@@ -24,18 +24,25 @@ export interface IHttpIntegration extends IIntegration {
  */
 export enum HttpIntegrationType {
   /**
-   * Integration type is a Lambda proxy
-   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-lambda.html
-   */
-  LAMBDA_PROXY = 'AWS_PROXY',
-  /**
-   * Integration type is an HTTP proxy
+   * Integration type is an HTTP proxy.
+   *
+   * For integrating the route or method request with an HTTP endpoint, with the
+   * client request passed through as-is. This is also referred to as HTTP proxy
+   * integration. For HTTP API private integrations, use an HTTP_PROXY integration.
+   *
    * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-http.html
    */
   HTTP_PROXY = 'HTTP_PROXY',
+
   /**
-   * Integration type is an AWS proxy
+   * Integration type is an AWS proxy.
+   *
+   * For integrating the route or method request with a Lambda function or other
+   * AWS service action. This integration is also referred to as a Lambda proxy
+   * integration.
+   *
    * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-aws-services.html
+   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-lambda.html
    */
   AWS_PROXY = 'AWS_PROXY',
 }
@@ -174,7 +181,7 @@ export interface HttpIntegrationProps {
 
   /**
    * Integration URI.
-   * This will be the function ARN in the case of `HttpIntegrationType.LAMBDA_PROXY`,
+   * This will be the function ARN in the case of `HttpIntegrationType.AWS_PROXY`,
    * or HTTP URL in the case of `HttpIntegrationType.HTTP_PROXY`.
    *
    * @default - none, required if no `integrationSubtype` is defined.
@@ -204,7 +211,7 @@ export interface HttpIntegrationProps {
   /**
    * The version of the payload format
    * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-lambda.html
-   * @default - defaults to latest in the case of HttpIntegrationType.LAMBDA_PROXY`, irrelevant otherwise.
+   * @default - defaults to latest in the case of HttpIntegrationType.AWS_PROXY`, irrelevant otherwise.
    */
   readonly payloadFormatVersion?: PayloadFormatVersion;
 
