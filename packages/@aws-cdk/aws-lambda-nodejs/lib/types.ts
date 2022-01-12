@@ -263,6 +263,30 @@ export interface BundlingOptions {
    * @default - asset hash is calculated based on the bundled output
    */
   readonly assetHash?: string;
+
+  /**
+   * Output format for the generated JavaScript files
+   *
+   * @default OutputFormat.CJS
+   */
+  readonly format?: OutputFormat;
+}
+
+/**
+ * Output format for the generated JavaScript files
+ */
+export enum OutputFormat {
+  /**
+   * CommonJS
+   */
+  CJS = 'cjs',
+
+  /**
+   * ECMAScript module
+   *
+   * Requires a running environment that supports `import` and `export` syntax.
+   */
+  ESM = 'esm'
 }
 
 /**
