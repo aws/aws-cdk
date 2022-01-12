@@ -53,6 +53,27 @@ describe('target tracking', () => {
 
   });
 
+  test('test setup target tracking on predefined metric for DYNAMODB_WRITE_CAPACITY_UTILIZATION', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const target = createScalableTarget(stack);
+
+    // WHEN
+    target.scaleToTrackMetric('Tracking', {
+      predefinedMetric: appscaling.PredefinedMetric.DYNAMODB_WRITE_CAPACITY_UTILIZATION,
+      targetValue: 0.9,
+    });
+
+    // THEN
+    expect(stack).toHaveResource('AWS::ApplicationAutoScaling::ScalingPolicy', {
+      PolicyType: 'TargetTrackingScaling',
+      TargetTrackingScalingPolicyConfiguration: {
+        PredefinedMetricSpecification: { PredefinedMetricType: 'DynamoDBWriteCapacityUtilization' },
+        TargetValue: 0.9,
+      },
+    });
+  });
+
   test('test setup target tracking on custom metric', () => {
     // GIVEN
     const stack = new cdk.Stack();
