@@ -9,9 +9,9 @@ import { AssetManifestBuilder } from '../util/asset-manifest-builder';
 import { publishAssets } from '../util/asset-publishing';
 import { contentHash } from '../util/content-hash';
 import { ISDK, SdkProvider } from './aws-auth';
+import { CfnEvaluationException } from './evaluate-cloudformation-template';
 import { tryHotswapDeployment } from './hotswap-deployments';
 import { ICON } from './hotswap/common';
-import { CfnEvaluationException } from './hotswap/evaluate-cloudformation-template';
 import { ToolkitInfo } from './toolkit-info';
 import {
   changeSetHasNoChanges, CloudFormationStack, TemplateParameters, waitForChangeSet,

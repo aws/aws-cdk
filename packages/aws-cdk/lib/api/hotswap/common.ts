@@ -1,12 +1,7 @@
 import * as cfn_diff from '@aws-cdk/cloudformation-diff';
-import { CloudFormation } from 'aws-sdk';
 import { ISDK } from '../aws-auth';
-import { CfnEvaluationException, EvaluateCloudFormationTemplate } from './evaluate-cloudformation-template';
 
 export const ICON = '✨';
-export interface ListStackResources {
-  listStackResources(): Promise<CloudFormation.StackResourceSummary[]>;
-}
 
 /**
  * An interface that represents a change that can be deployed in a short-circuit manner.
@@ -64,23 +59,6 @@ export class HotswappableChangeCandidate {
     this.newValue = newValue;
     this.propertyUpdates = propertyUpdates;
   }
-}
-
-export async function establishResourcePhysicalName(
-  logicalId: string, physicalNameInCfnTemplate: any, evaluateCfnTemplate: EvaluateCloudFormationTemplate,
-): Promise<string | undefined> {
-  if (physicalNameInCfnTemplate != null) {
-    try {
-      return await evaluateCfnTemplate.evaluateCfnExpression(physicalNameInCfnTemplate);
-    } catch (e) {
-      // If we can't evaluate the resource's name CloudFormation expression,
-      // just look it up in the currently deployed Stack
-      if (!(e instanceof CfnEvaluationException)) {
-        throw e;
-      }
-    }
-  }
-  return evaluateCfnTemplate.findPhysicalNameFor(logicalId);
 }
 
 /**

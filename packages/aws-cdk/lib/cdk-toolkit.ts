@@ -11,6 +11,8 @@ import { Bootstrapper, BootstrapEnvironmentOptions } from './api/bootstrap';
 import { CloudFormationDeployments } from './api/cloudformation-deployments';
 import { CloudAssembly, DefaultSelection, ExtendedStackSelection, StackCollection, StackSelector } from './api/cxapp/cloud-assembly';
 import { CloudExecutable } from './api/cxapp/cloud-executable';
+import { findCloudWatchLogGroups } from './api/logs/find-cloudwatch-logs';
+import { CloudWatchLogEventMonitor } from './api/logs/logs-monitor';
 import { StackActivityProgress } from './api/util/cloudformation/stack-activity-monitor';
 import { printSecurityDiff, printStackDiff, RequireApproval } from './diff';
 import { data, debug, error, highlight, print, success, warning } from './logging';
@@ -242,6 +244,10 @@ export class CdkToolkit {
         error('\n ❌  %s failed: %s', chalk.bold(stack.displayName), e);
         throw e;
       } finally {
+        if (options.cloudWatchLogMonitor) {
+          const foundLogGroupsResult = await findCloudWatchLogGroups(this.props.sdkProvider, stack);
+          options.cloudWatchLogMonitor.addLogGroups(foundLogGroupsResult.env, foundLogGroupsResult.sdk, foundLogGroupsResult.logGroupNames);
+        }
         // If an outputs file has been specified, create the file path and write stack outputs to it once.
         // Outputs are written after all stacks have been deployed. If a stack deployment fails,
         // all of the outputs from successfully deployed stacks before the failure will still be written.
@@ -304,10 +310,12 @@ export class CdkToolkit {
     // --------------                --------  'cdk deploy' done  --------------  'cdk deploy' done  --------------
     let latch: 'pre-ready' | 'open' | 'deploying' | 'queued' = 'pre-ready';
 
+    const cloudWatchLogMonitor = options.traceLogs ? new CloudWatchLogEventMonitor() : undefined;
     const deployAndWatch = async () => {
       latch = 'deploying';
+      cloudWatchLogMonitor?.deactivate();
 
-      await this.invokeDeployFromWatch(options);
+      await this.invokeDeployFromWatch(options, cloudWatchLogMonitor);
 
       // If latch is still 'deploying' after the 'await', that's fine,
       // but if it's 'queued', that means we need to deploy again
@@ -316,9 +324,10 @@ export class CdkToolkit {
         // and thinks the above 'while' condition is always 'false' without the cast
         latch = 'deploying';
         print("Detected file changes during deployment. Invoking 'cdk deploy' again");
-        await this.invokeDeployFromWatch(options);
+        await this.invokeDeployFromWatch(options, cloudWatchLogMonitor);
       }
       latch = 'open';
+      cloudWatchLogMonitor?.activate();
     };
 
     chokidar.watch(watchIncludes, {
@@ -594,7 +603,7 @@ export class CdkToolkit {
       : (options.returnRootDirIfEmpty ? [options.rootDir] : []);
   }
 
-  private async invokeDeployFromWatch(options: WatchOptions): Promise<void> {
+  private async invokeDeployFromWatch(options: WatchOptions, cloudWatchLogMonitor?: CloudWatchLogEventMonitor): Promise<void> {
     // 'watch' has different defaults than regular 'deploy'
     const hotswap = options.hotswap === undefined ? true : options.hotswap;
     const deployOptions: DeployOptions = {
@@ -604,6 +613,7 @@ export class CdkToolkit {
       // we need to make sure to not call 'deploy' with 'watch' again,
       // as that would lead to a cycle
       watch: false,
+      cloudWatchLogMonitor,
       cacheCloudAssembly: false,
       hotswap: hotswap,
       extraUserAgent: `cdk-watch/hotswap-${hotswap ? 'on' : 'off'}`,
@@ -745,6 +755,14 @@ interface WatchOptions {
    * @default - nothing extra is appended to the User-Agent header
    */
   readonly extraUserAgent?: string;
+
+  /**
+   * Whether to show CloudWatch logs for hotswapped resources
+   * locally in the users terminal
+   *
+   * @default - false
+   */
+  readonly traceLogs?: boolean;
 }
 
 export interface DeployOptions extends WatchOptions {
@@ -815,6 +833,14 @@ export interface DeployOptions extends WatchOptions {
    * @default true
    */
   readonly cacheCloudAssembly?: boolean;
+
+  /**
+   * Allows adding CloudWatch log groups to the log monitor via
+   * cloudWatchLogMonitor.setLogGroups();
+   *
+   * @default - not monitoring CloudWatch logs
+   */
+  readonly cloudWatchLogMonitor?: CloudWatchLogEventMonitor;
 }
 
 export interface DestroyOptions {
