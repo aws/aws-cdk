@@ -713,3 +713,78 @@ const loadBalancedFargateService = new ecsPatterns.ApplicationLoadBalancedFargat
   loadBalancerName: 'application-lb-name',
 });
 ```
+
+### Reuse existing load balancer and listener on ApplicationLoadBalancedFargateService
+
+```ts
+declare const cluster: ecs.Cluster;
+const service1 = new ecsPatterns.ApplicationLoadBalancedFargateService(this, 'Service1', {
+  cluster,
+  serviceName: 'service1',
+  memoryLimitMiB: 1024,
+  desiredCount: 1,
+  cpu: 512,
+  taskImageOptions: {
+    image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+  },
+  taskSubnets: {
+    subnets: [ec2.Subnet.fromSubnetId(this, 'subnet', 'VpcISOLATEDSubnet1Subnet80F07FA0')],
+  },
+});
+
+const service2 = new ecsPatterns.ApplicationLoadBalancedFargateService(this, 'Service2', {
+  cluster,
+  serviceName: 'service2',
+  memoryLimitMiB: 1024,
+  desiredCount: 1,
+  cpu: 512,
+  taskImageOptions: {
+    image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+  },
+  taskSubnets: {
+    subnets: [ec2.Subnet.fromSubnetId(this, 'subnet', 'VpcISOLATEDSubnet1Subnet80F07FA0')],
+  },
+  loadBalancer: service1.loadBalancer,
+  listener: service1.listener,
+});
+```
+
+### Reuse existing load balancer and listener on ApplicationMultipleTargetGroupsFargateService
+
+```ts
+declare const cluster: ecs.Cluster;
+const service1 = new ecsPatterns.ApplicationMultipleTargetGroupsFargateService(this, 'Service1', {
+  cluster,
+  serviceName: 'service1',
+  memoryLimitMiB: 1024,
+  desiredCount: 1,
+  cpu: 512,
+  taskImageOptions: {
+    image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+  },
+  taskSubnets: {
+    subnets: [ec2.Subnet.fromSubnetId(this, 'subnet', 'VpcISOLATEDSubnet1Subnet80F07FA0')],
+  },
+});
+
+const service2 = new ecsPatterns.ApplicationMultipleTargetGroupsFargateService(this, 'Service2', {
+  cluster,
+  serviceName: 'service2',
+  memoryLimitMiB: 1024,
+  desiredCount: 1,
+  cpu: 512,
+  taskImageOptions: {
+    image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+  },
+  taskSubnets: {
+    subnets: [ec2.Subnet.fromSubnetId(this, 'subnet', 'VpcISOLATEDSubnet1Subnet80F07FA0')],
+  },
+  loadBalancers: [{
+    name: service1.loadBalancer.loadBalancerName,
+    loadBalancer: service1.loadBalancer,
+    listeners: [{
+      name: service1.listener.node.id,
+    }],
+  }],
+});
+```

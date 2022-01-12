@@ -183,6 +183,15 @@ export interface ApplicationLoadBalancedServiceBaseProps {
   readonly loadBalancer?: IApplicationLoadBalancer;
 
   /**
+   * The application load balancer's listener that will listent to traffic to the service.
+   *
+   * [disable-awslint:ref-via-interface]
+   *
+   * @default - a new listener will be created.
+   */
+  readonly listener?: ApplicationListener;
+
+  /**
    * Listener port of the application load balancer that will serve traffic to the service.
    *
    * @default - The default listener port is determined from the protocol (port 80 for HTTP,
@@ -444,13 +453,13 @@ export abstract class ApplicationLoadBalancedServiceBase extends CoreConstruct {
       protocolVersion: props.protocolVersion,
     };
 
-    this.listener = loadBalancer.addListener('PublicListener', {
+    this.listener = props.listener ?? loadBalancer.addListener('PublicListener', {
       protocol,
       port: props.listenerPort,
       open: props.openListener ?? true,
       sslPolicy: props.sslPolicy,
     });
-    this.targetGroup = this.listener.addTargets('ECS', targetProps);
+    this.targetGroup = this.listener.addTargets(`ECS${props.serviceName ?? ''}`, targetProps);
 
     if (protocol === ApplicationProtocol.HTTPS) {
 

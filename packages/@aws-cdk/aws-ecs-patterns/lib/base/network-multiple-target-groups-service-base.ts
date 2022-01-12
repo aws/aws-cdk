@@ -212,6 +212,15 @@ export interface NetworkLoadBalancerProps {
   readonly listeners: NetworkListenerProps[];
 
   /**
+   * Already existing load balancer to reuse.
+   *
+   * [disable-awslint:ref-via-interface]
+   *
+   * @default - a new load balancer is created
+   */
+  readonly loadBalancer?: NetworkLoadBalancer;
+
+  /**
    * Determines whether the Load Balancer will be internet-facing.
    *
    * @default true
@@ -324,11 +333,16 @@ export abstract class NetworkMultipleTargetGroupsServiceBase extends CoreConstru
 
     if (props.loadBalancers) {
       for (const lbProps of props.loadBalancers) {
-        const lb = this.createLoadBalancer(lbProps.name, lbProps.publicLoadBalancer);
+        const lb = lbProps.loadBalancer ?? this.createLoadBalancer(lbProps.name, lbProps.publicLoadBalancer);
         this.loadBalancers.push(lb);
-        for (const listenerProps of lbProps.listeners) {
-          const listener = this.createListener(listenerProps.name, lb, listenerProps.port || 80);
-          this.listeners.push(listener);
+
+        if (lbProps.loadBalancer!=undefined) {
+          this.listeners.push(...lbProps.loadBalancer.listeners);
+        } else {
+          for (const listenerProps of lbProps.listeners) {
+            const listener = this.createListener(listenerProps.name, lb, listenerProps.port || 80);
+            this.listeners.push(listener);
+          }
         }
         this.createDomainName(lb, lbProps.domainName, lbProps.domainZone);
         new CfnOutput(this, `LoadBalancerDNS${lb.node.id}`, { value: lb.loadBalancerDnsName });

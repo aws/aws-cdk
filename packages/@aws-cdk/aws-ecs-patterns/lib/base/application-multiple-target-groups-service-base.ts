@@ -282,6 +282,15 @@ export interface ApplicationLoadBalancerProps {
   readonly listeners: ApplicationListenerProps[];
 
   /**
+   * Already existing load balancer to reuse.
+   *
+   * [disable-awslint:ref-via-interface]
+   *
+   * @default - a new load balancer is created
+   */
+  readonly loadBalancer?: ApplicationLoadBalancer;
+
+  /**
    * Determines whether the Load Balancer will be internet-facing.
    *
    * @default true
@@ -405,25 +414,31 @@ export abstract class ApplicationMultipleTargetGroupsServiceBase extends CoreCon
 
     if (props.loadBalancers) {
       for (const lbProps of props.loadBalancers) {
-        const lb = this.createLoadBalancer(lbProps.name, lbProps.publicLoadBalancer);
+        const lb = lbProps.loadBalancer ?? this.createLoadBalancer(lbProps.name, lbProps.publicLoadBalancer);
         this.loadBalancers.push(lb);
         const protocolType = new Set<ApplicationProtocol>();
-        for (const listenerProps of lbProps.listeners) {
-          const protocol = this.createListenerProtocol(listenerProps.protocol, listenerProps.certificate);
-          if (listenerProps.certificate !== undefined && protocol !== undefined && protocol !== ApplicationProtocol.HTTPS) {
-            throw new Error('The HTTPS protocol must be used when a certificate is given');
+
+        if (lbProps.loadBalancer!=undefined) {
+          this.listeners.push(...lbProps.loadBalancer.listeners);
+          protocolType.add(this.listeners[0].protocol);
+        } else {
+          for (const listenerProps of lbProps.listeners) {
+            const protocol = this.createListenerProtocol(listenerProps.protocol, listenerProps.certificate);
+            if (listenerProps.certificate !== undefined && protocol !== undefined && protocol !== ApplicationProtocol.HTTPS) {
+              throw new Error('The HTTPS protocol must be used when a certificate is given');
+            }
+            protocolType.add(protocol);
+            const listener = this.configListener(protocol, {
+              certificate: listenerProps.certificate,
+              domainName: lbProps.domainName,
+              domainZone: lbProps.domainZone,
+              listenerName: listenerProps.name,
+              loadBalancer: lb,
+              port: listenerProps.port,
+              sslPolicy: listenerProps.sslPolicy,
+            });
+            this.listeners.push(listener);
           }
-          protocolType.add(protocol);
-          const listener = this.configListener(protocol, {
-            certificate: listenerProps.certificate,
-            domainName: lbProps.domainName,
-            domainZone: lbProps.domainZone,
-            listenerName: listenerProps.name,
-            loadBalancer: lb,
-            port: listenerProps.port,
-            sslPolicy: listenerProps.sslPolicy,
-          });
-          this.listeners.push(listener);
         }
         const domainName = this.createDomainName(lb, lbProps.domainName, lbProps.domainZone);
         new CfnOutput(this, `LoadBalancerDNS${lb.node.id}`, { value: lb.loadBalancerDnsName });
