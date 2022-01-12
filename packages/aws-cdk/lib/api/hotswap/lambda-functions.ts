@@ -216,23 +216,26 @@ class LambdaFunctionHotswapOperation implements HotswapOperation {
     const operations: Promise<any>[] = [];
 
     if (resource.code !== undefined) {
-      const updateFunctionCodePromise = lambda.updateFunctionCode({
+      await lambda.updateFunctionCode({
         FunctionName: this.lambdaFunctionResource.physicalName,
         S3Bucket: resource.code.s3Bucket,
         S3Key: resource.code.s3Key,
         ImageUri: resource.code.imageUri,
       }).promise();
 
+      // we need to wait for LastUpdateStatus to be successful
+      // otherwise users will see old Lambda code working event after hotswap completed
+      const waitForFunctionUpdatedPromise = lambda.waitFor('functionUpdated', {
+        FunctionName: this.lambdaFunctionResource.physicalName,
+      }).promise();
+
       // only if the code changed is there any point in publishing a new Version
       if (this.lambdaFunctionResource.publishVersion) {
-        // we need to wait for the code update to be done before publishing a new Version
-        await updateFunctionCodePromise;
+        // wait for the code update to be done before publishing a new Version
         // if we don't wait for the Function to finish updating,
         // we can get a "The operation cannot be performed at this time. An update is in progress for resource:"
         // error when publishing a new Version
-        await lambda.waitFor('functionUpdated', {
-          FunctionName: this.lambdaFunctionResource.physicalName,
-        }).promise();
+        await waitForFunctionUpdatedPromise;
 
         const publishVersionPromise = lambda.publishVersion({
           FunctionName: this.lambdaFunctionResource.physicalName,
@@ -253,7 +256,7 @@ class LambdaFunctionHotswapOperation implements HotswapOperation {
           operations.push(publishVersionPromise);
         }
       } else {
-        operations.push(updateFunctionCodePromise);
+        operations.push(waitForFunctionUpdatedPromise);
       }
     }
 

@@ -15,6 +15,7 @@ beforeEach(() => {
     updateFunctionCode: mockUpdateLambdaCode,
     tagResource: mockTagResource,
     untagResource: mockUntagResource,
+    waitFor: jest.fn(),
   });
 });
 
