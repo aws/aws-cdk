@@ -1,7 +1,7 @@
 import * as cfn_diff from '@aws-cdk/cloudformation-diff';
 import * as cxapi from '@aws-cdk/cx-api';
 import { CloudFormation } from 'aws-sdk';
-import * as colors from 'colors/safe';
+import * as chalk from 'chalk';
 import { print } from '../logging';
 import { ISDK, Mode, SdkProvider } from './aws-auth';
 import { DeployStackResult } from './deploy-stack';
@@ -29,7 +29,7 @@ export async function tryHotswapDeployment(
   const resolvedEnv = await sdkProvider.resolveEnvironment(stackArtifact.environment);
   // create a new SDK using the CLI credentials, because the default one will not work for new-style synthesis -
   // it assumes the bootstrap deploy Role, which doesn't have permissions to update Lambda functions
-  const sdk = await sdkProvider.forEnvironment(resolvedEnv, Mode.ForWriting);
+  const sdk = (await sdkProvider.forEnvironment(resolvedEnv, Mode.ForWriting)).sdk;
   // The current resources of the Stack.
   // We need them to figure out the physical name of a resource in case it wasn't specified by the user.
   // We fetch it lazily, to save a service call, in case all hotswapped resources have their physical names set.
@@ -227,12 +227,12 @@ async function applyHotswappableChange(sdk: ISDK, hotswapOperation: HotswapOpera
 
   try {
     for (const name of hotswapOperation.resourceNames) {
-      print(`   ${ICON} %s`, colors.bold(name));
+      print(`   ${ICON} %s`, chalk.bold(name));
     }
     return await hotswapOperation.apply(sdk);
   } finally {
     for (const name of hotswapOperation.resourceNames) {
-      print(`${ICON} %s %s`, colors.bold(name), colors.green('hotswapped!'));
+      print(`${ICON} %s %s`, chalk.bold(name), chalk.green('hotswapped!'));
     }
     sdk.removeCustomUserAgent(customUserAgent);
   }

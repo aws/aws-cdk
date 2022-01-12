@@ -67,7 +67,7 @@
         ]
       }
     },
-    "UserAccess": {
+    "UserAccessEC42ADF7": {
       "Type": "AWS::IAM::AccessKey",
       "Properties": {
         "UserName": {
@@ -184,13 +184,13 @@
     },
     "TESTACCESSKEYID": {
       "Value": {
-        "Ref": "UserAccess"
+        "Ref": "UserAccessEC42ADF7"
       }
     },
     "TESTSECRETACCESSKEY": {
       "Value": {
         "Fn::GetAtt": [
-          "UserAccess",
+          "UserAccessEC42ADF7",
           "SecretAccessKey"
         ]
       }
