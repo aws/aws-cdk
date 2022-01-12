@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.6.0](https://github.com/aws/aws-cdk/compare/v2.5.0...v2.6.0) (2022-01-12)
+
+
+### Bug Fixes
+
+* **appmesh:** allow a Virtual Node have as a backend a Virtual Service whose provider is that Node ([#18265](https://github.com/aws/aws-cdk/issues/18265)) ([272b6b1](https://github.com/aws/aws-cdk/commit/272b6b1abe22b7415eed5cdba82056d154fc31d7)), closes [#17322](https://github.com/aws/aws-cdk/issues/17322)
+
 ## [2.5.0](https://github.com/aws/aws-cdk/compare/v2.4.0...v2.5.0) (2022-01-09)
 
 
