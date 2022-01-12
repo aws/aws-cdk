@@ -85,13 +85,15 @@ By default, Amazon ECR uses server-side encryption with Amazon S3-managed encryp
 
 When `encryptionKey` is set, the `encryption` property must be `KMS` or empty.
 
+In the case `encryption` is set to `KMS` but no `encryptionKey` is set, an AWS managed KMS key is used.
+
 ```ts
 new ecr.Repository(this, 'Repo', {
   encryption: ecr.RepositoryEncryption.KMS
 });
 ```
 
-or
+Otherwise, a customer-managed KMS key is used if `encryptionKey` was set and `encryption` was optionally set to `KMS`.
 
 ```ts
 import * as kms from '@aws-cdk/aws-kms';

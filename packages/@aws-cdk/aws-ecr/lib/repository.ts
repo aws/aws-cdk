@@ -503,8 +503,6 @@ export class Repository extends RepositoryBase {
 
     Repository.validateRepositoryName(this.physicalName);
 
-    const encryptionConfiguration = this.parseEncryption(props);
-
     const resource = new CfnRepository(this, 'Resource', {
       repositoryName: this.physicalName,
       // It says "Text", but they actually mean "Object".
@@ -639,7 +637,7 @@ export class Repository extends RepositoryBase {
 
     // if encryption key is set, encryption must be set to KMS.
     if (encryptionType !== RepositoryEncryption.KMS && props.encryptionKey) {
-      throw new Error(`encryptionKey is specified, so 'encryption' must be set to KMS (value: ${encryptionType})`);
+      throw new Error(`encryptionKey is specified, so 'encryption' must be set to KMS (value: ${encryptionType.value})`);
     }
 
     if (encryptionType === RepositoryEncryption.AES_256) {
@@ -723,15 +721,18 @@ export enum TagMutability {
  * from the AWS Key Management Service (AWS KMS) or from Amazon S3 managed encryption (SSE-S3).
  * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html#SysMetadata
  */
-export enum RepositoryEncryption {
-
+export class RepositoryEncryption {
   /**
    * 'AES256'
    */
-  AES_256 = 'AES256',
-
+  public static readonly AES_256 = new RepositoryEncryption('AES256');
   /**
    * 'KMS'
    */
-  KMS = 'KMS'
+  public static readonly KMS = new RepositoryEncryption('KMS');
+
+  /**
+   * @param value the string value of the encryption
+   */
+  protected constructor(public readonly value: string) { }
 }
