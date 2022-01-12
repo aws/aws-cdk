@@ -1,5 +1,5 @@
 import * as cfnspec from '@aws-cdk/cfnspec';
-import * as colors from 'colors/safe';
+import * as chalk from 'chalk';
 import { PropertyChange, PropertyMap, ResourceChange } from '../diff/types';
 import { DiffableCollection } from '../diffable';
 import { renderIntrinsics } from '../render-intrinsics';
@@ -77,18 +77,18 @@ export class IamChanges {
         renderedStatement.action,
         renderedStatement.principal,
         renderedStatement.condition,
-      ].map(s => colors.green(s)));
+      ].map(s => chalk.green(s)));
     }
     for (const statement of this.statements.removals) {
       const renderedStatement = statement.render();
       ret.push([
-        colors.red('-'),
+        chalk.red('-'),
         renderedStatement.resource,
         renderedStatement.effect,
         renderedStatement.action,
         renderedStatement.principal,
         renderedStatement.condition,
-      ].map(s => colors.red(s)));
+      ].map(s => chalk.red(s)));
     }
 
     // Sort by 2nd column
@@ -108,14 +108,14 @@ export class IamChanges {
         '+',
         att.identityArn,
         att.managedPolicyArn,
-      ].map(s => colors.green(s)));
+      ].map(s => chalk.green(s)));
     }
     for (const att of this.managedPolicies.removals) {
       ret.push([
         '-',
         att.identityArn,
         att.managedPolicyArn,
-      ].map(s => colors.red(s)));
+      ].map(s => chalk.red(s)));
     }
 
     // Sort by 2nd column
