@@ -65,11 +65,9 @@ describe('target tracking', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ApplicationAutoScaling::ScalingPolicy', {
-      PolicyType: 'TargetTrackingScaling',
+    expect(stack).toHaveResourceLike('AWS::ApplicationAutoScaling::ScalingPolicy', {
       TargetTrackingScalingPolicyConfiguration: {
         PredefinedMetricSpecification: { PredefinedMetricType: 'DynamoDBWriteCapacityUtilization' },
-        TargetValue: 0.9,
       },
     });
   });
