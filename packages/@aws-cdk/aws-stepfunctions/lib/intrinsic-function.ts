@@ -15,7 +15,9 @@ export class IntrinsicFunction {
       if (typeof arg === 'number') {
         result += arg + comma;
       } else if (typeof arg === 'string') {
-        if (isValidJsonPath(arg)) {
+        if (arg == this.NULL) {
+          result += 'null' + comma;
+        } else if (isValidJsonPath(arg)) {
           result += arg + comma;
         } else {
           result += quote + arg + quote + comma;
