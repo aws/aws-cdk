@@ -214,15 +214,19 @@ export class FieldUtils {
 }
 
 function validateJsonPath(path: string) {
-  if (path !== '$'
-    && !path.startsWith('$.')
-    && path !== '$$'
-    && !path.startsWith('$$.')
-    && !path.startsWith('$[')
-    && ['Format', 'StringToJson', 'JsonToString', 'Array'].every(fn => !path.startsWith(`States.${fn}`))
-  ) {
+  if (!isValidJsonPath(path)) {
     throw new Error(`JSON path values must be exactly '$', '$$', start with '$.', start with '$$.', start with '$[', or start with an intrinsic function: States.Format, States.StringToJson, States.JsonToString, or States.Array. Received: ${path}`);
   }
+}
+
+export function isValidJsonPath(path: string): boolean {
+  return (path === '$'
+    || path.startsWith('$.')
+    || path === '$$'
+    || path.startsWith('$$.')
+    || path.startsWith('$[')
+    || ['Format', 'StringToJson', 'JsonToString', 'Array'].some(fn => path.startsWith(`States.${fn}`))
+  );
 }
 
 function validateDataPath(path: string) {
