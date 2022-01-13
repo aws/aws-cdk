@@ -22,4 +22,8 @@ export class IntrinsicFunction {
     result = result.substring(0, result.length - comma.length);
     return 'States.Format(' + result + ')';
   }
+
+  public static StatesStringToJson(str: string): string {
+    return 'States.StringToJson(\'' + str + '\')';
+  }
 }

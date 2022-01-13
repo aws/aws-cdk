@@ -14,3 +14,14 @@ describe('States.Format()', () => {
       toEqual('States.Format(\'1{}2{}3{}4\', \'str\', 123, $.path)');
   });
 });
+
+describe('States.StringToJson()', () => {
+  test('empty string', () => {
+    expect(IntrinsicFunction.StatesStringToJson('')).
+      toEqual('States.StringToJson(\'\')');
+  }),
+  test('string', () => {
+    expect(IntrinsicFunction.StatesStringToJson('{"aaa":"bbb"}')).
+      toEqual('States.StringToJson(\'{"aaa":"bbb"}\')');
+  });
+});
