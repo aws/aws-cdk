@@ -98,6 +98,8 @@ describe('fetchDockerLoginCredentials', () => {
   });
 
   test('does not throw on correctly configured raw domain', async () => {
+    mockSecretWithSecretString({ username: 'secretUser', secret: 'secretPass' });
+
     await expect(fetchDockerLoginCredentials(aws, config, 'https://secret.example.com/v1/')).resolves.toBeTruthy();
   });
 
