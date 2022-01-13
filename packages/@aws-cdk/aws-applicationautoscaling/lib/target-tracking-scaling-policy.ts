@@ -190,6 +190,11 @@ export enum PredefinedMetric {
   DYNAMODB_READ_CAPACITY_UTILIZATION = 'DynamoDBReadCapacityUtilization',
   /**
    * DYNAMODB_WRITE_CAPACITY_UTILIZATION
+   *
+   * Suffix `dummy` is necessary due to jsii bug (https://github.com/aws/jsii/issues/2782).
+   * Duplicate values will be dropped, so this suffix is added as a workaround.
+   * The value will be replaced when this enum is used.
+   *
    * @see https://docs.aws.amazon.com/autoscaling/application/APIReference/API_PredefinedMetricSpecification.html
    */
   DYNAMODB_WRITE_CAPACITY_UTILIZATION = 'DynamoDBWriteCapacityUtilization-dummy',
