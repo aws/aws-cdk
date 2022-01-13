@@ -466,13 +466,26 @@ export interface ResolveCfnIntrinsicMockPseudoParameters {
 export interface ResolveCfnIntrinsicMocks {
   /**
    * Mock attribute values of cloudformation resources
-   *
+   * @example
+   * ```typescript
+   *{
+   *  MyResource: {
+   *    Ref: 'The value returned for {"Ref": "MyResource"}',
+   *    Attr1: 'The value returned for {"Fn::GetAtt": ["MyResource","Attr1"]}',
+   *  },
+   *}
+   * ```
    * @default {}
    */
   readonly cfnResources?: ResolveCfnIntrinsicMockResources;
   /**
    * Mock exports of other cloudformation stacks
-   *
+   * @example
+   * ```typescript
+   *{
+   *  'my-example-cfn-export': 'the value returned form {"Fn::Import": "my-example-cfn-export"}',
+   *}
+   * ```
    * @default {}
    */
   readonly cfnExports?: ResolveCfnIntrinsicMockResourceAttributes;
@@ -481,6 +494,11 @@ export interface ResolveCfnIntrinsicMocks {
    * @default - { see defaults of ResolveCfnIntrinsicMockPseudoParameters }
    */
   readonly cfnPseudoParameters?: ResolveCfnIntrinsicMockPseudoParameters
+  /**
+   * 
+   * @default {}
+   */
+  readonly cfnMaps?: ResolveCfnIntrinsicMockResources;
 }
 
 /**
@@ -522,6 +540,12 @@ export interface ResolveCfnIntrinsicOptions {
    * @default true
    */
   readonly resolveFnSelect?: boolean;
+  /**
+   * resolve Fn::GetAZs
+   * 
+   * @default true
+   */
+  readonly resolveGetAZs?: boolean;
 }
 
 class ResolveCfnIntrinsic extends Matcher {
@@ -534,13 +558,19 @@ class ResolveCfnIntrinsic extends Matcher {
         return mocks.cfnPseudoParameters![pseudoParameter];
       }
       // Handle { "Fn::Join" : [ "delimiter", [ comma-delimited list of values ] ] }
-      if ( options.resolveFnJoin && object['Fn::Join'] instanceof Array && object['Fn::Join'].length == 2 && object['Fn::Join'][1] instanceof Array ) {
+      if ( options.resolveFnJoin && typeof object['Fn::Join'] === 'object') {
+        if ( !(object['Fn::Join'] instanceof Array && object['Fn::Join'].length == 2)) {
+          throw new Error('Fn::Join expecting an array of with the lenght of 2');
+        }
         const delimiter = object['Fn::Join'][0];
         let valuesList = object['Fn::Join'][1];
+        if ( !(valuesList instanceof Array) ) {
+          throw new Error('Fn::Join expecting an array as valuesList');
+        }
         if (options.recursive) {
           valuesList = valuesList.map( (attr) => ResolveCfnIntrinsic.resolveIntrinsic(attr, options, mocks));
         }
-        valuesList.forEach( (value) => {
+        valuesList.forEach( (value: any) => {
           if ( typeof value === 'object' ) {
             throw new Error('Fn::Join valueList are not allowed to contain objects');
           }
@@ -551,26 +581,35 @@ class ResolveCfnIntrinsic extends Matcher {
         return valuesList.join(delimiter);
       }
       // Handle { "Fn::GetAtt" : [ "logicalNameOfResource", "attributeName" ] }
-      //if ( options.resolveFnGetAtt && object['Fn::GetAtt'] instanceof Array ) {
-      //  const logicalNameOfResource = object['Fn::GetAtt'][0];
-      //  const attributeName = object['Fn::GetAtt'][1];
-      //  if ( mocks !== undefined &&
-      //    mocks.cfnResources !== undefined &&
-      //    mocks?.cfnResources[logicalNameOfResource] !== undefined &&
-      //    mocks?.cfnResources[logicalNameOfResource][attributeName] !== undefined ) {
-      //    // Return the mock value
-      //    return mocks.cfnResources[logicalNameOfResource][attributeName];
-      //  }
-      //  throw new Error(`Could not resolve { "Fn::GetAtt": [ "${logicalNameOfResource}", "${attributeName}" ] }`);
-      //}
-      //// Handle { "Fn::ImportValue" : sharedValueToImport }
-      //if ( options.resolveFnImportValue && object['Fn::ImportValue'] instanceof object ) {
-      //  const sharedValueToImport = object['Fn::ImportValue'];
-      //  if ( mocks !== undefined && mocks.cfnExports !== undefined && mocks.cfnExports[sharedValueToImport] !== undefined ) {
-      //    return mocks.cfnExports[sharedValueToImport];
-      //  }
-      //  throw new Error(`Could not resolve { "Fn::ImportValue": "${sharedValueToImport}" }`);
-      //}
+      if ( options.resolveFnGetAtt && object['Fn::GetAtt'] instanceof Array ) {
+        const logicalNameOfResource = object['Fn::GetAtt'][0];
+        if ( !(typeof logicalNameOfResource == 'string') ) {
+          throw new Error('Fn::GetAtt logicalNameOfResource must be typeof string');
+        }
+        const attributeName = object['Fn::GetAtt'][1];
+        if ( !(typeof attributeName == 'string') ) {
+          throw new Error('Fn::GetAtt attributeName must be typeof string');
+        }
+        if ( mocks !== undefined &&
+          mocks.cfnResources !== undefined &&
+          mocks?.cfnResources[logicalNameOfResource] !== undefined &&
+          mocks?.cfnResources[logicalNameOfResource][attributeName] !== undefined ) {
+          // Return the mock value
+          return mocks.cfnResources[logicalNameOfResource][attributeName];
+        }
+        throw new Error(`Could not resolve { "Fn::GetAtt": [ "${logicalNameOfResource}", "${attributeName}" ] }`);
+      }
+      // Handle { "Fn::ImportValue" : sharedValueToImport }
+      if ( options.resolveFnImportValue && ( typeof object['Fn::ImportValue'] == 'object' || typeof object['Fn::ImportValue'] == 'string' ) ) {
+        const sharedValueToImport = object['Fn::ImportValue'];
+        if ( mocks !== undefined && mocks.cfnExports !== undefined && mocks.cfnExports[sharedValueToImport] !== undefined ) {
+          if ( options.recursive ) {
+            mocks.cfnExports[ResolveCfnIntrinsic.resolveIntrinsic(sharedValueToImport, options, mocks)];
+          }
+          return mocks.cfnExports[sharedValueToImport];
+        }
+        throw new Error(`Could not resolve { "Fn::ImportValue": "${sharedValueToImport}" }`);
+      }
       // Handle { "Fn::Sub" : [ String, { Var1Name: Var1Value, Var2Name: Var2Value } ] }
       //if ( object['Fn::Sub'] instanceof Array ) {
       //}
@@ -578,8 +617,9 @@ class ResolveCfnIntrinsic extends Matcher {
       //if ( object['Fn::FindInMap'] instanceof Array ) {
       //}
       // Handle { "Fn::GetAZs" : "region" }
-      //if ( object['Fn::GetAZs'] !== undefined ) {
-      //}
+      if ( options.resolveGetAZs && object['Fn::GetAZs'] !== undefined ) {
+
+      }
       // Handle { "Fn::Select" : [ index, [ list of objects ] ] }
       //if ( options.resolveFnSelect && object['Fn::Select'] instanceof Array ) {
       //  // Check if the select looks like expected
@@ -627,6 +667,7 @@ class ResolveCfnIntrinsic extends Matcher {
       resolveFnGetAtt: options.resolveFnGetAtt ?? true,
       resolveFnImportValue: options.resolveFnImportValue ?? true,
       resolveFnSelect: options.resolveFnSelect ?? true,
+      resolveGetAZs: options.resolveGetAZs ?? true,
     };
   };
 

@@ -53,8 +53,20 @@ describe('Matchers', () => {
       test('recursive join with recursiv:false', () => {
         expectFailure(Match.resolveCfnIntrinsic(Match.objectEquals({}), { recursive: false }), { 'Fn::Join': [' ', ['Join', 'some', { 'Fn::Join': [] }]] }, ['Error: Fn::Join valueList are not allowed to contain objects']);
       });
-      test('delimiter must be a string value', () => {
+      test('wrong usage', () => {
         expectFailure(Match.resolveCfnIntrinsic(Match.objectEquals({}), { recursive: false }), { 'Fn::Join': [{}, ['Join', 'some', 'strings']] }, ['Error: Fn::Join delimiter must be a string value']);
+        expectFailure(Match.resolveCfnIntrinsic(Match.objectEquals({}), { recursive: false }), { 'Fn::Join': ['', [{}]] }, ['Error: Fn::Join valueList are not allowed to contain objects']);
+        expectFailure(Match.resolveCfnIntrinsic(Match.objectEquals({}), { recursive: false }), { 'Fn::Join': ['', ''] }, ['Error: Fn::Join expecting an array as valuesList']);
+      });
+    });
+    describe('Fn::GetAtt', () => {
+      test('simple getAtt', () => {
+        expectPass(Match.resolveCfnIntrinsic('SomeResolvedAttribute', {}, { cfnResources: { Resource: { Attribute: 'SomeResolvedAttribute' } } }), { 'Fn::GetAtt': ['Resource', 'Attribute'] });
+        expectPass(Match.resolveCfnIntrinsic(12345, {}, { cfnResources: { Resource: { Attribute: 12345 } } }), { 'Fn::GetAtt': ['Resource', 'Attribute'] });
+      });
+      test('wrong usage', () => {
+        expectFailure(Match.resolveCfnIntrinsic(Match.objectEquals({}), { recursive: false }), { 'Fn::GetAtt': [{}, ''] }, ['Error: Fn::GetAtt logicalNameOfResource must be typeof string']);
+        expectFailure(Match.resolveCfnIntrinsic(Match.objectEquals({}), { recursive: false }), { 'Fn::GetAtt': ['', {}] }, ['Error: Fn::GetAtt attributeName must be typeof string']);
       });
     });
   });
