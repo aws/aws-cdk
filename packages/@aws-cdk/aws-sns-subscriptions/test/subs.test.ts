@@ -1,3 +1,4 @@
+import { MatchStyle } from '@aws-cdk/assert-internal';
 import '@aws-cdk/assert-internal/jest';
 import * as kms from '@aws-cdk/aws-kms';
 import * as lambda from '@aws-cdk/aws-lambda';
@@ -935,23 +936,7 @@ test('encrypted queue subscription', () => {
           'KeyPolicy': {
             'Statement': [
               {
-                'Action': [
-                  'kms:Create*',
-                  'kms:Describe*',
-                  'kms:Enable*',
-                  'kms:List*',
-                  'kms:Put*',
-                  'kms:Update*',
-                  'kms:Revoke*',
-                  'kms:Disable*',
-                  'kms:Get*',
-                  'kms:Delete*',
-                  'kms:ScheduleKeyDeletion',
-                  'kms:CancelKeyDeletion',
-                  'kms:GenerateDataKey',
-                  'kms:TagResource',
-                  'kms:UntagResource',
-                ],
+                'Action': 'kms:*',
                 'Effect': 'Allow',
                 'Principal': {
                   'AWS': {
@@ -1055,7 +1040,7 @@ test('encrypted queue subscription', () => {
         },
       },
     },
-  });
+  }, MatchStyle.SUPERSET);
 });
 
 test('lambda subscription', () => {

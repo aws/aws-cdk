@@ -66,7 +66,7 @@
     "@aws-cdk/pkglint": "0.0.0",
     "@types/fs-extra": "^9.0.13",
     "@types/jest": "^27.4.0",
-    "constructs": "^3.3.69",
+    "constructs": "^10.0.0",
     "jest": "^27.4.7",
     "ts-jest": "^27.1.2"
   },
@@ -74,14 +74,14 @@
     "@aws-cdk/cloud-assembly-schema": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
-    "constructs": "^3.3.69",
+    "constructs": "^10.0.0",
     "fs-extra": "^9.1.0"
   },
   "peerDependencies": {
     "@aws-cdk/cloud-assembly-schema": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
-    "constructs": "^3.3.69"
+    "constructs": "^10.0.0"
   },
   "bundledDependencies": [
     "fs-extra"
@@ -98,14 +98,15 @@
   ],
   "homepage": "https://github.com/aws/aws-cdk",
   "engines": {
-    "node": ">= 10.13.0 <13 || >=13.7.0"
+    "node": ">= 14.15.0"
   },
   "stability": "stable",
   "maturity": "stable",
   "publishConfig": {
-    "tag": "latest"
+    "tag": "next"
   },
   "awscdkio": {
     "announce": false
-  }
+  },
+  "private": true
 }
