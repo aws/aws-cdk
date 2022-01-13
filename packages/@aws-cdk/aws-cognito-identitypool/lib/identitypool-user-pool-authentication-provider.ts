@@ -94,7 +94,7 @@ export class UserPoolAuthenticationProvider implements IUserPoolAuthenticationPr
   }
 
   public bind(
-    _scope: Construct,
+    scope: Construct,
     identityPool: IIdentityPool,
     _options?: UserPoolAuthenticationProviderBindOptions,
   ): UserPoolAuthenticationProviderBindConfig {
