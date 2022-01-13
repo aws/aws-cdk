@@ -74,6 +74,29 @@ export interface SourceAccessConfiguration {
   readonly uri: string
 }
 
+/**
+ * Filter rules applied to a key or path. A rule consists of an operator and/or arguments.
+ *
+ * @see https://docs.aws.amazon.com/lambda/latest/dg/invocation-eventfiltering.html
+ */
+export type FilterPatternRule = (
+  | null
+  | string
+  | { 'anything-but': string | number | string[] | number[] | { prefix: string } }
+  | { numeric: (number | '<' | '<=' | '=' | '>=' | '>')[] }
+  | { exists: boolean }
+  | { prefix: string }
+)[];
+
+/**
+ * A filter rule, which consists of a key, operator and/or arguments.
+ *
+ * @see https://docs.aws.amazon.com/lambda/latest/dg/invocation-eventfiltering.html
+ */
+export interface FilterPattern {
+  readonly [key: string]: FilterPatternRule | FilterPattern;
+}
+
 export interface EventSourceMappingOptions {
   /**
    * The Amazon Resource Name (ARN) of the event source. Any record added to
@@ -210,6 +233,22 @@ export interface EventSourceMappingOptions {
    * @default - none
    */
   readonly sourceAccessConfigurations?: SourceAccessConfiguration[]
+
+  /**
+   * A list of event filtering criteria to control which events Lambda sends to
+   * your function for processing. You can define up to five different filters
+   * for a single event source. If an event satisfies any one of these five
+   * filters, Lambda sends the event to your function. Otherwise, Lambda
+   * discards the event. An event either satisfies the filter criteria or it
+   * doesn't. If you're using batching windows, Lambda applies your filter
+   * criteria to each new event to determine whether to add it to the current
+   * batch.
+   *
+   * @see https://docs.aws.amazon.com/lambda/latest/dg/invocation-eventfiltering.html
+   *
+   * @default - none
+   */
+  readonly filterPatterns?: FilterPattern[];
 }
 
 /**
@@ -313,6 +352,14 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
       selfManagedEventSource = { endpoints: { kafkaBootstrapServers: props.kafkaBootstrapServers } };
     }
 
+    let filterCriteria;
+    if (props.filterPatterns) {
+      if ((props.filterPatterns?.length ?? 0) > 5) {
+        throw new Error(`Maximum number of filter criteria for a single event source is five (given ${props.filterPatterns?.length}).`);
+      }
+      filterCriteria = { Filters: props.filterPatterns.map(filterPattern => ({ Pattern: JSON.stringify(filterPattern) })) };
+    }
+
     const cfnEventSourceMapping = new CfnEventSourceMapping(this, 'Resource', {
       batchSize: props.batchSize,
       bisectBatchOnFunctionError: props.bisectBatchOnError,
@@ -330,6 +377,7 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
       tumblingWindowInSeconds: props.tumblingWindow?.toSeconds(),
       sourceAccessConfigurations: props.sourceAccessConfigurations?.map((o) => {return { type: o.type.type, uri: o.uri };}),
       selfManagedEventSource,
+      filterCriteria,
     });
     this.eventSourceMappingId = cfnEventSourceMapping.ref;
   }

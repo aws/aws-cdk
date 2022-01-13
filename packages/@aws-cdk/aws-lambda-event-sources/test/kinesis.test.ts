@@ -263,4 +263,48 @@ describe('KinesisEventSource', () => {
     });
 
   });
+
+  test('specific filterCriteria', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const stream = new kinesis.Stream(stack, 'S');
+
+    // WHEN
+    fn.addEventSource(new sources.KinesisEventSource(stream, {
+      startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+      filterPatterns: [{ data: { balance: [{ numeric: ['>', 500] }] } }],
+    }));
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+      FilterCriteria: {
+        Filters: [
+          {
+            Pattern: '{"data":{"balance":[{"numeric":[">",500]}]}}',
+          },
+        ],
+      },
+    });
+  });
+
+  test('fails on more than 5 filterCriteria', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const stream = new kinesis.Stream(stack, 'S');
+
+    // WHEN/THEN
+    expect(() => fn.addEventSource(new sources.KinesisEventSource(stream, {
+      startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+      filterPatterns: [
+        { data: ['test'] },
+        { data: ['test'] },
+        { data: ['test'] },
+        { data: ['test'] },
+        { data: ['test'] },
+        { data: ['test'] },
+      ],
+    }))).toThrow(/Maximum number of filter criteria for a single event source is five/i);
+  });
 });

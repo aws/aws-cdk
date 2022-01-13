@@ -284,4 +284,46 @@ describe('SQSEventSource', () => {
 
 
   });
+
+  test('specific filterCriteria', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const q = new sqs.Queue(stack, 'Q');
+
+    // WHEN
+    fn.addEventSource(new sources.SqsEventSource(q, {
+      filterPatterns: [{ body: { balance: [{ numeric: ['>', 500] }] } }],
+    }));
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+      FilterCriteria: {
+        Filters: [
+          {
+            Pattern: '{"body":{"balance":[{"numeric":[">",500]}]}}',
+          },
+        ],
+      },
+    });
+  });
+
+  test('fails on more than 5 filterCriteria', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const q = new sqs.Queue(stack, 'Q');
+
+    // WHEN/THEN
+    expect(() => fn.addEventSource(new sources.SqsEventSource(q, {
+      filterPatterns: [
+        { body: ['test'] },
+        { body: ['test'] },
+        { body: ['test'] },
+        { body: ['test'] },
+        { body: ['test'] },
+        { body: ['test'] },
+      ],
+    }))).toThrow(/Maximum number of filter criteria for a single event source is five/i);
+  });
 });

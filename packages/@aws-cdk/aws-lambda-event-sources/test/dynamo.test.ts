@@ -724,7 +724,61 @@ describe('DynamoEventSource', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
       'Enabled': false,
     });
+  });
 
+  test('specific filterCriteria', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const table = new dynamodb.Table(stack, 'T', {
+      partitionKey: {
+        name: 'id',
+        type: dynamodb.AttributeType.STRING,
+      },
+      stream: dynamodb.StreamViewType.NEW_IMAGE,
+    });
 
+    // WHEN
+    fn.addEventSource(new sources.DynamoEventSource(table, {
+      startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+      filterPatterns: [{ dynamodb: { balance: [{ 'numeric': ['>', 500] }] } }],
+    }));
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+      FilterCriteria: {
+        Filters: [
+          {
+            Pattern: '{"dynamodb":{"balance":[{"numeric":[">",500]}]}}',
+          },
+        ],
+      },
+    });
+  });
+
+  test('fails on more than 5 filterCriteria', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const table = new dynamodb.Table(stack, 'T', {
+      partitionKey: {
+        name: 'id',
+        type: dynamodb.AttributeType.STRING,
+      },
+      stream: dynamodb.StreamViewType.NEW_IMAGE,
+    });
+
+    // WHEN/THEN
+    expect(() => fn.addEventSource(new sources.DynamoEventSource(table, {
+      startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+      filterPatterns: [
+        { dynamodb: ['test'] },
+        { dynamodb: ['test'] },
+        { dynamodb: ['test'] },
+        { dynamodb: ['test'] },
+        { dynamodb: ['test'] },
+        { dynamodb: ['test'] },
+      ],
+    }))).toThrow(/Maximum number of filter criteria for a single event source is five/i);
   });
 });

@@ -58,6 +58,7 @@ behavior:
 * __batchSize__: Determines how many records are buffered before invoking your lambda function.
 * __maxBatchingWindow__: The maximum amount of time to gather records before invoking the lambda. This increases the likelihood of a full batch at the cost of delayed processing.
 * __enabled__: If the SQS event source mapping should be enabled. The default is true.
+* __filterCriteria__: A list of filters for granular control of function triggers. The event must match at least one of the filters to make Lambda invoke the function.
 
 ```ts
 import { SqsEventSource } from '@aws-cdk/aws-lambda-event-sources';
@@ -158,6 +159,7 @@ and add it to your Lambda function. The following parameters will impact Amazon 
 * __startingPosition__: Will determine where to being consumption, either at the most recent ('LATEST') record or the oldest record ('TRIM_HORIZON'). 'TRIM_HORIZON' will ensure you process all available data, while 'LATEST' will ignore all records that arrived prior to attaching the event source.
 * __tumblingWindow__: The duration in seconds of a processing window when using streams.
 * __enabled__: If the DynamoDB Streams event source mapping should be enabled. The default is true.
+* __filterCriteria__: A list of filters for granular control of function triggers. The event must match at least one of the filters to make Lambda invoke the function.
 
 ```ts
 import * as dynamodb from '@aws-cdk/aws-dynamodb';
@@ -199,6 +201,7 @@ behavior:
 * __startingPosition__: Will determine where to being consumption, either at the most recent ('LATEST') record or the oldest record ('TRIM_HORIZON'). 'TRIM_HORIZON' will ensure you process all available data, while 'LATEST' will ignore all records that arrived prior to attaching the event source.
 * __tumblingWindow__: The duration in seconds of a processing window when using streams.
 * __enabled__: If the DynamoDB Streams event source mapping should be enabled. The default is true.
+* __filterCriteria__: A list of filters for granular control of function triggers. The event must match at least one of the filters to make Lambda invoke the function.
 
 ```ts
 import * as kinesis from '@aws-cdk/aws-kinesis';

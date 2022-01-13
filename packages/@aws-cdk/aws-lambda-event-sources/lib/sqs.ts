@@ -39,6 +39,32 @@ export interface SqsEventSourceProps {
    * @default true
    */
   readonly enabled?: boolean;
+
+  /**
+   * A list of event filtering criteria to control which events Lambda sends to
+   * your function for processing. You can define up to five different filters
+   * for a single event source. If an event satisfies any one of these five
+   * filters, Lambda sends the event to your function. Otherwise, Lambda
+   * discards the event. An event either satisfies the filter criteria or it
+   * doesn't. If you're using batching windows, Lambda applies your filter
+   * criteria to each new event to determine whether to add it to the current
+   * batch.
+   *
+   * @see https://docs.aws.amazon.com/lambda/latest/dg/invocation-eventfiltering.html
+   *
+   * @default - none
+   *
+   * @example
+   *
+   * import * as sources from '@aws-cdk/aws-lambda-event-sources';
+   * declare const fooQueue: sqs.IQueue
+   * new sources.SqsEventSource(fooQueue, {
+   *   filterPatterns: [
+   *     { body: { balance: [ { numeric: [ '>', 500 ] } ] } }
+   *   ]
+   * });
+   */
+  readonly filterPatterns?: lambda.FilterPattern[];
 }
 
 /**
@@ -64,6 +90,9 @@ export class SqsEventSource implements lambda.IEventSource {
         throw new Error(`Maximum batch size must be between 1 and 10 inclusive (given ${this.props.batchSize}) when batching window is not specified.`);
       }
     }
+    if ((this.props.filterPatterns?.length ?? 0) > 5) {
+      throw new Error(`Maximum number of filter criteria for a single event source is five (given ${this.props.filterPatterns?.length}).`);
+    }
   }
 
   public bind(target: lambda.IFunction) {
@@ -73,6 +102,7 @@ export class SqsEventSource implements lambda.IEventSource {
       reportBatchItemFailures: this.props.reportBatchItemFailures,
       enabled: this.props.enabled,
       eventSourceArn: this.queue.queueArn,
+      filterPatterns: this.props.filterPatterns,
     });
     this._eventSourceMappingId = eventSourceMapping.eventSourceMappingId;
 
