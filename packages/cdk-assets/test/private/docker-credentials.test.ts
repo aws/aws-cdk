@@ -98,7 +98,7 @@ describe('fetchDockerLoginCredentials', () => {
   });
 
   test('does not throw on correctly configured raw domain', async () => {
-    expect(fetchDockerLoginCredentials(aws, config, 'https://secret.example.com/v1/')).resolves;
+    await expect(fetchDockerLoginCredentials(aws, config, 'https://secret.example.com/v1/')).resolves.toBeTruthy();
   });
 
   describe('SecretsManager', () => {
