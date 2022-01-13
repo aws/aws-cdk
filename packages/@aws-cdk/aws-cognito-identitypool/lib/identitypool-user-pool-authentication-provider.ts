@@ -30,7 +30,11 @@ export interface IUserPoolAuthenticationProvider {
 /**
  * Props for the User Pool Authentication Provider
  */
-export interface UserPoolAuthenticationProviderProps extends UserPoolClientProps, UserPoolAuthenticationProviderBindOptions {}
+export interface UserPoolAuthenticationProviderProps {
+  readonly disableServerSideTokenCheck?: boolean;
+  readonly userPool: IUserPool;
+  readonly userPoolClient: IUserPoolClient;
+}
 
 /**
  * Represents UserPoolAuthenticationProvider Bind Options
