@@ -171,6 +171,14 @@ export const CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021 = '@aws-cdk/aws-cl
 export const TARGET_PARTITIONS = '@aws-cdk/core:target-partitions';
 
 /**
+ * Enable this feature flag to configure default logging behavior for the ECS Service Extensions. This will enable the
+ * `awslogs` log driver for the application container of the service to send the container logs to CloudWatch Logs.
+ *
+ * This is a feature flag as the new behavior provides a better default experience for the users.
+ */
+export const ECS_SERVICE_EXTENSIONS_ENABLE_DEFAULT_LOG_DRIVER = '@aws-cdk-containers/ecs-service-extensions:enableDefaultLogDriver';
+
+/**
  * This map includes context keys and values for feature flags that enable
  * capabilities "from the future", which we could not introduce as the default
  * behavior due to backwards compatibility for existing projects.
@@ -197,6 +205,7 @@ export const FUTURE_FLAGS: { [key: string]: boolean } = {
   [EFS_DEFAULT_ENCRYPTION_AT_REST]: true,
   [LAMBDA_RECOGNIZE_VERSION_PROPS]: true,
   [CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021]: true,
+  [ECS_SERVICE_EXTENSIONS_ENABLE_DEFAULT_LOG_DRIVER]: true,
 
   // We will advertise this flag when the feature is complete
   // [NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: 'true',
@@ -243,6 +252,9 @@ const FUTURE_FLAGS_DEFAULTS: { [key: string]: boolean } = {
   [EFS_DEFAULT_ENCRYPTION_AT_REST]: true,
   [LAMBDA_RECOGNIZE_VERSION_PROPS]: true,
   [CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021]: true,
+  // Every feature flag below this should have its default behavior set to "not
+  // activated", as it was introduced AFTER v2 was released.
+  [ECS_SERVICE_EXTENSIONS_ENABLE_DEFAULT_LOG_DRIVER]: false,
 };
 
 export function futureFlagDefault(flag: string): boolean | undefined {
