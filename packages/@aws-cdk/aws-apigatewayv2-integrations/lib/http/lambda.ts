@@ -63,7 +63,7 @@ export class HttpLambdaIntegration extends HttpRouteIntegration {
     });
 
     return {
-      type: HttpIntegrationType.LAMBDA_PROXY,
+      type: HttpIntegrationType.AWS_PROXY,
       uri: this.handler.functionArn,
       payloadFormatVersion: this.props.payloadFormatVersion ?? PayloadFormatVersion.VERSION_2_0,
       parameterMapping: this.props.parameterMapping,
