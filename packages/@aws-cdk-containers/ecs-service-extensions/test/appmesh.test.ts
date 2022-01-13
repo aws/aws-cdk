@@ -33,7 +33,6 @@ describe('appmesh', () => {
     });
 
     // THEN
-
     // Ensure that task has an App Mesh sidecar
     expect(stack).toHaveResource('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [

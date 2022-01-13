@@ -54,6 +54,8 @@ export interface ServiceProps {
 
   /**
    * The options for configuring the auto scaling target.
+   *
+   * @default none
    */
   readonly autoScaleTaskCount?: AutoScalingOptions;
 }
@@ -196,7 +198,6 @@ export class Service extends Construct {
       // Ensure that the task definition supports both EC2 and Fargate
       compatibility: ecs.Compatibility.EC2_AND_FARGATE,
     } as ecs.TaskDefinitionProps;
-
     for (const extensions in this.serviceDescription.extensions) {
       if (this.serviceDescription.extensions[extensions]) {
         taskDefProps = this.serviceDescription.extensions[extensions].modifyTaskDefinitionProps(taskDefProps);
