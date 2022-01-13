@@ -23,6 +23,7 @@ test('Default kinesis stream action', () => {
         {
           Kinesis: {
             StreamName: 'my-stream',
+            PartitionKey: '${newuuid()}',
             RoleArn: {
               'Fn::GetAtt': ['MyTopicRuleTopicRuleActionRoleCE2D05DA', 'Arn'],
             },

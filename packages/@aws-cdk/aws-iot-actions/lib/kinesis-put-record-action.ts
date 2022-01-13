@@ -13,7 +13,7 @@ export interface KinesisPutRecordActionProps extends CommonActionProps {
    * The partition key is usually composed of an expression (for example, ${topic()} or ${timestamp()}).
    *
    * @see https://docs.aws.amazon.com/kinesis/latest/APIReference/API_PutRecord.html#API_PutRecord_RequestParameters
-   * @default - None
+   * @default '${newuuid()}'
    */
   readonly partitionKey?: string;
 }
@@ -45,7 +45,7 @@ export class KinesisPutRecordAction implements iot.IAction {
       configuration: {
         kinesis: {
           streamName: this.stream.streamName,
-          partitionKey: this.partitionKey,
+          partitionKey: this.partitionKey || '${newuuid()}',
           roleArn: role.roleArn,
         },
       },
