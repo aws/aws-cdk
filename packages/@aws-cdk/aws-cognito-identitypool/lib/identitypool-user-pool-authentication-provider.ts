@@ -96,7 +96,7 @@ export class UserPoolAuthenticationProvider implements IUserPoolAuthenticationPr
   public bind(
     _scope: Construct,
     identityPool: IIdentityPool,
-    options?: UserPoolAuthenticationProviderBindOptions,
+    _options?: UserPoolAuthenticationProviderBindOptions,
   ): UserPoolAuthenticationProviderBindConfig {
     if (options?.hasOwnProperty('disableServerSideTokenCheck') && typeof options!.disableServerSideTokenCheck === 'boolean') {
       this.disableServerSideTokenCheck = options!.disableServerSideTokenCheck;
