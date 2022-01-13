@@ -491,7 +491,8 @@
         "DBInstanceClass": "db.r5.large",
         "DBClusterIdentifier": {
           "Ref": "DatabaseB269D8BB"
-        }
+        },
+        "AutoMinorVersionUpgrade": true
       },
       "DependsOn": [
         "VPCPrivateSubnet1DefaultRouteAE1D6490",
