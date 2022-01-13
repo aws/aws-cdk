@@ -95,7 +95,7 @@
     "aws-sdk": "^2.848.0",
     "aws-sdk-mock": "^5.5.1",
     "fs-extra": "^9.1.0",
-    "nock": "^13.2.1",
+    "nock": "^13.2.2",
     "sinon": "^9.2.4"
   },
   "dependencies": {
