@@ -1,3 +1,5 @@
+import { Writable } from 'stream';
+import * as archiver from 'archiver';
 import { flatMap } from '../../util';
 import { ISDK } from '../aws-auth';
 import { EvaluateCloudFormationTemplate } from '../evaluate-cloudformation-template';
@@ -108,7 +110,7 @@ async function isLambdaFunctionCodeOnlyChange(
     switch (updatedPropName) {
       case 'Code':
         let foundCodeDifference = false;
-        let s3Bucket = '', s3Key = '';
+        let s3Bucket, s3Key, zipFile;
 
         for (const newPropName in updatedProp.newValue) {
           switch (newPropName) {
@@ -120,6 +122,15 @@ async function isLambdaFunctionCodeOnlyChange(
               foundCodeDifference = true;
               s3Key = await evaluateCfnTemplate.evaluateCfnExpression(updatedProp.newValue[newPropName]);
               break;
+            case 'ZipFile':
+              foundCodeDifference = true;
+              // We must create a zip package containing a file with the inline code
+              const rawZipFile = await evaluateCfnTemplate.evaluateCfnExpression(updatedProp.newValue[newPropName]);
+              // file extension must be chosen depending on the runtime
+              const runtime: string = await evaluateCfnTemplate.evaluateCfnExpression(change.newValue.Properties!.Runtime);
+              const ext = getExtensionFromRuntime(runtime);
+              zipFile = await zipString(`index.${ext}`, rawZipFile);
+              break;
             default:
               return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
           }
@@ -128,6 +139,7 @@ async function isLambdaFunctionCodeOnlyChange(
           code = {
             s3Bucket,
             s3Key,
+            zipFile,
           };
         }
         break;
@@ -165,8 +177,9 @@ interface CfnDiffTagValue {
 }
 
 interface LambdaFunctionCode {
-  readonly s3Bucket: string;
-  readonly s3Key: string;
+  readonly s3Bucket?: string;
+  readonly s3Key?: string;
+  readonly zipFile?: Buffer;
 }
 
 enum TagDeletion {
@@ -214,6 +227,7 @@ class LambdaFunctionHotswapOperation implements HotswapOperation {
         FunctionName: this.lambdaFunctionResource.physicalName,
         S3Bucket: resource.code.s3Bucket,
         S3Key: resource.code.s3Key,
+        ZipFile: resource.code.zipFile,
       }).promise();
 
       // only if the code changed is there any point in publishing a new Version
@@ -280,4 +294,56 @@ class LambdaFunctionHotswapOperation implements HotswapOperation {
     // run all of our updates in parallel
     return Promise.all(operations);
   }
+}
+
+/**
+ * Compress a string as a file, returning a promise for the zip buffer
+ * https://github.com/archiverjs/node-archiver/issues/342
+ */
+export function zipString(fileName: string, rawString: string): Promise<Buffer> {
+  return new Promise((resolve, reject) => {
+    const buffs: Buffer[] = [];
+
+    const converter = new Writable();
+
+    converter._write = (chunk: Buffer, _: string, cb: () => void) => {
+      buffs.push(chunk);
+      process.nextTick(cb);
+    };
+
+    converter.on('finish', () => {
+      resolve(Buffer.concat(buffs));
+    });
+
+    const archive = archiver('zip');
+
+    archive.on('error', (err) => {
+      reject(err);
+    });
+
+    archive.pipe(converter);
+
+    archive.append(rawString, {
+      name: fileName,
+      date: new Date('1980-01-01T00:00:00.000Z'), // Add date to make resulting zip file deterministic
+    });
+
+    void archive.finalize();
+  });
+}
+
+/**
+ * Get file extension from Lambda runtime string.
+ * We use this extension to create a deployment package from Lambda inline code.
+ */
+function getExtensionFromRuntime(runtime: string): string {
+  if (runtime.startsWith('node')) {
+    return 'js';
+  }
+  if (runtime.startsWith('python')) {
+    return 'py';
+  }
+  // Currently inline code only supports Node.js and Python, ignoring other runtimes.
+  // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lambda-function-code.html#aws-properties-lambda-function-code-properties
+  return 'js';
 }
