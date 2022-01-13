@@ -1,10 +1,8 @@
-import { randomBytes } from 'crypto';
 import {
-  CfnUserPool,
   IUserPool,
-  UserPoolClient,
-  UserPoolClientProps,
+  IUserPoolClient,
 } from '@aws-cdk/aws-cognito';
+import { Stack } from '@aws-cdk/core';
 import {
   Construct, Node,
 } from 'constructs';
@@ -31,22 +29,30 @@ export interface IUserPoolAuthenticationProvider {
  * Props for the User Pool Authentication Provider
  */
 export interface UserPoolAuthenticationProviderProps {
-  readonly disableServerSideTokenCheck?: boolean;
+  /**
+   * The User Pool of the Associated Identity Providers
+   */
   readonly userPool: IUserPool;
-  readonly userPoolClient: IUserPoolClient;
-}
 
-/**
- * Represents UserPoolAuthenticationProvider Bind Options
- */
-export interface UserPoolAuthenticationProviderBindOptions {
+  /**
+   * The User Pool Client for the provided User Pool
+   * @default - A default user pool client will be added to User Pool
+   */
+  readonly userPoolClient?: IUserPoolClient;
+
   /**
    * Setting this to true turns off identity pool checks for this user pool to make sure the user has not been globally signed out or deleted before the identity pool provides an OIDC token or AWS credentials for the user
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cognito-identitypool-cognitoidentityprovider.html
    * @default false
    */
   readonly disableServerSideTokenCheck?: boolean;
+
 }
+
+/**
+ * Represents UserPoolAuthenticationProvider Bind Options
+ */
+export interface UserPoolAuthenticationProviderBindOptions {}
 
 /**
  * Represents a UserPoolAuthenticationProvider Bind Configuration
@@ -89,36 +95,24 @@ export class UserPoolAuthenticationProvider implements IUserPoolAuthenticationPr
   private disableServerSideTokenCheck: boolean
   constructor(props: UserPoolAuthenticationProviderProps) {
     this.userPool = props.userPool;
-    this.userPoolClient = props.userPoolClient;
+    this.userPoolClient = props.userPoolClient || this.userPool.addClient('UserPoolAuthenticationProviderClient');
     this.disableServerSideTokenCheck = props.disableServerSideTokenCheck ?? false;
   }
 
   public bind(
-    _scope: Construct,
+    scope: Construct,
     identityPool: IIdentityPool,
     _options?: UserPoolAuthenticationProviderBindOptions,
   ): UserPoolAuthenticationProviderBindConfig {
-    if (options?.hasOwnProperty('disableServerSideTokenCheck') && typeof options!.disableServerSideTokenCheck === 'boolean') {
-      this.disableServerSideTokenCheck = options!.disableServerSideTokenCheck;
-    }
     Node.of(identityPool).addDependency(this.userPool);
     Node.of(identityPool).addDependency(this.userPoolClient);
-    const serverSideTokenCheck = !this.disableServerSideTokenCheck;
+    const region = Stack.of(scope).region;
+    const urlSuffix = Stack.of(scope).urlSuffix;
+
     return {
       clientId: this.userPoolClient.userPoolClientId,
-      providerName: (this.userPool.node.defaultChild as CfnUserPool).attrProviderName,
+      providerName: `cognito-idp.${region}.${urlSuffix}/${this.userPool.userPoolId}`,
       serverSideTokenCheck: !this.disableServerSideTokenCheck,
     };
-  }
-
-  /**
-   * Configures and returns new User Pool Client that will implement Identity Providers in Identity Pool
-   */
-  private configureUserPoolClient(props: UserPoolAuthenticationProviderProps): UserPoolClient {
-    return props.userPool.addClient('UserPoolClientFor' + props.userPoolClientName || this.generateRandomName(), props);
-  }
-
-  private generateRandomName(bytes: number = 5): string {
-    return randomBytes(bytes).toString('hex');
   }
 }

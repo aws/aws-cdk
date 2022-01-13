@@ -31,7 +31,7 @@
       "UpdateReplacePolicy": "Retain",
       "DeletionPolicy": "Retain"
     },
-    "PoolUserPoolClientForundefinedBF6BDE57": {
+    "PoolUserPoolAuthenticationProviderClient20F2FFC4": {
       "Type": "AWS::Cognito::UserPoolClient",
       "Properties": {
         "UserPoolId": {
@@ -113,7 +113,7 @@
       "UpdateReplacePolicy": "Retain",
       "DeletionPolicy": "Retain"
     },
-    "OtherPoolUserPoolClientForundefined1B97829F": {
+    "OtherPoolUserPoolAuthenticationProviderClient08F670F8": {
       "Type": "AWS::Cognito::UserPoolClient",
       "Properties": {
         "UserPoolId": {
@@ -170,24 +170,50 @@
         "CognitoIdentityProviders": [
           {
             "ClientId": {
-              "Ref": "PoolUserPoolClientForundefinedBF6BDE57"
+              "Ref": "PoolUserPoolAuthenticationProviderClient20F2FFC4"
             },
             "ProviderName": {
-              "Fn::GetAtt": [
-                "PoolD3F588B8",
-                "ProviderName"
+              "Fn::Join": [
+                "",
+                [
+                  "cognito-idp.",
+                  {
+                    "Ref": "AWS::Region"
+                  },
+                  ".",
+                  {
+                    "Ref": "AWS::URLSuffix"
+                  },
+                  "/",
+                  {
+                    "Ref": "PoolD3F588B8"
+                  }
+                ]
               ]
             },
             "ServerSideTokenCheck": true
           },
           {
             "ClientId": {
-              "Ref": "OtherPoolUserPoolClientForundefined1B97829F"
+              "Ref": "OtherPoolUserPoolAuthenticationProviderClient08F670F8"
             },
             "ProviderName": {
-              "Fn::GetAtt": [
-                "OtherPool7DA7F2F7",
-                "ProviderName"
+              "Fn::Join": [
+                "",
+                [
+                  "cognito-idp.",
+                  {
+                    "Ref": "AWS::Region"
+                  },
+                  ".",
+                  {
+                    "Ref": "AWS::URLSuffix"
+                  },
+                  "/",
+                  {
+                    "Ref": "OtherPool7DA7F2F7"
+                  }
+                ]
               ]
             },
             "ServerSideTokenCheck": true
@@ -201,9 +227,9 @@
       },
       "DependsOn": [
         "OtherPool7DA7F2F7",
-        "OtherPoolUserPoolClientForundefined1B97829F",
+        "OtherPoolUserPoolAuthenticationProviderClient08F670F8",
         "PoolD3F588B8",
-        "PoolUserPoolClientForundefinedBF6BDE57"
+        "PoolUserPoolAuthenticationProviderClient20F2FFC4"
       ]
     },
     "identitypoolAuthenticatedRoleB074B49D": {
@@ -248,9 +274,9 @@
       },
       "DependsOn": [
         "OtherPool7DA7F2F7",
-        "OtherPoolUserPoolClientForundefined1B97829F",
+        "OtherPoolUserPoolAuthenticationProviderClient08F670F8",
         "PoolD3F588B8",
-        "PoolUserPoolClientForundefinedBF6BDE57"
+        "PoolUserPoolAuthenticationProviderClient20F2FFC4"
       ]
     },
     "identitypoolAuthenticatedRoleDefaultPolicyCB4D2992": {
@@ -275,9 +301,9 @@
       },
       "DependsOn": [
         "OtherPool7DA7F2F7",
-        "OtherPoolUserPoolClientForundefined1B97829F",
+        "OtherPoolUserPoolAuthenticationProviderClient08F670F8",
         "PoolD3F588B8",
-        "PoolUserPoolClientForundefinedBF6BDE57"
+        "PoolUserPoolAuthenticationProviderClient20F2FFC4"
       ]
     },
     "identitypoolUnauthenticatedRoleE61CAC70": {
@@ -322,9 +348,9 @@
       },
       "DependsOn": [
         "OtherPool7DA7F2F7",
-        "OtherPoolUserPoolClientForundefined1B97829F",
+        "OtherPoolUserPoolAuthenticationProviderClient08F670F8",
         "PoolD3F588B8",
-        "PoolUserPoolClientForundefinedBF6BDE57"
+        "PoolUserPoolAuthenticationProviderClient20F2FFC4"
       ]
     },
     "identitypoolUnauthenticatedRoleDefaultPolicyBFACCE98": {
@@ -349,9 +375,9 @@
       },
       "DependsOn": [
         "OtherPool7DA7F2F7",
-        "OtherPoolUserPoolClientForundefined1B97829F",
+        "OtherPoolUserPoolAuthenticationProviderClient08F670F8",
         "PoolD3F588B8",
-        "PoolUserPoolClientForundefinedBF6BDE57"
+        "PoolUserPoolAuthenticationProviderClient20F2FFC4"
       ]
     },
     "identitypoolDefaultRoleAttachment6BCAB114": {
@@ -382,9 +408,9 @@
         "identitypoolUnauthenticatedRoleDefaultPolicyBFACCE98",
         "identitypoolUnauthenticatedRoleE61CAC70",
         "OtherPool7DA7F2F7",
-        "OtherPoolUserPoolClientForundefined1B97829F",
+        "OtherPoolUserPoolAuthenticationProviderClient08F670F8",
         "PoolD3F588B8",
-        "PoolUserPoolClientForundefinedBF6BDE57"
+        "PoolUserPoolAuthenticationProviderClient20F2FFC4"
       ]
     }
   }

@@ -285,24 +285,50 @@ describe('identity pool', () => {
       CognitoIdentityProviders: [
         {
           ClientId: {
-            Ref: 'PoolUserPoolClientForundefinedBF6BDE57',
+            Ref: 'PoolUserPoolAuthenticationProviderClient20F2FFC4',
           },
           ProviderName: {
-            'Fn::GetAtt': [
-              'PoolD3F588B8',
-              'ProviderName',
+            'Fn::Join': [
+              '',
+              [
+                'cognito-idp.',
+                {
+                  Ref: 'AWS::Region',
+                },
+                '.',
+                {
+                  Ref: 'AWS::URLSuffix',
+                },
+                '/',
+                {
+                  Ref: 'PoolD3F588B8',
+                },
+              ],
             ],
           },
           ServerSideTokenCheck: true,
         },
         {
           ClientId: {
-            Ref: 'OtherPoolUserPoolClientForundefined1B97829F',
+            Ref: 'OtherPoolUserPoolAuthenticationProviderClient08F670F8',
           },
           ProviderName: {
-            'Fn::GetAtt': [
-              'OtherPool7DA7F2F7',
-              'ProviderName',
+            'Fn::Join': [
+              '',
+              [
+                'cognito-idp.',
+                {
+                  Ref: 'AWS::Region',
+                },
+                '.',
+                {
+                  Ref: 'AWS::URLSuffix',
+                },
+                '/',
+                {
+                  Ref: 'OtherPool7DA7F2F7',
+                },
+              ],
             ],
           },
           ServerSideTokenCheck: false,
