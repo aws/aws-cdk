@@ -1,7 +1,5 @@
-import '@aws-cdk/assert-internal/jest';
-import { ResourcePart } from '@aws-cdk/assert-internal';
-import * as iam from '@aws-cdk/aws-iam';
 import { Template } from '@aws-cdk/assertions';
+import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import * as s3 from '../lib';
 
@@ -49,8 +47,8 @@ describe('notification', () => {
       }),
     });
 
-    expect(stack).toHaveResource('AWS::S3::Bucket');
-    expect(stack).toHaveResource('AWS::Lambda::Function', {
+    Template.fromStack(stack).resourceCountIs('AWS::S3::Bucket', 1);
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
       Description: 'AWS CloudFormation handler for "Custom::S3BucketNotifications" resources (@aws-cdk/aws-s3)',
       Role: 'arn:aws:iam::111111111111:role/DevsNotAllowedToTouch',
     });
@@ -73,7 +71,7 @@ describe('notification', () => {
       }),
     });
 
-    expect(stack).toHaveResourceLike('AWS::Lambda::Function', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
       Description: 'AWS CloudFormation handler for "Custom::S3BucketNotifications" resources (@aws-cdk/aws-s3)',
       Role: 'arn:aws:iam::111111111111:role/DevsNotAllowedToTouch',
     });

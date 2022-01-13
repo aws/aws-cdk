@@ -845,13 +845,17 @@ export abstract class BucketBase extends Resource implements IBucket {
    * https://docs.aws.amazon.com/AmazonS3/latest/dev/NotificationHowTo.html
    */
   public addEventNotification(event: EventType, dest: IBucketNotificationDestination, ...filters: NotificationKeyFilter[]) {
+    this.withNotifications(notifications => notifications.addNotification(event, dest, ...filters));
+  }
+
+  private withNotifications(cb: (notifications: BucketNotifications) => void) {
     if (!this.notifications) {
       this.notifications = new BucketNotifications(this, 'Notifications', {
         bucket: this,
         handlerRole: this.notificationsHandlerRole,
       });
     }
-    this.notifications.addNotification(event, dest, ...filters);
+    cb(this.notifications);
   }
 
   /**
@@ -879,7 +883,7 @@ export abstract class BucketBase extends Resource implements IBucket {
   }
 
   protected enableEventBridgeNotification() {
-    this.notifications.enableEventBridgeNotification();
+    this.withNotifications(notifications => notifications.enableEventBridgeNotification());
   }
 
   private get writeActions(): string[] {
@@ -1491,7 +1495,7 @@ export interface BucketProps {
    * @default - a new role will be created.
    */
   readonly notificationsHandlerRole?: iam.IRole;
-  
+
   /**
    * Inteligent Tiering Configurations
    *
