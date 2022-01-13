@@ -3,6 +3,7 @@ import * as path from 'path';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as fs from 'fs-extra';
+import * as logging from '../../logging';
 import { Mode, SdkProvider, ISDK } from '../aws-auth';
 import { deployStack, DeployStackResult } from '../deploy-stack';
 import { DEFAULT_TOOLKIT_STACK_NAME, ToolkitInfo } from '../toolkit-info';
@@ -65,7 +66,18 @@ export class BootstrapStack {
 
     const newVersion = bootstrapVersionFromTemplate(template);
     if (this.currentToolkitInfo.found && newVersion < this.currentToolkitInfo.version && !options.force) {
-      throw new Error(`Not downgrading existing bootstrap stack from version '${this.currentToolkitInfo.version}' to version '${newVersion}'. Use --force to force or set the '@aws-cdk/core:newStyleStackSynthesis' feature flag in cdk.json to use the latest bootstrap version.`);
+      logging.warning(`Bootstrap stack already at version '${this.currentToolkitInfo.version}'. Not downgrading it to version '${newVersion}' (use --force if you intend to downgrade)`);
+      if (newVersion === 0) {
+        // A downgrade with 0 as target version means we probably have a new-style bootstrap in the account,
+        // and an old-style bootstrap as current target, which means the user probably forgot to put this flag in.
+        logging.warning('(Did you set the \'@aws-cdk/core:newStyleStackSynthesis\' feature flag in cdk.json?)');
+      }
+
+      return {
+        noOp: true,
+        outputs: {},
+        stackArn: this.currentToolkitInfo.bootstrapStack.stackId,
+      };
     }
 
     const outdir = await fs.mkdtemp(path.join(os.tmpdir(), 'cdk-bootstrap'));
