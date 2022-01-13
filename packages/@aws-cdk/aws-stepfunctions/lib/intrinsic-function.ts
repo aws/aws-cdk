@@ -26,4 +26,11 @@ export class IntrinsicFunction {
   public static StatesStringToJson(str: string): string {
     return 'States.StringToJson(\'' + str + '\')';
   }
+
+  public static StatesJsonToString(path: string): string {
+    if (!isValidJsonPath(path)) {
+      throw new Error('Arg of States.JsonToString() must be a JsonPath');
+    }
+    return 'States.JsonToString(' + path + ')';
+  }
 }

@@ -25,3 +25,18 @@ describe('States.StringToJson()', () => {
       toEqual('States.StringToJson(\'{"aaa":"bbb"}\')');
   });
 });
+
+describe('States.JsonToString()', () => {
+  test('path', () => {
+    expect(IntrinsicFunction.StatesJsonToString('$.path')).
+      toEqual('States.JsonToString($.path)');
+  }),
+  test('path (context object)', () => {
+    expect(IntrinsicFunction.StatesJsonToString('$$.path')).
+      toEqual('States.JsonToString($$.path)');
+  });
+  test('path (nested)', () => {
+    expect(IntrinsicFunction.StatesJsonToString(IntrinsicFunction.StatesForamt('$.{}', 'xxx'))).
+      toEqual('States.JsonToString(States.Format(\'$.{}\', \'xxx\'))');
+  });
+});
