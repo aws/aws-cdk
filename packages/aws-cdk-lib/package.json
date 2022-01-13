@@ -594,5 +594,6 @@
     "./pipelines/.warnings.jsii.js": "./pipelines/.warnings.jsii.js",
     "./pipelines/lib/helpers-internal": "./pipelines/lib/helpers-internal/index.js",
     "./region-info": "./region-info/index.js"
-  }
+  },
+  "preferredCdkCliVersion": "2"
 }

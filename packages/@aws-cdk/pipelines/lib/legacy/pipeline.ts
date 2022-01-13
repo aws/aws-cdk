@@ -9,6 +9,7 @@ import { AssetType } from '../blueprint/asset-type';
 import { dockerCredentialsInstallCommands, DockerCredential, DockerCredentialUsage } from '../docker-credentials';
 import { ApplicationSecurityCheck } from '../private/application-security-check';
 import { AssetSingletonRole } from '../private/asset-singleton-role';
+import { preferredCliVersion } from '../private/cli-version';
 import { appOf, assemblyBuilderOf } from '../private/construct-internals';
 import { DeployCdkStackAction, PublishAssetsAction, UpdatePipelineAction } from './actions';
 import { AddStageOptions, AssetPublishingCommand, BaseStageOptions, CdkStage, StackOutput } from './stage';
@@ -219,9 +220,11 @@ export class CdkPipeline extends CoreConstruct {
   private readonly _cloudAssemblyArtifact: codepipeline.Artifact;
   private readonly _dockerCredentials: DockerCredential[];
   private _applicationSecurityCheck?: ApplicationSecurityCheck;
+  private readonly cliVersion?: string;
 
   constructor(scope: Construct, id: string, props: CdkPipelineProps) {
     super(scope, id);
+    this.cliVersion = props.cdkCliVersion ?? preferredCliVersion();
 
     if (!App.isApp(this.node.root)) {
       throw new Error('CdkPipeline must be created under an App');
@@ -287,7 +290,7 @@ export class CdkPipeline extends CoreConstruct {
         actions: [new UpdatePipelineAction(this, 'UpdatePipeline', {
           cloudAssemblyInput: this._cloudAssemblyArtifact,
           pipelineStackHierarchicalId: pipelineStack.node.path,
-          cdkCliVersion: props.cdkCliVersion,
+          cdkCliVersion: this.cliVersion,
           projectName: maybeSuffix(props.pipelineName, '-selfupdate'),
           privileged: props.supportDockerAssets,
           dockerCredentials: this._dockerCredentials,
@@ -298,7 +301,7 @@ export class CdkPipeline extends CoreConstruct {
 
     this._assets = new AssetPublishing(this, 'Assets', {
       cloudAssemblyInput: this._cloudAssemblyArtifact,
-      cdkCliVersion: props.cdkCliVersion,
+      cdkCliVersion: this.cliVersion,
       pipeline: this._pipeline,
       projectName: maybeSuffix(props.pipelineName, '-publish'),
       vpc: props.vpc,

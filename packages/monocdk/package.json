@@ -365,5 +365,6 @@
   },
   "publishConfig": {
     "tag": "latest"
-  }
+  },
+  "preferredCdkCliVersion": "1"
 }
