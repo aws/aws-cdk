@@ -90,7 +90,7 @@ export class UserPoolAuthenticationProvider implements IUserPoolAuthenticationPr
   constructor(props: UserPoolAuthenticationProviderProps) {
     this.userPool = props.userPool;
     this.userPoolClient = this.configureUserPoolClient(props);
-    this.disableServerSideTokenCheck = props.disableServerSideTokenCheck ? true : false;
+    this.disableServerSideTokenCheck = props.disableServerSideTokenCheck ?? false;
   }
 
   public bind(
