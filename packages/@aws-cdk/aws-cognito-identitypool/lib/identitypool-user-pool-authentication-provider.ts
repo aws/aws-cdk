@@ -81,7 +81,7 @@ export class UserPoolAuthenticationProvider implements IUserPoolAuthenticationPr
   /**
    * The User Pool Client for the provided User Pool
    */
-  private userPoolClient: UserPoolClient;
+  private userPoolClient: IUserPoolClient;
 
   /**
    * Whether to disable the pool's default server side token check
