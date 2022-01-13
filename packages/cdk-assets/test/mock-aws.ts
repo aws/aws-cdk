@@ -16,6 +16,7 @@ export function mockAws() {
       },
     ],
   });
+  mockSecretsManager.getSecretValue = mockedApiFailure('NotImplemented', 'You need to supply an implementation for getSecretValue');
 
   return {
     mockEcr,
