@@ -30,7 +30,11 @@ export interface IUserPoolAuthenticationProvider {
 /**
  * Props for the User Pool Authentication Provider
  */
-export interface UserPoolAuthenticationProviderProps extends UserPoolClientProps, UserPoolAuthenticationProviderBindOptions {}
+export interface UserPoolAuthenticationProviderProps {
+  readonly disableServerSideTokenCheck?: boolean;
+  readonly userPool: IUserPool;
+  readonly userPoolClient: IUserPoolClient;
+}
 
 /**
  * Represents UserPoolAuthenticationProvider Bind Options
@@ -77,7 +81,7 @@ export class UserPoolAuthenticationProvider implements IUserPoolAuthenticationPr
   /**
    * The User Pool Client for the provided User Pool
    */
-  private userPoolClient: UserPoolClient;
+  private userPoolClient: IUserPoolClient;
 
   /**
    * Whether to disable the pool's default server side token check
@@ -85,14 +89,14 @@ export class UserPoolAuthenticationProvider implements IUserPoolAuthenticationPr
   private disableServerSideTokenCheck: boolean
   constructor(props: UserPoolAuthenticationProviderProps) {
     this.userPool = props.userPool;
-    this.userPoolClient = this.configureUserPoolClient(props);
-    this.disableServerSideTokenCheck = props.disableServerSideTokenCheck ? true : false;
+    this.userPoolClient = props.userPoolClient;
+    this.disableServerSideTokenCheck = props.disableServerSideTokenCheck ?? false;
   }
 
   public bind(
     _scope: Construct,
     identityPool: IIdentityPool,
-    options?: UserPoolAuthenticationProviderBindOptions,
+    _options?: UserPoolAuthenticationProviderBindOptions,
   ): UserPoolAuthenticationProviderBindConfig {
     if (options?.hasOwnProperty('disableServerSideTokenCheck') && typeof options!.disableServerSideTokenCheck === 'boolean') {
       this.disableServerSideTokenCheck = options!.disableServerSideTokenCheck;
@@ -103,7 +107,7 @@ export class UserPoolAuthenticationProvider implements IUserPoolAuthenticationPr
     return {
       clientId: this.userPoolClient.userPoolClientId,
       providerName: (this.userPool.node.defaultChild as CfnUserPool).attrProviderName,
-      serverSideTokenCheck,
+      serverSideTokenCheck: !this.disableServerSideTokenCheck,
     };
   }
 
