@@ -12,6 +12,7 @@ import { DockerCredential, dockerCredentialsInstallCommands, DockerCredentialUsa
 import { GraphNodeCollection, isGraph, AGraphNode, PipelineGraph } from '../helpers-internal';
 import { PipelineBase } from '../main';
 import { AssetSingletonRole } from '../private/asset-singleton-role';
+import { preferredCliVersion } from '../private/cli-version';
 import { appOf, assemblyBuilderOf, embeddedAsmPath, obtainScope } from '../private/construct-internals';
 import { toPosixPath } from '../private/fs';
 import { actionName, stackVariableNamespace } from '../private/identifiers';
@@ -303,6 +304,7 @@ export class CodePipeline extends PipelineBase {
   private _cloudAssemblyFileSet?: FileSet;
 
   private readonly singlePublisherPerAssetType: boolean;
+  private readonly cliVersion?: string;
 
   constructor(scope: Construct, id: string, private readonly props: CodePipelineProps) {
     super(scope, id, props);
@@ -310,6 +312,7 @@ export class CodePipeline extends PipelineBase {
     this.selfMutation = props.selfMutation ?? true;
     this.dockerCredentials = props.dockerCredentials ?? [];
     this.singlePublisherPerAssetType = !(props.publishAssetsInParallel ?? true);
+    this.cliVersion = props.cliVersion ?? preferredCliVersion();
   }
 
   /**
@@ -603,7 +606,7 @@ export class CodePipeline extends PipelineBase {
   }
 
   private selfMutateAction(): ICodePipelineActionFactory {
-    const installSuffix = this.props.cliVersion ? `@${this.props.cliVersion}` : '';
+    const installSuffix = this.cliVersion ? `@${this.cliVersion}` : '';
 
     const pipelineStack = Stack.of(this.pipeline);
     const pipelineStackIdentifier = pipelineStack.node.path ?? pipelineStack.stackName;
@@ -649,7 +652,7 @@ export class CodePipeline extends PipelineBase {
   }
 
   private publishAssetsAction(node: AGraphNode, assets: StackAsset[]): ICodePipelineActionFactory {
-    const installSuffix = this.props.cliVersion ? `@${this.props.cliVersion}` : '';
+    const installSuffix = this.cliVersion ? `@${this.cliVersion}` : '';
 
     const commands = assets.map(asset => {
       const relativeAssetManifestPath = path.relative(this.myCxAsmRoot, asset.assetManifestPath);
