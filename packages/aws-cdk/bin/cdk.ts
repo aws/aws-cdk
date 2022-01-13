@@ -124,6 +124,13 @@ async function parseCommandLineArguments() {
         desc: 'Continuously observe the project files, ' +
           'and deploy the given stack(s) automatically when changes are detected. ' +
           'Implies --hotswap by default',
+      })
+      .options('logs', {
+        type: 'boolean',
+        default: true,
+        desc: 'Show CloudWatch log events from all resources in the selected Stacks in the terminal. ' +
+          "'true' by default, use --no-logs to turn off. " +
+          "Only in effect if specified alongside the '--watch' option",
       }),
     )
     .command('watch [STACKS..]', "Shortcut for 'deploy --watch'", yargs => yargs
@@ -157,6 +164,12 @@ async function parseCommandLineArguments() {
           'which skips CloudFormation and updates the resources directly, ' +
           'and falls back to a full deployment if that is not possible. ' +
           "'true' by default, use --no-hotswap to turn off",
+      })
+      .options('logs', {
+        type: 'boolean',
+        default: true,
+        desc: 'Show CloudWatch log events from all resources in the selected Stacks in the terminal. ' +
+          "'true' by default, use --no-logs to turn off",
       }),
     )
     .command('destroy [STACKS..]', 'Destroy the stack(s) named STACKS', yargs => yargs
@@ -376,6 +389,7 @@ async function initCommandLine() {
           rollback: configuration.settings.get(['rollback']),
           hotswap: args.hotswap,
           watch: args.watch,
+          traceLogs: args.logs,
         });
 
       case 'watch':
@@ -395,6 +409,7 @@ async function initCommandLine() {
           progress: configuration.settings.get(['progress']),
           rollback: configuration.settings.get(['rollback']),
           hotswap: args.hotswap,
+          traceLogs: args.logs,
         });
 
       case 'destroy':

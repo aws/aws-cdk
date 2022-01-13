@@ -1,6 +1,38 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import * as AWS from 'aws-sdk';
-import { ListStackResources } from './common';
+import { ISDK } from './aws-auth';
+
+export interface ListStackResources {
+  listStackResources(): Promise<AWS.CloudFormation.StackResourceSummary[]>;
+}
+
+export class LazyListStackResources implements ListStackResources {
+  private stackResources: AWS.CloudFormation.StackResourceSummary[] | undefined;
+
+  constructor(private readonly sdk: ISDK, private readonly stackName: string) {
+  }
+
+  public async listStackResources(): Promise<AWS.CloudFormation.StackResourceSummary[]> {
+    if (this.stackResources === undefined) {
+      this.stackResources = await this.getStackResources();
+    }
+    return this.stackResources;
+  }
+
+  private async getStackResources(): Promise<AWS.CloudFormation.StackResourceSummary[]> {
+    const ret = new Array<AWS.CloudFormation.StackResourceSummary>();
+    let nextToken: string | undefined;
+    do {
+      const stackResourcesResponse = await this.sdk.cloudFormation().listStackResources({
+        StackName: this.stackName,
+        NextToken: nextToken,
+      }).promise();
+      ret.push(...(stackResourcesResponse.StackResourceSummaries ?? []));
+      nextToken = stackResourcesResponse.NextToken;
+    } while (nextToken);
+    return ret;
+  }
+}
 
 export class CfnEvaluationException extends Error {}
 
@@ -43,6 +75,21 @@ export class EvaluateCloudFormationTemplate {
     this.region = props.region;
     this.partition = props.partition;
     this.urlSuffix = props.urlSuffix;
+  }
+
+  public async establishResourcePhysicalName(logicalId: string, physicalNameInCfnTemplate: any): Promise<string | undefined> {
+    if (physicalNameInCfnTemplate != null) {
+      try {
+        return await this.evaluateCfnExpression(physicalNameInCfnTemplate);
+      } catch (e) {
+        // If we can't evaluate the resource's name CloudFormation expression,
+        // just look it up in the currently deployed Stack
+        if (!(e instanceof CfnEvaluationException)) {
+          throw e;
+        }
+      }
+    }
+    return this.findPhysicalNameFor(logicalId);
   }
 
   public async findPhysicalNameFor(logicalId: string): Promise<string | undefined> {
