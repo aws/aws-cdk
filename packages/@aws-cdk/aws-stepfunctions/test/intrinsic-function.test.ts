@@ -40,3 +40,14 @@ describe('States.JsonToString()', () => {
       toEqual('States.JsonToString(States.Format(\'$.{}\', \'xxx\'))');
   });
 });
+
+describe('States.Array()', () => {
+  test('zero args', () => {
+    expect(IntrinsicFunction.StatesArray()).
+      toEqual('States.Array()');
+  }),
+  test('nuber, string, null, path', () => {
+    expect(IntrinsicFunction.StatesArray(123, 'str', IntrinsicFunction.NULL, '$.path')).
+      toEqual('States.Array(123, \'str\', null, $.path)');
+  });
+});
