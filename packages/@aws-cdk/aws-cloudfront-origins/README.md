@@ -18,9 +18,6 @@ An S3 bucket can be added as an origin. If the bucket is configured as a website
 documents.
 
 ```ts
-import * as cloudfront from '@aws-cdk/aws-cloudfront';
-import * as origins from '@aws-cdk/aws-cloudfront-origins';
-
 const myBucket = new s3.Bucket(this, 'myBucket');
 new cloudfront.Distribution(this, 'myDist', {
   defaultBehavior: { origin: new origins.S3Origin(myBucket) },
@@ -38,9 +35,6 @@ URLs and not S3 URLs directly. Alternatively, a custom origin access identity ca
 You can configure CloudFront to add custom headers to the requests that it sends to your origin. These custom headers enable you to send and gather information from your origin that you don’t get with typical viewer requests. These headers can even be customized for each origin. CloudFront supports custom headers for both for custom and Amazon S3 origins.
 
 ```ts
-import * as cloudfront from '@aws-cdk/aws-cloudfront';
-import * as origins from '@aws-cdk/aws-cloudfront-origins';
-
 const myBucket = new s3.Bucket(this, 'myBucket');
 new cloudfront.Distribution(this, 'myDist', {
   defaultBehavior: { origin: new origins.S3Origin(myBucket, {
@@ -60,12 +54,12 @@ accessible (`internetFacing` is true). Both Application and Network load balance
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
 
-const vpc = new ec2.Vpc(...);
+declare const vpc: ec2.Vpc;
 // Create an application load balancer in a VPC. 'internetFacing' must be 'true'
 // for CloudFront to access the load balancer and use it as an origin.
 const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', {
   vpc,
-  internetFacing: true
+  internetFacing: true,
 });
 new cloudfront.Distribution(this, 'myDist', {
   defaultBehavior: { origin: new origins.LoadBalancerV2Origin(lb) },
@@ -75,6 +69,9 @@ new cloudfront.Distribution(this, 'myDist', {
 The origin can also be customized to respond on different ports, have different connection properties, etc.
 
 ```ts
+import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
+
+declare const loadBalancer: elbv2.ApplicationLoadBalancer;
 const origin = new origins.LoadBalancerV2Origin(loadBalancer, {
   connectionAttempts: 3,
   connectionTimeout: Duration.seconds(5),
@@ -103,6 +100,7 @@ CloudFront automatically switches to the secondary origin.
 You achieve that behavior in the CDK using the `OriginGroup` class:
 
 ```ts
+const myBucket = new s3.Bucket(this, 'myBucket');
 new cloudfront.Distribution(this, 'myDist', {
   defaultBehavior: {
     origin: new origins.OriginGroup({

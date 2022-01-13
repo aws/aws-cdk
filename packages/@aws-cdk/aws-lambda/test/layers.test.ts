@@ -82,6 +82,7 @@ describe('layers', () => {
     expect(canonicalizeTemplate(SynthUtils.toCloudFormation(stack))).toHaveResource('AWS::Lambda::LayerVersion', {
       Metadata: {
         'aws:asset:path': 'asset.Asset1Hash',
+        'aws:asset:is-bundled': false,
         'aws:asset:property': 'Content',
       },
     }, ResourcePart.CompleteDefinition);

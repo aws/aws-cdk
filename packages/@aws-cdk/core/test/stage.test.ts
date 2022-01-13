@@ -321,7 +321,7 @@ test('missing context in Stages is propagated up to root assembly', () => {
   new CfnResource(stack, 'Resource', { type: 'Something' });
 
   // WHEN
-  stack.reportMissingContext({
+  stack.reportMissingContextKey({
     key: 'missing-context-key',
     provider: cxschema.ContextProvider.AVAILABILITY_ZONE_PROVIDER,
     props: {

@@ -1,5 +1,7 @@
+import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import * as constructs from 'constructs';
+import { Construct } from 'constructs';
 import * as stepfunctions from '../lib';
 
 describe('States Language', () => {
@@ -362,7 +364,7 @@ describe('States Language', () => {
   test('States can have error branches', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    const task1 = new stepfunctions.Task(stack, 'Task1', { task: new FakeTask() });
+    const task1 = new FakeTask(stack, 'Task1');
     const failure = new stepfunctions.Fail(stack, 'Failed', { error: 'DidNotWork', cause: 'We got stuck' });
 
     // WHEN
@@ -392,7 +394,7 @@ describe('States Language', () => {
   test('Retries and errors with a result path', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    const task1 = new stepfunctions.Task(stack, 'Task1', { task: new FakeTask() });
+    const task1 = new FakeTask(stack, 'Task1');
     const failure = new stepfunctions.Fail(stack, 'Failed', { error: 'DidNotWork', cause: 'We got stuck' });
 
     // WHEN
@@ -422,8 +424,8 @@ describe('States Language', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
-    const task1 = new stepfunctions.Task(stack, 'Task1', { task: new FakeTask() });
-    const task2 = new stepfunctions.Task(stack, 'Task2', { task: new FakeTask() });
+    const task1 = new FakeTask(stack, 'Task1');
+    const task2 = new FakeTask(stack, 'Task2');
     const errorHandler = new stepfunctions.Pass(stack, 'ErrorHandler');
 
     // WHEN
@@ -466,8 +468,8 @@ describe('States Language', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
-    const task1 = new stepfunctions.Task(stack, 'Task1', { task: new FakeTask() });
-    const task2 = new stepfunctions.Task(stack, 'Task2', { task: new FakeTask() });
+    const task1 = new FakeTask(stack, 'Task1');
+    const task2 = new FakeTask(stack, 'Task2');
     const errorHandler = new stepfunctions.Pass(stack, 'ErrorHandler');
 
     // WHEN
@@ -495,9 +497,9 @@ describe('States Language', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
-    const task1 = new stepfunctions.Task(stack, 'Task1', { task: new FakeTask() });
-    const task2 = new stepfunctions.Task(stack, 'Task2', { task: new FakeTask() });
-    const task3 = new stepfunctions.Task(stack, 'Task3', { task: new FakeTask() });
+    const task1 = new FakeTask(stack, 'Task1');
+    const task2 = new FakeTask(stack, 'Task2');
+    const task3 = new FakeTask(stack, 'Task3');
     const errorHandler = new stepfunctions.Pass(stack, 'ErrorHandler');
 
     // WHEN
@@ -522,8 +524,8 @@ describe('States Language', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
-    const task1 = new stepfunctions.Task(stack, 'Task1', { task: new FakeTask() });
-    const task2 = new stepfunctions.Task(stack, 'Task2', { task: new FakeTask() });
+    const task1 = new FakeTask(stack, 'Task1');
+    const task2 = new FakeTask(stack, 'Task2');
     const errorHandler = new stepfunctions.Pass(stack, 'ErrorHandler');
 
     // WHEN
@@ -536,8 +538,8 @@ describe('States Language', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
-    const task1 = new stepfunctions.Task(stack, 'Task1', { task: new FakeTask() });
-    const task2 = new stepfunctions.Task(stack, 'Task2', { task: new FakeTask() });
+    const task1 = new FakeTask(stack, 'Task1');
+    const task2 = new FakeTask(stack, 'Task2');
     const failure = new stepfunctions.Fail(stack, 'Failed', { error: 'DidNotWork', cause: 'We got stuck' });
 
     // WHEN
@@ -611,9 +613,12 @@ describe('States Language', () => {
     const state1 = new stepfunctions.Pass(stack, 'State1');
     const state2 = new stepfunctions.Pass(stack, 'State2');
 
-    expect(() => new stepfunctions.Parallel(stack, 'Parallel')
+    const parallel = new stepfunctions.Parallel(stack, 'Parallel')
       .branch(state1.next(state2))
-      .branch(state2)).toThrow();
+      .branch(state2);
+
+    // WHEN
+    expect(() => render(parallel)).toThrow();
   }),
 
   describe('findReachableStates', () => {
@@ -708,12 +713,12 @@ class SimpleChain extends stepfunctions.StateMachineFragment {
   public readonly startState: stepfunctions.State;
   public readonly endStates: stepfunctions.INextable[];
 
-  private readonly task2: stepfunctions.Task;
+  private readonly task2: stepfunctions.TaskStateBase;
   constructor(scope: constructs.Construct, id: string) {
     super(scope, id);
 
-    const task1 = new stepfunctions.Task(this, 'Task1', { task: new FakeTask() });
-    this.task2 = new stepfunctions.Task(this, 'Task2', { task: new FakeTask() });
+    const task1 = new FakeTask(this, 'Task1');
+    this.task2 = new FakeTask(this, 'Task2');
 
     task1.next(this.task2);
 
@@ -731,10 +736,22 @@ function render(sm: stepfunctions.IChainable) {
   return new cdk.Stack().resolve(new stepfunctions.StateGraph(sm.startState, 'Test Graph').toGraphJson());
 }
 
-class FakeTask implements stepfunctions.IStepFunctionsTask {
-  public bind(_task: stepfunctions.Task): stepfunctions.StepFunctionsTaskConfig {
+interface FakeTaskProps extends stepfunctions.TaskStateBaseProps {
+  readonly policies?: iam.PolicyStatement[];
+}
+
+class FakeTask extends stepfunctions.TaskStateBase {
+  protected readonly taskMetrics?: stepfunctions.TaskMetricsConfig;
+  protected readonly taskPolicies?: iam.PolicyStatement[];
+
+  constructor(scope: Construct, id: string, props: FakeTaskProps = {}) {
+    super(scope, id, props);
+    this.taskPolicies = props.policies;
+  }
+
+  protected _renderTask(): any {
     return {
-      resourceArn: 'resource',
+      Resource: 'resource',
     };
   }
 }

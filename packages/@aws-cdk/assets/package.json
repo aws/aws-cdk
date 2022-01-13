@@ -73,12 +73,12 @@
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/cdk-integ-tools": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/jest": "^27.0.2",
+    "@types/jest": "^27.4.0",
     "@types/sinon": "^9.0.11",
     "aws-cdk": "0.0.0",
-    "jest": "^27.3.1",
+    "jest": "^27.4.7",
     "sinon": "^9.2.4",
-    "ts-mock-imports": "^1.3.7"
+    "ts-mock-imports": "^1.3.8"
   },
   "dependencies": {
     "@aws-cdk/core": "0.0.0",

@@ -1,7 +1,7 @@
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cfnDiff from '@aws-cdk/cloudformation-diff';
 import * as cxapi from '@aws-cdk/cx-api';
-import * as colors from 'colors/safe';
+import * as chalk from 'chalk';
 import { print, warning } from './logging';
 
 /**
@@ -36,7 +36,7 @@ export function printStackDiff(
   if (!diff.isEmpty) {
     cfnDiff.formatDifferences(stream || process.stderr, diff, buildLogicalToPathMap(newTemplate), context);
   } else {
-    print(colors.green('There were no differences'));
+    print(chalk.green('There were no differences'));
   }
 
   return diff.differenceCount;

@@ -371,7 +371,7 @@ describe('delivery stream', () => {
         region: stack.region,
         namespace: 'AWS/Firehose',
         metricName: 'IncomingBytes',
-        statistic: cloudwatch.Statistic.AVERAGE,
+        statistic: cloudwatch.Statistic.SUM,
         dimensions: {
           DeliveryStreamName: deliveryStream.deliveryStreamName,
         },
@@ -386,7 +386,7 @@ describe('delivery stream', () => {
         region: stack.region,
         namespace: 'AWS/Firehose',
         metricName: 'IncomingRecords',
-        statistic: cloudwatch.Statistic.AVERAGE,
+        statistic: cloudwatch.Statistic.SUM,
         dimensions: {
           DeliveryStreamName: deliveryStream.deliveryStreamName,
         },
@@ -401,7 +401,7 @@ describe('delivery stream', () => {
         region: stack.region,
         namespace: 'AWS/Firehose',
         metricName: 'BackupToS3.Bytes',
-        statistic: cloudwatch.Statistic.AVERAGE,
+        statistic: cloudwatch.Statistic.SUM,
         dimensions: {
           DeliveryStreamName: deliveryStream.deliveryStreamName,
         },
@@ -431,7 +431,7 @@ describe('delivery stream', () => {
         region: stack.region,
         namespace: 'AWS/Firehose',
         metricName: 'BackupToS3.Records',
-        statistic: cloudwatch.Statistic.AVERAGE,
+        statistic: cloudwatch.Statistic.SUM,
         dimensions: {
           DeliveryStreamName: deliveryStream.deliveryStreamName,
         },

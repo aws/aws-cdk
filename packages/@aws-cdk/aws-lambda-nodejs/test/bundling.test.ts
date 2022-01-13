@@ -6,7 +6,7 @@ import { AssetHashType, DockerImage } from '@aws-cdk/core';
 import { version as delayVersion } from 'delay/package.json';
 import { Bundling } from '../lib/bundling';
 import { PackageInstallation } from '../lib/package-installation';
-import { Charset, LogLevel, SourceMapMode } from '../lib/types';
+import { Charset, LogLevel, OutputFormat, SourceMapMode } from '../lib/types';
 import * as util from '../lib/util';
 
 
@@ -169,9 +169,9 @@ test('esbuild bundling with externals and dependencies', () => {
         'bash', '-c',
         [
           'esbuild --bundle "/asset-input/test/bundling.test.js" --target=node12 --platform=node --outfile="/asset-output/index.js" --external:abc --external:delay',
-          `echo \'{\"dependencies\":{\"delay\":\"${delayVersion}\"}}\' > /asset-output/package.json`,
-          'cp /asset-input/package-lock.json /asset-output/package-lock.json',
-          'cd /asset-output',
+          `echo \'{\"dependencies\":{\"delay\":\"${delayVersion}\"}}\' > "/asset-output/package.json"`,
+          'cp "/asset-input/package-lock.json" "/asset-output/package-lock.json"',
+          'cd "/asset-output"',
           'npm ci',
         ].join(' && '),
       ],
@@ -184,7 +184,7 @@ test('esbuild bundling with esbuild options', () => {
     entry,
     projectRoot,
     depsLockFilePath,
-    runtime: Runtime.NODEJS_12_X,
+    runtime: Runtime.NODEJS_14_X,
     architecture: Architecture.X86_64,
     minify: true,
     sourceMap: true,
@@ -207,6 +207,7 @@ test('esbuild bundling with esbuild options', () => {
       'process.env.NUMBER': '7777',
       'process.env.STRING': JSON.stringify('this is a "test"'),
     },
+    format: OutputFormat.ESM,
   });
 
   // Correctly bundles with esbuild
@@ -218,7 +219,7 @@ test('esbuild bundling with esbuild options', () => {
         'bash', '-c',
         [
           'esbuild --bundle "/asset-input/lib/handler.ts"',
-          '--target=es2020 --platform=node --outfile="/asset-output/index.js"',
+          '--target=es2020 --platform=node --format=esm --outfile="/asset-output/index.mjs"',
           '--minify --sourcemap --sources-content=false --external:aws-sdk --loader:.png=dataurl',
           defineInstructions,
           '--log-level=silent --keep-names --tsconfig=/asset-input/lib/custom-tsconfig.ts',
@@ -232,6 +233,17 @@ test('esbuild bundling with esbuild options', () => {
   // Make sure that the define instructions are working as expected with the esbuild CLI
   const bundleProcess = util.exec('bash', ['-c', `npx esbuild --bundle ${`${__dirname}/integ-handlers/define.ts`} ${defineInstructions}`]);
   expect(bundleProcess.stdout.toString()).toMatchSnapshot();
+});
+
+test('throws with ESM and NODEJS_12_X', () => {
+  expect(() => Bundling.bundle({
+    entry,
+    projectRoot,
+    depsLockFilePath,
+    runtime: Runtime.NODEJS_12_X,
+    architecture: Architecture.X86_64,
+    format: OutputFormat.ESM,
+  })).toThrow(/ECMAScript module output format is not supported by the nodejs12.x runtime/);
 });
 
 test('esbuild bundling source map default', () => {
@@ -550,9 +562,9 @@ test('esbuild bundling with projectRoot and externals and dependencies', () => {
         'bash', '-c',
         [
           'esbuild --bundle "/asset-input/packages/@aws-cdk/aws-lambda-nodejs/test/bundling.test.js" --target=node12 --platform=node --outfile="/asset-output/index.js" --external:abc --external:delay',
-          `echo \'{\"dependencies\":{\"delay\":\"${delayVersion}\"}}\' > /asset-output/package.json`,
-          'cp /asset-input/common/package-lock.json /asset-output/package-lock.json',
-          'cd /asset-output',
+          `echo \'{\"dependencies\":{\"delay\":\"${delayVersion}\"}}\' > "/asset-output/package.json"`,
+          'cp "/asset-input/common/package-lock.json" "/asset-output/package-lock.json"',
+          'cd "/asset-output"',
           'npm ci',
         ].join(' && '),
       ],

@@ -161,6 +161,24 @@ export const LAMBDA_RECOGNIZE_VERSION_PROPS = '@aws-cdk/aws-lambda:recognizeVers
 export const CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021 = '@aws-cdk/aws-cloudfront:defaultSecurityPolicyTLSv1.2_2021';
 
 /**
+ * What regions to include in lookup tables of environment agnostic stacks
+ *
+ * Has no effect on stacks that have a defined region, but will limit the amount
+ * of unnecessary regions included in stacks without a known region.
+ *
+ * The type of this value should be a list of strings.
+ */
+export const TARGET_PARTITIONS = '@aws-cdk/core:target-partitions';
+
+/**
+ * Enable this feature flag to configure default logging behavior for the ECS Service Extensions. This will enable the
+ * `awslogs` log driver for the application container of the service to send the container logs to CloudWatch Logs.
+ *
+ * This is a feature flag as the new behavior provides a better default experience for the users.
+ */
+export const ECS_SERVICE_EXTENSIONS_ENABLE_DEFAULT_LOG_DRIVER = '@aws-cdk-containers/ecs-service-extensions:enableDefaultLogDriver';
+
+/**
  * This map includes context keys and values for feature flags that enable
  * capabilities "from the future", which we could not introduce as the default
  * behavior due to backwards compatibility for existing projects.
@@ -173,7 +191,7 @@ export const CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021 = '@aws-cdk/aws-cl
  *
  * Tests must cover the default (disabled) case and the future (enabled) case.
  */
-export const FUTURE_FLAGS: { [key: string]: any } = {
+export const FUTURE_FLAGS: { [key: string]: boolean } = {
   [APIGATEWAY_USAGEPLANKEY_ORDERINSENSITIVE_ID]: true,
   [ENABLE_STACK_NAME_DUPLICATES_CONTEXT]: true,
   [ENABLE_DIFF_NO_FAIL_CONTEXT]: true,
@@ -187,9 +205,17 @@ export const FUTURE_FLAGS: { [key: string]: any } = {
   [EFS_DEFAULT_ENCRYPTION_AT_REST]: true,
   [LAMBDA_RECOGNIZE_VERSION_PROPS]: true,
   [CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021]: true,
+  [ECS_SERVICE_EXTENSIONS_ENABLE_DEFAULT_LOG_DRIVER]: true,
 
   // We will advertise this flag when the feature is complete
   // [NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: 'true',
+};
+
+/**
+ * Values that will be set by default in a new project, which are not necessarily booleans (and don't expire)
+ */
+export const NEW_PROJECT_DEFAULT_CONTEXT: { [key: string]: any} = {
+  [TARGET_PARTITIONS]: ['aws', 'aws-cn'],
 };
 
 /**
@@ -218,6 +244,7 @@ const FUTURE_FLAGS_DEFAULTS: { [key: string]: boolean } = {
   [EFS_DEFAULT_ENCRYPTION_AT_REST]: false,
   [LAMBDA_RECOGNIZE_VERSION_PROPS]: false,
   [CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021]: false,
+  [ECS_SERVICE_EXTENSIONS_ENABLE_DEFAULT_LOG_DRIVER]: false,
 };
 
 export function futureFlagDefault(flag: string): boolean | undefined {

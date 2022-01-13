@@ -5,7 +5,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import {
   Fn, IResource, Lazy, RemovalPolicy, Resource, ResourceProps, Stack, Token,
-  CustomResource, CustomResourceProvider, CustomResourceProviderRuntime, FeatureFlags, Tags,
+  CustomResource, CustomResourceProvider, CustomResourceProviderRuntime, FeatureFlags, Tags, Duration,
 } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
@@ -105,9 +105,10 @@ export interface IBucket extends IResource {
 
   /**
    * The https URL of an S3 object. For example:
-   * @example https://s3.us-west-1.amazonaws.com/onlybucket
-   * @example https://s3.us-west-1.amazonaws.com/bucket/key
-   * @example https://s3.cn-north-1.amazonaws.com.cn/china-bucket/mykey
+   *
+   * - `https://s3.us-west-1.amazonaws.com/onlybucket`
+   * - `https://s3.us-west-1.amazonaws.com/bucket/key`
+   * - `https://s3.cn-north-1.amazonaws.com.cn/china-bucket/mykey`
    * @param key The S3 key of the object. If not specified, the URL of the
    *      bucket is returned.
    * @returns an ObjectS3Url token
@@ -115,12 +116,27 @@ export interface IBucket extends IResource {
   urlForObject(key?: string): string;
 
   /**
+   * The https Transfer Acceleration URL of an S3 object. Specify `dualStack: true` at the options
+   * for dual-stack endpoint (connect to the bucket over IPv6). For example:
+   *
+   * - `https://bucket.s3-accelerate.amazonaws.com`
+   * - `https://bucket.s3-accelerate.amazonaws.com/key`
+   *
+   * @param key The S3 key of the object. If not specified, the URL of the
+   *      bucket is returned.
+   * @param options Options for generating URL.
+   * @returns an TransferAccelerationUrl token
+   */
+  transferAccelerationUrlForObject(key?: string, options?: TransferAccelerationUrlOptions): string;
+
+  /**
    * The virtual hosted-style URL of an S3 object. Specify `regional: false` at
    * the options for non-regional URL. For example:
-   * @example https://only-bucket.s3.us-west-1.amazonaws.com
-   * @example https://bucket.s3.us-west-1.amazonaws.com/key
-   * @example https://bucket.s3.amazonaws.com/key
-   * @example https://china-bucket.s3.cn-north-1.amazonaws.com.cn/mykey
+   *
+   * - `https://only-bucket.s3.us-west-1.amazonaws.com`
+   * - `https://bucket.s3.us-west-1.amazonaws.com/key`
+   * - `https://bucket.s3.amazonaws.com/key`
+   * - `https://china-bucket.s3.cn-north-1.amazonaws.com.cn/mykey`
    * @param key The S3 key of the object. If not specified, the URL of the
    *      bucket is returned.
    * @param options Options for generating URL.
@@ -130,8 +146,8 @@ export interface IBucket extends IResource {
 
   /**
    * The S3 URL of an S3 object. For example:
-   * @example s3://onlybucket
-   * @example s3://bucket/key
+   * - `s3://onlybucket`
+   * - `s3://bucket/key`
    * @param key The S3 key of the object. If not specified, the S3 URL of the
    *      bucket is returned.
    * @returns an ObjectS3Url token
@@ -603,9 +619,11 @@ export abstract class BucketBase extends Resource implements IBucket {
   /**
    * The https URL of an S3 object. Specify `regional: false` at the options
    * for non-regional URLs. For example:
-   * @example https://s3.us-west-1.amazonaws.com/onlybucket
-   * @example https://s3.us-west-1.amazonaws.com/bucket/key
-   * @example https://s3.cn-north-1.amazonaws.com.cn/china-bucket/mykey
+   *
+   * - `https://s3.us-west-1.amazonaws.com/onlybucket`
+   * - `https://s3.us-west-1.amazonaws.com/bucket/key`
+   * - `https://s3.cn-north-1.amazonaws.com.cn/china-bucket/mykey`
+   *
    * @param key The S3 key of the object. If not specified, the URL of the
    *      bucket is returned.
    * @returns an ObjectS3Url token
@@ -620,12 +638,35 @@ export abstract class BucketBase extends Resource implements IBucket {
   }
 
   /**
+   * The https Transfer Acceleration URL of an S3 object. Specify `dualStack: true` at the options
+   * for dual-stack endpoint (connect to the bucket over IPv6). For example:
+   *
+   * - `https://bucket.s3-accelerate.amazonaws.com`
+   * - `https://bucket.s3-accelerate.amazonaws.com/key`
+   *
+   * @param key The S3 key of the object. If not specified, the URL of the
+   *      bucket is returned.
+   * @param options Options for generating URL.
+   * @returns an TransferAccelerationUrl token
+   */
+  public transferAccelerationUrlForObject(key?: string, options?: TransferAccelerationUrlOptions): string {
+    const dualStack = options?.dualStack ? '.dualstack' : '';
+    const prefix = `https://${this.bucketName}.s3-accelerate${dualStack}.amazonaws.com/`;
+    if (typeof key !== 'string') {
+      return this.urlJoin(prefix);
+    }
+    return this.urlJoin(prefix, key);
+  }
+
+  /**
    * The virtual hosted-style URL of an S3 object. Specify `regional: false` at
    * the options for non-regional URL. For example:
-   * @example https://only-bucket.s3.us-west-1.amazonaws.com
-   * @example https://bucket.s3.us-west-1.amazonaws.com/key
-   * @example https://bucket.s3.amazonaws.com/key
-   * @example https://china-bucket.s3.cn-north-1.amazonaws.com.cn/mykey
+   *
+   * - `https://only-bucket.s3.us-west-1.amazonaws.com`
+   * - `https://bucket.s3.us-west-1.amazonaws.com/key`
+   * - `https://bucket.s3.amazonaws.com/key`
+   * - `https://china-bucket.s3.cn-north-1.amazonaws.com.cn/mykey`
+   *
    * @param key The S3 key of the object. If not specified, the URL of the
    *      bucket is returned.
    * @param options Options for generating URL.
@@ -642,8 +683,10 @@ export abstract class BucketBase extends Resource implements IBucket {
 
   /**
    * The S3 URL of an S3 object. For example:
-   * @example s3://onlybucket
-   * @example s3://bucket/key
+   *
+   * - `s3://onlybucket`
+   * - `s3://bucket/key`
+   *
    * @param key The S3 key of the object. If not specified, the S3 URL of the
    *      bucket is returned.
    * @returns an ObjectS3Url token
@@ -820,6 +863,10 @@ export abstract class BucketBase extends Resource implements IBucket {
    */
   public addObjectRemovedNotification(dest: IBucketNotificationDestination, ...filters: NotificationKeyFilter[]) {
     return this.addEventNotification(EventType.OBJECT_REMOVED, dest, ...filters);
+  }
+
+  protected enableEventBridgeNotification() {
+    this.notifications.enableEventBridgeNotification();
   }
 
   private get writeActions(): string[] {
@@ -1164,6 +1211,13 @@ export interface Inventory {
    */
 export enum ObjectOwnership {
   /**
+   * ACLs are disabled, and the bucket owner automatically owns
+   * and has full control over every object in the bucket.
+   * ACLs no longer affect permissions to data in the S3 bucket.
+   * The bucket uses policies to define access control.
+   */
+  BUCKET_OWNER_ENFORCED = 'BucketOwnerEnforced',
+  /**
    * Objects uploaded to the bucket change ownership to the bucket owner .
    */
   BUCKET_OWNER_PREFERRED = 'BucketOwnerPreferred',
@@ -1172,6 +1226,48 @@ export enum ObjectOwnership {
    */
   OBJECT_WRITER = 'ObjectWriter',
 }
+/**
+ * The intelligent tiering configuration.
+ */
+export interface IntelligentTieringConfiguration {
+  /**
+   * Configuration name
+   */
+  readonly name: string;
+
+
+  /**
+   * Add a filter to limit the scope of this configuration to a single prefix.
+   *
+   * @default this configuration will apply to **all** objects in the bucket.
+   */
+  readonly prefix?: string;
+
+  /**
+   * You can limit the scope of this rule to the key value pairs added below.
+   *
+   * @default No filtering will be performed on tags
+   */
+  readonly tags?: Tag[];
+
+  /**
+   * When enabled, Intelligent-Tiering will automatically move objects that
+   * haven’t been accessed for a minimum of 90 days to the Archive Access tier.
+   *
+   * @default Objects will not move to Glacier
+   */
+  readonly archiveAccessTierTime?: Duration;
+
+  /**
+   * When enabled, Intelligent-Tiering will automatically move objects that
+   * haven’t been accessed for a minimum of 180 days to the Deep Archive Access
+   * tier.
+   *
+   * @default Objects will not move to Glacier Deep Access
+   */
+  readonly deepArchiveAccessTierTime?: Duration;
+}
+
 export interface BucketProps {
   /**
    * The kind of server-side encryption to apply to this bucket.
@@ -1248,6 +1344,13 @@ export interface BucketProps {
    * @default false
    */
   readonly versioned?: boolean;
+
+  /**
+   * Whether this bucket should send notifications to Amazon EventBridge or not.
+   *
+   * @default false
+   */
+  readonly eventBridgeEnabled?: boolean;
 
   /**
    * Rules that define how Amazon S3 manages objects during their lifetime.
@@ -1361,6 +1464,38 @@ export interface BucketProps {
    *
    */
   readonly objectOwnership?: ObjectOwnership;
+
+  /**
+   * Whether this bucket should have transfer acceleration turned on or not.
+   *
+   * @default false
+   */
+  readonly transferAcceleration?: boolean;
+
+  /**
+   * Inteligent Tiering Configurations
+   *
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/intelligent-tiering.html
+   *
+   * @default No Intelligent Tiiering Configurations.
+   */
+  readonly intelligentTieringConfigurations?: IntelligentTieringConfiguration[];
+}
+
+
+/**
+ * Tag
+ */
+export interface Tag {
+
+  /**
+   * key to e tagged
+   */
+  readonly key: string;
+  /**
+   * additional value
+   */
+  readonly value: string;
 }
 
 /**
@@ -1497,6 +1632,7 @@ export class Bucket extends BucketBase {
   private accessControl?: BucketAccessControl;
   private readonly lifecycleRules: LifecycleRule[] = [];
   private readonly versioned?: boolean;
+  private readonly eventBridgeEnabled?: boolean;
   private readonly metrics: BucketMetrics[] = [];
   private readonly cors: CorsRule[] = [];
   private readonly inventories: Inventory[] = [];
@@ -1527,6 +1663,8 @@ export class Bucket extends BucketBase {
       loggingConfiguration: this.parseServerAccessLogs(props),
       inventoryConfigurations: Lazy.any({ produce: () => this.parseInventoryConfiguration() }),
       ownershipControls: this.parseOwnershipControls(props),
+      accelerateConfiguration: props.transferAcceleration ? { accelerationStatus: 'Enabled' } : undefined,
+      intelligentTieringConfigurations: this.parseTieringConfig(props),
     });
     this._resource = resource;
 
@@ -1534,6 +1672,7 @@ export class Bucket extends BucketBase {
 
     this.versioned = props.versioned;
     this.encryptionKey = encryptionKey;
+    this.eventBridgeEnabled = props.eventBridgeEnabled;
 
     this.bucketName = this.getResourceNameAttribute(resource.ref);
     this.bucketArn = this.getResourceArnAttribute(resource.attrArn, {
@@ -1583,6 +1722,10 @@ export class Bucket extends BucketBase {
       }
 
       this.enableAutoDeleteObjects();
+    }
+
+    if (this.eventBridgeEnabled) {
+      this.enableEventBridgeNotification();
     }
   }
 
@@ -1743,6 +1886,7 @@ export class Bucket extends BucketBase {
         noncurrentVersionTransitions: mapOrUndefined(rule.noncurrentVersionTransitions, t => ({
           storageClass: t.storageClass.value,
           transitionInDays: t.transitionAfter.toDays(),
+          newerNoncurrentVersions: t.noncurrentVersionsToRetain,
         })),
         prefix: rule.prefix,
         status: enabled ? 'Enabled' : 'Disabled',
@@ -1827,6 +1971,35 @@ export class Bucket extends BucketBase {
         objectOwnership,
       }],
     };
+  }
+
+  private parseTieringConfig({ intelligentTieringConfigurations }: BucketProps): CfnBucket.IntelligentTieringConfigurationProperty[] | undefined {
+    if (!intelligentTieringConfigurations) {
+      return undefined;
+    }
+
+    return intelligentTieringConfigurations.map(config => {
+      const tierings = [];
+      if (config.archiveAccessTierTime) {
+        tierings.push({
+          accessTier: 'ARCHIVE_ACCESS',
+          days: config.archiveAccessTierTime.toDays({ integral: true }),
+        });
+      }
+      if (config.deepArchiveAccessTierTime) {
+        tierings.push({
+          accessTier: 'DEEP_ARCHIVE_ACCESS',
+          days: config.deepArchiveAccessTierTime.toDays({ integral: true }),
+        });
+      }
+      return {
+        id: config.name,
+        prefix: config.prefix,
+        status: 'Enabled',
+        tagFilters: config.tags,
+        tierings: tierings,
+      };
+    });
   }
 
   private renderWebsiteConfiguration(props: BucketProps): CfnBucket.WebsiteConfigurationProperty | undefined {
@@ -1999,6 +2172,7 @@ export enum BucketEncryption {
 
 /**
  * Notification event types.
+ * @link https://docs.aws.amazon.com/AmazonS3/latest/userguide/notification-how-to-event-types-and-destinations.html#supported-notification-event-types
  */
 export enum EventType {
   /**
@@ -2150,6 +2324,67 @@ export enum EventType {
    * by replication metrics.
    */
   REPLICATION_OPERATION_NOT_TRACKED = 's3:Replication:OperationNotTracked',
+
+  /**
+   * By using the LifecycleExpiration event types, you can receive a notification
+   * when Amazon S3 deletes an object based on your S3 Lifecycle configuration.
+   */
+  LIFECYCLE_EXPIRATION = 's3:LifecycleExpiration:*',
+
+  /**
+   * The s3:LifecycleExpiration:Delete event type notifies you when an object
+   * in an unversioned bucket is deleted.
+   * It also notifies you when an object version is permanently deleted by an
+   * S3 Lifecycle configuration.
+   */
+  LIFECYCLE_EXPIRATION_DELETE = 's3:LifecycleExpiration:Delete',
+
+  /**
+   * The s3:LifecycleExpiration:DeleteMarkerCreated event type notifies you
+   * when S3 Lifecycle creates a delete marker when a current version of an
+   * object in versioned bucket is deleted.
+   */
+  LIFECYCLE_EXPIRATION_DELETE_MARKER_CREATED = 's3:LifecycleExpiration:DeleteMarkerCreated',
+
+  /**
+   * You receive this notification event when an object is transitioned to
+   * another Amazon S3 storage class by an S3 Lifecycle configuration.
+   */
+  LIFECYCLE_TRANSITION = 's3:LifecycleTransition',
+
+  /**
+   * You receive this notification event when an object within the
+   * S3 Intelligent-Tiering storage class moved to the Archive Access tier or
+   * Deep Archive Access tier.
+   */
+  INTELLIGENT_TIERING = 's3:IntelligentTiering',
+
+  /**
+   * By using the ObjectTagging event types, you can enable notification when
+   * an object tag is added or deleted from an object.
+   */
+  OBJECT_TAGGING = 's3:ObjectTagging:*',
+
+  /**
+   * The s3:ObjectTagging:Put event type notifies you when a tag is PUT on an
+   * object or an existing tag is updated.
+
+   */
+  OBJECT_TAGGING_PUT = 's3:ObjectTagging:Put',
+
+  /**
+   * The s3:ObjectTagging:Delete event type notifies you when a tag is removed
+   * from an object.
+   */
+  OBJECT_TAGGING_DELETE = 's3:ObjectTagging:Delete',
+
+  /**
+   * You receive this notification event when an ACL is PUT on an object or when
+   * an existing ACL is changed.
+   * An event is not generated when a request results in no change to an
+   * object’s ACL.
+   */
+  OBJECT_ACL_PUT = 's3:ObjectAcl:Put',
 }
 
 export interface NotificationKeyFilter {
@@ -2320,6 +2555,18 @@ export interface VirtualHostedStyleUrlOptions {
    * @default - true
    */
   readonly regional?: boolean;
+}
+
+/**
+ * Options for creating a Transfer Acceleration URL.
+ */
+export interface TransferAccelerationUrlOptions {
+  /**
+   * Dual-stack support to connect to the bucket over IPv6.
+   *
+   * @default - false
+   */
+  readonly dualStack?: boolean;
 }
 
 function mapOrUndefined<T, U>(list: T[] | undefined, callback: (element: T) => U): U[] | undefined {

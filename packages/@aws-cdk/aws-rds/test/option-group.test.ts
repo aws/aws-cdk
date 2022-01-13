@@ -1,7 +1,7 @@
 import '@aws-cdk/assert-internal/jest';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
-import { DatabaseInstanceEngine, OptionGroup, OracleEngineVersion, OracleLegacyEngineVersion } from '../lib';
+import { DatabaseInstanceEngine, OptionGroup, OracleEngineVersion } from '../lib';
 
 describe('option group', () => {
   test('create an option group', () => {
@@ -10,8 +10,8 @@ describe('option group', () => {
 
     // WHEN
     new OptionGroup(stack, 'Options', {
-      engine: DatabaseInstanceEngine.oracleSe1({
-        version: OracleLegacyEngineVersion.VER_11_2,
+      engine: DatabaseInstanceEngine.oracleSe2({
+        version: OracleEngineVersion.VER_12_1,
       }),
       configurations: [
         {
@@ -22,9 +22,8 @@ describe('option group', () => {
 
     // THEN
     expect(stack).toHaveResource('AWS::RDS::OptionGroup', {
-      EngineName: 'oracle-se1',
-      MajorEngineVersion: '11.2',
-      OptionGroupDescription: 'Option group for oracle-se1 11.2',
+      EngineName: 'oracle-se2',
+      MajorEngineVersion: '12.1',
       OptionConfigurations: [
         {
           OptionName: 'XMLDB',
@@ -42,8 +41,8 @@ describe('option group', () => {
 
     // WHEN
     const optionGroup = new OptionGroup(stack, 'Options', {
-      engine: DatabaseInstanceEngine.oracleSe({
-        version: OracleLegacyEngineVersion.VER_11_2,
+      engine: DatabaseInstanceEngine.oracleSe2({
+        version: OracleEngineVersion.VER_12_1,
       }),
       configurations: [
         {
@@ -57,9 +56,6 @@ describe('option group', () => {
 
     // THEN
     expect(stack).toHaveResource('AWS::RDS::OptionGroup', {
-      EngineName: 'oracle-se',
-      MajorEngineVersion: '11.2',
-      OptionGroupDescription: 'Option group for oracle-se 11.2',
       OptionConfigurations: [
         {
           OptionName: 'OEM',
@@ -103,8 +99,8 @@ describe('option group', () => {
     // WHEN
     const securityGroup = new ec2.SecurityGroup(stack, 'CustomSecurityGroup', { vpc });
     new OptionGroup(stack, 'Options', {
-      engine: DatabaseInstanceEngine.oracleSe({
-        version: OracleLegacyEngineVersion.VER_11_2,
+      engine: DatabaseInstanceEngine.oracleSe2({
+        version: OracleEngineVersion.VER_12_1,
       }),
       configurations: [
         {
@@ -118,9 +114,6 @@ describe('option group', () => {
 
     // THEN
     expect(stack).toHaveResource('AWS::RDS::OptionGroup', {
-      EngineName: 'oracle-se',
-      MajorEngineVersion: '11.2',
-      OptionGroupDescription: 'Option group for oracle-se 11.2',
       OptionConfigurations: [
         {
           OptionName: 'OEM',

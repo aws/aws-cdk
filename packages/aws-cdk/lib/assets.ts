@@ -2,7 +2,7 @@
 import * as path from 'path';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
-import * as colors from 'colors';
+import * as chalk from 'chalk';
 import { ToolkitInfo } from './api/toolkit-info';
 import { debug } from './logging';
 import { AssetManifestBuilder } from './util/asset-manifest-builder';
@@ -24,7 +24,7 @@ export async function addMetadataAssetsToManifest(stack: cxapi.CloudFormationSta
 
   if (!toolkitInfo.found) {
     // eslint-disable-next-line max-len
-    throw new Error(`This stack uses assets, so the toolkit stack must be deployed to the environment (Run "${colors.blue('cdk bootstrap ' + stack.environment!.name)}")`);
+    throw new Error(`This stack uses assets, so the toolkit stack must be deployed to the environment (Run "${chalk.blue('cdk bootstrap ' + stack.environment!.name)}")`);
   }
 
   const params: Record<string, string> = {};
