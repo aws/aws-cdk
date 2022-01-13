@@ -35,6 +35,7 @@ class TestStack extends cdk.Stack {
       clusterParameterGroup: params,
       kmsKey,
       removalPolicy: cdk.RemovalPolicy.DESTROY,
+      autoMinorVersionUpgrade: true,
     });
 
     cluster.connections.allowDefaultPortFromAnyIpv4('Open to the world');

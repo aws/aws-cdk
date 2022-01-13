@@ -858,7 +858,7 @@
                   "ProjectName": {
                     "Ref": "PipelineUpdatePipelineSelfMutationDAA41400"
                   },
-                  "EnvironmentVariables": "[{\"name\":\"_PROJECT_CONFIG_HASH\",\"type\":\"PLAINTEXT\",\"value\":\"9eda7f97d24aac861052bb47a41b80eecdd56096bf9a88a27c88d94c463785c8\"}]"
+                  "EnvironmentVariables": "[{\"name\":\"_PROJECT_CONFIG_HASH\",\"type\":\"PLAINTEXT\",\"value\":\"c0779bd925c3a7f19be75a4973c668d10d00ce3552b882c7d2ba3fa3cee6d976\"}]"
                 },
                 "InputArtifacts": [
                   {
@@ -1936,7 +1936,7 @@
           ]
         },
         "Source": {
-          "BuildSpec": "{\n  \"version\": \"0.2\",\n  \"phases\": {\n    \"install\": {\n      \"commands\": [\n        \"npm install -g aws-cdk\"\n      ]\n    },\n    \"build\": {\n      \"commands\": [\n        \"cdk -a . deploy PipelineStack --require-approval=never --verbose\"\n      ]\n    }\n  }\n}",
+          "BuildSpec": "{\n  \"version\": \"0.2\",\n  \"phases\": {\n    \"install\": {\n      \"commands\": [\n        \"npm install -g aws-cdk@1\"\n      ]\n    },\n    \"build\": {\n      \"commands\": [\n        \"cdk -a . deploy PipelineStack --require-approval=never --verbose\"\n      ]\n    }\n  }\n}",
           "Type": "CODEPIPELINE"
         },
         "Cache": {
@@ -2278,7 +2278,7 @@
           ]
         },
         "Source": {
-          "BuildSpec": "{\n  \"version\": \"0.2\",\n  \"phases\": {\n    \"install\": {\n      \"commands\": [\n        \"npm install -g cdk-assets\"\n      ]\n    },\n    \"build\": {\n      \"commands\": [\n        \"cdk-assets --path \\\"assembly-PipelineStack-Beta/PipelineStackBetaStack1E6541489.assets.json\\\" --verbose publish \\\"8289faf53c7da377bb2b90615999171adef5e1d8f6b88810e5fef75e6ca09ba5:current_account-current_region\\\"\"\n      ]\n    }\n  }\n}",
+          "BuildSpec": "{\n  \"version\": \"0.2\",\n  \"phases\": {\n    \"install\": {\n      \"commands\": [\n        \"npm install -g cdk-assets@1\"\n      ]\n    },\n    \"build\": {\n      \"commands\": [\n        \"cdk-assets --path \\\"assembly-PipelineStack-Beta/PipelineStackBetaStack1E6541489.assets.json\\\" --verbose publish \\\"8289faf53c7da377bb2b90615999171adef5e1d8f6b88810e5fef75e6ca09ba5:current_account-current_region\\\"\"\n      ]\n    }\n  }\n}",
           "Type": "CODEPIPELINE"
         },
         "Cache": {
@@ -2379,7 +2379,7 @@
           ]
         },
         "Source": {
-          "BuildSpec": "{\n  \"version\": \"0.2\",\n  \"phases\": {\n    \"install\": {\n      \"commands\": [\n        \"npm install -g cdk-assets\"\n      ]\n    },\n    \"build\": {\n      \"commands\": [\n        \"cdk-assets --path \\\"assembly-PipelineStack-Beta/PipelineStackBetaStack1E6541489.assets.json\\\" --verbose publish \\\"ac76997971c3f6ddf37120660003f1ced72b4fc58c498dfd99c78fa77e721e0e:current_account-current_region\\\"\"\n      ]\n    }\n  }\n}",
+          "BuildSpec": "{\n  \"version\": \"0.2\",\n  \"phases\": {\n    \"install\": {\n      \"commands\": [\n        \"npm install -g cdk-assets@1\"\n      ]\n    },\n    \"build\": {\n      \"commands\": [\n        \"cdk-assets --path \\\"assembly-PipelineStack-Beta/PipelineStackBetaStack1E6541489.assets.json\\\" --verbose publish \\\"ac76997971c3f6ddf37120660003f1ced72b4fc58c498dfd99c78fa77e721e0e:current_account-current_region\\\"\"\n      ]\n    }\n  }\n}",
           "Type": "CODEPIPELINE"
         },
         "Cache": {
