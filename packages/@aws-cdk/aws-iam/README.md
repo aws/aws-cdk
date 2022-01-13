@@ -209,12 +209,30 @@ The `WebIdentityPrincipal` class can be used as a principal for web identities l
 Cognito, Amazon, Google or Facebook, for example:
 
 ```ts
-const principal = new iam.WebIdentityPrincipal('cognito-identity.amazonaws.com')
-  .withConditions({
-    "StringEquals": { "cognito-identity.amazonaws.com:aud": "us-east-2:12345678-abcd-abcd-abcd-123456" },
-    "ForAnyValue:StringLike": {"cognito-identity.amazonaws.com:amr": "unauthenticated" },
-  });
+const principal = new iam.WebIdentityPrincipal('cognito-identity.amazonaws.com', {
+  'StringEquals': { 'cognito-identity.amazonaws.com:aud': 'us-east-2:12345678-abcd-abcd-abcd-123456' },
+  'ForAnyValue:StringLike': {'cognito-identity.amazonaws.com:amr': 'unauthenticated' },
+});
 ```
+
+If your identity provider is configured to assume a Role with [session
+tags](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_session-tags.html), you
+need to call `.withSessionTags()` to add the required permissions to the Role's
+policy document:
+
+```ts
+new iam.Role(this, 'Role', {
+  assumedBy: new iam.WebIdentityPrincipal('cognito-identity.amazonaws.com', {
+    'StringEquals': {
+      'cognito-identity.amazonaws.com:aud': 'us-east-2:12345678-abcd-abcd-abcd-123456',
+     },
+    'ForAnyValue:StringLike': {
+      'cognito-identity.amazonaws.com:amr': 'unauthenticated',
+    },
+  }).withSessionTags(),
+});
+```
+
 
 ## Parsing JSON Policy Documents
 
@@ -438,6 +456,27 @@ const user = iam.User.fromUserAttributes(this, 'MyImportedUserByAttributes', {
   userArn: 'arn:aws:iam::123456789012:user/johnsmith',
 });
 ```
+
+### Access Keys
+
+The ability for a user to make API calls via the CLI or an SDK is enabled by the user having an
+access key pair. To create an access key:
+
+```ts
+const user = new iam.User(this, 'MyUser');
+const accessKey = new iam.AccessKey(this, 'MyAccessKey', { user: user });
+```
+
+You can force CloudFormation to rotate the access key by providing a monotonically increasing `serial`
+property. Simply provide a higher serial value than any number used previously: 
+
+```ts
+const user = new iam.User(this, 'MyUser');
+const accessKey = new iam.AccessKey(this, 'MyAccessKey', { user: user, serial: 1 });
+```
+
+An access key may only be associated with a single user and cannot be "moved" between users. Changing
+the user associated with an access key replaces the access key (and its ID and secret value).
 
 ## Groups
 

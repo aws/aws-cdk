@@ -184,6 +184,56 @@ export enum InstanceClass {
   MEMORY5_AMD_NVME_DRIVE = 'r5ad',
 
   /**
+   * High memory instances (6TB) based on Intel Xeon Platinum 8176M (Skylake) processors, 1st generation
+   */
+  HIGH_MEMORY_6TB_1 = 'u-6tb1',
+
+  /**
+   * High memory instances (6TB) based on Intel Xeon Platinum 8176M (Skylake) processors, 1st generation
+   */
+  U_6TB1 = 'u-6tb1',
+
+  /**
+   * High memory instances (9TB) based on Intel Xeon Platinum 8176M (Skylake) processors, 1st generation
+   */
+  HIGH_MEMORY_9TB_1 = 'u-9tb1',
+
+  /**
+   * High memory instances (9TB) based on Intel Xeon Platinum 8176M (Skylake) processors, 1st generation
+   */
+  U_9TB1 = 'u-9tb1',
+
+  /**
+   * High memory instances (12TB) based on Intel Xeon Platinum 8176M (Skylake) processors, 1st generation
+   */
+  HIGH_MEMORY_12TB_1 = 'u-12tb1',
+
+  /**
+   * High memory instances (12TB) based on Intel Xeon Platinum 8176M (Skylake) processors, 1st generation
+   */
+  U_12TB1 = 'u-12tb1',
+
+  /**
+   * High memory instances (18TB) based on Intel Xeon Scalable (Cascade Lake) processors, 1st generation
+   */
+  HIGH_MEMORY_18TB_1 = 'u-18tb1',
+
+  /**
+   * High memory instances (18TB) based on Intel Xeon Scalable (Cascade Lake) processors, 1st generation
+   */
+  U_18TB1 = 'u-18tb1',
+
+  /**
+   * High memory instances (24TB) based on Intel Xeon Scalable (Cascade Lake) processors, 1st generation
+   */
+  HIGH_MEMORY_24TB_1 = 'u-24tb1',
+
+  /**
+   * High memory instances (24TB) based on Intel Xeon Scalable (Cascade Lake) processors, 1st generation
+   */
+  U_24TB1 = 'u-24tb1',
+
+  /**
    * Memory optimized instances based on AMD EPYC with local NVME drive, 5th generation
    */
   R5AD = 'r5ad',
@@ -343,6 +393,26 @@ export enum InstanceClass {
   D2 = 'd2',
 
   /**
+   * Storage-optimized instances, 3rd generation
+   */
+  STORAGE3 = 'd3',
+
+  /**
+   * Storage-optimized instances, 3rd generation
+   */
+  D3 = 'd3',
+
+  /**
+  * Storage-optimized instances, 3rd generation
+  */
+  STORAGE3_ENHANCED_NETWORK = 'd3en',
+
+  /**
+  * Storage-optimized instances, 3rd generation
+  */
+  D3EN = 'd3en',
+
+  /**
    * Storage/compute balanced instances, 1st generation
    */
   STORAGE_COMPUTE_1 = 'h1',
@@ -371,6 +441,26 @@ export enum InstanceClass {
    * I/O-optimized instances with local NVME drive, 3rd generation
    */
   I3EN = 'i3en',
+
+  /**
+   * Storage optimized instances powered by Graviton2 processor, 4th generation
+   */
+  STORAGE4_GRAVITON_NETWORK_OPTIMIZED = 'im4gn',
+
+  /**
+   * Storage optimized instances powered by Graviton2 processor, 4th generation
+   */
+  IM4GN = 'im4gn',
+
+  /**
+   * Storage optimized instances powered by Graviton2 processor, 4th generation
+   */
+  STORAGE4_GRAVITON_NETWORK_STORAGE_OPTIMIZED = 'is4gen',
+
+  /**
+   * Storage optimized instances powered by Graviton2 processor, 4th generation
+   */
+  IS4GEN = 'is4gen',
 
   /**
    * Burstable instances, 2nd generation
@@ -485,6 +575,16 @@ export enum InstanceClass {
    * Graphics-optimized instances with NVME drive for high performance computing, 4th generation
    */
   G4DN = 'g4dn',
+
+  /**
+   * Graphics-optimized instances based on AMD EPYC And Radeon Pro GPU (NAVI) with local NVME drive, 4th generation
+   */
+  GRAPHICS4_AMD_NVME_DRIVE = 'g4ad',
+
+  /**
+   * Graphics-optimized instances based on AMD EPYC And Radeon Pro GPU (NAVI) with local NVME drive, 4th generation
+   */
+  G4AD = 'g4ad',
 
   /**
    * Graphics-optimized instances, 5th generation
@@ -740,6 +840,16 @@ export enum InstanceSize {
    * Instance size XLARGE48 (48xlarge)
    */
   XLARGE48 = '48xlarge',
+
+  /**
+   * Instance size XLARGE56 (56xlarge)
+   */
+  XLARGE56 = '56xlarge',
+
+  /**
+   * Instance size XLARGE56 (112xlarge)
+   */
+  XLARGE112 = '112xlarge',
 
   /**
    * Instance size METAL (metal)

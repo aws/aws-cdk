@@ -85,8 +85,8 @@
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/cdk-integ-tools": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/aws-lambda": "^8.10.85",
-    "@types/jest": "^27.0.3"
+    "@types/aws-lambda": "^8.10.89",
+    "@types/jest": "^27.4.0"
   },
   "dependencies": {
     "@aws-cdk/aws-apigatewayv2": "0.0.0",
@@ -109,16 +109,6 @@
   },
   "stability": "experimental",
   "maturity": "experimental",
-  "features": [
-    {
-      "name": "Authorizer classes for HTTP APIs",
-      "stability": "Stable"
-    },
-    {
-      "name": "Authorizer classes for Websocket APIs",
-      "stability": "Experimental"
-    }
-  ],
   "awscdkio": {
     "announce": false
   },

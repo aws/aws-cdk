@@ -279,6 +279,21 @@ const importedRole = iam.Role.fromRoleArn(this, 'role', 'arn:aws:iam::1234567890
 [S3 Bucket Notifications]: https://docs.aws.amazon.com/AmazonS3/latest/dev/NotificationHowTo.html
 
 
+### EventBridge notifications
+
+Amazon S3 can send events to Amazon EventBridge whenever certain events happen in your bucket.
+Unlike other destinations, you don't need to select which event types you want to deliver.
+
+The following example will enable EventBridge notifications:
+
+```ts
+const bucket = new s3.Bucket(this, 'MyEventBridgeBucket', {
+  eventBridgeEnabled: true,
+});
+```
+
+[S3 EventBridge notifications]: https://docs.aws.amazon.com/AmazonS3/latest/userguide/EventBridge.html
+
 ## Block Public Access
 
 Use `blockPublicAccess` to specify [block public access settings] on the bucket.
@@ -444,7 +459,7 @@ bucket.virtualHostedUrlForObject('objectname', { regional: false }); // Virtual 
 
 ## Object Ownership
 
-You can use the two following properties to specify the bucket [object Ownership].
+You can use one of following properties to specify the bucket [object Ownership].
 
 [object Ownership]: https://docs.aws.amazon.com/AmazonS3/latest/dev/about-object-ownership.html
 
@@ -465,6 +480,16 @@ The bucket owner will own the object if the object is uploaded with the bucket-o
 ```ts
 new s3.Bucket(this, 'MyBucket', {
   objectOwnership: s3.ObjectOwnership.BUCKET_OWNER_PREFERRED,
+});
+```
+
+### Bucket owner enforced (recommended)
+
+ACLs are disabled, and the bucket owner automatically owns and has full control over every object in the bucket. ACLs no longer affect permissions to data in the S3 bucket. The bucket uses policies to define access control.
+
+```ts
+new s3.Bucket(this, 'MyBucket', {
+  objectOwnership: s3.ObjectOwnership.BUCKET_OWNER_ENFORCED,
 });
 ```
 
@@ -493,11 +518,11 @@ by deploying with CDK version `1.126.0` or later **before** switching this value
 
 ## Transfer Acceleration
 
-[Transfer Acceleration](https://docs.aws.amazon.com/AmazonS3/latest/userguide/transfer-acceleration.html) can be configured to enable fast, easy, and secure transfers of files over long distances: 
+[Transfer Acceleration](https://docs.aws.amazon.com/AmazonS3/latest/userguide/transfer-acceleration.html) can be configured to enable fast, easy, and secure transfers of files over long distances:
 
 ```ts
 const bucket = new s3.Bucket(this, 'MyBucket', {
-  transferAcceleration: true,
+   transferAcceleration: true,
 });
 ```
 
@@ -505,7 +530,24 @@ To access the bucket that is enabled for Transfer Acceleration, you must use a s
 
 ```ts
 const bucket = new s3.Bucket(this, 'MyBucket', {
-  transferAcceleration: true,
+   transferAcceleration: true,
 });
 bucket.transferAccelerationUrlForObject('objectname');
+```
+
+## Intelligent Tiering
+
+[Intelligent Tiering](https://docs.aws.amazon.com/AmazonS3/latest/userguide/intelligent-tiering.html) can be configured to automatically move files to glacier:
+
+```ts
+    new s3.Bucket(this, 'MyBucket', {
+   intelligentTieringConfigurations: [{
+      name: 'foo',
+      prefix: 'folder/name',
+      archiveAccessTierTime: cdk.Duration.days(90),
+      deepArchiveAccessTierTime: cdk.Duration.days(180),
+      tags: [{key: 'tagname', value: 'tagvalue'}]
+   }],
+});
+
 ```
