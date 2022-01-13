@@ -107,7 +107,7 @@ export class UserPoolAuthenticationProvider implements IUserPoolAuthenticationPr
     return {
       clientId: this.userPoolClient.userPoolClientId,
       providerName: (this.userPool.node.defaultChild as CfnUserPool).attrProviderName,
-      serverSideTokenCheck,
+      serverSideTokenCheck: !this.disableServerSideTokenCheck,
     };
   }
 
