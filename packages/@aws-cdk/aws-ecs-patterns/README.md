@@ -762,9 +762,6 @@ const service1 = new ecsPatterns.ApplicationMultipleTargetGroupsFargateService(t
   taskImageOptions: {
     image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
   },
-  taskSubnets: {
-    subnets: [ec2.Subnet.fromSubnetId(this, 'subnet', 'VpcISOLATEDSubnet1Subnet80F07FA0')],
-  },
 });
 
 const service2 = new ecsPatterns.ApplicationMultipleTargetGroupsFargateService(this, 'Service2', {
@@ -775,9 +772,6 @@ const service2 = new ecsPatterns.ApplicationMultipleTargetGroupsFargateService(t
   cpu: 512,
   taskImageOptions: {
     image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
-  },
-  taskSubnets: {
-    subnets: [ec2.Subnet.fromSubnetId(this, 'subnet', 'VpcISOLATEDSubnet1Subnet80F07FA0')],
   },
   loadBalancers: [{
     name: service1.loadBalancer.loadBalancerName,
