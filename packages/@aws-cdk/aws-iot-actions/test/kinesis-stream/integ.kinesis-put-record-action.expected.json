@@ -71,8 +71,8 @@
     "MyStream5C050E93": {
       "Type": "AWS::Kinesis::Stream",
       "Properties": {
-        "ShardCount": 3,
         "RetentionPeriodHours": 24,
+        "ShardCount": 3,
         "StreamEncryption": {
           "Fn::If": [
             "AwsCdkKinesisEncryptedStreamsUnsupportedRegions",
@@ -84,6 +84,9 @@
               "KeyId": "alias/aws/kinesis"
             }
           ]
+        },
+        "StreamModeDetails": {
+          "StreamMode": "PROVISIONED"
         }
       }
     }
