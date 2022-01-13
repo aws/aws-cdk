@@ -226,6 +226,14 @@ export interface DatabaseClusterProps {
    * @default - Retain cluster.
    */
   readonly removalPolicy?: RemovalPolicy
+
+  /**
+   * If set to true, Neptune will automatically update the engine of the entire
+   * cluster to the latest minor version after a stabilization window of 2 to 3 weeks.
+   *
+   * @default - false
+   */
+  readonly autoMinorVersionUpgrade?: boolean;
 }
 
 /**
@@ -513,6 +521,7 @@ export class DatabaseCluster extends DatabaseClusterBase implements IDatabaseClu
         // Instance properties
         dbInstanceClass: props.instanceType._instanceType,
         dbParameterGroupName: props.parameterGroup?.parameterGroupName,
+        autoMinorVersionUpgrade: props.autoMinorVersionUpgrade === true,
       });
 
       // We must have a dependency on the NAT gateway provider here to create
