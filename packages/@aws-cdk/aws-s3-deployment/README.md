@@ -9,8 +9,6 @@
 
 <!--END STABILITY BANNER-->
 
-> __Status: Experimental__
-
 This library allows populating an S3 bucket with the contents of .zip files
 from other S3 buckets or from local disk.
 
