@@ -159,11 +159,8 @@ describe('aws log driver', () => {
   test('allows cross-region log group', () => {
     // GIVEN
     const logGroupRegion = 'asghard';
-    const logGroup = logs.LogGroup.fromLogGroupArn(
-      stack,
-      'LogGroup',
-      `arn:aws:logs:${logGroupRegion}:1234:log-group:my_log_group`,
-    );
+    const logGroup = logs.LogGroup.fromLogGroupArn(stack, 'LogGroup',
+      `arn:aws:logs:${logGroupRegion}:1234:log-group:my_log_group`);
 
     // WHEN
     td.addContainer('Container', {
