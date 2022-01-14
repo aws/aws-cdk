@@ -142,7 +142,7 @@ async function isLambdaFunctionCodeOnlyChange(
           code = {
             s3Bucket,
             s3Key,
-            zipFile: functionCodeZip,
+            functionCodeZip,
           };
         }
         break;
@@ -182,7 +182,7 @@ interface CfnDiffTagValue {
 interface LambdaFunctionCode {
   readonly s3Bucket?: string;
   readonly s3Key?: string;
-  readonly zipFile?: Buffer;
+  readonly functionCodeZip?: Buffer;
 }
 
 enum TagDeletion {
@@ -230,7 +230,7 @@ class LambdaFunctionHotswapOperation implements HotswapOperation {
         FunctionName: this.lambdaFunctionResource.physicalName,
         S3Bucket: resource.code.s3Bucket,
         S3Key: resource.code.s3Key,
-        ZipFile: resource.code.zipFile,
+        ZipFile: resource.code.functionCodeZip,
       }).promise();
 
       // only if the code changed is there any point in publishing a new Version
