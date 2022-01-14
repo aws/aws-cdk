@@ -10,10 +10,10 @@ import { Fn } from '@aws-cdk/core';
 export abstract class DockerCredential {
   /**
    * Creates a DockerCredential for DockerHub.
-   * Convenience method for `fromCustomRegistry('index.docker.io', opts)`.
+   * Convenience method for `customRegistry('https://index.docker.io/v1/', opts)`.
    */
   public static dockerHub(secret: secretsmanager.ISecret, opts: ExternalDockerCredentialOptions = {}): DockerCredential {
-    return new ExternalDockerCredential('index.docker.io', secret, opts);
+    return new ExternalDockerCredential('https://index.docker.io/v1/', secret, opts);
   }
 
   /**

@@ -168,6 +168,7 @@
     "@aws-cdk/aws-codestarconnections": "0.0.0",
     "@aws-cdk/aws-codestarnotifications": "0.0.0",
     "@aws-cdk/aws-cognito": "0.0.0",
+    "@aws-cdk/aws-cognito-identitypool": "0.0.0",
     "@aws-cdk/aws-config": "0.0.0",
     "@aws-cdk/aws-connect": "0.0.0",
     "@aws-cdk/aws-cur": "0.0.0",
@@ -365,5 +366,6 @@
   },
   "publishConfig": {
     "tag": "latest"
-  }
+  },
+  "preferredCdkCliVersion": "1"
 }
