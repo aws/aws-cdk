@@ -108,7 +108,7 @@ async function isLambdaFunctionCodeOnlyChange(
     switch (updatedPropName) {
       case 'Code':
         let foundCodeDifference = false;
-        let s3Bucket = '', s3Key = '';
+        let s3Bucket, s3Key, imageUri;
 
         for (const newPropName in updatedProp.newValue) {
           switch (newPropName) {
@@ -120,6 +120,10 @@ async function isLambdaFunctionCodeOnlyChange(
               foundCodeDifference = true;
               s3Key = await evaluateCfnTemplate.evaluateCfnExpression(updatedProp.newValue[newPropName]);
               break;
+            case 'ImageUri':
+              foundCodeDifference = true;
+              imageUri = await evaluateCfnTemplate.evaluateCfnExpression(updatedProp.newValue[newPropName]);
+              break;
             default:
               return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
           }
@@ -128,6 +132,7 @@ async function isLambdaFunctionCodeOnlyChange(
           code = {
             s3Bucket,
             s3Key,
+            imageUri,
           };
         }
         break;
@@ -165,8 +170,9 @@ interface CfnDiffTagValue {
 }
 
 interface LambdaFunctionCode {
-  readonly s3Bucket: string;
-  readonly s3Key: string;
+  readonly s3Bucket?: string;
+  readonly s3Key?: string;
+  readonly imageUri?: string;
 }
 
 enum TagDeletion {
@@ -214,6 +220,7 @@ class LambdaFunctionHotswapOperation implements HotswapOperation {
         FunctionName: this.lambdaFunctionResource.physicalName,
         S3Bucket: resource.code.s3Bucket,
         S3Key: resource.code.s3Key,
+        ImageUri: resource.code.imageUri,
       }).promise();
 
       // only if the code changed is there any point in publishing a new Version
