@@ -110,7 +110,7 @@ async function isLambdaFunctionCodeOnlyChange(
     switch (updatedPropName) {
       case 'Code':
         let foundCodeDifference = false;
-        let s3Bucket, s3Key, zipFile;
+        let s3Bucket, s3Key, functionCodeZip;
 
         for (const newPropName in updatedProp.newValue) {
           switch (newPropName) {
@@ -125,11 +125,11 @@ async function isLambdaFunctionCodeOnlyChange(
             case 'ZipFile':
               foundCodeDifference = true;
               // We must create a zip package containing a file with the inline code
-              const rawZipFile = await evaluateCfnTemplate.evaluateCfnExpression(updatedProp.newValue[newPropName]);
+              const functionCode = await evaluateCfnTemplate.evaluateCfnExpression(updatedProp.newValue[newPropName]);
               // file extension must be chosen depending on the runtime
-              const runtime: string = await evaluateCfnTemplate.evaluateCfnExpression(change.newValue.Properties!.Runtime);
-              const ext = getExtensionFromRuntime(runtime);
-              zipFile = await zipString(`index.${ext}`, rawZipFile);
+              const functionRuntime: string = await evaluateCfnTemplate.evaluateCfnExpression(change.newValue.Properties!.Runtime);
+              const codeFileExt = determineCodeFileExtFromRuntime(functionRuntime);
+              functionCodeZip = await zipString(`index.${codeFileExt}`, functionCode);
               break;
             default:
               return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
@@ -139,7 +139,7 @@ async function isLambdaFunctionCodeOnlyChange(
           code = {
             s3Bucket,
             s3Key,
-            zipFile,
+            zipFile: functionCodeZip,
           };
         }
         break;
@@ -302,17 +302,17 @@ class LambdaFunctionHotswapOperation implements HotswapOperation {
  */
 export function zipString(fileName: string, rawString: string): Promise<Buffer> {
   return new Promise((resolve, reject) => {
-    const buffs: Buffer[] = [];
+    const buffers: Buffer[] = [];
 
     const converter = new Writable();
 
-    converter._write = (chunk: Buffer, _: string, cb: () => void) => {
-      buffs.push(chunk);
-      process.nextTick(cb);
+    converter._write = (chunk: Buffer, _: string, callback: () => void) => {
+      buffers.push(chunk);
+      process.nextTick(callback);
     };
 
     converter.on('finish', () => {
-      resolve(Buffer.concat(buffs));
+      resolve(Buffer.concat(buffers));
     });
 
     const archive = archiver('zip');
@@ -336,7 +336,7 @@ export function zipString(fileName: string, rawString: string): Promise<Buffer> 
  * Get file extension from Lambda runtime string.
  * We use this extension to create a deployment package from Lambda inline code.
  */
-function getExtensionFromRuntime(runtime: string): string {
+function determineCodeFileExtFromRuntime(runtime: string): string {
   if (runtime.startsWith('node')) {
     return 'js';
   }
