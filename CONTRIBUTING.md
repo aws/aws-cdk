@@ -69,7 +69,7 @@ $ yarn install
 ```
 
 We recommend that you use [Visual Studio Code](https://code.visualstudio.com/) to work on the CDK.
-We use `eslint` to keep our code consistent in terms of style and reducing defects. We recommend installing the
+We use `eslint` to keep our code consistent in terms of style and reducing defects. We recommend installing
 the [eslint extension](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) as well.
 
 ### Repo Layout
@@ -726,7 +726,7 @@ these directories.
 ### Linking against this repository
 
 If you are developing your own CDK application or library and want to use the locally checked out version of the
-AWS CDK, instead of the the version of npm, the `./link-all.sh` script will help here.
+AWS CDK, instead of the version of npm, the `./link-all.sh` script will help here.
 
 This script symlinks the built modules from the local AWS CDK repo under the `node_modules/` folder of the CDK app or
 library.
