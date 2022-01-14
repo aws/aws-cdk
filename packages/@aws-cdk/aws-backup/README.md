@@ -32,7 +32,8 @@ const plan = backup.BackupPlan.dailyWeeklyMonthly5YearRetention(this, 'Plan');
 
 Assigning resources to a plan can be done with `addSelection()`:
 
-```ts fixture=with-plan
+```ts
+declare const plan: backup.BackupPlan;
 const myTable = dynamodb.Table.fromTableName(this, 'Table', 'myTableName');
 const myCoolConstruct = new Construct(this, 'MyCoolConstruct');
 
@@ -50,16 +51,17 @@ created for the selection. The `BackupSelection` implements `IGrantable`.
 
 To add rules to a plan, use `addRule()`:
 
-```ts fixture=with-plan
+```ts
+declare const plan: backup.BackupPlan;
 plan.addRule(new backup.BackupPlanRule({
   completionWindow: Duration.hours(2),
   startWindow: Duration.hours(1),
   scheduleExpression: events.Schedule.cron({ // Only cron expressions are supported
     day: '15',
     hour: '3',
-    minute: '30'
+    minute: '30',
   }),
-  moveToColdStorageAfter: Duration.days(30)
+  moveToColdStorageAfter: Duration.days(30),
 }));
 ```
 
@@ -69,7 +71,8 @@ If no value is specified, the retention period is set to 35 days which is the ma
 Property `moveToColdStorageAfter` must not be specified because PITR does not support this option.
 This example defines an AWS Backup rule with PITR and a retention period set to 14 days:
 
-```ts fixture=with-plan
+```ts
+declare const plan: backup.BackupPlan;
 plan.addRule(new backup.BackupPlanRule({
   enableContinuousBackup: true,
   deleteAfter: Duration.days(14),
@@ -78,7 +81,8 @@ plan.addRule(new backup.BackupPlanRule({
 
 Ready-made rules are also available:
 
-```ts fixture=with-plan
+```ts
+declare const plan: backup.BackupPlan;
 plan.addRule(backup.BackupPlanRule.daily());
 plan.addRule(backup.BackupPlanRule.weekly());
 ```
@@ -152,7 +156,7 @@ const vault = new backup.BackupVault(this, 'Vault', {
         },
       }),
     ],
-  });
+  }),
 })
 ```
 
@@ -166,8 +170,8 @@ new backup.BackupVault(this, 'Vault', {
   blockRecoveryPointDeletion: true,
 });
 
-const plan = backup.BackupPlan.dailyMonthly1YearRetention(this, 'Plan');
-plan.backupVault.blockRecoveryPointDeletion();
+declare const backupVault: backup.BackupVault;
+backupVault.blockRecoveryPointDeletion();
 ```
 
 By default access is not restricted.

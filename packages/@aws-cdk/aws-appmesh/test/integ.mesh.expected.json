@@ -1040,22 +1040,12 @@
           "Backends": [
             {
               "VirtualService": {
-                "VirtualServiceName": {
-                  "Fn::GetAtt": [
-                    "service6D174F83",
-                    "VirtualServiceName"
-                  ]
-                }
+                "VirtualServiceName": "service1.domain.local"
               }
             },
             {
               "VirtualService": {
-                "VirtualServiceName": {
-                  "Fn::GetAtt": [
-                    "service27C65CF7D",
-                    "VirtualServiceName"
-                  ]
-                }
+                "VirtualServiceName": "service2.domain.local"
               }
             }
           ],
@@ -1111,12 +1101,7 @@
           "Backends": [
             {
               "VirtualService": {
-                "VirtualServiceName": {
-                  "Fn::GetAtt": [
-                    "service3859EB104",
-                    "VirtualServiceName"
-                  ]
-                }
+                "VirtualServiceName": "service3.domain.local"
               }
             }
           ],
@@ -1241,12 +1226,7 @@
           "Backends": [
             {
               "VirtualService": {
-                "VirtualServiceName": {
-                  "Fn::GetAtt": [
-                    "service4983B61EE",
-                    "VirtualServiceName"
-                  ]
-                }
+                "VirtualServiceName": "service4.domain.local"
               }
             }
           ],
