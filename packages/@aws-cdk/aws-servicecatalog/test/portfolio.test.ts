@@ -332,7 +332,7 @@ describe('portfolio associations and product constraints', () => {
   }),
 
   test('adding identical tag options to portfolio is idempotent', () => {
-    const tagOptions = new servicecatalog.TagOptions(stack ,'TagOptions', {
+    const tagOptions = new servicecatalog.TagOptions(stack, 'TagOptions', {
       key1: ['value1', 'value2'],
       key2: ['value1'],
     });
