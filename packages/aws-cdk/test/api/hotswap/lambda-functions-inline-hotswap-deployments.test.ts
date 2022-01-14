@@ -1,6 +1,5 @@
 import { Lambda } from 'aws-sdk';
 import * as setup from './hotswap-test-setup';
-import { zipString } from '../../../lib/api/hotswap/lambda-functions';
 
 let mockUpdateLambdaCode: (params: Lambda.Types.UpdateFunctionCodeRequest) => Lambda.Types.FunctionConfiguration;
 let mockTagResource: (params: Lambda.Types.TagResourceRequest) => {};
@@ -60,7 +59,7 @@ test('calls the updateLambdaCode() API when it receives only a code difference i
   expect(deployStackResult).not.toBeUndefined();
   expect(mockUpdateLambdaCode).toHaveBeenCalledWith({
     FunctionName: 'my-function',
-    ZipFile: await zipString('index.js', newCode),
+    ZipFile: expect.any(Buffer),
   });
 });
 
@@ -80,7 +79,6 @@ test('calls the updateLambdaCode() API when it receives only a code difference i
       },
     },
   });
-  const newCode = 'def handler(event, context):\n  return False';
   const cdkStackArtifact = setup.cdkStackArtifactOf({
     template: {
       Resources: {
@@ -88,7 +86,7 @@ test('calls the updateLambdaCode() API when it receives only a code difference i
           Type: 'AWS::Lambda::Function',
           Properties: {
             Code: {
-              ZipFile: newCode,
+              ZipFile: 'def handler(event, context):\n  return False',
             },
             Runtime: 'python3.9',
             FunctionName: 'my-function',
@@ -105,6 +103,46 @@ test('calls the updateLambdaCode() API when it receives only a code difference i
   expect(deployStackResult).not.toBeUndefined();
   expect(mockUpdateLambdaCode).toHaveBeenCalledWith({
     FunctionName: 'my-function',
-    ZipFile: await zipString('index.py', newCode),
+    ZipFile: expect.any(Buffer),
   });
+});
+
+test('throw a CfnEvaluationException when it receives an unsupported function runtime', async () => {
+  // GIVEN
+  setup.setCurrentCfnStackTemplate({
+    Resources: {
+      Func: {
+        Type: 'AWS::Lambda::Function',
+        Properties: {
+          Code: {
+            ZipFile: 'def handler(event:, context:) true end',
+          },
+          Runtime: 'ruby2.7',
+          FunctionName: 'my-function',
+        },
+      },
+    },
+  });
+  const cdkStackArtifact = setup.cdkStackArtifactOf({
+    template: {
+      Resources: {
+        Func: {
+          Type: 'AWS::Lambda::Function',
+          Properties: {
+            Code: {
+              ZipFile: 'def handler(event:, context:) false end',
+            },
+            Runtime: 'ruby2.7',
+            FunctionName: 'my-function',
+          },
+        },
+      },
+    },
+  });
+
+  // WHEN
+  const tryHotswap = hotswapMockSdkProvider.tryHotswapDeployment(cdkStackArtifact);
+
+  // THEN
+  await expect(tryHotswap).rejects.toThrow('runtime ruby2.7 is unsupported, only node.js and python runtimes are currently supported.');
 });

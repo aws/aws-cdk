@@ -2,7 +2,7 @@ import { Writable } from 'stream';
 import * as archiver from 'archiver';
 import { flatMap } from '../../util';
 import { ISDK } from '../aws-auth';
-import { EvaluateCloudFormationTemplate } from '../evaluate-cloudformation-template';
+import { CfnEvaluationException, EvaluateCloudFormationTemplate } from '../evaluate-cloudformation-template';
 import { ChangeHotswapImpact, ChangeHotswapResult, HotswapOperation, HotswappableChangeCandidate } from './common';
 
 /**
@@ -300,7 +300,7 @@ class LambdaFunctionHotswapOperation implements HotswapOperation {
  * Compress a string as a file, returning a promise for the zip buffer
  * https://github.com/archiverjs/node-archiver/issues/342
  */
-export function zipString(fileName: string, rawString: string): Promise<Buffer> {
+function zipString(fileName: string, rawString: string): Promise<Buffer> {
   return new Promise((resolve, reject) => {
     const buffers: Buffer[] = [];
 
@@ -345,5 +345,5 @@ function determineCodeFileExtFromRuntime(runtime: string): string {
   }
   // Currently inline code only supports Node.js and Python, ignoring other runtimes.
   // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lambda-function-code.html#aws-properties-lambda-function-code-properties
-  return 'js';
+  throw new CfnEvaluationException(`runtime ${runtime} is unsupported, only node.js and python runtimes are currently supported.`);
 }
