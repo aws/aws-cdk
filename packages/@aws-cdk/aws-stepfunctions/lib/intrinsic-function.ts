@@ -3,10 +3,21 @@ import { JsonPathToken } from './json-path';
 
 type arg = number | string | JsonPathToken;
 
-
+/**
+ * Create intrinsic functions string from each args
+ *
+ * @see
+ * https://states-language.net/spec.html#appendix-b
+ */
 export class IntrinsicFunction {
+  /**
+   * Special string value for null argument
+   */
   public static readonly NULL= 'NULL';
 
+  /**
+   * Create States.Format() string from args
+   */
   public static StatesForamt(fmt: string, ...args: arg[]): string {
     const quote = "'";
     const comma = ', ';
@@ -28,10 +39,16 @@ export class IntrinsicFunction {
     return 'States.Format(' + result + ')';
   }
 
+  /**
+   * Create States.StringToJson() string from args
+   */
   public static StatesStringToJson(str: string): string {
     return 'States.StringToJson(\'' + str + '\')';
   }
 
+  /**
+   * Create States.JsonToString() string from args
+   */
   public static StatesJsonToString(path: string): string {
     if (!isValidJsonPath(path)) {
       throw new Error('Arg of States.JsonToString() must be a JsonPath');
@@ -39,6 +56,10 @@ export class IntrinsicFunction {
     return 'States.JsonToString(' + path + ')';
   }
 
+  /**
+   * Create States.Array() string from an arg
+   * The arg must be a JsonPath
+   */
   public static StatesArray(...args: arg[]): string {
     const quote = "'";
     const comma = ', ';
