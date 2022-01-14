@@ -54,7 +54,10 @@
     "build+test+extract": "yarn build+test && yarn rosetta:extract"
   },
   "cdk-build": {
-    "cloudformation": "AWS::Inspector",
+    "cloudformation": [
+      "AWS::Inspector",
+      "AWS::InspectorV2"
+    ],
     "env": {
       "AWSLINT_BASE_CONSTRUCT": true
     }
