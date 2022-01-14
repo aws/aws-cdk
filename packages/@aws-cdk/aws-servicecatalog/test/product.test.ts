@@ -290,8 +290,10 @@ describe('Product', () => {
 
     test('add tag options to product', () => {
       const tagOptions = new servicecatalog.TagOptions(stack, 'TagOptions', {
-        key1: ['value1', 'value2'],
-        key2: ['value1'],
+        tagOptions: {
+          key1: ['value1', 'value2'],
+          key2: ['value1'],
+        },
       });
 
       product.associateTagOptions(tagOptions);
@@ -302,8 +304,10 @@ describe('Product', () => {
 
     test('add tag options as input to product in props', () => {
       const tagOptions = new servicecatalog.TagOptions(stack, 'TagOptions', {
-        key1: ['value1', 'value2'],
-        key2: ['value1'],
+        tagOptions: {
+          key1: ['value1', 'value2'],
+          key2: ['value1'],
+        },
       });
 
       new servicecatalog.CloudFormationProduct(stack, 'MyProductWithTagOptions', {
@@ -323,8 +327,10 @@ describe('Product', () => {
 
     test('adding identical tag options to product is idempotent', () => {
       const tagOptions = new servicecatalog.TagOptions(stack, 'TagOptions', {
-        key1: ['value1', 'value2'],
-        key2: ['value1'],
+        tagOptions: {
+          key1: ['value1', 'value2'],
+          key2: ['value1'],
+        },
       });
 
       product.associateTagOptions(tagOptions);
@@ -336,8 +342,10 @@ describe('Product', () => {
 
     test('adding tag options to portfolio and product creates unique tag options and enumerated associations', () => {
       const tagOptions = new servicecatalog.TagOptions(stack, 'TagOptions', {
-        key1: ['value1', 'value2', 'value3'],
-        key2: ['value1'],
+        tagOptions: {
+          key1: ['value1', 'value2', 'value3'],
+          key2: ['value1'],
+        },
       });
 
       const portfolio = new servicecatalog.Portfolio(stack, 'MyPortfolio', {

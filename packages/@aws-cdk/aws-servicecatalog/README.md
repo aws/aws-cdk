@@ -208,13 +208,17 @@ At the moment, TagOptions can only be disabled in the console.
 
 ```ts fixture=portfolio-product
 const tagOptionsForPortfolio = new servicecatalog.TagOptions(this, 'OrgTagOptions', {
-  group: ['finance', 'engineering', 'marketing', 'research'],
-  costCenter: ['01', '02','03'],
+  tagOptions: {
+    group: ['finance', 'engineering', 'marketing', 'research'],
+    costCenter: ['01', '02','03'],
+  }
 });
 portfolio.associateTagOptions(tagOptionsForPortfolio);
 
 const tagOptionsForProduct = new servicecatalog.TagOptions(this, 'ProductTagOptions', {
-  environment: ['dev', 'alpha', 'prod'],
+  tagOptions: {
+    environment: ['dev', 'alpha', 'prod'],
+  }
 });
 product.associateTagOptions(tagOptionsForProduct);
 ```

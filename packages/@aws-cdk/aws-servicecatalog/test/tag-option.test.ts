@@ -14,8 +14,10 @@ describe('TagOptions', () => {
   describe('creating tagOption(s)', () => {
     test('default tagOptions creation', () => {
       new servicecatalog.TagOptions(stack, 'TagOptions', {
-        key1: ['value1', 'value2'],
-        key2: ['value1', 'value2', 'value3'],
+        tagOptions: {
+          key1: ['value1', 'value2'],
+          key2: ['value1', 'value2', 'value3'],
+        },
       });
 
       Template.fromStack(stack).resourceCountIs('AWS::ServiceCatalog::TagOption', 5);
@@ -24,7 +26,9 @@ describe('TagOptions', () => {
     test('fails to create tag option with invalid minimum key length', () => {
       expect(() => {
         new servicecatalog.TagOptions(stack, 'TagOptions', {
-          '': ['value1', 'value2'],
+          tagOptions: {
+            '': ['value1', 'value2'],
+          },
         });
       }).toThrowError(/Invalid TagOption key for resource/);
     }),
@@ -32,7 +36,9 @@ describe('TagOptions', () => {
     test('fails to create tag option with invalid maxium key length', () => {
       expect(() => {
         new servicecatalog.TagOptions(stack, 'TagOptions', {
-          ['longKey'.repeat(1000)]: ['value1', 'value2'],
+          tagOptions: {
+            ['longKey'.repeat(1000)]: ['value1', 'value2'],
+          },
         });
       }).toThrowError(/Invalid TagOption key for resource/);
     }),
@@ -40,7 +46,9 @@ describe('TagOptions', () => {
     test('fails to create tag option with invalid value length', () => {
       expect(() => {
         new servicecatalog.TagOptions(stack, 'TagOptions', {
-          key: ['tagOptionValue'.repeat(1000)],
+          tagOptions: {
+            key: ['tagOptionValue'.repeat(1000)],
+          },
         });
       }).toThrowError(/Invalid TagOption value for resource/);
     }),
@@ -52,8 +60,10 @@ describe('TagOptions', () => {
       });
 
       const tagOptions = new servicecatalog.TagOptions(stack, 'TagOptions', {
-        key1: ['value1', 'value2'],
-        key2: ['value1', 'value2', 'value3'],
+        tagOptions: {
+          key1: ['value1', 'value2'],
+          key2: ['value1', 'value2', 'value3'],
+        },
       });
       portfolio.associateTagOptions(tagOptions);
 
@@ -73,8 +83,10 @@ describe('TagOptions', () => {
       });
 
       const tagOptions = new servicecatalog.TagOptions(stack, 'TagOptions', {
-        key1: ['value1', 'value2'],
-        key2: ['value1', 'value2', 'value3'],
+        tagOptions: {
+          key1: ['value1', 'value2'],
+          key2: ['value1', 'value2', 'value3'],
+        },
       });
 
       portfolio1.associateTagOptions(tagOptions);
@@ -89,8 +101,10 @@ describe('TagOptions', () => {
       const stack2 = new cdk.Stack(app, 'Stack2');
 
       const tagOptions = new servicecatalog.TagOptions(stack1, 'TagOptions', {
-        key1: ['value1', 'value2'],
-        key2: ['value1', 'value2', 'value3'],
+        tagOptions: {
+          key1: ['value1', 'value2'],
+          key2: ['value1', 'value2', 'value3'],
+        },
       });
 
       new servicecatalog.CloudFormationProduct(stack2, 'MyProduct', {

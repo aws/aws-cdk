@@ -39,8 +39,10 @@ const product = new servicecatalog.CloudFormationProduct(stack, 'TestProduct', {
 });
 
 const tagOptions = new servicecatalog.TagOptions(stack, 'TagOptions', {
-  key1: ['value1', 'value2'],
-  key2: ['value1'],
+  tagOptions: {
+    key1: ['value1', 'value2'],
+    key2: ['value1'],
+  },
 });
 
 product.associateTagOptions(tagOptions);

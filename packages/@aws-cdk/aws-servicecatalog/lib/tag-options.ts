@@ -8,6 +8,16 @@ import { CfnTagOption } from './servicecatalog.generated';
 import { Construct } from 'constructs';
 
 /**
+ * Properties for TagOptions.
+ */
+export interface TagOptionsProps {
+  /**
+   * TagOption keys and associated list of possible values.
+   */
+  readonly tagOptions: { [key: string]: string[] };
+}
+
+/**
  * Defines a set of TagOptions, which are a list of key-value pairs managed in AWS Service Catalog.
  * It is not an AWS tag, but serves as a template for creating an AWS tag based on the TagOption.
  * @resource AWS::ServiceCatalog::TagOption
@@ -20,9 +30,9 @@ export class TagOptions extends cdk.Resource {
    */
   public readonly _tagOptionsMap: { [key: string]: CfnTagOption };
 
-  constructor(scope: Construct, id: string, props: {[key: string]: string[] }) {
+  constructor(scope: Construct, id: string, props: TagOptionsProps) {
     super(scope, id);
-    this._tagOptionsMap = this.createUnderlyingTagOptions(props);
+    this._tagOptionsMap = this.createUnderlyingTagOptions(props.tagOptions);
   }
 
   private createUnderlyingTagOptions(tagOptions: { [key: string]: string[] }): { [key: string]: CfnTagOption } {
