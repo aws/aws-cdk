@@ -512,7 +512,7 @@
       "properties": {
         "AccessToken": "Personal Access token for 3rd party source control system for an Amplify app, used to create webhook and read-only deploy key. Token is not stored.\n\n*Length Constraints:* Minimum length of 1. Maximum length of 255.",
         "AutoBranchCreationConfig": "Sets the configuration for your automatic branch creation.",
-        "BasicAuthConfig": "The credentials for basic authorization for an Amplify app.",
+        "BasicAuthConfig": "The credentials for basic authorization for an Amplify app. You must base64-encode the authorization credentials and provide them in the format `user:password` .",
         "BuildSpec": "The build specification (build spec) for an Amplify app.\n\n*Length Constraints:* Minimum length of 1. Maximum length of 25000.\n\n*Pattern:* (?s).+",
         "CustomHeaders": "The custom HTTP headers for an Amplify app.\n\n*Length Constraints:* Minimum length of 0. Maximum length of 25000.\n\n*Pattern:* (?s).*",
         "CustomRules": "The custom rewrite and redirect rules for an Amplify app.",
@@ -577,7 +577,7 @@
       "description": "The AWS::Amplify::Branch resource creates a new branch within an app.",
       "properties": {
         "AppId": "The unique ID for an Amplify app.\n\n*Length Constraints:* Minimum length of 1. Maximum length of 20.\n\n*Pattern:* d[a-z0-9]+",
-        "BasicAuthConfig": "The basic authorization credentials for a branch of an Amplify app.",
+        "BasicAuthConfig": "The basic authorization credentials for a branch of an Amplify app. You must base64-encode the authorization credentials and provide them in the format `user:password` .",
         "BranchName": "The name for the branch.\n\n*Length Constraints:* Minimum length of 1. Maximum length of 255.\n\n*Pattern:* (?s).+",
         "BuildSpec": "The build specification (build spec) for the branch.\n\n*Length Constraints:* Minimum length of 1. Maximum length of 25000.\n\n*Pattern:* (?s).+",
         "Description": "The description for the branch that is part of an Amplify app.\n\n*Length Constraints:* Maximum length of 1000.\n\n*Pattern:* (?s).*",
@@ -13198,7 +13198,7 @@
       "description": "Specifies a VPC attachment.",
       "properties": {
         "AddSubnetIds": "The IDs of one or more subnets to add. You can specify at most one subnet per Availability Zone.",
-        "Options": "The VPC attachment options.\n\n- DnsSupport (enable | disable)\n- Ipv6Support (enable| disable)\n- ApplianceModeSupport (enable | disable)",
+        "Options": "The VPC attachment options in JSON or YAML.\n\n- DnsSupport (enable | disable)\n- Ipv6Support (enable| disable)\n- ApplianceModeSupport (enable | disable)",
         "RemoveSubnetIds": "The IDs of one or more subnets to remove.",
         "SubnetIds": "The IDs of the subnets.",
         "Tags": "The tags for the VPC attachment.",
@@ -15246,7 +15246,7 @@
         "SnapshotWindow": "The daily time range (in UTC) during which ElastiCache begins taking a daily snapshot of your node group (shard).\n\nExample: `05:00-09:00`\n\nIf you do not specify this parameter, ElastiCache automatically chooses an appropriate time range.",
         "SnapshottingClusterId": "The cluster ID that is used as the daily snapshot source for the replication group. This parameter cannot be set for Redis (cluster mode enabled) replication groups.",
         "Tags": "A list of tags to be added to this resource. Tags are comma-separated key,value pairs (e.g. Key= `myKey` , Value= `myKeyValue` . You can include multiple tags as shown following: Key= `myKey` , Value= `myKeyValue` Key= `mySecondKey` , Value= `mySecondKeyValue` . Tags on replication groups will be replicated to all nodes.",
-        "TransitEncryptionEnabled": "A flag that enables in-transit encryption when set to `true` .\n\nYou cannot modify the value of `TransitEncryptionEnabled` after the cluster is created. To enable in-transit encryption on a cluster you must set `TransitEncryptionEnabled` to `true` when you create a cluster.\n\nThis parameter is valid only if the `Engine` parameter is `redis` , the `EngineVersion` parameter is `3.2.6` or `4.x` or `5.x` , and the cluster is being created in an Amazon VPC.\n\nIf you enable in-transit encryption, you must also specify a value for `CacheSubnetGroup` .\n\n*Required:* Only available when creating a replication group in an Amazon VPC using redis version `3.2.6` or `4.x` onward.\n\nDefault: `false`\n\n> For HIPAA compliance, you must specify `TransitEncryptionEnabled` as `true` , an `AuthToken` , and a `CacheSubnetGroup` .",
+        "TransitEncryptionEnabled": "A flag that enables in-transit encryption when set to `true` .\n\nYou cannot modify the value of `TransitEncryptionEnabled` after the cluster is created. To enable in-transit encryption on a cluster you must set `TransitEncryptionEnabled` to `true` when you create a cluster.\n\nThis parameter is valid only if the `Engine` parameter is `redis` , the `EngineVersion` parameter is `3.2.6` or `4.x` onward, and the cluster is being created in an Amazon VPC.\n\nIf you enable in-transit encryption, you must also specify a value for `CacheSubnetGroup` .\n\n*Required:* Only available when creating a replication group in an Amazon VPC using redis version `3.2.6` or `4.x` onward.\n\nDefault: `false`\n\n> For HIPAA compliance, you must specify `TransitEncryptionEnabled` as `true` , an `AuthToken` , and a `CacheSubnetGroup` .",
         "UserGroupIds": "The list of user groups to associate with the replication group."
       }
     },
