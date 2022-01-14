@@ -110,7 +110,7 @@
       "ref-via-interface:@aws-cdk/aws-servicecatalog.IProduct.associateTagOptions.tagOptions",
       "ref-via-interface:@aws-cdk/aws-servicecatalog.IPortfolio.associateTagOptions.tagOptions",
       "ref-via-interface:@aws-cdk/aws-servicecatalog.PortfolioProps.tagOptions",
-      "construct-ctor:@aws-cdk/aws-servicecatalog.TagOptions.<initializer>.params[2]"
+      "construct-ctor:@aws-cdk/aws-servicecatalog.TagOptions"
     ]
   },
   "maturity": "experimental",

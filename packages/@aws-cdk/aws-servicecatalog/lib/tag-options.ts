@@ -20,9 +20,9 @@ export class TagOptions extends cdk.Resource {
    */
   public readonly _tagOptionsMap: { [key: string]: CfnTagOption };
 
-  constructor(scope: Construct, id: string, tagOptions: {[key: string]: string[] }) {
+  constructor(scope: Construct, id: string, props: {[key: string]: string[] }) {
     super(scope, id);
-    this._tagOptionsMap = this.createUnderlyingTagOptions(tagOptions);
+    this._tagOptionsMap = this.createUnderlyingTagOptions(props);
   }
 
   private createUnderlyingTagOptions(tagOptions: { [key: string]: string[] }): { [key: string]: CfnTagOption } {
