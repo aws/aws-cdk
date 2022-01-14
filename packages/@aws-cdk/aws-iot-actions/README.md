@@ -179,8 +179,6 @@ The code snippet below creates an AWS IoT Rule that put records to Kinesis Data
 stream when it is triggered.
 
 ```ts
-import * as iot from '@aws-cdk/aws-iot';
-import * as actions from '@aws-cdk/aws-iot-actions';
 import * as kinesis from '@aws-cdk/aws-kinesis';
 
 const stream = new kinesis.Stream(this, 'MyStream');
