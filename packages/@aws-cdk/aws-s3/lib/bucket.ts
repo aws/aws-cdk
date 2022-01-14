@@ -497,8 +497,6 @@ export abstract class BucketBase extends Resource implements IBucket {
 
   protected notificationsHandlerRole?: iam.IRole;
 
-  protected handlerRole?: iam.IRole;
-
   constructor(scope: Construct, id: string, props: ResourceProps = {}) {
     super(scope, id, props);
   }
