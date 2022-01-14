@@ -132,7 +132,11 @@ describe('container definition', () => {
                 'Fn::Join': [
                   '',
                   [
-                    'arn:aws:s3:::',
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':s3:::',
                     {
                       Ref: 'AssetParameters872561bf078edd1685d50c9ff821cdd60d2b2ddfb0013c4087e79bf2bb50724dS3Bucket7B2069B7',
                     },
@@ -852,7 +856,11 @@ describe('container definition', () => {
                   'Fn::Join': [
                     '',
                     [
-                      'arn:aws:s3:::',
+                      'arn:',
+                      {
+                        Ref: 'AWS::Partition',
+                      },
+                      ':s3:::',
                       {
                         Ref: 'AssetParameters872561bf078edd1685d50c9ff821cdd60d2b2ddfb0013c4087e79bf2bb50724dS3Bucket7B2069B7',
                       },
@@ -918,7 +926,11 @@ describe('container definition', () => {
                   'Fn::Join': [
                     '',
                     [
-                      'arn:aws:s3:::',
+                      'arn:',
+                      {
+                        Ref: 'AWS::Partition',
+                      },
+                      ':s3:::',
                       {
                         Ref: 'Bucket83908E77',
                       },
@@ -957,7 +969,11 @@ describe('container definition', () => {
                   'Fn::Join': [
                     '',
                     [
-                      'arn:aws:s3:::',
+                      'arn:',
+                      {
+                        Ref: 'AWS::Partition',
+                      },
+                      ':s3:::',
                       {
                         Ref: 'AssetParameters872561bf078edd1685d50c9ff821cdd60d2b2ddfb0013c4087e79bf2bb50724dS3Bucket7B2069B7',
                       },
@@ -1023,7 +1039,11 @@ describe('container definition', () => {
                   'Fn::Join': [
                     '',
                     [
-                      'arn:aws:s3:::',
+                      'arn:',
+                      {
+                        Ref: 'AWS::Partition',
+                      },
+                      ':s3:::',
                       {
                         Ref: 'Bucket83908E77',
                       },
