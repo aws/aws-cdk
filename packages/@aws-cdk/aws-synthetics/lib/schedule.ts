@@ -64,6 +64,32 @@ export class Schedule {
     return new Schedule(`cron(${minute} ${hour} ${day} ${month} ${weekDay} ${year})`);
   }
 
+  /**
+   * Convert a Schedule expression in to a number of seconds
+   *
+   * @param expression Schedule expression such as 'rate(2 minutes)'
+   */
+  public static expressionToRateDuration(expression: string): Duration {
+    const interval = expression.replace(/rate\(/, '').replace(/\)/, '');
+    const [value, period] = interval.split(' ');
+    const number = Number(period ? value[1] : '0');
+    const unit = period ? period : 'minutes';
+
+    switch (unit) {
+      case 'second':
+      case 'seconds':
+        return Duration.seconds(number);
+      case 'minute':
+      case 'minutes':
+        return Duration.minutes(number);
+      case 'hour':
+      case 'hours':
+        return Duration.hours(number);
+      default:
+        throw new Error('Unit not supported');
+    }
+  }
+
   private constructor(
     /**
      * The Schedule expression

@@ -1,5 +1,6 @@
 import * as crypto from 'crypto';
 import { Metric, MetricOptions, MetricProps } from '@aws-cdk/aws-cloudwatch';
+import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
@@ -81,6 +82,30 @@ export interface ArtifactsBucketLocation {
    * @default - no prefix
    */
   readonly prefix?: string;
+}
+
+export interface VpcConfiguration {
+  /**
+   * The VPC where this canary is run.
+   *
+   * Specify this if the canary needs to access resources in a VPC.
+   */
+  vpc: ec2.IVpc;
+
+  /**
+   * Where to place the network interfaces within the VPC.
+   *
+   * @default - the Vpc default strategy if not specified
+   */
+  readonly vpcSubnets?: ec2.SubnetSelection;
+
+  /**
+   * The list of security groups to associate with the canary's network interfaces.
+   *
+   * @default - If the function is placed within a VPC and a security group is
+   * not specified a dedicated security group will be created for this canary.
+   */
+  readonly securityGroups?: ec2.ISecurityGroup[];
 }
 
 /**
@@ -179,6 +204,43 @@ export interface CanaryProps {
    * @default - No environment variables.
    */
   readonly environmentVariables?: { [key: string]: string };
+
+  /**
+   * How long the canary is allowed to run before it must stop.
+   * You can't set this time to be longer than the frequency of the runs of this canary.
+   * If you omit this field, the frequency of the canary is used as this value, up to a maximum of 900 seconds.
+   *
+   * @default cdk.Duration.seconds(840)
+   */
+  readonly timeout?: cdk.Duration;
+
+  /**
+   * The maximum amount of memory that the canary can use while running. This value
+   * must be a multiple of 64. The range is 960 to 3008.
+   *
+   * @default cdk.Size.mebibytes(960)
+   */
+  readonly memorySize?: cdk.Size;
+
+  /**
+   * Specifies whether this canary is to use active AWS X-Ray tracing when it runs.
+   *
+   * Active tracing enables this canary run to be displayed in the ServiceLens and X-Ray service maps
+   * even if the canary does not hit an endpoint that has X-ray tracing enabled.
+   *
+   * You can enable active tracing only for canaries that use version syn-nodejs-2.0 or later for their canary runtime.
+   *
+   * Enabling tracing increases canary run time by 2.5% to 7%.
+   *
+   * @default false
+   */
+  readonly tracing?: boolean;
+
+  /**
+   * If this canary is to test an endpoint in a VPC, specify this to place a canary in
+   * a VPC.
+   */
+  readonly vpcConfig?: VpcConfiguration;
 }
 
 /**
@@ -229,7 +291,9 @@ export class Canary extends cdk.Resource {
       enforceSSL: true,
     });
 
-    this.role = props.role ?? this.createDefaultRole(props.artifactsBucketLocation?.prefix);
+    this.role = props.role ?? this.createDefaultRole(props);
+
+    const schedule = this.createSchedule(props);
 
     const resource: CfnCanary = new CfnCanary(this, 'Resource', {
       artifactS3Location: this.artifactsBucket.s3UrlForObject(props.artifactsBucketLocation?.prefix),
@@ -237,11 +301,12 @@ export class Canary extends cdk.Resource {
       startCanaryAfterCreation: props.startAfterCreation ?? true,
       runtimeVersion: props.runtime.name,
       name: this.physicalName,
-      schedule: this.createSchedule(props),
+      schedule,
       failureRetentionPeriod: props.failureRetentionPeriod?.toDays(),
       successRetentionPeriod: props.successRetentionPeriod?.toDays(),
       code: this.createCode(props),
-      runConfig: this.createRunConfig(props),
+      runConfig: this.createRunConfig(props, schedule),
+      vpcConfig: this.createVpcConfig(props.vpcConfig),
     });
 
     this.canaryId = resource.attrId;
@@ -289,8 +354,10 @@ export class Canary extends cdk.Resource {
   /**
    * Returns a default role for the canary
    */
-  private createDefaultRole(prefix?: string): iam.IRole {
+  private createDefaultRole(props: CanaryProps): iam.IRole {
     const { partition } = cdk.Stack.of(this);
+    const prefix = props.artifactsBucketLocation?.prefix;
+
     // Created role will need these policies to run the Canary.
     // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-synthetics-canary.html#cfn-synthetics-canary-executionrolearn
     const policy = new iam.PolicyDocument({
@@ -315,11 +382,28 @@ export class Canary extends cdk.Resource {
       ],
     });
 
+    if (props.tracing) {
+      policy.addStatements(
+        new iam.PolicyStatement({
+          resources: ['*'],
+          actions: ['xray:PutTraceSegments'],
+        }),
+      );
+    }
+
+    const managedPolicies: iam.IManagedPolicy[] = [];
+
+    if (props.vpcConfig) {
+      // Policy that will have ENI creation permissions
+      managedPolicies.push(iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaVPCAccessExecutionRole'));
+    }
+
     return new iam.Role(this, 'ServiceRole', {
       assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
       inlinePolicies: {
         canaryPolicy: policy,
       },
+      managedPolicies,
     });
   }
 
@@ -350,12 +434,50 @@ export class Canary extends cdk.Resource {
     };
   }
 
-  private createRunConfig(props: CanaryProps): CfnCanary.RunConfigProperty | undefined {
-    if (!props.environmentVariables) {
+  private createRunConfig(props: CanaryProps, schedule: CfnCanary.ScheduleProperty): CfnCanary.RunConfigProperty | undefined {
+    if (!props.timeout && !props.tracing && !props.environmentVariables && !props.memorySize) {
       return undefined;
     }
+
+    // Cloudformation implementation made TimeoutInSeconds a required field where it should not (see links below).
+    // So here is a workaround to fix https://github.com/aws/aws-cdk/issues/9300 and still follow documented behavior.
+    // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-synthetics-canary-runconfig.html#cfn-synthetics-canary-runconfig-timeoutinseconds
+    // https://github.com/aws-cloudformation/aws-cloudformation-resource-providers-synthetics/issues/31
+
+    const MAX_CANARY_TIMEOUT = cdk.Duration.minutes(60);
+    const rateDuration = Schedule.expressionToRateDuration(schedule.expression);
+    const canaryTimeout = rateDuration.toSeconds() <= MAX_CANARY_TIMEOUT.toSeconds() ? rateDuration : MAX_CANARY_TIMEOUT;
+
     return {
+      timeoutInSeconds: props.timeout?.toSeconds() ?? canaryTimeout.toSeconds(),
+      activeTracing: props.tracing,
       environmentVariables: props.environmentVariables,
+      memoryInMb: props.memorySize?.toMebibytes(),
+    };
+  }
+
+  private createVpcConfig(props: VpcConfiguration | undefined): CfnCanary.VPCConfigProperty | undefined {
+    if (!props) {
+      return undefined;
+    }
+
+    const { subnetIds } = props.vpc.selectSubnets(props.vpcSubnets);
+    let securityGroups: ec2.ISecurityGroup[];
+
+    if (props.securityGroups && props.securityGroups.length > 0) {
+      securityGroups = props.securityGroups;
+    } else {
+      const securityGroup = new ec2.SecurityGroup(this, 'SecurityGroup', {
+        vpc: props.vpc,
+        description: 'Automatic security group for Canary ' + cdk.Names.uniqueId(this),
+      });
+      securityGroups = [securityGroup];
+    }
+
+    return {
+      vpcId: props.vpc.vpcId,
+      subnetIds,
+      securityGroupIds: securityGroups.map(sg => sg.securityGroupId),
     };
   }
 
