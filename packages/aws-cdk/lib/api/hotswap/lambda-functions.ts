@@ -126,7 +126,7 @@ async function isLambdaFunctionCodeOnlyChange(
               foundCodeDifference = true;
               // We must create a zip package containing a file with the inline code
               const functionCode = await evaluateCfnTemplate.evaluateCfnExpression(updatedProp.newValue[newPropName]);
-              const functionRuntime: string = await evaluateCfnTemplate.evaluateCfnExpression(change.newValue.Properties?.Runtime);
+              const functionRuntime = await evaluateCfnTemplate.evaluateCfnExpression(change.newValue.Properties?.Runtime);
               if (!functionRuntime) {
                 return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
               }
