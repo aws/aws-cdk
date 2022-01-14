@@ -21,7 +21,7 @@ and/or your app's CI/CD pipeline, and can be naturally referenced in your CDK ap
 import { DockerImageAsset } from '@aws-cdk/aws-ecr-assets';
 
 const asset = new DockerImageAsset(this, 'MyBuildImage', {
-  directory: path.join(__dirname, 'my-image')
+  directory: path.join(__dirname, 'my-image'),
 });
 ```
 
@@ -55,14 +55,16 @@ values that can change between different machines to maintain a consistent
 asset hash.
 
 ```ts
+import { DockerImageAsset } from '@aws-cdk/aws-ecr-assets';
+
 const asset = new DockerImageAsset(this, 'MyBuildImage', {
   directory: path.join(__dirname, 'my-image'),
   buildArgs: {
-    HTTP_PROXY: 'http://10.20.30.2:1234'
+    HTTP_PROXY: 'http://10.20.30.2:1234',
   },
   invalidation: {
-    buildArgs: false
-  }
+    buildArgs: false,
+  },
 });
 ```
 
@@ -70,10 +72,12 @@ You can optionally pass a target to the `docker build` command by specifying
 the `target` property:
 
 ```ts
+import { DockerImageAsset } from '@aws-cdk/aws-ecr-assets';
+
 const asset = new DockerImageAsset(this, 'MyBuildImage', {
   directory: path.join(__dirname, 'my-image'),
-  target: 'a-target'
-})
+  target: 'a-target',
+});
 ```
 
 ## Images from Tarball
@@ -85,7 +89,7 @@ naturally referenced in your CDK app.
 import { TarballImageAsset } from '@aws-cdk/aws-ecr-assets';
 
 const asset = new TarballImageAsset(this, 'MyBuildImage', {
-  tarballFile: 'local-image.tar'
+  tarballFile: 'local-image.tar',
 });
 ```
 
@@ -106,7 +110,10 @@ your choice.
 
 Here an example from the [cdklabs/cdk-ecr-deployment] project:
 
-```ts
+```text
+// This example available in TypeScript only
+
+import { DockerImageAsset } from '@aws-cdk/aws-ecr-assets';
 import * as ecrdeploy from 'cdk-ecr-deployment';
 
 const image = new DockerImageAsset(this, 'CDKDockerImage', {
