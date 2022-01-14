@@ -133,7 +133,6 @@ export interface CloudFormationProductProps {
   readonly supportUrl?: string;
 
   /**
-   * [disable-awslint:ref-via-interface]
    * TagOptions associated directly to a product.
    *
    * @default - No tagOptions provided
