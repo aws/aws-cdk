@@ -85,11 +85,12 @@ export interface IPortfolio extends cdk.IResource {
   addProduct(product: IProduct): void;
 
   /**
+   * [disable-awslint:ref-via-interface]
    * Associate Tag Options.
    * A TagOption is a key-value pair managed in AWS Service Catalog.
    * It is not an AWS tag, but serves as a template for creating an AWS tag based on the TagOption.
    */
-  associateTagOptions(tagOptionsResource: TagOptions): void;
+  associateTagOptions(tagOptions: TagOptions): void;
 
   /**
    * Add a Resource Update Constraint.
@@ -278,6 +279,7 @@ export interface PortfolioProps {
    * TagOptions associated directly to a portfolio.
    *
    * @default - No tagOptions provided
+   * [disable-awslint:ref-via-interface]
    */
   readonly tagOptions?: TagOptions
 }

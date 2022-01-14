@@ -22,7 +22,7 @@ const portfolio = new servicecatalog.Portfolio(stack, 'TestPortfolio', {
 portfolio.giveAccessToRole(role);
 portfolio.giveAccessToGroup(group);
 
-const tagOptions = new servicecatalog.TagOptions(stack, {
+const tagOptions = new servicecatalog.TagOptions(stack, 'TagOptions', {
   key1: ['value1', 'value2'],
   key2: ['value1'],
 });

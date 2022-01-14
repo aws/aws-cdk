@@ -273,24 +273,52 @@ describe('Product', () => {
     }).toThrowError(/Invalid product versions for resource Default\/MyProduct/);
   });
 
-  test('add tag options as input to product in props', () => {
-    const tagOptions = new servicecatalog.TagOptions(stack, {
-      key1: ['value1', 'value2'],
-      key2: ['value1'],
-    });
+  describe('adding and associating TagOptions to a product', () => {
+    let product: servicecatalog.IProduct;
 
-    new servicecatalog.CloudFormationProduct(stack, 'MyProductWithTagOptions', {
-      productName: 'testProduct',
-      owner: 'testOwner',
-      productVersions: [
-        {
-          cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromUrl('https://awsdocs.s3.amazonaws.com/servicecatalog/development-environment.template'),
-        },
-      ],
-      tagOptions: tagOptions,
-    });
+    beforeEach(() => {
+      product = new servicecatalog.CloudFormationProduct(stack, 'MyProduct', {
+        productName: 'testProduct',
+        owner: 'testOwner',
+        productVersions: [
+          {
+            cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromUrl('https://awsdocs.s3.amazonaws.com/servicecatalog/development-environment.template'),
+          },
+        ],
+      });
+    }),
 
-    Template.fromStack(stack).resourceCountIs('AWS::ServiceCatalog::TagOption', 3); //Generates a resource for each unique key-value pair
-    Template.fromStack(stack).resourceCountIs('AWS::ServiceCatalog::TagOptionAssociation', 3);
+    test('add tag options to product', () => {
+      const tagOptions = new servicecatalog.TagOptions(stack, 'TagOptions', {
+        key1: ['value1', 'value2'],
+        key2: ['value1'],
+      });
+
+      product.associateTagOptions(tagOptions);
+
+      Template.fromStack(stack).resourceCountIs('AWS::ServiceCatalog::TagOption', 3); //Generates a resource for each unique key-value pair
+      Template.fromStack(stack).resourceCountIs('AWS::ServiceCatalog::TagOptionAssociation', 3);
+    }),
+
+    test('add tag options as input to product in props', () => {
+      const tagOptions = new servicecatalog.TagOptions(stack, 'TagOptions', {
+        key1: ['value1', 'value2'],
+        key2: ['value1'],
+      });
+
+      new servicecatalog.CloudFormationProduct(stack, 'MyProductWithTagOptions', {
+        productName: 'testProduct',
+        owner: 'testOwner',
+        productVersions: [
+          {
+            cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromUrl('https://awsdocs.s3.amazonaws.com/servicecatalog/development-environment.template'),
+          },
+        ],
+        tagOptions: tagOptions,
+      });
+
+      Template.fromStack(stack).resourceCountIs('AWS::ServiceCatalog::TagOption', 3); //Generates a resource for each unique key-value pair
+      Template.fromStack(stack).resourceCountIs('AWS::ServiceCatalog::TagOptionAssociation', 3);
+    });
   });
 });

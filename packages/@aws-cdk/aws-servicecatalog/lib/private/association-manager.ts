@@ -168,7 +168,7 @@ export class AssociationManager {
   }
 
   public static associateTagOptions(resource: cdk.IResource, resourceId: string, tagOptions: TagOptions): void {
-    for (const [tagOptionIdentifier, cfnTagOption] of Object.entries(tagOptions.tagOptionsMap)) {
+    for (const [tagOptionIdentifier, cfnTagOption] of Object.entries(tagOptions._tagOptionsMap)) {
       const tagAssocationConstructId = `TagOptionAssociation${hashValues(resource.node.addr, tagOptionIdentifier)}`;
       if (!resource.node.tryFindChild(tagAssocationConstructId)) {
         new CfnTagOptionAssociation(resource as cdk.Resource, tagAssocationConstructId, {

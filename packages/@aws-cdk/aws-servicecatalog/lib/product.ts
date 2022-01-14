@@ -24,6 +24,7 @@ export interface IProduct extends IResource {
   readonly productId: string;
 
   /**
+   * [disable-awslint:ref-via-interface]
    * Associate Tag Options.
    * A TagOption is a key-value pair managed in AWS Service Catalog.
    * It is not an AWS tag, but serves as a template for creating an AWS tag based on the TagOption.
@@ -133,6 +134,7 @@ export interface CloudFormationProductProps {
   readonly supportUrl?: string;
 
   /**
+   * [disable-awslint:ref-via-interface]
    * TagOptions associated directly to a product.
    *
    * @default - No tagOptions provided

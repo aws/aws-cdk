@@ -10,29 +10,35 @@ import { Construct } from 'constructs';
 /**
  * Defines a set of TagOptions, which are a list of key-value pairs managed in AWS Service Catalog.
  * It is not an AWS tag, but serves as a template for creating an AWS tag based on the TagOption.
+ * @resource AWS::ServiceCatalog::TagOption
  */
-export class TagOptions {
+export class TagOptions extends cdk.Resource {
   /**
    * Map of underlying TagOption resources.
+   *
+   * @internal
    */
-  public readonly tagOptionsMap: { [key: string]: CfnTagOption };
+  public readonly _tagOptionsMap: { [key: string]: CfnTagOption };
 
-  constructor(scope: Construct, tagOptions: { [key: string]: string[] }) {
-    this.tagOptionsMap = this.createUnderlyingTagOptions(scope, tagOptions);
+  constructor(scope: Construct, id: string, tagOptions: {[key: string]: string[] }) {
+    super(scope, id);
+    this._tagOptionsMap = this.createUnderlyingTagOptions(tagOptions);
   }
 
-  private createUnderlyingTagOptions(scope: Construct, tagOptions: { [key: string]: string[] }): { [key: string]: CfnTagOption } {
+  private createUnderlyingTagOptions(tagOptions: { [key: string]: string[] }): { [key: string]: CfnTagOption } {
     var tagOptionMap: { [key: string]: CfnTagOption } = {};
     for (const [key, tagOptionsList] of Object.entries(tagOptions)) {
-      InputValidator.validateLength(cdk.Stack.of(scope).node.addr, 'TagOption key', 1, 128, key);
+      InputValidator.validateLength(this.node.addr, 'TagOption key', 1, 128, key);
       tagOptionsList.forEach((value: string) => {
-        InputValidator.validateLength(cdk.Stack.of(scope).node.addr, 'TagOption value', 1, 256, value);
-        const tagOptionIdentifier = `TagOptions${hashValues(key, value)}`;
-        const tagOption = new CfnTagOption(cdk.Stack.of(scope), tagOptionIdentifier, {
-          key: key,
-          value: value,
-        });
-        tagOptionMap[tagOptionIdentifier] = tagOption;
+        InputValidator.validateLength(this.node.addr, 'TagOption value', 1, 256, value);
+        const tagOptionIdentifier = `$TagOption${hashValues(key, value)}`;
+        if (!this.node.tryFindChild(tagOptionIdentifier)) {
+          const tagOption = new CfnTagOption(this, tagOptionIdentifier, {
+            key: key,
+            value: value,
+          });
+          tagOptionMap[tagOptionIdentifier] = tagOption;
+        }
       });
     }
     return tagOptionMap;
