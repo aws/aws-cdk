@@ -35,7 +35,7 @@ export class GraphNode<A> {
    */
   public get allDeps(): GraphNode<A>[] {
     const fromParent = this.parentGraph?.allDeps ?? [];
-    return [...this.dependencies, ...fromParent];
+    return deduplicateDependencies([...this.dependencies, ...fromParent]);
   }
 
   public dependOn(...dependencies: Array<GraphNode<A> | undefined>) {
@@ -382,4 +382,22 @@ function projectDependencies<A>(dependencies: Map<GraphNode<A>, Set<GraphNode<A>
 
 export function isGraph<A>(x: GraphNode<A>): x is Graph<A> {
   return x instanceof Graph;
+}
+
+function deduplicateDependencies<A>(dependencies: GraphNode<A>[]) {
+  dependencies.sort((a, b) => a.uniqueId.localeCompare(b.uniqueId));
+  return dedupeGraphNodes(dependencies);
+}
+
+function dedupeGraphNodes<A>(deps: GraphNode<A>[]): GraphNode<A>[] {
+  if (deps.length === 0) { return deps; }
+
+  const dedupedDeps: GraphNode<A>[] = [];
+  dedupedDeps.push(deps[0]);
+  for (let i = 1; i < deps.length; i++) {
+    if (deps[i].uniqueId !== deps[i-1].uniqueId) {
+      dedupedDeps.push(deps[i]);
+    }
+  }
+  return dedupedDeps;
 }
