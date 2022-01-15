@@ -146,8 +146,8 @@ async function isLambdaFunctionCodeOnlyChange(
           code = {
             s3Bucket,
             s3Key,
-            functionCodeZip,
             imageUri,
+            functionCodeZip,
           };
         }
         break;
