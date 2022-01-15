@@ -110,7 +110,7 @@ async function isLambdaFunctionCodeOnlyChange(
     switch (updatedPropName) {
       case 'Code':
         let foundCodeDifference = false;
-        let s3Bucket, s3Key, functionCodeZip;
+        let s3Bucket, s3Key, imageUri, functionCodeZip;
 
         for (const newPropName in updatedProp.newValue) {
           switch (newPropName) {
@@ -121,6 +121,10 @@ async function isLambdaFunctionCodeOnlyChange(
             case 'S3Key':
               foundCodeDifference = true;
               s3Key = await evaluateCfnTemplate.evaluateCfnExpression(updatedProp.newValue[newPropName]);
+              break;
+            case 'ImageUri':
+              foundCodeDifference = true;
+              imageUri = await evaluateCfnTemplate.evaluateCfnExpression(updatedProp.newValue[newPropName]);
               break;
             case 'ZipFile':
               foundCodeDifference = true;
@@ -143,6 +147,7 @@ async function isLambdaFunctionCodeOnlyChange(
             s3Bucket,
             s3Key,
             functionCodeZip,
+            imageUri,
           };
         }
         break;
@@ -182,6 +187,7 @@ interface CfnDiffTagValue {
 interface LambdaFunctionCode {
   readonly s3Bucket?: string;
   readonly s3Key?: string;
+  readonly imageUri?: string;
   readonly functionCodeZip?: Buffer;
 }
 
@@ -230,6 +236,7 @@ class LambdaFunctionHotswapOperation implements HotswapOperation {
         FunctionName: this.lambdaFunctionResource.physicalName,
         S3Bucket: resource.code.s3Bucket,
         S3Key: resource.code.s3Key,
+        ImageUri: resource.code.imageUri,
         ZipFile: resource.code.functionCodeZip,
       }).promise();
 
