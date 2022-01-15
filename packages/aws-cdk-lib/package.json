@@ -171,6 +171,7 @@
     "@aws-cdk/aws-codestarconnections": "0.0.0",
     "@aws-cdk/aws-codestarnotifications": "0.0.0",
     "@aws-cdk/aws-cognito": "0.0.0",
+    "@aws-cdk/aws-cognito-identitypool": "0.0.0",
     "@aws-cdk/aws-config": "0.0.0",
     "@aws-cdk/aws-connect": "0.0.0",
     "@aws-cdk/aws-cur": "0.0.0",
@@ -346,7 +347,7 @@
     "@types/fs-extra": "^8.1.2",
     "@types/node": "^10.17.60",
     "constructs": "^3.3.69",
-    "esbuild": "^0.14.10",
+    "esbuild": "^0.14.11",
     "fs-extra": "^9.1.0",
     "ts-node": "^9.1.1",
     "typescript": "~3.8.3"
@@ -428,6 +429,7 @@
     "./aws-codestarconnections": "./aws-codestarconnections/index.js",
     "./aws-codestarnotifications": "./aws-codestarnotifications/index.js",
     "./aws-cognito": "./aws-cognito/index.js",
+    "./aws-cognito-identitypool": "./aws-cognito-identitypool/index.js",
     "./aws-config": "./aws-config/index.js",
     "./aws-connect": "./aws-connect/index.js",
     "./aws-cur": "./aws-cur/index.js",
@@ -594,5 +596,6 @@
     "./pipelines/.warnings.jsii.js": "./pipelines/.warnings.jsii.js",
     "./pipelines/lib/helpers-internal": "./pipelines/lib/helpers-internal/index.js",
     "./region-info": "./region-info/index.js"
-  }
+  },
+  "preferredCdkCliVersion": "2"
 }
