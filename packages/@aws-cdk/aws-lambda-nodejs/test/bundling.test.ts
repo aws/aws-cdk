@@ -422,6 +422,7 @@ test('Local bundling', () => {
     environment: {
       KEY: 'value',
     },
+    logLevel: LogLevel.ERROR,
   });
 
   expect(bundler.local).toBeDefined();

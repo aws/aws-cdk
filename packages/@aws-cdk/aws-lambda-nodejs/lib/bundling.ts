@@ -91,7 +91,7 @@ export class Bundling implements cdk.BundlingOptions {
   private readonly packageManager: PackageManager;
 
   constructor(private readonly props: BundlingProps) {
-    this.packageManager = PackageManager.fromLockFile(props.depsLockFilePath);
+    this.packageManager = PackageManager.fromLockFile(props.depsLockFilePath, props.logLevel);
 
     Bundling.esbuildInstallation = Bundling.esbuildInstallation ?? PackageInstallation.detect('esbuild');
     Bundling.tscInstallation = Bundling.tscInstallation ?? PackageInstallation.detect('tsc');
