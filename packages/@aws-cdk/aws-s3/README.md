@@ -252,6 +252,21 @@ bucket.addEventNotification(s3.EventType.OBJECT_CREATED, new s3n.SnsDestination(
 [S3 Bucket Notifications]: https://docs.aws.amazon.com/AmazonS3/latest/dev/NotificationHowTo.html
 
 
+### EventBridge notifications
+
+Amazon S3 can send events to Amazon EventBridge whenever certain events happen in your bucket.
+Unlike other destinations, you don't need to select which event types you want to deliver.
+
+The following example will enable EventBridge notifications:
+
+```ts
+const bucket = new s3.Bucket(this, 'MyEventBridgeBucket', {
+  eventBridgeEnabled: true,
+});
+```
+
+[S3 EventBridge notifications]: https://docs.aws.amazon.com/AmazonS3/latest/userguide/EventBridge.html
+
 ## Block Public Access
 
 Use `blockPublicAccess` to specify [block public access settings] on the bucket.
