@@ -1015,7 +1015,14 @@
         "VpcId": {
           "Ref": "MyVpcF9F0CA6F"
         },
-        "AvailabilityZone": "test-region-1a",
+        "AvailabilityZone": {
+          "Fn::Select": [
+            0,
+            {
+              "Fn::GetAZs": ""
+            }
+          ]
+        },
         "MapPublicIpOnLaunch": true,
         "Tags": [
           {
@@ -1112,7 +1119,14 @@
         "VpcId": {
           "Ref": "MyVpcF9F0CA6F"
         },
-        "AvailabilityZone": "test-region-1b",
+        "AvailabilityZone": {
+          "Fn::Select": [
+            1,
+            {
+              "Fn::GetAZs": ""
+            }
+          ]
+        },
         "MapPublicIpOnLaunch": true,
         "Tags": [
           {
@@ -1209,7 +1223,14 @@
         "VpcId": {
           "Ref": "MyVpcF9F0CA6F"
         },
-        "AvailabilityZone": "test-region-1a",
+        "AvailabilityZone": {
+          "Fn::Select": [
+            0,
+            {
+              "Fn::GetAZs": ""
+            }
+          ]
+        },
         "MapPublicIpOnLaunch": false,
         "Tags": [
           {
@@ -1271,7 +1292,14 @@
         "VpcId": {
           "Ref": "MyVpcF9F0CA6F"
         },
-        "AvailabilityZone": "test-region-1b",
+        "AvailabilityZone": {
+          "Fn::Select": [
+            1,
+            {
+              "Fn::GetAZs": ""
+            }
+          ]
+        },
         "MapPublicIpOnLaunch": false,
         "Tags": [
           {

@@ -1,6 +1,7 @@
 /// !cdk-integ canary-one
 
 import * as path from 'path';
+import * as ec2 from '@aws-cdk/aws-ec2';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import * as synthetics from '../lib';
@@ -67,6 +68,19 @@ new synthetics.Canary(stack, 'MyPythonCanary', {
     code: synthetics.Code.fromAsset(path.join(__dirname, 'canaries')),
   }),
   runtime: synthetics.Runtime.SYNTHETICS_PYTHON_SELENIUM_1_0,
+});
+
+const vpc = new ec2.Vpc(stack, 'MyVpc', { maxAzs: 2 });
+new synthetics.Canary(stack, 'MyVpcCanary', {
+  canaryName: 'canary-vpc',
+  test: synthetics.Test.custom({
+    handler: 'canary.handler',
+    code: synthetics.Code.fromAsset(path.join(__dirname, 'canary.zip')),
+  }),
+  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_3,
+  vpcConfig: {
+    vpc,
+  },
 });
 
 app.synth();

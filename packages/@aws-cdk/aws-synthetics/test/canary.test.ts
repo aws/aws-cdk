@@ -1,7 +1,7 @@
 import { Match, Template, Capture } from '@aws-cdk/assertions';
+import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
-import * as ec2 from '@aws-cdk/aws-ec2';
 import { Duration, Lazy, Stack, Size } from '@aws-cdk/core';
 import * as synthetics from '../lib';
 
@@ -151,7 +151,6 @@ test('An existing bucket and prefix can be specified instead of auto-created', (
   });
 });
 
-
 test('RunConfig attributes can be specified', () => {
   // GIVEN
   const stack = new Stack();
@@ -181,7 +180,7 @@ test('RunConfig attributes can be specified', () => {
     RunConfig: {
       EnvironmentVariables: environmentVariables,
       TimeoutInSeconds: timeout,
-      MemoryInMB: memorySize,
+      MemoryInMB: memorySize.toMebibytes(),
       ActiveTracing: activateTracing,
     },
   });
@@ -355,7 +354,9 @@ test('environment variables are skipped if not provided', () => {
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::Synthetics::Canary', {
-    RunConfig: Match.absent(),
+    RunConfig: {
+      EnvironmentVariables: Match.absent(),
+    },
   });
 });
 
@@ -498,7 +499,9 @@ test('On tracing enabled, the generated role will have xray PutTraceSegments per
   Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
     Policies: [
       {
+        PolicyName: Match.anyValue(),
         PolicyDocument: {
+          Version: Match.anyValue(),
           Statement: policyStatements,
         },
       },
@@ -634,8 +637,10 @@ test('can specify vpc', () => {
           console.log(\'hello world\');
         };`,
     },
-    VpcConfig: {
-      VpcId: Match.anyValue(),
+    VPCConfig: {
+      VpcId: {
+        Ref: Match.anyValue(),
+      },
     },
   });
 });

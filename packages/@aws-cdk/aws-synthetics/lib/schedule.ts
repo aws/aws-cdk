@@ -65,28 +65,41 @@ export class Schedule {
   }
 
   /**
-   * Convert a Schedule expression in to a number of seconds
+   * Convert a Schedule expression's minutes in to a Duration.
    *
    * @param expression Schedule expression such as 'rate(2 minutes)'
    */
   public static expressionToRateDuration(expression: string): Duration {
-    const interval = expression.replace(/rate\(/, '').replace(/\)/, '');
-    const [value, period] = interval.split(' ');
-    const number = Number(period ? value[1] : '0');
-    const unit = period ? period : 'minutes';
+    if (expression.includes('cron')) {
+      const intervals = expression.replace(/cron\(/, '').replace(/\)/, '');
+      const [minuteExpression] = intervals.split(' ');
+      if (minuteExpression.includes('/')) {
+        const [, every] = minuteExpression.split('/');
+        return Duration.minutes(Number(every));
+      } else if (minuteExpression.includes('*')) {
+        return Duration.hours(1);
+      } else {
+        return Duration.minutes(Number(minuteExpression));
+      }
+    } else {
+      const interval = expression.replace(/rate\(/, '').replace(/\)/, '');
+      const [value, period] = interval.split(' ');
+      const number = Number(period ? value : '0');
+      const unit = period ? period : 'minutes';
 
-    switch (unit) {
-      case 'second':
-      case 'seconds':
-        return Duration.seconds(number);
-      case 'minute':
-      case 'minutes':
-        return Duration.minutes(number);
-      case 'hour':
-      case 'hours':
-        return Duration.hours(number);
-      default:
-        throw new Error('Unit not supported');
+      switch (unit) {
+        case 'second':
+        case 'seconds':
+          return Duration.seconds(number);
+        case 'minute':
+        case 'minutes':
+          return Duration.minutes(number);
+        case 'hour':
+        case 'hours':
+          return Duration.hours(number);
+        default:
+          throw new Error('Unit not supported');
+      }
     }
   }
 

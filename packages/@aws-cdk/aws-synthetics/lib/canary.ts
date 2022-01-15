@@ -84,13 +84,16 @@ export interface ArtifactsBucketLocation {
   readonly prefix?: string;
 }
 
+/**
+ * Properties for specifying the VPC to place a canary in
+ */
 export interface VpcConfiguration {
   /**
    * The VPC where this canary is run.
    *
    * Specify this if the canary needs to access resources in a VPC.
    */
-  vpc: ec2.IVpc;
+  readonly vpc: ec2.IVpc;
 
   /**
    * Where to place the network interfaces within the VPC.
@@ -239,6 +242,8 @@ export interface CanaryProps {
   /**
    * If this canary is to test an endpoint in a VPC, specify this to place a canary in
    * a VPC.
+   *
+   * @default - No VPC
    */
   readonly vpcConfig?: VpcConfiguration;
 }
@@ -435,21 +440,17 @@ export class Canary extends cdk.Resource {
   }
 
   private createRunConfig(props: CanaryProps, schedule: CfnCanary.ScheduleProperty): CfnCanary.RunConfigProperty | undefined {
-    if (!props.timeout && !props.tracing && !props.environmentVariables && !props.memorySize) {
-      return undefined;
-    }
-
     // Cloudformation implementation made TimeoutInSeconds a required field where it should not (see links below).
     // So here is a workaround to fix https://github.com/aws/aws-cdk/issues/9300 and still follow documented behavior.
     // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-synthetics-canary-runconfig.html#cfn-synthetics-canary-runconfig-timeoutinseconds
     // https://github.com/aws-cloudformation/aws-cloudformation-resource-providers-synthetics/issues/31
 
-    const MAX_CANARY_TIMEOUT = cdk.Duration.minutes(60);
+    const MAX_CANARY_TIMEOUT = 840;
     const rateDuration = Schedule.expressionToRateDuration(schedule.expression);
-    const canaryTimeout = rateDuration.toSeconds() <= MAX_CANARY_TIMEOUT.toSeconds() ? rateDuration : MAX_CANARY_TIMEOUT;
+    const canaryTimeout = rateDuration.toSeconds() <= MAX_CANARY_TIMEOUT ? rateDuration.toSeconds() : MAX_CANARY_TIMEOUT;
 
     return {
-      timeoutInSeconds: props.timeout?.toSeconds() ?? canaryTimeout.toSeconds(),
+      timeoutInSeconds: props.timeout?.toSeconds() ?? canaryTimeout,
       activeTracing: props.tracing,
       environmentVariables: props.environmentVariables,
       memoryInMb: props.memorySize?.toMebibytes(),
