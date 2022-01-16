@@ -467,25 +467,21 @@ export interface ResolveCfnIntrinsicMocks {
   /**
    * Mock attribute values of cloudformation resources
    * @example
-   * ```typescript
    *{
    *  MyResource: {
    *    Ref: 'The value returned for {"Ref": "MyResource"}',
    *    Attr1: 'The value returned for {"Fn::GetAtt": ["MyResource","Attr1"]}',
    *  },
    *}
-   * ```
    * @default {}
    */
   readonly cfnResources?: ResolveCfnIntrinsicMockResources;
   /**
    * Mock exports of other cloudformation stacks
    * @example
-   * ```typescript
    *{
    *  'my-example-cfn-export': 'the value returned form {"Fn::Import": "my-example-cfn-export"}',
    *}
-   * ```
    * @default {}
    */
   readonly cfnExports?: ResolveCfnIntrinsicMockResourceAttributes;
@@ -495,10 +491,23 @@ export interface ResolveCfnIntrinsicMocks {
    */
   readonly cfnPseudoParameters?: ResolveCfnIntrinsicMockPseudoParameters
   /**
-   * 
+   * Add example maps, that will be resolved
    * @default {}
    */
   readonly cfnMaps?: ResolveCfnIntrinsicMockResources;
+  /**
+   * Overwrite mock values of the cloudformation getAZs api
+   *
+   * @default { ... The list of aws regions and availabilityzones from januar 2022 ... }
+   */
+  readonly cfnAZs?: ResolveCfnIntrinsicMockAZs;
+}
+
+/**
+ * TODO Doc
+ */
+export interface ResolveCfnIntrinsicMockAZs {
+  readonly [region: string]: string[];
 }
 
 /**
@@ -542,7 +551,7 @@ export interface ResolveCfnIntrinsicOptions {
   readonly resolveFnSelect?: boolean;
   /**
    * resolve Fn::GetAZs
-   * 
+   *
    * @default true
    */
   readonly resolveGetAZs?: boolean;
@@ -552,13 +561,22 @@ class ResolveCfnIntrinsic extends Matcher {
 
   private static resolveIntrinsic(object: any, options: ResolveCfnIntrinsicOptions, mocks: ResolveCfnIntrinsicMocks): any {
     if (typeof object === 'object') {
+      // Handle recursive
+      if (options.recursive) {
+        for (var key in object) {
+          object[key] = ResolveCfnIntrinsic.resolveIntrinsic(object[key], options, mocks);
+        }
+      }
       // Handle PseudoParameter
       if ( options.resolvePseudoParameters && ['AWS::AccountId', 'AWS::NotificationARNs', 'AWS::Partition', 'AWS::Region', 'AWS::StackId', 'AWS::StackName', 'AWS::URLSuffix'].includes(object.Ref) ) {
+        if ( mocks.cfnPseudoParameters == undefined ) {
+          throw new Error('PseudoParameters: No mocks found, ensure mocks.cfnPseudoParameters mock is defined');
+        }
         const pseudoParameter: 'awsAccountId' | 'awsNotificationARNs' | 'awsPartition' | 'awsRegion' | 'awsStackId'| 'awsStackName'| 'awsURLSuffix' = object.Ref.replace('AWS::', 'aws');
-        return mocks.cfnPseudoParameters![pseudoParameter];
+        return mocks.cfnPseudoParameters[pseudoParameter];
       }
       // Handle { "Fn::Join" : [ "delimiter", [ comma-delimited list of values ] ] }
-      if ( options.resolveFnJoin && typeof object['Fn::Join'] === 'object') {
+      if ( options.resolveFnJoin && object['Fn::Join'] !== undefined ) {
         if ( !(object['Fn::Join'] instanceof Array && object['Fn::Join'].length == 2)) {
           throw new Error('Fn::Join expecting an array of with the lenght of 2');
         }
@@ -566,9 +584,6 @@ class ResolveCfnIntrinsic extends Matcher {
         let valuesList = object['Fn::Join'][1];
         if ( !(valuesList instanceof Array) ) {
           throw new Error('Fn::Join expecting an array as valuesList');
-        }
-        if (options.recursive) {
-          valuesList = valuesList.map( (attr) => ResolveCfnIntrinsic.resolveIntrinsic(attr, options, mocks));
         }
         valuesList.forEach( (value: any) => {
           if ( typeof value === 'object' ) {
@@ -581,7 +596,7 @@ class ResolveCfnIntrinsic extends Matcher {
         return valuesList.join(delimiter);
       }
       // Handle { "Fn::GetAtt" : [ "logicalNameOfResource", "attributeName" ] }
-      if ( options.resolveFnGetAtt && object['Fn::GetAtt'] instanceof Array ) {
+      if ( options.resolveFnGetAtt && object['Fn::GetAtt'] !== undefined) {
         const logicalNameOfResource = object['Fn::GetAtt'][0];
         if ( !(typeof logicalNameOfResource == 'string') ) {
           throw new Error('Fn::GetAtt logicalNameOfResource must be typeof string');
@@ -600,12 +615,10 @@ class ResolveCfnIntrinsic extends Matcher {
         throw new Error(`Could not resolve { "Fn::GetAtt": [ "${logicalNameOfResource}", "${attributeName}" ] }`);
       }
       // Handle { "Fn::ImportValue" : sharedValueToImport }
-      if ( options.resolveFnImportValue && ( typeof object['Fn::ImportValue'] == 'object' || typeof object['Fn::ImportValue'] == 'string' ) ) {
+      if ( options.resolveFnImportValue && object['Fn::ImportValue'] !== undefined ) {
+        //} == 'object' || typeof object['Fn::ImportValue'] == 'string' ) ) {
         const sharedValueToImport = object['Fn::ImportValue'];
         if ( mocks !== undefined && mocks.cfnExports !== undefined && mocks.cfnExports[sharedValueToImport] !== undefined ) {
-          if ( options.recursive ) {
-            mocks.cfnExports[ResolveCfnIntrinsic.resolveIntrinsic(sharedValueToImport, options, mocks)];
-          }
           return mocks.cfnExports[sharedValueToImport];
         }
         throw new Error(`Could not resolve { "Fn::ImportValue": "${sharedValueToImport}" }`);
@@ -618,20 +631,54 @@ class ResolveCfnIntrinsic extends Matcher {
       //}
       // Handle { "Fn::GetAZs" : "region" }
       if ( options.resolveGetAZs && object['Fn::GetAZs'] !== undefined ) {
-
+        let getAZsAttr = object['Fn::GetAZs'];
+        // eslint-disable-next-line no-console
+        console.log('TYPE: ' + typeof getAZsAttr);
+        if (typeof getAZsAttr === 'string') {
+          // Because as default, the current region will return it's AZs, we rely on the PseudoParameter
+          if ( getAZsAttr === '' ) {
+            getAZsAttr = mocks.cfnPseudoParameters?.awsRegion;
+          }
+          if ( mocks.cfnAZs == undefined ) {
+            throw new Error('Fn::GetAZs: No mocks found, ensure mocks.cfnAZs mock is defined');
+          }
+          try {
+            // eslint-disable-next-line no-console
+            console.log('RESULT: ' + mocks.cfnAZs[getAZsAttr]);
+            return mocks.cfnAZs[getAZsAttr];
+          } catch (e) {
+            throw new Error(`Could not resolve { "Fn::GetAZs": "${getAZsAttr}" }`);
+          }
+        }
+        throw new Error(`Fn:GetAZs expected string value, found ${typeof getAZsAttr}:${JSON.stringify(getAZsAttr, null, 2)}`);
       }
       // Handle { "Fn::Select" : [ index, [ list of objects ] ] }
-      //if ( options.resolveFnSelect && object['Fn::Select'] instanceof Array ) {
-      //  // Check if the select looks like expected
-      //  if ( typeof object['Fn::Select'][0] == 'number' && object['Fn::Select'][1] instanceof Array ) {
-      //    if ( options.recursive ) {
-      //      return ResolveCfnIntrinsic.resolveIntrinsic(object['Fn::Select'][1][object['Fn::Select'][0]], options, mocks);
-      //    }
-      //    return object['Fn::Select'][1][object['Fn::Select'][0]];
-      //  }
-      //}
-      for (var property in object) {
-        object[property] = ResolveCfnIntrinsic.resolveIntrinsic(object[property], options, mocks);
+      if ( options.resolveFnSelect && object['Fn::Select'] !== undefined ) {
+        let attr = object['Fn::Select'];
+
+        // Check if the select looks like expected
+        if ( !(attr instanceof Array) && attr.length !== 2 ) {
+          throw new Error(`Fn::Select expected Array with length of 2, found ${typeof attr}:${JSON.stringify(attr, null, 2)}`);
+        }
+
+        let index;
+        try {
+          index = parseInt('' + attr[0]);
+        } catch {
+          throw new Error(`Fn::Select expected first attribute to be a numeric value, found ${attr[0]}`);
+        }
+        let listOfObjets = object['Fn::Select'][1];
+        if ( !(listOfObjets instanceof Array) ) {
+          throw new Error(`Fn::Select expected second attribute to be an Array, found ${typeof attr[1]}`);
+        }
+
+        // resolve
+        try {
+          return listOfObjets[index];
+        } catch {
+          throw new Error(`Fn::Select index ${index} not found in list of objects`);
+        }
+
       }
     }
     return object;
@@ -659,6 +706,25 @@ class ResolveCfnIntrinsic extends Matcher {
         awsStackName: mocks.cfnPseudoParameters?.awsStackName ?? 'teststack',
         awsURLSuffix: mocks.cfnPseudoParameters?.awsURLSuffix ?? 'amazonaws.com',
       },
+      cfnAZs: {
+        'eu-north-1': mocks.cfnAZs?.['eu-nort-1'] ?? ['eu-north-1a', 'eu-north-1b', 'eu-north-1c'],
+        'ap-south-1': mocks.cfnAZs?.['ap-south-1'] ?? ['ap-south-1a', 'ap-south-1b', 'ap-south-1c'],
+        'eu-west-3': mocks.cfnAZs?.['eu-west-3'] ?? ['eu-west-3a', 'eu-west-3b', 'eu-west-3c'],
+        'eu-west-2': mocks.cfnAZs?.['eu-west-2'] ?? ['eu-west-2a', 'eu-west-2b', 'eu-west-2c'],
+        'eu-west-1': mocks.cfnAZs?.['eu-west-1'] ?? ['eu-west-1a', 'eu-west-1b', 'eu-west-1c'],
+        'ap-northeast-3': mocks.cfnAZs?.['ap-northeast-3'] ?? ['ap-northeast-3a', 'ap-northeast-3b', 'ap-northeast-3c'],
+        'ap-northeast-2': mocks.cfnAZs?.['ap-northeast-2'] ?? ['ap-northeast-2a', 'ap-northeast-2b', 'ap-northeast-2c', 'ap-northeast-2d'],
+        'ap-northeast-1': mocks.cfnAZs?.['ap-northeast-1'] ?? ['ap-northeast-1a', 'ap-northeast-1c', 'ap-northeast-1d'],
+        'sa-east-1': mocks.cfnAZs?.['sa-east-1'] ?? ['sa-east-1a', 'sa-east-1b', 'sa-east-1c'],
+        'ca-central-1': mocks.cfnAZs?.['ca-central-1'] ?? ['ca-central-1a', 'ca-central-1b', 'ca-central-1d'],
+        'ap-southeast-1': mocks.cfnAZs?.['ap-southeast-1'] ?? ['ap-southeast-1a', 'ap-southeast-1b', 'ap-southeast-1c'],
+        'ap-southeast-2': mocks.cfnAZs?.['ap-southeast-2'] ?? ['ap-southeast-2a', 'ap-southeast-2b', 'ap-southeast-2c'],
+        'eu-central-1': mocks.cfnAZs?.['eu-central-1'] ?? ['eu-central-1a', 'eu-central-1b', 'eu-central-1c'],
+        'us-east-1': mocks.cfnAZs?.['us-east-1'] ?? ['us-east-1a', 'us-east-1b', 'us-east-1c', 'us-east-1d', 'us-east-1e', 'us-east-1f'],
+        'us-east-2': mocks.cfnAZs?.['us-east-2'] ?? ['us-east-2a', 'us-east-2b', 'us-east-2c'],
+        'us-west-1': mocks.cfnAZs?.['us-west-1'] ?? ['us-west-1b', 'us-west-1c'],
+        'us-west-2': mocks.cfnAZs?.['us-west-2'] ?? ['us-west-2a', 'us-west-2b', 'us-west-2c', 'us-west-2d'],
+      },
     };
     this.options = {
       recursive: options.recursive ?? true,
@@ -677,13 +743,13 @@ class ResolveCfnIntrinsic extends Matcher {
     try {
       const parsed = ResolveCfnIntrinsic.resolveIntrinsic(actual, this.options, this.mocks);
       // eslint-disable-next-line no-console
-      console.log(parsed);
+      // console.log(parsed);
       const matcher = Matcher.isMatcher(this.pattern) ? this.pattern : new LiteralMatch(this.name, this.pattern);
       const innerResult = matcher.test(parsed);
       result.compose(`(${this.name})`, innerResult);
     } catch (e) {
       // eslint-disable-next-line no-console
-      console.log(e);
+      // console.log(e);
       result.recordFailure({
         matcher: this,
         path: [],

@@ -54,9 +54,9 @@ describe('Matchers', () => {
         expectFailure(Match.resolveCfnIntrinsic(Match.objectEquals({}), { recursive: false }), { 'Fn::Join': [' ', ['Join', 'some', { 'Fn::Join': [] }]] }, ['Error: Fn::Join valueList are not allowed to contain objects']);
       });
       test('wrong usage', () => {
-        expectFailure(Match.resolveCfnIntrinsic(Match.objectEquals({}), { recursive: false }), { 'Fn::Join': [{}, ['Join', 'some', 'strings']] }, ['Error: Fn::Join delimiter must be a string value']);
-        expectFailure(Match.resolveCfnIntrinsic(Match.objectEquals({}), { recursive: false }), { 'Fn::Join': ['', [{}]] }, ['Error: Fn::Join valueList are not allowed to contain objects']);
-        expectFailure(Match.resolveCfnIntrinsic(Match.objectEquals({}), { recursive: false }), { 'Fn::Join': ['', ''] }, ['Error: Fn::Join expecting an array as valuesList']);
+        expectFailure(Match.resolveCfnIntrinsic(Match.objectEquals({})), { 'Fn::Join': [{}, ['Join', 'some', 'strings']] }, ['Error: Fn::Join delimiter must be a string value']);
+        expectFailure(Match.resolveCfnIntrinsic(Match.objectEquals({})), { 'Fn::Join': ['', [{}]] }, ['Error: Fn::Join valueList are not allowed to contain objects']);
+        expectFailure(Match.resolveCfnIntrinsic(Match.objectEquals({})), { 'Fn::Join': ['', ''] }, ['Error: Fn::Join expecting an array as valuesList']);
       });
     });
     describe('Fn::GetAtt', () => {
@@ -65,8 +65,22 @@ describe('Matchers', () => {
         expectPass(Match.resolveCfnIntrinsic(12345, {}, { cfnResources: { Resource: { Attribute: 12345 } } }), { 'Fn::GetAtt': ['Resource', 'Attribute'] });
       });
       test('wrong usage', () => {
-        expectFailure(Match.resolveCfnIntrinsic(Match.objectEquals({}), { recursive: false }), { 'Fn::GetAtt': [{}, ''] }, ['Error: Fn::GetAtt logicalNameOfResource must be typeof string']);
-        expectFailure(Match.resolveCfnIntrinsic(Match.objectEquals({}), { recursive: false }), { 'Fn::GetAtt': ['', {}] }, ['Error: Fn::GetAtt attributeName must be typeof string']);
+        expectFailure(Match.resolveCfnIntrinsic(''), { 'Fn::GetAtt': [{}, ''] }, ['Error: Fn::GetAtt logicalNameOfResource must be typeof string']);
+        expectFailure(Match.resolveCfnIntrinsic(''), { 'Fn::GetAtt': ['', {}] }, ['Error: Fn::GetAtt attributeName must be typeof string']);
+      });
+    });
+    describe('Fn::GetAZs', () => {
+      test('simple getAZs', () => {
+        expectPass(Match.resolveCfnIntrinsic(Match.arrayEquals(['us-east-1a', 'us-east-1b', 'us-east-1c', 'us-east-1d', 'us-east-1e', 'us-east-1f'])), { 'Fn::GetAZs': '' });
+        expectPass(Match.resolveCfnIntrinsic(Match.arrayEquals(['eu-central-1a', 'eu-central-1b', 'eu-central-1c'])), { 'Fn::GetAZs': 'eu-central-1' });
+      });
+    });
+    describe('Fn::Select', () => {
+      test('simple select', () => {
+        expectPass(Match.resolveCfnIntrinsic(1), { 'Fn::Select': ['1', [0, 1, 2]] });
+        expectPass(Match.resolveCfnIntrinsic(1), { 'Fn::Select': [1, [0, 1, 2]] });
+        expectPass(Match.resolveCfnIntrinsic('1'), { 'Fn::Select': [1, ['0', '1', '2']] });
+        expectPass(Match.resolveCfnIntrinsic({ some: 'object' }), { 'Fn::Select': [0, [{ some: 'object' }, '1', '2']] });
       });
     });
   });
