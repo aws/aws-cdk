@@ -1,5 +1,5 @@
 {
-  "$version": "51.0.0",
+  "$version": "53.0.0",
   "PropertyTypes": {
     "AWS::Transfer::Server.EndpointDetails": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-transfer-server-endpointdetails.html",
@@ -76,6 +76,12 @@
       "Properties": {
         "PassiveIp": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-transfer-server-protocoldetails.html#cfn-transfer-server-protocoldetails-passiveip",
+          "PrimitiveType": "String",
+          "Required": false,
+          "UpdateType": "Mutable"
+        },
+        "TlsSessionResumptionMode": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-transfer-server-protocoldetails.html#cfn-transfer-server-protocoldetails-tlssessionresumptionmode",
           "PrimitiveType": "String",
           "Required": false,
           "UpdateType": "Mutable"
