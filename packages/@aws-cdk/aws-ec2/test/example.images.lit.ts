@@ -15,7 +15,7 @@ const amznLinux = ec2.MachineImage.latestAmazonLinux({
 const windows = ec2.MachineImage.latestWindows(ec2.WindowsVersion.WINDOWS_SERVER_2019_ENGLISH_FULL_BASE);
 
 // Read AMI id from SSM parameter store
-const ssm = ec2.MachineImage.fromSSMParameter('/my/ami', ec2.OperatingSystemType.LINUX);
+const ssm = ec2.MachineImage.fromSsmParameter('/my/ami', { os: ec2.OperatingSystemType.LINUX });
 
 // Look up the most recent image matching a set of AMI filters.
 // In this case, look up the NAT instance AMI, by using a wildcard
