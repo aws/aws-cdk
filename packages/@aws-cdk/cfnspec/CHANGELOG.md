@@ -1,4 +1,228 @@
 
+## Unapplied changes
+
+* AWS::ECS is at 51.0.0
+* AWS::SageMaker is at 51.0.0
+
+# CloudFormation Resource Specification v53.0.0
+
+## New Resource Types
+
+* AWS::AppStream::ApplicationEntitlementAssociation
+* AWS::AppStream::Entitlement
+* AWS::EC2::NetworkInsightsAccessScope
+* AWS::EC2::NetworkInsightsAccessScopeAnalysis
+* AWS::Forecast::Dataset
+* AWS::Forecast::DatasetGroup
+* AWS::InspectorV2::Filter
+* AWS::KinesisVideo::SignalingChannel
+* AWS::KinesisVideo::Stream
+* AWS::Lightsail::Alarm
+* AWS::Lightsail::Bucket
+* AWS::Lightsail::LoadBalancer
+* AWS::Lightsail::LoadBalancerTlsCertificate
+
+## Attribute Changes
+
+* AWS::EC2::Host HostId (__added__)
+* AWS::EC2::IPAMScope IpamScopeType (__added__)
+* AWS::EC2::VPNGatewayRoutePropagation Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpn-gatewayrouteprop.html
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpngatewayroutepropagation.html
+* AWS::EC2::VPNGatewayRoutePropagation Id (__added__)
+* AWS::IoTAnalytics::Channel Id (__added__)
+* AWS::IoTAnalytics::Dataset Id (__added__)
+* AWS::IoTAnalytics::Datastore Id (__added__)
+* AWS::RDS::DBProxy VpcId (__deleted__)
+* AWS::Redshift::EventSubscription EventCategoriesList.DuplicatesAllowed (__added__)
+
+## Property Changes
+
+* AWS::AppSync::FunctionConfiguration MaxBatchSize (__added__)
+* AWS::AppSync::Resolver MaxBatchSize (__added__)
+* AWS::AutoScaling::WarmPool InstanceReusePolicy (__added__)
+* AWS::Config::OrganizationConfigRule OrganizationCustomCodeRuleMetadata (__added__)
+* AWS::EC2::ClientVpnEndpoint ClientLoginBannerOptions (__added__)
+* AWS::EC2::ClientVpnEndpoint SessionTimeoutHours (__added__)
+* AWS::EC2::FlowLog DestinationOptions (__added__)
+* AWS::EC2::IPAMScope IpamScopeType (__deleted__)
+* AWS::EC2::VPNGatewayRoutePropagation RouteTableIds.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpn-gatewayrouteprop.html#cfn-ec2-vpngatewayrouteprop-routetableids
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpngatewayroutepropagation.html#cfn-ec2-vpngatewayroutepropagation-routetableids
+* AWS::EC2::VPNGatewayRoutePropagation VpnGatewayId.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpn-gatewayrouteprop.html#cfn-ec2-vpngatewayrouteprop-vpngatewayid
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpngatewayroutepropagation.html#cfn-ec2-vpngatewayroutepropagation-vpngatewayid
+* AWS::Events::EventBus Tags (__added__)
+* AWS::GameLift::GameSessionQueue Tags (__added__)
+* AWS::GameLift::MatchmakingConfiguration Tags (__added__)
+* AWS::GameLift::MatchmakingRuleSet Tags (__added__)
+* AWS::GameLift::Script Tags (__added__)
+* AWS::IoT::JobTemplate JobExecutionsRetryConfig (__added__)
+* AWS::IoTAnalytics::Channel Tags.DuplicatesAllowed (__added__)
+* AWS::IoTAnalytics::Dataset Actions.DuplicatesAllowed (__added__)
+* AWS::IoTAnalytics::Dataset ContentDeliveryRules.DuplicatesAllowed (__added__)
+* AWS::IoTAnalytics::Dataset LateDataRules.DuplicatesAllowed (__added__)
+* AWS::IoTAnalytics::Dataset Tags.DuplicatesAllowed (__added__)
+* AWS::IoTAnalytics::Dataset Triggers.DuplicatesAllowed (__added__)
+* AWS::IoTAnalytics::Datastore Tags.DuplicatesAllowed (__added__)
+* AWS::RUM::AppMonitor Domain.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::RUM::AppMonitor Name.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::Redshift::EventSubscription EventCategories.DuplicatesAllowed (__added__)
+
+## Property Type Changes
+
+* AWS::KinesisAnalyticsV2::Application.CustomArtifactsConfiguration (__removed__)
+* AWS::AutoScaling::WarmPool.InstanceReusePolicy (__added__)
+* AWS::Config::OrganizationConfigRule.OrganizationCustomCodeRuleMetadata (__added__)
+* AWS::EC2::ClientVpnEndpoint.ClientLoginBannerOptions (__added__)
+* AWS::EC2::LaunchTemplate.InstanceRequirements (__added__)
+* AWS::Events::EventBus.TagEntry (__added__)
+* AWS::Glue::Crawler.MongoDBTarget (__added__)
+* AWS::IoTSiteWise::Gateway.GreengrassV2 (__added__)
+* AWS::NimbleStudio::LaunchProfile.StreamConfigurationSessionStorage (__added__)
+* AWS::NimbleStudio::LaunchProfile.StreamingSessionStorageRoot (__added__)
+* AWS::AppSync::Resolver.CachingConfig Ttl.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::EC2::LaunchTemplate.LaunchTemplateData InstanceRequirements (__added__)
+* AWS::Glue::Crawler.S3Target DlqEventQueueArn (__added__)
+* AWS::Glue::Crawler.S3Target EventQueueArn (__added__)
+* AWS::Glue::Crawler.S3Target SampleSize (__added__)
+* AWS::Glue::Crawler.Targets MongoDBTargets (__added__)
+* AWS::IoTAnalytics::Dataset.ContainerAction Variables.DuplicatesAllowed (__added__)
+* AWS::IoTAnalytics::Dataset.DatasetContentVersionValue DatasetName.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iotanalytics-dataset-variable-datasetcontentversionvalue.html#cfn-iotanalytics-dataset-variable-datasetcontentversionvalue-datasetname
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iotanalytics-dataset-datasetcontentversionvalue.html#cfn-iotanalytics-dataset-datasetcontentversionvalue-datasetname
+* AWS::IoTAnalytics::Dataset.DatasetContentVersionValue DatasetName.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::IoTAnalytics::Dataset.OutputFileUriValue FileName.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iotanalytics-dataset-variable-outputfileurivalue.html#cfn-iotanalytics-dataset-variable-outputfileurivalue-filename
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iotanalytics-dataset-outputfileurivalue.html#cfn-iotanalytics-dataset-outputfileurivalue-filename
+* AWS::IoTAnalytics::Dataset.OutputFileUriValue FileName.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::IoTAnalytics::Dataset.QueryAction Filters.DuplicatesAllowed (__added__)
+* AWS::IoTAnalytics::Dataset.Schedule ScheduleExpression.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iotanalytics-dataset-trigger-schedule.html#cfn-iotanalytics-dataset-trigger-schedule-scheduleexpression
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iotanalytics-dataset-schedule.html#cfn-iotanalytics-dataset-schedule-scheduleexpression
+* AWS::IoTAnalytics::Datastore.DatastorePartitions Partitions.DuplicatesAllowed (__added__)
+* AWS::IoTAnalytics::Datastore.IotSiteWiseMultiLayerStorage CustomerManagedS3Storage.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::IoTAnalytics::Datastore.SchemaDefinition Columns.DuplicatesAllowed (__added__)
+* AWS::IoTAnalytics::Pipeline.AddAttributes Attributes.PrimitiveType (__deleted__)
+* AWS::IoTAnalytics::Pipeline.AddAttributes Attributes.PrimitiveItemType (__added__)
+* AWS::IoTAnalytics::Pipeline.AddAttributes Attributes.Type (__added__)
+* AWS::IoTAnalytics::Pipeline.AddAttributes Attributes.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::IoTAnalytics::Pipeline.AddAttributes Name.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::IoTAnalytics::Pipeline.Channel ChannelName.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::IoTAnalytics::Pipeline.Channel Name.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::IoTAnalytics::Pipeline.Datastore DatastoreName.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::IoTAnalytics::Pipeline.Datastore Name.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::IoTAnalytics::Pipeline.DeviceRegistryEnrich Attribute.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::IoTAnalytics::Pipeline.DeviceRegistryEnrich Name.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::IoTAnalytics::Pipeline.DeviceRegistryEnrich RoleArn.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::IoTAnalytics::Pipeline.DeviceRegistryEnrich ThingName.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::IoTAnalytics::Pipeline.DeviceShadowEnrich Attribute.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::IoTAnalytics::Pipeline.DeviceShadowEnrich Name.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::IoTAnalytics::Pipeline.DeviceShadowEnrich RoleArn.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::IoTAnalytics::Pipeline.DeviceShadowEnrich ThingName.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::IoTAnalytics::Pipeline.Filter Filter.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::IoTAnalytics::Pipeline.Filter Name.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::IoTAnalytics::Pipeline.Lambda BatchSize.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::IoTAnalytics::Pipeline.Lambda LambdaName.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::IoTAnalytics::Pipeline.Lambda Name.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::IoTAnalytics::Pipeline.Math Attribute.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::IoTAnalytics::Pipeline.Math Math.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::IoTAnalytics::Pipeline.Math Name.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::IoTAnalytics::Pipeline.RemoveAttributes Attributes.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::IoTAnalytics::Pipeline.RemoveAttributes Name.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::IoTAnalytics::Pipeline.SelectAttributes Attributes.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::IoTAnalytics::Pipeline.SelectAttributes Name.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::IoTSiteWise::Gateway.GatewayPlatform GreengrassV2 (__added__)
+* AWS::IoTSiteWise::Gateway.GatewayPlatform Greengrass.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::KinesisAnalyticsV2::Application.ZeppelinApplicationConfiguration CustomArtifactsConfiguration.ItemType (__added__)
+* AWS::KinesisAnalyticsV2::Application.ZeppelinApplicationConfiguration CustomArtifactsConfiguration.Type (__changed__)
+  * Old: CustomArtifactsConfiguration
+  * New: List
+* AWS::Lex::BotAlias.BotAliasLocaleSettingsItem BotAliasLocaleSetting.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::Lex::BotAlias.BotAliasLocaleSettingsItem LocaleId.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::Lex::BotAlias.TextLogDestination CloudWatch.Type (__added__)
+* AWS::MediaLive::Channel.HlsGroupSettings ProgramDateTimeClock (__added__)
+* AWS::MediaLive::Channel.InputSettings Scte35Pid (__added__)
+* AWS::NimbleStudio::LaunchProfile.StreamConfiguration MaxStoppedSessionLengthInMinutes (__added__)
+* AWS::NimbleStudio::LaunchProfile.StreamConfiguration SessionStorage (__added__)
+* AWS::Transfer::Server.ProtocolDetails TlsSessionResumptionMode (__added__)
+
+## Unapplied changes
+
+* AWS::ECS is at 51.0.0
+* AWS::SageMaker is at 51.0.0
+
+
 # Serverless Application Model (SAM) Resource Specification v2016-10-31
 
 ## New Resource Types
