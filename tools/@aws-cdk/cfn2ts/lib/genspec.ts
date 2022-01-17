@@ -237,6 +237,13 @@ export function cloudFormationToScriptName(name: string): string {
     }
   }
 
+  // There is (so far) one example of a property which has a "getter"-looking name
+  // (GetObject). This is not `jsii`-compliant, as it would conflict with generated getter method names.
+  // As an ugly hack, we prepend the Typescript name with an underscore.
+  if (/^Get[A-Z]/.test(name)) {
+    return `_${ret}`;
+  }
+
   return ret;
 }
 

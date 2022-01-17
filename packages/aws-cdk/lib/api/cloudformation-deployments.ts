@@ -27,6 +27,86 @@ export async function replaceEnvPlaceholders<A extends { }>(object: A, env: cxap
   });
 }
 
+/**
+ * SDK obtained by assuming the lookup role
+ * for a given environment
+ */
+export interface PreparedSdkWithLookupRoleForEnvironment {
+  /**
+   * The SDK for the given environment
+   */
+  readonly sdk: ISDK;
+
+  /**
+   * The resolved environment for the stack
+   * (no more 'unknown-account/unknown-region')
+   */
+  readonly resolvedEnvironment: cxapi.Environment;
+
+  /**
+   * Whether or not the assume role was successful.
+   * If the assume role was not successful (false)
+   * then that means that the 'sdk' returned contains
+   * the default credentials (not the assume role credentials)
+   */
+  readonly didAssumeRole: boolean;
+}
+
+/**
+  * Try to use the bootstrap lookupRole. There are two scenarios that are handled here
+  *  1. The lookup role may not exist (it was added in bootstrap stack version 7)
+  *  2. The lookup role may not have the correct permissions (ReadOnlyAccess was added in
+  *      bootstrap stack version 8)
+  *
+  * In the case of 1 (lookup role doesn't exist) `forEnvironment` will either:
+  *   1. Return the default credentials if the default credentials are for the stack account
+  *   2. Throw an error if the default credentials are not for the stack account.
+  *
+  * If we successfully assume the lookup role we then proceed to 2 and check whether the bootstrap
+  * stack version is valid. If it is not we throw an error which should be handled in the calling
+  * function (and fallback to use a different role, etc)
+  *
+  * If we do not successfully assume the lookup role, but do get back the default credentials
+  * then return those and note that we are returning the default credentials. The calling
+  * function can then decide to use them or fallback to another role.
+  */
+export async function prepareSdkWithLookupRoleFor(
+  sdkProvider: SdkProvider,
+  stack: cxapi.CloudFormationStackArtifact,
+): Promise<PreparedSdkWithLookupRoleForEnvironment> {
+  const resolvedEnvironment = await sdkProvider.resolveEnvironment(stack.environment);
+
+  // Substitute any placeholders with information about the current environment
+  const arns = await replaceEnvPlaceholders({
+    lookupRoleArn: stack.lookupRole?.arn,
+  }, resolvedEnvironment, sdkProvider);
+
+  // try to assume the lookup role
+  const warningMessage = `Could not assume ${arns.lookupRoleArn}, proceeding anyway.`;
+  const upgradeMessage = `(To get rid of this warning, please upgrade to bootstrap version >= ${stack.lookupRole?.requiresBootstrapStackVersion})`;
+  try {
+    const stackSdk = await sdkProvider.forEnvironment(resolvedEnvironment, Mode.ForReading, {
+      assumeRoleArn: arns.lookupRoleArn,
+      assumeRoleExternalId: stack.lookupRole?.assumeRoleExternalId,
+    });
+
+    // if we succeed in assuming the lookup role, make sure we have the correct bootstrap stack version
+    if (stackSdk.didAssumeRole && stack.lookupRole?.bootstrapStackVersionSsmParameter && stack.lookupRole.requiresBootstrapStackVersion) {
+      const version = await ToolkitInfo.versionFromSsmParameter(stackSdk.sdk, stack.lookupRole.bootstrapStackVersionSsmParameter);
+      if (version < stack.lookupRole.requiresBootstrapStackVersion) {
+        throw new Error(`Bootstrap stack version '${stack.lookupRole.requiresBootstrapStackVersion}' is required, found version '${version}'.`);
+      }
+    } else if (!stackSdk.didAssumeRole) {
+      warning(upgradeMessage);
+    }
+    return { ...stackSdk, resolvedEnvironment };
+  } catch (e) {
+    debug(e);
+    warning(warningMessage);
+    warning(upgradeMessage);
+    throw (e);
+  }
+}
 
 export interface DeployStackOptions {
   /**
@@ -172,31 +252,6 @@ export interface ProvisionerProps {
 }
 
 /**
- * SDK obtained by assuming the lookup role
- * for a given environment
- */
-export interface PreparedSdkWithLookupRoleForEnvironment {
-  /**
-   * The SDK for the given environment
-   */
-  readonly sdk: ISDK;
-
-  /**
-   * The resolved environment for the stack
-   * (no more 'unknown-account/unknown-region')
-   */
-  readonly resolvedEnvironment: cxapi.Environment;
-
-  /**
-   * Whether or not the assume role was successful.
-   * If the assume role was not successful (false)
-   * then that means that the 'sdk' returned contains
-   * the default credentials (not the assume role credentials)
-   */
-  readonly didAssumeRole: boolean;
-}
-
-/**
  * SDK obtained by assuming the deploy role
  * for a given environment
  */
@@ -237,7 +292,7 @@ export class CloudFormationDeployments {
     let stackSdk: ISDK | undefined = undefined;
     // try to assume the lookup role and fallback to the deploy role
     try {
-      const result = await this.prepareSdkWithLookupRoleFor(stackArtifact);
+      const result = await prepareSdkWithLookupRoleFor(this.sdkProvider, stackArtifact);
       if (result.didAssumeRole) {
         stackSdk = result.sdk;
       }
@@ -309,59 +364,6 @@ export class CloudFormationDeployments {
     const { stackSdk } = await this.prepareSdkFor(options.stack, undefined, Mode.ForReading);
     const stack = await CloudFormationStack.lookup(stackSdk.cloudFormation(), options.deployName ?? options.stack.stackName);
     return stack.exists;
-  }
-
-  /**
-   * Try to use the bootstrap lookupRole. There are two scenarios that are handled here
-   *  1. The lookup role may not exist (it was added in bootstrap stack version 7)
-   *  2. The lookup role may not have the correct permissions (ReadOnlyAccess was added in
-   *      bootstrap stack version 8)
-   *
-   * In the case of 1 (lookup role doesn't exist) `forEnvironment` will either:
-   *   1. Return the default credentials if the default credentials are for the stack account
-   *   2. Throw an error if the default credentials are not for the stack account.
-   *
-   * If we successfully assume the lookup role we then proceed to 2 and check whether the bootstrap
-   * stack version is valid. If it is not we throw an error which should be handled in the calling
-   * function (and fallback to use a different role, etc)
-   *
-   * If we do not successfully assume the lookup role, but do get back the default credentials
-   * then return those and note that we are returning the default credentials. The calling
-   * function can then decide to use them or fallback to another role.
-   */
-  private async prepareSdkWithLookupRoleFor(stack: cxapi.CloudFormationStackArtifact): Promise<PreparedSdkWithLookupRoleForEnvironment> {
-    const resolvedEnvironment = await this.sdkProvider.resolveEnvironment(stack.environment);
-
-    // Substitute any placeholders with information about the current environment
-    const arns = await replaceEnvPlaceholders({
-      lookupRoleArn: stack.lookupRole?.arn,
-    }, resolvedEnvironment, this.sdkProvider);
-
-    // try to assume the lookup role
-    const warningMessage = `Could not assume ${arns.lookupRoleArn}, proceeding anyway.`;
-    const upgradeMessage = `(To get rid of this warning, please upgrade to bootstrap version >= ${stack.lookupRole?.requiresBootstrapStackVersion})`;
-    try {
-      const stackSdk = await this.sdkProvider.forEnvironment(resolvedEnvironment, Mode.ForReading, {
-        assumeRoleArn: arns.lookupRoleArn,
-        assumeRoleExternalId: stack.lookupRole?.assumeRoleExternalId,
-      });
-
-      // if we succeed in assuming the lookup role, make sure we have the correct bootstrap stack version
-      if (stackSdk.didAssumeRole && stack.lookupRole?.bootstrapStackVersionSsmParameter && stack.lookupRole.requiresBootstrapStackVersion) {
-        const version = await ToolkitInfo.versionFromSsmParameter(stackSdk.sdk, stack.lookupRole.bootstrapStackVersionSsmParameter);
-        if (version < stack.lookupRole.requiresBootstrapStackVersion) {
-          throw new Error(`Bootstrap stack version '${stack.lookupRole.requiresBootstrapStackVersion}' is required, found version '${version}'.`);
-        }
-      } else if (!stackSdk.didAssumeRole) {
-        warning(upgradeMessage);
-      }
-      return { ...stackSdk, resolvedEnvironment };
-    } catch (e) {
-      debug(e);
-      warning(warningMessage);
-      warning(upgradeMessage);
-      throw (e);
-    }
   }
 
   /**
