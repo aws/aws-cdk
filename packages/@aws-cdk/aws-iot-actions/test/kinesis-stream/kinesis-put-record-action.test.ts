@@ -14,7 +14,9 @@ test('Default kinesis stream action', () => {
   const stream = kinesis.Stream.fromStreamArn(stack, 'MyStream', 'arn:aws:kinesis:xx-west-1:111122223333:stream/my-stream');
 
   // WHEN
-  topicRule.addAction(new actions.KinesisPutRecordAction(stream));
+  topicRule.addAction(new actions.KinesisPutRecordAction(stream, {
+    partitionKey: '${newuuid()}',
+  }));
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::IoT::TopicRule', {
@@ -66,7 +68,7 @@ test('Default kinesis stream action', () => {
   });
 });
 
-test('can set partitionKey', () => {
+test('passes undefined to partitionKey if empty string is given', () => {
   // GIVEN
   const stack = new cdk.Stack();
   const topicRule = new iot.TopicRule(stack, 'MyTopicRule', {
@@ -76,14 +78,14 @@ test('can set partitionKey', () => {
 
   // WHEN
   topicRule.addAction(new actions.KinesisPutRecordAction(stream, {
-    partitionKey: '${timestamp()}',
+    partitionKey: '',
   }));
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::IoT::TopicRule', {
     TopicRulePayload: {
       Actions: [
-        Match.objectLike({ Kinesis: { PartitionKey: '${timestamp()}' } }),
+        Match.objectLike({ Kinesis: { PartitionKey: Match.absent() } }),
       ],
     },
   });
@@ -99,7 +101,10 @@ test('can set role', () => {
   const role = iam.Role.fromRoleArn(stack, 'MyRole', 'arn:aws:iam::123456789012:role/ForTest');
 
   // WHEN
-  topicRule.addAction(new actions.KinesisPutRecordAction(stream, { role }));
+  topicRule.addAction(new actions.KinesisPutRecordAction(stream, {
+    partitionKey: '${newuuid()}',
+    role,
+  }));
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::IoT::TopicRule', {

@@ -12,10 +12,14 @@ export interface KinesisPutRecordActionProps extends CommonActionProps {
    * The partition key used to determine to which shard the data is written.
    * The partition key is usually composed of an expression (for example, ${topic()} or ${timestamp()}).
    *
+   * @see https://docs.aws.amazon.com/iot/latest/developerguide/iot-substitution-templates.html
+   *
+   * You can use the expression '${newuuid()}' if your payload does not have a high cardinarity property.
+   * If you use empty string, this action use no partition key and all records will put same one shard.
+   *
    * @see https://docs.aws.amazon.com/kinesis/latest/APIReference/API_PutRecord.html#API_PutRecord_RequestParameters
-   * @default '${newuuid()}'
    */
-  readonly partitionKey?: string;
+  readonly partitionKey: string;
 }
 
 /**
@@ -29,7 +33,7 @@ export class KinesisPutRecordAction implements iot.IAction {
    * @param stream The Kinesis Data stream to which to put records.
    * @param props Optional properties to not use default
    */
-  constructor(private readonly stream: kinesis.IStream, props: KinesisPutRecordActionProps = {}) {
+  constructor(private readonly stream: kinesis.IStream, props: KinesisPutRecordActionProps) {
     this.partitionKey = props.partitionKey;
     this.role = props.role;
   }
@@ -45,7 +49,7 @@ export class KinesisPutRecordAction implements iot.IAction {
       configuration: {
         kinesis: {
           streamName: this.stream.streamName,
-          partitionKey: this.partitionKey || '${newuuid()}',
+          partitionKey: this.partitionKey || undefined,
           roleArn: role.roleArn,
         },
       },

@@ -187,7 +187,7 @@ const topicRule = new iot.TopicRule(this, 'TopicRule', {
   sql: iot.IotSql.fromStringAsVer20160323("SELECT * FROM 'device/+/data'"),
   actions: [
     new actions.KinesisPutRecordAction(stream, {
-      partitionKey: '${timestamp()}', // optional property, default is '${newuuid()}'
+      partitionKey: '${newuuid()}',
     }),
   ],
 });
