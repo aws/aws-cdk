@@ -68,6 +68,8 @@ default retention setting. The following code enables sending CloudWatch logs bu
 period for the created Log Group.
 
 ```ts
+import * as logs from '@aws-cdk/aws-logs';
+
 const trail = new cloudtrail.Trail(this, 'CloudTrail', {
   sendToCloudWatchLogs: true,
   cloudWatchLogsRetention: logs.RetentionDays.FOUR_MONTHS, 
@@ -88,18 +90,18 @@ The following code filters events for S3 from a specific AWS account and trigger
 
 ```ts
 const myFunctionHandler = new lambda.Function(this, 'MyFunction', {
-  code: lambda.Code.fromAsset('resource/myfunction');
+  code: lambda.Code.fromAsset('resource/myfunction'),
   runtime: lambda.Runtime.NODEJS_12_X,
   handler: 'index.handler',
 });
 
-const eventRule = Trail.onEvent(this, 'MyCloudWatchEvent', {
-  target: new eventTargets.LambdaFunction(myFunctionHandler),
+const eventRule = cloudtrail.Trail.onEvent(this, 'MyCloudWatchEvent', {
+  target: new targets.LambdaFunction(myFunctionHandler),
 });
 
 eventRule.addEventPattern({
-  account: '123456789012',
-  source: 'aws.s3',
+  account: ['123456789012'],
+  source: ['aws.s3'],
 });
 ```
 
@@ -141,7 +143,7 @@ The following code configures the `Trail` to only track management events that a
 ```ts
 const trail = new cloudtrail.Trail(this, 'CloudTrail', {
   // ...
-  managementEvents: ReadWriteType.READ_ONLY,
+  managementEvents: cloudtrail.ReadWriteType.READ_ONLY,
 });
 ```
 
@@ -157,13 +159,14 @@ be used to configure logging of S3 data events for specific buckets and specific
 configures logging of S3 data events for `fooBucket` and with object prefix `bar/`.
 
 ```ts
-import * as cloudtrail from '@aws-cdk/aws-cloudtrail';
+import * as s3 from '@aws-cdk/aws-s3';
 
 const trail = new cloudtrail.Trail(this, 'MyAmazingCloudTrail');
+declare const bucket: s3.Bucket;
 
 // Adds an event selector to the bucket foo
 trail.addS3EventSelector([{
-  bucket: fooBucket, // 'fooBucket' is of type s3.IBucket
+  bucket,
   objectPrefix: 'bar/',
 }]);
 ```
@@ -174,12 +177,12 @@ configures logging of Lambda data events for a specific Function.
 
 ```ts
 const trail = new cloudtrail.Trail(this, 'MyAmazingCloudTrail');
-const amazingFunction = new lambda.Function(stack, 'AnAmazingFunction', {
+const amazingFunction = new lambda.Function(this, 'AnAmazingFunction', {
   runtime: lambda.Runtime.NODEJS_12_X,
   handler: "hello.handler",
   code: lambda.Code.fromAsset("lambda"),
 });
 
 // Add an event selector to log data events for the provided Lambda functions.
-trail.addLambdaEventSelector([ lambdaFunction ]);
+trail.addLambdaEventSelector([ amazingFunction ]);
 ```

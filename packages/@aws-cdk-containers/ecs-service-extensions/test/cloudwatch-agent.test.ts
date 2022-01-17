@@ -27,7 +27,6 @@ describe('cloudwatch agent', () => {
     });
 
     // THEN
-
     expect(stack).toHaveResource('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
         {
