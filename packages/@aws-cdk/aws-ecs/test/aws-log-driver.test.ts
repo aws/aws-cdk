@@ -155,4 +155,38 @@ describe('aws log driver', () => {
 
 
   });
+
+  test('allows cross-region log group', () => {
+    // GIVEN
+    const logGroupRegion = 'asghard';
+    const logGroup = logs.LogGroup.fromLogGroupArn(stack, 'LogGroup',
+      `arn:aws:logs:${logGroupRegion}:1234:log-group:my_log_group`);
+
+    // WHEN
+    td.addContainer('Container', {
+      image,
+      logging: new ecs.AwsLogDriver({
+        logGroup,
+        streamPrefix: 'hello',
+      }),
+    });
+
+    // THEN
+    expect(stack).toCountResources('AWS::Logs::LogGroup', 0);
+    expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+      ContainerDefinitions: [
+        {
+          LogConfiguration: {
+            LogDriver: 'awslogs',
+            Options: {
+              'awslogs-group': logGroup.logGroupName,
+              'awslogs-stream-prefix': 'hello',
+              'awslogs-region': logGroupRegion,
+            },
+          },
+        },
+      ],
+    });
+  });
+
 });
