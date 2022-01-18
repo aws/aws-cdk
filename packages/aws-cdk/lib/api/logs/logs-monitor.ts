@@ -203,7 +203,7 @@ export class CloudWatchLogEventMonitor {
       // showing them a sampling (10000 events printed out is not very useful)
       if (filteredEvents.length > 0 && response.nextToken) {
         events.push({
-          message: '(...messages suppressed...)',
+          message: '>>> `watch` shows only the first 100 log messages - the rest have been truncated...',
           logGroupName,
           timestamp: new Date(endTime),
         });
