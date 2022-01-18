@@ -78,6 +78,33 @@ const CACHED_ACCOUNT = Symbol('cached_account');
 const CACHED_DEFAULT_CREDENTIALS = Symbol('cached_default_credentials');
 
 /**
+ * SDK configuration for a given environment
+ * 'forEnvironment' will attempt to assume a role and if it
+ * is not successful, then it will either:
+ *   1. Check to see if the default credentials (local credentials the CLI was executed with)
+ *      are for the given environment. If they are then return those.
+ *   2. If the default credentials are not for the given environment then
+ *      throw an error
+ *
+ * 'didAssumeRole' allows callers to whether they are receiving the assume role
+ * credentials or the default credentials.
+ */
+export interface SdkForEnvironment {
+  /**
+   * The SDK for the given environment
+   */
+  readonly sdk: ISDK;
+
+  /**
+   * Whether or not the assume role was successful.
+   * If the assume role was not successful (false)
+   * then that means that the 'sdk' returned contains
+   * the default credentials (not the assume role credentials)
+   */
+  readonly didAssumeRole: boolean;
+}
+
+/**
  * Creates instances of the AWS SDK appropriate for a given account/region.
  *
  * Behavior is as follows:
@@ -140,7 +167,11 @@ export class SdkProvider {
    *
    * The `environment` parameter is resolved first (see `resolveEnvironment()`).
    */
-  public async forEnvironment(environment: cxapi.Environment, mode: Mode, options?: CredentialsOptions): Promise<ISDK> {
+  public async forEnvironment(
+    environment: cxapi.Environment,
+    mode: Mode,
+    options?: CredentialsOptions,
+  ): Promise<SdkForEnvironment> {
     const env = await this.resolveEnvironment(environment);
     const baseCreds = await this.obtainBaseCredentials(env.account, mode);
 
@@ -151,7 +182,7 @@ export class SdkProvider {
     // account.
     if (options?.assumeRoleArn === undefined) {
       if (baseCreds.source === 'incorrectDefault') { throw new Error(fmtObtainCredentialsError(env.account, baseCreds)); }
-      return new SDK(baseCreds.credentials, env.region, this.sdkOptions);
+      return { sdk: new SDK(baseCreds.credentials, env.region, this.sdkOptions), didAssumeRole: false };
     }
 
     // We will proceed to AssumeRole using whatever we've been given.
@@ -161,7 +192,7 @@ export class SdkProvider {
     // we can determine whether the AssumeRole call succeeds or not.
     try {
       await sdk.forceCredentialRetrieval();
-      return sdk;
+      return { sdk, didAssumeRole: true };
     } catch (e) {
       // AssumeRole failed. Proceed and warn *if and only if* the baseCredentials were already for the right account
       // or returned from a plugin. This is to cover some current setups for people using plugins or preferring to
@@ -170,7 +201,7 @@ export class SdkProvider {
       if (baseCreds.source === 'correctDefault' || baseCreds.source === 'plugin') {
         debug(e.message);
         warning(`${fmtObtainedCredentials(baseCreds)} could not be used to assume '${options.assumeRoleArn}', but are for the right account. Proceeding anyway.`);
-        return new SDK(baseCreds.credentials, env.region, this.sdkOptions);
+        return { sdk: new SDK(baseCreds.credentials, env.region, this.sdkOptions), didAssumeRole: false };
       }
 
       throw e;

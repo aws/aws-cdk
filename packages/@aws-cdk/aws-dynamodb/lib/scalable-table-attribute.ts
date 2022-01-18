@@ -25,7 +25,7 @@ export class ScalableTableAttribute extends appscaling.BaseScalableAttribute {
     }
     this.scalingPolicyCreated = true;
     const predefinedMetric = this.props.dimension.indexOf('ReadCapacity') === -1
-      ? appscaling.PredefinedMetric.DYANMODB_WRITE_CAPACITY_UTILIZATION
+      ? appscaling.PredefinedMetric.DYNAMODB_WRITE_CAPACITY_UTILIZATION
       : appscaling.PredefinedMetric.DYNAMODB_READ_CAPACITY_UTILIZATION;
 
     super.doScaleToTrackMetric('Tracking', {
