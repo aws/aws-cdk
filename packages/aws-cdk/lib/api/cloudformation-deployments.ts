@@ -96,14 +96,20 @@ export async function prepareSdkWithLookupRoleFor(
       if (version < stack.lookupRole.requiresBootstrapStackVersion) {
         throw new Error(`Bootstrap stack version '${stack.lookupRole.requiresBootstrapStackVersion}' is required, found version '${version}'.`);
       }
-    } else if (!stackSdk.didAssumeRole) {
+      // we may not have assumed the lookup role because one was not provided
+      // if that is the case then don't print the upgrade warning
+    } else if (!stackSdk.didAssumeRole && stack.lookupRole?.requiresBootstrapStackVersion) {
       warning(upgradeMessage);
     }
     return { ...stackSdk, resolvedEnvironment };
   } catch (e) {
     debug(e);
-    warning(warningMessage);
-    warning(upgradeMessage);
+    // only print out the warnings if the lookupRole exists AND there is a required
+    // bootstrap version, otherwise the warnings will print `undefined`
+    if (stack.lookupRole && stack.lookupRole.requiresBootstrapStackVersion) {
+      warning(warningMessage);
+      warning(upgradeMessage);
+    }
     throw (e);
   }
 }
