@@ -384,6 +384,22 @@ describe('Matchers', () => {
       expectPass(matcher, {});
     });
   });
+
+  describe('stringLike', () => {
+    let matcher: Matcher;
+
+    test('simple', () => {
+      matcher = Match.stringLike('*includeHeaders = true*');
+      expectFailure(matcher, 'const includeHeaders = false;', [/String did not match pattern/]);
+      expectPass(matcher, 'const includeHeaders = true;');
+    });
+
+    test('nested in object', () => {
+      matcher = Match.objectLike({ foo: Match.stringLike('*includeHeaders = true*') });
+      expectFailure(matcher, { foo: 'const includeHeaders = false;' }, [/String did not match pattern/]);
+      expectPass(matcher, { foo: 'const includeHeaders = true;' });
+    });
+  });
 });
 
 function expectPass(matcher: Matcher, target: any): void {

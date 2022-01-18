@@ -79,6 +79,14 @@ export abstract class Match {
   public static anyValue(): Matcher {
     return new AnyMatch('anyValue');
   }
+
+  /**
+   * Matches targets according to a regular expression
+   * @param pattern
+   */
+  public static stringLike(pattern: string): Matcher {
+    return new StringLikeMatch('stringLike', pattern);
+  }
 }
 
 /**
@@ -377,4 +385,42 @@ class AnyMatch extends Matcher {
     }
     return result;
   }
+}
+
+class StringLikeMatch extends Matcher {
+  constructor(
+    public readonly name: string,
+    private readonly pattern: string) {
+
+    super();
+  }
+
+
+  test(actual: any): MatchResult {
+    const regex = new RegExp(`^${this.pattern.split('*').map(escapeRegex).join('.*')}$`, 'm');
+    const result = new MatchResult(actual);
+
+    if (typeof actual !== 'string') {
+      result.recordFailure({
+        matcher: this,
+        path: [],
+        message: `Expected a string, but got '${typeof actual}'`,
+      });
+    }
+
+    if (!regex.test(actual)) {
+      result.recordFailure({
+        matcher: this,
+        path: [],
+        message: `String did not match pattern '${this.pattern}'`,
+      });
+    }
+
+    return result;
+  }
+
+}
+
+function escapeRegex(s: string): string {
+  return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
 }
