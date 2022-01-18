@@ -1,4 +1,4 @@
-import { Template } from '@aws-cdk/assertions';
+import { Template /*Capture, Match*/ } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { CrossAccountDestination } from '../lib';
@@ -45,10 +45,16 @@ describe('destination', () => {
     }));
 
     // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::Logs::Destination', (props: any) => {
-      const pol = JSON.parse(props.DestinationPolicy);
-
-      return pol.Statement[0].Action === 'logs:TalkToMe';
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::Destination', {
+      DestinationName: 'MyDestination',
+      DestinationPolicy: '{\"Statement\":[{\"Action\":\"logs:TalkToMe\",\"Effect\":\"Allow\"}],\"Version\":\"2012-10-17\"}',
+      RoleArn: {
+        'Fn::GetAtt': [
+          'Role1ABCC5F0',
+          'Arn',
+        ],
+      },
+      TargetArn: 'arn:bogus',
     });
   });
 });
