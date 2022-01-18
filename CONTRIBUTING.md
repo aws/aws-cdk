@@ -52,9 +52,8 @@ See [Gitpod section](#gitpod) on how to set up the CDK repo on Gitpod.
 
 The following tools need to be installed on your system prior to installing the CDK:
 
-- [Node.js >= 10.13.0](https://nodejs.org/download/release/latest-v10.x/)
+- [Node.js >= 14.15.0](https://nodejs.org/download/release/latest-v14.x/)
   - We recommend using a version in [Active LTS](https://nodejs.org/en/about/releases/)
-  - ⚠️ versions `13.0.0` to `13.6.0` are not supported due to compatibility issues with our dependencies.
 - [Yarn >= 1.19.1, < 2](https://yarnpkg.com/lang/en/docs/install)
 - [.NET Core SDK 3.1.x](https://www.microsoft.com/net/download)
 - [Python >= 3.6.5, < 4.0](https://www.python.org/downloads/release/python-365/)
@@ -70,7 +69,7 @@ $ yarn install
 ```
 
 We recommend that you use [Visual Studio Code](https://code.visualstudio.com/) to work on the CDK.
-We use `eslint` to keep our code consistent in terms of style and reducing defects. We recommend installing the
+We use `eslint` to keep our code consistent in terms of style and reducing defects. We recommend installing
 the [eslint extension](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) as well.
 
 ### Repo Layout
@@ -727,7 +726,7 @@ these directories.
 ### Linking against this repository
 
 If you are developing your own CDK application or library and want to use the locally checked out version of the
-AWS CDK, instead of the the version of npm, the `./link-all.sh` script will help here.
+AWS CDK, instead of the version of npm, the `./link-all.sh` script will help here.
 
 This script symlinks the built modules from the local AWS CDK repo under the `node_modules/` folder of the CDK app or
 library.

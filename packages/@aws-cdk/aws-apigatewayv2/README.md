@@ -426,3 +426,17 @@ webSocketApi.grantManageConnections(lambda);
 API Gateway supports multiple mechanisms for [controlling and managing access to a WebSocket API](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-websocket-api-control-access.html) through authorizers.
 
 These authorizers can be found in the [APIGatewayV2-Authorizers](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-apigatewayv2-authorizers-readme.html) constructs library.
+
+### API Keys
+
+Websocket APIs also support usage of API Keys. An API Key is a key that is used to grant access to an API. These are useful for controlling and tracking access to an API, when used together with [usage plans](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-api-usage-plans.html). These together allow you to configure controls around API access such as quotas and throttling, along with per-API Key metrics on usage.
+
+To require an API Key when accessing the Websocket API:
+
+```ts
+const webSocketApi = new WebSocketApi(stack, 'mywsapi',{
+      apiKeySelectionExpression: WebSocketApiKeySelectionExpression.HEADER_X_API_KEY,
+    });
+...
+```
+

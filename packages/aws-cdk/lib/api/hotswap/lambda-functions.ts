@@ -1,6 +1,7 @@
+import { flatMap } from '../../util';
 import { ISDK } from '../aws-auth';
-import { ChangeHotswapImpact, ChangeHotswapResult, HotswapOperation, HotswappableChangeCandidate, establishResourcePhysicalName } from './common';
-import { EvaluateCloudFormationTemplate } from './evaluate-cloudformation-template';
+import { EvaluateCloudFormationTemplate } from '../evaluate-cloudformation-template';
+import { ChangeHotswapImpact, ChangeHotswapResult, HotswapOperation, HotswappableChangeCandidate } from './common';
 
 /**
  * Returns `ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT` if the change cannot be short-circuited,
@@ -11,25 +12,62 @@ import { EvaluateCloudFormationTemplate } from './evaluate-cloudformation-templa
 export async function isHotswappableLambdaFunctionChange(
   logicalId: string, change: HotswappableChangeCandidate, evaluateCfnTemplate: EvaluateCloudFormationTemplate,
 ): Promise<ChangeHotswapResult> {
+  // if the change is for a Lambda Version,
+  // ignore it by returning an empty hotswap operation -
+  // we will publish a new version when we get to hotswapping the actual Function this Version points to, below
+  // (Versions can't be changed in CloudFormation anyway, they're immutable)
+  if (change.newValue.Type === 'AWS::Lambda::Version') {
+    return ChangeHotswapImpact.IRRELEVANT;
+  }
+
+  // we handle Aliases specially too
+  if (change.newValue.Type === 'AWS::Lambda::Alias') {
+    return checkAliasHasVersionOnlyChange(change);
+  }
+
   const lambdaCodeChange = await isLambdaFunctionCodeOnlyChange(change, evaluateCfnTemplate);
   if (typeof lambdaCodeChange === 'string') {
     return lambdaCodeChange;
-  } else {
-    const functionName = await establishResourcePhysicalName(logicalId, change.newValue.Properties?.FunctionName, evaluateCfnTemplate);
-    if (!functionName) {
+  }
+
+  const functionName = await evaluateCfnTemplate.establishResourcePhysicalName(logicalId, change.newValue.Properties?.FunctionName);
+  if (!functionName) {
+    return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
+  }
+
+  const functionArn = await evaluateCfnTemplate.evaluateCfnExpression({
+    'Fn::Sub': 'arn:${AWS::Partition}:lambda:${AWS::Region}:${AWS::AccountId}:function:' + functionName,
+  });
+
+  // find all Lambda Versions that reference this Function
+  const versionsReferencingFunction = evaluateCfnTemplate.findReferencesTo(logicalId)
+    .filter(r => r.Type === 'AWS::Lambda::Version');
+  // find all Lambda Aliases that reference the above Versions
+  const aliasesReferencingVersions = flatMap(versionsReferencingFunction, v =>
+    evaluateCfnTemplate.findReferencesTo(v.LogicalId));
+  const aliasesNames = await Promise.all(aliasesReferencingVersions.map(a =>
+    evaluateCfnTemplate.evaluateCfnExpression(a.Properties?.Name)));
+
+  return new LambdaFunctionHotswapOperation({
+    physicalName: functionName,
+    functionArn: functionArn,
+    resource: lambdaCodeChange,
+    publishVersion: versionsReferencingFunction.length > 0,
+    aliasesNames,
+  });
+}
+
+/**
+ * Returns  is a given Alias change is only in the 'FunctionVersion' property,
+ * and `ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT` is the change is for any other property.
+ */
+function checkAliasHasVersionOnlyChange(change: HotswappableChangeCandidate): ChangeHotswapResult {
+  for (const updatedPropName in change.propertyUpdates) {
+    if (updatedPropName !== 'FunctionVersion') {
       return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
     }
-
-    const functionArn = await evaluateCfnTemplate.evaluateCfnExpression({
-      'Fn::Sub': 'arn:${AWS::Partition}:lambda:${AWS::Region}:${AWS::AccountId}:function:' + functionName,
-    });
-
-    return new LambdaFunctionHotswapOperation({
-      physicalName: functionName,
-      functionArn: functionArn,
-      resource: lambdaCodeChange,
-    });
   }
+  return ChangeHotswapImpact.IRRELEVANT;
 }
 
 /**
@@ -50,7 +88,7 @@ async function isLambdaFunctionCodeOnlyChange(
   }
 
   /*
-   * On first glance, we would want to initialize these using the "previous" values (change.oldValue),
+   * At first glance, we would want to initialize these using the "previous" values (change.oldValue),
    * in case only one of them changed, like the key, and the Bucket stayed the same.
    * However, that actually fails for old-style synthesis, which uses CFN Parameters!
    * Because the names of the Parameters depend on the hash of the Asset,
@@ -60,7 +98,6 @@ async function isLambdaFunctionCodeOnlyChange(
    * even if only one of them was actually changed,
    * which means we don't need the "old" values at all, and we can safely initialize these with just `''`.
    */
-  // Make sure only the code in the Lambda function changed
   const propertyUpdates = change.propertyUpdates;
   let code: LambdaFunctionCode | undefined = undefined;
   let tags: LambdaFunctionTags | undefined = undefined;
@@ -71,7 +108,7 @@ async function isLambdaFunctionCodeOnlyChange(
     switch (updatedPropName) {
       case 'Code':
         let foundCodeDifference = false;
-        let s3Bucket = '', s3Key = '';
+        let s3Bucket, s3Key, imageUri;
 
         for (const newPropName in updatedProp.newValue) {
           switch (newPropName) {
@@ -83,6 +120,10 @@ async function isLambdaFunctionCodeOnlyChange(
               foundCodeDifference = true;
               s3Key = await evaluateCfnTemplate.evaluateCfnExpression(updatedProp.newValue[newPropName]);
               break;
+            case 'ImageUri':
+              foundCodeDifference = true;
+              imageUri = await evaluateCfnTemplate.evaluateCfnExpression(updatedProp.newValue[newPropName]);
+              break;
             default:
               return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
           }
@@ -91,6 +132,7 @@ async function isLambdaFunctionCodeOnlyChange(
           code = {
             s3Bucket,
             s3Key,
+            imageUri,
           };
         }
         break;
@@ -128,8 +170,9 @@ interface CfnDiffTagValue {
 }
 
 interface LambdaFunctionCode {
-  readonly s3Bucket: string;
-  readonly s3Key: string;
+  readonly s3Bucket?: string;
+  readonly s3Key?: string;
+  readonly imageUri?: string;
 }
 
 enum TagDeletion {
@@ -149,6 +192,8 @@ interface LambdaFunctionResource {
   readonly physicalName: string;
   readonly functionArn: string;
   readonly resource: LambdaFunctionChange;
+  readonly publishVersion: boolean;
+  readonly aliasesNames: string[];
 }
 
 class LambdaFunctionHotswapOperation implements HotswapOperation {
@@ -156,7 +201,13 @@ class LambdaFunctionHotswapOperation implements HotswapOperation {
   public readonly resourceNames: string[];
 
   constructor(private readonly lambdaFunctionResource: LambdaFunctionResource) {
-    this.resourceNames = [lambdaFunctionResource.physicalName];
+    this.resourceNames = [
+      `Lambda Function '${lambdaFunctionResource.physicalName}'`,
+      // add Version here if we're publishing a new one
+      ...(lambdaFunctionResource.publishVersion ? [`Lambda Version for Function '${lambdaFunctionResource.physicalName}'`] : []),
+      // add any Aliases that we are hotswapping here
+      ...lambdaFunctionResource.aliasesNames.map(alias => `Lambda Alias '${alias}' for Function '${lambdaFunctionResource.physicalName}'`),
+    ];
   }
 
   public async apply(sdk: ISDK): Promise<any> {
@@ -165,11 +216,45 @@ class LambdaFunctionHotswapOperation implements HotswapOperation {
     const operations: Promise<any>[] = [];
 
     if (resource.code !== undefined) {
-      operations.push(lambda.updateFunctionCode({
+      const updateFunctionCodePromise = lambda.updateFunctionCode({
         FunctionName: this.lambdaFunctionResource.physicalName,
         S3Bucket: resource.code.s3Bucket,
         S3Key: resource.code.s3Key,
-      }).promise());
+        ImageUri: resource.code.imageUri,
+      }).promise();
+
+      // only if the code changed is there any point in publishing a new Version
+      if (this.lambdaFunctionResource.publishVersion) {
+        // we need to wait for the code update to be done before publishing a new Version
+        await updateFunctionCodePromise;
+        // if we don't wait for the Function to finish updating,
+        // we can get a "The operation cannot be performed at this time. An update is in progress for resource:"
+        // error when publishing a new Version
+        await lambda.waitFor('functionUpdated', {
+          FunctionName: this.lambdaFunctionResource.physicalName,
+        }).promise();
+
+        const publishVersionPromise = lambda.publishVersion({
+          FunctionName: this.lambdaFunctionResource.physicalName,
+        }).promise();
+
+        if (this.lambdaFunctionResource.aliasesNames.length > 0) {
+          // we need to wait for the Version to finish publishing
+          const versionUpdate = await publishVersionPromise;
+
+          for (const alias of this.lambdaFunctionResource.aliasesNames) {
+            operations.push(lambda.updateAlias({
+              FunctionName: this.lambdaFunctionResource.physicalName,
+              Name: alias,
+              FunctionVersion: versionUpdate.Version,
+            }).promise());
+          }
+        } else {
+          operations.push(publishVersionPromise);
+        }
+      } else {
+        operations.push(updateFunctionCodePromise);
+      }
     }
 
     if (resource.tags !== undefined) {
@@ -183,7 +268,6 @@ class LambdaFunctionHotswapOperation implements HotswapOperation {
         .forEach(([tagName, tagValue]) => {
           tagsToSet[tagName] = tagValue as string;
         });
-
 
       if (tagsToDelete.length > 0) {
         operations.push(lambda.untagResource({
