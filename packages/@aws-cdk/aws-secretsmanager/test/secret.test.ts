@@ -180,11 +180,11 @@ test('templated secret string', () => {
 
 describe('secretStringBeta1', () => {
   let user: iam.User;
-  let accessKey: iam.CfnAccessKey;
+  let accessKey: iam.AccessKey;
 
   beforeEach(() => {
     user = new iam.User(stack, 'User');
-    accessKey = new iam.CfnAccessKey(stack, 'MyKey', { userName: user.userName });
+    accessKey = new iam.AccessKey(stack, 'MyKey', { user });
   });
 
   test('fromUnsafePlaintext allows specifying a plaintext string', () => {
@@ -206,18 +206,18 @@ describe('secretStringBeta1', () => {
 
   test('toToken allows referencing a construct attribute', () => {
     new secretsmanager.Secret(stack, 'Secret', {
-      secretStringBeta1: secretsmanager.SecretStringValueBeta1.fromToken(accessKey.attrSecretAccessKey),
+      secretStringBeta1: secretsmanager.SecretStringValueBeta1.fromToken(accessKey.secretAccessKey.toString()),
     });
 
     expect(stack).toHaveResource('AWS::SecretsManager::Secret', {
       GenerateSecretString: ABSENT,
-      SecretString: { 'Fn::GetAtt': ['MyKey', 'SecretAccessKey'] },
+      SecretString: { 'Fn::GetAtt': ['MyKey6AB29FA6', 'SecretAccessKey'] },
     });
   });
 
   test('toToken allows referencing a construct attribute in nested JSON', () => {
     const secretString = secretsmanager.SecretStringValueBeta1.fromToken(JSON.stringify({
-      key: accessKey.attrSecretAccessKey,
+      key: accessKey.secretAccessKey.toString(),
       username: 'myUser',
     }));
     new secretsmanager.Secret(stack, 'Secret', {
@@ -233,7 +233,7 @@ describe('secretStringBeta1', () => {
             '{"key":"',
             {
               'Fn::GetAtt': [
-                'MyKey',
+                'MyKey6AB29FA6',
                 'SecretAccessKey',
               ],
             },
@@ -248,7 +248,7 @@ describe('secretStringBeta1', () => {
     // NOTE - This is actually not desired behavior, but the simple `!Token.isUnresolved`
     // check is the simplest and most consistent to implement. Covering this edge case of
     // a resolved Token representing a Ref/Fn::GetAtt is out of scope for this initial pass.
-    const secretKey = stack.resolve(accessKey.attrSecretAccessKey);
+    const secretKey = stack.resolve(accessKey.secretAccessKey);
     expect(() => new secretsmanager.Secret(stack, 'Secret', {
       secretStringBeta1: secretsmanager.SecretStringValueBeta1.fromToken(secretKey),
     })).toThrow(/appears to be plaintext/);
@@ -260,13 +260,53 @@ describe('secretStringBeta1', () => {
         generateStringKey: 'username',
         secretStringTemplate: JSON.stringify({ username: 'username' }),
       },
-      secretStringBeta1: secretsmanager.SecretStringValueBeta1.fromToken(accessKey.attrSecretAccessKey),
+      secretStringBeta1: secretsmanager.SecretStringValueBeta1.fromToken(accessKey.secretAccessKey.toString()),
     })).toThrow(/Cannot specify both `generateSecretString` and `secretStringBeta1`./);
   });
 
 });
 
 test('grantRead', () => {
+  // GIVEN
+  const secret = new secretsmanager.Secret(stack, 'Secret');
+  const role = new iam.Role(stack, 'Role', { assumedBy: new iam.AccountRootPrincipal() });
+
+  // WHEN
+  secret.grantRead(role);
+
+  // THEN
+  expect(stack).toHaveResource('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Version: '2012-10-17',
+      Statement: [{
+        Action: [
+          'secretsmanager:GetSecretValue',
+          'secretsmanager:DescribeSecret',
+        ],
+        Effect: 'Allow',
+        Resource: { Ref: 'SecretA720EF05' },
+      }],
+    },
+  });
+});
+
+test('Error when grantRead with different role and no KMS', () => {
+  // GIVEN
+  const testStack = new cdk.Stack(app, 'TestStack', {
+    env: {
+      account: '123456789012',
+    },
+  });
+  const secret = new secretsmanager.Secret(testStack, 'Secret');
+  const role = iam.Role.fromRoleArn(testStack, 'RoleFromArn', 'arn:aws:iam::111111111111:role/SomeRole');
+
+  // THEN
+  expect(() => {
+    secret.grantRead(role);
+  }).toThrowError('KMS Key must be provided for cross account access to Secret');
+});
+
+test('grantRead with KMS Key', () => {
   // GIVEN
   const key = new kms.Key(stack, 'KMS');
   const secret = new secretsmanager.Secret(stack, 'Secret', { encryptionKey: key });
