@@ -1,6 +1,6 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
-import { ArnFormat, FeatureFlags, Fn, IResource, Lazy, RemovalPolicy, Resource, SecretValue, Stack, Token } from '@aws-cdk/core';
+import { ArnFormat, FeatureFlags, Fn, IResource, Lazy, RemovalPolicy, Resource, SecretValue, Stack, Token, TokenComparison } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { IConstruct, Construct } from 'constructs';
 import { ResourcePolicy } from './policy';
@@ -306,8 +306,10 @@ abstract class SecretBase extends Resource implements ISecret {
       );
     }
 
+    const crossAccount = Token.compareStrings(Stack.of(this).account, grantee.grantPrincipal.principalAccount || '');
+
     // Throw if secret is not imported and it's shared cross account and no KMS key is provided
-    if (this instanceof Secret && result.resourceStatement && !this.encryptionKey) {
+    if (this instanceof Secret && result.resourceStatement && (!this.encryptionKey && crossAccount === TokenComparison.DIFFERENT)) {
       throw new Error('KMS Key must be provided for cross account access to Secret');
     }
 
