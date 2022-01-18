@@ -485,9 +485,9 @@ The class `StateMachineFragment` contains some helper functions (like
 machine as a subclass of this, it will be convenient to use:
 
 ```ts nofixture
-import { Construct, Stack } from '@aws-cdk/core';
+import { Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
-import * as tasks from '@aws-cdk/aws-stepfunctions-tasks';
 
 interface MyJobProps {
   jobFlavor: string;
@@ -515,10 +515,14 @@ class MyStack extends Stack {
   constructor(scope: Construct, id: string) {
     super(scope, id);
     // Do 3 different variants of MyJob in parallel
-    new sfn.Parallel(this, 'All jobs')
+    const parallel = new sfn.Parallel(this, 'All jobs')
       .branch(new MyJob(this, 'Quick', { jobFlavor: 'quick' }).prefixStates())
       .branch(new MyJob(this, 'Medium', { jobFlavor: 'medium' }).prefixStates())
       .branch(new MyJob(this, 'Slow', { jobFlavor: 'slow' }).prefixStates());
+
+    new sfn.StateMachine(this, 'MyStateMachine', {
+      definition: parallel,
+    });
   }
 }
 ```
