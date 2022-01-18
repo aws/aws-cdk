@@ -116,3 +116,8 @@ removed:@aws-cdk/aws-lambda-event-sources.SelfManagedKafkaEventSourceProps.tumbl
 base-types:@aws-cdk/aws-lambda-event-sources.KafkaEventSourceProps
 base-types:@aws-cdk/aws-lambda-event-sources.ManagedKafkaEventSourceProps
 base-types:@aws-cdk/aws-lambda-event-sources.SelfManagedKafkaEventSourceProps
+
+# fixed vpc property of BaseLoadBalancer so it correctly implements I(Application|Network)LoadBalancer (i.e: must be optional)
+changed-type:@aws-cdk/aws-elasticloadbalancingv2.ApplicationLoadBalancer.vpc
+changed-type:@aws-cdk/aws-elasticloadbalancingv2.BaseLoadBalancer.vpc
+changed-type:@aws-cdk/aws-elasticloadbalancingv2.NetworkLoadBalancer.vpc
