@@ -742,7 +742,7 @@ describe('record set', () => {
     ];
 
     for (var childHostedZone of childHostedZones) {
-      expect(stack).toHaveResource('Custom::CrossAccountZoneDelegation', {
+      Template.fromStack(stack).hasResourceProperties('Custom::CrossAccountZoneDelegation', {
         ServiceToken: {
           'Fn::GetAtt': [
             'CustomCrossAccountZoneDelegationCustomResourceProviderHandler44A84265',
@@ -803,7 +803,7 @@ describe('record set', () => {
     ];
 
     for (var policyName of policyNames) {
-      expect(stack).toHaveResource('AWS::IAM::Policy', {
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         PolicyName: policyName,
         PolicyDocument: {
           Version: '2012-10-17',
