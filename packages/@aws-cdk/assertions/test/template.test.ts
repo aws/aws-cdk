@@ -1,4 +1,4 @@
-import { App, CfnMapping, CfnOutput, CfnResource, NestedStack, Stack } from '@aws-cdk/core';
+import { App, CfnMapping, CfnOutput, CfnParameter, CfnResource, NestedStack, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { Capture, Match, Template } from '../lib';
 
@@ -701,6 +701,156 @@ describe('Template', () => {
         [
           /1 mappings/,
           /Expected Fred but received Baz/,
+        ],
+        done,
+      );
+      done();
+    });
+  });
+
+  describe('findParameters', () => {
+    test('matching', () => {
+      const stack = new Stack();
+      new CfnParameter(stack, 'p1', {
+        type: 'String',
+        description: 'string parameter',
+      });
+      new CfnParameter(stack, 'p2', {
+        type: 'Number',
+        description: 'number parameter',
+      });
+
+      const inspect = Template.fromStack(stack);
+      const result = inspect.findParameters('*', { Type: 'String' });
+      expect(result).toEqual({
+        p1: {
+          Description: 'string parameter',
+          Type: 'String',
+        },
+      });
+    });
+
+    test('not matching', () => {
+      const stack = new Stack();
+      new CfnParameter(stack, 'p1', {
+        type: 'String',
+        description: 'string parameter',
+      });
+
+      const inspect = Template.fromStack(stack);
+      const result = inspect.findParameters('*', { Type: 'Number' });
+      expect(Object.keys(result).length).toEqual(0);
+    });
+
+    test('matching with specific parameter name', () => {
+      const stack = new Stack();
+      new CfnParameter(stack, 'p1', {
+        type: 'String',
+        description: 'string parameter',
+      });
+      new CfnParameter(stack, 'p2', {
+        type: 'Number',
+        description: 'number parameter',
+      });
+
+      const inspect = Template.fromStack(stack);
+      const result = inspect.findParameters('p1', { Type: 'String' });
+      expect(result).toEqual({
+        p1: {
+          Description: 'string parameter',
+          Type: 'String',
+        },
+      });
+    });
+
+    test('not matching specific parameter name', () => {
+      const stack = new Stack();
+      new CfnParameter(stack, 'p1', {
+        type: 'String',
+        description: 'string parameter',
+      });
+      new CfnParameter(stack, 'p2', {
+        type: 'Number',
+        description: 'number parameter',
+      });
+
+      const inspect = Template.fromStack(stack);
+      const result = inspect.findParameters('p3', { Type: 'String' });
+      expect(Object.keys(result).length).toEqual(0);
+    });
+  });
+
+  describe('hasParameter', () => {
+    test('matching', () => {
+      const stack = new Stack();
+      new CfnParameter(stack, 'p1', {
+        type: 'String',
+        description: 'string parameter',
+      });
+      new CfnParameter(stack, 'p2', {
+        type: 'Number',
+        description: 'number parameter',
+      });
+
+      const inspect = Template.fromStack(stack);
+      expect(() => inspect.findParameters('p3', { Type: 'String' })).not.toThrow();
+    });
+
+    test('not matching', (done) => {
+      const stack = new Stack();
+      new CfnParameter(stack, 'p1', {
+        type: 'String',
+        description: 'string parameter',
+      });
+      new CfnParameter(stack, 'p2', {
+        type: 'Number',
+        description: 'number parameter',
+      });
+
+      const inspect = Template.fromStack(stack);
+      expectToThrow(
+        () => inspect.hasParameter('*', { Type: 'CommaDelimitedList' }),
+        [
+          /2 parameters/,
+          /Expected CommaDelimitedList but received String/,
+        ],
+        done,
+      );
+      done();
+    });
+
+    test('matching specific parameter name', () => {
+      const stack = new Stack();
+      new CfnParameter(stack, 'p1', {
+        type: 'String',
+        description: 'string parameter',
+      });
+      new CfnParameter(stack, 'p2', {
+        type: 'Number',
+        description: 'number parameter',
+      });
+
+      const inspect = Template.fromStack(stack);
+      expect(() => inspect.findParameters('p1', { Type: 'String' })).not.toThrow();
+    });
+
+    test('not matching specific parameter name', (done) => {
+      const stack = new Stack();
+      new CfnParameter(stack, 'p1', {
+        type: 'String',
+        description: 'string parameter',
+      });
+      new CfnParameter(stack, 'p2', {
+        type: 'Number',
+        description: 'number parameter',
+      });
+
+      const inspect = Template.fromStack(stack);
+      expectToThrow(
+        () => inspect.hasParameter('p2', { Type: 'CommaDelimitedList' }),
+        [
+          /1 parameter/,
+          /Expected CommaDelimitedList but received Number/,
         ],
         done,
       );
