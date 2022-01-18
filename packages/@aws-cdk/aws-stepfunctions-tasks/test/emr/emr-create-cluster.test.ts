@@ -1,7 +1,6 @@
 import { Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
-import { Token } from '@aws-cdk/core';
 import * as cdk from '@aws-cdk/core';
 import { EmrCreateCluster } from '../../lib';
 
@@ -39,7 +38,7 @@ test('Create Cluster with an unresolved release label', () => {
   new EmrCreateCluster(stack, 'Task', {
     instances: {},
     name: 'Cluster',
-    releaseLabel: Token.asString({}),
+    releaseLabel: cdk.Token.asString({}),
   });
 });
 
