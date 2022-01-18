@@ -55,7 +55,7 @@ test('continue to the next page if it exists', async () => {
     `[${blue('loggroup')}] ${yellow(HUMAN_TIME)} message`,
   );
   expect(stderrMock.mock.calls[1][0]).toContain(
-    `[${blue('loggroup')}] ${yellow(new Date(T100).toLocaleTimeString())} (...messages supressed...)`,
+    `[${blue('loggroup')}] ${yellow(new Date(T100).toLocaleTimeString())} (...messages suppressed...)`,
   );
 });
 

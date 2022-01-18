@@ -182,8 +182,9 @@ export class CloudWatchLogEventMonitor {
         limit: 100,
         startTime: startTime,
       }).promise();
+      const filteredEvents = response.events ?? [];
 
-      for (const event of response.events ?? []) {
+      for (const event of filteredEvents) {
         if (event.message) {
           events.push({
             message: event.message,
@@ -200,9 +201,9 @@ export class CloudWatchLogEventMonitor {
       // if we have > 100 events let the user know some
       // messages have been supressed. We are essentially
       // showing them a sampling (10000 events printed out is not very useful)
-      if (response.nextToken) {
+      if (filteredEvents.length > 0 && response.nextToken) {
         events.push({
-          message: '(...messages supressed...)',
+          message: '(...messages suppressed...)',
           logGroupName,
           timestamp: new Date(endTime),
         });
