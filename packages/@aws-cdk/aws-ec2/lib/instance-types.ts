@@ -725,6 +725,16 @@ export enum InstanceClass {
    * Multi-stream video transcoding instances for resolutions up to 4K UHD, 1st generation
    */
   VT1 = 'vt1',
+
+  /**
+   * High performance computing based on AMD EPYC, 6th generation
+   */
+  HIGH_PERFORMANCE_COMPUTING6_AMD = 'hpc6a',
+
+  /**
+   * High performance computing based on AMD EPYC, 6th generation
+   */
+  HPC6A = 'hpc6a',
 }
 
 /**
