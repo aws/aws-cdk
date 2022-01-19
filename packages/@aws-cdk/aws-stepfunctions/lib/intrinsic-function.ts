@@ -1,7 +1,6 @@
 import { isValidJsonPath } from '.';
-import { JsonPathToken } from './json-path';
 
-type arg = number | string | JsonPathToken;
+type arg = number | string;
 
 /**
  * Create intrinsic functions string from each args
