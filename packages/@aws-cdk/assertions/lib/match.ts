@@ -1,7 +1,7 @@
+import * as minimatch from 'minimatch';
 import { Matcher, MatchResult } from './matcher';
 import { AbsentMatch } from './private/matchers/absent';
 import { getType } from './private/type';
-import * as minimatch from 'minimatch';
 
 /**
  * Partial and special matching during template assertions.
