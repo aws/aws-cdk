@@ -191,6 +191,10 @@ describe('', () => {
               'Action': [
                 's3:DeleteObject*',
                 's3:PutObject',
+                's3:PutObjectLegalHold',
+                's3:PutObjectRetention',
+                's3:PutObjectTagging',
+                's3:PutObjectVersionTagging',
                 's3:Abort*',
               ],
               'Effect': 'Allow',
@@ -247,6 +251,10 @@ describe('', () => {
               'Action': [
                 's3:DeleteObject*',
                 's3:PutObject',
+                's3:PutObjectLegalHold',
+                's3:PutObjectRetention',
+                's3:PutObjectTagging',
+                's3:PutObjectVersionTagging',
                 's3:Abort*',
               ],
               'Effect': 'Allow',

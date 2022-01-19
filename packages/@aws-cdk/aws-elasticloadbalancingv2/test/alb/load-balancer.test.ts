@@ -183,7 +183,14 @@ describe('tests', () => {
         Version: '2012-10-17',
         Statement: [
           {
-            Action: ['s3:PutObject', 's3:Abort*'],
+            Action: [
+              's3:PutObject',
+              's3:PutObjectLegalHold',
+              's3:PutObjectRetention',
+              's3:PutObjectTagging',
+              's3:PutObjectVersionTagging',
+              's3:Abort*',
+            ],
             Effect: 'Allow',
             Principal: { AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::127311923021:root']] } },
             Resource: {
@@ -236,7 +243,14 @@ describe('tests', () => {
         Version: '2012-10-17',
         Statement: [
           {
-            Action: ['s3:PutObject', 's3:Abort*'],
+            Action: [
+              's3:PutObject',
+              's3:PutObjectLegalHold',
+              's3:PutObjectRetention',
+              's3:PutObjectTagging',
+              's3:PutObjectVersionTagging',
+              's3:Abort*',
+            ],
             Effect: 'Allow',
             Principal: { AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::127311923021:root']] } },
             Resource: {
