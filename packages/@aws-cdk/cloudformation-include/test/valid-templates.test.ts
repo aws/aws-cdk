@@ -281,18 +281,9 @@ describe('CDK Include', () => {
   test('can ingest a template with Fn::Sub using dotted attributes in map form and output it unchanged', () => {
     includeTestTemplate(stack, 'fn-sub-map-dotted-attributes.json');
 
-    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
-      "BucketName": {
-        "Fn::Sub": [
-          "${ELB.SourceSecurityGroup.GroupName}-${LoadBalancerName}",
-          {
-            "LoadBalancerName": {
-              "Ref": "ELB",
-            },
-          },
-        ],
-      },
-    });
+    Template.fromStack(stack).templateMatches(
+      loadTestFileToJsObject('fn-sub-map-dotted-attributes.json'),
+    );
   });
 
   test('preserves an empty map passed to Fn::Sub', () => {
@@ -612,13 +603,9 @@ describe('CDK Include', () => {
     const cfnBucket = cfnTemplate.getResource('Bucket');
 
     expect(cfnBucket.cfnOptions.updatePolicy).toBeDefined();
-    Template.fromStack(stack).hasResource('AWS::S3::Bucket', {
-      "UpdatePolicy": {
-        "AutoScalingReplacingUpdate": {
-          "WillReplace": false,
-        },
-      },
-    });
+    Template.fromStack(stack).templateMatches(
+      loadTestFileToJsObject('resource-attribute-update-policy.json'),
+    );
   });
 
   test("correctly handles referencing the ingested template's resources across Stacks", () => {

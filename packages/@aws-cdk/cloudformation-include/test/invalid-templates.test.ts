@@ -4,8 +4,8 @@ import * as constructs from 'constructs';
 import * as inc from '../lib';
 
 describe('CDK Include', () => {
-  let stack: core.Stack;
   let app: core.App;
+  let stack: core.Stack;
 
   beforeEach(() => {
     app = new core.App();
