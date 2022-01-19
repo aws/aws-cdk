@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import { Match, Template } from '@aws-cdk/assertions';
 import { AutoScalingGroup } from '@aws-cdk/aws-autoscaling';
 import { Certificate } from '@aws-cdk/aws-certificatemanager';
