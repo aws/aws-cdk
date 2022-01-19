@@ -5,6 +5,7 @@ import { Match } from './match';
 import { Matcher } from './matcher';
 import { findMappings, hasMapping } from './private/mappings';
 import { findOutputs, hasOutput } from './private/outputs';
+import { findParameters, hasParameter } from './private/parameters';
 import { countResources, findResources, hasResource, hasResourceProperties } from './private/resources';
 import { Template as TemplateType } from './private/template';
 
@@ -106,6 +107,30 @@ export class Template {
    */
   public findResources(type: string, props: any = {}): { [key: string]: { [key: string]: any } } {
     return findResources(this.template, type, props);
+  }
+
+  /**
+   * Assert that a Parameter with the given properties exists in the CloudFormation template.
+   * By default, performs partial matching on the parameter, via the `Match.objectLike()`.
+   * To configure different behavior, use other matchers in the `Match` class.
+   * @param logicalId the name of the parameter. Provide `'*'` to match all parameters in the template.
+   * @param props the parameter as should be expected in the template.
+   */
+  public hasParameter(logicalId: string, props: any): void {
+    const matchError = hasParameter(this.template, logicalId, props);
+    if (matchError) {
+      throw new Error(matchError);
+    }
+  }
+
+  /**
+   * Get the set of matching Parameters that match the given properties in the CloudFormation template.
+   * @param logicalId the name of the parameter. Provide `'*'` to match all parameters in the template.
+   * @param props by default, matches all Parameters in the template.
+   * When a literal object is provided, performs a partial match via `Match.objectLike()`.
+   * Use the `Match` APIs to configure a different behaviour.   */
+  public findParameters(logicalId: string, props: any = {}): { [key: string]: { [key: string]: any } } {
+    return findParameters(this.template, logicalId, props);
   }
 
   /**
