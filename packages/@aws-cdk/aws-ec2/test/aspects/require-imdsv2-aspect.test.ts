@@ -103,7 +103,7 @@ describe('RequireImdsv2Aspect', () => {
       expect(instance.node.metadataEntry).toContainEqual({
         data: expect.stringContaining('Cannot toggle IMDSv1 because this Instance is associated with an existing Launch Template.'),
         type: 'aws:cdk:warning',
-        trace: expect.anything(),
+        trace: undefined,
       });
     });
 
@@ -200,7 +200,7 @@ describe('RequireImdsv2Aspect', () => {
       expect(launchTemplate.node.metadataEntry).toContainEqual({
         data: expect.stringContaining('LaunchTemplateData is a CDK token.'),
         type: 'aws:cdk:warning',
-        trace: expect.anything(),
+        trace: undefined,
       });
     });
 
@@ -220,7 +220,7 @@ describe('RequireImdsv2Aspect', () => {
       expect(launchTemplate.node.metadataEntry).toContainEqual({
         data: expect.stringContaining('LaunchTemplateData.MetadataOptions is a CDK token.'),
         type: 'aws:cdk:warning',
-        trace: expect.anything(),
+        trace: undefined,
       });
     });
 

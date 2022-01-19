@@ -1560,7 +1560,7 @@ describe('vpc', () => {
       expect(vpc.node.metadataEntry).toContainEqual({
         data: expect.stringContaining("fromVpcAttributes: 'availabilityZones' is a list token: the imported VPC will not work with constructs that require a list of subnets at synthesis time. Use 'Vpc.fromLookup()' or 'Fn.importListValue' instead."),
         type: 'aws:cdk:warning',
-        trace: expect.anything(),
+        trace: undefined,
       });
     });
 

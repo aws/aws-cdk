@@ -13,6 +13,14 @@ beforeEach(() => {
   stack = new cdk.Stack(app);
 });
 
+test('blahblah', () => {
+  new secretsmanager.Secret(stack, 'Secret');
+
+  Template.fromStack(stack).hasResourceProperties('AWS::EC2::Instance', Match.not({
+    InstanceType: 'asdf',
+  }));
+});
+
 test('default secret', () => {
   // WHEN
   new secretsmanager.Secret(stack, 'Secret');
