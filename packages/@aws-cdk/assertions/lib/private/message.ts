@@ -3,15 +3,14 @@ export type Messages = {
 }
 
 export type Message = {
-  level: string;
+  level: 'info' | 'warning' | 'error';
   id: string;
   entry: MetadataEntry;
   [key: string]: any;
 };
 
-type MetadataEntry = {
+export type MetadataEntry = {
   type: string,
   data?: any,
   trace?: string[],
-  [key: string]: any;
 }

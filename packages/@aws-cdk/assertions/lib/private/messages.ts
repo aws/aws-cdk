@@ -31,9 +31,12 @@ export function hasMessage(messages: Messages, logicalId: string, props: any): s
   ].join('\n');
 }
 
+/**
+ * We redact the stack trace by default because it is unnecessarily long and unintelligible.
+ */
 function formatMessage(match: MatchResult, renderTrace: boolean = false): MatchResult {
   if (!renderTrace) {
-    match.target.entry.trace = ['redacted'];
+    match.target.entry.trace = 'redacted';
   }
   return match;
 }

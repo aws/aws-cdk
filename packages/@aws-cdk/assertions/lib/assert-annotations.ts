@@ -29,13 +29,13 @@ export class AssertAnnotations {
   }
 
   /**
-   * Assert that a Message with the given properties exists in the CloudFormation template.
+   * Assert that a Message with the given properties exists in the synthesized CDK `Stack`.
    * By default, performs partial matching on the parameter, via the `Match.objectLike()`.
    * To configure different behavior, use other matchers in the `Match` class.
    * @param logicalId the name of the parameter. Provide `'*'` to match all parameters in the template.
    * @param props the message as should be expected.
    */
-  public hasMessage(logicalId: string, props: any): void {
+  public hasMessage(logicalId: string, props: PartialMessage): void {
     const matchError = hasMessage(this._messages, logicalId, props);
     if (matchError) {
       throw new Error(matchError);
@@ -49,8 +49,86 @@ export class AssertAnnotations {
    * When a literal is provided, performs a partial match via `Match.objectLike()`.
    * Use the `Match` APIs to configure a different behaviour.
    */
-  public findMessage(logicalId: string, props: any): Message[] {
+  public findMessage(logicalId: string, props: PartialMessage): Message[] {
     return convertMessagesTypeToArray(findMessage(this._messages, logicalId, props) as Messages);
+  }
+
+  /**
+   * Assert that an Error with the given properties exists in the synthesized CDK `Stack`.
+   * By default, performs partial matching on the parameter, via the `Match.objectLike()`.
+   * To configure different behavior, use other matchers in the `Match` class.
+   * @param logicalId the name of the parameter. Provide `'*'` to match all parameters in the template.
+   * @param props the error as should be expected.
+   */
+  public hasError(logicalId: string, props: PartialMessage): void {
+    if (props.level && props.level !== 'error') {
+      throw new Error(`Message level mismatch: expected no level or 'error' but got ${props.level}`);
+    }
+
+    const matchError = hasMessage(this._messages, logicalId, {
+      ...props,
+      level: 'error',
+    });
+    if (matchError) {
+      throw new Error(matchError);
+    }
+  }
+
+  /**
+   * Get the set of matching Errors of a given id and properties.
+   * @param logicalId the name of the parameter. Provide `'*'` to match all parameters in the template.
+   * @param props by default, matches all resources with the given logicalId.
+   * When a literal is provided, performs a partial match via `Match.objectLike()`.
+   * Use the `Match` APIs to configure a different behaviour.
+   */
+  public findError(logicalId: string, props: PartialMessage): Message[] {
+    if (props.level && props.level !== 'error') {
+      throw new Error(`Message level mismatch: expected no level or 'error' but got ${props.level}`);
+    }
+
+    return convertMessagesTypeToArray(findMessage(this._messages, logicalId, {
+      ...props,
+      level: 'error',
+    }) as Messages);
+  }
+
+  /**
+   * Assert that a Warning with the given properties exists in the synthesized CDK `Stack`.
+   * By default, performs partial matching on the parameter, via the `Match.objectLike()`.
+   * To configure different behavior, use other matchers in the `Match` class.
+   * @param logicalId the name of the parameter. Provide `'*'` to match all parameters in the template.
+   * @param props the warning as should be expected.
+   */
+  public hasWarning(logicalId: string, props: PartialMessage): void {
+    if (props.level && props.level !== 'warning') {
+      throw new Error(`Message level mismatch: expected no level or 'warning' but got ${props.level}`);
+    }
+
+    const matchError = hasMessage(this._messages, logicalId, {
+      ...props,
+      level: 'warning',
+    });
+    if (matchError) {
+      throw new Error(matchError);
+    }
+  }
+
+  /**
+   * Get the set of matching Warnings of a given id and properties.
+   * @param logicalId the name of the parameter. Provide `'*'` to match all parameters in the template.
+   * @param props by default, matches all resources with the given logicalId.
+   * When a literal is provided, performs a partial match via `Match.objectLike()`.
+   * Use the `Match` APIs to configure a different behaviour.
+   */
+  public findWarning(logicalId: string, props: PartialMessage): Message[] {
+    if (props.level && props.level !== 'warning') {
+      throw new Error(`Message level mismatch: expected no level or 'warning' but got ${props.level}`);
+    }
+
+    return convertMessagesTypeToArray(findMessage(this._messages, logicalId, {
+      ...props,
+      level: 'warning',
+    }) as Messages);
   }
 }
 
@@ -67,7 +145,7 @@ function convertMessagesTypeToArray(messages: Messages): Message[] {
   return Object.values(messages) as Message[];
 }
 
-export function toMessages(stack: Stack): any {
+function toMessages(stack: Stack): any {
   const root = stack.node.root;
   if (!Stage.isStage(root)) {
     throw new Error('unexpected: all stacks must be part of a Stage or an App');
@@ -79,4 +157,46 @@ export function toMessages(stack: Stack): any {
   const assembly = root.synth({ force });
 
   return assembly.getStackArtifact(stack.artifactId).messages;
+}
+
+/**
+ * Message interface where all properties are optional.
+ * Used to help filter for specific messages.
+ */
+export interface PartialMessage {
+  /**
+   * The type of message. Can be 'info', 'warning', or 'error'.
+   */
+  readonly level?: 'info' | 'warning' | 'error';
+
+  /**
+   * The logical id of the message. For example, '/Default/Foo'.
+   */
+  readonly id?: string;
+
+  /**
+   * The data of the message.
+   */
+  readonly entry?: PartialMetadataEntry;
+}
+
+/**
+ * MetadataEntry interface where all properties are optional.
+ * Used to help filter for specific messages.
+ */
+export interface PartialMetadataEntry {
+  /**
+   * The type of message.
+   */
+  readonly type?: string,
+
+  /**
+   * The data of the message.
+   */
+  readonly data?: any,
+
+  /**
+   * The stack trace.
+   */
+  readonly trace?: string[],
 }
