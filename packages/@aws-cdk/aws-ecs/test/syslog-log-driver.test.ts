@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Match, Template } from '@aws-cdk/assertions';
 import * as cdk from '@aws-cdk/core';
 import * as ecs from '../lib';
 
@@ -10,8 +10,6 @@ describe('syslog log driver', () => {
   beforeEach(() => {
     stack = new cdk.Stack();
     td = new ecs.Ec2TaskDefinition(stack, 'TaskDefinition');
-
-
   });
 
   test('create a syslog log driver with options', () => {
@@ -25,20 +23,18 @@ describe('syslog log driver', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
-        {
+        Match.objectLike({
           LogConfiguration: {
             LogDriver: 'syslog',
             Options: {
               tag: 'hello',
             },
           },
-        },
+        }),
       ],
     });
-
-
   });
 
   test('create a syslog log driver without options', () => {
@@ -50,17 +46,15 @@ describe('syslog log driver', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
-        {
+        Match.objectLike({
           LogConfiguration: {
             LogDriver: 'syslog',
           },
-        },
+        }),
       ],
     });
-
-
   });
 
   test('create a syslog log driver using syslog', () => {
@@ -72,17 +66,15 @@ describe('syslog log driver', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
-        {
+        Match.objectLike({
           LogConfiguration: {
             LogDriver: 'syslog',
             Options: {},
           },
-        },
+        }),
       ],
     });
-
-
   });
 });
