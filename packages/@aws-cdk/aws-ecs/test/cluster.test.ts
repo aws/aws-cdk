@@ -2140,6 +2140,21 @@ describe('cluster', () => {
 
 
   });
+
+  test('When importing ECS Cluster via Arn', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const clusterName = 'my-cluster';
+    const region = 'service-region';
+    const account = 'service-account';
+    const clusterArn = `arn:aws:ecs:${region}:${account}:service/${clusterName}`;
+    const cluster = ecs.Cluster.fromClusterArn(stack, 'Cluster', clusterArn);
+
+    // THEN
+    expect(cluster.clusterName).toEqual(clusterName);
+    expect(cluster.env.region).toEqual(region);
+    expect(cluster.env.account).toEqual(account);
+  });
 });
 
 test('can add ASG capacity via Capacity Provider by not specifying machineImageType', () => {

@@ -6,7 +6,7 @@ import * as kms from '@aws-cdk/aws-kms';
 import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cloudmap from '@aws-cdk/aws-servicediscovery';
-import { Duration, Lazy, IResource, Resource, Stack, Aspects, IAspect, IConstruct } from '@aws-cdk/core';
+import { Duration, Lazy, IResource, Resource, Stack, Aspects, IAspect, IConstruct, ArnFormat } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { BottleRocketImage, EcsOptimizedAmi } from './amis';
 import { InstanceDrainHook } from './drain-hook/instance-drain-hook';
@@ -103,6 +103,28 @@ export class Cluster extends Resource implements ICluster {
    */
   public static fromClusterAttributes(scope: Construct, id: string, attrs: ClusterAttributes): ICluster {
     return new ImportedCluster(scope, id, attrs);
+  }
+
+  /**
+   * Import an existing cluster to the stack from the cluster ARN.
+   */
+  public static fromClusterArn(scope: Construct, id: string, clusterArn: string): ICluster {
+    const stack = Stack.of(scope);
+    const clusterName = stack.splitArn(clusterArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName as string;
+    class Import extends Resource implements ICluster {
+      public readonly clusterArn = clusterArn;
+      public readonly clusterName = clusterName;
+      public readonly hasEc2Capacity = false;
+      public readonly connections = new ec2.Connections({
+        securityGroups: [],
+      });
+      get vpc(): ec2.IVpc {
+        throw new Error('vpc is not available for a Cluster imported using fromClusterArn(), please use fromClusterAttributes() instead.');
+      }
+    }
+    return new Import(scope, id, {
+      environmentFromArn: clusterArn,
+    });
   }
 
   /**
