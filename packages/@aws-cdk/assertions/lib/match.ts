@@ -1,6 +1,7 @@
 import { Matcher, MatchResult } from './matcher';
 import { AbsentMatch } from './private/matchers/absent';
 import { getType } from './private/type';
+import * as minimatch from 'minimatch';
 
 /**
  * Partial and special matching during template assertions.
@@ -81,8 +82,9 @@ export abstract class Match {
   }
 
   /**
-   * Matches targets according to a regular expression
-   * @param pattern
+   * Matches targets according to a glob pattern, as supported
+   * by minimatch (https://github.com/isaacs/minimatch)
+   * @param pattern a glob pattern
    */
   public static stringLike(pattern: string): Matcher {
     return new StringLikeMatch('stringLike', pattern);
@@ -397,7 +399,6 @@ class StringLikeMatch extends Matcher {
 
 
   test(actual: any): MatchResult {
-    const regex = new RegExp(`^${this.pattern.split('*').map(escapeRegex).join('.*')}$`, 'm');
     const result = new MatchResult(actual);
 
     if (typeof actual !== 'string') {
@@ -408,19 +409,15 @@ class StringLikeMatch extends Matcher {
       });
     }
 
-    if (!regex.test(actual)) {
+    if (!minimatch(actual, this.pattern)) {
       result.recordFailure({
         matcher: this,
         path: [],
-        message: `String did not match pattern '${this.pattern}'`,
+        message: `String '${actual}' did not match pattern '${this.pattern}'`,
       });
     }
 
     return result;
   }
 
-}
-
-function escapeRegex(s: string): string {
-  return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
 }

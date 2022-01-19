@@ -390,13 +390,13 @@ describe('Matchers', () => {
 
     test('simple', () => {
       matcher = Match.stringLike('*includeHeaders = true*');
-      expectFailure(matcher, 'const includeHeaders = false;', [/String did not match pattern/]);
+      expectFailure(matcher, 'const includeHeaders = false;', [/did not match pattern/]);
       expectPass(matcher, 'const includeHeaders = true;');
     });
 
     test('nested in object', () => {
       matcher = Match.objectLike({ foo: Match.stringLike('*includeHeaders = true*') });
-      expectFailure(matcher, { foo: 'const includeHeaders = false;' }, [/String did not match pattern/]);
+      expectFailure(matcher, { foo: 'const includeHeaders = false;' }, [/did not match pattern/]);
       expectPass(matcher, { foo: 'const includeHeaders = true;' });
     });
   });

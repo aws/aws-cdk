@@ -68,14 +68,16 @@
     "@types/jest": "^27.4.0",
     "constructs": "^3.3.69",
     "jest": "^27.4.7",
-    "ts-jest": "^27.1.2"
+    "ts-jest": "^27.1.2",
+    "@types/minimatch": "3.0.5"
   },
   "dependencies": {
     "@aws-cdk/cloud-assembly-schema": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
     "constructs": "^3.3.69",
-    "fs-extra": "^9.1.0"
+    "fs-extra": "^9.1.0",
+    "minimatch": "3.0.4"
   },
   "peerDependencies": {
     "@aws-cdk/cloud-assembly-schema": "0.0.0",
@@ -84,7 +86,8 @@
     "constructs": "^3.3.69"
   },
   "bundledDependencies": [
-    "fs-extra"
+    "fs-extra",
+    "minimatch"
   ],
   "repository": {
     "url": "https://github.com/aws/aws-cdk.git",
