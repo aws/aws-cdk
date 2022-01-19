@@ -111,15 +111,19 @@ export class Cluster extends Resource implements ICluster {
   public static fromClusterArn(scope: Construct, id: string, clusterArn: string): ICluster {
     const stack = Stack.of(scope);
     const clusterName = stack.splitArn(clusterArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName as string;
+    const errorSuffix = 'is not available for a Cluster imported using fromClusterArn(), please use fromClusterAttributes() instead.';
+
     class Import extends Resource implements ICluster {
       public readonly clusterArn = clusterArn;
       public readonly clusterName = clusterName;
-      public readonly hasEc2Capacity = false;
-      public readonly connections = new ec2.Connections({
-        securityGroups: [],
-      });
+      get hasEc2Capacity(): boolean {
+        throw new Error(`hasEc2Capacity ${errorSuffix}`);
+      }
+      get connections(): ec2.Connections {
+        throw new Error(`connections ${errorSuffix}`);
+      }
       get vpc(): ec2.IVpc {
-        throw new Error('vpc is not available for a Cluster imported using fromClusterArn(), please use fromClusterAttributes() instead.');
+        throw new Error(`vpc ${errorSuffix}`);
       }
     }
     return new Import(scope, id, {
