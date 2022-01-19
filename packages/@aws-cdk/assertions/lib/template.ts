@@ -1,6 +1,6 @@
-import * as fs from 'fs';
 import * as path from 'path';
 import { Stack, Stage } from '@aws-cdk/core';
+import * as fs from 'fs-extra';
 import { Match } from './match';
 import { Matcher } from './matcher';
 import { findMappings, hasMapping } from './private/mappings';
@@ -201,7 +201,7 @@ export class Template {
   }
 }
 
-export function toTemplate(stack: Stack): any {
+function toTemplate(stack: Stack): any {
   const root = stack.node.root;
   if (!Stage.isStage(root)) {
     throw new Error('unexpected: all stacks must be part of a Stage or an App');
