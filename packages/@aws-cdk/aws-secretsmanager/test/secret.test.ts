@@ -271,7 +271,7 @@ test('grantRead', () => {
   secret.grantRead(role);
 
   // THEN
-  expect(stack).toHaveResource('AWS::IAM::Policy', {
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
     PolicyDocument: {
       Version: '2012-10-17',
       Statement: [{
