@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as cdk from '@aws-cdk/core';
 import * as signer from '../lib';
 
@@ -14,7 +14,7 @@ describe('signing profile', () => {
     const platform = signer.Platform.AWS_LAMBDA_SHA384_ECDSA;
     new signer.SigningProfile( stack, 'SigningProfile', { platform } );
 
-    expect(stack).toHaveResource('AWS::Signer::SigningProfile', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Signer::SigningProfile', {
       PlatformId: platform.platformId,
       SignatureValidityPeriod: {
         Type: 'MONTHS',
@@ -30,7 +30,7 @@ describe('signing profile', () => {
       signatureValidity: cdk.Duration.days( 7 ),
     } );
 
-    expect(stack).toHaveResource('AWS::Signer::SigningProfile', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Signer::SigningProfile', {
       PlatformId: platform.platformId,
       SignatureValidityPeriod: {
         Type: 'DAYS',
@@ -47,7 +47,7 @@ describe('signing profile', () => {
     cdk.Tags.of(signing).add('tag2', 'value2');
     cdk.Tags.of(signing).add('tag3', '');
 
-    expect(stack).toHaveResource('AWS::Signer::SigningProfile', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Signer::SigningProfile', {
       PlatformId: platform.platformId,
       SignatureValidityPeriod: {
         Type: 'MONTHS',
@@ -109,7 +109,7 @@ describe('signing profile', () => {
           ],
         ],
       });
-      expect(stack).toMatchTemplate({});
+      Template.fromStack(stack).templateMatches({});
     });
   } );
 });
