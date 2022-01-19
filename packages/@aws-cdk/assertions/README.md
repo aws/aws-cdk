@@ -251,7 +251,7 @@ This matcher can be combined with any of the other matchers.
 // The following will NOT throw an assertion error
 template.hasResourceProperties('Foo::Bar', {
   Fred: {
-    Wobble: [ Match.anyValue(), "Flip" ],
+    Wobble: [ Match.anyValue(), Match.anyValue() ],
   },
 });
 
@@ -371,7 +371,7 @@ template.hasResourceProperties('Foo::Bar', {
 
 ## Capturing Values
 
-This matcher APIs documented above allow capturing values in the matching entry
+The matcher APIs documented above allow capturing values in the matching entry
 (Resource, Output, Mapping, etc.). The following code captures a string from a
 matching resource.
 
@@ -463,3 +463,72 @@ fredCapture.asString(); // returns "Flob"
 fredCapture.next();     // returns true
 fredCapture.asString(); // returns "Quib"
 ```
+
+## Asserting Annotations
+
+In addition to template matching, we provide an API for annotation matching.
+[Annotations](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.Annotations.html)
+can be added via the [Aspects](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.Aspects.html)
+API. which you can learn more about
+[here](https://docs.aws.amazon.com/cdk/v2/guide/aspects.html).
+
+Say you have a `MyAspect` and a `MyStack` that uses `MyAspect`:
+
+```ts nofixture
+import * as cdk from '@aws-cdk/core';
+import { Construct, IConstruct } from 'constructs';
+
+class MyAspect implements cdk.IAspect {
+  public visit(node: IConstruct): void {
+    if (node instanceof cdk.CfnResource && node.cfnResourceType === 'Foo::Bar') {
+      this.error(node, 'we do not want a Foo::Bar resource');
+    }
+  }
+
+  protected error(node: IConstruct, message: string): void {
+    cdk.Annotations.of(node).addError(message);
+  }
+}
+
+class MyStack extends cdk.Stack {
+  constructor(scope: Construct, id: string) {
+    super(scope, id);
+
+    const stack = new cdk.Stack();
+    new cdk.CfnResource(stack, 'Foo', {
+      type: 'Foo::Bar',
+      properties: {
+        Fred: 'Thud',
+      },
+    });
+    cdk.Aspects.of(stack).add(new MyAspect());
+  }
+}
+```
+
+We can then assert that the stack contains the expected Error:
+
+```ts
+AssertAnnotations.fromStack(stack).hasMessage('/Default/Foo', {
+  level: 'error',
+  entry: {
+    data: 'we do not want a Foo::Bar resource',
+  },
+});
+```
+
+In addition to `hasMessage()`, we can also use `hasError()` or `hasWarning()` to similar
+effect:
+
+```ts
+AssertAnnotations.fromStack(stack).hasError('/Default/Foo', {
+  entry: {
+    data: 'we do not want a Foo::Bar resource',
+  }
+});
+```
+
+Similarly to `Template`, `AssertAnnotations` also provides APIs to retrieve matching
+messages. The `findMessages()` API is complementary to the `hasMessages()` API, except
+instead of asserting its presence, it returns the set of matching messages. Each
+`hasXxx()` API has a complementary `findXxx()` API.
