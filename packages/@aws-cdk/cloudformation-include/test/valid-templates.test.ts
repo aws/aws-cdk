@@ -624,7 +624,7 @@ describe('CDK Include', () => {
 
     expect(cfnBucket.cfnOptions.updatePolicy).toBeDefined();
 
-    // convert string types to boolean equivalents to appease test framework
+    // convert string values to boolean equivalents to appease test framework
     const template = loadTestFileToJsObject('resource-attribute-update-policy.json');
     template.Resources.Bucket.UpdatePolicy.AutoScalingReplacingUpdate.WillReplace = false;
     template.Resources.Bucket.UpdatePolicy.EnableVersionUpgrade = true;
