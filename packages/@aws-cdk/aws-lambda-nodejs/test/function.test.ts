@@ -1,7 +1,6 @@
-import '@aws-cdk/assert-internal/jest';
 import * as fs from 'fs';
 import * as path from 'path';
-import { ABSENT } from '@aws-cdk/assert-internal';
+import { Template, Match } from '@aws-cdk/assertions';
 import { Vpc } from '@aws-cdk/aws-ec2';
 import { CodeConfig, Runtime } from '@aws-cdk/aws-lambda';
 import { Stack } from '@aws-cdk/core';
@@ -40,7 +39,7 @@ test('NodejsFunction with .ts handler', () => {
     entry: expect.stringContaining('function.test.handler1.ts'), // Automatically finds .ts handler file
   }));
 
-  expect(stack).toHaveResource('AWS::Lambda::Function', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
     Handler: 'index.handler',
     Runtime: 'nodejs14.x',
   });
@@ -155,7 +154,7 @@ test('configures connection reuse for aws sdk', () => {
   // WHEN
   new NodejsFunction(stack, 'handler1');
 
-  expect(stack).toHaveResource('AWS::Lambda::Function', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
     Environment: {
       Variables: {
         AWS_NODEJS_CONNECTION_REUSE_ENABLED: '1',
@@ -170,8 +169,8 @@ test('can opt-out of connection reuse for aws sdk', () => {
     awsSdkConnectionReuse: false,
   });
 
-  expect(stack).toHaveResource('AWS::Lambda::Function', {
-    Environment: ABSENT,
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+    Environment: Match.absent(),
   });
 });
 
@@ -183,7 +182,7 @@ test('NodejsFunction in a VPC', () => {
   new NodejsFunction(stack, 'handler1', { vpc });
 
   // THEN
-  expect(stack).toHaveResource('AWS::Lambda::Function', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
     VpcConfig: {
       SecurityGroupIds: [
         {
