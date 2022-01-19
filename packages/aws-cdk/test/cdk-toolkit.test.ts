@@ -127,6 +127,13 @@ describe('readCurrentTemplate', () => {
             },
           },
         },
+        {
+          stackName: 'Test-Stack-A',
+          template,
+          properties: {
+            assumeRoleArn: 'bloop:${AWS::Region}:${AWS::AccountId}',
+          },
+        },
       ],
     });
     mockForEnvironment = jest.fn().mockImplementation(() => { return { sdk: mockCloudExecutable.sdkProvider.sdk, didAssumeRole: true }; });
@@ -142,6 +149,11 @@ describe('readCurrentTemplate', () => {
           Stacks: [
             {
               StackName: 'Test-Stack-C',
+              StackStatus: 'CREATE_COMPLETE',
+              CreationTime: new Date(),
+            },
+            {
+              StackName: 'Test-Stack-A',
               StackStatus: 'CREATE_COMPLETE',
               CreationTime: new Date(),
             },
@@ -327,6 +339,38 @@ describe('readCurrentTemplate', () => {
     });
     expect(mockForEnvironment.mock.calls[1][2]).toEqual({
       assumeRoleArn: 'bloop:here:123456789012',
+    });
+  });
+
+  test('do not print warnings if lookup role not provided in stack artifact', async () => {
+    // GIVEN
+    mockCloudExecutable.sdkProvider.stubSSM({
+      getParameter() {
+        return {};
+      },
+    });
+    const cdkToolkit = new CdkToolkit({
+      cloudExecutable: mockCloudExecutable,
+      configuration: mockCloudExecutable.configuration,
+      sdkProvider: mockCloudExecutable.sdkProvider,
+      cloudFormation: new CloudFormationDeployments({ sdkProvider: mockCloudExecutable.sdkProvider }),
+    });
+
+    // WHEN
+    await cdkToolkit.deploy({
+      selector: { patterns: ['Test-Stack-A'] },
+    });
+
+    // THEN
+    expect(flatten(stderrMock.mock.calls)).not.toEqual(expect.arrayContaining([
+      expect.stringMatching(/Could not assume/),
+      expect.stringMatching(/please upgrade to bootstrap version/),
+    ]));
+    expect(mockCloudExecutable.sdkProvider.sdk.ssm).not.toHaveBeenCalled();
+    expect(mockForEnvironment.mock.calls.length).toEqual(2);
+    expect(mockForEnvironment.mock.calls[0][2]).toEqual({
+      assumeRoleArn: undefined,
+      assumeRoleExternalId: undefined,
     });
   });
 });
