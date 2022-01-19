@@ -525,6 +525,7 @@ describe('test with shared setup', () => {
     });
   });
 });
+
 interface ReusePipelineStackProps extends cdk.StackProps {
   reuseCrossRegionSupportStacks?: boolean;
 }
