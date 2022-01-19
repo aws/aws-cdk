@@ -1,6 +1,6 @@
 import { Annotations, Aspects, CfnResource, IAspect, Stack } from '@aws-cdk/core';
 import { IConstruct } from 'constructs';
-import { AssertAnnotations } from '../lib';
+import { AssertAnnotations, Match } from '../lib';
 
 describe('Messages', () => {
   let stack: Stack;
@@ -71,6 +71,21 @@ describe('Messages', () => {
         },
       })).toThrowError(/"trace": "redacted"/);
     });
+
+    test('with matchers', () => {
+      const annotations = AssertAnnotations.fromStack(stack);
+      annotations.hasMessage('/Default/Foo', Match.not({
+        level: 'warning',
+      }));
+      annotations.hasMessage('/Default/Fred', {
+        level: Match.anyValue(),
+        entry: Match.objectEquals({
+          type: 'aws:cdk:warning',
+          data: 'this is a warning',
+          trace: Match.anyValue(),
+        }),
+      });
+    });
   });
 
   describe('findMessage', () => {
@@ -113,6 +128,24 @@ describe('Messages', () => {
       });
 
       expect(Object.keys(result).length).toEqual(0);
+    });
+
+    test('with matchers', () => {
+      const annotations = AssertAnnotations.fromStack(stack);
+      const resultA = annotations.findMessage('/Default/Foo', Match.not({
+        level: 'warning',
+      }));
+      expect(Object.keys(resultA).length).toEqual(1);
+
+      const resultB = annotations.findMessage('/Default/Fred', {
+        level: Match.anyValue(),
+        entry: Match.objectEquals({
+          type: 'aws:cdk:warning',
+          data: 'this is a warning',
+          trace: Match.anyValue(),
+        }),
+      });
+      expect(Object.keys(resultB).length).toEqual(1);
     });
   });
 

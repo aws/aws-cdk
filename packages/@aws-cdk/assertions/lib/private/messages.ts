@@ -10,7 +10,7 @@ export function findMessage(messages: Messages, logicalId: string, props: any = 
     return {};
   }
 
-  return result.matches as Messages;
+  return result.matches;
 }
 
 export function hasMessage(messages: Messages, logicalId: string, props: any): string | void {
@@ -25,14 +25,16 @@ export function hasMessage(messages: Messages, logicalId: string, props: any): s
     return 'No messages found in the stack';
   }
 
+  const renderTrace = props.entry?.trace ? true : false;
   return [
     `Stack has ${result.analyzedCount} messages, but none match as expected.`,
-    formatFailure(formatMessage(result.closestResult)),
+    formatFailure(formatMessage(result.closestResult, renderTrace)),
   ].join('\n');
 }
 
 /**
  * We redact the stack trace by default because it is unnecessarily long and unintelligible.
+ * The only time where we include the stack trace is when we are asserting against it.
  */
 function formatMessage(match: MatchResult, renderTrace: boolean = false): MatchResult {
   if (!renderTrace) {

@@ -35,7 +35,7 @@ export class AssertAnnotations {
    * @param logicalId the name of the parameter. Provide `'*'` to match all parameters in the template.
    * @param props the message as should be expected.
    */
-  public hasMessage(logicalId: string, props: PartialMessage): void {
+  public hasMessage(logicalId: string, props: any): void {
     const matchError = hasMessage(this._messages, logicalId, props);
     if (matchError) {
       throw new Error(matchError);
@@ -49,7 +49,7 @@ export class AssertAnnotations {
    * When a literal is provided, performs a partial match via `Match.objectLike()`.
    * Use the `Match` APIs to configure a different behaviour.
    */
-  public findMessage(logicalId: string, props: PartialMessage): Message[] {
+  public findMessage(logicalId: string, props: any): Message[] {
     return convertMessagesTypeToArray(findMessage(this._messages, logicalId, props) as Messages);
   }
 
@@ -60,7 +60,7 @@ export class AssertAnnotations {
    * @param logicalId the name of the parameter. Provide `'*'` to match all parameters in the template.
    * @param props the error as should be expected.
    */
-  public hasError(logicalId: string, props: PartialMessage): void {
+  public hasError(logicalId: string, props: any): void {
     if (props.level && props.level !== 'error') {
       throw new Error(`Message level mismatch: expected no level or 'error' but got ${props.level}`);
     }
@@ -81,7 +81,7 @@ export class AssertAnnotations {
    * When a literal is provided, performs a partial match via `Match.objectLike()`.
    * Use the `Match` APIs to configure a different behaviour.
    */
-  public findError(logicalId: string, props: PartialMessage): Message[] {
+  public findError(logicalId: string, props: any): Message[] {
     if (props.level && props.level !== 'error') {
       throw new Error(`Message level mismatch: expected no level or 'error' but got ${props.level}`);
     }
@@ -99,7 +99,7 @@ export class AssertAnnotations {
    * @param logicalId the name of the parameter. Provide `'*'` to match all parameters in the template.
    * @param props the warning as should be expected.
    */
-  public hasWarning(logicalId: string, props: PartialMessage): void {
+  public hasWarning(logicalId: string, props: any): void {
     if (props.level && props.level !== 'warning') {
       throw new Error(`Message level mismatch: expected no level or 'warning' but got ${props.level}`);
     }
@@ -120,7 +120,7 @@ export class AssertAnnotations {
    * When a literal is provided, performs a partial match via `Match.objectLike()`.
    * Use the `Match` APIs to configure a different behaviour.
    */
-  public findWarning(logicalId: string, props: PartialMessage): Message[] {
+  public findWarning(logicalId: string, props: any): Message[] {
     if (props.level && props.level !== 'warning') {
       throw new Error(`Message level mismatch: expected no level or 'warning' but got ${props.level}`);
     }
@@ -157,46 +157,4 @@ function toMessages(stack: Stack): any {
   const assembly = root.synth({ force });
 
   return assembly.getStackArtifact(stack.artifactId).messages;
-}
-
-/**
- * Message interface where all properties are optional.
- * Used to help filter for specific messages.
- */
-export interface PartialMessage {
-  /**
-   * The type of message. Can be 'info', 'warning', or 'error'.
-   */
-  readonly level?: 'info' | 'warning' | 'error';
-
-  /**
-   * The logical id of the message. For example, '/Default/Foo'.
-   */
-  readonly id?: string;
-
-  /**
-   * The data of the message.
-   */
-  readonly entry?: PartialMetadataEntry;
-}
-
-/**
- * MetadataEntry interface where all properties are optional.
- * Used to help filter for specific messages.
- */
-export interface PartialMetadataEntry {
-  /**
-   * The type of message.
-   */
-  readonly type?: string,
-
-  /**
-   * The data of the message.
-   */
-  readonly data?: any,
-
-  /**
-   * The stack trace.
-   */
-  readonly trace?: string[],
 }
