@@ -104,15 +104,15 @@ describe('CDK Include', () => {
 
     Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
       "CorsConfiguration": {
-        CorsRules: [
+        "CorsRules": [
           {
-            AllowedMethods: [
+            "AllowedMethods": [
               "GET",
             ],
-            AllowedOrigins: [
+            "AllowedOrigins": [
               "*",
             ],
-            MaxAge: 10,
+            "MaxAge": 10,
           },
         ],
       },
@@ -624,6 +624,7 @@ describe('CDK Include', () => {
 
     expect(cfnBucket.cfnOptions.updatePolicy).toBeDefined();
 
+    // convert string types to boolean equivalents to appease test framework
     const template = loadTestFileToJsObject('resource-attribute-update-policy.json');
     template.Resources.Bucket.UpdatePolicy.AutoScalingReplacingUpdate.WillReplace = false;
     template.Resources.Bucket.UpdatePolicy.EnableVersionUpgrade = true;
