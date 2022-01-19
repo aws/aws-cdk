@@ -123,11 +123,11 @@ describe('CDK Include', () => {
     includeTestTemplate(stack, 'number-for-string.json');
 
     Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
-      WebsiteConfiguration: {
-        RoutingRules: [
+      "WebsiteConfiguration": {
+        "RoutingRules": [
           {
-            RedirectRule: {
-              HttpRedirectCode: '403',
+            "RedirectRule": {
+              "HttpRedirectCode": '403',
             },
           },
         ],
@@ -139,7 +139,7 @@ describe('CDK Include', () => {
     includeTestTemplate(stack, 'boolean-for-string.json');
 
     Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
-      AccessControl: 'true',
+      "AccessControl": "true",
     });
   });
 
