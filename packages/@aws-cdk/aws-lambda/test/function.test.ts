@@ -10,6 +10,7 @@ import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as signer from '@aws-cdk/aws-signer';
 import * as sqs from '@aws-cdk/aws-sqs';
+import * as sns from '@aws-cdk/aws-sns';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
 import * as constructs from 'constructs';
@@ -674,6 +675,60 @@ describe('function', () => {
     const dlQueue = new sqs.Queue(stack, 'DeadLetterQueue', {
       queueName: 'MyLambda_DLQ',
       retentionPeriod: cdk.Duration.days(14),
+    });
+
+    expect(() => new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_10_X,
+      deadLetterQueueEnabled: false,
+      deadLetterQueue: dlQueue,
+    })).toThrow(/deadLetterQueue defined but deadLetterQueueEnabled explicitly set to false/);
+  });
+
+  test('default function with SNS DLQ when client provides Topic to be used as DLQ', () => {
+    const stack = new cdk.Stack();
+
+    const dlQueue = new sns.Topic(stack, 'DeadLetterQueue', {
+      topicName: 'MyLambda_DLQ',
+    });
+
+    new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_10_X,
+      deadLetterQueue: dlQueue,
+    });
+
+    expect(stack).toHaveResource('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'sns:Publish',
+            Effect: 'Allow',
+            Resource: {
+              'Ref': 'DeadLetterQueue9F481546',
+            },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    });
+
+    expect(stack).toHaveResource('AWS::Lambda::Function', {
+      DeadLetterConfig: {
+        TargetArn: {
+          'Ref': 'DeadLetterQueue9F481546',
+        },
+      },
+    });
+  })
+
+  test('error when default function with SNS DLQ when client provides Topic to be used as DLQ and deadLetterQueueEnabled set to false', () => {
+    const stack = new cdk.Stack();
+
+    const dlQueue = new sns.Topic(stack, 'DeadLetterQueue', {
+      topicName: 'MyLambda_DLQ',
     });
 
     expect(() => new lambda.Function(stack, 'MyLambda', {
@@ -1566,7 +1621,7 @@ describe('function', () => {
     expect(logGroup.logGroupArn).toBeDefined();
   });
 
-  test('dlq is returned when provided by user', () => {
+  test('dlq is returned when provided by user and is Queue', () => {
     const stack = new cdk.Stack();
 
     const dlQueue = new sqs.Queue(stack, 'DeadLetterQueue', {
@@ -1581,12 +1636,29 @@ describe('function', () => {
       deadLetterQueue: dlQueue,
     });
     const deadLetterQueue = fn.deadLetterQueue;
-    expect(deadLetterQueue?.queueArn).toBeDefined();
-    expect(deadLetterQueue?.queueName).toBeDefined();
-    expect(deadLetterQueue?.queueUrl).toBeDefined();
+    expect(deadLetterQueue).toBeDefined();
+    expect(deadLetterQueue).toBeInstanceOf(sqs.Queue)
   });
 
-  test('dlq is returned when setup by cdk', () => {
+  test('dlq is returned when provided by user and is Topic', () => {
+    const stack = new cdk.Stack();
+
+    const dlQueue = new sns.Topic(stack, 'DeadLetterQueue', {
+      topicName: 'MyLambda_DLQ',
+    });
+
+    const fn = new lambda.Function(stack, 'fn', {
+      handler: 'foo',
+      runtime: lambda.Runtime.NODEJS_10_X,
+      code: lambda.Code.fromInline('foo'),
+      deadLetterQueue: dlQueue,
+    });
+    const deadLetterQueue = fn.deadLetterQueue;
+    expect(deadLetterQueue).toBeDefined();
+    expect(deadLetterQueue).toBeInstanceOf(sns.Topic)
+  });
+
+  test('dlq is returned when setup by cdk and is Queue', () => {
     const stack = new cdk.Stack();
     const fn = new lambda.Function(stack, 'fn', {
       handler: 'foo',
@@ -1595,9 +1667,8 @@ describe('function', () => {
       deadLetterQueueEnabled: true,
     });
     const deadLetterQueue = fn.deadLetterQueue;
-    expect(deadLetterQueue?.queueArn).toBeDefined();
-    expect(deadLetterQueue?.queueName).toBeDefined();
-    expect(deadLetterQueue?.queueUrl).toBeDefined();
+    expect(deadLetterQueue).toBeDefined();
+    expect(deadLetterQueue).toBeInstanceOf(sqs.Queue)
   });
 
   test('dlq is undefined when not setup', () => {

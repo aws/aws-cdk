@@ -4,6 +4,7 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as logs from '@aws-cdk/aws-logs';
+import * as sns from '@aws-cdk/aws-sns';
 import * as sqs from '@aws-cdk/aws-sqs';
 import { Annotations, ArnFormat, CfnResource, Duration, Fn, Lazy, Names, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
@@ -187,11 +188,11 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
   readonly deadLetterQueueEnabled?: boolean;
 
   /**
-   * The SQS queue to use if DLQ is enabled.
+   * The SQS queue or SNS topic to use if DLQ is enabled.
    *
    * @default - SQS queue with 14 day retention period if `deadLetterQueueEnabled` is `true`
    */
-  readonly deadLetterQueue?: sqs.IQueue;
+  readonly deadLetterQueue?: sqs.IQueue | sns.ITopic;
 
   /**
    * Enable AWS X-Ray Tracing for Lambda Function.
@@ -574,7 +575,7 @@ export class Function extends FunctionBase {
   /**
    * The DLQ associated with this Lambda Function (this is an optional attribute).
    */
-  public readonly deadLetterQueue?: sqs.IQueue;
+  public readonly deadLetterQueue?: sqs.IQueue | sns.ITopic;
 
   /**
    * The architecture of this Lambda Function (this is an optional attribute and defaults to X86_64).
@@ -1030,6 +1031,10 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
     };
   }
 
+  private isQueue(deadLetterQueue: sqs.IQueue | sns.ITopic): deadLetterQueue is sqs.IQueue {
+    return (<sqs.IQueue>deadLetterQueue).queueArn !== undefined;
+  }
+
   private buildDeadLetterQueue(props: FunctionProps) {
     if (props.deadLetterQueue && props.deadLetterQueueEnabled === false) {
       throw Error('deadLetterQueue defined but deadLetterQueueEnabled explicitly set to false');
@@ -1043,18 +1048,25 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
       retentionPeriod: Duration.days(14),
     });
 
-    this.addToRolePolicy(new iam.PolicyStatement({
-      actions: ['sqs:SendMessage'],
-      resources: [deadLetterQueue.queueArn],
-    }));
+    if (this.isQueue(deadLetterQueue)){
+      this.addToRolePolicy(new iam.PolicyStatement({
+        actions: ['sqs:SendMessage'],
+        resources: [deadLetterQueue.queueArn],
+      }));
+    } else {
+      this.addToRolePolicy(new iam.PolicyStatement({
+        actions: ['sns:Publish'],
+        resources: [deadLetterQueue.topicArn],
+      }));
+    }
 
     return deadLetterQueue;
   }
 
-  private buildDeadLetterConfig(deadLetterQueue?: sqs.IQueue) {
+  private buildDeadLetterConfig(deadLetterQueue?: sqs.IQueue | sns.ITopic) {
     if (deadLetterQueue) {
       return {
-        targetArn: deadLetterQueue.queueArn,
+          targetArn: this.isQueue(deadLetterQueue) ? deadLetterQueue.queueArn : deadLetterQueue.topicArn,
       };
     } else {
       return undefined;
