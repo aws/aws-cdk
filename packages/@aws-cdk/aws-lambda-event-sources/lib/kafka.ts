@@ -4,13 +4,12 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import { Stack, Names } from '@aws-cdk/core';
-import { Construct } from 'constructs';
-import { StreamEventSource, StreamEventSourceProps } from './stream';
+import { StreamEventSource, BaseStreamEventSourceProps } from './stream';
 
 /**
  * Properties for a Kafka event source
  */
-export interface KafkaEventSourceProps extends StreamEventSourceProps {
+export interface KafkaEventSourceProps extends BaseStreamEventSourceProps{
   /**
    * The Kafka topic to subscribe to
    */
@@ -50,6 +49,10 @@ export enum AuthenticationMethod {
    * BASIC_AUTH (SASL/PLAIN) authentication method for your Kafka cluster
    */
   BASIC_AUTH = 'BASIC_AUTH',
+  /**
+   * CLIENT_CERTIFICATE_TLS_AUTH (mTLS) authentication method for your Kafka cluster
+   */
+  CLIENT_CERTIFICATE_TLS_AUTH = 'CLIENT_CERTIFICATE_TLS_AUTH',
 }
 
 /**
@@ -209,6 +212,9 @@ export class SelfManagedKafkaEventSource extends StreamEventSource {
     switch (this.innerProps.authenticationMethod) {
       case AuthenticationMethod.BASIC_AUTH:
         authType = lambda.SourceAccessConfigurationType.BASIC_AUTH;
+        break;
+      case AuthenticationMethod.CLIENT_CERTIFICATE_TLS_AUTH:
+        authType = lambda.SourceAccessConfigurationType.CLIENT_CERTIFICATE_TLS_AUTH;
         break;
       case AuthenticationMethod.SASL_SCRAM_256_AUTH:
         authType = lambda.SourceAccessConfigurationType.SASL_SCRAM_256_AUTH;

@@ -171,6 +171,14 @@ export const CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021 = '@aws-cdk/aws-cl
 export const TARGET_PARTITIONS = '@aws-cdk/core:target-partitions';
 
 /**
+ * Enable this feature flag to configure default logging behavior for the ECS Service Extensions. This will enable the
+ * `awslogs` log driver for the application container of the service to send the container logs to CloudWatch Logs.
+ *
+ * This is a feature flag as the new behavior provides a better default experience for the users.
+ */
+export const ECS_SERVICE_EXTENSIONS_ENABLE_DEFAULT_LOG_DRIVER = '@aws-cdk-containers/ecs-service-extensions:enableDefaultLogDriver';
+
+/**
  * This map includes context keys and values for feature flags that enable
  * capabilities "from the future", which we could not introduce as the default
  * behavior due to backwards compatibility for existing projects.
@@ -197,6 +205,7 @@ export const FUTURE_FLAGS: { [key: string]: boolean } = {
   [EFS_DEFAULT_ENCRYPTION_AT_REST]: true,
   [LAMBDA_RECOGNIZE_VERSION_PROPS]: true,
   [CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021]: true,
+  [ECS_SERVICE_EXTENSIONS_ENABLE_DEFAULT_LOG_DRIVER]: true,
 
   // We will advertise this flag when the feature is complete
   // [NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: 'true',
@@ -229,20 +238,21 @@ export const FUTURE_FLAGS_EXPIRED: string[] = [
  * explicitly configured.
  */
 const FUTURE_FLAGS_DEFAULTS: { [key: string]: boolean } = {
-  [APIGATEWAY_USAGEPLANKEY_ORDERINSENSITIVE_ID]: true,
-  [ENABLE_STACK_NAME_DUPLICATES_CONTEXT]: true,
-  [ENABLE_DIFF_NO_FAIL_CONTEXT]: true,
-  [STACK_RELATIVE_EXPORTS_CONTEXT]: true,
-  [NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: true,
-  [DOCKER_IGNORE_SUPPORT]: true,
-  [SECRETS_MANAGER_PARSE_OWNED_SECRET_NAME]: true,
-  [KMS_DEFAULT_KEY_POLICIES]: true,
-  [S3_GRANT_WRITE_WITHOUT_ACL]: true,
-  [ECS_REMOVE_DEFAULT_DESIRED_COUNT]: true,
-  [RDS_LOWERCASE_DB_IDENTIFIER]: true,
-  [EFS_DEFAULT_ENCRYPTION_AT_REST]: true,
-  [LAMBDA_RECOGNIZE_VERSION_PROPS]: true,
-  [CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021]: true,
+  [APIGATEWAY_USAGEPLANKEY_ORDERINSENSITIVE_ID]: false,
+  [ENABLE_STACK_NAME_DUPLICATES_CONTEXT]: false,
+  [ENABLE_DIFF_NO_FAIL_CONTEXT]: false,
+  [STACK_RELATIVE_EXPORTS_CONTEXT]: false,
+  [NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false,
+  [DOCKER_IGNORE_SUPPORT]: false,
+  [SECRETS_MANAGER_PARSE_OWNED_SECRET_NAME]: false,
+  [KMS_DEFAULT_KEY_POLICIES]: false,
+  [S3_GRANT_WRITE_WITHOUT_ACL]: false,
+  [ECS_REMOVE_DEFAULT_DESIRED_COUNT]: false,
+  [RDS_LOWERCASE_DB_IDENTIFIER]: false,
+  [EFS_DEFAULT_ENCRYPTION_AT_REST]: false,
+  [LAMBDA_RECOGNIZE_VERSION_PROPS]: false,
+  [CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021]: false,
+  [ECS_SERVICE_EXTENSIONS_ENABLE_DEFAULT_LOG_DRIVER]: false,
 };
 
 export function futureFlagDefault(flag: string): boolean | undefined {

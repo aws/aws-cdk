@@ -1,6 +1,4 @@
 import * as logs from '@aws-cdk/aws-logs';
-import { Stack } from '@aws-cdk/core';
-import { Construct } from 'constructs';
 import { ContainerDefinition } from '../container-definition';
 import { LogDriver, LogDriverConfig } from './log-driver';
 import { removeEmpty } from './utils';
@@ -124,7 +122,7 @@ export class AwsLogDriver extends LogDriver {
       options: removeEmpty({
         'awslogs-group': this.logGroup.logGroupName,
         'awslogs-stream-prefix': this.props.streamPrefix,
-        'awslogs-region': Stack.of(containerDefinition).region,
+        'awslogs-region': this.logGroup.env.region,
         'awslogs-datetime-format': this.props.datetimeFormat,
         'awslogs-multiline-pattern': this.props.multilinePattern,
         'mode': this.props.mode,

@@ -73,13 +73,13 @@ export class Asset extends Construct implements cdk.IAsset {
 
   /**
    * Attribute which represents the S3 HTTP URL of this asset.
-   * @example https://s3.us-west-1.amazonaws.com/bucket/key
+   * For example, `https://s3.us-west-1.amazonaws.com/bucket/key`
    */
   public readonly httpUrl: string;
 
   /**
    * Attribute which represents the S3 URL of this asset.
-   * @example s3://bucket/key
+   * For example, `s3://bucket/key`
    */
   public readonly s3ObjectUrl: string;
 
