@@ -319,12 +319,12 @@ provided regular expression.
 
 // The following will NOT throw an assertion error
 template.hasResourceProperties('Foo::Bar', {
-  Fred: Match.stringLike('.*includeHeaders = true.*'),
+  Template: Match.stringLikeRegexp('includeHeaders = (true|false)'),
 });
 
 // The following will throw an assertion error
 template.hasResourceProperties('Foo::Bar', {
-  Fred: Match.stringLike('.*includeHeaders = false.*'),
+  Template: Match.stringLikeRegexp('includeHeaders = null'),
 });
 ```
 
