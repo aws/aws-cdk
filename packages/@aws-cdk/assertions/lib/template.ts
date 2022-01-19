@@ -1,4 +1,6 @@
-import { Stack } from '@aws-cdk/core';
+import * as fs from 'fs';
+import * as path from 'path';
+import { Stack, Stage } from '@aws-cdk/core';
 import { Match } from './match';
 import { Matcher } from './matcher';
 import { findMappings, hasMapping } from './private/mappings';
@@ -6,7 +8,6 @@ import { findOutputs, hasOutput } from './private/outputs';
 import { findParameters, hasParameter } from './private/parameters';
 import { countResources, findResources, hasResource, hasResourceProperties } from './private/resources';
 import { Template as TemplateType } from './private/template';
-import { toStackArtifact } from './private/util';
 
 /**
  * Suite of assertions that can be run on a CDK stack.
@@ -199,6 +200,15 @@ export class Template {
   }
 }
 
-function toTemplate(stack: Stack): any {
-  return toStackArtifact(stack).template;
+export function toTemplate(stack: Stack): any {
+  const root = stack.node.root;
+  if (!Stage.isStage(root)) {
+    throw new Error('unexpected: all stacks must be part of a Stage or an App');
+  }
+  const assembly = root.synth();
+  if (stack.nestedStackParent) {
+    // if this is a nested stack (it has a parent), then just read the template as a string
+    return JSON.parse(fs.readFileSync(path.join(assembly.directory, stack.templateFile)).toString('utf-8'));
+  }
+  return assembly.getStackArtifact(stack.artifactId).template;
 }

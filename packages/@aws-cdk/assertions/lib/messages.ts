@@ -1,7 +1,6 @@
-import { Stack } from '@aws-cdk/core';
+import { Stack, Stage } from '@aws-cdk/core';
 import { Message, Messages as MessagesType } from './private/message';
 import { findMessage, hasMessage } from './private/messages';
-import { toStackArtifact } from './private/util';
 
 /**
  * Messages
@@ -62,6 +61,16 @@ function convertMessagesTypeToArray(messages: MessagesType): Message[] {
   return Object.values(messages);
 }
 
-function toMessages(stack: Stack): any {
-  return toStackArtifact(stack).messages;
+export function toMessages(stack: Stack): any {
+  const root = stack.node.root;
+  if (!Stage.isStage(root)) {
+    throw new Error('unexpected: all stacks must be part of a Stage or an App');
+  }
+
+  // to support incremental assertions (i.e. "expect(stack).toNotContainSomething(); doSomething(); expect(stack).toContainSomthing()")
+  const force = true;
+
+  const assembly = root.synth({ force });
+
+  return assembly.getStackArtifact(stack.artifactId).messages;
 }
