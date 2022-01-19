@@ -301,7 +301,7 @@ exactly equal to the pattern array.
 
 ### String Matchers
 
-The `Match.stringLike()` API can be used to assert that the target matches the
+The `Match.stringLikeRegexp()` API can be used to assert that the target matches the
 provided regular expression.
 
 ```ts
@@ -319,12 +319,12 @@ provided regular expression.
 
 // The following will NOT throw an assertion error
 template.hasResourceProperties('Foo::Bar', {
-  Fred: Match.stringLike('*includeHeaders = true*'),
+  Fred: Match.stringLike('.*includeHeaders = true.*'),
 });
 
 // The following will throw an assertion error
 template.hasResourceProperties('Foo::Bar', {
-  Fred: Match.stringLike('*includeHeaders = false*'),
+  Fred: Match.stringLike('.*includeHeaders = false.*'),
 });
 ```
 

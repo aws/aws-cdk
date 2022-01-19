@@ -1,4 +1,3 @@
-import * as minimatch from 'minimatch';
 import { Matcher, MatchResult } from './matcher';
 import { AbsentMatch } from './private/matchers/absent';
 import { getType } from './private/type';
@@ -82,12 +81,10 @@ export abstract class Match {
   }
 
   /**
-   * Matches targets according to a glob pattern, as supported
-   * by minimatch (https://github.com/isaacs/minimatch)
-   * @param pattern a glob pattern
+   * Matches targets according to a regular expression
    */
-  public static stringLike(pattern: string): Matcher {
-    return new StringLikeMatch('stringLike', pattern);
+  public static stringLikeRegexp(pattern: string): Matcher {
+    return new StringLikeRegexpMatch('stringLikeRegexp', pattern);
   }
 }
 
@@ -389,7 +386,7 @@ class AnyMatch extends Matcher {
   }
 }
 
-class StringLikeMatch extends Matcher {
+class StringLikeRegexpMatch extends Matcher {
   constructor(
     public readonly name: string,
     private readonly pattern: string) {
@@ -401,6 +398,8 @@ class StringLikeMatch extends Matcher {
   test(actual: any): MatchResult {
     const result = new MatchResult(actual);
 
+    const regex = new RegExp(this.pattern, 'gm');
+
     if (typeof actual !== 'string') {
       result.recordFailure({
         matcher: this,
@@ -409,7 +408,7 @@ class StringLikeMatch extends Matcher {
       });
     }
 
-    if (!minimatch(actual, this.pattern)) {
+    if (!regex.test(actual)) {
       result.recordFailure({
         matcher: this,
         path: [],
