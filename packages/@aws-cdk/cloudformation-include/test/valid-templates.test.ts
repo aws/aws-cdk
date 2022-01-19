@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { Match, Template } from '@aws-cdk/assertions';
+import { Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as ssm from '@aws-cdk/aws-ssm';
@@ -77,7 +77,7 @@ describe('CDK Include', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       "PolicyDocument": {
         "Statement": [
-          Match.objectLike({
+          {
             "Action": "s3:*",
             "Resource": {
               "Fn::GetAtt": [
@@ -85,7 +85,7 @@ describe('CDK Include', () => {
                 "Arn",
               ],
             },
-          }),
+          },
         ],
       },
     });
@@ -106,12 +106,6 @@ describe('CDK Include', () => {
       "CorsConfiguration": {
         "CorsRules": [
           {
-            "AllowedMethods": [
-              "GET",
-            ],
-            "AllowedOrigins": [
-              "*",
-            ],
             "MaxAge": 10,
           },
         ],
@@ -127,7 +121,7 @@ describe('CDK Include', () => {
         "RoutingRules": [
           {
             "RedirectRule": {
-              "HttpRedirectCode": '403',
+              "HttpRedirectCode": "403",
             },
           },
         ],
@@ -284,25 +278,20 @@ describe('CDK Include', () => {
     );
   });
 
-  test('can ingest a template with Fn::Sub in map form and output it unchanged', () => {
+  test('can ingest a template with Fn::Sub using dotted attributes in map form and output it unchanged', () => {
     includeTestTemplate(stack, 'fn-sub-map-dotted-attributes.json');
 
     Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
       "BucketName": {
-        "Fn::Sub": "${ELB.SourceSecurityGroup.GroupName}",
+        "Fn::Sub": [
+          "${ELB.SourceSecurityGroup.GroupName}-${LoadBalancerName}",
+          {
+            "LoadBalancerName": {
+              "Ref": "ELB",
+            },
+          },
+        ],
       },
-    });
-
-    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancing::LoadBalancer', {
-      "AvailabilityZones": [
-        "us-east-1a",
-      ],
-      "CrossZone": true,
-      "Listeners": [{
-        "LoadBalancerPort": "80",
-        "InstancePort": "80",
-        "Protocol": "HTTP",
-      }],
     });
   });
 
@@ -623,15 +612,13 @@ describe('CDK Include', () => {
     const cfnBucket = cfnTemplate.getResource('Bucket');
 
     expect(cfnBucket.cfnOptions.updatePolicy).toBeDefined();
-
-    // convert string values to boolean equivalents to appease test framework
-    const template = loadTestFileToJsObject('resource-attribute-update-policy.json');
-    template.Resources.Bucket.UpdatePolicy.AutoScalingReplacingUpdate.WillReplace = false;
-    template.Resources.Bucket.UpdatePolicy.EnableVersionUpgrade = true;
-
-    Template.fromStack(stack).templateMatches(
-      template,
-    );
+    Template.fromStack(stack).hasResource('AWS::S3::Bucket', {
+      "UpdatePolicy": {
+        "AutoScalingReplacingUpdate": {
+          "WillReplace": false,
+        },
+      },
+    });
   });
 
   test("correctly handles referencing the ingested template's resources across Stacks", () => {
@@ -667,12 +654,12 @@ describe('CDK Include', () => {
     Template.fromStack(otherStack).hasResourceProperties('AWS::IAM::Policy', {
       "PolicyDocument": {
         "Statement": [
-          Match.objectLike({
+          {
             "Action": "s3:*",
             "Resource": {
               "Fn::ImportValue": "MyStack:ExportsOutputFnGetAttBucketArn436138FE",
             },
-          }),
+          },
         ],
       },
     });

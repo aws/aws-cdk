@@ -5,9 +5,11 @@ import * as inc from '../lib';
 
 describe('CDK Include', () => {
   let stack: core.Stack;
+  let app: core.App;
 
   beforeEach(() => {
-    stack = new core.Stack();
+    app = new core.App();
+    stack = new core.Stack(app);
   });
 
   test('throws a validation exception for a template with a missing required top-level resource property', () => {
@@ -20,7 +22,7 @@ describe('CDK Include', () => {
     includeTestTemplate(stack, 'bucket-with-cors-rules-not-an-array.json');
 
     expect(() => {
-      core.App.of(stack)?.synth();
+      app.synth();
     }).toThrow(/corsRules: "CorsRules!" should be a list/);
   });
 
@@ -28,7 +30,7 @@ describe('CDK Include', () => {
     includeTestTemplate(stack, 'bucket-with-cors-rules-null-element.json');
 
     expect(() => {
-      core.App.of(stack)?.synth();
+      app.synth();
     }).toThrow(/allowedMethods: required but missing/);
   });
 
@@ -36,7 +38,7 @@ describe('CDK Include', () => {
     includeTestTemplate(stack, 'bucket-with-invalid-cors-rule.json');
 
     expect(() => {
-      core.App.of(stack)?.synth();
+      app.synth();
     }).toThrow(/allowedOrigins: required but missing/);
   });
 
@@ -128,7 +130,7 @@ describe('CDK Include', () => {
     includeTestTemplate(stack, 'alphabetical-string-passed-to-number.json');
 
     expect(() => {
-      core.App.of(stack)?.synth();
+      app.synth();
     }).toThrow(/"abc" should be a number/);
   });
 
