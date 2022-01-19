@@ -9,6 +9,7 @@ export * from './state-transition-metrics';
 export * from './chain';
 export * from './state-graph';
 export * from './step-functions-task';
+export * from './intrinsic-function';
 
 export * from './states/choice';
 export * from './states/fail';
