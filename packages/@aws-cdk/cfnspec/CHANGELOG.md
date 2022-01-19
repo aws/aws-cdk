@@ -4,6 +4,18 @@
 * AWS::ECS is at 51.0.0
 * AWS::SageMaker is at 51.0.0
 
+
+## Unapplied changes
+
+* AWS::ECS is at 51.0.0
+* AWS::SageMaker is at 51.0.0
+
+
+## Unapplied changes
+
+* AWS::ECS is at 51.0.0
+* AWS::SageMaker is at 51.0.0
+
 # CloudFormation Resource Specification v53.0.0
 
 ## New Resource Types
