@@ -1,9 +1,4 @@
-import {
-  countResources,
-  expect as expectCDK,
-  haveResourceLike,
-} from '@aws-cdk/assert-internal';
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import { testFutureBehavior, testLegacyBehavior } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
@@ -70,19 +65,19 @@ describe('RequireImdsv2Aspect', () => {
       // THEN
       const launchTemplate = instance.node.tryFindChild('LaunchTemplate') as LaunchTemplate;
       expect(launchTemplate).toBeDefined();
-      expectCDK(stack).to(haveResourceLike('AWS::EC2::LaunchTemplate', {
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::LaunchTemplate', {
         LaunchTemplateName: stack.resolve(launchTemplate.launchTemplateName),
         LaunchTemplateData: {
           MetadataOptions: {
             HttpTokens: 'required',
           },
         },
-      }));
-      expectCDK(stack).to(haveResourceLike('AWS::EC2::Instance', {
+      });
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::Instance', {
         LaunchTemplate: {
           LaunchTemplateName: stack.resolve(launchTemplate.launchTemplateName),
         },
-      }));
+      });
     });
 
     test('does not toggle when Instance has a LaunchTemplate', () => {
@@ -104,11 +99,11 @@ describe('RequireImdsv2Aspect', () => {
       // THEN
       // Aspect normally creates a LaunchTemplate for the Instance to toggle IMDSv1,
       // so we can assert that one was not created
-      expectCDK(stack).to(countResources('AWS::EC2::LaunchTemplate', 0));
+      Template.fromStack(stack).resourceCountIs('AWS::EC2::LaunchTemplate', 0);
       expect(instance.node.metadataEntry).toContainEqual({
         data: expect.stringContaining('Cannot toggle IMDSv1 because this Instance is associated with an existing Launch Template.'),
         type: 'aws:cdk:warning',
-        trace: undefined,
+        trace: expect.anything(),
       });
     });
 
@@ -205,7 +200,7 @@ describe('RequireImdsv2Aspect', () => {
       expect(launchTemplate.node.metadataEntry).toContainEqual({
         data: expect.stringContaining('LaunchTemplateData is a CDK token.'),
         type: 'aws:cdk:warning',
-        trace: undefined,
+        trace: expect.anything(),
       });
     });
 
@@ -225,7 +220,7 @@ describe('RequireImdsv2Aspect', () => {
       expect(launchTemplate.node.metadataEntry).toContainEqual({
         data: expect.stringContaining('LaunchTemplateData.MetadataOptions is a CDK token.'),
         type: 'aws:cdk:warning',
-        trace: undefined,
+        trace: expect.anything(),
       });
     });
 
@@ -238,13 +233,13 @@ describe('RequireImdsv2Aspect', () => {
       cdk.Aspects.of(stack).add(aspect);
 
       // THEN
-      expectCDK(stack).to(haveResourceLike('AWS::EC2::LaunchTemplate', {
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::LaunchTemplate', {
         LaunchTemplateData: {
           MetadataOptions: {
             HttpTokens: 'required',
           },
         },
-      }));
+      });
     });
   });
 });
