@@ -385,7 +385,7 @@ describe('Matchers', () => {
     });
   });
 
-  describe('stringLike', () => {
+  describe('stringLikeRegexp', () => {
     let matcher: Matcher;
 
     test('simple', () => {
