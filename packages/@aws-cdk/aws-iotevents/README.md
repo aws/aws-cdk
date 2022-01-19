@@ -58,7 +58,7 @@ const onlineState = new iotevents.State({
   stateName: 'online',
   onEnterEvents: [{
     eventName: 'test-event',
-    condition: `currentInput("${input.inputName}")`,
+    condition: iotevents.Expression.currentInput(input),
   }],
 });
 

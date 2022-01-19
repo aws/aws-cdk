@@ -1,4 +1,4 @@
-import { Event } from './event';
+import { Event, getEventJson } from './event';
 import { CfnDetectorModel } from './iotevents.generated';
 
 /**
@@ -38,7 +38,14 @@ export class State {
     const { stateName, onEnterEvents } = this.props;
     return {
       stateName,
-      onEnter: onEnterEvents && { events: onEnterEvents },
+      onEnter: onEnterEvents && { events: getEventJson(onEnterEvents) },
     };
+  }
+
+  /**
+   * returns true if this state has at least one condition via events
+   */
+  public hasCondition(): boolean {
+    return this.props.onEnterEvents?.some(event => event.condition) ?? false;
   }
 }

@@ -60,6 +60,10 @@ export class DetectorModel extends Resource implements IDetectorModel {
       physicalName: props.detectorModelName,
     });
 
+    if (!props.initialState.hasCondition()) {
+      throw new Error('Detector Model must use at least one Input in a condition.');
+    }
+
     const role = props.role ?? new iam.Role(this, 'DetectorModelRole', {
       assumedBy: new iam.ServicePrincipal('iotevents.amazonaws.com'),
     });

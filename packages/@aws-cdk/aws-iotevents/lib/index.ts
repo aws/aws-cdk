@@ -1,5 +1,6 @@
 export * from './detector-model';
 export * from './event';
+export * from './expression';
 export * from './input';
 export * from './state';
 

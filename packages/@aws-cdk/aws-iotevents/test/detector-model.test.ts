@@ -10,6 +10,10 @@ test('Default property', () => {
   new iotevents.DetectorModel(stack, 'MyDetectorModel', {
     initialState: new iotevents.State({
       stateName: 'test-state',
+      onEnterEvents: [{
+        eventName: 'test-eventName',
+        condition: iotevents.Expression.fromString('test-eventCondition'),
+      }],
     }),
   });
 
@@ -19,6 +23,12 @@ test('Default property', () => {
       InitialStateName: 'test-state',
       States: [{
         StateName: 'test-state',
+        OnEnter: {
+          Events: [{
+            EventName: 'test-eventName',
+            Condition: 'test-eventCondition',
+          }],
+        },
       }],
     },
     RoleArn: {
@@ -43,6 +53,10 @@ test('can get detector model name', () => {
   const detectorModel = new iotevents.DetectorModel(stack, 'MyDetectorModel', {
     initialState: new iotevents.State({
       stateName: 'test-state',
+      onEnterEvents: [{
+        eventName: 'test-eventName',
+        condition: iotevents.Expression.fromString('test-eventCondition'),
+      }],
     }),
   });
 
@@ -66,7 +80,13 @@ test('can set physical name', () => {
   // WHEN
   new iotevents.DetectorModel(stack, 'MyDetectorModel', {
     detectorModelName: 'test-detector-model',
-    initialState: new iotevents.State({ stateName: 'test-state' }),
+    initialState: new iotevents.State({
+      stateName: 'test-state',
+      onEnterEvents: [{
+        eventName: 'test-eventName',
+        condition: iotevents.Expression.fromString('test-eventCondition'),
+      }],
+    }),
   });
 
   // THEN
@@ -75,17 +95,22 @@ test('can set physical name', () => {
   });
 });
 
-test('can set onEnterEvents', () => {
+test('can set multiple events to State', () => {
   const stack = new cdk.Stack();
 
   // WHEN
   new iotevents.DetectorModel(stack, 'MyDetectorModel', {
     initialState: new iotevents.State({
       stateName: 'test-state',
-      onEnterEvents: [{
-        eventName: 'test-eventName',
-        condition: 'test-eventCondition',
-      }],
+      onEnterEvents: [
+        {
+          eventName: 'test-eventName1',
+          condition: iotevents.Expression.fromString('test-eventCondition'),
+        },
+        {
+          eventName: 'test-eventName2',
+        },
+      ],
     }),
   });
 
@@ -95,10 +120,13 @@ test('can set onEnterEvents', () => {
       States: [
         Match.objectLike({
           OnEnter: {
-            Events: [{
-              EventName: 'test-eventName',
-              Condition: 'test-eventCondition',
-            }],
+            Events: [
+              {
+                EventName: 'test-eventName1',
+                Condition: 'test-eventCondition',
+              },
+              { EventName: 'test-eventName2' },
+            ],
           },
         }),
       ],
@@ -113,7 +141,13 @@ test('can set role', () => {
   const role = iam.Role.fromRoleArn(stack, 'test-role', 'arn:aws:iam::123456789012:role/ForTest');
   new iotevents.DetectorModel(stack, 'MyDetectorModel', {
     role,
-    initialState: new iotevents.State({ stateName: 'test-state' }),
+    initialState: new iotevents.State({
+      stateName: 'test-state',
+      onEnterEvents: [{
+        eventName: 'test-eventName',
+        condition: iotevents.Expression.fromString('test-eventCondition'),
+      }],
+    }),
   });
 
   // THEN
@@ -132,5 +166,162 @@ test('can import a DetectorModel by detectorModelName', () => {
   // THEN
   expect(detectorModel).toMatchObject({
     detectorModelName: detectorModelName,
+  });
+});
+
+test('cannot create without condition', () => {
+  const stack = new cdk.Stack();
+
+  expect(() => {
+    new iotevents.DetectorModel(stack, 'MyDetectorModel', {
+      initialState: new iotevents.State({
+        stateName: 'test-state',
+        onEnterEvents: [{
+          eventName: 'test-eventName',
+        }],
+      }),
+    });
+  }).toThrow('Detector Model must use at least one Input in a condition.');
+});
+
+test('cannot create without event', () => {
+  const stack = new cdk.Stack();
+
+  expect(() => {
+    new iotevents.DetectorModel(stack, 'MyDetectorModel', {
+      initialState: new iotevents.State({
+        stateName: 'test-state',
+      }),
+    });
+  }).toThrow('Detector Model must use at least one Input in a condition.');
+});
+
+describe('Expression', () => {
+  test('currentInput', () => {
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const input = iotevents.Input.fromInputName(stack, 'MyInput', 'test-input');
+    new iotevents.DetectorModel(stack, 'MyDetectorModel', {
+      initialState: new iotevents.State({
+        stateName: 'test-state',
+        onEnterEvents: [{
+          eventName: 'test-eventName',
+          condition: iotevents.Expression.currentInput(input),
+        }],
+      }),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IoTEvents::DetectorModel', {
+      DetectorModelDefinition: {
+        States: [
+          Match.objectLike({
+            OnEnter: {
+              Events: [Match.objectLike({
+                Condition: 'currentInput("test-input")',
+              })],
+            },
+          }),
+        ],
+      },
+    });
+  });
+
+  test('inputAttribute', () => {
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const input = iotevents.Input.fromInputName(stack, 'MyInput', 'test-input');
+    new iotevents.DetectorModel(stack, 'MyDetectorModel', {
+      initialState: new iotevents.State({
+        stateName: 'test-state',
+        onEnterEvents: [{
+          eventName: 'test-eventName',
+          condition: iotevents.Expression.inputAttribute(input, 'json.path'),
+        }],
+      }),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IoTEvents::DetectorModel', {
+      DetectorModelDefinition: {
+        States: [
+          Match.objectLike({
+            OnEnter: {
+              Events: [Match.objectLike({
+                Condition: '$input.test-input.json.path',
+              })],
+            },
+          }),
+        ],
+      },
+    });
+  });
+
+  test('eq', () => {
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new iotevents.DetectorModel(stack, 'MyDetectorModel', {
+      initialState: new iotevents.State({
+        stateName: 'test-state',
+        onEnterEvents: [{
+          eventName: 'test-eventName',
+          condition: iotevents.Expression.eq(
+            iotevents.Expression.fromString('"aaa"'),
+            iotevents.Expression.fromString('"bbb"'),
+          ),
+        }],
+      }),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IoTEvents::DetectorModel', {
+      DetectorModelDefinition: {
+        States: [
+          Match.objectLike({
+            OnEnter: {
+              Events: [Match.objectLike({
+                Condition: '"aaa" == "bbb"',
+              })],
+            },
+          }),
+        ],
+      },
+    });
+  });
+
+  test('eq', () => {
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new iotevents.DetectorModel(stack, 'MyDetectorModel', {
+      initialState: new iotevents.State({
+        stateName: 'test-state',
+        onEnterEvents: [{
+          eventName: 'test-eventName',
+          condition: iotevents.Expression.and(
+            iotevents.Expression.fromString('true'),
+            iotevents.Expression.fromString('false'),
+          ),
+        }],
+      }),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IoTEvents::DetectorModel', {
+      DetectorModelDefinition: {
+        States: [
+          Match.objectLike({
+            OnEnter: {
+              Events: [Match.objectLike({
+                Condition: 'true && false',
+              })],
+            },
+          }),
+        ],
+      },
+    });
   });
 });

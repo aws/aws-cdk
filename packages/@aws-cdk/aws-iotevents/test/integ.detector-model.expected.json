@@ -48,7 +48,11 @@
                           {
                             "Ref": "MyInput08947B23"
                           },
-                          "\")"
+                          "\") && $input.",
+                          {
+                            "Ref": "MyInput08947B23"
+                          },
+                          ".payload.temperature == 31.5"
                         ]
                       ]
                     },
