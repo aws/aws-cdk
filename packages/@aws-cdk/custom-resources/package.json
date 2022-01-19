@@ -79,7 +79,7 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert-internal": "0.0.0",
+    "@aws-cdk/assertions": "0.0.0",
     "@aws-cdk/aws-events": "0.0.0",
     "@aws-cdk/aws-s3": "0.0.0",
     "@aws-cdk/aws-ssm": "0.0.0",
@@ -94,7 +94,7 @@
     "aws-sdk": "^2.848.0",
     "aws-sdk-mock": "^5.5.1",
     "fs-extra": "^9.1.0",
-    "nock": "^13.2.1",
+    "nock": "^13.2.2",
     "sinon": "^9.2.4"
   },
   "dependencies": {
