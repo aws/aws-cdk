@@ -14,8 +14,6 @@ describe('intervals', () => {
       { lower: 80, upper: 90, change: +1 },
       { lower: 90, upper: Infinity, change: +2 },
     ]);
-
-
   });
 
   test('test interval completion', () => {
@@ -37,8 +35,6 @@ describe('intervals', () => {
       { lower: 65, upper: 85, change: +3 },
       { lower: 85, upper: Infinity, change: undefined },
     ]);
-
-
   });
 
   test('bounds propagation fails if middle boundary missing', () => {
@@ -48,8 +44,6 @@ describe('intervals', () => {
         { upper: 20, change: -1 },
       ], false);
     }).toThrow();
-
-
   });
 
   test('lower alarm index is lower than higher alarm index', () => {
@@ -63,8 +57,6 @@ describe('intervals', () => {
           || alarms.lowerAlarmIntervalIndex < alarms.upperAlarmIntervalIndex);
       },
     ));
-
-
   });
 
   test('never pick undefined intervals for relative alarms', () => {
@@ -77,8 +69,6 @@ describe('intervals', () => {
           && (alarms.upperAlarmIntervalIndex === undefined || intervals[alarms.upperAlarmIntervalIndex].change !== undefined);
       },
     ));
-
-
   });
 
   test('pick intervals on either side of the undefined interval, if present', () => {
@@ -93,8 +83,6 @@ describe('intervals', () => {
         return (alarms.lowerAlarmIntervalIndex === i - 1 && alarms.upperAlarmIntervalIndex === i + 1);
       },
     ));
-
-
   });
 
   test('no picking upper bound infinity for lower alarm', () => {
@@ -107,8 +95,6 @@ describe('intervals', () => {
         return intervals[alarms.lowerAlarmIntervalIndex!].upper !== Infinity;
       },
     ));
-
-
   });
 
   test('no picking lower bound 0 for upper alarm', () => {
@@ -121,8 +107,6 @@ describe('intervals', () => {
         return intervals[alarms.upperAlarmIntervalIndex!].lower !== 0;
       },
     ));
-
-
   });
 });
 
