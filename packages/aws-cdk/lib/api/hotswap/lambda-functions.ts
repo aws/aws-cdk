@@ -1,5 +1,6 @@
 import { Writable } from 'stream';
 import * as archiver from 'archiver';
+import * as AWS from 'aws-sdk';
 import { flatMap } from '../../util';
 import { ISDK } from '../aws-auth';
 import { CfnEvaluationException, EvaluateCloudFormationTemplate } from '../evaluate-cloudformation-template';
@@ -232,7 +233,7 @@ class LambdaFunctionHotswapOperation implements HotswapOperation {
     const operations: Promise<any>[] = [];
 
     if (resource.code !== undefined) {
-      const updateFunctionCodePromise = lambda.updateFunctionCode({
+      const updateFunctionCodeResponse = await lambda.updateFunctionCode({
         FunctionName: this.lambdaFunctionResource.physicalName,
         S3Bucket: resource.code.s3Bucket,
         S3Key: resource.code.s3Key,
@@ -240,17 +241,9 @@ class LambdaFunctionHotswapOperation implements HotswapOperation {
         ZipFile: resource.code.functionCodeZip,
       }).promise();
 
-      // only if the code changed is there any point in publishing a new Version
-      if (this.lambdaFunctionResource.publishVersion) {
-        // we need to wait for the code update to be done before publishing a new Version
-        await updateFunctionCodePromise;
-        // if we don't wait for the Function to finish updating,
-        // we can get a "The operation cannot be performed at this time. An update is in progress for resource:"
-        // error when publishing a new Version
-        await lambda.waitFor('functionUpdated', {
-          FunctionName: this.lambdaFunctionResource.physicalName,
-        }).promise();
+      await this.waitForLastUpdateStatusComplete(updateFunctionCodeResponse, lambda);
 
+      if (this.lambdaFunctionResource.publishVersion) {
         const publishVersionPromise = lambda.publishVersion({
           FunctionName: this.lambdaFunctionResource.physicalName,
         }).promise();
@@ -269,8 +262,6 @@ class LambdaFunctionHotswapOperation implements HotswapOperation {
         } else {
           operations.push(publishVersionPromise);
         }
-      } else {
-        operations.push(updateFunctionCodePromise);
       }
     }
 
@@ -303,6 +294,58 @@ class LambdaFunctionHotswapOperation implements HotswapOperation {
 
     // run all of our updates in parallel
     return Promise.all(operations);
+  }
+
+  /**
+   * After a Lambda Function is updated, it cannot be updated again until the
+   * `State=Active` and the `LastUpdateStatus=Successful`.
+   *
+   * Depending on the configuration of the Lambda Function this could happen relatively quickly
+   * or very slowly. For example, Zip based functions _not_ in a VPC can take ~1 second whereas VPC
+   * or Container functions can take ~25 seconds (and 'idle' VPC functions can take minutes).
+   */
+  private async waitForLastUpdateStatusComplete(currentFunctionConfiguration: AWS.Lambda.FunctionConfiguration, lambda: AWS.Lambda): Promise<void> {
+    let delay = 1; // in seconds
+    // if the function is deployed in a VPC or if it is a container image function
+    // then the update will take much longer and we can wait longer between checks
+    if (currentFunctionConfiguration.VpcConfig || currentFunctionConfiguration.PackageType === 'Image') {
+      delay = 5;
+    }
+
+    // configure a custom waiter to wait for the function update to complete
+    (lambda as any).api.waiters.updateFunctionCodeToFinish = {
+      name: 'UpdateFunctionCodeToFinish',
+      operation: 'getFunction',
+      // equates to 1 minute for zip function not in a VPC and
+      // 5 minutes for container functions or function in a VPC
+      maxAttempts: 60,
+      delay,
+      acceptors: [
+        {
+          state: 'success',
+          matcher: 'path',
+          argument: "(Configuration.LastUpdateStatus == 'Successful' && Configuration.State == 'Active')",
+          expected: true,
+        },
+        {
+          state: 'failure',
+          matcher: 'path',
+          argument: 'Configuration.LastUpdateStatus',
+          expected: 'Failed',
+        },
+        {
+          state: 'retry',
+          matcher: 'path',
+          argument: 'Configuration.LastUpdateStatus',
+          expected: 'InProgress',
+        },
+      ],
+    };
+
+    const updateFunctionCodeWaiter = new (AWS as any).ResourceWaiter(lambda, 'updateFunctionCodeToFinish');
+    await updateFunctionCodeWaiter.wait({
+      FunctionName: this.lambdaFunctionResource.physicalName,
+    }).promise();
   }
 }
 

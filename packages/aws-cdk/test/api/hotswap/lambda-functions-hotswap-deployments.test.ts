@@ -8,13 +8,25 @@ let hotswapMockSdkProvider: setup.HotswapMockSdkProvider;
 
 beforeEach(() => {
   hotswapMockSdkProvider = setup.setupHotswapTests();
-  mockUpdateLambdaCode = jest.fn();
+  mockUpdateLambdaCode = jest.fn().mockReturnValue({});
   mockTagResource = jest.fn();
   mockUntagResource = jest.fn();
   hotswapMockSdkProvider.stubLambda({
     updateFunctionCode: mockUpdateLambdaCode,
     tagResource: mockTagResource,
     untagResource: mockUntagResource,
+  }, {
+    // these are needed for the waiter API that the ECS service hotswap uses
+    api: {
+      waiters: {},
+    },
+    makeRequest() {
+      return {
+        promise: () => Promise.resolve({}),
+        response: {},
+        addListeners: () => {},
+      };
+    },
   });
 });
 

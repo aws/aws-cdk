@@ -2,17 +2,37 @@ import { Lambda, StepFunctions } from 'aws-sdk';
 import * as setup from './hotswap-test-setup';
 
 let hotswapMockSdkProvider: setup.HotswapMockSdkProvider;
+let mockGetFunction: (params: Lambda.Types.GetFunctionRequest) => Lambda.Types.GetFunctionResponse;
 let mockUpdateLambdaCode: (params: Lambda.Types.UpdateFunctionCodeRequest) => Lambda.Types.FunctionConfiguration;
 let mockUpdateMachineDefinition: (params: StepFunctions.Types.UpdateStateMachineInput) => StepFunctions.Types.UpdateStateMachineOutput;
 let mockGetEndpointSuffix: () => string;
 
 beforeEach(() => {
   hotswapMockSdkProvider = setup.setupHotswapTests();
-  mockUpdateLambdaCode = jest.fn();
+  mockUpdateLambdaCode = jest.fn().mockReturnValue({});
+  mockGetFunction = jest.fn().mockReturnValue({
+    Configuration: {
+      State: 'Active',
+      LastUpdateStatus: 'Successful',
+    },
+  });
   mockUpdateMachineDefinition = jest.fn();
   mockGetEndpointSuffix = jest.fn(() => 'amazonaws.com');
   hotswapMockSdkProvider.stubLambda({
+    getFunction: mockGetFunction,
     updateFunctionCode: mockUpdateLambdaCode,
+  }, {
+    // these are needed for the waiter API that the ECS service hotswap uses
+    api: {
+      waiters: {},
+    },
+    makeRequest() {
+      return {
+        promise: () => Promise.resolve({}),
+        response: {},
+        addListeners: () => {},
+      };
+    },
   });
   hotswapMockSdkProvider.setUpdateStateMachineMock(mockUpdateMachineDefinition);
   hotswapMockSdkProvider.stubGetEndpointSuffix(mockGetEndpointSuffix);

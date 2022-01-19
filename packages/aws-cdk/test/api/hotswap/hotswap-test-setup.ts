@@ -83,8 +83,8 @@ export class HotswapMockSdkProvider {
     });
   }
 
-  public stubLambda(stubs: SyncHandlerSubsetOf<AWS.Lambda>) {
-    this.mockSdkProvider.stubLambda(stubs);
+  public stubLambda(stubs: SyncHandlerSubsetOf<AWS.Lambda>, additionalProperties: { [key: string]: any } = {}) {
+    this.mockSdkProvider.stubLambda(stubs, additionalProperties);
   }
 
   public setUpdateProjectMock(mockUpdateProject: (input: codebuild.UpdateProjectInput) => codebuild.UpdateProjectOutput) {
