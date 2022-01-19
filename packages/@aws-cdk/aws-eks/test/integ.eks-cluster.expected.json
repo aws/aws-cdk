@@ -951,6 +951,9 @@
             ],
             "endpointPublicAccess": true,
             "endpointPrivateAccess": true
+          },
+          "tags": {
+            "foo": "bar"
           }
         },
         "AssumeRoleArn": {

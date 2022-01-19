@@ -238,7 +238,14 @@ class VirtualServiceBackend extends Backend {
     return {
       virtualServiceBackend: {
         virtualService: {
-          virtualServiceName: this.virtualService.virtualServiceName,
+          /**
+           * We want to use the name of the Virtual Service here directly instead of
+           * a `{ 'Fn::GetAtt' }` CFN expression. This avoids a circular dependency in
+           * the case where this Virtual Node is the Virtual Service's provider.
+           */
+          virtualServiceName: cdk.Token.isUnresolved(this.virtualService.virtualServiceName)
+            ? (this.virtualService as any).physicalName
+            : this.virtualService.virtualServiceName,
           clientPolicy: this.tlsClientPolicy
             ? {
               tls: renderTlsClientPolicy(scope, this.tlsClientPolicy),

@@ -192,8 +192,11 @@ export abstract class BaseLoadBalancer extends Resource {
 
   /**
    * The VPC this load balancer has been created in.
+   *
+   * This property is always defined (not `null` or `undefined`) for sub-classes of `BaseLoadBalancer`.
    */
-  public readonly vpc: ec2.IVpc;
+  public readonly vpc?: ec2.IVpc;
+
   /**
    * Attributes set on this load balancer
    */
