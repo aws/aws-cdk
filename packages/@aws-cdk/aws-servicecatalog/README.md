@@ -169,7 +169,7 @@ import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 
 class S3BucketProduct extends servicecatalog.ProductStack {
-  constructor(scope: cdk.Construct, id: string) {
+  constructor(scope: cdk.Construct, id: string, assetBucket?: string) {
     super(scope, id);
 
     new s3.Bucket(this, 'BucketProduct');
@@ -182,7 +182,7 @@ const product = new servicecatalog.CloudFormationProduct(this, 'MyFirstProduct',
   productVersions: [
     {
       productVersionName: "v1",
-      cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromProductStack(new S3BucketProduct(this, 'S3BucketProduct')),
+      cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromProductStack(new S3BucketProduct(this, 'S3BucketProduct', 'MyProductAssetBucket')),
     },
   ],
 });
@@ -201,24 +201,24 @@ portfolio.addProduct(product);
 ## Tag Options
 
 TagOptions allow administrators to easily manage tags on provisioned products by creating a selection of tags for end users to choose from.
-TagOptions are created by specifying a key with a selection of values and can be associated with both portfolios and products.
+TagOptions are created by specifying a tag key with a selection of allowed values and can be associated with both portfolios and products.
 When launching a product, both the TagOptions associated with the product and the containing portfolio are made available.
 
 At the moment, TagOptions can only be disabled in the console.
 
 ```ts fixture=portfolio-product
 const tagOptionsForPortfolio = new servicecatalog.TagOptions(this, 'OrgTagOptions', {
-  tagOptions: {
-    group: ['finance', 'engineering', 'marketing', 'research'],
-    costCenter: ['01', '02','03'],
-  }
+  allowedValuesForTags: {
+    Group: ['finance', 'engineering', 'marketing', 'research'],
+    CostCenter: ['01', '02','03'],
+  },
 });
 portfolio.associateTagOptions(tagOptionsForPortfolio);
 
 const tagOptionsForProduct = new servicecatalog.TagOptions(this, 'ProductTagOptions', {
-  tagOptions: {
-    environment: ['dev', 'alpha', 'prod'],
-  }
+  allowedValuesForTags: {
+    Environment: ['dev', 'alpha', 'prod'],
+  },
 });
 product.associateTagOptions(tagOptionsForProduct);
 ```

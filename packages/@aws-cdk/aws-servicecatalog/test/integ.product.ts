@@ -39,7 +39,7 @@ const product = new servicecatalog.CloudFormationProduct(stack, 'TestProduct', {
 });
 
 const tagOptions = new servicecatalog.TagOptions(stack, 'TagOptions', {
-  tagOptions: {
+  allowedValuesForTags: {
     key1: ['value1', 'value2'],
     key2: ['value1'],
   },

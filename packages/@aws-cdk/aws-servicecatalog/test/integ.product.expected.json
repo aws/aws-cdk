@@ -219,58 +219,61 @@
         ]
       }
     },
-    "TestProductTagOptionAssociation799b9f6af4fd14F66802": {
+    "TestProductTagOptionAssociation6980d25bd022DE24DD5B": {
       "Type": "AWS::ServiceCatalog::TagOptionAssociation",
       "Properties": {
         "ResourceId": {
           "Ref": "TestProduct7606930B"
         },
         "TagOptionId": {
-          "Ref": "TagOptionsTagOption5f31c54ba705C49A7414"
+          "Ref": "TagOptions5f31c54ba705F110F743"
         }
       }
     },
-    "TestProductTagOptionAssociation27c789e0a093926F5538": {
+    "TestProductTagOptionAssociation5e4145fb974a24712424": {
       "Type": "AWS::ServiceCatalog::TagOptionAssociation",
       "Properties": {
         "ResourceId": {
           "Ref": "TestProduct7606930B"
         },
         "TagOptionId": {
-          "Ref": "TagOptionsTagOption8d263919cebbA227EEAD"
+          "Ref": "TagOptions8d263919cebb6764AC10"
         }
       }
     },
-    "TestProductTagOptionAssociationbafffb6a944c9C55BF09": {
+    "TestProductTagOptionAssociation5a46c2a214678FC25723": {
       "Type": "AWS::ServiceCatalog::TagOptionAssociation",
       "Properties": {
         "ResourceId": {
           "Ref": "TestProduct7606930B"
         },
         "TagOptionId": {
-          "Ref": "TagOptionsTagOptiona260cbbd99c48E537D5E"
+          "Ref": "TagOptionsa260cbbd99c416C40F73"
         }
       }
     },
-    "TagOptionsTagOption5f31c54ba705C49A7414": {
+    "TagOptions5f31c54ba705F110F743": {
       "Type": "AWS::ServiceCatalog::TagOption",
       "Properties": {
         "Key": "key1",
-        "Value": "value1"
+        "Value": "value1",
+        "Active": true
       }
     },
-    "TagOptionsTagOption8d263919cebbA227EEAD": {
+    "TagOptions8d263919cebb6764AC10": {
       "Type": "AWS::ServiceCatalog::TagOption",
       "Properties": {
         "Key": "key1",
-        "Value": "value2"
+        "Value": "value2",
+        "Active": true
       }
     },
-    "TagOptionsTagOptiona260cbbd99c48E537D5E": {
+    "TagOptionsa260cbbd99c416C40F73": {
       "Type": "AWS::ServiceCatalog::TagOption",
       "Properties": {
         "Key": "key2",
-        "Value": "value1"
+        "Value": "value1",
+        "Active": true
       }
     }
   },

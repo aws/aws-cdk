@@ -12,14 +12,18 @@ import { Construct } from 'constructs';
  */
 export interface TagOptionsProps {
   /**
-   * TagOption keys and associated list of possible values.
+   * The values that are allowed to be set for specific tags.
+   * The keys of the map represent the tag keys,
+   * and the values of the map are a list of allowed values of that particular tag key.
    */
-  readonly tagOptions: { [key: string]: string[] };
+  readonly allowedValuesForTags: { [tagKey: string]: string[] };
 }
 
 /**
  * Defines a set of TagOptions, which are a list of key-value pairs managed in AWS Service Catalog.
  * It is not an AWS tag, but serves as a template for creating an AWS tag based on the TagOption.
+ * See https://docs.aws.amazon.com/servicecatalog/latest/adminguide/tagoptions.html
+ *
  * @resource AWS::ServiceCatalog::TagOption
  */
 export class TagOptions extends cdk.Resource {
@@ -28,24 +32,26 @@ export class TagOptions extends cdk.Resource {
    *
    * @internal
    */
-  public readonly _tagOptionsMap: { [key: string]: CfnTagOption };
+  public readonly _tagOptionsMap: { [tagName: string]: CfnTagOption };
 
   constructor(scope: Construct, id: string, props: TagOptionsProps) {
     super(scope, id);
-    this._tagOptionsMap = this.createUnderlyingTagOptions(props.tagOptions);
+
+    this._tagOptionsMap = this.createUnderlyingTagOptions(props.allowedValuesForTags);
   }
 
-  private createUnderlyingTagOptions(tagOptions: { [key: string]: string[] }): { [key: string]: CfnTagOption } {
-    var tagOptionMap: { [key: string]: CfnTagOption } = {};
-    for (const [key, tagOptionsList] of Object.entries(tagOptions)) {
-      InputValidator.validateLength(this.node.addr, 'TagOption key', 1, 128, key);
-      tagOptionsList.forEach((value: string) => {
-        InputValidator.validateLength(this.node.addr, 'TagOption value', 1, 256, value);
-        const tagOptionIdentifier = `$TagOption${hashValues(key, value)}`;
+  private createUnderlyingTagOptions(tagOptions: { [tagKey: string]: string[] }): { [tagOptionIdentifier: string]: CfnTagOption } {
+    var tagOptionMap: { [tagOptionIdentifier: string]: CfnTagOption } = {};
+    for (const [tagKey, tagOptionsList] of Object.entries(tagOptions)) {
+      InputValidator.validateLength(this.node.addr, 'TagOption key', 1, 128, tagKey);
+      tagOptionsList.forEach((tagValue: string) => {
+        InputValidator.validateLength(this.node.addr, 'TagOption value', 1, 256, tagValue);
+        const tagOptionIdentifier = hashValues(tagKey, tagValue);
         if (!this.node.tryFindChild(tagOptionIdentifier)) {
           const tagOption = new CfnTagOption(this, tagOptionIdentifier, {
-            key: key,
-            value: value,
+            key: tagKey,
+            value: tagValue,
+            active: true,
           });
           tagOptionMap[tagOptionIdentifier] = tagOption;
         }

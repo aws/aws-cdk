@@ -139,7 +139,19 @@ export class AssociationManager {
     }
   }
 
-  public static setLaunchRoleConstraint(
+  public static associateTagOptions(resource: cdk.IResource, resourceId: string, tagOptions: TagOptions): void {
+    for (const [tagOptionIdentifier, cfnTagOption] of Object.entries(tagOptions._tagOptionsMap)) {
+      const tagAssocationConstructId = `TagOptionAssociation${hashValues(resource.node.addr, tagOptionIdentifier)}`;
+      if (!resource.node.tryFindChild(tagAssocationConstructId)) {
+        new CfnTagOptionAssociation(resource as cdk.Resource, tagAssocationConstructId, {
+          resourceId: resourceId,
+          tagOptionId: cfnTagOption.ref,
+        });
+      }
+    }
+  }
+
+  private static setLaunchRoleConstraint(
     portfolio: IPortfolio, product: IProduct, options: CommonConstraintOptions,
     roleOptions: LaunchRoleConstraintRoleOptions,
   ): void {
@@ -164,18 +176,6 @@ export class AssociationManager {
       constraint.addDependsOn(association.cfnPortfolioProductAssociation);
     } else {
       throw new Error(`Cannot set multiple launch roles for association ${this.prettyPrintAssociation(portfolio, product)}`);
-    }
-  }
-
-  public static associateTagOptions(resource: cdk.IResource, resourceId: string, tagOptions: TagOptions): void {
-    for (const [tagOptionIdentifier, cfnTagOption] of Object.entries(tagOptions._tagOptionsMap)) {
-      const tagAssocationConstructId = `TagOptionAssociation${hashValues(resource.node.addr, tagOptionIdentifier)}`;
-      if (!resource.node.tryFindChild(tagAssocationConstructId)) {
-        new CfnTagOptionAssociation(resource as cdk.Resource, tagAssocationConstructId, {
-          resourceId: resourceId,
-          tagOptionId: cfnTagOption.ref,
-        });
-      }
     }
   }
 

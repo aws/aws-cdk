@@ -74,36 +74,36 @@
         "PrincipalType": "IAM"
       }
     },
-    "TestPortfolioTagOptionAssociation588b5adc10dd7F84BFE3": {
+    "TestPortfolioTagOptionAssociation0dc7162cf16e2040A630": {
       "Type": "AWS::ServiceCatalog::TagOptionAssociation",
       "Properties": {
         "ResourceId": {
           "Ref": "TestPortfolio4AC794EB"
         },
         "TagOptionId": {
-          "Ref": "TagOptionsTagOption5f31c54ba705C49A7414"
+          "Ref": "TagOptions5f31c54ba705F110F743"
         }
       }
     },
-    "TestPortfolioTagOptionAssociationf2f58e7500fcE8FB28E4": {
+    "TestPortfolioTagOptionAssociation7bee6a69204e42AD5E51": {
       "Type": "AWS::ServiceCatalog::TagOptionAssociation",
       "Properties": {
         "ResourceId": {
           "Ref": "TestPortfolio4AC794EB"
         },
         "TagOptionId": {
-          "Ref": "TagOptionsTagOption8d263919cebbA227EEAD"
+          "Ref": "TagOptions8d263919cebb6764AC10"
         }
       }
     },
-    "TestPortfolioTagOptionAssociation3529ad9bdc559519AFC8": {
+    "TestPortfolioTagOptionAssociation936d6047c6d1807D4E89": {
       "Type": "AWS::ServiceCatalog::TagOptionAssociation",
       "Properties": {
         "ResourceId": {
           "Ref": "TestPortfolio4AC794EB"
         },
         "TagOptionId": {
-          "Ref": "TagOptionsTagOptiona260cbbd99c48E537D5E"
+          "Ref": "TagOptionsa260cbbd99c416C40F73"
         }
       }
     },
@@ -217,25 +217,28 @@
         "TestPortfolioPortfolioProductAssociationa0185761d231B0D998A7"
       ]
     },
-    "TagOptionsTagOption5f31c54ba705C49A7414": {
+    "TagOptions5f31c54ba705F110F743": {
       "Type": "AWS::ServiceCatalog::TagOption",
       "Properties": {
         "Key": "key1",
-        "Value": "value1"
+        "Value": "value1",
+        "Active": true
       }
     },
-    "TagOptionsTagOption8d263919cebbA227EEAD": {
+    "TagOptions8d263919cebb6764AC10": {
       "Type": "AWS::ServiceCatalog::TagOption",
       "Properties": {
         "Key": "key1",
-        "Value": "value2"
+        "Value": "value2",
+        "Active": true
       }
     },
-    "TagOptionsTagOptiona260cbbd99c48E537D5E": {
+    "TagOptionsa260cbbd99c416C40F73": {
       "Type": "AWS::ServiceCatalog::TagOption",
       "Properties": {
         "Key": "key2",
-        "Value": "value1"
+        "Value": "value1",
+        "Active": true
       }
     },
     "TestProduct7606930B": {
@@ -253,36 +256,36 @@
         ]
       }
     },
-    "TestProductTagOptionAssociationac2ca35a25e686F7BF73": {
+    "TestProductTagOptionAssociationd168a0728cec938F3943": {
       "Type": "AWS::ServiceCatalog::TagOptionAssociation",
       "Properties": {
         "ResourceId": {
           "Ref": "TestProduct7606930B"
         },
         "TagOptionId": {
-          "Ref": "TagOptionsTagOption5f31c54ba705C49A7414"
+          "Ref": "TagOptions5f31c54ba705F110F743"
         }
       }
     },
-    "TestProductTagOptionAssociatione355ed94b1c70354F0BD": {
+    "TestProductTagOptionAssociation5c417c784ec745E5B016": {
       "Type": "AWS::ServiceCatalog::TagOptionAssociation",
       "Properties": {
         "ResourceId": {
           "Ref": "TestProduct7606930B"
         },
         "TagOptionId": {
-          "Ref": "TagOptionsTagOption8d263919cebbA227EEAD"
+          "Ref": "TagOptions8d263919cebb6764AC10"
         }
       }
     },
-    "TestProductTagOptionAssociation25ff027af76d99BF7AF0": {
+    "TestProductTagOptionAssociation804e41acdcbfC22D2E68": {
       "Type": "AWS::ServiceCatalog::TagOptionAssociation",
       "Properties": {
         "ResourceId": {
           "Ref": "TestProduct7606930B"
         },
         "TagOptionId": {
-          "Ref": "TagOptionsTagOptiona260cbbd99c48E537D5E"
+          "Ref": "TagOptionsa260cbbd99c416C40F73"
         }
       }
     },
