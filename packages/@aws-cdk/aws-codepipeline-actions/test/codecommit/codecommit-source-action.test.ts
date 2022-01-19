@@ -555,7 +555,10 @@ describe('CodeCommit Source Action', () => {
       expect(repoStack).toHaveResourceLike('AWS::IAM::Policy', {
         PolicyDocument: {
           Statement: arrayWith({
-            'Action': 's3:PutObjectAcl',
+            'Action': [
+              's3:PutObjectAcl',
+              's3:PutObjectVersionAcl',
+            ],
             'Effect': 'Allow',
             'Resource': {
               'Fn::Join': ['', [
