@@ -18,7 +18,7 @@ export class IntrinsicFunction {
   /**
    * Create States.Format() string from args
    */
-  public static StatesForamt(fmt: string, ...args: arg[]): string {
+  public static statesForamt(fmt: string, ...args: arg[]): string {
     const quote = "'";
     const comma = ', ';
     var result: string = quote + fmt + quote + comma;
@@ -42,14 +42,14 @@ export class IntrinsicFunction {
   /**
    * Create States.StringToJson() string from args
    */
-  public static StatesStringToJson(str: string): string {
+  public static statesStringToJson(str: string): string {
     return 'States.StringToJson(\'' + str + '\')';
   }
 
   /**
    * Create States.JsonToString() string from args
    */
-  public static StatesJsonToString(path: string): string {
+  public static statesJsonToString(path: string): string {
     if (!isValidJsonPath(path)) {
       throw new Error('Arg of States.JsonToString() must be a JsonPath');
     }
@@ -60,7 +60,7 @@ export class IntrinsicFunction {
    * Create States.Array() string from an arg
    * The arg must be a JsonPath
    */
-  public static StatesArray(...args: arg[]): string {
+  public static statesArray(...args: arg[]): string {
     const quote = "'";
     const comma = ', ';
     var result: string = '';
