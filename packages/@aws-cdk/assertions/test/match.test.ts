@@ -176,12 +176,29 @@ describe('Matchers', () => {
       expectPass(matcher, { foo: 'bar', baz: { fred: 'waldo', wobble: 'flob' } });
     });
 
-    test('nested with ArrayMatch', () => {
+    test('ArrayMatch nested inside ObjectMatch', () => {
       matcher = Match.objectLike({
         foo: Match.arrayWith(['bar']),
       });
       expectPass(matcher, { foo: ['bar', 'baz'], fred: 'waldo' });
       expectFailure(matcher, { foo: ['baz'], fred: 'waldo' }, [/Missing element \[bar\] at pattern index 0 at \/foo/]);
+    });
+
+    test('Partiality is maintained throughout arrays', () => {
+      // Before this fix:
+      //
+      //   - objectLike({ x: { LITERAL }) ==> LITERAL would be matched partially as well
+      //   - objectLike({ xs: [ { LITERAL } ] }) ==> but here LITERAL would be matched fully
+      //
+      // That passing through an array resets the partial matching to full is a
+      // surprising inconsistency.
+      //
+      matcher = Match.objectLike({
+        foo: [{ bar: 'bar' }],
+      });
+      expectPass(matcher, { foo: [{ bar: 'bar' }] }); // Trivially true
+      expectPass(matcher, { boo: 'boo', foo: [{ bar: 'bar' }] }); // Additional members at top level okay
+      expectPass(matcher, { foo: [{ bar: 'bar', boo: 'boo' }] }); // Additional members at inner level okay
     });
 
     test('absent', () => {
@@ -389,7 +406,7 @@ describe('Matchers', () => {
 function expectPass(matcher: Matcher, target: any): void {
   const result = matcher.test(target);
   if (result.hasFailed()) {
-    fail(result.toHumanStrings()); // eslint-disable-line jest/no-jasmine-globals
+    throw new Error(result.toHumanStrings().join('\n')); // eslint-disable-line jest/no-jasmine-globals
   }
 }
 
