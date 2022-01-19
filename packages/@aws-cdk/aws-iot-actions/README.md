@@ -26,6 +26,7 @@ Currently supported are:
 - Put logs to CloudWatch Logs
 - Capture CloudWatch metrics
 - Change state for a CloudWatch alarm
+- Put records to Kinesis Data stream
 - Put records to Kinesis Data Firehose stream
 - Send messages to SQS queues
 
@@ -167,6 +168,26 @@ const topicRule = new iot.TopicRule(this, 'TopicRule', {
     new actions.CloudWatchSetAlarmStateAction(alarm, {
       reason: 'AWS Iot Rule action is triggered',
       alarmStateToSet: cloudwatch.AlarmState.ALARM,
+    }),
+  ],
+});
+```
+
+## Put records to Kinesis Data stream
+
+The code snippet below creates an AWS IoT Rule that put records to Kinesis Data
+stream when it is triggered.
+
+```ts
+import * as kinesis from '@aws-cdk/aws-kinesis';
+
+const stream = new kinesis.Stream(this, 'MyStream');
+
+const topicRule = new iot.TopicRule(this, 'TopicRule', {
+  sql: iot.IotSql.fromStringAsVer20160323("SELECT * FROM 'device/+/data'"),
+  actions: [
+    new actions.KinesisPutRecordAction(stream, {
+      partitionKey: '${newuuid()}',
     }),
   ],
 });
