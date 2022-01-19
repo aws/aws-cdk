@@ -16,7 +16,7 @@ beforeEach(() => {
     tagResource: mockTagResource,
     untagResource: mockUntagResource,
   }, {
-    // these are needed for the waiter API that the ECS service hotswap uses
+    // these are needed for the waiter API that the Lambda service hotswap uses
     api: {
       waiters: {},
     },

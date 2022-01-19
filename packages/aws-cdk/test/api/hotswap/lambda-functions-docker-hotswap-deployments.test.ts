@@ -5,28 +5,30 @@ let mockUpdateLambdaCode: (params: Lambda.Types.UpdateFunctionCodeRequest) => La
 let mockTagResource: (params: Lambda.Types.TagResourceRequest) => {};
 let mockUntagResource: (params: Lambda.Types.UntagResourceRequest) => {};
 let hotswapMockSdkProvider: setup.HotswapMockSdkProvider;
+let mockMakeRequest: (operation: string, params: any) => {};
 
 beforeEach(() => {
   hotswapMockSdkProvider = setup.setupHotswapTests();
-  mockUpdateLambdaCode = jest.fn().mockReturnValue({});
+  mockUpdateLambdaCode = jest.fn().mockReturnValue({
+    PackageType: 'Image',
+  });
   mockTagResource = jest.fn();
   mockUntagResource = jest.fn();
+  mockMakeRequest = jest.fn().mockReturnValue({
+    promise: () => Promise.resolve({}),
+    response: {},
+    addListeners: () => {},
+  });
   hotswapMockSdkProvider.stubLambda({
     updateFunctionCode: mockUpdateLambdaCode,
     tagResource: mockTagResource,
     untagResource: mockUntagResource,
   }, {
-    // these are needed for the waiter API that the ECS service hotswap uses
+    // these are needed for the waiter API that the Lambda service hotswap uses
     api: {
       waiters: {},
     },
-    makeRequest() {
-      return {
-        promise: () => Promise.resolve({}),
-        response: {},
-        addListeners: () => {},
-      };
-    },
+    makeRequest: mockMakeRequest,
   });
 });
 
@@ -76,4 +78,55 @@ test('calls the updateLambdaCode() API when it receives only a code difference i
     FunctionName: 'my-function',
     ImageUri: 'new-image',
   });
+});
+
+test('calls the getFunction() API with a delay of 5', async () => {
+  // GIVEN
+  setup.setCurrentCfnStackTemplate({
+    Resources: {
+      Func: {
+        Type: 'AWS::Lambda::Function',
+        Properties: {
+          Code: {
+            ImageUri: 'current-image',
+          },
+          FunctionName: 'my-function',
+        },
+        Metadata: {
+          'aws:asset:path': 'old-path',
+        },
+      },
+    },
+  });
+  const cdkStackArtifact = setup.cdkStackArtifactOf({
+    template: {
+      Resources: {
+        Func: {
+          Type: 'AWS::Lambda::Function',
+          Properties: {
+            Code: {
+              ImageUri: 'new-image',
+            },
+            FunctionName: 'my-function',
+          },
+          Metadata: {
+            'aws:asset:path': 'new-path',
+          },
+        },
+      },
+    },
+  });
+
+  // WHEN
+  await hotswapMockSdkProvider.tryHotswapDeployment(cdkStackArtifact);
+
+  // THEN
+  const waiters = (hotswapMockSdkProvider.mockSdkProvider.sdk.lambda() as any).api.waiters;
+  expect(mockMakeRequest).toHaveBeenCalledWith('getFunction', { FunctionName: 'my-function' });
+  expect(waiters).toEqual(expect.objectContaining({
+    updateFunctionCodeToFinish: expect.objectContaining({
+      name: 'UpdateFunctionCodeToFinish',
+      delay: 5,
+    }),
+  }));
 });

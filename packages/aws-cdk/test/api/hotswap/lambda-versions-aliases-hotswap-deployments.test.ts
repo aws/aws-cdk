@@ -2,7 +2,6 @@ import { Lambda } from 'aws-sdk';
 import * as setup from './hotswap-test-setup';
 
 let mockUpdateLambdaCode: (params: Lambda.Types.UpdateFunctionCodeRequest) => Lambda.Types.FunctionConfiguration;
-let mockGetFunction: (params: Lambda.Types.GetFunctionRequest) => Lambda.Types.GetFunctionResponse;
 let mockPublishVersion: jest.Mock<Lambda.FunctionConfiguration, Lambda.PublishVersionRequest[]>;
 let mockUpdateAlias: (params: Lambda.UpdateAliasRequest) => Lambda.AliasConfiguration;
 let hotswapMockSdkProvider: setup.HotswapMockSdkProvider;
@@ -10,22 +9,15 @@ let hotswapMockSdkProvider: setup.HotswapMockSdkProvider;
 beforeEach(() => {
   hotswapMockSdkProvider = setup.setupHotswapTests();
   mockUpdateLambdaCode = jest.fn().mockReturnValue({});
-  mockGetFunction = jest.fn().mockReturnValue({
-    Configuration: {
-      State: 'Active',
-      LastUpdateStatus: 'Successful',
-    },
-  });
   mockPublishVersion = jest.fn();
   mockUpdateAlias = jest.fn();
   hotswapMockSdkProvider.stubLambda({
-    getFunction: mockGetFunction,
     updateFunctionCode: mockUpdateLambdaCode,
     publishVersion: mockPublishVersion,
     updateAlias: mockUpdateAlias,
     waitFor: jest.fn(),
   }, {
-    // these are needed for the waiter API that the ECS service hotswap uses
+    // these are needed for the waiter API that the Lambda service hotswap uses
     api: {
       waiters: {},
     },
