@@ -1,19 +1,17 @@
 export type Messages = {
-  Messages: { [id: string]: Message }
+  Messages: { [logicalId: string]: Message }
 }
 
 export type Message = {
+  level: string;
+  id: string;
+  entry: MetadataEntry;
+  [key: string]: any;
+};
+
+type MetadataEntry = {
+  type: string,
+  data?: any,
+  trace?: string[],
   [key: string]: any;
 }
-
-// export type Message = {
-//   level: 'info' | 'warning' | 'error';
-//   id: string;
-//   entry: MetadataEntry;
-// };
-
-// type MetadataEntry = {
-//   type: string,
-//   data?: any,
-//   trace?: string[],
-// }

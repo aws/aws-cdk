@@ -128,7 +128,8 @@ export class Template {
    * @param logicalId the name of the parameter. Provide `'*'` to match all parameters in the template.
    * @param props by default, matches all Parameters in the template.
    * When a literal object is provided, performs a partial match via `Match.objectLike()`.
-   * Use the `Match` APIs to configure a different behaviour.   */
+   * Use the `Match` APIs to configure a different behaviour.
+   */
   public findParameters(logicalId: string, props: any = {}): { [key: string]: { [key: string]: any } } {
     return findParameters(this.template, logicalId, props);
   }

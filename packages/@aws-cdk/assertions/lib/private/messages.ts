@@ -1,8 +1,10 @@
+import { MatchResult } from '../matcher';
 import { Messages } from './message';
-import { formatFailure, matchSection } from './section';
+import { filterLogicalId, formatFailure, matchSection } from './section';
 
-export function findMessage(messages: Messages, props: any = {}): { [key: string]: { [key: string]: any } } {
-  const result = matchSection(messages, props);
+export function findMessage(messages: Messages, logicalId: string, props: any = {}): { [key: string]: { [key: string]: any } } {
+  const section: { [key: string]: {} } = messages;
+  const result = matchSection(filterLogicalId(section, logicalId), props);
 
   if (!result.match) {
     return {};
@@ -11,18 +13,27 @@ export function findMessage(messages: Messages, props: any = {}): { [key: string
   return result.matches as Messages;
 }
 
-export function hasMessage(messages: Messages, props: any): string | void {
-  const result = matchSection(messages, props);
+export function hasMessage(messages: Messages, logicalId: string, props: any): string | void {
+  const section: { [key: string]: {} } = messages;
+  const result = matchSection(filterLogicalId(section, logicalId), props);
+
   if (result.match) {
     return;
   }
 
   if (result.closestResult === undefined) {
-    return 'No parameters found in the template';
+    return 'No messages found in the stack';
   }
 
   return [
-    `Template has ${result.analyzedCount} parameters, but none match as expected.`,
-    formatFailure(result.closestResult),
+    `Stack has ${result.analyzedCount} messages, but none match as expected.`,
+    formatFailure(formatMessage(result.closestResult)),
   ].join('\n');
+}
+
+function formatMessage(match: MatchResult, renderTrace: boolean = false): MatchResult {
+  if (!renderTrace) {
+    match.target.entry.trace = ['redacted'];
+  }
+  return match;
 }
