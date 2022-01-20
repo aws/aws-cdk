@@ -201,6 +201,7 @@ test('esbuild bundling with esbuild options', () => {
     footer: '/* comments */',
     charset: Charset.UTF8,
     forceDockerBundling: true,
+    mainFields: ['module', 'main'],
     define: {
       'process.env.KEY': JSON.stringify('VALUE'),
       'process.env.BOOL': 'true',
@@ -224,7 +225,7 @@ test('esbuild bundling with esbuild options', () => {
           defineInstructions,
           '--log-level=silent --keep-names --tsconfig=/asset-input/lib/custom-tsconfig.ts',
           '--metafile=/asset-output/index.meta.json --banner:js="/* comments */" --footer:js="/* comments */"',
-          '--charset=utf8',
+          '--charset=utf8 --mainFields=module,main',
         ].join(' '),
       ],
     }),

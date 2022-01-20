@@ -273,11 +273,11 @@ export interface BundlingOptions {
 
   /**
    * How to determine the entry point for modules.
-   * Try "module,main" to default to ES module versions.
+   * Try ['module', 'main'] to default to ES module versions.
    *
-   * @default - main,module
+   * @default ['main', 'module']
    */
-  readonly mainFields?: string;
+  readonly mainFields?: string[];
 }
 
 /**
