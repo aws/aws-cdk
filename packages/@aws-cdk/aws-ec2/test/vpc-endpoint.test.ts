@@ -3,7 +3,7 @@ import { AnyPrincipal, PolicyStatement } from '@aws-cdk/aws-iam';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { ContextProvider, Fn, Stack } from '@aws-cdk/core';
 // eslint-disable-next-line max-len
-import { GatewayVpcEndpoint, GatewayVpcEndpointAwsService, InterfaceVpcEndpoint, InterfaceVpcEndpointAwsService, InterfaceVpcEndpointService, SecurityGroup, SubnetType, Vpc } from '../lib';
+import { GatewayVpcEndpoint, GatewayVpcEndpointAwsService, InterfaceVpcEndpoint, InterfaceVpcEndpointAwsService, InterfaceVpcEndpointService, SecurityGroup, SubnetFilter, SubnetType, Vpc } from '../lib';
 
 describe('vpc endpoint', () => {
   describe('gateway endpoint', () => {
@@ -267,6 +267,25 @@ describe('vpc endpoint', () => {
 
 
     });
+
+    describe('add interface endpoint to looked-up VPC', () => {
+      test('initial run', () => {
+        // GIVEN
+        const stack = new Stack(undefined, undefined, { env: { account: '1234', region: 'us-east-1' } });
+        const vpc = Vpc.fromLookup(stack, 'Vpc', {
+          vpcId: 'doesnt-matter',
+        });
+
+        // THEN: doesn't throw
+        vpc.addInterfaceEndpoint('SecretsManagerEndpoint', {
+          service: InterfaceVpcEndpointAwsService.SECRETS_MANAGER,
+          subnets: {
+            subnetFilters: [SubnetFilter.byIds(['1234'])],
+          },
+        });
+      });
+    });
+
 
     test('import/export', () => {
       // GIVEN
