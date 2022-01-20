@@ -13,6 +13,10 @@ import { FileSet, IFileSetProducer } from './file-set';
 export abstract class Step implements IFileSetProducer {
   /**
    * Define a sequence of steps to be executed in order.
+   *
+   * If you need more fine-grained step ordering, use the `addStepDependency()`
+   * API. For example, if you want `secondStep` to occur after `firstStep`, call
+   * `secondStep.addStepDependency(firstStep)`.
    */
   public static sequence(steps: Step[]): Step[] {
     for (let i = 1; i < steps.length; i++) {
