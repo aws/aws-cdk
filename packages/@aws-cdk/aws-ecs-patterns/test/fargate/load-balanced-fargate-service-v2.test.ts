@@ -29,13 +29,13 @@ describe('When Application Load Balancer', () => {
       LaunchType: 'FARGATE',
       LoadBalancers: [
         {
-          ContainerName: 'web',
-          ContainerPort: 80,
-          TargetGroupArn: {
-            Ref: 'ServiceLBPublicListenerECSGroup0CC8688C',
-          },
+        ContainerName: 'web',
+        ContainerPort: 80,
+        TargetGroupArn: {
+          Ref: 'ServiceLBPublicListenerECSGroup0CC8688C',
         },
-      ],
+      },
+    ],
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
@@ -680,7 +680,7 @@ describe('When Network Load Balancer', () => {
       listenerPort: 8181,
     });
 
-    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
       Port: 81,
       Protocol: 'TCP',
       TargetType: 'ip',
@@ -724,7 +724,7 @@ describe('When Network Load Balancer', () => {
       }],
     });
 
-    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
       Port: 81,
       Protocol: 'TCP',
       TargetType: 'ip',
