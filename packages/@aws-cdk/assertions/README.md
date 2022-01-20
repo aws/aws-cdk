@@ -538,26 +538,27 @@ class MyStack extends cdk.Stack {
 We can then assert that the stack contains the expected Error:
 
 ```ts
-AssertAnnotations.fromStack(stack).hasMessage('/Default/Foo', {
-  level: 'error',
-  entry: {
-    data: 'we do not want a Foo::Bar resource',
-  },
-});
+AssertAnnotations.fromStack(stack).hasError(
+  '/Default/Foo',
+  'we do not want a Foo::Bar resource',
+);
 ```
 
-In addition to `hasMessage()`, we can also use `hasError()` or `hasWarning()` to similar
-effect:
+Here are the available APIs for `AssertAnnotations`:
+
+- `hasError()` and `findError()`
+- `hasWarning()` and `findWarning()`
+- `hasInfo()` and `findInfo()`
+
+The corresponding `findXxx()` API is complementary to the `hasXxx()` API, except instead
+of asserting its presence, it returns the set of matching messages.
+
+In addition, this suite of APIs is compatable with `Matchers` for more fine-grained control.
+For example, the following assertion works as well:
 
 ```ts
-AssertAnnotations.fromStack(stack).hasError('/Default/Foo', {
-  entry: {
-    data: 'we do not want a Foo::Bar resource',
-  }
-});
+AssertAnnotations.fromStack(stack).hasError(
+  '/Default/Foo',
+  '.*Foo::Bar.*',
+);
 ```
-
-Similarly to `Template`, `AssertAnnotations` also provides APIs to retrieve matching
-messages. The `findMessages()` API is complementary to the `hasMessages()` API, except
-instead of asserting its presence, it returns the set of matching messages. Each
-`hasXxx()` API has a complementary `findXxx()` API.
