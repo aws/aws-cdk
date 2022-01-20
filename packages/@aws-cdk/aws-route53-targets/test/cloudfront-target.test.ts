@@ -1,5 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
-import { SynthUtils } from '@aws-cdk/assert-internal';
+import { Template } from '@aws-cdk/assertions';
 import * as cloudfront from '@aws-cdk/aws-cloudfront';
 import * as route53 from '@aws-cdk/aws-route53';
 import * as s3 from '@aws-cdk/aws-s3';
@@ -14,16 +13,12 @@ test('use CloudFrontTarget partition hosted zone id mapping', () => {
   targets.CloudFrontTarget.getHostedZoneId(stack);
 
   // THEN
-  expect(SynthUtils.toCloudFormation(stack)).toEqual({
-    Mappings: {
-      AWSCloudFrontPartitionHostedZoneIdMap: {
-        'aws': {
-          zoneId: 'Z2FDTNDATAQYW2',
-        },
-        'aws-cn': {
-          zoneId: 'Z3RFFRIM2A3IF5',
-        },
-      },
+  Template.fromStack(stack).hasMapping('AWSCloudFrontPartitionHostedZoneIdMap', {
+    'aws': {
+      zoneId: 'Z2FDTNDATAQYW2',
+    },
+    'aws-cn': {
+      zoneId: 'Z3RFFRIM2A3IF5',
     },
   });
 });
@@ -40,16 +35,12 @@ test('use CloudFrontTarget hosted zone id mappings in nested stacks', () => {
 
   // THEN
   for (let nestedStack of [nestedStackA, nestedStackB]) {
-    expect(SynthUtils.toCloudFormation(nestedStack)).toEqual({
-      Mappings: {
-        AWSCloudFrontPartitionHostedZoneIdMap: {
-          'aws': {
-            zoneId: 'Z2FDTNDATAQYW2',
-          },
-          'aws-cn': {
-            zoneId: 'Z3RFFRIM2A3IF5',
-          },
-        },
+    Template.fromStack(nestedStack).hasMapping('AWSCloudFrontPartitionHostedZoneIdMap', {
+      'aws': {
+        zoneId: 'Z2FDTNDATAQYW2',
+      },
+      'aws-cn': {
+        zoneId: 'Z3RFFRIM2A3IF5',
       },
     });
   }
@@ -81,7 +72,7 @@ test('use CloudFront as record target', () => {
   });
 
   // THEN
-  expect(stack).toHaveResource('AWS::Route53::RecordSet', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Route53::RecordSet', {
     AliasTarget: {
       DNSName: { 'Fn::GetAtt': ['MyDistributionCFDistributionDE147309', 'DomainName'] },
       HostedZoneId: {
