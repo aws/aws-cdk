@@ -1,4 +1,3 @@
-import { SynthUtils } from '@aws-cdk/assert-internal';
 import { Match, Template } from '@aws-cdk/assertions';
 import * as appscaling from '@aws-cdk/aws-applicationautoscaling';
 import * as iam from '@aws-cdk/aws-iam';
@@ -2430,17 +2429,16 @@ describe('global', () => {
       Condition: 'TableStackRegionNotEqualseucentral199D46FC0',
     });
 
-    expect(SynthUtils.toCloudFormation(stack).Conditions).toEqual({
-      TableStackRegionNotEqualseuwest2A03859E7: {
-        'Fn::Not': [
-          { 'Fn::Equals': ['eu-west-2', { Ref: 'AWS::Region' }] },
-        ],
-      },
-      TableStackRegionNotEqualseucentral199D46FC0: {
-        'Fn::Not': [
-          { 'Fn::Equals': ['eu-central-1', { Ref: 'AWS::Region' }] },
-        ],
-      },
+    Template.fromStack(stack).hasCondition('TableStackRegionNotEqualseuwest2A03859E7', {
+      'Fn::Not': [
+        { 'Fn::Equals': ['eu-west-2', { Ref: 'AWS::Region' }] },
+      ],
+    });
+
+    Template.fromStack(stack).hasCondition('TableStackRegionNotEqualseucentral199D46FC0', {
+      'Fn::Not': [
+        { 'Fn::Equals': ['eu-central-1', { Ref: 'AWS::Region' }] },
+      ],
     });
   });
 
@@ -2484,17 +2482,16 @@ describe('global', () => {
       Condition: 'TableStackRegionNotEqualseucentral199D46FC0',
     });
 
-    expect(SynthUtils.toCloudFormation(stack).Conditions).toEqual({
-      TableStackRegionNotEqualseuwest2A03859E7: {
-        'Fn::Not': [
-          { 'Fn::Equals': ['eu-west-2', { Ref: 'AWS::Region' }] },
-        ],
-      },
-      TableStackRegionNotEqualseucentral199D46FC0: {
-        'Fn::Not': [
-          { 'Fn::Equals': ['eu-central-1', { Ref: 'AWS::Region' }] },
-        ],
-      },
+    Template.fromStack(stack).hasCondition('TableStackRegionNotEqualseuwest2A03859E7', {
+      'Fn::Not': [
+        { 'Fn::Equals': ['eu-west-2', { Ref: 'AWS::Region' }] },
+      ],
+    });
+
+    Template.fromStack(stack).hasCondition('TableStackRegionNotEqualseucentral199D46FC0', {
+      'Fn::Not': [
+        { 'Fn::Equals': ['eu-central-1', { Ref: 'AWS::Region' }] },
+      ],
     });
   });
 
@@ -2855,7 +2852,7 @@ describe('global', () => {
 
     // THEN
     expect(() => {
-      SynthUtils.synthesize(stack);
+      Template.fromStack(stack);
     }).toThrow(/A global Table that uses PROVISIONED as the billing mode needs auto-scaled write capacity/);
   });
 
@@ -2882,7 +2879,7 @@ describe('global', () => {
 
     // THEN
     expect(() => {
-      SynthUtils.synthesize(stack);
+      Template.fromStack(stack);
     }).toThrow(/A global Table that uses PROVISIONED as the billing mode needs auto-scaled write capacity with a policy/);
   });
 
@@ -2971,7 +2968,8 @@ describe('global', () => {
     });
 
     // THEN
-    expect(SynthUtils.toCloudFormation(stack).Conditions).toBeUndefined();
+    const conditions = Template.fromStack(stack).findConditions('*');
+    expect(Object.keys(conditions).length).toEqual(0);
   });
 
   test('can configure timeout', () => {
@@ -3014,7 +3012,7 @@ test('L1 inside L2 expects removalpolicy to have been set', () => {
   new FakeTableL2(stack, 'Table');
 
   expect(() => {
-    SynthUtils.toCloudFormation(stack);
+    Template.fromStack(stack);
   }).toThrow(/is a stateful resource type/);
 });
 
