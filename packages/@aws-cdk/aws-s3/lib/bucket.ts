@@ -1869,6 +1869,7 @@ export class Bucket extends BucketBase {
         noncurrentVersionTransitions: mapOrUndefined(rule.noncurrentVersionTransitions, t => ({
           storageClass: t.storageClass.value,
           transitionInDays: t.transitionAfter.toDays(),
+          newerNoncurrentVersions: t.noncurrentVersionsToRetain,
         })),
         prefix: rule.prefix,
         status: enabled ? 'Enabled' : 'Disabled',

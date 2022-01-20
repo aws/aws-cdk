@@ -314,9 +314,7 @@ describe('mesh', () => {
               Backends: [
                 {
                   VirtualService: {
-                    VirtualServiceName: {
-                      'Fn::GetAtt': ['service1A48078CF', 'VirtualServiceName'],
-                    },
+                    VirtualServiceName: 'service1.domain.local',
                   },
                 },
               ],

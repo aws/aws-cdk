@@ -362,7 +362,8 @@ and that you have the necessary IAM permissions to update the resources that are
 Hotswapping is currently supported for the following changes
 (additional changes will be supported in the future):
 
-- Code asset changes of AWS Lambda functions.
+- Code asset (including Docker image and inline code) and tag changes of AWS Lambda functions.
+- AWS Lambda Versions and Aliases changes.
 - Definition changes of AWS Step Functions State Machines.
 - Container asset changes of AWS ECS Services.
 - Website asset changes of AWS S3 Bucket Deployments.
@@ -434,6 +435,13 @@ for example:
 
 Note that `watch` by default uses hotswap deployments (see above for details) --
 to turn them off, pass the `--no-hotswap` option when invoking it.
+
+By default `watch` will also monitor all CloudWatch Log Groups in your application and stream the log events
+locally to your terminal. To disable this feature you can pass the `--no-logs` option when invoking it:
+
+```console
+$ cdk watch --no-logs
+```
 
 **Note**: This command is considered experimental,
 and might have breaking changes in the future.

@@ -1,7 +1,7 @@
 import * as AWS from 'aws-sdk';
 import { ISDK } from '../aws-auth';
-import { ChangeHotswapImpact, ChangeHotswapResult, establishResourcePhysicalName, HotswapOperation, HotswappableChangeCandidate, lowerCaseFirstCharacter, transformObjectKeys } from './common';
-import { EvaluateCloudFormationTemplate } from './evaluate-cloudformation-template';
+import { EvaluateCloudFormationTemplate } from '../evaluate-cloudformation-template';
+import { ChangeHotswapImpact, ChangeHotswapResult, HotswapOperation, HotswappableChangeCandidate, lowerCaseFirstCharacter, transformObjectKeys } from './common';
 
 export async function isHotswappableCodeBuildProjectChange(
   logicalId: string, change: HotswappableChangeCandidate, evaluateCfnTemplate: EvaluateCloudFormationTemplate,
@@ -36,7 +36,7 @@ export async function isHotswappableCodeBuildProjectChange(
     }
   }
 
-  const projectName = await establishResourcePhysicalName(logicalId, change.newValue.Properties?.Name, evaluateCfnTemplate);
+  const projectName = await evaluateCfnTemplate.establishResourcePhysicalName(logicalId, change.newValue.Properties?.Name);
   if (!projectName) {
     return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
   }
@@ -51,7 +51,7 @@ class ProjectHotswapOperation implements HotswapOperation {
   constructor(
     private readonly updateProjectInput: AWS.CodeBuild.UpdateProjectInput,
   ) {
-    this.resourceNames = [updateProjectInput.name];
+    this.resourceNames = [`CodeBuild project '${updateProjectInput.name}'`];
   }
 
   public async apply(sdk: ISDK): Promise<any> {
