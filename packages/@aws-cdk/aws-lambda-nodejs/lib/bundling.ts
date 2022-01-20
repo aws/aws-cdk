@@ -4,7 +4,7 @@ import { Architecture, AssetCode, Code, Runtime } from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
 import { PackageInstallation } from './package-installation';
 import { PackageManager } from './package-manager';
-import { BundlingOptions, SourceMapMode } from './types';
+import { BundlingOptions, OutputFormat, SourceMapMode } from './types';
 import { exec, extractDependencies, findUp } from './util';
 
 const ESBUILD_MAJOR_VERSION = '0';
@@ -112,6 +112,11 @@ export class Bundling implements cdk.BundlingOptions {
       throw new Error('preCompilation can only be used with typescript files');
     }
 
+    if (props.format === OutputFormat.ESM
+        && (props.runtime === Runtime.NODEJS_10_X || props.runtime === Runtime.NODEJS_12_X)) {
+      throw new Error(`ECMAScript module output format is not supported by the ${props.runtime.name} runtime`);
+    }
+
     this.externals = [
       ...props.externalModules ?? ['aws-sdk'], // Mark aws-sdk as external by default (available in the runtime)
       ...props.nodeModules ?? [], // Mark the modules that we are going to install as externals also
@@ -185,12 +190,14 @@ export class Bundling implements cdk.BundlingOptions {
     const sourceMapValue = sourceMapMode === SourceMapMode.DEFAULT ? '' : `=${this.props.sourceMapMode}`;
     const sourcesContent = this.props.sourcesContent ?? true;
 
+    const outFile = this.props.format === OutputFormat.ESM ? 'index.mjs' : 'index.js';
     const esbuildCommand: string[] = [
       options.esbuildRunner,
       '--bundle', `"${pathJoin(options.inputDir, relativeEntryPath)}"`,
       `--target=${this.props.target ?? toTarget(this.props.runtime)}`,
       '--platform=node',
-      `--outfile="${pathJoin(options.outputDir, 'index.js')}"`,
+      ...this.props.format ? [`--format=${this.props.format}`] : [],
+      `--outfile="${pathJoin(options.outputDir, outFile)}"`,
       ...this.props.minify ? ['--minify'] : [],
       ...sourceMapEnabled ? [`--sourcemap${sourceMapValue}`] : [],
       ...sourcesContent ? [] : [`--sources-content=${sourcesContent}`],

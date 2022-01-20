@@ -1,4 +1,4 @@
-import { expect, haveResource } from '@aws-cdk/assert-internal';
+import { Template } from '@aws-cdk/assertions';
 import * as events from '@aws-cdk/aws-events';
 import * as sns from '@aws-cdk/aws-sns';
 import { Duration, Stack } from '@aws-cdk/core';
@@ -16,7 +16,7 @@ test('sns topic as an event rule target', () => {
   rule.addTarget(new targets.SnsTopic(topic));
 
   // THEN
-  expect(stack).to(haveResource('AWS::SNS::TopicPolicy', {
+  Template.fromStack(stack).hasResourceProperties('AWS::SNS::TopicPolicy', {
     PolicyDocument: {
       Statement: [
         {
@@ -30,9 +30,9 @@ test('sns topic as an event rule target', () => {
       Version: '2012-10-17',
     },
     Topics: [{ Ref: 'MyTopic86869434' }],
-  }));
+  });
 
-  expect(stack).to(haveResource('AWS::Events::Rule', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
     ScheduleExpression: 'rate(1 hour)',
     State: 'ENABLED',
     Targets: [
@@ -41,7 +41,7 @@ test('sns topic as an event rule target', () => {
         Id: 'Target0',
       },
     ],
-  }));
+  });
 });
 
 test('multiple uses of a topic as a target results in a single policy statement', () => {
@@ -58,7 +58,7 @@ test('multiple uses of a topic as a target results in a single policy statement'
   }
 
   // THEN
-  expect(stack).to(haveResource('AWS::SNS::TopicPolicy', {
+  Template.fromStack(stack).hasResourceProperties('AWS::SNS::TopicPolicy', {
     PolicyDocument: {
       Statement: [
         {
@@ -72,5 +72,5 @@ test('multiple uses of a topic as a target results in a single policy statement'
       Version: '2012-10-17',
     },
     Topics: [{ Ref: 'MyTopic86869434' }],
-  }));
+  });
 });

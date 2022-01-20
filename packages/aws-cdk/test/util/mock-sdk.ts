@@ -114,6 +114,10 @@ export class MockSdkProvider extends SdkProvider {
     (this.sdk as any).codeBuild = jest.fn().mockReturnValue(partialAwsService<AWS.CodeBuild>(stubs));
   }
 
+  public stubCloudWatchLogs(stubs: SyncHandlerSubsetOf<AWS.CloudWatchLogs>) {
+    (this.sdk as any).cloudWatchLogs = jest.fn().mockReturnValue(partialAwsService<AWS.CloudWatchLogs>(stubs));
+  }
+
   public stubGetEndpointSuffix(stub: () => string) {
     this.sdk.getEndpointSuffix = stub;
   }
@@ -134,6 +138,7 @@ export class MockSdk implements ISDK {
   public readonly kms = jest.fn();
   public readonly stepFunctions = jest.fn();
   public readonly codeBuild = jest.fn();
+  public readonly cloudWatchLogs = jest.fn();
   public readonly getEndpointSuffix = jest.fn();
   public readonly appendCustomUserAgent = jest.fn();
   public readonly removeCustomUserAgent = jest.fn();
@@ -147,6 +152,13 @@ export class MockSdk implements ISDK {
    */
   public stubCloudFormation(stubs: SyncHandlerSubsetOf<AWS.CloudFormation>) {
     this.cloudFormation.mockReturnValue(partialAwsService<AWS.CloudFormation>(stubs));
+  }
+
+  /**
+   * Replace the CloudWatch client with the given object
+   */
+  public stubCloudWatchLogs(stubs: SyncHandlerSubsetOf<AWS.CloudWatchLogs>) {
+    this.cloudWatchLogs.mockReturnValue(partialAwsService<AWS.CloudWatchLogs>(stubs));
   }
 
   /**

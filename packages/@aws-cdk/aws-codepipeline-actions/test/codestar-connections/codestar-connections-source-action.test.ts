@@ -1,8 +1,7 @@
-import '@aws-cdk/assert-internal/jest';
-import { arrayWith, objectLike, SynthUtils } from '@aws-cdk/assert-internal';
+import { Template, Match } from '@aws-cdk/assertions';
 import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
-import { Stack } from '@aws-cdk/core';
+import { App, Stack } from '@aws-cdk/core';
 import * as cpactions from '../../lib';
 
 /* eslint-disable quote-props */
@@ -16,7 +15,7 @@ describe('CodeStar Connections source Action', () => {
         codeBuildCloneOutput: false,
       });
 
-      expect(stack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+      Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
         'Stages': [
           {
             'Name': 'Source',
@@ -57,7 +56,7 @@ describe('CodeStar Connections source Action', () => {
       codeBuildCloneOutput: true,
     });
 
-    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       'PolicyDocument': {
         'Statement': [
           {
@@ -90,10 +89,10 @@ describe('CodeStar Connections source Action', () => {
       codeBuildCloneOutput: true,
     });
 
-    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       'PolicyDocument': {
-        'Statement': arrayWith(
-          objectLike({
+        'Statement': Match.arrayWith([
+          Match.objectLike({
             'Action': 's3:PutObjectAcl',
             'Effect': 'Allow',
             'Resource': {
@@ -103,7 +102,7 @@ describe('CodeStar Connections source Action', () => {
               ]],
             },
           }),
-        ),
+        ]),
       },
     });
 
@@ -117,7 +116,7 @@ describe('CodeStar Connections source Action', () => {
       triggerOnPush: false,
     });
 
-    expect(stack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
       'Stages': [
         {
           'Name': 'Source',
@@ -154,7 +153,7 @@ describe('CodeStar Connections source Action', () => {
     const stack = new Stack();
     createBitBucketAndCodeBuildPipeline(stack);
 
-    expect(stack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
       'Stages': [
         {
           'Name': 'Source',
@@ -180,7 +179,7 @@ describe('CodeStar Connections source Action', () => {
       variablesNamespace: 'kornicameister',
     });
 
-    expect(stack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
       'Stages': [
         {
           'Name': 'Source',
@@ -207,7 +206,8 @@ describe('CodeStar Connections source Action', () => {
   });
 
   test('fail if variable from unused action is referenced', () => {
-    const stack = new Stack();
+    const app = new App();
+    const stack = new Stack(app);
     const pipeline = createBitBucketAndCodeBuildPipeline(stack);
 
     const unusedSourceOutput = new codepipeline.Artifact();
@@ -229,12 +229,13 @@ describe('CodeStar Connections source Action', () => {
     pipeline.stage('Build').addAction(unusedBuildAction);
 
     expect(() => {
-      SynthUtils.synthesize(stack);
+      App.of(stack)!.synth();
     }).toThrow(/Cannot reference variables of action 'UnusedBitBucket', as that action was never added to a pipeline/);
   });
 
   test('fail if variable from unused action with custom namespace is referenced', () => {
-    const stack = new Stack();
+    const app = new App();
+    const stack = new Stack(app);
     const pipeline = createBitBucketAndCodeBuildPipeline(stack, {
       variablesNamespace: 'kornicameister',
     });
@@ -258,7 +259,7 @@ describe('CodeStar Connections source Action', () => {
     pipeline.stage('Build').addAction(unusedBuildAction);
 
     expect(() => {
-      SynthUtils.synthesize(stack);
+      App.of(stack)!.synth();
     }).toThrow(/Cannot reference variables of action 'UnusedBitBucket', as that action was never added to a pipeline/);
   });
 });

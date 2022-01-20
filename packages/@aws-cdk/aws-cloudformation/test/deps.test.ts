@@ -1,7 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { ResourcePart } from '@aws-cdk/assert-internal';
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import { testDeprecated, describeDeprecated } from '@aws-cdk/cdk-build-tools';
 import { App, CfnResource, Stack } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
@@ -39,8 +38,8 @@ describe('resource dependencies', () => {
     // THEN: the dependency needs to transfer from the resource within the
     // nested stack to the nested stack resource itself so the nested stack
     // will only be deployed the dependent resource
-    expect(parent).toHaveResource('AWS::CloudFormation::Stack', { DependsOn: ['ResourceInParent'] }, ResourcePart.CompleteDefinition);
-    expect(nested).toMatchTemplate({ Resources: { ResourceInNested: { Type: 'NESTED' } } }); // no DependsOn for the actual resource
+    Template.fromStack(parent).hasResource('AWS::CloudFormation::Stack', { DependsOn: ['ResourceInParent'] });
+    Template.fromStack(nested).templateMatches({ Resources: { ResourceInNested: { Type: 'NESTED' } } }); // no DependsOn for the actual resource
   }));
 
   // eslint-disable-next-line jest/valid-describe
@@ -57,8 +56,8 @@ describe('resource dependencies', () => {
 
     // THEN: the dependency needs to transfer from the resource within the
     // nested stack to the *parent* nested stack
-    expect(grantparent).toHaveResource('AWS::CloudFormation::Stack', { DependsOn: ['ResourceInGrandparent'] }, ResourcePart.CompleteDefinition);
-    expect(nested).toMatchTemplate({ Resources: { ResourceInNested: { Type: 'NESTED' } } }); // no DependsOn for the actual resource
+    Template.fromStack(grantparent).hasResource('AWS::CloudFormation::Stack', { DependsOn: ['ResourceInGrandparent'] });
+    Template.fromStack(nested).templateMatches({ Resources: { ResourceInNested: { Type: 'NESTED' } } }); // no DependsOn for the actual resource
   }));
 
   // eslint-disable-next-line jest/valid-describe
@@ -73,9 +72,9 @@ describe('resource dependencies', () => {
     addDep(resourceInParent, resourceInNested);
 
     // THEN: resource in parent needs to depend on the nested stack
-    expect(parent).toHaveResource('PARENT', {
+    Template.fromStack(parent).hasResource('PARENT', {
       DependsOn: [parent.resolve(nested.nestedStackResource!.logicalId)],
-    }, ResourcePart.CompleteDefinition);
+    });
   }));
 
   // eslint-disable-next-line jest/valid-describe
@@ -91,9 +90,9 @@ describe('resource dependencies', () => {
     addDep(resourceInGrandparent, resourceInNested);
 
     // THEN: resource in grantparent needs to depend on the top-level nested stack
-    expect(grandparent).toHaveResource('GRANDPARENT', {
+    Template.fromStack(grandparent).hasResource('GRANDPARENT', {
       DependsOn: [grandparent.resolve(parent.nestedStackResource!.logicalId)],
-    }, ResourcePart.CompleteDefinition);
+    });
   }));
 
   // eslint-disable-next-line jest/valid-describe
@@ -154,13 +153,13 @@ describe('resource dependencies', () => {
     addDep(resourceInNested1, resourceInNested2);
 
     // THEN: dependency transfered to nested stack resources
-    expect(stack).toHaveResource('AWS::CloudFormation::Stack', {
+    Template.fromStack(stack).hasResource('AWS::CloudFormation::Stack', {
       DependsOn: [stack.resolve(nested2.nestedStackResource!.logicalId)],
-    }, ResourcePart.CompleteDefinition);
+    });
 
-    expect(stack).not.toHaveResource('AWS::CloudFormation::Stack', {
+    expect(Template.fromStack(stack).findResources('AWS::CloudFormation::Stack', {
       DependsOn: [stack.resolve(nested1.nestedStackResource!.logicalId)],
-    }, ResourcePart.CompleteDefinition);
+    })).toEqual({});
   }));
 });
 
@@ -226,9 +225,9 @@ describe('stack dependencies', () => {
     nested1.addDependency(nested2);
 
     // THEN
-    expect(stack).toHaveResource('AWS::CloudFormation::Stack', {
+    Template.fromStack(stack).hasResource('AWS::CloudFormation::Stack', {
       DependsOn: [stack.resolve(nested2.nestedStackResource!.logicalId)],
-    }, ResourcePart.CompleteDefinition);
+    });
   });
 
   testDeprecated('nested stack depends on a deeply nested stack', () => {
@@ -242,9 +241,9 @@ describe('stack dependencies', () => {
     nested1.addDependency(nested21);
 
     // THEN: transfered to a resource dep between the resources in the common stack
-    expect(stack).toHaveResource('AWS::CloudFormation::Stack', {
+    Template.fromStack(stack).hasResource('AWS::CloudFormation::Stack', {
       DependsOn: [stack.resolve(nested2.nestedStackResource!.logicalId)],
-    }, ResourcePart.CompleteDefinition);
+    });
   });
 
   testDeprecated('deeply nested stack depends on a parent nested stack', () => {
@@ -258,9 +257,9 @@ describe('stack dependencies', () => {
     nested21.addDependency(nested1);
 
     // THEN: transfered to a resource dep between the resources in the common stack
-    expect(stack).toHaveResource('AWS::CloudFormation::Stack', {
+    Template.fromStack(stack).hasResource('AWS::CloudFormation::Stack', {
       DependsOn: [stack.resolve(nested1.nestedStackResource!.logicalId)],
-    }, ResourcePart.CompleteDefinition);
+    });
   });
 
   testDeprecated('top-level stack depends on a nested stack within a sibling', () => {

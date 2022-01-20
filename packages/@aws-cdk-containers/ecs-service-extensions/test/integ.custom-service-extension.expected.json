@@ -548,6 +548,18 @@
             ],
             "Essential": true,
             "Image": "nathanpeck/name",
+            "LogConfiguration": {
+              "LogDriver": "awslogs",
+              "Options": {
+                "awslogs-group": {
+                  "Ref": "namelogsF4B17D31"
+                },
+                "awslogs-stream-prefix": "name",
+                "awslogs-region": {
+                  "Ref": "AWS::Region"
+                }
+              }
+            },
             "Memory": 2048,
             "Name": "app",
             "PortMappings": [
@@ -566,6 +578,12 @@
           }
         ],
         "Cpu": "1024",
+        "ExecutionRoleArn": {
+          "Fn::GetAtt": [
+            "nametaskdefinitionExecutionRole45AC5C9A",
+            "Arn"
+          ]
+        },
         "Family": "awsecsintegnametaskdefinition0EA6A1A0",
         "Memory": "2048",
         "NetworkMode": "awsvpc",
@@ -580,6 +598,61 @@
           ]
         }
       }
+    },
+    "nametaskdefinitionExecutionRole45AC5C9A": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "ecs-tasks.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      }
+    },
+    "nametaskdefinitionExecutionRoleDefaultPolicyF7942D20": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "namelogsF4B17D31",
+                  "Arn"
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "nametaskdefinitionExecutionRoleDefaultPolicyF7942D20",
+        "Roles": [
+          {
+            "Ref": "nametaskdefinitionExecutionRole45AC5C9A"
+          }
+        ]
+      }
+    },
+    "namelogsF4B17D31": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "name-logs",
+        "RetentionInDays": 30
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
     "nameserviceService8015C8D6": {
       "Type": "AWS::ECS::Service",

@@ -1,5 +1,5 @@
 import { Template } from '@aws-cdk/assertions';
-import { AccountPrincipal, Role } from '@aws-cdk/aws-iam';
+import { AccountPrincipal, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import { Stack, App } from '@aws-cdk/core';
 import {
   HttpApi, HttpAuthorizer, HttpAuthorizerType, HttpConnectionType, HttpIntegrationType, HttpMethod, HttpRoute,
@@ -7,6 +7,8 @@ import {
   MappingValue,
   ParameterMapping,
   PayloadFormatVersion,
+  HttpIntegrationSubtype,
+  IntegrationCredentials,
 } from '../../lib';
 
 describe('HttpRoute', () => {
@@ -247,6 +249,56 @@ describe('HttpRoute', () => {
     });
 
     Template.fromStack(stack).resourceCountIs('AWS::ApiGatewayV2::VpcLink', 0);
+  });
+
+  test('configures AWS service integration correctly', () => {
+    // GIVEN
+    const stack = new Stack();
+    const httpApi = new HttpApi(stack, 'HttpApi');
+    const role = new Role(stack, 'Role', {
+      assumedBy: new ServicePrincipal('apigateway.amazonaws.com'),
+    });
+
+    class SqsSendMessageIntegration extends HttpRouteIntegration {
+      public bind(): HttpRouteIntegrationConfig {
+        return {
+          method: HttpMethod.ANY,
+          payloadFormatVersion: PayloadFormatVersion.VERSION_1_0,
+          type: HttpIntegrationType.AWS_PROXY,
+          subtype: HttpIntegrationSubtype.SQS_SEND_MESSAGE,
+          credentials: IntegrationCredentials.fromRole(role),
+          parameterMapping: ParameterMapping.fromObject({
+            QueueUrl: MappingValue.requestHeader('queueUrl'),
+            MessageBody: MappingValue.requestBody('message'),
+          }),
+        };
+      }
+    }
+
+    // WHEN
+    new HttpRoute(stack, 'HttpRoute', {
+      httpApi,
+      integration: new SqsSendMessageIntegration('SqsSendMessageIntegration'),
+      routeKey: HttpRouteKey.with('/sqs', HttpMethod.POST),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Integration', {
+      IntegrationType: 'AWS_PROXY',
+      IntegrationSubtype: 'SQS-SendMessage',
+      IntegrationMethod: 'ANY',
+      PayloadFormatVersion: '1.0',
+      CredentialsArn: {
+        'Fn::GetAtt': [
+          'Role1ABCC5F0',
+          'Arn',
+        ],
+      },
+      RequestParameters: {
+        QueueUrl: '$request.header.queueUrl',
+        MessageBody: '$request.body.message',
+      },
+    });
   });
 
   test('can create route with an authorizer attached', () => {

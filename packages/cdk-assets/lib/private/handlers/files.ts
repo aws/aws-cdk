@@ -10,6 +10,13 @@ import { pathExists } from '../fs-extra';
 import { replaceAwsPlaceholders } from '../placeholders';
 import { shell } from '../shell';
 
+/**
+ * The size of an empty zip file is 22 bytes
+ *
+ * Ref: https://en.wikipedia.org/wiki/ZIP_(file_format)
+ */
+const EMPTY_ZIP_FILE_SIZE = 22;
+
 export class FileAssetHandler implements IAssetHandler {
   private readonly fileCacheRoot: string;
 
@@ -74,6 +81,34 @@ export class FileAssetHandler implements IAssetHandler {
     const publishFile = this.asset.source.executable ?
       await this.externalPackageFile(this.asset.source.executable) : await this.packageFile(this.asset.source);
 
+    // Add a validation to catch the cases where we're accidentally producing an empty ZIP file (or worse,
+    // an empty file)
+    if (publishFile.contentType === 'application/zip') {
+      const fileSize = (await fs.stat(publishFile.packagedPath)).size;
+      if (fileSize <= EMPTY_ZIP_FILE_SIZE) {
+        const message = [
+          '🚨 WARNING: EMPTY ZIP FILE 🚨',
+          '',
+          'Zipping this asset produced an empty zip file. We do not know the root cause for this yet, and we need your help tracking it down.',
+          '',
+          'Please visit https://github.com/aws/aws-cdk/issues/18459 and tell us:',
+          'Your OS version, Nodejs version, CLI version, package manager, what the asset is supposed to contain, whether',
+          'or not this error is reproducible, what files are in your cdk.out directory, if you recently changed anything,',
+          'and anything else you think might be relevant.',
+          '',
+          'The deployment will continue, but it may fail. You can try removing the cdk.out directory and running the command',
+          'again; let us know if that resolves it.',
+          '',
+          'If you meant to produce an empty asset file on purpose, you can add an empty dotfile to the asset for now',
+          'to disable this notice.',
+        ];
+
+        for (const line of message) {
+          this.host.emitMessage(EventType.FAIL, line);
+        }
+      }
+    }
+
     this.host.emitMessage(EventType.UPLOAD, `Upload ${s3Url}`);
 
     const params = Object.assign({}, {
@@ -101,11 +136,11 @@ export class FileAssetHandler implements IAssetHandler {
       const packagedPath = path.join(this.fileCacheRoot, `${this.asset.id.assetId}.zip`);
 
       if (await pathExists(packagedPath)) {
-        this.host.emitMessage(EventType.CACHED, `From cache ${path}`);
+        this.host.emitMessage(EventType.CACHED, `From cache ${packagedPath}`);
         return { packagedPath, contentType };
       }
 
-      this.host.emitMessage(EventType.BUILD, `Zip ${fullPath} -> ${path}`);
+      this.host.emitMessage(EventType.BUILD, `Zip ${fullPath} -> ${packagedPath}`);
       await zipDirectory(fullPath, packagedPath);
       return { packagedPath, contentType };
     } else {
@@ -149,9 +184,19 @@ async function objectExists(s3: AWS.S3, bucket: string, key: string) {
    * prefix, and limiting results to 1. Since the list operation returns keys ordered by binary
    * UTF-8 representation, the key we are looking for is guaranteed to always be the first match
    * returned if it exists.
+   *
+   * If the file is too small, we discount it as a cache hit. There is an issue
+   * somewhere that sometimes produces empty zip files, and we would otherwise
+   * never retry building those assets without users having to manually clear
+   * their bucket, which is a bad experience.
    */
   const response = await s3.listObjectsV2({ Bucket: bucket, Prefix: key, MaxKeys: 1 }).promise();
-  return response.Contents != null && response.Contents.some(object => object.Key === key);
+  return (
+    response.Contents != null &&
+    response.Contents.some(
+      (object) => object.Key === key && (object.Size == null || object.Size > EMPTY_ZIP_FILE_SIZE),
+    )
+  );
 }
 
 

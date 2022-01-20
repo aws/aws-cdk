@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as cdk from '@aws-cdk/core';
 import * as ssm from '../lib';
 
@@ -26,7 +26,7 @@ test('can reference SSMPS string - latest version', () => {
   });
 
   // THEN
-  expect(stack).toMatchTemplate({
+  Template.fromStack(stack).templateMatches({
     Parameters: {
       RefParameter: {
         Type: 'AWS::SSM::Parameter::Value<String>',

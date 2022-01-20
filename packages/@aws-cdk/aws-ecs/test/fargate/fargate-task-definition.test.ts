@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import * as ecs from '../../lib';
@@ -11,7 +11,7 @@ describe('fargate task definition', () => {
       new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
 
       // THEN
-      expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
         Family: 'FargateTaskDef',
         NetworkMode: ecs.NetworkMode.AWS_VPC,
         RequiresCompatibilities: ['FARGATE'],
@@ -32,7 +32,7 @@ describe('fargate task definition', () => {
       });
 
       // THEN
-      expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
         Cpu: '128',
         Memory: '1024',
       });
@@ -72,7 +72,7 @@ describe('fargate task definition', () => {
       });
 
       // THEN
-      expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
         Cpu: '128',
         ExecutionRoleArn: {
           'Fn::GetAtt': [
@@ -265,7 +265,7 @@ describe('fargate task definition', () => {
       });
 
       // THEN
-      expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
         Cpu: '1024',
         Family: 'FargateTaskDef',
         Memory: '2048',
@@ -299,7 +299,7 @@ describe('fargate task definition', () => {
       });
 
       // THEN
-      expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
         Cpu: '1024',
         Family: 'FargateTaskDef',
         Memory: '2048',

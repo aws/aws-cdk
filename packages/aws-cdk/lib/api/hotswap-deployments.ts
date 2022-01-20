@@ -1,14 +1,13 @@
 import * as cfn_diff from '@aws-cdk/cloudformation-diff';
 import * as cxapi from '@aws-cdk/cx-api';
-import { CloudFormation } from 'aws-sdk';
-import * as colors from 'colors/safe';
+import * as chalk from 'chalk';
 import { print } from '../logging';
 import { ISDK, Mode, SdkProvider } from './aws-auth';
 import { DeployStackResult } from './deploy-stack';
+import { EvaluateCloudFormationTemplate, LazyListStackResources } from './evaluate-cloudformation-template';
 import { isHotswappableCodeBuildProjectChange } from './hotswap/code-build-projects';
-import { ICON, ChangeHotswapImpact, ChangeHotswapResult, HotswapOperation, HotswappableChangeCandidate, ListStackResources } from './hotswap/common';
+import { ICON, ChangeHotswapImpact, ChangeHotswapResult, HotswapOperation, HotswappableChangeCandidate } from './hotswap/common';
 import { isHotswappableEcsServiceChange } from './hotswap/ecs-services';
-import { EvaluateCloudFormationTemplate } from './hotswap/evaluate-cloudformation-template';
 import { isHotswappableLambdaFunctionChange } from './hotswap/lambda-functions';
 import { isHotswappableS3BucketDeploymentChange } from './hotswap/s3-bucket-deployments';
 import { isHotswappableStateMachineChange } from './hotswap/stepfunctions-state-machines';
@@ -40,7 +39,7 @@ export async function tryHotswapDeployment(
     account: resolvedEnv.account,
     region: resolvedEnv.region,
     partition: (await sdk.currentAccount()).partition,
-    urlSuffix: sdk.getEndpointSuffix,
+    urlSuffix: (region) => sdk.getEndpointSuffix(region),
     listStackResources,
   });
 
@@ -55,7 +54,7 @@ export async function tryHotswapDeployment(
   // apply the short-circuitable changes
   await applyAllHotswappableChanges(sdk, hotswappableChanges);
 
-  return { noOp: hotswappableChanges.length === 0, stackArn: cloudFormationStack.stackId, outputs: cloudFormationStack.outputs, stackArtifact };
+  return { noOp: hotswappableChanges.length === 0, stackArn: cloudFormationStack.stackId, outputs: cloudFormationStack.outputs };
 }
 
 async function findAllHotswappableChanges(
@@ -211,9 +210,7 @@ function isCandidateForHotswapping(change: cfn_diff.ResourceDifference): Hotswap
   };
 }
 
-async function applyAllHotswappableChanges(
-  sdk: ISDK, hotswappableChanges: HotswapOperation[],
-): Promise<void[]> {
+async function applyAllHotswappableChanges(sdk: ISDK, hotswappableChanges: HotswapOperation[]): Promise<void[]> {
   print(`\n${ICON} hotswapping resources:`);
   return Promise.all(hotswappableChanges.map(hotswapOperation => {
     return applyHotswappableChange(sdk, hotswapOperation);
@@ -227,41 +224,14 @@ async function applyHotswappableChange(sdk: ISDK, hotswapOperation: HotswapOpera
 
   try {
     for (const name of hotswapOperation.resourceNames) {
-      print(`   ${ICON} %s`, colors.bold(name));
+      print(`   ${ICON} %s`, chalk.bold(name));
     }
     return await hotswapOperation.apply(sdk);
   } finally {
     for (const name of hotswapOperation.resourceNames) {
-      print(`${ICON} %s %s`, colors.bold(name), colors.green('hotswapped!'));
+      print(`${ICON} %s %s`, chalk.bold(name), chalk.green('hotswapped!'));
     }
     sdk.removeCustomUserAgent(customUserAgent);
   }
 }
 
-class LazyListStackResources implements ListStackResources {
-  private stackResources: CloudFormation.StackResourceSummary[] | undefined;
-
-  constructor(private readonly sdk: ISDK, private readonly stackName: string) {
-  }
-
-  async listStackResources(): Promise<CloudFormation.StackResourceSummary[]> {
-    if (this.stackResources === undefined) {
-      this.stackResources = await this.getStackResources();
-    }
-    return this.stackResources;
-  }
-
-  private async getStackResources(): Promise<CloudFormation.StackResourceSummary[]> {
-    const ret = new Array<CloudFormation.StackResourceSummary>();
-    let nextToken: string | undefined;
-    do {
-      const stackResourcesResponse = await this.sdk.cloudFormation().listStackResources({
-        StackName: this.stackName,
-        NextToken: nextToken,
-      }).promise();
-      ret.push(...(stackResourcesResponse.StackResourceSummaries ?? []));
-      nextToken = stackResourcesResponse.NextToken;
-    } while (nextToken);
-    return ret;
-  }
-}

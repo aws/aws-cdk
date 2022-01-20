@@ -1,4 +1,6 @@
 import * as cdk from '@aws-cdk/core';
+import { FeatureFlags } from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import { CfnLaunchTemplate } from '../ec2.generated';
 import { Instance } from '../instance';
 import { LaunchTemplate } from '../launch-template';
@@ -83,17 +85,20 @@ export class InstanceRequireImdsv2Aspect extends RequireImdsv2Aspect {
       return;
     }
 
-    const name = `${node.node.id}LaunchTemplate`;
     const launchTemplate = new CfnLaunchTemplate(node, 'LaunchTemplate', {
       launchTemplateData: {
         metadataOptions: {
           httpTokens: 'required',
         },
       },
-      launchTemplateName: name,
     });
+    if (FeatureFlags.of(node).isEnabled(cxapi.EC2_UNIQUE_IMDSV2_LAUNCH_TEMPLATE_NAME)) {
+      launchTemplate.launchTemplateName = cdk.Names.uniqueId(launchTemplate);
+    } else {
+      launchTemplate.launchTemplateName = `${node.node.id}LaunchTemplate`;
+    }
     node.instance.launchTemplate = {
-      launchTemplateName: name,
+      launchTemplateName: launchTemplate.launchTemplateName,
       version: launchTemplate.getAtt('LatestVersionNumber').toString(),
     };
   }

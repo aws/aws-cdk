@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import { Stack } from '@aws-cdk/core';
 import { AllowListReceiptFilter, ReceiptFilter, ReceiptFilterPolicy } from '../lib';
 
@@ -17,7 +17,7 @@ describe('receipt filter', () => {
     });
 
     // THEN
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       'Resources': {
         'FilterC907D6DA': {
           'Type': 'AWS::SES::ReceiptFilter',
@@ -50,7 +50,7 @@ describe('receipt filter', () => {
     });
 
     // THEN
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       'Resources': {
         'AllowListBlockAll094C9B97': {
           'Type': 'AWS::SES::ReceiptFilter',

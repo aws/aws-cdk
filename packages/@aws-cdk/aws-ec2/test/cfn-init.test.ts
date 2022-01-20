@@ -1,13 +1,13 @@
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
-import { arrayWith, ResourcePart, stringLike } from '@aws-cdk/assert-internal';
-import '@aws-cdk/assert-internal/jest';
+import { Match, Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
 import { Asset } from '@aws-cdk/aws-s3-assets';
 import { AssetStaging, App, Aws, CfnResource, Stack, DefaultStackSynthesizer, IStackSynthesizer, FileAssetSource, FileAssetLocation } from '@aws-cdk/core';
 import * as ec2 from '../lib';
+import { stringLike } from './util';
 
 let app: App;
 let stack: Stack;
@@ -305,7 +305,7 @@ const ASSET_STATEMENT = {
         'arn:',
         { Ref: 'AWS::Partition' },
         ':s3:::',
-        { Ref: stringLike('AssetParameter*S3Bucket*') },
+        { Ref: stringLike(/AssetParameter.*S3Bucket.*/) },
       ]],
     },
     {
@@ -313,7 +313,7 @@ const ASSET_STATEMENT = {
         'arn:',
         { Ref: 'AWS::Partition' },
         ':s3:::',
-        { Ref: stringLike('AssetParameter*S3Bucket*') },
+        { Ref: stringLike(/AssetParameter.*S3Bucket.*/) },
         '/*',
       ]],
     },
@@ -338,9 +338,9 @@ describe('assets n buckets', () => {
     init.attach(resource, linuxOptions());
 
     // THEN
-    expect(stack).toHaveResource('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
-        Statement: arrayWith(ASSET_STATEMENT),
+        Statement: Match.arrayWith([ASSET_STATEMENT]),
         Version: '2012-10-17',
       },
     });
@@ -354,10 +354,10 @@ describe('assets n buckets', () => {
                   'https://s3.testregion.',
                   { Ref: 'AWS::URLSuffix' },
                   '/',
-                  { Ref: stringLike('AssetParameters*') },
+                  { Ref: stringLike(/AssetParameters.*/) },
                   '/',
-                  { 'Fn::Select': [0, { 'Fn::Split': ['||', { Ref: stringLike('AssetParameters*') }] }] },
-                  { 'Fn::Select': [1, { 'Fn::Split': ['||', { Ref: stringLike('AssetParameters*') }] }] },
+                  { 'Fn::Select': [0, { 'Fn::Split': ['||', { Ref: stringLike(/AssetParameters.*/) }] }] },
+                  { 'Fn::Select': [1, { 'Fn::Split': ['||', { Ref: stringLike(/AssetParameters.*/) }] }] },
                 ]],
               },
             },
@@ -369,7 +369,7 @@ describe('assets n buckets', () => {
           type: 'S3',
           roleName: { Ref: 'InstanceRole3CCE2F1D' },
           buckets: [
-            { Ref: stringLike('AssetParameters*S3Bucket*') },
+            { Ref: stringLike(/AssetParameters.*S3Bucket.*/) },
           ],
         },
       },
@@ -392,9 +392,9 @@ describe('assets n buckets', () => {
     init.attach(resource, linuxOptions());
 
     // THEN
-    expect(stack).toHaveResource('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
-        Statement: arrayWith(ASSET_STATEMENT),
+        Statement: Match.arrayWith([ASSET_STATEMENT]),
         Version: '2012-10-17',
       },
     });
@@ -407,10 +407,10 @@ describe('assets n buckets', () => {
                 'https://s3.testregion.',
                 { Ref: 'AWS::URLSuffix' },
                 '/',
-                { Ref: stringLike('AssetParameters*') },
+                { Ref: stringLike(/AssetParameters.*/) },
                 '/',
-                { 'Fn::Select': [0, { 'Fn::Split': ['||', { Ref: stringLike('AssetParameters*') }] }] },
-                { 'Fn::Select': [1, { 'Fn::Split': ['||', { Ref: stringLike('AssetParameters*') }] }] },
+                { 'Fn::Select': [0, { 'Fn::Split': ['||', { Ref: stringLike(/AssetParameters.*/) }] }] },
+                { 'Fn::Select': [1, { 'Fn::Split': ['||', { Ref: stringLike(/AssetParameters.*/) }] }] },
               ]],
             },
           },
@@ -421,7 +421,7 @@ describe('assets n buckets', () => {
           type: 'S3',
           roleName: { Ref: 'InstanceRole3CCE2F1D' },
           buckets: [
-            { Ref: stringLike('AssetParameters*S3Bucket*') },
+            { Ref: stringLike(/AssetParameters.*S3Bucket.*/) },
           ],
         },
       },
@@ -438,16 +438,16 @@ describe('assets n buckets', () => {
     init.attach(resource, linuxOptions());
 
     // THEN
-    expect(stack).toHaveResource('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
-        Statement: arrayWith({
+        Statement: Match.arrayWith([{
           Action: ['s3:GetObject*', 's3:GetBucket*', 's3:List*'],
           Effect: 'Allow',
           Resource: [
             { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':s3:::my-bucket']] },
             { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':s3:::my-bucket/file.js']] },
           ],
-        }),
+        }]),
         Version: '2012-10-17',
       },
     });
@@ -481,16 +481,16 @@ describe('assets n buckets', () => {
     init.attach(resource, linuxOptions());
 
     // THEN
-    expect(stack).toHaveResource('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
-        Statement: arrayWith({
+        Statement: Match.arrayWith([{
           Action: ['s3:GetObject*', 's3:GetBucket*', 's3:List*'],
           Effect: 'Allow',
           Resource: [
             { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':s3:::my-bucket']] },
             { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':s3:::my-bucket/file.zip']] },
           ],
-        }),
+        }]),
         Version: '2012-10-17',
       },
     });
@@ -528,9 +528,9 @@ describe('assets n buckets', () => {
         S3AccessCreds: {
           type: 'S3',
           roleName: { Ref: 'InstanceRole3CCE2F1D' },
-          buckets: [
-            { Ref: stringLike('AssetParameters*S3Bucket*') },
-          ],
+          buckets: Match.arrayWith([
+            { Ref: stringLike(/AssetParameters.*S3Bucket.*/) },
+          ]),
         },
       },
     });
@@ -553,10 +553,10 @@ describe('assets n buckets', () => {
         S3AccessCreds: {
           type: 'S3',
           roleName: { Ref: 'InstanceRole3CCE2F1D' },
-          buckets: arrayWith(
-            { Ref: stringLike('AssetParameters*S3Bucket*') },
+          buckets: Match.arrayWith([
+            { Ref: stringLike(/AssetParameters.*S3Bucket.*/) },
             'my-bucket',
-          ),
+          ]),
         },
       },
     });
@@ -632,9 +632,9 @@ function linuxOptions() {
 }
 
 function expectMetadataLike(pattern: any) {
-  expect(stack).toHaveResourceLike('CDK::Test::Resource', {
+  Template.fromStack(stack).hasResource('CDK::Test::Resource', {
     Metadata: pattern,
-  }, ResourcePart.CompleteDefinition);
+  });
 }
 
 function expectLine(lines: string[], re: RegExp) {

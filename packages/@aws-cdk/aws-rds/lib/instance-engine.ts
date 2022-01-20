@@ -1392,7 +1392,10 @@ export class SqlServerEngineVersion {
   public static readonly VER_14_00_3035_2_V1 = SqlServerEngineVersion.of('14.00.3035.2.v1', '14.00');
   /** Version "14.00.3049.1.v1". */
   public static readonly VER_14_00_3049_1_V1 = SqlServerEngineVersion.of('14.00.3049.1.v1', '14.00');
-  /** Version "14.00.3192.2.v1". */
+  /**
+   * Version "14.00.3192.2.v1".
+   * @deprecated SQL Server version 14.00.3192.2.v1 reached end of life
+  */
   public static readonly VER_14_00_3192_2_V1 = SqlServerEngineVersion.of('14.00.3192.2.v1', '14.00');
   /** Version "14.00.3223.3.v1". */
   public static readonly VER_14_00_3223_3_V1 = SqlServerEngineVersion.of('14.00.3223.3.v1', '14.00');

@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as sns from '@aws-cdk/aws-sns';
 import * as cdk from '@aws-cdk/core';
@@ -16,7 +16,7 @@ test('asBucketNotificationDestination adds bucket permissions only once for each
   // another bucket will be added to the topic policy
   new notif.SnsDestination(topic).bind(bucket2, bucket2);
 
-  expect(stack).toMatchTemplate({
+  Template.fromStack(stack).templateMatches({
     Resources: {
       Bucket83908E77: {
         Type: 'AWS::S3::Bucket',

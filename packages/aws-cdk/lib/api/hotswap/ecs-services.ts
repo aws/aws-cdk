@@ -1,7 +1,7 @@
 import * as AWS from 'aws-sdk';
 import { ISDK } from '../aws-auth';
-import { ChangeHotswapImpact, ChangeHotswapResult, establishResourcePhysicalName, HotswapOperation, HotswappableChangeCandidate, lowerCaseFirstCharacter, transformObjectKeys } from './common';
-import { EvaluateCloudFormationTemplate } from './evaluate-cloudformation-template';
+import { EvaluateCloudFormationTemplate } from '../evaluate-cloudformation-template';
+import { ChangeHotswapImpact, ChangeHotswapResult, HotswapOperation, HotswappableChangeCandidate, lowerCaseFirstCharacter, transformObjectKeys } from './common';
 
 export async function isHotswappableEcsServiceChange(
   logicalId: string, change: HotswappableChangeCandidate, evaluateCfnTemplate: EvaluateCloudFormationTemplate,
@@ -45,7 +45,7 @@ export async function isHotswappableEcsServiceChange(
 
   const taskDefinitionResource = change.newValue.Properties;
   // first, let's get the name of the family
-  const familyNameOrArn = await establishResourcePhysicalName(logicalId, taskDefinitionResource?.Family, evaluateCfnTemplate);
+  const familyNameOrArn = await evaluateCfnTemplate.establishResourcePhysicalName(logicalId, taskDefinitionResource?.Family);
   if (!familyNameOrArn) {
     // if the Family property has not bee provided, and we can't find it in the current Stack,
     // this means hotswapping is not possible
