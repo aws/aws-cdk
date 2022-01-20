@@ -20,7 +20,7 @@ export function hasCondition(template: Template, logicalId: string, props: any):
   }
 
   if (result.closestResult === undefined) {
-    return 'No parameters found in the template';
+    return 'No conditions found in the template';
   }
 
   return [
