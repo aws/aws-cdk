@@ -29,13 +29,13 @@ describe('When Application Load Balancer', () => {
       LaunchType: 'FARGATE',
       LoadBalancers: [
         {
-        ContainerName: 'web',
-        ContainerPort: 80,
-        TargetGroupArn: {
-          Ref: 'ServiceLBPublicListenerECSGroup0CC8688C',
+          ContainerName: 'web',
+          ContainerPort: 80,
+          TargetGroupArn: {
+            Ref: 'ServiceLBPublicListenerECSGroup0CC8688C',
+          },
         },
-      },
-    ],
+      ],
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
