@@ -207,8 +207,6 @@ describe('', () => {
         lambdaOutput: new codepipeline.Artifact(),
       }, app);
 
-      // expect(Template.fromStack(stack).toJSON()).toEqual({});
-
       Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         PolicyName: 'PipelineInvokeLambdaCodePipelineActionRoleDefaultPolicy103F34DA',
         'PolicyDocument': Match.objectLike({
