@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as acmpca from '@aws-cdk/aws-acmpca';
 import { Duration, Lazy, Stack } from '@aws-cdk/core';
 import { PrivateCertificate } from '../lib';
@@ -12,7 +12,7 @@ test('private certificate authority', () => {
       'arn:aws:acm-pca:us-east-1:123456789012:certificate-authority/023077d8-2bfa-4eb0-8f22-05c96deade77'),
   });
 
-  expect(stack).toHaveResource('AWS::CertificateManager::Certificate', {
+  Template.fromStack(stack).hasResourceProperties('AWS::CertificateManager::Certificate', {
     DomainName: 'test.example.com',
     CertificateAuthorityArn: 'arn:aws:acm-pca:us-east-1:123456789012:certificate-authority/023077d8-2bfa-4eb0-8f22-05c96deade77',
   });
@@ -28,7 +28,7 @@ test('private certificate authority with subjectAlternativeNames', () => {
       'arn:aws:acm-pca:us-east-1:123456789012:certificate-authority/023077d8-2bfa-4eb0-8f22-05c96deade77'),
   });
 
-  expect(stack).toHaveResource('AWS::CertificateManager::Certificate', {
+  Template.fromStack(stack).hasResourceProperties('AWS::CertificateManager::Certificate', {
     DomainName: 'test.example.com',
     SubjectAlternativeNames: ['extra.example.com'],
     CertificateAuthorityArn: 'arn:aws:acm-pca:us-east-1:123456789012:certificate-authority/023077d8-2bfa-4eb0-8f22-05c96deade77',
@@ -45,7 +45,7 @@ test('private certificate authority with multiple subjectAlternativeNames', () =
       'arn:aws:acm-pca:us-east-1:123456789012:certificate-authority/023077d8-2bfa-4eb0-8f22-05c96deade77'),
   });
 
-  expect(stack).toHaveResource('AWS::CertificateManager::Certificate', {
+  Template.fromStack(stack).hasResourceProperties('AWS::CertificateManager::Certificate', {
     DomainName: 'test.example.com',
     SubjectAlternativeNames: ['*.test.example.com', '*.foo.test.example.com', 'bar.test.example.com'],
     CertificateAuthorityArn: 'arn:aws:acm-pca:us-east-1:123456789012:certificate-authority/023077d8-2bfa-4eb0-8f22-05c96deade77',
@@ -73,7 +73,7 @@ test('private certificate authority with tokens', () => {
     certificateAuthority: acmpca.CertificateAuthority.fromCertificateAuthorityArn(stack, 'CA', certificateAuthority),
   });
 
-  expect(stack).toHaveResource('AWS::CertificateManager::Certificate', {
+  Template.fromStack(stack).hasResourceProperties('AWS::CertificateManager::Certificate', {
     DomainName: 'test.example.com',
     SubjectAlternativeNames: ['extra.example.com'],
     CertificateAuthorityArn: 'arn:aws:acm-pca:us-east-1:123456789012:certificate-authority/023077d8-2bfa-4eb0-8f22-05c96deade77',
