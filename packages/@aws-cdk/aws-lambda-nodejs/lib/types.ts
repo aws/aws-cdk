@@ -277,7 +277,7 @@ export interface BundlingOptions {
    *
    * @default - main,module
    */
-   readonly mainFields?: string;
+  readonly mainFields?: string;
 }
 
 /**
