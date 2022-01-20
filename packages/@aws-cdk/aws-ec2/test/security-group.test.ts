@@ -402,7 +402,7 @@ describe('security group', () => {
       sg.addIngressRule(Peer.securityGroupId('sg-123456789'), Port.allTcp(), 'no owner id property');
 
       //THEN
-      expect(stack).toHaveResource('AWS::EC2::SecurityGroup', {
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroup', {
         SecurityGroupIngress: [{
           SourceSecurityGroupId: 'sg-123456789',
           Description: 'no owner id property',
@@ -423,7 +423,7 @@ describe('security group', () => {
       sg.addIngressRule(Peer.securityGroupId('sg-123456789', '000000000000'), Port.allTcp(), 'contains owner id property');
 
       //THEN
-      expect(stack).toHaveResource('AWS::EC2::SecurityGroup', {
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroup', {
         SecurityGroupIngress: [{
           SourceSecurityGroupId: 'sg-123456789',
           SourceSecurityGroupOwnerId: '000000000000',
@@ -445,7 +445,7 @@ describe('security group', () => {
       sg.addEgressRule(Peer.securityGroupId('sg-123456789', '000000000000'), Port.allTcp(), 'no owner id property');
 
       //THEN
-      expect(stack).toHaveResource('AWS::EC2::SecurityGroup', {
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroup', {
         SecurityGroupEgress: [{
           DestinationSecurityGroupId: 'sg-123456789',
           Description: 'no owner id property',
