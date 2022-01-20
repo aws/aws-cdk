@@ -200,7 +200,7 @@ export class Template {
 
   /**
    * Get the set of matching Conditions that match the given properties in the CloudFormation template.
-   * @param logicalId the name of the mapping. Provide `'*'` to match all conditions in the template.
+   * @param logicalId the name of the condition. Provide `'*'` to match all conditions in the template.
    * @param props by default, matches all Conditions in the template.
    * When a literal object is provided, performs a partial match via `Match.objectLike()`.
    * Use the `Match` APIs to configure a different behaviour.
