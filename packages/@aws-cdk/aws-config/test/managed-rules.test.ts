@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as sns from '@aws-cdk/aws-sns';
 import * as cdk from '@aws-cdk/core';
 import * as config from '../lib';
@@ -12,7 +12,7 @@ describe('access keys', () => {
     new config.AccessKeysRotated(stack, 'AccessKeys');
 
     // THEN
-    expect(stack).toHaveResource('AWS::Config::ConfigRule', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Config::ConfigRule', {
       Source: {
         Owner: 'AWS',
         SourceIdentifier: 'ACCESS_KEYS_ROTATED',
@@ -30,7 +30,7 @@ describe('access keys', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::Config::ConfigRule', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Config::ConfigRule', {
       Source: {
         Owner: 'AWS',
         SourceIdentifier: 'ACCESS_KEYS_ROTATED',
@@ -51,7 +51,7 @@ describe('cloudformation stack', () => {
     new config.CloudFormationStackDriftDetectionCheck(stack, 'Drift');
 
     // THEN
-    expect(stack).toHaveResource('AWS::Config::ConfigRule', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Config::ConfigRule', {
       Source: {
         Owner: 'AWS',
         SourceIdentifier: 'CLOUDFORMATION_STACK_DRIFT_DETECTION_CHECK',
@@ -71,7 +71,7 @@ describe('cloudformation stack', () => {
       },
     });
 
-    expect(stack).toHaveResource('AWS::IAM::Role', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
       AssumeRolePolicyDocument: {
         Statement: [
           {
@@ -113,7 +113,7 @@ describe('cloudformation stack', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::Config::ConfigRule', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Config::ConfigRule', {
       Source: {
         Owner: 'AWS',
         SourceIdentifier: 'CLOUDFORMATION_STACK_NOTIFICATION_CHECK',
@@ -157,7 +157,7 @@ describe('ec2 instance', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::Config::ConfigRule', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Config::ConfigRule', {
       Source: {
         Owner: 'AWS',
         SourceIdentifier: config.ManagedRuleIdentifiers.EC2_INSTANCE_PROFILE_ATTACHED,
