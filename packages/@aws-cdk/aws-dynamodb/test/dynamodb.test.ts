@@ -1,5 +1,5 @@
-import { arrayWith, ABSENT, ResourcePart, SynthUtils } from '@aws-cdk/assert-internal';
-import { Template } from '@aws-cdk/assertions';
+import { SynthUtils } from '@aws-cdk/assert-internal';
+import { Match, Template } from '@aws-cdk/assertions';
 import * as appscaling from '@aws-cdk/aws-applicationautoscaling';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kinesis from '@aws-cdk/aws-kinesis';
@@ -90,14 +90,14 @@ describe('default properties', () => {
       ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 },
     });
 
-    Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::Table', { DeletionPolicy: CfnDeletionPolicy.RETAIN }, ResourcePart.CompleteDefinition);
+    Template.fromStack(stack).hasResource('AWS::DynamoDB::Table', { DeletionPolicy: CfnDeletionPolicy.RETAIN });
 
   });
 
   test('removalPolicy is DESTROY', () => {
     new Table(stack, CONSTRUCT_NAME, { partitionKey: TABLE_PARTITION_KEY, removalPolicy: RemovalPolicy.DESTROY });
 
-    Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::Table', { DeletionPolicy: CfnDeletionPolicy.DELETE }, ResourcePart.CompleteDefinition);
+    Template.fromStack(stack).hasResource('AWS::DynamoDB::Table', { DeletionPolicy: CfnDeletionPolicy.DELETE });
 
   });
 
@@ -313,8 +313,8 @@ describe('default properties', () => {
 
     // since the resource has not been used in a cross-environment manner,
     // so the name should not be filled
-    Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::Table', {
-      TableName: ABSENT,
+    Template.fromStack(stack).hasResource('AWS::DynamoDB::Table', {
+      TableName: Match.absent(),
     });
   });
 });
@@ -515,14 +515,14 @@ testLegacyBehavior('if an encryption key is included, encrypt/decrypt permission
   const user = new iam.User(stack, 'MyUser');
   table.grantReadWriteData(user);
   Template.fromStack(stack).templateMatches({
-    'Resources': {
-      'TableAKey07CC09EC': {
-        'Type': 'AWS::KMS::Key',
-        'Properties': {
-          'KeyPolicy': {
-            'Statement': [
+    Resources: {
+      TableAKey07CC09EC: {
+        Type: 'AWS::KMS::Key',
+        Properties: {
+          KeyPolicy: {
+            Statement: [
               {
-                'Action': [
+                Action: [
                   'kms:Create*',
                   'kms:Describe*',
                   'kms:Enable*',
@@ -539,99 +539,99 @@ testLegacyBehavior('if an encryption key is included, encrypt/decrypt permission
                   'kms:TagResource',
                   'kms:UntagResource',
                 ],
-                'Effect': 'Allow',
-                'Principal': {
-                  'AWS': {
+                Effect: 'Allow',
+                Principal: {
+                  AWS: {
                     'Fn::Join': [
                       '',
                       [
                         'arn:',
                         {
-                          'Ref': 'AWS::Partition',
+                          Ref: 'AWS::Partition',
                         },
                         ':iam::',
                         {
-                          'Ref': 'AWS::AccountId',
+                          Ref: 'AWS::AccountId',
                         },
                         ':root',
                       ],
                     ],
                   },
                 },
-                'Resource': '*',
+                Resource: '*',
               },
               {
-                'Action': [
+                Action: [
                   'kms:Decrypt',
                   'kms:DescribeKey',
                   'kms:Encrypt',
                   'kms:ReEncrypt*',
                   'kms:GenerateDataKey*',
                 ],
-                'Effect': 'Allow',
-                'Principal': {
-                  'AWS': {
+                Effect: 'Allow',
+                Principal: {
+                  AWS: {
                     'Fn::GetAtt': [
                       'MyUserDC45028B',
                       'Arn',
                     ],
                   },
                 },
-                'Resource': '*',
+                Resource: '*',
               },
             ],
-            'Version': '2012-10-17',
+            Version: '2012-10-17',
           },
-          'Description': 'Customer-managed key auto-created for encrypting DynamoDB table at Default/Table A',
-          'EnableKeyRotation': true,
+          Description: 'Customer-managed key auto-created for encrypting DynamoDB table at Default/Table A',
+          EnableKeyRotation: true,
         },
-        'UpdateReplacePolicy': 'Retain',
-        'DeletionPolicy': 'Retain',
+        UpdateReplacePolicy: 'Retain',
+        DeletionPolicy: 'Retain',
       },
-      'TableA3D7B5AFA': {
-        'Type': 'AWS::DynamoDB::Table',
-        'Properties': {
-          'KeySchema': [
+      TableA3D7B5AFA: {
+        Type: 'AWS::DynamoDB::Table',
+        Properties: {
+          KeySchema: [
             {
-              'AttributeName': 'hashKey',
-              'KeyType': 'HASH',
+              AttributeName: 'hashKey',
+              KeyType: 'HASH',
             },
           ],
-          'AttributeDefinitions': [
+          AttributeDefinitions: [
             {
-              'AttributeName': 'hashKey',
-              'AttributeType': 'S',
+              AttributeName: 'hashKey',
+              AttributeType: 'S',
             },
           ],
-          'ProvisionedThroughput': {
-            'ReadCapacityUnits': 5,
-            'WriteCapacityUnits': 5,
+          ProvisionedThroughput: {
+            ReadCapacityUnits: 5,
+            WriteCapacityUnits: 5,
           },
-          'SSESpecification': {
-            'KMSMasterKeyId': {
+          SSESpecification: {
+            KMSMasterKeyId: {
               'Fn::GetAtt': [
                 'TableAKey07CC09EC',
                 'Arn',
               ],
             },
-            'SSEEnabled': true,
-            'SSEType': 'KMS',
+            SSEEnabled: true,
+            SSEType: 'KMS',
           },
-          'TableName': 'MyTable',
+          TableName: 'MyTable',
         },
-        'UpdateReplacePolicy': 'Retain',
-        'DeletionPolicy': 'Retain',
+        UpdateReplacePolicy: 'Retain',
+        DeletionPolicy: 'Retain',
       },
-      'MyUserDC45028B': {
-        'Type': 'AWS::IAM::User',
+      MyUserDC45028B: {
+        Type: 'AWS::IAM::User',
       },
-      'MyUserDefaultPolicy7B897426': {
-        'Type': 'AWS::IAM::Policy',
-        'Properties': {
-          'PolicyDocument': {
-            'Statement': [
+      MyUserDefaultPolicy7B897426: {
+        Type: 'AWS::IAM::Policy',
+        Properties: {
+          PolicyDocument: {
+            Statement: [
               {
-                'Action': [
+                Action: [
                   'dynamodb:BatchGetItem',
                   'dynamodb:GetRecords',
                   'dynamodb:GetShardIterator',
@@ -644,8 +644,8 @@ testLegacyBehavior('if an encryption key is included, encrypt/decrypt permission
                   'dynamodb:UpdateItem',
                   'dynamodb:DeleteItem',
                 ],
-                'Effect': 'Allow',
-                'Resource': [
+                Effect: 'Allow',
+                Resource: [
                   {
                     'Fn::GetAtt': [
                       'TableA3D7B5AFA',
@@ -653,20 +653,20 @@ testLegacyBehavior('if an encryption key is included, encrypt/decrypt permission
                     ],
                   },
                   {
-                    'Ref': 'AWS::NoValue',
+                    Ref: 'AWS::NoValue',
                   },
                 ],
               },
               {
-                'Action': [
+                Action: [
                   'kms:Decrypt',
                   'kms:DescribeKey',
                   'kms:Encrypt',
                   'kms:ReEncrypt*',
                   'kms:GenerateDataKey*',
                 ],
-                'Effect': 'Allow',
-                'Resource': {
+                Effect: 'Allow',
+                Resource: {
                   'Fn::GetAtt': [
                     'TableAKey07CC09EC',
                     'Arn',
@@ -674,12 +674,12 @@ testLegacyBehavior('if an encryption key is included, encrypt/decrypt permission
                 },
               },
             ],
-            'Version': '2012-10-17',
+            Version: '2012-10-17',
           },
-          'PolicyName': 'MyUserDefaultPolicy7B897426',
-          'Users': [
+          PolicyName: 'MyUserDefaultPolicy7B897426',
+          Users: [
             {
-              'Ref': 'MyUserDC45028B',
+              Ref: 'MyUserDC45028B',
             },
           ],
         },
@@ -699,23 +699,23 @@ test('if an encryption key is included, encrypt/decrypt permissions are added to
   table.grantReadWriteData(user);
 
   Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-    'PolicyDocument': {
-      'Statement': arrayWith({
-        'Action': [
+    PolicyDocument: {
+      Statement: Match.arrayWith([{
+        Action: [
           'kms:Decrypt',
           'kms:DescribeKey',
           'kms:Encrypt',
           'kms:ReEncrypt*',
           'kms:GenerateDataKey*',
         ],
-        'Effect': 'Allow',
-        'Resource': {
+        Effect: 'Allow',
+        Resource: {
           'Fn::GetAtt': [
             'TableAKey07CC09EC',
             'Arn',
           ],
         },
-      }),
+      }]),
     },
   });
 });
@@ -2410,7 +2410,7 @@ describe('global', () => {
     });
 
     // THEN
-    Template.fromStack(stack).hasResourceProperties('Custom::DynamoDBReplica', {
+    Template.fromStack(stack).hasResource('Custom::DynamoDBReplica', {
       Properties: {
         TableName: {
           Ref: 'TableCD117FA1',
@@ -2418,9 +2418,9 @@ describe('global', () => {
         Region: 'eu-west-2',
       },
       Condition: 'TableStackRegionNotEqualseuwest2A03859E7',
-    }, ResourcePart.CompleteDefinition);
+    });
 
-    Template.fromStack(stack).hasResourceProperties('Custom::DynamoDBReplica', {
+    Template.fromStack(stack).hasResource('Custom::DynamoDBReplica', {
       Properties: {
         TableName: {
           Ref: 'TableCD117FA1',
@@ -2428,7 +2428,7 @@ describe('global', () => {
         Region: 'eu-central-1',
       },
       Condition: 'TableStackRegionNotEqualseucentral199D46FC0',
-    }, ResourcePart.CompleteDefinition);
+    });
 
     expect(SynthUtils.toCloudFormation(stack).Conditions).toEqual({
       TableStackRegionNotEqualseuwest2A03859E7: {
@@ -2462,7 +2462,7 @@ describe('global', () => {
     });
 
     // THEN
-    Template.fromStack(stack).hasResourceProperties('Custom::DynamoDBReplica', {
+    Template.fromStack(stack).hasResource('Custom::DynamoDBReplica', {
       Properties: {
         TableName: {
           Ref: 'TableCD117FA1',
@@ -2471,9 +2471,9 @@ describe('global', () => {
         SkipReplicationCompletedWait: 'true',
       },
       Condition: 'TableStackRegionNotEqualseuwest2A03859E7',
-    }, ResourcePart.CompleteDefinition);
+    });
 
-    Template.fromStack(stack).hasResourceProperties('Custom::DynamoDBReplica', {
+    Template.fromStack(stack).hasResource('Custom::DynamoDBReplica', {
       Properties: {
         TableName: {
           Ref: 'TableCD117FA1',
@@ -2482,7 +2482,7 @@ describe('global', () => {
         SkipReplicationCompletedWait: 'true',
       },
       Condition: 'TableStackRegionNotEqualseucentral199D46FC0',
-    }, ResourcePart.CompleteDefinition);
+    });
 
     expect(SynthUtils.toCloudFormation(stack).Conditions).toEqual({
       TableStackRegionNotEqualseuwest2A03859E7: {
@@ -2907,8 +2907,8 @@ describe('global', () => {
       maxCapacity: 10,
     }).scaleOnUtilization({ targetUtilizationPercent: 75 });
 
-    Template.fromStack(stack).hasResourcePropertiesLike('AWS::DynamoDB::Table', {
-      BillingMode: ABSENT, // PROVISIONED is the default
+    Template.fromStack(stack).hasResource('AWS::DynamoDB::Table', {
+      BillingMode: Match.absent(), // PROVISIONED is the default
     });
   });
 
