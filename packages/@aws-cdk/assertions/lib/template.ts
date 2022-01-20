@@ -3,6 +3,7 @@ import { Stack, Stage } from '@aws-cdk/core';
 import * as fs from 'fs-extra';
 import { Match } from './match';
 import { Matcher } from './matcher';
+import { findConditions, hasCondition } from './private/conditions';
 import { findMappings, hasMapping } from './private/mappings';
 import { findOutputs, hasOutput } from './private/outputs';
 import { findParameters, hasParameter } from './private/parameters';
@@ -181,6 +182,31 @@ export class Template {
    */
   public findMappings(logicalId: string, props: any = {}): { [key: string]: { [key: string]: any } } {
     return findMappings(this.template, logicalId, props);
+  }
+
+  /**
+   * Assert that a Condition with the given properties exists in the CloudFormation template.
+   * By default, performs partial matching on the resource, via the `Match.objectLike()`.
+   * To configure different behavour, use other matchers in the `Match` class.
+   * @param logicalId the name of the mapping. Provide `'*'` to match all conditions in the template.
+   * @param props the output as should be expected in the template.
+   */
+  public hasCondition(logicalId: string, props: any): void {
+    const matchError = hasCondition(this.template, logicalId, props);
+    if (matchError) {
+      throw new Error(matchError);
+    }
+  }
+
+  /**
+   * Get the set of matching Conditions that match the given properties in the CloudFormation template.
+   * @param logicalId the name of the mapping. Provide `'*'` to match all conditions in the template.
+   * @param props by default, matches all Conditions in the template.
+   * When a literal object is provided, performs a partial match via `Match.objectLike()`.
+   * Use the `Match` APIs to configure a different behaviour.
+   */
+  public findConditions(logicalId: string, props: any = {}): { [key: string]: { [key: string]: any } } {
+    return findConditions(this.template, logicalId, props);
   }
 
   /**
