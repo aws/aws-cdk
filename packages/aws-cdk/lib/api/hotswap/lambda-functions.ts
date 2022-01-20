@@ -305,12 +305,13 @@ class LambdaFunctionHotswapOperation implements HotswapOperation {
    * or Container functions can take ~25 seconds (and 'idle' VPC functions can take minutes).
    */
   private async waitForLastUpdateStatusComplete(currentFunctionConfiguration: AWS.Lambda.FunctionConfiguration, lambda: AWS.Lambda): Promise<void> {
-    let delay = 1; // in seconds
     // if the function is deployed in a VPC or if it is a container image function
     // then the update will take much longer and we can wait longer between checks
-    if (currentFunctionConfiguration.VpcConfig || currentFunctionConfiguration.PackageType === 'Image') {
-      delay = 5;
-    }
+    // otherwise, the update will be quick, so a 1-second delay is fine
+    const delaySeconds = !(!currentFunctionConfiguration.VpcConfig?.VpcId || currentFunctionConfiguration.VpcConfig.VpcId === '') ||
+        currentFunctionConfiguration.PackageType === 'Image'
+      ? 5
+      : 1;
 
     // configure a custom waiter to wait for the function update to complete
     (lambda as any).api.waiters.updateFunctionCodeToFinish = {
@@ -319,25 +320,19 @@ class LambdaFunctionHotswapOperation implements HotswapOperation {
       // equates to 1 minute for zip function not in a VPC and
       // 5 minutes for container functions or function in a VPC
       maxAttempts: 60,
-      delay,
+      delay: delaySeconds,
       acceptors: [
         {
-          state: 'success',
           matcher: 'path',
-          argument: "(Configuration.LastUpdateStatus == 'Successful' && Configuration.State == 'Active')",
+          argument: "Configuration.LastUpdateStatus == 'Successful' && Configuration.State == 'Active'",
           expected: true,
+          state: 'success',
         },
         {
-          state: 'failure',
           matcher: 'path',
           argument: 'Configuration.LastUpdateStatus',
           expected: 'Failed',
-        },
-        {
-          state: 'retry',
-          matcher: 'path',
-          argument: 'Configuration.LastUpdateStatus',
-          expected: 'InProgress',
+          state: 'failure',
         },
       ],
     };
