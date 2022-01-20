@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
@@ -18,7 +18,7 @@ describe('tests', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
       TargetGroupAttributes: [
         {
           Key: 'proxy_protocol_v2.enabled',
@@ -41,7 +41,7 @@ describe('tests', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
       TargetGroupAttributes: [
         {
           Key: 'preserve_client_ip.enabled',
@@ -64,7 +64,7 @@ describe('tests', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
       TargetGroupAttributes: [
         {
           Key: 'proxy_protocol_v2.enabled',
@@ -87,7 +87,7 @@ describe('tests', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
       TargetGroupAttributes: [
         {
           Key: 'preserve_client_ip.enabled',
@@ -107,7 +107,7 @@ describe('tests', () => {
       protocol: elbv2.Protocol.UDP,
     });
 
-    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
       Protocol: 'UDP',
     });
   });
@@ -121,7 +121,7 @@ describe('tests', () => {
       port: 80,
     });
 
-    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
       Protocol: 'TCP',
     });
   });
