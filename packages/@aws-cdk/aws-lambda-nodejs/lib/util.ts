@@ -187,7 +187,7 @@ export function tryGetTsconfigCompilerOptions(tsconfigPath: string): string {
     }
   });
 
-  return compilerOptionsString;
+  return compilerOptionsString.trim();
 }
 
 

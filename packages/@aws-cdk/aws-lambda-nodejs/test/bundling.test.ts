@@ -578,7 +578,6 @@ test('esbuild bundling with pre compilations', () => {
     projectRoot,
     depsLockFilePath,
     runtime: Runtime.NODEJS_14_X,
-    forceDockerBundling: true,
     tsconfig,
     preCompilation: true,
     architecture: Architecture.X86_64,
@@ -591,7 +590,7 @@ test('esbuild bundling with pre compilations', () => {
       command: [
         'bash', '-c',
         [
-          'tsc /asset-input/lib/handler.ts --rootDir ./ --outDir ./  &&',
+          'tsc /asset-input/lib/handler.ts --rootDir ./ --outDir ./ &&',
           'esbuild --bundle \"/asset-input/lib/handler.js\" --target=node14 --platform=node --outfile=\"/asset-output/index.js\"',
           '--external:aws-sdk --tsconfig=/asset-input/lib/custom-tsconfig.ts',
         ].join(' '),
@@ -608,7 +607,6 @@ test('esbuild bundling with pre compilations with undefined tsconfig ( Should fi
     projectRoot: path.dirname(packageLock),
     depsLockFilePath: packageLock,
     runtime: Runtime.NODEJS_14_X,
-    forceDockerBundling: true,
     preCompilation: true,
     architecture: Architecture.X86_64,
   });
@@ -620,7 +618,7 @@ test('esbuild bundling with pre compilations with undefined tsconfig ( Should fi
       command: [
         'bash', '-c',
         [
-          'tsc /asset-input/test/bundling.test.ts --rootDir ./ --outDir ./  &&',
+          'tsc /asset-input/test/bundling.test.ts --rootDir ./ --outDir ./ &&',
           'esbuild --bundle \"/asset-input/test/bundling.test.js\" --target=node14 --platform=node --outfile=\"/asset-output/index.js\"',
           '--external:aws-sdk',
         ].join(' '),

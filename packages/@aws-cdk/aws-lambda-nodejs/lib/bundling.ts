@@ -68,13 +68,8 @@ export class Bundling implements cdk.BundlingOptions {
     this.tscInstallation = undefined;
   }
 
-  // public static clearTscCompilationCache(): void {
-  //   this.tscCompiled = false;
-  // }
-
   private static esbuildInstallation?: PackageInstallation;
   private static tscInstallation?: PackageInstallation;
-  //private static tscCompiled = false
 
   // Core bundling options
   public readonly image: cdk.DockerImage;
@@ -158,7 +153,6 @@ export class Bundling implements cdk.BundlingOptions {
     const pathJoin = osPathJoin(options.osPlatform);
     let tscCommand: string = '';
     let relativeEntryPath = pathJoin(options.inputDir, this.relativeEntryPath);
-    let compilerOptionsString = '';
 
     if (this.props.preCompilation) {
 
@@ -170,8 +164,8 @@ export class Bundling implements cdk.BundlingOptions {
         }
         tsconfig = path.relative(this.projectRoot, findConfig);
       }
-      compilerOptionsString = tryGetTsconfigCompilerOptions(pathJoin(options.inputDir, tsconfig));
-      tscCommand = `${options.tscRunner} ${relativeEntryPath} ${compilerOptionsString}`;
+      const compilerOptions = tryGetTsconfigCompilerOptions(pathJoin(options.inputDir, tsconfig));
+      tscCommand = `${options.tscRunner} ${relativeEntryPath} ${compilerOptions}`;
       relativeEntryPath = relativeEntryPath.replace(/\.ts(x?)$/, '.js$1');
     }
 
