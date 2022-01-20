@@ -2347,7 +2347,7 @@ describe('import', () => {
 
       table.grantReadData(role);
 
-      Template.fromStack(stack).hasResourcePropertiesLike('AWS::IAM::Policy', {
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         PolicyDocument: {
           Statement: [
             {
