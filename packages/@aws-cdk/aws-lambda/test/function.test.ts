@@ -9,8 +9,8 @@ import * as kms from '@aws-cdk/aws-kms';
 import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as signer from '@aws-cdk/aws-signer';
-import * as sqs from '@aws-cdk/aws-sqs';
 import * as sns from '@aws-cdk/aws-sns';
+import * as sqs from '@aws-cdk/aws-sqs';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
 import * as constructs from 'constructs';
@@ -722,7 +722,7 @@ describe('function', () => {
         },
       },
     });
-  })
+  });
 
   test('error when default function with SNS DLQ when client provides Topic to be used as DLQ and deadLetterQueueEnabled set to false', () => {
     const stack = new cdk.Stack();
@@ -1637,7 +1637,7 @@ describe('function', () => {
     });
     const deadLetterQueue = fn.deadLetterQueue;
     expect(deadLetterQueue).toBeDefined();
-    expect(deadLetterQueue).toBeInstanceOf(sqs.Queue)
+    expect(deadLetterQueue).toBeInstanceOf(sqs.Queue);
   });
 
   test('dlq is returned when provided by user and is Topic', () => {
@@ -1655,7 +1655,7 @@ describe('function', () => {
     });
     const deadLetterQueue = fn.deadLetterQueue;
     expect(deadLetterQueue).toBeDefined();
-    expect(deadLetterQueue).toBeInstanceOf(sns.Topic)
+    expect(deadLetterQueue).toBeInstanceOf(sns.Topic);
   });
 
   test('dlq is returned when setup by cdk and is Queue', () => {
@@ -1668,7 +1668,7 @@ describe('function', () => {
     });
     const deadLetterQueue = fn.deadLetterQueue;
     expect(deadLetterQueue).toBeDefined();
-    expect(deadLetterQueue).toBeInstanceOf(sqs.Queue)
+    expect(deadLetterQueue).toBeInstanceOf(sqs.Queue);
   });
 
   test('dlq is undefined when not setup', () => {

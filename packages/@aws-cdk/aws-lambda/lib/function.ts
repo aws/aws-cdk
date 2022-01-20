@@ -1048,7 +1048,7 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
       retentionPeriod: Duration.days(14),
     });
 
-    if (this.isQueue(deadLetterQueue)){
+    if (this.isQueue(deadLetterQueue)) {
       this.addToRolePolicy(new iam.PolicyStatement({
         actions: ['sqs:SendMessage'],
         resources: [deadLetterQueue.queueArn],
@@ -1066,7 +1066,7 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
   private buildDeadLetterConfig(deadLetterQueue?: sqs.IQueue | sns.ITopic) {
     if (deadLetterQueue) {
       return {
-          targetArn: this.isQueue(deadLetterQueue) ? deadLetterQueue.queueArn : deadLetterQueue.topicArn,
+        targetArn: this.isQueue(deadLetterQueue) ? deadLetterQueue.queueArn : deadLetterQueue.topicArn,
       };
     } else {
       return undefined;
