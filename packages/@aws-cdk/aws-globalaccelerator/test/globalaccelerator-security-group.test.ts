@@ -1,4 +1,4 @@
-import { expect, haveResource, ResourcePart } from '@aws-cdk/assert-internal';
+import { Template } from '@aws-cdk/assertions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ga from '../lib';
 import { testFixture } from './util';
@@ -22,7 +22,7 @@ test('custom resource exists', () => {
   endpointGroup.connectionsPeer('GlobalAcceleratorSG', vpc);
 
   // THEN
-  expect(stack).to(haveResource('Custom::AWS', {
+  Template.fromStack(stack).hasResource('Custom::AWS', {
     Properties: {
       ServiceToken: {
         'Fn::GetAtt': [
@@ -48,7 +48,7 @@ test('custom resource exists', () => {
       'GroupGlobalAcceleratorSGCustomResourceCustomResourcePolicy9C957AD2',
       'GroupC77FDACD',
     ],
-  }, ResourcePart.CompleteDefinition));
+  });
 });
 
 test('can create security group rule', () => {
@@ -73,7 +73,7 @@ test('can create security group rule', () => {
   instanceConnections.allowFrom(gaSg, ec2.Port.tcp(443));
 
   // THEN
-  expect(stack).to(haveResource('AWS::EC2::SecurityGroupIngress', {
+  Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroupIngress', {
     IpProtocol: 'tcp',
     FromPort: 443,
     GroupId: {
@@ -89,5 +89,5 @@ test('can create security group rule', () => {
       ],
     },
     ToPort: 443,
-  }));
+  });
 });
