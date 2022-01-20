@@ -483,7 +483,8 @@ See the documentation for the __@aws-cdk/aws-lambda-event-sources__ module for m
 ## Lambda with DLQ
 
 A dead-letter queue can be automatically created for a Lambda function by
-setting the `deadLetterQueueEnabled: true` configuration.
+setting the `deadLetterQueueEnabled: true` configuration. In such case CDK creates
+a `sqs.Queue` as `deadLetterQueue`.
 
 ```ts
 const fn = new lambda.Function(this, 'MyFunction', {
@@ -500,6 +501,20 @@ It is also possible to provide a dead-letter queue instead of getting a new queu
 import * as sqs from '@aws-cdk/aws-sqs';
 
 const dlq = new sqs.Queue(this, 'DLQ');
+const fn = new lambda.Function(this, 'MyFunction', {
+  runtime: lambda.Runtime.NODEJS_12_X,
+  handler: 'index.handler',
+  code: lambda.Code.fromInline('exports.handler = function(event, ctx, cb) { return cb(null, "hi"); }'),
+  deadLetterQueue: dlq,
+});
+```
+
+And if needed, one might utilize an `sns.Topic` instead of `sqs.Queue` as dead-letter queue:
+
+```ts
+import * as sns from '@aws-cdk/aws-sns';
+
+const dlq = new sns.Topic(this, 'DLQ');
 const fn = new lambda.Function(this, 'MyFunction', {
   runtime: lambda.Runtime.NODEJS_12_X,
   handler: 'index.handler',
