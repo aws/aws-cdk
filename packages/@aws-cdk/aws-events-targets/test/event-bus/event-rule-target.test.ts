@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import * as sqs from '@aws-cdk/aws-sqs';
@@ -18,7 +18,7 @@ test('Use EventBus as an event rule target', () => {
   ),
   ));
 
-  expect(stack).toHaveResource('AWS::Events::Rule', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
     Targets: [
       {
         Arn: 'arn:aws:events:us-east-1:111111111111:default',
@@ -32,7 +32,7 @@ test('Use EventBus as an event rule target', () => {
       },
     ],
   });
-  expect(stack).toHaveResource('AWS::IAM::Policy', {
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
     PolicyDocument: {
       Statement: [{
         Effect: 'Allow',
@@ -66,7 +66,7 @@ test('with supplied role', () => {
     { role },
   ));
 
-  expect(stack).toHaveResource('AWS::Events::Rule', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
     Targets: [{
       Arn: 'arn:aws:events:us-east-1:123456789012:default',
       Id: 'Target0',
@@ -78,7 +78,7 @@ test('with supplied role', () => {
       },
     }],
   });
-  expect(stack).toHaveResource('AWS::IAM::Policy', {
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
     PolicyDocument: {
       Statement: [{
         Effect: 'Allow',
@@ -109,7 +109,7 @@ test('with a Dead Letter Queue specified', () => {
     { deadLetterQueue: queue },
   ));
 
-  expect(stack).toHaveResource('AWS::Events::Rule', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
     Targets: [{
       Arn: 'arn:aws:events:us-east-1:123456789012:default',
       Id: 'Target0',
@@ -130,7 +130,7 @@ test('with a Dead Letter Queue specified', () => {
     }],
   });
 
-  expect(stack).toHaveResource('AWS::SQS::QueuePolicy', {
+  Template.fromStack(stack).hasResourceProperties('AWS::SQS::QueuePolicy', {
     PolicyDocument: {
       Statement: [
         {

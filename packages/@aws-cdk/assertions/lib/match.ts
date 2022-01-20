@@ -122,7 +122,7 @@ class LiteralMatch extends Matcher {
 
   public test(actual: any): MatchResult {
     if (Array.isArray(this.pattern)) {
-      return new ArrayMatch(this.name, this.pattern, { subsequence: false }).test(actual);
+      return new ArrayMatch(this.name, this.pattern, { subsequence: false, partialObjects: this.partialObjects }).test(actual);
     }
 
     if (typeof this.pattern === 'object') {
@@ -162,6 +162,13 @@ interface ArrayMatchOptions {
    * @default true
    */
   readonly subsequence?: boolean;
+
+  /**
+   * Whether to continue matching objects inside the array partially
+   *
+   * @default false
+   */
+  readonly partialObjects?: boolean;
 }
 
 /**
@@ -169,6 +176,7 @@ interface ArrayMatchOptions {
  */
 class ArrayMatch extends Matcher {
   private readonly subsequence: boolean;
+  private readonly partialObjects: boolean;
 
   constructor(
     public readonly name: string,
@@ -177,6 +185,7 @@ class ArrayMatch extends Matcher {
 
     super();
     this.subsequence = options.subsequence ?? true;
+    this.partialObjects = options.partialObjects ?? false;
   }
 
   public test(actual: any): MatchResult {
@@ -202,7 +211,10 @@ class ArrayMatch extends Matcher {
     while (patternIdx < this.pattern.length && actualIdx < actual.length) {
       const patternElement = this.pattern[patternIdx];
 
-      const matcher = Matcher.isMatcher(patternElement) ? patternElement : new LiteralMatch(this.name, patternElement);
+      const matcher = Matcher.isMatcher(patternElement)
+        ? patternElement
+        : new LiteralMatch(this.name, patternElement, { partialObjects: this.partialObjects });
+
       const matcherName = matcher.name;
       if (this.subsequence && (matcherName == 'absent' || matcherName == 'anyValue')) {
         // array subsequence matcher is not compatible with anyValue() or absent() matcher. They don't make sense to be used together.
