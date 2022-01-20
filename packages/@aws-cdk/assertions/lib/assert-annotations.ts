@@ -22,114 +22,82 @@ export class AssertAnnotations {
   }
 
   /**
-   * Returns raw data of all messages on the stack.
+   * Assert that an error with the given message exists in the synthesized CDK `Stack`.
+   *
+   * @param constructPath the construct path to the error. Provide `'*'` to match all errors in the template.
+   * @param message the error message as should be expected. This should be a string or Matcher object.
    */
-  public get messageList(): Message[] {
-    return convertMessagesTypeToArray(this._messages);
-  }
-
-  /**
-   * Assert that a Message with the given properties exists in the synthesized CDK `Stack`.
-   * By default, performs partial matching on the parameter, via the `Match.objectLike()`.
-   * To configure different behavior, use other matchers in the `Match` class.
-   * @param logicalId the name of the parameter. Provide `'*'` to match all parameters in the template.
-   * @param props the message as should be expected.
-   */
-  public hasMessage(logicalId: string, props: any): void {
-    const matchError = hasMessage(this._messages, logicalId, props);
+  public hasError(constructPath: string, message: any): void {
+    const matchError = hasMessage(this._messages, constructPath, constructMessage('error', message));
     if (matchError) {
       throw new Error(matchError);
     }
   }
 
   /**
-   * Get the set of matching messages of a given id and properties.
-   * @param logicalId the name of the parameter. Provide `'*'` to match all parameters in the template.
-   * @param props by default, matches all resources with the given logicalId.
-   * When a literal is provided, performs a partial match via `Match.objectLike()`.
-   * Use the `Match` APIs to configure a different behaviour.
+   * Get the set of matching errors of a given construct path and message.
+   *
+   * @param constructPath the construct path to the error. Provide `'*'` to match all errors in the template.
+   * @param message the error message as should be expected. This should be a string or Matcher object.
    */
-  public findMessage(logicalId: string, props: any): Message[] {
-    return convertMessagesTypeToArray(findMessage(this._messages, logicalId, props) as Messages);
+  public findError(constructPath: string, message: any): Message[] {
+    return convertMessagesTypeToArray(findMessage(this._messages, constructPath, constructMessage('error', message)) as Messages);
   }
 
   /**
-   * Assert that an Error with the given properties exists in the synthesized CDK `Stack`.
-   * By default, performs partial matching on the parameter, via the `Match.objectLike()`.
-   * To configure different behavior, use other matchers in the `Match` class.
-   * @param logicalId the name of the parameter. Provide `'*'` to match all parameters in the template.
-   * @param props the error as should be expected.
+   * Assert that an warning with the given message exists in the synthesized CDK `Stack`.
+   *
+   * @param constructPath the construct path to the warning. Provide `'*'` to match all warnings in the template.
+   * @param message the warning message as should be expected. This should be a string or Matcher object.
    */
-  public hasError(logicalId: string, props: any): void {
-    if (props.level && props.level !== 'error') {
-      throw new Error(`Message level mismatch: expected no level or 'error' but got ${props.level}`);
-    }
-
-    const matchError = hasMessage(this._messages, logicalId, {
-      ...props,
-      level: 'error',
-    });
+  public hasWarning(constructPath: string, message: any): void {
+    const matchError = hasMessage(this._messages, constructPath, constructMessage('warning', message));
     if (matchError) {
       throw new Error(matchError);
     }
   }
 
   /**
-   * Get the set of matching Errors of a given id and properties.
-   * @param logicalId the name of the parameter. Provide `'*'` to match all parameters in the template.
-   * @param props by default, matches all resources with the given logicalId.
-   * When a literal is provided, performs a partial match via `Match.objectLike()`.
-   * Use the `Match` APIs to configure a different behaviour.
+   * Get the set of matching warning of a given construct path and message.
+   *
+   * @param constructPath the construct path to the warning. Provide `'*'` to match all warnings in the template.
+   * @param message the warning message as should be expected. This should be a string or Matcher object.
    */
-  public findError(logicalId: string, props: any): Message[] {
-    if (props.level && props.level !== 'error') {
-      throw new Error(`Message level mismatch: expected no level or 'error' but got ${props.level}`);
-    }
-
-    return convertMessagesTypeToArray(findMessage(this._messages, logicalId, {
-      ...props,
-      level: 'error',
-    }) as Messages);
+  public findWarning(constructPath: string, message: any): Message[] {
+    return convertMessagesTypeToArray(findMessage(this._messages, constructPath, constructMessage('warning', message)) as Messages);
   }
 
   /**
-   * Assert that a Warning with the given properties exists in the synthesized CDK `Stack`.
-   * By default, performs partial matching on the parameter, via the `Match.objectLike()`.
-   * To configure different behavior, use other matchers in the `Match` class.
-   * @param logicalId the name of the parameter. Provide `'*'` to match all parameters in the template.
-   * @param props the warning as should be expected.
+   * Assert that an info with the given message exists in the synthesized CDK `Stack`.
+   *
+   * @param constructPath the construct path to the info. Provide `'*'` to match all info in the template.
+   * @param message the info message as should be expected. This should be a string or Matcher object.
    */
-  public hasWarning(logicalId: string, props: any): void {
-    if (props.level && props.level !== 'warning') {
-      throw new Error(`Message level mismatch: expected no level or 'warning' but got ${props.level}`);
-    }
-
-    const matchError = hasMessage(this._messages, logicalId, {
-      ...props,
-      level: 'warning',
-    });
+  public hasInfo(constructPath: string, message: any): void {
+    const matchError = hasMessage(this._messages, constructPath, constructMessage('info', message));
     if (matchError) {
       throw new Error(matchError);
     }
   }
 
   /**
-   * Get the set of matching Warnings of a given id and properties.
-   * @param logicalId the name of the parameter. Provide `'*'` to match all parameters in the template.
-   * @param props by default, matches all resources with the given logicalId.
-   * When a literal is provided, performs a partial match via `Match.objectLike()`.
-   * Use the `Match` APIs to configure a different behaviour.
+   * Get the set of matching infos of a given construct path and message.
+   *
+   * @param constructPath the construct path to the info. Provide `'*'` to match all infos in the template.
+   * @param message the info message as should be expected. This should be a string or Matcher object.
    */
-  public findWarning(logicalId: string, props: any): Message[] {
-    if (props.level && props.level !== 'warning') {
-      throw new Error(`Message level mismatch: expected no level or 'warning' but got ${props.level}`);
-    }
-
-    return convertMessagesTypeToArray(findMessage(this._messages, logicalId, {
-      ...props,
-      level: 'warning',
-    }) as Messages);
+  public findInfo(constructPath: string, message: any): Message[] {
+    return convertMessagesTypeToArray(findMessage(this._messages, constructPath, constructMessage('info', message)) as Messages);
   }
+}
+
+function constructMessage(type: 'info' | 'warning' | 'error', message: any): {[key:string]: any } {
+  return {
+    level: type,
+    entry: {
+      data: message,
+    },
+  };
 }
 
 function convertArrayToMessagesType(messages: Message[]): Messages {
