@@ -1,5 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
-import { ResourcePart } from '@aws-cdk/assert-internal';
+import { Match, Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { Duration, Stack } from '@aws-cdk/core';
@@ -25,7 +24,7 @@ describe('lambda authorizer', () => {
       authorizationType: AuthorizationType.CUSTOM,
     });
 
-    expect(stack).toHaveResource('AWS::ApiGateway::Authorizer', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Authorizer', {
       Type: 'TOKEN',
       RestApiId: stack.resolve(restApi.restApiId),
       IdentitySource: 'method.request.header.Authorization',
@@ -51,7 +50,7 @@ describe('lambda authorizer', () => {
       },
     });
 
-    expect(stack).toHaveResource('AWS::Lambda::Permission', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
       Action: 'lambda:InvokeFunction',
       Principal: 'apigateway.amazonaws.com',
     });
@@ -80,7 +79,7 @@ describe('lambda authorizer', () => {
       authorizationType: AuthorizationType.CUSTOM,
     });
 
-    expect(stack).toHaveResource('AWS::ApiGateway::Authorizer', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Authorizer', {
       Type: 'REQUEST',
       RestApiId: stack.resolve(restApi.restApiId),
       AuthorizerUri: {
@@ -105,7 +104,7 @@ describe('lambda authorizer', () => {
       },
     });
 
-    expect(stack).toHaveResource('AWS::Lambda::Permission', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
       Action: 'lambda:InvokeFunction',
       Principal: 'apigateway.amazonaws.com',
     });
@@ -154,7 +153,7 @@ describe('lambda authorizer', () => {
       authorizationType: AuthorizationType.CUSTOM,
     });
 
-    expect(stack).toHaveResource('AWS::ApiGateway::Authorizer', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Authorizer', {
       Type: 'TOKEN',
       RestApiId: stack.resolve(restApi.restApiId),
       IdentitySource: 'method.request.header.whoami',
@@ -206,7 +205,7 @@ describe('lambda authorizer', () => {
       authorizationType: AuthorizationType.CUSTOM,
     });
 
-    expect(stack).toHaveResource('AWS::ApiGateway::Authorizer', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Authorizer', {
       Type: 'REQUEST',
       RestApiId: stack.resolve(restApi.restApiId),
       IdentitySource: 'method.request.header.whoami',
@@ -260,7 +259,7 @@ describe('lambda authorizer', () => {
       authorizationType: AuthorizationType.CUSTOM,
     });
 
-    expect(stack).toHaveResource('AWS::ApiGateway::Authorizer', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Authorizer', {
       Type: 'TOKEN',
       RestApiId: stack.resolve(restApi.restApiId),
       AuthorizerUri: {
@@ -285,9 +284,9 @@ describe('lambda authorizer', () => {
       },
     });
 
-    expect(stack).toHaveResource('AWS::IAM::Role');
+    Template.fromStack(stack).hasResource('AWS::IAM::Role', Match.anyValue());
 
-    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       Roles: [
         stack.resolve(role.roleName),
       ],
@@ -300,9 +299,9 @@ describe('lambda authorizer', () => {
           },
         ],
       },
-    }, ResourcePart.Properties);
+    });
 
-    expect(stack).not.toHaveResource('AWS::Lambda::Permission');
+    Template.fromStack(stack).resourceCountIs('AWS::Lambda::Permission', 0);
   });
 
   test('request authorizer with assume role', () => {
@@ -332,7 +331,7 @@ describe('lambda authorizer', () => {
       authorizationType: AuthorizationType.CUSTOM,
     });
 
-    expect(stack).toHaveResource('AWS::ApiGateway::Authorizer', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Authorizer', {
       Type: 'REQUEST',
       RestApiId: stack.resolve(restApi.restApiId),
       AuthorizerUri: {
@@ -357,9 +356,9 @@ describe('lambda authorizer', () => {
       },
     });
 
-    expect(stack).toHaveResource('AWS::IAM::Role');
+    Template.fromStack(stack).hasResource('AWS::IAM::Role', Match.anyValue());
 
-    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       Roles: [
         stack.resolve(role.roleName),
       ],
@@ -372,9 +371,9 @@ describe('lambda authorizer', () => {
           },
         ],
       },
-    }, ResourcePart.Properties);
+    });
 
-    expect(stack).not.toHaveResource('AWS::Lambda::Permission');
+    Template.fromStack(stack).resourceCountIs('AWS::Lambda::Permission', 0);
   });
 
   test('token authorizer throws when not attached to a rest api', () => {
