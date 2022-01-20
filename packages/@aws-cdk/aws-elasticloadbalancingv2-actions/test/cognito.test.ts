@@ -1,4 +1,4 @@
-import { expect, haveResource } from '@aws-cdk/assert-internal';
+import { Template } from '@aws-cdk/assertions';
 import * as cognito from '@aws-cdk/aws-cognito';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
@@ -35,7 +35,7 @@ test('Cognito Action', () => {
   });
 
   // THEN
-  expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::Listener', {
+  Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::Listener', {
     DefaultActions: [
       {
         AuthenticateCognitoConfig: {
@@ -56,5 +56,5 @@ test('Cognito Action', () => {
         Type: 'fixed-response',
       },
     ],
-  }));
+  });
 });

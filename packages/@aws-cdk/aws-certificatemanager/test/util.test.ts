@@ -1,4 +1,3 @@
-import '@aws-cdk/assert-internal/jest';
 import { PublicHostedZone } from '@aws-cdk/aws-route53';
 import { App, Aws, Stack } from '@aws-cdk/core';
 import { Certificate, DnsValidatedCertificate } from '../lib';

@@ -1,5 +1,4 @@
-import { expect as cdkExpect, haveResource, haveResourceLike, ResourcePart } from '@aws-cdk/assert-internal';
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import { IVpcEndpointServiceLoadBalancer, VpcEndpointService } from '@aws-cdk/aws-ec2';
 import { Stack } from '@aws-cdk/core';
 import { PublicHostedZone, VpcEndpointServiceDomainName } from '../lib';
@@ -44,7 +43,7 @@ test('create domain name resource', () => {
   });
 
   // THEN
-  cdkExpect(stack).to(haveResourceLike('Custom::AWS', {
+  Template.fromStack(stack).hasResource('Custom::AWS', {
     Properties: {
       Create: {
         'Fn::Join': [
@@ -87,10 +86,10 @@ test('create domain name resource', () => {
       'EndpointDomainEnableDnsCustomResourcePolicy5E6DE7EB',
       'VPCES3AE7D565',
     ],
-  }, ResourcePart.CompleteDefinition));
+  });
 
   // Have to use `haveResourceLike` because there is a property that, by design, changes on every build
-  cdkExpect(stack).to(haveResourceLike('Custom::AWS', {
+  Template.fromStack(stack).hasResource('Custom::AWS', {
     Properties: {
       Create: {
         'Fn::Join': [
@@ -123,9 +122,9 @@ test('create domain name resource', () => {
       'EndpointDomainGetNamesCustomResourcePolicy141775B1',
       'VPCES3AE7D565',
     ],
-  }, ResourcePart.CompleteDefinition));
+  });
 
-  cdkExpect(stack).to(haveResource('AWS::Route53::RecordSet', {
+  Template.fromStack(stack).hasResource('AWS::Route53::RecordSet', {
     Properties: {
       Name: {
         'Fn::Join': [
@@ -167,9 +166,9 @@ test('create domain name resource', () => {
     DependsOn: [
       'VPCES3AE7D565',
     ],
-  }, ResourcePart.CompleteDefinition));
+  });
 
-  cdkExpect(stack).to(haveResourceLike('Custom::AWS', {
+  Template.fromStack(stack).hasResource('Custom::AWS', {
     Properties: {
       Create: {
         'Fn::Join': [
@@ -241,7 +240,7 @@ test('create domain name resource', () => {
       'EndpointDomainStartVerificationCustomResourcePolicyD2BAC9A6',
       'VPCES3AE7D565',
     ],
-  }, ResourcePart.CompleteDefinition));
+  });
 });
 
 test('throws if creating multiple domains for a single service', () => {
@@ -266,7 +265,6 @@ test('throws if creating multiple domains for a single service', () => {
   }).toThrow(/Cannot create a VpcEndpointServiceDomainName for service/);
 });
 
-
 test('endpoint domain name property equals input domain name', () => {
   // GIVEN
   vpces = new VpcEndpointService(stack, 'NameTest', {
@@ -279,5 +277,4 @@ test('endpoint domain name property equals input domain name', () => {
     publicHostedZone: zone,
   });
   expect(dn.domainName).toEqual('name-test.aws-cdk.dev');
-
 });

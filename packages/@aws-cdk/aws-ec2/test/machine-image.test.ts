@@ -1,4 +1,4 @@
-import { expect as cdkExpect, matchTemplate, MatchStyle } from '@aws-cdk/assert-internal';
+import { Template } from '@aws-cdk/assertions';
 import { App, Stack } from '@aws-cdk/core';
 import * as ec2 from '../lib';
 
@@ -44,7 +44,7 @@ test('can make and use a Linux image in agnostic stack', () => {
     },
   };
 
-  cdkExpect(stack).to(matchTemplate(expected, MatchStyle.EXACT));
+  Template.fromStack(stack).templateMatches(expected);
   expect(stack.resolve(details.imageId)).toEqual({ 'Fn::FindInMap': ['AmiMap', { Ref: 'AWS::Region' }, 'ami'] });
   expect(details.osType).toEqual(ec2.OperatingSystemType.LINUX);
 });
@@ -81,7 +81,7 @@ test('can make and use a Windows image in agnostic stack', () => {
     },
   };
 
-  cdkExpect(stack).to(matchTemplate(expected, MatchStyle.EXACT));
+  Template.fromStack(stack).templateMatches(expected);
   expect(stack.resolve(details.imageId)).toEqual({ 'Fn::FindInMap': ['AmiMap', { Ref: 'AWS::Region' }, 'ami'] });
   expect(details.osType).toEqual(ec2.OperatingSystemType.WINDOWS);
 });
