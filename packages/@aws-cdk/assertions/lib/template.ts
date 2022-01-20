@@ -206,10 +206,7 @@ function toTemplate(stack: Stack): any {
     throw new Error('unexpected: all stacks must be part of a Stage or an App');
   }
 
-  // to support incremental assertions (i.e. "expect(stack).toNotContainSomething(); doSomething(); expect(stack).toContainSomthing()")
-  const force = true;
-
-  const assembly = root.synth({ force });
+  const assembly = root.synth();
   if (stack.nestedStackParent) {
     // if this is a nested stack (it has a parent), then just read the template as a string
     return JSON.parse(fs.readFileSync(path.join(assembly.directory, stack.templateFile)).toString('utf-8'));

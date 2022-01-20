@@ -394,7 +394,6 @@ class StringLikeRegexpMatch extends Matcher {
     super();
   }
 
-
   test(actual: any): MatchResult {
     const result = new MatchResult(actual);
 
