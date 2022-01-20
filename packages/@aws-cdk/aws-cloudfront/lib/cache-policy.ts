@@ -1,4 +1,4 @@
-import { Duration, Names, Resource, Token } from '@aws-cdk/core';
+import { Duration, Names, Resource, Stack, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnCachePolicy } from './cloudfront.generated';
 
@@ -85,9 +85,13 @@ export interface CachePolicyProps {
  * A Cache Policy configuration.
  *
  * @resource AWS::CloudFront::CachePolicy
+ * @link https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/using-managed-cache-policies.html
  */
 export class CachePolicy extends Resource implements ICachePolicy {
-
+  /**
+   * This policy is designed for use with an origin that is an AWS Amplify web app.
+   */
+  public static readonly AMPLIFY = CachePolicy.fromManagedCachePolicy('2e54312d-136d-493c-8eb9-b001f22f67d2');
   /**
    * Optimize cache efficiency by minimizing the values that CloudFront includes in the cache key.
    * Query strings and cookies are not included in the cache key, and only the normalized 'Accept-Encoding' header is included.
@@ -125,7 +129,7 @@ export class CachePolicy extends Resource implements ICachePolicy {
       physicalName: props.cachePolicyName,
     });
 
-    const cachePolicyName = props.cachePolicyName ?? Names.uniqueId(this);
+    const cachePolicyName = props.cachePolicyName ?? `${Names.uniqueId(this)}-${Stack.of(this).region}`;
     if (!Token.isUnresolved(cachePolicyName) && !cachePolicyName.match(/^[\w-]+$/i)) {
       throw new Error(`'cachePolicyName' can only include '-', '_', and alphanumeric characters, got: '${props.cachePolicyName}'`);
     }
@@ -231,13 +235,10 @@ export class CacheHeaderBehavior {
     if (headers.length === 0) {
       throw new Error('At least one header to allow must be provided');
     }
-    if (headers.length > 10) {
-      throw new Error(`Maximum allowed headers in Cache Policy is 10; got ${headers.length}.`);
-    }
     return new CacheHeaderBehavior('whitelist', headers);
   }
 
-  /** If the no headers will be passed, or an allow list of headers. */
+  /** If no headers will be passed, or an allow list of headers. */
   public readonly behavior: string;
   /** The headers for the allow/deny list, if applicable. */
   public readonly headers?: string[];

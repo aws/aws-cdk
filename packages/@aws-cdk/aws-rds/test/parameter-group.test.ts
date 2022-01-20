@@ -1,10 +1,9 @@
-import { countResources, expect, haveResource } from '@aws-cdk/assert';
+import '@aws-cdk/assert-internal/jest';
 import * as cdk from '@aws-cdk/core';
-import { nodeunitShim, Test } from 'nodeunit-shim';
 import { DatabaseClusterEngine, ParameterGroup } from '../lib';
 
-nodeunitShim({
-  "does not create a parameter group if it wasn't bound to a cluster or instance"(test: Test) {
+describe('parameter group', () => {
+  test("does not create a parameter group if it wasn't bound to a cluster or instance", () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -18,13 +17,13 @@ nodeunitShim({
     });
 
     // THEN
-    expect(stack).to(countResources('AWS::RDS::DBParameterGroup', 0));
-    expect(stack).to(countResources('AWS::RDS::DBClusterParameterGroup', 0));
+    expect(stack).toCountResources('AWS::RDS::DBParameterGroup', 0);
+    expect(stack).toCountResources('AWS::RDS::DBClusterParameterGroup', 0);
 
-    test.done();
-  },
 
-  'create a parameter group when bound to an instance'(test: Test) {
+  });
+
+  test('create a parameter group when bound to an instance', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -39,18 +38,18 @@ nodeunitShim({
     parameterGroup.bindToInstance({});
 
     // THEN
-    expect(stack).to(haveResource('AWS::RDS::DBParameterGroup', {
+    expect(stack).toHaveResource('AWS::RDS::DBParameterGroup', {
       Description: 'desc',
       Family: 'aurora5.6',
       Parameters: {
         key: 'value',
       },
-    }));
+    });
 
-    test.done();
-  },
 
-  'create a parameter group when bound to a cluster'(test: Test) {
+  });
+
+  test('create a parameter group when bound to a cluster', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -65,18 +64,18 @@ nodeunitShim({
     parameterGroup.bindToCluster({});
 
     // THEN
-    expect(stack).to(haveResource('AWS::RDS::DBClusterParameterGroup', {
+    expect(stack).toHaveResource('AWS::RDS::DBClusterParameterGroup', {
       Description: 'desc',
       Family: 'aurora5.6',
       Parameters: {
         key: 'value',
       },
-    }));
+    });
 
-    test.done();
-  },
 
-  'creates 2 parameter groups when bound to a cluster and an instance'(test: Test) {
+  });
+
+  test('creates 2 parameter groups when bound to a cluster and an instance', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -92,13 +91,13 @@ nodeunitShim({
     parameterGroup.bindToInstance({});
 
     // THEN
-    expect(stack).to(countResources('AWS::RDS::DBParameterGroup', 1));
-    expect(stack).to(countResources('AWS::RDS::DBClusterParameterGroup', 1));
+    expect(stack).toCountResources('AWS::RDS::DBParameterGroup', 1);
+    expect(stack).toCountResources('AWS::RDS::DBClusterParameterGroup', 1);
 
-    test.done();
-  },
 
-  'Add an additional parameter to an existing parameter group'(test: Test) {
+  });
+
+  test('Add an additional parameter to an existing parameter group', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -115,15 +114,15 @@ nodeunitShim({
     clusterParameterGroup.addParameter('key2', 'value2');
 
     // THEN
-    expect(stack).to(haveResource('AWS::RDS::DBClusterParameterGroup', {
+    expect(stack).toHaveResource('AWS::RDS::DBClusterParameterGroup', {
       Description: 'desc',
       Family: 'aurora5.6',
       Parameters: {
         key1: 'value1',
         key2: 'value2',
       },
-    }));
+    });
 
-    test.done();
-  },
+
+  });
 });

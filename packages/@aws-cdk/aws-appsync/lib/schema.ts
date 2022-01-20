@@ -4,7 +4,7 @@ import { CfnGraphQLSchema } from './appsync.generated';
 import { GraphqlApi } from './graphqlapi';
 import { SchemaMode, shapeAddition } from './private';
 import { IIntermediateType } from './schema-base';
-import { ResolvableField } from './schema-field';
+import { Field, ResolvableField } from './schema-field';
 import { ObjectType } from './schema-intermediate';
 
 /**
@@ -98,7 +98,6 @@ export class Schema {
    * @param delimiter the delimiter between schema and addition
    * @default - ''
    *
-   * @experimental
    */
   public addToSchema(addition: string, delimiter?: string): void {
     if (this.mode !== SchemaMode.CODE) {
@@ -165,7 +164,7 @@ export class Schema {
    * @param fieldName the name of the Subscription
    * @param field the resolvable field to for this Subscription
    */
-  public addSubscription(fieldName: string, field: ResolvableField): ObjectType {
+  public addSubscription(fieldName: string, field: Field): ObjectType {
     if (this.mode !== SchemaMode.CODE) {
       throw new Error(`Unable to add subscription. Schema definition mode must be ${SchemaMode.CODE}. Received: ${this.mode}`);
     }
@@ -186,7 +185,6 @@ export class Schema {
    *
    * @param type the intermediate type to add to the schema
    *
-   * @experimental
    */
   public addType(type: IIntermediateType): IIntermediateType {
     if (this.mode !== SchemaMode.CODE) {

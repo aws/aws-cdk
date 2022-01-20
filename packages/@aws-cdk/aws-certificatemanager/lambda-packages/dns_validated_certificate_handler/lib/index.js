@@ -2,7 +2,7 @@
 
 const aws = require('aws-sdk');
 
-const defaultSleep = function(ms) {
+const defaultSleep = function (ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 };
 
@@ -24,7 +24,7 @@ let maxAttempts = 10;
  * @param {string} [reason] reason for failure, if any, to convey to the user
  * @returns {Promise} Promise that is resolved on success, or rejected on connection error or HTTP error response
  */
-let report = function(event, context, responseStatus, physicalResourceId, responseData, reason) {
+let report = function (event, context, responseStatus, physicalResourceId, responseData, reason) {
   return new Promise((resolve, reject) => {
     const https = require('https');
     const { URL } = require('url');
@@ -75,12 +75,13 @@ let report = function(event, context, responseStatus, physicalResourceId, respon
  * @param {string} requestId the CloudFormation request ID
  * @param {string} domainName the Common Name (CN) field for the requested certificate
  * @param {string} hostedZoneId the Route53 Hosted Zone ID
+ * @param {map} tags Tags to add to the requested certificate
  * @returns {string} Validated certificate ARN
  */
-const requestCertificate = async function(requestId, domainName, subjectAlternativeNames, hostedZoneId, region, route53Endpoint) {
+const requestCertificate = async function (requestId, domainName, subjectAlternativeNames, hostedZoneId, region, route53Endpoint, tags) {
   const crypto = require('crypto');
   const acm = new aws.ACM({ region });
-  const route53 = route53Endpoint ? new aws.Route53({endpoint: route53Endpoint}) : new aws.Route53();
+  const route53 = route53Endpoint ? new aws.Route53({ endpoint: route53Endpoint }) : new aws.Route53();
   if (waiter) {
     // Used by the test suite, since waiters aren't mockable yet
     route53.waitFor = acm.waitFor = waiter;
@@ -97,6 +98,16 @@ const requestCertificate = async function(requestId, domainName, subjectAlternat
 
   console.log(`Certificate ARN: ${reqCertResponse.CertificateArn}`);
 
+
+  if (!!tags) {
+    const result = Array.from(Object.entries(tags)).map(([Key, Value]) => ({ Key, Value }))
+
+    await acm.addTagsToCertificate({
+      CertificateArn: reqCertResponse.CertificateArn,
+      Tags: result,
+    }).promise();
+  }
+
   console.log('Waiting for ACM to provide DNS records for validation...');
 
   let records;
@@ -105,7 +116,8 @@ const requestCertificate = async function(requestId, domainName, subjectAlternat
       CertificateArn: reqCertResponse.CertificateArn
     }).promise();
     const options = Certificate.DomainValidationOptions || [];
-    if (options.length > 0 && options[0].ResourceRecord) {
+    // Ensure all records are ready; there is (at least a theory there's) a chance of a partial response here in rare cases.
+    if (options.length > 0 && options.every(opt => opt && !!opt.ResourceRecord)) {
       // some alternative names will produce the same validation record
       // as the main domain (eg. example.com + *.example.com)
       // filtering duplicates to avoid errors with adding the same record
@@ -128,6 +140,7 @@ const requestCertificate = async function(requestId, domainName, subjectAlternat
   if (!records) {
     throw new Error(`Response from describeCertificate did not contain DomainValidationOptions after ${maxAttempts} attempts.`)
   }
+
 
   console.log(`Upserting ${records.length} DNS records into zone ${hostedZoneId}:`);
 
@@ -180,7 +193,7 @@ const requestCertificate = async function(requestId, domainName, subjectAlternat
  *
  * @param {string} arn The certificate ARN
  */
-const deleteCertificate = async function(arn, region) {
+const deleteCertificate = async function (arn, region) {
   const acm = new aws.ACM({ region });
 
   try {
@@ -224,7 +237,7 @@ const deleteCertificate = async function(arn, region) {
 /**
  * Main handler, invoked by Lambda
  */
-exports.certificateRequestHandler = async function(event, context) {
+exports.certificateRequestHandler = async function (event, context) {
   var responseData = {};
   var physicalResourceId;
   var certificateArn;
@@ -240,6 +253,7 @@ exports.certificateRequestHandler = async function(event, context) {
           event.ResourceProperties.HostedZoneId,
           event.ResourceProperties.Region,
           event.ResourceProperties.Route53Endpoint,
+          event.ResourceProperties.Tags,
         );
         responseData.Arn = physicalResourceId = certificateArn;
         break;
@@ -267,69 +281,69 @@ exports.certificateRequestHandler = async function(event, context) {
 /**
  * @private
  */
-exports.withReporter = function(reporter) {
+exports.withReporter = function (reporter) {
   report = reporter;
 };
 
 /**
  * @private
  */
-exports.withDefaultResponseURL = function(url) {
+exports.withDefaultResponseURL = function (url) {
   defaultResponseURL = url;
 };
 
 /**
  * @private
  */
-exports.withWaiter = function(w) {
+exports.withWaiter = function (w) {
   waiter = w;
 };
 
 /**
  * @private
  */
-exports.resetWaiter = function() {
+exports.resetWaiter = function () {
   waiter = undefined;
 };
 
 /**
  * @private
  */
-exports.withSleep = function(s) {
+exports.withSleep = function (s) {
   sleep = s;
 }
 
 /**
  * @private
  */
-exports.resetSleep = function() {
+exports.resetSleep = function () {
   sleep = defaultSleep;
 }
 
 /**
  * @private
  */
-exports.withRandom = function(r) {
+exports.withRandom = function (r) {
   random = r;
 }
 
 /**
  * @private
  */
-exports.resetRandom = function() {
+exports.resetRandom = function () {
   random = Math.random;
 }
 
 /**
  * @private
  */
-exports.withMaxAttempts = function(ma) {
+exports.withMaxAttempts = function (ma) {
   maxAttempts = ma;
 }
 
 /**
  * @private
  */
-exports.resetMaxAttempts = function() {
+exports.resetMaxAttempts = function () {
   maxAttempts = 10;
 }

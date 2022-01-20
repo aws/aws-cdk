@@ -1,7 +1,7 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as iam from '@aws-cdk/aws-iam';
-import { Duration, IResource, Resource, Stack } from '@aws-cdk/core';
+import { ArnFormat, Duration, IResource, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnJobDefinition } from './batch.generated';
 import { ExposedSecret } from './exposed-secret';
@@ -50,6 +50,21 @@ export enum LogDriver {
    * Specifies the syslog logging driver.
    */
   SYSLOG = 'syslog'
+}
+
+/**
+ * Platform capabilities
+ */
+export enum PlatformCapabilities {
+  /**
+   * Specifies EC2 environment.
+   */
+  EC2 = 'EC2',
+
+  /**
+   * Specifies Fargate environment.
+   */
+  FARGATE = 'FARGATE'
 }
 
 /**
@@ -135,9 +150,9 @@ export interface JobDefinitionContainer {
 
   /**
    * The hard limit (in MiB) of memory to present to the container. If your container attempts to exceed
-   * the memory specified here, the container is killed. You must specify at least 4 MiB of memory for a job.
+   * the memory specified here, the container is killed. You must specify at least 4 MiB of memory for EC2 and 512 MiB for Fargate.
    *
-   * @default 4
+   * @default - 4 for EC2, 512 for Fargate
    */
   readonly memoryLimitMiB?: number;
 
@@ -185,9 +200,9 @@ export interface JobDefinitionContainer {
 
   /**
    * The number of vCPUs reserved for the container. Each vCPU is equivalent to
-   * 1,024 CPU shares. You must specify at least one vCPU.
+   * 1,024 CPU shares. You must specify at least one vCPU for EC2 and 0.25 for Fargate.
    *
-   * @default 1
+   * @default - 1 for EC2, 0.25 for Fargate
    */
   readonly vcpus?: number;
 
@@ -197,6 +212,28 @@ export interface JobDefinitionContainer {
    * @default - No data volumes will be used.
    */
   readonly volumes?: ecs.Volume[];
+
+  /**
+   * Fargate platform version
+   *
+   * @default - LATEST platform version will be used
+   */
+  readonly platformVersion?: ecs.FargatePlatformVersion
+
+  /**
+   * The IAM role that AWS Batch can assume.
+   * Required when using Fargate.
+   *
+   * @default - None
+   */
+  readonly executionRole?: iam.IRole;
+
+  /**
+   * Whether or not to assign a public IP to the job
+   *
+   * @default - false
+   */
+  readonly assignPublicIp?: boolean
 }
 
 /**
@@ -252,6 +289,13 @@ export interface JobDefinitionProps {
    * @default - undefined
    */
   readonly timeout?: Duration;
+
+  /**
+   * The platform capabilities required by the job definition.
+   *
+   * @default - EC2
+   */
+  readonly platformCapabilities?: PlatformCapabilities[];
 }
 
 /**
@@ -338,7 +382,7 @@ export class JobDefinition extends Resource implements IJobDefinition {
    */
   public static fromJobDefinitionArn(scope: Construct, id: string, jobDefinitionArn: string): IJobDefinition {
     const stack = Stack.of(scope);
-    const jobDefName = stack.parseArn(jobDefinitionArn).resourceName!;
+    const jobDefName = stack.splitArn(jobDefinitionArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName!;
 
     class Import extends Resource implements IJobDefinition {
       public readonly jobDefinitionArn = jobDefinitionArn;
@@ -361,7 +405,7 @@ export class JobDefinition extends Resource implements IJobDefinition {
     const jobDefArn = stack.formatArn({
       service: 'batch',
       resource: 'job-definition',
-      sep: '/',
+      arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
       resourceName: jobDefinitionName,
     });
 
@@ -382,16 +426,20 @@ export class JobDefinition extends Resource implements IJobDefinition {
       physicalName: props.jobDefinitionName,
     });
 
+    this.validateProps(props);
+
     this.imageConfig = new JobDefinitionImageConfig(this, props.container);
+
+    const isFargate = !!props.platformCapabilities?.includes(PlatformCapabilities.FARGATE);
 
     const jobDef = new CfnJobDefinition(this, 'Resource', {
       jobDefinitionName: props.jobDefinitionName,
-      containerProperties: this.buildJobContainer(props.container),
+      containerProperties: this.buildJobContainer(props.container, isFargate),
       type: 'container',
       nodeProperties: props.nodeProps
         ? {
           mainNode: props.nodeProps.mainNode,
-          nodeRangeProperties: this.buildNodeRangeProps(props.nodeProps),
+          nodeRangeProperties: this.buildNodeRangeProps(props.nodeProps, isFargate),
           numNodes: props.nodeProps.count,
         }
         : undefined,
@@ -402,6 +450,7 @@ export class JobDefinition extends Resource implements IJobDefinition {
       timeout: {
         attemptDurationSeconds: props.timeout ? props.timeout.toSeconds() : undefined,
       },
+      platformCapabilities: props.platformCapabilities ?? [PlatformCapabilities.EC2],
     });
 
     this.jobDefinitionArn = this.getResourceArnAttribute(jobDef.ref, {
@@ -412,7 +461,7 @@ export class JobDefinition extends Resource implements IJobDefinition {
     this.jobDefinitionName = this.getResourceNameAttribute(jobDef.ref);
   }
 
-  private deserializeEnvVariables(env?: { [name: string]: string}): CfnJobDefinition.EnvironmentProperty[] | undefined {
+  private deserializeEnvVariables(env?: { [name: string]: string }): CfnJobDefinition.EnvironmentProperty[] | undefined {
     const vars = new Array<CfnJobDefinition.EnvironmentProperty>();
 
     if (env === undefined) {
@@ -426,7 +475,31 @@ export class JobDefinition extends Resource implements IJobDefinition {
     return vars;
   }
 
-  private buildJobContainer(container?: JobDefinitionContainer): CfnJobDefinition.ContainerPropertiesProperty | undefined {
+  /**
+   * Validates the properties provided for a new job definition.
+   */
+  private validateProps(props: JobDefinitionProps) {
+    if (props === undefined) {
+      return;
+    }
+
+    if (props.platformCapabilities !== undefined && props.platformCapabilities.includes(PlatformCapabilities.FARGATE)
+      && props.container.executionRole === undefined) {
+      throw new Error('Fargate job must have executionRole set');
+    }
+
+    if (props.platformCapabilities !== undefined && props.platformCapabilities.includes(PlatformCapabilities.FARGATE)
+      && props.container.gpuCount !== undefined) {
+      throw new Error('Fargate job must not have gpuCount set');
+    }
+
+    if ((props.platformCapabilities === undefined || props.platformCapabilities.includes(PlatformCapabilities.EC2))
+      && props.container.assignPublicIp !== undefined) {
+      throw new Error('EC2 job must not have assignPublicIp set');
+    }
+  }
+
+  private buildJobContainer(container: JobDefinitionContainer, isFargate: boolean): CfnJobDefinition.ContainerPropertiesProperty | undefined {
     if (container === undefined) {
       return undefined;
     }
@@ -437,6 +510,7 @@ export class JobDefinition extends Resource implements IJobDefinition {
       image: this.imageConfig.imageName,
       instanceType: container.instanceType && container.instanceType.toString(),
       jobRoleArn: container.jobRole && container.jobRole.roleArn,
+      executionRoleArn: container.executionRole && container.executionRole.roleArn,
       linuxParameters: container.linuxParams
         ? { devices: container.linuxParams.renderLinuxParameters().devices }
         : undefined,
@@ -447,26 +521,31 @@ export class JobDefinition extends Resource implements IJobDefinition {
           ? this.buildLogConfigurationSecretOptions(container.logConfiguration.secretOptions)
           : undefined,
       } : undefined,
-      memory: container.memoryLimitMiB || 4,
       mountPoints: container.mountPoints,
       privileged: container.privileged || false,
-      resourceRequirements: container.gpuCount
-        ? [{ type: 'GPU', value: String(container.gpuCount) }]
-        : undefined,
+      networkConfiguration: container.assignPublicIp ? {
+        assignPublicIp: container.assignPublicIp ? 'ENABLED' : 'DISABLED',
+      } : undefined,
       readonlyRootFilesystem: container.readOnly || false,
       ulimits: container.ulimits,
       user: container.user,
-      vcpus: container.vcpus || 1,
       volumes: container.volumes,
+      fargatePlatformConfiguration: container.platformVersion ? {
+        platformVersion: container.platformVersion,
+      } : undefined,
+      resourceRequirements: [
+        { type: 'VCPU', value: String(container.vcpus || (isFargate ? 0.25 : 1)) },
+        { type: 'MEMORY', value: String(container.memoryLimitMiB || (isFargate ? 512 : 4)) },
+      ].concat(container.gpuCount ? [{ type: 'GPU', value: String(container.gpuCount) }] : []),
     };
   }
 
-  private buildNodeRangeProps(multiNodeProps: IMultiNodeProps): CfnJobDefinition.NodeRangePropertyProperty[] {
+  private buildNodeRangeProps(multiNodeProps: IMultiNodeProps, isFargate: boolean): CfnJobDefinition.NodeRangePropertyProperty[] {
     const rangeProps = new Array<CfnJobDefinition.NodeRangePropertyProperty>();
 
     for (const prop of multiNodeProps.rangeProps) {
       rangeProps.push({
-        container: this.buildJobContainer(prop.container),
+        container: this.buildJobContainer(prop.container, isFargate),
         targetNodes: `${prop.fromNodeIndex || 0}:${prop.toNodeIndex || multiNodeProps.count}`,
       });
     }

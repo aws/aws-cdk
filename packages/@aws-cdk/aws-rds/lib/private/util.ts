@@ -31,14 +31,14 @@ export interface DatabaseS3ImportExportProps {
  * Validates the S3 import/export props and returns the import/export roles, if any.
  * If `combineRoles` is true, will reuse the import role for export (or vice versa) if possible.
  *
- * Notably, `combineRoles` is (by default) set to true for instances, but false for clusters.
+ * Notably, `combineRoles` is set to true for instances, but false for clusters.
  * This is because the `combineRoles` functionality is most applicable to instances and didn't exist
  * for the initial clusters implementation. To maintain backwards compatibility, it is set to false for clusters.
  */
 export function setupS3ImportExport(
   scope: Construct,
   props: DatabaseS3ImportExportProps,
-  combineRoles?: boolean): { s3ImportRole?: iam.IRole, s3ExportRole?: iam.IRole } {
+  combineRoles: boolean): { s3ImportRole?: iam.IRole, s3ExportRole?: iam.IRole } {
 
   let s3ImportRole = props.s3ImportRole;
   let s3ExportRole = props.s3ExportRole;
@@ -94,11 +94,13 @@ export function renderCredentials(scope: Construct, engine: IEngine, credentials
     renderedCredentials = Credentials.fromSecret(
       new DatabaseSecret(scope, 'Secret', {
         username: renderedCredentials.username,
+        secretName: renderedCredentials.secretName,
         encryptionKey: renderedCredentials.encryptionKey,
         excludeCharacters: renderedCredentials.excludeCharacters,
         // if username must be referenced as a string we can safely replace the
         // secret when customization options are changed without risking a replacement
         replaceOnPasswordCriteriaChanges: credentials?.usernameAsString,
+        replicaRegions: renderedCredentials.replicaRegions,
       }),
       // pass username if it must be referenced as a string
       credentials?.usernameAsString ? renderedCredentials.username : undefined,

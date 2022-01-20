@@ -1,4 +1,4 @@
-import '@aws-cdk/assert/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as cdk from '@aws-cdk/core';
 import * as appsync from '../lib';
 import * as t from './scalar-type-defintions';
@@ -24,7 +24,7 @@ describe('testing all GraphQL Types', () => {
     const out = 'type Test {\n  id: ID\n}\n';
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::GraphQLSchema', {
       Definition: `${out}`,
     });
   });
@@ -39,7 +39,7 @@ describe('testing all GraphQL Types', () => {
     const out = 'type Test {\n  id: String\n}\n';
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::GraphQLSchema', {
       Definition: `${out}`,
     });
   });
@@ -54,7 +54,7 @@ describe('testing all GraphQL Types', () => {
     const out = 'type Test {\n  id: Int\n}\n';
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::GraphQLSchema', {
       Definition: `${out}`,
     });
   });
@@ -69,7 +69,7 @@ describe('testing all GraphQL Types', () => {
     const out = 'type Test {\n  id: Float\n}\n';
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::GraphQLSchema', {
       Definition: `${out}`,
     });
   });
@@ -84,7 +84,7 @@ describe('testing all GraphQL Types', () => {
     const out = 'type Test {\n  id: Boolean\n}\n';
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::GraphQLSchema', {
       Definition: `${out}`,
     });
   });
@@ -99,7 +99,7 @@ describe('testing all GraphQL Types', () => {
     const out = 'type Test {\n  id: AWSDate\n}\n';
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::GraphQLSchema', {
       Definition: `${out}`,
     });
   });
@@ -114,7 +114,7 @@ describe('testing all GraphQL Types', () => {
     const out = 'type Test {\n  id: AWSTime\n}\n';
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::GraphQLSchema', {
       Definition: `${out}`,
     });
   });
@@ -129,7 +129,7 @@ describe('testing all GraphQL Types', () => {
     const out = 'type Test {\n  id: AWSDateTime\n}\n';
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::GraphQLSchema', {
       Definition: `${out}`,
     });
   });
@@ -144,7 +144,7 @@ describe('testing all GraphQL Types', () => {
     const out = 'type Test {\n  id: AWSTimestamp\n}\n';
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::GraphQLSchema', {
       Definition: `${out}`,
     });
   });
@@ -159,7 +159,7 @@ describe('testing all GraphQL Types', () => {
     const out = 'type Test {\n  id: AWSEmail\n}\n';
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::GraphQLSchema', {
       Definition: `${out}`,
     });
   });
@@ -174,7 +174,7 @@ describe('testing all GraphQL Types', () => {
     const out = 'type Test {\n  id: AWSJSON\n}\n';
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::GraphQLSchema', {
       Definition: `${out}`,
     });
   });
@@ -190,7 +190,7 @@ describe('testing all GraphQL Types', () => {
     const out = 'type Test {\n  id: AWSURL\n}\n';
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::GraphQLSchema', {
       Definition: `${out}`,
     });
   });
@@ -205,7 +205,7 @@ describe('testing all GraphQL Types', () => {
     const out = 'type Test {\n  id: AWSPhone\n}\n';
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::GraphQLSchema', {
       Definition: `${out}`,
     });
   });
@@ -220,7 +220,7 @@ describe('testing all GraphQL Types', () => {
     const out = 'type Test {\n  id: AWSIPAddress\n}\n';
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::GraphQLSchema', {
       Definition: `${out}`,
     });
   });

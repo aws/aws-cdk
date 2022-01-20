@@ -15,7 +15,6 @@ const RESOURCE_TYPE = 'Custom::AWSCDKOpenIdConnectProvider';
 /**
  * Represents an IAM OpenID Connect provider.
  *
- * @experimental
  */
 export interface IOpenIdConnectProvider extends IResource {
   /**
@@ -31,7 +30,6 @@ export interface IOpenIdConnectProvider extends IResource {
 
 /**
  * Initialization properties for `OpenIdConnectProvider`.
- * @experimental
  */
 export interface OpenIdConnectProviderProps {
   /**
@@ -101,7 +99,6 @@ export interface OpenIdConnectProviderProps {
  * @see http://openid.net/connect
  * @see https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_providers_oidc.html
  *
- * @experimental
  * @resource AWS::CloudFormation::CustomResource
  */
 export class OpenIdConnectProvider extends Resource implements IOpenIdConnectProvider {

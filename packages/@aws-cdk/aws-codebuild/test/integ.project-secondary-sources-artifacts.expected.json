@@ -51,7 +51,7 @@
                           "Arn"
                         ]
                       },
-                      "/*"
+                      "/some/path"
                     ]
                   ]
                 }
@@ -180,6 +180,9 @@
         "Source": {
           "BuildSpec": "{\n  \"version\": \"0.2\"\n}",
           "Type": "NO_SOURCE"
+        },
+        "Cache": {
+          "Type": "NO_CACHE"
         },
         "EncryptionKey": "alias/aws/s3",
         "SecondaryArtifacts": [

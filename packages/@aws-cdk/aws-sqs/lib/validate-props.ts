@@ -14,5 +14,5 @@ function validateRange(label: string, value: number | undefined, minValue: numbe
   if (value === undefined || Token.isUnresolved(value)) { return; }
   const unitSuffix = unit ? ` ${unit}` : '';
   if (value < minValue) { throw new Error(`${label} must be ${minValue}${unitSuffix} or more, but ${value} was provided`); }
-  if (value > maxValue) { throw new Error(`${label} must be ${maxValue}${unitSuffix} of less, but ${value} was provided`); }
+  if (value > maxValue) { throw new Error(`${label} must be ${maxValue}${unitSuffix} or less, but ${value} was provided`); }
 }

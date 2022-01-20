@@ -1,10 +1,10 @@
 import * as crypto from 'crypto';
 import { DnsValidatedCertificate, ICertificate } from '@aws-cdk/aws-certificatemanager';
-import { CloudFrontWebDistribution, OriginProtocolPolicy, PriceClass, ViewerProtocolPolicy } from '@aws-cdk/aws-cloudfront';
+import { CloudFrontWebDistribution, OriginProtocolPolicy, PriceClass, ViewerCertificate, ViewerProtocolPolicy } from '@aws-cdk/aws-cloudfront';
 import { ARecord, AaaaRecord, IHostedZone, RecordTarget } from '@aws-cdk/aws-route53';
 import { CloudFrontTarget } from '@aws-cdk/aws-route53-targets';
 import { BlockPublicAccess, Bucket, RedirectProtocol } from '@aws-cdk/aws-s3';
-import { RemovalPolicy, Stack, Token } from '@aws-cdk/core';
+import { ArnFormat, RemovalPolicy, Stack, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 
 // v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
@@ -62,18 +62,18 @@ export class HttpsRedirect extends CoreConstruct {
     const domainNames = props.recordNames ?? [props.zone.zoneName];
 
     if (props.certificate) {
-      const certificateRegion = Stack.of(this).parseArn(props.certificate.certificateArn).region;
+      const certificateRegion = Stack.of(this).splitArn(props.certificate.certificateArn, ArnFormat.SLASH_RESOURCE_NAME).region;
       if (!Token.isUnresolved(certificateRegion) && certificateRegion !== 'us-east-1') {
         throw new Error(`The certificate must be in the us-east-1 region and the certificate you provided is in ${certificateRegion}.`);
       }
     }
 
-    const redirectCertArn = props.certificate ? props.certificate.certificateArn : new DnsValidatedCertificate(this, 'RedirectCertificate', {
+    const redirectCert = props.certificate ?? new DnsValidatedCertificate(this, 'RedirectCertificate', {
       domainName: domainNames[0],
       subjectAlternativeNames: domainNames,
       hostedZone: props.zone,
       region: 'us-east-1',
-    }).certificateArn;
+    });
 
     const redirectBucket = new Bucket(this, 'RedirectBucket', {
       websiteRedirect: {
@@ -92,10 +92,9 @@ export class HttpsRedirect extends CoreConstruct {
           originProtocolPolicy: OriginProtocolPolicy.HTTP_ONLY,
         },
       }],
-      aliasConfiguration: {
-        acmCertRef: redirectCertArn,
-        names: domainNames,
-      },
+      viewerCertificate: ViewerCertificate.fromAcmCertificate(redirectCert, {
+        aliases: domainNames,
+      }),
       comment: `Redirect to ${props.targetDomain} from ${domainNames.join(', ')}`,
       priceClass: PriceClass.PRICE_CLASS_ALL,
       viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,

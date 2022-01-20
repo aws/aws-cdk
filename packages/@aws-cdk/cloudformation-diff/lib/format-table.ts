@@ -1,4 +1,4 @@
-import * as colors from 'colors/safe';
+import * as chalk from 'chalk';
 import * as stringWidth from 'string-width';
 import * as table from 'table';
 
@@ -27,16 +27,15 @@ function lineBetween(rowA: string[], rowB: string[]) {
   return rowA[1] !== rowB[1];
 }
 
-function buildColumnConfig(widths: number[] | undefined): { [index: number]: table.TableColumns } | undefined {
+function buildColumnConfig(widths: number[] | undefined): { [index: number]: table.ColumnUserConfig } | undefined {
   if (widths === undefined) { return undefined; }
 
-  const ret: { [index: number]: table.TableColumns } = {};
+  const ret: { [index: number]: table.ColumnUserConfig } = {};
   widths.forEach((width, i) => {
-    ret[i] = { width };
-
     if (width === undefined) {
-      delete ret[i].width;
+      return;
     }
+    ret[i] = { width };
   });
 
   return ret;
@@ -94,7 +93,7 @@ function sum(xs: number[]): number {
 }
 
 // What color the table is going to be
-const tableColor = colors.gray;
+const tableColor = chalk.gray;
 
 // Unicode table characters with a color
 const TABLE_BORDER_CHARACTERS = {

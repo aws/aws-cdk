@@ -1,4 +1,4 @@
-import { ArnComponents } from './arn';
+import { ArnComponents, ArnFormat } from './arn';
 import { CfnResource } from './cfn-resource';
 import { IConstruct, Construct as CoreConstruct } from './construct-compat';
 import { IStringProducer, Lazy } from './lazy';
@@ -58,6 +58,19 @@ export interface IResource extends IConstruct {
    * that might be different than the stack they were imported into.
    */
   readonly env: ResourceEnvironment;
+
+  /**
+   * Apply the given removal policy to this resource
+   *
+   * The Removal Policy controls what happens to this resource when it stops
+   * being managed by CloudFormation, either because you've removed it from the
+   * CDK application or because you've made a change that requires the resource
+   * to be replaced.
+   *
+   * The resource can be deleted (`RemovalPolicy.DESTROY`), or left in your AWS
+   * account for data recovery and cleanup later (`RemovalPolicy.RETAIN`).
+   */
+  applyRemovalPolicy(policy: RemovalPolicy): void;
 }
 
 /**
@@ -90,6 +103,18 @@ export interface ResourceProps {
    * @default - the resource is in the same region as the stack it belongs to
    */
   readonly region?: string;
+
+  /**
+   * ARN to deduce region and account from
+   *
+   * The ARN is parsed and the account and region are taken from the ARN.
+   * This should be used for imported resources.
+   *
+   * Cannot be supplied together with either `account` or `region`.
+   *
+   * @default - take environment from `account`, `region` parameters, or use Stack environment.
+   */
+  readonly environmentFromArn?: string;
 }
 
 /**
@@ -116,7 +141,6 @@ export abstract class Resource extends CoreConstruct implements IResource {
    * - a concrete name generated automatically during synthesis, in
    *   cross-environment scenarios.
    *
-   * @experimental
    */
   protected readonly physicalName: string;
 
@@ -126,12 +150,21 @@ export abstract class Resource extends CoreConstruct implements IResource {
   constructor(scope: Construct, id: string, props: ResourceProps = {}) {
     super(scope, id);
 
+    if ((props.account !== undefined || props.region !== undefined) && props.environmentFromArn !== undefined) {
+      throw new Error(`Supply at most one of 'account'/'region' (${props.account}/${props.region}) and 'environmentFromArn' (${props.environmentFromArn})`);
+    }
+
     Object.defineProperty(this, RESOURCE_SYMBOL, { value: true });
 
     this.stack = Stack.of(this);
+
+    const parsedArn = props.environmentFromArn ?
+      // Since we only want the region and account, NO_RESOURE_NAME is good enough
+      this.stack.splitArn(props.environmentFromArn, ArnFormat.NO_RESOURCE_NAME)
+      : undefined;
     this.env = {
-      account: props.account ?? this.stack.account,
-      region: props.region ?? this.stack.region,
+      account: props.account ?? parsedArn?.account ?? this.stack.account,
+      region: props.region ?? parsedArn?.region ?? this.stack.region,
     };
 
     let physicalName = props.physicalName;
@@ -186,7 +219,7 @@ export abstract class Resource extends CoreConstruct implements IResource {
    * CDK application or because you've made a change that requires the resource
    * to be replaced.
    *
-   * The resource can be deleted (`RemovalPolicy.DELETE`), or left in your AWS
+   * The resource can be deleted (`RemovalPolicy.DESTROY`), or left in your AWS
    * account for data recovery and cleanup later (`RemovalPolicy.RETAIN`).
    */
   public applyRemovalPolicy(policy: RemovalPolicy) {
@@ -211,7 +244,6 @@ export abstract class Resource extends CoreConstruct implements IResource {
    *
    * @param nameAttr The CFN attribute which resolves to the resource's name.
    * Commonly this is the resource's `ref`.
-   * @experimental
    */
   protected getResourceNameAttribute(nameAttr: string) {
     return mimicReference(nameAttr, {
@@ -244,7 +276,6 @@ export abstract class Resource extends CoreConstruct implements IResource {
    * reference `this.physicalName` somewhere within the ARN in order for
    * cross-environment references to work.
    *
-   * @experimental
    */
   protected getResourceArnAttribute(arnAttr: string, arnComponents: ArnComponents) {
     return mimicReference(arnAttr, {

@@ -1,175 +1,174 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { nodeunitShim, Test } from 'nodeunit-shim';
 import { ImportMock } from 'ts-mock-imports';
 import { SymlinkFollowMode } from '../../lib/fs';
 import * as util from '../../lib/fs/utils';
 
-nodeunitShim({
-  shouldFollow: {
-    always: {
-      'follows internal'(test: Test) {
+describe('utils', () => {
+  describe('shouldFollow', () => {
+    describe('always', () => {
+      test('follows internal', () => {
         const sourceRoot = path.join('source', 'root');
         const linkTarget = path.join(sourceRoot, 'referent');
 
         const mockFsExists = ImportMock.mockFunction(fs, 'existsSync', true);
         try {
-          test.ok(util.shouldFollow(SymlinkFollowMode.ALWAYS, sourceRoot, linkTarget));
-          test.ok(mockFsExists.calledOnceWith(linkTarget));
-          test.done();
+          expect(util.shouldFollow(SymlinkFollowMode.ALWAYS, sourceRoot, linkTarget)).toEqual(true);
+          expect(mockFsExists.calledOnceWith(linkTarget)).toEqual(true);
+          ;
         } finally {
           mockFsExists.restore();
         }
-      },
+      });
 
-      'follows external'(test: Test) {
+      test('follows external', () => {
         const sourceRoot = path.join('source', 'root');
         const linkTarget = path.join('alternate', 'referent');
         const mockFsExists = ImportMock.mockFunction(fs, 'existsSync', true);
         try {
-          test.ok(util.shouldFollow(SymlinkFollowMode.ALWAYS, sourceRoot, linkTarget));
-          test.ok(mockFsExists.calledOnceWith(linkTarget));
-          test.done();
+          expect(util.shouldFollow(SymlinkFollowMode.ALWAYS, sourceRoot, linkTarget)).toEqual(true);
+          expect(mockFsExists.calledOnceWith(linkTarget)).toEqual(true);
+          ;
         } finally {
           mockFsExists.restore();
         }
-      },
+      });
 
-      'does not follow internal when the referent does not exist'(test: Test) {
+      test('does not follow internal when the referent does not exist', () => {
         const sourceRoot = path.join('source', 'root');
         const linkTarget = path.join(sourceRoot, 'referent');
         const mockFsExists = ImportMock.mockFunction(fs, 'existsSync', false);
         try {
-          test.ok(!util.shouldFollow(SymlinkFollowMode.ALWAYS, sourceRoot, linkTarget));
-          test.ok(mockFsExists.calledOnceWith(linkTarget));
-          test.done();
+          expect(util.shouldFollow(SymlinkFollowMode.ALWAYS, sourceRoot, linkTarget)).toEqual(false);
+          expect(mockFsExists.calledOnceWith(linkTarget)).toEqual(true);
+          ;
         } finally {
           mockFsExists.restore();
         }
-      },
+      });
 
-      'does not follow external when the referent does not exist'(test: Test) {
+      test('does not follow external when the referent does not exist', () => {
         const sourceRoot = path.join('source', 'root');
         const linkTarget = path.join('alternate', 'referent');
         const mockFsExists = ImportMock.mockFunction(fs, 'existsSync', false);
         try {
-          test.ok(!util.shouldFollow(SymlinkFollowMode.ALWAYS, sourceRoot, linkTarget));
-          test.ok(mockFsExists.calledOnceWith(linkTarget));
-          test.done();
+          expect(util.shouldFollow(SymlinkFollowMode.ALWAYS, sourceRoot, linkTarget)).toEqual(false);
+          expect(mockFsExists.calledOnceWith(linkTarget)).toEqual(true);
+          ;
         } finally {
           mockFsExists.restore();
         }
-      },
-    },
+      });
+    });
 
-    external: {
-      'does not follow internal'(test: Test) {
+    describe('external', () => {
+      test('does not follow internal', () => {
         const sourceRoot = path.join('source', 'root');
         const linkTarget = path.join(sourceRoot, 'referent');
         const mockFsExists = ImportMock.mockFunction(fs, 'existsSync');
         try {
-          test.ok(!util.shouldFollow(SymlinkFollowMode.EXTERNAL, sourceRoot, linkTarget));
-          test.ok(mockFsExists.notCalled);
-          test.done();
+          expect(util.shouldFollow(SymlinkFollowMode.EXTERNAL, sourceRoot, linkTarget)).toEqual(false);
+          expect(mockFsExists.notCalled).toEqual(true);
+          ;
         } finally {
           mockFsExists.restore();
         }
-      },
+      });
 
-      'follows external'(test: Test) {
+      test('follows external', () => {
         const sourceRoot = path.join('source', 'root');
         const linkTarget = path.join('alternate', 'referent');
         const mockFsExists = ImportMock.mockFunction(fs, 'existsSync', true);
         try {
-          test.ok(util.shouldFollow(SymlinkFollowMode.EXTERNAL, sourceRoot, linkTarget));
-          test.ok(mockFsExists.calledOnceWith(linkTarget));
-          test.done();
+          expect(util.shouldFollow(SymlinkFollowMode.EXTERNAL, sourceRoot, linkTarget)).toEqual(true);
+          expect(mockFsExists.calledOnceWith(linkTarget)).toEqual(true);
+          ;
         } finally {
           mockFsExists.restore();
         }
-      },
+      });
 
-      'does not follow external when referent does not exist'(test: Test) {
+      test('does not follow external when referent does not exist', () => {
         const sourceRoot = path.join('source', 'root');
         const linkTarget = path.join('alternate', 'referent');
         const mockFsExists = ImportMock.mockFunction(fs, 'existsSync', false);
         try {
-          test.ok(!util.shouldFollow(SymlinkFollowMode.EXTERNAL, sourceRoot, linkTarget));
-          test.ok(mockFsExists.calledOnceWith(linkTarget));
-          test.done();
+          expect(util.shouldFollow(SymlinkFollowMode.EXTERNAL, sourceRoot, linkTarget)).toEqual(false);
+          expect(mockFsExists.calledOnceWith(linkTarget)).toEqual(true);
+          ;
         } finally {
           mockFsExists.restore();
         }
-      },
-    },
+      });
+    });
 
-    blockExternal: {
-      'follows internal'(test: Test) {
+    describe('blockExternal', () => {
+      test('follows internal', () => {
         const sourceRoot = path.join('source', 'root');
         const linkTarget = path.join(sourceRoot, 'referent');
         const mockFsExists = ImportMock.mockFunction(fs, 'existsSync', true);
         try {
-          test.ok(util.shouldFollow(SymlinkFollowMode.BLOCK_EXTERNAL, sourceRoot, linkTarget));
-          test.ok(mockFsExists.calledOnceWith(linkTarget));
-          test.done();
+          expect(util.shouldFollow(SymlinkFollowMode.BLOCK_EXTERNAL, sourceRoot, linkTarget)).toEqual(true);
+          expect(mockFsExists.calledOnceWith(linkTarget)).toEqual(true);
+          ;
         } finally {
           mockFsExists.restore();
         }
-      },
+      });
 
-      'does not follow internal when referent does not exist'(test: Test) {
+      test('does not follow internal when referent does not exist', () => {
         const sourceRoot = path.join('source', 'root');
         const linkTarget = path.join(sourceRoot, 'referent');
         const mockFsExists = ImportMock.mockFunction(fs, 'existsSync', false);
         try {
-          test.ok(!util.shouldFollow(SymlinkFollowMode.BLOCK_EXTERNAL, sourceRoot, linkTarget));
-          test.ok(mockFsExists.calledOnceWith(linkTarget));
-          test.done();
+          expect(util.shouldFollow(SymlinkFollowMode.BLOCK_EXTERNAL, sourceRoot, linkTarget)).toEqual(false);
+          expect(mockFsExists.calledOnceWith(linkTarget)).toEqual(true);
+          ;
         } finally {
           mockFsExists.restore();
         }
-      },
+      });
 
-      'does not follow external'(test: Test) {
+      test('does not follow external', () => {
         const sourceRoot = path.join('source', 'root');
         const linkTarget = path.join('alternate', 'referent');
         const mockFsExists = ImportMock.mockFunction(fs, 'existsSync');
         try {
-          test.ok(!util.shouldFollow(SymlinkFollowMode.BLOCK_EXTERNAL, sourceRoot, linkTarget));
-          test.ok(mockFsExists.notCalled);
-          test.done();
+          expect(util.shouldFollow(SymlinkFollowMode.BLOCK_EXTERNAL, sourceRoot, linkTarget)).toEqual(false);
+          expect(mockFsExists.notCalled).toEqual(true);
+          ;
         } finally {
           mockFsExists.restore();
         }
-      },
-    },
+      });
+    });
 
-    never: {
-      'does not follow internal'(test: Test) {
+    describe('never', () => {
+      test('does not follow internal', () => {
         const sourceRoot = path.join('source', 'root');
         const linkTarget = path.join(sourceRoot, 'referent');
         const mockFsExists = ImportMock.mockFunction(fs, 'existsSync');
         try {
-          test.ok(!util.shouldFollow(SymlinkFollowMode.NEVER, sourceRoot, linkTarget));
-          test.ok(mockFsExists.notCalled);
-          test.done();
+          expect(util.shouldFollow(SymlinkFollowMode.NEVER, sourceRoot, linkTarget)).toEqual(false);
+          expect(mockFsExists.notCalled).toEqual(true);
+          ;
         } finally {
           mockFsExists.restore();
         }
-      },
+      });
 
-      'does not follow external'(test: Test) {
+      test('does not follow external', () => {
         const sourceRoot = path.join('source', 'root');
         const linkTarget = path.join('alternate', 'referent');
         const mockFsExists = ImportMock.mockFunction(fs, 'existsSync');
         try {
-          test.ok(!util.shouldFollow(SymlinkFollowMode.NEVER, sourceRoot, linkTarget));
-          test.ok(mockFsExists.notCalled);
-          test.done();
+          expect(util.shouldFollow(SymlinkFollowMode.NEVER, sourceRoot, linkTarget)).toEqual(false);
+          expect(mockFsExists.notCalled).toEqual(true);
+          ;
         } finally {
           mockFsExists.restore();
         }
-      },
-    },
-  },
+      });
+    });
+  });
 });

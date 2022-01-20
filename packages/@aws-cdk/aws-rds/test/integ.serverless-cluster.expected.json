@@ -355,10 +355,10 @@
         }
       }
     },
-    "ServerlessDatabaseSubnetsB39719DC": {
+    "SubnetGroup": {
       "Type": "AWS::RDS::DBSubnetGroup",
       "Properties": {
-        "DBSubnetGroupDescription": "Subnets for Serverless Database database",
+        "DBSubnetGroupDescription": "My Subnet Group",
         "SubnetIds": [
           {
             "Ref": "VPCPublicSubnet1SubnetB4246D30"
@@ -366,7 +366,8 @@
           {
             "Ref": "VPCPublicSubnet2Subnet74179F39"
           }
-        ]
+        ],
+        "DBSubnetGroupName": "mynotlowercasesubnetgroupname"
       }
     },
     "ServerlessDatabaseSecurityGroup1E143FBB": {
@@ -417,7 +418,7 @@
         "Engine": "aurora-mysql",
         "DBClusterParameterGroupName": "default.aurora-mysql5.7",
         "DBSubnetGroupName": {
-          "Ref": "ServerlessDatabaseSubnetsB39719DC"
+          "Ref": "SubnetGroup"
         },
         "EngineMode": "serverless",
         "MasterUsername": "admin",
@@ -432,8 +433,8 @@
           }
         ]
       },
-      "UpdateReplacePolicy": "Snapshot",
-      "DeletionPolicy": "Snapshot"
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     }
   }
 }

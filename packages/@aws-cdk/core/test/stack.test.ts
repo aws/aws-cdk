@@ -1,10 +1,13 @@
+import { testDeprecated, testFutureBehavior, testLegacyBehavior } from '@aws-cdk/cdk-build-tools';
 import * as cxapi from '@aws-cdk/cx-api';
-import { testFutureBehavior, testLegacyBehavior } from 'cdk-build-tools/lib/feature-flag';
+import { Fact } from '@aws-cdk/region-info';
+import { Node } from 'constructs';
 import {
   App, CfnCondition, CfnInclude, CfnOutput, CfnParameter,
   CfnResource, Construct, Lazy, ScopedAws, Stack, validateString,
   ISynthesisSession, Tags, LegacyStackSynthesizer, DefaultStackSynthesizer,
   NestedStack,
+  Aws,
 } from '../lib';
 import { Intrinsic } from '../lib/private/intrinsic';
 import { resolveReferences } from '../lib/private/refs';
@@ -59,7 +62,7 @@ describe('stack', () => {
 
     expect(() => {
       app.synth();
-    }).toThrow('Number of resources: 1000 is greater than allowed maximum of 500');
+    }).toThrow('Number of resources in stack \'MyStack\': 1000 is greater than allowed maximum of 500');
 
 
   });
@@ -81,7 +84,7 @@ describe('stack', () => {
 
     expect(() => {
       app.synth();
-    }).toThrow('Number of resources: 200 is greater than allowed maximum of 100');
+    }).toThrow('Number of resources in stack \'MyStack\': 200 is greater than allowed maximum of 100');
 
 
   });
@@ -241,7 +244,7 @@ describe('stack', () => {
 
   });
 
-  test('Include should support non-hash top-level template elements like "Description"', () => {
+  testDeprecated('Include should support non-hash top-level template elements like "Description"', () => {
     const stack = new Stack();
 
     const template = {
@@ -489,7 +492,7 @@ describe('stack', () => {
 
   test('cross stack references and dependencies work within child stacks (non-nested)', () => {
     // GIVEN
-    const app = new App();
+    const app = new App({ context: { '@aws-cdk/core:stackRelativeExports': true } });
     const parent = new Stack(app, 'Parent');
     const child1 = new Stack(parent, 'Child1');
     const child2 = new Stack(parent, 'Child2');
@@ -520,7 +523,7 @@ describe('stack', () => {
       Outputs: {
         ExportsOutputRefResourceA461B4EF9: {
           Value: { Ref: 'ResourceA' },
-          Export: { Name: 'ParentChild18FAEF419:Child1ExportsOutputRefResourceA7BF20B37' },
+          Export: { Name: 'ParentChild18FAEF419:ExportsOutputRefResourceA461B4EF9' },
         },
       },
     });
@@ -529,7 +532,7 @@ describe('stack', () => {
         Resource1: {
           Type: 'R2',
           Properties: {
-            RefToResource1: { 'Fn::ImportValue': 'ParentChild18FAEF419:Child1ExportsOutputRefResourceA7BF20B37' },
+            RefToResource1: { 'Fn::ImportValue': 'ParentChild18FAEF419:ExportsOutputRefResourceA461B4EF9' },
           },
         },
       },
@@ -541,7 +544,7 @@ describe('stack', () => {
 
   test('automatic cross-stack references and manual exports look the same', () => {
     // GIVEN: automatic
-    const appA = new App();
+    const appA = new App({ context: { '@aws-cdk/core:stackRelativeExports': true } });
     const producerA = new Stack(appA, 'Producer');
     const consumerA = new Stack(appA, 'Consumer');
     const resourceA = new CfnResource(producerA, 'Resource', { type: 'AWS::Resource' });
@@ -661,6 +664,29 @@ describe('stack', () => {
     }));
   });
 
+  test('asset metadata added to NestedStack resource that contains asset path and property', () => {
+    const app = new App();
+
+    // WHEN
+    const parentStack = new Stack(app, 'parent');
+    parentStack.node.setContext(cxapi.ASSET_RESOURCE_METADATA_ENABLED_CONTEXT, true);
+    const childStack = new NestedStack(parentStack, 'child');
+    new CfnResource(childStack, 'ChildResource', { type: 'Resource::Child' });
+
+    const assembly = app.synth();
+    expect(assembly.getStackByName(parentStack.stackName).template).toEqual(expect.objectContaining({
+      Resources: {
+        childNestedStackchildNestedStackResource7408D03F: expect.objectContaining({
+          Metadata: {
+            'aws:asset:path': 'parentchild13F9359B.nested.template.json',
+            'aws:asset:property': 'TemplateURL',
+          },
+        }),
+      },
+    }));
+
+  });
+
   test('cross-stack reference (substack references parent stack)', () => {
     // GIVEN
     const app = new App();
@@ -704,7 +730,7 @@ describe('stack', () => {
 
   test('cross-stack reference (parent stack references substack)', () => {
     // GIVEN
-    const app = new App();
+    const app = new App({ context: { '@aws-cdk/core:stackRelativeExports': true } });
     const parentStack = new Stack(app, 'parent');
     const childStack = new Stack(parentStack, 'child');
 
@@ -724,7 +750,7 @@ describe('stack', () => {
         MyParentResource: {
           Type: 'Resource::Parent',
           Properties: {
-            ParentProp: { 'Fn::ImportValue': 'parentchild13F9359B:childExportsOutputFnGetAttMyChildResourceAttributeOfChildResource420052FC' },
+            ParentProp: { 'Fn::ImportValue': 'parentchild13F9359B:ExportsOutputFnGetAttMyChildResourceAttributeOfChildResource52813264' },
           },
         },
       },
@@ -735,7 +761,7 @@ describe('stack', () => {
       Outputs: {
         ExportsOutputFnGetAttMyChildResourceAttributeOfChildResource52813264: {
           Value: { 'Fn::GetAtt': ['MyChildResource', 'AttributeOfChildResource'] },
-          Export: { Name: 'parentchild13F9359B:childExportsOutputFnGetAttMyChildResourceAttributeOfChildResource420052FC' },
+          Export: { Name: 'parentchild13F9359B:ExportsOutputFnGetAttMyChildResourceAttributeOfChildResource52813264' },
         },
       },
     });
@@ -1164,6 +1190,58 @@ describe('stack', () => {
     const app = new App();
     expect(new Stack(app, 'Stack', { analyticsReporting: true })._versionReportingEnabled).toBeDefined();
 
+  });
+});
+
+describe('regionalFact', () => {
+  Fact.register({ name: 'MyFact', region: 'us-east-1', value: 'x.amazonaws.com' });
+  Fact.register({ name: 'MyFact', region: 'eu-west-1', value: 'x.amazonaws.com' });
+  Fact.register({ name: 'MyFact', region: 'cn-north-1', value: 'x.amazonaws.com.cn' });
+
+  Fact.register({ name: 'WeirdFact', region: 'us-east-1', value: 'oneformat' });
+  Fact.register({ name: 'WeirdFact', region: 'eu-west-1', value: 'otherformat' });
+
+  test('regional facts return a literal value if possible', () => {
+    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-east-1' } });
+    expect(stack.regionalFact('MyFact')).toEqual('x.amazonaws.com');
+  });
+
+  test('regional facts are simplified to use URL_SUFFIX token if possible', () => {
+    const stack = new Stack();
+    expect(stack.regionalFact('MyFact')).toEqual(`x.${Aws.URL_SUFFIX}`);
+  });
+
+  test('regional facts are simplified to use concrete values if URL_SUFFIX token is not necessary', () => {
+    const stack = new Stack();
+    Node.of(stack).setContext(cxapi.TARGET_PARTITIONS, ['aws']);
+    expect(stack.regionalFact('MyFact')).toEqual('x.amazonaws.com');
+  });
+
+  test('regional facts generate a mapping if necessary', () => {
+    const stack = new Stack();
+    new CfnOutput(stack, 'TheFact', {
+      value: stack.regionalFact('WeirdFact'),
+    });
+
+    expect(toCloudFormation(stack)).toEqual({
+      Mappings: {
+        WeirdFactMap: {
+          'eu-west-1': { value: 'otherformat' },
+          'us-east-1': { value: 'oneformat' },
+        },
+      },
+      Outputs: {
+        TheFact: {
+          Value: {
+            'Fn::FindInMap': [
+              'WeirdFactMap',
+              { Ref: 'AWS::Region' },
+              'value',
+            ],
+          },
+        },
+      },
+    });
   });
 });
 

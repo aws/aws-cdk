@@ -4,25 +4,41 @@
 export class GeoRestriction {
 
   /**
-   * Whitelist specific countries which you want CloudFront to distribute your content.
+   * Allow specific countries which you want CloudFront to distribute your content.
    *
    * @param locations Two-letter, uppercase country code for a country
-   * that you want to whitelist. Include one element for each country.
+   * that you want to allow. Include one element for each country.
    * See ISO 3166-1-alpha-2 code on the *International Organization for Standardization* website
    */
-  public static whitelist(...locations: string[]) {
+  public static allowlist(...locations: string[]) {
     return new GeoRestriction('whitelist', GeoRestriction.validateLocations(locations));
   }
 
   /**
-   * Blacklist specific countries which you don't want CloudFront to distribute your content.
+   * Deny specific countries which you don't want CloudFront to distribute your content.
    *
    * @param locations Two-letter, uppercase country code for a country
-   * that you want to blacklist. Include one element for each country.
+   * that you want to deny. Include one element for each country.
    * See ISO 3166-1-alpha-2 code on the *International Organization for Standardization* website
    */
-  public static blacklist(...locations: string[]) {
+  public static denylist(...locations: string[]) {
     return new GeoRestriction('blacklist', GeoRestriction.validateLocations(locations));
+  }
+
+  /**
+   * DEPRECATED
+   * @deprecated use `allowlist`
+   */
+  public static whitelist(...locations: string[]) {
+    return GeoRestriction.allowlist(...locations);
+  }
+
+  /**
+   * DEPRECATED
+   * @deprecated use `denylist`
+   */
+  public static blacklist(...locations: string[]) {
+    return GeoRestriction.denylist(...locations);
   }
 
   private static LOCATION_REGEX = /^[A-Z]{2}$/;
@@ -43,9 +59,9 @@ export class GeoRestriction {
   /**
    * Creates an instance of GeoRestriction for internal use
    *
-   * @param restrictionType Specifies the restriction type to impose (whitelist or blacklist)
+   * @param restrictionType Specifies the restriction type to impose
    * @param locations Two-letter, uppercase country code for a country
-   * that you want to whitelist/blacklist. Include one element for each country.
+   * that you want to allow/deny. Include one element for each country.
    * See ISO 3166-1-alpha-2 code on the *International Organization for Standardization* website
    */
   private constructor(readonly restrictionType: 'whitelist' | 'blacklist', readonly locations: string[]) {}

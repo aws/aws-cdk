@@ -1,9 +1,9 @@
-import '@aws-cdk/assert/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as s3 from '@aws-cdk/aws-s3';
 import { App, Duration, SecretValue, Stack } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
-import { testFutureBehavior } from 'cdk-build-tools/lib/feature-flag';
+import { testFutureBehavior } from '@aws-cdk/cdk-build-tools/lib/feature-flag';
 import * as cpactions from '../../lib';
 
 /* eslint-disable quote-props */
@@ -14,7 +14,7 @@ describe('', () => {
       const stack = new Stack();
       minimalPipeline(stack);
 
-      expect(stack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+      Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
         'Stages': [
           {
             'Name': 'Source',
@@ -53,7 +53,7 @@ describe('', () => {
       const stack = new Stack(app);
       minimalPipeline(stack);
 
-      expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         'PolicyDocument': {
           'Statement': [
             {
@@ -85,7 +85,7 @@ describe('', () => {
         accessControl: s3.BucketAccessControl.PUBLIC_READ_WRITE,
       });
 
-      expect(stack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+      Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
         'Stages': [
           {},
           {
@@ -113,7 +113,7 @@ describe('', () => {
         ],
       });
 
-      expect(stack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+      Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
         'Stages': [
           {},
           {
@@ -137,7 +137,7 @@ describe('', () => {
         objectKey: '/a/b/c',
       });
 
-      expect(stack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+      Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
         'Stages': [
           {},
           {
@@ -169,7 +169,7 @@ describe('', () => {
         bucket: deployBucket,
       });
 
-      expect(stack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+      Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
         Stages: [
           {},
           {

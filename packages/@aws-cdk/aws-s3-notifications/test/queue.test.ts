@@ -1,5 +1,4 @@
-import { arrayWith, SynthUtils } from '@aws-cdk/assert';
-import '@aws-cdk/assert/jest';
+import { Match, Template } from '@aws-cdk/assertions';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as sqs from '@aws-cdk/aws-sqs';
 import { Stack } from '@aws-cdk/core';
@@ -13,7 +12,7 @@ test('queues can be used as destinations', () => {
 
   bucket.addObjectRemovedNotification(new notif.SqsDestination(queue));
 
-  expect(stack).toHaveResource('AWS::SQS::QueuePolicy', {
+  Template.fromStack(stack).hasResourceProperties('AWS::SQS::QueuePolicy', {
     PolicyDocument: {
       Statement: [
         {
@@ -44,7 +43,7 @@ test('queues can be used as destinations', () => {
     ],
   });
 
-  expect(stack).toHaveResource('Custom::S3BucketNotifications', {
+  Template.fromStack(stack).hasResourceProperties('Custom::S3BucketNotifications', {
     BucketName: {
       Ref: 'Bucket83908E77',
     },
@@ -67,7 +66,11 @@ test('queues can be used as destinations', () => {
 
   // make sure the queue policy is added as a dependency to the bucket
   // notifications resource so it will be created first.
-  expect(SynthUtils.synthesize(stack).template.Resources.BucketNotifications8F2E257D.DependsOn).toEqual(['QueuePolicy25439813', 'Queue4A7E3555']);
+
+  const resources = Template.fromStack(stack).findResources('Custom::S3BucketNotifications');
+
+  expect(resources.BucketNotifications8F2E257D.DependsOn)
+    .toEqual(['QueuePolicy25439813', 'Queue4A7E3555']);
 });
 
 test('if the queue is encrypted with a custom kms key, the key resource policy is updated to allow s3 to read messages', () => {
@@ -77,9 +80,9 @@ test('if the queue is encrypted with a custom kms key, the key resource policy i
 
   bucket.addObjectCreatedNotification(new notif.SqsDestination(queue));
 
-  expect(stack).toHaveResourceLike('AWS::KMS::Key', {
+  Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
     KeyPolicy: {
-      Statement: arrayWith({
+      Statement: Match.arrayWith([{
         Action: [
           'kms:GenerateDataKey*',
           'kms:Decrypt',
@@ -89,7 +92,7 @@ test('if the queue is encrypted with a custom kms key, the key resource policy i
           Service: 's3.amazonaws.com',
         },
         Resource: '*',
-      }),
+      }]),
     },
   });
 });

@@ -1,5 +1,5 @@
-import '@aws-cdk/assert/jest';
-import { ABSENT } from '@aws-cdk/assert';
+import '@aws-cdk/assert-internal/jest';
+import { ABSENT } from '@aws-cdk/assert-internal';
 import { Stack } from '@aws-cdk/core';
 import { ResponseType, RestApi } from '../lib';
 

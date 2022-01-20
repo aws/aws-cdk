@@ -108,6 +108,7 @@ export class NetworkLoadBalancedEc2Service extends NetworkLoadBalancedServiceBas
         environment: taskImageOptions.environment,
         secrets: taskImageOptions.secrets,
         logging: logDriver,
+        dockerLabels: taskImageOptions.dockerLabels,
       });
       container.addPortMappings({
         containerPort: taskImageOptions.containerPort || 80,
@@ -131,6 +132,7 @@ export class NetworkLoadBalancedEc2Service extends NetworkLoadBalancedServiceBas
       enableECSManagedTags: props.enableECSManagedTags,
       cloudMapOptions: props.cloudMapOptions,
       deploymentController: props.deploymentController,
+      circuitBreaker: props.circuitBreaker,
     });
     this.addServiceAsTarget(this.service);
   }

@@ -5,7 +5,6 @@ import { Token } from '../token';
 /**
  * Customization properties for an Intrinsic token
  *
- * @experimental
  */
 export interface IntrinsicProps {
   /**
@@ -24,7 +23,6 @@ export interface IntrinsicProps {
  *
  * This class will disappear in a future release and should not be used.
  *
- * @experimental
  */
 export class Intrinsic implements IResolvable {
   /**

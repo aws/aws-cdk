@@ -4,6 +4,11 @@ export const BUCKET_READ_ACTIONS = [
   's3:List*',
 ];
 
+export const BUCKET_READ_METADATA_ACTIONS = [
+  's3:GetBucket*',
+  's3:List*',
+];
+
 export const LEGACY_BUCKET_PUT_ACTIONS = [
   's3:PutObject*',
   's3:Abort*',

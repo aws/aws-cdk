@@ -16,8 +16,8 @@ export function slugify(x: string): string {
 export function defaultSubnetName(type: SubnetType) {
   switch (type) {
     case SubnetType.PUBLIC: return 'Public';
-    case SubnetType.PRIVATE: return 'Private';
-    case SubnetType.ISOLATED: return 'Isolated';
+    case SubnetType.PRIVATE_WITH_NAT: return 'Private';
+    case SubnetType.PRIVATE_ISOLATED: return 'Isolated';
   }
 }
 

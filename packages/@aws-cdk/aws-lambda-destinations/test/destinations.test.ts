@@ -1,4 +1,4 @@
-import '@aws-cdk/assert/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as events from '@aws-cdk/aws-events';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as sns from '@aws-cdk/aws-sns';
@@ -28,7 +28,7 @@ test('event bus as destination', () => {
   });
 
   // THEN
-  expect(stack).toHaveResource('AWS::Lambda::EventInvokeConfig', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventInvokeConfig', {
     DestinationConfig: {
       OnSuccess: {
         Destination: {
@@ -41,7 +41,7 @@ test('event bus as destination', () => {
     },
   });
 
-  expect(stack).toHaveResource('AWS::IAM::Policy', {
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
     PolicyDocument: {
       Statement: [
         {
@@ -71,7 +71,7 @@ test('lambda as destination', () => {
   });
 
   // THEN
-  expect(stack).toHaveResource('AWS::Lambda::EventInvokeConfig', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventInvokeConfig', {
     DestinationConfig: {
       OnSuccess: {
         Destination: {
@@ -84,7 +84,7 @@ test('lambda as destination', () => {
     },
   });
 
-  expect(stack).toHaveResource('AWS::IAM::Policy', {
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
     PolicyDocument: {
       Statement: [
         {
@@ -116,7 +116,7 @@ test('lambda payload as destination', () => {
   });
 
   // THEN
-  expect(stack).toHaveResource('AWS::Lambda::EventInvokeConfig', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventInvokeConfig', {
     DestinationConfig: {
       OnSuccess: {
         Destination: {
@@ -165,7 +165,7 @@ test('lambda payload as destination', () => {
     },
   });
 
-  expect(stack).toHaveResource('AWS::IAM::Policy', {
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
     PolicyDocument: {
       Statement: [
         {
@@ -197,7 +197,7 @@ test('lambda payload as destination', () => {
     },
   });
 
-  expect(stack).toHaveResource('AWS::Events::Rule', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
     EventPattern: {
       'detail-type': [
         'Lambda Function Invocation Result - Success',
@@ -236,7 +236,7 @@ test('lambda payload as destination', () => {
     ],
   });
 
-  expect(stack).toHaveResource('AWS::Events::Rule', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
     EventPattern: {
       'detail-type': [
         'Lambda Function Invocation Result - Failure',
@@ -287,7 +287,7 @@ test('sns as destination', () => {
   });
 
   // THEN
-  expect(stack).toHaveResource('AWS::Lambda::EventInvokeConfig', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventInvokeConfig', {
     DestinationConfig: {
       OnSuccess: {
         Destination: {
@@ -297,7 +297,7 @@ test('sns as destination', () => {
     },
   });
 
-  expect(stack).toHaveResource('AWS::IAM::Policy', {
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
     PolicyDocument: {
       Statement: [
         {
@@ -324,7 +324,7 @@ test('sqs as destination', () => {
   });
 
   // THEN
-  expect(stack).toHaveResource('AWS::Lambda::EventInvokeConfig', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventInvokeConfig', {
     DestinationConfig: {
       OnSuccess: {
         Destination: {
@@ -337,7 +337,7 @@ test('sqs as destination', () => {
     },
   });
 
-  expect(stack).toHaveResource('AWS::IAM::Policy', {
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
     PolicyDocument: {
       Statement: [
         {

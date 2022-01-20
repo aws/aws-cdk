@@ -1,4 +1,4 @@
-import '@aws-cdk/assert/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as signer from '@aws-cdk/aws-signer';
 import * as cdk from '@aws-cdk/core';
 import * as lambda from '../lib';
@@ -18,7 +18,7 @@ describe('code signing config', () => {
       signingProfiles: [signingProfile],
     });
 
-    expect(stack).toHaveResource('AWS::Lambda::CodeSigningConfig', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::CodeSigningConfig', {
       AllowedPublishers: {
         SigningProfileVersionArns: [{
           'Fn::GetAtt': [
@@ -28,7 +28,7 @@ describe('code signing config', () => {
         }],
       },
       CodeSigningPolicies: {
-        UntrustedArtifactOnDeployment: lambda.UntrustedArtifactOnDeployment.WARN,
+        UntrustedArtifactOnDeployment: 'Warn',
       },
     });
   });
@@ -41,7 +41,7 @@ describe('code signing config', () => {
       signingProfiles: [signingProfile1, signingProfile2, signingProfile3],
     });
 
-    expect(stack).toHaveResource('AWS::Lambda::CodeSigningConfig', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::CodeSigningConfig', {
       AllowedPublishers: {
         SigningProfileVersionArns: [
           {
@@ -76,9 +76,9 @@ describe('code signing config', () => {
       description: 'test description',
     });
 
-    expect(stack).toHaveResource('AWS::Lambda::CodeSigningConfig', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::CodeSigningConfig', {
       CodeSigningPolicies: {
-        UntrustedArtifactOnDeployment: lambda.UntrustedArtifactOnDeployment.ENFORCE,
+        UntrustedArtifactOnDeployment: 'Enforce',
       },
       Description: 'test description',
     });
@@ -91,7 +91,7 @@ describe('code signing config', () => {
 
     expect(codeSigningConfig.codeSigningConfigArn).toBe(codeSigningConfigArn);
     expect(codeSigningConfig.codeSigningConfigId).toBe(codeSigningConfigId);
-    expect(stack).toCountResources('AWS::Lambda::CodeSigningConfig', 0);
+    Template.fromStack(stack).resourceCountIs('AWS::Lambda::CodeSigningConfig', 0);
   });
 
   test('fail import with malformed code signing config arn', () => {

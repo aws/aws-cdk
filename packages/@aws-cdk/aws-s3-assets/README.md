@@ -3,13 +3,7 @@
 
 ---
 
-![cdk-constructs: Experimental](https://img.shields.io/badge/cdk--constructs-experimental-important.svg?style=for-the-badge)
-
-> The APIs of higher level constructs in this module are experimental and under active development.
-> They are subject to non-backward compatible changes or removal in any future version. These are
-> not subject to the [Semantic Versioning](https://semver.org/) model and breaking changes will be
-> announced in the release notes. This means that while you may use them, you may need to update
-> your source code when upgrading to a newer version of this package.
+![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
 
@@ -101,18 +95,21 @@ method `tryBundle()` which should return `true` if local bundling was performed.
 If `false` is returned, docker bundling will be done:
 
 ```ts
+class MyBundle implements ILocalBundling {
+  public tryBundle(outputDir: string, options: BundlingOptions) {
+    const canRunLocally = true // replace with actual logic
+    if (canRunLocally) {
+      // perform local bundling here
+      return true;
+    }
+    return false; 
+  }
+}
+
 new assets.Asset(this, 'BundledAsset', {
   path: '/path/to/asset',
   bundling: {
-    local: {
-      tryBundle(outputDir: string, options: BundlingOptions) {
-        if (canRunLocally) {
-          // perform local bundling here
-          return true;
-        }
-        return false;
-      },
-    },
+    local: new MyBundle(),
     // Docker bundling fallback
     image: DockerImage.fromRegistry('alpine'),
     entrypoint: ['/bin/sh', '-c'],

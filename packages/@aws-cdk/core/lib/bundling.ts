@@ -2,22 +2,22 @@ import { spawnSync, SpawnSyncOptions } from 'child_process';
 import * as crypto from 'crypto';
 import { isAbsolute, join } from 'path';
 import { FileSystem } from './fs';
+import { quiet, reset } from './private/jsii-deprecated';
 
 /**
  * Bundling options
  *
- * @experimental
  */
 export interface BundlingOptions {
   /**
    * The Docker image where the command will run.
    */
-  readonly image: BundlingDockerImage;
+  readonly image: DockerImage;
 
   /**
    * The entrypoint to run in the Docker container.
    *
-   * @example ['/bin/sh', '-c']
+   * Example value: `['/bin/sh', '-c']`
    *
    * @see https://docs.docker.com/engine/reference/builder/#entrypoint
    *
@@ -28,7 +28,7 @@ export interface BundlingOptions {
   /**
    * The command to run in the Docker container.
    *
-   * @example ['npm', 'install']
+   * Example value: `['npm', 'install']`
    *
    * @see https://docs.docker.com/engine/reference/run/
    *
@@ -77,7 +77,6 @@ export interface BundlingOptions {
    *
    * @default - bundling will only be performed in a Docker container
    *
-   * @experimental
    */
   readonly local?: ILocalBundling;
 
@@ -86,15 +85,21 @@ export interface BundlingOptions {
    *
    * @default BundlingOutput.AUTO_DISCOVER
    *
-   * @experimental
    */
   readonly outputType?: BundlingOutput;
+
+  /**
+   * [Security configuration](https://docs.docker.com/engine/reference/run/#security-configuration)
+   * when running the docker container.
+   *
+   * @default - no security options
+   */
+  readonly securityOpt?: string;
 }
 
 /**
  * The type of output that a bundling operation is producing.
  *
- * @experimental
  */
 export enum BundlingOutput {
   /**
@@ -120,7 +125,6 @@ export enum BundlingOutput {
 /**
  * Local bundling
  *
- * @experimental
  */
 export interface ILocalBundling {
   /**
@@ -146,7 +150,7 @@ export class BundlingDockerImage {
    * @param image the image name
    */
   public static fromRegistry(image: string) {
-    return new BundlingDockerImage(image);
+    return new DockerImage(image);
   }
 
   /**
@@ -157,34 +161,8 @@ export class BundlingDockerImage {
    *
    * @deprecated use DockerImage.fromBuild()
    */
-  public static fromAsset(path: string, options: DockerBuildOptions = {}) {
-    const buildArgs = options.buildArgs || {};
-
-    if (options.file && isAbsolute(options.file)) {
-      throw new Error(`"file" must be relative to the docker build directory. Got ${options.file}`);
-    }
-
-    // Image tag derived from path and build options
-    const input = JSON.stringify({ path, ...options });
-    const tagHash = crypto.createHash('sha256').update(input).digest('hex');
-    const tag = `cdk-${tagHash}`;
-
-    const dockerArgs: string[] = [
-      'build', '-t', tag,
-      ...(options.file ? ['-f', join(path, options.file)] : []),
-      ...flatten(Object.entries(buildArgs).map(([k, v]) => ['--build-arg', `${k}=${v}`])),
-      path,
-    ];
-
-    dockerExec(dockerArgs);
-
-    // Fingerprints the directory containing the Dockerfile we're building and
-    // differentiates the fingerprint based on build arguments. We do this so
-    // we can provide a stable image hash. Otherwise, the image ID will be
-    // different every time the Docker layer cache is cleared, due primarily to
-    // timestamps.
-    const hash = FileSystem.fingerprint(path, { extraHash: JSON.stringify(options) });
-    return new BundlingDockerImage(tag, hash);
+  public static fromAsset(path: string, options: DockerBuildOptions = {}): BundlingDockerImage {
+    return DockerImage.fromBuild(path, options);
   }
 
   /** @param image The Docker image */
@@ -217,10 +195,13 @@ export class BundlingDockerImage {
 
     const dockerArgs: string[] = [
       'run', '--rm',
+      ...options.securityOpt
+        ? ['--security-opt', options.securityOpt]
+        : [],
       ...options.user
         ? ['-u', options.user]
         : [],
-      ...flatten(volumes.map(v => ['-v', `${v.hostPath}:${v.containerPath}:${v.consistency ?? DockerVolumeConsistency.DELEGATED}`])),
+      ...flatten(volumes.map(v => ['-v', `${v.hostPath}:${v.containerPath}:${isSeLinux() ? 'z,' : ''}${v.consistency ?? DockerVolumeConsistency.DELEGATED}`])),
       ...flatten(Object.entries(environment).map(([k, v]) => ['--env', `${k}=${v}`])),
       ...options.workingDirectory
         ? ['-w', options.workingDirectory]
@@ -276,7 +257,111 @@ export class DockerImage extends BundlingDockerImage {
    * @param options Docker build options
    */
   public static fromBuild(path: string, options: DockerBuildOptions = {}) {
-    return BundlingDockerImage.fromAsset(path, options);
+    const buildArgs = options.buildArgs || {};
+
+    if (options.file && isAbsolute(options.file)) {
+      throw new Error(`"file" must be relative to the docker build directory. Got ${options.file}`);
+    }
+
+    // Image tag derived from path and build options
+    const input = JSON.stringify({ path, ...options });
+    const tagHash = crypto.createHash('sha256').update(input).digest('hex');
+    const tag = `cdk-${tagHash}`;
+
+    const dockerArgs: string[] = [
+      'build', '-t', tag,
+      ...(options.file ? ['-f', join(path, options.file)] : []),
+      ...(options.platform ? ['--platform', options.platform] : []),
+      ...flatten(Object.entries(buildArgs).map(([k, v]) => ['--build-arg', `${k}=${v}`])),
+      path,
+    ];
+
+    dockerExec(dockerArgs);
+
+    // Fingerprints the directory containing the Dockerfile we're building and
+    // differentiates the fingerprint based on build arguments. We do this so
+    // we can provide a stable image hash. Otherwise, the image ID will be
+    // different every time the Docker layer cache is cleared, due primarily to
+    // timestamps.
+    const hash = FileSystem.fingerprint(path, { extraHash: JSON.stringify(options) });
+    return new DockerImage(tag, hash);
+  }
+
+  /**
+   * Reference an image on DockerHub or another online registry.
+   *
+   * @param image the image name
+   */
+  public static fromRegistry(image: string) {
+    return new DockerImage(image);
+  }
+
+  /** The Docker image */
+  public readonly image: string;
+
+  constructor(image: string, _imageHash?: string) {
+    // It is preferrable for the deprecated class to inherit a non-deprecated class.
+    // However, in this case, the opposite has occurred which is incompatible with
+    // a deprecation feature. See https://github.com/aws/jsii/issues/3102.
+    const deprecated = quiet();
+
+    super(image, _imageHash);
+
+    reset(deprecated);
+    this.image = image;
+  }
+
+  /**
+   * Provides a stable representation of this image for JSON serialization.
+   *
+   * @return The overridden image name if set or image hash name in that order
+   */
+  public toJSON() {
+    // It is preferrable for the deprecated class to inherit a non-deprecated class.
+    // However, in this case, the opposite has occurred which is incompatible with
+    // a deprecation feature. See https://github.com/aws/jsii/issues/3102.
+    const deprecated = quiet();
+
+    const json = super.toJSON();
+
+    reset(deprecated);
+    return json;
+  }
+
+  /**
+   * Runs a Docker image
+   */
+  public run(options: DockerRunOptions = {}) {
+    // It is preferrable for the deprecated class to inherit a non-deprecated class.
+    // However, in this case, the opposite has occurred which is incompatible with
+    // a deprecation feature. See https://github.com/aws/jsii/issues/3102.
+    const deprecated = quiet();
+
+    const result = super.run(options);
+
+    reset(deprecated);
+    return result;
+  }
+
+  /**
+   * Copies a file or directory out of the Docker image to the local filesystem.
+   *
+   * If `outputPath` is omitted the destination path is a temporary directory.
+   *
+   * @param imagePath the path in the Docker image
+   * @param outputPath the destination path for the copy operation
+   * @returns the destination path
+   */
+  public cp(imagePath: string, outputPath?: string): string {
+    // It is preferrable for the deprecated class to inherit a non-deprecated class.
+    // However, in this case, the opposite has occurred which is incompatible with
+    // a deprecation feature. See https://github.com/aws/jsii/issues/3102.
+    const deprecated = quiet();
+
+    const result = super.cp(imagePath, outputPath);
+
+    reset(deprecated);
+    return result;
   }
 }
 
@@ -366,6 +451,14 @@ export interface DockerRunOptions {
    * @default - root or image default
    */
   readonly user?: string;
+
+  /**
+   * [Security configuration](https://docs.docker.com/engine/reference/run/#security-configuration)
+   * when running the docker container.
+   *
+   * @default - no security options
+   */
+  readonly securityOpt?: string;
 }
 
 /**
@@ -385,6 +478,15 @@ export interface DockerBuildOptions {
    * @default `Dockerfile`
    */
   readonly file?: string;
+
+  /**
+   * Set platform if server is multi-platform capable. _Requires Docker Engine API v1.38+_.
+   *
+   * Example value: `linux/amd64`
+   *
+   * @default - no platform specified
+   */
+  readonly platform?: string;
 }
 
 function flatten(x: string[][]) {
@@ -413,4 +515,29 @@ function dockerExec(args: string[], options?: SpawnSyncOptions) {
   }
 
   return proc;
+}
+
+function isSeLinux() : boolean {
+  if (process.platform != 'linux') {
+    return false;
+  }
+  const prog = 'selinuxenabled';
+  const proc = spawnSync(prog, [], {
+    stdio: [ // show selinux status output
+      'pipe', // get value of stdio
+      process.stderr, // redirect stdout to stderr
+      'inherit', // inherit stderr
+    ],
+  });
+  if (proc.error) {
+    // selinuxenabled not a valid command, therefore not enabled
+    return false;
+  }
+  if (proc.status == 0) {
+    // selinux enabled
+    return true;
+  } else {
+    // selinux not enabled
+    return false;
+  }
 }

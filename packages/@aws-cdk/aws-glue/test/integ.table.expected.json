@@ -433,7 +433,6 @@
           "Statement": [
             {
               "Action": [
-                "glue:BatchDeletePartition",
                 "glue:BatchGetPartition",
                 "glue:GetPartition",
                 "glue:GetPartitions",
@@ -511,7 +510,6 @@
             },
             {
               "Action": [
-                "glue:BatchDeletePartition",
                 "glue:BatchGetPartition",
                 "glue:GetPartition",
                 "glue:GetPartitions",
@@ -624,7 +622,6 @@
           "Statement": [
             {
               "Action": [
-                "glue:BatchDeletePartition",
                 "glue:BatchGetPartition",
                 "glue:GetPartition",
                 "glue:GetPartitions",
@@ -702,7 +699,6 @@
             },
             {
               "Action": [
-                "glue:BatchDeletePartition",
                 "glue:BatchGetPartition",
                 "glue:GetPartition",
                 "glue:GetPartitions",
@@ -747,7 +743,6 @@
             },
             {
               "Action": [
-                "glue:BatchDeletePartition",
                 "glue:BatchGetPartition",
                 "glue:GetPartition",
                 "glue:GetPartitions",

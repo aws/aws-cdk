@@ -1,124 +1,123 @@
-import { expect, haveResourceLike } from '@aws-cdk/assert';
+import { Template } from '@aws-cdk/assertions';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
-import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as cpactions from '../../lib';
 
-nodeunitShim({
-  'ECS deploy Action': {
-    'throws an exception if neither inputArtifact nor imageFile were provided'(test: Test) {
+describe('ecs deploy action', () => {
+  describe('ECS deploy Action', () => {
+    test('throws an exception if neither inputArtifact nor imageFile were provided', () => {
       const service = anyEcsService();
 
-      test.throws(() => {
+      expect(() => {
         new cpactions.EcsDeployAction({
           actionName: 'ECS',
           service,
         });
-      }, /one of 'input' or 'imageFile' is required/);
+      }).toThrow(/one of 'input' or 'imageFile' is required/);
 
-      test.done();
-    },
 
-    'can be created just by specifying the inputArtifact'(test: Test) {
+    });
+
+    test('can be created just by specifying the inputArtifact', () => {
       const service = anyEcsService();
       const artifact = new codepipeline.Artifact('Artifact');
 
-      test.doesNotThrow(() => {
+      expect(() => {
         new cpactions.EcsDeployAction({
           actionName: 'ECS',
           service,
           input: artifact,
         });
-      });
+      }).not.toThrow();
 
-      test.done();
-    },
 
-    'can be created just by specifying the imageFile'(test: Test) {
+    });
+
+    test('can be created just by specifying the imageFile', () => {
       const service = anyEcsService();
       const artifact = new codepipeline.Artifact('Artifact');
 
-      test.doesNotThrow(() => {
+      expect(() => {
         new cpactions.EcsDeployAction({
           actionName: 'ECS',
           service,
           imageFile: artifact.atPath('imageFile.json'),
         });
-      });
+      }).not.toThrow();
 
-      test.done();
-    },
 
-    'throws an exception if both inputArtifact and imageFile were provided'(test: Test) {
+    });
+
+    test('throws an exception if both inputArtifact and imageFile were provided', () => {
       const service = anyEcsService();
       const artifact = new codepipeline.Artifact('Artifact');
 
-      test.throws(() => {
+      expect(() => {
         new cpactions.EcsDeployAction({
           actionName: 'ECS',
           service,
           input: artifact,
           imageFile: artifact.atPath('file.json'),
         });
-      }, /one of 'input' or 'imageFile' can be provided/);
+      }).toThrow(/one of 'input' or 'imageFile' can be provided/);
 
-      test.done();
-    },
 
-    'can be created with deploymentTimeout between 1-60 minutes'(test: Test) {
+    });
+
+    test('can be created with deploymentTimeout between 1-60 minutes', () => {
       const service = anyEcsService();
       const artifact = new codepipeline.Artifact('Artifact');
 
-      test.doesNotThrow(() => {
+      expect(() => {
         new cpactions.EcsDeployAction({
           actionName: 'ECS',
           service,
           input: artifact,
           deploymentTimeout: cdk.Duration.minutes(30),
         });
-      });
+      }).not.toThrow();
 
-      test.done();
-    },
 
-    'throws an exception if deploymentTimeout is out of bounds'(test: Test) {
+    });
+
+    test('throws an exception if deploymentTimeout is out of bounds', () => {
       const service = anyEcsService();
       const artifact = new codepipeline.Artifact('Artifact');
 
-      test.throws(() => {
+      expect(() => {
         new cpactions.EcsDeployAction({
           actionName: 'ECS',
           service,
           input: artifact,
           deploymentTimeout: cdk.Duration.minutes(61),
         });
-      }, /timeout must be between 1 and 60 minutes/);
+      }).toThrow(/timeout must be between 1 and 60 minutes/);
 
-      test.throws(() => {
+      expect(() => {
         new cpactions.EcsDeployAction({
           actionName: 'ECS',
           service,
           input: artifact,
           deploymentTimeout: cdk.Duration.minutes(0),
         });
-      }, /timeout must be between 1 and 60 minutes/);
+      }).toThrow(/timeout must be between 1 and 60 minutes/);
 
-      test.throws(() => {
+      expect(() => {
         new cpactions.EcsDeployAction({
           actionName: 'ECS',
           service,
           input: artifact,
           deploymentTimeout: cdk.Duration.seconds(30),
         });
-      }, /cannot be converted into a whole number/);
+      }).toThrow(/cannot be converted into a whole number/);
 
-      test.done();
-    },
 
-    "sets the target service as the action's backing resource"(test: Test) {
+    });
+
+    test("sets the target service as the action's backing resource", () => {
       const service = anyEcsService();
       const artifact = new codepipeline.Artifact('Artifact');
 
@@ -128,12 +127,12 @@ nodeunitShim({
         input: artifact,
       });
 
-      test.equal(action.actionProperties.resource, service);
+      expect(action.actionProperties.resource).toEqual(service);
 
-      test.done();
-    },
 
-    'can be created by existing service'(test: Test) {
+    });
+
+    test('can be created by existing service', () => {
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'Vpc');
       const service = ecs.FargateService.fromFargateServiceAttributes(stack, 'FargateService', {
@@ -173,7 +172,7 @@ nodeunitShim({
         ],
       });
 
-      expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+      Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
         Stages: [
           {},
           {
@@ -193,11 +192,11 @@ nodeunitShim({
             ],
           },
         ],
-      }));
+      });
 
-      test.done();
-    },
-  },
+
+    });
+  });
 });
 
 function anyEcsService(): ecs.FargateService {

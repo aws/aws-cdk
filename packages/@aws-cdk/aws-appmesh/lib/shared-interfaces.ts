@@ -1,6 +1,7 @@
 import * as cdk from '@aws-cdk/core';
 import { CfnVirtualGateway, CfnVirtualNode } from './appmesh.generated';
-import { ClientPolicy } from './client-policy';
+import { renderTlsClientPolicy } from './private/utils';
+import { TlsClientPolicy } from './tls-client-policy';
 import { IVirtualService } from './virtual-service';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
@@ -59,6 +60,8 @@ export interface TcpTimeout {
 
 /**
  * Enum of supported AppMesh protocols
+ *
+ * @deprecated not for use outside package
  */
 export enum Protocol {
   HTTP = 'http',
@@ -68,60 +71,29 @@ export enum Protocol {
 }
 
 /**
- * Properties used to define healthchecks when creating virtual nodes.
- * All values have a default if only specified as {} when creating.
- * If property not set, then no healthchecks will be defined.
+ * Represents the outlier detection for a listener.
  */
-export interface HealthCheck {
+export interface OutlierDetection {
   /**
-   * Number of successful attempts before considering the node UP
-   *
-   * @default 2
+   * The base amount of time for which a host is ejected.
    */
-  readonly healthyThreshold?: number;
+  readonly baseEjectionDuration: cdk.Duration;
 
   /**
-   * Interval in milliseconds to re-check
-   *
-   * @default 5 seconds
+   * The time interval between ejection sweep analysis.
    */
-  readonly interval?: cdk.Duration;
+  readonly interval: cdk.Duration;
 
   /**
-   * The path where the application expects any health-checks, this can also be the application path.
-   *
-   * @default /
+   * Maximum percentage of hosts in load balancing pool for upstream service that can be ejected. Will eject at
+   * least one host regardless of the value.
    */
-  readonly path?: string;
+  readonly maxEjectionPercent: number;
 
   /**
-   * The TCP port number for the healthcheck
-   *
-   * @default - same as corresponding port mapping
+   * Number of consecutive 5xx errors required for ejection.
    */
-  readonly port?: number;
-
-  /**
-   * The protocol to use for the healthcheck, for convinience a const enum has been defined.
-   * Protocol.HTTP or Protocol.TCP
-   *
-   * @default - same as corresponding port mapping
-   */
-  readonly protocol?: Protocol;
-
-  /**
-   * Timeout in milli-seconds for the healthcheck to be considered a fail.
-   *
-   * @default 2 seconds
-   */
-  readonly timeout?: cdk.Duration;
-
-  /**
-   * Number of failed attempts before considering the node DOWN.
-   *
-   * @default 2
-   */
-  readonly unhealthyThreshold?: number;
+  readonly maxServerErrors: number;
 }
 
 /**
@@ -201,11 +173,11 @@ class FileAccessLog extends AccessLog {
  */
 export interface BackendDefaults {
   /**
-   * Client policy for backend defaults
+   * TLS properties for Client policy for backend defaults
    *
-   * @default none
+   * @default - none
    */
-  readonly clientPolicy?: ClientPolicy;
+  readonly tlsClientPolicy?: TlsClientPolicy;
 }
 
 /**
@@ -214,11 +186,11 @@ export interface BackendDefaults {
 export interface VirtualServiceBackendOptions {
 
   /**
-   * Client policy for the backend
+   * TLS properties for  Client policy for the backend
    *
-   * @default none
+   * @default - none
    */
-  readonly clientPolicy?: ClientPolicy;
+  readonly tlsClientPolicy?: TlsClientPolicy;
 }
 
 /**
@@ -240,7 +212,7 @@ export abstract class Backend {
    * Construct a Virtual Service backend
    */
   public static virtualService(virtualService: IVirtualService, props: VirtualServiceBackendOptions = {}): Backend {
-    return new VirtualServiceBackend(virtualService, props.clientPolicy);
+    return new VirtualServiceBackend(virtualService, props.tlsClientPolicy);
   }
 
   /**
@@ -255,21 +227,87 @@ export abstract class Backend {
 class VirtualServiceBackend extends Backend {
 
   constructor (private readonly virtualService: IVirtualService,
-    private readonly clientPolicy: ClientPolicy | undefined) {
+    private readonly tlsClientPolicy: TlsClientPolicy | undefined) {
     super();
   }
 
   /**
    * Return config for a Virtual Service backend
    */
-  public bind(_scope: Construct): BackendConfig {
+  public bind(scope: Construct): BackendConfig {
     return {
       virtualServiceBackend: {
         virtualService: {
-          virtualServiceName: this.virtualService.virtualServiceName,
-          clientPolicy: this.clientPolicy?.bind(_scope).clientPolicy,
+          /**
+           * We want to use the name of the Virtual Service here directly instead of
+           * a `{ 'Fn::GetAtt' }` CFN expression. This avoids a circular dependency in
+           * the case where this Virtual Node is the Virtual Service's provider.
+           */
+          virtualServiceName: cdk.Token.isUnresolved(this.virtualService.virtualServiceName)
+            ? (this.virtualService as any).physicalName
+            : this.virtualService.virtualServiceName,
+          clientPolicy: this.tlsClientPolicy
+            ? {
+              tls: renderTlsClientPolicy(scope, this.tlsClientPolicy),
+            }
+            : undefined,
         },
       },
     };
   }
+}
+
+/**
+ * Connection pool properties for HTTP listeners
+ */
+export interface HttpConnectionPool {
+  /**
+   * The maximum connections in the pool
+   *
+   * @default - none
+   */
+  readonly maxConnections: number;
+
+  /**
+   * The maximum pending requests in the pool
+   *
+   * @default - none
+   */
+  readonly maxPendingRequests: number;
+}
+
+/**
+ * Connection pool properties for TCP listeners
+ */
+export interface TcpConnectionPool {
+  /**
+   * The maximum connections in the pool
+   *
+   * @default - none
+   */
+  readonly maxConnections: number;
+}
+
+/**
+ * Connection pool properties for gRPC listeners
+ */
+export interface GrpcConnectionPool {
+  /**
+   * The maximum requests in the pool
+   *
+   * @default - none
+   */
+  readonly maxRequests: number;
+}
+
+/**
+ * Connection pool properties for HTTP2 listeners
+ */
+export interface Http2ConnectionPool {
+  /**
+   * The maximum requests in the pool
+   *
+   * @default - none
+   */
+  readonly maxRequests: number;
 }

@@ -1,6 +1,9 @@
-import { green } from 'colors/safe';
+import { inspect } from 'util';
+import * as chalk from 'chalk';
 
 import { CredentialProviderSource } from './api/aws-auth/credentials';
+import { registerContextProvider } from './context-providers';
+import { ContextProviderPlugin, isContextProviderPlugin } from './context-providers/provider';
 import { error } from './logging';
 
 /**
@@ -17,7 +20,6 @@ import { error } from './logging';
  *     }
  *   }
  *
- * @experimental
  */
 export interface Plugin {
   /**
@@ -38,7 +40,6 @@ export interface Plugin {
 /**
  * A utility to manage plug-ins.
  *
- * @experimental
  */
 export class PluginHost {
   public static instance = new PluginHost();
@@ -66,12 +67,12 @@ export class PluginHost {
       const plugin = require(moduleSpec);
       /* eslint-enable */
       if (!isPlugin(plugin)) {
-        error(`Module ${green(moduleSpec)} is not a valid plug-in, or has an unsupported version.`);
+        error(`Module ${chalk.green(moduleSpec)} is not a valid plug-in, or has an unsupported version.`);
         throw new Error(`Module ${moduleSpec} does not define a valid plug-in.`);
       }
       if (plugin.init) { plugin.init(PluginHost.instance); }
     } catch (e) {
-      error(`Unable to load ${green(moduleSpec)}: ${e.stack}`);
+      error(`Unable to load ${chalk.green(moduleSpec)}: ${e.stack}`);
       throw new Error(`Unable to load plug-in: ${moduleSpec}`);
     }
 
@@ -87,5 +88,30 @@ export class PluginHost {
    */
   public registerCredentialProviderSource(source: CredentialProviderSource) {
     this.credentialProviderSources.push(source);
+  }
+
+  /**
+   * (EXPERIMENTAL) Allow plugins to register context providers
+   *
+   * Context providers are objects with the following method:
+   *
+   * ```ts
+   *   getValue(args: {[key: string]: any}): Promise<any>;
+   * ```
+   *
+   * Currently, they cannot reuse the CDK's authentication mechanisms, so they
+   * must be prepared to either not make AWS calls or use their own source of
+   * AWS credentials.
+   *
+   * This feature is experimental, and only intended to be used internally at Amazon
+   * as a trial.
+   *
+   * @experimental
+   */
+  public registerContextProviderAlpha(providerName: string, provider: ContextProviderPlugin) {
+    if (!isContextProviderPlugin(provider)) {
+      throw new Error(`Object you gave me does not look like a ContextProviderPlugin: ${inspect(provider)}`);
+    }
+    registerContextProvider(providerName, provider);
   }
 }

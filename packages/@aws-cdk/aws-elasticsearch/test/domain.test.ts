@@ -1,14 +1,13 @@
 /* eslint-disable jest/expect-expect */
-import '@aws-cdk/assert/jest';
-import * as assert from '@aws-cdk/assert';
+import { Match, Template } from '@aws-cdk/assertions';
 import * as acm from '@aws-cdk/aws-certificatemanager';
 import { Metric, Statistic } from '@aws-cdk/aws-cloudwatch';
-import { Subnet, Vpc, EbsDeviceVolumeType } from '@aws-cdk/aws-ec2';
+import { Vpc, EbsDeviceVolumeType, SecurityGroup } from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as logs from '@aws-cdk/aws-logs';
 import * as route53 from '@aws-cdk/aws-route53';
-import { App, Stack, Duration, SecretValue } from '@aws-cdk/core';
+import { App, Stack, Duration, SecretValue, CfnParameter, Token } from '@aws-cdk/core';
 import { Domain, ElasticsearchVersion } from '../lib';
 
 let app: App;
@@ -30,14 +29,90 @@ const readWriteActions = [
   ...writeActions,
 ];
 
+test('connections throws if domain is placed inside a vpc', () => {
+
+  expect(() => {
+    new Domain(stack, 'Domain', {
+      version: ElasticsearchVersion.V7_1,
+    }).connections;
+  }).toThrowError("Connections are only available on VPC enabled domains. Use the 'vpc' property to place a domain inside a VPC");
+});
+
+test('subnets and security groups can be provided when vpc is used', () => {
+
+  const vpc = new Vpc(stack, 'Vpc');
+  const securityGroup = new SecurityGroup(stack, 'CustomSecurityGroup', {
+    vpc,
+  });
+  const domain = new Domain(stack, 'Domain', {
+    version: ElasticsearchVersion.V7_10,
+    vpc,
+    vpcSubnets: [{ subnets: [vpc.privateSubnets[0]] }],
+    securityGroups: [securityGroup],
+  });
+
+  expect(domain.connections.securityGroups[0].securityGroupId).toEqual(securityGroup.securityGroupId);
+  Template.fromStack(stack).hasResourceProperties('AWS::Elasticsearch::Domain', {
+    VPCOptions: {
+      SecurityGroupIds: [
+        {
+          'Fn::GetAtt': [
+            'CustomSecurityGroupE5E500E5',
+            'GroupId',
+          ],
+        },
+      ],
+      SubnetIds: [
+        {
+          Ref: 'VpcPrivateSubnet1Subnet536B997A',
+        },
+      ],
+    },
+  });
+});
+
+test('default subnets and security group when vpc is used', () => {
+
+  const vpc = new Vpc(stack, 'Vpc');
+  const domain = new Domain(stack, 'Domain', {
+    version: ElasticsearchVersion.V7_10,
+    vpc,
+  });
+
+  expect(stack.resolve(domain.connections.securityGroups[0].securityGroupId)).toEqual({ 'Fn::GetAtt': ['DomainSecurityGroup48AA5FD6', 'GroupId'] });
+  Template.fromStack(stack).hasResourceProperties('AWS::Elasticsearch::Domain', {
+    VPCOptions: {
+      SecurityGroupIds: [
+        {
+          'Fn::GetAtt': [
+            'DomainSecurityGroup48AA5FD6',
+            'GroupId',
+          ],
+        },
+      ],
+      SubnetIds: [
+        {
+          Ref: 'VpcPrivateSubnet1Subnet536B997A',
+        },
+        {
+          Ref: 'VpcPrivateSubnet2Subnet3788AAA1',
+        },
+        {
+          Ref: 'VpcPrivateSubnet3SubnetF258B56E',
+        },
+      ],
+    },
+  });
+});
+
 test('default removalpolicy is retain', () => {
   new Domain(stack, 'Domain', {
     version: ElasticsearchVersion.V7_1,
   });
 
-  expect(stack).toHaveResource('AWS::Elasticsearch::Domain', {
+  Template.fromStack(stack).hasResource('AWS::Elasticsearch::Domain', {
     DeletionPolicy: 'Retain',
-  }, assert.ResourcePart.CompleteDefinition);
+  });
 });
 
 test('grants kms permissions if needed', () => {
@@ -73,7 +148,7 @@ test('grants kms permissions if needed', () => {
     Version: '2012-10-17',
   };
 
-  const resources = assert.expect(stack).value.Resources;
+  const resources = Template.fromStack(stack).toJSON().Resources;
   expect(resources.AWS679f53fac002430cb0da5b7982bd2287ServiceRoleDefaultPolicyD28E1A5E.Properties.PolicyDocument).toStrictEqual(expectedPolicy);
 
 });
@@ -81,7 +156,7 @@ test('grants kms permissions if needed', () => {
 test('minimal example renders correctly', () => {
   new Domain(stack, 'Domain', { version: ElasticsearchVersion.V7_1 });
 
-  expect(stack).toHaveResource('AWS::Elasticsearch::Domain', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Elasticsearch::Domain', {
     CognitoOptions: {
       Enabled: false,
     },
@@ -101,10 +176,10 @@ test('minimal example renders correctly', () => {
       Enabled: false,
     },
     LogPublishingOptions: {
-      AUDIT_LOGS: assert.ABSENT,
-      ES_APPLICATION_LOGS: assert.ABSENT,
-      SEARCH_SLOW_LOGS: assert.ABSENT,
-      INDEX_SLOW_LOGS: assert.ABSENT,
+      AUDIT_LOGS: Match.absent(),
+      ES_APPLICATION_LOGS: Match.absent(),
+      SEARCH_SLOW_LOGS: Match.absent(),
+      INDEX_SLOW_LOGS: Match.absent(),
     },
     NodeToNodeEncryptionOptions: {
       Enabled: false,
@@ -118,11 +193,11 @@ test('can enable version upgrade update policy', () => {
     enableVersionUpgrade: true,
   });
 
-  expect(stack).toHaveResource('AWS::Elasticsearch::Domain', {
+  Template.fromStack(stack).hasResource('AWS::Elasticsearch::Domain', {
     UpdatePolicy: {
       EnableVersionUpgrade: true,
     },
-  }, assert.ResourcePart.CompleteDefinition);
+  });
 });
 
 describe('UltraWarm instances', () => {
@@ -136,7 +211,7 @@ describe('UltraWarm instances', () => {
       },
     });
 
-    expect(stack).toHaveResourceLike('AWS::Elasticsearch::Domain', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Elasticsearch::Domain', {
       ElasticsearchClusterConfig: {
         DedicatedMasterEnabled: true,
         WarmEnabled: true,
@@ -156,7 +231,7 @@ describe('UltraWarm instances', () => {
       },
     });
 
-    expect(stack).toHaveResourceLike('AWS::Elasticsearch::Domain', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Elasticsearch::Domain', {
       ElasticsearchClusterConfig: {
         DedicatedMasterEnabled: true,
         WarmEnabled: true,
@@ -166,6 +241,45 @@ describe('UltraWarm instances', () => {
     });
   });
 
+});
+
+test('can use tokens in capacity configuration', () => {
+  new Domain(stack, 'Domain', {
+    version: ElasticsearchVersion.V7_10,
+    capacity: {
+      dataNodeInstanceType: Token.asString({ Ref: 'dataNodeInstanceType' }),
+      dataNodes: Token.asNumber({ Ref: 'dataNodes' }),
+      masterNodeInstanceType: Token.asString({ Ref: 'masterNodeInstanceType' }),
+      masterNodes: Token.asNumber({ Ref: 'masterNodes' }),
+      warmInstanceType: Token.asString({ Ref: 'warmInstanceType' }),
+      warmNodes: Token.asNumber({ Ref: 'warmNodes' }),
+    },
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::Elasticsearch::Domain', {
+    ElasticsearchClusterConfig: {
+      InstanceCount: {
+        Ref: 'dataNodes',
+      },
+      InstanceType: {
+        Ref: 'dataNodeInstanceType',
+      },
+      DedicatedMasterEnabled: true,
+      DedicatedMasterCount: {
+        Ref: 'masterNodes',
+      },
+      DedicatedMasterType: {
+        Ref: 'masterNodeInstanceType',
+      },
+      WarmEnabled: true,
+      WarmCount: {
+        Ref: 'warmNodes',
+      },
+      WarmType: {
+        Ref: 'warmInstanceType',
+      },
+    },
+  });
 });
 
 describe('log groups', () => {
@@ -178,7 +292,7 @@ describe('log groups', () => {
       },
     });
 
-    expect(stack).toHaveResourceLike('AWS::Elasticsearch::Domain', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Elasticsearch::Domain', {
       LogPublishingOptions: {
         SEARCH_SLOW_LOGS: {
           CloudWatchLogsLogGroupArn: {
@@ -189,9 +303,9 @@ describe('log groups', () => {
           },
           Enabled: true,
         },
-        AUDIT_LOGS: assert.ABSENT,
-        ES_APPLICATION_LOGS: assert.ABSENT,
-        INDEX_SLOW_LOGS: assert.ABSENT,
+        AUDIT_LOGS: Match.absent(),
+        ES_APPLICATION_LOGS: Match.absent(),
+        INDEX_SLOW_LOGS: Match.absent(),
       },
     });
   });
@@ -204,7 +318,7 @@ describe('log groups', () => {
       },
     });
 
-    expect(stack).toHaveResourceLike('AWS::Elasticsearch::Domain', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Elasticsearch::Domain', {
       LogPublishingOptions: {
         INDEX_SLOW_LOGS: {
           CloudWatchLogsLogGroupArn: {
@@ -215,9 +329,9 @@ describe('log groups', () => {
           },
           Enabled: true,
         },
-        AUDIT_LOGS: assert.ABSENT,
-        ES_APPLICATION_LOGS: assert.ABSENT,
-        SEARCH_SLOW_LOGS: assert.ABSENT,
+        AUDIT_LOGS: Match.absent(),
+        ES_APPLICATION_LOGS: Match.absent(),
+        SEARCH_SLOW_LOGS: Match.absent(),
       },
     });
   });
@@ -230,7 +344,7 @@ describe('log groups', () => {
       },
     });
 
-    expect(stack).toHaveResourceLike('AWS::Elasticsearch::Domain', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Elasticsearch::Domain', {
       LogPublishingOptions: {
         ES_APPLICATION_LOGS: {
           CloudWatchLogsLogGroupArn: {
@@ -241,9 +355,9 @@ describe('log groups', () => {
           },
           Enabled: true,
         },
-        AUDIT_LOGS: assert.ABSENT,
-        SEARCH_SLOW_LOGS: assert.ABSENT,
-        INDEX_SLOW_LOGS: assert.ABSENT,
+        AUDIT_LOGS: Match.absent(),
+        SEARCH_SLOW_LOGS: Match.absent(),
+        INDEX_SLOW_LOGS: Match.absent(),
       },
     });
   });
@@ -264,7 +378,7 @@ describe('log groups', () => {
       enforceHttps: true,
     });
 
-    expect(stack).toHaveResourceLike('AWS::Elasticsearch::Domain', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Elasticsearch::Domain', {
       LogPublishingOptions: {
         AUDIT_LOGS: {
           CloudWatchLogsLogGroupArn: {
@@ -275,9 +389,9 @@ describe('log groups', () => {
           },
           Enabled: true,
         },
-        ES_APPLICATION_LOGS: assert.ABSENT,
-        SEARCH_SLOW_LOGS: assert.ABSENT,
-        INDEX_SLOW_LOGS: assert.ABSENT,
+        ES_APPLICATION_LOGS: Match.absent(),
+        SEARCH_SLOW_LOGS: Match.absent(),
+        INDEX_SLOW_LOGS: Match.absent(),
       },
     });
   });
@@ -299,7 +413,7 @@ describe('log groups', () => {
         slowIndexLogEnabled: true,
       },
     });
-    expect(stack).toHaveResourceLike('AWS::Elasticsearch::Domain', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Elasticsearch::Domain', {
       LogPublishingOptions: {
         ES_APPLICATION_LOGS: {
           CloudWatchLogsLogGroupArn: {
@@ -328,10 +442,10 @@ describe('log groups', () => {
           },
           Enabled: true,
         },
-        AUDIT_LOGS: assert.ABSENT,
+        AUDIT_LOGS: Match.absent(),
       },
     });
-    expect(stack).toHaveResourceLike('AWS::Elasticsearch::Domain', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Elasticsearch::Domain', {
       LogPublishingOptions: {
         ES_APPLICATION_LOGS: {
           CloudWatchLogsLogGroupArn: {
@@ -360,7 +474,7 @@ describe('log groups', () => {
           },
           Enabled: true,
         },
-        AUDIT_LOGS: assert.ABSENT,
+        AUDIT_LOGS: Match.absent(),
       },
     });
   });
@@ -380,7 +494,7 @@ describe('log groups', () => {
     });
 
     // Domain1
-    expect(stack).toHaveResourceLike('Custom::CloudwatchLogResourcePolicy', {
+    Template.fromStack(stack).hasResourceProperties('Custom::CloudwatchLogResourcePolicy', {
       Create: {
         'Fn::Join': [
           '',
@@ -398,7 +512,7 @@ describe('log groups', () => {
       },
     });
     // Domain2
-    expect(stack).toHaveResourceLike('Custom::CloudwatchLogResourcePolicy', {
+    Template.fromStack(stack).hasResourceProperties('Custom::CloudwatchLogResourcePolicy', {
       Create: {
         'Fn::Join': [
           '',
@@ -437,7 +551,7 @@ describe('log groups', () => {
       },
     });
 
-    expect(stack).toHaveResourceLike('AWS::Elasticsearch::Domain', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Elasticsearch::Domain', {
       LogPublishingOptions: {
         SEARCH_SLOW_LOGS: {
           CloudWatchLogsLogGroupArn: {
@@ -448,9 +562,9 @@ describe('log groups', () => {
           },
           Enabled: true,
         },
-        AUDIT_LOGS: assert.ABSENT,
-        ES_APPLICATION_LOGS: assert.ABSENT,
-        INDEX_SLOW_LOGS: assert.ABSENT,
+        AUDIT_LOGS: Match.absent(),
+        ES_APPLICATION_LOGS: Match.absent(),
+        INDEX_SLOW_LOGS: Match.absent(),
       },
     });
   });
@@ -466,7 +580,7 @@ describe('log groups', () => {
       },
     });
 
-    expect(stack).toHaveResourceLike('AWS::Elasticsearch::Domain', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Elasticsearch::Domain', {
       LogPublishingOptions: {
         INDEX_SLOW_LOGS: {
           CloudWatchLogsLogGroupArn: {
@@ -477,9 +591,9 @@ describe('log groups', () => {
           },
           Enabled: true,
         },
-        AUDIT_LOGS: assert.ABSENT,
-        ES_APPLICATION_LOGS: assert.ABSENT,
-        SEARCH_SLOW_LOGS: assert.ABSENT,
+        AUDIT_LOGS: Match.absent(),
+        ES_APPLICATION_LOGS: Match.absent(),
+        SEARCH_SLOW_LOGS: Match.absent(),
       },
     });
   });
@@ -495,7 +609,7 @@ describe('log groups', () => {
       },
     });
 
-    expect(stack).toHaveResourceLike('AWS::Elasticsearch::Domain', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Elasticsearch::Domain', {
       LogPublishingOptions: {
         ES_APPLICATION_LOGS: {
           CloudWatchLogsLogGroupArn: {
@@ -506,9 +620,9 @@ describe('log groups', () => {
           },
           Enabled: true,
         },
-        AUDIT_LOGS: assert.ABSENT,
-        SEARCH_SLOW_LOGS: assert.ABSENT,
-        INDEX_SLOW_LOGS: assert.ABSENT,
+        AUDIT_LOGS: Match.absent(),
+        SEARCH_SLOW_LOGS: Match.absent(),
+        INDEX_SLOW_LOGS: Match.absent(),
       },
     });
   });
@@ -532,7 +646,7 @@ describe('log groups', () => {
       },
     });
 
-    expect(stack).toHaveResourceLike('AWS::Elasticsearch::Domain', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Elasticsearch::Domain', {
       LogPublishingOptions: {
         AUDIT_LOGS: {
           CloudWatchLogsLogGroupArn: {
@@ -543,9 +657,9 @@ describe('log groups', () => {
           },
           Enabled: true,
         },
-        ES_APPLICATION_LOGS: assert.ABSENT,
-        SEARCH_SLOW_LOGS: assert.ABSENT,
-        INDEX_SLOW_LOGS: assert.ABSENT,
+        ES_APPLICATION_LOGS: Match.absent(),
+        SEARCH_SLOW_LOGS: Match.absent(),
+        INDEX_SLOW_LOGS: Match.absent(),
       },
     });
   });
@@ -627,7 +741,7 @@ describe('grants', () => {
 
     domain.grantReadWrite(user);
 
-    expect(stack).toHaveResource('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -709,8 +823,8 @@ describe('metrics', () => {
 
   test('Can use metricClusterIndexWriteBlocked on an Elasticsearch Domain', () => {
     testMetric(
-      (domain) => domain.metricClusterIndexWriteBlocked(),
-      'ClusterIndexWriteBlocked',
+      (domain) => domain.metricClusterIndexWritesBlocked(),
+      'ClusterIndexWritesBlocked',
       Statistic.MAXIMUM,
       Duration.minutes(1),
     );
@@ -811,19 +925,22 @@ describe('import', () => {
 
   test('static fromDomainEndpoint(endpoint) allows importing an external/existing domain', () => {
     const domainName = 'test-domain-2w2x2u3tifly';
-    const domainEndpoint = `https://${domainName}-jcjotrt6f7otem4sqcwbch3c4u.testregion.es.amazonaws.com`;
+    const domainEndpointWithoutHttps = `${domainName}-jcjotrt6f7otem4sqcwbch3c4u.testregion.es.amazonaws.com`;
+    const domainEndpoint = `https://${domainEndpointWithoutHttps}`;
     const imported = Domain.fromDomainEndpoint(stack, 'Domain', domainEndpoint);
 
     expect(imported.domainName).toEqual(domainName);
     expect(imported.domainArn).toMatch(RegExp(`es:testregion:1234:domain/${domainName}$`));
+    expect(imported.domainEndpoint).toEqual(domainEndpointWithoutHttps);
 
-    expect(stack).not.toHaveResource('AWS::Elasticsearch::Domain');
+    Template.fromStack(stack).resourceCountIs('AWS::Elasticsearch::Domain', 0);
   });
 
   test('static fromDomainAttributes(attributes) allows importing an external/existing domain', () => {
     const domainName = 'test-domain-2w2x2u3tifly';
-    const domainArn = `es:testregion:1234:domain/${domainName}`;
-    const domainEndpoint = `https://${domainName}-jcjotrt6f7otem4sqcwbch3c4u.testregion.es.amazonaws.com`;
+    const domainArn = `arn:aws:es:testregion:1234:domain/${domainName}`;
+    const domainEndpointWithoutHttps = `${domainName}-jcjotrt6f7otem4sqcwbch3c4u.testregion.es.amazonaws.com`;
+    const domainEndpoint = `https://${domainEndpointWithoutHttps}`;
     const imported = Domain.fromDomainAttributes(stack, 'Domain', {
       domainArn,
       domainEndpoint,
@@ -831,10 +948,48 @@ describe('import', () => {
 
     expect(imported.domainName).toEqual(domainName);
     expect(imported.domainArn).toEqual(domainArn);
+    expect(imported.domainEndpoint).toEqual(domainEndpointWithoutHttps);
 
-    expect(stack).not.toHaveResource('AWS::Elasticsearch::Domain');
+    Template.fromStack(stack).resourceCountIs('AWS::Elasticsearch::Domain', 0);
   });
 
+  test('static fromDomainAttributes(attributes) allows importing with token arn and endpoint', () => {
+    const domainArn = new CfnParameter(stack, 'domainArn', { type: 'String' }).valueAsString;
+    const domainEndpoint = new CfnParameter(stack, 'domainEndpoint', { type: 'String' }).valueAsString;
+    const imported = Domain.fromDomainAttributes(stack, 'Domain', {
+      domainArn,
+      domainEndpoint,
+    });
+    const expectedDomainName = {
+      'Fn::Select': [
+        1,
+        {
+          'Fn::Split': [
+            '/',
+            {
+              'Fn::Select': [
+                5,
+                {
+                  'Fn::Split': [
+                    ':',
+                    {
+                      Ref: 'domainArn',
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    };
+
+    expect(stack.resolve(imported.domainName)).toEqual(expectedDomainName);
+    expect(imported.domainArn).toEqual(domainArn);
+    expect(imported.domainEndpoint).toEqual(domainEndpoint);
+
+    Template.fromStack(stack).resourceCountIs('AWS::Elasticsearch::Domain', 0);
+  });
 });
 
 describe('advanced security options', () => {
@@ -856,7 +1011,7 @@ describe('advanced security options', () => {
       enforceHttps: true,
     });
 
-    expect(stack).toHaveResourceLike('AWS::Elasticsearch::Domain', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Elasticsearch::Domain', {
       AdvancedSecurityOptions: {
         Enabled: true,
         InternalUserDatabaseEnabled: false,
@@ -890,7 +1045,7 @@ describe('advanced security options', () => {
       enforceHttps: true,
     });
 
-    expect(stack).toHaveResourceLike('AWS::Elasticsearch::Domain', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Elasticsearch::Domain', {
       AdvancedSecurityOptions: {
         Enabled: true,
         InternalUserDatabaseEnabled: true,
@@ -924,7 +1079,7 @@ describe('advanced security options', () => {
       enforceHttps: true,
     });
 
-    expect(stack).toHaveResourceLike('AWS::Elasticsearch::Domain', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Elasticsearch::Domain', {
       AdvancedSecurityOptions: {
         Enabled: true,
         InternalUserDatabaseEnabled: true,
@@ -955,7 +1110,7 @@ describe('advanced security options', () => {
       },
     });
 
-    expect(stack).toHaveResourceLike('AWS::SecretsManager::Secret', {
+    Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::Secret', {
       GenerateSecretString: {
         GenerateStringKey: 'password',
       },
@@ -1032,7 +1187,7 @@ describe('custom endpoints', () => {
       },
     });
 
-    expect(stack).toHaveResourceLike('AWS::Elasticsearch::Domain', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Elasticsearch::Domain', {
       DomainEndpointOptions: {
         EnforceHTTPS: true,
         CustomEndpointEnabled: true,
@@ -1042,7 +1197,7 @@ describe('custom endpoints', () => {
         },
       },
     });
-    expect(stack).toHaveResourceLike('AWS::CertificateManager::Certificate', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CertificateManager::Certificate', {
       DomainName: customDomainName,
       ValidationMethod: 'EMAIL',
     });
@@ -1060,7 +1215,7 @@ describe('custom endpoints', () => {
       },
     });
 
-    expect(stack).toHaveResourceLike('AWS::Elasticsearch::Domain', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Elasticsearch::Domain', {
       DomainEndpointOptions: {
         EnforceHTTPS: true,
         CustomEndpointEnabled: true,
@@ -1070,7 +1225,7 @@ describe('custom endpoints', () => {
         },
       },
     });
-    expect(stack).toHaveResourceLike('AWS::CertificateManager::Certificate', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CertificateManager::Certificate', {
       DomainName: customDomainName,
       DomainValidationOptions: [
         {
@@ -1082,7 +1237,7 @@ describe('custom endpoints', () => {
       ],
       ValidationMethod: 'DNS',
     });
-    expect(stack).toHaveResourceLike('AWS::Route53::RecordSet', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Route53::RecordSet', {
       Name: 'search.example.com.',
       Type: 'CNAME',
       HostedZoneId: {
@@ -1118,7 +1273,7 @@ describe('custom endpoints', () => {
       },
     });
 
-    expect(stack).toHaveResourceLike('AWS::Elasticsearch::Domain', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Elasticsearch::Domain', {
       DomainEndpointOptions: {
         EnforceHTTPS: true,
         CustomEndpointEnabled: true,
@@ -1128,7 +1283,7 @@ describe('custom endpoints', () => {
         },
       },
     });
-    expect(stack).toHaveResourceLike('AWS::Route53::RecordSet', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Route53::RecordSet', {
       Name: 'search.example.com.',
       Type: 'CNAME',
       HostedZoneId: {
@@ -1150,7 +1305,9 @@ describe('custom endpoints', () => {
 describe('custom error responses', () => {
 
   test('error when availabilityZoneCount does not match vpcOptions.subnets length', () => {
-    const vpc = new Vpc(stack, 'Vpc');
+    const vpc = new Vpc(stack, 'Vpc', {
+      maxAzs: 1,
+    });
 
     expect(() => new Domain(stack, 'Domain', {
       version: ElasticsearchVersion.V7_4,
@@ -1158,16 +1315,7 @@ describe('custom error responses', () => {
         enabled: true,
         availabilityZoneCount: 2,
       },
-      vpcOptions: {
-        subnets: [
-          new Subnet(stack, 'Subnet', {
-            availabilityZone: 'testaz',
-            cidrBlock: vpc.vpcCidrBlock,
-            vpcId: vpc.vpcId,
-          }),
-        ],
-        securityGroups: [],
-      },
+      vpc,
     })).toThrow(/you need to provide a subnet for each AZ you are using/);
   });
 
@@ -1209,24 +1357,27 @@ describe('custom error responses', () => {
     })).toThrow(/Unknown Elasticsearch version: 5\.4/);
   });
 
-  test('error when log publishing is enabled for elasticsearch version < 5.1', () => {
-    const error = /logs publishing requires Elasticsearch version 5.1 or later/;
+  test('error when invalid domain name is given', () => {
+    expect(() => new Domain(stack, 'Domain1', {
+      version: ElasticsearchVersion.V7_4,
+      domainName: 'InvalidName',
+    })).toThrow(/Valid characters are a-z/);
+    expect(() => new Domain(stack, 'Domain2', {
+      version: ElasticsearchVersion.V7_4,
+      domainName: 'a'.repeat(29),
+    })).toThrow(/It must be between 3 and 28 characters/);
+    expect(() => new Domain(stack, 'Domain3', {
+      version: ElasticsearchVersion.V7_4,
+      domainName: '123domain',
+    })).toThrow(/It must start with a lowercase letter/);
+  });
+
+  test('error when error log publishing is enabled for elasticsearch version < 5.1', () => {
+    const error = /Error logs publishing requires Elasticsearch version 5.1 or later/;
     expect(() => new Domain(stack, 'Domain1', {
       version: ElasticsearchVersion.V2_3,
       logging: {
         appLogEnabled: true,
-      },
-    })).toThrow(error);
-    expect(() => new Domain(stack, 'Domain2', {
-      version: ElasticsearchVersion.V1_5,
-      logging: {
-        slowSearchLogEnabled: true,
-      },
-    })).toThrow(error);
-    expect(() => new Domain(stack, 'Domain3', {
-      version: ElasticsearchVersion.V1_5,
-      logging: {
-        slowIndexLogEnabled: true,
       },
     })).toThrow(error);
   });
@@ -1287,7 +1438,7 @@ describe('custom error responses', () => {
     })).toThrow(/Node-to-node encryption requires Elasticsearch version 6.0 or later/);
   });
 
-  test('error when i3 instance types are specified with EBS enabled', () => {
+  test('error when i3 or r6g instance types are specified with EBS enabled', () => {
     expect(() => new Domain(stack, 'Domain1', {
       version: ElasticsearchVersion.V7_4,
       capacity: {
@@ -1297,7 +1448,17 @@ describe('custom error responses', () => {
         volumeSize: 100,
         volumeType: EbsDeviceVolumeType.GENERAL_PURPOSE_SSD,
       },
-    })).toThrow(/I3 instance types do not support EBS storage volumes/);
+    })).toThrow(/I3 and R6GD instance types do not support EBS storage volumes/);
+    expect(() => new Domain(stack, 'Domain2', {
+      version: ElasticsearchVersion.V7_4,
+      capacity: {
+        dataNodeInstanceType: 'r6gd.large.elasticsearch',
+      },
+      ebs: {
+        volumeSize: 100,
+        volumeType: EbsDeviceVolumeType.GENERAL_PURPOSE_SSD,
+      },
+    })).toThrow(/I3 and R6GD instance types do not support EBS storage volumes/);
   });
 
   test('error when m3, r3, or t2 instance types are specified with encryption at rest enabled', () => {
@@ -1340,7 +1501,7 @@ describe('custom error responses', () => {
     })).toThrow(/t2.micro.elasticsearch instance type supports only Elasticsearch 1.5 and 2.3/);
   });
 
-  test('error when any instance type other than R3 and I3 are specified without EBS enabled', () => {
+  test('error when any instance type other than R3, I3 and R6GD are specified without EBS enabled', () => {
     expect(() => new Domain(stack, 'Domain1', {
       version: ElasticsearchVersion.V7_4,
       ebs: {
@@ -1349,7 +1510,42 @@ describe('custom error responses', () => {
       capacity: {
         masterNodeInstanceType: 'm5.large.elasticsearch',
       },
-    })).toThrow(/EBS volumes are required when using instance types other than r3 or i3/);
+    })).toThrow(/EBS volumes are required when using instance types other than r3, i3 or r6gd/);
+    expect(() => new Domain(stack, 'Domain2', {
+      version: ElasticsearchVersion.V7_4,
+      ebs: {
+        enabled: false,
+      },
+      capacity: {
+        dataNodeInstanceType: 'm5.large.elasticsearch',
+      },
+    })).toThrow(/EBS volumes are required when using instance types other than r3, i3 or r6gd/);
+  });
+
+  test('can use compatible master instance types that does not have local storage when data node type is i3 or r6gd', () => {
+    new Domain(stack, 'Domain1', {
+      version: ElasticsearchVersion.V7_4,
+      ebs: {
+        enabled: false,
+      },
+      capacity: {
+        masterNodeInstanceType: 'c5.2xlarge.elasticsearch',
+        dataNodeInstanceType: 'i3.2xlarge.elasticsearch',
+      },
+    });
+    new Domain(stack, 'Domain2', {
+      version: ElasticsearchVersion.V7_4,
+      ebs: {
+        enabled: false,
+      },
+      capacity: {
+        masterNodes: 3,
+        masterNodeInstanceType: 'c6g.large.elasticsearch',
+        dataNodeInstanceType: 'r6gd.large.elasticsearch',
+      },
+    });
+    // both configurations pass synth-time validation
+    Template.fromStack(stack).resourceCountIs('AWS::Elasticsearch::Domain', 2);
   });
 
   test('error when availabilityZoneCount is not 2 or 3', () => {
@@ -1357,31 +1553,7 @@ describe('custom error responses', () => {
 
     expect(() => new Domain(stack, 'Domain1', {
       version: ElasticsearchVersion.V7_4,
-      vpcOptions: {
-        subnets: [
-          new Subnet(stack, 'Subnet1', {
-            availabilityZone: 'testaz1',
-            cidrBlock: vpc.vpcCidrBlock,
-            vpcId: vpc.vpcId,
-          }),
-          new Subnet(stack, 'Subnet2', {
-            availabilityZone: 'testaz2',
-            cidrBlock: vpc.vpcCidrBlock,
-            vpcId: vpc.vpcId,
-          }),
-          new Subnet(stack, 'Subnet3', {
-            availabilityZone: 'testaz3',
-            cidrBlock: vpc.vpcCidrBlock,
-            vpcId: vpc.vpcId,
-          }),
-          new Subnet(stack, 'Subnet4', {
-            availabilityZone: 'testaz4',
-            cidrBlock: vpc.vpcCidrBlock,
-            vpcId: vpc.vpcId,
-          }),
-        ],
-        securityGroups: [],
-      },
+      vpc,
       zoneAwareness: {
         availabilityZoneCount: 4,
       },
@@ -1431,7 +1603,7 @@ describe('custom error responses', () => {
 test('can specify future version', () => {
   new Domain(stack, 'Domain', { version: ElasticsearchVersion.of('8.2') });
 
-  expect(stack).toHaveResourceLike('AWS::Elasticsearch::Domain', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Elasticsearch::Domain', {
     ElasticsearchVersion: '8.2',
   });
 });
@@ -1443,7 +1615,7 @@ describe('unsigned basic auth', () => {
       useUnsignedBasicAuth: true,
     });
 
-    expect(stack).toHaveResourceLike('AWS::Elasticsearch::Domain', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Elasticsearch::Domain', {
       AdvancedSecurityOptions: {
         Enabled: true,
         InternalUserDatabaseEnabled: true,
@@ -1474,7 +1646,7 @@ describe('unsigned basic auth', () => {
       useUnsignedBasicAuth: true,
     });
 
-    expect(stack).toHaveResourceLike('AWS::Elasticsearch::Domain', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Elasticsearch::Domain', {
       AdvancedSecurityOptions: {
         Enabled: true,
         InternalUserDatabaseEnabled: false,
@@ -1508,7 +1680,7 @@ describe('unsigned basic auth', () => {
       useUnsignedBasicAuth: true,
     });
 
-    expect(stack).toHaveResourceLike('AWS::Elasticsearch::Domain', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Elasticsearch::Domain', {
       AdvancedSecurityOptions: {
         Enabled: true,
         InternalUserDatabaseEnabled: true,
@@ -1561,6 +1733,34 @@ describe('unsigned basic auth', () => {
   });
 });
 
+describe('advanced options', () => {
+  test('use advanced options', () => {
+    new Domain(stack, 'Domain', {
+      version: ElasticsearchVersion.V7_1,
+      advancedOptions: {
+        'rest.action.multi.allow_explicit_index': 'true',
+        'indices.fielddata.cache.size': '50',
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Elasticsearch::Domain', {
+      AdvancedOptions: {
+        'rest.action.multi.allow_explicit_index': 'true',
+        'indices.fielddata.cache.size': '50',
+      },
+    });
+  });
+
+  test('advanced options absent by default', () => {
+    new Domain(stack, 'Domain', {
+      version: ElasticsearchVersion.V7_1,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Elasticsearch::Domain', {
+      AdvancedOptions: Match.absent(),
+    });
+  });
+});
 
 function testGrant(
   expectedActions: string[],
@@ -1597,7 +1797,7 @@ function testGrant(
       ? resolvedPaths
       : resolvedPaths[0];
 
-  expect(stack).toHaveResource('AWS::IAM::Policy', {
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
     PolicyDocument: {
       Statement: [
         {

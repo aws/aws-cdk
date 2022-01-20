@@ -1,4 +1,3 @@
-import '@aws-cdk/assert/jest';
 import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';

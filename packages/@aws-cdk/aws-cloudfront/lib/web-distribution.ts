@@ -6,6 +6,7 @@ import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnDistribution } from './cloudfront.generated';
 import { HttpVersion, IDistribution, LambdaEdgeEventType, OriginProtocolPolicy, PriceClass, ViewerProtocolPolicy, SSLMethod, SecurityPolicyProtocol } from './distribution';
+import { FunctionAssociation } from './function';
 import { GeoRestriction } from './geo-restriction';
 import { IKeyGroup } from './key-group';
 import { IOriginAccessIdentity } from './origin-access-identity';
@@ -52,6 +53,7 @@ export enum FailoverStatusCode {
  * "cloudfront.net" domain. To use this feature you must provide the list of
  * additional domains, and the ACM Certificate that CloudFront should use for
  * these additional domains.
+ * @deprecated see {@link CloudFrontWebDistributionProps#viewerCertificate} with {@link ViewerCertificate#acmCertificate}
  */
 export interface AliasConfiguration {
   /**
@@ -121,6 +123,7 @@ interface SourceConfigurationRender {
   readonly customOriginSource?: CustomOriginConfig;
   readonly originPath?: string;
   readonly originHeaders?: { [key: string]: string };
+  readonly originShieldRegion?: string
 }
 
 /**
@@ -200,6 +203,15 @@ export interface SourceConfiguration {
    * @deprecated Use originHeaders on s3OriginSource or customOriginSource
    */
   readonly originHeaders?: { [key: string]: string };
+
+  /**
+   * When you enable Origin Shield in the AWS Region that has the lowest latency to your origin, you can get better network performance
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/origin-shield.html
+   *
+   * @default - origin shield not enabled
+   */
+  readonly originShieldRegion?: string;
 }
 
 /**
@@ -266,6 +278,13 @@ export interface CustomOriginConfig {
    * @default - No additional headers are passed.
    */
   readonly originHeaders?: { [key: string]: string };
+
+  /**
+   * When you enable Origin Shield in the AWS Region that has the lowest latency to your origin, you can get better network performance
+   *
+   * @default - origin shield not enabled
+   */
+  readonly originShieldRegion?: string;
 }
 
 export enum OriginSslPolicy {
@@ -304,6 +323,13 @@ export interface S3OriginConfig {
    * @default - No additional headers are passed.
    */
   readonly originHeaders?: { [key: string]: string };
+
+  /**
+   * When you enable Origin Shield in the AWS Region that has the lowest latency to your origin, you can get better network performance
+   *
+   * @default - origin shield not enabled
+   */
+  readonly originShieldRegion?: string;
 }
 
 /**
@@ -421,6 +447,19 @@ export interface Behavior {
    */
   readonly lambdaFunctionAssociations?: LambdaFunctionAssociation[];
 
+  /**
+   * The CloudFront functions to invoke before serving the contents.
+   *
+   * @default - no functions will be invoked
+   */
+  readonly functionAssociations?: FunctionAssociation[];
+
+  /**
+   * The viewer policy for this behavior.
+   *
+   * @default - the distribution wide viewer protocol policy will be used
+   */
+  readonly viewerProtocolPolicy?: ViewerProtocolPolicy;
 }
 
 export interface LambdaFunctionAssociation {
@@ -549,6 +588,13 @@ export interface CloudFrontWebDistributionProps {
   readonly comment?: string;
 
   /**
+   * Enable or disable the distribution.
+   *
+   * @default true
+   */
+  readonly enabled?: boolean;
+
+  /**
    * The default object to serve.
    *
    * @default - "index.html" is served.
@@ -675,19 +721,17 @@ export interface CloudFrontWebDistributionAttributes {
  * Here's how you can use this construct:
  *
  * ```ts
- * import { CloudFrontWebDistribution } from '@aws-cdk/aws-cloudfront'
+ * const sourceBucket = new s3.Bucket(this, 'Bucket');
  *
- * const sourceBucket = new Bucket(this, 'Bucket');
- *
- * const distribution = new CloudFrontWebDistribution(this, 'MyDistribution', {
- *  originConfigs: [
- *    {
- *      s3OriginSource: {
- *      s3BucketSource: sourceBucket
- *      },
- *      behaviors : [ {isDefaultBehavior: true}]
- *    }
- *  ]
+ * const distribution = new cloudfront.CloudFrontWebDistribution(this, 'MyDistribution', {
+ *   originConfigs: [
+ *     {
+ *       s3OriginSource: {
+ *       s3BucketSource: sourceBucket,
+ *       },
+ *       behaviors : [ {isDefaultBehavior: true}],
+ *     },
+ *   ],
  * });
  * ```
  *
@@ -760,7 +804,7 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
     [SSLMethod.SNI]: [
       SecurityPolicyProtocol.TLS_V1, SecurityPolicyProtocol.TLS_V1_1_2016,
       SecurityPolicyProtocol.TLS_V1_2016, SecurityPolicyProtocol.TLS_V1_2_2018,
-      SecurityPolicyProtocol.TLS_V1_2_2019,
+      SecurityPolicyProtocol.TLS_V1_2_2019, SecurityPolicyProtocol.TLS_V1_2_2021,
     ],
     [SSLMethod.VIP]: [SecurityPolicyProtocol.SSL_V3, SecurityPolicyProtocol.TLS_V1],
   };
@@ -768,9 +812,15 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
   constructor(scope: Construct, id: string, props: CloudFrontWebDistributionProps) {
     super(scope, id);
 
+    // Comments have an undocumented limit of 128 characters
+    const trimmedComment =
+      props.comment && props.comment.length > 128
+        ? `${props.comment.substr(0, 128 - 3)}...`
+        : props.comment;
+
     let distributionConfig: CfnDistribution.DistributionConfigProperty = {
-      comment: props.comment,
-      enabled: true,
+      comment: trimmedComment,
+      enabled: props.enabled ?? true,
       defaultRootObject: props.defaultRootObject ?? 'index.html',
       httpVersion: props.httpVersion || HttpVersion.HTTP2,
       priceClass: props.priceClass || PriceClass.PRICE_CLASS_100,
@@ -799,6 +849,7 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
             customOriginSource: originConfig.failoverCustomOriginSource,
             originPath: originConfig.originPath,
             originHeaders: originConfig.originHeaders,
+            originShieldRegion: originConfig.originShieldRegion,
           },
           originSecondaryId,
         );
@@ -903,7 +954,10 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
     }
 
     if (props.loggingConfig) {
-      this.loggingBucket = props.loggingConfig.bucket || new s3.Bucket(this, 'LoggingBucket');
+      this.loggingBucket = props.loggingConfig.bucket || new s3.Bucket(this, 'LoggingBucket', {
+        encryption: s3.BucketEncryption.S3_MANAGED,
+        enforceSSL: true,
+      });
       distributionConfig = {
         ...distributionConfig,
         logging: {
@@ -945,10 +999,18 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
       trustedKeyGroups: input.trustedKeyGroups?.map(key => key.keyGroupId),
       trustedSigners: input.trustedSigners,
       targetOriginId: input.targetOriginId,
-      viewerProtocolPolicy: protoPolicy || ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+      viewerProtocolPolicy: input.viewerProtocolPolicy || protoPolicy || ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
     };
     if (!input.isDefaultBehavior) {
       toReturn = Object.assign(toReturn, { pathPattern: input.pathPattern });
+    }
+    if (input.functionAssociations) {
+      toReturn = Object.assign(toReturn, {
+        functionAssociations: input.functionAssociations.map(association => ({
+          functionArn: association.function.functionArn,
+          eventType: association.eventType.toString(),
+        })),
+      });
     }
     if (input.lambdaFunctionAssociations) {
       const includeBodyEventTypes = [LambdaEdgeEventType.ORIGIN_REQUEST, LambdaEdgeEventType.VIEWER_REQUEST];
@@ -1009,6 +1071,14 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
       throw new Error('Only one originPath field allowed across origin and failover origins');
     }
 
+    if ([
+      originConfig.originShieldRegion,
+      originConfig.s3OriginSource?.originShieldRegion,
+      originConfig.customOriginSource?.originShieldRegion,
+    ].filter(x => x).length > 1) {
+      throw new Error('Only one originShieldRegion field allowed across origin and failover origins');
+    }
+
     const headers = originConfig.originHeaders ?? originConfig.s3OriginSource?.originHeaders ?? originConfig.customOriginSource?.originHeaders;
 
     const originHeaders: CfnDistribution.OriginCustomHeaderProperty[] = [];
@@ -1062,23 +1132,24 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
         : originConfig.customOriginSource!.domainName,
       originPath: originConfig.originPath ?? originConfig.customOriginSource?.originPath ?? originConfig.s3OriginSource?.originPath,
       originCustomHeaders:
-          originHeaders.length > 0 ? originHeaders : undefined,
+        originHeaders.length > 0 ? originHeaders : undefined,
       s3OriginConfig,
+      originShield: this.toOriginShieldProperty(originConfig),
       customOriginConfig: originConfig.customOriginSource
         ? {
           httpPort: originConfig.customOriginSource.httpPort || 80,
           httpsPort: originConfig.customOriginSource.httpsPort || 443,
           originKeepaliveTimeout:
-                (originConfig.customOriginSource.originKeepaliveTimeout &&
-                  originConfig.customOriginSource.originKeepaliveTimeout.toSeconds()) ||
-                5,
+            (originConfig.customOriginSource.originKeepaliveTimeout &&
+              originConfig.customOriginSource.originKeepaliveTimeout.toSeconds()) ||
+            5,
           originReadTimeout:
-                (originConfig.customOriginSource.originReadTimeout &&
-                  originConfig.customOriginSource.originReadTimeout.toSeconds()) ||
-                30,
+            (originConfig.customOriginSource.originReadTimeout &&
+              originConfig.customOriginSource.originReadTimeout.toSeconds()) ||
+            30,
           originProtocolPolicy:
-                originConfig.customOriginSource.originProtocolPolicy ||
-                OriginProtocolPolicy.HTTPS_ONLY,
+            originConfig.customOriginSource.originProtocolPolicy ||
+            OriginProtocolPolicy.HTTPS_ONLY,
           originSslProtocols: originConfig.customOriginSource
             .allowedOriginSSLVersions || [OriginSslPolicy.TLS_V1_2],
         }
@@ -1088,5 +1159,17 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
     };
 
     return originProperty;
+  }
+
+  /**
+   * Takes origin shield region from props and converts to CfnDistribution.OriginShieldProperty
+   */
+  private toOriginShieldProperty(originConfig:SourceConfigurationRender): CfnDistribution.OriginShieldProperty | undefined {
+    const originShieldRegion = originConfig.originShieldRegion ??
+    originConfig.customOriginSource?.originShieldRegion ??
+    originConfig.s3OriginSource?.originShieldRegion;
+    return originShieldRegion
+      ? { enabled: true, originShieldRegion }
+      : undefined;
   }
 }

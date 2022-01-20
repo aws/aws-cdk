@@ -24,13 +24,12 @@ const handler = new lambda.Function(stack, 'HelloHandler', {
 });
 httpApi.addRoutes({
   path: '/',
-  integration: new integrations.LambdaProxyIntegration({
-    handler,
-  }),
+  integration: new integrations.HttpLambdaIntegration('DefaultIntegration', handler),
 });
 
 const callEndpointJob = new CallApiGatewayHttpApiEndpoint(stack, 'Call APIGW', {
-  api: httpApi,
+  apiId: httpApi.apiId,
+  apiStack: cdk.Stack.of(httpApi),
   method: HttpMethod.GET,
   authType: AuthType.IAM_ROLE,
   outputPath: sfn.JsonPath.stringAt('$.ResponseBody'),

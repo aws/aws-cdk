@@ -77,7 +77,7 @@ export interface QueueProcessingFargateServiceProps extends QueueProcessingServi
   readonly taskSubnets?: ec2.SubnetSelection;
 
   /**
-   * The security groups to associate with the service. If you do not specify a security group, the default security group for the VPC is used.
+   * The security groups to associate with the service. If you do not specify a security group, a new security group is created.
    *
    * @default - A new security group is created.
    */
@@ -148,6 +148,8 @@ export class QueueProcessingFargateService extends QueueProcessingServiceBase {
       securityGroups: props.securityGroups,
       vpcSubnets: props.taskSubnets,
       assignPublicIp: props.assignPublicIp,
+      circuitBreaker: props.circuitBreaker,
+      capacityProviderStrategies: props.capacityProviderStrategies,
     });
 
     this.configureAutoscalingForService(this.service);

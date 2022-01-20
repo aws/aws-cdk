@@ -1,5 +1,5 @@
-import '@aws-cdk/assert/jest';
-import { ResourcePart } from '@aws-cdk/assert';
+import '@aws-cdk/assert-internal/jest';
+import { ResourcePart } from '@aws-cdk/assert-internal';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import * as apigateway from '../lib';
@@ -17,10 +17,33 @@ describe('api key', () => {
     // should have an api key with no props defined.
   });
 
+
+  test('enabled flag is respected', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new apigateway.ApiKey(stack, 'my-api-key', {
+      enabled: false,
+      value: 'arandomstringwithmorethantwentycharacters',
+    });
+
+    // THEN
+    expect(stack).toHaveResource('AWS::ApiGateway::ApiKey', {
+      Enabled: false,
+      Value: 'arandomstringwithmorethantwentycharacters',
+    });
+  });
+
+
   test('specify props for apiKey', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    const api = new apigateway.RestApi(stack, 'test-api', { cloudWatchRole: false, deploy: true, deployOptions: { stageName: 'test' } });
+    const api = new apigateway.RestApi(stack, 'test-api', {
+      cloudWatchRole: false,
+      deploy: true,
+      deployOptions: { stageName: 'test' },
+    });
     api.root.addMethod('GET'); // api must have atleast one method.
 
     // WHEN
@@ -41,17 +64,37 @@ describe('api key', () => {
     });
   });
 
+  test('add description to apiKey', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const api = new apigateway.RestApi(stack, 'test-api');
+    api.root.addMethod('GET'); // api must have atleast one method.
+
+    // WHEN
+    api.addApiKey('my-api-key', {
+      description: 'The most secret api key',
+    });
+
+    // THEN
+    expect(stack).toHaveResource('AWS::ApiGateway::ApiKey', {
+      Description: 'The most secret api key',
+    });
+  });
+
   test('use an imported api key', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    const api = new apigateway.RestApi(stack, 'test-api', { cloudWatchRole: false, deploy: true, deployOptions: { stageName: 'test' } });
+    const api = new apigateway.RestApi(stack, 'test-api', {
+      cloudWatchRole: false,
+      deploy: true,
+      deployOptions: { stageName: 'test' },
+    });
     api.root.addMethod('GET'); // api must have atleast one method.
 
     // WHEN
     const importedKey = apigateway.ApiKey.fromApiKeyId(stack, 'imported', 'KeyIdabc');
-    api.addUsagePlan('plan', {
-      apiKey: importedKey,
-    });
+    const usagePlan = api.addUsagePlan('plan');
+    usagePlan.addApiKey(importedKey);
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::ApiGateway::UsagePlanKey', {
@@ -67,7 +110,11 @@ describe('api key', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const user = new iam.User(stack, 'User');
-    const api = new apigateway.RestApi(stack, 'test-api', { cloudWatchRole: false, deploy: true, deployOptions: { stageName: 'test' } });
+    const api = new apigateway.RestApi(stack, 'test-api', {
+      cloudWatchRole: false,
+      deploy: true,
+      deployOptions: { stageName: 'test' },
+    });
     api.root.addMethod('GET'); // api must have atleast one method.
 
     // WHEN
@@ -114,7 +161,11 @@ describe('api key', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const user = new iam.User(stack, 'User');
-    const api = new apigateway.RestApi(stack, 'test-api', { cloudWatchRole: false, deploy: true, deployOptions: { stageName: 'test' } });
+    const api = new apigateway.RestApi(stack, 'test-api', {
+      cloudWatchRole: false,
+      deploy: true,
+      deployOptions: { stageName: 'test' },
+    });
     api.root.addMethod('GET'); // api must have atleast one method.
 
     // WHEN
@@ -166,7 +217,11 @@ describe('api key', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const user = new iam.User(stack, 'User');
-    const api = new apigateway.RestApi(stack, 'test-api', { cloudWatchRole: false, deploy: true, deployOptions: { stageName: 'test' } });
+    const api = new apigateway.RestApi(stack, 'test-api', {
+      cloudWatchRole: false,
+      deploy: true,
+      deployOptions: { stageName: 'test' },
+    });
     api.root.addMethod('GET'); // api must have atleast one method.
 
     // WHEN
@@ -237,7 +292,11 @@ describe('api key', () => {
     test('only api key is created when rate limiting properties are not provided', () => {
       // GIVEN
       const stack = new cdk.Stack();
-      const api = new apigateway.RestApi(stack, 'test-api', { cloudWatchRole: false, deploy: true, deployOptions: { stageName: 'test' } });
+      const api = new apigateway.RestApi(stack, 'test-api', {
+        cloudWatchRole: false,
+        deploy: true,
+        deployOptions: { stageName: 'test' },
+      });
       api.root.addMethod('GET'); // api must have atleast one method.
 
       // WHEN
@@ -265,7 +324,11 @@ describe('api key', () => {
     test('api key and usage plan are created and linked when rate limiting properties are provided', () => {
       // GIVEN
       const stack = new cdk.Stack();
-      const api = new apigateway.RestApi(stack, 'test-api', { cloudWatchRole: false, deploy: true, deployOptions: { stageName: 'test' } });
+      const api = new apigateway.RestApi(stack, 'test-api', {
+        cloudWatchRole: false,
+        deploy: true,
+        deployOptions: { stageName: 'test' },
+      });
       api.root.addMethod('GET'); // api must have atleast one method.
 
       // WHEN

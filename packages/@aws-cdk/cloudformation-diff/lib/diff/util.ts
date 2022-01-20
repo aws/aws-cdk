@@ -138,15 +138,10 @@ export function unionOf(lv: string[] | Set<string>, rv: string[] | Set<string>):
  * A parseFloat implementation that does the right thing for
  * strings like '0.0.0'
  * (for which JavaScript's parseFloat() returns 0).
+ * We return NaN for all of these strings that do not represent numbers,
+ * and so comparing them fails,
+ * and doesn't short-circuit the diff logic.
  */
 function safeParseFloat(str: string): number {
-  const ret = parseFloat(str);
-  if (ret === 0) {
-    // if the str is exactly '0', that's OK;
-    // but parseFloat() also returns 0 for things like '0.0';
-    // in this case, return NaN, so we'll fall back to string comparison
-    return str === '0' ? ret : NaN;
-  } else {
-    return ret;
-  }
+  return Number(str);
 }

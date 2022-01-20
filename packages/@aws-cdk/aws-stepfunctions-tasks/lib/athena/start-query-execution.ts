@@ -8,7 +8,6 @@ import { integrationResourceArn, validatePatternSupported } from '../private/tas
 
 /**
  * Properties for starting a Query Execution
- * @experimental
  */
 export interface AthenaStartQueryExecutionProps extends sfn.TaskStateBaseProps {
   /**
@@ -49,7 +48,6 @@ export interface AthenaStartQueryExecutionProps extends sfn.TaskStateBaseProps {
  * Start an Athena Query as a Task
  *
  * @see https://docs.aws.amazon.com/step-functions/latest/dg/connect-athena.html
- * @experimental
  */
 export class AthenaStartQueryExecution extends sfn.TaskStateBase {
 
@@ -185,40 +183,22 @@ export class AthenaStartQueryExecution extends sfn.TaskStateBase {
    * @internal
    */
   protected _renderTask(): any {
-    if (this.props.resultConfiguration?.outputLocation) {
-      return {
-        Resource: integrationResourceArn('athena', 'startQueryExecution', this.integrationPattern),
-        Parameters: sfn.FieldUtils.renderObject({
-          QueryString: this.props.queryString,
-          ClientRequestToken: this.props.clientRequestToken,
-          QueryExecutionContext: {
-            Catalog: this.props.queryExecutionContext?.catalogName,
-            Database: this.props.queryExecutionContext?.databaseName,
-          },
-          ResultConfiguration: {
-            EncryptionConfiguration: this.renderEncryption(),
-            OutputLocation: `s3://${this.props.resultConfiguration?.outputLocation?.bucketName}/${this.props.resultConfiguration?.outputLocation?.objectKey}/`,
-          },
-          WorkGroup: this.props.workGroup,
-        }),
-      };
-    } else {
-      return {
-        Resource: integrationResourceArn('athena', 'startQueryExecution', this.integrationPattern),
-        Parameters: sfn.FieldUtils.renderObject({
-          QueryString: this.props.queryString,
-          ClientRequestToken: this.props.clientRequestToken,
-          QueryExecutionContext: {
-            Catalog: this.props.queryExecutionContext?.catalogName,
-            Database: this.props.queryExecutionContext?.databaseName,
-          },
-          ResultConfiguration: {
-            EncryptionConfiguration: this.renderEncryption(),
-          },
-          WorkGroup: this.props.workGroup,
-        }),
-      };
-    }
+    return {
+      Resource: integrationResourceArn('athena', 'startQueryExecution', this.integrationPattern),
+      Parameters: sfn.FieldUtils.renderObject({
+        QueryString: this.props.queryString,
+        ClientRequestToken: this.props.clientRequestToken,
+        QueryExecutionContext: (this.props.queryExecutionContext?.catalogName || this.props.queryExecutionContext?.databaseName) ? {
+          Catalog: this.props.queryExecutionContext?.catalogName,
+          Database: this.props.queryExecutionContext?.databaseName,
+        } : undefined,
+        ResultConfiguration: {
+          EncryptionConfiguration: this.renderEncryption(),
+          OutputLocation: this.props.resultConfiguration?.outputLocation ? `s3://${this.props.resultConfiguration.outputLocation.bucketName}/${this.props.resultConfiguration.outputLocation.objectKey}/` : undefined,
+        },
+        WorkGroup: this.props?.workGroup,
+      }),
+    };
   }
 }
 
@@ -226,15 +206,15 @@ export class AthenaStartQueryExecution extends sfn.TaskStateBase {
  * Location of query result along with S3 bucket configuration
  *
  * @see https://docs.aws.amazon.com/athena/latest/APIReference/API_ResultConfiguration.html
- * @experimental
  */
 export interface ResultConfiguration {
 
   /**
    * S3 path of query results
    *
+   * Example value: `s3://query-results-bucket/folder/`
+   *
    * @default - Query Result Location set in Athena settings for this workgroup
-   * @example s3://query-results-bucket/folder/
   */
   readonly outputLocation?: s3.Location;
 
@@ -250,7 +230,6 @@ export interface ResultConfiguration {
  * Encryption Configuration of the S3 bucket
  *
  * @see https://docs.aws.amazon.com/athena/latest/APIReference/API_EncryptionConfiguration.html
- * @experimental
  */
 export interface EncryptionConfiguration {
 
@@ -273,7 +252,6 @@ export interface EncryptionConfiguration {
  * Encryption Options of the S3 bucket
  *
  * @see https://docs.aws.amazon.com/athena/latest/APIReference/API_EncryptionConfiguration.html#athena-Type-EncryptionConfiguration-EncryptionOption
- * @experimental
  */
 export enum EncryptionOption {
   /**
@@ -302,7 +280,6 @@ export enum EncryptionOption {
  * Database and data catalog context in which the query execution occurs
  *
  * @see https://docs.aws.amazon.com/athena/latest/APIReference/API_QueryExecutionContext.html
- * @experimental
  */
 export interface QueryExecutionContext {
 

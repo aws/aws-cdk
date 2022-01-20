@@ -1,19 +1,61 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import * as assets from '@aws-cdk/assets';
 import * as ecr from '@aws-cdk/aws-ecr';
-import { Annotations, FeatureFlags, IgnoreMode, Stack, Token } from '@aws-cdk/core';
+import { Annotations, AssetStaging, FeatureFlags, FileFingerprintOptions, IgnoreMode, Stack, SymlinkFollowMode, Token, Stage, CfnResource } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line
+import { FingerprintOptions, FollowMode, IAsset } from '@aws-cdk/assets';
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
 import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
+ * Options to control invalidation of `DockerImageAsset` asset hashes
+ */
+export interface DockerImageAssetInvalidationOptions {
+  /**
+   * Use `extraHash` while calculating the asset hash
+   *
+   * @default true
+   */
+  readonly extraHash?: boolean;
+
+  /**
+   * Use `buildArgs` while calculating the asset hash
+   *
+   * @default true
+   */
+  readonly buildArgs?: boolean;
+
+  /**
+   * Use `target` while calculating the asset hash
+   *
+   * @default true
+   */
+  readonly target?: boolean;
+
+  /**
+   * Use `file` while calculating the asset hash
+   *
+   * @default true
+   */
+  readonly file?: boolean;
+
+  /**
+   * Use `repositoryName` while calculating the asset hash
+   *
+   * @default true
+   */
+  readonly repositoryName?: boolean;
+}
+
+/**
  * Options for DockerImageAsset
  */
-export interface DockerImageAssetOptions extends assets.FingerprintOptions {
+export interface DockerImageAssetOptions extends FingerprintOptions, FileFingerprintOptions {
   /**
    * ECR repository name
    *
@@ -52,6 +94,13 @@ export interface DockerImageAssetOptions extends assets.FingerprintOptions {
    * @default 'Dockerfile'
    */
   readonly file?: string;
+
+  /**
+   * Options to control which parameters are used to invalidate the asset hash.
+   *
+   * @default - hash all parameters
+   */
+  readonly invalidation?: DockerImageAssetInvalidationOptions;
 }
 
 /**
@@ -60,6 +109,8 @@ export interface DockerImageAssetOptions extends assets.FingerprintOptions {
 export interface DockerImageAssetProps extends DockerImageAssetOptions {
   /**
    * The directory where the Dockerfile is stored
+   *
+   * Any directory inside with a name that matches the CDK output folder (cdk.out by default) will be excluded from the asset
    */
   readonly directory: string;
 }
@@ -69,7 +120,7 @@ export interface DockerImageAssetProps extends DockerImageAssetOptions {
  *
  * The image will be created in build time and uploaded to an ECR repository.
  */
-export class DockerImageAsset extends CoreConstruct implements assets.IAsset {
+export class DockerImageAsset extends CoreConstruct implements IAsset {
   /**
    * The full URI of the image (including a tag). Use this reference to pull
    * the asset.
@@ -81,7 +132,44 @@ export class DockerImageAsset extends CoreConstruct implements assets.IAsset {
    */
   public repository: ecr.IRepository;
 
+  /**
+   * A hash of the source of this asset, which is available at construction time. As this is a plain
+   * string, it can be used in construct IDs in order to enforce creation of a new resource when
+   * the content hash has changed.
+   * @deprecated use assetHash
+   */
   public readonly sourceHash: string;
+
+  /**
+   * A hash of this asset, which is available at construction time. As this is a plain string, it
+   * can be used in construct IDs in order to enforce creation of a new resource when the content
+   * hash has changed.
+   */
+  public readonly assetHash: string;
+
+  /**
+   * The path to the asset, relative to the current Cloud Assembly
+   *
+   * If asset staging is disabled, this will just be the original path.
+   *
+   * If asset staging is enabled it will be the staged path.
+   */
+  private readonly assetPath: string;
+
+  /**
+   * The path to the Dockerfile, relative to the assetPath
+   */
+  private readonly dockerfilePath?: string;
+
+  /**
+   * Build args to pass to the `docker build` command.
+   */
+  private readonly dockerBuildArgs?: { [key: string]: string };
+
+  /**
+   * Docker target to build to
+   */
+  private readonly dockerBuildTarget?: string;
 
   constructor(scope: Construct, id: string, props: DockerImageAssetProps) {
     super(scope, id);
@@ -96,7 +184,8 @@ export class DockerImageAsset extends CoreConstruct implements assets.IAsset {
     }
 
     // validate the docker file exists
-    const file = path.join(dir, props.file || 'Dockerfile');
+    this.dockerfilePath = props.file || 'Dockerfile';
+    const file = path.join(dir, this.dockerfilePath);
     if (!fs.existsSync(file)) {
       throw new Error(`Cannot find file at ${file}`);
     }
@@ -116,33 +205,37 @@ export class DockerImageAsset extends CoreConstruct implements assets.IAsset {
         ...dockerIgnorePatterns,
         ...exclude,
 
-        // Ensure .dockerignore is whitelisted no matter what.
+        // Ensure .dockerignore is included no matter what.
         '!.dockerignore',
       ];
     }
 
-    // Ensure the Dockerfile is whitelisted no matter what.
+    // Ensure the Dockerfile is included no matter what.
     exclude.push('!' + path.basename(file));
+    // Ensure the cdk.out folder is not included to avoid infinite loops.
+    const cdkout = Stage.of(this)?.outdir ?? 'cdk.out';
+    exclude.push(cdkout);
 
     if (props.repositoryName) {
       Annotations.of(this).addWarning('DockerImageAsset.repositoryName is deprecated. Override "core.Stack.addDockerImageAsset" to control asset locations');
     }
 
     // include build context in "extra" so it will impact the hash
-    const extraHash: { [field: string]: any } = { };
-    if (props.extraHash) { extraHash.user = props.extraHash; }
-    if (props.buildArgs) { extraHash.buildArgs = props.buildArgs; }
-    if (props.target) { extraHash.target = props.target; }
-    if (props.file) { extraHash.file = props.file; }
-    if (props.repositoryName) { extraHash.repositoryName = props.repositoryName; }
+    const extraHash: { [field: string]: any } = {};
+    if (props.invalidation?.extraHash !== false && props.extraHash) { extraHash.user = props.extraHash; }
+    if (props.invalidation?.buildArgs !== false && props.buildArgs) { extraHash.buildArgs = props.buildArgs; }
+    if (props.invalidation?.target !== false && props.target) { extraHash.target = props.target; }
+    if (props.invalidation?.file !== false && props.file) { extraHash.file = props.file; }
+    if (props.invalidation?.repositoryName !== false && props.repositoryName) { extraHash.repositoryName = props.repositoryName; }
 
     // add "salt" to the hash in order to invalidate the image in the upgrade to
     // 1.21.0 which removes the AdoptedRepository resource (and will cause the
     // deletion of the ECR repository the app used).
     extraHash.version = '1.21.0';
 
-    const staging = new assets.Staging(this, 'Staging', {
+    const staging = new AssetStaging(this, 'Staging', {
       ...props,
+      follow: props.followSymlinks ?? toSymlinkFollow(props.follow),
       exclude,
       ignoreMode,
       sourcePath: dir,
@@ -151,21 +244,57 @@ export class DockerImageAsset extends CoreConstruct implements assets.IAsset {
         : JSON.stringify(extraHash),
     });
 
-    this.sourceHash = staging.sourceHash;
+    this.sourceHash = staging.assetHash;
+    this.assetHash = staging.assetHash;
 
     const stack = Stack.of(this);
+    this.assetPath = staging.relativeStagedPath(stack);
+    this.dockerBuildArgs = props.buildArgs;
+    this.dockerBuildTarget = props.target;
+
     const location = stack.synthesizer.addDockerImageAsset({
-      directoryName: staging.relativeStagedPath(stack),
-      dockerBuildArgs: props.buildArgs,
-      dockerBuildTarget: props.target,
+      directoryName: this.assetPath,
+      dockerBuildArgs: this.dockerBuildArgs,
+      dockerBuildTarget: this.dockerBuildTarget,
       dockerFile: props.file,
-      repositoryName: props.repositoryName,
-      sourceHash: staging.sourceHash,
+      sourceHash: staging.assetHash,
     });
 
     this.repository = ecr.Repository.fromRepositoryName(this, 'Repository', location.repositoryName);
     this.imageUri = location.imageUri;
   }
+
+  /**
+   * Adds CloudFormation template metadata to the specified resource with
+   * information that indicates which resource property is mapped to this local
+   * asset. This can be used by tools such as SAM CLI to provide local
+   * experience such as local invocation and debugging of Lambda functions.
+   *
+   * Asset metadata will only be included if the stack is synthesized with the
+   * "aws:cdk:enable-asset-metadata" context key defined, which is the default
+   * behavior when synthesizing via the CDK Toolkit.
+   *
+   * @see https://github.com/aws/aws-cdk/issues/1432
+   *
+   * @param resource The CloudFormation resource which is using this asset [disable-awslint:ref-via-interface]
+   * @param resourceProperty The property name where this asset is referenced
+   */
+  public addResourceMetadata(resource: CfnResource, resourceProperty: string) {
+    if (!this.node.tryGetContext(cxapi.ASSET_RESOURCE_METADATA_ENABLED_CONTEXT)) {
+      return; // not enabled
+    }
+
+    // tell tools such as SAM CLI that the resourceProperty of this resource
+    // points to a local path and include the path to de dockerfile, docker build args, and target,
+    // in order to enable local invocation of this function.
+    resource.cfnOptions.metadata = resource.cfnOptions.metadata || { };
+    resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_PATH_KEY] = this.assetPath;
+    resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_DOCKERFILE_PATH_KEY] = this.dockerfilePath;
+    resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_DOCKER_BUILD_ARGS_KEY] = this.dockerBuildArgs;
+    resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_DOCKER_BUILD_TARGET_KEY] = this.dockerBuildTarget;
+    resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_PROPERTY_KEY] = resourceProperty;
+  }
+
 }
 
 function validateProps(props: DockerImageAssetProps) {
@@ -183,5 +312,15 @@ function validateBuildArgs(buildArgs?: { [key: string]: string }) {
     if (Token.isUnresolved(key) || Token.isUnresolved(value)) {
       throw new Error('Cannot use tokens in keys or values of "buildArgs" since they are needed before deployment');
     }
+  }
+}
+
+function toSymlinkFollow(follow?: FollowMode): SymlinkFollowMode | undefined {
+  switch (follow) {
+    case undefined: return undefined;
+    case FollowMode.NEVER: return SymlinkFollowMode.NEVER;
+    case FollowMode.ALWAYS: return SymlinkFollowMode.ALWAYS;
+    case FollowMode.BLOCK_EXTERNAL: return SymlinkFollowMode.BLOCK_EXTERNAL;
+    case FollowMode.EXTERNAL: return SymlinkFollowMode.EXTERNAL;
   }
 }

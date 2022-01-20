@@ -1,7 +1,7 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import { IVpcEndpoint } from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
-import { CfnOutput, IResource as IResourceBase, Resource, Stack } from '@aws-cdk/core';
+import { ArnFormat, CfnOutput, IResource as IResourceBase, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { ApiDefinition } from './api-definition';
 import { ApiKey, ApiKeyOptions, IApiKey } from './api-key';
@@ -170,6 +170,16 @@ export interface RestApiBaseProps {
    * @default EndpointType.EDGE
    */
   readonly endpointTypes?: EndpointType[];
+
+  /**
+   * Specifies whether clients can invoke the API using the default execute-api
+   * endpoint. To require that clients use a custom domain name to invoke the
+   * API, disable the default endpoint.
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigateway-restapi.html
+   *
+   * @default false
+   */
+  readonly disableExecuteApiEndpoint?: boolean;
 }
 
 /**
@@ -236,7 +246,6 @@ export interface RestApiProps extends RestApiOptions {
 
 /**
  * Props to instantiate a new SpecRestApi
- * @experimental
  */
 export interface SpecRestApiProps extends RestApiBaseProps {
   /**
@@ -303,11 +312,14 @@ export abstract class RestApiBase extends Resource implements IRestApi {
 
   /**
    * A human friendly name for this Rest API. Note that this is different from `restApiId`.
+   * @attribute
    */
   public readonly restApiName: string;
 
   private _latestDeployment?: Deployment;
   private _domainName?: DomainName;
+
+  protected cloudWatchAccount?: CfnAccount;
 
   constructor(scope: Construct, id: string, props: RestApiBaseProps = { }) {
     super(scope, id);
@@ -364,7 +376,7 @@ export abstract class RestApiBase extends Resource implements IRestApi {
     return Stack.of(this).formatArn({
       service: 'execute-api',
       resource: this.restApiId,
-      sep: '/',
+      arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
       resourceName: `${stage}/${method}${path}`,
     });
   }
@@ -396,7 +408,7 @@ export abstract class RestApiBase extends Resource implements IRestApi {
     return new cloudwatch.Metric({
       namespace: 'AWS/ApiGateway',
       metricName,
-      dimensions: { ApiName: this.restApiName },
+      dimensionsMap: { ApiName: this.restApiName },
       ...props,
     }).attachTo(this);
   }
@@ -490,20 +502,51 @@ export abstract class RestApiBase extends Resource implements IRestApi {
     ignore(deployment);
   }
 
-  protected configureCloudWatchRole(apiResource: CfnRestApi) {
+  /**
+   * Associates a Stage with this REST API
+   *
+   * @internal
+   */
+  public _attachStage(stage: Stage) {
+    if (this.cloudWatchAccount) {
+      stage.node.addDependency(this.cloudWatchAccount);
+    }
+  }
+
+  /**
+   * @internal
+   */
+  protected _configureCloudWatchRole(apiResource: CfnRestApi) {
     const role = new iam.Role(this, 'CloudWatchRole', {
       assumedBy: new iam.ServicePrincipal('apigateway.amazonaws.com'),
       managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonAPIGatewayPushToCloudWatchLogs')],
     });
 
-    const resource = new CfnAccount(this, 'Account', {
+    this.cloudWatchAccount = new CfnAccount(this, 'Account', {
       cloudWatchRoleArn: role.roleArn,
     });
 
-    resource.node.addDependency(apiResource);
+    this.cloudWatchAccount.node.addDependency(apiResource);
   }
 
-  protected configureDeployment(props: RestApiOptions) {
+  /**
+   * @deprecated This method will be made internal. No replacement
+   */
+  protected configureCloudWatchRole(apiResource: CfnRestApi) {
+    this._configureCloudWatchRole(apiResource);
+  }
+
+  /**
+   * @deprecated This method will be made internal. No replacement
+   */
+  protected configureDeployment(props: RestApiBaseProps) {
+    this._configureDeployment(props);
+  }
+
+  /**
+   * @internal
+   */
+  protected _configureDeployment(props: RestApiBaseProps) {
     const deploy = props.deploy ?? true;
     if (deploy) {
 
@@ -567,7 +610,6 @@ export abstract class RestApiBase extends Resource implements IRestApi {
  * By default, the API will automatically be deployed and accessible from a
  * public endpoint.
  *
- * @experimental
  *
  * @resource AWS::ApiGateway::RestApi
  */
@@ -598,19 +640,22 @@ export class SpecRestApi extends RestApiBase {
       endpointConfiguration: this._configureEndpoints(props),
       parameters: props.parameters,
     });
+
+    props.apiDefinition.bindAfterCreate(this, this);
+
     this.node.defaultChild = resource;
     this.restApiId = resource.ref;
     this.restApiRootResourceId = resource.attrRootResourceId;
     this.root = new RootResource(this, {}, this.restApiRootResourceId);
 
-    this.configureDeployment(props);
+    this._configureDeployment(props);
     if (props.domainName) {
       this.addDomainName('CustomDomain', props.domainName);
     }
 
     const cloudWatchRole = props.cloudWatchRole ?? true;
     if (cloudWatchRole) {
-      this.configureCloudWatchRole(resource);
+      this._configureCloudWatchRole(resource);
     }
   }
 }
@@ -660,7 +705,6 @@ export class RestApi extends RestApiBase {
 
   /**
    * Import an existing RestApi that can be configured with additional Methods and Resources.
-   * @experimental
    */
   public static fromRestApiAttributes(scope: Construct, id: string, attrs: RestApiAttributes): IRestApi {
     class Import extends RestApiBase {
@@ -702,16 +746,17 @@ export class RestApi extends RestApiBase {
       apiKeySourceType: props.apiKeySourceType,
       cloneFrom: props.cloneFrom?.restApiId,
       parameters: props.parameters,
+      disableExecuteApiEndpoint: props.disableExecuteApiEndpoint,
     });
     this.node.defaultChild = resource;
     this.restApiId = resource.ref;
 
     const cloudWatchRole = props.cloudWatchRole ?? true;
     if (cloudWatchRole) {
-      this.configureCloudWatchRole(resource);
+      this._configureCloudWatchRole(resource);
     }
 
-    this.configureDeployment(props);
+    this._configureDeployment(props);
     if (props.domainName) {
       this.addDomainName('CustomDomain', props.domainName);
     }

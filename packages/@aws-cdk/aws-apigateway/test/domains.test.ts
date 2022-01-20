@@ -1,5 +1,5 @@
-import { ABSENT } from '@aws-cdk/assert';
-import '@aws-cdk/assert/jest';
+import { ABSENT } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
 import * as acm from '@aws-cdk/aws-certificatemanager';
 import { Bucket } from '@aws-cdk/aws-s3';
 import { Stack } from '@aws-cdk/core';
@@ -259,6 +259,79 @@ describe('domains', () => {
     });
   });
 
+  test('a base path can be defined when adding a domain name', () => {
+    // GIVEN
+    const domainName = 'my.domain.com';
+    const basePath = 'users';
+    const stack = new Stack();
+    const certificate = new acm.Certificate(stack, 'cert', { domainName: 'my.domain.com' });
+
+    // WHEN
+    const api = new apigw.RestApi(stack, 'api', {});
+
+    api.root.addMethod('GET');
+
+    api.addDomainName('domainId', { domainName, certificate, basePath });
+
+    // THEN
+    expect(stack).toHaveResource('AWS::ApiGateway::BasePathMapping', {
+      'BasePath': 'users',
+      'RestApiId': {
+        'Ref': 'apiC8550315',
+      },
+    });
+  });
+
+  test('additional base paths can added if addDomainName was called with a non-empty base path', () => {
+    // GIVEN
+    const domainName = 'my.domain.com';
+    const basePath = 'users';
+    const stack = new Stack();
+    const certificate = new acm.Certificate(stack, 'cert', { domainName: 'my.domain.com' });
+
+    // WHEN
+    const api = new apigw.RestApi(stack, 'api', {});
+
+    api.root.addMethod('GET');
+
+    const dn = api.addDomainName('domainId', { domainName, certificate, basePath });
+    dn.addBasePathMapping(api, {
+      basePath: 'books',
+    });
+
+    // THEN
+    expect(stack).toHaveResource('AWS::ApiGateway::BasePathMapping', {
+      'BasePath': 'users',
+      'RestApiId': {
+        'Ref': 'apiC8550315',
+      },
+    });
+    expect(stack).toHaveResource('AWS::ApiGateway::BasePathMapping', {
+      'BasePath': 'books',
+      'RestApiId': {
+        'Ref': 'apiC8550315',
+      },
+    });
+  });
+
+  test('no additional base paths can added if addDomainName was called without a base path', () => {
+    // GIVEN
+    const domainName = 'my.domain.com';
+    const stack = new Stack();
+    const certificate = new acm.Certificate(stack, 'cert', { domainName: 'my.domain.com' });
+
+    // WHEN
+    const api = new apigw.RestApi(stack, 'api', {});
+
+    api.root.addMethod('GET');
+
+    const dn = api.addDomainName('domainId', { domainName, certificate });
+
+    expect(() => dn.addBasePathMapping(api, { basePath: 'books' }))
+      .toThrow(/No additional base paths are allowed/);
+  });
+
+
   test('domain name cannot contain uppercase letters', () => {
     // GIVEN
     const stack = new Stack();
@@ -388,7 +461,7 @@ describe('domains', () => {
 
   test('accepts a mutual TLS configuration', () => {
     const stack = new Stack();
-    const bucket = Bucket.fromBucketName(stack, 'testBucket', 'exampleBucket');
+    const bucket = Bucket.fromBucketName(stack, 'testBucket', 'example-bucket');
     new apigw.DomainName(stack, 'another-domain', {
       domainName: 'example.com',
       mtls: {
@@ -402,14 +475,14 @@ describe('domains', () => {
       'DomainName': 'example.com',
       'EndpointConfiguration': { 'Types': ['REGIONAL'] },
       'RegionalCertificateArn': 'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d',
-      'MutualTlsAuthentication': { 'TruststoreUri': 's3://exampleBucket/someca.pem' },
+      'MutualTlsAuthentication': { 'TruststoreUri': 's3://example-bucket/someca.pem' },
     });
 
   });
 
   test('mTLS should allow versions to be set on the s3 bucket', () => {
     const stack = new Stack();
-    const bucket = Bucket.fromBucketName(stack, 'testBucket', 'exampleBucket');
+    const bucket = Bucket.fromBucketName(stack, 'testBucket', 'example-bucket');
     new apigw.DomainName(stack, 'another-domain', {
       domainName: 'example.com',
       certificate: acm.Certificate.fromCertificateArn(stack, 'cert2', 'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d'),
@@ -423,7 +496,7 @@ describe('domains', () => {
       'DomainName': 'example.com',
       'EndpointConfiguration': { 'Types': ['REGIONAL'] },
       'RegionalCertificateArn': 'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d',
-      'MutualTlsAuthentication': { 'TruststoreUri': 's3://exampleBucket/someca.pem', 'TruststoreVersion': 'version' },
+      'MutualTlsAuthentication': { 'TruststoreUri': 's3://example-bucket/someca.pem', 'TruststoreVersion': 'version' },
     });
   });
 

@@ -1,9 +1,9 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import { Template } from '@aws-cdk/assertions';
 import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import * as sqs from '@aws-cdk/aws-sqs';
-import { CfnElement, Stack } from '@aws-cdk/core';
+import { CfnElement, Duration, Stack } from '@aws-cdk/core';
 import * as targets from '../../lib';
 
 describe('CodeBuild event target', () => {
@@ -27,7 +27,7 @@ describe('CodeBuild event target', () => {
     rule.addTarget(new targets.CodeBuildProject(project));
 
     // THEN
-    expect(stack).to(haveResource('AWS::Events::Rule', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
       Targets: [
         {
           Arn: projectArn,
@@ -35,9 +35,9 @@ describe('CodeBuild event target', () => {
           RoleArn: { 'Fn::GetAtt': ['MyProjectEventsRole5B7D93F5', 'Arn'] },
         },
       ],
-    }));
+    });
 
-    expect(stack).to(haveResource('AWS::IAM::Role', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
       AssumeRolePolicyDocument: {
         Statement: [
           {
@@ -48,9 +48,9 @@ describe('CodeBuild event target', () => {
         ],
         Version: '2012-10-17',
       },
-    }));
+    });
 
-    expect(stack).to(haveResource('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -61,7 +61,7 @@ describe('CodeBuild event target', () => {
         ],
         Version: '2012-10-17',
       },
-    }));
+    });
   });
 
   test('specifying event for codebuild project target', () => {
@@ -82,7 +82,7 @@ describe('CodeBuild event target', () => {
     );
 
     // THEN
-    expect(stack).to(haveResource('AWS::Events::Rule', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
       Targets: [
         {
           Arn: projectArn,
@@ -93,7 +93,7 @@ describe('CodeBuild event target', () => {
           },
         },
       ],
-    }));
+    });
   });
 
   test('specifying custom role for codebuild project target', () => {
@@ -111,7 +111,7 @@ describe('CodeBuild event target', () => {
     rule.addTarget(new targets.CodeBuildProject(project, { eventRole: role }));
 
     // THEN
-    expect(stack).to(haveResource('AWS::Events::Rule', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
       Targets: [
         {
           Arn: projectArn,
@@ -119,7 +119,55 @@ describe('CodeBuild event target', () => {
           RoleArn: { 'Fn::GetAtt': ['MyRole', 'Arn'] },
         },
       ],
-    }));
+    });
+  });
+
+  test('specifying retry policy', () => {
+    // GIVEN
+    const rule = new events.Rule(stack, 'Rule', {
+      schedule: events.Schedule.expression('rate(1 hour)'),
+    });
+
+    // WHEN
+    const eventInput = {
+      buildspecOverride: 'buildspecs/hourly.yml',
+    };
+
+    rule.addTarget(
+      new targets.CodeBuildProject(project, {
+        event: events.RuleTargetInput.fromObject(eventInput),
+        retryAttempts: 2,
+        maxEventAge: Duration.hours(2),
+      }),
+    );
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+      ScheduleExpression: 'rate(1 hour)',
+      State: 'ENABLED',
+      Targets: [
+        {
+          Arn: {
+            'Fn::GetAtt': [
+              'MyProject39F7B0AE',
+              'Arn',
+            ],
+          },
+          Id: 'Target0',
+          Input: '{"buildspecOverride":"buildspecs/hourly.yml"}',
+          RetryPolicy: {
+            MaximumEventAgeInSeconds: 7200,
+            MaximumRetryAttempts: 2,
+          },
+          RoleArn: {
+            'Fn::GetAtt': [
+              'MyProjectEventsRole5B7D93F5',
+              'Arn',
+            ],
+          },
+        },
+      ],
+    });
   });
 
   test('use a Dead Letter Queue for the rule target', () => {
@@ -143,7 +191,7 @@ describe('CodeBuild event target', () => {
     );
 
     // THEN
-    expect(stack).to(haveResource('AWS::Events::Rule', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
       Targets: [
         {
           Arn: projectArn,
@@ -162,9 +210,9 @@ describe('CodeBuild event target', () => {
           },
         },
       ],
-    }));
+    });
 
-    expect(stack).to(haveResource('AWS::SQS::QueuePolicy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::SQS::QueuePolicy', {
       PolicyDocument: {
         Statement: [
           {
@@ -199,6 +247,6 @@ describe('CodeBuild event target', () => {
           Ref: 'Queue4A7E3555',
         },
       ],
-    }));
+    });
   });
 });

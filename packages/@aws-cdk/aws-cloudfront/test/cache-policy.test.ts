@@ -1,4 +1,4 @@
-import '@aws-cdk/assert/jest';
+import { Template } from '@aws-cdk/assertions';
 import { App, Aws, Duration, Stack } from '@aws-cdk/core';
 import { CachePolicy, CacheCookieBehavior, CacheHeaderBehavior, CacheQueryStringBehavior } from '../lib';
 
@@ -22,9 +22,9 @@ describe('CachePolicy', () => {
   test('minimal example', () => {
     new CachePolicy(stack, 'CachePolicy');
 
-    expect(stack).toHaveResource('AWS::CloudFront::CachePolicy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::CachePolicy', {
       CachePolicyConfig: {
-        Name: 'StackCachePolicy0D6FCBC0',
+        Name: 'StackCachePolicy0D6FCBC0-testregion',
         MinTTL: 0,
         DefaultTTL: 86400,
         MaxTTL: 31536000,
@@ -59,7 +59,7 @@ describe('CachePolicy', () => {
       enableAcceptEncodingBrotli: true,
     });
 
-    expect(stack).toHaveResource('AWS::CloudFront::CachePolicy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::CachePolicy', {
       CachePolicyConfig: {
         Name: 'MyPolicy',
         Comment: 'A default policy',
@@ -96,17 +96,6 @@ describe('CachePolicy', () => {
     expect(() => new CachePolicy(stack, 'CachePolicy6', { cachePolicyName: 'My_Policy' })).not.toThrow();
   });
 
-  test('throws if more than 10 CacheHeaderBehavior headers are being passed', () => {
-    const errorMessage = /Maximum allowed headers in Cache Policy is 10; got (.*?)/;
-    expect(() => new CachePolicy(stack, 'CachePolicy1', {
-      headerBehavior: CacheHeaderBehavior.allowList('Lorem', 'ipsum', 'dolor', 'sit', 'amet', 'consectetur', 'adipiscing', 'elit', 'sed', 'do', 'eiusmod'),
-    })).toThrow(errorMessage);
-
-    expect(() => new CachePolicy(stack, 'CachePolicy2', {
-      headerBehavior: CacheHeaderBehavior.allowList('Lorem', 'ipsum', 'dolor', 'sit', 'amet', 'consectetur', 'adipiscing', 'elit', 'sed', 'do'),
-    })).not.toThrow();
-  });
-
   test('does not throw if cachePolicyName is a token', () => {
     expect(() => new CachePolicy(stack, 'CachePolicy', {
       cachePolicyName: Aws.STACK_NAME,
@@ -117,7 +106,7 @@ describe('CachePolicy', () => {
     test('default TTLs', () => {
       new CachePolicy(stack, 'CachePolicy', { cachePolicyName: 'MyPolicy' });
 
-      expect(stack).toHaveResourceLike('AWS::CloudFront::CachePolicy', {
+      Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::CachePolicy', {
         CachePolicyConfig: {
           MinTTL: 0,
           DefaultTTL: 86400,
@@ -132,7 +121,7 @@ describe('CachePolicy', () => {
         minTtl: Duration.days(2),
       });
 
-      expect(stack).toHaveResourceLike('AWS::CloudFront::CachePolicy', {
+      Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::CachePolicy', {
         CachePolicyConfig: {
           MinTTL: 172800,
           DefaultTTL: 172800,
@@ -147,7 +136,7 @@ describe('CachePolicy', () => {
         defaultTtl: Duration.days(400),
       });
 
-      expect(stack).toHaveResourceLike('AWS::CloudFront::CachePolicy', {
+      Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::CachePolicy', {
         CachePolicyConfig: {
           MinTTL: 0,
           DefaultTTL: 34560000,

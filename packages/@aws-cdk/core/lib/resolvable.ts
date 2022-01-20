@@ -105,7 +105,6 @@ export interface ITokenResolver {
  *
  * Interface so it could potentially be exposed over jsii.
  *
- * @experimental
  */
 export interface IFragmentConcatenator {
   /**
@@ -130,7 +129,6 @@ export class StringConcat implements IFragmentConcatenator {
 /**
  * Default resolver implementation
  *
- * @experimental
  */
 export class DefaultTokenResolver implements ITokenResolver {
   constructor(private readonly concat: IFragmentConcatenator) {

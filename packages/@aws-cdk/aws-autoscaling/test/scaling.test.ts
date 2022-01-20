@@ -1,19 +1,19 @@
-import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
+import '@aws-cdk/assert-internal/jest';
+import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert-internal';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
 import * as cdk from '@aws-cdk/core';
 import * as constructs from 'constructs';
-import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as autoscaling from '../lib';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
 import { Construct } from '@aws-cdk/core';
 
-nodeunitShim({
-  'target tracking policies': {
-    'cpu utilization'(test: Test) {
+describe('scaling', () => {
+  describe('target tracking policies', () => {
+    test('cpu utilization', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const fixture = new ASGFixture(stack, 'Fixture');
@@ -32,10 +32,10 @@ nodeunitShim({
         },
       }));
 
-      test.done();
-    },
 
-    'network ingress'(test: Test) {
+    });
+
+    test('network ingress', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const fixture = new ASGFixture(stack, 'Fixture');
@@ -54,10 +54,10 @@ nodeunitShim({
         },
       }));
 
-      test.done();
-    },
 
-    'network egress'(test: Test) {
+    });
+
+    test('network egress', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const fixture = new ASGFixture(stack, 'Fixture');
@@ -76,10 +76,10 @@ nodeunitShim({
         },
       }));
 
-      test.done();
-    },
 
-    'request count per second'(test: Test) {
+    });
+
+    test('request count per second', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const fixture = new ASGFixture(stack, 'Fixture');
@@ -124,10 +124,10 @@ nodeunitShim({
         },
       }));
 
-      test.done();
-    },
 
-    'request count per minute'(test: Test) {
+    });
+
+    test('request count per minute', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const fixture = new ASGFixture(stack, 'Fixture');
@@ -172,10 +172,10 @@ nodeunitShim({
         },
       }));
 
-      test.done();
-    },
 
-    'custom metric'(test: Test) {
+    });
+
+    test('custom metric', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const fixture = new ASGFixture(stack, 'Fixture');
@@ -185,7 +185,7 @@ nodeunitShim({
         metric: new cloudwatch.Metric({
           metricName: 'Henk',
           namespace: 'Test',
-          dimensions: {
+          dimensionsMap: {
             Mustache: 'Bushy',
           },
         }),
@@ -206,11 +206,11 @@ nodeunitShim({
         },
       }));
 
-      test.done();
-    },
-  },
 
-  'step scaling'(test: Test) {
+    });
+  });
+
+  test('step scaling', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const fixture = new ASGFixture(stack, 'Fixture');
@@ -220,7 +220,7 @@ nodeunitShim({
       metric: new cloudwatch.Metric({
         metricName: 'Legs',
         namespace: 'Henk',
-        dimensions: { Mustache: 'Bushy' },
+        dimensionsMap: { Mustache: 'Bushy' },
       }),
       // Adjust the number of legs to be closer to 2
       scalingSteps: [
@@ -273,8 +273,8 @@ nodeunitShim({
       AlarmDescription: 'Lower threshold scaling alarm',
     }));
 
-    test.done();
-  },
+
+  });
 });
 
 test('step scaling from percentile metric', () => {

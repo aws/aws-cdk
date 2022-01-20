@@ -208,7 +208,7 @@
         "RouteSelectionExpression": "$request.body.action"
       }
     },
-    "mywsapiconnectRouteWebSocketApiIntegmywsapiconnectRoute456CB290Permission2D0BC294": {
+    "mywsapiconnectRouteConnectIntegrationPermission719B6E63": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
@@ -245,7 +245,7 @@
         }
       }
     },
-    "mywsapiconnectRouteWebSocketIntegration50b017444a02be00a0b575d123314581176017EE": {
+    "mywsapiconnectRouteConnectIntegrationE101DB9B": {
       "Type": "AWS::ApiGatewayV2::Integration",
       "Properties": {
         "ApiId": {
@@ -253,9 +253,26 @@
         },
         "IntegrationType": "AWS_PROXY",
         "IntegrationUri": {
-          "Fn::GetAtt": [
-            "ConnectHandler2FFD52D8",
-            "Arn"
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":apigateway:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":lambda:path/2015-03-31/functions/",
+              {
+                "Fn::GetAtt": [
+                  "ConnectHandler2FFD52D8",
+                  "Arn"
+                ]
+              },
+              "/invocations"
+            ]
           ]
         }
       }
@@ -267,20 +284,21 @@
           "Ref": "mywsapi32E6CE11"
         },
         "RouteKey": "$connect",
+        "AuthorizationType": "NONE",
         "Target": {
           "Fn::Join": [
             "",
             [
               "integrations/",
               {
-                "Ref": "mywsapiconnectRouteWebSocketIntegration50b017444a02be00a0b575d123314581176017EE"
+                "Ref": "mywsapiconnectRouteConnectIntegrationE101DB9B"
               }
             ]
           ]
         }
       }
     },
-    "mywsapidisconnectRouteWebSocketApiIntegmywsapidisconnectRoute26B84CF3PermissionB3F6D0A8": {
+    "mywsapidisconnectRouteDisconnectIntegrationPermissionA8197C41": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
@@ -317,7 +335,7 @@
         }
       }
     },
-    "mywsapidisconnectRouteWebSocketIntegrationcd3bacb451e82549501e141cc094d7ba1F7F68BC": {
+    "mywsapidisconnectRouteDisconnectIntegrationF927D904": {
       "Type": "AWS::ApiGatewayV2::Integration",
       "Properties": {
         "ApiId": {
@@ -325,9 +343,26 @@
         },
         "IntegrationType": "AWS_PROXY",
         "IntegrationUri": {
-          "Fn::GetAtt": [
-            "DisconnectHandlerCB7ED6F7",
-            "Arn"
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":apigateway:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":lambda:path/2015-03-31/functions/",
+              {
+                "Fn::GetAtt": [
+                  "DisconnectHandlerCB7ED6F7",
+                  "Arn"
+                ]
+              },
+              "/invocations"
+            ]
           ]
         }
       }
@@ -339,20 +374,21 @@
           "Ref": "mywsapi32E6CE11"
         },
         "RouteKey": "$disconnect",
+        "AuthorizationType": "NONE",
         "Target": {
           "Fn::Join": [
             "",
             [
               "integrations/",
               {
-                "Ref": "mywsapidisconnectRouteWebSocketIntegrationcd3bacb451e82549501e141cc094d7ba1F7F68BC"
+                "Ref": "mywsapidisconnectRouteDisconnectIntegrationF927D904"
               }
             ]
           ]
         }
       }
     },
-    "mywsapidefaultRouteWebSocketApiIntegmywsapidefaultRouteA13D926BPermission58B64FCE": {
+    "mywsapidefaultRouteDefaultIntegrationPermission3B7F9CA1": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
@@ -389,7 +425,7 @@
         }
       }
     },
-    "mywsapidefaultRouteWebSocketIntegration640ac0772c157aa8b9a56aa99adbd9d7A2B7F2FA": {
+    "mywsapidefaultRouteDefaultIntegrationFFCB3BA9": {
       "Type": "AWS::ApiGatewayV2::Integration",
       "Properties": {
         "ApiId": {
@@ -397,9 +433,26 @@
         },
         "IntegrationType": "AWS_PROXY",
         "IntegrationUri": {
-          "Fn::GetAtt": [
-            "DefaultHandler604DF7AC",
-            "Arn"
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":apigateway:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":lambda:path/2015-03-31/functions/",
+              {
+                "Fn::GetAtt": [
+                  "DefaultHandler604DF7AC",
+                  "Arn"
+                ]
+              },
+              "/invocations"
+            ]
           ]
         }
       }
@@ -411,20 +464,21 @@
           "Ref": "mywsapi32E6CE11"
         },
         "RouteKey": "$default",
+        "AuthorizationType": "NONE",
         "Target": {
           "Fn::Join": [
             "",
             [
               "integrations/",
               {
-                "Ref": "mywsapidefaultRouteWebSocketIntegration640ac0772c157aa8b9a56aa99adbd9d7A2B7F2FA"
+                "Ref": "mywsapidefaultRouteDefaultIntegrationFFCB3BA9"
               }
             ]
           ]
         }
       }
     },
-    "mywsapisendmessageRouteWebSocketApiIntegmywsapisendmessageRoute8A775F3CPermission660FB575": {
+    "mywsapisendmessageRouteSendMessageIntegrationPermission92C9841E": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
@@ -461,7 +515,7 @@
         }
       }
     },
-    "mywsapisendmessageRouteWebSocketIntegrationcf58a195e318f43f52c4d9ac6d6d2430786B6471": {
+    "mywsapisendmessageRouteSendMessageIntegrationD29E12F9": {
       "Type": "AWS::ApiGatewayV2::Integration",
       "Properties": {
         "ApiId": {
@@ -469,9 +523,26 @@
         },
         "IntegrationType": "AWS_PROXY",
         "IntegrationUri": {
-          "Fn::GetAtt": [
-            "MessageHandlerDFBBCD6B",
-            "Arn"
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":apigateway:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":lambda:path/2015-03-31/functions/",
+              {
+                "Fn::GetAtt": [
+                  "MessageHandlerDFBBCD6B",
+                  "Arn"
+                ]
+              },
+              "/invocations"
+            ]
           ]
         }
       }
@@ -483,13 +554,14 @@
           "Ref": "mywsapi32E6CE11"
         },
         "RouteKey": "sendmessage",
+        "AuthorizationType": "NONE",
         "Target": {
           "Fn::Join": [
             "",
             [
               "integrations/",
               {
-                "Ref": "mywsapisendmessageRouteWebSocketIntegrationcf58a195e318f43f52c4d9ac6d6d2430786B6471"
+                "Ref": "mywsapisendmessageRouteSendMessageIntegrationD29E12F9"
               }
             ]
           ]

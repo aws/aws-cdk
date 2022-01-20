@@ -51,6 +51,10 @@
                 ]
               }
             },
+            "RetryPolicy": {
+              "MaximumEventAgeInSeconds": 7200,
+              "MaximumRetryAttempts": 2
+            },
             "Id": "Target0",
             "RoleArn": {
               "Fn::GetAtt": [
@@ -236,6 +240,9 @@
             ]
           },
           "Type": "CODECOMMIT"
+        },
+        "Cache": {
+          "Type": "NO_CACHE"
         },
         "EncryptionKey": "alias/aws/s3"
       }

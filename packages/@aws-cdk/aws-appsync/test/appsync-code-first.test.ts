@@ -1,4 +1,4 @@
-import '@aws-cdk/assert/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as cdk from '@aws-cdk/core';
 import * as appsync from '../lib';
 import * as t from './scalar-type-defintions';
@@ -34,7 +34,7 @@ describe('code-first implementation through GraphQL Api functions`', () => {
     const out = 'interface Test {\n  id: ID\n  lid: [ID]\n  rid: ID!\n  rlid: [ID]!\n  rlrid: [ID!]!\n  dupid: [ID!]!\n}\n';
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::GraphQLSchema', {
       Definition: `${out}`,
     });
   });
@@ -55,7 +55,7 @@ describe('code-first implementation through GraphQL Api functions`', () => {
     const out = 'type Test {\n  id: ID\n  lid: [ID]\n  rid: ID!\n  rlid: [ID]!\n  rlrid: [ID!]!\n  dupid: [ID!]!\n}\n';
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::GraphQLSchema', {
       Definition: `${out}`,
     });
   });
@@ -75,7 +75,7 @@ describe('code-first implementation through GraphQL Api functions`', () => {
     const out = 'type Test {\n  id: ID\n  lid: [ID]\n  rid: ID!\n  rlid: [ID]!\n  rlrid: [ID!]!\n  dupid: [ID!]!\n}\n';
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::GraphQLSchema', {
       Definition: `${out}`,
     });
   });
@@ -96,7 +96,7 @@ describe('code-first implementation through GraphQL Api functions`', () => {
     const out = 'type Test {\n  id: ID\n  lid: [ID]\n  rid: ID!\n  rlid: [ID]!\n  rlrid: [ID!]!\n  dupid: [ID!]!\n}\n';
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::GraphQLSchema', {
       Definition: `${out}`,
     });
   });
@@ -116,7 +116,7 @@ describe('code-first implementation through GraphQL Api functions`', () => {
     const out = 'interface Test {\n  id: ID\n  lid: [ID]\n  rid: ID!\n  rlid: [ID]!\n  rlrid: [ID!]!\n  dupid: [ID!]!\n}\n';
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::GraphQLSchema', {
       Definition: `${out}`,
     });
   });
@@ -137,8 +137,33 @@ describe('code-first implementation through GraphQL Api functions`', () => {
     const out = 'interface Test {\n  id: ID\n  lid: [ID]\n  rid: ID!\n  rlid: [ID]!\n  rlrid: [ID!]!\n  dupid: [ID!]!\n}\n';
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::GraphQLSchema', {
       Definition: `${out}`,
+    });
+  });
+
+  test('addSubscription allows for adding fields but not resolvable fields', () => {
+    const ds = api.addNoneDataSource('DS');
+
+    // WHEN
+    api.addMutation('addId', new appsync.ResolvableField({
+      returnType: t.required_id,
+      args: { id: t.required_id },
+      dataSource: ds,
+    }));
+    api.addSubscription('addedId', new appsync.Field({
+      returnType: t.required_id,
+      args: { id: t.required_id },
+      directives: [appsync.Directive.subscribe('addId')],
+    }));
+
+    const schemaDef = 'schema {\n  mutation: Mutation\n  subscription: Subscription\n}\n';
+    const mutationDef = 'type Mutation {\n  addId(id: ID!): ID!\n}\n';
+    const subscriptionDef = 'type Subscription {\n  addedId(id: ID!): ID!\n  @aws_subscribe(mutations: ["addId"])\n}\n';
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::GraphQLSchema', {
+      Definition: `${schemaDef}${mutationDef}${subscriptionDef}`,
     });
   });
 });
@@ -171,7 +196,7 @@ describe('code-first implementation through Schema functions`', () => {
     const out = 'interface Test {\n  id: ID\n  lid: [ID]\n  rid: ID!\n  rlid: [ID]!\n  rlrid: [ID!]!\n  dupid: [ID!]!\n}\n';
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::GraphQLSchema', {
       Definition: `${out}`,
     });
   });
@@ -197,7 +222,7 @@ describe('code-first implementation through Schema functions`', () => {
     const out = 'type Test {\n  id: ID\n  lid: [ID]\n  rid: ID!\n  rlid: [ID]!\n  rlrid: [ID!]!\n  dupid: [ID!]!\n}\n';
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::GraphQLSchema', {
       Definition: `${out}`,
     });
   });
@@ -223,7 +248,7 @@ describe('code-first implementation through Schema functions`', () => {
     const out = 'type Test {\n  id: ID\n  lid: [ID]\n  rid: ID!\n  rlid: [ID]!\n  rlrid: [ID!]!\n  dupid: [ID!]!\n}\n';
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::GraphQLSchema', {
       Definition: `${out}`,
     });
   });
@@ -248,7 +273,7 @@ describe('code-first implementation through Schema functions`', () => {
     const out = 'type Test {\n  id: ID\n  lid: [ID]\n  rid: ID!\n  rlid: [ID]!\n  rlrid: [ID!]!\n  dupid: [ID!]!\n}\n';
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::GraphQLSchema', {
       Definition: `${out}`,
     });
   });
@@ -272,7 +297,7 @@ describe('code-first implementation through Schema functions`', () => {
     const out = 'interface Test {\n  id: ID\n  lid: [ID]\n  rid: ID!\n  rlid: [ID]!\n  rlrid: [ID!]!\n  dupid: [ID!]!\n}\n';
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::GraphQLSchema', {
       Definition: `${out}`,
     });
   });
@@ -297,7 +322,7 @@ describe('code-first implementation through Schema functions`', () => {
     const out = 'interface Test {\n  id: ID\n  lid: [ID]\n  rid: ID!\n  rlid: [ID]!\n  rlrid: [ID!]!\n  dupid: [ID!]!\n}\n';
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::GraphQLSchema', {
       Definition: `${out}`,
     });
   });

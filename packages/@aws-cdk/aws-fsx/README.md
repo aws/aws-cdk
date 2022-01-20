@@ -5,17 +5,7 @@
 
 ![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
 
-> All classes with the `Cfn` prefix in this module ([CFN Resources]) are always stable and safe to use.
->
-> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib
-
-![cdk-constructs: Experimental](https://img.shields.io/badge/cdk--constructs-experimental-important.svg?style=for-the-badge)
-
-> The APIs of higher level constructs in this module are experimental and under active development.
-> They are subject to non-backward compatible changes or removal in any future version. These are
-> not subject to the [Semantic Versioning](https://semver.org/) model and breaking changes will be
-> announced in the release notes. This means that while you may use them, you may need to update
-> your source code when upgrading to a newer version of this package.
+![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
 
@@ -53,7 +43,7 @@ Linux operating system. It also provides read-after-write consistency and suppor
 
 Import to your project:
 
-```ts
+```ts nofixture
 import * as fsx from '@aws-cdk/aws-fsx';
 ```
 
@@ -62,14 +52,14 @@ import * as fsx from '@aws-cdk/aws-fsx';
 Setup required properties and create:
 
 ```ts
-const stack = new Stack(app, 'Stack');
-const vpc = new Vpc(stack, 'VPC');
+declare const vpc: ec2.Vpc;
 
-const fileSystem = new LustreFileSystem(stack, 'FsxLustreFileSystem', {
-  lustreConfiguration: { deploymentType: LustreDeploymentType.SCRATCH_2 },
+const fileSystem = new fsx.LustreFileSystem(this, 'FsxLustreFileSystem', {
+  lustreConfiguration: { deploymentType: fsx.LustreDeploymentType.SCRATCH_2 },
   storageCapacityGiB: 1200,
   vpc,
-  vpcSubnet: vpc.privateSubnets[0]});
+  vpcSubnet: vpc.privateSubnets[0],
+});
 ```
 
 ### Connecting
@@ -78,6 +68,9 @@ To control who can access the file system, use the `.connections` attribute. FSx
 need to specify the port. This example allows an EC2 instance to connect to a file system:
 
 ```ts
+declare const fileSystem: fsx.LustreFileSystem;
+declare const instance: ec2.Instance;
+
 fileSystem.connections.allowDefaultPortFrom(instance);
 ```
 
@@ -88,33 +81,34 @@ used to mount the file system on an EC2 instance. The following example shows ho
 instance, and then use User Data to mount the file system on the instance at start-up:
 
 ```ts
-const app = new App();
-const stack = new Stack(app, 'AwsCdkFsxLustre');
-const vpc = new Vpc(stack, 'VPC');
+import * as iam from '@aws-cdk/aws-iam';
 
+declare const vpc: ec2.Vpc;
 const lustreConfiguration = {
-  deploymentType: LustreDeploymentType.SCRATCH_2,
+  deploymentType: fsx.LustreDeploymentType.SCRATCH_2,
 };
-const fs = new LustreFileSystem(stack, 'FsxLustreFileSystem', {
+
+const fs = new fsx.LustreFileSystem(this, 'FsxLustreFileSystem', {
   lustreConfiguration,
   storageCapacityGiB: 1200,
   vpc,
-  vpcSubnet: vpc.privateSubnets[0]});
+  vpcSubnet: vpc.privateSubnets[0],
+});
 
-const inst = new Instance(stack, 'inst', {
-  instanceType: InstanceType.of(InstanceClass.T2, InstanceSize.LARGE),
-  machineImage: new AmazonLinuxImage({
-    generation: AmazonLinuxGeneration.AMAZON_LINUX_2,
+const inst = new ec2.Instance(this, 'inst', {
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.T2, ec2.InstanceSize.LARGE),
+  machineImage: new ec2.AmazonLinuxImage({
+    generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2,
   }),
   vpc,
   vpcSubnets: {
-    subnetType: SubnetType.PUBLIC,
+    subnetType: ec2.SubnetType.PUBLIC,
   },
 });
 fs.connections.allowDefaultPortFrom(inst);
 
 // Need to give the instance access to read information about FSx to determine the file system's mount name.
-inst.role.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName('AmazonFSxReadOnlyAccess'));
+inst.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonFSxReadOnlyAccess'));
 
 const mountPath = '/mnt/fsx';
 const dnsName = fs.dnsName;
@@ -130,7 +124,8 @@ inst.userData.addCommands(
   `chown ec2-user:ec2-user ${mountPath}`,
   // Set the file system up to mount automatically on start up and mount it.
   `echo "${dnsName}@tcp:/${mountName} ${mountPath} lustre defaults,noatime,flock,_netdev 0 0" >> /etc/fstab`,
-  'mount -a');
+  'mount -a',
+);
 ```
 
 ### Importing
@@ -141,31 +136,30 @@ system, and then also import the VPC the file system is in and add an EC2 instan
 system.
 
 ```ts
-const app = new App();
-const stack = new Stack(app, 'AwsCdkFsxLustreImport');
-
-const sg = SecurityGroup.fromSecurityGroupId(stack, 'FsxSecurityGroup', '{SECURITY-GROUP-ID}');
-const fs = LustreFileSystem.fromLustreFileSystemAttributes(stack, 'FsxLustreFileSystem', {
-    dnsName: '{FILE-SYSTEM-DNS-NAME}'
-    fileSystemId: '{FILE-SYSTEM-ID}',
-    securityGroup: sg
+const sg = ec2.SecurityGroup.fromSecurityGroupId(this, 'FsxSecurityGroup', '{SECURITY-GROUP-ID}');
+const fs = fsx.LustreFileSystem.fromLustreFileSystemAttributes(this, 'FsxLustreFileSystem', {
+  dnsName: '{FILE-SYSTEM-DNS-NAME}',
+  fileSystemId: '{FILE-SYSTEM-ID}',
+  securityGroup: sg,
 });
 
-const vpc = Vpc.fromVpcAttributes(stack, 'Vpc', {
-    availabilityZones: ['us-west-2a', 'us-west-2b'],
-    publicSubnetIds: ['{US-WEST-2A-SUBNET-ID}', '{US-WEST-2B-SUBNET-ID}'],
-    vpcId: '{VPC-ID}'
+const vpc = ec2.Vpc.fromVpcAttributes(this, 'Vpc', {
+  availabilityZones: ['us-west-2a', 'us-west-2b'],
+  publicSubnetIds: ['{US-WEST-2A-SUBNET-ID}', '{US-WEST-2B-SUBNET-ID}'],
+  vpcId: '{VPC-ID}',
 });
-const inst = new Instance(stack, 'inst', {
-  instanceType: InstanceType.of(InstanceClass.T2, InstanceSize.LARGE),
-  machineImage: new AmazonLinuxImage({
-    generation: AmazonLinuxGeneration.AMAZON_LINUX_2
+
+const inst = new ec2.Instance(this, 'inst', {
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.T2, ec2.InstanceSize.LARGE),
+  machineImage: new ec2.AmazonLinuxImage({
+    generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2,
   }),
   vpc,
   vpcSubnets: {
-    subnetType: SubnetType.PUBLIC,
-  }
+    subnetType: ec2.SubnetType.PUBLIC,
+  },
 });
+
 fs.connections.allowDefaultPortFrom(inst);
 ```
 

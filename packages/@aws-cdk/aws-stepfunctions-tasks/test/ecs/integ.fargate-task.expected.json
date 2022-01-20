@@ -34,7 +34,7 @@
                   {
                     "Ref": "AWS::URLSuffix"
                   },
-                  "/aws-cdk/assets:709fd91ba301f9b460ce1066dbc339f6a29bd4a07609ff98fb0e0faa475b650d"
+                  "/aws-cdk/assets:3fc39b45c4fd074ceef5d0f8528b74fa7fe6e8fa0aa4a6ffe7fb5e016cf8dc04"
                 ]
               ]
             },
@@ -252,6 +252,12 @@
     "StateMachine2E01A3A5": {
       "Type": "AWS::StepFunctions::StateMachine",
       "Properties": {
+        "RoleArn": {
+          "Fn::GetAtt": [
+            "StateMachineRoleB840431D",
+            "Arn"
+          ]
+        },
         "DefinitionString": {
           "Fn::Join": [
             "",
@@ -280,12 +286,6 @@
               },
               ":states:::ecs:runTask.sync\"}}}"
             ]
-          ]
-        },
-        "RoleArn": {
-          "Fn::GetAtt": [
-            "StateMachineRoleB840431D",
-            "Arn"
           ]
         }
       },
