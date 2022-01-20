@@ -49,11 +49,31 @@ function clone(obj: any) {
   return JSON.parse(JSON.stringify(obj));
 }
 
+function addNestedStacks(templatePath: string, outdir: string, rootStackTemplate?: any) {
+  let template = rootStackTemplate;
+
+  if (!template) {
+    const templatePathWithDir = path.join('diff-nested-stacks-templates', templatePath);
+    template = JSON.parse(fs.readFileSync(path.join(__dirname, templatePathWithDir)).toString());
+    fs.writeFileSync(path.join(outdir, templatePath), JSON.stringify(template, undefined, 2));
+  }
+
+  for (const logicalId in template.Resources) {
+    if (template.Resources[logicalId].Type === 'AWS::CloudFormation::Stack') {
+      if (template.Resources[logicalId].Metadata && template.Resources[logicalId].Metadata['aws:asset:path']) {
+        const nestedTemplatePath = template.Resources[logicalId].Metadata['aws:asset:path'];
+        addNestedStacks(nestedTemplatePath, outdir);
+      }
+    }
+  }
+}
+
 function addAttributes(assembly: TestAssembly, builder: cxapi.CloudAssemblyBuilder) {
   for (const stack of assembly.stacks) {
     const templateFile = `${stack.stackName}.template.json`;
     const template = stack.template ?? DEFAULT_FAKE_TEMPLATE;
     fs.writeFileSync(path.join(builder.outdir, templateFile), JSON.stringify(template, undefined, 2));
+    addNestedStacks(templateFile, builder.outdir, template);
 
     // we call patchStackTags here to simulate the tags formatter
     // that is used when building real manifest files.

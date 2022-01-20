@@ -1,0 +1,16 @@
+{
+  "Resources": {
+    "SomeResource": {
+      "Type": "AWS::Something",
+      "Properties": {
+        "Property": "new-value"
+      }
+    },
+    "NestedStack": {
+      "Type": "AWS::CloudFormation::Stack",
+      "Metadata": {
+        "aws:asset:path": "one-resource-stack.nested.template.json"
+      }
+    }
+  }
+}
