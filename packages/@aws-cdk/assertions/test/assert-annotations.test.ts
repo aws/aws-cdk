@@ -4,6 +4,7 @@ import { AssertAnnotations, Match } from '../lib';
 
 describe('Messages', () => {
   let stack: Stack;
+  let annotations: AssertAnnotations;
   beforeAll(() => {
     stack = new Stack();
     new CfnResource(stack, 'Foo', {
@@ -27,213 +28,97 @@ describe('Messages', () => {
       },
     });
 
+    new CfnResource(stack, 'Qux', {
+      type: 'Fred::Thud',
+      properties: {
+        Fred: 'Bar',
+      },
+    });
+
     Aspects.of(stack).add(new MyAspect());
-  });
-
-  describe('fromStack', () => {
-    test('default', () => {
-      const annotations = AssertAnnotations.fromStack(stack);
-      expect(annotations.messageList).toHaveLength(3);
-    });
-  });
-
-  describe('hasMessage', () => {
-    test('exact match', () => {
-      const annotations = AssertAnnotations.fromStack(stack);
-      annotations.hasMessage('/Default/Foo', {
-        level: 'error',
-        entry: {
-          data: 'this is an error',
-        },
-      });
-
-      expect(() => annotations.hasMessage('/Default/Foo', {
-        level: 'warning',
-        entry: {
-          data: 'this is a warning',
-        },
-      })).toThrowError(/Expected warning but received error at \/level/);
-
-      expect(() => annotations.hasMessage('/Default/Foo', {
-        level: 'error',
-        entry: {
-          data: 'this is wrong',
-        },
-      })).toThrowError(/Expected this is wrong but received this is an error at \/entry\/data/);
-    });
-
-    test('stack trace is redacted', () => {
-      const annotations = AssertAnnotations.fromStack(stack);
-      expect(() => annotations.hasMessage('/Default/Foo', {
-        level: 'error',
-        entry: {
-          data: 'this is wrong',
-        },
-      })).toThrowError(/"trace": "redacted"/);
-    });
-
-    test('with matchers', () => {
-      const annotations = AssertAnnotations.fromStack(stack);
-      annotations.hasMessage('/Default/Foo', Match.not({
-        level: 'warning',
-      }));
-      annotations.hasMessage('/Default/Fred', {
-        level: Match.anyValue(),
-        entry: Match.objectEquals({
-          type: 'aws:cdk:warning',
-          data: 'this is a warning',
-          trace: Match.anyValue(),
-        }),
-      });
-    });
-  });
-
-  describe('findMessage', () => {
-    test('matching', () => {
-      const annotations = AssertAnnotations.fromStack(stack);
-      const result = annotations.findMessage('*', { level: 'error' });
-      expect(Object.keys(result).length).toEqual(2);
-      expect(result[0].id).toEqual('/Default/Foo');
-      expect(result[1].id).toEqual('/Default/Bar');
-    });
-
-    test('not matching', () => {
-      const annotations = AssertAnnotations.fromStack(stack);
-      const resultA = annotations.findMessage('*', { level: 'info' });
-      expect(Object.keys(resultA).length).toEqual(0);
-
-      const resultB = annotations.findMessage('*', {
-        level: 'warning',
-        entry: {
-          data: 'this is not a warning',
-        },
-      });
-      expect(Object.keys(resultB).length).toEqual(0);
-    });
-
-    test('matching specific output', () => {
-      const annotations = AssertAnnotations.fromStack(stack);
-      const result = annotations.findMessage('/Default/Bar', {
-        level: 'error',
-      });
-
-      expect(Object.keys(result).length).toEqual(1);
-      expect(result[0].id).toEqual('/Default/Bar');
-    });
-
-    test('not matching specific output', () => {
-      const annotations = AssertAnnotations.fromStack(stack);
-      const result = annotations.findMessage('/Default/Bear', {
-        level: 'error',
-      });
-
-      expect(Object.keys(result).length).toEqual(0);
-    });
-
-    test('with matchers', () => {
-      const annotations = AssertAnnotations.fromStack(stack);
-      const resultA = annotations.findMessage('/Default/Foo', Match.not({
-        level: 'warning',
-      }));
-      expect(Object.keys(resultA).length).toEqual(1);
-
-      const resultB = annotations.findMessage('/Default/Fred', {
-        level: Match.anyValue(),
-        entry: Match.objectEquals({
-          type: 'aws:cdk:warning',
-          data: 'this is a warning',
-          trace: Match.anyValue(),
-        }),
-      });
-      expect(Object.keys(resultB).length).toEqual(1);
-    });
+    annotations = AssertAnnotations.fromStack(stack);
   });
 
   describe('hasError', () => {
     test('match', () => {
-      AssertAnnotations.fromStack(stack).hasError('/Default/Foo', {
-        entry: {
-          data: 'this is an error',
-        },
-      });
+      annotations.hasError('/Default/Foo', 'this is an error');
     });
 
     test('no match', () => {
-      expect(() => AssertAnnotations.fromStack(stack).hasError('/Default/Fred', {
-      })).toThrowError(/Stack has 1 messages, but none match as expected./);
-    });
-
-    test('incorrect specification', () => {
-      expect(() => AssertAnnotations.fromStack(stack).hasWarning('*', {
-        level: 'info',
-      })).toThrowError(/Message level mismatch:/);
+      expect(() => annotations.hasError('/Default/Fred', Match.anyValue()))
+        .toThrowError(/Stack has 1 messages, but none match as expected./);
     });
   });
 
   describe('findError', () => {
     test('match', () => {
-      const result = AssertAnnotations.fromStack(stack).findError('*', {
-      });
+      const result = annotations.findError('*', Match.anyValue());
       expect(Object.keys(result).length).toEqual(2);
     });
 
     test('no match', () => {
-      const result = AssertAnnotations.fromStack(stack).findError('*', {
-        entry: {
-          data: 'no message looks like this',
-        },
-      });
+      const result = annotations.findError('*', 'no message looks like this');
       expect(Object.keys(result).length).toEqual(0);
-    });
-
-    test('incorrect specification', () => {
-      expect(() => AssertAnnotations.fromStack(stack).findError('*', {
-        level: 'info',
-      })).toThrowError(/Message level mismatch:/);
     });
   });
 
   describe('hasWarning', () => {
     test('match', () => {
-      AssertAnnotations.fromStack(stack).hasWarning('/Default/Fred', {
-        entry: {
-          data: 'this is a warning',
-        },
-      });
+      annotations.hasWarning('/Default/Fred', 'this is a warning');
     });
 
     test('no match', () => {
-      expect(() => AssertAnnotations.fromStack(stack).hasWarning('/Default/Foo', {
-      })).toThrowError(/Stack has 1 messages, but none match as expected./);
-    });
-
-    test('incorrect specification', () => {
-      expect(() => AssertAnnotations.fromStack(stack).hasWarning('*', {
-        level: 'info',
-      })).toThrowError(/Message level mismatch:/);
+      expect(() => annotations.hasWarning('/Default/Foo', Match.anyValue())).toThrowError(/Stack has 1 messages, but none match as expected./);
     });
   });
 
   describe('findWarning', () => {
     test('match', () => {
-      const result = AssertAnnotations.fromStack(stack).findWarning('*', {
-      });
+      const result = annotations.findWarning('*', Match.anyValue());
       expect(Object.keys(result).length).toEqual(1);
     });
 
     test('no match', () => {
-      const result = AssertAnnotations.fromStack(stack).findWarning('*', {
-        entry: {
-          data: 'no message looks like this',
-        },
-      });
+      const result = annotations.findWarning('*', 'no message looks like this');
       expect(Object.keys(result).length).toEqual(0);
     });
+  });
 
-    test('incorrect specification', () => {
-      expect(() => AssertAnnotations.fromStack(stack).findWarning('*', {
-        level: 'info',
-      })).toThrowError(/Message level mismatch:/);
+  describe('hasInfo', () => {
+    test('match', () => {
+      annotations.hasInfo('/Default/Qux', 'this is an info');
+    });
+
+    test('no match', () => {
+      expect(() => annotations.hasInfo('/Default/Qux', 'this info is incorrect')).toThrowError(/Stack has 1 messages, but none match as expected./);
+    });
+  });
+
+  describe('findInfo', () => {
+    test('match', () => {
+      const result = annotations.findInfo('/Default/Qux', 'this is an info');
+      expect(Object.keys(result).length).toEqual(1);
+    });
+
+    test('no match', () => {
+      const result = annotations.findInfo('*', 'no message looks like this');
+      expect(Object.keys(result).length).toEqual(0);
+    });
+  });
+
+  describe('with matchers', () => {
+    test('anyValue', () => {
+      const result = annotations.findError('*', Match.anyValue());
+      expect(Object.keys(result).length).toEqual(2);
+    });
+
+    test('not', () => {
+      expect(() => annotations.hasError('/Default/Foo', Match.not('this is an error')))
+        .toThrowError(/Found unexpected match: "this is an error" at \/entry\/data/);
+    });
+
+    test('stringLikeRegEx', () => {
+      annotations.hasError('/Default/Foo', Match.stringLikeRegexp('.*error'));
     });
   });
 });
@@ -243,8 +128,10 @@ class MyAspect implements IAspect {
     if (node instanceof CfnResource) {
       if (node.cfnResourceType === 'Foo::Bar') {
         this.error(node, 'this is an error');
-      } else {
+      } else if (node.cfnResourceType === 'Baz::Qux') {
         this.warn(node, 'this is a warning');
+      } else {
+        this.info(node, 'this is an info');
       }
     }
   };
@@ -255,5 +142,9 @@ class MyAspect implements IAspect {
 
   protected error(node: IConstruct, message: string): void {
     Annotations.of(node).addError(message);
+  }
+
+  protected info(node: IConstruct, message: string): void {
+    Annotations.of(node).addInfo(message);
   }
 }

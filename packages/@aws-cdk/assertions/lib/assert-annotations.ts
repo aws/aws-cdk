@@ -1,5 +1,6 @@
 import { Stack, Stage } from '@aws-cdk/core';
-import { Message, Messages } from './private/message';
+import { SynthesisMessage } from '@aws-cdk/cx-api';
+import { Messages } from './private/message';
 import { findMessage, hasMessage } from './private/messages';
 
 /**
@@ -17,7 +18,7 @@ export class AssertAnnotations {
 
   private readonly _messages: Messages;
 
-  private constructor(messages: Message[]) {
+  private constructor(messages: SynthesisMessage[]) {
     this._messages = convertArrayToMessagesType(messages);
   }
 
@@ -40,7 +41,7 @@ export class AssertAnnotations {
    * @param constructPath the construct path to the error. Provide `'*'` to match all errors in the template.
    * @param message the error message as should be expected. This should be a string or Matcher object.
    */
-  public findError(constructPath: string, message: any): Message[] {
+  public findError(constructPath: string, message: any): SynthesisMessage[] {
     return convertMessagesTypeToArray(findMessage(this._messages, constructPath, constructMessage('error', message)) as Messages);
   }
 
@@ -63,7 +64,7 @@ export class AssertAnnotations {
    * @param constructPath the construct path to the warning. Provide `'*'` to match all warnings in the template.
    * @param message the warning message as should be expected. This should be a string or Matcher object.
    */
-  public findWarning(constructPath: string, message: any): Message[] {
+  public findWarning(constructPath: string, message: any): SynthesisMessage[] {
     return convertMessagesTypeToArray(findMessage(this._messages, constructPath, constructMessage('warning', message)) as Messages);
   }
 
@@ -86,7 +87,7 @@ export class AssertAnnotations {
    * @param constructPath the construct path to the info. Provide `'*'` to match all infos in the template.
    * @param message the info message as should be expected. This should be a string or Matcher object.
    */
-  public findInfo(constructPath: string, message: any): Message[] {
+  public findInfo(constructPath: string, message: any): SynthesisMessage[] {
     return convertMessagesTypeToArray(findMessage(this._messages, constructPath, constructMessage('info', message)) as Messages);
   }
 }
@@ -100,7 +101,7 @@ function constructMessage(type: 'info' | 'warning' | 'error', message: any): {[k
   };
 }
 
-function convertArrayToMessagesType(messages: Message[]): Messages {
+function convertArrayToMessagesType(messages: SynthesisMessage[]): Messages {
   return messages.reduce((obj, item) => {
     return {
       ...obj,
@@ -109,8 +110,8 @@ function convertArrayToMessagesType(messages: Message[]): Messages {
   }, {}) as Messages;
 }
 
-function convertMessagesTypeToArray(messages: Messages): Message[] {
-  return Object.values(messages) as Message[];
+function convertMessagesTypeToArray(messages: Messages): SynthesisMessage[] {
+  return Object.values(messages) as SynthesisMessage[];
 }
 
 function toMessages(stack: Stack): any {
