@@ -335,7 +335,7 @@ describe('portfolio associations and product constraints', () => {
     Template.fromStack(stack).resourceCountIs('AWS::ServiceCatalog::TagOptionAssociation', 3);
   }),
 
-  test('adding identical tag options to portfolio is idempotent', () => {
+  test('adding tag options to portfolio multiple times is idempotent', () => {
     const tagOptions = new servicecatalog.TagOptions(stack, 'TagOptions', {
       allowedValuesForTags: {
         key1: ['value1', 'value2'],

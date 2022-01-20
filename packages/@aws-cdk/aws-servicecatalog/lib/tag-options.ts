@@ -14,7 +14,7 @@ export interface TagOptionsProps {
   /**
    * The values that are allowed to be set for specific tags.
    * The keys of the map represent the tag keys,
-   * and the values of the map are a list of allowed values of that particular tag key.
+   * and the values of the map are a list of allowed values for that particular tag key.
    */
   readonly allowedValuesForTags: { [tagKey: string]: string[] };
 }
@@ -32,7 +32,7 @@ export class TagOptions extends cdk.Resource {
    *
    * @internal
    */
-  public readonly _tagOptionsMap: { [tagName: string]: CfnTagOption };
+  public readonly _tagOptionsMap: { [tagOptionIdentifier: string]: CfnTagOption };
 
   constructor(scope: Construct, id: string, props: TagOptionsProps) {
     super(scope, id);

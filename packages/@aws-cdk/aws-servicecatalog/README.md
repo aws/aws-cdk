@@ -182,7 +182,7 @@ const product = new servicecatalog.CloudFormationProduct(this, 'MyFirstProduct',
   productVersions: [
     {
       productVersionName: "v1",
-      cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromProductStack(new S3BucketProduct(this, 'S3BucketProduct'),
+      cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromProductStack(new S3BucketProduct(this, 'S3BucketProduct')),
     },
   ],
 });
