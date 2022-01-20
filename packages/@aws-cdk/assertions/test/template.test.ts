@@ -1014,7 +1014,7 @@ describe('Template', () => {
       });
 
       const inspect = Template.fromStack(stack);
-      const result = inspect.findConditions('Fred', { Baz: { Bar: 'Qux' } });
+      const result = inspect.findConditions('Foo', { 'Fn::Equals': { 'Bar': 'Qux' } });
       expect(Object.keys(result).length).toEqual(0);
     });
   });
