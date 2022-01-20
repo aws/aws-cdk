@@ -12,6 +12,6 @@
     "build+extract": "npm run build"
   },
   "devDependencies": {
-    "jest": "^27.4.3"
+    "jest": "^27.4.7"
   }
 }

@@ -577,6 +577,16 @@ export enum InstanceClass {
   G4DN = 'g4dn',
 
   /**
+   * Graphics-optimized instances based on AMD EPYC And Radeon Pro GPU (NAVI) with local NVME drive, 4th generation
+   */
+  GRAPHICS4_AMD_NVME_DRIVE = 'g4ad',
+
+  /**
+   * Graphics-optimized instances based on AMD EPYC And Radeon Pro GPU (NAVI) with local NVME drive, 4th generation
+   */
+  G4AD = 'g4ad',
+
+  /**
    * Graphics-optimized instances, 5th generation
    */
   GRAPHICS5 = 'g5',
@@ -715,6 +725,16 @@ export enum InstanceClass {
    * Multi-stream video transcoding instances for resolutions up to 4K UHD, 1st generation
    */
   VT1 = 'vt1',
+
+  /**
+   * High performance computing based on AMD EPYC, 6th generation
+   */
+  HIGH_PERFORMANCE_COMPUTING6_AMD = 'hpc6a',
+
+  /**
+   * High performance computing based on AMD EPYC, 6th generation
+   */
+  HPC6A = 'hpc6a',
 }
 
 /**

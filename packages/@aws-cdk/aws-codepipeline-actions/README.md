@@ -198,6 +198,35 @@ const sourceAction = new codepipeline_actions.CodeStarConnectionsSourceAction({
 You can also use the `CodeStarConnectionsSourceAction` to connect to GitHub, in the same way
 (you just have to select GitHub as the source when creating the connection in the console).
 
+Similarly to `GitHubSourceAction`, `CodeStarConnectionsSourceAction` also emits the variables:
+
+```ts
+declare const project: codebuild.Project;
+
+const sourceOutput = new codepipeline.Artifact();
+const sourceAction = new codepipeline_actions.CodeStarConnectionsSourceAction({
+  actionName: 'BitBucket_Source',
+  owner: 'aws',
+  repo: 'aws-cdk',
+  output: sourceOutput,
+  connectionArn: 'arn:aws:codestar-connections:us-east-1:123456789012:connection/12345678-abcd-12ab-34cdef5678gh',
+  variablesNamespace: 'SomeSpace', // optional - by default, a name will be generated for you
+});
+
+// later:
+
+new codepipeline_actions.CodeBuildAction({
+  actionName: 'CodeBuild',
+  project,
+  input: sourceOutput,
+  environmentVariables: {
+    COMMIT_ID: {
+      value: sourceAction.variables.commitId,
+    },
+  },
+});
+```
+
 ### AWS S3 Source
 
 To use an S3 Bucket as a source in CodePipeline:
