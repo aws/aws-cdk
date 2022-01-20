@@ -100,7 +100,7 @@ The following code imports an existing cluster using the ARN which can be used t
 import an Amazon ECS service either EC2 or Fargate.
 
 ```ts
-const clusterArn = 'arn:aws:ecs:us-east-1:012345678910:service/clusterName';
+const clusterArn = 'arn:aws:ecs:us-east-1:012345678910:cluster/clusterName';
 
 const cluster = ecs.Cluster.fromClusterArn(this, 'Cluster', clusterArn);
 ```
