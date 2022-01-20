@@ -590,7 +590,7 @@ test('esbuild bundling with pre compilations', () => {
       command: [
         'bash', '-c',
         [
-          'tsc /asset-input/lib/handler.ts --rootDir ./ --outDir ./ &&',
+          'tsc \"/asset-input/lib/handler.ts\" --rootDir ./ --outDir ./ &&',
           'esbuild --bundle \"/asset-input/lib/handler.js\" --target=node14 --platform=node --outfile=\"/asset-output/index.js\"',
           '--external:aws-sdk --tsconfig=/asset-input/lib/custom-tsconfig.ts',
         ].join(' '),
@@ -618,7 +618,7 @@ test('esbuild bundling with pre compilations with undefined tsconfig ( Should fi
       command: [
         'bash', '-c',
         [
-          'tsc /asset-input/test/bundling.test.ts --rootDir ./ --outDir ./ &&',
+          'tsc \"/asset-input/test/bundling.test.ts\" --rootDir ./ --outDir ./ &&',
           'esbuild --bundle \"/asset-input/test/bundling.test.js\" --target=node14 --platform=node --outfile=\"/asset-output/index.js\"',
           '--external:aws-sdk',
         ].join(' '),

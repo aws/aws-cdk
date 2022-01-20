@@ -165,7 +165,7 @@ export class Bundling implements cdk.BundlingOptions {
         tsconfig = path.relative(this.projectRoot, findConfig);
       }
       const compilerOptions = tryGetTsconfigCompilerOptions(pathJoin(options.inputDir, tsconfig));
-      tscCommand = `${options.tscRunner} ${relativeEntryPath} ${compilerOptions}`;
+      tscCommand = `${options.tscRunner} "${relativeEntryPath}" ${compilerOptions}`;
       relativeEntryPath = relativeEntryPath.replace(/\.ts(x?)$/, '.js$1');
     }
 

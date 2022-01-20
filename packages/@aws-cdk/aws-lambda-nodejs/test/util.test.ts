@@ -184,6 +184,13 @@ describe('tryGetTsconfigCompilerOptions', () => {
   test('with dependencies referenced in package.json', () => {
     const tsconfig = path.join(__dirname, '..', 'tsconfig.json');
     const compilerOptions = tryGetTsconfigCompilerOptions(tsconfig);
-    expect(compilerOptions).toEqual('--alwaysStrict --charset utf8 --declaration --experimentalDecorators --inlineSourceMap --inlineSources --lib es2019 --module CommonJS --newLine lf --noEmitOnError --noFallthroughCasesInSwitch --noImplicitAny --noImplicitReturns --noImplicitThis --noUnusedLocals --noUnusedParameters --resolveJsonModule --strict --strictNullChecks --strictPropertyInitialization --target ES2019 --rootDir ./ --outDir ./');
+    expect(compilerOptions).toEqual([
+      '--alwaysStrict --charset utf8 --declaration --experimentalDecorators',
+      '--inlineSourceMap --inlineSources --lib es2019 --module CommonJS',
+      '--newLine lf --noEmitOnError --noFallthroughCasesInSwitch --noImplicitAny',
+      '--noImplicitReturns --noImplicitThis --noUnusedLocals --noUnusedParameters',
+      '--resolveJsonModule --strict --strictNullChecks --strictPropertyInitialization',
+      '--target ES2019 --rootDir ./ --outDir ./',
+    ].join(' '));
   });
 });
