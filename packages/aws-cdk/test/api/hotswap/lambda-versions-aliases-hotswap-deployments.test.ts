@@ -16,18 +16,6 @@ beforeEach(() => {
     publishVersion: mockPublishVersion,
     updateAlias: mockUpdateAlias,
     waitFor: jest.fn(),
-  }, {
-    // these are needed for the waiter API that the Lambda service hotswap uses
-    api: {
-      waiters: {},
-    },
-    makeRequest() {
-      return {
-        promise: () => Promise.resolve({}),
-        response: {},
-        addListeners: () => {},
-      };
-    },
   });
 });
 

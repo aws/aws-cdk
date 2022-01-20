@@ -24,10 +24,6 @@ beforeEach(() => {
     tagResource: mockTagResource,
     untagResource: mockUntagResource,
   }, {
-    // these are needed for the waiter API that the Lambda service hotswap uses
-    api: {
-      waiters: {},
-    },
     makeRequest: mockMakeRequest,
   });
 });
@@ -121,9 +117,8 @@ test('calls the getFunction() API with a delay of 5', async () => {
   await hotswapMockSdkProvider.tryHotswapDeployment(cdkStackArtifact);
 
   // THEN
-  const waiters = (hotswapMockSdkProvider.mockSdkProvider.sdk.lambda() as any).api.waiters;
   expect(mockMakeRequest).toHaveBeenCalledWith('getFunction', { FunctionName: 'my-function' });
-  expect(waiters).toEqual(expect.objectContaining({
+  expect(hotswapMockSdkProvider.getLambdaApiWaiters()).toEqual(expect.objectContaining({
     updateFunctionCodeToFinish: expect.objectContaining({
       name: 'UpdateFunctionCodeToFinish',
       delay: 5,

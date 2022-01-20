@@ -308,7 +308,7 @@ class LambdaFunctionHotswapOperation implements HotswapOperation {
     // if the function is deployed in a VPC or if it is a container image function
     // then the update will take much longer and we can wait longer between checks
     // otherwise, the update will be quick, so a 1-second delay is fine
-    const delaySeconds = !(!currentFunctionConfiguration.VpcConfig?.VpcId || currentFunctionConfiguration.VpcConfig.VpcId === '') ||
+    const delaySeconds = currentFunctionConfiguration.VpcConfig?.VpcId ||
         currentFunctionConfiguration.PackageType === 'Image'
       ? 5
       : 1;

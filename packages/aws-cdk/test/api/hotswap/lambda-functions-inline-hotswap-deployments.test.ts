@@ -15,18 +15,6 @@ beforeEach(() => {
     updateFunctionCode: mockUpdateLambdaCode,
     tagResource: mockTagResource,
     untagResource: mockUntagResource,
-  }, {
-    // these are needed for the waiter API that the Lambda service hotswap uses
-    api: {
-      waiters: {},
-    },
-    makeRequest() {
-      return {
-        promise: () => Promise.resolve({}),
-        response: {},
-        addListeners: () => {},
-      };
-    },
   });
 });
 

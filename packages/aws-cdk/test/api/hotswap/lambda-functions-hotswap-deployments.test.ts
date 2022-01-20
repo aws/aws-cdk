@@ -22,10 +22,6 @@ beforeEach(() => {
     tagResource: mockTagResource,
     untagResource: mockUntagResource,
   }, {
-    // these are needed for the waiter API that the Lambda service hotswap uses
-    api: {
-      waiters: {},
-    },
     makeRequest: mockMakeRequest,
   });
 });
@@ -593,11 +589,10 @@ test('calls getFunction() after function code is updated with delay 1', async ()
 
   // WHEN
   await hotswapMockSdkProvider.tryHotswapDeployment(cdkStackArtifact);
-  const waiters = (hotswapMockSdkProvider.mockSdkProvider.sdk.lambda() as any).api.waiters;
 
   // THEN
   expect(mockMakeRequest).toHaveBeenCalledWith('getFunction', { FunctionName: 'my-function' });
-  expect(waiters).toEqual(expect.objectContaining({
+  expect(hotswapMockSdkProvider.getLambdaApiWaiters()).toEqual(expect.objectContaining({
     updateFunctionCodeToFinish: expect.objectContaining({
       name: 'UpdateFunctionCodeToFinish',
       delay: 1,
@@ -605,7 +600,7 @@ test('calls getFunction() after function code is updated with delay 1', async ()
   }));
 });
 
-test('calls getFunction() after function code is updated and VpcId is empty string delay 1', async () => {
+test('calls getFunction() after function code is updated and VpcId is empty string with delay 1', async () => {
   // GIVEN
   mockUpdateLambdaCode = jest.fn().mockReturnValue({
     VpcConfig: {
@@ -616,12 +611,6 @@ test('calls getFunction() after function code is updated and VpcId is empty stri
     updateFunctionCode: mockUpdateLambdaCode,
     tagResource: mockTagResource,
     untagResource: mockUntagResource,
-  }, {
-    // these are needed for the waiter API that the Lambda service hotswap uses
-    api: {
-      waiters: {},
-    },
-    makeRequest: mockMakeRequest,
   });
   setup.setCurrentCfnStackTemplate({
     Resources: {
@@ -662,11 +651,9 @@ test('calls getFunction() after function code is updated and VpcId is empty stri
 
   // WHEN
   await hotswapMockSdkProvider.tryHotswapDeployment(cdkStackArtifact);
-  const waiters = (hotswapMockSdkProvider.mockSdkProvider.sdk.lambda() as any).api.waiters;
 
   // THEN
-  expect(mockMakeRequest).toHaveBeenCalledWith('getFunction', { FunctionName: 'my-function' });
-  expect(waiters).toEqual(expect.objectContaining({
+  expect(hotswapMockSdkProvider.getLambdaApiWaiters()).toEqual(expect.objectContaining({
     updateFunctionCodeToFinish: expect.objectContaining({
       name: 'UpdateFunctionCodeToFinish',
       delay: 1,
@@ -685,12 +672,6 @@ test('calls getFunction() after function code is updated on a VPC function with 
     updateFunctionCode: mockUpdateLambdaCode,
     tagResource: mockTagResource,
     untagResource: mockUntagResource,
-  }, {
-    // these are needed for the waiter API that the Lambda service hotswap uses
-    api: {
-      waiters: {},
-    },
-    makeRequest: mockMakeRequest,
   });
   setup.setCurrentCfnStackTemplate({
     Resources: {
@@ -731,11 +712,9 @@ test('calls getFunction() after function code is updated on a VPC function with 
 
   // WHEN
   await hotswapMockSdkProvider.tryHotswapDeployment(cdkStackArtifact);
-  const waiters = (hotswapMockSdkProvider.mockSdkProvider.sdk.lambda() as any).api.waiters;
 
   // THEN
-  expect(mockMakeRequest).toHaveBeenCalledWith('getFunction', { FunctionName: 'my-function' });
-  expect(waiters).toEqual(expect.objectContaining({
+  expect(hotswapMockSdkProvider.getLambdaApiWaiters()).toEqual(expect.objectContaining({
     updateFunctionCodeToFinish: expect.objectContaining({
       name: 'UpdateFunctionCodeToFinish',
       delay: 5,
