@@ -9,8 +9,6 @@
 
 <!--END STABILITY BANNER-->
 
-> __Status: Experimental__
-
 This library allows populating an S3 bucket with the contents of .zip files
 from other S3 buckets or from local disk.
 
@@ -278,12 +276,14 @@ new s3deploy.BucketDeployment(this, 'DeployMeWithEfsStorage', {
   which can be deployed into the bucket by this timeout.
 - When the `BucketDeployment` is removed from the stack, the contents are retained
   in the destination bucket ([#952](https://github.com/aws/aws-cdk/issues/952)).
-- Bucket deployment _only happens_ during stack create/update. This means that
-  if you wish to update the contents of the destination, you will need to
-  change the source s3 key (or bucket), so that the resource will be updated.
-  This is inline with best practices. If you use local disk assets, this will
-  happen automatically whenever you modify the asset, since the S3 key is based
-  on a hash of the asset contents.
+- If you are using `s3deploy.Source.bucket()` to take the file source from
+  another bucket: the deployed files will only be updated if the key (file name)
+  of the file in the source  bucket changes. Mutating the file in place will not
+  be good enough: the custom resource will simply not run if the properties don't
+  change.
+  - If you use assets (`s3deploy.Source.asset()`) you don't need to worry
+    about this: the asset system will make sure that if the files have changed, 
+    the file name is unique and the deployment will run.
 
 ## Development
 
