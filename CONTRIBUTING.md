@@ -46,7 +46,7 @@ let us know if it's not up-to-date (even better, submit a PR with your  correcti
 
 The following steps describe how to set up the AWS CDK repository on your local machine.
 The alternative is to use [Gitpod](https://www.gitpod.io/), a Cloud IDE for your development.
-See [Gitpod section](#gitpod) on how to set up the CDK repo on Gitpod.
+See [Gitpod section](#gitpod-alternative) on how to set up the CDK repo on Gitpod.
 
 ### Setup
 
