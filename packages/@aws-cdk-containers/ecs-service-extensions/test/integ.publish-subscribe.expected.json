@@ -596,6 +596,18 @@
             ],
             "Essential": true,
             "Image": "nathanpeck/name",
+            "LogConfiguration": {
+              "LogDriver": "awslogs",
+              "Options": {
+                "awslogs-group": {
+                  "Ref": "PublisherlogsDF0C1067"
+                },
+                "awslogs-stream-prefix": "Publisher",
+                "awslogs-region": {
+                  "Ref": "AWS::Region"
+                }
+              }
+            },
             "Memory": 512,
             "Name": "app",
             "PortMappings": [
@@ -614,6 +626,12 @@
           }
         ],
         "Cpu": "256",
+        "ExecutionRoleArn": {
+          "Fn::GetAtt": [
+            "PublishertaskdefinitionExecutionRole5C00C542",
+            "Arn"
+          ]
+        },
         "Family": "awsecsintegPublishertaskdefinitionD50610D0",
         "Memory": "512",
         "NetworkMode": "awsvpc",
@@ -628,6 +646,61 @@
           ]
         }
       }
+    },
+    "PublishertaskdefinitionExecutionRole5C00C542": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "ecs-tasks.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      }
+    },
+    "PublishertaskdefinitionExecutionRoleDefaultPolicy681FD8E6": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "PublisherlogsDF0C1067",
+                  "Arn"
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "PublishertaskdefinitionExecutionRoleDefaultPolicy681FD8E6",
+        "Roles": [
+          {
+            "Ref": "PublishertaskdefinitionExecutionRole5C00C542"
+          }
+        ]
+      }
+    },
+    "PublisherlogsDF0C1067": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "Publisher-logs",
+        "RetentionInDays": 30
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
     "PublisherserviceService9EB00F60": {
       "Type": "AWS::ECS::Service",
@@ -901,6 +974,18 @@
             ],
             "Essential": true,
             "Image": "nathanpeck/name",
+            "LogConfiguration": {
+              "LogDriver": "awslogs",
+              "Options": {
+                "awslogs-group": {
+                  "Ref": "Workerlogs2994AC4D"
+                },
+                "awslogs-stream-prefix": "Worker",
+                "awslogs-region": {
+                  "Ref": "AWS::Region"
+                }
+              }
+            },
             "Memory": 512,
             "Name": "app",
             "PortMappings": [
@@ -919,6 +1004,12 @@
           }
         ],
         "Cpu": "256",
+        "ExecutionRoleArn": {
+          "Fn::GetAtt": [
+            "WorkertaskdefinitionExecutionRole3C1A1848",
+            "Arn"
+          ]
+        },
         "Family": "awsecsintegWorkertaskdefinition32B60762",
         "Memory": "512",
         "NetworkMode": "awsvpc",
@@ -933,6 +1024,61 @@
           ]
         }
       }
+    },
+    "WorkertaskdefinitionExecutionRole3C1A1848": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "ecs-tasks.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      }
+    },
+    "WorkertaskdefinitionExecutionRoleDefaultPolicy6E199B19": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "Workerlogs2994AC4D",
+                  "Arn"
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "WorkertaskdefinitionExecutionRoleDefaultPolicy6E199B19",
+        "Roles": [
+          {
+            "Ref": "WorkertaskdefinitionExecutionRole3C1A1848"
+          }
+        ]
+      }
+    },
+    "Workerlogs2994AC4D": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "Worker-logs",
+        "RetentionInDays": 30
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
     "WorkerserviceService68C5A5C3": {
       "Type": "AWS::ECS::Service",
@@ -1184,7 +1330,7 @@
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "AssetParameterscc8d03e1cef62b38b47438d429cdc3828f57a52cffd1a84c4cda032bc21be19dS3Bucket151170D5"
+            "Ref": "AssetParametersa820140ad8525b8ed56ad2a7bcd9da99d6afc2490e8c91e34620886c011bdc91S3Bucket1FFDEA8D"
           },
           "S3Key": {
             "Fn::Join": [
@@ -1197,7 +1343,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParameterscc8d03e1cef62b38b47438d429cdc3828f57a52cffd1a84c4cda032bc21be19dS3VersionKey3D692C3D"
+                          "Ref": "AssetParametersa820140ad8525b8ed56ad2a7bcd9da99d6afc2490e8c91e34620886c011bdc91S3VersionKeyA60C027B"
                         }
                       ]
                     }
@@ -1210,7 +1356,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParameterscc8d03e1cef62b38b47438d429cdc3828f57a52cffd1a84c4cda032bc21be19dS3VersionKey3D692C3D"
+                          "Ref": "AssetParametersa820140ad8525b8ed56ad2a7bcd9da99d6afc2490e8c91e34620886c011bdc91S3VersionKeyA60C027B"
                         }
                       ]
                     }
@@ -1326,17 +1472,17 @@
     }
   },
   "Parameters": {
-    "AssetParameterscc8d03e1cef62b38b47438d429cdc3828f57a52cffd1a84c4cda032bc21be19dS3Bucket151170D5": {
+    "AssetParametersa820140ad8525b8ed56ad2a7bcd9da99d6afc2490e8c91e34620886c011bdc91S3Bucket1FFDEA8D": {
       "Type": "String",
-      "Description": "S3 bucket for asset \"cc8d03e1cef62b38b47438d429cdc3828f57a52cffd1a84c4cda032bc21be19d\""
+      "Description": "S3 bucket for asset \"a820140ad8525b8ed56ad2a7bcd9da99d6afc2490e8c91e34620886c011bdc91\""
     },
-    "AssetParameterscc8d03e1cef62b38b47438d429cdc3828f57a52cffd1a84c4cda032bc21be19dS3VersionKey3D692C3D": {
+    "AssetParametersa820140ad8525b8ed56ad2a7bcd9da99d6afc2490e8c91e34620886c011bdc91S3VersionKeyA60C027B": {
       "Type": "String",
-      "Description": "S3 key for asset version \"cc8d03e1cef62b38b47438d429cdc3828f57a52cffd1a84c4cda032bc21be19d\""
+      "Description": "S3 key for asset version \"a820140ad8525b8ed56ad2a7bcd9da99d6afc2490e8c91e34620886c011bdc91\""
     },
-    "AssetParameterscc8d03e1cef62b38b47438d429cdc3828f57a52cffd1a84c4cda032bc21be19dArtifactHash167B1C30": {
+    "AssetParametersa820140ad8525b8ed56ad2a7bcd9da99d6afc2490e8c91e34620886c011bdc91ArtifactHashC1953821": {
       "Type": "String",
-      "Description": "Artifact hash for asset \"cc8d03e1cef62b38b47438d429cdc3828f57a52cffd1a84c4cda032bc21be19d\""
+      "Description": "Artifact hash for asset \"a820140ad8525b8ed56ad2a7bcd9da99d6afc2490e8c91e34620886c011bdc91\""
     }
   }
 }
