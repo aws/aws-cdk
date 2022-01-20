@@ -53,6 +53,25 @@ describe('TagOptions', () => {
       }).toThrowError(/Invalid TagOption value for resource/);
     }),
 
+    test('fails to create tag options with no tag keys or values', () => {
+      expect(() => {
+        new servicecatalog.TagOptions(stack, 'TagOptions', {
+          allowedValuesForTags: {},
+        });
+      }).toThrowError(/No tag option keys or values were provided/);
+    }),
+
+    test('fails to create tag options for tag key with no values', () => {
+      expect(() => {
+        new servicecatalog.TagOptions(stack, 'TagOptions', {
+          allowedValuesForTags: {
+            key1: ['value1', 'value2'],
+            key2: [],
+          },
+        });
+      }).toThrowError(/No tag option values were provided for tag option key/);
+    }),
+
     test('associate tag options', () => {
       const portfolio = new servicecatalog.Portfolio(stack, 'MyPortfolio', {
         displayName: 'testPortfolio',

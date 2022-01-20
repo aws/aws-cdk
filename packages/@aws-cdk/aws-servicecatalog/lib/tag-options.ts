@@ -36,15 +36,20 @@ export class TagOptions extends cdk.Resource {
 
   constructor(scope: Construct, id: string, props: TagOptionsProps) {
     super(scope, id);
-
     this._tagOptionsMap = this.createUnderlyingTagOptions(props.allowedValuesForTags);
   }
 
-  private createUnderlyingTagOptions(tagOptions: { [tagKey: string]: string[] }): { [tagOptionIdentifier: string]: CfnTagOption } {
+  private createUnderlyingTagOptions(allowedValuesForTags: { [tagKey: string]: string[] }): { [tagOptionIdentifier: string]: CfnTagOption } {
+    if (Object.keys(allowedValuesForTags).length === 0) {
+      throw new Error(`No tag option keys or values were provided for resource ${this.node.path}`);
+    }
     var tagOptionMap: { [tagOptionIdentifier: string]: CfnTagOption } = {};
-    for (const [tagKey, tagOptionsList] of Object.entries(tagOptions)) {
+    for (const [tagKey, tagValues] of Object.entries(allowedValuesForTags)) {
       InputValidator.validateLength(this.node.addr, 'TagOption key', 1, 128, tagKey);
-      tagOptionsList.forEach((tagValue: string) => {
+      if (tagValues.length === 0) {
+        throw new Error(`No tag option values were provided for tag option key ${tagKey} for resource ${this.node.path}`);
+      }
+      tagValues.forEach((tagValue: string) => {
         InputValidator.validateLength(this.node.addr, 'TagOption value', 1, 256, tagValue);
         const tagOptionIdentifier = hashValues(tagKey, tagValue);
         if (!this.node.tryFindChild(tagOptionIdentifier)) {
