@@ -79,6 +79,13 @@ export abstract class Match {
   public static anyValue(): Matcher {
     return new AnyMatch('anyValue');
   }
+
+  /**
+   * Matches targets according to a regular expression
+   */
+  public static stringLikeRegexp(pattern: string): Matcher {
+    return new StringLikeRegexpMatch('stringLikeRegexp', pattern);
+  }
 }
 
 /**
@@ -389,4 +396,38 @@ class AnyMatch extends Matcher {
     }
     return result;
   }
+}
+
+class StringLikeRegexpMatch extends Matcher {
+  constructor(
+    public readonly name: string,
+    private readonly pattern: string) {
+
+    super();
+  }
+
+  test(actual: any): MatchResult {
+    const result = new MatchResult(actual);
+
+    const regex = new RegExp(this.pattern, 'gm');
+
+    if (typeof actual !== 'string') {
+      result.recordFailure({
+        matcher: this,
+        path: [],
+        message: `Expected a string, but got '${typeof actual}'`,
+      });
+    }
+
+    if (!regex.test(actual)) {
+      result.recordFailure({
+        matcher: this,
+        path: [],
+        message: `String '${actual}' did not match pattern '${this.pattern}'`,
+      });
+    }
+
+    return result;
+  }
+
 }

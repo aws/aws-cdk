@@ -299,6 +299,35 @@ target array. Out of order will be recorded as a match failure.
 Alternatively, the `Match.arrayEquals()` API can be used to assert that the target is
 exactly equal to the pattern array.
 
+### String Matchers
+
+The `Match.stringLikeRegexp()` API can be used to assert that the target matches the
+provided regular expression.
+
+```ts
+// Given a template -
+// {
+//   "Resources": {
+//     "MyBar": {
+//       "Type": "Foo::Bar",
+//       "Properties": {
+//         "Template": "const includeHeaders = true;"
+//       }
+//     }
+//   }
+// }
+
+// The following will NOT throw an assertion error
+template.hasResourceProperties('Foo::Bar', {
+  Template: Match.stringLikeRegexp('includeHeaders = (true|false)'),
+});
+
+// The following will throw an assertion error
+template.hasResourceProperties('Foo::Bar', {
+  Template: Match.stringLikeRegexp('includeHeaders = null'),
+});
+```
+
 ### Not Matcher
 
 The not matcher inverts the search pattern and matches all patterns in the path that does
