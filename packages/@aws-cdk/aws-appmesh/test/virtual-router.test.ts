@@ -1,5 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
-import { ABSENT } from '@aws-cdk/assert-internal';
+import { Match, Template } from '@aws-cdk/assertions';
 import * as cdk from '@aws-cdk/core';
 import * as appmesh from '../lib';
 
@@ -11,10 +10,11 @@ describe('virtual router', () => {
       const mesh = new appmesh.Mesh(stack, 'mesh', {
         meshName: 'test-mesh',
       });
+
       // WHEN
       mesh.addVirtualRouter('http-router-listener');
 
-      expect(stack).toHaveResourceLike('AWS::AppMesh::VirtualRouter', {
+      Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::VirtualRouter', {
         VirtualRouterName: 'meshhttprouterlistenerF57BCB2F',
         Spec: {
           Listeners: [
@@ -27,14 +27,15 @@ describe('virtual router', () => {
           ],
         },
       });
-
     });
+
     test('should have protocol variant listeners', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const mesh = new appmesh.Mesh(stack, 'mesh', {
         meshName: 'test-mesh',
       });
+
       // WHEN
       mesh.addVirtualRouter('http-router-listener', {
         listeners: [
@@ -67,7 +68,7 @@ describe('virtual router', () => {
       // THEN
       const expectedPorts = [appmesh.Protocol.HTTP, appmesh.Protocol.HTTP2, appmesh.Protocol.GRPC, appmesh.Protocol.TCP];
       expectedPorts.forEach(protocol => {
-        expect(stack).toHaveResourceLike('AWS::AppMesh::VirtualRouter', {
+        Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::VirtualRouter', {
           VirtualRouterName: `${protocol}-router-listener`,
           Spec: {
             Listeners: [
@@ -79,11 +80,9 @@ describe('virtual router', () => {
               },
             ],
           },
-          MeshOwner: ABSENT,
+          MeshOwner: Match.absent(),
         });
       });
-
-
     });
 
     describe('with shared service mesh', () => {
@@ -105,11 +104,9 @@ describe('virtual router', () => {
         });
 
         // THEN
-        expect(stack).toHaveResourceLike('AWS::AppMesh::VirtualRouter', {
+        Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::VirtualRouter', {
           MeshOwner: meshEnv.account,
         });
-
-
       });
     });
   });
@@ -154,8 +151,8 @@ describe('virtual router', () => {
       });
 
       // THEN
-      expect(stack).
-        toHaveResourceLike('AWS::AppMesh::Route', {
+      Template.fromStack(stack).
+        hasResourceProperties('AWS::AppMesh::Route', {
           RouteName: 'route-1',
           Spec: {
             HttpRoute: {
@@ -178,8 +175,6 @@ describe('virtual router', () => {
             'Fn::GetAtt': ['meshrouter81B8087E', 'VirtualRouterName'],
           },
         });
-
-
     });
   });
   describe('When adding routes to a VirtualRouter with existing routes', () => {
@@ -268,8 +263,8 @@ describe('virtual router', () => {
       });
 
       // THEN
-      expect(stack).
-        toHaveResourceLike('AWS::AppMesh::Route', {
+      Template.fromStack(stack).
+        hasResourceProperties('AWS::AppMesh::Route', {
           RouteName: 'route-1',
           Spec: {
             HttpRoute: {
@@ -290,8 +285,8 @@ describe('virtual router', () => {
           },
         });
 
-      expect(stack).
-        toHaveResourceLike('AWS::AppMesh::Route', {
+      Template.fromStack(stack).
+        hasResourceProperties('AWS::AppMesh::Route', {
           RouteName: 'route-2',
           Spec: {
             HttpRoute: {
@@ -312,8 +307,8 @@ describe('virtual router', () => {
           },
         });
 
-      expect(stack).
-        toHaveResourceLike('AWS::AppMesh::Route', {
+      Template.fromStack(stack).
+        hasResourceProperties('AWS::AppMesh::Route', {
           RouteName: 'route-3',
           Spec: {
             HttpRoute: {
@@ -333,8 +328,6 @@ describe('virtual router', () => {
             },
           },
         });
-
-
     });
   });
   describe('When adding a TCP route to existing VirtualRouter', () => {
@@ -374,8 +367,8 @@ describe('virtual router', () => {
       });
 
       // THEN
-      expect(stack).
-        toHaveResourceLike('AWS::AppMesh::Route', {
+      Template.fromStack(stack).
+        hasResourceProperties('AWS::AppMesh::Route', {
           RouteName: 'route-tcp-1',
           Spec: {
             TcpRoute: {
@@ -395,8 +388,6 @@ describe('virtual router', () => {
             'Fn::GetAtt': ['meshrouter81B8087E', 'VirtualRouterName'],
           },
         });
-
-
     });
   });
 
@@ -414,8 +405,6 @@ describe('virtual router', () => {
     // THEN
     expect(virtualRouter.mesh.meshName).toEqual(meshName);
     expect(virtualRouter.virtualRouterName).toEqual(virtualRouterName);
-
-
   });
   test('Can import Virtual Routers using attributes', () => {
     // GIVEN
@@ -433,7 +422,5 @@ describe('virtual router', () => {
     // THEN
     expect(virtualRouter1.mesh.meshName).toEqual(meshName);
     expect(virtualRouter1.virtualRouterName).toEqual(virtualRouterName);
-
-
   });
 });

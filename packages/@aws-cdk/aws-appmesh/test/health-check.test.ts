@@ -1,5 +1,4 @@
 import * as cdk from '@aws-cdk/core';
-
 import * as appmesh from '../lib';
 
 let idCounter = 0;
@@ -29,8 +28,6 @@ describe('health check', () => {
     expect(() => toThrow(max)).not.toThrow();
     expect(() => toThrow(min - 1)).toThrow(/interval must be between 5 seconds and 300 seconds/);
     expect(() => toThrow(max + 1)).toThrow(/interval must be between 5 seconds and 300 seconds/);
-
-
   });
   test('timeout', () => {
     // GIVEN
@@ -48,8 +45,6 @@ describe('health check', () => {
     expect(() => toThrow(max)).not.toThrow();
     expect(() => toThrow(min - 1)).toThrow(/timeout must be between 2 seconds and 60 seconds/);
     expect(() => toThrow(max + 1)).toThrow(/timeout must be between 2 seconds and 60 seconds/);
-
-
   });
   test('healthyThreshold', () => {
     // GIVEN
@@ -67,8 +62,6 @@ describe('health check', () => {
     expect(() => toThrow(max)).not.toThrow();
     expect(() => toThrow(min - 1)).toThrow(/healthyThreshold must be between 2 and 10/);
     expect(() => toThrow(max + 1)).toThrow(/healthyThreshold must be between 2 and 10/);
-
-
   });
   test('unhealthyThreshold', () => {
     // GIVEN
@@ -86,7 +79,5 @@ describe('health check', () => {
     expect(() => toThrow(max)).not.toThrow();
     expect(() => toThrow(min - 1)).toThrow(/unhealthyThreshold must be between 2 and 10/);
     expect(() => toThrow(max + 1)).toThrow(/unhealthyThreshold must be between 2 and 10/);
-
-
   });
 });
