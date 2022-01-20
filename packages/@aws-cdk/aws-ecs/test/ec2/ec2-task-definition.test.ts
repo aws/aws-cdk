@@ -1,5 +1,5 @@
-import '@aws-cdk/assert-internal/jest';
 import * as path from 'path';
+import { Match, Template } from '@aws-cdk/assertions';
 import { Protocol } from '@aws-cdk/aws-ec2';
 import { Repository } from '@aws-cdk/aws-ecr';
 import * as iam from '@aws-cdk/aws-iam';
@@ -18,14 +18,13 @@ describe('ec2 task definition', () => {
       new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
       // THEN
-      expect(stack).toHaveResource('AWS::ECS::TaskDefinition', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
         Family: 'Ec2TaskDef',
         NetworkMode: ecs.NetworkMode.BRIDGE,
         RequiresCompatibilities: ['EC2'],
       });
 
       // test error if no container defs?
-
     });
 
     test('with all properties set', () => {
@@ -56,7 +55,7 @@ describe('ec2 task definition', () => {
       });
 
       // THEN
-      expect(stack).toHaveResource('AWS::ECS::TaskDefinition', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
         ExecutionRoleArn: {
           'Fn::GetAtt': [
             'ExecutionRole605A040B',
@@ -104,7 +103,7 @@ describe('ec2 task definition', () => {
       taskDefinition.addPlacementConstraint(ecs.PlacementConstraint.memberOf('attribute:ecs.instance-type =~ t2.*'));
 
       // THEN
-      expect(stack).toHaveResource('AWS::ECS::TaskDefinition', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
         PlacementConstraints: [
           {
             Expression: 'attribute:ecs.instance-type =~ t2.*',
@@ -125,7 +124,7 @@ describe('ec2 task definition', () => {
       });
 
       // THEN
-      expect(stack).toHaveResource('AWS::ECS::TaskDefinition', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
         NetworkMode: ecs.NetworkMode.AWS_VPC,
       });
 
@@ -140,7 +139,7 @@ describe('ec2 task definition', () => {
       });
 
       // THEN
-      expect(stack).toHaveResource('AWS::ECS::TaskDefinition', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
         IpcMode: ecs.IpcMode.TASK,
       });
 
@@ -155,7 +154,7 @@ describe('ec2 task definition', () => {
       });
 
       // THEN
-      expect(stack).toHaveResource('AWS::ECS::TaskDefinition', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
         PidMode: ecs.PidMode.HOST,
       });
 
@@ -194,7 +193,7 @@ describe('ec2 task definition', () => {
       }));
 
       // THEN
-      expect(stack).toHaveResource('AWS::ECS::TaskDefinition', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
         Family: 'Ec2TaskDef',
         ContainerDefinitions: [{
           Essential: true,
@@ -222,7 +221,7 @@ describe('ec2 task definition', () => {
         }],
       });
 
-      expect(stack).toHaveResource('AWS::IAM::Policy', {
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         PolicyDocument: {
           Version: '2012-10-17',
           Statement: [
@@ -288,7 +287,7 @@ describe('ec2 task definition', () => {
       });
 
       // THEN
-      expect(stack).toHaveResource('AWS::ECS::TaskDefinition', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
         Family: 'Ec2TaskDef',
         ContainerDefinitions: [
           {
@@ -465,7 +464,7 @@ describe('ec2 task definition', () => {
       });
 
       // THEN
-      expect(stack).toHaveResource('AWS::ECR::Repository', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECR::Repository', {
         LifecyclePolicy: {
           // eslint-disable-next-line max-len
           LifecyclePolicyText: '{"rules":[{"rulePriority":10,"selection":{"tagStatus":"tagged","tagPrefixList":["abc"],"countType":"imageCountMoreThan","countNumber":1},"action":{"type":"expire"}}]}',
@@ -474,7 +473,7 @@ describe('ec2 task definition', () => {
         RepositoryName: 'project-a/amazon-ecs-sample',
       });
 
-      expect(stack).toHaveResource('AWS::ECS::TaskDefinition', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
         Family: 'Ec2TaskDef',
         ContainerDefinitions: [{
           Essential: true,
@@ -547,7 +546,7 @@ describe('ec2 task definition', () => {
       });
 
       // THEN
-      expect(stack).toHaveResource('AWS::ECS::TaskDefinition', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
         ContainerDefinitions: [{
           Essential: true,
           Memory: 512,
@@ -617,7 +616,7 @@ describe('ec2 task definition', () => {
       });
 
       // THEN
-      expect(stack).toHaveResource('AWS::ECS::TaskDefinition', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
         ContainerDefinitions: [{
           Essential: true,
           Memory: 512,
@@ -688,7 +687,7 @@ describe('ec2 task definition', () => {
       });
 
       // THEN
-      expect(stack).toHaveResource('AWS::ECR::Repository', {});
+      Template.fromStack(stack).hasResourceProperties('AWS::ECR::Repository', {});
 
 
     });
@@ -743,7 +742,7 @@ describe('ec2 task definition', () => {
       });
 
       // THEN
-      expect(stack).toHaveResource('AWS::ECS::TaskDefinition', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
         Family: 'StackEc2TaskDefF03698CF',
         ContainerDefinitions: [
           {
@@ -810,9 +809,9 @@ describe('ec2 task definition', () => {
       });
 
       // THEN
-      expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
         Family: 'Ec2TaskDef',
-        ContainerDefinitions: [{
+        ContainerDefinitions: [Match.objectLike({
           MountPoints: [
             {
               ContainerPath: './cache',
@@ -820,7 +819,7 @@ describe('ec2 task definition', () => {
               SourceVolume: 'scratch',
             },
           ],
-        }],
+        })],
         Volumes: [{
           Host: {
             SourcePath: '/tmp/cache',
@@ -828,9 +827,8 @@ describe('ec2 task definition', () => {
           Name: 'scratch',
         }],
       });
-
-
     });
+
     test('correctly sets container dependenices', () => {
       // GIVEN
       const stack = new cdk.Stack();
@@ -861,15 +859,15 @@ describe('ec2 task definition', () => {
       );
 
       // THEN
-      expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
         Family: 'Ec2TaskDef',
-        ContainerDefinitions: [{
+        ContainerDefinitions: [Match.objectLike({
           Name: 'dependency1',
-        },
-        {
+        }),
+        Match.objectLike({
           Name: 'dependency2',
-        },
-        {
+        }),
+        Match.objectLike({
           Name: 'web',
           DependsOn: [{
             Condition: 'HEALTHY',
@@ -879,7 +877,7 @@ describe('ec2 task definition', () => {
             Condition: 'SUCCESS',
             ContainerName: 'dependency2',
           }],
-        }],
+        })],
       });
 
 
@@ -910,25 +908,23 @@ describe('ec2 task definition', () => {
       container.addLink(linkedContainer2);
 
       // THEN
-      expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
         ContainerDefinitions: [
-          {
+          Match.objectLike({
             Links: [
               'linked1:linked',
               'linked2',
             ],
             Name: 'web',
-          },
-          {
+          }),
+          Match.objectLike({
             Name: 'linked1',
-          },
-          {
+          }),
+          Match.objectLike({
             Name: 'linked2',
-          },
+          }),
         ],
       });
-
-
     });
 
     test('correctly set policy statement to the task IAM role', () => {
@@ -943,7 +939,7 @@ describe('ec2 task definition', () => {
       }));
 
       // THEN
-      expect(stack).toHaveResource('AWS::IAM::Policy', {
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         PolicyDocument: {
           Version: '2012-10-17',
           Statement: [
@@ -955,9 +951,8 @@ describe('ec2 task definition', () => {
           ],
         },
       });
-
-
     });
+
     test('correctly sets volumes from', () => {
       const stack = new cdk.Stack();
 
@@ -974,18 +969,16 @@ describe('ec2 task definition', () => {
       });
 
       // THEN
-      expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
-        ContainerDefinitions: [{
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
+        ContainerDefinitions: [Match.objectLike({
           VolumesFrom: [
             {
               SourceContainer: 'SourceContainer',
               ReadOnly: true,
             },
           ],
-        }],
+        })],
       });
-
-
     });
 
     test('correctly set policy statement to the task execution IAM role', () => {
@@ -1000,7 +993,7 @@ describe('ec2 task definition', () => {
       }));
 
       // THEN
-      expect(stack).toHaveResource('AWS::IAM::Policy', {
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         PolicyDocument: {
           Version: '2012-10-17',
           Statement: [
@@ -1044,9 +1037,9 @@ describe('ec2 task definition', () => {
       });
 
       // THEN
-      expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
         Family: 'Ec2TaskDef',
-        ContainerDefinitions: [{
+        ContainerDefinitions: [Match.objectLike({
           MountPoints: [
             {
               ContainerPath: './cache',
@@ -1054,7 +1047,7 @@ describe('ec2 task definition', () => {
               SourceVolume: 'scratch',
             },
           ],
-        }],
+        })],
         Volumes: [{
           Host: {
             SourcePath: '/tmp/cache',
@@ -1062,8 +1055,6 @@ describe('ec2 task definition', () => {
           Name: 'scratch',
         }],
       });
-
-
     });
 
     test('correctly sets placement constraints', () => {
@@ -1081,7 +1072,7 @@ describe('ec2 task definition', () => {
       });
 
       // THEN
-      expect(stack).toHaveResource('AWS::ECS::TaskDefinition', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
         PlacementConstraints: [
           {
             Expression: 'attribute:ecs.instance-type =~ t2.*',
@@ -1108,7 +1099,7 @@ describe('ec2 task definition', () => {
       });
 
       // THEN
-      expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
         TaskRoleArn: stack.resolve(taskDefinition.taskRole.roleArn),
       });
 
@@ -1121,7 +1112,7 @@ describe('ec2 task definition', () => {
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
       // THEN
-      expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
         TaskRoleArn: stack.resolve(taskDefinition.taskRole.roleArn),
       });
 
@@ -1152,7 +1143,7 @@ describe('ec2 task definition', () => {
       });
 
       // THEN
-      expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
         Family: 'Ec2TaskDef',
         Volumes: [{
           Name: 'scratch',
@@ -1189,7 +1180,7 @@ describe('ec2 task definition', () => {
       });
 
       // THEN
-      expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
         Family: 'Ec2TaskDef',
         Volumes: [{
           Name: 'scratch',
@@ -1223,7 +1214,7 @@ describe('ec2 task definition', () => {
       });
 
       // THEN
-      expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
         Family: 'Ec2TaskDef',
         InferenceAccelerators: [{
           DeviceName: 'device1',
@@ -1256,7 +1247,7 @@ describe('ec2 task definition', () => {
       });
 
       // THEN
-      expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
         Family: 'Ec2TaskDef',
         InferenceAccelerators: [{
           DeviceName: 'device1',
