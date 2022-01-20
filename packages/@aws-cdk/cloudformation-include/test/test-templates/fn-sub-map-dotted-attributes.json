@@ -4,7 +4,14 @@
       "Type": "AWS::S3::Bucket",
       "Properties": {
         "BucketName": { 
-          "Fn::Sub": "${ELB.SourceSecurityGroup.GroupName}"
+          "Fn::Sub": [
+            "${ELB.SourceSecurityGroup.GroupName}-${LoadBalancerName}",
+            {
+              "LoadBalancerName": {
+                "Ref": "ELB"
+              }
+            }
+          ]
         }
       }
     },
@@ -14,7 +21,7 @@
         "AvailabilityZones": [
           "us-east-1a"
         ],
-        "CrossZone": "true",
+        "CrossZone": true,
         "Listeners": [{
           "LoadBalancerPort": "80",
           "InstancePort": "80",
