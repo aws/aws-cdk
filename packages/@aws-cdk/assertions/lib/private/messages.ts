@@ -25,17 +25,14 @@ export function hasMessage(messages: Messages, logicalId: string, props: any): s
     return 'No messages found in the stack';
   }
 
-  const renderTrace = props.entry?.trace ? true : false;
   return [
     `Stack has ${result.analyzedCount} messages, but none match as expected.`,
-    formatFailure(formatMessage(result.closestResult, renderTrace)),
+    formatFailure(formatMessage(result.closestResult)),
   ].join('\n');
 }
 
-/**
- * We redact the stack trace by default because it is unnecessarily long and unintelligible.
- * The only time where we include the stack trace is when we are asserting against it.
- */
+// We redact the stack trace by default because it is unnecessarily long and unintelligible.
+// If there is a use case for rendering the trace, we can add it later.
 function formatMessage(match: MatchResult, renderTrace: boolean = false): MatchResult {
   if (!renderTrace) {
     match.target.entry.trace = 'redacted';
