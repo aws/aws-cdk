@@ -6,7 +6,7 @@ import { CfnDetectorModel } from './iotevents.generated';
  */
 export interface Event {
   /**
-   * The name of the event
+   * The name of the event.
    */
   readonly eventName: string;
 
