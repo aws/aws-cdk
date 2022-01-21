@@ -46,20 +46,20 @@ export class TagOptions extends cdk.Resource {
     var tagOptionMap: { [tagOptionIdentifier: string]: CfnTagOption } = {};
     for (const [tagKey, tagValues] of Object.entries(allowedValuesForTags)) {
       InputValidator.validateLength(this.node.addr, 'TagOption key', 1, 128, tagKey);
-      if (tagValues.length === 0) {
+
+      const uniqueTagValues = new Set(tagValues);
+      if (uniqueTagValues.size === 0) {
         throw new Error(`No tag option values were provided for tag option key ${tagKey} for resource ${this.node.path}`);
       }
-      tagValues.forEach((tagValue: string) => {
+      uniqueTagValues.forEach((tagValue: string) => {
         InputValidator.validateLength(this.node.addr, 'TagOption value', 1, 256, tagValue);
         const tagOptionIdentifier = hashValues(tagKey, tagValue);
-        if (!this.node.tryFindChild(tagOptionIdentifier)) {
-          const tagOption = new CfnTagOption(this, tagOptionIdentifier, {
-            key: tagKey,
-            value: tagValue,
-            active: true,
-          });
-          tagOptionMap[tagOptionIdentifier] = tagOption;
-        }
+        const tagOption = new CfnTagOption(this, tagOptionIdentifier, {
+          key: tagKey,
+          value: tagValue,
+          active: true,
+        });
+        tagOptionMap[tagOptionIdentifier] = tagOption;
       });
     }
     return tagOptionMap;
