@@ -1,6 +1,5 @@
 import * as path from 'path';
-import '@aws-cdk/assert-internal/jest';
-import { expect as expectStack } from '@aws-cdk/assert-internal';
+import { Template } from '@aws-cdk/assertions';
 import { App, Stack } from '@aws-cdk/core';
 import { Function, FunctionCode } from '../lib';
 
@@ -15,7 +14,7 @@ describe('CloudFront Function', () => {
       code: FunctionCode.fromInline('code'),
     });
 
-    expectStack(stack).toMatch({
+    Template.fromStack(stack).templateMatches({
       Resources: {
         CF2D7241DD7: {
           Type: 'AWS::CloudFront::Function',
@@ -40,7 +39,7 @@ describe('CloudFront Function', () => {
       code: FunctionCode.fromInline('code'),
     });
 
-    expectStack(stack).toMatch({
+    Template.fromStack(stack).templateMatches({
       Resources: {
         CF2D7241DD7: {
           Type: 'AWS::CloudFront::Function',
@@ -89,7 +88,7 @@ describe('CloudFront Function', () => {
       functionName: 'FunctionName',
     });
 
-    expectStack(stack).toMatch({
+    Template.fromStack(stack).templateMatches({
       Resources: {
         CF2D7241DD7: {
           Type: 'AWS::CloudFront::Function',
@@ -116,7 +115,7 @@ describe('CloudFront Function', () => {
       code: FunctionCode.fromFile({ filePath: path.join(__dirname, 'function-code.js') }),
     });
 
-    expectStack(stack).toMatch({
+    Template.fromStack(stack).templateMatches({
       Resources: {
         CF2D7241DD7: {
           Type: 'AWS::CloudFront::Function',

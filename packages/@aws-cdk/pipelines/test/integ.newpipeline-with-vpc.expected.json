@@ -1363,6 +1363,18 @@
         "Cache": {
           "Type": "NO_CACHE"
         },
+        "Description": {
+          "Fn::Join": [
+            "",
+            [
+              "Pipeline step ",
+              {
+                "Ref": "Pipeline9850B417"
+              },
+              "/Build/Synth"
+            ]
+          ]
+        },
         "EncryptionKey": "alias/aws/s3",
         "VpcConfig": {
           "SecurityGroupIds": [
@@ -1950,6 +1962,18 @@
         "Cache": {
           "Type": "NO_CACHE"
         },
+        "Description": {
+          "Fn::Join": [
+            "",
+            [
+              "Pipeline step ",
+              {
+                "Ref": "Pipeline9850B417"
+              },
+              "/UpdatePipeline/SelfMutate"
+            ]
+          ]
+        },
         "EncryptionKey": "alias/aws/s3",
         "VpcConfig": {
           "SecurityGroupIds": [
@@ -2292,6 +2316,18 @@
         "Cache": {
           "Type": "NO_CACHE"
         },
+        "Description": {
+          "Fn::Join": [
+            "",
+            [
+              "Pipeline step ",
+              {
+                "Ref": "Pipeline9850B417"
+              },
+              "/Assets/FileAsset1"
+            ]
+          ]
+        },
         "EncryptionKey": "alias/aws/s3",
         "VpcConfig": {
           "SecurityGroupIds": [
@@ -2392,6 +2428,18 @@
         },
         "Cache": {
           "Type": "NO_CACHE"
+        },
+        "Description": {
+          "Fn::Join": [
+            "",
+            [
+              "Pipeline step ",
+              {
+                "Ref": "Pipeline9850B417"
+              },
+              "/Assets/FileAsset2"
+            ]
+          ]
         },
         "EncryptionKey": "alias/aws/s3",
         "VpcConfig": {
