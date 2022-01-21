@@ -427,14 +427,16 @@ export class CloudFormationDeployments {
 
       generatedParentTemplate.Resources[nestedStackLogicalId].NestedTemplate = nestedStackTemplates.generatedNestedTemplate;
 
+      let deployedNestedTemplate = {};
       if (deployedParentTemplate.Resources) {
         deployedParentTemplate.Resources[nestedStackLogicalId].NestedTemplate = nestedStackTemplates.deployedNestedTemplate;
+        deployedNestedTemplate = deployedParentTemplate.Resources[nestedStackLogicalId].NestedTemplate;
       }
 
       await this.replaceNestedStacksInParentTemplate(
         rootStackArtifact,
-        generatedParentTemplate.Resources[nestedStackLogicalId],
-        (deployedParentTemplate.Resources ?? {})[nestedStackLogicalId] ?? {},
+        generatedParentTemplate.Resources[nestedStackLogicalId].NestedTemplate,
+        deployedNestedTemplate,
         nestedStackTemplates.nestedStackName,
         sdk,
       );
