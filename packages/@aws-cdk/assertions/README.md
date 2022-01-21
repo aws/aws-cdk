@@ -139,7 +139,7 @@ expect(result.Foo).toEqual({ Value: 'Fred', Description: 'FooFred' });
 expect(result.Bar).toEqual({ Value: 'Fred', Description: 'BarFred' });
 ```
 
-The APIs `hasMapping()` and `findMappings()` provide similar functionalities.
+The APIs `hasMapping()`, `findMappings()`, `hasCondition()`, and `hasCondtions()` provide similar functionalities.
 
 ## Special Matchers
 
