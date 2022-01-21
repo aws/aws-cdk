@@ -6,7 +6,7 @@ import { CfnDetectorModel } from './iotevents.generated';
  */
 export interface StateProps {
   /**
-   * The name of the state
+   * The name of the state.
    */
   readonly stateName: string;
 
