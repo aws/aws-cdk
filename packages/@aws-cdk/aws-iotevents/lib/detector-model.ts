@@ -45,7 +45,7 @@ export interface DetectorModelProps {
  */
 export class DetectorModel extends Resource implements IDetectorModel {
   /**
-   * Import an existing detector model
+   * Import an existing detector model.
    */
   public static fromDetectorModelName(scope: Construct, id: string, detectorModelName: string): IDetectorModel {
     return new class extends Resource implements IDetectorModel {
