@@ -6,7 +6,7 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import { AsgCapacityProvider } from '@aws-cdk/aws-ecs';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as sqs from '@aws-cdk/aws-sqs';
-import { testDeprecated } from '@aws-cdk/cdk-build-tools';
+import { testDeprecated, testLegacyBehavior } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as ecsPatterns from '../../lib';
@@ -88,9 +88,9 @@ test('test ECS queue worker service construct - with only required props', () =>
   });
 });
 
-test('test ECS queue worker service construct - with remove default desiredCount feature flag', () => {
+testLegacyBehavior('test ECS queue worker service construct - with remove default desiredCount feature flag', cdk.App, (app) => {
   // GIVEN
-  const stack = new cdk.Stack();
+  const stack = new cdk.Stack(app);
   stack.node.setContext(cxapi.ECS_REMOVE_DEFAULT_DESIRED_COUNT, true);
 
   const vpc = new ec2.Vpc(stack, 'VPC');
@@ -221,7 +221,6 @@ testDeprecated('test ECS queue worker service construct - with optional props', 
     image: ecs.ContainerImage.fromRegistry('test'),
     command: ['-c', '4', 'amazon.com'],
     enableLogging: false,
-    desiredTaskCount: 2,
     environment: {
       TEST_ENVIRONMENT_VARIABLE1: 'test environment variable 1 value',
       TEST_ENVIRONMENT_VARIABLE2: 'test environment variable 2 value',
@@ -299,9 +298,9 @@ testDeprecated('test ECS queue worker service construct - with optional props', 
   });
 });
 
-testDeprecated('can set desiredTaskCount to 0', () => {
+testLegacyBehavior('can set desiredTaskCount to 0', cdk.App, (app) => {
   // GIVEN
-  const stack = new cdk.Stack();
+  const stack = new cdk.Stack(app);
   const vpc = new ec2.Vpc(stack, 'VPC');
   const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
   cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
