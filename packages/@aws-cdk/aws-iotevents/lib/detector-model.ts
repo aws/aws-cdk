@@ -72,7 +72,7 @@ export class DetectorModel extends Resource implements IDetectorModel {
       detectorModelName: this.physicalName,
       detectorModelDefinition: {
         initialStateName: props.initialState.stateName,
-        states: [props.initialState.toStateJson()],
+        states: [props.initialState._toStateJson()],
       },
       roleArn: role.roleArn,
     });

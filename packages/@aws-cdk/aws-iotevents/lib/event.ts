@@ -1,5 +1,4 @@
 import { Expression } from './expression';
-import { CfnDetectorModel } from './iotevents.generated';
 
 /**
  * Specifies the actions to be performed when the condition evaluates to TRUE.
@@ -16,13 +15,4 @@ export interface Event {
    * @default - none (the actions are always executed)
    */
   readonly condition?: Expression;
-}
-
-export function getEventJson(events: Event[]): CfnDetectorModel.EventProperty[] {
-  return events.map(e => {
-    return {
-      eventName: e.eventName,
-      condition: e.condition?.evaluate(),
-    };
-  });
 }

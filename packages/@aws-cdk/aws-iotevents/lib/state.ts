@@ -1,4 +1,4 @@
-import { Event, getEventJson } from './event';
+import { Event } from './event';
 import { CfnDetectorModel } from './iotevents.generated';
 
 /**
@@ -33,8 +33,10 @@ export class State {
 
   /**
    * Return the state property JSON
+   *
+   * @internal
    */
-  public toStateJson(): CfnDetectorModel.StateProperty {
+  public _toStateJson(): CfnDetectorModel.StateProperty {
     const { stateName, onEnterEvents } = this.props;
     return {
       stateName,
@@ -48,4 +50,13 @@ export class State {
   public hasCondition(): boolean {
     return this.props.onEnterEvents?.some(event => event.condition) ?? false;
   }
+}
+
+function getEventJson(events: Event[]): CfnDetectorModel.EventProperty[] {
+  return events.map(e => {
+    return {
+      eventName: e.eventName,
+      condition: e.condition?.evaluate(),
+    };
+  });
 }

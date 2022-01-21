@@ -3,9 +3,12 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import * as iotevents from '../lib';
 
-test('Default property', () => {
-  const stack = new cdk.Stack();
+let stack: cdk.Stack;
+beforeEach(() => {
+  stack = new cdk.Stack();
+});
 
+test('Default property', () => {
   // WHEN
   new iotevents.DetectorModel(stack, 'MyDetectorModel', {
     initialState: new iotevents.State({
@@ -48,7 +51,6 @@ test('Default property', () => {
 });
 
 test('can get detector model name', () => {
-  const stack = new cdk.Stack();
   // GIVEN
   const detectorModel = new iotevents.DetectorModel(stack, 'MyDetectorModel', {
     initialState: new iotevents.State({
@@ -75,8 +77,6 @@ test('can get detector model name', () => {
 });
 
 test('can set physical name', () => {
-  const stack = new cdk.Stack();
-
   // WHEN
   new iotevents.DetectorModel(stack, 'MyDetectorModel', {
     detectorModelName: 'test-detector-model',
@@ -96,8 +96,6 @@ test('can set physical name', () => {
 });
 
 test('can set multiple events to State', () => {
-  const stack = new cdk.Stack();
-
   // WHEN
   new iotevents.DetectorModel(stack, 'MyDetectorModel', {
     initialState: new iotevents.State({
@@ -135,8 +133,6 @@ test('can set multiple events to State', () => {
 });
 
 test('can set role', () => {
-  const stack = new cdk.Stack();
-
   // WHEN
   const role = iam.Role.fromRoleArn(stack, 'test-role', 'arn:aws:iam::123456789012:role/ForTest');
   new iotevents.DetectorModel(stack, 'MyDetectorModel', {
@@ -157,8 +153,6 @@ test('can set role', () => {
 });
 
 test('can import a DetectorModel by detectorModelName', () => {
-  const stack = new cdk.Stack();
-
   // WHEN
   const detectorModelName = 'detector-model-name';
   const detectorModel = iotevents.DetectorModel.fromDetectorModelName(stack, 'ExistingDetectorModel', detectorModelName);
@@ -170,8 +164,6 @@ test('can import a DetectorModel by detectorModelName', () => {
 });
 
 test('cannot create without condition', () => {
-  const stack = new cdk.Stack();
-
   expect(() => {
     new iotevents.DetectorModel(stack, 'MyDetectorModel', {
       initialState: new iotevents.State({
@@ -185,8 +177,6 @@ test('cannot create without condition', () => {
 });
 
 test('cannot create without event', () => {
-  const stack = new cdk.Stack();
-
   expect(() => {
     new iotevents.DetectorModel(stack, 'MyDetectorModel', {
       initialState: new iotevents.State({
@@ -198,8 +188,6 @@ test('cannot create without event', () => {
 
 describe('Expression', () => {
   test('currentInput', () => {
-    const stack = new cdk.Stack();
-
     // WHEN
     const input = iotevents.Input.fromInputName(stack, 'MyInput', 'test-input');
     new iotevents.DetectorModel(stack, 'MyDetectorModel', {
@@ -229,8 +217,6 @@ describe('Expression', () => {
   });
 
   test('inputAttribute', () => {
-    const stack = new cdk.Stack();
-
     // WHEN
     const input = iotevents.Input.fromInputName(stack, 'MyInput', 'test-input');
     new iotevents.DetectorModel(stack, 'MyDetectorModel', {
@@ -260,8 +246,6 @@ describe('Expression', () => {
   });
 
   test('eq', () => {
-    const stack = new cdk.Stack();
-
     // WHEN
     new iotevents.DetectorModel(stack, 'MyDetectorModel', {
       initialState: new iotevents.State({
@@ -293,8 +277,6 @@ describe('Expression', () => {
   });
 
   test('eq', () => {
-    const stack = new cdk.Stack();
-
     // WHEN
     new iotevents.DetectorModel(stack, 'MyDetectorModel', {
       initialState: new iotevents.State({
