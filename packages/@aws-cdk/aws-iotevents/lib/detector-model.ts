@@ -34,7 +34,7 @@ export interface DetectorModelProps {
   /**
    * The role that grants permission to AWS IoT Events to perform its operations.
    *
-   * @default - a role will be created with default permissions.
+   * @default - a role will be created with default permissions
    */
   readonly role?: iam.IRole;
 }
