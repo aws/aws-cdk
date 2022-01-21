@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import { Stack } from '@aws-cdk/core';
 import * as actions from '../lib';
@@ -19,7 +19,7 @@ test('can use ssm with critical severity and performance category as alarm actio
   alarm.addAlarmAction(new actions.SsmAction(actions.OpsItemSeverity.CRITICAL, actions.OpsItemCategory.PERFORMANCE));
 
   // THEN
-  expect(stack).toHaveResource('AWS::CloudWatch::Alarm', {
+  Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
     AlarmActions: [
       {
         'Fn::Join': [
@@ -58,7 +58,7 @@ test('can use ssm with meduim severity and no category as alarm action', () => {
   alarm.addAlarmAction(new actions.SsmAction(actions.OpsItemSeverity.MEDIUM));
 
   // THEN
-  expect(stack).toHaveResource('AWS::CloudWatch::Alarm', {
+  Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
     AlarmActions: [
       {
         'Fn::Join': [
