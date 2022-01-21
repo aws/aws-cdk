@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';
 import * as cdk from '@aws-cdk/core';
@@ -33,7 +33,7 @@ test('aws sdk js custom resource with onCreate and onDelete', () => {
   });
 
   // THEN
-  expect(stack).toHaveResource('Custom::LogRetentionPolicy', {
+  Template.fromStack(stack).hasResourceProperties('Custom::LogRetentionPolicy', {
     'Create': JSON.stringify({
       'service': 'CloudWatchLogs',
       'action': 'putRetentionPolicy',
@@ -55,7 +55,7 @@ test('aws sdk js custom resource with onCreate and onDelete', () => {
     'InstallLatestAwsSdk': true,
   });
 
-  expect(stack).toHaveResource('AWS::IAM::Policy', {
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
     'PolicyDocument': {
       'Statement': [
         {
@@ -95,7 +95,7 @@ test('onCreate defaults to onUpdate', () => {
   });
 
   // THEN
-  expect(stack).toHaveResource('Custom::S3PutObject', {
+  Template.fromStack(stack).hasResourceProperties('Custom::S3PutObject', {
     'Create': JSON.stringify({
       'service': 's3',
       'action': 'putObject',
@@ -148,7 +148,7 @@ test('with custom policyStatements', () => {
   });
 
   // THEN
-  expect(stack).toHaveResource('AWS::IAM::Policy', {
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
     'PolicyDocument': {
       'Statement': [
         {
@@ -207,7 +207,7 @@ test('booleans are encoded in the stringified parameters object', () => {
   });
 
   // THEN
-  expect(stack).toHaveResource('Custom::ServiceAction', {
+  Template.fromStack(stack).hasResourceProperties('Custom::ServiceAction', {
     'Create': JSON.stringify({
       'service': 'service',
       'action': 'action',
@@ -263,7 +263,7 @@ test('encodes physical resource id reference', () => {
   });
 
   // THEN
-  expect(stack).toHaveResource('Custom::ServiceAction', {
+  Template.fromStack(stack).hasResourceProperties('Custom::ServiceAction', {
     'Create': JSON.stringify({
       'service': 'service',
       'action': 'action',
@@ -296,7 +296,7 @@ test('timeout defaults to 2 minutes', () => {
   });
 
   // THEN
-  expect(stack).toHaveResource('AWS::Lambda::Function', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
     Timeout: 120,
   });
 });
@@ -317,7 +317,7 @@ test('can specify timeout', () => {
   });
 
   // THEN
-  expect(stack).toHaveResource('AWS::Lambda::Function', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
     Timeout: 900,
   });
 });
@@ -340,7 +340,7 @@ test('implements IGrantable', () => {
   // WHEN
   role.grantPassRole(customResource.grantPrincipal);
 
-  expect(stack).toHaveResource('AWS::IAM::Policy', {
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
     PolicyDocument: {
       Statement: [
         {
@@ -376,11 +376,11 @@ test('can use existing role', () => {
   });
 
   // THEN
-  expect(stack).toHaveResource('AWS::Lambda::Function', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
     Role: 'arn:aws:iam::123456789012:role/CoolRole',
   });
 
-  expect(stack).not.toHaveResource('AWS::IAM::Role');
+  Template.fromStack(stack).resourceCountIs('AWS::IAM::Role', 0);
 });
 
 test('getData', () => {
@@ -524,7 +524,7 @@ test('getDataString', () => {
   });
 
   // THEN
-  expect(stack).toHaveResource('Custom::AWS', {
+  Template.fromStack(stack).hasResourceProperties('Custom::AWS', {
     Create: {
       'Fn::Join': [
         '',
@@ -559,7 +559,7 @@ test('can specify log retention', () => {
   });
 
   // THEN
-  expect(stack).toHaveResource('Custom::LogRetention', {
+  Template.fromStack(stack).hasResourceProperties('Custom::LogRetention', {
     LogGroupName: {
       'Fn::Join': [
         '',
@@ -591,7 +591,7 @@ test('disable AWS SDK installation', () => {
   });
 
   // THEN
-  expect(stack).toHaveResource('Custom::AWS', {
+  Template.fromStack(stack).hasResourceProperties('Custom::AWS', {
     'InstallLatestAwsSdk': false,
   });
 });
@@ -612,7 +612,7 @@ test('can specify function name', () => {
   });
 
   // THEN
-  expect(stack).toHaveResource('AWS::Lambda::Function', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
     FunctionName: 'my-cool-function',
   });
 });
@@ -640,7 +640,7 @@ test('separate policies per custom resource', () => {
   });
 
   // THEN
-  expect(stack).toHaveResource('AWS::IAM::Policy', {
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
     PolicyDocument: {
       Statement: [
         {
@@ -652,7 +652,7 @@ test('separate policies per custom resource', () => {
       Version: '2012-10-17',
     },
   });
-  expect(stack).toHaveResource('AWS::IAM::Policy', {
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
     PolicyDocument: {
       Statement: [
         {
@@ -690,7 +690,7 @@ test('tokens can be used as dictionary keys', () => {
   });
 
   // THEN
-  expect(stack).toHaveResource('Custom::AWS', {
+  Template.fromStack(stack).hasResourceProperties('Custom::AWS', {
     Create: {
       'Fn::Join': [
         '',
@@ -730,7 +730,7 @@ test('assumedRoleArn adds statement for sts:assumeRole', () => {
 
   // THEN
 
-  expect(stack).toHaveResource('AWS::IAM::Policy', {
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
     PolicyDocument: {
       Statement: [
         {
