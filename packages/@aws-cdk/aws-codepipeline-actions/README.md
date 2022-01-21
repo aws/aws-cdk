@@ -772,7 +772,7 @@ CodePipeline can deploy an ECS service which [cluster formatted ECS service ARN]
 import * as ecs from '@aws-cdk/aws-ecs';
 
 const service = ecs.BaseService.fromServiceArnWithCluster(this, 'EcsService',
-  'arn:aws:ecs:us-east-1:123456789012:service/myClusterName}/myServiceName'
+  'arn:aws:ecs:us-east-1:123456789012:service/myClusterName/myServiceName'
 );
 const pipeline = new codepipeline.Pipeline(this, 'MyPipeline');
 const buildOutput = new codepipeline.Artifact();
