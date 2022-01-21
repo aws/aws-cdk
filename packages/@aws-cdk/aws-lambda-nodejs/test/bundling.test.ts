@@ -225,7 +225,7 @@ test('esbuild bundling with esbuild options', () => {
           defineInstructions,
           '--log-level=silent --keep-names --tsconfig=/asset-input/lib/custom-tsconfig.ts',
           '--metafile=/asset-output/index.meta.json --banner:js="/* comments */" --footer:js="/* comments */"',
-          '--charset=utf8 --mainFields=module,main',
+          '--charset=utf8 --main-fields=module,main',
         ].join(' '),
       ],
     }),
