@@ -123,7 +123,9 @@ test('can set multiple events to State', () => {
                 EventName: 'test-eventName1',
                 Condition: 'test-eventCondition',
               },
-              { EventName: 'test-eventName2' },
+              {
+                EventName: 'test-eventName2',
+              },
             ],
           },
         }),
