@@ -61,7 +61,7 @@ export class DetectorModel extends Resource implements IDetectorModel {
     });
 
     if (!props.initialState.hasCondition()) {
-      throw new Error('Detector Model must use at least one Input in a condition.');
+      throw new Error('Detector Model must have at least one Input with a condition');
     }
 
     const role = props.role ?? new iam.Role(this, 'DetectorModelRole', {
