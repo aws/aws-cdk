@@ -17,14 +17,6 @@ afterAll(() => {
   monitor.deactivate();
 });
 
-let TIMESTAMP: number;
-let HUMAN_TIME: string;
-
-beforeAll(() => {
-  TIMESTAMP = new Date().getTime();
-  HUMAN_TIME = new Date(TIMESTAMP).toLocaleTimeString();
-});
-
 test('continue to the next page if it exists', async () => {
   // GIVEN
   sdk.stubCloudWatchLogs({
@@ -50,12 +42,13 @@ test('continue to the next page if it exists', async () => {
   await sleep(1000);
 
   // THEN
+  const expectedDate = new Date(T0 + 102 * 1000).toLocaleTimeString();
   expect(stderrMock).toHaveBeenCalledTimes(2);
   expect(stderrMock.mock.calls[0][0]).toContain(
-    `[${blue('loggroup')}] ${yellow(HUMAN_TIME)} message`,
+    `[${blue('loggroup')}] ${yellow(expectedDate)} message`,
   );
   expect(stderrMock.mock.calls[1][0]).toContain(
-    `[${blue('loggroup')}] ${yellow(new Date(T100).toLocaleTimeString())} >>> \`watch\` shows only the first 100 log messages - the rest have been truncated...`,
+    `[${blue('loggroup')}] ${yellow(expectedDate)} >>> \`watch\` shows only the first 100 log messages - the rest have been truncated...`,
   );
 });
 
@@ -65,7 +58,7 @@ function event(nr: number, message: string): AWS.CloudWatchLogs.FilteredLogEvent
   return {
     eventId: `${nr}`,
     message,
-    timestamp: new Date(T0 * nr * 1000).getTime(),
-    ingestionTime: new Date(T0 * nr * 1000).getTime(),
+    timestamp: new Date(T0 + nr * 1000).getTime(),
+    ingestionTime: new Date(T0 + nr * 1000).getTime(),
   };
 }
