@@ -44,7 +44,7 @@ import * as iotevents from '@aws-cdk/aws-iotevents';
 
 The following example creates an AWS IoT Events detector model to your stack.
 The detector model need a reference to at least one AWS IoT Events input.
-AWS IoT Events input enable that the detector can get MQTT payload values from IoT Core rules.
+AWS IoT Events inputs enable the detector to get MQTT payload values from IoT Core rules.
 
 ```ts
 import * as iotevents from '@aws-cdk/aws-iotevents';
