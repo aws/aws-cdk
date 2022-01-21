@@ -510,7 +510,7 @@ export abstract class BaseService extends Resource
       resources: ['*'],
     }));
 
-    const logGroupArn = logConfiguration?.cloudWatchLogGroup ? `arn:aws:logs:${this.stack.region}:${this.stack.account}:log-group:${logConfiguration.cloudWatchLogGroup.logGroupName}:*` : '*';
+    const logGroupArn = logConfiguration?.cloudWatchLogGroup ? `arn:${this.stack.partition}:logs:${this.stack.region}:${this.stack.account}:log-group:${logConfiguration.cloudWatchLogGroup.logGroupName}:*` : '*';
     this.taskDefinition.addToTaskRolePolicy(new iam.PolicyStatement({
       actions: [
         'logs:CreateLogStream',
@@ -531,14 +531,14 @@ export abstract class BaseService extends Resource
         actions: [
           's3:PutObject',
         ],
-        resources: [`arn:aws:s3:::${logConfiguration.s3Bucket.bucketName}/*`],
+        resources: [`arn:${this.stack.partition}:s3:::${logConfiguration.s3Bucket.bucketName}/*`],
       }));
       if (logConfiguration.s3EncryptionEnabled) {
         this.taskDefinition.addToTaskRolePolicy(new iam.PolicyStatement({
           actions: [
             's3:GetEncryptionConfiguration',
           ],
-          resources: [`arn:aws:s3:::${logConfiguration.s3Bucket.bucketName}`],
+          resources: [`arn:${this.stack.partition}:s3:::${logConfiguration.s3Bucket.bucketName}`],
         }));
       }
     }
@@ -558,7 +558,7 @@ export abstract class BaseService extends Resource
         'kms:*',
       ],
       resources: ['*'],
-      principals: [new iam.ArnPrincipal(`arn:aws:iam::${this.stack.account}:root`)],
+      principals: [new iam.ArnPrincipal(`arn:${this.stack.partition}:iam::${this.stack.account}:root`)],
     }));
 
     if (logging === ExecuteCommandLogging.DEFAULT || this.cluster.executeCommandConfiguration?.logConfiguration?.cloudWatchEncryptionEnabled) {
@@ -573,7 +573,7 @@ export abstract class BaseService extends Resource
         resources: ['*'],
         principals: [new iam.ServicePrincipal(`logs.${this.stack.region}.amazonaws.com`)],
         conditions: {
-          ArnLike: { 'kms:EncryptionContext:aws:logs:arn': `arn:aws:logs:${this.stack.region}:${this.stack.account}:*` },
+          ArnLike: { 'kms:EncryptionContext:aws:logs:arn': `arn:${this.stack.partition}:logs:${this.stack.region}:${this.stack.account}:*` },
         },
       }));
     }
