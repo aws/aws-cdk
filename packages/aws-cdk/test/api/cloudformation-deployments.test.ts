@@ -659,13 +659,18 @@ test('readCurrentTemplateWithNestedStacks() succesfully ignores stacks without m
     Resources: {
       WithMetadata: {
         Type: 'AWS::CloudFormation::Stack',
-        Resources: {
-          SomeResource: {
-            Type: 'AWS::Something',
-            Properties: {
-              Property: 'old-value',
+        NestedTemplate: {
+          Resources: {
+            SomeResource: {
+              Type: 'AWS::Something',
+              Properties: {
+                Property: 'old-value',
+              },
             },
           },
+        },
+        Metadata: {
+          'aws:asset:path': 'one-resource-stack.nested.template.json',
         },
       },
     },
@@ -682,13 +687,18 @@ test('readCurrentTemplateWithNestedStacks() succesfully ignores stacks without m
       },
       WithMetadata: { // Changed
         Type: 'AWS::CloudFormation::Stack',
-        Resources: {
-          SomeResource: {
-            Type: 'AWS::Something',
-            Properties: {
-              Property: 'new-value',
+        NestedTemplate: {
+          Resources: {
+            SomeResource: {
+              Type: 'AWS::Something',
+              Properties: {
+                Property: 'new-value',
+              },
             },
           },
+        },
+        Metadata: {
+          'aws:asset:path': 'one-resource-stack.nested.template.json',
         },
       },
     },
@@ -772,6 +782,9 @@ test('readCurrentTemplateWithNestedStacks() does not erase the AWS::CloudFormati
             },
           },
         },
+        Metadata: {
+          'aws:asset:path': 'one-resource-stack.nested.template.json',
+        },
       },
     },
   });
@@ -792,6 +805,9 @@ test('readCurrentTemplateWithNestedStacks() does not erase the AWS::CloudFormati
               },
             },
           },
+        },
+        Metadata: {
+          'aws:asset:path': 'one-resource-stack.nested.template.json',
         },
       },
     },

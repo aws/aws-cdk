@@ -426,7 +426,6 @@ export class CloudFormationDeployments {
       );
 
       generatedParentTemplate.Resources[nestedStackLogicalId].NestedTemplate = nestedStackTemplates.generatedNestedTemplate;
-      //generatedParentTemplate.Resources[nestedStackLogicalId].Type = 'AWS::CloudFormation::Stack';
 
       if (deployedParentTemplate.Resources) {
         deployedParentTemplate.Resources[nestedStackLogicalId].NestedTemplate = nestedStackTemplates.deployedNestedTemplate;
