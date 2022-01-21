@@ -788,6 +788,10 @@ const deployStage = pipeline.addStage({
 });
 ```
 
+When deploying across accounts especially in a CDK self mutating pipeline it is recommended to provide
+the `role` on the `EcsDeployAction`.  The role will need to have permissions assigned to it for
+ECS deployment see [EcsDeployAction](https://github.com/aws/aws-cdk/blob/d735ce4bc9049b68b830641d68c97f4be565968d/packages/%40aws-cdk/aws-codepipeline-actions/lib/ecs/deploy-action.ts#L85-L110) for proper permissions to apply to the role.
+
 
 #### Deploying ECS applications stored in a separate source code repository
 

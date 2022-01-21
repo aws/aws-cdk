@@ -255,7 +255,7 @@ describe('ecs deploy action', () => {
                   ClusterName: clusterName,
                   ServiceName: serviceName,
                 },
-                Region: 'service-region',
+                Region: region,
                 RoleArn: {
                   'Fn::Join': [
                     '',
@@ -264,7 +264,7 @@ describe('ecs deploy action', () => {
                       {
                         Ref: 'AWS::Partition',
                       },
-                      ':iam::service-account:role/pipelinestack-support-serloyecsactionrole49867f847238c85af7c0',
+                      `:iam::${account}:role/pipelinestack-support-serloyecsactionrole49867f847238c85af7c0`,
                     ],
                   ],
                 },
