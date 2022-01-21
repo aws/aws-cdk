@@ -9,7 +9,8 @@ import { State } from './state';
  */
 export interface IDetectorModel extends IResource {
   /**
-   * The name of the detector model
+   * The name of the detector model.
+   *
    * @attribute
    */
   readonly detectorModelName: string;
