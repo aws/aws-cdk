@@ -5,13 +5,11 @@ import * as util from '../lib/util';
 describe('util', () => {
   test('throws when zone name ending with a \'.\'', () => {
     expect(() => util.validateZoneName('zone.name.')).toThrow(/trailing dot/);
-
   });
 
   test('accepts a valid domain name', () => {
     const domainName = 'amazonaws.com';
     util.validateZoneName(domainName);
-
   });
 
   test('providedName ending with a dot returns the name', () => {
@@ -27,7 +25,6 @@ describe('util', () => {
 
     // THEN
     expect(qualified).toEqual('test.domain.com.');
-
   });
 
   test('providedName that matches zoneName returns providedName with a trailing dot', () => {
@@ -43,7 +40,6 @@ describe('util', () => {
 
     // THEN
     expect(qualified).toEqual('test.domain.com.');
-
   });
 
   test('providedName that ends with zoneName returns providedName with a trailing dot', () => {
@@ -59,7 +55,6 @@ describe('util', () => {
 
     // THEN
     expect(qualified).toEqual('test.domain.com.');
-
   });
 
   test('providedName that does not match zoneName concatenates providedName and zoneName', () => {
@@ -75,6 +70,5 @@ describe('util', () => {
 
     // THEN
     expect(qualified).toEqual('test.domain.com.');
-
   });
 });

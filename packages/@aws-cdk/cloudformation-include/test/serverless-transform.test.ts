@@ -1,5 +1,5 @@
 import * as path from 'path';
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as core from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as constructs from 'constructs';
@@ -20,7 +20,7 @@ describe('CDK Include for templates with SAM transform', () => {
   test('can ingest a template with only a minimal SAM function using S3Location for CodeUri, and output it unchanged', () => {
     includeTestTemplate(stack, 'only-minimal-sam-function-codeuri-as-s3location.yaml');
 
-    expect(stack).toMatchTemplate(
+    Template.fromStack(stack).templateMatches(
       loadTestFileToJsObject('only-minimal-sam-function-codeuri-as-s3location.yaml'),
     );
   });
@@ -28,7 +28,7 @@ describe('CDK Include for templates with SAM transform', () => {
   test('can ingest a template with only a SAM function using an array with DDB CRUD for Policies, and output it unchanged', () => {
     includeTestTemplate(stack, 'only-sam-function-policies-array-ddb-crud.yaml');
 
-    expect(stack).toMatchTemplate(
+    Template.fromStack(stack).templateMatches(
       loadTestFileToJsObject('only-sam-function-policies-array-ddb-crud.yaml'),
     );
   });
@@ -36,7 +36,7 @@ describe('CDK Include for templates with SAM transform', () => {
   test('can ingest a template with only a minimal SAM function using a parameter for CodeUri, and output it unchanged', () => {
     includeTestTemplate(stack, 'only-minimal-sam-function-codeuri-as-param.yaml');
 
-    expect(stack).toMatchTemplate(
+    Template.fromStack(stack).templateMatches(
       loadTestFileToJsObject('only-minimal-sam-function-codeuri-as-param.yaml'),
     );
   });
@@ -44,7 +44,7 @@ describe('CDK Include for templates with SAM transform', () => {
   test('can ingest a template with only a minimal SAM function using a parameter for CodeUri Bucket property, and output it unchanged', () => {
     includeTestTemplate(stack, 'only-minimal-sam-function-codeuri-bucket-as-param.yaml');
 
-    expect(stack).toMatchTemplate(
+    Template.fromStack(stack).templateMatches(
       loadTestFileToJsObject('only-minimal-sam-function-codeuri-bucket-as-param.yaml'),
     );
   });
@@ -52,7 +52,7 @@ describe('CDK Include for templates with SAM transform', () => {
   test('can ingest a template with only a SAM function using an array with DDB CRUD for Policies with an Fn::If expression, and output it unchanged', () => {
     includeTestTemplate(stack, 'only-sam-function-policies-array-ddb-crud-if.yaml');
 
-    expect(stack).toMatchTemplate(
+    Template.fromStack(stack).templateMatches(
       loadTestFileToJsObject('only-sam-function-policies-array-ddb-crud-if.yaml'),
     );
   });
@@ -60,7 +60,7 @@ describe('CDK Include for templates with SAM transform', () => {
   test('can ingest a template with a a union-type property provided as an object, and output it unchanged', () => {
     includeTestTemplate(stack, 'api-endpoint-config-object.yaml');
 
-    expect(stack).toMatchTemplate(
+    Template.fromStack(stack).templateMatches(
       loadTestFileToJsObject('api-endpoint-config-object.yaml'),
     );
   });
@@ -68,7 +68,7 @@ describe('CDK Include for templates with SAM transform', () => {
   test('can ingest a template with a a union-type property provided as a string, and output it unchanged', () => {
     includeTestTemplate(stack, 'api-endpoint-config-string.yaml');
 
-    expect(stack).toMatchTemplate(
+    Template.fromStack(stack).templateMatches(
       loadTestFileToJsObject('api-endpoint-config-string.yaml'),
     );
   });
@@ -76,7 +76,7 @@ describe('CDK Include for templates with SAM transform', () => {
   test('can ingest a template with a a union-type property provided as an empty string, and output it unchanged', () => {
     includeTestTemplate(stack, 'api-endpoint-config-string-empty.yaml');
 
-    expect(stack).toMatchTemplate(
+    Template.fromStack(stack).templateMatches(
       loadTestFileToJsObject('api-endpoint-config-string-empty.yaml'),
     );
   });

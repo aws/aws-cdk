@@ -512,7 +512,7 @@
       "properties": {
         "AccessToken": "Personal Access token for 3rd party source control system for an Amplify app, used to create webhook and read-only deploy key. Token is not stored.\n\n*Length Constraints:* Minimum length of 1. Maximum length of 255.",
         "AutoBranchCreationConfig": "Sets the configuration for your automatic branch creation.",
-        "BasicAuthConfig": "The credentials for basic authorization for an Amplify app.",
+        "BasicAuthConfig": "The credentials for basic authorization for an Amplify app. You must base64-encode the authorization credentials and provide them in the format `user:password` .",
         "BuildSpec": "The build specification (build spec) for an Amplify app.\n\n*Length Constraints:* Minimum length of 1. Maximum length of 25000.\n\n*Pattern:* (?s).+",
         "CustomHeaders": "The custom HTTP headers for an Amplify app.\n\n*Length Constraints:* Minimum length of 0. Maximum length of 25000.\n\n*Pattern:* (?s).*",
         "CustomRules": "The custom rewrite and redirect rules for an Amplify app.",
@@ -577,7 +577,7 @@
       "description": "The AWS::Amplify::Branch resource creates a new branch within an app.",
       "properties": {
         "AppId": "The unique ID for an Amplify app.\n\n*Length Constraints:* Minimum length of 1. Maximum length of 20.\n\n*Pattern:* d[a-z0-9]+",
-        "BasicAuthConfig": "The basic authorization credentials for a branch of an Amplify app.",
+        "BasicAuthConfig": "The basic authorization credentials for a branch of an Amplify app. You must base64-encode the authorization credentials and provide them in the format `user:password` .",
         "BranchName": "The name for the branch.\n\n*Length Constraints:* Minimum length of 1. Maximum length of 255.\n\n*Pattern:* (?s).+",
         "BuildSpec": "The build specification (build spec) for the branch.\n\n*Length Constraints:* Minimum length of 1. Maximum length of 25000.\n\n*Pattern:* (?s).+",
         "Description": "The description for the branch that is part of an Amplify app.\n\n*Length Constraints:* Maximum length of 1000.\n\n*Pattern:* (?s).*",
@@ -1735,7 +1735,7 @@
     },
     "AWS::AppConfig::ConfigurationProfile.Validators": {
       "attributes": {},
-      "description": "A validator provides a syntactic or semantic check to ensure the configuration that you want to deploy functions as intended. To validate your application configuration data, you provide a schema or a Lambda function that runs against the configuration. The configuration deployment or update can only proceed when the configuration data is valid.",
+      "description": "A validator provides a syntactic or semantic check to ensure the configuration that you want to deploy functions as intended. To validate your application configuration data, you provide a schema or an AWS Lambda function that runs against the configuration. The configuration deployment or update can only proceed when the configuration data is valid.",
       "properties": {
         "Content": "Either the JSON Schema content or the Amazon Resource Name (ARN) of an Lambda function.",
         "Type": "AWS AppConfig supports validators of type `JSON_SCHEMA` and `LAMBDA`"
@@ -4339,6 +4339,7 @@
         "DataSourceName": "The name of data source this function will attach.",
         "Description": "The `Function` description.",
         "FunctionVersion": "The version of the request mapping template. Currently, only the 2018-05-29 version of the template is supported.",
+        "MaxBatchSize": "The maximum number of resolver request inputs that will be sent to a single AWS Lambda function in a `BatchInvoke` operation.",
         "Name": "The name of the function.",
         "RequestMappingTemplate": "The `Function` request mapping template. Functions support only the 2018-05-29 version of the request mapping template.",
         "RequestMappingTemplateS3Location": "Describes a Sync configuration for a resolver.\n\nContains information on which Conflict Detection, as well as Resolution strategy, should be performed when the resolver is invoked.",
@@ -4475,6 +4476,7 @@
         "DataSourceName": "The resolver data source name.",
         "FieldName": "The GraphQL field on a type that invokes the resolver.",
         "Kind": "The resolver type.\n\n- *UNIT* : A UNIT resolver type. A UNIT resolver is the default resolver type. You can use a UNIT resolver to run a GraphQL query against a single data source.\n- *PIPELINE* : A PIPELINE resolver type. You can use a PIPELINE resolver to invoke a series of `Function` objects in a serial manner. You can use a pipeline resolver to run a GraphQL query against multiple data sources.",
+        "MaxBatchSize": "The maximum number of resolver request inputs that will be sent to a single AWS Lambda function in a `BatchInvoke` operation.",
         "PipelineConfig": "Functions linked with the pipeline resolver.",
         "RequestMappingTemplate": "The request mapping template.\n\nRequest mapping templates are optional when using a Lambda data source. For all other data sources, a request mapping template is required.",
         "RequestMappingTemplateS3Location": "The location of a request mapping template in an Amazon S3 bucket. Use this if you want to provision with a template file in Amazon S3 rather than embedding it in your CloudFormation template.",
@@ -7024,7 +7026,7 @@
       "description": "Use event selectors to further specify the management and data event settings for your trail. By default, trails created without specific event selectors will be configured to log all read and write management events, and no data events. When an event occurs in your account, CloudTrail evaluates the event selector for all trails. For each trail, if the event matches any event selector, the trail processes and logs the event. If the event doesn't match any event selector, the trail doesn't log the event.\n\nYou can configure up to five event selectors for a trail.\n\nYou cannot apply both event selectors and advanced event selectors to a trail.",
       "properties": {
         "DataResources": "CloudTrail supports data event logging for Amazon S3 objects and AWS Lambda functions. You can specify up to 250 resources for an individual event selector, but the total number of data resources cannot exceed 250 across all event selectors in a trail. This limit does not apply if you configure resource logging for all data events.\n\nFor more information, see [Data Events](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/logging-management-and-data-events-with-cloudtrail.html#logging-data-events) and [Limits in AWS CloudTrail](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/WhatIsCloudTrail-Limits.html) in the *AWS CloudTrail User Guide* .",
-        "ExcludeManagementEventSources": "An optional list of service event sources from which you do not want management events to be logged on your trail. In this release, the list can be empty (disables the filter), or it can filter out AWS Key Management Service or Amazon RDS Data API events by containing `kms.amazonaws.com` or `rdsdata.amazonaws.com` . By default, `ExcludeManagementEventSources` is empty, and AWS KMS and Amazon RDS Data API events are logged to your trail.",
+        "ExcludeManagementEventSources": "An optional list of service event sources from which you do not want management events to be logged on your trail. In this release, the list can be empty (disables the filter), or it can filter out AWS Key Management Service or Amazon RDS Data API events by containing `kms.amazonaws.com` or `rdsdata.amazonaws.com` . By default, `ExcludeManagementEventSources` is empty, and AWS KMS and Amazon RDS Data API events are logged to your trail. You can exclude management event sources only in regions that support the event source.",
         "IncludeManagementEvents": "Specify if you want your event selector to include management events for your trail.\n\nFor more information, see [Management Events](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/logging-management-and-data-events-with-cloudtrail.html#logging-management-events) in the *AWS CloudTrail User Guide* .\n\nBy default, the value is `true` .\n\nThe first copy of management events is free. You are charged for additional copies of management events that you are logging on any subsequent trail in the same region. For more information about CloudTrail pricing, see [AWS CloudTrail Pricing](https://docs.aws.amazon.com/cloudtrail/pricing/) .",
         "ReadWriteType": "Specify if you want your trail to log read-only events, write-only events, or all. For example, the EC2 `GetConsoleOutput` is a read-only API operation and `RunInstances` is a write-only API operation.\n\nBy default, the value is `All` ."
       }
@@ -8315,18 +8317,18 @@
     },
     "AWS::Cognito::UserPool.CustomEmailSender": {
       "attributes": {},
-      "description": "",
+      "description": "A custom email sender AWS Lambda trigger.",
       "properties": {
-        "LambdaArn": "",
-        "LambdaVersion": ""
+        "LambdaArn": "The Amazon Resource Name (ARN) of the AWS Lambda function that Amazon Cognito triggers to send email notifications to users.",
+        "LambdaVersion": "The Lambda version represents the signature of the \"request\" attribute in the \"event\" information that Amazon Cognito passes to your custom email sender AWS Lambda function. The only supported value is `V1_0` ."
       }
     },
     "AWS::Cognito::UserPool.CustomSMSSender": {
       "attributes": {},
-      "description": "",
+      "description": "A custom SMS sender AWS Lambda trigger.",
       "properties": {
-        "LambdaArn": "",
-        "LambdaVersion": ""
+        "LambdaArn": "The Amazon Resource Name (ARN) of the AWS Lambda function that Amazon Cognito triggers to send SMS notifications to users.",
+        "LambdaVersion": "The Lambda version represents the signature of the \"request\" attribute in the \"event\" information Amazon Cognito passes to your custom SMS sender Lambda function. The only supported value is `V1_0` ."
       }
     },
     "AWS::Cognito::UserPool.DeviceConfiguration": {
@@ -8362,11 +8364,11 @@
       "description": "Specifies the configuration for AWS Lambda triggers.",
       "properties": {
         "CreateAuthChallenge": "Creates an authentication challenge.",
-        "CustomEmailSender": "",
+        "CustomEmailSender": "A custom email sender AWS Lambda trigger.",
         "CustomMessage": "A custom Message AWS Lambda trigger.",
-        "CustomSMSSender": "",
+        "CustomSMSSender": "A custom SMS sender AWS Lambda trigger.",
         "DefineAuthChallenge": "Defines the authentication challenge.",
-        "KMSKeyID": "",
+        "KMSKeyID": "The Amazon Resource Name of a AWS Key Management Service ( AWS KMS ) key. Amazon Cognito uses the key to encrypt codes and temporary passwords sent to `CustomEmailSender` and `CustomSMSSender` .",
         "PostAuthentication": "A post-authentication AWS Lambda trigger.",
         "PostConfirmation": "A post-confirmation AWS Lambda trigger.",
         "PreAuthentication": "A pre-authentication AWS Lambda trigger.",
@@ -8498,7 +8500,7 @@
       "attributes": {},
       "description": "The Amazon Pinpoint analytics configuration for collecting metrics for a user pool.\n\n> In Regions where Pinpoint isn't available, User Pools only supports sending events to Amazon Pinpoint projects in us-east-1. In Regions where Pinpoint is available, User Pools will support sending events to Amazon Pinpoint projects within that same Region.",
       "properties": {
-        "ApplicationArn": "",
+        "ApplicationArn": "The Amazon Resource Name (ARN) of an Amazon Pinpoint project. You can use the Amazon Pinpoint project for integration with the chosen user pool client. Amazon Cognito publishes events to the Amazon Pinpoint project that the app ARN declares.",
         "ApplicationId": "The application ID for an Amazon Pinpoint application.",
         "ExternalId": "The external ID.",
         "RoleArn": "The ARN of an AWS Identity and Access Management role that authorizes Amazon Cognito to publish events to Amazon Pinpoint analytics.",
@@ -8766,7 +8768,7 @@
     },
     "AWS::Config::ConfigurationAggregator": {
       "attributes": {
-        "ConfigurationAggregatorArn": "",
+        "ConfigurationAggregatorArn": "The Amazon Resource Name (ARN) of the aggregator.",
         "Ref": "`Ref` returns the ConfigurationAggregatorName, such as `myConfigurationAggregator` ."
       },
       "description": "The details about the configuration aggregator, including information about source accounts, regions, and metadata of the aggregator.",
@@ -8997,8 +8999,8 @@
     },
     "AWS::Config::StoredQuery": {
       "attributes": {
-        "QueryArn": "",
-        "QueryId": "",
+        "QueryArn": "Amazon Resource Name (ARN) of the query. For example, arn:partition:service:region:account-id:resource-type/resource-name/resource-id.",
+        "QueryId": "The ID of the query.",
         "Ref": ""
       },
       "description": "Provides the details of a stored query.",
@@ -11360,8 +11362,8 @@
         "IpamId": "The ID of the IPAM.",
         "PrivateDefaultScopeId": "The ID of the IPAM's default private scope.",
         "PublicDefaultScopeId": "The ID of the IPAM's default public scope.",
-        "Ref": "",
-        "ScopeCount": "The number of scopes in the IPAM."
+        "Ref": "`Ref` returns the IPAM ID.",
+        "ScopeCount": "The number of scopes in the IPAM. The scope quota is 5."
       },
       "description": "IPAM is a VPC feature that you can use to automate your IP address management workflows including assigning, tracking, troubleshooting, and auditing IP addresses across AWS Regions and accounts throughout your AWS Organization. For more information, see [What is IPAM?](https://docs.aws.amazon.com//vpc/latest/ipam/what-is-it-ipam.html) in the *Amazon VPC IPAM User Guide* .",
       "properties": {
@@ -11379,27 +11381,27 @@
     },
     "AWS::EC2::IPAMAllocation": {
       "attributes": {
-        "IpamPoolAllocationId": "The ID of the allocation.",
-        "Ref": ""
+        "IpamPoolAllocationId": "The ID of an allocation.",
+        "Ref": "`Ref` returns the pool ID, allocation ID, and CIDR."
       },
-      "description": "",
+      "description": "In IPAM, an allocation is a CIDR assignment from an IPAM pool to another resource or IPAM pool.",
       "properties": {
         "Cidr": "The CIDR you would like to allocate from the IPAM pool. Note the following:\n\n- If there is no DefaultNetmaskLength allocation rule set on the pool, you must specify either the NetmaskLength or the CIDR.\n- If the DefaultNetmaskLength allocation rule is set on the pool, you can specify either the NetmaskLength or the CIDR and the DefaultNetmaskLength allocation rule will be ignored.\n\nPossible values: Any available IPv4 or IPv6 CIDR.",
-        "Description": "A description of the pool allocation.",
+        "Description": "A description for the allocation.",
         "IpamPoolId": "The ID of the IPAM pool from which you would like to allocate a CIDR.",
         "NetmaskLength": "The netmask length of the CIDR you would like to allocate from the IPAM pool. Note the following:\n\n- If there is no DefaultNetmaskLength allocation rule set on the pool, you must specify either the NetmaskLength or the CIDR.\n- If the DefaultNetmaskLength allocation rule is set on the pool, you can specify either the NetmaskLength or the CIDR and the DefaultNetmaskLength allocation rule will be ignored.\n\nPossible netmask lengths for IPv4 addresses are 0 - 32. Possible netmask lengths for IPv6 addresses are 0 - 128."
       }
     },
     "AWS::EC2::IPAMPool": {
       "attributes": {
-        "Arn": "The ARN of the IPAM.",
-        "IpamArn": "The ARN of the IPAM pool.",
+        "Arn": "The ARN of the IPAM pool.",
+        "IpamArn": "The ARN of the IPAM.",
         "IpamPoolId": "The ID of the IPAM pool.",
         "IpamScopeArn": "The ARN of the scope of the IPAM pool.",
-        "IpamScopeType": "The IPAM scope type (public | private).",
-        "PoolDepth": "The depth of pools in your IPAM pool.",
-        "Ref": "",
-        "State": "The state of the IPAM pool (create-in-progress | create-complete | create-failed | modify-in-progress | modify-complete | modify-failed | delete-in-progress | delete-complete | delete-failed).",
+        "IpamScopeType": "The scope of the IPAM.",
+        "PoolDepth": "The depth of pools in your IPAM pool. The pool depth quota is 10.",
+        "Ref": "`Ref` returns the IPAM pool ID.",
+        "State": "The state of the IPAM pool.",
         "StateMessage": "A message related to the failed creation of an IPAM pool."
       },
       "description": "In IPAM, a pool is a collection of contiguous IP addresses CIDRs. Pools enable you to organize your IP addresses according to your routing and security needs. For example, if you have separate routing and security needs for development and production applications, you can create a pool for each.",
@@ -11411,9 +11413,9 @@
         "AllocationResourceTags": "Tags that are required for resources that use CIDRs from this IPAM pool. Resources that do not have these tags will not be allowed to allocate space from the pool. If the resources have their tags changed after they have allocated space or if the allocation tagging requirements are changed on the pool, the resource may be marked as noncompliant.",
         "AutoImport": "If selected, IPAM will continuously look for resources within the CIDR range of this pool and automatically import them as allocations into your IPAM. The CIDRs that will be allocated for these resources must not already be allocated to other resources in order for the import to succeed. IPAM will import a CIDR regardless of its compliance with the pool's allocation rules, so a resource might be imported and subsequently marked as noncompliant. If IPAM discovers multiple CIDRs that overlap, IPAM will import the largest CIDR only. If IPAM discovers multiple CIDRs with matching CIDRs, IPAM will randomly import one of them only.\n\nA locale must be set on the pool for this feature to work.",
         "Description": "The description of the IPAM pool.",
-        "IpamScopeId": "",
+        "IpamScopeId": "The ID of the scope in which you would like to create the IPAM pool.",
         "Locale": "The locale of the IPAM pool. In IPAM, the locale is the AWS Region where you want to make an IPAM pool available for allocations. Only resources in the same Region as the locale of the pool can get IP address allocations from the pool. You can only allocate a CIDR for a VPC, for example, from an IPAM pool that shares a locale with the VPC\u2019s Region. Note that once you choose a Locale for a pool, you cannot modify it. If you choose an AWS Region for locale that has not been configured as an operating Region for the IPAM, you'll get an error.",
-        "ProvisionedCidrs": "",
+        "ProvisionedCidrs": "Information about the CIDRs provisioned to an IPAM pool.",
         "PubliclyAdvertisable": "Determines if a pool is publicly advertisable. This option is not available for pools with AddressFamily set to `ipv4` .",
         "SourceIpamPoolId": "The ID of the source IPAM pool. You can use this option to create an IPAM pool within an existing source pool.",
         "Tags": "The key/value combination of a tag assigned to the resource. Use the tag key in the filter name and the tag value as the filter value. For example, to find all resources that have a tag with the key `Owner` and the value `TeamA` , specify `tag:Owner` for the filter name and `TeamA` for the filter value."
@@ -11421,24 +11423,24 @@
     },
     "AWS::EC2::IPAMPool.ProvisionedCidr": {
       "attributes": {},
-      "description": "",
+      "description": "The CIDR provisioned to the IPAM pool. A CIDR is a representation of an IP address and its associated network mask (or netmask) and refers to a range of IP addresses. An IPv4 CIDR example is `10.24.34.0/23` . An IPv6 CIDR example is `2001:DB8::/32` .",
       "properties": {
-        "Cidr": ""
+        "Cidr": "The CIDR provisioned to the IPAM pool. A CIDR is a representation of an IP address and its associated network mask (or netmask) and refers to a range of IP addresses. An IPv4 CIDR example is `10.24.34.0/23` . An IPv6 CIDR example is `2001:DB8::/32` ."
       }
     },
     "AWS::EC2::IPAMScope": {
       "attributes": {
         "Arn": "The ARN of the scope.",
-        "IpamArn": "The ARN of the IPAM.",
-        "IpamScopeId": "The ID of the scope.",
-        "IsDefault": "Indicates whether the scope is the default scope.",
-        "PoolCount": "The number of pools in the scope.",
-        "Ref": ""
+        "IpamArn": "The ARN of an IPAM.",
+        "IpamScopeId": "The ID of an IPAM scope.",
+        "IsDefault": "Defines if the scope is the default scope or not.",
+        "PoolCount": "The number of pools in a scope.",
+        "Ref": "`Ref` returns the IPAM scope ID."
       },
       "description": "In IPAM, a scope is the highest-level container within IPAM. An IPAM contains two default scopes. Each scope represents the IP space for a single network. The private scope is intended for all private IP address space. The public scope is intended for all public IP address space. Scopes enable you to reuse IP addresses across multiple unconnected networks without causing IP address overlap or conflict.\n\nFor more information, see [How IPAM works](https://docs.aws.amazon.com//vpc/latest/ipam/how-it-works-ipam.html) in the *Amazon VPC IPAM User Guide*",
       "properties": {
         "Description": "The description of the scope.",
-        "IpamId": "",
+        "IpamId": "The ID of the IPAM for which you're creating this scope.",
         "IpamScopeType": "The type of the scope.",
         "Tags": "The key/value combination of a tag assigned to the resource. Use the tag key in the filter name and the tag value as the filter value. For example, to find all resources that have a tag with the key `Owner` and the value `TeamA` , specify `tag:Owner` for the filter name and `TeamA` for the filter value."
       }
@@ -13198,7 +13200,7 @@
       "description": "Specifies a VPC attachment.",
       "properties": {
         "AddSubnetIds": "The IDs of one or more subnets to add. You can specify at most one subnet per Availability Zone.",
-        "Options": "The VPC attachment options.\n\n- DnsSupport (enable | disable)\n- Ipv6Support (enable| disable)\n- ApplianceModeSupport (enable | disable)",
+        "Options": "The VPC attachment options in JSON or YAML.\n\n- DnsSupport (enable | disable)\n- Ipv6Support (enable| disable)\n- ApplianceModeSupport (enable | disable)",
         "RemoveSubnetIds": "The IDs of one or more subnets to remove.",
         "SubnetIds": "The IDs of the subnets.",
         "Tags": "The tags for the VPC attachment.",
@@ -13215,14 +13217,14 @@
         "Ipv6CidrBlocks": "The IPv6 CIDR blocks that are associated with the VPC, such as `[ 2001:db8:1234:1a00::/56 ]` .",
         "Ref": "`Ref` returns the ID of the VPC."
       },
-      "description": "Specifies a VPC with the specified IPv4 CIDR block. The smallest VPC you can create uses a /28 netmask (16 IPv4 addresses), and the largest uses a /16 netmask (65,536 IPv4 addresses). For more information about how large to make your VPC, see [Your VPC and Subnets](https://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/VPC_Subnets.html) in the *Amazon Virtual Private Cloud User Guide* .",
+      "description": "Specifies a VPC with the specified IPv4 CIDR block. The smallest VPC you can create uses a /28 netmask (16 IPv4 addresses), and the largest uses a /16 netmask (65,536 IPv4 addresses). For more information about how large to make your VPC, see [Overview of VPCs and subnets](https://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/VPC_Subnets.html) in the *Amazon Virtual Private Cloud User Guide* .",
       "properties": {
         "CidrBlock": "The primary IPv4 CIDR block for the VPC.",
-        "EnableDnsHostnames": "Indicates whether the instances launched in the VPC get DNS hostnames. If enabled, instances in the VPC get DNS hostnames; otherwise, they do not. Disabled by default for nondefault VPCs. For more information, see [DNS Support in Your VPC](https://docs.aws.amazon.com/vpc/latest/userguide/vpc-dns.html#vpc-dns-support) .\n\nYou can only enable DNS hostnames if you've enabled DNS support.",
-        "EnableDnsSupport": "Indicates whether the DNS resolution is supported for the VPC. If enabled, queries to the Amazon provided DNS server at the 169.254.169.253 IP address, or the reserved IP address at the base of the VPC network range \"plus two\" succeed. If disabled, the Amazon provided DNS service in the VPC that resolves public DNS hostnames to IP addresses is not enabled. Enabled by default. For more information, see [DNS Support in Your VPC](https://docs.aws.amazon.com/vpc/latest/userguide/vpc-dns.html#vpc-dns-support) .",
+        "EnableDnsHostnames": "Indicates whether the instances launched in the VPC get DNS hostnames. If enabled, instances in the VPC get DNS hostnames; otherwise, they do not. Disabled by default for nondefault VPCs. For more information, see [DNS attributes in your VPC](https://docs.aws.amazon.com/vpc/latest/userguide/vpc-dns.html#vpc-dns-support) .\n\nYou can only enable DNS hostnames if you've enabled DNS support.",
+        "EnableDnsSupport": "Indicates whether the DNS resolution is supported for the VPC. If enabled, queries to the Amazon provided DNS server at the 169.254.169.253 IP address, or the reserved IP address at the base of the VPC network range \"plus two\" succeed. If disabled, the Amazon provided DNS service in the VPC that resolves public DNS hostnames to IP addresses is not enabled. Enabled by default. For more information, see [DNS attributes in your VPC](https://docs.aws.amazon.com/vpc/latest/userguide/vpc-dns.html#vpc-dns-support) .",
         "InstanceTenancy": "The allowed tenancy of instances launched into the VPC.\n\n- `\"default\"` : An instance launched into the VPC runs on shared hardware by default, unless you explicitly specify a different tenancy during instance launch.\n- `\"dedicated\"` : An instance launched into the VPC is a Dedicated Instance by default, unless you explicitly specify a tenancy of host during instance launch. You cannot specify a tenancy of default during instance launch.\n\nUpdating `InstanceTenancy` requires no replacement only if you are updating its value from `\"dedicated\"` to `\"default\"` . Updating `InstanceTenancy` from `\"default\"` to `\"dedicated\"` requires replacement.",
-        "Ipv4IpamPoolId": "",
-        "Ipv4NetmaskLength": "",
+        "Ipv4IpamPoolId": "The ID of an IPv4 IPAM pool you want to use for allocating this VPC's CIDR. For more information, see [What is IPAM?](https://docs.aws.amazon.com//vpc/latest/ipam/what-is-it-ipam.html) in the *Amazon VPC IPAM User Guide* .",
+        "Ipv4NetmaskLength": "The netmask length of the IPv4 CIDR you want to allocate to this VPC from an Amazon VPC IP Address Manager (IPAM) pool. For more information about IPAM, see [What is IPAM?](https://docs.aws.amazon.com//vpc/latest/ipam/what-is-it-ipam.html) in the *Amazon VPC IPAM User Guide* .",
         "Tags": "The tags for the VPC."
       }
     },
@@ -13234,11 +13236,11 @@
       "properties": {
         "AmazonProvidedIpv6CidrBlock": "Requests an Amazon-provided IPv6 CIDR block with a /56 prefix length for the VPC. You cannot specify the range of IPv6 addresses, or the size of the CIDR block.",
         "CidrBlock": "An IPv4 CIDR block to associate with the VPC.",
-        "Ipv4IpamPoolId": "",
-        "Ipv4NetmaskLength": "",
+        "Ipv4IpamPoolId": "Associate a CIDR allocated from an IPv4 IPAM pool to a VPC. For more information about Amazon VPC IP Address Manager (IPAM), see [What is IPAM?](https://docs.aws.amazon.com//vpc/latest/ipam/what-is-it-ipam.html) in the *Amazon VPC IPAM User Guide* .",
+        "Ipv4NetmaskLength": "The netmask length of the IPv4 CIDR you would like to associate from an Amazon VPC IP Address Manager (IPAM) pool. For more information about IPAM, see [What is IPAM?](https://docs.aws.amazon.com//vpc/latest/ipam/what-is-it-ipam.html) in the *Amazon VPC IPAM User Guide* .",
         "Ipv6CidrBlock": "An IPv6 CIDR block from the IPv6 address pool. You must also specify `Ipv6Pool` in the request.\n\nTo let Amazon choose the IPv6 CIDR block for you, omit this parameter.",
-        "Ipv6IpamPoolId": "",
-        "Ipv6NetmaskLength": "",
+        "Ipv6IpamPoolId": "Associates a CIDR allocated from an IPv6 IPAM pool to a VPC. For more information about Amazon VPC IP Address Manager (IPAM), see [What is IPAM?](https://docs.aws.amazon.com//vpc/latest/ipam/what-is-it-ipam.html) in the *Amazon VPC IPAM User Guide* .",
+        "Ipv6NetmaskLength": "The netmask length of the IPv6 CIDR you would like to associate from an Amazon VPC IP Address Manager (IPAM) pool. For more information about IPAM, see [What is IPAM?](https://docs.aws.amazon.com//vpc/latest/ipam/what-is-it-ipam.html) in the *Amazon VPC IPAM User Guide* .",
         "Ipv6Pool": "The ID of an IPv6 address pool from which to allocate the IPv6 CIDR block.",
         "VpcId": "The ID of the VPC."
       }
@@ -13881,7 +13883,7 @@
     },
     "AWS::ECS::TaskDefinition.EphemeralStorage": {
       "attributes": {},
-      "description": "The amount of ephemeral storage to allocate for the task. This parameter is used to expand the total amount of ephemeral storage available, beyond the default amount, for tasks hosted on AWS Fargate . For more information, see [Fargate task storage](https://docs.aws.amazon.com/AmazonECS/latest/userguide/using_data_volumes.html) in the *Amazon ECS User Guide for AWS Fargate* .\n\n> This parameter is only supported for tasks hosted on Fargate using the following platform versions:\n> \n> - Linux platform version `1.4.0` or later.\n> - Windows platform version `1.0.0` or later.",
+      "description": "The amount of ephemeral storage to allocate for the task. This parameter is used to expand the total amount of ephemeral storage available, beyond the default amount, for tasks hosted on AWS Fargate . For more information, see [Fargate task storage](https://docs.aws.amazon.com/AmazonECS/latest/userguide/using_data_volumes.html) in the *Amazon ECS User Guide for AWS Fargate* .\n\n> This parameter is only supported for tasks hosted on Fargate using Linux platform version `1.4.0` or later. This parameter is not supported for Windows containers on Fargate.",
       "properties": {
         "SizeInGiB": "The total amount, in GiB, of ephemeral storage to set for the task. The minimum supported value is `21` GiB and the maximum supported value is `200` GiB."
       }
@@ -14143,13 +14145,13 @@
       "attributes": {
         "AccessPointId": "The ID of the EFS access point.",
         "Arn": "The Amazon Resource Name (ARN) of the access point.",
-        "Ref": "`Ref` returns the resource ID. For example:\n\n`{\"Ref\":\"fsap-0123456789abcdef0\"}` .\n\nRef returns the access point ID."
+        "Ref": "`Ref` returns the AccessPoint ID. For example:\n\n`{\"Ref\":\"access_point-logical_id\"}` returns\n\n`fsap-0123456789abcdef0`"
       },
       "description": "The `AWS::EFS::AccessPoint` resource creates an EFS access point. An access point is an application-specific view into an EFS file system that applies an operating system user and group, and a file system path, to any file system request made through the access point. The operating system user and group override any identity information provided by the NFS client. The file system path is exposed as the access point's root directory. Applications using the access point can only access data in its own directory and below. To learn more, see [Mounting a file system using EFS access points](https://docs.aws.amazon.com/efs/latest/ug/efs-access-points.html) .\n\nThis operation requires permissions for the `elasticfilesystem:CreateAccessPoint` action.",
       "properties": {
         "AccessPointTags": "An array of key-value pairs to apply to this resource.\n\nFor more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) .",
         "ClientToken": "The opaque string specified in the request to ensure idempotent creation.",
-        "FileSystemId": "The ID of the EFS file system that the access point applies to.",
+        "FileSystemId": "The ID of the EFS file system that the access point applies to. Accepts only the ID format for input when specifying a file system, for example `fs-0123456789abcedf2` .",
         "PosixUser": "The full POSIX identity, including the user ID, group ID, and secondary group IDs on the access point that is used for all file operations by NFS clients using the access point.",
         "RootDirectory": "The directory on the Amazon EFS file system that the access point exposes as the root directory to NFS clients using the access point."
       }
@@ -14190,15 +14192,15 @@
     },
     "AWS::EFS::FileSystem": {
       "attributes": {
-        "Arn": "The Amazon Resource Name (ARN) of the EFS file system. For example: `arn:aws:elasticfilesystem:us-west-2:1111333322228888:file-system/fs-12345678`",
+        "Arn": "The Amazon Resource Name (ARN) of the EFS file system.\n\nExample: `arn:aws:elasticfilesystem:us-west-2:1111333322228888:file-system/fs-0123456789abcdef8`",
         "FileSystemId": "The ID of the EFS file system. For example: `fs-12345678`",
-        "Ref": "`Ref` returns the resource ID. For example:\n\n`{\"Ref\":\"fs-12345678\"}` .\n\nFor the Amazon EFS file system `fs-12345678` , Ref returns the file system ID."
+        "Ref": "`Ref` returns the FileSystem ID. For example:\n\n`{\"Ref\":\"file_system-logical_id\"}` returns\n\n`fs-0123456789abcdef2`"
       },
       "description": "The `AWS::EFS::FileSystem` resource creates a new, empty file system in Amazon Elastic File System ( Amazon EFS ). You must create a mount target ( [AWS::EFS::MountTarget](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-efs-mounttarget.html) ) to mount your EFS file system on an Amazon EC2 or other AWS cloud compute resource.",
       "properties": {
         "AvailabilityZoneName": "Used to create a file system that uses One Zone storage classes. It specifies the AWS Availability Zone in which to create the file system. Use the format `us-east-1a` to specify the Availability Zone. For more information about One Zone storage classes, see [Using EFS storage classes](https://docs.aws.amazon.com/efs/latest/ug/storage-classes.html) in the *Amazon EFS User Guide* .\n\n> One Zone storage classes are not available in all Availability Zones in AWS Regions where Amazon EFS is available.",
         "BackupPolicy": "Use the `BackupPolicy` to turn automatic backups on or off for the file system.",
-        "BypassPolicyLockoutSafetyCheck": "",
+        "BypassPolicyLockoutSafetyCheck": "(Optional) Use this boolean to use or bypass the `FileSystemPolicy` lockout safety check. The policy lockout safety check determines if the `FileSystemPolicy` in the request will lock out the IAM principal making the request, preventing them from making future `PutFileSystemPolicy` requests on the file system. Set `BypassPolicyLockoutSafetyCheck` to `True` only when you intend to prevent the IAM principal that is making the request from making a subsequent `PutFileSystemPolicy` request on the file system. The default value is `False` .",
         "Encrypted": "A Boolean value that, if true, creates an encrypted file system. When creating an encrypted file system, you have the option of specifying a KmsKeyId for an existing AWS KMS key . If you don't specify a KMS key , then the default KMS key for Amazon EFS , `/aws/elasticfilesystem` , is used to protect the encrypted file system.",
         "FileSystemPolicy": "The `FileSystemPolicy` for the EFS file system. A file system policy is an IAM resource policy used to control NFS access to an EFS file system. For more information, see [Using IAM to control NFS access to Amazon EFS](https://docs.aws.amazon.com/efs/latest/ug/iam-access-control-nfs-efs.html) in the *Amazon EFS User Guide* .",
         "FileSystemTags": "Use to create one or more tags associated with the file system. Each tag is a user-defined key-value pair. Name your file system on creation by including a `\"Key\":\"Name\",\"Value\":\"{value}\"` key-value pair. Each key must be unique. For more information, see [Tagging AWS resources](https://docs.aws.amazon.com/general/latest/gr/aws_tagging.html) in the *AWS General Reference Guide* .",
@@ -14234,9 +14236,9 @@
     },
     "AWS::EFS::MountTarget": {
       "attributes": {
-        "Id": "",
-        "IpAddress": "The IPv4 address of the mount target.",
-        "Ref": "`Ref` returns the resource ID. For example:\n\n`{\"Ref\":\"fsmt-12345678\"}` .\n\nFor the Amazon EFS file system mount target `fsmt-12345678` , Ref returns the mount target ID."
+        "Id": "The ID of the Amazon EFS file system that the mount target provides access to.\n\nExample: `fs-0123456789111222a`",
+        "IpAddress": "The IPv4 address of the mount target.\n\nExample: 192.0.2.0",
+        "Ref": "`Ref` returns the MountTarget ID. For example:\n\n`{\"Ref\":\"logical_mount_target_id\"}` returns\n\n`fsmt-0123456789abcdef8` ."
       },
       "description": "The `AWS::EFS::MountTarget` resource is an Amazon EFS resource that creates a mount target for an EFS file system. You can then mount the file system on Amazon EC2 instances or other resources by using the mount target.",
       "properties": {
@@ -15137,7 +15139,7 @@
         "DestinationDetails": "Configuration details of either a CloudWatch Logs destination or Kinesis Data Firehose destination.",
         "DestinationType": "Specify either CloudWatch Logs or Kinesis Data Firehose as the destination type. Valid values are either `cloudwatch-logs` or `kinesis-firehose` .",
         "LogFormat": "Valid values are either `json` or `text` .",
-        "LogType": "Valid value is `slow-log` . Refers to [slow-log](https://docs.aws.amazon.com/https://redis.io/commands/slowlog) ."
+        "LogType": "Valid value is either `slow-log` , which refers to [slow-log](https://docs.aws.amazon.com/https://redis.io/commands/slowlog) or `engine-log` ."
       }
     },
     "AWS::ElastiCache::GlobalReplicationGroup": {
@@ -15246,7 +15248,7 @@
         "SnapshotWindow": "The daily time range (in UTC) during which ElastiCache begins taking a daily snapshot of your node group (shard).\n\nExample: `05:00-09:00`\n\nIf you do not specify this parameter, ElastiCache automatically chooses an appropriate time range.",
         "SnapshottingClusterId": "The cluster ID that is used as the daily snapshot source for the replication group. This parameter cannot be set for Redis (cluster mode enabled) replication groups.",
         "Tags": "A list of tags to be added to this resource. Tags are comma-separated key,value pairs (e.g. Key= `myKey` , Value= `myKeyValue` . You can include multiple tags as shown following: Key= `myKey` , Value= `myKeyValue` Key= `mySecondKey` , Value= `mySecondKeyValue` . Tags on replication groups will be replicated to all nodes.",
-        "TransitEncryptionEnabled": "A flag that enables in-transit encryption when set to `true` .\n\nYou cannot modify the value of `TransitEncryptionEnabled` after the cluster is created. To enable in-transit encryption on a cluster you must set `TransitEncryptionEnabled` to `true` when you create a cluster.\n\nThis parameter is valid only if the `Engine` parameter is `redis` , the `EngineVersion` parameter is `3.2.6` or `4.x` or `5.x` , and the cluster is being created in an Amazon VPC.\n\nIf you enable in-transit encryption, you must also specify a value for `CacheSubnetGroup` .\n\n*Required:* Only available when creating a replication group in an Amazon VPC using redis version `3.2.6` or `4.x` onward.\n\nDefault: `false`\n\n> For HIPAA compliance, you must specify `TransitEncryptionEnabled` as `true` , an `AuthToken` , and a `CacheSubnetGroup` .",
+        "TransitEncryptionEnabled": "A flag that enables in-transit encryption when set to `true` .\n\nYou cannot modify the value of `TransitEncryptionEnabled` after the cluster is created. To enable in-transit encryption on a cluster you must set `TransitEncryptionEnabled` to `true` when you create a cluster.\n\nThis parameter is valid only if the `Engine` parameter is `redis` , the `EngineVersion` parameter is `3.2.6` or `4.x` onward, and the cluster is being created in an Amazon VPC.\n\nIf you enable in-transit encryption, you must also specify a value for `CacheSubnetGroup` .\n\n*Required:* Only available when creating a replication group in an Amazon VPC using redis version `3.2.6` or `4.x` onward.\n\nDefault: `false`\n\n> For HIPAA compliance, you must specify `TransitEncryptionEnabled` as `true` , an `AuthToken` , and a `CacheSubnetGroup` .",
         "UserGroupIds": "The list of user groups to associate with the replication group."
       }
     },
@@ -15261,7 +15263,7 @@
       "attributes": {},
       "description": "Configuration details of either a CloudWatch Logs destination or Kinesis Data Firehose destination.",
       "properties": {
-        "CloudWatchLogsDetails": "",
+        "CloudWatchLogsDetails": "The configuration details of the CloudWatch Logs destination. Note that this field is marked as required but only if CloudWatch Logs was chosen as the destination.",
         "KinesisFirehoseDetails": "The configuration details of the Kinesis Data Firehose destination. Note that this field is marked as required but only if Kinesis Data Firehose was chosen as the destination."
       }
     },
@@ -15279,7 +15281,7 @@
         "DestinationDetails": "Configuration details of either a CloudWatch Logs destination or Kinesis Data Firehose destination.",
         "DestinationType": "Specify either CloudWatch Logs or Kinesis Data Firehose as the destination type. Valid values are either `cloudwatch-logs` or `kinesis-firehose` .",
         "LogFormat": "Valid values are either `json` or `text` .",
-        "LogType": "Valid value is `slow-log` . Refers to [slow-log](https://docs.aws.amazon.com/https://redis.io/commands/slowlog) ."
+        "LogType": "Valid value is either `slow-log` , which refers to [slow-log](https://docs.aws.amazon.com/https://redis.io/commands/slowlog) or `engine-log` ."
       }
     },
     "AWS::ElastiCache::ReplicationGroup.NodeGroupConfiguration": {
@@ -16793,12 +16795,12 @@
     },
     "AWS::FSx::FileSystem": {
       "attributes": {
-        "DNSName": "Use the DNSName value to access the DNS name of your Amazon FSx file system. The DNS name identifies the file system.",
-        "LustreMountName": "Use the LustreMountName value when mounting an Amazon FSx for Lustre file system. For SCRATCH_1 deployment types, this value is always \"fsx\". For SCRATCH_2 and PERSISTENT_1 deployment types, this value is a string that is unique within an AWS Region . For more information, see [Mounting from an Amazon EC2 Instance](https://docs.aws.amazon.com/fsx/latest/LustreGuide/mounting-ec2-instance.html) .",
-        "Ref": "`Ref` returns the function returns the file system resource ID. For example:\n\n`{\"Ref\":\"fs-01234567890123456\"}`\n\nFor the Amazon FSx file system `fs-01234567890123456` , Ref returns the file system ID.",
-        "RootVolumeId": ""
+        "DNSName": "Returns the FSx for Windows file system's DNSName.\n\nExample: `amznfsxp1honlek.corp.example.com`",
+        "LustreMountName": "Returns the file system's LustreMountName.\n\nExample for SCRATCH_1 deployment types: This value is always `fsx` .\n\nExample for SCRATCH_2 and PERSISTENT deployment types: `2p3fhbmv`",
+        "Ref": "`Ref` returns the file system resource ID. For example:\n\n`{\"Ref\":\"file_system_logical_id\"}`\n\nReturns `fs-0123456789abcdef6` .",
+        "RootVolumeId": "Returns the root volume ID of the FSx for OpenZFS file system.\n\nExample: `fsvol-0123456789abcdefa`"
       },
-      "description": "The `AWS::FSx::FileSystem` resource is an Amazon FSx resource type that creates either an Amazon FSx for Windows File Server file system or an Amazon FSx for Lustre file system.",
+      "description": "The `AWS::FSx::FileSystem` resource is an Amazon FSx resource type that creates an Amazon FSx file system. You can create any of the following supported file system types:\n\n- Amazon FSx for Lustre\n- Amazon FSx for NetApp ONTAP\n- Amazon FSx for OpenZFS\n- Amazon FSx for Windows File Server",
       "properties": {
         "BackupId": "The ID of the source backup. Specifies the backup that you are copying.",
         "FileSystemType": "The type of Amazon FSx file system, which can be `LUSTRE` , `WINDOWS` , `ONTAP` , or `OPENZFS` .",
@@ -16934,7 +16936,7 @@
       "properties": {
         "ActiveDirectoryId": "The ID for an existing AWS Managed Microsoft Active Directory (AD) instance that the file system should join when it's created.",
         "Aliases": "An array of one or more DNS alias names that you want to associate with the Amazon FSx file system. Aliases allow you to use existing DNS names to access the data in your Amazon FSx file system. You can associate up to 50 aliases with a file system at any time.\n\nFor more information, see [Working with DNS Aliases](https://docs.aws.amazon.com/fsx/latest/WindowsGuide/managing-dns-aliases.html) and [Walkthrough 5: Using DNS aliases to access your file system](https://docs.aws.amazon.com/fsx/latest/WindowsGuide/walkthrough05-file-system-custom-CNAME.html) , including additional steps you must take to be able to access your file system using a DNS alias.\n\nAn alias name has to meet the following requirements:\n\n- Formatted as a fully-qualified domain name (FQDN), `hostname.domain` , for example, `accounting.example.com` .\n- Can contain alphanumeric characters, the underscore (_), and the hyphen (-).\n- Cannot start or end with a hyphen.\n- Can start with a numeric.\n\nFor DNS alias names, Amazon FSx stores alphabetical characters as lowercase letters (a-z), regardless of how you specify them: as uppercase letters, lowercase letters, or the corresponding letters in escape codes.",
-        "AuditLogConfiguration": "",
+        "AuditLogConfiguration": "The configuration that Amazon FSx for Windows File Server uses to audit and log user accesses of files, folders, and file shares on the Amazon FSx for Windows File Server file system.",
         "AutomaticBackupRetentionDays": "The number of days to retain automatic backups. The default is to retain backups for 7 days. Setting this value to 0 disables the creation of automatic backups. The maximum retention period for backups is 90 days.",
         "CopyTagsToBackups": "A Boolean flag indicating whether tags for the file system should be copied to backups. This value defaults to false. If it's set to true, all tags for the file system are copied to all automatic and user-initiated backups where the user doesn't specify tags. If this value is true, and you specify one or more tags, only the specified tags are copied to backups. If you specify one or more tags when creating a user-initiated backup, no tags are copied from the file system, regardless of this value.",
         "DailyAutomaticBackupStartTime": "The preferred time to take daily automatic backups, formatted HH:MM in the UTC time zone.",
@@ -16947,8 +16949,8 @@
     },
     "AWS::FSx::Snapshot": {
       "attributes": {
-        "Ref": "",
-        "ResourceARN": "`Ref` returns the Amazon Resource Name (ARN)."
+        "Ref": "`Ref` returns the ID of the snapshot. For example:\n\n`{\"Ref\":\"logical_snapshot_id\"}`\n\nReturns `fsvolsnap-0123456789abcedf5` .",
+        "ResourceARN": "Returns the snapshot's Amazon Resource Name (ARN).\n\nExample: `arn:aws:fsx:us-east-2:111133334444:snapshot/fsvol-01234567890123456/fsvolsnap-0123456789abcedf5`"
       },
       "description": "A snapshot of an Amazon FSx for OpenZFS volume.",
       "properties": {
@@ -16959,10 +16961,10 @@
     },
     "AWS::FSx::StorageVirtualMachine": {
       "attributes": {
-        "Ref": "",
-        "ResourceARN": "`Ref` returns the Amazon Resource Name (ARN).",
-        "StorageVirtualMachineId": "`Ref` returns the SVM's system generated unique ID.",
-        "UUID": "`Ref` returns the volume's universally unique identifier (UUID)."
+        "Ref": "`Ref` returns the resource ID, such as `svm-01234567890123456` . For example:\n\n`{\"Ref\": \"svm_logical_id\"}` returns\n\n`svm-01234567890123456`",
+        "ResourceARN": "Returns the storage virtual machine's Amazon Resource Name (ARN).\n\nExample: `arn:aws:fsx:us-east-2:111111111111:storage-virtual-machine/fs-0123456789abcdef1/svm-01234567890123456`",
+        "StorageVirtualMachineId": "Returns the storgage virtual machine's system generated ID.\n\nExample: `svm-0123456789abcedf1`",
+        "UUID": "Returns the storage virtual machine's system generated unique identifier (UUID).\n\nExample: `abcd0123-cd45-ef67-11aa-1111aaaa23bc`"
       },
       "description": "Creates a storage virtual machine (SVM) for an Amazon FSx for ONTAP file system.",
       "properties": {
@@ -16996,10 +16998,10 @@
     },
     "AWS::FSx::Volume": {
       "attributes": {
-        "Ref": "",
-        "ResourceARN": "`Ref` returns the Amazon Resource Name (ARN).",
-        "UUID": "`Ref` returns the volume's universally unique identifier (UUID).",
-        "VolumeId": "`Ref` returns the system-generated, unique ID of the volume."
+        "Ref": "`Ref` returns the ID for the volume. For example:\n\n`{\"Ref\":\"vol_logical_id\"}`\n\nReturns `fsvol-0123456789abcdef6` .",
+        "ResourceARN": "Returns the volume's Amazon Resource Name (ARN).\n\nExample: `arn:aws:fsx:us-east-2:111122223333:volume/fs-0123456789abcdef9/fsvol-01234567891112223`",
+        "UUID": "Returns the volume's universally unique identifier (UUID).\n\nExample: `abcd0123-cd45-ef67-11aa-1111aaaa23bc`",
+        "VolumeId": "Returns the volume's ID.\n\nExample: `fsvol-0123456789abcdefa`"
       },
       "description": "Creates an Amazon FSx for NetApp ONTAP or Amazon FSx for OpenZFS storage volume.",
       "properties": {
@@ -17980,10 +17982,10 @@
     },
     "AWS::Glue::Database.PrincipalPrivileges": {
       "attributes": {},
-      "description": "",
+      "description": "the permissions granted to a principal",
       "properties": {
-        "Permissions": "",
-        "Principal": ""
+        "Permissions": "The permissions that are granted to the principal.",
+        "Principal": "The principal who is granted permissions."
       }
     },
     "AWS::Glue::DevEndpoint": {
@@ -22796,7 +22798,7 @@
         "ServiceNowConfiguration": "Provides configuration for data sources that connect to ServiceNow instances.",
         "SharePointConfiguration": "Provides information necessary to create a data source connector for a Microsoft SharePoint site.",
         "WebCrawlerConfiguration": "Provides the configuration information required for Amazon Kendra Web Crawler.",
-        "WorkDocsConfiguration": ""
+        "WorkDocsConfiguration": "Provides the configuration information to connect to WorkDocs as your data source."
       }
     },
     "AWS::Kendra::DataSource.DataSourceToIndexFieldMapping": {
@@ -22871,11 +22873,11 @@
     },
     "AWS::Kendra::DataSource.ProxyConfiguration": {
       "attributes": {},
-      "description": "",
+      "description": "Provides the configuration information for a web proxy to connect to website hosts.",
       "properties": {
-        "Credentials": "",
-        "Host": "",
-        "Port": ""
+        "Credentials": "Your secret ARN, which you can create in [AWS Secrets Manager](https://docs.aws.amazon.com/secretsmanager/latest/userguide/intro.html)\n\nThe credentials are optional. You use a secret if web proxy credentials are required to connect to a website host. Amazon Kendra currently support basic authentication to connect to a web proxy server. The secret stores your credentials.",
+        "Host": "The name of the website host you want to connect to via a web proxy server.\n\nFor example, the host name of https://a.example.com/page1.html is \"a.example.com\".",
+        "Port": "The port number of the website host you want to connect to via a web proxy server.\n\nFor example, the port for https://a.example.com/page1.html is 443, the standard port for HTTPS."
       }
     },
     "AWS::Kendra::DataSource.S3DataSourceConfiguration": {
@@ -23021,7 +23023,7 @@
         "SslCertificateS3Path": "Information required to find a specific file in an Amazon S3 bucket.",
         "Urls": "The URLs of the Microsoft SharePoint site that contains the documents that should be indexed.",
         "UseChangeLog": "Set to `TRUE` to use the Microsoft SharePoint change log to determine the documents that need to be updated in the index. Depending on the size of the SharePoint change log, it may take longer for Amazon Kendra to use the change log than it takes it to determine the changed documents using the Amazon Kendra document crawler.",
-        "VpcConfiguration": ""
+        "VpcConfiguration": "Provides information for connecting to an Amazon VPC."
       }
     },
     "AWS::Kendra::DataSource.SqlConfiguration": {
@@ -23051,15 +23053,15 @@
       "attributes": {},
       "description": "",
       "properties": {
-        "AuthenticationConfiguration": "",
-        "CrawlDepth": "",
-        "MaxContentSizePerPageInMegaBytes": "",
-        "MaxLinksPerPage": "",
-        "MaxUrlsPerMinuteCrawlRate": "",
-        "ProxyConfiguration": "",
-        "UrlExclusionPatterns": "",
-        "UrlInclusionPatterns": "",
-        "Urls": "Specifies the seed or starting point URLs of the websites or the sitemap URLs of the websites you want to crawl.\n\nYou can include website subdomains. You can list up to 100 seed URLs and up to three sitemap URLs.\n\nYou can only crawl websites that use the secure communication protocol, Hypertext Transfer Protocol Secure (HTTPS). If you receive an error when crawling a website, it could be that the website is blocked from crawling.\n\n*When selecting websites to index, you must adhere to the [Amazon Acceptable Use Policy](https://docs.aws.amazon.com/aup/) and all other Amazon terms. Remember that you must only use the Amazon Kendra web crawler to index your own webpages, or webpages that you have authorization to index.*"
+        "AuthenticationConfiguration": "Provides configuration information required to connect to websites using authentication.\n\nYou can connect to websites using basic authentication of user name and password.\n\nYou must provide the website host name and port number. For example, the host name of https://a.example.com/page1.html is \"a.example.com\" and the port is 443, the standard port for HTTPS. You use a secret in [AWS Secrets Manager](https://docs.aws.amazon.com/secretsmanager/latest/userguide/intro.html) to store your authentication credentials.",
+        "CrawlDepth": "Specifies the number of levels in a website that you want to crawl.\n\nThe first level begins from the website seed or starting point URL. For example, if a website has 3 levels \u2013 index level (i.e. seed in this example), sections level, and subsections level \u2013 and you are only interested in crawling information up to the sections level (i.e. levels 0-1), you can set your depth to 1.\n\nThe default crawl depth is set to 2.",
+        "MaxContentSizePerPageInMegaBytes": "The maximum size (in MB) of a webpage or attachment to crawl.\n\nFiles larger than this size (in MB) are skipped/not crawled.\n\nThe default maximum size of a webpage or attachment is set to 50 MB.",
+        "MaxLinksPerPage": "The maximum number of URLs on a webpage to include when crawling a website. This number is per webpage.\n\nAs a website\u2019s webpages are crawled, any URLs the webpages link to are also crawled. URLs on a webpage are crawled in order of appearance.\n\nThe default maximum links per page is 100.",
+        "MaxUrlsPerMinuteCrawlRate": "The maximum number of URLs crawled per website host per minute.\n\nA minimum of one URL is required.\n\nThe default maximum number of URLs crawled per website host per minute is 300.",
+        "ProxyConfiguration": "Provides configuration information required to connect to your internal websites via a web proxy.\n\nYou must provide the website host name and port number. For example, the host name of https://a.example.com/page1.html is \"a.example.com\" and the port is 443, the standard port for HTTPS.\n\nWeb proxy credentials are optional and you can use them to connect to a web proxy server that requires basic authentication. To store web proxy credentials, you use a secret in [AWS Secrets Manager](https://docs.aws.amazon.com/secretsmanager/latest/userguide/intro.html) .",
+        "UrlExclusionPatterns": "The regular expression pattern to exclude certain URLs to crawl.\n\nIf there is a regular expression pattern to include certain URLs that conflicts with the exclude pattern, the exclude pattern takes precedence.",
+        "UrlInclusionPatterns": "The regular expression pattern to include certain URLs to crawl.\n\nIf there is a regular expression pattern to exclude certain URLs that conflicts with the include pattern, the exclude pattern takes precedence.",
+        "Urls": "Specifies the seed or starting point URLs of the websites or the sitemap URLs of the websites you want to crawl.\n\nYou can include website subdomains. You can list up to 100 seed URLs and up to three sitemap URLs.\n\nYou can only crawl websites that use the secure communication protocol, Hypertext Transfer Protocol Secure (HTTPS). If you receive an error when crawling a website, it could be that the website is blocked from crawling.\n\n*When selecting websites to index, you must adhere to the [Amazon Acceptable Use Policy](https://docs.aws.amazon.com/aup/) and all other Amazon terms. Remember that you must only use Amazon Kendra Web Crawler to index your own webpages, or webpages that you have authorization to index.*"
       }
     },
     "AWS::Kendra::DataSource.WebCrawlerSeedUrlConfiguration": {
@@ -23074,7 +23076,7 @@
       "attributes": {},
       "description": "Provides the configuration information of the sitemap URLs to crawl.\n\n*When selecting websites to index, you must adhere to the [Amazon Acceptable Use Policy](https://docs.aws.amazon.com/aup/) and all other Amazon terms. Remember that you must only use the Amazon Kendra web crawler to index your own webpages, or webpages that you have authorization to index.*",
       "properties": {
-        "SiteMaps": ""
+        "SiteMaps": "The list of sitemap URLs of the websites you want to crawl.\n\nThe list can include a maximum of three sitemap URLs."
       }
     },
     "AWS::Kendra::DataSource.WebCrawlerUrls": {
@@ -23087,14 +23089,14 @@
     },
     "AWS::Kendra::DataSource.WorkDocsConfiguration": {
       "attributes": {},
-      "description": "",
+      "description": "Provides the configuration information to connect to Amazon WorkDocs as your data source.\n\nAmazon WorkDocs connector is available in Oregon, North Virginia, Sydney, Singapore and Ireland regions.",
       "properties": {
-        "CrawlComments": "",
-        "ExclusionPatterns": "",
-        "FieldMappings": "",
-        "InclusionPatterns": "",
-        "OrganizationId": "",
-        "UseChangeLog": ""
+        "CrawlComments": "`TRUE` to include comments on documents in your index. Including comments in your index means each comment is a document that can be searched on.\n\nThe default is set to `FALSE` .",
+        "ExclusionPatterns": "A list of regular expression patterns to exclude certain files in your Amazon WorkDocs site repository. Files that match the patterns are excluded from the index. Files that don\u2019t match the patterns are included in the index. If a file matches both an inclusion pattern and an exclusion pattern, the exclusion pattern takes precedence and the file isn\u2019t included in the index.",
+        "FieldMappings": "A list of `DataSourceToIndexFieldMapping` objects that map Amazon WorkDocs field names to custom index field names in Amazon Kendra. You must first create the custom index fields using the `UpdateIndex` operation before you map to Amazon WorkDocs fields. For more information, see [Mapping Data Source Fields](https://docs.aws.amazon.com/kendra/latest/dg/field-mapping.html) . The Amazon WorkDocs data source field names need to exist in your Amazon WorkDocs custom metadata.",
+        "InclusionPatterns": "A list of regular expression patterns to include certain files in your Amazon WorkDocs site repository. Files that match the patterns are included in the index. Files that don't match the patterns are excluded from the index. If a file matches both an inclusion pattern and an exclusion pattern, the exclusion pattern takes precedence and the file isn\u2019t included in the index.",
+        "OrganizationId": "The identifier of the directory corresponding to your Amazon WorkDocs site repository.\n\nYou can find the organization ID in the [AWS Directory Service](https://docs.aws.amazon.com/directoryservicev2/) by going to *Active Directory* , then *Directories* . Your Amazon WorkDocs site directory has an ID, which is the organization ID. You can also set up a new Amazon WorkDocs directory in the AWS Directory Service console and enable a Amazon WorkDocs site for the directory in the Amazon WorkDocs console.",
+        "UseChangeLog": "`TRUE` to use the change logs to update documents in your index instead of scanning all documents.\n\nIf you are syncing your Amazon WorkDocs data source with your index for the first time, all documents are scanned. After your first sync, you can use the change logs to update your documents in your index for future syncs.\n\nThe default is set to `FALSE` ."
       }
     },
     "AWS::Kendra::Faq": {
@@ -24545,7 +24547,7 @@
         "FilterCriteria": "(Streams and Amazon SQS) An object that defines the filter criteria that determine whether Lambda should process an event. For more information, see [Lambda event filtering](https://docs.aws.amazon.com/lambda/latest/dg/invocation-eventfiltering.html) .",
         "FunctionName": "The name of the Lambda function.\n\n**Name formats** - *Function name* - `MyFunction` .\n- *Function ARN* - `arn:aws:lambda:us-west-2:123456789012:function:MyFunction` .\n- *Version or Alias ARN* - `arn:aws:lambda:us-west-2:123456789012:function:MyFunction:PROD` .\n- *Partial ARN* - `123456789012:function:MyFunction` .\n\nThe length constraint applies only to the full ARN. If you specify only the function name, it's limited to 64 characters in length.",
         "FunctionResponseTypes": "(Streams and SQS) A list of current response type enums applied to the event source mapping.\n\nValid Values: `ReportBatchItemFailures`",
-        "MaximumBatchingWindowInSeconds": "(Streams and Amazon SQS standard queues) The maximum amount of time, in seconds, that Lambda spends gathering records before invoking the function.\n\nDefault: 0\n\nRelated setting: When you set `BatchSize` to a value greater than 10, you must set `MaximumBatchingWindowInSeconds` to at least 1.",
+        "MaximumBatchingWindowInSeconds": "The maximum amount of time, in seconds, that Lambda spends gathering records before invoking the function.\n\n*Default ( Kinesis , DynamoDB , Amazon SQS event sources)* : 0\n\n*Default ( Amazon MSK , Kafka, Amazon MQ event sources)* : 500 ms",
         "MaximumRecordAgeInSeconds": "(Streams only) Discard records older than the specified age. The default value is -1,\nwhich sets the maximum age to infinite. When the value is set to infinite, Lambda never discards old records.",
         "MaximumRetryAttempts": "(Streams only) Discard records after the specified number of retries. The default value is -1,\nwhich sets the maximum number of retries to infinite. When MaximumRetryAttempts is infinite, Lambda retries failed records until the record expires in the event source.",
         "ParallelizationFactor": "(Streams only) The number of batches to process concurrently from each shard. The default value is 1.",
@@ -26080,7 +26082,7 @@
       "attributes": {
         "Ref": "`Ref` returns the Amazon MSK cluster ARN. For example:\n\n`REF MyTestCluster`\n\nFor the Amazon MSK cluster `MyTestCluster` , Ref returns the ARN of the cluster."
       },
-      "description": "The `AWS::MSK::Cluster` resource creates an Amazon MSK cluster. For more information, see [What Is Amazon MSK?](https://docs.aws.amazon.com/msk/latest/developerguide/what-is-msk.html) in the *Amazon MSK Developer Guide* .",
+      "description": "The `AWS::MSK::Cluster` resource creates an Amazon MSK cluster . For more information, see [What Is Amazon MSK?](https://docs.aws.amazon.com/msk/latest/developerguide/what-is-msk.html) in the *Amazon MSK Developer Guide* .",
       "properties": {
         "BrokerNodeGroupInfo": "The setup to be used for brokers in the cluster.",
         "ClientAuthentication": "Includes information related to client authentication.",
@@ -26088,8 +26090,8 @@
         "ConfigurationInfo": "The Amazon MSK configuration to use for the cluster.",
         "EncryptionInfo": "Includes all encryption-related information.",
         "EnhancedMonitoring": "Specifies the level of monitoring for the MSK cluster. The possible values are `DEFAULT` , `PER_BROKER` , and `PER_TOPIC_PER_BROKER` .",
-        "KafkaVersion": "The version of Apache Kafka. You can use Amazon MSK to create clusters that use Apache Kafka versions 1.1.1 and 2.2.1.",
-        "LoggingInfo": "You can configure your MSK cluster to send broker logs to different destination types. This is a container for the configuration details related to broker logs.",
+        "KafkaVersion": "The version of Apache Kafka. For more information, see [Supported Apache Kafka versions](https://docs.aws.amazon.com/msk/latest/developerguide/supported-kafka-versions.html) in the Amazon MSK Developer Guide.",
+        "LoggingInfo": "You can configure your Amazon MSK cluster to send broker logs to different destination types. This is a container for the configuration details related to broker logs.",
         "NumberOfBrokerNodes": "The number of broker nodes you want in the Amazon MSK cluster. You can submit an update to increase the number of broker nodes in a cluster.",
         "OpenMonitoring": "The settings for open monitoring.",
         "Tags": "A map of key:value pairs to apply to this resource. Both key and value are of type String."
@@ -26097,11 +26099,11 @@
     },
     "AWS::MSK::Cluster.BrokerLogs": {
       "attributes": {},
-      "description": "You can configure your MSK cluster to send broker logs to different destination types. This configuration specifies the details of these destinations.",
+      "description": "You can configure your Amazon MSK cluster to send broker logs to different destination types. This configuration specifies the details of these destinations.",
       "properties": {
         "CloudWatchLogs": "Details of the CloudWatch Logs destination for broker logs.",
         "Firehose": "Details of the Kinesis Data Firehose delivery stream that is the destination for broker logs.",
-        "S3": "Details of the Amazon S3 destination for broker logs."
+        "S3": "Details of the Amazon MSK destination for broker logs."
       }
     },
     "AWS::MSK::Cluster.BrokerNodeGroupInfo": {
@@ -26130,7 +26132,7 @@
       "description": "Details of the CloudWatch Logs destination for broker logs.",
       "properties": {
         "Enabled": "Specifies whether broker logs get sent to the specified CloudWatch Logs destination.",
-        "LogGroup": "The CloudWatch log group that is the destination for broker logs."
+        "LogGroup": "The CloudWatch Logs group that is the destination for broker logs."
       }
     },
     "AWS::MSK::Cluster.ConfigurationInfo": {
@@ -26166,8 +26168,8 @@
       "attributes": {},
       "description": "The settings for encrypting data in transit.",
       "properties": {
-        "ClientBroker": "Indicates the encryption setting for data in transit between clients and brokers. The following are the possible values.\n\n- `TLS` means that client-broker communication is enabled with TLS only.\n- `TLS_PLAINTEXT` means that client-broker communication is enabled for both TLS-encrypted, as well as plaintext data.\n- `PLAINTEXT` means that client-broker communication is enabled in plaintext only.\n\nThe default value is `TLS` .",
-        "InCluster": "When set to true, it indicates that data communication among the broker nodes of the cluster is encrypted. When set to false, the communication happens in plaintext. The default value is true."
+        "ClientBroker": "Indicates the encryption setting for data in transit between clients and brokers. The following are the possible values.\n\n- `TLS` means that client-broker communication is enabled with TLS only.\n- `TLS_PLAINTEXT` means that client-broker communication is enabled for both TLS-encrypted, as well as plain text data.\n- `PLAINTEXT` means that client-broker communication is enabled in plain text only.\n\nThe default value is `TLS` .",
+        "InCluster": "When set to true, it indicates that data communication among the broker nodes of the cluster is encrypted. When set to false, the communication happens in plain text. The default value is true."
       }
     },
     "AWS::MSK::Cluster.EncryptionInfo": {
@@ -26202,9 +26204,9 @@
     },
     "AWS::MSK::Cluster.LoggingInfo": {
       "attributes": {},
-      "description": "You can configure your MSK cluster to send broker logs to different destination types. This is a container for the configuration details related to broker logs.",
+      "description": "You can configure your Amazon MSK cluster to send broker logs to different destination types. This is a container for the configuration details related to broker logs.",
       "properties": {
-        "BrokerLogs": "You can configure your MSK cluster to send broker logs to different destination types. This configuration specifies the details of these destinations."
+        "BrokerLogs": "You can configure your Amazon MSK cluster to send broker logs to different destination types. This configuration specifies the details of these destinations."
       }
     },
     "AWS::MSK::Cluster.NodeExporter": {
@@ -26233,7 +26235,7 @@
       "attributes": {},
       "description": "Specifies whether the cluster's brokers are accessible from the internet. Public access is off by default.",
       "properties": {
-        "Type": "Set to DISABLED to turn off public access or to SERVICE_PROVIDED_EIPS to turn it on. Public access if off by default."
+        "Type": "Set to `DISABLED` to turn off public access or to `SERVICE_PROVIDED_EIPS` to turn it on. Public access if off by default."
       }
     },
     "AWS::MSK::Cluster.S3": {
@@ -29630,13 +29632,13 @@
     },
     "AWS::OpenSearchService::Domain": {
       "attributes": {
-        "Arn": "The Amazon Resource Name (ARN) of the domain, such as `arn:aws:es:us-west-2:123456789012:domain/mystack-1ab2cdefghij` . This returned value is the same as the one returned by `AWS::OpenSearchService::Domain.Arn` .",
+        "Arn": "The Amazon Resource Name (ARN) of the domain, such as `arn:aws:es:us-west-2:123456789012:domain/mystack-1ab2cdefghij` .",
         "DomainArn": "",
         "DomainEndpoint": "The domain-specific endpoint used for requests to the OpenSearch APIs, such as `search-mystack-1ab2cdefghij-ab1c2deckoyb3hofw7wpqa3cm.us-west-1.es.amazonaws.com` .",
-        "Id": "",
+        "Id": "The resource ID. For example, `123456789012/my-domain` .",
         "Ref": "When the logical ID of this resource is provided to the Ref intrinsic function, Ref returns the resource name, such as `mystack-abc1d2efg3h4.` For more information about using the Ref function, see [Ref](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-ref.html) ."
       },
-      "description": "The AWS::OpenSearchService::Domain resource creates an Amazon OpenSearch Service (successor to Amazon Elasticsearch Service) domain.\n\n> The `AWS::OpenSearchService::Domain` resource replaces the legacy [AWS::Elasticsearch::Domain](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticsearch-domain.html) resource. While the Elasticsearch resource and options are still supported, we recommend modifying your existing Cloudformation templates to use the new OpenSearch Service resource, which supports both OpenSearch and legacy Elasticsearch engines. For instructions to upgrade domains defined within CloudFormation from Elasticsearch to OpenSearch, see [Remarks](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticsearch-domain.html#aws-resource-elasticsearch-domain--remarks) .",
+      "description": "The AWS::OpenSearchService::Domain resource creates an Amazon OpenSearch Service (successor to Amazon Elasticsearch Service) domain.\n\n> The `AWS::OpenSearchService::Domain` resource replaces the legacy [AWS::Elasticsearch::Domain](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticsearch-domain.html) resource. While the Elasticsearch resource and options are still supported, we recommend modifying your existing Cloudformation templates to use the new OpenSearch Service resource, which supports both OpenSearch and legacy Elasticsearch engines. For instructions to upgrade domains defined within CloudFormation from Elasticsearch to OpenSearch, see [Remarks](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-opensearchservice-domain.html#aws-resource-opensearchservice-domain--remarks) .",
       "properties": {
         "AccessPolicies": "An AWS Identity and Access Management ( IAM ) policy document that specifies who can access the OpenSearch Service domain and their permissions. For more information, see [Configuring access policies](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/ac.html#ac-creating) in the *Amazon OpenSearch Service Developer Guide* .",
         "AdvancedOptions": "Additional options to specify for the OpenSearch Service domain. For more information, see [Advanced cluster parameters](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/createupdatedomains.html#createdomain-configure-advanced-options) in the *Amazon OpenSearch Service Developer Guide* .",
@@ -32156,7 +32158,7 @@
         "AllowMajorVersionUpgrade": "A value that indicates whether major version upgrades are allowed. Changing this parameter doesn't result in an outage and the change is asynchronously applied as soon as possible.\n\nConstraints: Major version upgrades must be allowed when specifying a value for the `EngineVersion` parameter that is a different major version than the DB instance's current version.",
         "AssociatedRoles": "The AWS Identity and Access Management (IAM) roles associated with the DB instance.",
         "AutoMinorVersionUpgrade": "A value that indicates whether minor engine upgrades are applied automatically to the DB instance during the maintenance window. By default, minor engine upgrades are applied automatically.",
-        "AvailabilityZone": "The Availability Zone that the database instance will be created in.\n\nDefault: A random, system-chosen Availability Zone in the endpoint's region.\n\nExample: `us-east-1d`\n\nConstraint: The AvailabilityZone parameter cannot be specified if the MultiAZ parameter is set to `true` . The specified Availability Zone must be in the same region as the current endpoint.",
+        "AvailabilityZone": "The Availability Zone (AZ) where the database will be created. For information on AWS Regions and Availability Zones, see [Regions and Availability Zones](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.RegionsAndAvailabilityZones.html) .\n\n*Amazon Aurora*\n\nNot applicable. Availability Zones are managed by the DB cluster.\n\nDefault: A random, system-chosen Availability Zone in the endpoint's AWS Region.\n\nExample: `us-east-1d`\n\nConstraint: The `AvailabilityZone` parameter can't be specified if the DB instance is a Multi-AZ deployment. The specified Availability Zone must be in the same AWS Region as the current endpoint.\n\n> If you're creating a DB instance in an RDS on VMware environment, specify the identifier of the custom Availability Zone to create the DB instance in.\n> \n> For more information about RDS on VMware, see the [RDS on VMware User Guide.](https://docs.aws.amazon.com/AmazonRDS/latest/RDSonVMwareUserGuide/rds-on-vmware.html)",
         "BackupRetentionPeriod": "The number of days for which automated backups are retained. Setting this parameter to a positive number enables backups. Setting this parameter to 0 disables automated backups.\n\n*Amazon Aurora*\n\nNot applicable. The retention period for automated backups is managed by the DB cluster.\n\nDefault: 1\n\nConstraints:\n\n- Must be a value from 0 to 35\n- Can't be set to 0 if the DB instance is a source to read replicas",
         "CACertificateIdentifier": "The identifier of the CA certificate for this DB instance.\n\n> Specifying or updating this property triggers a reboot. \n\nFor more information about CA certificate identifiers for RDS DB engines, see [Rotating Your SSL/TLS Certificate](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.SSL-certificate-rotation.html) in the *Amazon RDS User Guide* .\n\nFor more information about CA certificate identifiers for Aurora DB engines, see [Rotating Your SSL/TLS Certificate](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/UsingWithRDS.SSL-certificate-rotation.html) in the *Amazon Aurora User Guide* .",
         "CharacterSetName": "For supported engines, indicates that the DB instance should be associated with the specified character set.\n\n*Amazon Aurora*\n\nNot applicable. The character set is managed by the DB cluster. For more information, see [AWS::RDS::DBCluster](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbcluster.html) .",
@@ -32228,7 +32230,7 @@
       },
       "description": "The `AWS::RDS::DBParameterGroup` resource creates a custom parameter group for an RDS database family.\n\nThis type can be declared in a template and referenced in the `DBParameterGroupName` property of an `[AWS::RDS::DBInstance](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-database-instance.html)` resource.\n\nFor information about configuring parameters for Amazon RDS DB instances, see [Working with DB parameter groups](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_WorkingWithParamGroups.html) in the *Amazon RDS User Guide* .\n\nFor information about configuring parameters for Amazon Aurora DB instances, see [Working with DB parameter groups and DB cluster parameter groups](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/USER_WorkingWithParamGroups.html) in the *Amazon Aurora User Guide* .\n\n> Applying a parameter group to a DB instance may require the DB instance to reboot, resulting in a database outage for the duration of the reboot.",
       "properties": {
-        "Description": "Provides the customer-specified description for this DB Parameter Group.",
+        "Description": "Provides the customer-specified description for this DB parameter group.",
         "Family": "The DB parameter group family name. A DB parameter group can be associated with one and only one DB parameter group family, and can be applied only to a DB instance running a DB engine and engine version compatible with that DB parameter group family.\n\n> The DB parameter group family can't be changed when updating a DB parameter group. \n\nTo list all of the available parameter group families, use the following command:\n\n`aws rds describe-db-engine-versions --query \"DBEngineVersions[].DBParameterGroupFamily\"`\n\nThe output contains duplicates.\n\nFor more information, see `[CreateDBParameterGroup](https://docs.aws.amazon.com//AmazonRDS/latest/APIReference/API_CreateDBParameterGroup.html)` .",
         "Parameters": "An array of parameter names and values for the parameter update. At least one parameter name and value must be supplied. Subsequent arguments are optional.\n\nFor more information about DB parameters and DB parameter groups for Amazon RDS DB engines, see [Working with DB Parameter Groups](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_WorkingWithParamGroups.html) in the *Amazon RDS User Guide* .\n\nFor more information about DB cluster and DB instance parameters and parameter groups for Amazon Aurora DB engines, see [Working with DB Parameter Groups and DB Cluster Parameter Groups](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/USER_WorkingWithParamGroups.html) in the *Amazon Aurora User Guide* .\n\n> AWS CloudFormation doesn't support specifying an apply method for each individual parameter. The default apply method for each parameter is used.",
         "Tags": "Tags to assign to the DB parameter group."
@@ -32332,7 +32334,7 @@
       "properties": {
         "DBSecurityGroupIngress": "Ingress rules to be applied to the DB security group.",
         "EC2VpcId": "The identifier of an Amazon VPC. This property indicates the VPC that this DB security group belongs to.\n\n> The `EC2VpcId` property is for backward compatibility with older regions, and is no longer recommended for providing security information to an RDS DB instance.",
-        "GroupDescription": "Provides the description of the DB Security Group.",
+        "GroupDescription": "Provides the description of the DB security group.",
         "Tags": "Tags to assign to the DB security group."
       }
     },
@@ -32341,9 +32343,9 @@
       "description": "The `Ingress` property type specifies an individual ingress rule within an `AWS::RDS::DBSecurityGroup` resource.",
       "properties": {
         "CIDRIP": "The IP range to authorize.",
-        "EC2SecurityGroupId": "Id of the EC2 Security Group to authorize. For VPC DB Security Groups, `EC2SecurityGroupId` must be provided. Otherwise, EC2SecurityGroupOwnerId and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided.",
-        "EC2SecurityGroupName": "Name of the EC2 Security Group to authorize. For VPC DB Security Groups, `EC2SecurityGroupId` must be provided. Otherwise, EC2SecurityGroupOwnerId and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided.",
-        "EC2SecurityGroupOwnerId": "AWS Account Number of the owner of the EC2 Security Group specified in the EC2SecurityGroupName parameter. The AWS Access Key ID is not an acceptable value. For VPC DB Security Groups, `EC2SecurityGroupId` must be provided. Otherwise, EC2SecurityGroupOwnerId and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided."
+        "EC2SecurityGroupId": "Id of the EC2 security group to authorize. For VPC DB security groups, `EC2SecurityGroupId` must be provided. Otherwise, `EC2SecurityGroupOwnerId` and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided.",
+        "EC2SecurityGroupName": "Name of the EC2 security group to authorize. For VPC DB security groups, `EC2SecurityGroupId` must be provided. Otherwise, `EC2SecurityGroupOwnerId` and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided.",
+        "EC2SecurityGroupOwnerId": "AWS account number of the owner of the EC2 security group specified in the `EC2SecurityGroupName` parameter. The AWS access key ID isn't an acceptable value. For VPC DB security groups, `EC2SecurityGroupId` must be provided. Otherwise, `EC2SecurityGroupOwnerId` and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided."
       }
     },
     "AWS::RDS::DBSecurityGroupIngress": {
@@ -32353,10 +32355,10 @@
       "description": "The `AWS::RDS::DBSecurityGroupIngress` resource enables ingress to a DB security group using one of two forms of authorization. First, you can add EC2 or VPC security groups to the DB security group if the application using the database is running on EC2 or VPC instances. Second, IP ranges are available if the application accessing your database is running on the Internet.\n\nThis type supports updates. For more information about updating stacks, see [AWS CloudFormation Stacks Updates](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks.html) .\n\nFor details about the settings for DB security group ingress, see [AuthorizeDBSecurityGroupIngress](https://docs.aws.amazon.com/AmazonRDS/latest/APIReference/API_AuthorizeDBSecurityGroupIngress.html) .",
       "properties": {
         "CIDRIP": "The IP range to authorize.",
-        "DBSecurityGroupName": "The name of the DB Security Group to add authorization to.",
-        "EC2SecurityGroupId": "Id of the EC2 Security Group to authorize. For VPC DB Security Groups, `EC2SecurityGroupId` must be provided. Otherwise, EC2SecurityGroupOwnerId and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided.",
-        "EC2SecurityGroupName": "Name of the EC2 Security Group to authorize. For VPC DB Security Groups, `EC2SecurityGroupId` must be provided. Otherwise, EC2SecurityGroupOwnerId and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided.",
-        "EC2SecurityGroupOwnerId": "AWS Account Number of the owner of the EC2 Security Group specified in the EC2SecurityGroupName parameter. The AWS Access Key ID is not an acceptable value. For VPC DB Security Groups, `EC2SecurityGroupId` must be provided. Otherwise, EC2SecurityGroupOwnerId and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided."
+        "DBSecurityGroupName": "The name of the DB security group to add authorization to.",
+        "EC2SecurityGroupId": "Id of the EC2 security group to authorize. For VPC DB security groups, `EC2SecurityGroupId` must be provided. Otherwise, `EC2SecurityGroupOwnerId` and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided.",
+        "EC2SecurityGroupName": "Name of the EC2 security group to authorize. For VPC DB security groups, `EC2SecurityGroupId` must be provided. Otherwise, `EC2SecurityGroupOwnerId` and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided.",
+        "EC2SecurityGroupOwnerId": "AWS account number of the owner of the EC2 security group specified in the `EC2SecurityGroupName` parameter. The AWS access key ID isn't an acceptable value. For VPC DB security groups, `EC2SecurityGroupId` must be provided. Otherwise, `EC2SecurityGroupOwnerId` and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided."
       }
     },
     "AWS::RDS::DBSubnetGroup": {
@@ -32365,9 +32367,9 @@
       },
       "description": "The `AWS::RDS::DBSubnetGroup` resource creates a database subnet group. Subnet groups must contain at least two subnets in two different Availability Zones in the same region.\n\nFor more information, see [Working with DB subnet groups](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_VPC.WorkingWithRDSInstanceinaVPC.html#USER_VPC.Subnets) in the *Amazon RDS User Guide* .",
       "properties": {
-        "DBSubnetGroupDescription": "The description for the DB Subnet Group.",
+        "DBSubnetGroupDescription": "The description for the DB subnet group.",
         "DBSubnetGroupName": "The name for the DB subnet group. This value is stored as a lowercase string.\n\nConstraints: Must contain no more than 255 lowercase alphanumeric characters or hyphens. Must not be \"Default\".\n\nExample: `mysubnetgroup`",
-        "SubnetIds": "The EC2 Subnet IDs for the DB Subnet Group.",
+        "SubnetIds": "The EC2 Subnet IDs for the DB subnet group.",
         "Tags": "Tags to assign to the DB subnet group."
       }
     },
@@ -32377,8 +32379,8 @@
       },
       "description": "The `AWS::RDS::EventSubscription` resource allows you to receive notifications for Amazon Relational Database Service events through the Amazon Simple Notification Service (Amazon SNS). For more information, see [Using Amazon RDS Event Notification](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_Events.html) in the *Amazon RDS User Guide* .",
       "properties": {
-        "Enabled": "A Boolean value; set to *true* to activate the subscription, set to *false* to create the subscription but not active it.",
-        "EventCategories": "A list of event categories for a SourceType that you want to subscribe to. You can see a list of the categories for a given SourceType in the [Events](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_Events.html) topic in the Amazon RDS User Guide or by using the *DescribeEventCategories* action.",
+        "Enabled": "A value that indicates whether to activate the subscription. If the event notification subscription isn't activated, the subscription is created but not active.",
+        "EventCategories": "A list of event categories for a particular source type ( `SourceType` ) that you want to subscribe to. You can see a list of the categories for a given source type in the \"Amazon RDS event categories and event messages\" section of the [*Amazon RDS User Guide*](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_Events.Messages.html) or the [*Amazon Aurora User Guide*](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/USER_Events.Messages.html) . You can also see this list by using the `DescribeEventCategories` operation.",
         "SnsTopicArn": "The Amazon Resource Name (ARN) of the SNS topic created for event notification. The ARN is created by Amazon SNS when you create a topic and subscribe to it.",
         "SourceIds": "The list of identifiers of the event sources for which events are returned. If not specified, then all sources are included in the response. An identifier must begin with a letter and must contain only ASCII letters, digits, and hyphens. It can't end with a hyphen or contain two consecutive hyphens.\n\nConstraints:\n\n- If a `SourceIds` value is supplied, `SourceType` must also be provided.\n- If the source type is a DB instance, a `DBInstanceIdentifier` value must be supplied.\n- If the source type is a DB cluster, a `DBClusterIdentifier` value must be supplied.\n- If the source type is a DB parameter group, a `DBParameterGroupName` value must be supplied.\n- If the source type is a DB security group, a `DBSecurityGroupName` value must be supplied.\n- If the source type is a DB snapshot, a `DBSnapshotIdentifier` value must be supplied.\n- If the source type is a DB cluster snapshot, a `DBClusterSnapshotIdentifier` value must be supplied.",
         "SourceType": "The type of source that is generating the events. For example, if you want to be notified of events generated by a DB instance, set this parameter to `db-instance` . If this value isn't specified, all events are returned.\n\nValid values: `db-instance` | `db-cluster` | `db-parameter-group` | `db-security-group` | `db-snapshot` | `db-cluster-snapshot`"
@@ -34072,24 +34074,24 @@
     },
     "AWS::S3::Bucket.Rule": {
       "attributes": {},
-      "description": "Specifies lifecycle rules for an Amazon S3 bucket. For more information, see [Put Bucket Lifecycle Configuration](https://docs.aws.amazon.com/AmazonS3/latest/API/RESTBucketPUTlifecycle.html) in the *Amazon S3 API Reference* .",
+      "description": "Specifies lifecycle rules for an Amazon S3 bucket. For more information, see [Put Bucket Lifecycle Configuration](https://docs.aws.amazon.com/AmazonS3/latest/API/RESTBucketPUTlifecycle.html) in the *Amazon S3 API Reference* .\n\nYou must specify at least one of the following properties: `AbortIncompleteMultipartUpload` , `ExpirationDate` , `ExpirationInDays` , `NoncurrentVersionExpirationInDays` , `NoncurrentVersionTransition` , `NoncurrentVersionTransitions` , `Transition` , or `Transitions` .",
       "properties": {
-        "AbortIncompleteMultipartUpload": "Specifies a lifecycle rule that stops incomplete multipart uploads to an Amazon S3 bucket.\n\nYou must specify at least one of the following properties: `AbortIncompleteMultipartUpload` , `ExpirationDate` , `ExpirationInDays` , `NoncurrentVersionExpirationInDays` , `NoncurrentVersionTransition` , `NoncurrentVersionTransitions` , `Transition` , or `Transitions` .",
-        "ExpirationDate": "Indicates when objects are deleted from Amazon S3 and Amazon S3 Glacier. The date value must be in ISO 8601 format. The time is always midnight UTC. If you specify an expiration and transition time, you must use the same time unit for both properties (either in days or by date). The expiration time must also be later than the transition time.\n\nYou must specify at least one of the following properties: `AbortIncompleteMultipartUpload` , `ExpirationDate` , `ExpirationInDays` , `NoncurrentVersionExpirationInDays` , `NoncurrentVersionTransition` , `NoncurrentVersionTransitions` , `Transition` , or `Transitions` .",
-        "ExpirationInDays": "Indicates the number of days after creation when objects are deleted from Amazon S3 and Amazon S3 Glacier. If you specify an expiration and transition time, you must use the same time unit for both properties (either in days or by date). The expiration time must also be later than the transition time.\n\nYou must specify at least one of the following properties: `AbortIncompleteMultipartUpload` , `ExpirationDate` , `ExpirationInDays` , `NoncurrentVersionExpirationInDays` , `NoncurrentVersionTransition` , `NoncurrentVersionTransitions` , `Transition` , or `Transitions` .",
+        "AbortIncompleteMultipartUpload": "Specifies a lifecycle rule that stops incomplete multipart uploads to an Amazon S3 bucket.",
+        "ExpirationDate": "Indicates when objects are deleted from Amazon S3 and Amazon S3 Glacier. The date value must be in ISO 8601 format. The time is always midnight UTC. If you specify an expiration and transition time, you must use the same time unit for both properties (either in days or by date). The expiration time must also be later than the transition time.",
+        "ExpirationInDays": "Indicates the number of days after creation when objects are deleted from Amazon S3 and Amazon S3 Glacier. If you specify an expiration and transition time, you must use the same time unit for both properties (either in days or by date). The expiration time must also be later than the transition time.",
         "ExpiredObjectDeleteMarker": "Indicates whether Amazon S3 will remove a delete marker without any noncurrent versions. If set to true, the delete marker will be removed if there are no noncurrent versions. This cannot be specified with `ExpirationInDays` , `ExpirationDate` , or `TagFilters` .",
         "Id": "Unique identifier for the rule. The value can't be longer than 255 characters.",
         "NoncurrentVersionExpiration": "Specifies when noncurrent object versions expire. Upon expiration, Amazon S3 permanently deletes the noncurrent object versions. You set this lifecycle configuration action on a bucket that has versioning enabled (or suspended) to request that Amazon S3 delete noncurrent object versions at a specific period in the object's lifetime.",
-        "NoncurrentVersionExpirationInDays": "(Deprecated.) For buckets with versioning enabled (or suspended), specifies the time, in days, between when a new version of the object is uploaded to the bucket and when old versions of the object expire. When object versions expire, Amazon S3 permanently deletes them. If you specify a transition and expiration time, the expiration time must be later than the transition time.\n\nYou must specify at least one of the following properties: `AbortIncompleteMultipartUpload` , `ExpirationDate` , `ExpirationInDays` , `NoncurrentVersionExpirationInDays` , `NoncurrentVersionTransition` , `NoncurrentVersionTransitions` , `Transition` , or `Transitions` .",
-        "NoncurrentVersionTransition": "(Deprecated.) For buckets with versioning enabled (or suspended), specifies when non-current objects transition to a specified storage class. If you specify a transition and expiration time, the expiration time must be later than the transition time. If you specify this property, don't specify the `NoncurrentVersionTransitions` property.\n\nYou must specify at least one of the following properties: `AbortIncompleteMultipartUpload` , `ExpirationDate` , `ExpirationInDays` , `NoncurrentVersionExpirationInDays` , `NoncurrentVersionTransition` , `NoncurrentVersionTransitions` , `Transition` , or `Transitions` .",
-        "NoncurrentVersionTransitions": "For buckets with versioning enabled (or suspended), one or more transition rules that specify when non-current objects transition to a specified storage class. If you specify a transition and expiration time, the expiration time must be later than the transition time. If you specify this property, don't specify the `NoncurrentVersionTransition` property.\n\nYou must specify at least one of the following properties: `AbortIncompleteMultipartUpload` , `ExpirationDate` , `ExpirationInDays` , `NoncurrentVersionExpirationInDays` , `NoncurrentVersionTransition` , `NoncurrentVersionTransitions` , `Transition` , or `Transitions` .",
+        "NoncurrentVersionExpirationInDays": "(Deprecated.) For buckets with versioning enabled (or suspended), specifies the time, in days, between when a new version of the object is uploaded to the bucket and when old versions of the object expire. When object versions expire, Amazon S3 permanently deletes them. If you specify a transition and expiration time, the expiration time must be later than the transition time.",
+        "NoncurrentVersionTransition": "(Deprecated.) For buckets with versioning enabled (or suspended), specifies when non-current objects transition to a specified storage class. If you specify a transition and expiration time, the expiration time must be later than the transition time. If you specify this property, don't specify the `NoncurrentVersionTransitions` property.",
+        "NoncurrentVersionTransitions": "For buckets with versioning enabled (or suspended), one or more transition rules that specify when non-current objects transition to a specified storage class. If you specify a transition and expiration time, the expiration time must be later than the transition time. If you specify this property, don't specify the `NoncurrentVersionTransition` property.",
         "ObjectSizeGreaterThan": "Specifies the minimum object size in bytes for this rule to apply to. For more information about size based rules, see [Lifecycle configuration using size-based rules](https://docs.aws.amazon.com/AmazonS3/latest/userguide/lifecycle-configuration-examples.html#lc-size-rules) in the *Amazon S3 User Guide* .",
         "ObjectSizeLessThan": "Specifies the maximum object size in bytes for this rule to apply to. For more information about sized based rules, see [Lifecycle configuration using size-based rules](https://docs.aws.amazon.com/AmazonS3/latest/userguide/lifecycle-configuration-examples.html#lc-size-rules) in the *Amazon S3 User Guide* .",
         "Prefix": "Object key prefix that identifies one or more objects to which this rule applies.\n\n> Replacement must be made for object keys containing special characters (such as carriage returns) when using XML requests. For more information, see [XML related object key constraints](https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-keys.html#object-key-xml-related-constraints) .",
         "Status": "If `Enabled` , the rule is currently being applied. If `Disabled` , the rule is not currently being applied.",
         "TagFilters": "Tags to use to identify a subset of objects to which the lifecycle rule applies.",
-        "Transition": "(Deprecated.) Specifies when an object transitions to a specified storage class. If you specify an expiration and transition time, you must use the same time unit for both properties (either in days or by date). The expiration time must also be later than the transition time. If you specify this property, don't specify the `Transitions` property.\n\nYou must specify at least one of the following properties: `AbortIncompleteMultipartUpload` , `ExpirationDate` , `ExpirationInDays` , `NoncurrentVersionExpirationInDays` , `NoncurrentVersionTransition` , `NoncurrentVersionTransitions` , `Transition` , or `Transitions` .",
-        "Transitions": "One or more transition rules that specify when an object transitions to a specified storage class. If you specify an expiration and transition time, you must use the same time unit for both properties (either in days or by date). The expiration time must also be later than the transition time. If you specify this property, don't specify the `Transition` property.\n\nYou must specify at least one of the following properties: `AbortIncompleteMultipartUpload` , `ExpirationDate` , `ExpirationInDays` , `NoncurrentVersionExpirationInDays` , `NoncurrentVersionTransition` , `NoncurrentVersionTransitions` , `Transition` , or `Transitions` ."
+        "Transition": "(Deprecated.) Specifies when an object transitions to a specified storage class. If you specify an expiration and transition time, you must use the same time unit for both properties (either in days or by date). The expiration time must also be later than the transition time. If you specify this property, don't specify the `Transitions` property.",
+        "Transitions": "One or more transition rules that specify when an object transitions to a specified storage class. If you specify an expiration and transition time, you must use the same time unit for both properties (either in days or by date). The expiration time must also be later than the transition time. If you specify this property, don't specify the `Transition` property."
       }
     },
     "AWS::S3::Bucket.S3KeyFilter": {
@@ -34804,7 +34806,7 @@
     },
     "AWS::SSM::Association": {
       "attributes": {
-        "AssociationId": ""
+        "AssociationId": "The association ID."
       },
       "description": "The `AWS::SSM::Association` resource creates a State Manager association for your managed instances. A State Manager association defines the state that you want to maintain on your instances. For example, an association can specify that anti-virus software must be installed and running on your instances, or that certain ports must be closed. For static targets, the association specifies a schedule for when the configuration is reapplied. For dynamic targets, such as an AWS Resource Groups or an AWS Auto Scaling Group, State Manager applies the configuration when new instances are added to the group. The association also specifies actions to take when applying the configuration. For example, an association for anti-virus software might run once a day. If the software is not installed, then State Manager installs it. If the software is installed, but the service is not running, then the association might instruct State Manager to start the service.",
       "properties": {
@@ -35113,7 +35115,7 @@
     "AWS::SSM::ResourceDataSync": {
       "attributes": {
         "Ref": "`Ref` returns the name of the resource data sync, such as `TestResourceDataSync` .",
-        "SyncName": ""
+        "SyncName": "The name of the resource data sync."
       },
       "description": "The `AWS::SSM::ResourceDataSync` resource creates, updates, or deletes a resource data sync for AWS Systems Manager . A resource data sync helps you view data from multiple sources in a single location. Systems Manager offers two types of resource data sync: `SyncToDestination` and `SyncFromSource` .\n\nYou can configure Systems Manager Inventory to use the `SyncToDestination` type to synchronize Inventory data from multiple AWS Regions to a single Amazon S3 bucket.\n\nYou can configure Systems Manager Explorer to use the `SyncFromSource` type to synchronize operational work items (OpsItems) and operational data (OpsData) from multiple AWS Regions . This type can synchronize OpsItems and OpsData from multiple AWS accounts and Regions or from an `EntireOrganization` by using AWS Organizations .\n\nA resource data sync is an asynchronous operation that returns immediately. After a successful initial sync is completed, the system continuously syncs data.\n\nBy default, data is not encrypted in Amazon S3 . We strongly recommend that you enable encryption in Amazon S3 to ensure secure data storage. We also recommend that you secure access to the Amazon S3 bucket by creating a restrictive bucket policy.\n\nFor more information, see [Configuring Inventory Collection](https://docs.aws.amazon.com/systems-manager/latest/userguide/sysman-inventory-configuring.html#sysman-inventory-datasync) and [Setting Up Systems Manager Explorer to Display Data from Multiple Accounts and Regions](https://docs.aws.amazon.com/systems-manager/latest/userguide/Explorer-resource-data-sync.html) in the *AWS Systems Manager User Guide* .\n\nImportant: The following *Syntax* section shows all fields that are supported for a resource data sync. The *Examples* section below shows the recommended way to specify configurations for each sync type. Please see the *Examples* section when you create your resource data sync.",
       "properties": {
@@ -36798,8 +36800,8 @@
         "MasterSecretKmsKeyArn": "The ARN of the KMS key that Secrets Manager uses to encrypt the elevated secret if you use the [alternating users strategy](https://docs.aws.amazon.com/secretsmanager/latest/userguide/rotating-secrets_strategies.html#rotating-secrets-two-users) . If you don't specify this value and you use the alternating users strategy, then Secrets Manager uses the key `aws/secretsmanager` . If `aws/secretsmanager` doesn't yet exist, then Secrets Manager creates it for you automatically the first time it encrypts the secret value.",
         "RotationLambdaName": "The name of the Lambda rotation function.",
         "RotationType": "The type of rotation template to use. For more information, see [Secrets Manager rotation function templates](https://docs.aws.amazon.com/secretsmanager/latest/userguide/reference_available-rotation-templates.html) .\n\nYou can specify one of the following `RotationTypes` :\n\n- MySQLSingleUser\n- MySQLMultiUser\n- PostgreSQLSingleUser\n- PostgreSQLMultiUser\n- OracleSingleUser\n- OracleMultiUser\n- MariaDBSingleUser\n- MariaDBMultiUser\n- SQLServerSingleUser\n- SQLServerMultiUser\n- RedshiftSingleUser\n- RedshiftMultiUser\n- MongoDBSingleUser\n- MongoDBMultiUser",
-        "SuperuserSecretArn": "",
-        "SuperuserSecretKmsKeyArn": "",
+        "SuperuserSecretArn": "The ARN of the secret that contains elevated credentials. The Lambda rotation function uses this secret for the [Alternating users rotation strategy](https://docs.aws.amazon.com/secretsmanager/latest/userguide/rotating-secrets_strategies.html#rotating-secrets-two-users) .",
+        "SuperuserSecretKmsKeyArn": "The ARN of the KMS key that Secrets Manager uses to encrypt the elevated secret if you use the [alternating users strategy](https://docs.aws.amazon.com/secretsmanager/latest/userguide/rotating-secrets_strategies.html#rotating-secrets-two-users) . If you don't specify this value and you use the alternating users strategy, then Secrets Manager uses the key `aws/secretsmanager` . If `aws/secretsmanager` doesn't yet exist, then Secrets Manager creates it for you automatically the first time it encrypts the secret value.",
         "VpcSecurityGroupIds": "A comma-separated list of security group IDs applied to the target database.\n\nThe templates applies the same security groups as on the Lambda rotation function that is created as part of this stack.",
         "VpcSubnetIds": "A comma separated list of VPC subnet IDs of the target database network. The Lambda rotation function is in the same subnet group."
       }
@@ -36857,7 +36859,7 @@
       "description": "The `AWS::SecretsManager::SecretTargetAttachment` resource completes the final link between a Secrets Manager secret and the associated database. This is required because each has a dependency on the other. No matter which one you create first, the other doesn't exist yet. To resolve this, you must create the resources in the following order:\n\n- Define the secret without referencing the service or database. You can't reference the service or database because it doesn't exist yet. The secret must contain a user name and password.\n- Next, define the service or database. Include the reference to the secret to use stored credentials to define the database admin user and password.\n- Finally, define a `SecretTargetAttachment` resource type to finish configuring the secret with the required database engine type and the connection details of the service or database. The rotation function requires the details, if you attach one later by defining a [AWS::SecretsManager::RotationSchedule](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-secretsmanager-rotationschedule.html) resource type.",
       "properties": {
         "SecretId": "The ARN or name of the secret. To reference a secret also created in this template, use the see [Ref](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-ref.html) function with the secret's logical ID.",
-        "TargetId": "The ARN of the database or cluster.",
+        "TargetId": "The ID of the database or cluster.",
         "TargetType": "A string that defines the type of service or database associated with the secret. This value instructs Secrets Manager how to update the secret with the details of the service or database. This value must be one of the following:\n\n- AWS::RDS::DBInstance\n- AWS::RDS::DBCluster\n- AWS::Redshift::Cluster\n- AWS::DocDB::DBInstance\n- AWS::DocDB::DBCluster"
       }
     },

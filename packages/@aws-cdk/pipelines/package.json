@@ -157,5 +157,6 @@
   "homepage": "https://github.com/aws/aws-cdk",
   "publishConfig": {
     "tag": "latest"
-  }
+  },
+  "preferredCdkCliVersion": "1"
 }

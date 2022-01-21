@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import { App, Stack } from '@aws-cdk/core';
 import { OpenSearchAccessPolicy } from '../lib/opensearch-access-policy';
@@ -28,7 +28,7 @@ test('minimal example renders correctly', () => {
     })],
   });
 
-  expect(stack).toHaveResource('Custom::OpenSearchAccessPolicy', {
+  Template.fromStack(stack).hasResourceProperties('Custom::OpenSearchAccessPolicy', {
     ServiceToken: {
       'Fn::GetAtt': [
         'AWS679f53fac002430cb0da5b7982bd22872D164C4C',
@@ -56,7 +56,7 @@ test('minimal example renders correctly', () => {
       physicalResourceId: { id: 'TestDomainAccessPolicy' },
     }),
   });
-  expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
     PolicyDocument: {
       Statement: [{
         Action: 'es:UpdateDomainConfig',

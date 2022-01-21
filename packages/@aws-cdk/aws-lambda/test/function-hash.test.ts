@@ -1,4 +1,3 @@
-import '@aws-cdk/assert-internal/jest';
 import * as path from 'path';
 import { resourceSpecification } from '@aws-cdk/cfnspec';
 import { App, CfnOutput, CfnResource, Stack } from '@aws-cdk/core';

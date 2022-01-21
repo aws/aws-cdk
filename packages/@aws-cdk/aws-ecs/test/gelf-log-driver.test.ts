@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Match, Template } from '@aws-cdk/assertions';
 import * as cdk from '@aws-cdk/core';
 import * as ecs from '../lib';
 
@@ -25,20 +25,18 @@ describe('gelf log driver', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
-        {
+        Match.objectLike({
           LogConfiguration: {
             LogDriver: 'gelf',
             Options: {
               'gelf-address': 'my-gelf-address',
             },
           },
-        },
+        }),
       ],
     });
-
-
   });
 
   test('create a gelf log driver using gelf with minimum options', () => {
@@ -52,19 +50,17 @@ describe('gelf log driver', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
-        {
+        Match.objectLike({
           LogConfiguration: {
             LogDriver: 'gelf',
             Options: {
               'gelf-address': 'my-gelf-address',
             },
           },
-        },
+        }),
       ],
     });
-
-
   });
 });

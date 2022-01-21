@@ -125,3 +125,17 @@ const replica1 = new neptune.DatabaseInstance(this, 'Instance', {
   instanceType: neptune.InstanceType.R5_LARGE
 });
 ```
+
+## Automatic minor version upgrades
+
+By setting `autoMinorVersionUpgrade` to true, Neptune will automatically update 
+the engine of the entire cluster to the latest minor version after a stabilization 
+window of 2 to 3 weeks. 
+
+```ts
+new neptune.DatabaseCluster(stack, 'Cluster', {
+      vpc,
+      instanceType: InstanceType.R5_LARGE,
+      autoMinorVersionUpgrade: true
+    });
+```

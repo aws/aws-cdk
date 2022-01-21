@@ -21,7 +21,9 @@ async function main() {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const version = require('../package.json').version;
+  const cfnSpecPkgJson = require('../package.json');
+  const version = cfnSpecPkgJson.version;
+  const jestTypesVersion = cfnSpecPkgJson.devDependencies['@types/jest'];
 
   // iterate over all cloudformation namespaces
   for (const namespace of cfnspec.namespaces()) {
@@ -172,7 +174,7 @@ async function main() {
         '@aws-cdk/cdk-build-tools': version,
         '@aws-cdk/cfn2ts': version,
         '@aws-cdk/pkglint': version,
-        '@types/jest': '^26.0.22',
+        '@types/jest': jestTypesVersion,
       },
       dependencies: {
         '@aws-cdk/core': version,

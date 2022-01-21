@@ -1,5 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
-import { SynthUtils } from '@aws-cdk/assert-internal';
+import { Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import { HostedZone, PublicHostedZone } from '@aws-cdk/aws-route53';
 import { App, Stack, Token, Tags } from '@aws-cdk/core';
@@ -17,7 +16,7 @@ test('creates CloudFormation Custom Resource', () => {
     hostedZone: exampleDotComZone,
   });
 
-  expect(stack).toHaveResource('AWS::CloudFormation::CustomResource', {
+  Template.fromStack(stack).hasResourceProperties('AWS::CloudFormation::CustomResource', {
     DomainName: 'test.example.com',
     ServiceToken: {
       'Fn::GetAtt': [
@@ -29,12 +28,12 @@ test('creates CloudFormation Custom Resource', () => {
       Ref: 'ExampleDotCom4D1B83AA',
     },
   });
-  expect(stack).toHaveResource('AWS::Lambda::Function', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
     Handler: 'index.certificateRequestHandler',
     Runtime: 'nodejs12.x',
     Timeout: 900,
   });
-  expect(stack).toHaveResource('AWS::IAM::Policy', {
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
     PolicyName: 'CertificateCertificateRequestorFunctionServiceRoleDefaultPolicy3C8845BC',
     Roles: [
       {
@@ -92,7 +91,7 @@ test('adds validation error on domain mismatch', () => {
   });
 
   expect(() => {
-    SynthUtils.synthesize(stack);
+    Template.fromStack(stack);
   }).toThrow(/DNS zone hello.com is not authoritative for certificate domain name example.com/);
 });
 
@@ -108,7 +107,7 @@ test('does not try to validate unresolved tokens', () => {
     hostedZone: helloDotComZone,
   });
 
-  SynthUtils.synthesize(stack); // does not throw
+  Template.fromStack(stack); // does not throw
 });
 
 test('test root certificate', () => {
@@ -123,7 +122,7 @@ test('test root certificate', () => {
     hostedZone: exampleDotComZone,
   });
 
-  expect(stack).toHaveResource('AWS::CloudFormation::CustomResource', {
+  Template.fromStack(stack).hasResourceProperties('AWS::CloudFormation::CustomResource', {
     ServiceToken: {
       'Fn::GetAtt': [
         'CertCertificateRequestorFunction98FDF273',
@@ -150,7 +149,7 @@ test('test tags are passed to customresource', () => {
     hostedZone: exampleDotComZone,
   });
 
-  expect(stack).toHaveResource('AWS::CloudFormation::CustomResource', {
+  Template.fromStack(stack).hasResourceProperties('AWS::CloudFormation::CustomResource', {
     ServiceToken: {
       'Fn::GetAtt': [
         'CertCertificateRequestorFunction98FDF273',
@@ -185,7 +184,7 @@ test('works with imported zone', () => {
   });
 
   // THEN
-  expect(stack).toHaveResource('AWS::CloudFormation::CustomResource', {
+  Template.fromStack(stack).hasResourceProperties('AWS::CloudFormation::CustomResource', {
     ServiceToken: {
       'Fn::GetAtt': [
         'CertCertificateRequestorFunction98FDF273',
@@ -217,7 +216,7 @@ test('works with imported role', () => {
   });
 
   // THEN
-  expect(stack).toHaveResource('AWS::Lambda::Function', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
     Role: 'arn:aws:iam::account-id:role/role-name',
   });
 });

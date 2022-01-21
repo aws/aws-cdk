@@ -1,5 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
-import { ABSENT } from '@aws-cdk/assert-internal';
+import { Match, Template } from '@aws-cdk/assertions';
 import * as acm from '@aws-cdk/aws-certificatemanager';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
@@ -39,7 +38,7 @@ describe('virtual gateway', () => {
       });
 
       // THEN
-      expect(stack).toHaveResourceLike('AWS::AppMesh::VirtualGateway', {
+      Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::VirtualGateway', {
         Spec: {
           Listeners: [
             {
@@ -53,7 +52,7 @@ describe('virtual gateway', () => {
         VirtualGatewayName: 'testGateway',
       });
 
-      expect(stack).toHaveResourceLike('AWS::AppMesh::VirtualGateway', {
+      Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::VirtualGateway', {
         Spec: {
           Listeners: [
             {
@@ -74,10 +73,10 @@ describe('virtual gateway', () => {
           ],
         },
         VirtualGatewayName: 'httpGateway',
-        MeshOwner: ABSENT,
+        MeshOwner: Match.absent(),
       });
 
-      expect(stack).toHaveResourceLike('AWS::AppMesh::VirtualGateway', {
+      Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::VirtualGateway', {
         Spec: {
           Listeners: [
             {
@@ -99,7 +98,6 @@ describe('virtual gateway', () => {
         },
         VirtualGatewayName: 'http2Gateway',
       });
-
     });
 
     test('should have expected features', () => {
@@ -122,7 +120,7 @@ describe('virtual gateway', () => {
       });
 
       // THEN
-      expect(stack).toHaveResourceLike('AWS::AppMesh::VirtualGateway', {
+      Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::VirtualGateway', {
         Spec: {
           Listeners: [
             {
@@ -150,7 +148,6 @@ describe('virtual gateway', () => {
         },
         VirtualGatewayName: 'test-gateway',
       });
-
     });
 
     test('with an http listener with a TLS certificate from ACM', () => {
@@ -179,10 +176,10 @@ describe('virtual gateway', () => {
       });
 
       // THEN
-      expect(stack).toHaveResourceLike('AWS::AppMesh::VirtualGateway', {
+      Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::VirtualGateway', {
         Spec: {
           Listeners: [
-            {
+            Match.objectLike({
               TLS: {
                 Mode: appmesh.TlsMode.STRICT,
                 Certificate: {
@@ -193,12 +190,10 @@ describe('virtual gateway', () => {
                   },
                 },
               },
-            },
+            }),
           ],
         },
       });
-
-
     });
 
     test('with an grpc listener with a TLS certificate from file', () => {
@@ -223,10 +218,10 @@ describe('virtual gateway', () => {
       });
 
       // THEN
-      expect(stack).toHaveResourceLike('AWS::AppMesh::VirtualGateway', {
+      Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::VirtualGateway', {
         Spec: {
           Listeners: [
-            {
+            Match.objectLike({
               TLS: {
                 Mode: appmesh.TlsMode.STRICT,
                 Certificate: {
@@ -236,12 +231,10 @@ describe('virtual gateway', () => {
                   },
                 },
               },
-            },
+            }),
           ],
         },
       });
-
-
     });
 
     test('with an http2 listener with a TLS certificate from SDS', () => {
@@ -265,10 +258,10 @@ describe('virtual gateway', () => {
       });
 
       // THEN
-      expect(stack).toHaveResourceLike('AWS::AppMesh::VirtualGateway', {
+      Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::VirtualGateway', {
         Spec: {
           Listeners: [
-            {
+            Match.objectLike({
               TLS: {
                 Mode: appmesh.TlsMode.STRICT,
                 Certificate: {
@@ -277,12 +270,10 @@ describe('virtual gateway', () => {
                   },
                 },
               },
-            },
+            }),
           ],
         },
       });
-
-
     });
 
     describe('with an grpc listener with a TLS validation from file', () => {
@@ -310,10 +301,10 @@ describe('virtual gateway', () => {
         });
 
         // THEN
-        expect(stack).toHaveResourceLike('AWS::AppMesh::VirtualGateway', {
+        Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::VirtualGateway', {
           Spec: {
             Listeners: [
-              {
+              Match.objectLike({
                 TLS: {
                   Mode: appmesh.TlsMode.STRICT,
                   Certificate: {
@@ -330,12 +321,10 @@ describe('virtual gateway', () => {
                     },
                   },
                 },
-              },
+              }),
             ],
           },
         });
-
-
       });
     });
 
@@ -365,10 +354,10 @@ describe('virtual gateway', () => {
         });
 
         // THEN
-        expect(stack).toHaveResourceLike('AWS::AppMesh::VirtualGateway', {
+        Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::VirtualGateway', {
           Spec: {
             Listeners: [
-              {
+              Match.objectLike({
                 TLS: {
                   Mode: appmesh.TlsMode.STRICT,
                   Certificate: {
@@ -384,12 +373,10 @@ describe('virtual gateway', () => {
                     },
                   },
                 },
-              },
+              }),
             ],
           },
         });
-
-
       });
     });
 
@@ -415,10 +402,10 @@ describe('virtual gateway', () => {
       });
 
       // THEN
-      expect(stack).toHaveResourceLike('AWS::AppMesh::VirtualGateway', {
+      Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::VirtualGateway', {
         Spec: {
           Listeners: [
-            {
+            Match.objectLike({
               TLS: {
                 Mode: appmesh.TlsMode.PERMISSIVE,
                 Certificate: {
@@ -428,12 +415,10 @@ describe('virtual gateway', () => {
                   },
                 },
               },
-            },
+            }),
           ],
         },
       });
-
-
     });
 
     describe('with shared service mesh', () => {
@@ -455,11 +440,9 @@ describe('virtual gateway', () => {
         });
 
         // THEN
-        expect(stack).toHaveResourceLike('AWS::AppMesh::VirtualGateway', {
+        Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::VirtualGateway', {
           MeshOwner: meshEnv.account,
         });
-
-
       });
     });
   });
@@ -491,7 +474,7 @@ describe('virtual gateway', () => {
       });
 
       // THEN
-      expect(stack).toHaveResourceLike('AWS::AppMesh::GatewayRoute', {
+      Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::GatewayRoute', {
         GatewayRouteName: 'test-gateway-route',
         Spec: {
           HttpRoute: {
@@ -510,7 +493,6 @@ describe('virtual gateway', () => {
           },
         },
       });
-
     });
   });
 
@@ -542,13 +524,12 @@ describe('virtual gateway', () => {
         }),
       });
       // THEN
-      expect(stack).toHaveResourceLike('AWS::AppMesh::GatewayRoute', {
+      Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::GatewayRoute', {
         GatewayRouteName: 'test-gateway-route',
       });
-      expect(stack).toHaveResourceLike('AWS::AppMesh::GatewayRoute', {
+      Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::GatewayRoute', {
         GatewayRouteName: 'test-gateway-route-2',
       });
-
     });
   });
 
@@ -575,7 +556,7 @@ describe('virtual gateway', () => {
       });
 
       // THEN
-      expect(stack).toHaveResourceLike('AWS::AppMesh::VirtualGateway', {
+      Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::VirtualGateway', {
         VirtualGatewayName: 'virtual-gateway',
         Spec: {
           BackendDefaults: {
@@ -593,8 +574,6 @@ describe('virtual gateway', () => {
           },
         },
       });
-
-
     });
 
     describe("with client's TLS certificate from SDS", () => {
@@ -621,7 +600,7 @@ describe('virtual gateway', () => {
         });
 
         // THEN
-        expect(stack).toHaveResourceLike('AWS::AppMesh::VirtualGateway', {
+        Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::VirtualGateway', {
           VirtualGatewayName: 'virtual-gateway',
           Spec: {
             BackendDefaults: {
@@ -649,8 +628,6 @@ describe('virtual gateway', () => {
             },
           },
         });
-
-
       });
     });
   });
@@ -679,23 +656,21 @@ describe('virtual gateway', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppMesh::VirtualGateway', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::VirtualGateway', {
       VirtualGatewayName: 'virtual-gateway',
       Spec: {
         Listeners: [
-          {
+          Match.objectLike({
             ConnectionPool: {
               HTTP: {
                 MaxConnections: 100,
                 MaxPendingRequests: 10,
               },
             },
-          },
+          }),
         ],
       },
     });
-
-
   });
 
   test('Can add an grpc connection pool to listener', () => {
@@ -721,22 +696,20 @@ describe('virtual gateway', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppMesh::VirtualGateway', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::VirtualGateway', {
       VirtualGatewayName: 'virtual-gateway',
       Spec: {
         Listeners: [
-          {
+          Match.objectLike({
             ConnectionPool: {
               GRPC: {
                 MaxRequests: 10,
               },
             },
-          },
+          }),
         ],
       },
     });
-
-
   });
 
   test('Can add an http2 connection pool to listener', () => {
@@ -762,22 +735,20 @@ describe('virtual gateway', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppMesh::VirtualGateway', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::VirtualGateway', {
       VirtualGatewayName: 'virtual-gateway',
       Spec: {
         Listeners: [
-          {
+          Match.objectLike({
             ConnectionPool: {
               HTTP2: {
                 MaxRequests: 10,
               },
             },
-          },
+          }),
         ],
       },
     });
-
-
   });
 
   test('Can import VirtualGateways using an ARN', () => {
@@ -796,7 +767,6 @@ describe('virtual gateway', () => {
     // THEN
     expect(virtualGateway.mesh.meshName).toEqual(meshName);
     expect(virtualGateway.virtualGatewayName).toEqual(virtualGatewayName);
-
   });
 
   test('Can import VirtualGateways using attributes', () => {
@@ -816,8 +786,6 @@ describe('virtual gateway', () => {
     // THEN
     expect(virtualGateway.mesh.meshName).toEqual(meshName);
     expect(virtualGateway.virtualGatewayName).toEqual(virtualGatewayName);
-
-
   });
 
   test('Can grant an identity StreamAggregatedResources for a given VirtualGateway', () => {
@@ -835,7 +803,7 @@ describe('virtual gateway', () => {
     gateway.grantStreamAggregatedResources(user);
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -848,7 +816,5 @@ describe('virtual gateway', () => {
         ],
       },
     });
-
-
   });
 });
