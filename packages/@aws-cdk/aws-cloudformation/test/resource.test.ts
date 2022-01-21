@@ -1,5 +1,4 @@
-import { ResourcePart } from '@aws-cdk/assert-internal';
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as sns from '@aws-cdk/aws-sns';
 import { describeDeprecated, testDeprecated } from '@aws-cdk/cdk-build-tools';
@@ -23,7 +22,7 @@ describeDeprecated('custom resources honor removalPolicy', () => {
     new TestCustomResource(stack, 'Custom');
 
     // THEN
-    expect(stack).toHaveResource('AWS::CloudFormation::CustomResource', {}, ResourcePart.CompleteDefinition);
+    Template.fromStack(stack).hasResource('AWS::CloudFormation::CustomResource', {});
     expect(app.synth().tryGetArtifact(stack.stackName)!.findMetadataByType('aws:cdk:protected').length).toEqual(0);
   });
 
@@ -36,7 +35,7 @@ describeDeprecated('custom resources honor removalPolicy', () => {
     new TestCustomResource(stack, 'Custom', { removalPolicy: cdk.RemovalPolicy.DESTROY });
 
     // THEN
-    expect(stack).toHaveResource('AWS::CloudFormation::CustomResource', {}, ResourcePart.CompleteDefinition);
+    Template.fromStack(stack).hasResource('AWS::CloudFormation::CustomResource', {});
     expect(app.synth().tryGetArtifact(stack.stackName)!.findMetadataByType('aws:cdk:protected').length).toEqual(0);
   });
 
@@ -49,10 +48,10 @@ describeDeprecated('custom resources honor removalPolicy', () => {
     new TestCustomResource(stack, 'Custom', { removalPolicy: cdk.RemovalPolicy.RETAIN });
 
     // THEN
-    expect(stack).toHaveResource('AWS::CloudFormation::CustomResource', {
+    Template.fromStack(stack).hasResource('AWS::CloudFormation::CustomResource', {
       DeletionPolicy: 'Retain',
       UpdateReplacePolicy: 'Retain',
-    }, ResourcePart.CompleteDefinition);
+    });
   });
 });
 
@@ -66,7 +65,7 @@ testDeprecated('custom resource is added twice, lambda is added once', () => {
   new TestCustomResource(stack, 'Custom2');
 
   // THEN
-  expect(stack).toMatchTemplate({
+  Template.fromStack(stack).templateMatches({
     'Resources': {
       'SingletonLambdaTestCustomResourceProviderServiceRole81FEAB5C': {
         'Type': 'AWS::IAM::Role',
@@ -149,7 +148,7 @@ testDeprecated('custom resources can specify a resource type that starts with Cu
     resourceType: 'Custom::MyCustomResourceType',
     provider: CustomResourceProvider.fromTopic(new sns.Topic(stack, 'Provider')),
   });
-  expect(stack).toHaveResource('Custom::MyCustomResourceType');
+  Template.fromStack(stack).hasResourceProperties('Custom::MyCustomResourceType', {});
 });
 
 describeDeprecated('fails if custom resource type is invalid', () => {
