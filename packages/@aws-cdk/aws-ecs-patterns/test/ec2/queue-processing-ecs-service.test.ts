@@ -33,7 +33,6 @@ test('test ECS queue worker service construct - with only required props', () =>
 
   // THEN - QueueWorker is of EC2 launch type, an SQS queue is created and all default properties are set.
   Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
-    DesiredCount: 1,
     LaunchType: 'EC2',
   });
 
@@ -142,7 +141,6 @@ test('test ECS queue worker service construct - with optional props for queues',
 
   // THEN - QueueWorker is of EC2 launch type, an SQS queue is created and all default properties are set.
   Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
-    DesiredCount: 1,
     LaunchType: 'EC2',
   });
 
@@ -237,7 +235,6 @@ testDeprecated('test ECS queue worker service construct - with optional props', 
 
   // THEN - QueueWorker is of EC2 launch type, an SQS queue is created and all optional properties are set.
   Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
-    DesiredCount: 2,
     DeploymentConfiguration: {
       MinimumHealthyPercent: 60,
       MaximumPercent: 150,

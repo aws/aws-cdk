@@ -814,7 +814,8 @@ describe('Template', () => {
       expectToThrow(
         () => inspect.hasParameter('*', { Type: 'CommaDelimitedList' }),
         [
-          /2 parameters/,
+          // Third parameter is automatically included as part of DefaultSynthesizer
+          /3 parameters/,
           /Expected CommaDelimitedList but received String/,
         ],
         done,
