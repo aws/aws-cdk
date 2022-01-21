@@ -2433,7 +2433,11 @@ describe('fargate service', () => {
                 'Fn::Join': [
                   '',
                   [
-                    'arn:aws:logs:',
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':logs:',
                     {
                       Ref: 'AWS::Region',
                     },
@@ -2462,7 +2466,11 @@ describe('fargate service', () => {
                 'Fn::Join': [
                   '',
                   [
-                    'arn:aws:s3:::',
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':s3:::',
                     {
                       Ref: 'ExecBucket29559356',
                     },
@@ -2566,7 +2574,11 @@ describe('fargate service', () => {
                 'Fn::Join': [
                   '',
                   [
-                    'arn:aws:logs:',
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':logs:',
                     {
                       Ref: 'AWS::Region',
                     },
@@ -2595,7 +2607,11 @@ describe('fargate service', () => {
                 'Fn::Join': [
                   '',
                   [
-                    'arn:aws:s3:::',
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':s3:::',
                     {
                       Ref: 'EcsExecBucket4F468651',
                     },
@@ -2665,7 +2681,11 @@ describe('fargate service', () => {
                   'Fn::Join': [
                     '',
                     [
-                      'arn:aws:iam::',
+                      'arn:',
+                      {
+                        Ref: 'AWS::Partition',
+                      },
+                      ':iam::',
                       {
                         Ref: 'AWS::AccountId',
                       },
@@ -2772,7 +2792,11 @@ describe('fargate service', () => {
                 'Fn::Join': [
                   '',
                   [
-                    'arn:aws:logs:',
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':logs:',
                     {
                       Ref: 'AWS::Region',
                     },
@@ -2801,7 +2825,11 @@ describe('fargate service', () => {
                 'Fn::Join': [
                   '',
                   [
-                    'arn:aws:s3:::',
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':s3:::',
                     {
                       Ref: 'EcsExecBucket4F468651',
                     },
@@ -2817,7 +2845,11 @@ describe('fargate service', () => {
                 'Fn::Join': [
                   '',
                   [
-                    'arn:aws:s3:::',
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':s3:::',
                     {
                       Ref: 'EcsExecBucket4F468651',
                     },
@@ -2886,7 +2918,11 @@ describe('fargate service', () => {
                   'Fn::Join': [
                     '',
                     [
-                      'arn:aws:iam::',
+                      'arn:',
+                      {
+                        Ref: 'AWS::Partition',
+                      },
+                      ':iam::',
                       {
                         Ref: 'AWS::AccountId',
                       },
@@ -2911,7 +2947,11 @@ describe('fargate service', () => {
                     'Fn::Join': [
                       '',
                       [
-                        'arn:aws:logs:',
+                        'arn:',
+                        {
+                          Ref: 'AWS::Partition',
+                        },
+                        ':logs:',
                         {
                           Ref: 'AWS::Region',
                         },
