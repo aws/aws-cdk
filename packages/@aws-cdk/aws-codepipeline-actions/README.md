@@ -769,7 +769,7 @@ const deployStage = pipeline.addStage({
 CodePipeline can deploy an ECS service which [cluster formatted ECS service ARN](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-account-settings.html#ecs-resource-ids) this can be deploy across region and accounts as well using the ARN.
 
 ```ts
-import * as ecs from `@aws-cdk/aws-ecs`;
+import * as ecs from '@aws-cdk/aws-ecs';
 
 const service = ecs.BaseService.fromServiceArnWithCluster(this, 'EcsService',
   'arn:aws:ecs:us-east-1:123456789012:service/myClusterName}/myServiceName'
