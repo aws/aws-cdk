@@ -13,7 +13,7 @@ export interface Event {
   /**
    * The Boolean expression that, when TRUE, causes the actions to be performed.
    *
-   * @default None - Defaults to perform the actions always.
+   * @default - none (the actions are always executed)
    */
   readonly condition?: Expression;
 }
