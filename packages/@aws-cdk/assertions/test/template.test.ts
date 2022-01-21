@@ -1,15 +1,15 @@
-import { App, CfnCondition, CfnMapping, CfnOutput, CfnParameter, CfnResource, Fn, NestedStack, Stack } from '@aws-cdk/core';
+import { App, CfnCondition, CfnMapping, CfnOutput, CfnParameter, CfnResource, Fn, LegacyStackSynthesizer, NestedStack, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { Capture, Match, Template } from '../lib';
 
 describe('Template', () => {
   test('fromString', () => {
     const template = Template.fromString(`{
-        "Resources": { 
-          "Foo": { 
+        "Resources": {
+          "Foo": {
             "Type": "Baz::Qux",
             "Properties": { "Fred": "Waldo" }
-          } 
+          }
         }
       }`);
 
@@ -79,11 +79,11 @@ describe('Template', () => {
   describe('fromString', () => {
     test('default', () => {
       const assertions = Template.fromString(`{
-        "Resources": { 
-          "Foo": { 
+        "Resources": {
+          "Foo": {
             "Type": "Baz::Qux",
             "Properties": { "Fred": "Waldo" }
-          } 
+          }
         }
       }`);
       assertions.resourceCountIs('Baz::Qux', 1);
@@ -126,7 +126,10 @@ describe('Template', () => {
 
   describe('templateMatches', () => {
     test('matches', () => {
-      const stack = new Stack();
+      const app = new App();
+      const stack = new Stack(app, 'Stack', {
+        synthesizer: new LegacyStackSynthesizer(),
+      });
       new CfnResource(stack, 'Foo', {
         type: 'Foo::Bar',
         properties: { baz: 'qux' },
