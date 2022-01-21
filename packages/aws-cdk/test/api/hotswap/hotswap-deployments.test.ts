@@ -13,18 +13,6 @@ beforeEach(() => {
   mockGetEndpointSuffix = jest.fn(() => 'amazonaws.com');
   hotswapMockSdkProvider.stubLambda({
     updateFunctionCode: mockUpdateLambdaCode,
-  }, {
-    // these are needed for the waiter API that the Lambda service hotswap uses
-    api: {
-      waiters: {},
-    },
-    makeRequest() {
-      return {
-        promise: () => Promise.resolve({}),
-        response: {},
-        addListeners: () => {},
-      };
-    },
   });
   hotswapMockSdkProvider.setUpdateStateMachineMock(mockUpdateMachineDefinition);
   hotswapMockSdkProvider.stubGetEndpointSuffix(mockGetEndpointSuffix);

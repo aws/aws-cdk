@@ -241,8 +241,9 @@ class LambdaFunctionHotswapOperation implements HotswapOperation {
         ZipFile: resource.code.functionCodeZip,
       }).promise();
 
-      await this.waitForLastUpdateStatusComplete(updateFunctionCodeResponse, lambda);
+      await this.waitForLambdasCodeUpdateToFinish(updateFunctionCodeResponse, lambda);
 
+      // only if the code changed is there any point in publishing a new Version
       if (this.lambdaFunctionResource.publishVersion) {
         const publishVersionPromise = lambda.publishVersion({
           FunctionName: this.lambdaFunctionResource.physicalName,
@@ -304,14 +305,14 @@ class LambdaFunctionHotswapOperation implements HotswapOperation {
    * or very slowly. For example, Zip based functions _not_ in a VPC can take ~1 second whereas VPC
    * or Container functions can take ~25 seconds (and 'idle' VPC functions can take minutes).
    */
-  private async waitForLastUpdateStatusComplete(currentFunctionConfiguration: AWS.Lambda.FunctionConfiguration, lambda: AWS.Lambda): Promise<void> {
+  private async waitForLambdasCodeUpdateToFinish(currentFunctionConfiguration: AWS.Lambda.FunctionConfiguration, lambda: AWS.Lambda): Promise<void> {
+    const functionIsInVpcOrUsesDockerForCode = currentFunctionConfiguration.VpcConfig?.VpcId ||
+        currentFunctionConfiguration.PackageType === 'Image';
+
     // if the function is deployed in a VPC or if it is a container image function
     // then the update will take much longer and we can wait longer between checks
     // otherwise, the update will be quick, so a 1-second delay is fine
-    const delaySeconds = currentFunctionConfiguration.VpcConfig?.VpcId ||
-        currentFunctionConfiguration.PackageType === 'Image'
-      ? 5
-      : 1;
+    const delaySeconds = functionIsInVpcOrUsesDockerForCode ? 5 : 1;
 
     // configure a custom waiter to wait for the function update to complete
     (lambda as any).api.waiters.updateFunctionCodeToFinish = {

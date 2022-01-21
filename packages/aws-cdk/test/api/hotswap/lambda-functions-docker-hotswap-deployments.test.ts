@@ -5,7 +5,7 @@ let mockUpdateLambdaCode: (params: Lambda.Types.UpdateFunctionCodeRequest) => La
 let mockTagResource: (params: Lambda.Types.TagResourceRequest) => {};
 let mockUntagResource: (params: Lambda.Types.UntagResourceRequest) => {};
 let hotswapMockSdkProvider: setup.HotswapMockSdkProvider;
-let mockMakeRequest: (operation: string, params: any) => {};
+let mockMakeRequest: (operation: string, params: any) => AWS.Request<any, AWS.AWSError>;
 
 beforeEach(() => {
   hotswapMockSdkProvider = setup.setupHotswapTests();

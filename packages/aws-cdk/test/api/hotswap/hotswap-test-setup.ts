@@ -83,7 +83,11 @@ export class HotswapMockSdkProvider {
     });
   }
 
-  public stubLambda(stubs: SyncHandlerSubsetOf<AWS.Lambda>, additionalProperties: { [key: string]: any } = {}) {
+  public stubLambda(
+    stubs: SyncHandlerSubsetOf<AWS.Lambda>,
+    serviceStubs?: SyncHandlerSubsetOf<AWS.Service>,
+    additionalProperties: { [key: string]: any } = {},
+  ): void {
     this.mockSdkProvider.stubLambda(stubs, {
       api: {
         waiters: {},
@@ -95,11 +99,12 @@ export class HotswapMockSdkProvider {
           addListeners: () => {},
         };
       },
+      ...serviceStubs,
       ...additionalProperties,
     });
   }
 
-  public getLambdaApiWaiters() {
+  public getLambdaApiWaiters(): { [key: string]: any } {
     return (this.mockSdkProvider.sdk.lambda() as any).api.waiters;
   }
 
