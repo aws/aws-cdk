@@ -515,7 +515,6 @@ test('test Fargate loadbalanced construct with TLS', () => {
   });
 
   Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
-    DesiredCount: 1,
     LaunchType: 'FARGATE',
   });
 
@@ -577,7 +576,6 @@ test('test Fargateloadbalanced construct with TLS and default certificate', () =
   });
 
   Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
-    DesiredCount: 1,
     LaunchType: 'FARGATE',
   });
 
