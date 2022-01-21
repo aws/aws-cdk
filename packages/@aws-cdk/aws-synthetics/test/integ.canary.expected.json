@@ -659,10 +659,17 @@
                   "Resource": "*"
                 },
                 {
-                  "Action": [
-                    "s3:PutObject",
-                    "s3:GetBucketLocation"
-                  ],
+                  "Action": "s3:GetBucketLocation",
+                  "Effect": "Allow",
+                  "Resource": {
+                    "Fn::GetAtt": [
+                      "MyCanaryThreeArtifactsBucket894E857E",
+                      "Arn"
+                    ]
+                  }
+                },
+                {
+                  "Action": "s3:PutObject",
                   "Effect": "Allow",
                   "Resource": {
                     "Fn::Join": [
@@ -873,10 +880,17 @@
                   "Resource": "*"
                 },
                 {
-                  "Action": [
-                    "s3:PutObject",
-                    "s3:GetBucketLocation"
-                  ],
+                  "Action": "s3:GetBucketLocation",
+                  "Effect": "Allow",
+                  "Resource": {
+                    "Fn::GetAtt": [
+                      "MyPythonCanaryArtifactsBucket7AE88133",
+                      "Arn"
+                    ]
+                  }
+                },
+                {
+                  "Action": "s3:PutObject",
                   "Effect": "Allow",
                   "Resource": {
                     "Fn::Join": [
