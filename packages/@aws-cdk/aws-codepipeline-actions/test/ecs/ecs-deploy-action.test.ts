@@ -240,7 +240,7 @@ describe('ecs deploy action', () => {
         ],
       });
 
-      expect(stack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+      Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
         Stages: [
           {},
           {
