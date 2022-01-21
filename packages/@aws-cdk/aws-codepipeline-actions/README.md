@@ -764,9 +764,11 @@ const deployStage = pipeline.addStage({
 
 [image definition file]: https://docs.aws.amazon.com/codepipeline/latest/userguide/pipelines-create.html#pipelines-create-image-definitions
 
-#### Deploying ECS applications with existing ECS service ARN
+#### Deploying ECS applications to existing services
 
-CodePipeline can deploy an ECS service which [cluster formatted ECS service ARN](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-account-settings.html#ecs-resource-ids) this can be deploy across region and accounts as well using the ARN.
+CodePipeline can deploy to an existing ECS service which uses the
+[ECS service ARN format that contains the Cluster name](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-account-settings.html#ecs-resource-ids).
+This also works if the service is in a different account and/or region than the pipeline:
 
 ```ts
 import * as ecs from '@aws-cdk/aws-ecs';
@@ -776,6 +778,7 @@ const service = ecs.BaseService.fromServiceArnWithCluster(this, 'EcsService',
 );
 const pipeline = new codepipeline.Pipeline(this, 'MyPipeline');
 const buildOutput = new codepipeline.Artifact();
+// add source and build stages to the pipeline as usual...
 const deployStage = pipeline.addStage({
   stageName: 'Deploy',
   actions: [
@@ -788,10 +791,11 @@ const deployStage = pipeline.addStage({
 });
 ```
 
-When deploying across accounts especially in a CDK self mutating pipeline it is recommended to provide
-the `role` on the `EcsDeployAction`.  The role will need to have permissions assigned to it for
-ECS deployment see [EcsDeployAction](https://github.com/aws/aws-cdk/blob/d735ce4bc9049b68b830641d68c97f4be565968d/packages/%40aws-cdk/aws-codepipeline-actions/lib/ecs/deploy-action.ts#L85-L110) for proper permissions to apply to the role.
-
+When deploying across accounts, especially in a CDK Pipelines self-mutating pipeline,
+it is recommended to provide the `role` property to the `EcsDeployAction`. 
+The Role will need to have permissions assigned to it for ECS deployment.
+See [the CodePipeline documentation](https://docs.aws.amazon.com/codepipeline/latest/userguide/how-to-custom-role.html#how-to-update-role-new-services)
+for the permissions needed.
 
 #### Deploying ECS applications stored in a separate source code repository
 

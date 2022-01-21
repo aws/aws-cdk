@@ -317,8 +317,8 @@ export abstract class BaseService extends Resource
   implements IBaseService, elbv2.IApplicationLoadBalancerTarget, elbv2.INetworkLoadBalancerTarget, elb.ILoadBalancerTarget {
   /**
    * Import an existing ECS/Fargate Service using the service cluster format.
-   * The format is the "new" format "arn:aws:ecs:region:aws_account_id:service/cluster-name/service-name"
-   * see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-account-settings.html#ecs-resource-ids
+   * The format is the "new" format "arn:aws:ecs:region:aws_account_id:service/cluster-name/service-name".
+   * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-account-settings.html#ecs-resource-ids
    */
   public static fromServiceArnWithCluster(scope: Construct, id: string, serviceArn: string): IBaseService {
     const stack = Stack.of(scope);
