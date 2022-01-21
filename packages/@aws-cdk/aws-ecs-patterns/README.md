@@ -478,6 +478,9 @@ const queueProcessingFargateService = new ecsPatterns.QueueProcessingFargateServ
   maxScalingCapacity: 5,
   maxHealthyPercent: 200,
   minHealthyPercent: 66,
+  healthCheck: {
+    command: [ "CMD-SHELL", "curl -f http://localhost/ || exit 1" ]
+  },
 });
 ```
 
