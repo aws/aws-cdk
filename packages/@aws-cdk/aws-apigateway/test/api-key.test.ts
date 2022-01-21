@@ -12,8 +12,9 @@ describe('api key', () => {
     new apigateway.ApiKey(stack, 'my-api-key');
 
     // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::ApiKey', Match.absent());
-    // should have an api key with no props defined.
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::ApiKey', {
+      Enabled: true,
+    });
   });
 
 
