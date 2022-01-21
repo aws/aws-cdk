@@ -8,7 +8,7 @@ let mockGetEndpointSuffix: () => string;
 
 beforeEach(() => {
   hotswapMockSdkProvider = setup.setupHotswapTests();
-  mockUpdateLambdaCode = jest.fn();
+  mockUpdateLambdaCode = jest.fn().mockReturnValue({});
   mockUpdateMachineDefinition = jest.fn();
   mockGetEndpointSuffix = jest.fn(() => 'amazonaws.com');
   hotswapMockSdkProvider.stubLambda({
