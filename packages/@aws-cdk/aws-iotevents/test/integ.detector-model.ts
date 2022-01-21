@@ -12,7 +12,7 @@ class TestStack extends cdk.Stack {
 
     const onlineState = new iotevents.State({
       stateName: 'online',
-      onEnterEvents: [{
+      onEnter: [{
         eventName: 'test-event',
         // meaning `condition: 'currentInput("test_input") && $input.test_input.payload.temperature == 31.5'`
         condition: iotevents.Expression.and(

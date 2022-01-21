@@ -11,11 +11,12 @@ export interface StateProps {
   readonly stateName: string;
 
   /**
-   * Specifies the actions that are performed when the state is entered and the `condition` is `TRUE`.
+   * Specifies the events on enter. the conditions of the events are evaluated when the state is entered.
+   * If the condition is `TRUE`, the actions of the event are performed.
    *
-   * @default - no actions will be performed when the state is entered
+   * @default - events on enter will not be set
    */
-  readonly onEnterEvents?: Event[];
+  readonly onEnter?: Event[];
 }
 
 /**
@@ -37,10 +38,10 @@ export class State {
    * @internal
    */
   public _toStateJson(): CfnDetectorModel.StateProperty {
-    const { stateName, onEnterEvents } = this.props;
+    const { stateName, onEnter } = this.props;
     return {
       stateName,
-      onEnter: onEnterEvents && { events: getEventJson(onEnterEvents) },
+      onEnter: onEnter && { events: getEventJson(onEnter) },
     };
   }
 
@@ -48,7 +49,7 @@ export class State {
    * returns true if this state has at least one condition via events
    */
   public hasCondition(): boolean {
-    return this.props.onEnterEvents?.some(event => event.condition) ?? false;
+    return this.props.onEnter?.some(event => event.condition) ?? false;
   }
 }
 

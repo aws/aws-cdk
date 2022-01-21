@@ -13,7 +13,7 @@ test('Default property', () => {
   new iotevents.DetectorModel(stack, 'MyDetectorModel', {
     initialState: new iotevents.State({
       stateName: 'test-state',
-      onEnterEvents: [{
+      onEnter: [{
         eventName: 'test-eventName',
         condition: iotevents.Expression.fromString('test-eventCondition'),
       }],
@@ -55,7 +55,7 @@ test('can get detector model name', () => {
   const detectorModel = new iotevents.DetectorModel(stack, 'MyDetectorModel', {
     initialState: new iotevents.State({
       stateName: 'test-state',
-      onEnterEvents: [{
+      onEnter: [{
         eventName: 'test-eventName',
         condition: iotevents.Expression.fromString('test-eventCondition'),
       }],
@@ -82,7 +82,7 @@ test('can set physical name', () => {
     detectorModelName: 'test-detector-model',
     initialState: new iotevents.State({
       stateName: 'test-state',
-      onEnterEvents: [{
+      onEnter: [{
         eventName: 'test-eventName',
         condition: iotevents.Expression.fromString('test-eventCondition'),
       }],
@@ -100,7 +100,7 @@ test('can set multiple events to State', () => {
   new iotevents.DetectorModel(stack, 'MyDetectorModel', {
     initialState: new iotevents.State({
       stateName: 'test-state',
-      onEnterEvents: [
+      onEnter: [
         {
           eventName: 'test-eventName1',
           condition: iotevents.Expression.fromString('test-eventCondition'),
@@ -139,7 +139,7 @@ test('can set role', () => {
     role,
     initialState: new iotevents.State({
       stateName: 'test-state',
-      onEnterEvents: [{
+      onEnter: [{
         eventName: 'test-eventName',
         condition: iotevents.Expression.fromString('test-eventCondition'),
       }],
@@ -168,7 +168,7 @@ test('cannot create without condition', () => {
     new iotevents.DetectorModel(stack, 'MyDetectorModel', {
       initialState: new iotevents.State({
         stateName: 'test-state',
-        onEnterEvents: [{
+        onEnter: [{
           eventName: 'test-eventName',
         }],
       }),
@@ -193,7 +193,7 @@ describe('Expression', () => {
     new iotevents.DetectorModel(stack, 'MyDetectorModel', {
       initialState: new iotevents.State({
         stateName: 'test-state',
-        onEnterEvents: [{
+        onEnter: [{
           eventName: 'test-eventName',
           condition: iotevents.Expression.currentInput(input),
         }],
@@ -222,7 +222,7 @@ describe('Expression', () => {
     new iotevents.DetectorModel(stack, 'MyDetectorModel', {
       initialState: new iotevents.State({
         stateName: 'test-state',
-        onEnterEvents: [{
+        onEnter: [{
           eventName: 'test-eventName',
           condition: iotevents.Expression.inputAttribute(input, 'json.path'),
         }],
@@ -250,7 +250,7 @@ describe('Expression', () => {
     new iotevents.DetectorModel(stack, 'MyDetectorModel', {
       initialState: new iotevents.State({
         stateName: 'test-state',
-        onEnterEvents: [{
+        onEnter: [{
           eventName: 'test-eventName',
           condition: iotevents.Expression.eq(
             iotevents.Expression.fromString('"aaa"'),
@@ -281,7 +281,7 @@ describe('Expression', () => {
     new iotevents.DetectorModel(stack, 'MyDetectorModel', {
       initialState: new iotevents.State({
         stateName: 'test-state',
-        onEnterEvents: [{
+        onEnter: [{
           eventName: 'test-eventName',
           condition: iotevents.Expression.and(
             iotevents.Expression.fromString('true'),
