@@ -104,7 +104,6 @@ def get_oci_cmd(repository, version):
     if re.fullmatch(pattern, registry) is not None:
         region = registry.replace('.amazonaws.com', '').split('.')[-1]
         cmnd = [
-            "HELM_EXPERIMENTAL_OCI=1;" \
             f"aws ecr get-login-password --region {region} | " \
             f"helm registry login --username AWS --password-stdin {registry}; helm pull {repository} --version {version} --untar"
             ]

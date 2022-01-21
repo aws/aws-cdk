@@ -1144,6 +1144,24 @@ cluster.addHelmChart('test-chart', {
 });
 ```
 
+### OCI Charts
+
+OCI charts are also supported. Before executing ensure the handler lambda has the required ECR IAM permissions.
+Also replace the `${VARS}` with appropriate values.
+
+```ts
+declare const cluster: eks.Cluster;
+// option 1: use a construct
+new eks.HelmChart(this, 'MyOCIChart', {
+  cluster,
+  chart: 'some-chart',
+  repository: 'oci://${ACCOUNT_ID}.dkr.ecr.${ACCOUNT_REGION}.amazonaws.com/${REPO_NAME}',
+  namespace: 'oci',
+  version: '0.0.1'
+});
+
+```
+
 Helm charts are implemented as CloudFormation resources in CDK.
 This means that if the chart is deleted from your code (or the stack is
 deleted), the next `cdk deploy` will issue a `helm uninstall` command and the
