@@ -305,6 +305,25 @@ const invokeTask = new tasks.CallApiGatewayRestApiEndpoint(this, 'Call REST API'
 });
 ```
 
+Be aware that the header values must be arrays. When passing the Task Token
+in the headers field `WAIT_FOR_TASK_TOKEN` integration, use
+`JsonPath.array()` to wrap the token in an array:
+
+```ts
+import * as apigateway from '@aws-cdk/aws-apigateway';
+declare const api: apigateway.RestApi;
+
+new tasks.CallApiGatewayRestApiEndpoint(this, 'Endpoint', {
+  api,
+  stageName: 'Stage',
+  method: tasks.HttpMethod.PUT,
+  integrationPattern: sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN,
+  headers: sfn.TaskInput.fromObject({
+    TaskToken: sfn.JsonPath.array(sfn.JsonPath.taskToken),
+  }),
+});
+```
+
 ### Call HTTP API Endpoint
 
 The `CallApiGatewayHttpApiEndpoint` calls the HTTP API endpoint.
@@ -798,7 +817,7 @@ The service integration APIs correspond to Amazon EMR on EKS APIs, but differ in
 
 ### Create Virtual Cluster
 
-The [CreateVirtualCluster](https://docs.aws.amazon.com/emr-on-eks/latest/APIReference/API_CreateVirtualCluster.html) API creates a single virtual cluster that's mapped to a single Kubernetes namespace. 
+The [CreateVirtualCluster](https://docs.aws.amazon.com/emr-on-eks/latest/APIReference/API_CreateVirtualCluster.html) API creates a single virtual cluster that's mapped to a single Kubernetes namespace.
 
 The EKS cluster containing the Kubernetes namespace where the virtual cluster will be mapped can be passed in from the task input.
 
