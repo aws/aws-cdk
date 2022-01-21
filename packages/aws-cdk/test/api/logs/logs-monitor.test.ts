@@ -19,10 +19,11 @@ afterAll(() => {
 
 test('continue to the next page if it exists', async () => {
   // GIVEN
+  const eventDate = new Date(T0 + 102 * 1000);
   sdk.stubCloudWatchLogs({
     filterLogEvents() {
       return {
-        events: [event(102, 'message')],
+        events: [event(102, 'message', eventDate)],
         nextToken: 'some-token',
       };
     },
@@ -42,23 +43,23 @@ test('continue to the next page if it exists', async () => {
   await sleep(1000);
 
   // THEN
-  const expectedDate = new Date(T0 + 102 * 1000).toLocaleTimeString();
+  const expectedLocaleTimeString = eventDate.toLocaleTimeString();
   expect(stderrMock).toHaveBeenCalledTimes(2);
   expect(stderrMock.mock.calls[0][0]).toContain(
-    `[${blue('loggroup')}] ${yellow(expectedDate)} message`,
+    `[${blue('loggroup')}] ${yellow(expectedLocaleTimeString)} message`,
   );
   expect(stderrMock.mock.calls[1][0]).toContain(
-    `[${blue('loggroup')}] ${yellow(expectedDate)} >>> \`watch\` shows only the first 100 log messages - the rest have been truncated...`,
+    `[${blue('loggroup')}] ${yellow(expectedLocaleTimeString)} >>> \`watch\` shows only the first 100 log messages - the rest have been truncated...`,
   );
 });
 
 const T0 = 1597837230504;
 const T100 = T0 + 100 * 1000;
-function event(nr: number, message: string): AWS.CloudWatchLogs.FilteredLogEvent {
+function event(nr: number, message: string, timestamp: Date): AWS.CloudWatchLogs.FilteredLogEvent {
   return {
     eventId: `${nr}`,
     message,
-    timestamp: new Date(T0 + nr * 1000).getTime(),
-    ingestionTime: new Date(T0 + nr * 1000).getTime(),
+    timestamp: timestamp.getTime(),
+    ingestionTime: timestamp.getTime(),
   };
 }
