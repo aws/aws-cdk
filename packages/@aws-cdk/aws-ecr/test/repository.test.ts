@@ -373,7 +373,7 @@ describe('repository', () => {
     new ecr.Repository(stack, 'Repo', { encryption: ecr.RepositoryEncryption.AES_256 });
 
     // THEN
-    expectCDK(stack).toMatch({
+    Template.fromStack(stack).templateMatches({
       Resources: {
         Repo02AC86CF: {
           Type: 'AWS::ECR::Repository',
@@ -393,12 +393,12 @@ describe('repository', () => {
     new ecr.Repository(stack, 'Repo', { encryption: ecr.RepositoryEncryption.KMS });
 
     // THEN
-    expectCDK(stack).to(haveResource('AWS::ECR::Repository',
+    Template.fromStack(stack).hasResourceProperties('AWS::ECR::Repository',
       {
         EncryptionConfiguration: {
           EncryptionType: 'KMS',
         },
-      }));
+      });
   });
 
   test('kms encryption with custom kms configuration', () => {
@@ -411,7 +411,7 @@ describe('repository', () => {
     new ecr.Repository(stack, 'Repo', { encryptionKey: custom_key });
 
     // THEN
-    expectCDK(stack).to(haveResource('AWS::ECR::Repository',
+    Template.fromStack(stack).hasResourceProperties('AWS::ECR::Repository',
       {
         EncryptionConfiguration: {
           EncryptionType: 'KMS',
@@ -422,7 +422,7 @@ describe('repository', () => {
             ],
           },
         },
-      }));
+      });
   });
 
   test('fails if with custom kms key and AES256 as encryption', () => {
