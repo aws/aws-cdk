@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as cdk from '@aws-cdk/core';
 import * as lambda from '../lib';
 
@@ -14,7 +14,7 @@ describe('lambda version', () => {
     new cdk.CfnOutput(stack, 'Name', { value: version.functionName });
 
     // THEN
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       Outputs: {
         ARN: {
           Value: 'arn:aws:lambda:region:account-id:function:function-name:version',
@@ -43,7 +43,7 @@ describe('lambda version', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::Lambda::EventInvokeConfig', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventInvokeConfig', {
       FunctionName: {
         Ref: 'Fn9270CBC0',
       },
@@ -91,12 +91,12 @@ describe('lambda version', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::Lambda::EventInvokeConfig', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventInvokeConfig', {
       FunctionName: 'function-name',
       Qualifier: 'version1',
       MaximumRetryAttempts: 1,
     });
-    expect(stack).toHaveResource('AWS::Lambda::EventInvokeConfig', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventInvokeConfig', {
       FunctionName: 'function-name',
       Qualifier: 'version2',
       MaximumRetryAttempts: 0,
@@ -117,7 +117,7 @@ describe('lambda version', () => {
     version.addAlias('foo');
 
     // THEN
-    expect(stack).toHaveResource('AWS::Lambda::Alias', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Alias', {
       FunctionName: {
         Ref: 'Fn9270CBC0',
       },

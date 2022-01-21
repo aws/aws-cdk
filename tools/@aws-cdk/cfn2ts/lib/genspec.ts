@@ -227,6 +227,14 @@ export function attributeDefinition(attributeName: string, spec: schema.Attribut
  */
 export function cloudFormationToScriptName(name: string): string {
   if (name === 'VPCs') { return 'vpcs'; }
+
+  // Lightsail contains a property called "GetObject", which isn't a jsii-compliant name
+  // as it conflicts with generated getters in other languages (e.g., Java, C#).
+  // For now, hard-coding a replacement property name to something that's frankly better anyway.
+  if (name === 'GetObject') {
+    name = 'objectAccess';
+  }
+
   const ret = codemaker.toCamelCase(name);
 
   // eslint-disable-next-line @typescript-eslint/naming-convention
