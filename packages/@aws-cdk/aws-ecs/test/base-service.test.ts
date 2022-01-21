@@ -1,10 +1,15 @@
 import * as cdk from '@aws-cdk/core';
 import * as ecs from '../lib';
 
+let stack: cdk.Stack;
+
+beforeEach(() => {
+  stack = new cdk.Stack();
+});
+
 describe('When import an ECS Service', () => {
   test('with serviceArnWithCluster', () => {
     // GIVEN
-    const stack = new cdk.Stack();
     const clusterName = 'cluster-name';
     const serviceName = 'my-http-service';
     const region = 'service-region';
@@ -26,29 +31,14 @@ describe('When import an ECS Service', () => {
   });
 
   test('throws an expection if no resourceName provided on fromServiceArnWithCluster', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const region = 'service-region';
-    const account = 'service-account';
-    const serviceArn = `arn:aws:ecs:${region}:${account}:service`;
-
-    //THEN
     expect(() => {
-      ecs.BaseService.fromServiceArnWithCluster(stack, 'Service', serviceArn);
+      ecs.BaseService.fromServiceArnWithCluster(stack, 'Service', 'arn:aws:ecs:service-region:service-account:service');
     }).toThrowError(/Missing resource Name from service ARN/);
   });
 
   test('throws an expection if not using cluster arn format on fromServiceArnWithCluster', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const region = 'service-region';
-    const account = 'service-account';
-    const serviceName = 'my-http-service';
-    const serviceArn = `arn:aws:ecs:${region}:${account}:service/${serviceName}`;
-
-    //THEN
     expect(() => {
-      ecs.BaseService.fromServiceArnWithCluster(stack, 'Service', serviceArn);
-    }).toThrowError(`resource name ${serviceName} from service ARN`);
+      ecs.BaseService.fromServiceArnWithCluster(stack, 'Service', 'arn:aws:ecs:service-region:service-account:service/my-http-service');
+    }).toThrowError(/is not using the ARN cluster format/);
   });
 });

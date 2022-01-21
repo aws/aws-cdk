@@ -764,6 +764,31 @@ const deployStage = pipeline.addStage({
 
 [image definition file]: https://docs.aws.amazon.com/codepipeline/latest/userguide/pipelines-create.html#pipelines-create-image-definitions
 
+#### Deploying ECS applications with existing ECS service ARN
+
+CodePipeline can deploy an ECS service which [cluster formatted ECS service ARN](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-account-settings.html#ecs-resource-ids) this can be deploy across region and accounts as well using the ARN.
+
+```ts
+import * as ecs from `@aws-cdk/aws-ecs`;
+
+const service = ecs.BaseService.fromServiceArnWithCluster(this, 'EcsService',
+  'arn:aws:ecs:us-east-1:123456789012:service/myClusterName}/myServiceName'
+);
+const pipeline = new codepipeline.Pipeline(this, 'MyPipeline');
+const buildOutput = new codepipeline.Artifact();
+const deployStage = pipeline.addStage({
+  stageName: 'Deploy',
+  actions: [
+    new codepipeline_actions.EcsDeployAction({
+      actionName: 'DeployAction',
+      service: service,
+      input: buildOutput,
+    }),
+  ],
+});
+```
+
+
 #### Deploying ECS applications stored in a separate source code repository
 
 The idiomatic CDK way of deploying an ECS application is to have your Dockerfiles and your CDK code in the same source code repository,

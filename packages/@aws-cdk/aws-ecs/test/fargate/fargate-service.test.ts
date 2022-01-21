@@ -2212,56 +2212,6 @@ describe('fargate service', () => {
 
     });
 
-    test('with serviceArnWithCluster', () => {
-      // GIVEN
-      const stack = new cdk.Stack();
-      const clusterName = 'cluster-name';
-      const serviceName = 'my-http-service';
-      const region = 'service-region';
-      const account = 'service-account';
-      const serviceArn = `arn:aws:ecs:${region}:${account}:service/${clusterName}/${serviceName}`;
-
-      // WHEN
-      const service = ecs.FargateService.fromServiceArnWithCluster(stack, 'FargateService', serviceArn);
-
-      // THEN
-      expect(service.serviceArn).toEqual(serviceArn);
-      expect(service.serviceName).toEqual(serviceName);
-      expect(service.env.account).toEqual(account);
-      expect(service.env.region).toEqual(region);
-
-      expect(service.cluster.clusterName).toEqual(clusterName);
-      expect(service.cluster.env.account).toEqual(account);
-      expect(service.cluster.env.region).toEqual(region);
-    });
-
-    test('throws an expection if no resourceName provided on fromServiceArnWithCluster', () => {
-      // GIVEN
-      const stack = new cdk.Stack();
-      const region = 'service-region';
-      const account = 'service-account';
-      const serviceArn = `arn:aws:ecs:${region}:${account}:service`;
-
-      //THEN
-      expect(() => {
-        ecs.FargateService.fromServiceArnWithCluster(stack, 'FargateService', serviceArn);
-      }).toThrowError(/Missing resource Name from service ARN/);
-    });
-
-    test('throws an expection if not using cluster arn format on fromServiceArnWithCluster', () => {
-      // GIVEN
-      const stack = new cdk.Stack();
-      const region = 'service-region';
-      const account = 'service-account';
-      const serviceName = 'my-http-service';
-      const serviceArn = `arn:aws:ecs:${region}:${account}:service/${serviceName}`;
-
-      //THEN
-      expect(() => {
-        ecs.FargateService.fromServiceArnWithCluster(stack, 'FargateService', serviceArn);
-      }).toThrowError(`resource name ${serviceName} from service ARN`);
-    });
-
     test('allows setting enable execute command', () => {
       // GIVEN
       const stack = new cdk.Stack();

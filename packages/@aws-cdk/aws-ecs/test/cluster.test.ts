@@ -2147,8 +2147,7 @@ describe('cluster', () => {
     const clusterName = 'my-cluster';
     const region = 'service-region';
     const account = 'service-account';
-    const clusterArn = `arn:aws:ecs:${region}:${account}:cluster/${clusterName}`;
-    const cluster = ecs.Cluster.fromClusterArn(stack, 'Cluster', clusterArn);
+    const cluster = ecs.Cluster.fromClusterArn(stack, 'Cluster', `arn:aws:ecs:${region}:${account}:cluster/${clusterName}`);
 
     // THEN
     expect(cluster.clusterName).toEqual(clusterName);
@@ -2159,10 +2158,10 @@ describe('cluster', () => {
   test('throws error when import ECS Cluster without resource name in arn', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    const clusterArn = 'arn:aws:ecs:service-region:service-account:cluster';
+
     // THEN
     expect(() => {
-      ecs.Cluster.fromClusterArn(stack, 'Cluster', clusterArn);
+      ecs.Cluster.fromClusterArn(stack, 'Cluster', 'arn:aws:ecs:service-region:service-account:cluster');
     }).toThrowError(/Missing required Cluster Name from Cluster ARN: /);
   });
 });

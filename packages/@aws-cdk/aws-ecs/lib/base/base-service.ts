@@ -317,6 +317,8 @@ export abstract class BaseService extends Resource
   implements IBaseService, elbv2.IApplicationLoadBalancerTarget, elbv2.INetworkLoadBalancerTarget, elb.ILoadBalancerTarget {
   /**
    * Import an existing ECS/Fargate Service using the service cluster format.
+   * The format is the "new" format "arn:aws:ecs:region:aws_account_id:service/cluster-name/service-name"
+   * see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-account-settings.html#ecs-resource-ids
    */
   public static fromServiceArnWithCluster(scope: Construct, id: string, serviceArn: string): IBaseService {
     const stack = Stack.of(scope);
@@ -325,12 +327,12 @@ export abstract class BaseService extends Resource
     if (!resourceName) {
       throw new Error('Missing resource Name from service ARN: ${serviceArn}');
     }
-
-    if (resourceName.split('/').length !== 2) {
+    const resourceNameParts = resourceName.split('/');
+    if (resourceNameParts.length !== 2) {
       throw new Error(`resource name ${resourceName} from service ARN: ${serviceArn} is not using the ARN cluster format`);
     }
-    const clusterName = resourceName.split('/')[0];
-    const serviceName = resourceName.split('/')[1];
+    const clusterName = resourceNameParts[0];
+    const serviceName = resourceNameParts[1];
 
     const clusterArn = Stack.of(scope).formatArn({
       partition: arn.partition,
@@ -347,8 +349,8 @@ export abstract class BaseService extends Resource
       public readonly serviceArn = serviceArn;
       public readonly serviceName = serviceName;
       public readonly cluster = cluster;
-
     }
+
     return new Import(scope, id, {
       environmentFromArn: serviceArn,
     });

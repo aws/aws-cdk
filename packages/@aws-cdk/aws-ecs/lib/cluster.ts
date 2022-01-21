@@ -107,6 +107,8 @@ export class Cluster extends Resource implements ICluster {
 
   /**
    * Import an existing cluster to the stack from the cluster ARN.
+   * This does not provide access to the vpc, hasEc2Capacity, or connections use fromClusterAttributes to
+   * access those properties.
    */
   public static fromClusterArn(scope: Construct, id: string, clusterArn: string): ICluster {
     const stack = Stack.of(scope);
@@ -132,6 +134,7 @@ export class Cluster extends Resource implements ICluster {
         throw new Error(`vpc ${errorSuffix}`);
       }
     }
+
     return new Import(scope, id, {
       environmentFromArn: clusterArn,
     });
