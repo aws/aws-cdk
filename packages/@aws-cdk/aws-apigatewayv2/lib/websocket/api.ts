@@ -150,7 +150,7 @@ export class WebSocketApi extends ApiBase implements IWebSocketApi {
     return Grant.addToPrincipal({
       grantee: identity,
       actions: ['execute-api:ManageConnections'],
-      resourceArns: [`${arn}/*/POST/@connections/*`],
+      resourceArns: [`${arn}/*/*/@connections/*`],
     });
   }
 }
