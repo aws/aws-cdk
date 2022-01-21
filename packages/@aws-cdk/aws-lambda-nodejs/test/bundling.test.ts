@@ -16,7 +16,6 @@ beforeEach(() => {
   jest.resetAllMocks();
   jest.restoreAllMocks();
   Bundling.clearEsbuildInstallationCache();
-  //Bundling.clearTscInstallationCache();
 
   jest.spyOn(Code, 'fromAsset');
 
