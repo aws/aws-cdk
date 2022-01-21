@@ -1670,7 +1670,6 @@ describe('cluster', () => {
         },
       ],
     });
-
   });
 
   testDeprecated('correct bottlerocket AMI for ARM64 architecture', () => {
