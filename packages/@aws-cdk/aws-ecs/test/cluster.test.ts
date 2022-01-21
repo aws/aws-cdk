@@ -1691,15 +1691,10 @@ describe('cluster', () => {
       },
     });
 
-    const assembly = app.synth();
-    const template = assembly.getStackByName(stack.stackName).template;
-    expect(template.Parameters).toEqual({
-      SsmParameterValueawsservicebottlerocketawsecs1arm64latestimageidC96584B6F00A464EAD1953AFF4B05118Parameter: {
-        Type: 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>',
-        Default: '/aws/service/bottlerocket/aws-ecs-1/arm64/latest/image_id',
-      },
+    Template.fromStack(stack).hasParameter('SsmParameterValueawsservicebottlerocketawsecs1arm64latestimageidC96584B6F00A464EAD1953AFF4B05118Parameter', {
+      Type: 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>',
+      Default: '/aws/service/bottlerocket/aws-ecs-1/arm64/latest/image_id',
     });
-
   });
 
   testDeprecated('throws when machineImage and machineImageType both specified', () => {

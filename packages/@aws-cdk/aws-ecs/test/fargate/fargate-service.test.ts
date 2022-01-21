@@ -2657,29 +2657,6 @@ describe('fargate service', () => {
               },
               Resource: '*',
             },
-            {
-              Action: 'kms:*',
-              Effect: 'Allow',
-              Principal: {
-                AWS: {
-                  'Fn::Join': [
-                    '',
-                    [
-                      'arn:',
-                      {
-                        Ref: 'AWS::Partition',
-                      },
-                      ':iam::',
-                      {
-                        Ref: 'AWS::AccountId',
-                      },
-                      ':root',
-                    ],
-                  ],
-                },
-              },
-              Resource: '*',
-            },
           ],
           Version: '2012-10-17',
         },
@@ -2855,29 +2832,6 @@ describe('fargate service', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
         KeyPolicy: {
           Statement: [
-            {
-              Action: 'kms:*',
-              Effect: 'Allow',
-              Principal: {
-                AWS: {
-                  'Fn::Join': [
-                    '',
-                    [
-                      'arn:',
-                      {
-                        Ref: 'AWS::Partition',
-                      },
-                      ':iam::',
-                      {
-                        Ref: 'AWS::AccountId',
-                      },
-                      ':root',
-                    ],
-                  ],
-                },
-              },
-              Resource: '*',
-            },
             {
               Action: 'kms:*',
               Effect: 'Allow',
