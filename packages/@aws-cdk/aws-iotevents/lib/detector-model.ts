@@ -47,10 +47,9 @@ export class DetectorModel extends Resource implements IDetectorModel {
    * Import an existing detector model
    */
   public static fromDetectorModelName(scope: Construct, id: string, detectorModelName: string): IDetectorModel {
-    class Import extends Resource implements IDetectorModel {
+    return new class extends Resource implements IDetectorModel {
       public readonly detectorModelName = detectorModelName;
-    }
-    return new Import(scope, id);
+    }(scope, id);
   }
 
   public readonly detectorModelName: string;
