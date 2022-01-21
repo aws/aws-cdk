@@ -181,7 +181,7 @@ test('cannot create without condition', () => {
         }],
       }),
     });
-  }).toThrow('Detector Model must use at least one Input in a condition.');
+  }).toThrow('Detector Model must have at least one Input with a condition');
 });
 
 test('cannot create without event', () => {
@@ -193,7 +193,7 @@ test('cannot create without event', () => {
         stateName: 'test-state',
       }),
     });
-  }).toThrow('Detector Model must use at least one Input in a condition.');
+  }).toThrow('Detector Model must have at least one Input with a condition');
 });
 
 describe('Expression', () => {

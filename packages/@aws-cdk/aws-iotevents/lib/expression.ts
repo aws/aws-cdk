@@ -70,6 +70,6 @@ class BinaryOperationExpression extends Expression {
   }
 
   public evaluate() {
-    return `${this.left.evaluate()} ${this.operater} ${this.right.evaluate()}`;
+    return `${this.left.evaluate()} ${this.operator} ${this.right.evaluate()}`;
   }
 }
