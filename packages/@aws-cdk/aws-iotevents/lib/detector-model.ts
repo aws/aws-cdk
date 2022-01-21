@@ -60,7 +60,7 @@ export class DetectorModel extends Resource implements IDetectorModel {
       physicalName: props.detectorModelName,
     });
 
-    if (!props.initialState.hasCondition()) {
+    if (!props.initialState._onEnterEventsHaveAtLeastOneCondition()) {
       throw new Error('Detector Model must have at least one Input with a condition');
     }
 

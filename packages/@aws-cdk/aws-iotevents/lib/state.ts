@@ -47,8 +47,10 @@ export class State {
 
   /**
    * returns true if this state has at least one condition via events
+   *
+   * @internal
    */
-  public hasCondition(): boolean {
+  public _onEnterEventsHaveAtLeastOneCondition(): boolean {
     return this.props.onEnter?.some(event => event.condition) ?? false;
   }
 }
