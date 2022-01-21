@@ -46,7 +46,6 @@ export class JsonPath {
     return new JsonPathToken(path);
   }
 
-
   /**
    * Use the entire data structure
    *
