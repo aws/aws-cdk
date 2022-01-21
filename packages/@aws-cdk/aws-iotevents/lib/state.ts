@@ -13,7 +13,7 @@ export interface StateProps {
   /**
    * Specifies the actions that are performed when the state is entered and the `condition` is `TRUE`
    *
-   * @default None
+   * @default - no actions will be performed when the state is entered
    */
   readonly onEnterEvents?: Event[];
 }
