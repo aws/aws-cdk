@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as kms from '@aws-cdk/aws-kms';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as sns from '@aws-cdk/aws-sns';
@@ -22,7 +22,7 @@ beforeEach(() => {
 test('url subscription', () => {
   topic.addSubscription(new subs.UrlSubscription('https://foobar.com/'));
 
-  expect(stack).toMatchTemplate({
+  Template.fromStack(stack).templateMatches({
     'Resources': {
       'MyTopic86869434': {
         'Type': 'AWS::SNS::Topic',
@@ -54,7 +54,7 @@ test('url subscription with user provided dlq', () => {
     deadLetterQueue: dlQueue,
   }));
 
-  expect(stack).toMatchTemplate({
+  Template.fromStack(stack).templateMatches({
     'Resources': {
       'MyTopic86869434': {
         'Type': 'AWS::SNS::Topic',
@@ -134,7 +134,7 @@ test('url subscription (with raw delivery)', () => {
     rawMessageDelivery: true,
   }));
 
-  expect(stack).toMatchTemplate({
+  Template.fromStack(stack).templateMatches({
     'Resources': {
       'MyTopic86869434': {
         'Type': 'AWS::SNS::Topic',
@@ -160,7 +160,7 @@ test('url subscription (unresolved url with protocol)', () => {
   const urlToken = Token.asString({ Ref: 'my-url-1' });
   topic.addSubscription(new subs.UrlSubscription(urlToken, { protocol: sns.SubscriptionProtocol.HTTPS }));
 
-  expect(stack).toMatchTemplate({
+  Template.fromStack(stack).templateMatches({
     'Resources': {
       'MyTopic86869434': {
         'Type': 'AWS::SNS::Topic',
@@ -190,7 +190,7 @@ test('url subscription (double unresolved url with protocol)', () => {
   topic.addSubscription(new subs.UrlSubscription(urlToken1, { protocol: sns.SubscriptionProtocol.HTTPS }));
   topic.addSubscription(new subs.UrlSubscription(urlToken2, { protocol: sns.SubscriptionProtocol.HTTPS }));
 
-  expect(stack).toMatchTemplate({
+  Template.fromStack(stack).templateMatches({
     'Resources': {
       'MyTopic86869434': {
         'Type': 'AWS::SNS::Topic',
@@ -240,7 +240,7 @@ test('queue subscription', () => {
 
   topic.addSubscription(new subs.SqsSubscription(queue));
 
-  expect(stack).toMatchTemplate({
+  Template.fromStack(stack).templateMatches({
     'Resources': {
       'MyTopic86869434': {
         'Type': 'AWS::SNS::Topic',
@@ -332,7 +332,7 @@ test('queue subscription cross region', () => {
 
   topic1.addSubscription(new subs.SqsSubscription(queue));
 
-  expect(topicStack).toMatchTemplate({
+  Template.fromStack(topicStack).templateMatches({
     'Resources': {
       'TopicBFC7AF6E': {
         'Type': 'AWS::SNS::Topic',
@@ -344,7 +344,7 @@ test('queue subscription cross region', () => {
     },
   });
 
-  expect(queueStack).toMatchTemplate({
+  Template.fromStack(queueStack).templateMatches({
     'Resources': {
       'MyQueueE6CA6235': {
         'Type': 'AWS::SQS::Queue',
@@ -438,7 +438,7 @@ test('queue subscription cross region, env agnostic', () => {
 
   topic1.addSubscription(new subs.SqsSubscription(queue));
 
-  expect(topicStack).toMatchTemplate({
+  Template.fromStack(topicStack).templateMatches({
     'Resources': {
       'TopicBFC7AF6E': {
         'Type': 'AWS::SNS::Topic',
@@ -460,7 +460,7 @@ test('queue subscription cross region, env agnostic', () => {
     },
   });
 
-  expect(queueStack).toMatchTemplate({
+  Template.fromStack(queueStack).templateMatches({
     'Resources': {
       'MyQueueE6CA6235': {
         'Type': 'AWS::SQS::Queue',
@@ -540,7 +540,7 @@ test('queue subscription cross region, topic env agnostic', () => {
 
   topic1.addSubscription(new subs.SqsSubscription(queue));
 
-  expect(topicStack).toMatchTemplate({
+  Template.fromStack(topicStack).templateMatches({
     'Resources': {
       'TopicBFC7AF6E': {
         'Type': 'AWS::SNS::Topic',
@@ -552,7 +552,7 @@ test('queue subscription cross region, topic env agnostic', () => {
     },
   });
 
-  expect(queueStack).toMatchTemplate({
+  Template.fromStack(queueStack).templateMatches({
     'Resources': {
       'MyQueueE6CA6235': {
         'Type': 'AWS::SQS::Queue',
@@ -666,7 +666,7 @@ test('queue subscription cross region, queue env agnostic', () => {
 
   topic1.addSubscription(new subs.SqsSubscription(queue));
 
-  expect(topicStack).toMatchTemplate({
+  Template.fromStack(topicStack).templateMatches({
     'Resources': {
       'TopicBFC7AF6E': {
         'Type': 'AWS::SNS::Topic',
@@ -678,7 +678,7 @@ test('queue subscription cross region, queue env agnostic', () => {
     },
   });
 
-  expect(queueStack).toMatchTemplate({
+  Template.fromStack(queueStack).templateMatches({
     'Resources': {
       'MyQueueE6CA6235': {
         'Type': 'AWS::SQS::Queue',
@@ -768,7 +768,7 @@ test('queue subscription with user provided dlq', () => {
     deadLetterQueue: dlQueue,
   }));
 
-  expect(stack).toMatchTemplate({
+  Template.fromStack(stack).templateMatches({
     'Resources': {
       'MyTopic86869434': {
         'Type': 'AWS::SNS::Topic',
@@ -893,7 +893,7 @@ test('queue subscription (with raw delivery)', () => {
 
   topic.addSubscription(new subs.SqsSubscription(queue, { rawMessageDelivery: true }));
 
-  expect(stack).toHaveResource('AWS::SNS::Subscription', {
+  Template.fromStack(stack).hasResourceProperties('AWS::SNS::Subscription', {
     'Endpoint': {
       'Fn::GetAtt': [
         'MyQueueE6CA6235',
@@ -920,7 +920,7 @@ test('encrypted queue subscription', () => {
 
   topic.addSubscription(new subs.SqsSubscription(queue));
 
-  expect(stack).toMatchTemplate({
+  Template.fromStack(stack).templateMatches({
     'Resources': {
       'MyTopic86869434': {
         'Type': 'AWS::SNS::Topic',
@@ -1067,7 +1067,7 @@ test('lambda subscription', () => {
 
   topic.addSubscription(new subs.LambdaSubscription(fction));
 
-  expect(stack).toMatchTemplate({
+  Template.fromStack(stack).templateMatches({
     'Resources': {
       'MyTopic86869434': {
         'Type': 'AWS::SNS::Topic',
@@ -1178,7 +1178,7 @@ test('lambda subscription, cross region env agnostic', () => {
 
   topic1.addSubscription(new subs.LambdaSubscription(fction));
 
-  expect(lambdaStack).toMatchTemplate({
+  Template.fromStack(lambdaStack).templateMatches({
     'Resources': {
       'MyFuncServiceRole54065130': {
         'Type': 'AWS::IAM::Role',
@@ -1292,7 +1292,7 @@ test('lambda subscription, cross region', () => {
 
   topic1.addSubscription(new subs.LambdaSubscription(fction));
 
-  expect(lambdaStack).toMatchTemplate({
+  Template.fromStack(lambdaStack).templateMatches({
     'Resources': {
       'MyFuncServiceRole54065130': {
         'Type': 'AWS::IAM::Role',
@@ -1401,7 +1401,7 @@ test('lambda subscription, cross region', () => {
 test('email subscription', () => {
   topic.addSubscription(new subs.EmailSubscription('foo@bar.com'));
 
-  expect(stack).toMatchTemplate({
+  Template.fromStack(stack).templateMatches({
     'Resources': {
       'MyTopic86869434': {
         'Type': 'AWS::SNS::Topic',
@@ -1428,7 +1428,7 @@ test('email subscription with unresolved', () => {
   const emailToken = Token.asString({ Ref: 'my-email-1' });
   topic.addSubscription(new subs.EmailSubscription(emailToken));
 
-  expect(stack).toMatchTemplate({
+  Template.fromStack(stack).templateMatches({
     'Resources': {
       'MyTopic86869434': {
         'Type': 'AWS::SNS::Topic',
@@ -1459,7 +1459,7 @@ test('email and url subscriptions with unresolved', () => {
   topic.addSubscription(new subs.EmailSubscription(emailToken));
   topic.addSubscription(new subs.UrlSubscription(urlToken, { protocol: sns.SubscriptionProtocol.HTTPS }));
 
-  expect(stack).toMatchTemplate({
+  Template.fromStack(stack).templateMatches({
     'Resources': {
       'MyTopic86869434': {
         'Type': 'AWS::SNS::Topic',
@@ -1507,7 +1507,7 @@ test('email and url subscriptions with unresolved - four subscriptions', () => {
   topic.addSubscription(new subs.EmailSubscription(emailToken3));
   topic.addSubscription(new subs.EmailSubscription(emailToken4));
 
-  expect(stack).toMatchTemplate({
+  Template.fromStack(stack).templateMatches({
     'Resources': {
       'MyTopic86869434': {
         'Type': 'AWS::SNS::Topic',
@@ -1579,7 +1579,7 @@ test('multiple subscriptions', () => {
   topic.addSubscription(new subs.SqsSubscription(queue));
   topic.addSubscription(new subs.LambdaSubscription(func));
 
-  expect(stack).toMatchTemplate({
+  Template.fromStack(stack).templateMatches({
     'Resources': {
       'MyTopic86869434': {
         'Type': 'AWS::SNS::Topic',
@@ -1759,7 +1759,7 @@ test('with filter policy', () => {
     },
   }));
 
-  expect(stack).toHaveResource('AWS::SNS::Subscription', {
+  Template.fromStack(stack).hasResourceProperties('AWS::SNS::Subscription', {
     'FilterPolicy': {
       'color': [
         'red',
@@ -1797,7 +1797,7 @@ test('region property is present on an imported topic - sqs', () => {
   const queue = new sqs.Queue(stack, 'myqueue');
   imported.addSubscription(new subs.SqsSubscription(queue));
 
-  expect(stack).toHaveResource('AWS::SNS::Subscription', {
+  Template.fromStack(stack).hasResourceProperties('AWS::SNS::Subscription', {
     Region: 'us-east-1',
   });
 });
@@ -1808,7 +1808,7 @@ test('region property on an imported topic as a parameter - sqs', () => {
   const queue = new sqs.Queue(stack, 'myqueue');
   imported.addSubscription(new subs.SqsSubscription(queue));
 
-  expect(stack).toHaveResource('AWS::SNS::Subscription', {
+  Template.fromStack(stack).hasResourceProperties('AWS::SNS::Subscription', {
     Region: {
       'Fn::Select': [3, { 'Fn::Split': [':', { 'Ref': 'topicArn' }] }],
     },
@@ -1824,7 +1824,7 @@ test('region property is present on an imported topic - lambda', () => {
   });
   imported.addSubscription(new subs.LambdaSubscription(func));
 
-  expect(stack).toHaveResource('AWS::SNS::Subscription', {
+  Template.fromStack(stack).hasResourceProperties('AWS::SNS::Subscription', {
     Region: 'us-east-1',
   });
 });
@@ -1839,7 +1839,7 @@ test('region property on an imported topic as a parameter - lambda', () => {
   });
   imported.addSubscription(new subs.LambdaSubscription(func));
 
-  expect(stack).toHaveResource('AWS::SNS::Subscription', {
+  Template.fromStack(stack).hasResourceProperties('AWS::SNS::Subscription', {
     Region: {
       'Fn::Select': [3, { 'Fn::Split': [':', { 'Ref': 'topicArn' }] }],
     },
@@ -1849,7 +1849,7 @@ test('region property on an imported topic as a parameter - lambda', () => {
 test('sms subscription', () => {
   topic.addSubscription(new subs.SmsSubscription('+15551231234'));
 
-  expect(stack).toMatchTemplate({
+  Template.fromStack(stack).templateMatches({
     'Resources': {
       'MyTopic86869434': {
         'Type': 'AWS::SNS::Topic',
@@ -1876,7 +1876,7 @@ test('sms subscription with unresolved', () => {
   const smsToken = Token.asString({ Ref: 'my-sms-1' });
   topic.addSubscription(new subs.SmsSubscription(smsToken));
 
-  expect(stack).toMatchTemplate({
+  Template.fromStack(stack).templateMatches({
     'Resources': {
       'MyTopic86869434': {
         'Type': 'AWS::SNS::Topic',
