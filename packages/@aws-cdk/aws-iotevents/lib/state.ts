@@ -11,7 +11,7 @@ export interface StateProps {
   readonly stateName: string;
 
   /**
-   * Specifies the actions that are performed when the state is entered and the `condition` is `TRUE`
+   * Specifies the actions that are performed when the state is entered and the `condition` is `TRUE`.
    *
    * @default - no actions will be performed when the state is entered
    */
