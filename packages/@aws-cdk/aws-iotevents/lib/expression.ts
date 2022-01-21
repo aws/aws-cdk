@@ -63,7 +63,7 @@ class StringExpression extends Expression {
 class BinaryOperationExpression extends Expression {
   constructor(
     private readonly left: Expression,
-    private readonly operater: string,
+    private readonly operator: string,
     private readonly right: Expression,
   ) {
     super();
