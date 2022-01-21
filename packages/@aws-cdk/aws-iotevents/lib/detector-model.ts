@@ -21,7 +21,7 @@ export interface IDetectorModel extends IResource {
  */
 export interface DetectorModelProps {
   /**
-   * The name of the detector model
+   * The name of the detector model.
    *
    * @default - CloudFormation will generate a unique name of the detector model
    */
