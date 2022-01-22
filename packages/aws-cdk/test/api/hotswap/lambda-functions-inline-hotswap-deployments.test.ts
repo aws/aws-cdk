@@ -8,7 +8,7 @@ let hotswapMockSdkProvider: setup.HotswapMockSdkProvider;
 
 beforeEach(() => {
   hotswapMockSdkProvider = setup.setupHotswapTests();
-  mockUpdateLambdaCode = jest.fn();
+  mockUpdateLambdaCode = jest.fn().mockReturnValue({});
   mockTagResource = jest.fn();
   mockUntagResource = jest.fn();
   hotswapMockSdkProvider.stubLambda({
