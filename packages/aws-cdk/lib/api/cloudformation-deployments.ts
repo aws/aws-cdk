@@ -413,6 +413,10 @@ export class CloudFormationDeployments {
   ): Promise<void> {
     const listStackResources = parentStackName ? new LazyListStackResources(sdk, parentStackName) : undefined;
 
+    console.log('---------------')
+    console.log(generatedParentTemplate)
+
+
     const parentNestedStackResources = Object.entries(generatedParentTemplate.Resources ?? {});
     for (const [nestedStackLogicalId, resource] of parentNestedStackResources) {
       if (!this.isCdkManagedNestedStack(resource)) {
@@ -425,18 +429,39 @@ export class CloudFormationDeployments {
         rootStackArtifact, assetPath, nestedStackLogicalId, parentStackName, listStackResources, sdk,
       );
 
-      generatedParentTemplate.Resources[nestedStackLogicalId].NestedTemplate = nestedStackTemplates.generatedNestedTemplate;
+      //generatedParentTemplate.Resources[nestedStackLogicalId].Properties.NestedTemplate = nestedStackTemplates.generatedNestedTemplate;
+
+      ///////////////////////////////
+      if (!generatedParentTemplate.Resources) {
+        generatedParentTemplate.Resources = {};
+      }
+      console.log(nestedStackTemplates)
+      generatedParentTemplate.Resources[nestedStackLogicalId].Properties.NestedTemplate = nestedStackTemplates.generatedNestedTemplate;
+      ///////////////////////////////
 
       let deployedNestedTemplate = {};
       if (deployedParentTemplate.Resources) {
-        deployedParentTemplate.Resources[nestedStackLogicalId].NestedTemplate = nestedStackTemplates.deployedNestedTemplate;
-        deployedNestedTemplate = deployedParentTemplate.Resources[nestedStackLogicalId].NestedTemplate;
+        //deployedParentTemplate.Resources[nestedStackLogicalId].NestedTemplate = nestedStackTemplates.deployedNestedTemplate;
+        //deployedNestedTemplate = deployedParentTemplate.Resources[nestedStackLogicalId].NestedTemplate;
+
+        /////////////////////////////
+        if (!deployedParentTemplate.Resources[nestedStackLogicalId]) {
+          deployedParentTemplate.Resources[nestedStackLogicalId] = {};
+        }
+
+        if (!deployedParentTemplate.Resources[nestedStackLogicalId].Properties) {
+          deployedParentTemplate.Resources[nestedStackLogicalId].Properties = {};
+        }
+
+        deployedParentTemplate.Resources[nestedStackLogicalId].Properties.NestedTemplate = nestedStackTemplates.deployedNestedTemplate;
+        deployedNestedTemplate = deployedParentTemplate.Resources[nestedStackLogicalId].Properties.NestedTemplate ?? {};
+        /////////////////////////////
       }
 
       await this.replaceNestedStacksInParentTemplate(
         rootStackArtifact,
-        generatedParentTemplate.Resources[nestedStackLogicalId].NestedTemplate,
-        deployedNestedTemplate,
+        generatedParentTemplate.Resources[nestedStackLogicalId].Properties.NestedTemplate, // todo: remove .Properties'
+        deployedNestedTemplate ?? {}, // TODO: remove the ?? {}
         nestedStackTemplates.nestedStackName,
         sdk,
       );
