@@ -34,24 +34,14 @@ export interface IWidget {
  * This is in contrast to other widgets which exist for layout purposes.
  */
 export abstract class ConcreteWidget implements IWidget {
-  /**
-   * Same as width, but writable inside class methods
-   * @internal
-   */
-  protected _width: number;
   public readonly width: number;
-  /**
-   * Same as height, but writable inside class methods
-   * @internal
-   */
-  protected _height: number;
   public readonly height: number;
   protected x?: number;
   protected y?: number;
 
   constructor(width: number, height: number) {
-    this.width = this._width = width;
-    this.height = this._height = height;
+    this.width = width;
+    this.height = height;
 
     if (this.width > GRID_WIDTH) {
       throw new Error(`Widget is too wide, max ${GRID_WIDTH} units allowed`);

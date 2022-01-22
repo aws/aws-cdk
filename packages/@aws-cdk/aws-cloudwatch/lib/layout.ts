@@ -8,7 +8,14 @@ import { GRID_WIDTH, IWidget } from './widget';
  * Widgets will be laid out next to each other
  */
 export class Row implements IWidget {
+  /**
+   * Same as width, but writable inside class methods
+   */
   private _width: number;
+
+  /**
+   * Same as height, but writable inside class methods
+   */
   private _height: number;
 
   /**
@@ -55,6 +62,9 @@ export class Row implements IWidget {
     this._height = Math.max(this.height, y + widget.height);
   }
 
+  /**
+   * Add the widget to this container
+   */
   public addWidget(w: IWidget): void {
     this.widgets.push(w);
 
