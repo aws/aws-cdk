@@ -1,8 +1,8 @@
 import * as path from 'path';
 import { format } from 'util';
 import * as cxapi from '@aws-cdk/cx-api';
-import * as chokidar from 'chokidar';
 import * as chalk from 'chalk';
+import * as chokidar from 'chokidar';
 import * as fs from 'fs-extra';
 import * as promptly from 'promptly';
 import { environmentsFromDescriptors, globEnvironmentsFromStacks, looksLikeGlob } from '../lib/api/cxapp/environments';
@@ -233,7 +233,8 @@ export class CdkToolkit {
         }
 
         for (const name of Object.keys(result.outputs).sort()) {
-          const value = result.outputs[name];
+          // We will mask sensitive data because we are running in CI system
+          const value = options.ci ? '**********' : result.outputs[name];
           print('%s.%s = %s', chalk.cyan(stack.id), chalk.cyan(name), chalk.underline(chalk.cyan(value)));
         }
 
