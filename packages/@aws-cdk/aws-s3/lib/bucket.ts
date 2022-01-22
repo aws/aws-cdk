@@ -356,9 +356,7 @@ export interface IBucket extends IResource {
 }
 
 /**
- * A reference to a bucket. The easiest way to instantiate is to call
- * `bucket.export()`. Then, the consumer can use `Bucket.import(this, ref)` and
- * get a `Bucket`.
+ * A reference to a bucket outside this stack
  */
 export interface BucketAttributes {
   /**
@@ -1869,6 +1867,7 @@ export class Bucket extends BucketBase {
         noncurrentVersionTransitions: mapOrUndefined(rule.noncurrentVersionTransitions, t => ({
           storageClass: t.storageClass.value,
           transitionInDays: t.transitionAfter.toDays(),
+          newerNoncurrentVersions: t.noncurrentVersionsToRetain,
         })),
         prefix: rule.prefix,
         status: enabled ? 'Enabled' : 'Disabled',

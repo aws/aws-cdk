@@ -18,7 +18,7 @@ export class HostedZoneContextProviderPlugin implements ContextProviderPlugin {
     const domainName = args.domainName;
     debug(`Reading hosted zone ${account}:${region}:${domainName}`);
     const options = { assumeRoleArn: args.lookupRoleArn };
-    const r53 = (await this.aws.forEnvironment(cxapi.EnvironmentUtils.make(account, region), Mode.ForReading, options)).route53();
+    const r53 = (await this.aws.forEnvironment(cxapi.EnvironmentUtils.make(account, region), Mode.ForReading, options)).sdk.route53();
     const response = await r53.listHostedZonesByName({ DNSName: domainName }).promise();
     if (!response.HostedZones) {
       throw new Error(`Hosted Zone not found in account ${account}, region ${region}: ${domainName}`);
