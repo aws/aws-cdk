@@ -1,5 +1,5 @@
 import { EOL } from 'os';
-import { expect as expectCDK, haveResource, ResourcePart } from '@aws-cdk/assert-internal';
+import { Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import * as ecr from '../lib';
@@ -13,7 +13,7 @@ describe('public repository', () => {
     new ecr.PublicRepository(stack, 'PublicRepo');
 
     // THEN
-    expectCDK(stack).toMatch({
+    Template.fromStack(stack).templateMatches({
       Resources: {
         PublicRepo59BDF279: {
           Type: 'AWS::ECR::PublicRepository',
@@ -38,7 +38,7 @@ describe('public repository', () => {
     });
 
     // THEN
-    expectCDK(stack).toMatch({
+    Template.fromStack(stack).templateMatches({
       Resources: {
         PublicRepo59BDF279: {
           Type: 'AWS::ECR::PublicRepository',
@@ -75,7 +75,7 @@ describe('public repository', () => {
     });
 
     // THEN
-    expectCDK(stack).to(haveResource('AWS::ECR::PublicRepository', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECR::PublicRepository', {
       RepositoryPolicyText: {
         Statement: [
           {
@@ -86,7 +86,7 @@ describe('public repository', () => {
         ],
         Version: '2012-10-17',
       },
-    }));
+    });
   });
 
   test('resource policy using addToResourcePolicy() method', () => {
@@ -101,7 +101,7 @@ describe('public repository', () => {
     }));
 
     // THEN
-    expectCDK(stack).to(haveResource('AWS::ECR::PublicRepository', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECR::PublicRepository', {
       RepositoryPolicyText: {
         Statement: [
           {
@@ -112,7 +112,7 @@ describe('public repository', () => {
         ],
         Version: '2012-10-17',
       },
-    }));
+    });
   });
 
   test('fails if repository policy has no actions', () => {
@@ -155,10 +155,10 @@ describe('public repository', () => {
     new ecr.PublicRepository(stack, 'PublicRepo');
 
     // THEN
-    expectCDK(stack).to(haveResource('AWS::ECR::PublicRepository', {
+    Template.fromStack(stack).hasResource('AWS::ECR::PublicRepository', {
       Type: 'AWS::ECR::PublicRepository',
       DeletionPolicy: 'Retain',
-    }, ResourcePart.CompleteDefinition));
+    });
   });
 
   test('"Delete" removal policy can be set explicitly', () => {
@@ -171,10 +171,10 @@ describe('public repository', () => {
     });
 
     // THEN
-    expectCDK(stack).to(haveResource('AWS::ECR::PublicRepository', {
+    Template.fromStack(stack).hasResource('AWS::ECR::PublicRepository', {
       Type: 'AWS::ECR::PublicRepository',
       DeletionPolicy: 'Delete',
-    }, ResourcePart.CompleteDefinition));
+    });
   });
 
   test('fails with message on invalid repository names', () => {
@@ -232,7 +232,7 @@ describe('public repository', () => {
     repo.grantPush(new iam.AnyPrincipal());
 
     // THEN
-    expectCDK(stack).to(haveResource('AWS::ECR::PublicRepository', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECR::PublicRepository', {
       RepositoryPolicyText: {
         Statement: [
           {
@@ -249,7 +249,7 @@ describe('public repository', () => {
         ],
         Version: '2012-10-17',
       },
-    }));
+    });
   });
 
   test('import with concrete arn', () => {
@@ -283,10 +283,20 @@ describe('public repository', () => {
       publicRepositoryArn: cdk.Fn.getAtt('Boom', 'Arn').toString(),
       publicRepositoryName: cdk.Fn.getAtt('Boom', 'Name').toString(),
     });
+    new cdk.CfnOutput(stack, 'RepoArn', {
+      value: repo.publicRepositoryArn,
+    });
+    new cdk.CfnOutput(stack, 'RepoName', {
+      value: repo.publicRepositoryName,
+    });
 
     // THEN
-    expectCDK(stack.resolve(repo.publicRepositoryArn)).toMatch({ 'Fn::GetAtt': ['Boom', 'Arn'] });
-    expectCDK(stack.resolve(repo.publicRepositoryName)).toMatch({ 'Fn::GetAtt': ['Boom', 'Name'] });
+    Template.fromStack(stack).hasOutput('*', {
+      Value: { 'Fn::GetAtt': ['Boom', 'Arn'] },
+    });
+    Template.fromStack(stack).hasOutput('*', {
+      Value: { 'Fn::GetAtt': ['Boom', 'Name'] },
+    });
   });
 
   test('import with local public repository name', () => {
@@ -295,14 +305,24 @@ describe('public repository', () => {
 
     // WHEN
     const repo = ecr.PublicRepository.fromPublicRepositoryName(stack, 'PublicRepo', 'foo/bar/foo/fooo');
+    new cdk.CfnOutput(stack, 'RepoArn', {
+      value: repo.publicRepositoryArn,
+    });
+    new cdk.CfnOutput(stack, 'RepoName', {
+      value: repo.publicRepositoryName,
+    });
 
     // THEN
-    expectCDK(stack.resolve(repo.publicRepositoryArn)).toMatch({
-      'Fn::Join': ['', [
-        'arn:', { Ref: 'AWS::Partition' }, ':ecr-public::',
-        { Ref: 'AWS::AccountId' }, ':repository/foo/bar/foo/fooo',
-      ]],
+    Template.fromStack(stack).hasOutput('*', {
+      Value: {
+        'Fn::Join': ['', [
+          'arn:', { Ref: 'AWS::Partition' }, ':ecr-public::',
+          { Ref: 'AWS::AccountId' }, ':repository/foo/bar/foo/fooo',
+        ]],
+      },
     });
-    expect(stack.resolve(repo.publicRepositoryName)).toBe('foo/bar/foo/fooo');
+    Template.fromStack(stack).hasOutput('*', {
+      Value: 'foo/bar/foo/fooo',
+    });
   });
 });
