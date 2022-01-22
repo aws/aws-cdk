@@ -707,7 +707,7 @@ describe('function', () => {
             Action: 'sns:Publish',
             Effect: 'Allow',
             Resource: {
-              'Ref': 'DeadLetterQueue9F481546',
+              Ref: 'DeadLetterQueue9F481546',
             },
           },
         ],
@@ -718,7 +718,7 @@ describe('function', () => {
     expect(stack).toHaveResource('AWS::Lambda::Function', {
       DeadLetterConfig: {
         TargetArn: {
-          'Ref': 'DeadLetterQueue9F481546',
+          Ref: 'DeadLetterQueue9F481546',
         },
       },
     });
