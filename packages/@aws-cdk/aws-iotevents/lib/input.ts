@@ -1,3 +1,4 @@
+import * as iam from '@aws-cdk/aws-iam';
 import { Resource, IResource } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnInput } from './iotevents.generated';
@@ -11,7 +12,65 @@ export interface IInput extends IResource {
    * @attribute
    */
   readonly inputName: string;
+
+  /**
+   * The ARN of the input
+   * @attribute
+   */
+  readonly inputArn: string;
+
+  /**
+   * Grant the indicated permissions on this input to the given IAM principal (Role/Group/User).
+   *
+   * @param grantee The principal (no-op if undefined)
+   * @param actions The set of actions to allow (i.e. "dynamodb:PutItem", "dynamodb:GetItem", ...)
+   */
+  grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant
+
+  /**
+   * Grant the putting message permission to the given IAM principal (Role/Group/User).
+   *
+   * @param grantee The principal (no-op if undefined)
+   */
+  grantPutMessage(grantee: iam.IGrantable): iam.Grant
 }
+
+
+abstract class InputBase extends Resource implements IInput {
+  /**
+   * @attribute
+   */
+  public abstract readonly inputName: string;
+  /**
+   * @attribute
+   */
+  public abstract readonly inputArn: string;
+
+  /**
+   * Grant the indicated permissions on this input to the given IAM principal (Role/Group/User).
+   *
+   * @param grantee The principal (no-op if undefined)
+   * @param actions The set of actions to allow (i.e. "dynamodb:PutItem", "dynamodb:GetItem", ...)
+   */
+  public grant(grantee: iam.IGrantable, ...actions: string[]) {
+    return iam.Grant.addToPrincipal({
+      grantee,
+      actions,
+      resourceArns: [this.inputArn],
+      scope: this,
+    });
+  }
+
+  /**
+   * Grant the putting message permission to the given IAM principal (Role/Group/User).
+   *
+   * @param grantee The principal (no-op if undefined)
+   */
+  public grantPutMessage(grantee: iam.IGrantable) {
+    return this.grant(grantee, 'iotevents-data:BatchPutMessage');
+  }
+}
+
 
 /**
  * Properties for defining an AWS IoT Events input
@@ -37,18 +96,23 @@ export interface InputProps {
 /**
  * Defines an AWS IoT Events input in this stack.
  */
-export class Input extends Resource implements IInput {
+export class Input extends InputBase {
   /**
    * Import an existing input
    */
   public static fromInputName(scope: Construct, id: string, inputName: string): IInput {
-    class Import extends Resource implements IInput {
+    return new class Import extends InputBase {
       public readonly inputName = inputName;
-    }
-    return new Import(scope, id);
+      public readonly inputArn = this.stack.formatArn({
+        service: 'iotevents',
+        resource: 'input',
+        resourceName: inputName,
+      });
+    }(scope, id);
   }
 
   public readonly inputName: string;
+  public readonly inputArn: string;
 
   constructor(scope: Construct, id: string, props: InputProps) {
     super(scope, id, {
@@ -67,5 +131,10 @@ export class Input extends Resource implements IInput {
     });
 
     this.inputName = this.getResourceNameAttribute(resource.ref);
+    this.inputArn = this.stack.formatArn({
+      service: 'iotevents',
+      resource: 'input',
+      resourceName: this.inputName,
+    });
   }
 }
