@@ -1,17 +1,16 @@
 import { EOL } from 'os';
+import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
-import { IResource, Lazy, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/core';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-
+import { Lazy, Resource, Stack, Token } from '@aws-cdk/core';
 import { Construct, IConstruct } from 'constructs';
+import { BaseRepositoryProps, IBaseRepository, OnCloudTrailImagePushedOptions } from './base-repository';
 import { CfnPublicRepository, CfnPublicRepositoryProps } from './ecr.generated';
 
 /**
  * Represents an ECR Public Repository.
  */
-export interface IPublicRepository extends IResource {
+export interface IPublicRepository extends IBaseRepository {
+
   /**
    * The name of the repository.
    * @attribute
@@ -25,16 +24,6 @@ export interface IPublicRepository extends IResource {
   readonly publicRepositoryArn: string;
 
   /**
-   * Add a policy statement to the repository's resource policy
-   */
-  addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult;
-
-  /**
-   * Grant the given principal identity permissions to perform the actions on this repository
-   */
-  grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant;
-
-  /**
    * Grant the given identity permissions to push images to this repository.
    */
   grantPush(grantee: iam.IGrantable): iam.Grant;
@@ -44,6 +33,8 @@ export interface IPublicRepository extends IResource {
  * Base class for ECR Public Repository. Reused between imported repositories and owned repositories.
  */
 export abstract class PublicRepositoryBase extends Resource implements IPublicRepository {
+
+  protected static readonly PUBLIC_REPO_REGION = 'us-east-1';
 
   // From https://docs.aws.amazon.com/AmazonECR/latest/public/public-repository-policy-examples.html
   private static readonly PUSH_IAM_ACTIONS = [
@@ -58,6 +49,52 @@ export abstract class PublicRepositoryBase extends Resource implements IPublicRe
   public abstract readonly publicRepositoryArn: string;
 
   public abstract addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult;
+
+  public onCloudTrailEvent(id: string, options: events.OnEventOptions = {}): events.Rule {
+    // See https://docs.aws.amazon.com/AmazonECR/latest/public/logging-using-cloudtrail.html
+    if (Stack.of(this).region !== PublicRepositoryBase.PUBLIC_REPO_REGION) {
+      throw new Error(`CloudWatch event rule for ECR Public Repository can only be created in ${PublicRepositoryBase.PUBLIC_REPO_REGION}.`);
+    }
+
+    const rule = new events.Rule(this, id, options);
+    rule.addTarget(options.target);
+    rule.addEventPattern({
+      source: ['aws.ecr-public'],
+      detailType: ['AWS API Call via CloudTrail'],
+      detail: {
+        requestParameters: {
+          repositoryName: [this.publicRepositoryName],
+        },
+      },
+    });
+    return rule;
+  }
+
+  public onCloudTrailImagePushed(id: string, options: OnCloudTrailImagePushedOptions = {}): events.Rule {
+    const rule = this.onCloudTrailEvent(id, options);
+    rule.addEventPattern({
+      detail: {
+        eventName: ['PutImage'],
+        requestParameters: {
+          imageTag: options.imageTag ? [options.imageTag] : undefined,
+        },
+      },
+    });
+    return rule;
+  }
+
+  public onEvent(id: string, options: events.OnEventOptions = {}) {
+    if (Stack.of(this).region !== PublicRepositoryBase.PUBLIC_REPO_REGION) {
+      throw new Error(`CloudWatch event rule for ECR Public Repository can only be created in ${PublicRepositoryBase.PUBLIC_REPO_REGION}.`);
+    }
+    const rule = new events.Rule(this, id, options);
+    rule.addEventPattern({
+      source: ['aws.ecr-public'],
+      resources: [this.publicRepositoryArn],
+    });
+    rule.addTarget(options.target);
+    return rule;
+  }
 
   public grant(grantee: iam.IGrantable, ...actions: string[]) {
     return iam.Grant.addToPrincipalAndResource({
@@ -86,7 +123,7 @@ export abstract class PublicRepositoryBase extends Resource implements IPublicRe
 /**
  * Options for the ECR Public Repository construct.
  */
-export interface PublicRepositoryProps {
+export interface PublicRepositoryProps extends BaseRepositoryProps {
   /**
    * Name for this repository
    *
@@ -139,13 +176,6 @@ export interface PublicRepositoryProps {
    * @default - No policy document. Only the repository owner has access to manage the repository.
    */
   readonly resourcePolicy?: iam.PolicyStatement[];
-
-  /**
-   * Determine what happens to the repository when the resource/stack is deleted.
-   *
-   * @default RemovalPolicy.Retain
-   */
-  readonly removalPolicy?: RemovalPolicy;
 }
 
 /**
@@ -168,7 +198,6 @@ export interface PublicRepositoryAttributes {
  * Define an ECR Public Repository.
  */
 export class PublicRepository extends PublicRepositoryBase {
-
   /**
    * Import a repository from attributes.
    */
@@ -276,6 +305,9 @@ export class PublicRepository extends PublicRepositoryBase {
     super(scope, id, {
       physicalName: props.publicRepositoryName,
     });
+    if (Stack.of(this).region !== PublicRepositoryBase.PUBLIC_REPO_REGION) {
+      throw new Error(`ECR Public Repository can only be created in ${PublicRepositoryBase.PUBLIC_REPO_REGION}.`);
+    }
 
     PublicRepository.validateRepositoryName(this.physicalName);
 

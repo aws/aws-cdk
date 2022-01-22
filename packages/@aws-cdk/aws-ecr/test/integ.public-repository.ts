@@ -16,7 +16,7 @@ import * as ecr from '../lib';
  */
 
 const app = new cdk.App();
-const stack = new cdk.Stack(app, 'aws-ecr-public-repo-integ-stack');
+const stack = new cdk.Stack(app, 'aws-ecr-public-repo-integ-stack', { env: { region: 'us-east-1' } });
 
 const repo = new ecr.PublicRepository(stack, 'PublicRepo', {
   description: 'Some description',

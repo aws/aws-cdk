@@ -1,15 +1,16 @@
 import { EOL } from 'os';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
-import { ArnFormat, IResource, Lazy, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/core';
+import { ArnFormat, Lazy, Resource, Stack, Token } from '@aws-cdk/core';
 import { IConstruct, Construct } from 'constructs';
+import { BaseRepositoryProps, IBaseRepository, OnCloudTrailImagePushedOptions } from './base-repository';
 import { CfnRepository } from './ecr.generated';
 import { LifecycleRule, TagStatus } from './lifecycle';
 
 /**
  * Represents an ECR repository.
  */
-export interface IRepository extends IResource {
+export interface IRepository extends IBaseRepository {
   /**
    * The name of the repository
    * @attribute
@@ -50,16 +51,6 @@ export interface IRepository extends IResource {
   repositoryUriForDigest(digest?: string): string;
 
   /**
-   * Add a policy statement to the repository's resource policy
-   */
-  addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult;
-
-  /**
-   * Grant the given principal identity permissions to perform the actions on this repository
-   */
-  grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant;
-
-  /**
    * Grant the given identity permissions to pull images in this repository.
    */
   grantPull(grantee: iam.IGrantable): iam.Grant;
@@ -70,29 +61,6 @@ export interface IRepository extends IResource {
   grantPullPush(grantee: iam.IGrantable): iam.Grant;
 
   /**
-   * Define a CloudWatch event that triggers when something happens to this repository
-   *
-   * Requires that there exists at least one CloudTrail Trail in your account
-   * that captures the event. This method will not create the Trail.
-   *
-   * @param id The id of the rule
-   * @param options Options for adding the rule
-   */
-  onCloudTrailEvent(id: string, options?: events.OnEventOptions): events.Rule;
-
-  /**
-   * Defines an AWS CloudWatch event rule that can trigger a target when an image is pushed to this
-   * repository.
-   *
-   * Requires that there exists at least one CloudTrail Trail in your account
-   * that captures the event. This method will not create the Trail.
-   *
-   * @param id The id of the rule
-   * @param options Options for adding the rule
-   */
-  onCloudTrailImagePushed(id: string, options?: OnCloudTrailImagePushedOptions): events.Rule;
-
-  /**
    * Defines an AWS CloudWatch event rule that can trigger a target when the image scan is completed
    *
    *
@@ -100,16 +68,10 @@ export interface IRepository extends IResource {
    * @param options Options for adding the rule
    */
   onImageScanCompleted(id: string, options?: OnImageScanCompletedOptions): events.Rule;
-
-  /**
-   * Defines a CloudWatch event rule which triggers for repository events. Use
-   * `rule.addEventPattern(pattern)` to specify a filter.
-   */
-  onEvent(id: string, options?: events.OnEventOptions): events.Rule;
 }
 
 /**
- * Base class for ECR repository. Reused between imported repositories and owned repositories.
+ * Base class for private ECR repository. Reused between imported repositories and owned repositories.
  */
 export abstract class RepositoryBase extends Resource implements IRepository {
   /**
@@ -295,18 +257,6 @@ export abstract class RepositoryBase extends Resource implements IRepository {
 }
 
 /**
- * Options for the onCloudTrailImagePushed method
- */
-export interface OnCloudTrailImagePushedOptions extends events.OnEventOptions {
-  /**
-   * Only watch changes to this image tag
-   *
-   * @default - Watch changes to all tags
-   */
-  readonly imageTag?: string;
-}
-
-/**
  * Options for the OnImageScanCompleted method
  */
 export interface OnImageScanCompletedOptions extends events.OnEventOptions {
@@ -319,7 +269,7 @@ export interface OnImageScanCompletedOptions extends events.OnEventOptions {
   readonly imageTags?: string[];
 }
 
-export interface RepositoryProps {
+export interface RepositoryProps extends BaseRepositoryProps {
   /**
    * Name for this repository
    *
@@ -343,13 +293,6 @@ export interface RepositoryProps {
   readonly lifecycleRegistryId?: string;
 
   /**
-   * Determine what happens to the repository when the resource/stack is deleted.
-   *
-   * @default RemovalPolicy.Retain
-   */
-  readonly removalPolicy?: RemovalPolicy;
-
-  /**
    * Enable the scan on push when creating the repository
    *
    *  @default false
@@ -370,7 +313,7 @@ export interface RepositoryAttributes {
 }
 
 /**
- * Define an ECR repository
+ * Define a private ECR repository
  */
 export class Repository extends RepositoryBase {
   /**

@@ -7,7 +7,7 @@ import * as ecr from '../lib';
 describe('public repository', () => {
   test('construct public repository', () => {
     // GIVEN
-    const stack = new cdk.Stack();
+    const stack = new cdk.Stack(new cdk.App(), 'id', { env: { region: 'us-east-1' } });
 
     // WHEN
     new ecr.PublicRepository(stack, 'PublicRepo');
@@ -24,9 +24,17 @@ describe('public repository', () => {
     });
   });
 
+  test('construct public repository in incorrect region should fail', () => {
+    // GIVEN
+    const stack = new cdk.Stack(new cdk.App(), 'id', { env: { region: 'us-east-2' } });
+
+    // WHEN/THEN
+    expect(() => new ecr.PublicRepository(stack, 'PublicRepo')).toThrow(/ECR Public Repository can only be created in us-east-1./);
+  });
+
   test('construct public repository with repository catalog data', () => {
     // GIVEN
-    const stack = new cdk.Stack();
+    const stack = new cdk.Stack(new cdk.App(), 'id', { env: { region: 'us-east-1' } });
 
     // WHEN
     new ecr.PublicRepository(stack, 'PublicRepo', {
@@ -64,7 +72,7 @@ describe('public repository', () => {
 
   test('resource policy using constructor', () => {
     // GIVEN
-    const stack = new cdk.Stack();
+    const stack = new cdk.Stack(new cdk.App(), 'id', { env: { region: 'us-east-1' } });
 
     // WHEN
     new ecr.PublicRepository(stack, 'PublicRepo', {
@@ -91,7 +99,7 @@ describe('public repository', () => {
 
   test('resource policy using addToResourcePolicy() method', () => {
     // GIVEN
-    const stack = new cdk.Stack();
+    const stack = new cdk.Stack(new cdk.App(), 'id', { env: { region: 'us-east-1' } });
     const repo = new ecr.PublicRepository(stack, 'PublicRepo');
 
     // WHEN
@@ -118,7 +126,7 @@ describe('public repository', () => {
   test('fails if repository policy has no actions', () => {
     // GIVEN
     const app = new cdk.App();
-    const stack = new cdk.Stack(app, 'my-stack');
+    const stack = new cdk.Stack(app, 'id', { env: { region: 'us-east-1' } });
     const repo = new ecr.PublicRepository(stack, 'PublicRepo');
 
     // WHEN
@@ -134,7 +142,7 @@ describe('public repository', () => {
   test('fails if repository policy has no IAM principals', () => {
     // GIVEN
     const app = new cdk.App();
-    const stack = new cdk.Stack(app, 'my-stack');
+    const stack = new cdk.Stack(app, 'id', { env: { region: 'us-east-1' } });
     const repo = new ecr.PublicRepository(stack, 'PublicRepo');
 
     // WHEN
@@ -147,9 +155,47 @@ describe('public repository', () => {
     expect(() => app.synth()).toThrow(/A PolicyStatement used in a resource-based policy must specify at least one IAM principal/);
   });
 
+  describe('events', () => {
+    test('onImagePushed without imageTag creates the correct event', () => {
+      const stack = new cdk.Stack(new cdk.App(), 'id', {
+        env: {
+          region: 'us-east-1',
+        },
+      });
+      const repo = new ecr.PublicRepository(stack, 'PublicRepo');
+
+      repo.onCloudTrailImagePushed('EventRule', {
+        target: {
+          bind: () => ({ arn: 'ARN', id: '' }),
+        },
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+        EventPattern: {
+          source: [
+            'aws.ecr-public',
+          ],
+          detail: {
+            eventName: [
+              'PutImage',
+            ],
+            requestParameters: {
+              repositoryName: [
+                {
+                  Ref: 'PublicRepo59BDF279',
+                },
+              ],
+            },
+          },
+        },
+        State: 'ENABLED',
+      });
+    });
+  });
+
   test('removal policy is "Retain" by default', () => {
     // GIVEN
-    const stack = new cdk.Stack();
+    const stack = new cdk.Stack(new cdk.App(), 'id', { env: { region: 'us-east-1' } });
 
     // WHEN
     new ecr.PublicRepository(stack, 'PublicRepo');
@@ -163,7 +209,7 @@ describe('public repository', () => {
 
   test('"Delete" removal policy can be set explicitly', () => {
     // GIVEN
-    const stack = new cdk.Stack();
+    const stack = new cdk.Stack(new cdk.App(), 'id', { env: { region: 'us-east-1' } });
 
     // WHEN
     new ecr.PublicRepository(stack, 'PublicRepo', {
@@ -178,7 +224,7 @@ describe('public repository', () => {
   });
 
   test('fails with message on invalid repository names', () => {
-    const stack = new cdk.Stack();
+    const stack = new cdk.Stack(new cdk.App(), 'id', { env: { region: 'us-east-1' } });
     const repositoryName = `-repositoRy.--${new Array(205).join('$')}`;
     const expectedErrors = [
       `Invalid ECR repository name (value: ${repositoryName})`,
@@ -192,7 +238,7 @@ describe('public repository', () => {
   });
 
   test('fails if repository name has less than 2 or more than 205 characters', () => {
-    const stack = new cdk.Stack();
+    const stack = new cdk.Stack(new cdk.App(), 'id', { env: { region: 'us-east-1' } });
 
     expect(() => new ecr.PublicRepository(stack, 'PublicRepo1', {
       publicRepositoryName: 'a',
@@ -204,7 +250,7 @@ describe('public repository', () => {
   });
 
   test('fails if repository name does not follow the specified pattern', () => {
-    const stack = new cdk.Stack();
+    const stack = new cdk.Stack(new cdk.App(), 'id', { env: { region: 'us-east-1' } });
 
     expect(() => new ecr.PublicRepository(stack, 'PublicRepo1', {
       publicRepositoryName: 'aAa',
@@ -225,7 +271,7 @@ describe('public repository', () => {
 
   test('grantPullPush adds appropriate resource policies', () => {
     // GIVEN
-    const stack = new cdk.Stack();
+    const stack = new cdk.Stack(new cdk.App(), 'id', { env: { region: 'us-east-1' } });
     const repo = new ecr.PublicRepository(stack, 'PublicRepo');
 
     // WHEN
@@ -254,7 +300,7 @@ describe('public repository', () => {
 
   test('import with concrete arn', () => {
     // GIVEN
-    const stack = new cdk.Stack();
+    const stack = new cdk.Stack(new cdk.App(), 'id', { env: { region: 'us-east-1' } });
 
     // WHEN
     const repo = ecr.PublicRepository.fromPublicRepositoryArn(stack, 'repo', 'arn:aws:ecr-public::585695036304:repository/foo/bar/foo/fooo');
@@ -266,7 +312,7 @@ describe('public repository', () => {
 
   test('fails if importing with token arn and no name', () => {
     // GIVEN
-    const stack = new cdk.Stack();
+    const stack = new cdk.Stack(new cdk.App(), 'id', { env: { region: 'us-east-1' } });
 
     // WHEN/THEN
     expect(() => {
@@ -276,7 +322,7 @@ describe('public repository', () => {
 
   test('import with token arn and repository name (see awslabs/aws-cdk#1232)', () => {
     // GIVEN
-    const stack = new cdk.Stack();
+    const stack = new cdk.Stack(new cdk.App(), 'id', { env: { region: 'us-east-1' } });
 
     // WHEN
     const repo = ecr.PublicRepository.fromPublicRepositoryAttributes(stack, 'PublicRepo', {
@@ -301,7 +347,7 @@ describe('public repository', () => {
 
   test('import with local public repository name', () => {
     // GIVEN
-    const stack = new cdk.Stack();
+    const stack = new cdk.Stack(new cdk.App(), 'id', { env: { region: 'us-east-1' } });
 
     // WHEN
     const repo = ecr.PublicRepository.fromPublicRepositoryName(stack, 'PublicRepo', 'foo/bar/foo/fooo');
