@@ -863,6 +863,10 @@ export abstract class BucketBase extends Resource implements IBucket {
     return this.addEventNotification(EventType.OBJECT_REMOVED, dest, ...filters);
   }
 
+  protected enableEventBridgeNotification() {
+    this.notifications.enableEventBridgeNotification();
+  }
+
   private get writeActions(): string[] {
     return [
       ...perms.BUCKET_DELETE_ACTIONS,
@@ -1340,6 +1344,13 @@ export interface BucketProps {
   readonly versioned?: boolean;
 
   /**
+   * Whether this bucket should send notifications to Amazon EventBridge or not.
+   *
+   * @default false
+   */
+  readonly eventBridgeEnabled?: boolean;
+
+  /**
    * Rules that define how Amazon S3 manages objects during their lifetime.
    *
    * @default - No lifecycle rules.
@@ -1619,6 +1630,7 @@ export class Bucket extends BucketBase {
   private accessControl?: BucketAccessControl;
   private readonly lifecycleRules: LifecycleRule[] = [];
   private readonly versioned?: boolean;
+  private readonly eventBridgeEnabled?: boolean;
   private readonly metrics: BucketMetrics[] = [];
   private readonly cors: CorsRule[] = [];
   private readonly inventories: Inventory[] = [];
@@ -1658,6 +1670,7 @@ export class Bucket extends BucketBase {
 
     this.versioned = props.versioned;
     this.encryptionKey = encryptionKey;
+    this.eventBridgeEnabled = props.eventBridgeEnabled;
 
     this.bucketName = this.getResourceNameAttribute(resource.ref);
     this.bucketArn = this.getResourceArnAttribute(resource.attrArn, {
@@ -1707,6 +1720,10 @@ export class Bucket extends BucketBase {
       }
 
       this.enableAutoDeleteObjects();
+    }
+
+    if (this.eventBridgeEnabled) {
+      this.enableEventBridgeNotification();
     }
   }
 
