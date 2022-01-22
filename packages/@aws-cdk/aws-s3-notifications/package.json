@@ -71,12 +71,12 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert-internal": "0.0.0",
+    "@aws-cdk/assertions": "0.0.0",
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/cdk-integ-tools": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/jest": "^27.0.3",
-    "jest": "^27.4.5"
+    "@types/jest": "^27.4.0",
+    "jest": "^27.4.7"
   },
   "dependencies": {
     "@aws-cdk/aws-iam": "0.0.0",

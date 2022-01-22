@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import { Certificate } from '@aws-cdk/aws-certificatemanager';
 import { HostedZone } from '@aws-cdk/aws-route53';
 import { App, Stack } from '@aws-cdk/core';
@@ -20,7 +20,7 @@ test('create HTTPS redirect', () => {
   });
 
   // THEN
-  expect(stack).toHaveResource('AWS::S3::Bucket', {
+  Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
     WebsiteConfiguration: {
       RedirectAllRequestsTo: {
         HostName: 'bar.example.com',
@@ -34,28 +34,28 @@ test('create HTTPS redirect', () => {
       RestrictPublicBuckets: true,
     },
   });
-  expect(stack).toHaveResourceLike('AWS::CloudFront::Distribution', {
+  Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
     DistributionConfig: {
       Aliases: ['foo.example.com', 'baz.example.com'],
       DefaultRootObject: '',
     },
   });
-  expect(stack).toHaveResource('AWS::Route53::RecordSet', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Route53::RecordSet', {
     Type: 'A',
     Name: 'foo.example.com.',
     HostedZoneId: 'ID',
   });
-  expect(stack).toHaveResource('AWS::Route53::RecordSet', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Route53::RecordSet', {
     Type: 'AAAA',
     Name: 'foo.example.com.',
     HostedZoneId: 'ID',
   });
-  expect(stack).toHaveResource('AWS::Route53::RecordSet', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Route53::RecordSet', {
     Type: 'A',
     Name: 'baz.example.com.',
     HostedZoneId: 'ID',
   });
-  expect(stack).toHaveResource('AWS::Route53::RecordSet', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Route53::RecordSet', {
     Type: 'AAAA',
     Name: 'baz.example.com.',
     HostedZoneId: 'ID',
@@ -77,7 +77,7 @@ test('create HTTPS redirect for apex', () => {
   });
 
   // THEN
-  expect(stack).toHaveResource('AWS::S3::Bucket', {
+  Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
     WebsiteConfiguration: {
       RedirectAllRequestsTo: {
         HostName: 'bar.example.com',
@@ -85,11 +85,11 @@ test('create HTTPS redirect for apex', () => {
       },
     },
   });
-  expect(stack).toHaveResource('AWS::Route53::RecordSet', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Route53::RecordSet', {
     Type: 'A',
     Name: 'example.com.',
   });
-  expect(stack).toHaveResource('AWS::Route53::RecordSet', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Route53::RecordSet', {
     Type: 'AAAA',
     Name: 'example.com.',
   });
@@ -114,7 +114,7 @@ test('create HTTPS redirect with existing cert', () => {
   });
 
   // THEN
-  expect(stack).toHaveResource('AWS::S3::Bucket', {
+  Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
     WebsiteConfiguration: {
       RedirectAllRequestsTo: {
         HostName: 'bar.example.com',
@@ -122,7 +122,7 @@ test('create HTTPS redirect with existing cert', () => {
       },
     },
   });
-  expect(stack).toHaveResourceLike('AWS::CloudFront::Distribution', {
+  Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
     DistributionConfig: {
       ViewerCertificate: {
         AcmCertificateArn: 'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d',
