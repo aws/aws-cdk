@@ -91,4 +91,25 @@ describe('Layout', () => {
 
 
   });
+
+  test('add a widget to the widgets list', () => {
+    const row = new Row(new Spacer());
+    expect(row.width).toEqual(1);
+
+    row.addWidget(new Spacer({ width: 3 }));
+    expect(row.width).toEqual(4);
+  });
+
+  test('row wraps when adding widgets', () => {
+    const row = new Row(
+      new Spacer({ width: 10 }),
+      new Spacer({ width: 10 }),
+    );
+    expect(row.width).toEqual(20);
+    expect(row.height).toEqual(1);
+
+    row.addWidget(new Spacer({ width: 5, height: 2 }));
+    expect(row.width).toEqual(20);
+    expect(row.height).toEqual(3);
+  });
 });

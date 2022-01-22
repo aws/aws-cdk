@@ -8,8 +8,8 @@ import { GRID_WIDTH, IWidget } from './widget';
  * Widgets will be laid out next to each other
  */
 export class Row implements IWidget {
-  public readonly width: number;
-  public readonly height: number;
+  private _width: number;
+  private _height: number;
 
   /**
    * List of contained widgets
@@ -24,23 +24,48 @@ export class Row implements IWidget {
   constructor(...widgets: IWidget[]) {
     this.widgets = widgets;
 
-    this.width = 0;
-    this.height = 0;
+    this._width = 0;
+    this._height = 0;
     let x = 0;
     let y = 0;
     for (const widget of widgets) {
       // See if we need to horizontally wrap to add this widget
       if (x + widget.width > GRID_WIDTH) {
-        y = this.height;
+        y = this._height;
         x = 0;
       }
 
-      this.offsets.push({ x, y });
-      this.width = Math.max(this.width, x + widget.width);
-      this.height = Math.max(this.height, y + widget.height);
+      this.updateDimensions(x, y, widget);
 
       x += widget.width;
     }
+  }
+
+  public get width() : number {
+    return this._width;
+  }
+
+  public get height() : number {
+    return this._height;
+  }
+
+  private updateDimensions(x: number, y: number, widget: IWidget): void {
+    this.offsets.push({ x, y });
+    this._width = Math.max(this.width, x + widget.width);
+    this._height = Math.max(this.height, y + widget.height);
+  }
+
+  public addWidget(w: IWidget): void {
+    this.widgets.push(w);
+
+    let x = this.width;
+    let y = this.height;
+    if (x + w.width > GRID_WIDTH) {
+      y = this.height;
+      x = 0;
+    }
+
+    this.updateDimensions(x, y, w);
   }
 
   public position(x: number, y: number): void {
