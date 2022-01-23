@@ -50,7 +50,7 @@ abstract class InputBase extends Resource implements IInput {
    * Grant the indicated permissions on this input to the given IAM principal (Role/Group/User).
    *
    * @param grantee The principal (no-op if undefined)
-   * @param actions The set of actions to allow (i.e. "dynamodb:PutItem", "dynamodb:GetItem", ...)
+   * @param actions The set of actions to allow (i.e. "iotevents:BatchPutMessage")
    */
   public grant(grantee: iam.IGrantable, ...actions: string[]) {
     return iam.Grant.addToPrincipal({
