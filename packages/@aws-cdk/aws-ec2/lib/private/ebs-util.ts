@@ -24,9 +24,11 @@ function synthesizeBlockDeviceMappings<RT, NDT>(construct: Construct, blockDevic
   return blockDevices.map<RT>(({ deviceName, volume, mappingEnabled }): RT => {
     const { virtualName, ebsDevice: ebs } = volume;
 
-    if (ebs) {
-      const { iops, volumeType } = ebs;
+    let finalEbs: any;
 
+    if (ebs) {
+
+      const { iops, volumeType } = ebs;
       if (!iops) {
         if (volumeType === EbsDeviceVolumeType.IO1) {
           throw new Error('iops property is required with volumeType: EbsDeviceVolumeType.IO1');
@@ -34,9 +36,27 @@ function synthesizeBlockDeviceMappings<RT, NDT>(construct: Construct, blockDevic
       } else if (volumeType !== EbsDeviceVolumeType.IO1) {
         Annotations.of(construct).addWarning('iops will be ignored without volumeType: EbsDeviceVolumeType.IO1');
       }
+
+      /**
+       * Because the Ebs properties of the L2 Constructs do not match the Ebs properties of the Cfn Constructs,
+       * we have to do some transformation.
+       */
+
+      finalEbs = {};
+
+      for ( var propertie in ebs ) {
+        if ( propertie === 'kmsKey' ) {
+          finalEbs.kmsKeyId = ebs[propertie]?.keyArn;
+        } else {
+          finalEbs[propertie] = (ebs as any)[propertie];
+        }
+      }
+    } else {
+      finalEbs = undefined;
     }
 
+
     const noDevice = mappingEnabled === false ? noDeviceValue : undefined;
-    return { deviceName, ebs, virtualName, noDevice } as any;
+    return { deviceName, ebs: finalEbs, virtualName, noDevice } as any;
   });
 }

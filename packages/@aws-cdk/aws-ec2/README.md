@@ -1034,7 +1034,7 @@ new ec2.Instance(this, 'Instance', {
       deviceName: '/dev/sda1',
       volume: ec2.BlockDeviceVolume.ebs(50, {
         encrypted: true,
-        kmsKeyId: kmsKey.keyArn
+        kmsKey: kmsKey,
       }),
     },
   ],

@@ -235,7 +235,7 @@ describe('instance', () => {
           volume: BlockDeviceVolume.ebs(15, {
             deleteOnTermination: true,
             encrypted: true,
-            kmsKeyId: kmsKey.keyArn,
+            kmsKey: kmsKey,
             volumeType: EbsDeviceVolumeType.IO1,
             iops: 5000,
           }),
