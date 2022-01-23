@@ -67,3 +67,11 @@ new iotevents.DetectorModel(this, 'MyDetectorModel', {
   initialState: onlineState,
 });
 ```
+
+For grant the permittion to put message to the input, you can use
+`grantPutMessage()` as following;
+
+```ts
+declare const principal: iam.AnyPrincipal;
+input.grantPutMessage(principal);
+```
