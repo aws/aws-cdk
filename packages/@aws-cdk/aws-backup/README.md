@@ -34,6 +34,7 @@ Assigning resources to a plan can be done with `addSelection()`:
 
 ```ts
 declare const plan: backup.BackupPlan;
+declare const vpc: ec2.Vpc;
 const myTable = dynamodb.Table.fromTableName(this, 'Table', 'myTableName');
 const myDatabaseInstance = new rds.DatabaseInstance(this, 'DatabaseInstance', {
   engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_26 }),
