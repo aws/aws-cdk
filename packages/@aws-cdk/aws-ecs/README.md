@@ -96,6 +96,15 @@ const cluster = new ecs.Cluster(this, 'Cluster', {
 });
 ```
 
+The following code imports an existing cluster using the ARN which can be used to 
+import an Amazon ECS service either EC2 or Fargate.
+
+```ts
+const clusterArn = 'arn:aws:ecs:us-east-1:012345678910:cluster/clusterName';
+
+const cluster = ecs.Cluster.fromClusterArn(this, 'Cluster', clusterArn);
+```
+
 To use tasks with Amazon EC2 launch-type, you have to add capacity to
 the cluster in order for tasks to be scheduled on your instances.  Typically,
 you add an AutoScalingGroup with instances running the latest
