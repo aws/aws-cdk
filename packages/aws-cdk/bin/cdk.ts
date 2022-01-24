@@ -3,7 +3,6 @@ import 'source-map-support/register';
 import * as cxapi from '@aws-cdk/cx-api';
 import '@jsii/check-node/run';
 import * as chalk from 'chalk';
-import * as yargs from 'yargs';
 
 import { SdkProvider } from '../lib/api/aws-auth';
 import { BootstrapSource, Bootstrapper } from '../lib/api/bootstrap';
@@ -21,6 +20,8 @@ import { PluginHost } from '../lib/plugin';
 import { serializeStructure } from '../lib/serialize';
 import { Command, Configuration, Settings } from '../lib/settings';
 import * as version from '../lib/version';
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const yargs = require('yargs');
 
 /* eslint-disable max-len */
 /* eslint-disable @typescript-eslint/no-shadow */ // yargs

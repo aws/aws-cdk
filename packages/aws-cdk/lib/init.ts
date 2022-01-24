@@ -211,8 +211,9 @@ function versionedTemplatesDir(): Promise<string> {
     if (currentVersion === '0.0.0') {
       currentVersion = '1.0.0';
     }
+    const root = path.dirname(require.resolve('../package.json'));
     const majorVersion = semver.major(currentVersion);
-    resolve(path.join(__dirname, 'init-templates', `v${majorVersion}`));
+    resolve(path.join(root, 'lib', 'init-templates', `v${majorVersion}`));
   });
 }
 

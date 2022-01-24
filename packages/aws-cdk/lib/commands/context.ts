@@ -1,5 +1,5 @@
 import * as chalk from 'chalk';
-import * as yargs from 'yargs';
+import type { Arguments } from 'yargs';
 import * as version from '../../lib/version';
 import { CommandOptions } from '../command-api';
 import { print } from '../logging';
@@ -21,7 +21,7 @@ export const builder = {
   },
 };
 
-export function handler(args: yargs.Arguments) {
+export function handler(args: Arguments) {
   args.commandHandler = realHandler;
 }
 

@@ -1,7 +1,7 @@
 import * as process from 'process';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as chalk from 'chalk';
-import * as yargs from 'yargs';
+import type { Arguments } from 'yargs';
 import { print } from '../../lib/logging';
 import * as version from '../../lib/version';
 import { CommandOptions } from '../command-api';
@@ -10,7 +10,7 @@ export const command = 'doctor';
 export const describe = 'Check your set-up for potential problems';
 export const builder = {};
 
-export function handler(args: yargs.Arguments) {
+export function handler(args: Arguments) {
   args.commandHandler = realHandler;
 }
 

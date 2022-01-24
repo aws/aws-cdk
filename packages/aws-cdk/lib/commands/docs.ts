@@ -1,7 +1,7 @@
 import * as childProcess from 'child_process';
 import * as process from 'process';
 import * as chalk from 'chalk';
-import * as yargs from 'yargs';
+import type { Arguments as YArguments } from 'yargs';
 import { debug, print, warning } from '../../lib/logging';
 import { CommandOptions } from '../command-api';
 
@@ -23,11 +23,11 @@ export const builder = {
   },
 };
 
-export interface Arguments extends yargs.Arguments {
+export interface Arguments extends YArguments {
   browser: string
 }
 
-export function handler(args: yargs.Arguments) {
+export function handler(args: YArguments) {
   args.commandHandler = realHandler;
 }
 
