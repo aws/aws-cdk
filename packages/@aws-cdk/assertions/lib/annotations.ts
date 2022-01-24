@@ -7,13 +7,13 @@ import { findMessage, hasMessage } from './private/messages';
  * Suite of assertions that can be run on a CDK Stack.
  * Focused on asserting annotations.
  */
-export class AssertAnnotations {
+export class Annotations {
   /**
    * Base your assertions on the messages returned by a synthesized CDK `Stack`.
    * @param stack the CDK Stack to run assertions on
    */
-  public static fromStack(stack: Stack): AssertAnnotations {
-    return new AssertAnnotations(toMessages(stack));
+  public static fromStack(stack: Stack): Annotations {
+    return new Annotations(toMessages(stack));
   }
 
   private readonly _messages: Messages;

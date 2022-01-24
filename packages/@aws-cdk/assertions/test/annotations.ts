@@ -1,10 +1,10 @@
 import { Annotations, Aspects, CfnResource, IAspect, Stack } from '@aws-cdk/core';
 import { IConstruct } from 'constructs';
-import { AssertAnnotations, Match } from '../lib';
+import { Annotations as _Annotations, Match } from '../lib';
 
 describe('Messages', () => {
   let stack: Stack;
-  let annotations: AssertAnnotations;
+  let annotations: _Annotations;
   beforeAll(() => {
     stack = new Stack();
     new CfnResource(stack, 'Foo', {
@@ -36,7 +36,7 @@ describe('Messages', () => {
     });
 
     Aspects.of(stack).add(new MyAspect());
-    annotations = AssertAnnotations.fromStack(stack);
+    annotations = _Annotations.fromStack(stack);
   });
 
   describe('hasError', () => {
