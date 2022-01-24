@@ -606,11 +606,11 @@
             "Essential": true,
             "HealthCheck": {
               "Command": [
-                "CMD-SHELL",
-                "custom-healthcheck-command"
+                "CMD-SHELL", 
+                "curl -f http://localhost/ || exit 1" 
               ],
-              "Interval": 30,
-              "Retries": 3,
+              "Interval": 720,
+              "Retries": 34,
               "Timeout": 5
             },
             "Image": {

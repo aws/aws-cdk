@@ -1,7 +1,7 @@
 import * as path from 'path';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
-import { App, Stack } from '@aws-cdk/core';
+import { App, Stack, Duration } from '@aws-cdk/core';
 
 import { QueueProcessingFargateService } from '../../lib';
 
@@ -15,7 +15,9 @@ new QueueProcessingFargateService(stack, 'PublicQueueService', {
   image: new ecs.AssetImage(path.join(__dirname, '..', 'sqs-reader')),
   assignPublicIp: true,
   healthCheck: {
-    command: ['custom-healthcheck-command'],
+    command: ['CMD-SHELL', 'curl -f http://localhost/ || exit 1'],
+    interval: Duration.minutes(12),
+    retries: 34,
   },
 });
 
