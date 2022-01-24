@@ -39,6 +39,7 @@ export function renderObject(obj: object | undefined): object | undefined {
     handleList: renderStringList,
     handleNumber: renderNumber,
     handleBoolean: renderBoolean,
+    handleResolvable: renderResolvable,
   });
 }
 
@@ -71,6 +72,13 @@ export function findReferencedPaths(obj: object | undefined): Set<string> {
     },
 
     handleBoolean(_key: string, _x: boolean) {
+      return {};
+    },
+
+    handleResolvable(_key: string, x: IResolvable) {
+      for (const p of findPathsInIntrinsicFunctions(jsonPathFromAny(x))) {
+        found.add(p);
+      }
       return {};
     },
   });
@@ -115,6 +123,7 @@ interface FieldHandlers {
   handleList(key: string, x: string[]): {[key: string]: string[] | string };
   handleNumber(key: string, x: number): {[key: string]: number | string};
   handleBoolean(key: string, x: boolean): {[key: string]: boolean};
+  handleResolvable(key: string, x: IResolvable): {[key: string]: any};
 }
 
 export function recurseObject(obj: object | undefined, handlers: FieldHandlers, visited: object[] = []): object | undefined {
@@ -144,7 +153,11 @@ export function recurseObject(obj: object | undefined, handlers: FieldHandlers, 
     } else if (value === null || value === undefined) {
       // Nothing
     } else if (typeof value === 'object') {
-      ret[key] = recurseObject(value, handlers, visited);
+      if (Tokenization.isResolvable(value)) {
+        Object.assign(ret, handlers.handleResolvable(key, value));
+      } else {
+        ret[key] = recurseObject(value, handlers, visited);
+      }
     }
   }
 
@@ -195,6 +208,21 @@ function isStringArray(x: any): x is string[] {
  */
 function renderString(key: string, value: string): {[key: string]: string} {
   const path = jsonPathString(value);
+  if (path !== undefined) {
+    return { [key + '.$']: path };
+  } else {
+    return { [key]: value };
+  }
+}
+
+/**
+ * Render a resolvable
+ *
+ * If we can extract a Path from it, render as a path string, otherwise as itself (will
+ * be resolved later
+ */
+function renderResolvable(key: string, value: IResolvable): {[key: string]: any} {
+  const path = jsonPathFromAny(value);
   if (path !== undefined) {
     return { [key + '.$']: path };
   } else {
