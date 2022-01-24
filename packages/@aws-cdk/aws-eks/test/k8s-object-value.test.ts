@@ -1,4 +1,3 @@
-import '@aws-cdk/assert-internal/jest';
 import { App, Stack, Duration } from '@aws-cdk/core';
 import * as eks from '../lib';
 import { KubernetesObjectValue } from '../lib/k8s-object-value';
