@@ -20,6 +20,8 @@ import { PluginHost } from '../lib/plugin';
 import { serializeStructure } from '../lib/serialize';
 import { Command, Configuration, Settings } from '../lib/settings';
 import * as version from '../lib/version';
+// https://github.com/yargs/yargs/issues/1929
+// https://github.com/evanw/esbuild/issues/1492
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const yargs = require('yargs');
 
