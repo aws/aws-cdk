@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Match, Template } from '@aws-cdk/assertions';
 import * as logs from '@aws-cdk/aws-logs';
 import * as cdk from '@aws-cdk/core';
 import * as ecs from '../lib';
@@ -29,13 +29,13 @@ describe('aws log driver', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::Logs::LogGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::LogGroup', {
       RetentionInDays: logs.RetentionDays.ONE_MONTH,
     });
 
-    expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
-        {
+        Match.objectLike({
           LogConfiguration: {
             LogDriver: 'awslogs',
             Options: {
@@ -47,11 +47,9 @@ describe('aws log driver', () => {
               'mode': 'non-blocking',
             },
           },
-        },
+        }),
       ],
     });
-
-
   });
 
   test('create an aws log driver using awsLogs', () => {
@@ -67,13 +65,13 @@ describe('aws log driver', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::Logs::LogGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::LogGroup', {
       RetentionInDays: logs.RetentionDays.ONE_MONTH,
     });
 
-    expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
-        {
+        Match.objectLike({
           LogConfiguration: {
             LogDriver: 'awslogs',
             Options: {
@@ -84,11 +82,9 @@ describe('aws log driver', () => {
               'awslogs-multiline-pattern': 'pattern',
             },
           },
-        },
+        }),
       ],
     });
-
-
   });
 
   test('with a defined log group', () => {
@@ -105,13 +101,13 @@ describe('aws log driver', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::Logs::LogGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::LogGroup', {
       RetentionInDays: logs.RetentionDays.TWO_YEARS,
     });
 
-    expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
-        {
+        Match.objectLike({
           LogConfiguration: {
             LogDriver: 'awslogs',
             Options: {
@@ -120,11 +116,9 @@ describe('aws log driver', () => {
               'awslogs-region': { Ref: 'AWS::Region' },
             },
           },
-        },
+        }),
       ],
     });
-
-
   });
 
   test('without a defined log group: creates one anyway', () => {
@@ -137,9 +131,7 @@ describe('aws log driver', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::Logs::LogGroup', {});
-
-
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::LogGroup', {});
   });
 
   test('throws when specifying log retention and log group', () => {
@@ -172,10 +164,10 @@ describe('aws log driver', () => {
     });
 
     // THEN
-    expect(stack).toCountResources('AWS::Logs::LogGroup', 0);
-    expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+    Template.fromStack(stack).resourceCountIs('AWS::Logs::LogGroup', 0);
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
-        {
+        Match.objectLike({
           LogConfiguration: {
             LogDriver: 'awslogs',
             Options: {
@@ -184,9 +176,8 @@ describe('aws log driver', () => {
               'awslogs-region': logGroupRegion,
             },
           },
-        },
+        }),
       ],
     });
   });
-
 });
