@@ -1,5 +1,4 @@
-import { ResourcePart } from '@aws-cdk/assert-internal';
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
 import * as codedeploy from '../../lib';
@@ -45,7 +44,7 @@ test('custom resource created', () => {
   });
 
   // THEN
-  expect(stack).toHaveResourceLike('Custom::AWS', {
+  Template.fromStack(stack).hasResourceProperties('Custom::AWS', {
     ServiceToken: {
       'Fn::GetAtt': [
         'AWS679f53fac002430cb0da5b7982bd22872D164C4C',
@@ -57,7 +56,7 @@ test('custom resource created', () => {
     Delete: '{"service":"CodeDeploy","action":"deleteDeploymentConfig","parameters":{"deploymentConfigName":"CustomConfig.LambdaCanary5Percent1Minutes"}}',
   });
 
-  expect(stack).toHaveResource('AWS::IAM::Policy', {
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
     PolicyDocument: {
       Statement: [
         {
@@ -91,7 +90,7 @@ test('custom resource created with specific name', () => {
   });
 
   // THEN
-  expect(stack).toHaveResourceLike('Custom::AWS', {
+  Template.fromStack(stack).hasResourceProperties('Custom::AWS', {
     Create: '{"service":"CodeDeploy","action":"createDeploymentConfig","parameters":{"deploymentConfigName":"MyDeploymentConfig","computePlatform":"Lambda","trafficRoutingConfig":{"type":"TimeBasedCanary","timeBasedCanary":{"canaryInterval":"1","canaryPercentage":"5"}}},"physicalResourceId":{"id":"MyDeploymentConfig"}}',
     Update: '{"service":"CodeDeploy","action":"createDeploymentConfig","parameters":{"deploymentConfigName":"MyDeploymentConfig","computePlatform":"Lambda","trafficRoutingConfig":{"type":"TimeBasedCanary","timeBasedCanary":{"canaryInterval":"1","canaryPercentage":"5"}}},"physicalResourceId":{"id":"MyDeploymentConfig"}}',
     Delete: '{"service":"CodeDeploy","action":"deleteDeploymentConfig","parameters":{"deploymentConfigName":"MyDeploymentConfig"}}',
@@ -112,7 +111,7 @@ test('can create linear custom config', () => {
   });
 
   // THEN
-  expect(stack).toHaveResourceLike('AWS::CodeDeploy::DeploymentGroup', {
+  Template.fromStack(stack).hasResourceProperties('AWS::CodeDeploy::DeploymentGroup', {
     DeploymentConfigName: 'CustomConfig.LambdaLinear5PercentEvery1Minutes',
   });
 });
@@ -131,7 +130,7 @@ test('can create canary custom config', () => {
   });
 
   // THEN
-  expect(stack).toHaveResourceLike('AWS::CodeDeploy::DeploymentGroup', {
+  Template.fromStack(stack).hasResourceProperties('AWS::CodeDeploy::DeploymentGroup', {
     DeploymentConfigName: 'CustomConfig.LambdaCanary5Percent1Minutes',
   });
 });
@@ -150,7 +149,7 @@ test('dependency on the config exists to ensure ordering', () => {
   });
 
   // THEN
-  expect(stack).toHaveResourceLike('AWS::CodeDeploy::DeploymentGroup', {
+  Template.fromStack(stack).hasResource('AWS::CodeDeploy::DeploymentGroup', {
     Properties: {
       DeploymentConfigName: 'CustomConfig.LambdaCanary5Percent1Minutes',
     },
@@ -158,5 +157,5 @@ test('dependency on the config exists to ensure ordering', () => {
       'CustomConfigDeploymentConfigCustomResourcePolicy0426B684',
       'CustomConfigDeploymentConfigE9E1F384',
     ],
-  }, ResourcePart.CompleteDefinition);
+  });
 });
