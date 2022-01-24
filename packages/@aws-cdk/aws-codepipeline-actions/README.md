@@ -764,6 +764,39 @@ const deployStage = pipeline.addStage({
 
 [image definition file]: https://docs.aws.amazon.com/codepipeline/latest/userguide/pipelines-create.html#pipelines-create-image-definitions
 
+#### Deploying ECS applications to existing services
+
+CodePipeline can deploy to an existing ECS service which uses the
+[ECS service ARN format that contains the Cluster name](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-account-settings.html#ecs-resource-ids).
+This also works if the service is in a different account and/or region than the pipeline:
+
+```ts
+import * as ecs from '@aws-cdk/aws-ecs';
+
+const service = ecs.BaseService.fromServiceArnWithCluster(this, 'EcsService',
+  'arn:aws:ecs:us-east-1:123456789012:service/myClusterName/myServiceName'
+);
+const pipeline = new codepipeline.Pipeline(this, 'MyPipeline');
+const buildOutput = new codepipeline.Artifact();
+// add source and build stages to the pipeline as usual...
+const deployStage = pipeline.addStage({
+  stageName: 'Deploy',
+  actions: [
+    new codepipeline_actions.EcsDeployAction({
+      actionName: 'DeployAction',
+      service: service,
+      input: buildOutput,
+    }),
+  ],
+});
+```
+
+When deploying across accounts, especially in a CDK Pipelines self-mutating pipeline,
+it is recommended to provide the `role` property to the `EcsDeployAction`. 
+The Role will need to have permissions assigned to it for ECS deployment.
+See [the CodePipeline documentation](https://docs.aws.amazon.com/codepipeline/latest/userguide/how-to-custom-role.html#how-to-update-role-new-services)
+for the permissions needed.
+
 #### Deploying ECS applications stored in a separate source code repository
 
 The idiomatic CDK way of deploying an ECS application is to have your Dockerfiles and your CDK code in the same source code repository,

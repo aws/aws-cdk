@@ -102,8 +102,8 @@ export class MockSdkProvider extends SdkProvider {
     (this.sdk as any).ssm = jest.fn().mockReturnValue(partialAwsService<AWS.SSM>(stubs));
   }
 
-  public stubLambda(stubs: SyncHandlerSubsetOf<AWS.Lambda>) {
-    (this.sdk as any).lambda = jest.fn().mockReturnValue(partialAwsService<AWS.Lambda>(stubs));
+  public stubLambda(stubs: SyncHandlerSubsetOf<AWS.Lambda>, additionalProperties: { [key: string]: any } = {}) {
+    (this.sdk as any).lambda = jest.fn().mockReturnValue(partialAwsService<AWS.Lambda>(stubs, additionalProperties));
   }
 
   public stubStepFunctions(stubs: SyncHandlerSubsetOf<AWS.StepFunctions>) {
