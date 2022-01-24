@@ -13,6 +13,36 @@ const ExpectedBucketPolicyProperties = {
   PolicyDocument: {
     Statement: [
       {
+        Action: 's3:*',
+        Condition: {
+          Bool: { 'aws:SecureTransport': 'false' },
+        },
+        Effect: 'Deny',
+        Principal: {
+          AWS: '*',
+        },
+        Resource: [
+          {
+            'Fn::GetAtt': [
+              'MyAmazingCloudTrailS3A580FE27',
+              'Arn',
+            ],
+          },
+          {
+            'Fn::Join': [
+              '',
+              [{
+                'Fn::GetAtt': [
+                  'MyAmazingCloudTrailS3A580FE27',
+                  'Arn',
+                ],
+              },
+              '/*'],
+            ],
+          },
+        ],
+      },
+      {
         Action: 's3:GetBucketAcl',
         Effect: 'Allow',
         Principal: {
@@ -154,6 +184,40 @@ describe('cloudtrail', () => {
         Bucket: { Ref: 'TrailS30071F172' },
         PolicyDocument: {
           Statement: [
+            {
+              Action: 's3:*',
+              Condition: {
+                Bool: {
+                  'aws:SecureTransport': 'false',
+                },
+              },
+              Effect: 'Deny',
+              Principal: {
+                AWS: '*',
+              },
+              Resource: [
+                {
+                  'Fn::GetAtt': [
+                    'TrailS30071F172',
+                    'Arn',
+                  ],
+                },
+                {
+                  'Fn::Join': [
+                    '',
+                    [
+                      {
+                        'Fn::GetAtt': [
+                          'TrailS30071F172',
+                          'Arn',
+                        ],
+                      },
+                      '/*',
+                    ],
+                  ],
+                },
+              ],
+            },
             {
               Action: 's3:GetBucketAcl',
               Effect: 'Allow',
