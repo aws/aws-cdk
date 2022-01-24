@@ -1,5 +1,4 @@
-import { arrayWith } from '@aws-cdk/assert-internal';
-import '@aws-cdk/assert-internal/jest';
+import { Match, Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import * as codebuild from '../lib';
@@ -15,7 +14,7 @@ test('can attach permissions boundary to Project', () => {
   iam.PermissionsBoundary.of(project).apply(new codebuild.UntrustedCodeBoundaryPolicy(stack, 'Boundary'));
 
   // THEN
-  expect(stack).toHaveResourceLike('AWS::IAM::Role', {
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
     PermissionsBoundary: { Ref: 'BoundaryEA298153' },
   });
 });
@@ -38,13 +37,13 @@ test('can add additional statements Boundary', () => {
   }));
 
   // THEN
-  expect(stack).toHaveResourceLike('AWS::IAM::ManagedPolicy', {
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::ManagedPolicy', {
     PolicyDocument: {
-      Statement: arrayWith({
+      Statement: Match.arrayWith([{
         Effect: 'Allow',
         Action: 'a:a',
         Resource: 'b',
-      }),
+      }]),
     },
   });
 });
