@@ -699,7 +699,8 @@ describe('function', () => {
       deadLetterQueue: dlQueue,
     });
 
-    expect(stack).toHaveResource('AWS::IAM::Policy', {
+    const tpl = Template.fromStack(stack);
+    tpl.hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -713,8 +714,7 @@ describe('function', () => {
         Version: '2012-10-17',
       },
     });
-
-    expect(stack).toHaveResource('AWS::Lambda::Function', {
+    tpl.hasResourceProperties('AWS::Lambda::Function', {
       DeadLetterConfig: {
         TargetArn: {
           Ref: 'DeadLetterQueue9F481546',
