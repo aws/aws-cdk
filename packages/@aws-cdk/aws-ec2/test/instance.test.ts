@@ -1,6 +1,5 @@
 import * as path from 'path';
 import '@aws-cdk/assert-internal/jest';
-import { arrayWith, ResourcePart, stringLike, SynthUtils } from '@aws-cdk/assert-internal';
 import { Key } from '@aws-cdk/aws-kms';
 import { Match, Template } from '@aws-cdk/assertions';
 import { Asset } from '@aws-cdk/aws-s3-assets';
