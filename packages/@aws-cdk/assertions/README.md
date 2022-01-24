@@ -498,8 +498,7 @@ fredCapture.asString(); // returns "Quib"
 In addition to template matching, we provide an API for annotation matching.
 [Annotations](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.Annotations.html)
 can be added via the [Aspects](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.Aspects.html)
-API. which you can learn more about
-[here](https://docs.aws.amazon.com/cdk/v2/guide/aspects.html).
+API. You can learn more about Aspects [here](https://docs.aws.amazon.com/cdk/v2/guide/aspects.html).
 
 Say you have a `MyAspect` and a `MyStack` that uses `MyAspect`:
 
@@ -538,13 +537,15 @@ class MyStack extends cdk.Stack {
 We can then assert that the stack contains the expected Error:
 
 ```ts
-AssertAnnotations.fromStack(stack).hasError(
+// import { Annotations } from '@aws-cdk/assertions';
+
+Annotations.fromStack(stack).hasError(
   '/Default/Foo',
   'we do not want a Foo::Bar resource',
 );
 ```
 
-Here are the available APIs for `AssertAnnotations`:
+Here are the available APIs for `Annotations`:
 
 - `hasError()` and `findError()`
 - `hasWarning()` and `findWarning()`
@@ -557,8 +558,8 @@ In addition, this suite of APIs is compatable with `Matchers` for more fine-grai
 For example, the following assertion works as well:
 
 ```ts
-AssertAnnotations.fromStack(stack).hasError(
+Annotations.fromStack(stack).hasError(
   '/Default/Foo',
-  '.*Foo::Bar.*',
+  Match.stringLikeRegexp('.*Foo::Bar.*'),
 );
 ```
