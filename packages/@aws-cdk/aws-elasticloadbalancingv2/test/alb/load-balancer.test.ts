@@ -1,5 +1,4 @@
-import { ResourcePart, arrayWith } from '@aws-cdk/assert-internal';
-import '@aws-cdk/assert-internal/jest';
+import { Match, Template } from '@aws-cdk/assertions';
 import { Metric } from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as s3 from '@aws-cdk/aws-s3';
@@ -23,7 +22,7 @@ describe('tests', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
       Scheme: 'internet-facing',
       Subnets: [
         { Ref: 'StackPublicSubnet1Subnet0AD81D22' },
@@ -45,12 +44,12 @@ describe('tests', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+    Template.fromStack(stack).hasResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
       DependsOn: [
         'StackPublicSubnet1DefaultRoute16154E3D',
         'StackPublicSubnet2DefaultRoute0319539B',
       ],
-    }, ResourcePart.CompleteDefinition);
+    });
   });
 
   test('Trivial construction: internal', () => {
@@ -62,7 +61,7 @@ describe('tests', () => {
     new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
       Scheme: 'internal',
       Subnets: [
         { Ref: 'StackPrivateSubnet1Subnet47AC2BC7' },
@@ -86,7 +85,7 @@ describe('tests', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
       LoadBalancerAttributes: [
         {
           Key: 'deletion_protection.enabled',
@@ -116,13 +115,13 @@ describe('tests', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
-      LoadBalancerAttributes: arrayWith(
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+      LoadBalancerAttributes: Match.arrayWith([
         {
           Key: 'deletion_protection.enabled',
           Value: 'false',
         },
-      ),
+      ]),
     });
   });
 
@@ -143,7 +142,7 @@ describe('tests', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::Listener');
+    Template.fromStack(stack).resourceCountIs('AWS::ElasticLoadBalancingV2::Listener', 1);
     expect(loadBalancer.listeners).toContain(listener);
   });
 
@@ -166,8 +165,8 @@ describe('tests', () => {
       lb.logAccessLogs(bucket);
 
       //THEN
-      expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
-        LoadBalancerAttributes: arrayWith(
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+        LoadBalancerAttributes: Match.arrayWith([
           {
             Key: 'access_logs.s3.enabled',
             Value: 'true',
@@ -180,7 +179,7 @@ describe('tests', () => {
             Key: 'access_logs.s3.prefix',
             Value: '',
           },
-        ),
+        ]),
       });
     });
 
@@ -194,9 +193,9 @@ describe('tests', () => {
 
       // THEN
       // verify the ALB depends on the bucket *and* the bucket policy
-      expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+      Template.fromStack(stack).hasResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
         DependsOn: ['AccessLoggingBucketPolicy700D7CC6', 'AccessLoggingBucketA6D88F29'],
-      }, ResourcePart.CompleteDefinition);
+      });
     });
 
     testLegacyBehavior('legacy bucket permissions', cdk.App, (app) => {
@@ -207,7 +206,7 @@ describe('tests', () => {
 
       // THEN
       // verify the bucket policy allows the ALB to put objects in the bucket
-      expect(stack).toHaveResource('AWS::S3::BucketPolicy', {
+      Template.fromStack(stack).hasResourceProperties('AWS::S3::BucketPolicy', {
         PolicyDocument: {
           Version: '2012-10-17',
           Statement: [
@@ -252,7 +251,7 @@ describe('tests', () => {
 
       // THEN
       // verify the bucket policy allows the ALB to put objects in the bucket
-      expect(stack).toHaveResource('AWS::S3::BucketPolicy', {
+      Template.fromStack(stack).hasResourceProperties('AWS::S3::BucketPolicy', {
         PolicyDocument: {
           Version: '2012-10-17',
           Statement: [
@@ -297,8 +296,8 @@ describe('tests', () => {
 
       // THEN
       // verify that the LB attributes reference the bucket
-      expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
-        LoadBalancerAttributes: arrayWith(
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+        LoadBalancerAttributes: Match.arrayWith([
           {
             Key: 'access_logs.s3.enabled',
             Value: 'true',
@@ -311,11 +310,11 @@ describe('tests', () => {
             Key: 'access_logs.s3.prefix',
             Value: 'prefix-of-access-logs',
           },
-        ),
+        ]),
       });
 
       // verify the bucket policy allows the ALB to put objects in the bucket
-      expect(stack).toHaveResource('AWS::S3::BucketPolicy', {
+      Template.fromStack(stack).hasResourceProperties('AWS::S3::BucketPolicy', {
         PolicyDocument: {
           Version: '2012-10-17',
           Statement: [
@@ -403,7 +402,7 @@ describe('tests', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
       Name: 'myLoadBalancer',
     });
   });
@@ -467,7 +466,7 @@ describe('tests', () => {
     listener.addTargets('Targets', { port: 8080 });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::Listener');
+    Template.fromStack(stack).resourceCountIs('AWS::ElasticLoadBalancingV2::Listener', 1);
     expect(() => alb.listeners).toThrow();
   });
 
@@ -496,7 +495,7 @@ describe('tests', () => {
     alb.addSecurityGroup(new ec2.SecurityGroup(stack, 'SecurityGroup2', { vpc }));
 
     // THEN
-    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
       SecurityGroups: [
         { 'Fn::GetAtt': ['SecurityGroup1F554B36F', 'GroupId'] },
         { 'Fn::GetAtt': ['SecurityGroup23BE86BB7', 'GroupId'] },
@@ -524,7 +523,7 @@ describe('tests', () => {
       });
 
       // THEN
-      expect(stack).not.toHaveResource('AWS::ElasticLoadBalancingV2::ApplicationLoadBalancer');
+      Template.fromStack(stack).resourceCountIs('AWS::ElasticLoadBalancingV2::ApplicationLoadBalancer', 0);
       expect(loadBalancer.loadBalancerArn).toEqual('arn:aws:elasticloadbalancing:us-west-2:123456789012:loadbalancer/application/my-load-balancer/50dc6c495c0c9188');
       expect(loadBalancer.loadBalancerCanonicalHostedZoneId).toEqual('Z3DZXE0EXAMPLE');
       expect(loadBalancer.loadBalancerDnsName).toEqual('my-load-balancer-1234567890.us-west-2.elb.amazonaws.com');
@@ -556,7 +555,7 @@ describe('tests', () => {
       });
 
       // THEN
-      expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::Listener');
+      Template.fromStack(stack).resourceCountIs('AWS::ElasticLoadBalancingV2::Listener', 1);
       expect(() => loadBalancer.listeners).toThrow();
     });
 
