@@ -34,11 +34,31 @@ describe('lambda authorizer', () => {
           [
             'arn:',
             {
-              Ref: 'AWS::Partition',
+              'Fn::Select': [
+                1,
+                {
+                  'Fn::Split': [
+                    ':',
+                    {
+                      'Fn::GetAtt': ['myfunction9B95E948', 'Arn'],
+                    },
+                  ],
+                },
+              ],
             },
             ':apigateway:',
             {
-              Ref: 'AWS::Region',
+              'Fn::Select': [
+                3,
+                {
+                  'Fn::Split': [
+                    ':',
+                    {
+                      'Fn::GetAtt': ['myfunction9B95E948', 'Arn'],
+                    },
+                  ],
+                },
+              ],
             },
             ':lambda:path/2015-03-31/functions/',
             {
@@ -88,11 +108,31 @@ describe('lambda authorizer', () => {
           [
             'arn:',
             {
-              Ref: 'AWS::Partition',
+              'Fn::Select': [
+                1,
+                {
+                  'Fn::Split': [
+                    ':',
+                    {
+                      'Fn::GetAtt': ['myfunction9B95E948', 'Arn'],
+                    },
+                  ],
+                },
+              ],
             },
             ':apigateway:',
             {
-              Ref: 'AWS::Region',
+              'Fn::Select': [
+                3,
+                {
+                  'Fn::Split': [
+                    ':',
+                    {
+                      'Fn::GetAtt': ['myfunction9B95E948', 'Arn'],
+                    },
+                  ],
+                },
+              ],
             },
             ':lambda:path/2015-03-31/functions/',
             {
@@ -166,11 +206,31 @@ describe('lambda authorizer', () => {
           [
             'arn:',
             {
-              Ref: 'AWS::Partition',
+              'Fn::Select': [
+                1,
+                {
+                  'Fn::Split': [
+                    ':',
+                    {
+                      'Fn::GetAtt': ['myfunction9B95E948', 'Arn'],
+                    },
+                  ],
+                },
+              ],
             },
             ':apigateway:',
             {
-              Ref: 'AWS::Region',
+              'Fn::Select': [
+                3,
+                {
+                  'Fn::Split': [
+                    ':',
+                    {
+                      'Fn::GetAtt': ['myfunction9B95E948', 'Arn'],
+                    },
+                  ],
+                },
+              ],
             },
             ':lambda:path/2015-03-31/functions/',
             {
@@ -217,11 +277,31 @@ describe('lambda authorizer', () => {
           [
             'arn:',
             {
-              Ref: 'AWS::Partition',
+              'Fn::Select': [
+                1,
+                {
+                  'Fn::Split': [
+                    ':',
+                    {
+                      'Fn::GetAtt': ['myfunction9B95E948', 'Arn'],
+                    },
+                  ],
+                },
+              ],
             },
             ':apigateway:',
             {
-              Ref: 'AWS::Region',
+              'Fn::Select': [
+                3,
+                {
+                  'Fn::Split': [
+                    ':',
+                    {
+                      'Fn::GetAtt': ['myfunction9B95E948', 'Arn'],
+                    },
+                  ],
+                },
+              ],
             },
             ':lambda:path/2015-03-31/functions/',
             {
@@ -268,11 +348,31 @@ describe('lambda authorizer', () => {
           [
             'arn:',
             {
-              Ref: 'AWS::Partition',
+              'Fn::Select': [
+                1,
+                {
+                  'Fn::Split': [
+                    ':',
+                    {
+                      'Fn::GetAtt': ['myfunction9B95E948', 'Arn'],
+                    },
+                  ],
+                },
+              ],
             },
             ':apigateway:',
             {
-              Ref: 'AWS::Region',
+              'Fn::Select': [
+                3,
+                {
+                  'Fn::Split': [
+                    ':',
+                    {
+                      'Fn::GetAtt': ['myfunction9B95E948', 'Arn'],
+                    },
+                  ],
+                },
+              ],
             },
             ':lambda:path/2015-03-31/functions/',
             {
@@ -340,11 +440,31 @@ describe('lambda authorizer', () => {
           [
             'arn:',
             {
-              Ref: 'AWS::Partition',
+              'Fn::Select': [
+                1,
+                {
+                  'Fn::Split': [
+                    ':',
+                    {
+                      'Fn::GetAtt': ['myfunction9B95E948', 'Arn'],
+                    },
+                  ],
+                },
+              ],
             },
             ':apigateway:',
             {
-              Ref: 'AWS::Region',
+              'Fn::Select': [
+                3,
+                {
+                  'Fn::Split': [
+                    ':',
+                    {
+                      'Fn::GetAtt': ['myfunction9B95E948', 'Arn'],
+                    },
+                  ],
+                },
+              ],
             },
             ':lambda:path/2015-03-31/functions/',
             {
