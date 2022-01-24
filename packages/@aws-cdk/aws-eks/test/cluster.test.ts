@@ -2414,14 +2414,13 @@ describe('cluster', () => {
         endpointAccess: eks.EndpointAccess.PUBLIC,
       });
 
-      // const nested = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
-      // const template = SynthUtils.toCloudFormation(nested);
-      //
-      // // we don't attach vpc config in case endpoint is public only, regardless of whether
-      // // the vpc has private subnets or not.
-      // expect(template.Resources.Handler886CB40B.Properties.VpcConfig).toEqual(undefined);
+      const nested = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
 
-
+      // we don't attach vpc config in case endpoint is public only, regardless of whether
+      // the vpc has private subnets or not.
+      Template.fromStack(nested).hasResourceProperties('AWS::Lambda::Function', {
+        VpcConfig: Match.absent(),
+      });
     });
 
     test('private without private subnets', () => {
@@ -2467,12 +2466,9 @@ describe('cluster', () => {
       });
 
       const nested = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
-      // const template = SynthUtils.toCloudFormation(nested);
 
       // we don't have private subnets, but we don't need them since public access
       // is not restricted.
-      // expect(template.Resources.Handler886CB40B.Properties.VpcConfig).toEqual(undefined);
-
       Template.fromStack(nested).hasResourceProperties('AWS::Lambda::Function', {
         VpcConfig: Match.absent(),
       });
@@ -2488,14 +2484,12 @@ describe('cluster', () => {
         endpointAccess: eks.EndpointAccess.PUBLIC_AND_PRIVATE,
       });
 
-      // const nested = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
-      // const template = SynthUtils.toCloudFormation(nested);
-      //
-      // // we have private subnets so we should use them.
-      // expect(template.Resources.Handler886CB40B.Properties.VpcConfig.SubnetIds.length).not.toEqual(0);
-      // expect(template.Resources.Handler886CB40B.Properties.VpcConfig.SecurityGroupIds.length).not.toEqual(0);
+      const nested = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
 
-
+      // we have private subnets so we should use them.
+      const functions = Template.fromStack(nested).findResources('AWS::Lambda::Function');
+      expect(functions.Handler886CB40B.Properties.VpcConfig.SubnetIds.length).not.toEqual(0);
+      expect(functions.Handler886CB40B.Properties.VpcConfig.SecurityGroupIds.length).not.toEqual(0);
     });
 
     test('private and restricted public without private subnets', () => {
@@ -2584,13 +2578,6 @@ describe('cluster', () => {
       });
 
       const nested = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
-      // const template = SynthUtils.toCloudFormation(nested);
-
-      // expect(template.Resources.Handler886CB40B.Properties.VpcConfig.SubnetIds).toEqual([
-      //   'subnet-private-in-us-east-1a',
-      // ]);
-
-
       Template.fromStack(nested).hasResourceProperties('AWS::Lambda::Function', {
         VpcConfig: { SubnetIds: ['subnet-private-in-us-east-1a'] },
       });
@@ -2655,12 +2642,6 @@ describe('cluster', () => {
       });
 
       const nested = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
-      // const template = SynthUtils.toCloudFormation(nested);
-      //
-      // expect(template.Resources.Handler886CB40B.Properties.VpcConfig.SubnetIds).toEqual([
-      //   'subnet-private-in-us-east-1a',
-      // ]);
-
       Template.fromStack(nested).hasResourceProperties('AWS::Lambda::Function', {
         VpcConfig: { SubnetIds: ['subnet-private-in-us-east-1a'] },
       });
