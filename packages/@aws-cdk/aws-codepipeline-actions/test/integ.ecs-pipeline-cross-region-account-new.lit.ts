@@ -25,7 +25,6 @@ const app = new cdk.App();
  */
 class NewEcsServiceStack extends cdk.Stack {
   public readonly serviceArn: string;
-  public readonly clusterName: string;
   public readonly deployRole: iam.IRole;
 
   constructor(scope: Construct, id: string, props: cdk.StackProps) {
@@ -59,13 +58,13 @@ class NewEcsServiceStack extends cdk.Stack {
      * The token causes in the ECS Deploy Action to not be able to determine region.
      * Using the formatArn produces a ARN which only makes the resourceName as a token, which allows
      * the ECS Deploy Action to determine the region and account you are deploying to.
+     * https://github.com/aws/aws-cdk/pull/18382 addresses the serviceArn not being a token.
      */
     this.serviceArn = this.formatArn({
       service: 'ecs',
       resource: 'service',
-      resourceName: service.serviceName,
+      resourceName: `${cluster.clusterName}/${service.serviceName}`,
     });
-    this.clusterName = cluster.clusterName;
     /**
      * The deployRole is being looked up from an existing role.
      * If you want to create a new role here you can do that however you will need this stack deployed
@@ -121,7 +120,6 @@ class NewEcsServiceStack extends cdk.Stack {
  */
 class NewEcsServiceStage extends cdk.Stage {
   public readonly serviceArn: string;
-  public readonly clusterName: string;
   public readonly deployRole: iam.IRole;
   public readonly stack: cdk.Stack;
 
@@ -131,7 +129,6 @@ class NewEcsServiceStage extends cdk.Stage {
     const testStack = new NewEcsServiceStack(this, 'ecsStack', {});
     this.stack = testStack;
     this.serviceArn = testStack.serviceArn;
-    this.clusterName = testStack.clusterName;
     this.deployRole = testStack.deployRole;
   }
 }
@@ -157,22 +154,21 @@ const testStage = new NewEcsServiceStage(pipelineStack, 'TestStage', {
 });
 const stackName = testStage.stack.stackName;
 const changeSetName = `changeset-${testStage.stack.stackName}`;
-const stageActions = [
-  new cpactions.CloudFormationCreateReplaceChangeSetAction({
-    actionName: 'PrepareChanges',
-    stackName: stackName,
-    changeSetName: changeSetName,
-    adminPermissions: true,
-    templatePath: artifact.atPath(testStage.stack.templateFile),
-    runOrder: 1,
-  }),
-  new cpactions.CloudFormationExecuteChangeSetAction({
-    actionName: 'ExecuteChanges',
-    stackName: stackName,
-    changeSetName: changeSetName,
-    runOrder: 2,
-  }),
-];
+const stageActions = [];
+stageActions.push(new cpactions.CloudFormationCreateReplaceChangeSetAction({
+  actionName: 'PrepareChanges',
+  stackName: stackName,
+  changeSetName: changeSetName,
+  adminPermissions: true,
+  templatePath: artifact.atPath(testStage.stack.templateFile),
+  runOrder: 1,
+}));
+stageActions.push(new cpactions.CloudFormationExecuteChangeSetAction({
+  actionName: 'ExecuteChanges',
+  stackName: stackName,
+  changeSetName: changeSetName,
+  runOrder: 2,
+}));
 
 const testIStage = pipeline.addStage({
   stageName: testStage.stageName,
@@ -185,14 +181,7 @@ const testIStage = pipeline.addStage({
  * The VPC doesn't actually matter and it doesn't get created.
  * The construct ids will need to be unique.
  */
-const service = ecs.FargateService.fromFargateServiceAttributes(pipelineStack, 'FargateService', {
-  serviceArn: testStage.serviceArn,
-  cluster: ecs.Cluster.fromClusterAttributes(pipelineStack, 'Cluster', {
-    vpc: new ec2.Vpc(pipelineStack, 'Vpc'),
-    securityGroups: [],
-    clusterName: testStage.clusterName,
-  }),
-});
+const service = ecs.BaseService.fromServiceArnWithCluster(pipelineStack, 'FargateService', testStage.serviceArn);
 /**
  * It is highly recommended passing in the role from the stage/stack, if not a new role
  * will be added to the pipeline action, will not exist in the account you are deploying to.

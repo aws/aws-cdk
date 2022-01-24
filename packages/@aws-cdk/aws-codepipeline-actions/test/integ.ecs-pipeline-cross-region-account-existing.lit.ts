@@ -29,7 +29,6 @@ const app = new cdk.App();
  */
 class ExistingEcsServiceStack extends cdk.Stack {
   public readonly serviceArn: string;
-  public readonly clusterName: string;
   public readonly deployRole: iam.IRole;
 
   constructor(scope: Construct, id: string, props: cdk.StackProps) {
@@ -39,16 +38,24 @@ class ExistingEcsServiceStack extends cdk.Stack {
     const vpc = ec2.Vpc.fromLookup(this, 'VpcLookup', {
       isDefault: false,
     });
-    this.clusterName = 'cluster-name';
+    const clusterName = 'cluster-name';
+    const cluster = ecs.Cluster.fromClusterAttributes(this, 'Cluster', {
+      vpc,
+      securityGroups: [],
+      clusterName: clusterName,
+    });
     const service = ecs.FargateService.fromFargateServiceAttributes(this, 'FargateService', {
       serviceName: 'service-name',
-      cluster: ecs.Cluster.fromClusterAttributes(this, 'Cluster', {
-        vpc,
-        securityGroups: [],
-        clusterName: this.clusterName,
-      }),
+      cluster: cluster,
     });
-    this.serviceArn = service.serviceArn;
+    /**
+     * The default serviceArn doesn't include the cluster, as it isn't in the new format.
+     */
+    this.serviceArn = this.formatArn({
+      service: 'ecs',
+      resource: 'service',
+      resourceName: `${cluster.clusterName}/${service.serviceName}`,
+    });
     /**
      * The deployRole is being looked up from an existing role.
      * If you want to create a new role here you can do that however you will need this stack deployed
@@ -104,7 +111,6 @@ class ExistingEcsServiceStack extends cdk.Stack {
  */
 class ExistingEcsServiceStage extends cdk.Stage {
   public readonly serviceArn: string;
-  public readonly clusterName: string;
   public readonly deployRole: iam.IRole;
   public readonly stack: cdk.Stack
 
@@ -114,7 +120,6 @@ class ExistingEcsServiceStage extends cdk.Stage {
     const testStack = new ExistingEcsServiceStack(this, 'ecsStack', {});
     this.stack = testStack;
     this.serviceArn = testStack.serviceArn;
-    this.clusterName = testStack.clusterName;
     this.deployRole = testStack.deployRole;
   }
 }
@@ -140,22 +145,21 @@ const testStage = new ExistingEcsServiceStage(pipelineStack, 'TestStage', {
 });
 const stackName = testStage.stack.stackName;
 const changeSetName = `changeset-${testStage.stack.stackName}`;
-const stageActions = [
-  new cpactions.CloudFormationCreateReplaceChangeSetAction({
-    actionName: 'PrepareChanges',
-    stackName: stackName,
-    changeSetName: changeSetName,
-    adminPermissions: true,
-    templatePath: artifact.atPath(testStage.stack.templateFile),
-    runOrder: 1,
-  }),
-  new cpactions.CloudFormationExecuteChangeSetAction({
-    actionName: 'ExecuteChanges',
-    stackName: stackName,
-    changeSetName: changeSetName,
-    runOrder: 2,
-  }),
-];
+const stageActions = [];
+stageActions.push(new cpactions.CloudFormationCreateReplaceChangeSetAction({
+  actionName: 'PrepareChanges',
+  stackName: stackName,
+  changeSetName: changeSetName,
+  adminPermissions: true,
+  templatePath: artifact.atPath(testStage.stack.templateFile),
+  runOrder: 1,
+}));
+stageActions.push(new cpactions.CloudFormationExecuteChangeSetAction({
+  actionName: 'ExecuteChanges',
+  stackName: stackName,
+  changeSetName: changeSetName,
+  runOrder: 2,
+}));
 
 const testIStage = pipeline.addStage({
   stageName: testStage.stageName,
@@ -167,14 +171,7 @@ const testIStage = pipeline.addStage({
  * The VPC doesn't actually matter and it doesn't get created.
  * The construct ids will need to be unique.
 */
-const service = ecs.FargateService.fromFargateServiceAttributes(pipelineStack, 'FargateService', {
-  serviceArn: testStage.serviceArn,
-  cluster: ecs.Cluster.fromClusterAttributes(pipelineStack, 'Cluster', {
-    vpc: new ec2.Vpc(pipelineStack, 'Vpc'),
-    securityGroups: [],
-    clusterName: testStage.clusterName,
-  }),
-});
+const service = ecs.BaseService.fromServiceArnWithCluster(pipelineStack, 'FargateService', testStage.serviceArn);
 /**
  * It is highly recommended passing in the role from the stage/stack, if not a new role
  * will be added to the pipeline action, will not exist in the account you are deploying to.
