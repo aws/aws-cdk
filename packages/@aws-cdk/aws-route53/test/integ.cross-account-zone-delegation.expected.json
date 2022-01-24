@@ -78,6 +78,55 @@
         "Name": "sub.myzone.com."
       }
     },
+    "DelegationWithZoneIdcrossaccountzonedelegationhandlerrolePolicy5170A69B": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "ParentHostedZoneCrossAccountZoneDelegationRole95B1C36E",
+                  "Arn"
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "DelegationWithZoneIdcrossaccountzonedelegationhandlerrolePolicy5170A69B",
+        "Roles": [
+          {
+            "Fn::Select": [
+              1,
+              {
+                "Fn::Split": [
+                  "/",
+                  {
+                    "Fn::Select": [
+                      5,
+                      {
+                        "Fn::Split": [
+                          ":",
+                          {
+                            "Fn::GetAtt": [
+                              "CustomCrossAccountZoneDelegationCustomResourceProviderRoleED64687B",
+                              "Arn"
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
     "DelegationWithZoneIdCrossAccountZoneDelegationCustomResourceFFD766E7": {
       "Type": "Custom::CrossAccountZoneDelegation",
       "Properties": {
@@ -126,26 +175,6 @@
         "ManagedPolicyArns": [
           {
             "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-          }
-        ],
-        "Policies": [
-          {
-            "PolicyName": "Inline",
-            "PolicyDocument": {
-              "Version": "2012-10-17",
-              "Statement": [
-                {
-                  "Effect": "Allow",
-                  "Action": "sts:AssumeRole",
-                  "Resource": {
-                    "Fn::GetAtt": [
-                      "ParentHostedZoneCrossAccountZoneDelegationRole95B1C36E",
-                      "Arn"
-                    ]
-                  }
-                }
-              ]
-            }
           }
         ]
       }
@@ -210,6 +239,55 @@
       "Type": "AWS::Route53::HostedZone",
       "Properties": {
         "Name": "anothersub.myzone.com."
+      }
+    },
+    "DelegationWithZoneNamecrossaccountzonedelegationhandlerrolePolicy86996882": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "ParentHostedZoneCrossAccountZoneDelegationRole95B1C36E",
+                  "Arn"
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "DelegationWithZoneNamecrossaccountzonedelegationhandlerrolePolicy86996882",
+        "Roles": [
+          {
+            "Fn::Select": [
+              1,
+              {
+                "Fn::Split": [
+                  "/",
+                  {
+                    "Fn::Select": [
+                      5,
+                      {
+                        "Fn::Split": [
+                          ":",
+                          {
+                            "Fn::GetAtt": [
+                              "CustomCrossAccountZoneDelegationCustomResourceProviderRoleED64687B",
+                              "Arn"
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
       }
     },
     "DelegationWithZoneNameCrossAccountZoneDelegationCustomResourceA1A1C94A": {

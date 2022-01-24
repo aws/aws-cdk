@@ -1,9 +1,10 @@
-import '@aws-cdk/assert-internal/jest';
+import { Match, Template } from '@aws-cdk/assertions';
 import { Vpc } from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
+import { ContainerImage } from '@aws-cdk/aws-ecs';
 import { CompositePrincipal, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import { Duration, Stack } from '@aws-cdk/core';
-import { ApplicationMultipleTargetGroupsFargateService, NetworkMultipleTargetGroupsFargateService, ApplicationLoadBalancedFargateService } from '../../lib';
+import { ApplicationLoadBalancedFargateService, ApplicationMultipleTargetGroupsFargateService, NetworkLoadBalancedFargateService, NetworkMultipleTargetGroupsFargateService } from '../../lib';
 
 describe('When Application Load Balancer', () => {
   test('test Fargate loadbalanced construct with default settings', () => {
@@ -21,9 +22,9 @@ describe('When Application Load Balancer', () => {
     });
 
     // THEN - stack contains a load balancer and a service
-    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::LoadBalancer');
+    Template.fromStack(stack).resourceCountIs('AWS::ElasticLoadBalancingV2::LoadBalancer', 1);
 
-    expect(stack).toHaveResource('AWS::ECS::Service', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
       DesiredCount: 1,
       LaunchType: 'FARGATE',
       LoadBalancers: [
@@ -37,9 +38,9 @@ describe('When Application Load Balancer', () => {
       ],
     });
 
-    expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
-        {
+        Match.objectLike({
           Image: 'test',
           LogConfiguration: {
             LogDriver: 'awslogs',
@@ -60,7 +61,7 @@ describe('When Application Load Balancer', () => {
               Protocol: 'tcp',
             },
           ],
-        },
+        }),
       ],
       Cpu: '256',
       ExecutionRoleArn: {
@@ -135,7 +136,7 @@ describe('When Application Load Balancer', () => {
     });
 
     // THEN - stack contains a load balancer and a service
-    expect(stack).toHaveResource('AWS::ECS::Service', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
       DesiredCount: 3,
       EnableECSManagedTags: true,
       HealthCheckGracePeriodSeconds: 2,
@@ -182,7 +183,7 @@ describe('When Application Load Balancer', () => {
       ServiceName: 'myService',
     });
 
-    expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
         {
           Environment: [
@@ -314,11 +315,11 @@ describe('When Application Load Balancer', () => {
     });
 
     // THEN - stack contains a load balancer and a service
-    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
       Name: 'alb-test-load-balancer',
     });
 
-    expect(stack).toHaveResource('AWS::ECS::Service', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
       DesiredCount: 1,
       LaunchType: 'FARGATE',
       LoadBalancers: [
@@ -332,9 +333,9 @@ describe('When Application Load Balancer', () => {
       ],
     });
 
-    expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
-        {
+        Match.objectLike({
           Image: 'test',
           LogConfiguration: {
             LogDriver: 'awslogs',
@@ -355,7 +356,7 @@ describe('When Application Load Balancer', () => {
               Protocol: 'tcp',
             },
           ],
-        },
+        }),
       ],
       Cpu: '256',
       ExecutionRoleArn: {
@@ -390,9 +391,9 @@ describe('When Network Load Balancer', () => {
     });
 
     // THEN - stack contains a load balancer and a service
-    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::LoadBalancer');
+    Template.fromStack(stack).resourceCountIs('AWS::ElasticLoadBalancingV2::LoadBalancer', 1);
 
-    expect(stack).toHaveResource('AWS::ECS::Service', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
       DesiredCount: 1,
       LaunchType: 'FARGATE',
       LoadBalancers: [
@@ -406,9 +407,9 @@ describe('When Network Load Balancer', () => {
       ],
     });
 
-    expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
-        {
+        Match.objectLike({
           Image: 'test',
           LogConfiguration: {
             LogDriver: 'awslogs',
@@ -429,7 +430,7 @@ describe('When Network Load Balancer', () => {
               Protocol: 'tcp',
             },
           ],
-        },
+        }),
       ],
       Cpu: '256',
       ExecutionRoleArn: {
@@ -500,7 +501,7 @@ describe('When Network Load Balancer', () => {
     });
 
     // THEN - stack contains a load balancer and a service
-    expect(stack).toHaveResource('AWS::ECS::Service', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
       DesiredCount: 3,
       EnableECSManagedTags: true,
       HealthCheckGracePeriodSeconds: 2,
@@ -546,7 +547,7 @@ describe('When Network Load Balancer', () => {
       ServiceName: 'myService',
     });
 
-    expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
         {
           Environment: [
@@ -660,5 +661,76 @@ describe('When Network Load Balancer', () => {
         cluster,
       });
     }).toThrow(/You must specify one of: taskDefinition or image/);
+  });
+
+  test('test Fargate networkloadbalanced construct with custom Port', () => {
+    // GIVEN
+    const stack = new Stack();
+    const vpc = new Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+
+    new NetworkLoadBalancedFargateService(stack, 'NLBService', {
+      cluster: cluster,
+      memoryLimitMiB: 1024,
+      cpu: 512,
+      taskImageOptions: {
+        image: ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+        containerPort: 81,
+      },
+      listenerPort: 8181,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
+      Port: 81,
+      Protocol: 'TCP',
+      TargetType: 'ip',
+      VpcId: {
+        Ref: 'VPCB9E5F0B4',
+      },
+    });
+  });
+
+  test('test Fargate multinetworkloadbalanced construct with custom Port', () => {
+    // GIVEN
+    const stack = new Stack();
+    const vpc = new Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+
+    new NetworkMultipleTargetGroupsFargateService(stack, 'Service', {
+      cluster,
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('test'),
+      },
+    });
+
+
+    new NetworkMultipleTargetGroupsFargateService(stack, 'NLBService', {
+      cluster: cluster,
+      memoryLimitMiB: 1024,
+      cpu: 512,
+      taskImageOptions: {
+        image: ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+      },
+      loadBalancers: [
+        {
+          name: 'lb1',
+          listeners: [
+            { name: 'listener1', port: 8181 },
+          ],
+        },
+      ],
+      targetGroups: [{
+        containerPort: 81,
+      }],
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
+      Port: 81,
+      Protocol: 'TCP',
+      TargetType: 'ip',
+      VpcId: {
+        Ref: 'VPCB9E5F0B4',
+      },
+    });
   });
 });
