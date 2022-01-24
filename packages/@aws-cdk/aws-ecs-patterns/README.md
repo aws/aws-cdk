@@ -556,10 +556,10 @@ const queueProcessingFargateService = new ecsPatterns.QueueProcessingFargateServ
   healthCheck: {
     command: [ "CMD-SHELL", "curl -f http://localhost/ || exit 1" ],
     // the properties below are optional
-    interval: cdk.Duration.minutes(30),
+    interval: Duration.minutes(30),
     retries: 123,
-    startPeriod: cdk.Duration.minutes(30),
-    timeout: cdk.Duration.minutes(30),
+    startPeriod: Duration.minutes(30),
+    timeout: Duration.minutes(30),
   },
 });
 ```
