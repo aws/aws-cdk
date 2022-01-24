@@ -28,22 +28,24 @@ export interface TagOptionsProps {
  */
 export class TagOptions extends cdk.Resource {
   /**
-   * Map of underlying TagOption resources.
+   * List of underlying CfnTagOption resources.
    *
    * @internal
    */
-  public readonly _tagOptionsMap: { [tagOptionIdentifier: string]: CfnTagOption };
+  public _cfnTagOptions: CfnTagOption[];
 
   constructor(scope: Construct, id: string, props: TagOptionsProps) {
     super(scope, id);
-    this._tagOptionsMap = this.createUnderlyingTagOptions(props.allowedValuesForTags);
+
+    this._cfnTagOptions = this.createUnderlyingTagOptions(props.allowedValuesForTags);
   }
 
-  private createUnderlyingTagOptions(allowedValuesForTags: { [tagKey: string]: string[] }): { [tagOptionIdentifier: string]: CfnTagOption } {
+  private createUnderlyingTagOptions(allowedValuesForTags: { [tagKey: string]: string[] }): CfnTagOption[] {
     if (Object.keys(allowedValuesForTags).length === 0) {
       throw new Error(`No tag option keys or values were provided for resource ${this.node.path}`);
     }
-    var tagOptionMap: { [tagOptionIdentifier: string]: CfnTagOption } = {};
+    var tagOptions: CfnTagOption[] = [];
+
     for (const [tagKey, tagValues] of Object.entries(allowedValuesForTags)) {
       InputValidator.validateLength(this.node.addr, 'TagOption key', 1, 128, tagKey);
 
@@ -59,9 +61,10 @@ export class TagOptions extends cdk.Resource {
           value: tagValue,
           active: true,
         });
-        tagOptionMap[tagOptionIdentifier] = tagOption;
+        tagOptions.push(tagOption);
       });
     }
-    return tagOptionMap;
+    return tagOptions;
   }
 }
+
