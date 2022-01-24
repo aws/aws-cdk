@@ -111,7 +111,7 @@ export class JsonPath {
    * For example:
    *
    * ```ts
-   * sfn.JsonPath.format('Hello, my name is {}.', JsonPath.stringAt('$.name'))
+   * sfn.JsonPath.format('Hello, my name is {}.', sfn.JsonPath.stringAt('$.name'))
    * ```
    *
    * @see https://docs.aws.amazon.com/step-functions/latest/dg/amazon-states-language-intrinsic-functions.html
@@ -130,7 +130,7 @@ export class JsonPath {
    * For example:
    *
    * ```ts
-   * sfn.JsonPath.stringToJson(JsonPath.stringAt('$.someJsonBody'))
+   * sfn.JsonPath.stringToJson(sfn.JsonPath.stringAt('$.someJsonBody'))
    * ```
    *
    * @see https://docs.aws.amazon.com/step-functions/latest/dg/amazon-states-language-intrinsic-functions.html
@@ -148,7 +148,7 @@ export class JsonPath {
    * For example:
    *
    * ```ts
-   * sfn.JsonPath.jsonToString(JsonPath.objectAt('$.someObject'))
+   * sfn.JsonPath.jsonToString(sfn.JsonPath.objectAt('$.someObject'))
    * ```
    *
    * @see https://docs.aws.amazon.com/step-functions/latest/dg/amazon-states-language-intrinsic-functions.html
