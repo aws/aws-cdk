@@ -21,7 +21,12 @@ export enum LustreDeploymentType {
   /**
    * Long term storage. Data is replicated and file servers are replaced if they fail.
    */
-  PERSISTENT_1 = 'PERSISTENT_1'
+  PERSISTENT_1 = 'PERSISTENT_1',
+  /**
+   * Newer type of long term storage with higher throughput tiers.
+   * Data is replicated and file servers are replaced if they fail.
+   */
+  PERSISTENT_2 = 'PERSISTENT_2'
 }
 
 /**
