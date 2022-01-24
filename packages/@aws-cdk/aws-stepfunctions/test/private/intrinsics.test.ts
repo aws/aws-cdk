@@ -14,6 +14,10 @@ test('JSON path with quoted literal', () => {
   expect(parse("$['I\\'m'].Path")).toEqual({ type: 'path', path: "$['I\\'m'].Path" });
 });
 
+test('Complex JSON path between square brackets', () => {
+  expect(parse("$[?('Eva Green' in @['starring'])]")).toEqual({ type: 'path', path: "$[?('Eva Green' in @['starring'])]" });
+});
+
 test('JSON path must be contiguous', () => {
   expect(() => parse('$.Path AndThen')).toThrow(/Invalid JSONPath expression/);
 });
@@ -54,6 +58,29 @@ test('parse string literal with escaped quotes', () => {
       {
         type: 'string-literal',
         literal: "Hi I'm cool",
+      },
+    ],
+  });
+});
+
+test('nested function calls', () => {
+  expect(parse("States.Format('{}', States.JsonToString($.Obj))")).toEqual({
+    type: 'fncall',
+    functionName: 'States.Format',
+    arguments: [
+      {
+        type: 'string-literal',
+        literal: '{}',
+      },
+      {
+        type: 'fncall',
+        functionName: 'States.JsonToString',
+        arguments: [
+          {
+            type: 'path',
+            path: '$.Obj',
+          },
+        ],
       },
     ],
   });
