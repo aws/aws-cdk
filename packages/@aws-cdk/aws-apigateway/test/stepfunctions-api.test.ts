@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import { StateMachine } from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
@@ -17,7 +17,7 @@ describe('Step Functions api', () => {
     }).toThrow();
 
     //THEN
-    expect(stack).toHaveResource('AWS::ApiGateway::Method', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
       HttpMethod: 'ANY',
       MethodResponses: getMethodResponse(),
       AuthorizationType: 'NONE',
