@@ -1308,7 +1308,7 @@ describe('auto scaling group', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::AutoScaling::AutoScalingGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::AutoScalingGroup', {
       TerminationPolicies: [
         'OldestInstance',
         'Default',
