@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import { Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { FilterPattern, ILogGroup, ILogSubscriptionDestination, LogGroup, SubscriptionFilter } from '../lib';
@@ -17,13 +17,11 @@ describe('subscription filter', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::Logs::SubscriptionFilter', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::SubscriptionFilter', {
       DestinationArn: 'arn:bogus',
       FilterPattern: 'some pattern',
       LogGroupName: { Ref: 'LogGroupF5B46931' },
     });
-
-
   });
 });
 
