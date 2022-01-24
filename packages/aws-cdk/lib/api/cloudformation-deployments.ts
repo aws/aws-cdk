@@ -412,11 +412,6 @@ export class CloudFormationDeployments {
     sdk: ISDK,
   ): Promise<void> {
     const listStackResources = parentStackName ? new LazyListStackResources(sdk, parentStackName) : undefined;
-
-    console.log('---------------')
-    console.log(generatedParentTemplate)
-
-
     const parentNestedStackResources = Object.entries(generatedParentTemplate.Resources ?? {});
     for (const [nestedStackLogicalId, resource] of parentNestedStackResources) {
       if (!this.isCdkManagedNestedStack(resource)) {
@@ -432,11 +427,11 @@ export class CloudFormationDeployments {
       //generatedParentTemplate.Resources[nestedStackLogicalId].Properties.NestedTemplate = nestedStackTemplates.generatedNestedTemplate;
 
       ///////////////////////////////
-      if (!generatedParentTemplate.Resources) {
-        generatedParentTemplate.Resources = {};
+      if (!generatedParentTemplate.Resources[nestedStackLogicalId].Properties) {
+        generatedParentTemplate.Resources[nestedStackLogicalId].Properties = {};
       }
-      console.log(nestedStackTemplates)
       generatedParentTemplate.Resources[nestedStackLogicalId].Properties.NestedTemplate = nestedStackTemplates.generatedNestedTemplate;
+      const generatedNestedTemplate = generatedParentTemplate.Resources[nestedStackLogicalId].Properties.NestedTemplate;
       ///////////////////////////////
 
       let deployedNestedTemplate = {};
@@ -460,8 +455,8 @@ export class CloudFormationDeployments {
 
       await this.replaceNestedStacksInParentTemplate(
         rootStackArtifact,
-        generatedParentTemplate.Resources[nestedStackLogicalId].Properties.NestedTemplate, // todo: remove .Properties'
-        deployedNestedTemplate ?? {}, // TODO: remove the ?? {}
+        generatedNestedTemplate,
+        deployedNestedTemplate,
         nestedStackTemplates.nestedStackName,
         sdk,
       );

@@ -244,25 +244,27 @@ test('readCurrentTemplateWithNestedStacks() can handle non-Resources in the temp
     Resources: {
       NestedStack: {
         Type: 'AWS::CloudFormation::Stack',
-        NestedTemplate: {
-          Resources: {
-            NestedResource: {
-              Type: 'AWS::Something',
-              Properties: {
-                Property: 'old-value',
+        Properties: {
+          NestedTemplate: {
+            Resources: {
+              NestedResource: {
+                Type: 'AWS::Something',
+                Properties: {
+                  Property: 'old-value',
+                },
               },
             },
-          },
-          Outputs: {
-            NestedOutput: {
-              Value: {
-                Ref: 'NestedResource',
+            Outputs: {
+              NestedOutput: {
+                Value: {
+                  Ref: 'NestedResource',
+                },
               },
             },
-          },
-          Parameters: {
-            NestedParam: {
-              Type: 'String',
+            Parameters: {
+              NestedParam: {
+                Type: 'String',
+              },
             },
           },
         },
@@ -277,25 +279,27 @@ test('readCurrentTemplateWithNestedStacks() can handle non-Resources in the temp
     Resources: {
       NestedStack: {
         Type: 'AWS::CloudFormation::Stack',
-        NestedTemplate: {
-          Resources: {
-            NestedResource: {
-              Type: 'AWS::Something',
-              Properties: {
-                Property: 'new-value',
+        Properties: {
+          NestedTemplate: {
+            Resources: {
+              NestedResource: {
+                Type: 'AWS::Something',
+                Properties: {
+                  Property: 'new-value',
+                },
               },
             },
-          },
-          Outputs: {
-            NestedOutput: {
-              Value: {
-                Ref: 'NestedResource',
+            Outputs: {
+              NestedOutput: {
+                Value: {
+                  Ref: 'NestedResource',
+                },
               },
             },
-          },
-          Parameters: {
-            NestedParam: {
-              Type: 'Number',
+            Parameters: {
+              NestedParam: {
+                Type: 'Number',
+              },
             },
           },
         },
@@ -441,44 +445,50 @@ test('readCurrentTemplateWithNestedStacks() with a 3-level nested + sibling stru
     Resources: {
       NestedStack: {
         Type: 'AWS::CloudFormation::Stack',
-        NestedTemplate: {
-          Resources: {
-            NestedStackA: {
-              Type: 'AWS::CloudFormation::Stack',
-              NestedTemplate: {
-                Resources: {
-                  SomeResource: {
-                    Type: 'AWS::Something',
-                    Properties: {
-                      Property: 'old-value',
+        Properties: {
+          NestedTemplate: {
+            Resources: {
+              NestedStackA: {
+                Type: 'AWS::CloudFormation::Stack',
+                Properties: {
+                  NestedTemplate: {
+                    Resources: {
+                      SomeResource: {
+                        Type: 'AWS::Something',
+                        Properties: {
+                          Property: 'old-value',
+                        },
+                      },
                     },
                   },
                 },
+                Metadata: {
+                  'aws:asset:path': 'one-resource-stack.nested.template.json',
+                },
               },
-              Metadata: {
-                'aws:asset:path': 'one-resource-stack.nested.template.json',
-              },
-            },
-            NestedStackB: {
-              Type: 'AWS::CloudFormation::Stack',
-              NestedTemplate: {
-                Resources: {
-                  SomeResource: {
-                    Type: 'AWS::Something',
-                    Properties: {
-                      Property: 'old-value',
+              NestedStackB: {
+                Type: 'AWS::CloudFormation::Stack',
+                Properties: {
+                  NestedTemplate: {
+                    Resources: {
+                      SomeResource: {
+                        Type: 'AWS::Something',
+                        Properties: {
+                          Property: 'old-value',
+                        },
+                      },
                     },
                   },
                 },
+                Metadata: {
+                  'aws:asset:path': 'one-resource-stack.nested.template.json',
+                },
               },
-              Metadata: {
-                'aws:asset:path': 'one-resource-stack.nested.template.json',
-              },
-            },
-            SomeResource: {
-              Type: 'AWS::Something',
-              Properties: {
-                Property: 'old-value',
+              SomeResource: {
+                Type: 'AWS::Something',
+                Properties: {
+                  Property: 'old-value',
+                },
               },
             },
           },
@@ -494,44 +504,50 @@ test('readCurrentTemplateWithNestedStacks() with a 3-level nested + sibling stru
     Resources: {
       NestedStack: {
         Type: 'AWS::CloudFormation::Stack',
-        NestedTemplate: {
-          Resources: {
-            NestedStackA: {
-              Type: 'AWS::CloudFormation::Stack',
-              NestedTemplate: {
-                Resources: {
-                  SomeResource: {
-                    Type: 'AWS::Something',
-                    Properties: {
-                      Property: 'new-value',
+        Properties: {
+          NestedTemplate: {
+            Resources: {
+              NestedStackA: {
+                Type: 'AWS::CloudFormation::Stack',
+                Properties: {
+                  NestedTemplate: {
+                    Resources: {
+                      SomeResource: {
+                        Type: 'AWS::Something',
+                        Properties: {
+                          Property: 'new-value',
+                        },
+                      },
                     },
                   },
                 },
+                Metadata: {
+                  'aws:asset:path': 'one-resource-stack.nested.template.json',
+                },
               },
-              Metadata: {
-                'aws:asset:path': 'one-resource-stack.nested.template.json',
-              },
-            },
-            NestedStackB: {
-              Type: 'AWS::CloudFormation::Stack',
-              NestedTemplate: {
-                Resources: {
-                  SomeResource: {
-                    Type: 'AWS::Something',
-                    Properties: {
-                      Property: 'new-value',
+              NestedStackB: {
+                Type: 'AWS::CloudFormation::Stack',
+                Properties: {
+                  NestedTemplate: {
+                    Resources: {
+                      SomeResource: {
+                        Type: 'AWS::Something',
+                        Properties: {
+                          Property: 'new-value',
+                        },
+                      },
                     },
                   },
                 },
+                Metadata: {
+                  'aws:asset:path': 'one-resource-stack.nested.template.json',
+                },
               },
-              Metadata: {
-                'aws:asset:path': 'one-resource-stack.nested.template.json',
-              },
-            },
-            SomeResource: {
-              Type: 'AWS::Something',
-              Properties: {
-                Property: 'new-value',
+              SomeResource: {
+                Type: 'AWS::Something',
+                Properties: {
+                  Property: 'new-value',
+                },
               },
             },
           },
@@ -699,12 +715,14 @@ test('readCurrentTemplateWithNestedStacks() succesfully ignores stacks without m
     Resources: {
       WithMetadata: {
         Type: 'AWS::CloudFormation::Stack',
-        NestedTemplate: {
-          Resources: {
-            SomeResource: {
-              Type: 'AWS::Something',
-              Properties: {
-                Property: 'old-value',
+        Properties: {
+          NestedTemplate: {
+            Resources: {
+              SomeResource: {
+                Type: 'AWS::Something',
+                Properties: {
+                  Property: 'old-value',
+                },
               },
             },
           },
@@ -727,12 +745,14 @@ test('readCurrentTemplateWithNestedStacks() succesfully ignores stacks without m
       },
       WithMetadata: { // Changed
         Type: 'AWS::CloudFormation::Stack',
-        NestedTemplate: {
-          Resources: {
-            SomeResource: {
-              Type: 'AWS::Something',
-              Properties: {
-                Property: 'new-value',
+        Properties: {
+          NestedTemplate: {
+            Resources: {
+              SomeResource: {
+                Type: 'AWS::Something',
+                Properties: {
+                  Property: 'new-value',
+                },
               },
             },
           },
@@ -811,13 +831,13 @@ test('readCurrentTemplateWithNestedStacks() does not erase the AWS::CloudFormati
         Type: 'AWS::CloudFormation::Stack',
         Properties: {
           TimeoutInMinutes: 5,
-        },
-        NestedTemplate: {
-          Resources: {
-            SomeResource: {
-              Type: 'AWS::Something',
-              Properties: {
-                Property: 'old-value',
+          NestedTemplate: {
+            Resources: {
+              SomeResource: {
+                Type: 'AWS::Something',
+                Properties: {
+                  Property: 'old-value',
+                },
               },
             },
           },
@@ -835,13 +855,13 @@ test('readCurrentTemplateWithNestedStacks() does not erase the AWS::CloudFormati
         Type: 'AWS::CloudFormation::Stack',
         Properties: {
           TimeoutInMinutes: 5,
-        },
-        NestedTemplate: {
-          Resources: {
-            SomeResource: {
-              Type: 'AWS::Something',
-              Properties: {
-                Property: 'new-value',
+          NestedTemplate: {
+            Resources: {
+              SomeResource: {
+                Type: 'AWS::Something',
+                Properties: {
+                  Property: 'new-value',
+                },
               },
             },
           },
