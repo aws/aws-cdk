@@ -1721,7 +1721,7 @@
         "Name": "A name for the configuration profile.",
         "RetrievalRoleArn": "The ARN of an IAM role with permission to access the configuration at the specified `LocationUri` .\n\n> A retrieval role ARN is not required for configurations stored in the AWS AppConfig hosted configuration store. It is required for all other sources that store your configuration.",
         "Tags": "Metadata to assign to the configuration profile. Tags help organize and categorize your AWS AppConfig resources. Each tag consists of a key and an optional value, both of which you define.",
-        "Type": "The type of configurations that the configuration profile contains. A configuration can be a feature flag used for enabling or disabling new features or a freeform configuration used to introduce changes to your application.",
+        "Type": "The type of configurations contained in the profile. AWS AppConfig supports `feature flags` and `freeform` configurations. We recommend you create feature flag configurations to enable or disable new features and freeform configurations to distribute configurations to an application. When calling this API, enter one of the following values for `Type` :\n\n`AWS.AppConfig.FeatureFlags`\n\n`AWS.Freeform`",
         "Validators": "A list of methods for validating the configuration."
       }
     },
@@ -1821,7 +1821,7 @@
       "attributes": {
         "Ref": "`Ref` returns the version number."
       },
-      "description": "Create a new configuration in the AWS AppConfig hosted configuration store. Configurations must be 64 KB or smaller. The AWS AppConfig hosted configuration store provides the following benefits over other configuration store options.\n\n- You don't need to set up and configure other services such as Amazon Simple Storage Service ( Amazon S3 ) or Parameter Store.\n- You don't need to configure AWS Identity and Access Management ( IAM ) permissions to use the configuration store.\n- You can store configurations in any content type.\n- There is no cost to use the store.\n- You can create a configuration and add it to the store when you create a configuration profile.",
+      "description": "Create a new configuration in the AWS AppConfig hosted configuration store. Configurations must be 1 MB or smaller. The AWS AppConfig hosted configuration store provides the following benefits over other configuration store options.\n\n- You don't need to set up and configure other services such as Amazon Simple Storage Service ( Amazon S3 ) or Parameter Store.\n- You don't need to configure AWS Identity and Access Management ( IAM ) permissions to use the configuration store.\n- You can store configurations in any content type.\n- There is no cost to use the store.\n- You can create a configuration and add it to the store when you create a configuration profile.",
       "properties": {
         "ApplicationId": "The application ID.",
         "ConfigurationProfileId": "The configuration profile ID.",
@@ -5384,9 +5384,17 @@
       "description": "The `AWS::AutoScaling::WarmPool` resource creates a pool of pre-initialized EC2 instances that sits alongside the Auto Scaling group. Whenever your application needs to scale out, the Auto Scaling group can draw on the warm pool to meet its new desired capacity.\n\nWhen you create a warm pool, you can define a minimum size. When your Auto Scaling group scales out and the size of the warm pool shrinks, Amazon EC2 Auto Scaling launches new instances into the warm pool to maintain its minimum size.\n\nFor more information, see [Warm pools for Amazon EC2 Auto Scaling](https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-warm-pools.html) in the *Amazon EC2 Auto Scaling User Guide* .\n\n> CloudFormation supports the `UpdatePolicy` attribute for Auto Scaling groups. During an update, if `UpdatePolicy` is set to `AutoScalingRollingUpdate` , CloudFormation replaces `InService` instances only. Instances in the warm pool are not replaced. The difference in which instances are replaced can potentially result in different instance configurations after the stack update completes. If `UpdatePolicy` is set to `AutoScalingReplacingUpdate` , you do not encounter this issue because CloudFormation replaces both the Auto Scaling group and the warm pool.",
       "properties": {
         "AutoScalingGroupName": "The name of the Auto Scaling group.",
+        "InstanceReusePolicy": "",
         "MaxGroupPreparedCapacity": "Specifies the maximum number of instances that are allowed to be in the warm pool or in any state except `Terminated` for the Auto Scaling group. This is an optional property. Specify it only if you do not want the warm pool size to be determined by the difference between the group's maximum capacity and its desired capacity.\n\n> If a value for `MaxGroupPreparedCapacity` is not specified, Amazon EC2 Auto Scaling launches and maintains the difference between the group's maximum capacity and its desired capacity. If you specify a value for `MaxGroupPreparedCapacity` , Amazon EC2 Auto Scaling uses the difference between the `MaxGroupPreparedCapacity` and the desired capacity instead.\n> \n> The size of the warm pool is dynamic. Only when `MaxGroupPreparedCapacity` and `MinSize` are set to the same value does the warm pool have an absolute size. \n\nIf the desired capacity of the Auto Scaling group is higher than the `MaxGroupPreparedCapacity` , the capacity of the warm pool is 0, unless you specify a value for `MinSize` . To remove a value that you previously set, include the property but specify -1 for the value.",
         "MinSize": "Specifies the minimum number of instances to maintain in the warm pool. This helps you to ensure that there is always a certain number of warmed instances available to handle traffic spikes. Defaults to 0 if not specified.",
         "PoolState": "Sets the instance state to transition to after the lifecycle actions are complete. Default is `Stopped` ."
+      }
+    },
+    "AWS::AutoScaling::WarmPool.InstanceReusePolicy": {
+      "attributes": {},
+      "description": "",
+      "properties": {
+        "ReuseOnScaleIn": ""
       }
     },
     "AWS::AutoScalingPlans::ScalingPlan": {
@@ -5869,7 +5877,7 @@
       },
       "description": "The `AWS::CE::CostCategory` resource creates groupings of cost that you can use across products in the AWS Billing and Cost Management console, such as Cost Explorer and AWS Budgets. For more information, see [Managing Your Costs with Cost Categories](https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/manage-cost-categories.html) in the *AWS Billing and Cost Management User Guide* .",
       "properties": {
-        "DefaultValue": "",
+        "DefaultValue": "The default value for the cost category.",
         "Name": "The unique name of the Cost Category.",
         "RuleVersion": "The rule schema version in this particular Cost Category.",
         "Rules": "The array of CostCategoryRule in JSON array format.\n\n> Rules are processed in order. If there are multiple rules that match the line item, then the first rule to match is used to determine that Cost Category value.",
@@ -10923,12 +10931,14 @@
         "AuthenticationOptions": "Information about the authentication method to be used to authenticate clients.",
         "ClientCidrBlock": "The IPv4 address range, in CIDR notation, from which to assign client IP addresses. The address range cannot overlap with the local CIDR of the VPC in which the associated subnet is located, or the routes that you add manually. The address range cannot be changed after the Client VPN endpoint has been created. The CIDR block should be /22 or greater.",
         "ClientConnectOptions": "The options for managing connection authorization for new client connections.",
+        "ClientLoginBannerOptions": "Options for enabling a customizable text banner that will be displayed on AWS provided clients when a VPN session is established.",
         "ConnectionLogOptions": "Information about the client connection logging options.\n\nIf you enable client connection logging, data about client connections is sent to a Cloudwatch Logs log stream. The following information is logged:\n\n- Client connection requests\n- Client connection results (successful and unsuccessful)\n- Reasons for unsuccessful client connection requests\n- Client connection termination time",
         "Description": "A brief description of the Client VPN endpoint.",
         "DnsServers": "Information about the DNS servers to be used for DNS resolution. A Client VPN endpoint can have up to two DNS servers. If no DNS server is specified, the DNS address configured on the device is used for the DNS server.",
         "SecurityGroupIds": "The IDs of one or more security groups to apply to the target network. You must also specify the ID of the VPC that contains the security groups.",
         "SelfServicePortal": "Specify whether to enable the self-service portal for the Client VPN endpoint.\n\nDefault Value: `enabled`",
         "ServerCertificateArn": "The ARN of the server certificate. For more information, see the [AWS Certificate Manager User Guide](https://docs.aws.amazon.com/acm/latest/userguide/) .",
+        "SessionTimeoutHours": "The maximum VPN session duration time in hours.\n\nValid values: `8 | 10 | 12 | 24`\n\nDefault value: `24`",
         "SplitTunnel": "Indicates whether split-tunnel is enabled on the AWS Client VPN endpoint.\n\nBy default, split-tunnel on a VPN endpoint is disabled.\n\nFor information about split-tunnel VPN endpoints, see [Split-tunnel AWS Client VPN endpoint](https://docs.aws.amazon.com/vpn/latest/clientvpn-admin/split-tunnel-vpn.html) in the *AWS Client VPN Administrator Guide* .",
         "TagSpecifications": "The tags to apply to the Client VPN endpoint during creation.",
         "TransportProtocol": "The transport protocol to be used by the VPN session.\n\nDefault value: `udp`",
@@ -10959,6 +10969,14 @@
       "properties": {
         "Enabled": "Indicates whether client connect options are enabled. The default is `false` (not enabled).",
         "LambdaFunctionArn": "The Amazon Resource Name (ARN) of the AWS Lambda function used for connection authorization."
+      }
+    },
+    "AWS::EC2::ClientVpnEndpoint.ClientLoginBannerOptions": {
+      "attributes": {},
+      "description": "Options for enabling a customizable text banner that will be displayed on AWS provided clients when a VPN session is established.",
+      "properties": {
+        "BannerText": "Customizable text that will be displayed in a banner on AWS provided clients when a VPN session is established. UTF-8 encoded characters only. Maximum of 1400 characters.",
+        "Enabled": "Enable or disable a customizable text banner that will be displayed on AWS provided clients when a VPN session is established.\n\nValid values: `true | false`\n\nDefault value: `false`"
       }
     },
     "AWS::EC2::ClientVpnEndpoint.ConnectionLogOptions": {
@@ -11346,6 +11364,7 @@
     },
     "AWS::EC2::Host": {
       "attributes": {
+        "HostId": "The ID of the host.",
         "Ref": "`Ref` returns the host ID, such as `h-0ab123c45d67ef89` ."
       },
       "description": "Allocates a fully dedicated physical server for launching EC2 instances. Because the host is fully dedicated for your use, it can help you address compliance requirements and reduce costs by allowing you to use your existing server-bound software licenses. For more information, see [Dedicated Hosts](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/dedicated-hosts-overview.html) in the *Amazon EC2 User Guide for Linux Instances* .",
@@ -13380,6 +13399,7 @@
     },
     "AWS::EC2::VPNGatewayRoutePropagation": {
       "attributes": {
+        "Id": "The ID of the VPN gateway.",
         "Ref": "`Ref` returns the ID of the VPN gateway."
       },
       "description": "Enables a virtual private gateway (VGW) to propagate routes to the specified route table of a VPC.\n\nIf you reference a VPN gateway that is in the same template as your VPN gateway route propagation, you must explicitly declare a dependency on the VPN gateway attachment. The `AWS::EC2::VPNGatewayRoutePropagation` resource cannot use the VPN gateway until it has successfully attached to the VPC. Add a [DependsOn Attribute](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-attribute-dependson.html) in the `AWS::EC2::VPNGatewayRoutePropagation` resource to explicitly declare a dependency on the VPN gateway attachment.",
@@ -17868,6 +17888,14 @@
         "Path": "The path of the JDBC target."
       }
     },
+    "AWS::Glue::Crawler.MongoDBTarget": {
+      "attributes": {},
+      "description": "Specifies an Amazon DocumentDB or MongoDB data store to crawl.",
+      "properties": {
+        "ConnectionName": "The name of the connection to use to connect to the Amazon DocumentDB or MongoDB target.",
+        "Path": "The path of the Amazon DocumentDB or MongoDB target (database/collection)."
+      }
+    },
     "AWS::Glue::Crawler.RecrawlPolicy": {
       "attributes": {},
       "description": "When crawling an Amazon S3 data source after the first crawl is complete, specifies whether to crawl the entire dataset again or to crawl only folders that were added since the last crawler run. For more information, see [Incremental Crawls in AWS Glue](https://docs.aws.amazon.com/glue/latest/dg/incremental-crawls.html) in the developer guide.",
@@ -17880,8 +17908,11 @@
       "description": "Specifies a data store in Amazon Simple Storage Service (Amazon S3).",
       "properties": {
         "ConnectionName": "The name of a connection which allows a job or crawler to access data in Amazon S3 within an Amazon Virtual Private Cloud environment (Amazon VPC).",
+        "DlqEventQueueArn": "",
+        "EventQueueArn": "",
         "Exclusions": "A list of glob patterns used to exclude from the crawl. For more information, see [Catalog Tables with a Crawler](https://docs.aws.amazon.com/glue/latest/dg/add-crawler.html) .",
-        "Path": "The path to the Amazon S3 target."
+        "Path": "The path to the Amazon S3 target.",
+        "SampleSize": "Sets the number of files in each leaf folder to be crawled when crawling sample files in a dataset. If not set, all the files are crawled. A valid value is an integer between 1 and 249."
       }
     },
     "AWS::Glue::Crawler.Schedule": {
@@ -17906,6 +17937,7 @@
         "CatalogTargets": "Specifies AWS Glue Data Catalog targets.",
         "DynamoDBTargets": "Specifies Amazon DynamoDB targets.",
         "JdbcTargets": "Specifies JDBC targets.",
+        "MongoDBTargets": "A list of Mongo DB targets.",
         "S3Targets": "Specifies Amazon Simple Storage Service (Amazon S3) targets."
       }
     },
@@ -20424,7 +20456,7 @@
       "properties": {
         "DisplayName": "Field that represents a friendly name in the console for the custom metric; it doesn't have to be unique. Don't use this name as the metric identifier in the device metric report. Can be updated.",
         "MetricName": "The name of the custom metric. This will be used in the metric report submitted from the device/thing. It shouldn't begin with `aws:` . Cannot be updated once it's defined.",
-        "MetricType": "The type of the custom metric. Types include `string-list` , `ip-address-list` , `number-list` , and `number` .",
+        "MetricType": "The type of the custom metric. Types include `string-list` , `ip-address-list` , and `number-list` .",
         "Tags": "Metadata that can be used to manage the custom metric."
       }
     },
@@ -20529,13 +20561,13 @@
     },
     "AWS::IoT::Logging": {
       "attributes": {
-        "Ref": ""
+        "Ref": "`Ref` returns the log ID. For example:\n\n`{\"Ref\": \"Log-12345\"}`"
       },
-      "description": "",
+      "description": "Configure logging.",
       "properties": {
-        "AccountId": "",
-        "DefaultLogLevel": "",
-        "RoleArn": ""
+        "AccountId": "The account ID.",
+        "DefaultLogLevel": "The default log level.Valid Values: `DEBUG | INFO | ERROR | WARN | DISABLED`",
+        "RoleArn": "The role ARN used for the log."
       }
     },
     "AWS::IoT::MitigationAction": {
@@ -20653,14 +20685,14 @@
     },
     "AWS::IoT::ResourceSpecificLogging": {
       "attributes": {
-        "Ref": "",
-        "TargetId": ""
+        "Ref": "`Ref` returns the resource-specific log ID. For example:\n\n`{\"Ref\": \"MyResourceLog-12345\" }`",
+        "TargetId": "The target Id."
       },
-      "description": "",
+      "description": "Configure resource-specific logging.",
       "properties": {
-        "LogLevel": "",
-        "TargetName": "",
-        "TargetType": ""
+        "LogLevel": "The default log level.Valid Values: `DEBUG | INFO | ERROR | WARN | DISABLED`",
+        "TargetName": "The target name.",
+        "TargetType": "The target type. Valid Values: `DEFAULT | THING_GROUP`"
       }
     },
     "AWS::IoT::ScheduledAudit": {
@@ -20927,7 +20959,7 @@
       "attributes": {},
       "description": "Describes an action that writes data to an Amazon Kinesis Firehose stream.",
       "properties": {
-        "BatchMode": "",
+        "BatchMode": "Whether to deliver the Kinesis Data Firehose stream as a batch by using [`PutRecordBatch`](https://docs.aws.amazon.com/firehose/latest/APIReference/API_PutRecordBatch.html) . The default value is `false` .\n\nWhen `batchMode` is `true` and the rule's SQL statement evaluates to an Array, each Array element forms one record in the [`PutRecordBatch`](https://docs.aws.amazon.com/firehose/latest/APIReference/API_PutRecordBatch.html) request. The resulting array can't have more than 500 records.",
         "DeliveryStreamName": "The delivery stream name.",
         "RoleArn": "The IAM role that grants access to the Amazon Kinesis Firehose stream.",
         "Separator": "A character separator that will be used to separate records written to the Firehose stream. Valid values are: '\\n' (newline), '\\t' (tab), '\\r\\n' (Windows newline), ',' (comma)."
@@ -20962,7 +20994,7 @@
       "attributes": {},
       "description": "Sends message data to an AWS IoT Analytics channel.",
       "properties": {
-        "BatchMode": "",
+        "BatchMode": "Whether to process the action as a batch. The default value is `false` .\n\nWhen `batchMode` is `true` and the rule SQL statement evaluates to an Array, each Array element is delivered as a separate message when passed by [`BatchPutMessage`](https://docs.aws.amazon.com/iotanalytics/latest/APIReference/API_BatchPutMessage.html) The resulting array can't have more than 100 messages.",
         "ChannelName": "The name of the IoT Analytics channel to which message data will be sent.",
         "RoleArn": "The ARN of the role which has a policy that grants IoT Analytics permission to send message data via IoT Analytics (iotanalytics:BatchPutMessage)."
       }
@@ -20971,7 +21003,7 @@
       "attributes": {},
       "description": "Sends an input to an AWS IoT Events detector.",
       "properties": {
-        "BatchMode": "",
+        "BatchMode": "Whether to process the event actions as a batch. The default value is `false` .\n\nWhen `batchMode` is `true` , you can't specify a `messageId` .\n\nWhen `batchMode` is `true` and the rule SQL statement evaluates to an Array, each Array element is treated as a separate message when Events by calling [`BatchPutMessage`](https://docs.aws.amazon.com/iotevents/latest/apireference/API_iotevents-data_BatchPutMessage.html) . The resulting array can't have more than 10 messages.",
         "InputName": "The name of the AWS IoT Events input.",
         "MessageId": "The ID of the message. The default `messageId` is a new UUID value.\n\nWhen `batchMode` is `true` , you can't specify a `messageId` --a new UUID value will be assigned.\n\nAssign a value to this property to ensure that only one input (message) with a given `messageId` will be processed by an AWS IoT Events detector.",
         "RoleArn": "The ARN of the role that grants AWS IoT permission to send an input to an AWS IoT Events detector. (\"Action\":\"iotevents:BatchPutMessage\")."
@@ -22190,7 +22222,8 @@
       "attributes": {},
       "description": "Contains a gateway's platform information.",
       "properties": {
-        "Greengrass": "A gateway that runs on AWS IoT Greengrass ."
+        "Greengrass": "A gateway that runs on AWS IoT Greengrass .",
+        "GreengrassV2": ""
       }
     },
     "AWS::IoTSiteWise::Gateway.Greengrass": {
@@ -22198,6 +22231,13 @@
       "description": "Contains details for a gateway that runs on AWS IoT Greengrass . To create a gateway that runs on AWS IoT Greengrass , you must add the IoT SiteWise connector to a Greengrass group and deploy it. Your Greengrass group must also have permissions to upload data to AWS IoT SiteWise . For more information, see [Ingesting data using a gateway](https://docs.aws.amazon.com/iot-sitewise/latest/userguide/gateway-connector.html) in the *AWS IoT SiteWise User Guide* .",
       "properties": {
         "GroupArn": "The [ARN](https://docs.aws.amazon.com/general/latest/gr/aws-arns-and-namespaces.html) of the Greengrass group. For more information about how to find a group's ARN, see [ListGroups](https://docs.aws.amazon.com/greengrass/latest/apireference/listgroups-get.html) and [GetGroup](https://docs.aws.amazon.com/greengrass/latest/apireference/getgroup-get.html) in the *AWS IoT Greengrass API Reference* ."
+      }
+    },
+    "AWS::IoTSiteWise::Gateway.GreengrassV2": {
+      "attributes": {},
+      "description": "",
+      "properties": {
+        "CoreDeviceThingName": ""
       }
     },
     "AWS::IoTSiteWise::Portal": {
@@ -23051,7 +23091,7 @@
     },
     "AWS::Kendra::DataSource.WebCrawlerConfiguration": {
       "attributes": {},
-      "description": "",
+      "description": "Provides the configuration information required for Amazon Kendra Web Crawler.",
       "properties": {
         "AuthenticationConfiguration": "Provides configuration information required to connect to websites using authentication.\n\nYou can connect to websites using basic authentication of user name and password.\n\nYou must provide the website host name and port number. For example, the host name of https://a.example.com/page1.html is \"a.example.com\" and the port is 443, the standard port for HTTPS. You use a secret in [AWS Secrets Manager](https://docs.aws.amazon.com/secretsmanager/latest/userguide/intro.html) to store your authentication credentials.",
         "CrawlDepth": "Specifies the number of levels in a website that you want to crawl.\n\nThe first level begins from the website seed or starting point URL. For example, if a website has 3 levels \u2013 index level (i.e. seed in this example), sections level, and subsections level \u2013 and you are only interested in crawling information up to the sections level (i.e. levels 0-1), you can set your depth to 1.\n\nThe default crawl depth is set to 2.",
@@ -24393,7 +24433,7 @@
       "attributes": {},
       "description": "A structure for the resource.",
       "properties": {
-        "DataLocationResource": "Currently not supported by AWS CloudFormation .",
+        "DataLocationResource": "A structure for a data location object where permissions are granted or revoked.",
         "DatabaseResource": "A structure for the database object.",
         "TableResource": "A structure for the table object. A table is a metadata definition that represents your data. You can Grant and Revoke table privileges to a principal.",
         "TableWithColumnsResource": "Currently not supported by AWS CloudFormation ."
@@ -24406,12 +24446,12 @@
         "CatalogId": "",
         "DatabaseName": "The name of the database for the table. Unique to a Data Catalog. A database is a set of associated table definitions organized into a logical group. You can Grant and Revoke database privileges to a principal.",
         "Name": "The name of the table.",
-        "TableWildcard": ""
+        "TableWildcard": "An empty object representing all tables under a database. If this field is specified instead of the `Name` field, all tables under `DatabaseName` will have permission changes applied."
       }
     },
     "AWS::LakeFormation::Permissions.TableWildcard": {
       "attributes": {},
-      "description": "",
+      "description": "A wildcard object representing every table under a database.",
       "properties": {}
     },
     "AWS::LakeFormation::Permissions.TableWithColumnsResource": {
@@ -25433,6 +25473,101 @@
         "GetObject": "Specifies the anonymous access to all objects in a bucket.\n\nThe following options can be specified:\n\n- `public` - Sets all objects in the bucket to public (read-only), making them readable by everyone on the internet.\n\nIf the `GetObject` value is set to `public` , then all objects in the bucket default to public regardless of the `allowPublicOverrides` value.\n- `private` - Sets all objects in the bucket to private, making them readable only by you and anyone that you grant access to.\n\nIf the `GetObject` value is set to `private` , and the `allowPublicOverrides` value is set to `true` , then all objects in the bucket default to private unless they are configured with a `public-read` ACL. Individual objects with a `public-read` ACL are readable by everyone on the internet."
       }
     },
+    "AWS::Lightsail::Certificate": {
+      "attributes": {
+        "CertificateArn": "The Amazon Resource Name (ARN) of the certificate.",
+        "Ref": "",
+        "Status": "The validation status of the certificate."
+      },
+      "description": "The `AWS::Lightsail::Certificate` resource specifies an SSL/TLS certificate that you can use with a content delivery network (CDN) distribution and a container service.\n\n> For information about certificates that you can use with a load balancer, see [AWS::Lightsail::LoadBalancerTlsCertificate](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lightsail-loadbalancertlscertificate.html) .",
+      "properties": {
+        "CertificateName": "The name of the certificate.",
+        "DomainName": "The domain name of the certificate.",
+        "SubjectAlternativeNames": "An array of strings that specify the alternate domains (such as `example.org` ) and subdomains (such as `blog.example.com` ) of the certificate.",
+        "Tags": "An array of key-value pairs to apply to this resource.\n\nFor more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) in the *AWS CloudFormation User Guide* .\n\n> The `Value` of `Tags` is optional for Lightsail resources."
+      }
+    },
+    "AWS::Lightsail::Container": {
+      "attributes": {
+        "ContainerArn": "The Amazon Resource Name (ARN) of the container.",
+        "Ref": "",
+        "Url": "The publicly accessible URL of the container service.\n\nIf no public endpoint is specified in the current deployment, this URL returns a 404 response."
+      },
+      "description": "The `AWS::Lightsail::Container` resource specifies a container service.\n\nA Lightsail container service is a compute resource to which you can deploy containers.",
+      "properties": {
+        "ContainerServiceDeployment": "An object that describes the current container deployment of the container service.",
+        "IsDisabled": "A Boolean value indicating whether the container service is disabled.",
+        "Power": "The power specification of the container service.\n\nThe power specifies the amount of RAM, the number of vCPUs, and the base price of the container service.",
+        "PublicDomainNames": "The public domain name of the container service, such as `example.com` and `www.example.com` .\n\nYou can specify up to four public domain names for a container service. The domain names that you specify are used when you create a deployment with a container that is configured as the public endpoint of your container service.\n\nIf you don't specify public domain names, then you can use the default domain of the container service.\n\n> You must create and validate an SSL/TLS certificate before you can use public domain names with your container service. Use the [AWS::Lightsail::Certificate](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lightsail-certificate.html) resource to create a certificate for the public domain names that you want to use with your container service.",
+        "Scale": "The scale specification of the container service.\n\nThe scale specifies the allocated compute nodes of the container service.",
+        "ServiceName": "The name of the container service.",
+        "Tags": "An array of key-value pairs to apply to this resource.\n\nFor more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) in the *AWS CloudFormation User Guide* .\n\n> The `Value` of `Tags` is optional for Lightsail resources."
+      }
+    },
+    "AWS::Lightsail::Container.Container": {
+      "attributes": {},
+      "description": "`Container` is a property of the [ContainerServiceDeployment](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lightsail-container-containerservicedeployment.html) property. It describes the settings of a container that will be launched, or that is launched, to an Amazon Lightsail container service.",
+      "properties": {
+        "Command": "The launch command for the container.",
+        "ContainerName": "The name of the container.",
+        "Environment": "The environment variables of the container.",
+        "Image": "The name of the image used for the container.\n\nContainer images that are sourced from (registered and stored on) your container service start with a colon ( `:` ). For example, if your container service name is `container-service-1` , the container image label is `mystaticsite` , and you want to use the third version ( `3` ) of the registered container image, then you should specify `:container-service-1.mystaticsite.3` . To use the latest version of a container image, specify `latest` instead of a version number (for example, `:container-service-1.mystaticsite.latest` ). Your container service will automatically use the highest numbered version of the registered container image.\n\nContainer images that are sourced from a public registry like Docker Hub don\u2019t start with a colon. For example, `nginx:latest` or `nginx` .",
+        "Ports": "An object that describes the open firewall ports and protocols of the container."
+      }
+    },
+    "AWS::Lightsail::Container.ContainerServiceDeployment": {
+      "attributes": {},
+      "description": "`ContainerServiceDeployment` is a property of the [AWS::Lightsail::Container](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lightsail-container.html) resource. It describes a container deployment configuration of a container service.\n\nA deployment specifies the settings, such as the ports and launch command, of containers that are deployed to your container service.",
+      "properties": {
+        "Containers": "An object that describes the configuration for the containers of the deployment.",
+        "PublicEndpoint": "An object that describes the endpoint of the deployment."
+      }
+    },
+    "AWS::Lightsail::Container.EnvironmentVariable": {
+      "attributes": {},
+      "description": "`EnvironmentVariable` is a property of the [Container](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lightsail-container-container.html) property. It describes the environment variables of a container on a container service which are key-value parameters that provide dynamic configuration of the application or script run by the container.",
+      "properties": {
+        "Value": "The environment variable value.",
+        "Variable": "The environment variable key."
+      }
+    },
+    "AWS::Lightsail::Container.HealthCheckConfig": {
+      "attributes": {},
+      "description": "`HealthCheckConfig` is a property of the [PublicEndpoint](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lightsail-container-publicendpoint.html) property. It describes the healthcheck configuration of a container deployment on a container service.",
+      "properties": {
+        "HealthyThreshold": "The number of consecutive health check successes required before moving the container to the `Healthy` state. The default value is `2` .",
+        "IntervalSeconds": "The approximate interval, in seconds, between health checks of an individual container. You can specify between `5` and `300` seconds. The default value is `5` .",
+        "Path": "The path on the container on which to perform the health check. The default value is `/` .",
+        "SuccessCodes": "The HTTP codes to use when checking for a successful response from a container. You can specify values between `200` and `499` . You can specify multiple values (for example, `200,202` ) or a range of values (for example, `200-299` ).",
+        "TimeoutSeconds": "The amount of time, in seconds, during which no response means a failed health check. You can specify between `2` and `60` seconds. The default value is `2` .",
+        "UnhealthyThreshold": "The number of consecutive health check failures required before moving the container to the `Unhealthy` state. The default value is `2` ."
+      }
+    },
+    "AWS::Lightsail::Container.PortInfo": {
+      "attributes": {},
+      "description": "`PortInfo` is a property of the [Container](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lightsail-container-container.html) property. It describes the ports to open and the protocols to use for a container on a Amazon Lightsail container service.",
+      "properties": {
+        "Port": "The open firewall ports of the container.",
+        "Protocol": "The protocol name for the open ports.\n\n*Allowed values* : `HTTP` | `HTTPS` | `TCP` | `UDP`"
+      }
+    },
+    "AWS::Lightsail::Container.PublicDomainName": {
+      "attributes": {},
+      "description": "`PublicDomainName` is a property of the [AWS::Lightsail::Container](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lightsail-container.html) resource. It describes the public domain names to use with a container service, such as `example.com` and `www.example.com` . It also describes the certificates to use with a container service.",
+      "properties": {
+        "CertificateName": "The name of the certificate for the public domains.",
+        "DomainNames": "The public domain names to use with the container service."
+      }
+    },
+    "AWS::Lightsail::Container.PublicEndpoint": {
+      "attributes": {},
+      "description": "`PublicEndpoint` is a property of the [ContainerServiceDeployment](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lightsail-container-containerservicedeployment.html) property. It describes describes the settings of the public endpoint of a container on a container service.",
+      "properties": {
+        "ContainerName": "The name of the container entry of the deployment that the endpoint configuration applies to.",
+        "ContainerPort": "The port of the specified container to which traffic is forwarded to.",
+        "HealthCheckConfig": "An object that describes the health check configuration of the container."
+      }
+    },
     "AWS::Lightsail::Database": {
       "attributes": {
         "DatabaseArn": "The Amazon Resource Name (ARN) of the database (for example, `arn:aws:lightsail:us-east-2:123456789101:RelationalDatabase/244ad76f-8aad-4741-809f-12345EXAMPLE` ).",
@@ -25507,6 +25642,89 @@
       "description": "`AutoSnapshotAddOn` is a property of the [AddOn](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lightsail-disk-addon.html) property. It describes the automatic snapshot add-on for a disk.",
       "properties": {
         "SnapshotTimeOfDay": "The daily time when an automatic snapshot will be created.\n\nConstraints:\n\n- Must be in `HH:00` format, and in an hourly increment.\n- Specified in Coordinated Universal Time (UTC).\n- The snapshot will be automatically created between the time specified and up to 45 minutes after."
+      }
+    },
+    "AWS::Lightsail::Distribution": {
+      "attributes": {
+        "AbleToUpdateBundle": "Indicates whether you can update the distribution\u2019s current bundle to another bundle.",
+        "DistributionArn": "The Amazon Resource Name (ARN) of the distribution.",
+        "Ref": "",
+        "Status": "The status of the distribution."
+      },
+      "description": "The `AWS::Lightsail::Distribution` resource specifies a content delivery network (CDN) distribution. You can create distributions only in the `us-east-1` AWS Region.\n\nA distribution is a globally distributed network of caching servers that improve the performance of your website or web application hosted on a Lightsail instance, static content hosted on a Lightsail bucket, or through a Lightsail load balancer.",
+      "properties": {
+        "BundleId": "The ID of the bundle applied to the distribution.",
+        "CacheBehaviorSettings": "An object that describes the cache behavior settings of the distribution.",
+        "CacheBehaviors": "An array of objects that describe the per-path cache behavior of the distribution.",
+        "CertificateName": "The name of the SSL/TLS certificate attached to the distribution.",
+        "DefaultCacheBehavior": "An object that describes the default cache behavior of the distribution.",
+        "DistributionName": "The name of the distribution",
+        "IpAddressType": "The IP address type of the distribution.\n\nThe possible values are `ipv4` for IPv4 only, and `dualstack` for IPv4 and IPv6.",
+        "IsEnabled": "A Boolean value indicating whether the distribution is enabled.",
+        "Origin": "An object that describes the origin resource of the distribution, such as a Lightsail instance, bucket, or load balancer.\n\nThe distribution pulls, caches, and serves content from the origin.",
+        "Tags": "An array of key-value pairs to apply to this resource.\n\nFor more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) in the *AWS CloudFormation User Guide* .\n\n> The `Value` of `Tags` is optional for Lightsail resources."
+      }
+    },
+    "AWS::Lightsail::Distribution.CacheBehavior": {
+      "attributes": {},
+      "description": "`CacheBehavior` is a property of the [AWS::Lightsail::Distribution](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lightsail-distribution.html) resource. It describes the default cache behavior of an Amazon Lightsail content delivery network (CDN) distribution.",
+      "properties": {
+        "Behavior": "The cache behavior of the distribution.\n\nThe following cache behaviors can be specified:\n\n- *`cache`* - This option is best for static sites. When specified, your distribution caches and serves your entire website as static content. This behavior is ideal for websites with static content that doesn't change depending on who views it, or for websites that don't use cookies, headers, or query strings to personalize content.\n- *`dont-cache`* - This option is best for sites that serve a mix of static and dynamic content. When specified, your distribution caches and serves only the content that is specified in the distribution\u2019s `CacheBehaviorPerPath` parameter. This behavior is ideal for websites or web applications that use cookies, headers, and query strings to personalize content for individual users."
+      }
+    },
+    "AWS::Lightsail::Distribution.CacheBehaviorPerPath": {
+      "attributes": {},
+      "description": "`CacheBehaviorPerPath` is a property of the [AWS::Lightsail::Distribution](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lightsail-distribution.html) resource. It describes the per-path cache behavior of an Amazon Lightsail content delivery network (CDN) distribution.\n\nUse a per-path cache behavior to override the default cache behavior of a distribution, or to add an exception to it. For example, if you set the `CacheBehavior` to `cache` , you can use a per-path cache behavior to specify a directory, file, or file type that your distribution will cache. If you don\u2019t want your distribution to cache a specified directory, file, or file type, set the per-path cache behavior to `dont-cache` .",
+      "properties": {
+        "Behavior": "The cache behavior for the specified path.\n\nYou can specify one of the following per-path cache behaviors:\n\n- *`cache`* - This behavior caches the specified path.\n- *`dont-cache`* - This behavior doesn't cache the specified path.",
+        "Path": "The path to a directory or file to cache, or not cache. Use an asterisk symbol to specify wildcard directories ( `path/to/assets/*` ), and file types ( `*.html` , `*jpg` , `*js` ). Directories and file paths are case-sensitive.\n\nExamples:\n\n- Specify the following to cache all files in the document root of an Apache web server running on a instance.\n\n`var/www/html/`\n- Specify the following file to cache only the index page in the document root of an Apache web server.\n\n`var/www/html/index.html`\n- Specify the following to cache only the .html files in the document root of an Apache web server.\n\n`var/www/html/*.html`\n- Specify the following to cache only the .jpg, .png, and .gif files in the images sub-directory of the document root of an Apache web server.\n\n`var/www/html/images/*.jpg`\n\n`var/www/html/images/*.png`\n\n`var/www/html/images/*.gif`\n\nSpecify the following to cache all files in the images subdirectory of the document root of an Apache web server.\n\n`var/www/html/images/`"
+      }
+    },
+    "AWS::Lightsail::Distribution.CacheSettings": {
+      "attributes": {},
+      "description": "`CacheSettings` is a property of the [AWS::Lightsail::Distribution](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lightsail-distribution.html) resource. It describes the cache settings of an Amazon Lightsail content delivery network (CDN) distribution.\n\nThese settings apply only to your distribution\u2019s `CacheBehaviors` that have a `Behavior` of `cache` . This includes the `DefaultCacheBehavior` .",
+      "properties": {
+        "AllowedHTTPMethods": "The HTTP methods that are processed and forwarded to the distribution's origin.\n\nYou can specify the following options:\n\n- `GET,HEAD` - The distribution forwards the `GET` and `HEAD` methods.\n- `GET,HEAD,OPTIONS` - The distribution forwards the `GET` , `HEAD` , and `OPTIONS` methods.\n- `GET,HEAD,OPTIONS,PUT,PATCH,POST,DELETE` - The distribution forwards the `GET` , `HEAD` , `OPTIONS` , `PUT` , `PATCH` , `POST` , and `DELETE` methods.\n\nIf you specify `GET,HEAD,OPTIONS,PUT,PATCH,POST,DELETE` , you might need to restrict access to your distribution's origin so users can't perform operations that you don't want them to. For example, you might not want users to have permission to delete objects from your origin.",
+        "CachedHTTPMethods": "The HTTP method responses that are cached by your distribution.\n\nYou can specify the following options:\n\n- `GET,HEAD` - The distribution caches responses to the `GET` and `HEAD` methods.\n- `GET,HEAD,OPTIONS` - The distribution caches responses to the `GET` , `HEAD` , and `OPTIONS` methods.",
+        "DefaultTTL": "The default amount of time that objects stay in the distribution's cache before the distribution forwards another request to the origin to determine whether the content has been updated.\n\n> The value specified applies only when the origin does not add HTTP headers such as `Cache-Control max-age` , `Cache-Control s-maxage` , and `Expires` to objects.",
+        "ForwardedCookies": "An object that describes the cookies that are forwarded to the origin. Your content is cached based on the cookies that are forwarded.",
+        "ForwardedHeaders": "An object that describes the headers that are forwarded to the origin. Your content is cached based on the headers that are forwarded.",
+        "ForwardedQueryStrings": "An object that describes the query strings that are forwarded to the origin. Your content is cached based on the query strings that are forwarded.",
+        "MaximumTTL": "The maximum amount of time that objects stay in the distribution's cache before the distribution forwards another request to the origin to determine whether the object has been updated.\n\nThe value specified applies only when the origin adds HTTP headers such as `Cache-Control max-age` , `Cache-Control s-maxage` , and `Expires` to objects.",
+        "MinimumTTL": "The minimum amount of time that objects stay in the distribution's cache before the distribution forwards another request to the origin to determine whether the object has been updated.\n\nA value of `0` must be specified for `minimumTTL` if the distribution is configured to forward all headers to the origin."
+      }
+    },
+    "AWS::Lightsail::Distribution.CookieObject": {
+      "attributes": {},
+      "description": "`CookieObject` is a property of the [CacheSettings](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lightsail-distribution-cachesettings.html) property. It describes whether an Amazon Lightsail content delivery network (CDN) distribution forwards cookies to the origin and, if so, which ones.\n\nFor the cookies that you specify, your distribution caches separate versions of the specified content based on the cookie values in viewer requests.",
+      "properties": {
+        "CookiesAllowList": "The specific cookies to forward to your distribution's origin.",
+        "Option": "Specifies which cookies to forward to the distribution's origin for a cache behavior.\n\nUse one of the following configurations for your distribution:\n\n- *`all`* - Forwards all cookies to your origin.\n- *`none`* - Doesn\u2019t forward cookies to your origin.\n- *`allow-list`* - Forwards only the cookies that you specify using the `CookiesAllowList` parameter."
+      }
+    },
+    "AWS::Lightsail::Distribution.HeaderObject": {
+      "attributes": {},
+      "description": "`HeaderObject` is a property of the [CacheSettings](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lightsail-distribution-cachesettings.html) property. It describes the request headers used by your distribution, which caches your content based on the request headers.\n\nFor the headers that you specify, your distribution caches separate versions of the specified content based on the header values in viewer requests. For example, suppose that viewer requests for logo.jpg contain a custom product header that has a value of either acme or apex. Also, suppose that you configure your distribution to cache your content based on values in the product header. Your distribution forwards the product header to the origin and caches the response from the origin once for each header value.",
+      "properties": {
+        "HeadersAllowList": "The specific headers to forward to your distribution's origin.",
+        "Option": "The headers that you want your distribution to forward to your origin. Your distribution caches your content based on these headers.\n\nUse one of the following configurations for your distribution:\n\n- *`all`* - Forwards all headers to your origin..\n- *`none`* - Forwards only the default headers.\n- *`allow-list`* - Forwards only the headers that you specify using the `HeadersAllowList` parameter."
+      }
+    },
+    "AWS::Lightsail::Distribution.InputOrigin": {
+      "attributes": {},
+      "description": "`InputOrigin` is a property of the [AWS::Lightsail::Distribution](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lightsail-distribution.html) resource. It describes the origin resource of an Amazon Lightsail content delivery network (CDN) distribution.\n\nAn origin can be a instance, bucket, or load balancer. A distribution pulls content from an origin, caches it, and serves it to viewers through a worldwide network of edge servers.",
+      "properties": {
+        "Name": "The name of the origin resource.",
+        "ProtocolPolicy": "The protocol that your Amazon Lightsail distribution uses when establishing a connection with your origin to pull content.",
+        "RegionName": "The AWS Region name of the origin resource."
+      }
+    },
+    "AWS::Lightsail::Distribution.QueryStringObject": {
+      "attributes": {},
+      "description": "`QueryStringObject` is a property of the [CacheSettings](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lightsail-distribution-cachesettings.html) property. It describes the query string parameters that an Amazon Lightsail content delivery network (CDN) distribution to bases caching on.\n\nFor the query strings that you specify, your distribution caches separate versions of the specified content based on the query string values in viewer requests.",
+      "properties": {
+        "Option": "Indicates whether the distribution forwards and caches based on query strings.",
+        "QueryStringsAllowList": "The specific query strings that the distribution forwards to the origin.\n\nYour distribution caches content based on the specified query strings.\n\nIf the `option` parameter is true, then your distribution forwards all query strings, regardless of what you specify using the `QueryStringsAllowList` parameter."
       }
     },
     "AWS::Lightsail::Instance": {
@@ -32158,7 +32376,7 @@
         "AllowMajorVersionUpgrade": "A value that indicates whether major version upgrades are allowed. Changing this parameter doesn't result in an outage and the change is asynchronously applied as soon as possible.\n\nConstraints: Major version upgrades must be allowed when specifying a value for the `EngineVersion` parameter that is a different major version than the DB instance's current version.",
         "AssociatedRoles": "The AWS Identity and Access Management (IAM) roles associated with the DB instance.",
         "AutoMinorVersionUpgrade": "A value that indicates whether minor engine upgrades are applied automatically to the DB instance during the maintenance window. By default, minor engine upgrades are applied automatically.",
-        "AvailabilityZone": "The Availability Zone (AZ) where the database will be created. For information on AWS Regions and Availability Zones, see [Regions and Availability Zones](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.RegionsAndAvailabilityZones.html) .\n\n*Amazon Aurora*\n\nNot applicable. Availability Zones are managed by the DB cluster.\n\nDefault: A random, system-chosen Availability Zone in the endpoint's AWS Region.\n\nExample: `us-east-1d`\n\nConstraint: The `AvailabilityZone` parameter can't be specified if the DB instance is a Multi-AZ deployment. The specified Availability Zone must be in the same AWS Region as the current endpoint.\n\n> If you're creating a DB instance in an RDS on VMware environment, specify the identifier of the custom Availability Zone to create the DB instance in.\n> \n> For more information about RDS on VMware, see the [RDS on VMware User Guide.](https://docs.aws.amazon.com/AmazonRDS/latest/RDSonVMwareUserGuide/rds-on-vmware.html)",
+        "AvailabilityZone": "The Availability Zone that the database instance will be created in.\n\nDefault: A random, system-chosen Availability Zone in the endpoint's region.\n\nExample: `us-east-1d`\n\nConstraint: The AvailabilityZone parameter cannot be specified if the MultiAZ parameter is set to `true` . The specified Availability Zone must be in the same region as the current endpoint.",
         "BackupRetentionPeriod": "The number of days for which automated backups are retained. Setting this parameter to a positive number enables backups. Setting this parameter to 0 disables automated backups.\n\n*Amazon Aurora*\n\nNot applicable. The retention period for automated backups is managed by the DB cluster.\n\nDefault: 1\n\nConstraints:\n\n- Must be a value from 0 to 35\n- Can't be set to 0 if the DB instance is a source to read replicas",
         "CACertificateIdentifier": "The identifier of the CA certificate for this DB instance.\n\n> Specifying or updating this property triggers a reboot. \n\nFor more information about CA certificate identifiers for RDS DB engines, see [Rotating Your SSL/TLS Certificate](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.SSL-certificate-rotation.html) in the *Amazon RDS User Guide* .\n\nFor more information about CA certificate identifiers for Aurora DB engines, see [Rotating Your SSL/TLS Certificate](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/UsingWithRDS.SSL-certificate-rotation.html) in the *Amazon Aurora User Guide* .",
         "CharacterSetName": "For supported engines, indicates that the DB instance should be associated with the specified character set.\n\n*Amazon Aurora*\n\nNot applicable. The character set is managed by the DB cluster. For more information, see [AWS::RDS::DBCluster](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbcluster.html) .",
@@ -32230,7 +32448,7 @@
       },
       "description": "The `AWS::RDS::DBParameterGroup` resource creates a custom parameter group for an RDS database family.\n\nThis type can be declared in a template and referenced in the `DBParameterGroupName` property of an `[AWS::RDS::DBInstance](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-database-instance.html)` resource.\n\nFor information about configuring parameters for Amazon RDS DB instances, see [Working with DB parameter groups](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_WorkingWithParamGroups.html) in the *Amazon RDS User Guide* .\n\nFor information about configuring parameters for Amazon Aurora DB instances, see [Working with DB parameter groups and DB cluster parameter groups](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/USER_WorkingWithParamGroups.html) in the *Amazon Aurora User Guide* .\n\n> Applying a parameter group to a DB instance may require the DB instance to reboot, resulting in a database outage for the duration of the reboot.",
       "properties": {
-        "Description": "Provides the customer-specified description for this DB parameter group.",
+        "Description": "Provides the customer-specified description for this DB Parameter Group.",
         "Family": "The DB parameter group family name. A DB parameter group can be associated with one and only one DB parameter group family, and can be applied only to a DB instance running a DB engine and engine version compatible with that DB parameter group family.\n\n> The DB parameter group family can't be changed when updating a DB parameter group. \n\nTo list all of the available parameter group families, use the following command:\n\n`aws rds describe-db-engine-versions --query \"DBEngineVersions[].DBParameterGroupFamily\"`\n\nThe output contains duplicates.\n\nFor more information, see `[CreateDBParameterGroup](https://docs.aws.amazon.com//AmazonRDS/latest/APIReference/API_CreateDBParameterGroup.html)` .",
         "Parameters": "An array of parameter names and values for the parameter update. At least one parameter name and value must be supplied. Subsequent arguments are optional.\n\nFor more information about DB parameters and DB parameter groups for Amazon RDS DB engines, see [Working with DB Parameter Groups](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_WorkingWithParamGroups.html) in the *Amazon RDS User Guide* .\n\nFor more information about DB cluster and DB instance parameters and parameter groups for Amazon Aurora DB engines, see [Working with DB Parameter Groups and DB Cluster Parameter Groups](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/USER_WorkingWithParamGroups.html) in the *Amazon Aurora User Guide* .\n\n> AWS CloudFormation doesn't support specifying an apply method for each individual parameter. The default apply method for each parameter is used.",
         "Tags": "Tags to assign to the DB parameter group."
@@ -32334,7 +32552,7 @@
       "properties": {
         "DBSecurityGroupIngress": "Ingress rules to be applied to the DB security group.",
         "EC2VpcId": "The identifier of an Amazon VPC. This property indicates the VPC that this DB security group belongs to.\n\n> The `EC2VpcId` property is for backward compatibility with older regions, and is no longer recommended for providing security information to an RDS DB instance.",
-        "GroupDescription": "Provides the description of the DB security group.",
+        "GroupDescription": "Provides the description of the DB Security Group.",
         "Tags": "Tags to assign to the DB security group."
       }
     },
@@ -32343,9 +32561,9 @@
       "description": "The `Ingress` property type specifies an individual ingress rule within an `AWS::RDS::DBSecurityGroup` resource.",
       "properties": {
         "CIDRIP": "The IP range to authorize.",
-        "EC2SecurityGroupId": "Id of the EC2 security group to authorize. For VPC DB security groups, `EC2SecurityGroupId` must be provided. Otherwise, `EC2SecurityGroupOwnerId` and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided.",
-        "EC2SecurityGroupName": "Name of the EC2 security group to authorize. For VPC DB security groups, `EC2SecurityGroupId` must be provided. Otherwise, `EC2SecurityGroupOwnerId` and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided.",
-        "EC2SecurityGroupOwnerId": "AWS account number of the owner of the EC2 security group specified in the `EC2SecurityGroupName` parameter. The AWS access key ID isn't an acceptable value. For VPC DB security groups, `EC2SecurityGroupId` must be provided. Otherwise, `EC2SecurityGroupOwnerId` and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided."
+        "EC2SecurityGroupId": "Id of the EC2 Security Group to authorize. For VPC DB Security Groups, `EC2SecurityGroupId` must be provided. Otherwise, EC2SecurityGroupOwnerId and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided.",
+        "EC2SecurityGroupName": "Name of the EC2 Security Group to authorize. For VPC DB Security Groups, `EC2SecurityGroupId` must be provided. Otherwise, EC2SecurityGroupOwnerId and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided.",
+        "EC2SecurityGroupOwnerId": "AWS Account Number of the owner of the EC2 Security Group specified in the EC2SecurityGroupName parameter. The AWS Access Key ID is not an acceptable value. For VPC DB Security Groups, `EC2SecurityGroupId` must be provided. Otherwise, EC2SecurityGroupOwnerId and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided."
       }
     },
     "AWS::RDS::DBSecurityGroupIngress": {
@@ -32355,10 +32573,10 @@
       "description": "The `AWS::RDS::DBSecurityGroupIngress` resource enables ingress to a DB security group using one of two forms of authorization. First, you can add EC2 or VPC security groups to the DB security group if the application using the database is running on EC2 or VPC instances. Second, IP ranges are available if the application accessing your database is running on the Internet.\n\nThis type supports updates. For more information about updating stacks, see [AWS CloudFormation Stacks Updates](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks.html) .\n\nFor details about the settings for DB security group ingress, see [AuthorizeDBSecurityGroupIngress](https://docs.aws.amazon.com/AmazonRDS/latest/APIReference/API_AuthorizeDBSecurityGroupIngress.html) .",
       "properties": {
         "CIDRIP": "The IP range to authorize.",
-        "DBSecurityGroupName": "The name of the DB security group to add authorization to.",
-        "EC2SecurityGroupId": "Id of the EC2 security group to authorize. For VPC DB security groups, `EC2SecurityGroupId` must be provided. Otherwise, `EC2SecurityGroupOwnerId` and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided.",
-        "EC2SecurityGroupName": "Name of the EC2 security group to authorize. For VPC DB security groups, `EC2SecurityGroupId` must be provided. Otherwise, `EC2SecurityGroupOwnerId` and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided.",
-        "EC2SecurityGroupOwnerId": "AWS account number of the owner of the EC2 security group specified in the `EC2SecurityGroupName` parameter. The AWS access key ID isn't an acceptable value. For VPC DB security groups, `EC2SecurityGroupId` must be provided. Otherwise, `EC2SecurityGroupOwnerId` and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided."
+        "DBSecurityGroupName": "The name of the DB Security Group to add authorization to.",
+        "EC2SecurityGroupId": "Id of the EC2 Security Group to authorize. For VPC DB Security Groups, `EC2SecurityGroupId` must be provided. Otherwise, EC2SecurityGroupOwnerId and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided.",
+        "EC2SecurityGroupName": "Name of the EC2 Security Group to authorize. For VPC DB Security Groups, `EC2SecurityGroupId` must be provided. Otherwise, EC2SecurityGroupOwnerId and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided.",
+        "EC2SecurityGroupOwnerId": "AWS Account Number of the owner of the EC2 Security Group specified in the EC2SecurityGroupName parameter. The AWS Access Key ID is not an acceptable value. For VPC DB Security Groups, `EC2SecurityGroupId` must be provided. Otherwise, EC2SecurityGroupOwnerId and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided."
       }
     },
     "AWS::RDS::DBSubnetGroup": {
@@ -32367,9 +32585,9 @@
       },
       "description": "The `AWS::RDS::DBSubnetGroup` resource creates a database subnet group. Subnet groups must contain at least two subnets in two different Availability Zones in the same region.\n\nFor more information, see [Working with DB subnet groups](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_VPC.WorkingWithRDSInstanceinaVPC.html#USER_VPC.Subnets) in the *Amazon RDS User Guide* .",
       "properties": {
-        "DBSubnetGroupDescription": "The description for the DB subnet group.",
+        "DBSubnetGroupDescription": "The description for the DB Subnet Group.",
         "DBSubnetGroupName": "The name for the DB subnet group. This value is stored as a lowercase string.\n\nConstraints: Must contain no more than 255 lowercase alphanumeric characters or hyphens. Must not be \"Default\".\n\nExample: `mysubnetgroup`",
-        "SubnetIds": "The EC2 Subnet IDs for the DB subnet group.",
+        "SubnetIds": "The EC2 Subnet IDs for the DB Subnet Group.",
         "Tags": "Tags to assign to the DB subnet group."
       }
     },
@@ -32379,8 +32597,8 @@
       },
       "description": "The `AWS::RDS::EventSubscription` resource allows you to receive notifications for Amazon Relational Database Service events through the Amazon Simple Notification Service (Amazon SNS). For more information, see [Using Amazon RDS Event Notification](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_Events.html) in the *Amazon RDS User Guide* .",
       "properties": {
-        "Enabled": "A value that indicates whether to activate the subscription. If the event notification subscription isn't activated, the subscription is created but not active.",
-        "EventCategories": "A list of event categories for a particular source type ( `SourceType` ) that you want to subscribe to. You can see a list of the categories for a given source type in the \"Amazon RDS event categories and event messages\" section of the [*Amazon RDS User Guide*](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_Events.Messages.html) or the [*Amazon Aurora User Guide*](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/USER_Events.Messages.html) . You can also see this list by using the `DescribeEventCategories` operation.",
+        "Enabled": "A Boolean value; set to *true* to activate the subscription, set to *false* to create the subscription but not active it.",
+        "EventCategories": "A list of event categories for a SourceType that you want to subscribe to. You can see a list of the categories for a given SourceType in the [Events](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_Events.html) topic in the Amazon RDS User Guide or by using the *DescribeEventCategories* action.",
         "SnsTopicArn": "The Amazon Resource Name (ARN) of the SNS topic created for event notification. The ARN is created by Amazon SNS when you create a topic and subscribe to it.",
         "SourceIds": "The list of identifiers of the event sources for which events are returned. If not specified, then all sources are included in the response. An identifier must begin with a letter and must contain only ASCII letters, digits, and hyphens. It can't end with a hyphen or contain two consecutive hyphens.\n\nConstraints:\n\n- If a `SourceIds` value is supplied, `SourceType` must also be provided.\n- If the source type is a DB instance, a `DBInstanceIdentifier` value must be supplied.\n- If the source type is a DB cluster, a `DBClusterIdentifier` value must be supplied.\n- If the source type is a DB parameter group, a `DBParameterGroupName` value must be supplied.\n- If the source type is a DB security group, a `DBSecurityGroupName` value must be supplied.\n- If the source type is a DB snapshot, a `DBSnapshotIdentifier` value must be supplied.\n- If the source type is a DB cluster snapshot, a `DBClusterSnapshotIdentifier` value must be supplied.",
         "SourceType": "The type of source that is generating the events. For example, if you want to be notified of events generated by a DB instance, set this parameter to `db-instance` . If this value isn't specified, all events are returned.\n\nValid values: `db-instance` | `db-cluster` | `db-parameter-group` | `db-security-group` | `db-snapshot` | `db-cluster-snapshot`"
@@ -32439,7 +32657,7 @@
       },
       "description": "Creates a CloudWatch RUM app monitor, which you can use to collect telemetry data from your application and send it to CloudWatch RUM. The data includes performance and reliability information such as page load time, client-side errors, and user behavior.\n\nAfter you create an app monitor, sign in to the CloudWatch RUM console to get the JavaScript code snippet to add to your web application. For more information, see [How do I find a code snippet that I've already generated?](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch-RUM-find-code-snippet.html)",
       "properties": {
-        "AppMonitorConfiguration": "A structure that contains much of the configuration data for the app monitor. If you are using Amazon Cognito for authorization, you must include this structure in your request, and it must include the ID of the Amazon Cognito identity pool to use for authorization. If you don't include `AppMonitorConfiguration` , you must set up your own authorization method. For more information, see [Authorize your application to send data to AWS](https://docs.aws.amazon.com/monitoring/CloudWatch-RUM-get-started-authorization.html) .\n\nIf you omit this argument, the sample rate used for CloudWatch RUM is set to 10% of the user sessions.",
+        "AppMonitorConfiguration": "A structure that contains much of the configuration data for the app monitor. If you are using Amazon Cognito for authorization, you must include this structure in your request, and it must include the ID of the Amazon Cognito identity pool to use for authorization. If you don't include `AppMonitorConfiguration` , you must set up your own authorization method. For more information, see [Authorize your application to send data to AWS](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch-RUM-get-started-authorization.html) .\n\nIf you omit this argument, the sample rate used for CloudWatch RUM is set to 10% of the user sessions.",
         "CwLogEnabled": "Data collected by CloudWatch RUM is kept by RUM for 30 days and then deleted. This parameter specifies whether CloudWatch RUM sends a copy of this telemetry data to Amazon CloudWatch Logs in your account. This enables you to keep the telemetry data for more than 30 days, but it does incur Amazon CloudWatch Logs charges.\n\nIf you omit this parameter, the default is `false` .",
         "Domain": "The top-level internet domain name for which your application has administrative authority. This parameter is required.",
         "Name": "A name for the app monitor. This parameter is required.",
@@ -36639,6 +36857,7 @@
       },
       "description": "The `AWS::SageMaker::Pipeline` resource creates shell scripts that run when you create and/or start a SageMaker Pipeline. For information about SageMaker Pipelines, see [SageMaker Pipelines](https://docs.aws.amazon.com/sagemaker/latest/dg/pipelines.html) in the *Amazon SageMaker Developer Guide* .",
       "properties": {
+        "ParallelismConfiguration": "The parallelism configuration applied to the pipeline.",
         "PipelineDefinition": "The definition of the pipeline. This can be either a JSON string or an Amazon S3 location.",
         "PipelineDescription": "The description of the pipeline.",
         "PipelineDisplayName": "The display name of the pipeline.",
