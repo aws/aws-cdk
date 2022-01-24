@@ -75,7 +75,8 @@ export class LegacyStackSynthesizer extends StackSynthesizer {
     }
     this.cycle = true;
     try {
-      return this.stack.synthesizer.addFileAsset(asset);
+      const stack = this.stack;
+      return withoutDeprecationWarnings(() => stack.addFileAsset(asset));
     } finally {
       this.cycle = false;
     }
@@ -91,7 +92,8 @@ export class LegacyStackSynthesizer extends StackSynthesizer {
     }
     this.cycle = true;
     try {
-      return this.stack.synthesizer.addDockerImageAsset(asset);
+      const stack = this.stack;
+      return withoutDeprecationWarnings(() => stack.addDockerImageAsset(asset));
     } finally {
       this.cycle = false;
     }
@@ -193,5 +195,15 @@ export class LegacyStackSynthesizer extends StackSynthesizer {
       this._assetParameters = new Construct(this.stack, 'AssetParameters');
     }
     return this._assetParameters;
+  }
+}
+
+function withoutDeprecationWarnings<A>(block: () => A): A {
+  const orig = process.env.JSII_DEPRECATED;
+  process.env.JSII_DEPRECATED = 'quiet';
+  try {
+    return block();
+  } finally {
+    process.env.JSII_DEPRECATED = orig;
   }
 }

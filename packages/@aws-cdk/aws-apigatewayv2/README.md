@@ -35,12 +35,13 @@ Higher level constructs for Websocket APIs | ![Experimental](https://img.shields
   - [Publishing HTTP APIs](#publishing-http-apis)
   - [Custom Domain](#custom-domain)
   - [Mutual TLS](#mutual-tls-mtls)
-  - [Managing access](#managing-access)
+  - [Managing access to HTTP APIs](#managing-access-to-http-apis)
   - [Metrics](#metrics)
   - [VPC Link](#vpc-link)
   - [Private Integration](#private-integration)
 - [WebSocket API](#websocket-api)
   - [Manage Connections Permission](#manage-connections-permission)
+  - [Managing access to WebSocket APIs](#managing-access-to-websocket-apis)
 
 ## Introduction
 
@@ -254,7 +255,7 @@ declare const apiDemo: apigwv2.HttpApi;
 const demoDomainUrl = apiDemo.defaultStage?.domainUrl; // returns "https://example.com/demo"
 ```
 
-## Mutual TLS (mTLS)
+### Mutual TLS (mTLS)
 
 Mutual TLS can be configured to limit access to your API based by using client certificates instead of (or as an extension of) using authorization headers.
 
@@ -277,7 +278,7 @@ new DomainName(stack, 'DomainName', {
 
 Instructions for configuring your trust store can be found [here](https://aws.amazon.com/blogs/compute/introducing-mutual-tls-authentication-for-amazon-api-gateway/)
 
-### Managing access
+### Managing access to HTTP APIs
 
 API Gateway supports multiple mechanisms for [controlling and managing access to your HTTP
 API](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-access-control.html) through authorizers.
@@ -419,3 +420,23 @@ stage.grantManageConnections(lambda);
 // for all the stages permission
 webSocketApi.grantManageConnections(lambda);
 ```
+
+### Managing access to WebSocket APIs
+
+API Gateway supports multiple mechanisms for [controlling and managing access to a WebSocket API](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-websocket-api-control-access.html) through authorizers.
+
+These authorizers can be found in the [APIGatewayV2-Authorizers](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-apigatewayv2-authorizers-readme.html) constructs library.
+
+### API Keys
+
+Websocket APIs also support usage of API Keys. An API Key is a key that is used to grant access to an API. These are useful for controlling and tracking access to an API, when used together with [usage plans](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-api-usage-plans.html). These together allow you to configure controls around API access such as quotas and throttling, along with per-API Key metrics on usage.
+
+To require an API Key when accessing the Websocket API:
+
+```ts
+const webSocketApi = new WebSocketApi(stack, 'mywsapi',{
+      apiKeySelectionExpression: WebSocketApiKeySelectionExpression.HEADER_X_API_KEY,
+    });
+...
+```
+

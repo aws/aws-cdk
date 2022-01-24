@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as events from '@aws-cdk/aws-events';
 import * as logs from '@aws-cdk/aws-logs';
 import * as sqs from '@aws-cdk/aws-sqs';
@@ -20,7 +20,7 @@ test('use log group as an event rule target', () => {
   rule1.addTarget(new targets.CloudWatchLogGroup(logGroup));
 
   // THEN
-  expect(stack).toHaveResource('AWS::Events::Rule', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
     ScheduleExpression: 'rate(1 minute)',
     State: 'ENABLED',
     Targets: [
@@ -72,7 +72,7 @@ test('use log group as an event rule target with rule target input', () => {
   }));
 
   // THEN
-  expect(stack).toHaveResource('AWS::Events::Rule', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
     ScheduleExpression: 'rate(1 minute)',
     State: 'ENABLED',
     Targets: [
@@ -135,7 +135,7 @@ test('specifying retry policy and dead letter queue', () => {
   }));
 
   // THEN
-  expect(stack).toHaveResource('AWS::Events::Rule', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
     ScheduleExpression: 'rate(1 minute)',
     State: 'ENABLED',
     Targets: [
