@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as cdk from '@aws-cdk/core';
 import * as iam from '../lib';
 
@@ -13,7 +13,7 @@ describe('IAM lazy role', () => {
     });
 
     // THEN
-    expect(stack).not.toHaveResource('AWS::IAM::Role');
+    Template.fromStack(stack).resourceCountIs('AWS::IAM::Role', 0);
   });
 
   test('creates the resource when a property is read', () => {
@@ -27,7 +27,7 @@ describe('IAM lazy role', () => {
 
     // THEN
     expect(roleArn).not.toBeNull();
-    expect(stack).toHaveResource('AWS::IAM::Role', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
       AssumeRolePolicyDocument: {
         Version: '2012-10-17',
         Statement: [{

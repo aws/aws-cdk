@@ -1,4 +1,3 @@
-import '@aws-cdk/assert-internal/jest';
 import { Stack } from '@aws-cdk/core';
 import { AnyPrincipal, Group, PolicyDocument, PolicyStatement } from '../lib';
 
