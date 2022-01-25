@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import { App, Stack } from '@aws-cdk/core';
 import { Group, ManagedPolicy, User } from '../lib';
 
@@ -8,7 +8,7 @@ describe('IAM groups', () => {
     const stack = new Stack(app, 'MyStack');
     new Group(stack, 'MyGroup');
 
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       Resources: { MyGroupCBA54B1B: { Type: 'AWS::IAM::Group' } },
     });
   });
@@ -22,7 +22,7 @@ describe('IAM groups', () => {
     user1.addToGroup(group);
     group.addUser(user2);
 
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       Resources:
       {
         MyGroupCBA54B1B: { Type: 'AWS::IAM::Group' },
@@ -50,7 +50,7 @@ describe('IAM groups', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::IAM::Group', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Group', {
       ManagedPolicyArns: [
         { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::aws:policy/asdf']] },
       ],
