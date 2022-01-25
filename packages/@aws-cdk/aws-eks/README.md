@@ -1397,6 +1397,30 @@ Kubernetes [endpoint access](#endpoint-access), you must also specify:
 * `kubectlPrivateSubnetIds` - a list of private VPC subnets IDs that will be used
   to access the Kubernetes endpoint.
 
+## Logging
+
+EKS supports cluster logging for 5 different types of events: 
+
+* API requests to the cluster.
+* Cluster access via the Kubernetes API.
+* Authentication requests into the cluster.
+* State of cluster controllers.
+* Scheduling decisions.
+
+You can enable logging for each one separately using the `clusterLogging`
+property. For example:
+
+```ts
+this.cluster = new eks.Cluster(this, 'Cluster', {
+  // ...
+  clusterLogging: [
+    eks.ClusterLoggingTypes.API,
+    eks.ClusterLoggingTypes.AUTHENTICATOR,
+    eks.ClusterLoggingTypes.SCHEDULER,
+  ],
+});
+```
+
 ## Known Issues and Limitations
 
 * [One cluster per stack](https://github.com/aws/aws-cdk/issues/10073)
