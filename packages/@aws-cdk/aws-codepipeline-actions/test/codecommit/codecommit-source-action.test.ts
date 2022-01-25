@@ -554,7 +554,10 @@ describe('CodeCommit Source Action', () => {
       Template.fromStack(repoStack).hasResourceProperties('AWS::IAM::Policy', {
         PolicyDocument: {
           Statement: Match.arrayWith([{
-            'Action': 's3:PutObjectAcl',
+            'Action': [
+              's3:PutObjectAcl',
+              's3:PutObjectVersionAcl',
+            ],
             'Effect': 'Allow',
             'Resource': {
               'Fn::Join': ['', [
