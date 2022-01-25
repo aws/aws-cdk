@@ -465,7 +465,67 @@ describe('FSx for Lustre File System', () => {
             vpc,
             vpcSubnet,
           });
-        }).toThrowError('perUnitStorageThroughput can only be set for the PERSISTENT_1 deployment type');
+        }).toThrowError('perUnitStorageThroughput can only be set for the PERSISTENT_1/PERSISTENT_2 deployment types');
+      });
+    });
+
+    describe('perUnitStorageThroughput_Persistent_2', () => {
+      test.each([
+        125,
+        250,
+        500,
+        1000,
+      ])('valid perUnitStorageThroughput of %d', (throughput: number) => {
+        lustreConfiguration = {
+          deploymentType: LustreDeploymentType.PERSISTENT_2,
+          perUnitStorageThroughput: throughput,
+        };
+
+        new LustreFileSystem(stack, 'FsxFileSystem', {
+          lustreConfiguration,
+          storageCapacityGiB: storageCapacity,
+          vpc,
+          vpcSubnet,
+        });
+
+        Template.fromStack(stack).hasResourceProperties('AWS::FSx::FileSystem', {
+          LustreConfiguration: {
+            DeploymentType: LustreDeploymentType.PERSISTENT_2,
+            PerUnitStorageThroughput: throughput,
+          },
+        });
+      });
+
+      test('invalid perUnitStorageThroughput', () => {
+        lustreConfiguration = {
+          deploymentType: LustreDeploymentType.PERSISTENT_2,
+          perUnitStorageThroughput: 1,
+        };
+
+        expect(() => {
+          new LustreFileSystem(stack, 'FsxFileSystem', {
+            lustreConfiguration,
+            storageCapacityGiB: storageCapacity,
+            vpc,
+            vpcSubnet,
+          });
+        }).toThrowError('perUnitStorageThroughput must be 125, 250, 500 or 1000 MB/s/TiB');
+      });
+
+      test('setting perUnitStorageThroughput on wrong deploymentType', () => {
+        lustreConfiguration = {
+          deploymentType: LustreDeploymentType.SCRATCH_2,
+          perUnitStorageThroughput: 125,
+        };
+
+        expect(() => {
+          new LustreFileSystem(stack, 'FsxFileSystem', {
+            lustreConfiguration,
+            storageCapacityGiB: storageCapacity,
+            vpc,
+            vpcSubnet,
+          });
+        }).toThrowError('perUnitStorageThroughput can only be set for the PERSISTENT_1/PERSISTENT_2 deployment types');
       });
     });
 
@@ -477,6 +537,9 @@ describe('FSx for Lustre File System', () => {
         [1200, LustreDeploymentType.PERSISTENT_1],
         [2400, LustreDeploymentType.PERSISTENT_1],
         [4800, LustreDeploymentType.PERSISTENT_1],
+        [1200, LustreDeploymentType.PERSISTENT_2],
+        [2400, LustreDeploymentType.PERSISTENT_2],
+        [4800, LustreDeploymentType.PERSISTENT_2],
       ])('proper multiple for storage capacity of %d on %s', (value: number, deploymentType: LustreDeploymentType) => {
         lustreConfiguration = {
           deploymentType,
