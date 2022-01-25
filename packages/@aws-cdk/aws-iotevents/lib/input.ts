@@ -1,5 +1,5 @@
 import * as iam from '@aws-cdk/aws-iam';
-import { Resource, IResource } from '@aws-cdk/core';
+import { Resource, IResource, Aws } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnInput } from './iotevents.generated';
 
@@ -118,10 +118,14 @@ export class Input extends InputBase {
     });
 
     this.inputName = this.getResourceNameAttribute(resource.ref);
-    this.inputArn = this.stack.formatArn({
+    this.inputArn = this.getResourceArnAttribute(arnForInput(resource.ref), {
       service: 'iotevents',
       resource: 'input',
-      resourceName: this.inputName,
+      resourceName: this.physicalName,
     });
   }
+}
+
+function arnForInput(inputName: string): string {
+  return `arn:${Aws.PARTITION}:iotevents:${Aws.REGION}:${Aws.ACCOUNT_ID}:input/${inputName}`;
 }
