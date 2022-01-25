@@ -35,7 +35,7 @@ describe('WebSocketLambdaAuthorizer', () => {
       Name: 'default-authorizer',
       AuthorizerType: 'REQUEST',
       IdentitySource: [
-        '$request.header.Authorization',
+        'route.request.header.Authorization',
       ],
     });
 

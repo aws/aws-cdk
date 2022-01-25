@@ -1,6 +1,7 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import { CloudFormation } from 'aws-sdk';
 import * as AWS from 'aws-sdk';
+import * as codebuild from 'aws-sdk/clients/codebuild';
 import * as lambda from 'aws-sdk/clients/lambda';
 import * as stepfunctions from 'aws-sdk/clients/stepfunctions';
 import { DeployStackResult } from '../../../lib/api';
@@ -83,14 +84,33 @@ export class HotswapMockSdkProvider {
   }
 
   public stubLambda(
-    mockUpdateLambdaCode: (input: lambda.UpdateFunctionCodeRequest) => lambda.FunctionConfiguration,
-    mockTagResource?: (input: lambda.TagResourceRequest) => {},
-    mockUntagResource?: (input: lambda.UntagResourceRequest) => {},
-  ) {
-    this.mockSdkProvider.stubLambda({
-      updateFunctionCode: mockUpdateLambdaCode ?? jest.fn(),
-      tagResource: mockTagResource ?? jest.fn(),
-      untagResource: mockUntagResource ?? jest.fn(),
+    stubs: SyncHandlerSubsetOf<AWS.Lambda>,
+    serviceStubs?: SyncHandlerSubsetOf<AWS.Service>,
+    additionalProperties: { [key: string]: any } = {},
+  ): void {
+    this.mockSdkProvider.stubLambda(stubs, {
+      api: {
+        waiters: {},
+      },
+      makeRequest() {
+        return {
+          promise: () => Promise.resolve({}),
+          response: {},
+          addListeners: () => {},
+        };
+      },
+      ...serviceStubs,
+      ...additionalProperties,
+    });
+  }
+
+  public getLambdaApiWaiters(): { [key: string]: any } {
+    return (this.mockSdkProvider.sdk.lambda() as any).api.waiters;
+  }
+
+  public setUpdateProjectMock(mockUpdateProject: (input: codebuild.UpdateProjectInput) => codebuild.UpdateProjectOutput) {
+    this.mockSdkProvider.stubCodeBuild({
+      updateProject: mockUpdateProject,
     });
   }
 

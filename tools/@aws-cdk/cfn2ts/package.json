@@ -32,7 +32,7 @@
   "license": "Apache-2.0",
   "dependencies": {
     "@aws-cdk/cfnspec": "0.0.0",
-    "codemaker": "^1.47.0",
+    "codemaker": "^1.52.1",
     "fast-json-patch": "^3.1.0",
     "fs-extra": "^9.1.0",
     "yargs": "^16.2.0"
@@ -41,9 +41,9 @@
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
     "@types/fs-extra": "^8.1.2",
-    "@types/jest": "^27.0.3",
+    "@types/jest": "^27.4.0",
     "@types/yargs": "^15.0.14",
-    "jest": "^27.4.3"
+    "jest": "^27.4.7"
   },
   "keywords": [
     "aws",

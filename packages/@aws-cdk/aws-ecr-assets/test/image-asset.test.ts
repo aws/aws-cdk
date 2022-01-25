@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { expect as ourExpect, haveResource } from '@aws-cdk/assert-internal';
+import { Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import { describeDeprecated, testDeprecated, testFutureBehavior } from '@aws-cdk/cdk-build-tools';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
@@ -173,7 +173,7 @@ describe('image asset', () => {
     asset.repository.grantPull(user);
 
     // THEN
-    ourExpect(stack).to(haveResource('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         'Statement': [
           {
@@ -218,9 +218,7 @@ describe('image asset', () => {
           'Ref': 'MyUserDC45028B',
         },
       ],
-    }));
-
-
+    });
   });
 
   test('fails if the directory does not exist', () => {
@@ -305,8 +303,6 @@ describe('image asset', () => {
     expect(!fs.existsSync(path.join(session.directory, `asset.${image.assetHash}`, 'node_modules', 'one'))).toBeDefined();
     expect(!fs.existsSync(path.join(session.directory, `asset.${image.assetHash}`, 'node_modules', 'some_dep'))).toBeDefined();
     expect(!fs.existsSync(path.join(session.directory, `asset.${image.assetHash}`, 'node_modules', 'some_dep', 'file'))).toBeDefined();
-
-
   });
 
   testFutureBehavior('docker directory is staged without files specified in exclude option', flags, App, (app) => {
@@ -333,8 +329,6 @@ describe('image asset', () => {
       directory: path.join(__dirname, 'demo-image'),
       buildArgs: { key: token },
     })).toThrow(expected);
-
-
   });
 
   testDeprecated('fails if using token as repositoryName', () => {
@@ -347,8 +341,6 @@ describe('image asset', () => {
       directory: path.join(__dirname, 'demo-image'),
       repositoryName: token,
     })).toThrow(/Cannot use Token as value of 'repositoryName'/);
-
-
   });
 
   testFutureBehavior('docker build options are included in the asset id', flags, App, (app) => {
@@ -400,8 +392,6 @@ function testDockerDirectoryIsStagedWithoutFilesSpecifiedInDockerignore(app: App
   expect(!fs.existsSync(path.join(session.directory, `asset.${image.assetHash}`, 'foobar.txt'))).toBeDefined();
   expect(fs.existsSync(path.join(session.directory, `asset.${image.assetHash}`, 'subdirectory'))).toBeDefined();
   expect(fs.existsSync(path.join(session.directory, `asset.${image.assetHash}`, 'subdirectory', 'baz.txt'))).toBeDefined();
-
-
 }
 
 function testDockerDirectoryIsStagedWithoutFilesSpecifiedInExcludeOption(app: App, ignoreMode?: IgnoreMode) {
@@ -420,8 +410,6 @@ function testDockerDirectoryIsStagedWithoutFilesSpecifiedInExcludeOption(app: Ap
   expect(!fs.existsSync(path.join(session.directory, `asset.${image.assetHash}`, 'foobar.txt'))).toBeDefined();
   expect(!fs.existsSync(path.join(session.directory, `asset.${image.assetHash}`, 'subdirectory'))).toBeDefined();
   expect(!fs.existsSync(path.join(session.directory, `asset.${image.assetHash}`, 'subdirectory', 'baz.txt'))).toBeDefined();
-
-
 }
 
 testFutureBehavior('nested assemblies share assets: legacy synth edition', flags, App, (app) => {
