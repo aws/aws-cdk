@@ -7,7 +7,7 @@ class TestStack extends cdk.Stack {
 
     const input = new iotevents.Input(this, 'MyInput', {
       inputName: 'test_input',
-      attributeJsonPaths: ['payload.temperature'],
+      attributeJsonPaths: ['payload.deviceId', 'payload.temperature'],
     });
 
     const onlineState = new iotevents.State({
@@ -27,6 +27,9 @@ class TestStack extends cdk.Stack {
 
     new iotevents.DetectorModel(this, 'MyDetectorModel', {
       detectorModelName: 'test-detector-model',
+      detectorModelDescription: 'test-detector-model-description',
+      evaluationMethod: iotevents.EvaluationMethod.SERIAL,
+      key: 'payload.deviceId',
       initialState: onlineState,
     });
   }
