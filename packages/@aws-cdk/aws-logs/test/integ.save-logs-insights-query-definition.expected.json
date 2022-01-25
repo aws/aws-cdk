@@ -1,0 +1,11 @@
+{
+  "Resources": {
+    "QueryDefinition4190BC36": {
+      "Type": "AWS::Logs::QueryDefinition",
+      "Properties": {
+        "Name": "MyQuery",
+        "QueryString": "fields @timestamp, @message | sort @timestamp desc | limit 20"
+      }
+    }
+  }
+}
