@@ -108,11 +108,14 @@ the value that's in the data key of `OrderId` to a Lambda function as you invoke
 it, use `JsonPath.stringAt('$.OrderId')`, like so:
 
 ```ts
+import * as lambda from '@aws-cdk/aws-lambda';
+
 declare const orderFn: lambda.Function;
+
 const submitJob = new tasks.LambdaInvoke(this, 'InvokeOrderProcessor', {
   lambdaFunction: orderFn,
   payload: sfn.TaskInput.fromObject({
-    OrderId: JsonPath.stringAt('$.OrderId'),
+    OrderId: sfn.JsonPath.stringAt('$.OrderId'),
   }),
 });
 ```
