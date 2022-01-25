@@ -214,7 +214,7 @@ test('Bundling a function with custom bundling image', () => {
   expect(DockerImage.fromBuild).toHaveBeenCalledWith(expect.stringMatching(entry));
 });
 
-test('Bundling with custom build args', () => {
+test('Bundling with custom build args`', () => {
   const entry = path.join(__dirname, 'lambda-handler');
   const testPypi = 'https://test.pypi.org/simple/';
   Bundling.bundle({
@@ -226,6 +226,25 @@ test('Bundling with custom build args', () => {
   expect(DockerImage.fromBuild).toHaveBeenCalledWith(expect.stringMatching(path.join(__dirname, '../lib')), expect.objectContaining({
     buildArgs: expect.objectContaining({
       PIP_INDEX_URL: testPypi,
+    }),
+  }));
+});
+
+test('Bundling with custom environment vars`', () => {
+  const entry = path.join(__dirname, 'lambda-handler');
+  Bundling.bundle({
+    entry: entry,
+    runtime: Runtime.PYTHON_3_7,
+    environment: {
+      KEY: 'value',
+    },
+  });
+
+  expect(Code.fromAsset).toHaveBeenCalledWith(entry, expect.objectContaining({
+    bundling: expect.objectContaining({
+      environment: {
+        KEY: 'value',
+      },
     }),
   }));
 });
