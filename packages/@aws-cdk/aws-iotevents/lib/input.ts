@@ -9,49 +9,44 @@ import { CfnInput } from './iotevents.generated';
 export interface IInput extends IResource {
   /**
    * The name of the input
+   *
    * @attribute
    */
   readonly inputName: string;
 
   /**
    * The ARN of the input
+   *
    * @attribute
    */
   readonly inputArn: string;
 
   /**
-   * Grant the indicated permissions on this input to the given IAM principal (Role/Group/User).
-   *
-   * @param grantee The principal (no-op if undefined)
-   * @param actions The set of actions to allow (i.e. "iotevents:BatchPutMessage")
-   */
-  grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant
-
-  /**
    * Grant the putting message permission to the given IAM principal (Role/Group/User).
    *
-   * @param grantee The principal (no-op if undefined)
+   * @param grantee the principal
    */
   grantPutMessage(grantee: iam.IGrantable): iam.Grant
+
+  /**
+   * Grant the indicated permissions on this input to the given IAM principal (Role/Group/User).
+   *
+   * @param grantee the principal
+   * @param actions the set of actions to allow (i.e. "iotevents:BatchPutMessage")
+   */
+  grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant
 }
 
 
 abstract class InputBase extends Resource implements IInput {
-  /**
-   * @attribute
-   */
   public abstract readonly inputName: string;
-  /**
-   * @attribute
-   */
+
   public abstract readonly inputArn: string;
 
-  /**
-   * Grant the indicated permissions on this input to the given IAM principal (Role/Group/User).
-   *
-   * @param grantee The principal (no-op if undefined)
-   * @param actions The set of actions to allow (i.e. "iotevents:BatchPutMessage")
-   */
+  public grantPutMessage(grantee: iam.IGrantable) {
+    return this.grant(grantee, 'iotevents:BatchPutMessage');
+  }
+
   public grant(grantee: iam.IGrantable, ...actions: string[]) {
     return iam.Grant.addToPrincipal({
       grantee,
@@ -59,15 +54,6 @@ abstract class InputBase extends Resource implements IInput {
       resourceArns: [this.inputArn],
       scope: this,
     });
-  }
-
-  /**
-   * Grant the putting message permission to the given IAM principal (Role/Group/User).
-   *
-   * @param grantee The principal (no-op if undefined)
-   */
-  public grantPutMessage(grantee: iam.IGrantable) {
-    return this.grant(grantee, 'iotevents:BatchPutMessage');
   }
 }
 
@@ -112,6 +98,7 @@ export class Input extends InputBase {
   }
 
   public readonly inputName: string;
+
   public readonly inputArn: string;
 
   constructor(scope: Construct, id: string, props: InputProps) {

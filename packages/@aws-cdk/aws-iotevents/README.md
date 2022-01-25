@@ -68,8 +68,8 @@ new iotevents.DetectorModel(this, 'MyDetectorModel', {
 });
 ```
 
-For grant the permittion to put message to the input, you can use
-`grantPutMessage()` as following;
+To grant permissions to put messages in the input,
+you can use the `grantPutMessage()` method:
 
 ```ts
 declare const principal: iam.AnyPrincipal;

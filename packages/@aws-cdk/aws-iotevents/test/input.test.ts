@@ -42,6 +42,19 @@ test('can get input name', () => {
   });
 });
 
+test('can set physical name', () => {
+  // WHEN
+  new iotevents.Input(stack, 'MyInput', {
+    inputName: 'test_input',
+    attributeJsonPaths: ['payload.temperature'],
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::IoTEvents::Input', {
+    InputName: 'test_input',
+  });
+});
+
 test('can get input ARN', () => {
   // GIVEN
   const input = new iotevents.Input(stack, 'MyInput', {
@@ -59,33 +72,17 @@ test('can get input ARN', () => {
   // THEN
   Template.fromStack(stack).hasResourceProperties('Test::Resource', {
     InputArn: {
-      'Fn::Join': [
-        '',
-        [
-          'arn:',
-          { Ref: 'AWS::Partition' },
-          ':iotevents:',
-          { Ref: 'AWS::Region' },
-          ':',
-          { Ref: 'AWS::AccountId' },
-          ':input/',
-          { Ref: 'MyInput08947B23' },
-        ],
-      ],
+      'Fn::Join': ['', [
+        'arn:',
+        { Ref: 'AWS::Partition' },
+        ':iotevents:',
+        { Ref: 'AWS::Region' },
+        ':',
+        { Ref: 'AWS::AccountId' },
+        ':input/',
+        { Ref: 'MyInput08947B23' },
+      ]],
     },
-  });
-});
-
-test('can set physical name', () => {
-  // WHEN
-  new iotevents.Input(stack, 'MyInput', {
-    inputName: 'test_input',
-    attributeJsonPaths: ['payload.temperature'],
-  });
-
-  // THEN
-  Template.fromStack(stack).hasResourceProperties('AWS::IoTEvents::Input', {
-    InputName: 'test_input',
   });
 });
 
@@ -112,7 +109,6 @@ test('cannot be created with an empty array of attributeJsonPaths', () => {
 test('can grant the permission to put message', () => {
   const role = iam.Role.fromRoleArn(stack, 'MyRole', 'arn:aws:iam::account-id:role/role-name');
   const input = new iotevents.Input(stack, 'MyInput', {
-    inputName: 'test_input',
     attributeJsonPaths: ['payload.temperature'],
   });
 
@@ -127,22 +123,21 @@ test('can grant the permission to put message', () => {
           Action: 'iotevents:BatchPutMessage',
           Effect: 'Allow',
           Resource: {
-            'Fn::Join': [
-              '',
-              [
-                'arn:',
-                { Ref: 'AWS::Partition' },
-                ':iotevents:',
-                { Ref: 'AWS::Region' },
-                ':',
-                { Ref: 'AWS::AccountId' },
-                ':input/',
-                { Ref: 'MyInput08947B23' },
-              ],
-            ],
+            'Fn::Join': ['', [
+              'arn:',
+              { Ref: 'AWS::Partition' },
+              ':iotevents:',
+              { Ref: 'AWS::Region' },
+              ':',
+              { Ref: 'AWS::AccountId' },
+              ':input/',
+              { Ref: 'MyInput08947B23' },
+            ]],
           },
         },
       ],
     },
+    PolicyName: 'MyRolePolicy64AB00A5',
+    Roles: ['role-name'],
   });
 });
