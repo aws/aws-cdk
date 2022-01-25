@@ -69,14 +69,14 @@ async function parseCommandLineArguments() {
     .option('staging', { type: 'boolean', desc: 'Copy assets to the output directory (use --no-staging to disable, needed for local debugging the source files with SAM CLI)', default: true })
     .option('output', { type: 'string', alias: 'o', desc: 'Emits the synthesized cloud assembly into a directory (default: cdk.out)', requiresArg: true })
     .option('no-color', { type: 'boolean', desc: 'Removes colors and other style from console output', default: false })
-    .command(['list [STACKS..]', 'ls [STACKS..]'], 'Lists all stacks in the app', yargs => yargs
+    .command(['list [STACKS..]', 'ls [STACKS..]'], 'Lists all stacks in the app', (yargs: any) => yargs
       .option('long', { type: 'boolean', default: false, alias: 'l', desc: 'Display environment information for each stack' }),
     )
-    .command(['synthesize [STACKS..]', 'synth [STACKS..]'], 'Synthesizes and prints the CloudFormation template for this stack', yargs => yargs
+    .command(['synthesize [STACKS..]', 'synth [STACKS..]'], 'Synthesizes and prints the CloudFormation template for this stack', (yargs: any) => yargs
       .option('exclusively', { type: 'boolean', alias: 'e', desc: 'Only synthesize requested stacks, don\'t include dependencies' })
       .option('validation', { type: 'boolean', desc: 'After synthesis, validate stacks with the "validateOnSynth" attribute set (can also be controlled with CDK_VALIDATION)', default: true })
       .option('quiet', { type: 'boolean', alias: 'q', desc: 'Do not output CloudFormation Template to stdout', default: false }))
-    .command('bootstrap [ENVIRONMENTS..]', 'Deploys the CDK toolkit stack into an AWS environment', yargs => yargs
+    .command('bootstrap [ENVIRONMENTS..]', 'Deploys the CDK toolkit stack into an AWS environment', (yargs: any) => yargs
       .option('bootstrap-bucket-name', { type: 'string', alias: ['b', 'toolkit-bucket-name'], desc: 'The name of the CDK toolkit bucket; bucket will be created and must not exist', default: undefined })
       .option('bootstrap-kms-key-id', { type: 'string', desc: 'AWS KMS master key ID used for the SSE-KMS encryption', default: undefined, conflicts: 'bootstrap-customer-key' })
       .option('bootstrap-customer-key', { type: 'boolean', desc: 'Create a Customer Master Key (CMK) for the bootstrap bucket (you will be charged but can customize permissions, modern bootstrapping only)', default: undefined, conflicts: 'bootstrap-kms-key-id' })
@@ -92,7 +92,7 @@ async function parseCommandLineArguments() {
       .option('show-template', { type: 'boolean', desc: 'Instead of actual bootstrapping, print the current CLI\'s bootstrapping template to stdout for customization', default: false })
       .option('template', { type: 'string', requiresArg: true, desc: 'Use the template from the given file instead of the built-in one (use --show-template to obtain an example)' }),
     )
-    .command('deploy [STACKS..]', 'Deploys the stack(s) named STACKS into your AWS account', yargs => yargs
+    .command('deploy [STACKS..]', 'Deploys the stack(s) named STACKS into your AWS account', (yargs: any) => yargs
       .option('all', { type: 'boolean', default: false, desc: 'Deploy all available stacks' })
       .option('build-exclude', { type: 'array', alias: 'E', nargs: 1, desc: 'Do not rebuild asset with the given ID. Can be specified multiple times', default: [] })
       .option('exclusively', { type: 'boolean', alias: 'e', desc: 'Only deploy requested stacks, don\'t include dependencies' })
@@ -136,7 +136,7 @@ async function parseCommandLineArguments() {
           "Only in effect if specified alongside the '--watch' option",
       }),
     )
-    .command('watch [STACKS..]', "Shortcut for 'deploy --watch'", yargs => yargs
+    .command('watch [STACKS..]', "Shortcut for 'deploy --watch'", (yargs: any) => yargs
       // I'm fairly certain none of these options, present for 'deploy', make sense for 'watch':
       // .option('all', { type: 'boolean', default: false, desc: 'Deploy all available stacks' })
       // .option('ci', { type: 'boolean', desc: 'Force CI detection', default: process.env.CI !== undefined })
@@ -175,11 +175,11 @@ async function parseCommandLineArguments() {
           "'true' by default, use --no-logs to turn off",
       }),
     )
-    .command('destroy [STACKS..]', 'Destroy the stack(s) named STACKS', yargs => yargs
+    .command('destroy [STACKS..]', 'Destroy the stack(s) named STACKS', (yargs: any) => yargs
       .option('all', { type: 'boolean', default: false, desc: 'Destroy all available stacks' })
       .option('exclusively', { type: 'boolean', alias: 'e', desc: 'Only destroy requested stacks, don\'t include dependees' })
       .option('force', { type: 'boolean', alias: 'f', desc: 'Do not ask for confirmation before destroying the stacks' }))
-    .command('diff [STACKS..]', 'Compares the specified stack with the deployed stack or a local template file, and returns with status 1 if any difference is found', yargs => yargs
+    .command('diff [STACKS..]', 'Compares the specified stack with the deployed stack or a local template file, and returns with status 1 if any difference is found', (yargs: any) => yargs
       .option('exclusively', { type: 'boolean', alias: 'e', desc: 'Only diff requested stacks, don\'t include dependencies' })
       .option('context-lines', { type: 'number', desc: 'Number of context lines to include in arbitrary JSON diff rendering', default: 3, requiresArg: true })
       .option('template', { type: 'string', desc: 'The path to the CloudFormation template to compare with', requiresArg: true })
@@ -187,7 +187,7 @@ async function parseCommandLineArguments() {
       .option('security-only', { type: 'boolean', desc: 'Only diff for broadened security changes', default: false })
       .option('fail', { type: 'boolean', desc: 'Fail with exit code 1 in case of diff', default: false }))
     .command('metadata [STACK]', 'Returns all metadata associated with this stack')
-    .command('init [TEMPLATE]', 'Create a new, empty CDK project from a template.', yargs => yargs
+    .command('init [TEMPLATE]', 'Create a new, empty CDK project from a template.', (yargs: any) => yargs
       .option('language', { type: 'string', alias: 'l', desc: 'The language to be used for the new project (default can be configured in ~/.cdk.json)', choices: initTemplateLanguages })
       .option('list', { type: 'boolean', desc: 'List the available templates' })
       .option('generate-only', { type: 'boolean', default: false, desc: 'If true, only generates project files, without executing additional operations such as setting up a git repo, installing dependencies or compiling the project' }),

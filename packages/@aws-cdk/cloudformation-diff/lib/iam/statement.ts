@@ -1,4 +1,4 @@
-import * as deepEqual from 'fast-deep-equal';
+import deepEqual from 'fast-deep-equal';
 import { deepRemoveUndefined } from '../util';
 
 export class Statement {

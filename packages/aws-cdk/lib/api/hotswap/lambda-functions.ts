@@ -1,5 +1,5 @@
 import { Writable } from 'stream';
-import * as archiver from 'archiver';
+import archiver from 'archiver';
 import { flatMap } from '../../util';
 import { ISDK } from '../aws-auth';
 import { CfnEvaluationException, EvaluateCloudFormationTemplate } from '../evaluate-cloudformation-template';

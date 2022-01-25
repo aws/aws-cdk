@@ -1,5 +1,5 @@
 import * as cxapi from '@aws-cdk/cx-api';
-import * as minimatch from 'minimatch';
+import minimatch from 'minimatch';
 import { SdkProvider } from '../aws-auth';
 import { StackCollection } from './cloud-assembly';
 

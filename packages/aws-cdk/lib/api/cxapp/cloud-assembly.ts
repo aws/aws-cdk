@@ -1,6 +1,6 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import * as chalk from 'chalk';
-import * as minimatch from 'minimatch';
+import minimatch from 'minimatch';
 import * as semver from 'semver';
 import { error, print, warning } from '../../logging';
 import { flatten } from '../../util';

@@ -1,6 +1,6 @@
 import { createWriteStream, promises as fs } from 'fs';
 import * as path from 'path';
-import * as archiver from 'archiver';
+import archiver from 'archiver';
 import * as glob from 'glob';
 
 export function zipDirectory(directory: string, outputFile: string): Promise<void> {

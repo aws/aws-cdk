@@ -1,4 +1,4 @@
-import * as wrapAnsi from 'wrap-ansi';
+import wrapAnsi from 'wrap-ansi';
 
 /**
  * A class representing rewritable display lines
