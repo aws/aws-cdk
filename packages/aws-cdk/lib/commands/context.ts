@@ -1,4 +1,4 @@
-import * as colors from 'colors/safe';
+import * as chalk from 'chalk';
 import * as yargs from 'yargs';
 import * as version from '../../lib/version';
 import { CommandOptions } from '../command-api';
@@ -63,18 +63,18 @@ function listContext(context: Context) {
   }
 
   // Print config by default
-  const data: any[] = [[colors.green('#'), colors.green('Key'), colors.green('Value')]];
+  const data: any[] = [[chalk.green('#'), chalk.green('Key'), chalk.green('Value')]];
   for (const [i, key] of keys) {
     const jsonWithoutNewlines = JSON.stringify(context.all[key], undefined, 2).replace(/\s+/g, ' ');
     data.push([i, key, jsonWithoutNewlines]);
   }
 
-  print(`Context found in ${colors.blue(PROJECT_CONFIG)}:\n`);
+  print(`Context found in ${chalk.blue(PROJECT_CONFIG)}:\n`);
 
   print(renderTable(data, process.stdout.columns));
 
   // eslint-disable-next-line max-len
-  print(`Run ${colors.blue('cdk context --reset KEY_OR_NUMBER')} to remove a context key. It will be refreshed on the next CDK synthesis run.`);
+  print(`Run ${chalk.blue('cdk context --reset KEY_OR_NUMBER')} to remove a context key. It will be refreshed on the next CDK synthesis run.`);
 }
 
 function invalidateContext(context: Context, key: string) {
@@ -87,9 +87,9 @@ function invalidateContext(context: Context, key: string) {
   // Unset!
   if (context.has(key)) {
     context.unset(key);
-    print(`Context value ${colors.blue(key)} reset. It will be refreshed on next synthesis`);
+    print(`Context value ${chalk.blue(key)} reset. It will be refreshed on next synthesis`);
   } else {
-    print(`No context value with key ${colors.blue(key)}`);
+    print(`No context value with key ${chalk.blue(key)}`);
   }
 }
 

@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import * as sqs from '@aws-cdk/aws-sqs';
@@ -22,14 +22,14 @@ test('State machine can be used as Event Rule target', () => {
   }));
 
   // THEN
-  expect(stack).toHaveResourceLike('AWS::Events::Rule', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
     Targets: [
       {
         Input: '{"SomeParam":"SomeValue"}',
       },
     ],
   });
-  expect(stack).toHaveResourceLike('AWS::IAM::Role', {
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
     AssumeRolePolicyDocument: {
       Statement: [
         {
@@ -42,7 +42,7 @@ test('State machine can be used as Event Rule target', () => {
       ],
     },
   });
-  expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
     PolicyDocument: {
       Statement: [
         {
@@ -77,14 +77,14 @@ test('Existing role can be used for State machine Rule target', () => {
   }));
 
   // THEN
-  expect(stack).toHaveResourceLike('AWS::Events::Rule', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
     Targets: [
       {
         Input: '{"SomeParam":"SomeValue"}',
       },
     ],
   });
-  expect(stack).toHaveResourceLike('AWS::IAM::Role', {
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
     AssumeRolePolicyDocument: {
       Statement: [
         {
@@ -97,7 +97,7 @@ test('Existing role can be used for State machine Rule target', () => {
       ],
     },
   });
-  expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
     PolicyDocument: {
       Statement: [
         {
@@ -135,7 +135,7 @@ test('specifying retry policy', () => {
   }));
 
   // THEN
-  expect(stack).toHaveResource('AWS::Events::Rule', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
     ScheduleExpression: 'rate(1 hour)',
     State: 'ENABLED',
     Targets: [
@@ -186,7 +186,7 @@ test('use a Dead Letter Queue for the rule target', () => {
   }));
 
   // the Permission resource should be in the event stack
-  expect(stack).toHaveResource('AWS::Events::Rule', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
     ScheduleExpression: 'rate(1 minute)',
     State: 'ENABLED',
     Targets: [
@@ -214,7 +214,7 @@ test('use a Dead Letter Queue for the rule target', () => {
     ],
   });
 
-  expect(stack).toHaveResource('AWS::SQS::QueuePolicy', {
+  Template.fromStack(stack).hasResourceProperties('AWS::SQS::QueuePolicy', {
     PolicyDocument: {
       Statement: [
         {

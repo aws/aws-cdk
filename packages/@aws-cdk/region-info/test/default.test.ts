@@ -5,12 +5,12 @@ const urlSuffix = '.nowhere.null';
 
 describe('servicePrincipal', () => {
   for (const suffix of ['', '.amazonaws.com', '.amazonaws.com.cn']) {
-    for (const service of ['states', 'ssm']) {
+    for (const service of ['codedeploy', 'states', 'ssm']) {
       test(`${service}${suffix}`, () => {
         expect(Default.servicePrincipal(`${service}${suffix}`, region, urlSuffix)).toBe(`${service}.${region}.amazonaws.com`);
       });
     }
-    for (const service of ['codedeploy', 'logs']) {
+    for (const service of ['logs']) {
       test(`${service}${suffix}`, () => {
         expect(Default.servicePrincipal(`${service}${suffix}`, region, urlSuffix)).toBe(`${service}.${region}.${urlSuffix}`);
       });
@@ -48,12 +48,19 @@ describe('servicePrincipal', () => {
     });
   }
 
+  for (const cnRegion of ['cn-north-1', 'cn-northwest-1']) {
+    test(`Exceptions: codedeploy in ${cnRegion}`, () => {
+      expect(Default.servicePrincipal('codedeploy', cnRegion, 'amazonaws.com.cn')).toBe(`codedeploy.${cnRegion}.amazonaws.com.cn`);
+    });
+  }
+
 });
 
 
 describe('spot-check some service principals', () => {
   test('ssm', () => {
     expect(Default.servicePrincipal('ssm.amazonaws.com', 'us-east-1', 'x')).toBe('ssm.amazonaws.com');
+    expect(Default.servicePrincipal('ssm.amazonaws.com', 'eu-north-1', 'x')).toBe('ssm.amazonaws.com');
     expect(Default.servicePrincipal('ssm.amazonaws.com', 'ap-east-1', 'x')).toBe('ssm.ap-east-1.amazonaws.com');
     expect(Default.servicePrincipal('ssm.amazonaws.com', 'eu-south-1', 'x')).toBe('ssm.eu-south-1.amazonaws.com');
   });
