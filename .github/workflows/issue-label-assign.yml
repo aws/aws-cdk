@@ -19,8 +19,7 @@ jobs:
           github-token: "${{ secrets.GITHUB_TOKEN }}"
           excluded-expressions: "[CDK CLI Version|TypeScript|Java|Python]"
           area-is-keyword: true
-          included-labels: "[needs-triage]"
-          excluded-labels: "[p1|p2|p0]"
+          excluded-labels: "[p1|p2|p0|contribution/core]"
           default-area: >
            {
              "assignees":["NGL321","peterwoodworth","ryparker"]
