@@ -112,15 +112,35 @@ function makeIdentifier(s: string) {
  * Return an anonymous TypeScript type that would accept the given dimensions
  */
 function dimensionsType(dims: string[]) {
-  return `{ ${dims.map(d => `${d}: string`).join(', ')} }`;
+  return `{ ${dims.map(d => `${escapeIdentifier(d)}: string`).join(', ')} }`;
+}
+
+/**
+ * Escape identifiers
+ *
+ * Most services choose nice and neat ASCII characters for their dimension
+ * names, but of course you know some won't.
+ */
+function escapeIdentifier(ident: string) {
+  return ident.match(/[^a-zA-Z0-9]/) ? `'${ident}'` : ident;
 }
 
 function groupByNamespace(metrics: cfnspec.CannedMetric[]): Record<string, cfnspec.CannedMetric[]> {
   const ret: Record<string, cfnspec.CannedMetric[]> = {};
   for (const metric of metrics) {
-    // Always starts with 'AWS/' (except when it doesn't, looking at you `CloudWatchSynthetics`)
-    const namespace = metric.namespace.replace(/^AWS\//, '');
+    const namespace = sanitizeNamespace(metric.namespace);
     (ret[namespace] ?? (ret[namespace] = [])).push(metric);
   }
   return ret;
+}
+
+/**
+ * Sanitize metrics namespace
+ *
+ * - Most namespaces look like 'AWS/<ServiceName>'.
+ * - 'AWS/CloudWatch/MetricStreams' has 2 slashes in it.
+ * - 'CloudWatchSynthetics' doesn't have a slash at all.
+ */
+function sanitizeNamespace(namespace: string) {
+  return namespace.replace(/^AWS\//, '').replace('/', '');
 }

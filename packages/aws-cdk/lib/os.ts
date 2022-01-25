@@ -1,5 +1,5 @@
 import * as child_process from 'child_process';
-import * as colors from 'colors/safe';
+import * as chalk from 'chalk';
 import { debug } from './logging';
 
 export interface ShellOptions extends child_process.SpawnOptions {
@@ -13,7 +13,7 @@ export interface ShellOptions extends child_process.SpawnOptions {
  * string.
  */
 export async function shell(command: string[], options: ShellOptions = {}): Promise<string> {
-  debug(`Executing ${colors.blue(renderCommandLine(command))}`);
+  debug(`Executing ${chalk.blue(renderCommandLine(command))}`);
   const child = child_process.spawn(command[0], command.slice(1), {
     ...options,
     stdio: ['ignore', 'pipe', 'inherit'],
