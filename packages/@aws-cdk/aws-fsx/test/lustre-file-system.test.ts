@@ -565,6 +565,8 @@ describe('FSx for Lustre File System', () => {
         [2401, LustreDeploymentType.SCRATCH_2],
         [1, LustreDeploymentType.PERSISTENT_1],
         [2401, LustreDeploymentType.PERSISTENT_1],
+        [1, LustreDeploymentType.PERSISTENT_2],
+        [2401, LustreDeploymentType.PERSISTENT_2],
       ])('invalid value of %d for storage capacity on %s', (invalidValue: number, deploymentType: LustreDeploymentType) => {
         lustreConfiguration = {
           deploymentType,
