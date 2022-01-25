@@ -208,6 +208,7 @@ and invokes it asynchronously.
 
 ```ts
 declare const fn: lambda.Function;
+
 const submitJob = new tasks.LambdaInvoke(this, 'Invoke Handler', {
   lambdaFunction: fn,
   payload: sfn.TaskInput.fromJsonPathAt('$.input'),
@@ -215,12 +216,12 @@ const submitJob = new tasks.LambdaInvoke(this, 'Invoke Handler', {
 });
 ```
 
-You can also use [intrinsic functions](https://docs.aws.amazon.com/step-functions/latest/dg/amazon-states-language-intrinsic-functions.html) with `JsonPath.stringAt()`.
+You can also use [intrinsic functions](https://docs.aws.amazon.com/step-functions/latest/dg/amazon-states-language-intrinsic-functions.html) available on `JsonPath`, for example `JsonPath.format()`.
 Here is an example of starting an Athena query that is dynamically created using the task input:
 
 ```ts
 const startQueryExecutionJob = new tasks.AthenaStartQueryExecution(this, 'Athena Start Query', {
-  queryString: sfn.JsonPath.stringAt("States.Format('select contacts where year={};', $.year)"),
+  queryString: sfn.JsonPath.format('select contacts where year={};', sfn.JsonPath.stringAt('$.year')),
   queryExecutionContext: {
     databaseName: 'interactions',
   },

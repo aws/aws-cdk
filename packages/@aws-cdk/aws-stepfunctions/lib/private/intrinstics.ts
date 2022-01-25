@@ -17,6 +17,18 @@ export interface FnCallExpression {
   readonly arguments: IntrinsicExpression[];
 }
 
+
+/**
+ * LL(1) parser for StepFunctions intrinsics
+ *
+ * The parser implements a state machine over a cursor into an expression
+ * string. The cusor gets moved, the character at the cursor gets inspected
+ * and based on the character we accumulate some value and potentially move
+ * to a different state.
+ *
+ * Literal strings are not allowed at the top level, but are allowed inside
+ * function calls.
+ */
 export class IntrinsicParser {
   private i: number = 0;
 
@@ -26,12 +38,14 @@ export class IntrinsicParser {
   public parseTopLevelIntrinsic(): TopLevelIntrinsic {
     this.ws();
 
-    const ret =
-      this.char() === '$'
-        ? this.parsePath()
-        : isAlphaNum(this.char())
-          ? this.parseFnCall()
-          : this.raiseError("expected '$' or a function call");
+    let ret;
+    if (this.char() === '$') {
+      ret = this.parsePath();
+    } else if (isAlphaNum(this.char())) {
+      ret = this.parseFnCall();
+    } else {
+      this.raiseError("expected '$' or a function call");
+    }
 
     this.ws();
 
@@ -42,7 +56,7 @@ export class IntrinsicParser {
     return ret;
   }
 
-  public parseIntrinsic(): IntrinsicExpression {
+  private parseIntrinsic(): IntrinsicExpression {
     this.ws();
 
     if (this.char() === '$') {
@@ -73,7 +87,7 @@ export class IntrinsicParser {
    * - Accept single-quoted strings ('...')
    * - Accept anything between matched square brackets ([...])
    */
-  public parsePath(): PathExpression {
+  private parsePath(): PathExpression {
     const pathString = new Array<string>();
     if (this.char() !== '$') {
       this.raiseError('expected \'$\'');
@@ -116,7 +130,7 @@ export class IntrinsicParser {
    * Cursor should be on call identifier. Afterwards, cursor will be on closing
    * quote.
    */
-  public parseFnCall(): FnCallExpression {
+  private parseFnCall(): FnCallExpression {
     const name = new Array<string>();
     while (this.char() !== '(') {
       name.push(this.consume());
@@ -154,7 +168,7 @@ export class IntrinsicParser {
    * Cursor is expected to be on the first opening quote. Afterwards,
    * cursor will be after the closing quote.
    */
-  public parseStringLiteral(): StringLiteralExpression {
+  private parseStringLiteral(): StringLiteralExpression {
     const { unquoted } = this.consumeQuotedString();
     return { type: 'string-literal', literal: unquoted };
   }
@@ -207,6 +221,8 @@ export class IntrinsicParser {
 
   /**
    * Consume whitespace if it exists
+   *
+   * Move the cursor to the next non-whitespace character.
    */
   private ws() {
     while (!this.eof && [' ', '\t', '\n'].includes(this.char())) {
