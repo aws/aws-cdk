@@ -1,5 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
-import { ABSENT, ResourcePart } from '@aws-cdk/assert-internal';
+import { Match, Template } from '@aws-cdk/assertions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import { AccountPrincipal, Role } from '@aws-cdk/aws-iam';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
@@ -15,8 +14,6 @@ describe('proxy', () => {
   beforeEach(() => {
     stack = new cdk.Stack();
     vpc = new ec2.Vpc(stack, 'VPC');
-
-
   });
 
   test('create a DB proxy from an instance', () => {
@@ -36,7 +33,7 @@ describe('proxy', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::RDS::DBProxy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBProxy', {
       Auth: [
         {
           AuthScheme: 'SECRETS',
@@ -66,7 +63,7 @@ describe('proxy', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::RDS::DBProxyTargetGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBProxyTargetGroup', {
       DBProxyName: {
         Ref: 'ProxyCB0DFB71',
       },
@@ -78,8 +75,6 @@ describe('proxy', () => {
       ],
       TargetGroupName: 'default',
     });
-
-
   });
 
   test('create a DB proxy from a cluster', () => {
@@ -99,7 +94,7 @@ describe('proxy', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::RDS::DBProxy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBProxy', {
       Auth: [
         {
           AuthScheme: 'SECRETS',
@@ -127,7 +122,7 @@ describe('proxy', () => {
         },
       ],
     });
-    expect(stack).toHaveResourceLike('AWS::RDS::DBProxyTargetGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBProxyTargetGroup', {
       DBProxyName: {
         Ref: 'ProxyCB0DFB71',
       },
@@ -137,10 +132,10 @@ describe('proxy', () => {
           Ref: 'DatabaseB269D8BB',
         },
       ],
-      DBInstanceIdentifiers: ABSENT,
+      DBInstanceIdentifiers: Match.absent(),
       TargetGroupName: 'default',
     });
-    expect(stack).toHaveResourceLike('AWS::EC2::SecurityGroupIngress', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroupIngress', {
       IpProtocol: 'tcp',
       Description: 'Allow connections to the database Cluster from the Proxy',
       FromPort: {
@@ -156,8 +151,6 @@ describe('proxy', () => {
         'Fn::GetAtt': ['DatabaseB269D8BB', 'Endpoint.Port'],
       },
     });
-
-
   });
 
   test('One or more secrets are required.', () => {
@@ -175,8 +168,6 @@ describe('proxy', () => {
         vpc,
       });
     }).toThrow('One or more secrets are required.');
-
-
   });
 
   test('fails when trying to create a proxy for a target without an engine', () => {
@@ -191,8 +182,6 @@ describe('proxy', () => {
         secrets: [new secretsmanager.Secret(stack, 'Secret')],
       });
     }).toThrow(/Could not determine engine for proxy target 'Default\/Cluster'\. Please provide it explicitly when importing the resource/);
-
-
   });
 
   test("fails when trying to create a proxy for a target with an engine that doesn't have engineFamily", () => {
@@ -213,8 +202,6 @@ describe('proxy', () => {
         secrets: [new secretsmanager.Secret(stack, 'Secret')],
       });
     }).toThrow(/Engine 'mariadb-10\.0\.24' does not support proxies/);
-
-
   });
 
   test('correctly creates a proxy for an imported Cluster if its engine is known', () => {
@@ -232,20 +219,18 @@ describe('proxy', () => {
       secrets: [new secretsmanager.Secret(stack, 'Secret')],
     });
 
-    expect(stack).toHaveResourceLike('AWS::RDS::DBProxy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBProxy', {
       EngineFamily: 'POSTGRESQL',
     });
-    expect(stack).toHaveResourceLike('AWS::RDS::DBProxyTargetGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBProxyTargetGroup', {
       DBClusterIdentifiers: [
         'my-cluster',
       ],
     });
-    expect(stack).toHaveResourceLike('AWS::EC2::SecurityGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroup', {
       GroupDescription: 'SecurityGroup for Database Proxy',
       VpcId: { Ref: 'VPCB9E5F0B4' },
     });
-
-
   });
 
   describe('imported Proxies', () => {
@@ -256,8 +241,6 @@ describe('proxy', () => {
         endpoint: 'my-endpoint',
         securityGroups: [],
       });
-
-
     });
 
     test('grant rds-db:connect in grantConnect() with a dbUser explicitly passed', () => {
@@ -269,7 +252,7 @@ describe('proxy', () => {
       importedDbProxy.grantConnect(role, databaseUser);
 
       // THEN
-      expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         PolicyDocument: {
           Statement: [{
             Effect: 'Allow',
@@ -289,8 +272,6 @@ describe('proxy', () => {
           Version: '2012-10-17',
         },
       });
-
-
     });
 
     test('throws when grantConnect() is used without a dbUser', () => {
@@ -303,8 +284,6 @@ describe('proxy', () => {
       expect(() => {
         importedDbProxy.grantConnect(role);
       }).toThrow(/For imported Database Proxies, the dbUser is required in grantConnect/);
-
-
     });
   });
 
@@ -328,7 +307,7 @@ describe('proxy', () => {
     proxy.grantConnect(role);
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [{
           Effect: 'Allow',
@@ -362,8 +341,6 @@ describe('proxy', () => {
         Version: '2012-10-17',
       },
     });
-
-
   });
 
   test('new Proxy with multiple Secrets cannot use grantConnect() without a dbUser passed', () => {
@@ -391,8 +368,6 @@ describe('proxy', () => {
     expect(() => {
       proxy.grantConnect(role);
     }).toThrow(/When the Proxy contains multiple Secrets, you must pass a dbUser explicitly to grantConnect/);
-
-
   });
 
   test('DBProxyTargetGroup should have dependency on the proxy targets', () => {
@@ -412,7 +387,7 @@ describe('proxy', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::RDS::DBProxyTargetGroup', {
+    Template.fromStack(stack).hasResource('AWS::RDS::DBProxyTargetGroup', {
       Properties: {
         DBProxyName: {
           Ref: 'proxy3A1DA9C7',
@@ -429,8 +404,6 @@ describe('proxy', () => {
         'clusterSecurityGroupF441DCEA',
         'clusterSubnets81E3593F',
       ],
-    }, ResourcePart.CompleteDefinition);
-
-
+    });
   });
 });

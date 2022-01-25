@@ -26,7 +26,7 @@ class StringLike extends Matcher {
 
   public test(actual: any): MatchResult {
     if (typeof(actual) !== 'string') {
-      throw new Error(`Expected string but found ${typeof(actual)}`);
+      throw new Error(`Expected string but found ${typeof(actual)} ${JSON.stringify(actual)}`);
     }
     const re = new RegExp(`^${this.pattern.split('*').map(escapeRegex).join('.*')}$`);
 

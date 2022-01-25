@@ -249,6 +249,33 @@ const bucket = s3.Bucket.fromBucketAttributes(this, 'ImportedBucket', {
 bucket.addEventNotification(s3.EventType.OBJECT_CREATED, new s3n.SnsDestination(topic));
 ```
 
+When you add an event notification to a bucket, a custom resource is created to 
+manage the notifications. By default, a new role is created for the Lambda
+function that implements this feature. If you want to use your own role instead,
+you should provide it in the `Bucket` constructor:
+
+```ts
+declare const myRole: iam.IRole;
+const bucket = new s3.Bucket(this, 'MyBucket', {
+  notificationsHandlerRole: myRole,
+});
+```
+
+Whatever role you provide, the CDK will try to modify it by adding the 
+permissions from `AWSLambdaBasicExecutionRole` (an AWS managed policy) as well 
+as the permissions `s3:PutBucketNotification` and `s3:GetBucketNotification`. 
+If you’re passing an imported role, and you don’t want this to happen, configure 
+it to be immutable:
+
+```ts
+const importedRole = iam.Role.fromRoleArn(this, 'role', 'arn:aws:iam::123456789012:role/RoleName', {
+  mutable: false,
+});
+```
+
+> If you provide an imported immutable role, make sure that it has at least all 
+> the permissions mentioned above. Otherwise, the deployment will fail!
+
 [S3 Bucket Notifications]: https://docs.aws.amazon.com/AmazonS3/latest/dev/NotificationHowTo.html
 
 
