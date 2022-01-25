@@ -9,6 +9,7 @@ import {
   NetworkMode,
   TaskDefinition,
 } from '../base/task-definition';
+import { RuntimePlatform } from '../runtime-platform';
 
 /**
  * The properties for a task definition.
@@ -59,6 +60,15 @@ export interface FargateTaskDefinitionProps extends CommonTaskDefinitionProps {
    * @default 20
    */
   readonly ephemeralStorageGiB?: number;
+
+  /**
+   * The operating system that your task definitions are running on.
+   *
+   * A runtimePlatform is supported only for tasks using the Fargate launch type.
+   *
+   * @default - Undefined.
+   */
+  readonly runtimePlatform?: RuntimePlatform;
 }
 
 /**
