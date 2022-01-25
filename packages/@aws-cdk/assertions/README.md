@@ -9,6 +9,8 @@
 
 <!--END STABILITY BANNER-->
 
+See [Migrating to Assertions](#migrating-to-assertions) for migration instructions from `@aws-cdk/assert`.
+
 Functions for writing test asserting against CDK applications, with focus on CloudFormation templates.
 
 The `Template` class includes a set of methods for writing assertions against CloudFormation templates. Use one of the `Template.fromXxx()` static methods to create an instance of this class.
@@ -562,4 +564,130 @@ Annotations.fromStack(stack).hasError(
   '/Default/Foo',
   Match.stringLikeRegexp('.*Foo::Bar.*'),
 );
+```
+
+## Migrating to Assertions
+
+If you have assertions written using the now-deprecated `@aws-cdk/assert` module, you can
+easily migrate to the `@aws-cdk/assertions` module using [Comby](https://comby.dev/).
+Comby is a tool for structured code rewriting.
+
+After downloading Comby, the following script can rewrite most use cases:
+
+```bash
+# comby -config ~/rewrite.toml -f .ts -d test -in-place -timeout 10
+
+[000_import]
+match="import '@aws-cdk/assert-internal/jest'"
+rewrite="import { Template } from '@aws-cdk/assertions'"
+
+[000_import2]
+match="import :[_] from '@aws-cdk/assert-internal'"
+rewrite="import { Template } from '@aws-cdk/assertions'"
+
+[100_jest_toHaveResourceLike_CompleteDefinition]
+match="expect(:[stack]).toHaveResourceLike(:[args], ResourcePart.CompleteDefinition)"
+rewrite="Template.fromStack(:[stack]).hasResource(:[args])"
+
+[100_assert_toHaveResourceLike_CompleteDefinition]
+match=":[[expect]](:[stack]).to(haveResourceLike(:[args], ResourcePart.CompleteDefinition))"
+rewrite="Template.fromStack(:[stack]).hasResource(:[args])"
+rule='''where match :[expect] {
+ | "expect" -> true
+ | "cdkExpect" -> true
+ | ":[_]" -> false
+}'''
+
+[100_jest_toHaveResource_CompleteDefinition]
+match="expect(:[stack]).toHaveResource(:[args], ResourcePart.CompleteDefinition)"
+rewrite="Template.fromStack(:[stack]).hasResource(:[args])"
+
+[100_assert_toHaveResource_CompleteDefinition]
+match=":[[expect]](:[stack]).to(haveResource(:[args], ResourcePart.CompleteDefinition))"
+rewrite="Template.fromStack(:[stack]).hasResource(:[args])"
+rule='''where match :[expect] {
+ | "expect" -> true
+ | "cdkExpect" -> true
+ | ":[_]" -> false
+}'''
+
+[200_jest_toHaveResourceLike]
+match="expect(:[stack]).toHaveResourceLike(:[args])"
+rewrite="Template.fromStack(:[stack]).hasResourceProperties(:[args])"
+
+[200_assert_toHaveResourceLike]
+match=":[[expect]](:[stack]).to(haveResourceLike(:[args]))"
+rewrite="Template.fromStack(:[stack]).hasResourceProperties(:[args])"
+rule='''where match :[expect] {
+ | "expect" -> true
+ | "cdkExpect" -> true
+ | ":[_]" -> false
+}'''
+
+[200_jest_toHaveResource]
+match="expect(:[stack]).toHaveResource(:[args])"
+rewrite="Template.fromStack(:[stack]).hasResourceProperties(:[args])"
+
+[200_assert_toHaveResource]
+match=":[[expect]](:[stack]).to(haveResource(:[args]))"
+rewrite="Template.fromStack(:[stack]).hasResourceProperties(:[args])"
+rule='''where match :[expect] {
+ | "expect" -> true
+ | "cdkExpect" -> true
+ | ":[_]" -> false
+}'''
+
+[200_jest_toCountResources]
+match="expect(:[stack]).toCountResources"
+rewrite="Template.fromStack(:[stack]).resourceCountIs"
+
+[200_assert_toCountResources2]
+match=":[[expect]](:[stack]).to(countResources(:[args]))"
+rewrite="Template.fromStack(:[stack]).resourceCountIs(:[args])"
+rule='''where match :[expect] {
+ | "expect" -> true
+ | "cdkExpect" -> true
+ | ":[_]" -> false
+}'''
+
+[200_jest_toMatchTemplate]
+match="expect(:[stack]).toMatchTemplate"
+rewrite="Template.fromStack(:[stack]).templateMatches"
+
+[200_assert_toMatchTemplate]
+match=":[[expect]](:[stack]).toMatchTemplate"
+rewrite="Template.fromStack(:[stack]).templateMatches"
+rule='''where match :[expect] {
+ | "expect" -> true
+ | "cdkExpect" -> true
+ | ":[_]" -> false
+}'''
+
+[300_notToHaveResourceLike]
+match="expect(:[stack]).not.toHaveResourceLike(:[args])"
+rewrite="Template.fromStack(:[stack]).resourceCountIs(:[args], 0)"
+
+[300_notToHaveResource]
+match="expect(:[stack]).not.toHaveResource(:[args])"
+rewrite="Template.fromStack(:[stack]).resourceCountIs(:[args], 0)"
+
+[arrayWith]
+match="arrayWith(:[args])"
+rewrite="Match.arrayWith([:[args]])"
+
+[objectLike]
+match="objectLike"
+rewrite="Match.objectLike"
+
+[absent]
+match="ABSENT"
+rewrite="Match.absent()"
+
+[400_synthutils_template]
+match="SynthUtils.synthesize(:[stack]).template"
+rewrite="Template.fromStack(:[stack]).toJSON()"
+
+[401_synthutils_assembly]
+match="SynthUtils.synthesize(:[stack])"
+rewrite="App.of(:[stack]).synth()"
 ```
