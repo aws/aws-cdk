@@ -2111,63 +2111,23 @@ describe('fargate service', () => {
   });
 
   describe('When import a Fargate Service', () => {
-    test('with old serviceArn', () => {
+    test('with serviceArn', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const cluster = new ecs.Cluster(stack, 'EcsCluster');
-      const serviceArn = 'arn:aws:ecs:us-west-2:123456789012:service/my-http-service';
 
       // WHEN
       const service = ecs.FargateService.fromFargateServiceAttributes(stack, 'EcsService', {
-        serviceArn: serviceArn,
+        serviceArn: 'arn:aws:ecs:us-west-2:123456789012:service/my-http-service',
         cluster,
       });
 
       // THEN
-      expect(service.serviceArn).toEqual(serviceArn);
+      expect(service.serviceArn).toEqual('arn:aws:ecs:us-west-2:123456789012:service/my-http-service');
       expect(service.serviceName).toEqual('my-http-service');
 
       expect(service.env.account).toEqual('123456789012');
       expect(service.env.region).toEqual('us-west-2');
-
-      // WHEN
-      const fargateService = ecs.FargateService.fromFargateServiceArn(stack, 'fargateService',
-        serviceArn,
-      );
-
-      // THEN
-      expect(fargateService.serviceName).toEqual('my-http-service');
-      expect(fargateService.serviceArn).toEqual(serviceArn);
-
-    });
-
-    test('with new serviceArn', () => {
-      // GIVEN
-      const stack = new cdk.Stack();
-      const cluster = new ecs.Cluster(stack, 'EcsCluster');
-      const serviceArn = 'arn:aws:ecs:us-west-2:123456789012:service/cluster/my-http-service';
-
-      // WHEN
-      const service = ecs.FargateService.fromFargateServiceAttributes(stack, 'EcsService', {
-        serviceArn: serviceArn,
-        cluster,
-      });
-
-      // THEN
-      expect(service.serviceArn).toEqual(serviceArn);
-      expect(service.serviceName).toEqual('my-http-service');
-
-      expect(service.env.account).toEqual('123456789012');
-      expect(service.env.region).toEqual('us-west-2');
-
-      // WHEN
-      const fargateService = ecs.FargateService.fromFargateServiceArn(stack, 'fargateService',
-        serviceArn,
-      );
-
-      // THEN
-      expect(fargateService.serviceName).toEqual('my-http-service');
-      expect(fargateService.serviceArn).toEqual(serviceArn);
 
     });
 

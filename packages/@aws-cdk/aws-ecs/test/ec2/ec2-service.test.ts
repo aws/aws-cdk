@@ -54,6 +54,7 @@ describe('ec2 service', () => {
 
       expect(service.node.defaultChild).toBeDefined();
 
+
     });
 
     test('token param', () => {
@@ -75,15 +76,8 @@ describe('ec2 service', () => {
       });
 
       expect(service.serviceArn).toContain(`service/${cluster.clusterName}/${service.serviceName}`);
-
-      const importService = ecs.Ec2Service.fromEc2ServiceAttributes(stack, 'importService', {
-        cluster: cluster,
-        serviceArn: service.serviceArn,
-      });
-      expect(importService.serviceArn).toContain(`service/${cluster.clusterName}/${service.serviceName}`);
-      expect(importService.serviceName).toEqual(service.serviceName);
-
     });
+
     test('allows setting enable execute command', () => {
       // GIVEN
       const stack = new cdk.Stack();
@@ -3307,60 +3301,23 @@ describe('ec2 service', () => {
   });
 
   describe('When import an EC2 Service', () => {
-    test('with old serviceArn', () => {
+    test('with serviceArn', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const cluster = new ecs.Cluster(stack, 'EcsCluster');
-      const serviceArn = 'arn:aws:ecs:us-west-2:123456789012:service/my-http-service';
 
       // WHEN
       const service = ecs.Ec2Service.fromEc2ServiceAttributes(stack, 'EcsService', {
-        serviceArn: serviceArn,
+        serviceArn: 'arn:aws:ecs:us-west-2:123456789012:service/my-http-service',
         cluster,
       });
 
       // THEN
-      expect(service.serviceArn).toEqual(serviceArn);
+      expect(service.serviceArn).toEqual('arn:aws:ecs:us-west-2:123456789012:service/my-http-service');
       expect(service.serviceName).toEqual('my-http-service');
 
       expect(service.env.account).toEqual('123456789012');
       expect(service.env.region).toEqual('us-west-2');
-
-      // WHEN
-      const ecsService = ecs.Ec2Service.fromEc2ServiceArn(stack, 'EcsServiceArn',
-        serviceArn,
-      );
-      // THEN
-      expect(ecsService.serviceName).toEqual('my-http-service');
-      expect(ecsService.serviceArn).toEqual(serviceArn);
-
-    });
-
-    test('with new serviceArn', () => {
-      // GIVEN
-      const stack = new cdk.Stack();
-      const cluster = new ecs.Cluster(stack, 'EcsCluster');
-      const serviceArn = 'arn:aws:ecs:us-west-2:123456789012:service/cluster/my-http-service';
-
-      // WHEN
-      const service = ecs.Ec2Service.fromEc2ServiceAttributes(stack, 'EcsService', {
-        serviceArn: serviceArn,
-        cluster,
-      });
-
-      // THEN
-      expect(service.serviceArn).toEqual(serviceArn);
-      expect(service.serviceName).toEqual('my-http-service');
-
-      expect(service.env.account).toEqual('123456789012');
-      expect(service.env.region).toEqual('us-west-2');
-
-      const ecsService = ecs.Ec2Service.fromEc2ServiceArn(stack, 'EcsServiceArn',
-        serviceArn,
-      );
-      // THEN
-      expect(ecsService.serviceName).toEqual('my-http-service');
-      expect(ecsService.serviceArn).toEqual(serviceArn);
 
     });
 

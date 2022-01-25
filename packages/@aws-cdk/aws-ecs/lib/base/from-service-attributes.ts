@@ -47,9 +47,7 @@ export function fromServiceAtrributes(scope: Construct, id: string, attrs: Servi
     });
   } else {
     arn = attrs.serviceArn as string;
-    const resourceName = stack.splitArn(arn, ArnFormat.SLASH_RESOURCE_NAME).resourceName as string;
-    const resourceNameSplit = resourceName.split('/');
-    name = resourceNameSplit.length === 1 ? resourceName : resourceNameSplit[1];
+    name = stack.splitArn(arn, ArnFormat.SLASH_RESOURCE_NAME).resourceName as string;
   }
   class Import extends Resource implements IBaseService {
     public readonly serviceArn = arn;

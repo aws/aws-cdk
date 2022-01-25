@@ -126,12 +126,9 @@ export class Ec2Service extends BaseService implements IEc2Service {
    * Imports from the specified service ARN.
    */
   public static fromEc2ServiceArn(scope: Construct, id: string, ec2ServiceArn: string): IEc2Service {
-    const resourceName = Stack.of(scope).splitArn(ec2ServiceArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName as string;
-    const resourceNameSplit = resourceName.split('/');
-    const serviceName = resourceNameSplit.length === 1 ? resourceName : resourceNameSplit[1];
     class Import extends Resource implements IEc2Service {
       public readonly serviceArn = ec2ServiceArn;
-      public readonly serviceName = serviceName;
+      public readonly serviceName = Stack.of(scope).splitArn(ec2ServiceArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName as string;
     }
     return new Import(scope, id);
   }
