@@ -119,5 +119,5 @@ Comby is a tool used to do structured code rewriting. You can install it
 repository, and run the following command in the root directory of your project:
 
 ```bash
-comby -config rewrite.toml -f .test.ts
+comby -config ~/rewrite.toml -f .ts -d test -in-place -timeout 10
 ```
