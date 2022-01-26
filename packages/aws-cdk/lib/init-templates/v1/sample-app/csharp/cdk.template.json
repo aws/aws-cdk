@@ -1,5 +1,5 @@
 {
-  "app": "dotnet run -p src/%name.PascalCased%/%name.PascalCased%.csproj",
+  "app": "dotnet run --project src/%name.PascalCased%/%name.PascalCased%.csproj",
   "watch": {
     "include": ["**"],
     "exclude": [
