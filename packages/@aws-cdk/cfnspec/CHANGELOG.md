@@ -1,3 +1,8 @@
+
+## Unapplied changes
+
+* AWS::ECS is at 51.0.0
+
 # CloudFormation Resource Specification v53.1.0
 
 ## New Resource Types
