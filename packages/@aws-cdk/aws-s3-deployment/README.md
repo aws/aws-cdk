@@ -9,8 +9,6 @@
 
 <!--END STABILITY BANNER-->
 
-> __Status: Experimental__
-
 This library allows populating an S3 bucket with the contents of .zip files
 from other S3 buckets or from local disk.
 
@@ -20,13 +18,13 @@ enabled and populates it from a local directory on disk.
 ```ts
 const websiteBucket = new s3.Bucket(this, 'WebsiteBucket', {
   websiteIndexDocument: 'index.html',
-  publicReadAccess: true
+  publicReadAccess: true,
 });
 
 new s3deploy.BucketDeployment(this, 'DeployWebsite', {
   sources: [s3deploy.Source.asset('./website-dist')],
   destinationBucket: websiteBucket,
-  destinationKeyPrefix: 'web/static' // optional prefix in destination bucket
+  destinationKeyPrefix: 'web/static', // optional prefix in destination bucket
 });
 ```
 
@@ -110,6 +108,7 @@ when the `BucketDeployment` resource is created or updated. You can use the opti
 this behavior, in which case the files will not be deleted.
 
 ```ts
+declare const destinationBucket: s3.Bucket;
 new s3deploy.BucketDeployment(this, 'DeployMeWithoutDeletingFilesOnDestination', {
   sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
   destinationBucket,
@@ -122,17 +121,18 @@ each with its own characteristics. For example, you can set different cache-cont
 based on file extensions:
 
 ```ts
-new BucketDeployment(this, 'BucketDeployment', {
-  sources: [Source.asset('./website', { exclude: ['index.html'] })],
-  destinationBucket: bucket,
-  cacheControl: [CacheControl.fromString('max-age=31536000,public,immutable')],
+declare const destinationBucket: s3.Bucket;
+new s3deploy.BucketDeployment(this, 'BucketDeployment', {
+  sources: [s3deploy.Source.asset('./website', { exclude: ['index.html'] })],
+  destinationBucket,
+  cacheControl: [s3deploy.CacheControl.fromString('max-age=31536000,public,immutable')],
   prune: false,
 });
 
-new BucketDeployment(this, 'HTMLBucketDeployment', {
-  sources: [Source.asset('./website', { exclude: ['*', '!index.html'] })],
-  destinationBucket: bucket,
-  cacheControl: [CacheControl.fromString('max-age=0,no-cache,no-store,must-revalidate')],
+new s3deploy.BucketDeployment(this, 'HTMLBucketDeployment', {
+  sources: [s3deploy.Source.asset('./website', { exclude: ['*', '!index.html'] })],
+  destinationBucket,
+  cacheControl: [s3deploy.CacheControl.fromString('max-age=0,no-cache,no-store,must-revalidate')],
   prune: false,
 });
 ```
@@ -142,19 +142,21 @@ new BucketDeployment(this, 'HTMLBucketDeployment', {
 There are two points at which filters are evaluated in a deployment: asset bundling and the actual deployment. If you simply want to exclude files in the asset bundling process, you should leverage the `exclude` property of `AssetOptions` when defining your source:
 
 ```ts
-new BucketDeployment(this, 'HTMLBucketDeployment', {
-  sources: [Source.asset('./website', { exclude: ['*', '!index.html'] })],
-  destinationBucket: bucket,
+declare const destinationBucket: s3.Bucket;
+new s3deploy.BucketDeployment(this, 'HTMLBucketDeployment', {
+  sources: [s3deploy.Source.asset('./website', { exclude: ['*', '!index.html'] })],
+  destinationBucket,
 });
 ```
 
 If you want to specify filters to be used in the deployment process, you can use the `exclude` and `include` filters on `BucketDeployment`.  If excluded, these files will not be deployed to the destination bucket. In addition, if the file already exists in the destination bucket, it will not be deleted if you are using the `prune` option:
 
 ```ts
+declare const destinationBucket: s3.Bucket;
 new s3deploy.BucketDeployment(this, 'DeployButExcludeSpecificFiles', {
   sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
   destinationBucket,
-  exclude: ['*.txt']
+  exclude: ['*.txt'],
 });
 ```
 
@@ -189,7 +191,7 @@ and [`aws s3 sync` documentation](https://docs.aws.amazon.com/cli/latest/referen
 ```ts
 const websiteBucket = new s3.Bucket(this, 'WebsiteBucket', {
   websiteIndexDocument: 'index.html',
-  publicReadAccess: true
+  publicReadAccess: true,
 });
 
 new s3deploy.BucketDeployment(this, 'DeployWebsite', {
@@ -201,9 +203,12 @@ new s3deploy.BucketDeployment(this, 'DeployWebsite', {
   // system-defined metadata
   contentType: "text/html",
   contentLanguage: "en",
-  storageClass: StorageClass.INTELLIGENT_TIERING,
-  serverSideEncryption: ServerSideEncryption.AES_256,
-  cacheControl: [CacheControl.setPublic(), CacheControl.maxAge(cdk.Duration.hours(1))],
+  storageClass: s3deploy.StorageClass.INTELLIGENT_TIERING,
+  serverSideEncryption: s3deploy.ServerSideEncryption.AES_256,
+  cacheControl: [
+    s3deploy.CacheControl.setPublic(),
+    s3deploy.CacheControl.maxAge(Duration.hours(1)),
+  ],
   accessControl: s3.BucketAccessControl.BUCKET_OWNER_FULL_CONTROL,
 });
 ```
@@ -250,13 +255,16 @@ Please note that creating VPC inline may cause stack deletion failures. It is sh
 To avoid such condition, keep your network infra (VPC) in a separate stack and pass as props.
 
 ```ts
+declare const destinationBucket: s3.Bucket;
+declare const vpc: ec2.Vpc;
+
 new s3deploy.BucketDeployment(this, 'DeployMeWithEfsStorage', {
-    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
-    destinationBucket,
-    destinationKeyPrefix: 'efs/',
-    useEfs: true,
-    vpc: new ec2.Vpc(this, 'Vpc'),
-    retainOnDelete: false,
+  sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+  destinationBucket,
+  destinationKeyPrefix: 'efs/',
+  useEfs: true,
+  vpc,
+  retainOnDelete: false,
 });
 ```
 
@@ -268,12 +276,14 @@ new s3deploy.BucketDeployment(this, 'DeployMeWithEfsStorage', {
   which can be deployed into the bucket by this timeout.
 - When the `BucketDeployment` is removed from the stack, the contents are retained
   in the destination bucket ([#952](https://github.com/aws/aws-cdk/issues/952)).
-- Bucket deployment _only happens_ during stack create/update. This means that
-  if you wish to update the contents of the destination, you will need to
-  change the source s3 key (or bucket), so that the resource will be updated.
-  This is inline with best practices. If you use local disk assets, this will
-  happen automatically whenever you modify the asset, since the S3 key is based
-  on a hash of the asset contents.
+- If you are using `s3deploy.Source.bucket()` to take the file source from
+  another bucket: the deployed files will only be updated if the key (file name)
+  of the file in the source  bucket changes. Mutating the file in place will not
+  be good enough: the custom resource will simply not run if the properties don't
+  change.
+  - If you use assets (`s3deploy.Source.asset()`) you don't need to worry
+    about this: the asset system will make sure that if the files have changed, 
+    the file name is unique and the deployment will run.
 
 ## Development
 
