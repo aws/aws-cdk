@@ -132,6 +132,11 @@ export class TargetTrackingScalingPolicy extends Construct {
 
     super(scope, id);
 
+    // replace dummy value in DYNAMODB_WRITE_CAPACITY_UTILIZATION due to a jsii bug (https://github.com/aws/jsii/issues/2782)
+    const predefinedMetric = props.predefinedMetric === PredefinedMetric.DYNAMODB_WRITE_CAPACITY_UTILIZATION ?
+      PredefinedMetric.DYANMODB_WRITE_CAPACITY_UTILIZATION :
+      props.predefinedMetric;
+
     const resource = new CfnScalingPolicy(this, 'Resource', {
       policyName: props.policyName || cdk.Names.uniqueId(this),
       policyType: 'TargetTrackingScaling',
@@ -139,8 +144,8 @@ export class TargetTrackingScalingPolicy extends Construct {
       targetTrackingScalingPolicyConfiguration: {
         customizedMetricSpecification: renderCustomMetric(props.customMetric),
         disableScaleIn: props.disableScaleIn,
-        predefinedMetricSpecification: props.predefinedMetric !== undefined ? {
-          predefinedMetricType: props.predefinedMetric,
+        predefinedMetricSpecification: predefinedMetric !== undefined ? {
+          predefinedMetricType: predefinedMetric,
           resourceLabel: props.resourceLabel,
         } : undefined,
         scaleInCooldown: props.scaleInCooldown && props.scaleInCooldown.toSeconds(),
@@ -180,8 +185,19 @@ export enum PredefinedMetric {
    */
   DYNAMODB_READ_CAPACITY_UTILIZATION = 'DynamoDBReadCapacityUtilization',
   /**
+   * DYNAMODB_WRITE_CAPACITY_UTILIZATION
+   *
+   * Suffix `dummy` is necessary due to jsii bug (https://github.com/aws/jsii/issues/2782).
+   * Duplicate values will be dropped, so this suffix is added as a workaround.
+   * The value will be replaced when this enum is used.
+   *
+   * @see https://docs.aws.amazon.com/autoscaling/application/APIReference/API_PredefinedMetricSpecification.html
+   */
+  DYNAMODB_WRITE_CAPACITY_UTILIZATION = 'DynamoDBWriteCapacityUtilization-dummy',
+  /**
    * DYANMODB_WRITE_CAPACITY_UTILIZATION
    * @see https://docs.aws.amazon.com/autoscaling/application/APIReference/API_PredefinedMetricSpecification.html
+   * @deprecated use `PredefinedMetric.DYNAMODB_WRITE_CAPACITY_UTILIZATION`
    */
   DYANMODB_WRITE_CAPACITY_UTILIZATION = 'DynamoDBWriteCapacityUtilization',
   /**
