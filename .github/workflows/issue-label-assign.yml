@@ -8,7 +8,7 @@ on:
     types: [opened, edited]
 
 jobs:
-  test:
+  triage-manager:
     permissions:
       issues: write
       pull-requests: write
@@ -19,6 +19,11 @@ jobs:
           github-token: "${{ secrets.GITHUB_TOKEN }}"
           excluded-expressions: "[CDK CLI Version|TypeScript|Java|Python]"
           area-is-keyword: true
+          excluded-labels: "[p1|p2|p0|contribution/core]"
+          default-area: >
+           {
+             "assignees":["NGL321","peterwoodworth","ryparker"]
+           }
           parameters: >
            [
            {"area":"package/tools","keywords":["cli","command line","init","synth","diff","bootstrap"],"labels":["package/tools"],"assignees":["rix0rrr"]},
