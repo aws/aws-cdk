@@ -685,7 +685,7 @@ export class ContainerDefinition extends CoreConstruct {
       workingDirectory: this.props.workingDirectory,
       logConfiguration: this.logDriverConfig,
       environment: this.environment && Object.keys(this.environment).length ? renderKV(this.environment, 'name', 'value') : undefined,
-      environmentFiles: this.environmentFiles && renderEnvironmentFiles(this.environmentFiles),
+      environmentFiles: this.environmentFiles && renderEnvironmentFiles(cdk.Stack.of(this).partition, this.environmentFiles),
       secrets: this.secrets,
       extraHosts: this.props.extraHosts && renderKV(this.props.extraHosts, 'hostname', 'ipAddress'),
       healthCheck: this.props.healthCheck && renderHealthCheck(this.props.healthCheck),
@@ -757,7 +757,7 @@ function renderKV(env: { [key: string]: string }, keyName: string, valueName: st
   return ret;
 }
 
-function renderEnvironmentFiles(environmentFiles: EnvironmentFileConfig[]): any[] {
+function renderEnvironmentFiles(partition: string, environmentFiles: EnvironmentFileConfig[]): any[] {
   const ret = [];
   for (const environmentFile of environmentFiles) {
     const s3Location = environmentFile.s3Location;
@@ -768,7 +768,7 @@ function renderEnvironmentFiles(environmentFiles: EnvironmentFileConfig[]): any[
 
     ret.push({
       type: environmentFile.fileType,
-      value: `arn:aws:s3:::${s3Location.bucketName}/${s3Location.objectKey}`,
+      value: `arn:${partition}:s3:::${s3Location.bucketName}/${s3Location.objectKey}`,
     });
   }
   return ret;
