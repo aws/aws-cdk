@@ -1,6 +1,5 @@
 import * as path from 'path';
-import '@aws-cdk/assert-internal/jest';
-import { arrayWith, ResourcePart, stringLike, SynthUtils } from '@aws-cdk/assert-internal';
+import { Match, Template } from '@aws-cdk/assertions';
 import { Asset } from '@aws-cdk/aws-s3-assets';
 import { StringParameter } from '@aws-cdk/aws-ssm';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
@@ -11,7 +10,6 @@ import {
   EbsDeviceVolumeType, InitCommand, Instance, InstanceArchitecture, InstanceClass, InstanceSize, InstanceType, LaunchTemplate, UserData, Vpc,
 } from '../lib';
 
-
 let stack: Stack;
 let vpc: Vpc;
 beforeEach(() => {
@@ -20,34 +18,6 @@ beforeEach(() => {
 });
 
 describe('instance', () => {
-  test('instance is created correctly', () => {
-    // GIVEN
-    const sampleInstances = [{
-      instanceClass: InstanceClass.BURSTABLE4_GRAVITON,
-      instanceSize: InstanceSize.LARGE,
-      instanceType: 't4g.large',
-    }, {
-      instanceClass: InstanceClass.HIGH_COMPUTE_MEMORY1,
-      instanceSize: InstanceSize.XLARGE3,
-      instanceType: 'z1d.3xlarge',
-    }];
-
-    for (const [i, sampleInstance] of sampleInstances.entries()) {
-      // WHEN
-      new Instance(stack, `Instance${i}`, {
-        vpc,
-        machineImage: new AmazonLinuxImage(),
-        instanceType: InstanceType.of(sampleInstance.instanceClass, sampleInstance.instanceSize),
-      });
-
-      // THEN
-      expect(stack).toHaveResource('AWS::EC2::Instance', {
-        InstanceType: sampleInstance.instanceType,
-      });
-    }
-
-
-  });
   test('instance is created with source/dest check switched off', () => {
     // WHEN
     new Instance(stack, 'Instance', {
@@ -58,7 +28,7 @@ describe('instance', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::EC2::Instance', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::Instance', {
       InstanceType: 't3.large',
       SourceDestCheck: false,
     });
@@ -78,7 +48,7 @@ describe('instance', () => {
     param.grantRead(instance);
 
     // THEN
-    expect(stack).toHaveResource('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -208,7 +178,7 @@ describe('instance', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::EC2::Instance', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::Instance', {
       PropagateTagsToVolumeOnCreation: true,
     });
   });
@@ -243,7 +213,7 @@ describe('instance', () => {
       });
 
       // THEN
-      expect(stack).toHaveResource('AWS::EC2::Instance', {
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::Instance', {
         BlockDeviceMappings: [
           {
             DeviceName: 'ebs',
@@ -369,7 +339,7 @@ describe('instance', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::EC2::Instance', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::Instance', {
       InstanceType: 't3.large',
       PrivateIpAddress: '10.0.0.2',
     });
@@ -387,12 +357,12 @@ describe('instance', () => {
     });
 
     // Force stack synth so the InstanceRequireImdsv2Aspect is applied
-    SynthUtils.synthesize(stack);
+    Template.fromStack(stack);
 
     // THEN
     const launchTemplate = instance.node.tryFindChild('LaunchTemplate') as LaunchTemplate;
     expect(launchTemplate).toBeDefined();
-    expect(stack).toHaveResourceLike('AWS::EC2::LaunchTemplate', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::LaunchTemplate', {
       LaunchTemplateName: stack.resolve(launchTemplate.launchTemplateName),
       LaunchTemplateData: {
         MetadataOptions: {
@@ -400,14 +370,13 @@ describe('instance', () => {
         },
       },
     });
-    expect(stack).toHaveResourceLike('AWS::EC2::Instance', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::Instance', {
       LaunchTemplate: {
         LaunchTemplateName: stack.resolve(launchTemplate.launchTemplateName),
       },
     });
   });
 });
-
 
 test('add CloudFormation Init to instance', () => {
   // GIVEN
@@ -421,11 +390,11 @@ test('add CloudFormation Init to instance', () => {
   });
 
   // THEN
-  expect(stack).toHaveResource('AWS::EC2::Instance', {
+  Template.fromStack(stack).hasResourceProperties('AWS::EC2::Instance', {
     UserData: {
       'Fn::Base64': {
         'Fn::Join': ['', [
-          stringLike('#!/bin/bash\n# fingerprint: *\n(\n  set +e\n  /opt/aws/bin/cfn-init -v --region '),
+          '#!/bin/bash\n# fingerprint: 85ac432b1de1144f\n(\n  set +e\n  /opt/aws/bin/cfn-init -v --region ',
           { Ref: 'AWS::Region' },
           ' --stack ',
           { Ref: 'AWS::StackName' },
@@ -438,24 +407,24 @@ test('add CloudFormation Init to instance', () => {
       },
     },
   });
-  expect(stack).toHaveResource('AWS::IAM::Policy', {
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
     PolicyDocument: {
-      Statement: arrayWith({
+      Statement: Match.arrayWith([{
         Action: ['cloudformation:DescribeStackResource', 'cloudformation:SignalResource'],
         Effect: 'Allow',
         Resource: { Ref: 'AWS::StackId' },
-      }),
+      }]),
       Version: '2012-10-17',
     },
   });
-  expect(stack).toHaveResource('AWS::EC2::Instance', {
+  Template.fromStack(stack).hasResource('AWS::EC2::Instance', {
     CreationPolicy: {
       ResourceSignal: {
         Count: 1,
         Timeout: 'PT5M',
       },
     },
-  }, ResourcePart.CompleteDefinition);
+  });
 });
 
 test('cause replacement from s3 asset in userdata', () => {
@@ -499,11 +468,10 @@ test('cause replacement from s3 asset in userdata', () => {
   // on the actual asset hash and not accidentally on the token stringification of them.
   // (which would base the hash on '${Token[1234.bla]}'
   const hash = 'f88eace39faf39d7';
-  const result = SynthUtils.toCloudFormation(stack);
-  expect(result).toEqual(expect.objectContaining({
-    Resources: expect.objectContaining({
-      [`InstanceOne5B821005${hash}`]: expect.objectContaining({ Type: 'AWS::EC2::Instance', Properties: expect.anything() }),
-      [`InstanceTwoDC29A7A7${hash}`]: expect.objectContaining({ Type: 'AWS::EC2::Instance', Properties: expect.anything() }),
+  Template.fromStack(stack).templateMatches(Match.objectLike({
+    Resources: Match.objectLike({
+      [`InstanceOne5B821005${hash}`]: Match.objectLike({ Type: 'AWS::EC2::Instance', Properties: Match.anyValue() }),
+      [`InstanceTwoDC29A7A7${hash}`]: Match.objectLike({ Type: 'AWS::EC2::Instance', Properties: Match.anyValue() }),
     }),
   }));
 });

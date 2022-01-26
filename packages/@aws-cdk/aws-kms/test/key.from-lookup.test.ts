@@ -3,7 +3,6 @@ import { ContextProvider, GetContextValueOptions, GetContextValueResult, Lazy, S
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import { Key } from '../lib';
-import '@aws-cdk/assert-internal/jest';
 
 test('requires concrete values', () => {
   expect(() => {

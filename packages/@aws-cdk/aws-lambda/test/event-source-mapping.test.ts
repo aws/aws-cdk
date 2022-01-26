@@ -1,5 +1,4 @@
-import { ABSENT } from '@aws-cdk/assert-internal';
-import '@aws-cdk/assert-internal/jest';
+import { Match, Template } from '@aws-cdk/assertions';
 import * as cdk from '@aws-cdk/core';
 import { Code, EventSourceMapping, Function, Runtime } from '../lib';
 
@@ -165,7 +164,7 @@ describe('event source mapping', () => {
       kafkaTopic: topicNameParam.valueAsString,
     });
 
-    expect(stack).toHaveResourceLike('AWS::Lambda::EventSourceMapping', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
       Topics: [{
         Ref: 'TopicNameParam',
       }],
@@ -234,7 +233,7 @@ describe('event source mapping', () => {
       kafkaTopic: topicNameParam.valueAsString,
     });
 
-    expect(stack).toHaveResourceLike('AWS::Lambda::EventSourceMapping', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
       EventSourceArn: eventSourceArn,
     });
   });
@@ -258,7 +257,7 @@ describe('event source mapping', () => {
       kafkaTopic: topicNameParam.valueAsString,
     });
 
-    expect(stack).toHaveResourceLike('AWS::Lambda::EventSourceMapping', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
       SelfManagedEventSource: { Endpoints: { KafkaBootstrapServers: kafkaBootstrapServers } },
     });
   });
@@ -309,7 +308,7 @@ describe('event source mapping', () => {
       reportBatchItemFailures: true,
     });
 
-    expect(stack).toHaveResourceLike('AWS::Lambda::EventSourceMapping', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
       FunctionResponseTypes: ['ReportBatchItemFailures'],
     });
   });
@@ -328,8 +327,8 @@ describe('event source mapping', () => {
       eventSourceArn: '',
     });
 
-    expect(stack).toHaveResourceLike('AWS::Lambda::EventSourceMapping', {
-      FunctionResponseTypes: ABSENT,
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+      FunctionResponseTypes: Match.absent(),
     });
   });
 
@@ -348,8 +347,8 @@ describe('event source mapping', () => {
       reportBatchItemFailures: false,
     });
 
-    expect(stack).toHaveResourceLike('AWS::Lambda::EventSourceMapping', {
-      FunctionResponseTypes: ABSENT,
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+      FunctionResponseTypes: Match.absent(),
     });
   });
 });

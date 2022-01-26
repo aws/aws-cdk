@@ -46,7 +46,7 @@ let us know if it's not up-to-date (even better, submit a PR with your  correcti
 
 The following steps describe how to set up the AWS CDK repository on your local machine.
 The alternative is to use [Gitpod](https://www.gitpod.io/), a Cloud IDE for your development.
-See [Gitpod section](#gitpod) on how to set up the CDK repo on Gitpod.
+See [Gitpod section](#gitpod-alternative) on how to set up the CDK repo on Gitpod.
 
 ### Setup
 
@@ -69,7 +69,7 @@ $ yarn install
 ```
 
 We recommend that you use [Visual Studio Code](https://code.visualstudio.com/) to work on the CDK.
-We use `eslint` to keep our code consistent in terms of style and reducing defects. We recommend installing the
+We use `eslint` to keep our code consistent in terms of style and reducing defects. We recommend installing
 the [eslint extension](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) as well.
 
 ### Repo Layout
@@ -726,7 +726,7 @@ these directories.
 ### Linking against this repository
 
 If you are developing your own CDK application or library and want to use the locally checked out version of the
-AWS CDK, instead of the the version of npm, the `./link-all.sh` script will help here.
+AWS CDK, instead of the version of npm, the `./link-all.sh` script will help here.
 
 This script symlinks the built modules from the local AWS CDK repo under the `node_modules/` folder of the CDK app or
 library.
@@ -803,34 +803,16 @@ The pattern is simple:
    with the name of the context key that **enables** this new feature (for
    example, `ENABLE_STACK_NAME_DUPLICATES`). The context key should be in the
    form `module.Type:feature` (e.g. `@aws-cdk/core:enableStackNameDuplicates`).
-2. Use `node.tryGetContext(cxapi.ENABLE_XXX)` to check if this feature is enabled
+2. Use `FeatureFlags.of(construct).isEnabled(cxapi.ENABLE_XXX)` to check if this feature is enabled
    in your code. If it is not defined, revert to the legacy behavior.
 3. Add your feature flag to the `FUTURE_FLAGS` map in
    [cx-api/lib/features.ts](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/cx-api/lib/features.ts).
    This map is inserted to generated `cdk.json` files for new projects created
    through `cdk init`.
-4. In your PR title (which goes into CHANGELOG), add a `(under feature flag)` suffix. e.g:
+4. In your tests, use the `testFutureBehavior` and `testLegacyBehavior` [jest helper methods] to test the enabled and disabled behavior.
+5. In your PR title (which goes into CHANGELOG), add a `(under feature flag)` suffix. e.g:
 
     `fix(core): impossible to use the same physical stack name for two stacks (under feature flag)`
-
-In the [next major version of the
-CDK](https://github.com/aws/aws-cdk/issues/3398) we will either remove the
-legacy behavior or flip the logic for all these features and then
-reset the `FEATURE_FLAGS` map for the next cycle.
-
-### Feature Flags - CDKv2
-
-We have started working on the next version of the CDK, specifically CDKv2. This is currently being maintained
-on a separate branch `v2-main` whereas `master` continues to track versions `1.x`.
-
-Feature flags introduced in the CDK 1.x and removed in 2.x, must be added to the `FUTURE_FLAGS_EXPIRED` list in
-[cx-api/lib/features.ts](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/cx-api/lib/features.ts)
-on the `v2-main` branch.
-This will make the default behaviour in CDKv2 as if the flag is enabled and also prevents users from disabling
-the feature flag.
-
-A couple of [jest helper methods] are available for use with unit tests. These help run unit tests that test
-behaviour when flags are enabled or disabled in the two major versions.
 
 [jest helper methods]: https://github.com/aws/aws-cdk/blob/master/tools/@aws-cdk/cdk-build-tools/lib/feature-flag.ts
 

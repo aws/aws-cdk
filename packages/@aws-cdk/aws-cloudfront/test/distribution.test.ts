@@ -1,5 +1,4 @@
-import { ABSENT, objectLike } from '@aws-cdk/assert-internal';
-import '@aws-cdk/assert-internal/jest';
+import { Match, Template } from '@aws-cdk/assertions';
 import * as acm from '@aws-cdk/aws-certificatemanager';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as s3 from '@aws-cdk/aws-s3';
@@ -35,7 +34,7 @@ test('minimal example renders correctly', () => {
   const origin = defaultOrigin();
   new Distribution(stack, 'MyDist', { defaultBehavior: { origin } });
 
-  expect(stack).toHaveResource('AWS::CloudFront::Distribution', {
+  Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
     DistributionConfig: {
       DefaultCacheBehavior: {
         CachePolicyId: '658327ea-f89d-4fab-a63d-7e88639e58f6',
@@ -79,7 +78,7 @@ test('exhaustive example of props renders correctly', () => {
     webAclId: '473e64fd-f30b-4765-81a0-62ad96dd167a',
   });
 
-  expect(stack).toHaveResource('AWS::CloudFront::Distribution', {
+  Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
     DistributionConfig: {
       Aliases: ['example.com'],
       DefaultCacheBehavior: {
@@ -130,7 +129,7 @@ test('ensure comment prop is not greater than max lenght', () => {
 ellipsis so a user would know there was more to read and everything beyond this point should not show up`,
   });
 
-  expect(stack).toHaveResource('AWS::CloudFront::Distribution', {
+  Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
     DistributionConfig: {
       DefaultCacheBehavior: {
         CachePolicyId: '658327ea-f89d-4fab-a63d-7e88639e58f6',
@@ -180,7 +179,7 @@ describe('multiple behaviors', () => {
       },
     });
 
-    expect(stack).toHaveResource('AWS::CloudFront::Distribution', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
       DistributionConfig: {
         DefaultCacheBehavior: {
           CachePolicyId: '658327ea-f89d-4fab-a63d-7e88639e58f6',
@@ -219,7 +218,7 @@ describe('multiple behaviors', () => {
       },
     });
 
-    expect(stack).toHaveResource('AWS::CloudFront::Distribution', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
       DistributionConfig: {
         DefaultCacheBehavior: {
           CachePolicyId: '658327ea-f89d-4fab-a63d-7e88639e58f6',
@@ -266,7 +265,7 @@ describe('multiple behaviors', () => {
     });
     dist.addBehavior('api/2*', origin);
 
-    expect(stack).toHaveResource('AWS::CloudFront::Distribution', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
       DistributionConfig: {
         DefaultCacheBehavior: {
           CachePolicyId: '658327ea-f89d-4fab-a63d-7e88639e58f6',
@@ -359,7 +358,7 @@ describe('certificates', () => {
           certificate,
         });
 
-        expect(customStack).toHaveResourceLike('AWS::CloudFront::Distribution', {
+        Template.fromStack(customStack).hasResourceProperties('AWS::CloudFront::Distribution', {
           DistributionConfig: {
             Aliases: ['example.com', 'www.example.com'],
             ViewerCertificate: {
@@ -386,7 +385,7 @@ describe('certificates', () => {
           certificate,
         });
 
-        expect(customStack).toHaveResourceLike('AWS::CloudFront::Distribution', {
+        Template.fromStack(customStack).hasResourceProperties('AWS::CloudFront::Distribution', {
           DistributionConfig: {
             Aliases: ['example.com', 'www.example.com'],
             ViewerCertificate: {
@@ -409,7 +408,7 @@ describe('certificates', () => {
       certificate: certificate,
     });
 
-    expect(stack).toHaveResourceLike('AWS::CloudFront::Distribution', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
       DistributionConfig: {
         ViewerCertificate: {
           AcmCertificateArn: 'arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012',
@@ -457,7 +456,7 @@ describe('custom error responses', () => {
       }],
     });
 
-    expect(stack).toHaveResourceLike('AWS::CloudFront::Distribution', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
       DistributionConfig: {
         CustomErrorResponses: [
           {
@@ -486,9 +485,9 @@ describe('logging', () => {
     const origin = defaultOrigin();
     new Distribution(stack, 'MyDist', { defaultBehavior: { origin } });
 
-    expect(stack).toHaveResourceLike('AWS::CloudFront::Distribution', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
       DistributionConfig: {
-        Logging: ABSENT,
+        Logging: Match.absent(),
       },
     });
   });
@@ -512,7 +511,7 @@ describe('logging', () => {
       enableLogging: true,
     });
 
-    expect(stack).toHaveResourceLike('AWS::CloudFront::Distribution', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
       DistributionConfig: {
         Logging: {
           Bucket: { 'Fn::GetAtt': ['MyDistLoggingBucket9B8976BC', 'RegionalDomainName'] },
@@ -529,7 +528,7 @@ describe('logging', () => {
       logBucket: loggingBucket,
     });
 
-    expect(stack).toHaveResourceLike('AWS::CloudFront::Distribution', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
       DistributionConfig: {
         Logging: {
           Bucket: { 'Fn::GetAtt': ['MyLoggingBucket4382CD04', 'RegionalDomainName'] },
@@ -547,7 +546,7 @@ describe('logging', () => {
       logIncludesCookies: true,
     });
 
-    expect(stack).toHaveResourceLike('AWS::CloudFront::Distribution', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
       DistributionConfig: {
         Logging: {
           Bucket: { 'Fn::GetAtt': ['MyDistLoggingBucket9B8976BC', 'RegionalDomainName'] },
@@ -587,7 +586,7 @@ describe('with Lambda@Edge functions', () => {
       },
     });
 
-    expect(stack).toHaveResourceLike('AWS::CloudFront::Distribution', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
       DistributionConfig: {
         DefaultCacheBehavior: {
           LambdaFunctionAssociations: [
@@ -617,7 +616,7 @@ describe('with Lambda@Edge functions', () => {
       },
     });
 
-    expect(stack).toHaveResource('AWS::IAM::Role', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
       AssumeRolePolicyDocument: {
         Statement: [
           {
@@ -656,10 +655,10 @@ describe('with Lambda@Edge functions', () => {
       },
     });
 
-    expect(stack).toHaveResourceLike('AWS::CloudFront::Distribution', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
       DistributionConfig: {
         CacheBehaviors: [
-          {
+          Match.objectLike({
             PathPattern: 'images/*',
             LambdaFunctionAssociations: [
               {
@@ -669,7 +668,7 @@ describe('with Lambda@Edge functions', () => {
                 },
               },
             ],
-          },
+          }),
         ],
       },
     });
@@ -711,8 +710,8 @@ describe('with Lambda@Edge functions', () => {
       },
     });
 
-    expect(stack).toHaveResource('AWS::Lambda::Function', {
-      Environment: ABSENT,
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+      Environment: Match.absent(),
       Code: {
         ZipFile: 'whateverwithenv',
       },
@@ -764,7 +763,7 @@ describe('with Lambda@Edge functions', () => {
       },
     });
 
-    expect(stack).toHaveResourceLike('AWS::CloudFront::Distribution', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
       DistributionConfig: {
         DefaultCacheBehavior: {
           LambdaFunctionAssociations: [
@@ -798,7 +797,7 @@ describe('with CloudFront functions', () => {
       },
     });
 
-    expect(stack).toHaveResourceLike('AWS::CloudFront::Distribution', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
       DistributionConfig: {
         DefaultCacheBehavior: {
           FunctionAssociations: [
@@ -826,7 +825,7 @@ test('price class is included if provided', () => {
     priceClass: PriceClass.PRICE_CLASS_200,
   });
 
-  expect(stack).toHaveResourceLike('AWS::CloudFront::Distribution', {
+  Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
     DistributionConfig: {
       PriceClass: 'PriceClass_200',
     },
@@ -840,7 +839,7 @@ test('escape hatches are supported', () => {
   const cfnDist = dist.node.defaultChild as CfnDistribution;
   cfnDist.addPropertyOverride('DistributionConfig.DefaultCacheBehavior.ForwardedValues.Headers', ['*']);
 
-  expect(stack).toHaveResourceLike('AWS::CloudFront::Distribution', {
+  Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
     DistributionConfig: {
       DefaultCacheBehavior: {
         ForwardedValues: {
@@ -859,9 +858,9 @@ describe('origin IDs', () => {
       defaultBehavior: { origin: defaultOrigin() },
     });
 
-    expect(nestedStack).toHaveResourceLike('AWS::CloudFront::Distribution', {
+    Template.fromStack(nestedStack).hasResourceProperties('AWS::CloudFront::Distribution', {
       DistributionConfig: {
-        Origins: [objectLike({
+        Origins: [Match.objectLike({
           Id: 'ngerThanTheOneHundredAndTwentyEightCharacterLimitAReallyAwesomeDistributionWithAMemorableNameThatIWillNeverForgetOrigin1D38031F9',
         })],
       },
@@ -875,10 +874,10 @@ describe('origin IDs', () => {
       defaultBehavior: { origin: defaultOriginGroup() },
     });
 
-    expect(nestedStack).toHaveResourceLike('AWS::CloudFront::Distribution', {
+    Template.fromStack(nestedStack).hasResourceProperties('AWS::CloudFront::Distribution', {
       DistributionConfig: {
         OriginGroups: {
-          Items: [objectLike({
+          Items: [Match.objectLike({
             Id: 'hanTheOneHundredAndTwentyEightCharacterLimitAReallyAwesomeDistributionWithAMemorableNameThatIWillNeverForgetOriginGroup1B5CE3FE6',
           })],
         },

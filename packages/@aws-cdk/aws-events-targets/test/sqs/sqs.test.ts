@@ -1,4 +1,4 @@
-import { expect as cdkExpect, haveResource } from '@aws-cdk/assert-internal';
+import { Template } from '@aws-cdk/assertions';
 import * as events from '@aws-cdk/aws-events';
 import * as sqs from '@aws-cdk/aws-sqs';
 import { Duration, Stack } from '@aws-cdk/core';
@@ -16,7 +16,7 @@ test('sqs queue as an event rule target', () => {
   rule.addTarget(new targets.SqsQueue(queue));
 
   // THEN
-  cdkExpect(stack).to(haveResource('AWS::SQS::QueuePolicy', {
+  Template.fromStack(stack).hasResourceProperties('AWS::SQS::QueuePolicy', {
     PolicyDocument: {
       Statement: [
         {
@@ -48,9 +48,9 @@ test('sqs queue as an event rule target', () => {
       Version: '2012-10-17',
     },
     Queues: [{ Ref: 'MyQueueE6CA6235' }],
-  }));
+  });
 
-  cdkExpect(stack).to(haveResource('AWS::Events::Rule', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
     ScheduleExpression: 'rate(1 hour)',
     State: 'ENABLED',
     Targets: [
@@ -64,7 +64,7 @@ test('sqs queue as an event rule target', () => {
         Id: 'Target0',
       },
     ],
-  }));
+  });
 });
 
 test('multiple uses of a queue as a target results in multi policy statement because of condition', () => {
@@ -81,7 +81,7 @@ test('multiple uses of a queue as a target results in multi policy statement bec
   }
 
   // THEN
-  cdkExpect(stack).to(haveResource('AWS::SQS::QueuePolicy', {
+  Template.fromStack(stack).hasResourceProperties('AWS::SQS::QueuePolicy', {
     PolicyDocument: {
       Statement: [
         {
@@ -138,7 +138,7 @@ test('multiple uses of a queue as a target results in multi policy statement bec
       Version: '2012-10-17',
     },
     Queues: [{ Ref: 'MyQueueE6CA6235' }],
-  }));
+  });
 });
 
 test('fail if messageGroupId is specified on non-fifo queues', () => {
@@ -161,7 +161,7 @@ test('fifo queues are synthesized correctly', () => {
     messageGroupId: 'MyMessageGroupId',
   }));
 
-  cdkExpect(stack).to(haveResource('AWS::Events::Rule', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
     ScheduleExpression: 'rate(1 hour)',
     State: 'ENABLED',
     Targets: [
@@ -178,7 +178,7 @@ test('fifo queues are synthesized correctly', () => {
         },
       },
     ],
-  }));
+  });
 });
 
 test('dead letter queue is configured correctly', () => {
@@ -194,7 +194,7 @@ test('dead letter queue is configured correctly', () => {
     deadLetterQueue,
   }));
 
-  cdkExpect(stack).to(haveResource('AWS::Events::Rule', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
     ScheduleExpression: 'rate(1 hour)',
     State: 'ENABLED',
     Targets: [
@@ -216,7 +216,7 @@ test('dead letter queue is configured correctly', () => {
         },
       },
     ],
-  }));
+  });
 });
 
 test('specifying retry policy', () => {
@@ -232,7 +232,7 @@ test('specifying retry policy', () => {
     maxEventAge: Duration.hours(2),
   }));
 
-  cdkExpect(stack).to(haveResource('AWS::Events::Rule', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
     ScheduleExpression: 'rate(1 hour)',
     State: 'ENABLED',
     Targets: [
@@ -250,5 +250,5 @@ test('specifying retry policy', () => {
         },
       },
     ],
-  }));
+  });
 });
