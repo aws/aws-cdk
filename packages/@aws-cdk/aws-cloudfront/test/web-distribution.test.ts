@@ -1,5 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
-import { ABSENT } from '@aws-cdk/assert-internal';
+import { Match, Template } from '@aws-cdk/assertions';
 import * as certificatemanager from '@aws-cdk/aws-certificatemanager';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as s3 from '@aws-cdk/aws-s3';
@@ -58,7 +57,7 @@ describe('web distribution', () => {
       ],
     });
 
-    expect(stack).toMatchTemplate(
+    Template.fromStack(stack).templateMatches(
       {
         'Resources': {
           'AnAmazingWebsiteProbablyCFDistribution47E3983B': {
@@ -149,7 +148,7 @@ describe('web distribution', () => {
       ],
     });
 
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       'Resources': {
         'Bucket83908E77': {
           'Type': 'AWS::S3::Bucket',
@@ -227,7 +226,7 @@ describe('web distribution', () => {
       ],
     });
 
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       'Resources': {
         'Bucket83908E77': {
           'Type': 'AWS::S3::Bucket',
@@ -306,7 +305,7 @@ added the ellipsis so a user would know there was more to read and everything be
       ],
     });
 
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       Resources: {
         Bucket83908E77: {
           Type: 'AWS::S3::Bucket',
@@ -369,7 +368,7 @@ added the ellipsis so a user would know there was more to r...`,
       }],
     });
 
-    expect(stack).toHaveResourceLike('AWS::CloudFront::Distribution', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
       DistributionConfig: {
         Origins: [
           {
@@ -392,10 +391,11 @@ added the ellipsis so a user would know there was more to r...`,
       },
     });
 
-    expect(stack).toHaveResourceLike('AWS::S3::BucketPolicy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::BucketPolicy', {
       PolicyDocument: {
         Statement: [{
           Action: 's3:GetObject',
+          Effect: 'Allow',
           Principal: {
             CanonicalUser: { 'Fn::GetAtt': ['OAIE1EFC67F', 'S3CanonicalUserId'] },
           },
@@ -441,7 +441,7 @@ added the ellipsis so a user would know there was more to r...`,
       ],
     });
 
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       'Resources': {
         'Bucket83908E77': {
           'Type': 'AWS::S3::Bucket',
@@ -548,7 +548,7 @@ added the ellipsis so a user would know there was more to r...`,
       ],
     });
 
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       'Resources': {
         'Bucket83908E77': {
           'Type': 'AWS::S3::Bucket',
@@ -630,7 +630,7 @@ added the ellipsis so a user would know there was more to r...`,
       ],
     });
 
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       'Resources': {
         'Bucket83908E77': {
           'Type': 'AWS::S3::Bucket',
@@ -729,7 +729,7 @@ added the ellipsis so a user would know there was more to r...`,
       ],
     });
 
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       'Resources': {
         'Bucket83908E77': {
           'Type': 'AWS::S3::Bucket',
@@ -812,7 +812,7 @@ added the ellipsis so a user would know there was more to r...`,
       ],
     });
 
-    expect(stack).toHaveResourceLike('AWS::CloudFront::Distribution', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
       'DistributionConfig': {
         'DefaultCacheBehavior': {
           'FunctionAssociations': [
@@ -863,7 +863,7 @@ added the ellipsis so a user would know there was more to r...`,
       ],
     });
 
-    expect(stack).toHaveResourceLike('AWS::CloudFront::Distribution', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
       'DistributionConfig': {
         'DefaultCacheBehavior': {
           'LambdaFunctionAssociations': [
@@ -913,8 +913,8 @@ added the ellipsis so a user would know there was more to r...`,
       ],
     });
 
-    expect(stack).toHaveResource('AWS::Lambda::Function', {
-      Environment: ABSENT,
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+      Environment: Match.absent(),
     });
 
 
@@ -1027,7 +1027,7 @@ added the ellipsis so a user would know there was more to r...`,
       aliasConfiguration: { acmCertRef: 'another_acm_ref', names: ['ftp.example.com'] },
     });
 
-    expect(stack).toHaveResourceLike('AWS::CloudFront::Distribution', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
       'DistributionConfig': {
         'Aliases': ['www.example.com'],
         'ViewerCertificate': {
@@ -1037,7 +1037,7 @@ added the ellipsis so a user would know there was more to r...`,
       },
     });
 
-    expect(stack).toHaveResourceLike('AWS::CloudFront::Distribution', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
       'DistributionConfig': {
         'Aliases': ['ftp.example.com'],
         'ViewerCertificate': {
@@ -1067,7 +1067,7 @@ added the ellipsis so a user would know there was more to r...`,
           viewerCertificate: ViewerCertificate.fromAcmCertificate(certificate),
         });
 
-        expect(stack).toHaveResourceLike('AWS::CloudFront::Distribution', {
+        Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
           'DistributionConfig': {
             'Aliases': [],
             'ViewerCertificate': {
@@ -1097,7 +1097,7 @@ added the ellipsis so a user would know there was more to r...`,
           viewerCertificate: ViewerCertificate.fromAcmCertificate(certificate),
         });
 
-        expect(stack).toHaveResourceLike('AWS::CloudFront::Distribution', {
+        Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
           'DistributionConfig': {
             'Aliases': [],
             'ViewerCertificate': {
@@ -1129,7 +1129,7 @@ added the ellipsis so a user would know there was more to r...`,
           }),
         });
 
-        expect(stack).toHaveResourceLike('AWS::CloudFront::Distribution', {
+        Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
           'DistributionConfig': {
             'Aliases': ['example.com', 'www.example.com'],
             'ViewerCertificate': {
@@ -1158,7 +1158,7 @@ added the ellipsis so a user would know there was more to r...`,
           viewerCertificate: ViewerCertificate.fromIamCertificate('test'),
         });
 
-        expect(stack).toHaveResourceLike('AWS::CloudFront::Distribution', {
+        Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
           'DistributionConfig': {
             'Aliases': [],
             'ViewerCertificate': {
@@ -1186,7 +1186,7 @@ added the ellipsis so a user would know there was more to r...`,
           }),
         });
 
-        expect(stack).toHaveResourceLike('AWS::CloudFront::Distribution', {
+        Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
           'DistributionConfig': {
             'Aliases': ['example.com'],
             'ViewerCertificate': {
@@ -1213,7 +1213,7 @@ added the ellipsis so a user would know there was more to r...`,
           viewerCertificate: ViewerCertificate.fromCloudFrontDefaultCertificate(),
         });
 
-        expect(stack).toHaveResourceLike('AWS::CloudFront::Distribution', {
+        Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
           'DistributionConfig': {
             'Aliases': [],
             'ViewerCertificate': {
@@ -1236,7 +1236,7 @@ added the ellipsis so a user would know there was more to r...`,
           viewerCertificate: ViewerCertificate.fromCloudFrontDefaultCertificate('example.com', 'www.example.com'),
         });
 
-        expect(stack).toHaveResourceLike('AWS::CloudFront::Distribution', {
+        Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
           'DistributionConfig': {
             'Aliases': ['example.com', 'www.example.com'],
             'ViewerCertificate': {
@@ -1302,7 +1302,7 @@ added the ellipsis so a user would know there was more to r...`,
           viewerCertificate: ViewerCertificate.fromAcmCertificate(certificate),
         });
 
-        expect(stack).toHaveResourceLike('AWS::CloudFront::Distribution', {
+        Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
           'DistributionConfig': {
             'Aliases': [],
             'ViewerCertificate': {
@@ -1349,7 +1349,7 @@ added the ellipsis so a user would know there was more to r...`,
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::IAM::Role', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
       AssumeRolePolicyDocument: {
         'Statement': [
           {
@@ -1399,7 +1399,7 @@ added the ellipsis so a user would know there was more to r...`,
       ],
     });
 
-    expect(stack).not.toHaveResourceLike('AWS::IAM::Role');
+    Template.fromStack(stack).resourceCountIs('AWS::IAM::Role', 0);
 
   });
 
@@ -1417,7 +1417,7 @@ added the ellipsis so a user would know there was more to r...`,
           geoRestriction: GeoRestriction.allowlist('US', 'UK'),
         });
 
-        expect(stack).toMatchTemplate({
+        Template.fromStack(stack).templateMatches({
           'Resources': {
             'Bucket83908E77': {
               'Type': 'AWS::S3::Bucket',
@@ -1493,7 +1493,7 @@ added the ellipsis so a user would know there was more to r...`,
           geoRestriction: GeoRestriction.denylist('US'),
         });
 
-        expect(stack).toMatchTemplate({
+        Template.fromStack(stack).templateMatches({
           'Resources': {
             'Bucket83908E77': {
               'Type': 'AWS::S3::Bucket',

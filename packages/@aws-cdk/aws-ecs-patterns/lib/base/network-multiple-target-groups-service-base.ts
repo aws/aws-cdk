@@ -370,7 +370,7 @@ export abstract class NetworkMultipleTargetGroupsServiceBase extends Construct {
   protected registerECSTargets(service: BaseService, container: ContainerDefinition, targets: NetworkTargetProps[]): NetworkTargetGroup {
     for (const targetProps of targets) {
       const targetGroup = this.findListener(targetProps.listener).addTargets(`ECSTargetGroup${container.containerName}${targetProps.containerPort}`, {
-        port: 80,
+        port: targetProps.containerPort ?? 80,
         targets: [
           service.loadBalancerTarget({
             containerName: container.containerName,
