@@ -99,8 +99,15 @@ export class Row implements IWidget {
  * Widgets will be laid out next to each other
  */
 export class Column implements IWidget {
-  public readonly width: number;
-  public readonly height: number;
+  /**
+   * Same as width, but writable inside class methods
+   */
+  private _width: number;
+
+  /**
+   * Same as height, but writable inside class methods
+   */
+  private _height: number;
 
   /**
    * List of contained widgets
@@ -111,8 +118,25 @@ export class Column implements IWidget {
     this.widgets = widgets;
 
     // There's no vertical wrapping so this one's a lot easier
-    this.width = Math.max(...this.widgets.map(w => w.width));
-    this.height = sum(...this.widgets.map(w => w.height));
+    this._width = Math.max(...this.widgets.map(w => w.width));
+    this._height = sum(...this.widgets.map(w => w.height));
+  }
+
+  public get width() : number {
+    return this._width;
+  }
+
+  public get height() : number {
+    return this._height;
+  }
+
+  /**
+   * Add the widget to this container
+   */
+  public addWidget(w: IWidget): void {
+    this.widgets.push(w);
+    this._width = Math.max(this.width, w.width);
+    this._height += w.height;
   }
 
   public position(x: number, y: number): void {

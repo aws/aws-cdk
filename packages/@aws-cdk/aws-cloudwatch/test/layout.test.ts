@@ -92,12 +92,28 @@ describe('Layout', () => {
 
   });
 
-  test('add a widget to the widgets list', () => {
+  test('add a widget to the row', () => {
     const row = new Row(new Spacer());
     expect(row.width).toEqual(1);
 
     row.addWidget(new Spacer({ width: 3 }));
     expect(row.width).toEqual(4);
+
+
+  });
+
+  test('add a widget to the column', () => {
+    const column = new Column(
+      new Spacer(),
+      new Spacer(),
+    );
+    expect(column.height).toEqual(2);
+
+    column.addWidget(new Spacer({ height: 2, width: 3 }));
+    expect(column.height).toEqual(4);
+    expect(column.width).toEqual(3);
+
+
   });
 
   test('row wraps when adding widgets', () => {
@@ -111,5 +127,7 @@ describe('Layout', () => {
     row.addWidget(new Spacer({ width: 5, height: 2 }));
     expect(row.width).toEqual(20);
     expect(row.height).toEqual(3);
+
+
   });
 });
