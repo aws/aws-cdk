@@ -20,6 +20,7 @@ new ApplicationLoadBalancedFargateService(stack, 'myService', {
   },
   protocol: ApplicationProtocol.HTTPS,
   enableECSManagedTags: true,
+  enableExecuteCommand: true,
   domainName: 'test.example.com',
   domainZone: route53.HostedZone.fromHostedZoneAttributes(stack, 'HostedZone', {
     hostedZoneId: 'fakeId',

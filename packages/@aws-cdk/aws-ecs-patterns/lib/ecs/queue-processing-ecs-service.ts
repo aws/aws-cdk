@@ -124,6 +124,7 @@ export class QueueProcessingEc2Service extends QueueProcessingServiceBase {
       deploymentController: props.deploymentController,
       circuitBreaker: props.circuitBreaker,
       capacityProviderStrategies: props.capacityProviderStrategies,
+      enableExecuteCommand: props.enableExecuteCommand,
     });
 
     this.configureAutoscalingForService(this.service);

@@ -118,6 +118,7 @@ describe('When Application Load Balancer', () => {
       memoryLimitMiB: 512,
       desiredCount: 3,
       enableECSManagedTags: true,
+      enableExecuteCommand: true,
       healthCheckGracePeriod: Duration.millis(2000),
       platformVersion: ecs.FargatePlatformVersion.VERSION1_4,
       propagateTags: ecs.PropagatedTagSource.SERVICE,
@@ -181,6 +182,45 @@ describe('When Application Load Balancer', () => {
       PlatformVersion: ecs.FargatePlatformVersion.VERSION1_4,
       PropagateTags: 'SERVICE',
       ServiceName: 'myService',
+    });
+
+    // ECS Exec
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: [
+              'ssmmessages:CreateControlChannel',
+              'ssmmessages:CreateDataChannel',
+              'ssmmessages:OpenControlChannel',
+              'ssmmessages:OpenDataChannel',
+            ],
+            Effect: 'Allow',
+            Resource: '*',
+          },
+          {
+            Action: 'logs:DescribeLogGroups',
+            Effect: 'Allow',
+            Resource: '*',
+          },
+          {
+            Action: [
+              'logs:CreateLogStream',
+              'logs:DescribeLogStreams',
+              'logs:PutLogEvents',
+            ],
+            Effect: 'Allow',
+            Resource: '*',
+          },
+        ],
+        Version: '2012-10-17',
+      },
+      PolicyName: 'TaskRoleDefaultPolicy07FC53DE',
+      Roles: [
+        {
+          Ref: 'TaskRole30FC0FBB',
+        },
+      ],
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
@@ -487,6 +527,7 @@ describe('When Network Load Balancer', () => {
       memoryLimitMiB: 512,
       desiredCount: 3,
       enableECSManagedTags: true,
+      enableExecuteCommand: true,
       healthCheckGracePeriod: Duration.millis(2000),
       propagateTags: ecs.PropagatedTagSource.SERVICE,
       serviceName: 'myService',
@@ -545,6 +586,45 @@ describe('When Network Load Balancer', () => {
       },
       PropagateTags: 'SERVICE',
       ServiceName: 'myService',
+    });
+
+    // ECS Exec
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: [
+              'ssmmessages:CreateControlChannel',
+              'ssmmessages:CreateDataChannel',
+              'ssmmessages:OpenControlChannel',
+              'ssmmessages:OpenDataChannel',
+            ],
+            Effect: 'Allow',
+            Resource: '*',
+          },
+          {
+            Action: 'logs:DescribeLogGroups',
+            Effect: 'Allow',
+            Resource: '*',
+          },
+          {
+            Action: [
+              'logs:CreateLogStream',
+              'logs:DescribeLogStreams',
+              'logs:PutLogEvents',
+            ],
+            Effect: 'Allow',
+            Resource: '*',
+          },
+        ],
+        Version: '2012-10-17',
+      },
+      PolicyName: 'TaskRoleDefaultPolicy07FC53DE',
+      Roles: [
+        {
+          Ref: 'TaskRole30FC0FBB',
+        },
+      ],
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {

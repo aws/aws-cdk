@@ -186,6 +186,13 @@ export interface NetworkLoadBalancedServiceBaseProps {
    * @default - disabled
    */
   readonly circuitBreaker?: DeploymentCircuitBreaker;
+
+  /**
+   * Wether ECS Exec should be enabled
+   *
+   * @default - false
+   */
+  readonly enableExecuteCommand?: boolean;
 }
 
 export interface NetworkLoadBalancedTaskImageOptions {

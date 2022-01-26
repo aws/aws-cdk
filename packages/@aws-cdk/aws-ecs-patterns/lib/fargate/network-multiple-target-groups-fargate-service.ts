@@ -183,6 +183,7 @@ export class NetworkMultipleTargetGroupsFargateService extends NetworkMultipleTa
       enableECSManagedTags: props.enableECSManagedTags,
       cloudMapOptions: props.cloudMapOptions,
       platformVersion: props.platformVersion,
+      enableExecuteCommand: props.enableExecuteCommand,
     });
   }
 }

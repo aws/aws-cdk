@@ -1,8 +1,8 @@
 import { Match, Template } from '@aws-cdk/assertions';
 import { AutoScalingGroup } from '@aws-cdk/aws-autoscaling';
 import { Certificate } from '@aws-cdk/aws-certificatemanager';
-import { MachineImage, Vpc } from '@aws-cdk/aws-ec2';
 import * as ec2 from '@aws-cdk/aws-ec2';
+import { MachineImage, Vpc } from '@aws-cdk/aws-ec2';
 import {
   AsgCapacityProvider,
   AwsLogDriver,
@@ -130,6 +130,7 @@ describe('When Application Load Balancer', () => {
       cpu: 256,
       desiredCount: 3,
       enableECSManagedTags: true,
+      enableExecuteCommand: true,
       healthCheckGracePeriod: Duration.millis(2000),
       loadBalancers: [
         {
@@ -1006,6 +1007,7 @@ describe('When Network Load Balancer', () => {
       cpu: 256,
       desiredCount: 3,
       enableECSManagedTags: true,
+      enableExecuteCommand: true,
       healthCheckGracePeriod: Duration.millis(2000),
       loadBalancers: [
         {
@@ -1069,6 +1071,45 @@ describe('When Network Load Balancer', () => {
       PropagateTags: 'SERVICE',
       SchedulingStrategy: 'REPLICA',
       ServiceName: 'myService',
+    });
+
+    // ECS Exec
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: [
+              'ssmmessages:CreateControlChannel',
+              'ssmmessages:CreateDataChannel',
+              'ssmmessages:OpenControlChannel',
+              'ssmmessages:OpenDataChannel',
+            ],
+            Effect: 'Allow',
+            Resource: '*',
+          },
+          {
+            Action: 'logs:DescribeLogGroups',
+            Effect: 'Allow',
+            Resource: '*',
+          },
+          {
+            Action: [
+              'logs:CreateLogStream',
+              'logs:DescribeLogStreams',
+              'logs:PutLogEvents',
+            ],
+            Effect: 'Allow',
+            Resource: '*',
+          },
+        ],
+        Version: '2012-10-17',
+      },
+      PolicyName: 'TaskRoleDefaultPolicy07FC53DE',
+      Roles: [
+        {
+          Ref: 'TaskRole30FC0FBB',
+        },
+      ],
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {

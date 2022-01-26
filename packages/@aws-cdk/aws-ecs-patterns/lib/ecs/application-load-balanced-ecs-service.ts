@@ -135,6 +135,7 @@ export class ApplicationLoadBalancedEc2Service extends ApplicationLoadBalancedSe
       cloudMapOptions: props.cloudMapOptions,
       deploymentController: props.deploymentController,
       circuitBreaker: props.circuitBreaker,
+      enableExecuteCommand: props.enableExecuteCommand,
     });
     this.addServiceAsTarget(this.service);
   }

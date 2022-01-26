@@ -102,6 +102,13 @@ export interface NetworkMultipleTargetGroupsServiceBaseProps {
    * @default - default portMapping registered as target group and attached to the first defined listener
    */
   readonly targetGroups?: NetworkTargetProps[];
+
+  /**
+   * Wether ECS Exec should be enabled
+   *
+   * @default - false
+   */
+  readonly enableExecuteCommand?: boolean;
 }
 
 /**
@@ -231,6 +238,7 @@ export interface NetworkLoadBalancerProps {
    * @default - No Route53 hosted domain zone.
    */
   readonly domainZone?: IHostedZone;
+
 }
 
 /**
