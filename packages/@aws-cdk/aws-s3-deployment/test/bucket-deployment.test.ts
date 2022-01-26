@@ -1056,3 +1056,20 @@ test('bucket has multiple deployments', () => {
     ],
   });
 });
+
+test('Source.content() can be used to create a file with contents', () => {
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'Test');
+  const bucket = new s3.Bucket(stack, 'Bucket');
+
+  const source = s3deploy.Source.content('my/path.txt', 'hello, world');
+
+  new s3deploy.BucketDeployment(stack, 'DeployWithVpc3', {
+    sources: [source],
+    destinationBucket: bucket,
+    destinationKeyPrefix: '/x/z',
+  });
+
+  const result = app.synth();
+  expect(result.stacks[0].assets).toStrictEqual([]);
+});

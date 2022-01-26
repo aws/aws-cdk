@@ -1,6 +1,10 @@
+import * as fs from 'fs';
+import { join, dirname } from 'path';
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as s3_assets from '@aws-cdk/aws-s3-assets';
+import { FileSystem } from '@aws-cdk/core';
+import { renderContent } from './content';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
@@ -19,6 +23,11 @@ export interface SourceConfig {
    * An S3 object key in the source bucket that points to a zip file.
    */
   readonly zipObjectKey: string;
+
+  /**
+   * A set of markers to substitute in the source content.
+   */
+  readonly markers?: Record<string, any>;
 }
 
 /**
@@ -105,6 +114,32 @@ export class Source {
         return {
           bucket: asset.bucket,
           zipObjectKey: asset.s3ObjectKey,
+        };
+      },
+    };
+  }
+
+  /**
+   * Deploys a file with the specified textual contents into the bucket. The
+   * content can include deploy-time values that will get resolved only during
+   * deployment.
+   *
+   * @param objectKey The S3 object key to use for this file.
+   * @param content The contents
+   */
+  public static content(objectKey: string, content: string): ISource {
+    return {
+      bind: (scope: Construct, context?: DeploymentSourceContext) => {
+        const workdir = FileSystem.mkdtemp('s3-deployment');
+        const outputPath = join(workdir, objectKey);
+        const rendered = renderContent(scope, content);
+        fs.mkdirSync(dirname(outputPath), { recursive: true });
+        fs.writeFileSync(outputPath, rendered.text);
+        const asset = this.asset(workdir).bind(scope, context);
+        return {
+          bucket: asset.bucket,
+          zipObjectKey: asset.zipObjectKey,
+          markers: rendered.markers,
         };
       },
     };
