@@ -188,7 +188,7 @@ export interface NetworkLoadBalancedServiceBaseProps {
   readonly circuitBreaker?: DeploymentCircuitBreaker;
 
   /**
-   * Wether ECS Exec should be enabled
+   * Whether ECS Exec should be enabled
    *
    * @default - false
    */

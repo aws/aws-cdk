@@ -104,7 +104,7 @@ export interface NetworkMultipleTargetGroupsServiceBaseProps {
   readonly targetGroups?: NetworkTargetProps[];
 
   /**
-   * Wether ECS Exec should be enabled
+   * Whether ECS Exec should be enabled
    *
    * @default - false
    */

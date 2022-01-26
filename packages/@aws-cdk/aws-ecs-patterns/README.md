@@ -733,3 +733,25 @@ const loadBalancedFargateService = new ecsPatterns.ApplicationLoadBalancedFargat
   loadBalancerName: 'application-lb-name',
 });
 ```
+
+### ECS Exec
+
+To enable ECS Exec, all Services, i.e. `ApplicationLoadBalanced(Fargate|Ec2)Service`, `ApplicationMultipleTargetGroups(Fargate|Ec2)Service`, `NetworkLoadBalanced(Fargate|Ec2)Service`, `NetworkMultipleTargetGroups(Fargate|Ec2)Service`, `QueueProcessing(Fargate|Ec2)Service` allow you to enable ECS Exec, by setting `enableExecuteCommand` to `true`.
+
+This is not possible for the ScheduledTasks.
+
+Example:
+
+```ts
+declare const cluster: ecs.Cluster;
+const loadBalancedFargateService = new ecsPatterns.ApplicationLoadBalancedFargateService(this, 'Service', {
+  cluster,
+  memoryLimitMiB: 1024,
+  desiredCount: 1,
+  cpu: 512,
+  taskImageOptions: {
+    image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+  },
+  enableExecuteCommand: true
+});
+```

@@ -113,7 +113,7 @@ export interface ApplicationMultipleTargetGroupsServiceBaseProps {
   readonly targetGroups?: ApplicationTargetProps[];
 
   /**
-   * Wether ECS Exec should be enabled
+   * Whether ECS Exec should be enabled
    *
    * @default - false
    */

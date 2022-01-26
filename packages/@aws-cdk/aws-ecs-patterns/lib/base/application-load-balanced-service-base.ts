@@ -259,7 +259,7 @@ export interface ApplicationLoadBalancedServiceBaseProps {
   readonly loadBalancerName?: string;
 
   /**
-   * Wether ECS Exec should be enabled
+   * Whether ECS Exec should be enabled
    *
    * @default - false
    */
