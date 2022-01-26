@@ -26,5 +26,4 @@ export interface AwsCloudFormationStackProperties {
   readonly terminationProtection?: boolean;
 }
 
-/* eslint-disable */
 export { CloudArtifact } from './cloud-assembly';
