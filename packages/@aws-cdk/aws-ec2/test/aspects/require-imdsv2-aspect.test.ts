@@ -2,6 +2,7 @@ import { Template } from '@aws-cdk/assertions';
 import { testFutureBehavior, testLegacyBehavior } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
+import { Construct } from 'constructs';
 import {
   CfnLaunchTemplate,
   Instance,
@@ -34,14 +35,14 @@ describe('RequireImdsv2Aspect', () => {
       // @ts-ignore
       aspect.warn(node, errmsg);
     });
-    const construct = new cdk.Construct(stack, 'Construct');
+    const construct = new Construct(stack, 'Construct');
 
     // WHEN
     aspect.visit(construct);
 
     // THEN
     expect(visitMock).toHaveBeenCalled();
-    expect(construct.node.metadataEntry).not.toContainEqual({
+    expect(construct.node.metadata).not.toContainEqual({
       data: expect.stringContaining(errmsg),
       type: 'aws:cdk:warning',
       trace: undefined,
@@ -100,7 +101,7 @@ describe('RequireImdsv2Aspect', () => {
       // Aspect normally creates a LaunchTemplate for the Instance to toggle IMDSv1,
       // so we can assert that one was not created
       Template.fromStack(stack).resourceCountIs('AWS::EC2::LaunchTemplate', 0);
-      expect(instance.node.metadataEntry).toContainEqual({
+      expect(instance.node.metadata).toContainEqual({
         data: expect.stringContaining('Cannot toggle IMDSv1 because this Instance is associated with an existing Launch Template.'),
         type: 'aws:cdk:warning',
         trace: undefined,
@@ -126,7 +127,7 @@ describe('RequireImdsv2Aspect', () => {
       aspect.visit(instance);
 
       // THEN
-      expect(instance.node.metadataEntry).not.toContainEqual({
+      expect(instance.node.metadata).not.toContainEqual({
         data: expect.stringContaining('Cannot toggle IMDSv1 because this Instance is associated with an existing Launch Template.'),
         type: 'aws:cdk:warning',
         trace: undefined,
@@ -197,7 +198,7 @@ describe('RequireImdsv2Aspect', () => {
       aspect.visit(launchTemplate);
 
       // THEN
-      expect(launchTemplate.node.metadataEntry).toContainEqual({
+      expect(launchTemplate.node.metadata).toContainEqual({
         data: expect.stringContaining('LaunchTemplateData is a CDK token.'),
         type: 'aws:cdk:warning',
         trace: undefined,
@@ -217,7 +218,7 @@ describe('RequireImdsv2Aspect', () => {
       aspect.visit(launchTemplate);
 
       // THEN
-      expect(launchTemplate.node.metadataEntry).toContainEqual({
+      expect(launchTemplate.node.metadata).toContainEqual({
         data: expect.stringContaining('LaunchTemplateData.MetadataOptions is a CDK token.'),
         type: 'aws:cdk:warning',
         trace: undefined,

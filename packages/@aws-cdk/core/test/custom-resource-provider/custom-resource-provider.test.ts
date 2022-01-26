@@ -9,7 +9,8 @@ const TEST_HANDLER = `${__dirname}/mock-provider`;
 describe('custom resource provider', () => {
   test('minimal configuration', () => {
     // GIVEN
-    const stack = new Stack();
+    const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
+    const stack = new Stack(app);
 
     // WHEN
     CustomResourceProvider.getOrCreate(stack, 'Custom:MyResourceType', {

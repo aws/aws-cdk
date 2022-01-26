@@ -6,6 +6,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
 import { Asset } from '@aws-cdk/aws-s3-assets';
 import { AssetStaging, App, Aws, CfnResource, Stack, DefaultStackSynthesizer, IStackSynthesizer, FileAssetSource, FileAssetLocation } from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import * as ec2 from '../lib';
 import { stringLike } from './util';
 
@@ -21,7 +22,11 @@ function resetState() {
 }
 
 function resetStateWithSynthesizer(customSynthesizer?: IStackSynthesizer) {
-  app = new App();
+  app = new App({
+    context: {
+      [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false,
+    },
+  });
   stack = new Stack(app, 'Stack', {
     env: { account: '1234', region: 'testregion' },
     synthesizer: customSynthesizer,

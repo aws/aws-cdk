@@ -2,6 +2,7 @@ import * as path from 'path';
 import { Template } from '@aws-cdk/assertions';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import * as glue from '../lib';
 
 describe('Code', () => {
@@ -9,7 +10,8 @@ describe('Code', () => {
   let script: glue.Code;
 
   beforeEach(() => {
-    stack = new cdk.Stack();
+    const app = new cdk.App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
+    stack = new cdk.Stack(app, 'Stack');
   });
 
   describe('.fromBucket()', () => {
@@ -99,7 +101,7 @@ describe('Code', () => {
         }),
       });
 
-      expect(stack.node.metadataEntry.find(m => m.type === 'aws:cdk:asset')).toBeDefined();
+      expect(stack.node.metadata.find(m => m.type === 'aws:cdk:asset')).toBeDefined();
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         Command: {
           ScriptLocation: {
@@ -256,7 +258,7 @@ describe('Code', () => {
         ],
       };
 
-      expect(stack.node.metadataEntry.find(m => m.type === 'aws:cdk:asset')).toBeDefined();
+      expect(stack.node.metadata.find(m => m.type === 'aws:cdk:asset')).toBeDefined();
       // Job1 and Job2 use reuse the asset
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         Command: {
