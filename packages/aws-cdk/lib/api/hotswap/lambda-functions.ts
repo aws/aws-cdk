@@ -369,7 +369,7 @@ function zipString(fileName: string, rawString: string): Promise<Buffer> {
 
     const archive = archiver('zip');
 
-    archive.on('error', (err) => {
+    archive.on('error', (err: any) => {
       reject(err);
     });
 
