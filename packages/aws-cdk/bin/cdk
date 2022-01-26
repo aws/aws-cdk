@@ -2,5 +2,10 @@
 try {
   require('./cdk-bundle.js');
 } catch (e) {
-  require('./cdk.js');
+  if (e.message.includes('Cannot find module')) {
+    // require('./cdk.js');
+    throw new Error('FAIL')
+  } else {
+    throw e;
+  }
 }
