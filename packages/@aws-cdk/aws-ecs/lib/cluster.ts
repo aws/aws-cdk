@@ -6,7 +6,7 @@ import * as kms from '@aws-cdk/aws-kms';
 import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cloudmap from '@aws-cdk/aws-servicediscovery';
-import { Duration, Lazy, IResource, Resource, Stack, Aspects, IAspect } from '@aws-cdk/core';
+import { Duration, Lazy, IResource, Resource, Stack, Aspects, IAspect, ArnFormat } from '@aws-cdk/core';
 import { Construct, IConstruct } from 'constructs';
 import { BottleRocketImage, EcsOptimizedAmi } from './amis';
 import { InstanceDrainHook } from './drain-hook/instance-drain-hook';
@@ -99,6 +99,41 @@ export class Cluster extends Resource implements ICluster {
    */
   public static fromClusterAttributes(scope: Construct, id: string, attrs: ClusterAttributes): ICluster {
     return new ImportedCluster(scope, id, attrs);
+  }
+
+  /**
+   * Import an existing cluster to the stack from the cluster ARN.
+   * This does not provide access to the vpc, hasEc2Capacity, or connections -
+   * use the `fromClusterAttributes` method to access those properties.
+   */
+  public static fromClusterArn(scope: Construct, id: string, clusterArn: string): ICluster {
+    const stack = Stack.of(scope);
+    const arn = stack.splitArn(clusterArn, ArnFormat.SLASH_RESOURCE_NAME);
+    const clusterName = arn.resourceName;
+
+    if (!clusterName) {
+      throw new Error(`Missing required Cluster Name from Cluster ARN: ${clusterArn}`);
+    }
+
+    const errorSuffix = 'is not available for a Cluster imported using fromClusterArn(), please use fromClusterAttributes() instead.';
+
+    class Import extends Resource implements ICluster {
+      public readonly clusterArn = clusterArn;
+      public readonly clusterName = clusterName!;
+      get hasEc2Capacity(): boolean {
+        throw new Error(`hasEc2Capacity ${errorSuffix}`);
+      }
+      get connections(): ec2.Connections {
+        throw new Error(`connections ${errorSuffix}`);
+      }
+      get vpc(): ec2.IVpc {
+        throw new Error(`vpc ${errorSuffix}`);
+      }
+    }
+
+    return new Import(scope, id, {
+      environmentFromArn: clusterArn,
+    });
   }
 
   /**

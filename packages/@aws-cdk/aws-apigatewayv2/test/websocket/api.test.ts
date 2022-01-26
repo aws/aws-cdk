@@ -141,7 +141,7 @@ describe('WebSocketApi', () => {
                 {
                   Ref: 'apiC8550315',
                 },
-                '/*/POST/@connections/*',
+                '/*/*/@connections/*',
               ]],
             },
           }]),
