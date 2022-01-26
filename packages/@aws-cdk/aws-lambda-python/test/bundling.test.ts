@@ -214,7 +214,7 @@ test('Bundling a function with custom bundling image', () => {
   expect(DockerImage.fromBuild).toHaveBeenCalledWith(expect.stringMatching(entry));
 });
 
-test('Bundling with custom build args`', () => {
+test('Bundling with custom build args', () => {
   const entry = path.join(__dirname, 'lambda-handler');
   const testPypi = 'https://test.pypi.org/simple/';
   Bundling.bundle({
