@@ -1,2 +1,6 @@
 #!/usr/bin/env node
-require('./cdk.js');
+try {
+  require('./cdk-bundle.js');
+} catch (e) {
+  require('./cdk.js');
+}

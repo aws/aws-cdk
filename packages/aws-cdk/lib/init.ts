@@ -5,7 +5,7 @@ import * as chalk from 'chalk';
 import * as fs from 'fs-extra';
 import * as semver from 'semver';
 import { error, print, warning } from './logging';
-import { cdkHomeDir } from './util/directories';
+import { cdkHomeDir, rootDir } from './util/directories';
 import { versionNumber } from './version';
 
 export type InvokeHook = (targetDirectory: string) => Promise<void>;
@@ -211,9 +211,8 @@ function versionedTemplatesDir(): Promise<string> {
     if (currentVersion === '0.0.0') {
       currentVersion = '1.0.0';
     }
-    const root = path.dirname(require.resolve('../package.json'));
     const majorVersion = semver.major(currentVersion);
-    resolve(path.join(root, 'lib', 'init-templates', `v${majorVersion}`));
+    resolve(path.join(rootDir(), 'lib', 'init-templates', `v${majorVersion}`));
   });
 }
 
