@@ -461,45 +461,6 @@ describe('ec2 service', () => {
         KeyPolicy: {
           Statement: [
             {
-              Action: [
-                'kms:Create*',
-                'kms:Describe*',
-                'kms:Enable*',
-                'kms:List*',
-                'kms:Put*',
-                'kms:Update*',
-                'kms:Revoke*',
-                'kms:Disable*',
-                'kms:Get*',
-                'kms:Delete*',
-                'kms:ScheduleKeyDeletion',
-                'kms:CancelKeyDeletion',
-                'kms:GenerateDataKey',
-                'kms:TagResource',
-                'kms:UntagResource',
-              ],
-              Effect: 'Allow',
-              Principal: {
-                AWS: {
-                  'Fn::Join': [
-                    '',
-                    [
-                      'arn:',
-                      {
-                        Ref: 'AWS::Partition',
-                      },
-                      ':iam::',
-                      {
-                        Ref: 'AWS::AccountId',
-                      },
-                      ':root',
-                    ],
-                  ],
-                },
-              },
-              Resource: '*',
-            },
-            {
               Action: 'kms:*',
               Effect: 'Allow',
               Principal: {
@@ -697,45 +658,6 @@ describe('ec2 service', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
         KeyPolicy: {
           Statement: [
-            {
-              Action: [
-                'kms:Create*',
-                'kms:Describe*',
-                'kms:Enable*',
-                'kms:List*',
-                'kms:Put*',
-                'kms:Update*',
-                'kms:Revoke*',
-                'kms:Disable*',
-                'kms:Get*',
-                'kms:Delete*',
-                'kms:ScheduleKeyDeletion',
-                'kms:CancelKeyDeletion',
-                'kms:GenerateDataKey',
-                'kms:TagResource',
-                'kms:UntagResource',
-              ],
-              Effect: 'Allow',
-              Principal: {
-                AWS: {
-                  'Fn::Join': [
-                    '',
-                    [
-                      'arn:',
-                      {
-                        Ref: 'AWS::Partition',
-                      },
-                      ':iam::',
-                      {
-                        Ref: 'AWS::AccountId',
-                      },
-                      ':root',
-                    ],
-                  ],
-                },
-              },
-              Resource: '*',
-            },
             {
               Action: 'kms:*',
               Effect: 'Allow',
@@ -1261,7 +1183,7 @@ describe('ec2 service', () => {
       });
 
       // THEN
-      expect(service.node.metadataEntry[0].data).toEqual('taskDefinition and launchType are blanked out when using external deployment controller.');
+      expect(service.node.metadata[0].data).toEqual('taskDefinition and launchType are blanked out when using external deployment controller.');
       Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
         Cluster: {
           Ref: 'EcsCluster97242B84',

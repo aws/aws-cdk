@@ -871,7 +871,7 @@ added the ellipsis so a user would know there was more to r...`,
               'EventType': 'origin-request',
               'IncludeBody': true,
               'LambdaFunctionARN': {
-                'Ref': 'LambdaCurrentVersionDF706F6A97fb843e9bd06fcd2bb15eeace80e13e',
+                'Ref': 'LambdaCurrentVersionDF706F6A25bf7d67df4eb614ea2e1ea69c8759b6',
               },
             },
           ],
