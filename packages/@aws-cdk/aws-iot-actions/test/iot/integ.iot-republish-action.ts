@@ -13,8 +13,8 @@ class TestStack extends cdk.Stack {
     });
 
     topicRule.addAction(
-      new actions.IotRepublishAction('${topic()}/republish', {
-        qos: actions.MqttQos.AT_LEAST_ONCE,
+      new actions.IotRepublishMqttAction('${topic()}/republish', {
+        qos: actions.MqttQualityOfService.AT_LEAST_ONCE,
       }),
     );
   }

@@ -4,11 +4,11 @@ import { CommonActionProps } from './common-action-props';
 import { singletonActionRole } from './private/role';
 
 /**
- * MQTT Quality of Service
+ * MQTT Quality of Service (QoS) indicates the level of assurance for delivery of an MQTT Message.
  *
  * @see https://docs.aws.amazon.com/iot/latest/developerguide/mqtt.html#mqtt-qos
  */
-export enum MqttQos {
+export enum MqttQualityOfService {
   /**
    * QoS level 0. Sent zero or more times.
    * This level should be used for messages that are sent over reliable communication links or that can be missed without a problem.
@@ -25,29 +25,29 @@ export enum MqttQos {
 /**
  * Configuration properties of an action to republish MQTT messages.
  */
-export interface IotRepublishActionProps extends CommonActionProps {
+export interface IotRepublishMqttActionProps extends CommonActionProps {
   /**
    * The Quality of Service (QoS) level to use when republishing messages.
    *
    * @see https://docs.aws.amazon.com/iot/latest/developerguide/mqtt.html#mqtt-qos
    *
-   * @default MqttQos.ZERO_OR_MORE_TIMES
+   * @default MqttQualityOfService.ZERO_OR_MORE_TIMES
    */
-  readonly qos?: MqttQos;
+  readonly qos?: MqttQualityOfService;
 }
 
 /**
  * The action to put the record from an MQTT message to republish another MQTT topic.
  */
-export class IotRepublishAction implements iot.IAction {
-  private readonly qos?: MqttQos;
+export class IotRepublishMqttAction implements iot.IAction {
+  private readonly qos?: MqttQualityOfService;
   private readonly role?: iam.IRole;
 
   /**
    * @param topic The MQTT topic to which to republish the message.
-   * @param props Optional properties to not use default
+   * @param props Optional properties to not use default.
    */
-  constructor(private readonly topic: string, props: IotRepublishActionProps = {}) {
+  constructor(private readonly topic: string, props: IotRepublishMqttActionProps = {}) {
     this.qos = props.qos;
     this.role = props.role;
   }

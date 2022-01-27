@@ -4,20 +4,19 @@ import * as iot from '@aws-cdk/aws-iot';
 import * as cdk from '@aws-cdk/core';
 import * as actions from '../../lib';
 
-let stack:cdk.Stack;
+let stack: cdk.Stack;
+let topicRule:iot.TopicRule;
 beforeEach(() => {
   stack = new cdk.Stack();
+  topicRule = new iot.TopicRule(stack, 'MyTopicRule', {
+    sql: iot.IotSql.fromStringAsVer20160323("SELECT topic(2) as device_id FROM 'device/+/data'"),
+  });
 });
 
 test('Default IoT republish action', () => {
-  // GIVEN
-  const topicRule = new iot.TopicRule(stack, 'MyTopicRule', {
-    sql: iot.IotSql.fromStringAsVer20160323("SELECT topic(2) as device_id FROM 'device/+/data'"),
-  });
-
   // WHEN
   topicRule.addAction(
-    new actions.IotRepublishAction('test-topic'),
+    new actions.IotRepublishMqttAction('test-topic'),
   );
 
   // THEN
@@ -70,14 +69,9 @@ test('Default IoT republish action', () => {
 });
 
 test('can set qos', () => {
-  // GIVEN
-  const topicRule = new iot.TopicRule(stack, 'MyTopicRule', {
-    sql: iot.IotSql.fromStringAsVer20160323("SELECT topic(2) as device_id FROM 'device/+/data'"),
-  });
-
   // WHEN
   topicRule.addAction(
-    new actions.IotRepublishAction('test-topic', { qos: actions.MqttQos.AT_LEAST_ONCE }),
+    new actions.IotRepublishMqttAction('test-topic', { qos: actions.MqttQualityOfService.AT_LEAST_ONCE }),
   );
 
   // THEN
@@ -91,15 +85,10 @@ test('can set qos', () => {
 });
 
 test('can set role', () => {
-  // GIVEN
-  const topicRule = new iot.TopicRule(stack, 'MyTopicRule', {
-    sql: iot.IotSql.fromStringAsVer20160323("SELECT topic(2) as device_id FROM 'device/+/data'"),
-  });
-  const role = iam.Role.fromRoleArn(stack, 'MyRole', 'arn:aws:iam::123456789012:role/ForTest');
-
   // WHEN
+  const role = iam.Role.fromRoleArn(stack, 'MyRole', 'arn:aws:iam::123456789012:role/ForTest');
   topicRule.addAction(
-    new actions.IotRepublishAction('test-topic', { role }),
+    new actions.IotRepublishMqttAction('test-topic', { role }),
   );
 
   // THEN
