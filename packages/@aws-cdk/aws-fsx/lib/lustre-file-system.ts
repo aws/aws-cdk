@@ -282,18 +282,18 @@ export class LustreFileSystem extends FileSystemBase {
     if (perUnitStorageThroughput === undefined) { return; }
 
     if (deploymentType !== LustreDeploymentType.PERSISTENT_1 && deploymentType !== LustreDeploymentType.PERSISTENT_2) {
-      throw new Error('perUnitStorageThroughput can only be set for the PERSISTENT_1/PERSISTENT_2 deployment types');
+      throw new Error('perUnitStorageThroughput can only be set for the PERSISTENT_1/PERSISTENT_2 deployment types, received: ' + deploymentType);
     }
 
     if (deploymentType === LustreDeploymentType.PERSISTENT_1) {
       if (![50, 100, 200].includes(perUnitStorageThroughput)) {
-        throw new Error('perUnitStorageThroughput must be 50, 100, or 200 MB/s/TiB');
+        throw new Error('perUnitStorageThroughput must be 50, 100, or 200 MB/s/TiB for PERSISTENT_1 deployment type, got: ' + perUnitStorageThroughput);
       }
     }
 
     if (deploymentType === LustreDeploymentType.PERSISTENT_2) {
       if (![125, 250, 500, 1000].includes(perUnitStorageThroughput)) {
-        throw new Error('perUnitStorageThroughput must be 125, 250, 500 or 1000 MB/s/TiB');
+        throw new Error('perUnitStorageThroughput must be 125, 250, 500 or 1000 MB/s/TiB for PERSISTENT_2 deployment type, got: ' + perUnitStorageThroughput);
       }
     }
   }

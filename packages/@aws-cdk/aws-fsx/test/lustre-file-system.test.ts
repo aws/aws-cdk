@@ -436,10 +436,16 @@ describe('FSx for Lustre File System', () => {
         });
       });
 
-      test('invalid perUnitStorageThroughput', () => {
+      test.each([
+        1,
+        125,
+        250,
+        500,
+        1000,
+      ])('invalid perUnitStorageThroughput', (invalidValue: number) => {
         lustreConfiguration = {
           deploymentType: LustreDeploymentType.PERSISTENT_1,
-          perUnitStorageThroughput: 1,
+          perUnitStorageThroughput: invalidValue,
         };
 
         expect(() => {
@@ -449,7 +455,7 @@ describe('FSx for Lustre File System', () => {
             vpc,
             vpcSubnet,
           });
-        }).toThrowError('perUnitStorageThroughput must be 50, 100, or 200 MB/s/TiB');
+        }).toThrowError('perUnitStorageThroughput must be 50, 100, or 200 MB/s/TiB for PERSISTENT_1 deployment type, got: ' + invalidValue);
       });
 
       test('setting perUnitStorageThroughput on wrong deploymentType', () => {
@@ -496,10 +502,16 @@ describe('FSx for Lustre File System', () => {
         });
       });
 
-      test('invalid perUnitStorageThroughput', () => {
+      test.each([
+        1,
+        50,
+        100,
+        200,
+        550,
+      ])('invalid perUnitStorageThroughput', (invalidValue: number) => {
         lustreConfiguration = {
           deploymentType: LustreDeploymentType.PERSISTENT_2,
-          perUnitStorageThroughput: 1,
+          perUnitStorageThroughput: invalidValue,
         };
 
         expect(() => {
@@ -509,23 +521,7 @@ describe('FSx for Lustre File System', () => {
             vpc,
             vpcSubnet,
           });
-        }).toThrowError('perUnitStorageThroughput must be 125, 250, 500 or 1000 MB/s/TiB');
-      });
-
-      test('setting perUnitStorageThroughput on wrong deploymentType', () => {
-        lustreConfiguration = {
-          deploymentType: LustreDeploymentType.SCRATCH_2,
-          perUnitStorageThroughput: 125,
-        };
-
-        expect(() => {
-          new LustreFileSystem(stack, 'FsxFileSystem', {
-            lustreConfiguration,
-            storageCapacityGiB: storageCapacity,
-            vpc,
-            vpcSubnet,
-          });
-        }).toThrowError('perUnitStorageThroughput can only be set for the PERSISTENT_1/PERSISTENT_2 deployment types');
+        }).toThrowError('perUnitStorageThroughput must be 125, 250, 500 or 1000 MB/s/TiB for PERSISTENT_2 deployment type, got: ' + invalidValue);
       });
     });
 
