@@ -2,6 +2,46 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.141.0](https://github.com/aws/aws-cdk/compare/v1.140.0...v1.141.0) (2022-01-27)
+
+
+### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
+
+* **servicecatalog:** `TagOptions` now have `scope` and `props` argument in constructor, and data is now passed via a `allowedValueForTags` field in props
+
+### Features
+
+* **assertions:** support assertions on stack messages ([#18521](https://github.com/aws/aws-cdk/issues/18521)) ([cb86e30](https://github.com/aws/aws-cdk/commit/cb86e30391aefdda13e6b0d4b3be2fedf76477c8)), closes [#18347](https://github.com/aws/aws-cdk/issues/18347)
+* **assertions:** support for conditions ([#18577](https://github.com/aws/aws-cdk/issues/18577)) ([55ff1b2](https://github.com/aws/aws-cdk/commit/55ff1b2e69f1b42bbbecd9dc95e17f2ffc35f94e)), closes [#18560](https://github.com/aws/aws-cdk/issues/18560)
+* **aws-ecs-patterns:** adding support for custom HealthCheck while creating QueueProcessingFargateService ([#18219](https://github.com/aws/aws-cdk/issues/18219)) ([0ca81a1](https://github.com/aws/aws-cdk/commit/0ca81a118d3d54b87d2d05a53fb72e4efe03b591)), closes [#15636](https://github.com/aws/aws-cdk/issues/15636)
+* **certificatemanager:** DnsValidatedCertificate DNS record cleanup ([#18311](https://github.com/aws/aws-cdk/issues/18311)) ([36d356d](https://github.com/aws/aws-cdk/commit/36d356d0b3e422f7451f4b0dd2f971aa0378210e)), closes [#3333](https://github.com/aws/aws-cdk/issues/3333) [#7063](https://github.com/aws/aws-cdk/issues/7063)
+* **cfnspec:** cloudformation spec v53.1.0 ([#18588](https://github.com/aws/aws-cdk/issues/18588)) ([a283a48](https://github.com/aws/aws-cdk/commit/a283a482dead64e94383ba21cc7908f10c4459a2))
+* **cfnspec:** cloudformation spec v53.1.0 ([#18658](https://github.com/aws/aws-cdk/issues/18658)) ([2eda19e](https://github.com/aws/aws-cdk/commit/2eda19e510374426190531810cff518d582644ad))
+* **ec2:** session timeout and login banner for client vpn endpoint ([#18590](https://github.com/aws/aws-cdk/issues/18590)) ([7294118](https://github.com/aws/aws-cdk/commit/72941180a7188e5560a58f1509554ef038544ec4))
+* **ecs:** add `BaseService.fromServiceArnWithCluster()` for use in CodePipeline ([#18530](https://github.com/aws/aws-cdk/issues/18530)) ([3d192a9](https://github.com/aws/aws-cdk/commit/3d192a9a832857cb246d719a68b4b8f40d807fed))
+* **iotevents:** add DetectorModel L2 Construct ([#18049](https://github.com/aws/aws-cdk/issues/18049)) ([d0960f1](https://github.com/aws/aws-cdk/commit/d0960f181e5f66daa1eb53be2190b7e62bd66030)), closes [#17711](https://github.com/aws/aws-cdk/issues/17711) [#17711](https://github.com/aws/aws-cdk/issues/17711)
+* **lambda-nodejs:** Allow setting mainFields for esbuild ([#18569](https://github.com/aws/aws-cdk/issues/18569)) ([0e78aeb](https://github.com/aws/aws-cdk/commit/0e78aeb9ad62226e67f72f23c0008ba749b3a73b))
+* **s3:** custom role for the bucket notifications handler ([#17794](https://github.com/aws/aws-cdk/issues/17794)) ([43f232d](https://github.com/aws/aws-cdk/commit/43f232ddc0a18e9a2fada2fbead758ab3538adc2)), closes [#9918](https://github.com/aws/aws-cdk/issues/9918) [#13241](https://github.com/aws/aws-cdk/issues/13241)
+* **servicecatalog:** Create TagOptions Construct ([#18314](https://github.com/aws/aws-cdk/issues/18314)) ([903c4b6](https://github.com/aws/aws-cdk/commit/903c4b6e4adf676fae42265a048dddd0e1386542)), closes [#17753](https://github.com/aws/aws-cdk/issues/17753)
+
+
+### Bug Fixes
+
+* **apigatewayv2:** websocket api: allow all methods in grant manage connections ([#18544](https://github.com/aws/aws-cdk/issues/18544)) ([41c8a3f](https://github.com/aws/aws-cdk/commit/41c8a3fa6b50a94affb65286d862056050d02e84)), closes [#18410](https://github.com/aws/aws-cdk/issues/18410)
+* **aws-apigateway:** cross region authorizer ref ([#18444](https://github.com/aws/aws-cdk/issues/18444)) ([0e0a092](https://github.com/aws/aws-cdk/commit/0e0a0922ba1d538abdfeb61a260c262109115038))
+* **cli:** hotswap should wait for lambda's `updateFunctionCode` to complete ([#18536](https://github.com/aws/aws-cdk/issues/18536)) ([0e08eeb](https://github.com/aws/aws-cdk/commit/0e08eebd2f13ab0da6cac7b91288845cad530192)), closes [#18386](https://github.com/aws/aws-cdk/issues/18386) [#18386](https://github.com/aws/aws-cdk/issues/18386)
+* **ecs:** only works in 'aws' partition ([#18496](https://github.com/aws/aws-cdk/issues/18496)) ([525ac07](https://github.com/aws/aws-cdk/commit/525ac07369e33e2f36b7a0eea7913e43649484db)), closes [#18429](https://github.com/aws/aws-cdk/issues/18429)
+* **ecs-patterns:** Fix Network Load Balancer Port assignments in ECS Patterns ([#18157](https://github.com/aws/aws-cdk/issues/18157)) ([1393729](https://github.com/aws/aws-cdk/commit/13937299596d0b858d56e9116bf7a7dbe039d4b4)), closes [#18073](https://github.com/aws/aws-cdk/issues/18073)
+* **elasticloadbalancingv2:** ApplicationLoadBalancer.logAccessLogs does not grant all necessary permissions ([#18558](https://github.com/aws/aws-cdk/issues/18558)) ([bde1795](https://github.com/aws/aws-cdk/commit/bde17950293309b7449fc412301634770b47111f)), closes [#18367](https://github.com/aws/aws-cdk/issues/18367)
+* **pipelines:** CodeBuild projects are hard to tell apart ([#18492](https://github.com/aws/aws-cdk/issues/18492)) ([f6dab8d](https://github.com/aws/aws-cdk/commit/f6dab8d8c5aa4cf56d6846e2d13c1d5641136f72))
+* **region-info:** incorrect codedeploy service principals ([#18505](https://github.com/aws/aws-cdk/issues/18505)) ([16db963](https://github.com/aws/aws-cdk/commit/16db9639e86f1fd6f26a1054f4d6df24801d0f05))
+* **route53:** add RoutingControlArn to HealthCheck patch ([#18645](https://github.com/aws/aws-cdk/issues/18645)) ([c58e8bb](https://github.com/aws/aws-cdk/commit/c58e8bbbcb0a66c37b65cddc1da8d19dfbf26b4f)), closes [#18570](https://github.com/aws/aws-cdk/issues/18570)
+* **s3:** add missing safe actions to `grantWrite`, `grantReadWrite` and `grantPut` methods ([#18494](https://github.com/aws/aws-cdk/issues/18494)) ([940d043](https://github.com/aws/aws-cdk/commit/940d0439cd347f06d755f3e3dd0582470749f710)), closes [#13616](https://github.com/aws/aws-cdk/issues/13616)
+* **secretsmanager:** SecretRotation for secret imported by name has incorrect permissions ([#18567](https://github.com/aws/aws-cdk/issues/18567)) ([9ed263c](https://github.com/aws/aws-cdk/commit/9ed263cde0b41959ff267720c0978bfe7449337a)), closes [#18424](https://github.com/aws/aws-cdk/issues/18424)
+* **stepfunctions:** task token integration cannot be used with API Gateway ([#18595](https://github.com/aws/aws-cdk/issues/18595)) ([678eede](https://github.com/aws/aws-cdk/commit/678eeded5d5631dbacff43ead697ecbd3bd4b27d)), closes [#14184](https://github.com/aws/aws-cdk/issues/14184) [#14181](https://github.com/aws/aws-cdk/issues/14181)
+* **stepfunctions-tasks:** cluster creation fails with unresolved release labels ([#18288](https://github.com/aws/aws-cdk/issues/18288)) ([9940952](https://github.com/aws/aws-cdk/commit/9940952d67bdf07f3d737dc88676dc7f7c435a12))
+* **synthetics:** correct getbucketlocation policy ([#13573](https://github.com/aws/aws-cdk/issues/13573)) ([e743525](https://github.com/aws/aws-cdk/commit/e743525b6379371110d737bb360f637c41d30ca1)), closes [#13572](https://github.com/aws/aws-cdk/issues/13572)
+
 ## [1.140.0](https://github.com/aws/aws-cdk/compare/v1.139.0...v1.140.0) (2022-01-20)
 
 
