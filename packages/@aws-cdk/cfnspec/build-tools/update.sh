@@ -61,13 +61,17 @@ update-spec \
     spec-source/specification/000_cfn/000_official \
     true true
 
+old_version=$(cat cfn.version)
+new_version=$(node -p "require('${scriptdir}/../spec-source/specification/000_cfn/000_official/001_Version.json').ResourceSpecificationVersion")
 echo >&2 "Recording new version..."
 rm -f cfn.version
-node -p "require('${scriptdir}/../spec-source/specification/000_cfn/000_official/001_Version.json').ResourceSpecificationVersion" > cfn.version
+echo "$new_version" > cfn.version
 
-
-echo >&2 "Reporting outdated specs..."
-node build-tools/report-issues spec-source/specification/000_cfn/000_official/ outdated >> CHANGELOG.md.new
+# Only report outdated specs if we made changes, otherwise we're stuck reporting changes every time.
+if [[ "$new_version" != "$old_version" ]]; then
+    echo >&2 "Reporting outdated specs..."
+    node build-tools/report-issues spec-source/specification/000_cfn/000_official/ outdated >> CHANGELOG.md.new
+fi
 
 update-spec \
     "Serverless Application Model (SAM) Resource Specification" \
