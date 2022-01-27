@@ -30,6 +30,13 @@
         "distName": "aws-cdk.aws-memorydb",
         "module": "aws_cdk.aws_memorydb"
       }
+    },
+    "metadata": {
+      "jsii": {
+        "rosetta": {
+          "strict": true
+        }
+      }
     }
   },
   "repository": {

@@ -30,6 +30,13 @@
         "distName": "aws-cdk.aws-connect",
         "module": "aws_cdk.aws_connect"
       }
+    },
+    "metadata": {
+      "jsii": {
+        "rosetta": {
+          "strict": true
+        }
+      }
     }
   },
   "repository": {

@@ -30,6 +30,13 @@
         "distName": "aws-cdk.aws-emrcontainers",
         "module": "aws_cdk.aws_emrcontainers"
       }
+    },
+    "metadata": {
+      "jsii": {
+        "rosetta": {
+          "strict": true
+        }
+      }
     }
   },
   "repository": {
