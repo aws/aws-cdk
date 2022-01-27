@@ -21,7 +21,7 @@ The currently implemented actions are: EC2 Actions, SNS Actions, Autoscaling Act
 declare const alarm: cloudwatch.Alarm;
 // Attach a reboot when alarm triggers
 alarm.addAlarmAction(
-  new actions.Ec2Action(actions.Ec2InstanceActions.REBOOT),
+  new actions.Ec2Action(actions.Ec2InstanceAction.REBOOT),
 );
 ```
 
