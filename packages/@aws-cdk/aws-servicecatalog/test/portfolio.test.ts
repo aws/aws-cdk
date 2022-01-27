@@ -350,44 +350,6 @@ describe('portfolio associations and product constraints', () => {
     Template.fromStack(stack).resourceCountIs('AWS::ServiceCatalog::TagOptionAssociation', 3);
   }),
 
-  test('fails to create and then add tag options with invalid minimum key length', () => {
-    expect(() => {
-      const tagOptions = new servicecatalog.TagOptions(stack, 'TagOptions', {
-        allowedValuesForTags: {
-          '': ['value1', 'value2'],
-          'key2': ['value1'],
-        },
-      });
-
-      portfolio.associateTagOptions(tagOptions);
-    }).toThrowError(/Invalid TagOption key for resource/);
-  });
-
-  test('fails to create and then add tag options with invalid maxium key length', () => {
-    expect(() => {
-      const tagOptions = new servicecatalog.TagOptions(stack, 'TagOptions', {
-        allowedValuesForTags: {
-          ['key1'.repeat(1000)]: ['value1', 'value2'],
-          key2: ['value1'],
-        },
-      });
-
-      portfolio.associateTagOptions(tagOptions);
-    }).toThrowError(/Invalid TagOption key for resource/);
-  }),
-
-  test('fails to create and then add tag options with invalid value length', () => {
-    expect(() => {
-      const tagOptions = new servicecatalog.TagOptions(stack, 'TagOptions', {
-        allowedValuesForTags: {
-          key1: ['value1'.repeat(1000), 'value2'],
-          key2: ['value1'],
-        },
-      });
-      portfolio.associateTagOptions(tagOptions);
-    }).toThrowError(/Invalid TagOption value for resource/);
-  }),
-
   test('add tag update constraint', () => {
     portfolio.addProduct(product);
     portfolio.constrainTagUpdates(product, {
