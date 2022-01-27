@@ -399,7 +399,7 @@ describe('When Application Load Balancer', () => {
       },
     });
 
-    expect(stack).toCountResources('AWS::ElasticLoadBalancingV2::Listener', 1);
+    Template.fromStack(stack).resourceCountIs('AWS::ElasticLoadBalancingV2::Listener', 1);
   });
 
   test('reuse existing Listener on ApplicationMultipleTargetGroupsFargateService', () => {
@@ -432,7 +432,7 @@ describe('When Application Load Balancer', () => {
       },
     });
 
-    expect(stack).toCountResources('AWS::ElasticLoadBalancingV2::Listener', 1);
+    Template.fromStack(stack).resourceCountIs('AWS::ElasticLoadBalancingV2::Listener', 1);
   });
 });
 
@@ -820,7 +820,7 @@ describe('When Network Load Balancer', () => {
       },
     });
 
-    expect(stack).toCountResources('AWS::ElasticLoadBalancingV2::Listener', 1);
+    Template.fromStack(stack).resourceCountIs('AWS::ElasticLoadBalancingV2::Listener', 1);
   });
 
   test('reuse existing Listener on NetworkMultipleTargetGroupsFargateService', () => {
@@ -853,6 +853,6 @@ describe('When Network Load Balancer', () => {
       },
     });
 
-    expect(stack).toCountResources('AWS::ElasticLoadBalancingV2::Listener', 1);
+    Template.fromStack(stack).resourceCountIs('AWS::ElasticLoadBalancingV2::Listener', 1);
   });
 });
