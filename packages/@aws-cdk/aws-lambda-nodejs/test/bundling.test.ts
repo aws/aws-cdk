@@ -572,41 +572,17 @@ test('esbuild bundling with projectRoot and externals and dependencies', () => {
 });
 
 test('esbuild bundling with pre compilations', () => {
-  Bundling.bundle({
-    entry,
-    projectRoot,
-    depsLockFilePath,
-    runtime: Runtime.NODEJS_14_X,
-    tsconfig,
-    preCompilation: true,
-    architecture: Architecture.X86_64,
-  });
-
-  // Correctly bundles with esbuild
-  expect(Code.fromAsset).toHaveBeenCalledWith(path.dirname(depsLockFilePath), {
-    assetHashType: AssetHashType.OUTPUT,
-    bundling: expect.objectContaining({
-      command: [
-        'bash', '-c',
-        [
-          'tsc \"/asset-input/lib/handler.ts\" --rootDir ./ --outDir ./ &&',
-          'esbuild --bundle \"/asset-input/lib/handler.js\" --target=node14 --platform=node --outfile=\"/asset-output/index.js\"',
-          '--external:aws-sdk --tsconfig=/asset-input/lib/custom-tsconfig.ts',
-        ].join(' '),
-      ],
-    }),
-  });
-});
-
-test('esbuild bundling with pre compilations with undefined tsconfig ( Should find in root directory )', () => {
   const packageLock = path.join(__dirname, '..', 'package-lock.json');
+  const customTsconfig = path.join(__dirname, '..', 'tsconfig.json');
 
   Bundling.bundle({
     entry: __filename.replace('.js', '.ts'),
     projectRoot: path.dirname(packageLock),
     depsLockFilePath: packageLock,
     runtime: Runtime.NODEJS_14_X,
+    tsconfig: customTsconfig,
     preCompilation: true,
+    forceDockerBundling: true,
     architecture: Architecture.X86_64,
   });
 
@@ -617,9 +593,11 @@ test('esbuild bundling with pre compilations with undefined tsconfig ( Should fi
       command: [
         'bash', '-c',
         [
-          'tsc \"/asset-input/test/bundling.test.ts\" --rootDir ./ --outDir ./ &&',
-          'esbuild --bundle \"/asset-input/test/bundling.test.js\" --target=node14 --platform=node --outfile=\"/asset-output/index.js\"',
-          '--external:aws-sdk',
+          'tsc \"/asset-input/packages/@aws-cdk/aws-lambda-nodejs/test/bundling.test.js\"',
+          '--alwaysStrict --charset utf8 --declaration --experimentalDecorators --inlineSourceMap --inlineSources --lib es2019',
+          '--module CommonJS --newLine lf --noEmitOnError --noFallthroughCasesInSwitch --noImplicitAny --noImplicitReturns --noImplicitThis',
+          '--noUnusedLocals --noUnusedParameters --resolveJsonModule --strict --strictNullChecks --strictPropertyInitialization --target ES2019 --rootDir ./ --outDir ./ &&',
+          'esbuild --bundle \"/asset-input/lib/handler.js\" --target=node14 --platform=node --outfile=\"/asset-output/index.js\" --external:aws-sdk',
         ].join(' '),
       ],
     }),

@@ -145,7 +145,7 @@ export function extractDependencies(pkgPath: string, modules: string[]): { [key:
   return dependencies;
 }
 
-export function tryGetTsconfigCompilerOptions(tsconfigPath: string): string {
+export function getTsconfigCompilerOptions(tsconfigPath: string): string {
   const compilerOptions = extractTsConfig(tsconfigPath);
   const excludedCompilerOptions = [
     'composite',
@@ -192,21 +192,17 @@ export function tryGetTsconfigCompilerOptions(tsconfigPath: string): string {
 
 
 function extractTsConfig(tsconfigPath: string, previousCompilerOptions?: Record<string, any>): Record<string, any> | undefined {
-  try {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const { extends: extendedConfig, compilerOptions } = require(tsconfigPath);
-    const updatedCompilerOptions = {
-      ...(previousCompilerOptions ?? {}),
-      ...compilerOptions,
-    };
-    if (extendedConfig) {
-      return extractTsConfig(
-        path.resolve(tsconfigPath.replace(/[^\/]+$/, ''), extendedConfig),
-        updatedCompilerOptions,
-      );
-    }
-    return updatedCompilerOptions;
-  } catch (err) {
-    return;
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const { extends: extendedConfig, compilerOptions } = require(tsconfigPath);
+  const updatedCompilerOptions = {
+    ...(previousCompilerOptions ?? {}),
+    ...compilerOptions,
+  };
+  if (extendedConfig) {
+    return extractTsConfig(
+      path.resolve(tsconfigPath.replace(/[^\/]+$/, ''), extendedConfig),
+      updatedCompilerOptions,
+    );
   }
+  return updatedCompilerOptions;
 }

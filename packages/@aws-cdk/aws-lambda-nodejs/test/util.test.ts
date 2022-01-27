@@ -1,7 +1,7 @@
 import * as child_process from 'child_process';
 import * as fs from 'fs';
 import * as path from 'path';
-import { callsites, exec, extractDependencies, findUp, findUpMultiple, tryGetTsconfigCompilerOptions } from '../lib/util';
+import { callsites, exec, extractDependencies, findUp, findUpMultiple, getTsconfigCompilerOptions } from '../lib/util';
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -180,10 +180,10 @@ describe('extractDependencies', () => {
   });
 });
 
-describe('tryGetTsconfigCompilerOptions', () => {
-  test('with dependencies referenced in package.json', () => {
+describe('getTsconfigCompilerOptions', () => {
+  test('should extract compiler options and returns as string', () => {
     const tsconfig = path.join(__dirname, '..', 'tsconfig.json');
-    const compilerOptions = tryGetTsconfigCompilerOptions(tsconfig);
+    const compilerOptions = getTsconfigCompilerOptions(tsconfig);
     expect(compilerOptions).toEqual([
       '--alwaysStrict --charset utf8 --declaration --experimentalDecorators',
       '--inlineSourceMap --inlineSources --lib es2019 --module CommonJS',

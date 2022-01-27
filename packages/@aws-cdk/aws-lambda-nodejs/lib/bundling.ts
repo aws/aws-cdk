@@ -5,7 +5,7 @@ import * as cdk from '@aws-cdk/core';
 import { PackageInstallation } from './package-installation';
 import { PackageManager } from './package-manager';
 import { BundlingOptions, OutputFormat, SourceMapMode } from './types';
-import { exec, extractDependencies, findUp, tryGetTsconfigCompilerOptions } from './util';
+import { exec, extractDependencies, findUp, getTsconfigCompilerOptions } from './util';
 
 const ESBUILD_MAJOR_VERSION = '0';
 
@@ -164,7 +164,7 @@ export class Bundling implements cdk.BundlingOptions {
         }
         tsconfig = path.relative(this.projectRoot, findConfig);
       }
-      const compilerOptions = tryGetTsconfigCompilerOptions(pathJoin(options.inputDir, tsconfig));
+      const compilerOptions = getTsconfigCompilerOptions(pathJoin(options.inputDir, tsconfig));
       tscCommand = `${options.tscRunner} "${relativeEntryPath}" ${compilerOptions}`;
       relativeEntryPath = relativeEntryPath.replace(/\.ts(x?)$/, '.js$1');
     }
