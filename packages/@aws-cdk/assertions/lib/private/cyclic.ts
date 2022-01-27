@@ -25,8 +25,11 @@ export function checkTemplateForCyclicDependencies(template: Template): void {
       throw new Error(`Template is undeployable, these resources have a dependency cycle: ${cycle.join(' -> ')}`);
     }
 
-    for (const [name, _] of free) {
-      dependencies.delete(name);
+    for (const [logicalId, _] of free) {
+      for (const deps of dependencies.values()) {
+        deps.delete(logicalId);
+      }
+      dependencies.delete(logicalId);
     }
   }
 }
