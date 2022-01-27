@@ -19,7 +19,7 @@ export interface IDetectorModel extends IResource {
 /**
  * Information about the order in which events are evaluated and how actions are executed.
  */
-export enum EvaluationMethod {
+export enum EventEvaluation {
   /**
    * When setting to SERIAL, variables are updated and event conditions are evaluated in the order
    * that the events are defined.
@@ -48,7 +48,7 @@ export interface DetectorModelProps {
    *
    * @default none
    */
-  readonly detectorModelDescription?: string;
+  readonly description?: string;
 
   /**
    * Information about the order in which events are evaluated and how actions are executed.
@@ -58,9 +58,9 @@ export interface DetectorModelProps {
    * When setting to BATCH, variables within a state are updated and events within a state are
    * performed only after all event conditions are evaluated.
    *
-   * @default EvaluationMethod.BATCH
+   * @default EventEvaluation.BATCH
    */
-  readonly evaluationMethod?: EvaluationMethod;
+  readonly evaluationMethod?: EventEvaluation;
 
   /**
    * The value used to identify a detector instance. When a device or system sends input, a new
@@ -73,7 +73,7 @@ export interface DetectorModelProps {
    *
    * @default - none (single detector instance will be created and all inputs will be routed to it)
    */
-  readonly key?: string;
+  readonly detectorKey?: string;
 
   /**
    * The state that is entered at the creation of each detector.
@@ -118,9 +118,9 @@ export class DetectorModel extends Resource implements IDetectorModel {
 
     const resource = new CfnDetectorModel(this, 'Resource', {
       detectorModelName: this.physicalName,
-      detectorModelDescription: props.detectorModelDescription,
+      detectorModelDescription: props.description,
       evaluationMethod: props.evaluationMethod,
-      key: props.key,
+      key: props.detectorKey,
       detectorModelDefinition: {
         initialStateName: props.initialState.stateName,
         states: [props.initialState._toStateJson()],

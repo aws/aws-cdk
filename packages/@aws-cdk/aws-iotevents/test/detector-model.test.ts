@@ -76,10 +76,15 @@ test('can get detector model name', () => {
   });
 });
 
-test('can set physical name', () => {
+test.each([
+  ['physical name', { detectorModelName: 'test-detector-model' }, { DetectorModelName: 'test-detector-model' }],
+  ['description', { description: 'test-detector-model-description' }, { DetectorModelDescription: 'test-detector-model-description' }],
+  ['evaluationMethod', { evaluationMethod: iotevents.EventEvaluation.SERIAL }, { EvaluationMethod: 'SERIAL' }],
+  ['detectorKey', { detectorKey: 'payload.deviceId' }, { Key: 'payload.deviceId' }],
+])('can set %s', (_, partialProps, expected) => {
   // WHEN
   new iotevents.DetectorModel(stack, 'MyDetectorModel', {
-    detectorModelName: 'test-detector-model',
+    ...partialProps,
     initialState: new iotevents.State({
       stateName: 'test-state',
       onEnter: [{
@@ -90,68 +95,7 @@ test('can set physical name', () => {
   });
 
   // THEN
-  Template.fromStack(stack).hasResourceProperties('AWS::IoTEvents::DetectorModel', {
-    DetectorModelName: 'test-detector-model',
-  });
-});
-
-test('can set description', () => {
-  // WHEN
-  new iotevents.DetectorModel(stack, 'MyDetectorModel', {
-    detectorModelDescription: 'test-detector-model-description',
-    initialState: new iotevents.State({
-      stateName: 'test-state',
-      onEnter: [{
-        eventName: 'test-eventName',
-        condition: iotevents.Expression.fromString('test-eventCondition'),
-      }],
-    }),
-  });
-
-  // THEN
-  Template.fromStack(stack).hasResourceProperties('AWS::IoTEvents::DetectorModel', {
-    DetectorModelDescription: 'test-detector-model-description',
-  });
-});
-
-test('can set evaluationMethod', () => {
-  // WHEN
-  new iotevents.DetectorModel(stack, 'MyDetectorModel', {
-    detectorModelDescription: 'test-detector-model-description',
-    evaluationMethod: iotevents.EvaluationMethod.SERIAL,
-    initialState: new iotevents.State({
-      stateName: 'test-state',
-      onEnter: [{
-        eventName: 'test-eventName',
-        condition: iotevents.Expression.fromString('test-eventCondition'),
-      }],
-    }),
-  });
-
-  // THEN
-  Template.fromStack(stack).hasResourceProperties('AWS::IoTEvents::DetectorModel', {
-    EvaluationMethod: 'SERIAL',
-  });
-});
-
-test('can set key', () => {
-  // WHEN
-  new iotevents.DetectorModel(stack, 'MyDetectorModel', {
-    detectorModelDescription: 'test-detector-model-description',
-    key: 'payload.deviceId',
-    initialState: new iotevents.State({
-      stateName: 'test-state',
-      onEnter: [{
-        eventName: 'test-eventName',
-        condition: iotevents.Expression.fromString('test-eventCondition'),
-      }],
-    }),
-  });
-
-  // THEN
-  Template.fromStack(stack).hasResourceProperties('AWS::IoTEvents::DetectorModel', {
-    Key: 'payload.deviceId',
-  });
+  Template.fromStack(stack).hasResourceProperties('AWS::IoTEvents::DetectorModel', expected);
 });
 
 test('can set multiple events to State', () => {

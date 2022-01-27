@@ -27,9 +27,9 @@ class TestStack extends cdk.Stack {
 
     new iotevents.DetectorModel(this, 'MyDetectorModel', {
       detectorModelName: 'test-detector-model',
-      detectorModelDescription: 'test-detector-model-description',
-      evaluationMethod: iotevents.EvaluationMethod.SERIAL,
-      key: 'payload.deviceId',
+      description: 'test-detector-model-description',
+      evaluationMethod: iotevents.EventEvaluation.SERIAL,
+      detectorKey: 'payload.deviceId',
       initialState: onlineState,
     });
   }
