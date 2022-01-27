@@ -273,7 +273,7 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
 
     const project = new codebuild.PipelineProject(projectScope, this.constructId, {
       projectName: this.props.projectName,
-      description: `Pipeline step ${options.pipeline.pipeline.pipelineName}/${stage.stageName}/${actionName}`,
+      description: `Pipeline step ${stage.stageName}/${actionName}`,
       environment,
       vpc: projectOptions.vpc,
       subnetSelection: projectOptions.subnetSelection,
