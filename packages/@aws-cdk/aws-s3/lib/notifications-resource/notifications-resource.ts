@@ -13,6 +13,11 @@ interface NotificationsProps {
    * The bucket to manage notifications for.
    */
   bucket: IBucket;
+
+  /**
+   * The role to be used by the lambda handler
+   */
+  handlerRole?: iam.IRole;
 }
 
 /**
@@ -36,10 +41,12 @@ export class BucketNotifications extends Construct {
   private readonly topicNotifications = new Array<TopicConfiguration>();
   private resource?: cdk.CfnResource;
   private readonly bucket: IBucket;
+  private readonly handlerRole?: iam.IRole;
 
   constructor(scope: Construct, id: string, props: NotificationsProps) {
     super(scope, id);
     this.bucket = props.bucket;
+    this.handlerRole = props.handlerRole;
   }
 
   /**
@@ -102,12 +109,14 @@ export class BucketNotifications extends Construct {
    */
   private createResourceOnce() {
     if (!this.resource) {
-      const handler = NotificationsResourceHandler.singleton(this);
+      const handler = NotificationsResourceHandler.singleton(this, {
+        role: this.handlerRole,
+      });
 
       const managed = this.bucket instanceof Bucket;
 
       if (!managed) {
-        handler.role.addToPolicy(new iam.PolicyStatement({
+        handler.addToRolePolicy(new iam.PolicyStatement({
           actions: ['s3:GetBucketNotification'],
           resources: ['*'],
         }));

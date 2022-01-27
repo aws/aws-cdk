@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
@@ -95,7 +95,7 @@ describe('node group', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::EKS::Nodegroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EKS::Nodegroup', {
       AmiType: 'AL2_x86_64_GPU',
     });
 
@@ -114,7 +114,7 @@ describe('node group', () => {
     new eks.Nodegroup(stack, 'Nodegroup', { cluster });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::EKS::Nodegroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EKS::Nodegroup', {
       ClusterName: {
         Ref: 'Cluster9EE0221C',
       },
@@ -159,7 +159,7 @@ describe('node group', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::EKS::Nodegroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EKS::Nodegroup', {
       ClusterName: {
         Ref: 'Cluster9EE0221C',
       },
@@ -204,7 +204,7 @@ describe('node group', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::EKS::Nodegroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EKS::Nodegroup', {
       ClusterName: {
         Ref: 'Cluster9EE0221C',
       },
@@ -254,7 +254,7 @@ describe('node group', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::EKS::Nodegroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EKS::Nodegroup', {
       AmiType: 'AL2_x86_64',
     });
   });
@@ -281,7 +281,7 @@ describe('node group', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::EKS::Nodegroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EKS::Nodegroup', {
       AmiType: 'AL2_ARM_64',
     });
   });
@@ -309,7 +309,7 @@ describe('node group', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::EKS::Nodegroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EKS::Nodegroup', {
       AmiType: 'AL2_x86_64_GPU',
     });
   });
@@ -463,9 +463,9 @@ describe('node group', () => {
   });
 
   /**
-   * BOTTOEROCKET_X86_64 with defined instance types w/o launchTemplateSpec should deploy correctly.
+   * BOTTLEROCKET_X86_64 with defined instance types w/o launchTemplateSpec should deploy correctly.
    */
-  test('BOTTOEROCKET_X86_64 with defined instance types w/o launchTemplateSpec should deploy correctly', () => {
+  test('BOTTLEROCKET_X86_64 with defined instance types w/o launchTemplateSpec should deploy correctly', () => {
     // GIVEN
     const { stack, vpc } = testFixture();
     const cluster = new eks.Cluster(stack, 'Cluster', {
@@ -480,15 +480,15 @@ describe('node group', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::EKS::Nodegroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EKS::Nodegroup', {
       AmiType: 'BOTTLEROCKET_x86_64',
     });
   });
 
   /**
-     * BOTTOEROCKET_ARM_64 with defined instance types w/o launchTemplateSpec should deploy correctly.
+     * BOTTLEROCKET_ARM_64 with defined instance types w/o launchTemplateSpec should deploy correctly.
      */
-  test('BOTTOEROCKET_ARM_64 with defined instance types w/o launchTemplateSpec should deploy correctly', () => {
+  test('BOTTLEROCKET_ARM_64 with defined instance types w/o launchTemplateSpec should deploy correctly', () => {
     // GIVEN
     const { stack, vpc } = testFixture();
     const cluster = new eks.Cluster(stack, 'Cluster', {
@@ -503,7 +503,7 @@ describe('node group', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::EKS::Nodegroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EKS::Nodegroup', {
       AmiType: 'BOTTLEROCKET_ARM_64',
     });
   });
@@ -521,7 +521,7 @@ describe('node group', () => {
     new eks.Nodegroup(stack, 'Nodegroup', { cluster });
 
     // THEN
-    expect(stack).toHaveResource(eks.KubernetesManifest.RESOURCE_TYPE, {
+    Template.fromStack(stack).hasResourceProperties(eks.KubernetesManifest.RESOURCE_TYPE, {
       Manifest: {
         'Fn::Join': [
           '',
@@ -582,7 +582,7 @@ describe('node group', () => {
       },
     });
     // THEN
-    expect(stack).toHaveResource('AWS::EKS::Nodegroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EKS::Nodegroup', {
       RemoteAccess: {
         Ec2SshKey: 'foo',
         SourceSecurityGroups: [
@@ -611,7 +611,7 @@ describe('node group', () => {
     new eks.Nodegroup(stack, 'Nodegroup', { cluster, forceUpdate: false });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::EKS::Nodegroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EKS::Nodegroup', {
       ForceUpdateEnabled: false,
     });
 
@@ -633,7 +633,7 @@ describe('node group', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::EKS::Nodegroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EKS::Nodegroup', {
       InstanceTypes: [
         'm5.large',
       ],
@@ -658,7 +658,7 @@ describe('node group', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::EKS::Nodegroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EKS::Nodegroup', {
       InstanceTypes: [
         'm5.large',
       ],
@@ -687,7 +687,7 @@ describe('node group', () => {
       capacityType: eks.CapacityType.SPOT,
     });
     // THEN
-    expect(stack).toHaveResourceLike('AWS::EKS::Nodegroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EKS::Nodegroup', {
       InstanceTypes: [
         'm5.large',
         't3.large',
@@ -718,7 +718,7 @@ describe('node group', () => {
       capacityType: eks.CapacityType.ON_DEMAND,
     });
     // THEN
-    expect(stack).toHaveResourceLike('AWS::EKS::Nodegroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EKS::Nodegroup', {
       InstanceTypes: [
         'm5.large',
         't3.large',
@@ -765,7 +765,7 @@ describe('node group', () => {
       capacityType: eks.CapacityType.SPOT,
     });
     // THEN
-    expect(stack).toHaveResourceLike('AWS::EKS::Nodegroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EKS::Nodegroup', {
       CapacityType: 'SPOT',
     });
 
@@ -830,7 +830,7 @@ describe('node group', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::EKS::Nodegroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EKS::Nodegroup', {
       RemoteAccess: {
         Ec2SshKey: 'foo',
       },
@@ -856,7 +856,7 @@ describe('node group', () => {
     new cdk.CfnOutput(stack2, 'NodegroupName', { value: imported.nodegroupName });
 
     // THEN
-    expect(stack2).toMatchTemplate({
+    Template.fromStack(stack2).templateMatches({
       Outputs: {
         NodegroupName: {
           Value: {
@@ -880,7 +880,7 @@ describe('node group', () => {
     cluster.addNodegroupCapacity('ng');
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::EKS::Nodegroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EKS::Nodegroup', {
       ClusterName: {
         Ref: 'Cluster9EE0221C',
       },
@@ -929,7 +929,7 @@ describe('node group', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::EKS::Nodegroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EKS::Nodegroup', {
       ClusterName: {
         Ref: 'Cluster9EE0221C',
       },
@@ -984,7 +984,7 @@ describe('node group', () => {
       desiredSize: 4,
     });
     // THEN
-    expect(stack).toHaveResourceLike('AWS::EKS::Nodegroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EKS::Nodegroup', {
       ScalingConfig: {
         MinSize: 2,
         MaxSize: 6,
@@ -1010,7 +1010,7 @@ describe('node group', () => {
       desiredSize: cdk.Lazy.number({ produce: () => 20 }),
     });
     // THEN
-    expect(stack).toHaveResourceLike('AWS::EKS::Nodegroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EKS::Nodegroup', {
       ScalingConfig: {
         MinSize: 5,
         MaxSize: 1,
@@ -1050,7 +1050,7 @@ describe('node group', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::EKS::Nodegroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EKS::Nodegroup', {
       LaunchTemplate: {
         Id: {
           Ref: 'LaunchTemplate',

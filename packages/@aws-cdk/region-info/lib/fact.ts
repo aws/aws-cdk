@@ -9,7 +9,8 @@ export class Fact {
    *          may not be an exhaustive list of all available AWS regions.
    */
   public static get regions(): string[] {
-    return AWS_REGIONS;
+    // Return by copy to ensure no modifications can be made to the undelying constant.
+    return Array.from(AWS_REGIONS);
   }
 
   /**

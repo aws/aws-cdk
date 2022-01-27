@@ -93,7 +93,10 @@ describe('CodeStar Connections source Action', () => {
       'PolicyDocument': {
         'Statement': Match.arrayWith([
           Match.objectLike({
-            'Action': 's3:PutObjectAcl',
+            'Action': [
+              's3:PutObjectAcl',
+              's3:PutObjectVersionAcl',
+            ],
             'Effect': 'Allow',
             'Resource': {
               'Fn::Join': ['', [

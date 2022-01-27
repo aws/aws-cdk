@@ -14,10 +14,13 @@ test('creates CloudFormation Custom Resource', () => {
   new DnsValidatedCertificate(stack, 'Certificate', {
     domainName: 'test.example.com',
     hostedZone: exampleDotComZone,
+    subjectAlternativeNames: ['test2.example.com'],
+    cleanupRoute53Records: true,
   });
 
   Template.fromStack(stack).hasResourceProperties('AWS::CloudFormation::CustomResource', {
     DomainName: 'test.example.com',
+    SubjectAlternativeNames: ['test2.example.com'],
     ServiceToken: {
       'Fn::GetAtt': [
         'CertificateCertificateRequestorFunction5E845413',
@@ -27,6 +30,7 @@ test('creates CloudFormation Custom Resource', () => {
     HostedZoneId: {
       Ref: 'ExampleDotCom4D1B83AA',
     },
+    CleanupRecords: 'true',
   });
   Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
     Handler: 'index.certificateRequestHandler',

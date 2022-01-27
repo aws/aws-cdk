@@ -1,4 +1,4 @@
-import { App, CfnMapping, CfnOutput, CfnParameter, CfnResource, NestedStack, Stack } from '@aws-cdk/core';
+import { App, CfnCondition, CfnMapping, CfnOutput, CfnParameter, CfnResource, Fn, NestedStack, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { Capture, Match, Template } from '../lib';
 
@@ -937,6 +937,150 @@ describe('Template', () => {
 
       const inspect = Template.fromStack(stack);
       const result = inspect.findMappings('Fred', { Baz: { Bar: 'Qux' } });
+      expect(Object.keys(result).length).toEqual(0);
+    });
+  });
+
+  describe('hasCondition', () => {
+    test('matching', () => {
+      const stack = new Stack();
+      new CfnCondition(stack, 'Foo', {
+        expression: Fn.conditionEquals('Bar', 'Baz'),
+      });
+
+      const inspect = Template.fromStack(stack);
+      expect(() => inspect.hasCondition('*', { 'Fn::Equals': ['Bar', 'Baz'] })).not.toThrow();
+    });
+
+    test('not matching', (done) => {
+      const stack = new Stack();
+      new CfnCondition(stack, 'Foo', {
+        expression: Fn.conditionEquals('Bar', 'Baz'),
+      });
+
+      new CfnCondition(stack, 'Qux', {
+        expression: Fn.conditionNot(Fn.conditionEquals('Quux', 'Quuz')),
+      });
+
+      const inspect = Template.fromStack(stack);
+      expectToThrow(
+        () => inspect.hasCondition('*', {
+          'Fn::Equals': ['Baz', 'Bar'],
+        }),
+        [
+          /2 conditions/,
+          /Missing key/,
+        ],
+        done,
+      );
+      done();
+    });
+
+    test('matching specific outputName', () => {
+      const stack = new Stack();
+      new CfnCondition(stack, 'Foo', {
+        expression: Fn.conditionEquals('Bar', 'Baz'),
+      });
+
+      const inspect = Template.fromStack(stack);
+      expect(() => inspect.hasCondition('Foo', { 'Fn::Equals': ['Bar', 'Baz'] })).not.toThrow();
+    });
+
+    test('not matching specific outputName', (done) => {
+      const stack = new Stack();
+      new CfnCondition(stack, 'Foo', {
+        expression: Fn.conditionEquals('Baz', 'Bar'),
+      });
+
+      const inspect = Template.fromStack(stack);
+      expectToThrow(
+        () => inspect.hasCondition('Foo', {
+          'Fn::Equals': ['Bar', 'Baz'],
+        }),
+        [
+          /1 conditions/,
+          /Expected Baz but received Bar/,
+        ],
+        done,
+      );
+      done();
+    });
+  });
+
+  describe('findConditions', () => {
+    test('matching', () => {
+      const stack = new Stack();
+      new CfnCondition(stack, 'Foo', {
+        expression: Fn.conditionEquals('Bar', 'Baz'),
+      });
+
+      new CfnCondition(stack, 'Qux', {
+        expression: Fn.conditionNot(Fn.conditionEquals('Quux', 'Quuz')),
+      });
+
+      const inspect = Template.fromStack(stack);
+      const firstCondition = inspect.findConditions('Foo');
+      expect(firstCondition).toEqual({
+        Foo: {
+          'Fn::Equals': [
+            'Bar',
+            'Baz',
+          ],
+        },
+      });
+
+      const secondCondition = inspect.findConditions('Qux');
+      expect(secondCondition).toEqual({
+        Qux: {
+          'Fn::Not': [
+            {
+              'Fn::Equals': [
+                'Quux',
+                'Quuz',
+              ],
+            },
+          ],
+        },
+      });
+    });
+
+    test('not matching', () => {
+      const stack = new Stack();
+      new CfnCondition(stack, 'Foo', {
+        expression: Fn.conditionEquals('Bar', 'Baz'),
+      });
+
+      const inspect = Template.fromStack(stack);
+      const result = inspect.findMappings('Bar');
+      expect(Object.keys(result).length).toEqual(0);
+    });
+
+    test('matching with specific outputName', () => {
+      const stack = new Stack();
+      new CfnCondition(stack, 'Foo', {
+        expression: Fn.conditionEquals('Bar', 'Baz'),
+      });
+
+      const inspect = Template.fromStack(stack);
+      const result = inspect.findConditions('Foo', { 'Fn::Equals': ['Bar', 'Baz'] });
+      expect(result).toEqual({
+        Foo: {
+          'Fn::Equals': [
+            'Bar',
+            'Baz',
+          ],
+        },
+      });
+    });
+
+    test('not matching specific output name', () => {
+      const stack = new Stack();
+      new CfnCondition(stack, 'Foo', {
+        expression: Fn.conditionEquals('Bar', 'Baz'),
+      });
+
+      const inspect = Template.fromStack(stack);
+      const result = inspect.findConditions('Foo', { 'Fn::Equals': ['Bar', 'Qux'] });
       expect(Object.keys(result).length).toEqual(0);
     });
   });

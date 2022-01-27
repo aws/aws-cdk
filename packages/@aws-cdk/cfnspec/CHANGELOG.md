@@ -2,6 +2,53 @@
 ## Unapplied changes
 
 * AWS::ECS is at 51.0.0
+
+# CloudFormation Resource Specification v53.1.0
+
+## New Resource Types
+
+* AWS::Lightsail::Certificate
+* AWS::Lightsail::Container
+* AWS::Lightsail::Distribution
+
+## Attribute Changes
+
+* AWS::ServiceDiscovery::PrivateDnsNamespace HostedZoneId (__added__)
+* AWS::ServiceDiscovery::PublicDnsNamespace HostedZoneId (__added__)
+
+## Property Changes
+
+* AWS::DMS::Endpoint GcpMySQLSettings (__added__)
+* AWS::SageMaker::Device Device.PrimitiveType (__deleted__)
+* AWS::SageMaker::Pipeline ParallelismConfiguration (__added__)
+
+## Property Type Changes
+
+* AWS::ApplicationInsights::Application.HAClusterPrometheusExporter (__added__)
+* AWS::ApplicationInsights::Application.HANAPrometheusExporter (__added__)
+* AWS::DMS::Endpoint.GcpMySQLSettings (__added__)
+* AWS::SSM::MaintenanceWindowTask.CloudWatchOutputConfig (__added__)
+* AWS::ApplicationInsights::Application.ConfigurationDetails HAClusterPrometheusExporter (__added__)
+* AWS::ApplicationInsights::Application.ConfigurationDetails HANAPrometheusExporter (__added__)
+* AWS::DataBrew::Job.OutputLocation BucketOwner (__added__)
+* AWS::DataBrew::Job.S3Location BucketOwner (__added__)
+* AWS::RoboMaker::SimulationApplication.RobotSoftwareSuite Version.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::RoboMaker::SimulationApplication.SimulationSoftwareSuite Version.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::SSM::MaintenanceWindowTask.MaintenanceWindowRunCommandParameters CloudWatchOutputConfig (__added__)
+* AWS::SSM::MaintenanceWindowTask.MaintenanceWindowRunCommandParameters DocumentVersion (__added__)
+
+## Unapplied changes
+
+* AWS::ECS is at 51.0.0
+
+
+## Unapplied changes
+
+* AWS::ECS is at 51.0.0
 * AWS::SageMaker is at 51.0.0
 
 

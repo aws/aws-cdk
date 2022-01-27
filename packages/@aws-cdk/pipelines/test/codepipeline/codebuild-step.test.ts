@@ -43,6 +43,28 @@ test('additionalinputs creates the right commands', () => {
   });
 });
 
+test('CodeBuild projects have a description', () => {
+  new cdkp.CodePipeline(pipelineStack, 'Pipeline', {
+    synth: new cdkp.CodeBuildStep('Synth', {
+      commands: ['/bin/true'],
+      input: cdkp.CodePipelineSource.gitHub('test/test', 'main'),
+    }),
+  });
+
+  // THEN
+  Template.fromStack(pipelineStack).hasResourceProperties(
+    'AWS::CodeBuild::Project',
+    {
+      Description: {
+        'Fn::Join': [
+          '',
+          ['Pipeline step ', { Ref: 'Pipeline9850B417' }, '/Build/Synth'],
+        ],
+      },
+    },
+  );
+});
+
 test('long duration steps are supported', () => {
   // WHEN
   new cdkp.CodePipeline(pipelineStack, 'Pipeline', {

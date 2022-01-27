@@ -1,5 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
-import { ResourcePart } from '@aws-cdk/assert-internal';
+import { Template } from '@aws-cdk/assertions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import * as cdk from '@aws-cdk/core';
@@ -21,7 +20,7 @@ describe('database secret manager', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::RDS::DBCluster', {
+    Template.fromStack(stack).hasResource('AWS::RDS::DBCluster', {
       Properties: {
         Engine: 'aurora-postgresql',
         DBClusterParameterGroupName: 'default.aurora-postgresql10',
@@ -65,9 +64,7 @@ describe('database secret manager', () => {
       },
       DeletionPolicy: 'Snapshot',
       UpdateReplacePolicy: 'Snapshot',
-    }, ResourcePart.CompleteDefinition);
-
-
+    });
   });
 });
 

@@ -5,6 +5,7 @@ import * as certificatemanager from '@aws-cdk/aws-certificatemanager';
 import * as cognito from '@aws-cdk/aws-cognito';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
+import * as path from 'path';
 
 class Fixture extends Stack {
   constructor(scope: Construct, id: string) {

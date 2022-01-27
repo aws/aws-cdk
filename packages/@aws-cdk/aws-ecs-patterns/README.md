@@ -544,6 +544,26 @@ const queueProcessingFargateService = new ecsPatterns.QueueProcessingFargateServ
 });
 ```
 
+### Set a custom container-level Healthcheck for QueueProcessingFargateService
+
+```ts
+declare const vpc: ec2.Vpc;
+declare const securityGroup: ec2.SecurityGroup;
+const queueProcessingFargateService = new ecsPatterns.QueueProcessingFargateService(this, 'Service', {
+  vpc,
+  memoryLimitMiB: 512,
+  image: ecs.ContainerImage.fromRegistry('test'),
+  healthCheck: {
+    command: [ "CMD-SHELL", "curl -f http://localhost/ || exit 1" ],
+    // the properties below are optional
+    interval: Duration.minutes(30),
+    retries: 123,
+    startPeriod: Duration.minutes(30),
+    timeout: Duration.minutes(30),
+  },
+});
+```
+
 ### Set capacityProviderStrategies for QueueProcessingEc2Service
 
 ```ts

@@ -101,6 +101,57 @@ test('assign permissions for rotation schedule with a rotation Lambda', () => {
   });
 });
 
+test('grants correct permissions for secret imported by name', () => {
+  // GIVEN
+  const secret = secretsmanager.Secret.fromSecretNameV2(stack, 'Secret', 'mySecretName');
+  const rotationLambda = new lambda.Function(stack, 'Lambda', {
+    runtime: lambda.Runtime.NODEJS_10_X,
+    code: lambda.Code.fromInline('export.handler = event => event;'),
+    handler: 'index.handler',
+  });
+
+  // WHEN
+  new secretsmanager.RotationSchedule(stack, 'RotationSchedule', {
+    secret,
+    rotationLambda,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: Match.arrayWith([
+        {
+          Action: [
+            'secretsmanager:DescribeSecret',
+            'secretsmanager:GetSecretValue',
+            'secretsmanager:PutSecretValue',
+            'secretsmanager:UpdateSecretVersionStage',
+          ],
+          Effect: 'Allow',
+          Resource: {
+            'Fn::Join': ['', [
+              'arn:',
+              { Ref: 'AWS::Partition' },
+              ':secretsmanager:',
+              { Ref: 'AWS::Region' },
+              ':',
+              { Ref: 'AWS::AccountId' },
+              ':secret:mySecretName-??????',
+            ]],
+          },
+        },
+      ]),
+      Version: '2012-10-17',
+    },
+    PolicyName: 'LambdaServiceRoleDefaultPolicyDAE46E21',
+    Roles: [
+      {
+        Ref: 'LambdaServiceRoleA8ED4D3B',
+      },
+    ],
+  });
+});
+
 test('assign kms permissions for rotation schedule with a rotation Lambda', () => {
   // GIVEN
   const encryptionKey = new kms.Key(stack, 'Key');

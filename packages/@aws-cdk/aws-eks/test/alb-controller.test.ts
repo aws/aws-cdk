@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
+import { Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
-import '@aws-cdk/assert-internal/jest';
 import { Cluster, KubernetesVersion, AlbController, AlbControllerVersion, HelmChart } from '../lib';
 import { testFixture } from './util';
 
@@ -40,7 +40,7 @@ test('can configure a custom repository', () => {
     repository: 'custom',
   });
 
-  expect(stack).toHaveResource(HelmChart.RESOURCE_TYPE, {
+  Template.fromStack(stack).hasResourceProperties(HelmChart.RESOURCE_TYPE, {
     Values: {
       'Fn::Join': [
         '',

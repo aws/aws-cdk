@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as cdk from '@aws-cdk/core';
 import * as apigateway from '../lib';
 
@@ -14,7 +14,7 @@ describe('http integration', () => {
     api.root.addMethod('GET', integ);
 
     // THEN
-    expect(stack).toHaveResource('AWS::ApiGateway::Method', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
       Integration: {
         IntegrationHttpMethod: 'GET',
         Type: 'HTTP_PROXY',
@@ -40,7 +40,7 @@ describe('http integration', () => {
     api.root.addMethod('GET', integ);
 
     // THEN
-    expect(stack).toHaveResource('AWS::ApiGateway::Method', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
       Integration: {
         CacheNamespace: 'hey',
         IntegrationHttpMethod: 'POST',
