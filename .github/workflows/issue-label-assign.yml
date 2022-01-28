@@ -36,7 +36,7 @@ jobs:
           target: "issues"
           excluded-expressions: "[CDK CLI Version|TypeScript|Java|Python]"
           area-is-keyword: true
-          included-labels: "[needs-triage|guidance]"
+          included-labels: "[guidance]"
           default-area: ${{ env.OSDS_DEVS }}
           parameters: >
             [{"area":"guidance","keywords":["guidance"]}]
