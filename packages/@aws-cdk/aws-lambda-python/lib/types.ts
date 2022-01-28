@@ -31,6 +31,13 @@ export interface BundlingOptions {
   readonly buildArgs?: { [key: string]: string };
 
   /**
+   * Environment variables defined when bundling runs.
+   *
+   * @default - no environment variables are defined.
+   */
+  readonly environment?: { [key: string]: string; };
+
+  /**
    * Determines how asset hash is calculated. Assets will get rebuild and
    * uploaded only if their hash has changed.
    *
