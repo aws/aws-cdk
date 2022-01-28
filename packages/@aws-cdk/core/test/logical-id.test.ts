@@ -1,5 +1,7 @@
-import { CfnElement, CfnResource, Construct, Stack } from '../lib';
+import { Construct } from 'constructs';
+import { App, CfnElement, CfnResource, Stack } from '../lib';
 import { toCloudFormation } from './util';
+import * as cxapi from '@aws-cdk/cx-api';
 
 /**
  * These tests are executed once (for specific ID schemes)
@@ -234,7 +236,12 @@ describe('logical id', () => {
       }
     }
 
-    const stack = new MyStack();
+    const app = new App({
+      context: {
+        [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false,
+      },
+    });
+    const stack = new MyStack(app);
     new CfnResource(stack, 'A', { type: 'Type::Of::A' });
     const group = new Construct(stack, 'Group');
     new CfnResource(group, 'B', { type: 'Type::Of::B' });
