@@ -103,7 +103,7 @@ export class CdkToolkit {
     } else {
       // Compare N stacks against deployed templates
       for (const stack of stacks.stackArtifacts) {
-        stream.write(format('Stack %s\n', chalk.bold(stack.displayName)));
+        stream.write(format('Stack %s\n', chalk.bold(stack.hierarchicalId)));
         const currentTemplate = await this.props.cloudFormation.readCurrentTemplate(stack);
         diffs += options.securityOnly
           ? numberFromBool(printSecurityDiff(currentTemplate, stack, RequireApproval.Broadening))
@@ -150,17 +150,17 @@ export class CdkToolkit {
     const outputsFile = options.outputsFile;
 
     for (const stack of stacks.stackArtifacts) {
-      if (stacks.stackCount !== 1) { highlight(stack.displayName); }
+      if (stacks.stackCount !== 1) { highlight(stack.hierarchicalId); }
       if (!stack.environment) {
         // eslint-disable-next-line max-len
-        throw new Error(`Stack ${stack.displayName} does not define an environment, and AWS credentials could not be obtained from standard locations or no region was configured.`);
+        throw new Error(`Stack ${stack.hierarchicalId} does not define an environment, and AWS credentials could not be obtained from standard locations or no region was configured.`);
       }
 
       if (Object.keys(stack.template.Resources || {}).length === 0) { // The generated stack has no resources
         if (!await this.props.cloudFormation.stackExists({ stack })) {
-          warning('%s: stack has no resources, skipping deployment.', chalk.bold(stack.displayName));
+          warning('%s: stack has no resources, skipping deployment.', chalk.bold(stack.hierarchicalId));
         } else {
-          warning('%s: stack has no resources, deleting existing stack.', chalk.bold(stack.displayName));
+          warning('%s: stack has no resources, deleting existing stack.', chalk.bold(stack.hierarchicalId));
           await this.destroy({
             selector: { patterns: [stack.stackName] },
             exclusively: true,
@@ -188,7 +188,7 @@ export class CdkToolkit {
         }
       }
 
-      print('%s: deploying...', chalk.bold(stack.displayName));
+      print('%s: deploying...', chalk.bold(stack.hierarchicalId));
       const startDeployTime = new Date().getTime();
 
       let tags = options.tags;
@@ -222,7 +222,7 @@ export class CdkToolkit {
           ? ' ✅  %s (no changes)'
           : ' ✅  %s';
 
-        success('\n' + message, stack.displayName);
+        success('\n' + message, stack.hierarchicalId);
         elapsedDeployTime = new Date().getTime() - startDeployTime;
         print('\n✨  Deployment time: %ss\n', formatTime(elapsedDeployTime));
 
@@ -241,7 +241,7 @@ export class CdkToolkit {
 
         data(result.stackArn);
       } catch (e) {
-        error('\n ❌  %s failed: %s', chalk.bold(stack.displayName), e);
+        error('\n ❌  %s failed: %s', chalk.bold(stack.hierarchicalId), e);
         throw e;
       } finally {
         if (options.cloudWatchLogMonitor) {
@@ -369,16 +369,16 @@ export class CdkToolkit {
 
     const action = options.fromDeploy ? 'deploy' : 'destroy';
     for (const stack of stacks.stackArtifacts) {
-      success('%s: destroying...', chalk.blue(stack.displayName));
+      success('%s: destroying...', chalk.blue(stack.hierarchicalId));
       try {
         await this.props.cloudFormation.destroyStack({
           stack,
           deployName: stack.stackName,
           roleArn: options.roleArn,
         });
-        success(`\n ✅  %s: ${action}ed`, chalk.blue(stack.displayName));
+        success(`\n ✅  %s: ${action}ed`, chalk.blue(stack.hierarchicalId));
       } catch (e) {
-        error(`\n ❌  %s: ${action} failed`, chalk.blue(stack.displayName), e);
+        error(`\n ❌  %s: ${action} failed`, chalk.blue(stack.hierarchicalId), e);
         throw e;
       }
     }
