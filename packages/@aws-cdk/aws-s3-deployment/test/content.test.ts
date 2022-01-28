@@ -22,6 +22,16 @@ test('string with a "Ref" token', () => {
   });
 });
 
+test('string is a single "Ref" token', () => {
+  const stack = new Stack();
+  const bucket = new s3.Bucket(stack, 'Bucket');
+
+  expect(renderContent(stack, bucket.bucketName)).toStrictEqual({
+    text: '<<marker:0xbaba:0>>',
+    markers: { '<<marker:0xbaba:0>>': { Ref: 'Bucket83908E77' } },
+  });
+});
+
 test('string with a "Fn::GetAtt" token', () => {
   const stack = new Stack();
   const bucket = new s3.Bucket(stack, 'Bucket');

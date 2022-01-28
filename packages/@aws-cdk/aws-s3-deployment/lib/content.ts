@@ -15,38 +15,43 @@ export function renderContent(scope: Construct, content: string): Content {
     return { text: obj, markers: {} };
   }
 
-  if (!obj['Fn::Join']) {
-    throw new Error('Unexpected resolved value. Expecting Fn::Join');
-  }
-
-  const fnJoin: FnJoin = obj['Fn::Join'];
-  if (fnJoin[0] !== '') {
-    throw new Error('Unexpected join, expecting separator to be ""');
-  }
-
   const markers: Record<string, FnJoinPart> = {};
   const result = new Array<string>();
   let markerIndex = 0;
 
-  for (const part of fnJoin[1]) {
-    if (typeof(part) === 'string') {
-      result.push(part);
-      continue;
+  if (obj['Fn::Join']) {
+    const fnJoin: FnJoin = obj['Fn::Join'];
+    if (fnJoin[0] !== '') {
+      throw new Error('Unexpected join, expecting separator to be ""');
     }
 
-    if (typeof(part) === 'object') {
-      const keys: string[] = Object.keys(part);
-      if (keys.length !== 1) {
-        throw new Error('Invalid object');
+    for (const part of fnJoin[1]) {
+      if (typeof (part) === 'string') {
+        result.push(part);
+        continue;
       }
 
-      if ('Ref' in part || 'Fn::GetAtt' in part) {
-        const marker = `<<marker:0xbaba:${markerIndex++}>>`;
-        result.push(marker);
-        markers[marker] = part;
-      } else {
-        throw new Error('Invalid object');
+      if (typeof (part) === 'object') {
+        const keys: string[] = Object.keys(part);
+        if (keys.length !== 1) {
+          throw new Error('Invalid object');
+        }
+        createMarker(part);
       }
+    }
+  } else if (obj.Ref) {
+    createMarker(obj);
+  } else {
+    throw new Error('Unexpected resolved value. Expecting Fn::Join or Ref');
+  }
+
+  function createMarker(part: Ref | GetAtt) {
+    if ('Ref' in part || 'Fn::GetAtt' in part) {
+      const marker = `<<marker:0xbaba:${markerIndex++}>>`;
+      result.push(marker);
+      markers[marker] = part;
+    } else {
+      throw new Error('Invalid object');
     }
   }
 
