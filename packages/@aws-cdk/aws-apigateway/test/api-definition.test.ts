@@ -1,6 +1,5 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as path from 'path';
-import { ResourcePart } from '@aws-cdk/assert-internal';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
@@ -84,12 +83,12 @@ describe('api definition', () => {
         apiDefinition: assetApiDefinition,
       });
 
-      expect(stack).toHaveResource('AWS::ApiGateway::RestApi', {
+      Template.fromStack(stack).hasResource('AWS::ApiGateway::RestApi', {
         Metadata: {
           'aws:asset:path': 'asset.68497ac876de4e963fc8f7b5f1b28844c18ecc95e3f7c6e9e0bf250e03c037fb.yaml',
           'aws:asset:property': 'BodyS3Location',
         },
-      }, ResourcePart.CompleteDefinition);
+      });
 
     });
   });

@@ -226,6 +226,7 @@ export class Canary extends cdk.Resource {
 
     this.artifactsBucket = props.artifactsBucketLocation?.bucket ?? new s3.Bucket(this, 'ArtifactsBucket', {
       encryption: s3.BucketEncryption.KMS_MANAGED,
+      enforceSSL: true,
     });
 
     this.role = props.role ?? this.createDefaultRole(props.artifactsBucketLocation?.prefix);
@@ -299,8 +300,12 @@ export class Canary extends cdk.Resource {
           actions: ['s3:ListAllMyBuckets'],
         }),
         new iam.PolicyStatement({
+          resources: [this.artifactsBucket.bucketArn],
+          actions: ['s3:GetBucketLocation'],
+        }),
+        new iam.PolicyStatement({
           resources: [this.artifactsBucket.arnForObjects(`${prefix ? prefix+'/*' : '*'}`)],
-          actions: ['s3:PutObject', 's3:GetBucketLocation'],
+          actions: ['s3:PutObject'],
         }),
         new iam.PolicyStatement({
           resources: ['*'],

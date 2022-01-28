@@ -263,6 +263,38 @@ export interface BundlingOptions {
    * @default - asset hash is calculated based on the bundled output
    */
   readonly assetHash?: string;
+
+  /**
+   * Output format for the generated JavaScript files
+   *
+   * @default OutputFormat.CJS
+   */
+  readonly format?: OutputFormat;
+
+  /**
+   * How to determine the entry point for modules.
+   * Try ['module', 'main'] to default to ES module versions.
+   *
+   * @default ['main', 'module']
+   */
+  readonly mainFields?: string[];
+}
+
+/**
+ * Output format for the generated JavaScript files
+ */
+export enum OutputFormat {
+  /**
+   * CommonJS
+   */
+  CJS = 'cjs',
+
+  /**
+   * ECMAScript module
+   *
+   * Requires a running environment that supports `import` and `export` syntax.
+   */
+  ESM = 'esm'
 }
 
 /**
