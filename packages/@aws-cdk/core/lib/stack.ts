@@ -3,6 +3,7 @@ import * as path from 'path';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import { IConstruct, Construct, Node } from 'constructs';
+import * as minimatch from 'minimatch';
 import { Annotations } from './annotations';
 import { App } from './app';
 import { Arn, ArnComponents, ArnFormat } from './arn';
@@ -1152,6 +1153,19 @@ export class Stack extends CoreConstruct implements ITaggable {
     }
 
     return makeStackName(ids);
+  }
+
+  /**
+   * Indicates whether the stack requires bundling or not
+   */
+  public get bundlingRequired() {
+    const bundlingStacks: string[] = this.node.tryGetContext(cxapi.BUNDLING_STACKS) ?? ['*'];
+
+    // bundlingStacks is of the form `Stage/Stack`, convert it to `Stage-Stack` before comparing to stack name
+    return bundlingStacks.some(pattern => minimatch(
+      this.stackName,
+      pattern.replace('/', '-'),
+    ));
   }
 }
 

@@ -1191,6 +1191,38 @@ describe('stack', () => {
     expect(new Stack(app, 'Stack', { analyticsReporting: true })._versionReportingEnabled).toBeDefined();
 
   });
+
+  test('requires bundling when wildcard is specified in BUNDLING_STACKS', () => {
+    const app = new App();
+    const stack = new Stack(app, 'Stack');
+    stack.node.setContext(cxapi.BUNDLING_STACKS, ['*']);
+    expect(stack.bundlingRequired).toBe(true);
+
+  });
+
+  test('requires bundling when stackName has an exact match in BUNDLING_STACKS', () => {
+    const app = new App();
+    const stack = new Stack(app, 'Stack');
+    stack.node.setContext(cxapi.BUNDLING_STACKS, ['Stack']);
+    expect(stack.bundlingRequired).toBe(true);
+
+  });
+
+  test('does not require bundling when no item from BUILDING_STACKS matches stackName', () => {
+    const app = new App();
+    const stack = new Stack(app, 'Stack');
+    stack.node.setContext(cxapi.BUNDLING_STACKS, ['Stac']);
+    expect(stack.bundlingRequired).toBe(false);
+
+  });
+
+  test('does not require bundling when BUNDLING_STACKS is empty', () => {
+    const app = new App();
+    const stack = new Stack(app, 'Stack');
+    stack.node.setContext(cxapi.BUNDLING_STACKS, []);
+    expect(stack.bundlingRequired).toBe(false);
+
+  });
 });
 
 describe('regionalFact', () => {
