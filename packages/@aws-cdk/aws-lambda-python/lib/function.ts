@@ -1,6 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { Function, FunctionOptions, Runtime, RuntimeFamily } from '@aws-cdk/aws-lambda';
+import { Stack } from '@aws-cdk/core';
 import { Bundling } from './bundling';
 import { BundlingOptions } from './types';
 
@@ -79,6 +80,7 @@ export class PythonFunction extends Function {
       code: Bundling.bundle({
         entry,
         runtime,
+        skip: !Stack.of(scope).bundlingRequired,
         ...props.bundling,
       }),
       handler: resolvedHandler,

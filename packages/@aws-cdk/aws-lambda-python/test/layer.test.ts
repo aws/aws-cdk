@@ -63,3 +63,33 @@ test('Allows use of custom bundling image', () => {
     image,
   }));
 });
+
+test('Skip bundling when stack does not require it', () => {
+  const spy = jest.spyOn(stack, 'bundlingRequired', 'get').mockReturnValue(false);
+  const entry = path.join(__dirname, 'lambda-handler-project');
+
+  new PythonLayerVersion(stack, 'layer', {
+    entry,
+  });
+
+  expect(Bundling.bundle).toHaveBeenCalledWith(expect.objectContaining({
+    skip: true,
+  }));
+
+  spy.mockRestore();
+});
+
+test('Do not skip bundling when stack requires it', () => {
+  const spy = jest.spyOn(stack, 'bundlingRequired', 'get').mockReturnValue(true);
+  const entry = path.join(__dirname, 'lambda-handler-project');
+
+  new PythonLayerVersion(stack, 'layer', {
+    entry,
+  });
+
+  expect(Bundling.bundle).toHaveBeenCalledWith(expect.objectContaining({
+    skip: false,
+  }));
+
+  spy.mockRestore();
+});

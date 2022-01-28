@@ -34,6 +34,13 @@ export interface BundlingProps extends BundlingOptions {
    * @default Architecture.X86_64
    */
   readonly architecture?: Architecture;
+
+  /**
+   * Whether or not the bundling process should be skipped
+   *
+   * @default - Does not skip bundling
+   */
+  readonly skip?: boolean;
 }
 
 /**
@@ -45,7 +52,7 @@ export class Bundling implements CdkBundlingOptions {
       assetHash: options.assetHash,
       assetHashType: options.assetHashType,
       exclude: DEPENDENCY_EXCLUDES,
-      bundling: new Bundling(options),
+      bundling: options.skip ? undefined : new Bundling(options),
     });
   }
 

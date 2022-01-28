@@ -229,3 +229,25 @@ test('Bundling with custom build args', () => {
     }),
   }));
 });
+
+test('Do not build docker image when skipping bundling', () => {
+  const entry = path.join(__dirname, 'lambda-handler');
+  Bundling.bundle({
+    entry: entry,
+    runtime: Runtime.PYTHON_3_7,
+    skip: true,
+  });
+
+  expect(DockerImage.fromBuild).not.toHaveBeenCalled();
+});
+
+test('Build docker image when bundling is not skipped', () => {
+  const entry = path.join(__dirname, 'lambda-handler');
+  Bundling.bundle({
+    entry: entry,
+    runtime: Runtime.PYTHON_3_7,
+    skip: false,
+  });
+
+  expect(DockerImage.fromBuild).toHaveBeenCalled();
+});

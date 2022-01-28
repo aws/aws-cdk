@@ -1,5 +1,6 @@
 import * as path from 'path';
 import * as lambda from '@aws-cdk/aws-lambda';
+import { Stack } from '@aws-cdk/core';
 import { Bundling } from './bundling';
 import { BundlingOptions } from './types';
 
@@ -67,6 +68,7 @@ export class PythonLayerVersion extends lambda.LayerVersion {
         runtime,
         architecture,
         outputPathSuffix: 'python',
+        skip: !Stack.of(scope).bundlingRequired,
         ...props.bundling,
       }),
     });
