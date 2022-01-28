@@ -1821,6 +1821,8 @@ describe('container definition', () => {
       const linuxParameters = new ecs.LinuxParameters(stack, 'LinuxParameters', {
         initProcessEnabled: true,
         sharedMemorySize: 1024,
+        maxSwap: 5e3,
+        swappiness: 90,
       });
 
       linuxParameters.addCapabilities(ecs.Capability.ALL);
@@ -1859,6 +1861,8 @@ describe('container definition', () => {
       const linuxParameters = new ecs.LinuxParameters(stack, 'LinuxParameters', {
         initProcessEnabled: true,
         sharedMemorySize: 1024,
+        maxSwap: 5e3,
+        swappiness: 90,
       });
 
       linuxParameters.addCapabilities(ecs.Capability.ALL);
@@ -1899,6 +1903,8 @@ describe('container definition', () => {
       const linuxParameters = new ecs.LinuxParameters(stack, 'LinuxParameters', {
         initProcessEnabled: true,
         sharedMemorySize: 1024,
+        maxSwap: 5e3,
+        swappiness: 90,
       });
 
       // WHEN
@@ -1939,6 +1945,8 @@ describe('container definition', () => {
       const linuxParameters = new ecs.LinuxParameters(stack, 'LinuxParameters', {
         initProcessEnabled: true,
         sharedMemorySize: 1024,
+        maxSwap: 5e3,
+        swappiness: 90,
       });
 
       // WHEN
