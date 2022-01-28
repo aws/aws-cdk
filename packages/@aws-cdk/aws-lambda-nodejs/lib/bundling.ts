@@ -151,20 +151,15 @@ export class Bundling implements cdk.BundlingOptions {
 
   private createBundlingCommand(options: BundlingCommandOptions): string {
     const pathJoin = osPathJoin(options.osPlatform);
-    let tscCommand: string = '';
     let relativeEntryPath = pathJoin(options.inputDir, this.relativeEntryPath);
+    let tscCommand = '';
 
     if (this.props.preCompilation) {
-
-      let tsconfig = this.relativeTsconfigPath;
+      const tsconfig = this.props.tsconfig ?? findUp('tsconfig.json', path.dirname(this.props.entry));
       if (!tsconfig) {
-        const findConfig = findUp('tsconfig.json', path.dirname(this.props.entry));
-        if (!findConfig) {
-          throw new Error('Cannot find a tsconfig.json, please specify the prop: tsconfig');
-        }
-        tsconfig = path.relative(this.projectRoot, findConfig);
+        throw new Error('Cannot find a `tsconfig.json` but `preCompilation` is set to `true`, please specify it via `tsconfig`');
       }
-      const compilerOptions = getTsconfigCompilerOptions(pathJoin(options.inputDir, tsconfig));
+      const compilerOptions = getTsconfigCompilerOptions(tsconfig);
       tscCommand = `${options.tscRunner} "${relativeEntryPath}" ${compilerOptions}`;
       relativeEntryPath = relativeEntryPath.replace(/\.ts(x?)$/, '.js$1');
     }

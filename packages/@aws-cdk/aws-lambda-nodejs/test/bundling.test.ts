@@ -573,18 +573,18 @@ test('esbuild bundling with projectRoot and externals and dependencies', () => {
 
 test('esbuild bundling with pre compilations', () => {
   const packageLock = path.join(__dirname, '..', 'package-lock.json');
-  const customTsconfig = path.join(__dirname, '..', 'tsconfig.json');
 
   Bundling.bundle({
     entry: __filename.replace('.js', '.ts'),
     projectRoot: path.dirname(packageLock),
     depsLockFilePath: packageLock,
     runtime: Runtime.NODEJS_14_X,
-    tsconfig: customTsconfig,
     preCompilation: true,
     forceDockerBundling: true,
     architecture: Architecture.X86_64,
   });
+
+  const compilerOptions = util.getTsconfigCompilerOptions(path.join(__dirname, '..', 'tsconfig.json'));
 
   // Correctly bundles with esbuild
   expect(Code.fromAsset).toHaveBeenCalledWith(path.dirname(packageLock), {
@@ -593,18 +593,15 @@ test('esbuild bundling with pre compilations', () => {
       command: [
         'bash', '-c',
         [
-          'tsc \"/asset-input/packages/@aws-cdk/aws-lambda-nodejs/test/bundling.test.js\"',
-          '--alwaysStrict --charset utf8 --declaration --experimentalDecorators --inlineSourceMap --inlineSources --lib es2019',
-          '--module CommonJS --newLine lf --noEmitOnError --noFallthroughCasesInSwitch --noImplicitAny --noImplicitReturns --noImplicitThis',
-          '--noUnusedLocals --noUnusedParameters --resolveJsonModule --strict --strictNullChecks --strictPropertyInitialization --target ES2019 --rootDir ./ --outDir ./ &&',
-          'esbuild --bundle \"/asset-input/lib/handler.js\" --target=node14 --platform=node --outfile=\"/asset-output/index.js\" --external:aws-sdk',
+          `tsc \"/asset-input/test/bundling.test.ts\" ${compilerOptions} &&`,
+          'esbuild --bundle \"/asset-input/test/bundling.test.js\" --target=node14 --platform=node --outfile=\"/asset-output/index.js\" --external:aws-sdk',
         ].join(' '),
       ],
     }),
   });
 });
 
-test('esbuild bundling with pre compilations and undefined tsconfig ( Should throw) ', () => {
+test('throws with pre compilation and not found tsconfig', () => {
   expect(() => {
     Bundling.bundle({
       entry,
@@ -615,7 +612,7 @@ test('esbuild bundling with pre compilations and undefined tsconfig ( Should thr
       preCompilation: true,
       architecture: Architecture.X86_64,
     });
-  }).toThrow('Cannot find a tsconfig.json, please specify the prop: tsconfig');
+  }).toThrow('Cannot find a `tsconfig.json` but `preCompilation` is set to `true`, please specify it via `tsconfig`');
 
 });
 
