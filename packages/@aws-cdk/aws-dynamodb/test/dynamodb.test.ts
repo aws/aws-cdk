@@ -17,6 +17,7 @@ import {
   ProjectionType,
   StreamViewType,
   Table,
+  TableClass,
   TableEncryption,
   Operation,
   CfnTable,
@@ -334,6 +335,7 @@ testDeprecated('when specifying every property', () => {
     sortKey: TABLE_SORT_KEY,
     contributorInsightsEnabled: true,
     kinesisStream: stream,
+    tableClass: TableClass.STANDARD,
   });
   Tags.of(table).add('Environment', 'Production');
 
@@ -717,6 +719,70 @@ test('if an encryption key is included, encrypt/decrypt permissions are added to
       }]),
     },
   });
+});
+
+test('when specifying STANDARD_INFREQUENT_ACCESS table class', () => {
+  const stack = new Stack();
+  new Table(stack, CONSTRUCT_NAME, {
+    tableName: TABLE_NAME,
+    partitionKey: TABLE_PARTITION_KEY,
+    tableClass: TableClass.STANDARD_INFREQUENT_ACCESS,
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::Table',
+    {
+      KeySchema: [
+        { AttributeName: 'hashKey', KeyType: 'HASH' },
+      ],
+      TableClass: 'STANDARD_INFREQUENT_ACCESS',
+      AttributeDefinitions: [
+        { AttributeName: 'hashKey', AttributeType: 'S' },
+      ],
+      TableName: 'MyTable',
+    },
+  );
+});
+
+test('when specifying STANDARD table class', () => {
+  const stack = new Stack();
+  new Table(stack, CONSTRUCT_NAME, {
+    tableName: TABLE_NAME,
+    partitionKey: TABLE_PARTITION_KEY,
+    tableClass: TableClass.STANDARD,
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::Table',
+    {
+      KeySchema: [
+        { AttributeName: 'hashKey', KeyType: 'HASH' },
+      ],
+      TableClass: 'STANDARD',
+      AttributeDefinitions: [
+        { AttributeName: 'hashKey', AttributeType: 'S' },
+      ],
+      TableName: 'MyTable',
+    },
+  );
+});
+
+test('when specifying no table class', () => {
+  const stack = new Stack();
+  new Table(stack, CONSTRUCT_NAME, {
+    tableName: TABLE_NAME,
+    partitionKey: TABLE_PARTITION_KEY,
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::Table',
+    {
+      KeySchema: [
+        { AttributeName: 'hashKey', KeyType: 'HASH' },
+      ],
+      AttributeDefinitions: [
+        { AttributeName: 'hashKey', AttributeType: 'S' },
+      ],
+      TableName: 'MyTable',
+    },
+  );
 });
 
 test('when specifying PAY_PER_REQUEST billing mode', () => {
