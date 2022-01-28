@@ -41,6 +41,11 @@ class EksClusterStack extends TestStack {
       tags: {
         foo: 'bar',
       },
+      clusterLogging: [
+        eks.ClusterLoggingTypes.API,
+        eks.ClusterLoggingTypes.AUTHENTICATOR,
+        eks.ClusterLoggingTypes.SCHEDULER,
+      ],
     });
 
     this.assertFargateProfile();
