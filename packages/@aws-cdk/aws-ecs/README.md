@@ -500,7 +500,7 @@ taskDefinition.addContainer('container', {
     sharedMemorySize: 1024,
     maxSwap: 5e3,
     swappiness: 90,
-  });
+  }),
 });
 ```
 
