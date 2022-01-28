@@ -1,6 +1,6 @@
 import { IBucket, Location } from '@aws-cdk/aws-s3';
 import { Asset, AssetOptions } from '@aws-cdk/aws-s3-assets';
-import { Construct } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 
 /**
  * Constructs for types of environment files

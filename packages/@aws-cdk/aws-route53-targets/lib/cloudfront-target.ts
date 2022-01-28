@@ -1,6 +1,7 @@
 import * as cloudfront from '@aws-cdk/aws-cloudfront';
 import * as route53 from '@aws-cdk/aws-route53';
-import { Aws, CfnMapping, IConstruct, Stack } from '@aws-cdk/core';
+import { Aws, CfnMapping, Stack } from '@aws-cdk/core';
+import { IConstruct } from 'constructs';
 
 /**
  * Use a CloudFront Distribution as an alias record target
