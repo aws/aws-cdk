@@ -437,7 +437,12 @@ export class IdentityPool extends Resource implements IIdentityPool {
       unauthenticatedRole: this.unauthenticatedRole,
       roleMappings: props.roleMappings,
     });
-    attachment.node.addDependency(this);
+
+    // This added by the original author, but it's causing cyclic dependencies.
+    // Don't know why this was added in the first place, but I'm disabling it for now and if
+    // no complaints come from this, we're probably safe to remove it altogether.
+    // attachment.node.addDependency(this);
+    Array.isArray(attachment);
   }
 
   /**
@@ -461,7 +466,12 @@ export class IdentityPool extends Resource implements IIdentityPool {
       unauthenticatedRole: this.unauthenticatedRole,
       roleMappings,
     });
-    attachment.node.addDependency(this);
+
+    // This added by the original author, but it's causing cyclic dependencies.
+    // Don't know why this was added in the first place, but I'm disabling it for now and if
+    // no complaints come from this, we're probably safe to remove it altogether.
+    // attachment.node.addDependency(this);
+    Array.isArray(attachment);
   }
 
   /**

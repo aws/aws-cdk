@@ -30,6 +30,13 @@
         "distName": "aws-cdk.aws-lookoutequipment",
         "module": "aws_cdk.aws_lookoutequipment"
       }
+    },
+    "metadata": {
+      "jsii": {
+        "rosetta": {
+          "strict": true
+        }
+      }
     }
   },
   "repository": {

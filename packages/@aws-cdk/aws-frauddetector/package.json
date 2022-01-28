@@ -30,6 +30,13 @@
         "distName": "aws-cdk.aws-frauddetector",
         "module": "aws_cdk.aws_frauddetector"
       }
+    },
+    "metadata": {
+      "jsii": {
+        "rosetta": {
+          "strict": true
+        }
+      }
     }
   },
   "repository": {

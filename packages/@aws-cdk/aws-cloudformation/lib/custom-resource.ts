@@ -99,21 +99,35 @@ export interface CustomResourceProps {
    * [resource provider framework]: https://docs.aws.amazon.com/cdk/api/latest/docs/custom-resources-readme.html
    *
    * ```ts
-   * // use the provider framework from aws-cdk/custom-resources:
-   * provider: new custom_resources.Provider({
+   * import * as custom_resources from '@aws-cdk/custom-resources';
+   * import * as lambda from '@aws-cdk/aws-lambda';
+   * import { Stack } from '@aws-cdk/core';
+   * declare const myOnEventLambda: lambda.Function;
+   * declare const myIsCompleteLambda: lambda.Function;
+   * const stack = new Stack();
+   *
+   * const provider = new custom_resources.Provider(stack, 'myProvider', {
    *   onEventHandler: myOnEventLambda,
    *   isCompleteHandler: myIsCompleteLambda, // optional
    * });
    * ```
    *
    * ```ts
+   * import * as cloudformation from '@aws-cdk/aws-cloudformation';
+   * import * as lambda from '@aws-cdk/aws-lambda';
+   * declare const myFunction: lambda.Function;
+   *
    * // invoke an AWS Lambda function when a lifecycle event occurs:
-   * provider: CustomResourceProvider.fromLambda(myFunction)
+   * const provider = cloudformation.CustomResourceProvider.fromLambda(myFunction);
    * ```
    *
    * ```ts
+   * import * as cloudformation from '@aws-cdk/aws-cloudformation';
+   * import * as sns from '@aws-cdk/aws-sns';
+   * declare const myTopic: sns.Topic;
+   *
    * // publish lifecycle events to an SNS topic:
-   * provider: CustomResourceProvider.fromTopic(myTopic)
+   * const provider = cloudformation.CustomResourceProvider.fromTopic(myTopic);
    * ```
    */
   readonly provider: ICustomResourceProvider;

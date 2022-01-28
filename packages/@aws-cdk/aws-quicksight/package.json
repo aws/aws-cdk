@@ -30,6 +30,13 @@
         "distName": "aws-cdk.aws-quicksight",
         "module": "aws_cdk.aws_quicksight"
       }
+    },
+    "metadata": {
+      "jsii": {
+        "rosetta": {
+          "strict": true
+        }
+      }
     }
   },
   "repository": {

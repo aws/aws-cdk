@@ -28,6 +28,13 @@
         "distName": "aws-cdk.aws-licensemanager",
         "module": "aws_cdk.aws_licensemanager"
       }
+    },
+    "metadata": {
+      "jsii": {
+        "rosetta": {
+          "strict": true
+        }
+      }
     }
   },
   "repository": {

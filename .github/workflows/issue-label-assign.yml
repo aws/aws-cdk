@@ -8,7 +8,7 @@ on:
     types: [opened, edited]
 
 jobs:
-  triage-manager:
+  issue-triage-manager:
     permissions:
       issues: write
       pull-requests: write
@@ -17,14 +17,50 @@ jobs:
       - uses: aws-github-ops/aws-issue-triage-manager@main
         with:
           github-token: "${{ secrets.GITHUB_TOKEN }}"
+          target: "issues"
           excluded-expressions: "[CDK CLI Version|TypeScript|Java|Python]"
           area-is-keyword: true
-          excluded-labels: "[p1|p2|p0|contribution/core]"
-          default-area: >
+          included-labels: "[needs-triage]"
+          excluded-labels: "[p1|p2|p0|effort-small|effort-medium|effort-large|guidance]"
+          default-area: ${{ env.OSDS_DEVS }}
+          parameters: ${{ env.AREA_PARAMS }}
+  guidance-triage-manager:
+    permissions:
+      issues: write
+      pull-requests: write
+    runs-on: ubuntu-latest
+    steps:
+      - uses: aws-github-ops/aws-issue-triage-manager@main
+        with:
+          github-token: "${{ secrets.GITHUB_TOKEN }}"
+          target: "issues"
+          excluded-expressions: "[CDK CLI Version|TypeScript|Java|Python]"
+          area-is-keyword: true
+          included-labels: "[guidance]"
+          default-area: ${{ env.OSDS_DEVS }}
+          parameters: >
+            [{"area":"guidance","keywords":["guidance"]}]
+  pr-triage-manager:
+    permissions:
+      issues: write
+      pull-requests: write
+    runs-on: ubuntu-latest
+    steps:
+      - uses: aws-github-ops/aws-issue-triage-manager@main
+        with:
+          github-token: "${{ secrets.GITHUB_TOKEN }}"
+          target: "pull-requests"
+          area-is-keyword: true
+          excluded-labels: "[contribution/core]"
+          parameters: ${{ env.AREA_PARAMS }}
+
+env:
+ OSDS_DEVS: >
            {
              "assignees":["NGL321","peterwoodworth","ryparker"]
            }
-          parameters: >
+ 
+ AREA_PARAMS: >
            [
            {"area":"package/tools","keywords":["cli","command line","init","synth","diff","bootstrap"],"labels":["package/tools"],"assignees":["rix0rrr"]},
            {"area":"@aws-cdk/alexa-ask","keywords":["alexa-ask","alexa", "cfnskill"],"labels":["@aws-cdk/alexa-ask"],"assignees":["madeline-k"]},
