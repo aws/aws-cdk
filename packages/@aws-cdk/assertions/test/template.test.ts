@@ -1085,7 +1085,7 @@ describe('Template', () => {
     });
   });
 
-  test('throws when given a templat with cyclic dependencies', () => {
+  test('throws when given a template with cyclic dependencies', () => {
     expect(() => {
       Template.fromJSON({
         Resources: {
