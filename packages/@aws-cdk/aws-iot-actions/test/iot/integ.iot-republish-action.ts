@@ -14,7 +14,7 @@ class TestStack extends cdk.Stack {
 
     topicRule.addAction(
       new actions.IotRepublishMqttAction('${topic()}/republish', {
-        qos: actions.MqttQualityOfService.AT_LEAST_ONCE,
+        qualityOfService: actions.MqttQualityOfService.AT_LEAST_ONCE,
       }),
     );
   }

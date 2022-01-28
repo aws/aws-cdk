@@ -68,10 +68,10 @@ test('Default IoT republish action', () => {
   });
 });
 
-test('can set qos', () => {
+test('can set qualityOfService', () => {
   // WHEN
   topicRule.addAction(
-    new actions.IotRepublishMqttAction('test-topic', { qos: actions.MqttQualityOfService.AT_LEAST_ONCE }),
+    new actions.IotRepublishMqttAction('test-topic', { qualityOfService: actions.MqttQualityOfService.AT_LEAST_ONCE }),
   );
 
   // THEN

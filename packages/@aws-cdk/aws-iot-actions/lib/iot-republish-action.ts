@@ -33,14 +33,14 @@ export interface IotRepublishMqttActionProps extends CommonActionProps {
    *
    * @default MqttQualityOfService.ZERO_OR_MORE_TIMES
    */
-  readonly qos?: MqttQualityOfService;
+  readonly qualityOfService?: MqttQualityOfService;
 }
 
 /**
  * The action to put the record from an MQTT message to republish another MQTT topic.
  */
 export class IotRepublishMqttAction implements iot.IAction {
-  private readonly qos?: MqttQualityOfService;
+  private readonly qualityOfService?: MqttQualityOfService;
   private readonly role?: iam.IRole;
 
   /**
@@ -48,7 +48,7 @@ export class IotRepublishMqttAction implements iot.IAction {
    * @param props Optional properties to not use default.
    */
   constructor(private readonly topic: string, props: IotRepublishMqttActionProps = {}) {
-    this.qos = props.qos;
+    this.qualityOfService = props.qualityOfService;
     this.role = props.role;
   }
 
@@ -63,7 +63,7 @@ export class IotRepublishMqttAction implements iot.IAction {
       configuration: {
         republish: {
           topic: this.topic,
-          qos: this.qos,
+          qos: this.qualityOfService,
           roleArn: role.roleArn,
         },
       },
