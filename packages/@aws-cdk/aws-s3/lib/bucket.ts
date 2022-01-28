@@ -1304,7 +1304,7 @@ export interface BucketProps {
   * Enforces SSL for requests. S3.5 of the AWS Foundational Security Best Practices Regarding S3.
   * @see https://docs.aws.amazon.com/config/latest/developerguide/s3-bucket-ssl-requests-only.html
   *
-  * @default false
+  * @default - false if static web hosting is enabled, true otherwise
   */
   readonly enforceSSL?: boolean;
 
@@ -1702,7 +1702,8 @@ export class Bucket extends BucketBase {
     this.accessControl = props.accessControl;
 
     // Enforce AWS Foundational Security Best Practice
-    if (props.enforceSSL) {
+    const shouldEnforceSSLByDefault = props.enforceSSL == null && !this.isWebsite;
+    if (props.enforceSSL || shouldEnforceSSLByDefault) {
       this.enforceSSLStatement();
     }
 

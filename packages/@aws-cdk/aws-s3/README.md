@@ -154,13 +154,18 @@ from the bucket.
 
 ### Enforcing SSL
 
-To require all requests use Secure Socket Layer (SSL):
+To force all requests to use Secure Socket Layer (SSL):
 
 ```ts
 const bucket = new s3.Bucket(this, 'Bucket', {
   enforceSSL: true,
 });
 ```
+
+If `enforceSSL` is undefined, the following defaults apply:
+
+* If the bucket is not configured as a static website, SSL enforcement is enabled by default
+* If the bucket is configured as a static website, SSL enforcement is disabled by default
 
 ## Sharing buckets between stacks
 

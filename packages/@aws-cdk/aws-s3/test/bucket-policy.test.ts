@@ -87,7 +87,7 @@ describe('bucket policy', () => {
   test('when specifying a removalPolicy after creation', () => {
     const stack = new Stack();
 
-    const myBucket = new s3.Bucket(stack, 'MyBucket');
+    const myBucket = new s3.Bucket(stack, 'MyBucket', { enforceSSL: false });
     myBucket.addToResourcePolicy(new PolicyStatement({
       resources: [myBucket.bucketArn],
       actions: ['s3:GetObject*'],
@@ -130,7 +130,7 @@ describe('bucket policy', () => {
   test('fails if bucket policy has no actions', () => {
     const app = new App();
     const stack = new Stack(app, 'my-stack');
-    const myBucket = new s3.Bucket(stack, 'MyBucket');
+    const myBucket = new s3.Bucket(stack, 'MyBucket', { enforceSSL: false });
     myBucket.addToResourcePolicy(new PolicyStatement({
       resources: [myBucket.bucketArn],
       principals: [new AnyPrincipal()],
@@ -142,7 +142,7 @@ describe('bucket policy', () => {
   test('fails if bucket policy has no IAM principals', () => {
     const app = new App();
     const stack = new Stack(app, 'my-stack');
-    const myBucket = new s3.Bucket(stack, 'MyBucket');
+    const myBucket = new s3.Bucket(stack, 'MyBucket', { enforceSSL: false });
     myBucket.addToResourcePolicy(new PolicyStatement({
       resources: [myBucket.bucketArn],
       actions: ['s3:GetObject*'],

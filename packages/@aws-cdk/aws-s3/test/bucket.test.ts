@@ -310,6 +310,82 @@ describe('bucket', () => {
     });
   });
 
+  test('enforceSsl is enabled by default if not using static website hosting', () => {
+    const stack = new cdk.Stack();
+    new s3.Bucket(stack, 'MyBucket');
+
+    Template.fromStack(stack).templateMatches({
+      'Resources': {
+        'MyBucketF68F3FF0': {
+          'Type': 'AWS::S3::Bucket',
+          'UpdateReplacePolicy': 'Retain',
+          'DeletionPolicy': 'Retain',
+        },
+        'MyBucketPolicyE7FBAC7B': {
+          'Type': 'AWS::S3::BucketPolicy',
+          'Properties': {
+            'Bucket': {
+              'Ref': 'MyBucketF68F3FF0',
+            },
+            'PolicyDocument': {
+              'Statement': [
+                {
+                  'Action': 's3:*',
+                  'Condition': {
+                    'Bool': {
+                      'aws:SecureTransport': 'false',
+                    },
+                  },
+                  'Effect': 'Deny',
+                  'Principal': { AWS: '*' },
+                  'Resource': [
+                    {
+                      'Fn::GetAtt': [
+                        'MyBucketF68F3FF0',
+                        'Arn',
+                      ],
+                    },
+                    {
+                      'Fn::Join': [
+                        '',
+                        [
+                          {
+                            'Fn::GetAtt': [
+                              'MyBucketF68F3FF0',
+                              'Arn',
+                            ],
+                          },
+                          '/*',
+                        ],
+                      ],
+                    },
+                  ],
+                },
+              ],
+              'Version': '2012-10-17',
+            },
+          },
+        },
+      },
+    });
+  });
+
+  test('enforceSsl is disabled by default if using static website hosting', () => {
+    const stack = new cdk.Stack();
+    new s3.Bucket(stack, 'MyBucket');
+
+    // TODO: ensure that ssl enforcement policy is absent
+    Template.fromStack(stack).templateMatches({
+      'Resources': {
+        'MyBucketF68F3FF0': {
+          'Type': 'AWS::S3::Bucket',
+          'UpdateReplacePolicy': 'Retain',
+          'DeletionPolicy': 'Retain',
+        },
+      },
+    });
+  });
+
   test('bucketKeyEnabled can be enabled', () => {
     const stack = new cdk.Stack();
 
@@ -463,7 +539,7 @@ describe('bucket', () => {
 
     test('addPermission creates a bucket policy', () => {
       const stack = new cdk.Stack();
-      const bucket = new s3.Bucket(stack, 'MyBucket', { encryption: s3.BucketEncryption.UNENCRYPTED });
+      const bucket = new s3.Bucket(stack, 'MyBucket', { encryption: s3.BucketEncryption.UNENCRYPTED, enforceSSL: false });
 
       bucket.addToResourcePolicy(new iam.PolicyStatement({
         resources: ['foo'],
@@ -857,7 +933,7 @@ describe('bucket', () => {
     test('grant permissions to non-identity principal', () => {
       // GIVEN
       const stack = new cdk.Stack();
-      const bucket = new s3.Bucket(stack, 'MyBucket', { encryption: s3.BucketEncryption.KMS });
+      const bucket = new s3.Bucket(stack, 'MyBucket', { encryption: s3.BucketEncryption.KMS, enforceSSL: false });
 
       // WHEN
       bucket.grantRead(new iam.OrganizationPrincipal('o-1234'));
@@ -1417,6 +1493,7 @@ describe('bucket', () => {
       const stackA = new cdk.Stack(undefined, 'StackA', { env: { account: '123456789012' } });
       const bucketFromStackA = new s3.Bucket(stackA, 'MyBucket', {
         bucketName: 'my-bucket-physical-name',
+        enforceSSL: false,
       });
 
       const stackB = new cdk.Stack(undefined, 'StackB', { env: { account: '234567890123' } });
@@ -1736,7 +1813,7 @@ describe('bucket', () => {
     test('by default, grants s3:GetObject to all objects', () => {
       // GIVEN
       const stack = new cdk.Stack();
-      const bucket = new s3.Bucket(stack, 'b');
+      const bucket = new s3.Bucket(stack, 'b', { enforceSSL: false });
 
       // WHEN
       bucket.grantPublicAccess();
@@ -1761,7 +1838,7 @@ describe('bucket', () => {
     test('"keyPrefix" can be used to only grant access to certain objects', () => {
       // GIVEN
       const stack = new cdk.Stack();
-      const bucket = new s3.Bucket(stack, 'b');
+      const bucket = new s3.Bucket(stack, 'b', { enforceSSL: false });
 
       // WHEN
       bucket.grantPublicAccess('only/access/these/*');
@@ -1786,7 +1863,7 @@ describe('bucket', () => {
     test('"allowedActions" can be used to specify actions explicitly', () => {
       // GIVEN
       const stack = new cdk.Stack();
-      const bucket = new s3.Bucket(stack, 'b');
+      const bucket = new s3.Bucket(stack, 'b', { enforceSSL: false });
 
       // WHEN
       bucket.grantPublicAccess('*', 's3:GetObject', 's3:PutObject');
@@ -1811,7 +1888,7 @@ describe('bucket', () => {
     test('returns the PolicyStatement which can be then customized', () => {
       // GIVEN
       const stack = new cdk.Stack();
-      const bucket = new s3.Bucket(stack, 'b');
+      const bucket = new s3.Bucket(stack, 'b', { enforceSSL: false });
 
       // WHEN
       const result = bucket.grantPublicAccess();
@@ -2204,6 +2281,7 @@ describe('bucket', () => {
 
     const inventoryBucket = new s3.Bucket(stack, 'InventoryBucket');
     new s3.Bucket(stack, 'MyBucket', {
+      enforceSSL: false,
       inventories: [
         {
           destination: {
@@ -2326,6 +2404,7 @@ describe('bucket', () => {
     const stack = new cdk.Stack();
     new s3.Bucket(stack, 'MyBucket', {
       objectOwnership: undefined,
+      enforceSSL: false,
     });
     Template.fromStack(stack).templateMatches({
       'Resources': {
@@ -2344,6 +2423,7 @@ describe('bucket', () => {
     new s3.Bucket(stack, 'MyBucket', {
       removalPolicy: cdk.RemovalPolicy.DESTROY,
       autoDeleteObjects: true,
+      enforceSSL: false,
     });
 
     Template.fromStack(stack).hasResource('AWS::S3::Bucket', {
