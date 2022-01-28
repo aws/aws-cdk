@@ -71,8 +71,8 @@
     "exclude": true
   },
   "nozem": false,
-  "stability": "experimental",
-  "maturity": "developer-preview",
+  "stability": "deprecated",
+  "maturity": "deprecated",
   "publishConfig": {
     "tag": "latest-1"
   }

@@ -197,6 +197,7 @@ export class Bundling implements cdk.BundlingOptions {
       ...this.props.banner ? [`--banner:js=${JSON.stringify(this.props.banner)}`] : [],
       ...this.props.footer ? [`--footer:js=${JSON.stringify(this.props.footer)}`] : [],
       ...this.props.charset ? [`--charset=${this.props.charset}`] : [],
+      ...this.props.mainFields ? [`--main-fields=${this.props.mainFields.join(',')}`] : [],
     ];
 
     let depsCommand = '';
