@@ -30,6 +30,13 @@
         "distName": "aws-cdk.aws-healthlake",
         "module": "aws_cdk.aws_healthlake"
       }
+    },
+    "metadata": {
+      "jsii": {
+        "rosetta": {
+          "strict": true
+        }
+      }
     }
   },
   "repository": {

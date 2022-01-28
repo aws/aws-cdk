@@ -39,17 +39,17 @@ import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as sns from '@aws-cdk/aws-sns';
 import * as chatbot from '@aws-cdk/aws-chatbot';
 
-const project = new codebuild.PipelineProject(stack, 'MyProject');
+const project = new codebuild.PipelineProject(this, 'MyProject');
 
-const topic = new sns.Topic(stack, 'MyTopic1');
+const topic = new sns.Topic(this, 'MyTopic1');
 
-const slack = new chatbot.SlackChannelConfiguration(stack, 'MySlackChannel', {
+const slack = new chatbot.SlackChannelConfiguration(this, 'MySlackChannel', {
   slackChannelConfigurationName: 'YOUR_CHANNEL_NAME',
   slackWorkspaceId: 'YOUR_SLACK_WORKSPACE_ID',
   slackChannelId: 'YOUR_SLACK_CHANNEL_ID',
 });
 
-const rule = new notifications.NotificationRule(stack, 'NotificationRule', {
+const rule = new notifications.NotificationRule(this, 'NotificationRule', {
   source: project,
   events: [
     'codebuild-project-build-state-succeeded',
