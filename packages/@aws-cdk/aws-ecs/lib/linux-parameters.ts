@@ -23,6 +23,20 @@ export interface LinuxParametersProps {
    * @default No shared memory.
    */
   readonly sharedMemorySize?: number;
+
+  /**
+   * The total amount of swap memory (in MiB) a container can use.
+   *
+   * @default No swap.
+   */
+  readonly maxSwap?: number;
+
+  /**
+    * This allows you to tune a container's memory swappiness behavior.
+    *
+    * @default 60
+    */
+  readonly swappiness?: number;
 }
 
 /**
@@ -38,6 +52,16 @@ export class LinuxParameters extends CoreConstruct {
    * The shared memory size. Not valid for Fargate launch type
    */
   private readonly sharedMemorySize?: number;
+
+  /**
+   * The max swap memory (in MiB)
+   */
+  private readonly maxSwap?: number;
+
+  /**
+   * The swappiness behavior
+   */
+  private readonly swappiness?: number;
 
   /**
    * Capabilities to be added
@@ -67,6 +91,8 @@ export class LinuxParameters extends CoreConstruct {
 
     this.sharedMemorySize = props.sharedMemorySize;
     this.initProcessEnabled = props.initProcessEnabled;
+    this.maxSwap = props.maxSwap;
+    this.swappiness = props.swappiness;
   }
 
   /**
@@ -110,6 +136,8 @@ export class LinuxParameters extends CoreConstruct {
     return {
       initProcessEnabled: this.initProcessEnabled,
       sharedMemorySize: this.sharedMemorySize,
+      maxSwap: this.maxSwap,
+      swappiness: this.swappiness,
       capabilities: {
         add: cdk.Lazy.list({ produce: () => this.capAdd }, { omitEmpty: true }),
         drop: cdk.Lazy.list({ produce: () => this.capDrop }, { omitEmpty: true }),
