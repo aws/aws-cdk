@@ -133,6 +133,37 @@ describe('TagOptions', () => {
       Template.fromStack(stack).hasResource('AWS::ServiceCatalog::TagOptionAssociation', 10);
     }),
 
+    test('adding tag options to portfolio and product creates unique tag options and enumerated associations', () => {
+      const tagOptions = new servicecatalog.TagOptions(stack, 'TagOptions', {
+        allowedValuesForTags: {
+          key1: ['value1', 'value2'],
+          key2: ['value1'],
+        },
+      });
+
+      const portfolio = new servicecatalog.Portfolio(stack, 'MyPortfolio', {
+        displayName: 'testPortfolio',
+        providerName: 'testProvider',
+      });
+
+      const product = new servicecatalog.CloudFormationProduct(stack, 'MyProduct', {
+        productName: 'testProduct',
+        owner: 'testOwner',
+        productVersions: [
+          {
+            cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromUrl('https://awsdocs.s3.amazonaws.com/servicecatalog/development-environment.template'),
+          },
+        ],
+        tagOptions: tagOptions,
+      });
+
+      portfolio.associateTagOptions(tagOptions);
+      product.associateTagOptions(tagOptions);
+
+      Template.fromStack(stack).resourceCountIs('AWS::ServiceCatalog::TagOption', 3); //Generates a resource for each unique key-value pair
+      Template.fromStack(stack).resourceCountIs('AWS::ServiceCatalog::TagOptionAssociation', 6);
+    });
+
     test('create and associate tag options in another stack', () => {
       const tagOptionsStack = new cdk.Stack(app, 'TagOptionsStack');
       const productStack = new cdk.Stack(app, 'ProductStack');

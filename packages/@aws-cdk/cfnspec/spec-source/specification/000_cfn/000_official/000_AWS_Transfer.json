@@ -1,5 +1,5 @@
 {
-  "$version": "53.0.0",
+  "$version": "53.1.0",
   "PropertyTypes": {
     "AWS::Transfer::Server.EndpointDetails": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-transfer-server-endpointdetails.html",
@@ -69,7 +69,10 @@
       }
     },
     "AWS::Transfer::Server.Protocol": {
-      "PrimitiveType": "String"
+      "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-transfer-server-protocol.html",
+      "PrimitiveType": "String",
+      "Required": false,
+      "UpdateType": "Mutable"
     },
     "AWS::Transfer::Server.ProtocolDetails": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-transfer-server-protocoldetails.html",
@@ -159,7 +162,10 @@
       }
     },
     "AWS::Transfer::User.SshPublicKey": {
-      "PrimitiveType": "String"
+      "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-transfer-user-sshpublickey.html",
+      "PrimitiveType": "String",
+      "Required": false,
+      "UpdateType": "Mutable"
     },
     "AWS::Transfer::Workflow.WorkflowStep": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-transfer-workflow-workflowstep.html",
