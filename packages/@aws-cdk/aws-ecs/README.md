@@ -486,6 +486,7 @@ files is restricted to the EC2 launch type for files hosted on S3. Further detai
 about [specifying environment variables](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/taskdef-envfiles.html).
 
 ### Linux parameters
+
 To apply additional linux-specific options related to init process and memory management to the container, use the `linuxParameters` property:
 
 ```ts
