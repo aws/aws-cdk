@@ -1,5 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
-import { ABSENT, ResourcePart, SynthUtils, anything, arrayWith } from '@aws-cdk/assert-internal';
+import { Match, Template } from '@aws-cdk/assertions';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
@@ -47,11 +46,11 @@ describe('delivery stream', () => {
       destinations: [mockS3Destination],
     });
 
-    expect(stack).toHaveResource('AWS::KinesisFirehose::DeliveryStream', {
-      DeliveryStreamEncryptionConfigurationInput: ABSENT,
-      DeliveryStreamName: ABSENT,
+    Template.fromStack(stack).hasResourceProperties('AWS::KinesisFirehose::DeliveryStream', {
+      DeliveryStreamEncryptionConfigurationInput: Match.absent(),
+      DeliveryStreamName: Match.absent(),
       DeliveryStreamType: 'DirectPut',
-      KinesisStreamSourceConfiguration: ABSENT,
+      KinesisStreamSourceConfiguration: Match.absent(),
       ExtendedS3DestinationConfiguration: {
         BucketARN: bucketArn,
         RoleARN: roleArn,
@@ -77,14 +76,14 @@ describe('delivery stream', () => {
       destinations: [mockS3Destination],
     });
 
-    expect(stack).toHaveResourceLike('AWS::IAM::Role', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
       AssumeRolePolicyDocument: {
         Statement: [
-          {
+          Match.objectLike({
             Principal: {
               Service: 'firehose.amazonaws.com',
             },
-          },
+          }),
         ],
       },
     });
@@ -99,32 +98,33 @@ describe('delivery stream', () => {
       role: deliveryStreamRole,
     });
 
-    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
-            Action: arrayWith(
-              'kinesis:DescribeStream',
+            Effect: 'Allow',
+            Action: Match.arrayWith([
               'kinesis:GetRecords',
               'kinesis:GetShardIterator',
               'kinesis:ListShards',
-            ),
+              'kinesis:DescribeStream',
+            ]),
             Resource: stack.resolve(sourceStream.streamArn),
           },
         ],
       },
       Roles: [stack.resolve(deliveryStreamRole.roleName)],
     });
-    expect(stack).toHaveResource('AWS::KinesisFirehose::DeliveryStream', {
+    Template.fromStack(stack).hasResourceProperties('AWS::KinesisFirehose::DeliveryStream', {
       DeliveryStreamType: 'KinesisStreamAsSource',
       KinesisStreamSourceConfiguration: {
         KinesisStreamARN: stack.resolve(sourceStream.streamArn),
         RoleARN: stack.resolve(deliveryStreamRole.roleArn),
       },
     });
-    expect(stack).toHaveResourceLike('AWS::KinesisFirehose::DeliveryStream', {
-      DependsOn: arrayWith('DeliveryStreamRoleDefaultPolicy2759968B'),
-    }, ResourcePart.CompleteDefinition);
+    Template.fromStack(stack).hasResource('AWS::KinesisFirehose::DeliveryStream', {
+      DependsOn: Match.arrayWith(['DeliveryStreamRoleDefaultPolicy2759968B']),
+    });
   });
 
   test('requesting customer-owned encryption creates key and configuration', () => {
@@ -134,21 +134,21 @@ describe('delivery stream', () => {
       role: deliveryStreamRole,
     });
 
-    expect(stack).toHaveResource('AWS::KMS::Key');
-    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+    Template.fromStack(stack).resourceCountIs('AWS::KMS::Key', 1);
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
-          {
-            Action: arrayWith(
-              'kms:Encrypt',
+          Match.objectLike({
+            Action: Match.arrayWith([
               'kms:Decrypt',
-            ),
-          },
+              'kms:Encrypt',
+            ]),
+          }),
         ],
       },
       Roles: [stack.resolve(deliveryStreamRole.roleName)],
     });
-    expect(stack).toHaveResourceLike('AWS::KinesisFirehose::DeliveryStream', {
+    Template.fromStack(stack).hasResourceProperties('AWS::KinesisFirehose::DeliveryStream', {
       DeliveryStreamEncryptionConfigurationInput: {
         KeyARN: {
           'Fn::GetAtt': [
@@ -170,22 +170,22 @@ describe('delivery stream', () => {
       role: deliveryStreamRole,
     });
 
-    expect(stack).toHaveResource('AWS::KMS::Key');
-    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+    Template.fromStack(stack).resourceCountIs('AWS::KMS::Key', 1);
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
-          {
-            Action: arrayWith(
-              'kms:Encrypt',
+          Match.objectLike({
+            Action: Match.arrayWith([
               'kms:Decrypt',
-            ),
+              'kms:Encrypt',
+            ]),
             Resource: stack.resolve(key.keyArn),
-          },
+          }),
         ],
       },
       Roles: [stack.resolve(deliveryStreamRole.roleName)],
     });
-    expect(stack).toHaveResourceLike('AWS::KinesisFirehose::DeliveryStream', {
+    Template.fromStack(stack).hasResourceProperties('AWS::KinesisFirehose::DeliveryStream', {
       DeliveryStreamEncryptionConfigurationInput: {
         KeyARN: stack.resolve(key.keyArn),
         KeyType: 'CUSTOMER_MANAGED_CMK',
@@ -200,24 +200,12 @@ describe('delivery stream', () => {
       role: deliveryStreamRole,
     });
 
-    expect(stack).not.toHaveResource('AWS::KMS::Key');
-    expect(stack).not.toHaveResourceLike('AWS::IAM::Policy', {
-      PolicyDocument: {
-        Statement: [
-          {
-            Action: arrayWith(
-              'kms:Encrypt',
-              'kms:Decrypt',
-            ),
-          },
-        ],
-      },
-      Roles: [stack.resolve(deliveryStreamRole.roleName)],
-    });
-    expect(stack).toHaveResourceLike('AWS::KinesisFirehose::DeliveryStream', {
+    Template.fromStack(stack).resourceCountIs('AWS::KMS::Key', 0);
+    Template.fromStack(stack).resourceCountIs('AWS::IAM::Policy', 0);
+    Template.fromStack(stack).hasResourceProperties('AWS::KinesisFirehose::DeliveryStream', {
       DeliveryStreamType: 'DirectPut',
       DeliveryStreamEncryptionConfigurationInput: {
-        KeyARN: ABSENT,
+        KeyARN: Match.absent(),
         KeyType: 'AWS_OWNED_CMK',
       },
     });
@@ -230,23 +218,11 @@ describe('delivery stream', () => {
       role: deliveryStreamRole,
     });
 
-    expect(stack).not.toHaveResource('AWS::KMS::Key');
-    expect(stack).not.toHaveResourceLike('AWS::IAM::Policy', {
-      PolicyDocument: {
-        Statement: [
-          {
-            Action: arrayWith(
-              'kms:Encrypt',
-              'kms:Decrypt',
-            ),
-          },
-        ],
-      },
-      Roles: [stack.resolve(deliveryStreamRole.roleName)],
-    });
-    expect(stack).toHaveResourceLike('AWS::KinesisFirehose::DeliveryStream', {
+    Template.fromStack(stack).resourceCountIs('AWS::KMS::Key', 0);
+    Template.fromStack(stack).resourceCountIs('AWS::IAM::Policy', 0);
+    Template.fromStack(stack).hasResourceProperties('AWS::KinesisFirehose::DeliveryStream', {
       DeliveryStreamType: 'DirectPut',
-      DeliveryStreamEncryptionConfigurationInput: ABSENT,
+      DeliveryStreamEncryptionConfigurationInput: Match.absent(),
     });
   });
 
@@ -300,13 +276,13 @@ describe('delivery stream', () => {
 
     deliveryStream.grant(role, 'firehose:PutRecord');
 
-    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
-          {
+          Match.objectLike({
             Action: 'firehose:PutRecord',
             Resource: stack.resolve(deliveryStream.deliveryStreamArn),
-          },
+          }),
         ],
       },
       Roles: [stack.resolve(role.roleName)],
@@ -323,16 +299,16 @@ describe('delivery stream', () => {
 
     deliveryStream.grantPutRecords(role);
 
-    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
-          {
+          Match.objectLike({
             Action: [
               'firehose:PutRecord',
               'firehose:PutRecordBatch',
             ],
             Resource: stack.resolve(deliveryStream.deliveryStreamArn),
-          },
+          }),
         ],
       },
       Roles: [stack.resolve(role.roleName)],
@@ -346,12 +322,12 @@ describe('delivery stream', () => {
       destinations: [mockS3Destination],
     });
 
-    expect(stack).toHaveResourceLike('AWS::KinesisFirehose::DeliveryStream', {
+    Template.fromStack(stack).hasResource('AWS::KinesisFirehose::DeliveryStream', {
       DependsOn: [dependableId],
-    }, ResourcePart.CompleteDefinition);
-    expect(stack).toHaveResourceLike('AWS::IAM::Role', {
-      DependsOn: ABSENT,
-    }, ResourcePart.CompleteDefinition);
+    });
+    Template.fromStack(stack).hasResource('AWS::IAM::Role', {
+      DependsOn: Match.absent(),
+    });
   });
 
   test('supplying 0 or multiple destinations throws', () => {
@@ -395,7 +371,7 @@ describe('delivery stream', () => {
         region: stack.region,
         namespace: 'AWS/Firehose',
         metricName: 'IncomingBytes',
-        statistic: cloudwatch.Statistic.AVERAGE,
+        statistic: cloudwatch.Statistic.SUM,
         dimensions: {
           DeliveryStreamName: deliveryStream.deliveryStreamName,
         },
@@ -410,7 +386,7 @@ describe('delivery stream', () => {
         region: stack.region,
         namespace: 'AWS/Firehose',
         metricName: 'IncomingRecords',
-        statistic: cloudwatch.Statistic.AVERAGE,
+        statistic: cloudwatch.Statistic.SUM,
         dimensions: {
           DeliveryStreamName: deliveryStream.deliveryStreamName,
         },
@@ -425,7 +401,7 @@ describe('delivery stream', () => {
         region: stack.region,
         namespace: 'AWS/Firehose',
         metricName: 'BackupToS3.Bytes',
-        statistic: cloudwatch.Statistic.AVERAGE,
+        statistic: cloudwatch.Statistic.SUM,
         dimensions: {
           DeliveryStreamName: deliveryStream.deliveryStreamName,
         },
@@ -455,7 +431,7 @@ describe('delivery stream', () => {
         region: stack.region,
         namespace: 'AWS/Firehose',
         metricName: 'BackupToS3.Records',
-        statistic: cloudwatch.Statistic.AVERAGE,
+        statistic: cloudwatch.Statistic.SUM,
         dimensions: {
           DeliveryStreamName: deliveryStream.deliveryStreamName,
         },
@@ -472,19 +448,18 @@ describe('delivery stream', () => {
 
     securityGroup.connections.allowFrom(deliveryStream, ec2.Port.allTcp());
 
-    expect(stack).toHaveResourceLike('AWS::EC2::SecurityGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroup', {
       SecurityGroupIngress: [
-        {
+        Match.objectLike({
           CidrIp: {
-            'Fn::FindInMap': [
-              anything(),
+            'Fn::FindInMap': Match.arrayWith([
               {
                 Ref: 'AWS::Region',
               },
               'FirehoseCidrBlock',
-            ],
+            ]),
           },
-        },
+        }),
       ],
     });
   });
@@ -499,11 +474,11 @@ describe('delivery stream', () => {
 
     securityGroup.connections.allowFrom(deliveryStream, ec2.Port.allTcp());
 
-    expect(stack).toHaveResourceLike('AWS::EC2::SecurityGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroup', {
       SecurityGroupIngress: [
-        {
+        Match.objectLike({
           CidrIp: '13.57.135.192/27',
-        },
+        }),
       ],
     });
   });
@@ -516,7 +491,11 @@ describe('delivery stream', () => {
       destinations: [mockS3Destination],
     });
 
-    expect(Object.keys(SynthUtils.toCloudFormation(stack).Mappings).length).toBe(1);
+    Template.fromStack(stack).hasMapping('*', {
+      'af-south-1': {
+        FirehoseCidrBlock: '13.244.121.224/27',
+      },
+    });
   });
 
   test('can add tags', () => {
@@ -526,7 +505,7 @@ describe('delivery stream', () => {
 
     cdk.Tags.of(deliveryStream).add('tagKey', 'tagValue');
 
-    expect(stack).toHaveResource('AWS::KinesisFirehose::DeliveryStream', {
+    Template.fromStack(stack).hasResourceProperties('AWS::KinesisFirehose::DeliveryStream', {
       Tags: [
         {
           Key: 'tagKey',

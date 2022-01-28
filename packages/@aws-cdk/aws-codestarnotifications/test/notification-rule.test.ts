@@ -1,9 +1,10 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as cdk from '@aws-cdk/core';
 import * as notifications from '../lib';
 import {
   FakeCodeBuild,
   FakeCodePipeline,
+  FakeCodeCommit,
   FakeSlackTarget,
   FakeSnsTopicTarget,
 } from './helpers';
@@ -23,9 +24,29 @@ describe('NotificationRule', () => {
       events: ['codebuild-project-build-state-succeeded'],
     });
 
-    expect(stack).toHaveResourceLike('AWS::CodeStarNotifications::NotificationRule', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeStarNotifications::NotificationRule', {
       Resource: project.projectArn,
       EventTypeIds: ['codebuild-project-build-state-succeeded'],
+    });
+  });
+
+  test('created new notification rule from repository source', () => {
+    const repository = new FakeCodeCommit();
+
+    new notifications.NotificationRule(stack, 'MyNotificationRule', {
+      source: repository,
+      events: [
+        'codecommit-repository-pull-request-created',
+        'codecommit-repository-pull-request-merged',
+      ],
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeStarNotifications::NotificationRule', {
+      Resource: repository.repositoryArn,
+      EventTypeIds: [
+        'codecommit-repository-pull-request-created',
+        'codecommit-repository-pull-request-merged',
+      ],
     });
   });
 
@@ -44,7 +65,7 @@ describe('NotificationRule', () => {
       targets: [slack],
     });
 
-    expect(stack).toHaveResourceLike('AWS::CodeStarNotifications::NotificationRule', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeStarNotifications::NotificationRule', {
       Name: 'MyNotificationRule',
       DetailType: 'FULL',
       EventTypeIds: [
@@ -69,7 +90,7 @@ describe('NotificationRule', () => {
       events: ['codebuild-project-build-state-succeeded'],
     });
 
-    expect(stack).toHaveResourceLike('AWS::CodeStarNotifications::NotificationRule', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeStarNotifications::NotificationRule', {
       Name: 'MyNotificationRuleGeneratedFromId',
       Resource: project.projectArn,
       EventTypeIds: ['codebuild-project-build-state-succeeded'],
@@ -84,7 +105,7 @@ describe('NotificationRule', () => {
       events: ['codebuild-project-build-state-succeeded'],
     });
 
-    expect(stack).toHaveResourceLike('AWS::CodeStarNotifications::NotificationRule', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeStarNotifications::NotificationRule', {
       Name: 'ificationRuleGeneratedFromIdIsToooooooooooooooooooooooooooooLong',
       Resource: project.projectArn,
       EventTypeIds: ['codebuild-project-build-state-succeeded'],
@@ -100,7 +121,7 @@ describe('NotificationRule', () => {
       events: ['codebuild-project-build-state-succeeded'],
     });
 
-    expect(stack).toHaveResourceLike('AWS::CodeStarNotifications::NotificationRule', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeStarNotifications::NotificationRule', {
       Name: 'MyNotificationRule',
       Resource: project.projectArn,
       EventTypeIds: ['codebuild-project-build-state-succeeded'],
@@ -117,7 +138,7 @@ describe('NotificationRule', () => {
       enabled: false,
     });
 
-    expect(stack).toHaveResourceLike('AWS::CodeStarNotifications::NotificationRule', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeStarNotifications::NotificationRule', {
       Name: 'MyNotificationRule',
       Resource: project.projectArn,
       EventTypeIds: ['codebuild-project-build-state-succeeded'],
@@ -134,7 +155,7 @@ describe('NotificationRule', () => {
       enabled: true,
     });
 
-    expect(stack).toHaveResourceLike('AWS::CodeStarNotifications::NotificationRule', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeStarNotifications::NotificationRule', {
       Name: 'MyNotificationRule',
       Resource: project.projectArn,
       EventTypeIds: ['codebuild-project-build-state-succeeded'],
@@ -156,7 +177,7 @@ describe('NotificationRule', () => {
 
     expect(rule.addTarget(topic)).toEqual(true);
 
-    expect(stack).toHaveResourceLike('AWS::CodeStarNotifications::NotificationRule', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeStarNotifications::NotificationRule', {
       Resource: project.projectArn,
       EventTypeIds: ['codebuild-project-build-state-succeeded'],
       Targets: [
@@ -185,7 +206,7 @@ describe('NotificationRule', () => {
       ],
     });
 
-    expect(stack).toHaveResourceLike('AWS::CodeStarNotifications::NotificationRule', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeStarNotifications::NotificationRule', {
       Resource: pipeline.pipelineArn,
       EventTypeIds: [
         'codepipeline-pipeline-pipeline-execution-succeeded',

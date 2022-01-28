@@ -1,5 +1,5 @@
 import * as kms from '@aws-cdk/aws-kms';
-import { Duration, RemovalPolicy, Stack, Token } from '@aws-cdk/core';
+import { Duration, RemovalPolicy, Stack, Token, ArnFormat } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { IQueue, QueueAttributes, QueueBase } from './queue-base';
 import { CfnQueue } from './sqs.generated';
@@ -257,7 +257,7 @@ export class Queue extends QueueBase {
    */
   public static fromQueueAttributes(scope: Construct, id: string, attrs: QueueAttributes): IQueue {
     const stack = Stack.of(scope);
-    const parsedArn = stack.parseArn(attrs.queueArn);
+    const parsedArn = stack.splitArn(attrs.queueArn, ArnFormat.NO_RESOURCE_NAME);
     const queueName = attrs.queueName || parsedArn.resource;
     const queueUrl = attrs.queueUrl || `https://sqs.${parsedArn.region}.${stack.urlSuffix}/${parsedArn.account}/${queueName}`;
 
@@ -268,9 +268,28 @@ export class Queue extends QueueBase {
       public readonly encryptionMasterKey = attrs.keyArn
         ? kms.Key.fromKeyArn(this, 'Key', attrs.keyArn)
         : undefined;
-      public readonly fifo = queueName.endsWith('.fifo') ? true : false;
+      public readonly fifo: boolean = this.determineFifo();
 
       protected readonly autoCreatePolicy = false;
+
+      /**
+       * Determine fifo flag based on queueName and fifo attribute
+       */
+      private determineFifo(): boolean {
+        if (Token.isUnresolved(this.queueArn)) {
+          return attrs.fifo || false;
+        } else {
+          if (typeof attrs.fifo !== 'undefined') {
+            if (attrs.fifo && !queueName.endsWith('.fifo')) {
+              throw new Error("FIFO queue names must end in '.fifo'");
+            }
+            if (!attrs.fifo && queueName.endsWith('.fifo')) {
+              throw new Error("Non-FIFO queue name may not end in '.fifo'");
+            }
+          }
+          return queueName.endsWith('.fifo') ? true : false;
+        }
+      }
     }
 
     return new Import(scope, id);
@@ -300,6 +319,11 @@ export class Queue extends QueueBase {
    * Whether this queue is an Amazon SQS FIFO queue. If false, this is a standard queue.
    */
   public readonly fifo: boolean;
+
+  /**
+   * If this queue is configured with a dead-letter queue, this is the dead-letter queue settings.
+   */
+  public readonly deadLetterQueue?: DeadLetterQueue;
 
   protected readonly autoCreatePolicy = true;
 
@@ -342,6 +366,7 @@ export class Queue extends QueueBase {
     this.queueName = this.getResourceNameAttribute(queue.attrQueueName);
     this.encryptionMasterKey = encryptionMasterKey;
     this.queueUrl = queue.ref;
+    this.deadLetterQueue = props.deadLetterQueue;
 
     function _determineEncryptionProps(this: Queue): { encryptionProps: EncryptionProps, encryptionMasterKey?: kms.IKey } {
       let encryption = props.encryption || QueueEncryption.UNENCRYPTED;

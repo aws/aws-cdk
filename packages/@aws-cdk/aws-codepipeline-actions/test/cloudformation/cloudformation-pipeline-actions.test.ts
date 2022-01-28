@@ -1,16 +1,15 @@
-import { expect, haveResourceLike } from '@aws-cdk/assert-internal';
+import { Template, Match } from '@aws-cdk/assertions';
 import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as codecommit from '@aws-cdk/aws-codecommit';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import { PolicyStatement, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
-import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as cpactions from '../../lib';
 
 /* eslint-disable quote-props */
 
-nodeunitShim({
-  'CreateChangeSetAction can be used to make a change set from a CodePipeline'(test: Test) {
+describe('CloudFormation Pipeline Actions', () => {
+  test('CreateChangeSetAction can be used to make a change set from a CodePipeline', () => {
     const stack = new cdk.Stack();
 
     const pipeline = new codepipeline.Pipeline(stack, 'MagicPipeline');
@@ -79,7 +78,7 @@ nodeunitShim({
       ],
     });
 
-    expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
       'ArtifactStore': {
         'Location': {
           'Ref': 'MagicPipelineArtifactsBucket212FE7BF',
@@ -193,13 +192,12 @@ nodeunitShim({
         ],
         'Name': 'prod',
       }],
-    }));
+    });
 
-    test.done();
 
-  },
+  });
 
-  'fullPermissions leads to admin role and full IAM capabilities with pipeline bucket+key read permissions'(test: Test) {
+  test('fullPermissions leads to admin role and full IAM capabilities with pipeline bucket+key read permissions', () => {
   // GIVEN
     const stack = new TestFixture();
 
@@ -214,7 +212,7 @@ nodeunitShim({
     const roleId = 'PipelineDeployCreateUpdateRole515CB7D4';
 
     // THEN: Action in Pipeline has named IAM capabilities
-    expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
       'Stages': [
         { 'Name': 'Source' /* don't care about the rest */ },
         {
@@ -234,10 +232,10 @@ nodeunitShim({
           ],
         },
       ],
-    }));
+    });
 
     // THEN: Role is created with full permissions
-    expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Version: '2012-10-17',
         Statement: [
@@ -264,12 +262,12 @@ nodeunitShim({
         ],
       },
       Roles: [{ Ref: roleId }],
-    }));
+    });
 
-    test.done();
-  },
 
-  'outputFileName leads to creation of output artifact'(test: Test) {
+  });
+
+  test('outputFileName leads to creation of output artifact', () => {
   // GIVEN
     const stack = new TestFixture();
 
@@ -283,7 +281,7 @@ nodeunitShim({
     }));
 
     // THEN: Action has output artifacts
-    expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
       'Stages': [
         { 'Name': 'Source' /* don't care about the rest */ },
         {
@@ -296,12 +294,12 @@ nodeunitShim({
           ],
         },
       ],
-    }));
+    });
 
-    test.done();
-  },
 
-  'replaceOnFailure switches action type'(test: Test) {
+  });
+
+  test('replaceOnFailure switches action type', () => {
   // GIVEN
     const stack = new TestFixture();
 
@@ -315,7 +313,7 @@ nodeunitShim({
     }));
 
     // THEN: Action has output artifacts
-    expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
       'Stages': [
         { 'Name': 'Source' /* don't care about the rest */ },
         {
@@ -330,12 +328,12 @@ nodeunitShim({
           ],
         },
       ],
-    }));
+    });
 
-    test.done();
-  },
 
-  'parameterOverrides are serialized as a string'(test: Test) {
+  });
+
+  test('parameterOverrides are serialized as a string', () => {
   // GIVEN
     const stack = new TestFixture();
 
@@ -351,7 +349,7 @@ nodeunitShim({
     }));
 
     // THEN
-    expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
       'Stages': [
         { 'Name': 'Source' /* don't care about the rest */ },
         {
@@ -372,12 +370,12 @@ nodeunitShim({
           ],
         },
       ],
-    }));
+    });
 
-    test.done();
-  },
 
-  'Action service role is passed to template'(test: Test) {
+  });
+
+  test('Action service role is passed to template', () => {
     const stack = new TestFixture();
 
     const importedRole = Role.fromRoleArn(stack, 'ImportedRole', 'arn:aws:iam::000000000000:role/action-role');
@@ -399,7 +397,7 @@ nodeunitShim({
       stackName: 'magicStack',
     }));
 
-    expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
       'Stages': [
         {
           'Name': 'Source', /* don't care about the rest */
@@ -423,12 +421,12 @@ nodeunitShim({
           ],
         },
       ],
-    }));
+    });
 
-    test.done();
-  },
 
-  'Single capability is passed to template'(test: Test) {
+  });
+
+  test('Single capability is passed to template', () => {
   // GIVEN
     const stack = new TestFixture();
 
@@ -446,7 +444,7 @@ nodeunitShim({
     const roleId = 'PipelineDeployCreateUpdateRole515CB7D4';
 
     // THEN: Action in Pipeline has named IAM capabilities
-    expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
       'Stages': [
         { 'Name': 'Source' /* don't care about the rest */ },
         {
@@ -466,12 +464,12 @@ nodeunitShim({
           ],
         },
       ],
-    }));
+    });
 
-    test.done();
-  },
 
-  'Multiple capabilities are passed to template'(test: Test) {
+  });
+
+  test('Multiple capabilities are passed to template', () => {
   // GIVEN
     const stack = new TestFixture();
 
@@ -490,7 +488,7 @@ nodeunitShim({
     const roleId = 'PipelineDeployCreateUpdateRole515CB7D4';
 
     // THEN: Action in Pipeline has named IAM and AUTOEXPAND capabilities
-    expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
       'Stages': [
         { 'Name': 'Source' /* don't care about the rest */ },
         {
@@ -510,12 +508,12 @@ nodeunitShim({
           ],
         },
       ],
-    }));
+    });
 
-    test.done();
-  },
 
-  'Empty capabilities is not passed to template'(test: Test) {
+  });
+
+  test('Empty capabilities is not passed to template', () => {
   // GIVEN
     const stack = new TestFixture();
 
@@ -533,7 +531,7 @@ nodeunitShim({
     const roleId = 'PipelineDeployCreateUpdateRole515CB7D4';
 
     // THEN: Action in Pipeline has no capabilities
-    expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
       'Stages': [
         { 'Name': 'Source' /* don't care about the rest */ },
         {
@@ -552,12 +550,12 @@ nodeunitShim({
           ],
         },
       ],
-    }));
+    });
 
-    test.done();
-  },
 
-  'can use CfnCapabilities from the core module'(test: Test) {
+  });
+
+  test('can use CfnCapabilities from the core module', () => {
     // GIVEN
     const stack = new TestFixture();
 
@@ -574,7 +572,7 @@ nodeunitShim({
     }));
 
     // THEN: Action in Pipeline has named IAM and AUTOEXPAND capabilities
-    expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
       'Stages': [
         { 'Name': 'Source' /* don't care about the rest */ },
         {
@@ -594,13 +592,13 @@ nodeunitShim({
           ],
         },
       ],
-    }));
+    });
 
-    test.done();
-  },
 
-  'cross-account CFN Pipeline': {
-    'correctly creates the deployment Role in the other account'(test: Test) {
+  });
+
+  describe('cross-account CFN Pipeline', () => {
+    test('correctly creates the deployment Role in the other account', () => {
       const app = new cdk.App();
 
       const pipelineStack = new cdk.Stack(app, 'PipelineStack', {
@@ -638,7 +636,7 @@ nodeunitShim({
         ],
       });
 
-      expect(pipelineStack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+      Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
         'Stages': [
           {
             'Name': 'Source',
@@ -662,12 +660,23 @@ nodeunitShim({
             ],
           },
         ],
-      }));
+      });
 
       // the pipeline's BucketPolicy should trust both CFN roles
-      expect(pipelineStack).to(haveResourceLike('AWS::S3::BucketPolicy', {
-        'PolicyDocument': {
+      Template.fromStack(pipelineStack).hasResourceProperties('AWS::S3::BucketPolicy', {
+        'PolicyDocument': Match.objectLike({
           'Statement': [
+            {
+              'Action': 's3:*',
+              'Condition': {
+                'Bool': { 'aws:SecureTransport': 'false' },
+              },
+              'Effect': 'Deny',
+              'Principal': {
+                'AWS': '*',
+              },
+              'Resource': Match.anyValue(),
+            },
             {
               'Action': [
                 's3:GetObject*',
@@ -681,6 +690,7 @@ nodeunitShim({
                     ':iam::123456789012:role/pipelinestack-support-123fndeploymentrole4668d9b5a30ce3dc4508']],
                 },
               },
+              'Resource': Match.anyValue(),
             },
             {
               'Action': [
@@ -695,22 +705,23 @@ nodeunitShim({
                     ':iam::123456789012:role/pipelinestack-support-123loycfnactionrole56af64af3590f311bc50']],
                 },
               },
+              'Resource': Match.anyValue(),
             },
           ],
-        },
-      }));
+        }),
+      });
 
       const otherStack = app.node.findChild('cross-account-support-stack-123456789012') as cdk.Stack;
-      expect(otherStack).to(haveResourceLike('AWS::IAM::Role', {
+      Template.fromStack(otherStack).hasResourceProperties('AWS::IAM::Role', {
         'RoleName': 'pipelinestack-support-123loycfnactionrole56af64af3590f311bc50',
-      }));
-      expect(otherStack).to(haveResourceLike('AWS::IAM::Role', {
+      });
+      Template.fromStack(otherStack).hasResourceProperties('AWS::IAM::Role', {
         'RoleName': 'pipelinestack-support-123fndeploymentrole4668d9b5a30ce3dc4508',
-      }));
+      });
 
-      test.done();
-    },
-  },
+
+    });
+  });
 });
 
 /**

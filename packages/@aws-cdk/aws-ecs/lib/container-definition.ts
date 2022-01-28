@@ -307,6 +307,15 @@ export interface ContainerDefinitionOptions {
    * @default - No inference accelerators assigned.
    */
   readonly inferenceAcceleratorResources?: string[];
+
+  /**
+   * A list of namespaced kernel parameters to set in the container.
+   *
+   * @default - No system controls are set.
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ecs-taskdefinition-systemcontrol.html
+   * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task_definition_parameters.html#container_definition_systemcontrols
+   */
+  readonly systemControls?: SystemControl[];
 }
 
 /**
@@ -413,6 +422,8 @@ export class ContainerDefinition extends CoreConstruct {
 
   private readonly secrets?: CfnTaskDefinition.SecretProperty[];
 
+  private readonly environment: { [key: string]: string };
+
   /**
    * Constructs a new instance of the ContainerDefinition class.
    */
@@ -446,6 +457,12 @@ export class ContainerDefinition extends CoreConstruct {
           valueFrom: secret.arn,
         });
       }
+    }
+
+    if (props.environment) {
+      this.environment = { ...props.environment };
+    } else {
+      this.environment = {};
     }
 
     if (props.environmentFiles) {
@@ -536,6 +553,13 @@ export class ContainerDefinition extends CoreConstruct {
 
       return pm;
     }));
+  }
+
+  /**
+   * This method adds an environment variable to the container.
+   */
+  public addEnvironment(name: string, value: string) {
+    this.environment[name] = value;
   }
 
   /**
@@ -660,8 +684,8 @@ export class ContainerDefinition extends CoreConstruct {
       volumesFrom: cdk.Lazy.any({ produce: () => this.volumesFrom.map(renderVolumeFrom) }, { omitEmptyArray: true }),
       workingDirectory: this.props.workingDirectory,
       logConfiguration: this.logDriverConfig,
-      environment: this.props.environment && renderKV(this.props.environment, 'name', 'value'),
-      environmentFiles: this.environmentFiles && renderEnvironmentFiles(this.environmentFiles),
+      environment: this.environment && Object.keys(this.environment).length ? renderKV(this.environment, 'name', 'value') : undefined,
+      environmentFiles: this.environmentFiles && renderEnvironmentFiles(cdk.Stack.of(this).partition, this.environmentFiles),
       secrets: this.secrets,
       extraHosts: this.props.extraHosts && renderKV(this.props.extraHosts, 'hostname', 'ipAddress'),
       healthCheck: this.props.healthCheck && renderHealthCheck(this.props.healthCheck),
@@ -669,6 +693,7 @@ export class ContainerDefinition extends CoreConstruct {
       linuxParameters: this.linuxParameters && this.linuxParameters.renderLinuxParameters(),
       resourceRequirements: (!this.props.gpuCount && this.inferenceAcceleratorResources.length == 0 ) ? undefined :
         renderResourceRequirements(this.props.gpuCount, this.inferenceAcceleratorResources),
+      systemControls: this.props.systemControls && renderSystemControls(this.props.systemControls),
     };
   }
 }
@@ -732,7 +757,7 @@ function renderKV(env: { [key: string]: string }, keyName: string, valueName: st
   return ret;
 }
 
-function renderEnvironmentFiles(environmentFiles: EnvironmentFileConfig[]): any[] {
+function renderEnvironmentFiles(partition: string, environmentFiles: EnvironmentFileConfig[]): any[] {
   const ret = [];
   for (const environmentFile of environmentFiles) {
     const s3Location = environmentFile.s3Location;
@@ -743,7 +768,7 @@ function renderEnvironmentFiles(environmentFiles: EnvironmentFileConfig[]): any[
 
     ret.push({
       type: environmentFile.fileType,
-      value: `arn:aws:s3:::${s3Location.bucketName}/${s3Location.objectKey}`,
+      value: `arn:${partition}:s3:::${s3Location.bucketName}/${s3Location.objectKey}`,
     });
   }
   return ret;
@@ -1039,4 +1064,26 @@ function renderVolumeFrom(vf: VolumeFrom): CfnTaskDefinition.VolumeFromProperty 
     sourceContainer: vf.sourceContainer,
     readOnly: vf.readOnly,
   };
+}
+
+/**
+ * Kernel parameters to set in the container
+ */
+export interface SystemControl {
+  /**
+   * The namespaced kernel parameter for which to set a value.
+   */
+  readonly namespace: string;
+
+  /**
+   * The value for the namespaced kernel parameter specified in namespace.
+   */
+  readonly value: string;
+}
+
+function renderSystemControls(systemControls: SystemControl[]): CfnTaskDefinition.SystemControlProperty[] {
+  return systemControls.map(sc => ({
+    namespace: sc.namespace,
+    value: sc.value,
+  }));
 }

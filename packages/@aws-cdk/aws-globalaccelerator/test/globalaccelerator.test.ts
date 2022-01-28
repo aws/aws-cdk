@@ -1,4 +1,4 @@
-import { expect, haveResourceLike } from '@aws-cdk/assert-internal';
+import { Template } from '@aws-cdk/assertions';
 import { Duration } from '@aws-cdk/core';
 import * as ga from '../lib';
 import { testFixture } from './util';
@@ -11,9 +11,9 @@ test('create accelerator', () => {
   new ga.Accelerator(stack, 'Accelerator');
 
   // THEN
-  expect(stack).to(haveResourceLike('AWS::GlobalAccelerator::Accelerator', {
+  Template.fromStack(stack).hasResourceProperties('AWS::GlobalAccelerator::Accelerator', {
     Enabled: true,
-  }));
+  });
 });
 
 test('create listener', () => {
@@ -33,7 +33,7 @@ test('create listener', () => {
   });
 
   // THEN
-  expect(stack).to(haveResourceLike('AWS::GlobalAccelerator::Listener', {
+  Template.fromStack(stack).hasResourceProperties('AWS::GlobalAccelerator::Listener', {
     AcceleratorArn: {
       'Fn::GetAtt': [
         'Accelerator8EB0B6B1',
@@ -48,7 +48,7 @@ test('create listener', () => {
     ],
     Protocol: 'TCP',
     ClientAffinity: 'NONE',
-  }));
+  });
 });
 
 test('toPort defaults to fromPort if left out', () => {
@@ -64,14 +64,14 @@ test('toPort defaults to fromPort if left out', () => {
   });
 
   // THEN
-  expect(stack).to(haveResourceLike('AWS::GlobalAccelerator::Listener', {
+  Template.fromStack(stack).hasResourceProperties('AWS::GlobalAccelerator::Listener', {
     PortRanges: [
       {
         FromPort: 123,
         ToPort: 123,
       },
     ],
-  }));
+  });
 });
 
 test('create endpointgroup', () => {
@@ -92,7 +92,7 @@ test('create endpointgroup', () => {
   new ga.EndpointGroup(stack, 'Group', { listener });
 
   // THEN
-  expect(stack).to(haveResourceLike('AWS::GlobalAccelerator::EndpointGroup', {
+  Template.fromStack(stack).hasResourceProperties('AWS::GlobalAccelerator::EndpointGroup', {
     EndpointGroupRegion: {
       Ref: 'AWS::Region',
     },
@@ -102,7 +102,7 @@ test('create endpointgroup', () => {
         'ListenerArn',
       ],
     },
-  }));
+  });
 });
 
 test('endpointgroup region is the first endpoint\'s region', () => {
@@ -125,9 +125,9 @@ test('endpointgroup region is the first endpoint\'s region', () => {
   });
 
   // THEN
-  expect(stack).to(haveResourceLike('AWS::GlobalAccelerator::EndpointGroup', {
+  Template.fromStack(stack).hasResourceProperties('AWS::GlobalAccelerator::EndpointGroup', {
     EndpointGroupRegion: 'us-bla-5',
-  }));
+  });
 });
 
 test('endpointgroup with all parameters', () => {
@@ -156,7 +156,7 @@ test('endpointgroup with all parameters', () => {
   });
 
   // THEN
-  expect(stack).to(haveResourceLike('AWS::GlobalAccelerator::EndpointGroup', {
+  Template.fromStack(stack).hasResourceProperties('AWS::GlobalAccelerator::EndpointGroup', {
     EndpointGroupRegion: 'us-bla-5',
     HealthCheckIntervalSeconds: 10,
     HealthCheckPath: '/ping',
@@ -170,7 +170,7 @@ test('endpointgroup with all parameters', () => {
     ],
     ThresholdCount: 23,
     TrafficDialPercentage: 86,
-  }));
+  });
 });
 
 test('addEndpoint', () => {
@@ -201,7 +201,7 @@ test('addEndpoint', () => {
   });
 
   // THEN
-  expect(stack).to(haveResourceLike('AWS::GlobalAccelerator::EndpointGroup', {
+  Template.fromStack(stack).hasResourceProperties('AWS::GlobalAccelerator::EndpointGroup', {
     EndpointConfigurations: [
       {
         EndpointId: 'i-123',
@@ -209,5 +209,5 @@ test('addEndpoint', () => {
         Weight: 30,
       },
     ],
-  }));
+  });
 });

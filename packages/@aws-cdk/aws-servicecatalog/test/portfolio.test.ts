@@ -8,7 +8,12 @@ describe('Portfolio', () => {
   let stack: cdk.Stack;
 
   beforeEach(() => {
-    stack = new cdk.Stack();
+    const app = new cdk.App({
+      context: {
+        '@aws-cdk/core:newStyleStackSynthesis': false,
+      },
+    });
+    stack = new cdk.Stack(app);
   });
 
   describe('portfolio creation and importing', () => {
@@ -299,9 +304,11 @@ describe('portfolio associations and product constraints', () => {
   }),
 
   test('add tag options to portfolio', () => {
-    const tagOptions = new servicecatalog.TagOptions({
-      key1: ['value1', 'value2'],
-      key2: ['value1'],
+    const tagOptions = new servicecatalog.TagOptions(stack, 'TagOptions', {
+      allowedValuesForTags: {
+        key1: ['value1', 'value2'],
+        key2: ['value1'],
+      },
     });
 
     portfolio.associateTagOptions(tagOptions);
@@ -311,9 +318,11 @@ describe('portfolio associations and product constraints', () => {
   }),
 
   test('add tag options to portfolio as prop', () => {
-    const tagOptions = new servicecatalog.TagOptions({
-      key1: ['value1', 'value2'],
-      key2: ['value1'],
+    const tagOptions = new servicecatalog.TagOptions(stack, 'TagOptions', {
+      allowedValuesForTags: {
+        key1: ['value1', 'value2'],
+        key2: ['value1'],
+      },
     });
 
     portfolio = new servicecatalog.Portfolio(stack, 'MyPortfolioWithTag', {
@@ -326,51 +335,19 @@ describe('portfolio associations and product constraints', () => {
     Template.fromStack(stack).resourceCountIs('AWS::ServiceCatalog::TagOptionAssociation', 3);
   }),
 
-  test('adding identical tag options to portfolio is idempotent', () => {
-    const tagOptions1 = new servicecatalog.TagOptions({
-      key1: ['value1', 'value2'],
-      key2: ['value1'],
+  test('adding tag options to portfolio multiple times is idempotent', () => {
+    const tagOptions = new servicecatalog.TagOptions(stack, 'TagOptions', {
+      allowedValuesForTags: {
+        key1: ['value1', 'value2'],
+        key2: ['value1'],
+      },
     });
 
-    const tagOptions2 = new servicecatalog.TagOptions({
-      key1: ['value1', 'value2'],
-    });
-
-    portfolio.associateTagOptions(tagOptions1);
-    portfolio.associateTagOptions(tagOptions2); // If not idempotent this would fail
+    portfolio.associateTagOptions(tagOptions);
+    portfolio.associateTagOptions(tagOptions); // If not idempotent this would fail
 
     Template.fromStack(stack).resourceCountIs('AWS::ServiceCatalog::TagOption', 3); //Generates a resource for each unique key-value pair
     Template.fromStack(stack).resourceCountIs('AWS::ServiceCatalog::TagOptionAssociation', 3);
-  }),
-
-  test('fails to add tag options with invalid minimum key length', () => {
-    const tagOptions = new servicecatalog.TagOptions({
-      '': ['value1', 'value2'],
-      'key2': ['value1'],
-    });
-    expect(() => {
-      portfolio.associateTagOptions(tagOptions);
-    }).toThrowError(/Invalid TagOption key for resource/);
-  });
-
-  test('fails to add tag options with invalid maxium key length', () => {
-    const tagOptions = new servicecatalog.TagOptions({
-      ['key1'.repeat(1000)]: ['value1', 'value2'],
-      key2: ['value1'],
-    });
-    expect(() => {
-      portfolio.associateTagOptions(tagOptions);
-    }).toThrowError(/Invalid TagOption key for resource/);
-  }),
-
-  test('fails to add tag options with invalid value length', () => {
-    const tagOptions = new servicecatalog.TagOptions({
-      key1: ['value1'.repeat(1000), 'value2'],
-      key2: ['value1'],
-    });
-    expect(() => {
-      portfolio.associateTagOptions(tagOptions);
-    }).toThrowError(/Invalid TagOption value for resource/);
   }),
 
   test('add tag update constraint', () => {
@@ -563,6 +540,7 @@ describe('portfolio associations and product constraints', () => {
         assumedBy: new iam.AccountRootPrincipal(),
       });
       launchRole = new iam.Role(stack, 'LaunchRole', {
+        roleName: 'LaunchRole',
         assumedBy: new iam.ServicePrincipal('servicecatalog.amazonaws.com'),
       });
     }),
@@ -586,6 +564,59 @@ describe('portfolio associations and product constraints', () => {
       });
     }),
 
+    test('set a launch role constraint using local role name', () => {
+      portfolio.addProduct(product);
+
+      portfolio.setLocalLaunchRoleName(product, 'LocalLaunchRole', {
+        description: 'set launch role description',
+        messageLanguage: servicecatalog.MessageLanguage.EN,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::ServiceCatalog::LaunchRoleConstraint', {
+        PortfolioId: { Ref: 'MyPortfolio59CCA9C9' },
+        ProductId: { Ref: 'MyProduct49A3C587' },
+        Description: 'set launch role description',
+        AcceptLanguage: 'en',
+        LocalRoleName: { Ref: 'MyPortfolioLaunchRoleLocalLaunchRoleB2E6E22A' },
+      });
+    }),
+
+    test('set a launch role constraint using local role', () => {
+      portfolio.addProduct(product);
+
+      portfolio.setLocalLaunchRole(product, launchRole, {
+        description: 'set launch role description',
+        messageLanguage: servicecatalog.MessageLanguage.EN,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::ServiceCatalog::LaunchRoleConstraint', {
+        PortfolioId: { Ref: 'MyPortfolio59CCA9C9' },
+        ProductId: { Ref: 'MyProduct49A3C587' },
+        Description: 'set launch role description',
+        AcceptLanguage: 'en',
+        LocalRoleName: { Ref: 'LaunchRole2CFB2E44' },
+      });
+    }),
+
+    test('set a launch role constraint using imported local role', () => {
+      portfolio.addProduct(product);
+
+      const importedLaunchRole = iam.Role.fromRoleArn(portfolio.stack, 'ImportedLaunchRole', 'arn:aws:iam::123456789012:role/ImportedLaunchRole');
+
+      portfolio.setLocalLaunchRole(product, importedLaunchRole, {
+        description: 'set launch role description',
+        messageLanguage: servicecatalog.MessageLanguage.EN,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::ServiceCatalog::LaunchRoleConstraint', {
+        PortfolioId: { Ref: 'MyPortfolio59CCA9C9' },
+        ProductId: { Ref: 'MyProduct49A3C587' },
+        Description: 'set launch role description',
+        AcceptLanguage: 'en',
+        LocalRoleName: 'ImportedLaunchRole',
+      });
+    }),
+
     test('set launch role constraint still adds without explicit association', () => {
       portfolio.setLaunchRole(product, launchRole);
 
@@ -601,7 +632,57 @@ describe('portfolio associations and product constraints', () => {
 
       expect(() => {
         portfolio.setLaunchRole(product, otherLaunchRole);
-      }).toThrowError(/Cannot set multiple launch roles for association/);
+      }).toThrow(/Cannot set multiple launch roles for association/);
+    }),
+
+    test('local launch role must have roleName explicitly set', () => {
+      const otherLaunchRole = new iam.Role(stack, 'otherLaunchRole', {
+        assumedBy: new iam.ServicePrincipal('servicecatalog.amazonaws.com'),
+      });
+
+      expect(() => {
+        portfolio.setLocalLaunchRole(product, otherLaunchRole);
+      }).toThrow(/Role otherLaunchRole used for Local Launch Role must have roleName explicitly set/);
+    }),
+
+    test('fails to add multiple set launch roles - local launch role first', () => {
+      portfolio.setLocalLaunchRoleName(product, 'LaunchRole');
+
+      expect(() => {
+        portfolio.setLaunchRole(product, launchRole);
+      }).toThrow(/Cannot set multiple launch roles for association/);
+    }),
+
+    test('fails to add multiple set local launch roles - local launch role first', () => {
+      portfolio.setLocalLaunchRoleName(product, 'LaunchRole');
+
+      expect(() => {
+        portfolio.setLocalLaunchRole(product, launchRole);
+      }).toThrow(/Cannot set multiple launch roles for association/);
+    }),
+
+    test('fails to add multiple set local launch roles - local launch role name first', () => {
+      portfolio.setLocalLaunchRole(product, launchRole);
+
+      expect(() => {
+        portfolio.setLocalLaunchRoleName(product, 'LaunchRole');
+      }).toThrow(/Cannot set multiple launch roles for association/);
+    }),
+
+    test('fails to add multiple set launch roles - local launch role second', () => {
+      portfolio.setLaunchRole(product, launchRole);
+
+      expect(() => {
+        portfolio.setLocalLaunchRole(product, launchRole);
+      }).toThrow(/Cannot set multiple launch roles for association/);
+    }),
+
+    test('fails to add multiple set launch roles - local launch role second', () => {
+      portfolio.setLaunchRole(product, launchRole);
+
+      expect(() => {
+        portfolio.setLocalLaunchRoleName(product, 'LaunchRole');
+      }).toThrow(/Cannot set multiple launch roles for association/);
     }),
 
     test('fails to set launch role if stackset rule is already defined', () => {

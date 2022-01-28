@@ -1,6 +1,6 @@
-import '@aws-cdk/assert-internal/jest';
-import { ResourcePart, SynthUtils } from '@aws-cdk/assert-internal';
+import { Template } from '@aws-cdk/assertions';
 import { GatewayVpcEndpoint } from '@aws-cdk/aws-ec2';
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { App, CfnElement, CfnResource, Stack } from '@aws-cdk/core';
 import * as apigw from '../lib';
 
@@ -14,7 +14,7 @@ describe('restapi', () => {
     api.root.addMethod('GET'); // must have at least one method or an API definition
 
     // THEN
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       Resources: {
         myapi4C7BF186: {
           Type: 'AWS::ApiGateway::RestApi',
@@ -49,6 +49,7 @@ describe('restapi', () => {
             DeploymentId: { Ref: 'myapiDeployment92F2CB4972a890db5063ec679071ba7eefc76f2a' },
             StageName: 'prod',
           },
+          DependsOn: ['myapiAccountEC421A0A'],
         },
         myapiCloudWatchRole095452E5: {
           Type: 'AWS::IAM::Role',
@@ -130,7 +131,7 @@ describe('restapi', () => {
     api.root.addMethod('GET');
 
     // THEN
-    expect(stack).toHaveResource('AWS::ApiGateway::RestApi', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::RestApi', {
       Name: 'restapi',
     });
   });
@@ -166,17 +167,17 @@ describe('restapi', () => {
     foo.addResource('{hello}');
 
     // THEN
-    expect(stack).toHaveResource('AWS::ApiGateway::Resource', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Resource', {
       PathPart: 'foo',
       ParentId: { 'Fn::GetAtt': ['restapiC5611D27', 'RootResourceId'] },
     });
 
-    expect(stack).toHaveResource('AWS::ApiGateway::Resource', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Resource', {
       PathPart: 'bar',
       ParentId: { 'Fn::GetAtt': ['restapiC5611D27', 'RootResourceId'] },
     });
 
-    expect(stack).toHaveResource('AWS::ApiGateway::Resource', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Resource', {
       PathPart: '{hello}',
       ParentId: { Ref: 'restapifooF697E056' },
     });
@@ -196,7 +197,7 @@ describe('restapi', () => {
     proxy.addMethod('ANY');
 
     // THEN
-    expect(stack).toHaveResource('AWS::ApiGateway::Resource', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Resource', {
       PathPart: '{proxy+}',
       ParentId: { 'Fn::GetAtt': ['restapiC5611D27', 'RootResourceId'] },
     });
@@ -214,7 +215,7 @@ describe('restapi', () => {
     r1.addMethod('POST');
 
     // THEN
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       Resources: {
         restapiC5611D27: {
           Type: 'AWS::ApiGateway::RestApi',
@@ -328,8 +329,8 @@ describe('restapi', () => {
     api.root.addMethod('GET');
 
     // THEN
-    expect(stack).toHaveResource('AWS::IAM::Role');
-    expect(stack).toHaveResource('AWS::ApiGateway::Account');
+    Template.fromStack(stack).resourceCountIs('AWS::IAM::Role', 1);
+    Template.fromStack(stack).resourceCountIs('AWS::ApiGateway::Account', 1);
   });
 
   test('"url" and "urlForPath" return the URL endpoints of the deployed API', () => {
@@ -460,7 +461,7 @@ describe('restapi', () => {
     api.root.addMethod('GET');
 
     // THEN
-    expect(stack).toHaveResource('AWS::ApiGateway::RestApi', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::RestApi', {
       EndpointConfiguration: {
         Types: [
           'EDGE',
@@ -484,7 +485,7 @@ describe('restapi', () => {
     api.root.addMethod('GET');
 
     // THEN
-    expect(stack).toHaveResource('AWS::ApiGateway::RestApi', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::RestApi', {
       EndpointConfiguration: {
         Types: ['EDGE', 'PRIVATE'],
       },
@@ -509,7 +510,7 @@ describe('restapi', () => {
     api.root.addMethod('GET');
 
     // THEN
-    expect(stack).toHaveResource('AWS::ApiGateway::RestApi', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::RestApi', {
       EndpointConfiguration: {
         Types: [
           'EDGE',
@@ -549,7 +550,7 @@ describe('restapi', () => {
 
     api.root.addMethod('GET');
 
-    expect(stack).toHaveResource('AWS::ApiGateway::RestApi', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::RestApi', {
       CloneFrom: 'foobar',
       Name: 'api',
     });
@@ -566,7 +567,7 @@ describe('restapi', () => {
     resource.node.addDependency(api);
 
     // THEN
-    expect(stack).toHaveResource('My::Resource', {
+    Template.fromStack(stack).hasResource('My::Resource', {
       DependsOn: [
         'myapiAccountC3A4750C',
         'myapiCloudWatchRoleEB425128',
@@ -575,7 +576,7 @@ describe('restapi', () => {
         'myapiDeploymentStageprod329F21FF',
         'myapi162F20B8',
       ],
-    }, ResourcePart.CompleteDefinition);
+    });
   });
 
   test('defaultIntegration and defaultMethodOptions can be used at any level', () => {
@@ -622,7 +623,7 @@ describe('restapi', () => {
     // THEN
 
     // CASE #1
-    expect(stack).toHaveResourceLike('AWS::ApiGateway::Method', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
       HttpMethod: 'GET',
       ResourceId: { 'Fn::GetAtt': ['myapi162F20B8', 'RootResourceId'] },
       Integration: { Type: 'AWS' },
@@ -631,7 +632,7 @@ describe('restapi', () => {
     });
 
     // CASE #2
-    expect(stack).toHaveResourceLike('AWS::ApiGateway::Method', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
       HttpMethod: 'POST',
       ResourceId: { Ref: 'myapichildA0A65412' },
       Integration: { Type: 'AWS' },
@@ -640,7 +641,7 @@ describe('restapi', () => {
     });
 
     // CASE #3
-    expect(stack).toHaveResourceLike('AWS::ApiGateway::Method', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
       HttpMethod: 'DELETE',
       Integration: { Type: 'MOCK' },
       AuthorizerId: 'AUTHID2',
@@ -648,7 +649,7 @@ describe('restapi', () => {
     });
 
     // CASE #4
-    expect(stack).toHaveResourceLike('AWS::ApiGateway::Method', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
       HttpMethod: 'PUT',
       Integration: { Type: 'AWS' },
       AuthorizerId: 'AUTHID2',
@@ -669,7 +670,7 @@ describe('restapi', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ApiGateway::ApiKey', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::ApiKey', {
       Enabled: true,
       Name: 'myApiKey1',
       StageKeys: [
@@ -699,7 +700,7 @@ describe('restapi', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ApiGateway::Model', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Model', {
       RestApiId: { Ref: stack.getLogicalId(api.node.findChild('Resource') as CfnElement) },
       Schema: {
         $schema: 'http://json-schema.org/draft-04/schema#',
@@ -729,14 +730,14 @@ describe('restapi', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ApiGateway::RequestValidator', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::RequestValidator', {
       RestApiId: { Ref: stack.getLogicalId(api.node.findChild('Resource') as CfnElement) },
       Name: 'Parameters',
       ValidateRequestBody: false,
       ValidateRequestParameters: true,
     });
 
-    expect(stack).toHaveResource('AWS::ApiGateway::RequestValidator', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::RequestValidator', {
       RestApiId: { Ref: stack.getLogicalId(api.node.findChild('Resource') as CfnElement) },
       Name: 'Body',
       ValidateRequestBody: true,
@@ -753,7 +754,8 @@ describe('restapi', () => {
     api.root.addMethod('GET');
 
     // THEN
-    expect(SynthUtils.toCloudFormation(stack).Outputs).toEqual({
+    const outputs = Template.fromStack(stack).findOutputs('myapiEndpoint8EB17201');
+    expect(outputs).toEqual({
       myapiEndpoint8EB17201: {
         Value: {
           'Fn::Join': [
@@ -785,7 +787,8 @@ describe('restapi', () => {
     api.root.addMethod('GET');
 
     // THEN
-    expect(SynthUtils.toCloudFormation(stack).Outputs).toEqual({
+    const outputs = Template.fromStack(stack).findOutputs('myapiEndpoint8EB17201');
+    expect(outputs).toEqual({
       myapiEndpoint8EB17201: {
         Value: {
           'Fn::Join': [
@@ -807,7 +810,7 @@ describe('restapi', () => {
     });
   });
 
-  test('"restApi" and "api" properties return the RestApi correctly', () => {
+  testDeprecated('"restApi" and "api" properties return the RestApi correctly', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -821,7 +824,7 @@ describe('restapi', () => {
     expect(stack.resolve(method.api.restApiId)).toEqual(stack.resolve(method.restApi.restApiId));
   });
 
-  test('"restApi" throws an error on imported while "api" returns correctly', () => {
+  testDeprecated('"restApi" throws an error on imported while "api" returns correctly', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -862,11 +865,11 @@ describe('restapi', () => {
       resource.addMethod('GET');
 
       // THEN
-      expect(stack).toHaveResource('AWS::ApiGateway::Resource', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Resource', {
         PathPart: 'pets',
         ParentId: stack.resolve(imported.restApiRootResourceId),
       });
-      expect(stack).toHaveResource('AWS::ApiGateway::Method', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
         HttpMethod: 'GET',
         ResourceId: stack.resolve(resource.resourceId),
       });
@@ -886,11 +889,11 @@ describe('restapi', () => {
       resource.addMethod('GET');
 
       // THEN
-      expect(stack).toHaveResource('AWS::ApiGateway::Resource', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Resource', {
         PathPart: 'pets',
         ParentId: stack.resolve(api.restApiRootResourceId),
       });
-      expect(stack).toHaveResource('AWS::ApiGateway::Method', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
         HttpMethod: 'GET',
         ResourceId: stack.resolve(resource.resourceId),
       });
@@ -909,7 +912,7 @@ describe('restapi', () => {
       api.root.addMethod('GET');
 
       // THEN
-      expect(stack).toHaveResource('AWS::ApiGateway::RestApi', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::RestApi', {
         EndpointConfiguration: {
           Types: [
             'EDGE',
@@ -934,7 +937,7 @@ describe('restapi', () => {
       });
 
       // THEN
-      expect(stack).toHaveResource('AWS::ApiGateway::ApiKey', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::ApiKey', {
         Enabled: true,
         Name: 'myApiKey1',
         StageKeys: [
@@ -1079,7 +1082,7 @@ describe('restapi', () => {
     api.root.addMethod('GET');
 
     // THEN
-    expect(stack).toHaveResource('AWS::ApiGateway::RestApi', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::RestApi', {
       DisableExecuteApiEndpoint: true,
     });
   });

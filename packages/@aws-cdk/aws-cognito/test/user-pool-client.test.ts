@@ -63,7 +63,7 @@ describe('User Pool Client', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
-      ExplicitAuthFlows: Match.absentProperty(),
+      ExplicitAuthFlows: Match.absent(),
     });
   });
 
@@ -179,7 +179,7 @@ describe('User Pool Client', () => {
 
     Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
       AllowedOAuthFlows: ['client_credentials'],
-      CallbackURLs: Match.absentProperty(),
+      CallbackURLs: Match.absent(),
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
@@ -206,7 +206,7 @@ describe('User Pool Client', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
-      CallbackURLs: Match.absentProperty(),
+      CallbackURLs: Match.absent(),
     });
   });
 
@@ -447,7 +447,7 @@ describe('User Pool Client', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
       UserPoolId: stack.resolve(pool.userPoolId),
-      PreventUserExistenceErrors: Match.absentProperty(),
+      PreventUserExistenceErrors: Match.absent(),
     });
   });
 
@@ -515,8 +515,8 @@ describe('User Pool Client', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
       ClientName: 'OAuthDisabled',
-      AllowedOAuthFlows: Match.absentProperty(),
-      AllowedOAuthScopes: Match.absentProperty(),
+      AllowedOAuthFlows: Match.absent(),
+      AllowedOAuthScopes: Match.absent(),
       AllowedOAuthFlowsUserPoolClient: false,
     });
     Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
@@ -539,6 +539,53 @@ describe('User Pool Client', () => {
         },
       },
     })).toThrow(/disableOAuth is set/);
+  });
+
+  test('EnableTokenRevocation is absent by default', () => {
+    // GIVEN
+    const stack = new Stack();
+    const pool = new UserPool(stack, 'Pool');
+
+    // WHEN
+    pool.addClient('Client');
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
+      EnableTokenRevocation: Match.absent(),
+    });
+  });
+
+  test('enableTokenRevocation in addClient', () => {
+    // GIVEN
+    const stack = new Stack();
+    const pool = new UserPool(stack, 'Pool');
+
+    // WHEN
+    pool.addClient('Client', {
+      enableTokenRevocation: true,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
+      EnableTokenRevocation: true,
+    });
+  });
+
+  test('enableTokenRevocation in UserPoolClient', () => {
+    // GIVEN
+    const stack = new Stack();
+    const pool = new UserPool(stack, 'Pool');
+
+    // WHEN
+    new UserPoolClient(stack, 'Client1', {
+      userPool: pool,
+      enableTokenRevocation: true,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
+      EnableTokenRevocation: true,
+    });
   });
 
   describe('token validity', () => {
@@ -585,42 +632,42 @@ describe('User Pool Client', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
         ClientName: 'Client2',
         AccessTokenValidity: 60,
-        IdTokenValidity: Match.absentProperty(),
-        RefreshTokenValidity: Match.absentProperty(),
+        IdTokenValidity: Match.absent(),
+        RefreshTokenValidity: Match.absent(),
         TokenValidityUnits: {
           AccessToken: 'minutes',
-          IdToken: Match.absentProperty(),
-          RefreshToken: Match.absentProperty(),
+          IdToken: Match.absent(),
+          RefreshToken: Match.absent(),
         },
       });
       Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
         ClientName: 'Client3',
-        AccessTokenValidity: Match.absentProperty(),
+        AccessTokenValidity: Match.absent(),
         IdTokenValidity: 60,
-        RefreshTokenValidity: Match.absentProperty(),
+        RefreshTokenValidity: Match.absent(),
         TokenValidityUnits: {
-          AccessToken: Match.absentProperty(),
+          AccessToken: Match.absent(),
           IdToken: 'minutes',
-          RefreshToken: Match.absentProperty(),
+          RefreshToken: Match.absent(),
         },
       });
       Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
         ClientName: 'Client4',
-        AccessTokenValidity: Match.absentProperty(),
-        IdTokenValidity: Match.absentProperty(),
+        AccessTokenValidity: Match.absent(),
+        IdTokenValidity: Match.absent(),
         RefreshTokenValidity: 43200,
         TokenValidityUnits: {
-          AccessToken: Match.absentProperty(),
-          IdToken: Match.absentProperty(),
+          AccessToken: Match.absent(),
+          IdToken: Match.absent(),
           RefreshToken: 'minutes',
         },
       });
       Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
         ClientName: 'Client5',
-        TokenValidityUnits: Match.absentProperty(),
-        IdTokenValidity: Match.absentProperty(),
-        RefreshTokenValidity: Match.absentProperty(),
-        AccessTokenValidity: Match.absentProperty(),
+        TokenValidityUnits: Match.absent(),
+        IdTokenValidity: Match.absent(),
+        RefreshTokenValidity: Match.absent(),
+        AccessTokenValidity: Match.absent(),
       });
     });
 
@@ -839,8 +886,8 @@ describe('User Pool Client', () => {
 
       // EXPECT
       Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
-        ReadAttributes: Match.absentProperty(),
-        WriteAttributes: Match.absentProperty(),
+        ReadAttributes: Match.absent(),
+        WriteAttributes: Match.absent(),
       });
     });
 

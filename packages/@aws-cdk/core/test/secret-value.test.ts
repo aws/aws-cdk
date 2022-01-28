@@ -1,8 +1,7 @@
-import { nodeunitShim, Test } from 'nodeunit-shim';
-import { CfnDynamicReference, CfnDynamicReferenceService, CfnParameter, SecretValue, Stack } from '../lib';
+import { CfnDynamicReference, CfnDynamicReferenceService, CfnParameter, SecretValue, Stack, Token } from '../lib';
 
-nodeunitShim({
-  'plainText'(test: Test) {
+describe('secret value', () => {
+  test('plainText', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -10,11 +9,11 @@ nodeunitShim({
     const v = SecretValue.plainText('this just resolves to a string');
 
     // THEN
-    test.deepEqual(stack.resolve(v), 'this just resolves to a string');
-    test.done();
-  },
+    expect(stack.resolve(v)).toEqual('this just resolves to a string');
 
-  'secretsManager'(test: Test) {
+  });
+
+  test('secretsManager', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -25,11 +24,35 @@ nodeunitShim({
     });
 
     // THEN
-    test.deepEqual(stack.resolve(v), '{{resolve:secretsmanager:secret-id:SecretString:json-key:version-stage:}}');
-    test.done();
-  },
+    expect(stack.resolve(v)).toEqual('{{resolve:secretsmanager:secret-id:SecretString:json-key:version-stage:}}');
 
-  'secretsManager with defaults'(test: Test) {
+  });
+
+  test('secretsManager with secret-id from token', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const v = SecretValue.secretsManager(Token.asString({ Ref: 'secret-id' }), {
+      jsonField: 'json-key',
+      versionStage: 'version-stage',
+    });
+
+    // THEN
+    expect(stack.resolve(v)).toEqual({
+      'Fn::Join': [
+        '',
+        [
+          '{{resolve:secretsmanager:',
+          { Ref: 'secret-id' },
+          ':SecretString:json-key:version-stage:}}',
+        ],
+      ],
+    });
+
+  });
+
+  test('secretsManager with defaults', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -37,33 +60,54 @@ nodeunitShim({
     const v = SecretValue.secretsManager('secret-id');
 
     // THEN
-    test.deepEqual(stack.resolve(v), '{{resolve:secretsmanager:secret-id:SecretString:::}}');
-    test.done();
-  },
+    expect(stack.resolve(v)).toEqual('{{resolve:secretsmanager:secret-id:SecretString:::}}');
 
-  'secretsManager with an empty ID'(test: Test) {
-    test.throws(() => SecretValue.secretsManager(''), /secretId cannot be empty/);
-    test.done();
-  },
+  });
 
-  'secretsManager with versionStage and versionId'(test: Test) {
-    test.throws(() => {
+  test('secretsManager with defaults, secret-id from token', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const v = SecretValue.secretsManager(Token.asString({ Ref: 'secret-id' }));
+
+    // THEN
+    expect(stack.resolve(v)).toEqual({
+      'Fn::Join': [
+        '',
+        [
+          '{{resolve:secretsmanager:',
+          { Ref: 'secret-id' },
+          ':SecretString:::}}',
+        ],
+      ],
+    });
+
+  });
+
+  test('secretsManager with an empty ID', () => {
+    expect(() => SecretValue.secretsManager('')).toThrow(/secretId cannot be empty/);
+
+  });
+
+  test('secretsManager with versionStage and versionId', () => {
+    expect(() => {
       SecretValue.secretsManager('secret-id',
         {
           versionStage: 'version-stage',
           versionId: 'version-id',
         });
-    }, /were both provided but only one is allowed/);
+    }).toThrow(/were both provided but only one is allowed/);
 
-    test.done();
-  },
 
-  'secretsManager with a non-ARN ID that has colon'(test: Test) {
-    test.throws(() => SecretValue.secretsManager('not:an:arn'), /is not an ARN but contains ":"/);
-    test.done();
-  },
+  });
 
-  'ssmSecure'(test: Test) {
+  test('secretsManager with a non-ARN ID that has colon', () => {
+    expect(() => SecretValue.secretsManager('not:an:arn')).toThrow(/is not an ARN but contains ":"/);
+
+  });
+
+  test('ssmSecure', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -71,11 +115,22 @@ nodeunitShim({
     const v = SecretValue.ssmSecure('param-name', 'param-version');
 
     // THEN
-    test.deepEqual(stack.resolve(v), '{{resolve:ssm-secure:param-name:param-version}}');
-    test.done();
-  },
+    expect(stack.resolve(v)).toEqual('{{resolve:ssm-secure:param-name:param-version}}');
 
-  'cfnDynamicReference'(test: Test) {
+  });
+
+  test('ssmSecure without version', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const v = SecretValue.ssmSecure('param-name');
+
+    // THEN
+    expect(stack.resolve(v)).toEqual('{{resolve:ssm-secure:param-name:}}');
+  });
+
+  test('cfnDynamicReference', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -83,11 +138,11 @@ nodeunitShim({
     const v = SecretValue.cfnDynamicReference(new CfnDynamicReference(CfnDynamicReferenceService.SSM, 'foo:bar'));
 
     // THEN
-    test.deepEqual(stack.resolve(v), '{{resolve:ssm:foo:bar}}');
-    test.done();
-  },
+    expect(stack.resolve(v)).toEqual('{{resolve:ssm:foo:bar}}');
 
-  'cfnParameter (with NoEcho)'(test: Test) {
+  });
+
+  test('cfnParameter (with NoEcho)', () => {
     // GIVEN
     const stack = new Stack();
     const p = new CfnParameter(stack, 'MyParam', { type: 'String', noEcho: true });
@@ -96,17 +151,17 @@ nodeunitShim({
     const v = SecretValue.cfnParameter(p);
 
     // THEN
-    test.deepEqual(stack.resolve(v), { Ref: 'MyParam' });
-    test.done();
-  },
+    expect(stack.resolve(v)).toEqual({ Ref: 'MyParam' });
 
-  'fails if cfnParameter does not have NoEcho'(test: Test) {
+  });
+
+  test('fails if cfnParameter does not have NoEcho', () => {
     // GIVEN
     const stack = new Stack();
     const p = new CfnParameter(stack, 'MyParam', { type: 'String' });
 
     // THEN
-    test.throws(() => SecretValue.cfnParameter(p), /CloudFormation parameter must be configured with "NoEcho"/);
-    test.done();
-  },
+    expect(() => SecretValue.cfnParameter(p)).toThrow(/CloudFormation parameter must be configured with "NoEcho"/);
+
+  });
 });

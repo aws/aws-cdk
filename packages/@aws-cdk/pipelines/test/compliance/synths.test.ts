@@ -1,5 +1,4 @@
-import { arrayWith, deepObjectLike, encodedJson, objectLike, Capture, anything } from '@aws-cdk/assert-internal';
-import '@aws-cdk/assert-internal/jest';
+import { Capture, Match, Template } from '@aws-cdk/assertions';
 import * as cbuild from '@aws-cdk/aws-codebuild';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as ec2 from '@aws-cdk/aws-ec2';
@@ -64,12 +63,12 @@ behavior('synth takes arrays of commands', (suite) => {
 
   function THEN_codePipelineExpectation(installPhase: string) {
     // THEN
-    expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
+    Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
       Environment: {
         Image: 'aws/codebuild/standard:5.0',
       },
       Source: {
-        BuildSpec: encodedJson(deepObjectLike({
+        BuildSpec: Match.serializedJson(Match.objectLike({
           phases: {
             [installPhase]: {
               commands: [
@@ -112,12 +111,12 @@ behavior('synth sets artifact base-directory to cdk.out', (suite) => {
 
   function THEN_codePipelineExpectation() {
     // THEN
-    expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
+    Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
       Environment: {
         Image: 'aws/codebuild/standard:5.0',
       },
       Source: {
-        BuildSpec: encodedJson(deepObjectLike({
+        BuildSpec: Match.serializedJson(Match.objectLike({
           artifacts: {
             'base-directory': 'cdk.out',
           },
@@ -154,15 +153,15 @@ behavior('synth supports setting subdirectory', (suite) => {
 
   function THEN_codePipelineExpectation(installPhase: string) {
     // THEN
-    expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
+    Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
       Environment: {
         Image: 'aws/codebuild/standard:5.0',
       },
       Source: {
-        BuildSpec: encodedJson(deepObjectLike({
+        BuildSpec: Match.serializedJson(Match.objectLike({
           phases: {
             [installPhase]: {
-              commands: arrayWith('cd subdir'),
+              commands: Match.arrayWith(['cd subdir']),
             },
           },
           artifacts: {
@@ -201,7 +200,7 @@ behavior('npm synth sets, or allows setting, UNSAFE_PERM=true', (suite) => {
 
   function THEN_codePipelineExpectation() {
     // THEN
-    expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
+    Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
       Environment: {
         EnvironmentVariables: [
           {
@@ -225,12 +224,12 @@ behavior('synth assumes a JavaScript project by default (no build, yes synth)', 
     });
 
     // THEN
-    expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
+    Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
       Environment: {
         Image: 'aws/codebuild/standard:5.0',
       },
       Source: {
-        BuildSpec: encodedJson(deepObjectLike({
+        BuildSpec: Match.serializedJson(Match.objectLike({
           phases: {
             pre_build: {
               commands: ['npm ci'],
@@ -278,24 +277,24 @@ behavior('Magic CodePipeline variables passed to synth envvars must be rendered 
 
   function THEN_codePipelineExpectation() {
     // THEN
-    expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
-      Stages: arrayWith({
+    Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+      Stages: Match.arrayWith([{
         Name: 'Build',
         Actions: [
-          objectLike({
+          Match.objectLike({
             Name: 'Synth',
-            Configuration: objectLike({
-              EnvironmentVariables: encodedJson(arrayWith(
+            Configuration: Match.objectLike({
+              EnvironmentVariables: Match.serializedJson(Match.arrayWith([
                 {
                   name: 'VERSION',
                   type: 'PLAINTEXT',
                   value: '#{codepipeline.PipelineExecutionId}',
                 },
-              )),
+              ])),
             }),
           }),
         ],
-      }),
+      }]),
     });
   }
 });
@@ -354,24 +353,24 @@ behavior('CodeBuild: environment variables specified in multiple places are corr
 
   function THEN_codePipelineExpectation(installPhase: string) {
     // THEN
-    expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
-      Environment: objectLike({
+    Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
+      Environment: Match.objectLike({
         PrivilegedMode: true,
-        EnvironmentVariables: arrayWith(
-          {
-            Name: 'SOME_ENV_VAR',
-            Type: 'PLAINTEXT',
-            Value: 'SomeValue',
-          },
+        EnvironmentVariables: Match.arrayWith([
           {
             Name: 'INNER_VAR',
             Type: 'PLAINTEXT',
             Value: 'InnerValue',
           },
-        ),
+          {
+            Name: 'SOME_ENV_VAR',
+            Type: 'PLAINTEXT',
+            Value: 'SomeValue',
+          },
+        ]),
       }),
       Source: {
-        BuildSpec: encodedJson(deepObjectLike({
+        BuildSpec: Match.serializedJson(Match.objectLike({
           phases: {
             [installPhase]: {
               commands: ['install1', 'install2'],
@@ -413,12 +412,12 @@ behavior('install command can be overridden/specified', (suite) => {
 
   function THEN_codePipelineExpectation(installPhase: string) {
     // THEN
-    expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
+    Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
       Environment: {
         Image: 'aws/codebuild/standard:5.0',
       },
       Source: {
-        BuildSpec: encodedJson(deepObjectLike({
+        BuildSpec: Match.serializedJson(Match.objectLike({
           phases: {
             [installPhase]: {
               commands: ['/bin/true'],
@@ -445,12 +444,12 @@ behavior('synth can have its test commands set', (suite) => {
     });
 
     // THEN
-    expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
+    Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
       Environment: {
         Image: 'aws/codebuild/standard:5.0',
       },
       Source: {
-        BuildSpec: encodedJson(objectLike({
+        BuildSpec: Match.serializedJson(Match.objectLike({
           phases: {
             pre_build: {
               commands: ['/bin/true'],
@@ -506,12 +505,12 @@ behavior('Synth can output additional artifacts', (suite) => {
 
   function THEN_codePipelineExpectation(asmArtifact: string, testArtifact: string) {
     // THEN
-    expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
+    Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
       Environment: {
         Image: 'aws/codebuild/standard:5.0',
       },
       Source: {
-        BuildSpec: encodedJson(deepObjectLike({
+        BuildSpec: Match.serializedJson(Match.objectLike({
           artifacts: {
             'secondary-artifacts': {
               [asmArtifact]: {
@@ -559,6 +558,14 @@ behavior('Synth can be made to run in a VPC', (suite) => {
     THEN_codePipelineExpectation();
   });
 
+  suite.additional('Modern, using the synthCodeBuildDefaults', () => {
+    new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+      synthCodeBuildDefaults: { vpc },
+    });
+
+    THEN_codePipelineExpectation();
+  });
+
   suite.additional('Modern, using CodeBuildStep', () => {
     new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
       synth: new CodeBuildStep('Synth', {
@@ -577,7 +584,7 @@ behavior('Synth can be made to run in a VPC', (suite) => {
 
   function THEN_codePipelineExpectation() {
     // THEN
-    expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
+    Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
       VpcConfig: {
         SecurityGroupIds: [
           { 'Fn::GetAtt': ['CdkPipelineBuildSynthCdkBuildProjectSecurityGroupEA44D7C2', 'GroupId'] },
@@ -591,16 +598,16 @@ behavior('Synth can be made to run in a VPC', (suite) => {
       },
     });
 
-    expect(pipelineStack).toHaveResourceLike('AWS::IAM::Policy', {
+    Template.fromStack(pipelineStack).hasResourceProperties('AWS::IAM::Policy', {
       Roles: [
         { Ref: 'CdkPipelineBuildSynthCdkBuildProjectRole5E173C62' },
       ],
       PolicyDocument: {
-        Statement: arrayWith({
-          Action: arrayWith('ec2:DescribeSecurityGroups'),
+        Statement: Match.arrayWith([{
+          Action: Match.arrayWith(['ec2:DescribeSecurityGroups']),
           Effect: 'Allow',
           Resource: '*',
-        }),
+        }]),
       },
     });
   }
@@ -713,35 +720,35 @@ behavior('Pipeline action contains a hash that changes as the buildspec changes'
   }
 
   function captureProjectConfigHash(_pipelineStack: Stack) {
-    const theHash = Capture.aString();
-    expect(_pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
-      Stages: arrayWith({
+    const theHash = new Capture();
+    Template.fromStack(_pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+      Stages: Match.arrayWith([{
         Name: 'Build',
         Actions: [
-          objectLike({
+          Match.objectLike({
             Name: 'Synth',
-            Configuration: objectLike({
-              EnvironmentVariables: encodedJson([
+            Configuration: Match.objectLike({
+              EnvironmentVariables: Match.serializedJson([
                 {
                   name: '_PROJECT_CONFIG_HASH',
                   type: 'PLAINTEXT',
-                  value: theHash.capture(),
+                  value: theHash,
                 },
               ]),
             }),
           }),
         ],
-      }),
+      }]),
     });
 
-    return theHash.capturedValue;
+    return theHash.asString();
   }
 });
 
 behavior('Synth CodeBuild project role can be granted permissions', (suite) => {
   let bucket: s3.IBucket;
   beforeEach(() => {
-    bucket = s3.Bucket.fromBucketArn(pipelineStack, 'Bucket', 'arn:aws:s3:::ThisParticularBucket');
+    bucket = s3.Bucket.fromBucketArn(pipelineStack, 'Bucket', 'arn:aws:s3:::this-particular-bucket');
   });
 
 
@@ -776,12 +783,12 @@ behavior('Synth CodeBuild project role can be granted permissions', (suite) => {
 
   function THEN_codePipelineExpectation() {
     // THEN
-    expect(pipelineStack).toHaveResourceLike('AWS::IAM::Policy', {
+    Template.fromStack(pipelineStack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
-        Statement: arrayWith(deepObjectLike({
+        Statement: Match.arrayWith([Match.objectLike({
           Action: ['s3:GetObject*', 's3:GetBucket*', 's3:List*'],
-          Resource: ['arn:aws:s3:::ThisParticularBucket', 'arn:aws:s3:::ThisParticularBucket/*'],
-        })),
+          Resource: ['arn:aws:s3:::this-particular-bucket', 'arn:aws:s3:::this-particular-bucket/*'],
+        })]),
       },
     });
   }
@@ -870,15 +877,15 @@ behavior('CodeBuild: Can specify additional policy statements', (suite) => {
   });
 
   function THEN_codePipelineExpectation() {
-    expect(pipelineStack).toHaveResourceLike('AWS::IAM::Policy', {
+    Template.fromStack(pipelineStack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
-        Statement: arrayWith(deepObjectLike({
+        Statement: Match.arrayWith([Match.objectLike({
           Action: [
             'codeartifact:*',
             'sts:GetServiceBearerToken',
           ],
           Resource: 'arn:my:arn',
-        })),
+        })]),
       },
     });
   }
@@ -905,43 +912,43 @@ behavior('Multiple input sources in side-by-side directories', (suite) => {
       }),
     });
 
-    expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
-      Stages: arrayWith(
+    Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+      Stages: Match.arrayWith([
         {
           Name: 'Source',
           Actions: [
-            objectLike({ Configuration: objectLike({ Repo: 'bar' }) }),
-            objectLike({ Configuration: objectLike({ Repo: 'build' }) }),
-            objectLike({ Configuration: objectLike({ Repo: 'test' }) }),
+            Match.objectLike({ Configuration: Match.objectLike({ Repo: 'bar' }) }),
+            Match.objectLike({ Configuration: Match.objectLike({ Repo: 'build' }) }),
+            Match.objectLike({ Configuration: Match.objectLike({ Repo: 'test' }) }),
           ],
         },
         {
           Name: 'Build',
           Actions: [
-            objectLike({ Name: 'Prebuild', RunOrder: 1 }),
-            objectLike({
+            Match.objectLike({ Name: 'Prebuild', RunOrder: 1 }),
+            Match.objectLike({
               Name: 'Synth',
               RunOrder: 2,
               InputArtifacts: [
                 // 3 input artifacts
-                anything(),
-                anything(),
-                anything(),
+                Match.anyValue(),
+                Match.anyValue(),
+                Match.anyValue(),
               ],
             }),
           ],
         },
-      ),
+      ]),
     });
 
-    expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
+    Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
       Source: {
-        BuildSpec: encodedJson(deepObjectLike({
+        BuildSpec: Match.serializedJson(Match.objectLike({
           phases: {
             install: {
               commands: [
-                'ln -s "$CODEBUILD_SRC_DIR_foo_bar_Source" "../sibling"',
-                'ln -s "$CODEBUILD_SRC_DIR_Prebuild_Output" "sub"',
+                '[ ! -d "../sibling" ] || { echo \'additionalInputs: "../sibling" must not exist yet. If you want to merge multiple artifacts, use a "cp" command.\'; exit 1; } && ln -s -- "$CODEBUILD_SRC_DIR_foo_bar_Source" "../sibling"',
+                '[ ! -d "sub" ] || { echo \'additionalInputs: "sub" must not exist yet. If you want to merge multiple artifacts, use a "cp" command.\'; exit 1; } && ln -s -- "$CODEBUILD_SRC_DIR_Prebuild_Output" "sub"',
               ],
             },
             build: {
@@ -967,12 +974,12 @@ behavior('Can easily switch on privileged mode for synth', (suite) => {
       commands: ['LookAtMe'],
     });
 
-    expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
-      Environment: objectLike({
+    Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
+      Environment: Match.objectLike({
         PrivilegedMode: true,
       }),
       Source: {
-        BuildSpec: encodedJson(deepObjectLike({
+        BuildSpec: Match.serializedJson(Match.objectLike({
           phases: {
             build: {
               commands: [
@@ -1071,19 +1078,19 @@ behavior('can provide custom BuildSpec that is merged with generated one', (suit
 
   function THEN_codePipelineExpectation() {
     // THEN
-    expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
-      Environment: objectLike({
+    Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
+      Environment: Match.objectLike({
         PrivilegedMode: true,
-        EnvironmentVariables: arrayWith(
+        EnvironmentVariables: Match.arrayWith([
           {
             Name: 'INNER_VAR',
             Type: 'PLAINTEXT',
             Value: 'InnerValue',
           },
-        ),
+        ]),
       }),
       Source: {
-        BuildSpec: encodedJson(deepObjectLike({
+        BuildSpec: Match.serializedJson(Match.objectLike({
           env: {
             variables: {
               FOO: 'bar',
@@ -1091,7 +1098,7 @@ behavior('can provide custom BuildSpec that is merged with generated one', (suit
           },
           phases: {
             pre_build: {
-              commands: arrayWith('installCustom'),
+              commands: Match.arrayWith(['installCustom']),
             },
             build: {
               commands: ['synth'],

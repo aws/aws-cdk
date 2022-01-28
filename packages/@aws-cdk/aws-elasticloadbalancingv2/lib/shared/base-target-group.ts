@@ -186,7 +186,7 @@ export abstract class TargetGroupBase extends CoreConstruct implements ITargetGr
    * This identifier is emitted as a dimensions of the metrics of this target
    * group.
    *
-   * @example app/my-load-balancer/123456789
+   * Example value: `app/my-load-balancer/123456789`
    */
   public abstract readonly firstLoadBalancerFullName: string;
 
@@ -269,7 +269,7 @@ export abstract class TargetGroupBase extends CoreConstruct implements ITargetGr
       healthyThresholdCount: cdk.Lazy.number({ produce: () => this.healthCheck?.healthyThresholdCount }),
       unhealthyThresholdCount: cdk.Lazy.number({ produce: () => this.healthCheck?.unhealthyThresholdCount }),
       matcher: cdk.Lazy.any({
-        produce: () => this.healthCheck?.healthyHttpCodes !== undefined || this.healthCheck?.healthyGrpcCodes !== undefined ? {
+        produce: () => this.healthCheck?.healthyHttpCodes !== undefined || this.healthCheck?.healthyGrpcCodes !== undefined ? {
           grpcCode: this.healthCheck.healthyGrpcCodes,
           httpCode: this.healthCheck.healthyHttpCodes,
         } : undefined,
@@ -376,6 +376,11 @@ export interface TargetGroupImportProps extends TargetGroupAttributes {
  * A target group
  */
 export interface ITargetGroup extends cdk.IConstruct {
+  /**
+   * The name of the target group
+   */
+  readonly targetGroupName: string;
+
   /**
    * ARN of the target group
    */

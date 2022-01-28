@@ -22,6 +22,17 @@ export class FakeCodePipeline implements notifications.INotificationRuleSource {
   }
 }
 
+export class FakeCodeCommit implements notifications.INotificationRuleSource {
+  readonly repositoryArn = 'arn:aws:codecommit::1234567890:MyCodecommitProject';
+  readonly repositoryName = 'test-repository';
+
+  bindAsNotificationRuleSource(): notifications.NotificationRuleSourceConfig {
+    return {
+      sourceArn: this.repositoryArn,
+    };
+  }
+}
+
 export class FakeSnsTopicTarget implements notifications.INotificationRuleTarget {
   readonly topicArn = 'arn:aws:sns::1234567890:MyTopic';
 

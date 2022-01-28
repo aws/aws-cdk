@@ -59,7 +59,8 @@ export abstract class ContainerImage {
    * Use this method if the container image has already been created by another process (e.g. jib)
    * and you want to add it as a container image asset.
    *
-   * @param tarballFile Path to the tarball (relative to the directory).
+   * @param tarballFile Absolute path to the tarball. You can use language-specific idioms (such as `__dirname` in Node.js)
+   *                    to create an absolute path based on the current script running directory.
    */
   public static fromTarball(tarballFile: string): ContainerImage {
     return {
