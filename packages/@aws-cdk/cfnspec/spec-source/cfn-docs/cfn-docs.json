@@ -647,13 +647,13 @@
       },
       "description": "The AWS::AmplifyUIBuilder::Component resource specifies a component within an Amplify app. A component is a user interface (UI) element that you can customize. Use `ComponentChild` to configure an instance of a `Component` . A `ComponentChild` instance inherits the configuration of the main `Component` .",
       "properties": {
-        "BindingProperties": "The information to connect a component's properties to data at runtime.",
+        "BindingProperties": "The information to connect a component's properties to data at runtime. You can't specify `tags` as a valid property for `bindingProperties` .",
         "Children": "A list of the component's `ComponentChild` instances.",
-        "CollectionProperties": "The data binding configuration for the component's properties. Use this for a collection component.",
+        "CollectionProperties": "The data binding configuration for the component's properties. Use this for a collection component. You can't specify `tags` as a valid property for `collectionProperties` .",
         "ComponentType": "The type of the component. This can be an Amplify custom UI component or another custom component.",
         "Name": "The name of the component.",
-        "Overrides": "Describes the component's properties that can be overriden in a customized instance of the component.",
-        "Properties": "Describes the component's properties.",
+        "Overrides": "Describes the component's properties that can be overriden in a customized instance of the component. You can't specify `tags` as a valid property for `overrides` .",
+        "Properties": "Describes the component's properties. You can't specify `tags` as a valid property for `properties` .",
         "SourceId": "The unique ID of the component in its original source system, such as Figma.",
         "Tags": "One or more key-value pairs to use when tagging the component.",
         "Variants": "A list of the component's variants. A variant is a unique style configuration of a main component."
@@ -688,7 +688,7 @@
         "Children": "The list of `ComponentChild` instances for this component.",
         "ComponentType": "The type of the child component.",
         "Name": "The name of the child component.",
-        "Properties": "Describes the properties of the child component."
+        "Properties": "Describes the properties of the child component. You can't specify `tags` as a valid property for `properties` ."
       }
     },
     "AWS::AmplifyUIBuilder::Component.ComponentConditionProperty": {
@@ -759,7 +759,7 @@
       "attributes": {},
       "description": "The `ComponentVariant` property specifies the style configuration of a unique variation of a main component.",
       "properties": {
-        "Overrides": "The properties of the component variant that can be overriden when customizing an instance of the component.",
+        "Overrides": "The properties of the component variant that can be overriden when customizing an instance of the component. You can't specify `tags` as a valid property for `overrides` .",
         "VariantValues": "The combination of variants that comprise this variant."
       }
     },
@@ -35073,7 +35073,7 @@
         "AutomationTargetParameterName": "Choose the parameter that will define how your automation will branch out. This target is required for associations that use an Automation runbook and target resources by using rate controls. Automation is a capability of AWS Systems Manager .",
         "CalendarNames": "The names or Amazon Resource Names (ARNs) of the Change Calendar type documents your associations are gated under. The associations only run when that Change Calendar is open. For more information, see [AWS Systems Manager Change Calendar](https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-change-calendar) .",
         "ComplianceSeverity": "The severity level that is assigned to the association.",
-        "DocumentVersion": "The version of the SSM document to associate with the target.",
+        "DocumentVersion": "The version of the SSM document to associate with the target.\n\n> `DocumentVersion` is not valid for documents owned by AWS , such as `AWS-RunPatchBaseline` or `AWS-UpdateSSMAgent` . If you specify `DocumentVersion` for an AWS document, the system returns the following error: \"Error occurred during operation 'CreateAssociation'.\" (RequestToken: <token>, HandlerErrorCode: GeneralServiceException).",
         "InstanceId": "The ID of the instance that the SSM document is associated with. You must specify the `InstanceId` or `Targets` property.\n\n> `InstanceId` has been deprecated. To specify an instance ID for an association, use the `Targets` parameter. If you use the parameter `InstanceId` , you cannot use the parameters `AssociationName` , `DocumentVersion` , `MaxErrors` , `MaxConcurrency` , `OutputLocation` , or `ScheduleExpression` . To use these parameters, you must use the `Targets` parameter.",
         "MaxConcurrency": "The maximum number of targets allowed to run the association at the same time. You can specify a number, for example 10, or a percentage of the target set, for example 10%. The default value is 100%, which means all targets run the association at the same time.\n\nIf a new managed node starts and attempts to run an association while Systems Manager is running `MaxConcurrency` associations, the association is allowed to run. During the next association interval, the new managed node will process its association within the limit specified for `MaxConcurrency` .",
         "MaxErrors": "The number of errors that are allowed before the system stops sending requests to run the association on additional targets. You can specify either an absolute number of errors, for example 10, or a percentage of the target set, for example 10%. If you specify 3, for example, the system stops sending requests when the fourth error is received. If you specify 0, then the system stops sending requests after the first error is returned. If you run an association on 50 managed nodes and set `MaxError` to 10%, then the system stops sending the request when the sixth error is received.\n\nExecutions that are already running an association when `MaxErrors` is reached are allowed to complete, but some of these executions may fail as well. If you need to ensure that there won't be more than max-errors failed executions, set `MaxConcurrency` to 1 so that executions proceed one at a time.",
