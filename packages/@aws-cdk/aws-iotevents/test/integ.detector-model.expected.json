@@ -6,6 +6,9 @@
         "InputDefinition": {
           "Attributes": [
             {
+              "JsonPath": "payload.deviceId"
+            },
+            {
               "JsonPath": "payload.temperature"
             }
           ]
@@ -70,7 +73,10 @@
             "Arn"
           ]
         },
-        "DetectorModelName": "test-detector-model"
+        "DetectorModelDescription": "test-detector-model-description",
+        "DetectorModelName": "test-detector-model",
+        "EvaluationMethod": "SERIAL",
+        "Key": "payload.deviceId"
       }
     }
   }
