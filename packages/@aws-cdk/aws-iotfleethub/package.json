@@ -30,6 +30,13 @@
         "distName": "aws-cdk.aws-iotfleethub",
         "module": "aws_cdk.aws_iotfleethub"
       }
+    },
+    "metadata": {
+      "jsii": {
+        "rosetta": {
+          "strict": true
+        }
+      }
     }
   },
   "repository": {
