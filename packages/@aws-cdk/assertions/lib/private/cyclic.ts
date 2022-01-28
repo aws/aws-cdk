@@ -68,10 +68,12 @@ function findExpressionDependencies(obj: any): Set<string> {
       } else if (keys.length === 1 && keys[0] === 'Fn::GetAtt') {
         ret.add(x[keys[0]][0]);
       } else if (keys.length === 1 && keys[0] === 'Fn::Sub') {
-        for (const logId of logicalIdsInSubString(x[keys[0]][0])) {
+        const argument = x[keys[0]];
+        const pattern = Array.isArray(argument) ? argument[0] : argument;
+        for (const logId of logicalIdsInSubString(pattern)) {
           ret.add(logId);
         }
-        const contextDict = x[keys[0]][1];
+        const contextDict = Array.isArray(argument) ? argument[1] : undefined;
         if (contextDict) {
           Object.values(contextDict).forEach(recurse);
         }
@@ -91,10 +93,8 @@ function logicalIdsInSubString(x: string): string[] {
       case 'getatt':
       case 'ref':
         return [fragment.logicalId];
-      case 'ref':
+      case 'literal':
         return [];
-      default:
-        throw new Error('Unrecognized fragment type');
     }
   });
 }
