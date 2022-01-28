@@ -109,10 +109,14 @@ function analyzeSubPattern(pattern: string): SubFragment[] {
     if (pattern[ph0 + 2] === '!') {
       // "${!" means "don't actually substitute"
       start = ph0 + 3;
+      ph0 = pattern.indexOf('${', start);
       continue;
     }
 
     const ph1 = pattern.indexOf('}', ph0 + 2);
+    if (ph1 === -1) {
+      break;
+    }
     const placeholder = pattern.substring(ph0 + 2, ph1);
 
     if (ph0 > start) {
