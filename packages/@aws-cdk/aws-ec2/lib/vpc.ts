@@ -351,6 +351,17 @@ export interface SelectedSubnets {
    * Whether any of the given subnets are from the VPC's public subnets.
    */
   readonly hasPublic: boolean;
+
+  /**
+   * The subnet selection is not actually real yet
+   *
+   * If this value is true, don't validate anything about the subnets. The count
+   * or identities are not known yet, and the validation will most likely fail
+   * which will prevent a successful lookup.
+   *
+   * @default false
+   */
+  readonly isPendingLookup?: boolean;
 }
 
 /**
@@ -430,6 +441,7 @@ abstract class VpcBase extends Resource implements IVpc {
       internetConnectivityEstablished: tap(new CompositeDependable(), d => subnets.forEach(s => d.add(s.internetConnectivityEstablished))),
       subnets,
       hasPublic: subnets.some(s => pubs.has(s)),
+      isPendingLookup: this.incompleteSubnetDefinition,
     };
   }
 
@@ -953,6 +965,13 @@ export interface VpcProps {
    * @default - No flow logs.
    */
   readonly flowLogs?: { [id: string]: FlowLogOptions }
+
+  /**
+   * The VPC name.
+   *
+   * @default this.node.path
+   */
+  readonly vpcName?: string;
 }
 
 /**
@@ -1298,7 +1317,7 @@ export class Vpc extends VpcBase {
     this.vpcDefaultSecurityGroup = this.resource.attrDefaultSecurityGroup;
     this.vpcIpv6CidrBlocks = this.resource.attrIpv6CidrBlocks;
 
-    Tags.of(this).add(NAME_TAG, this.node.path);
+    Tags.of(this).add(NAME_TAG, props.vpcName || this.node.path);
 
     this.availabilityZones = stack.availabilityZones;
 

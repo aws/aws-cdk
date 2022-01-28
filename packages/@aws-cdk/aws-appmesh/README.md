@@ -236,6 +236,24 @@ The `backends` property can be added with `node.addBackend()`. In the example, w
 
 The `backendDefaults` property is added to the node while creating the virtual node. These are the virtual node's default settings for all backends.
 
+The `VirtualNode.addBackend()` method is especially useful if you want to create a circular traffic flow by having a Virtual Service as a backend whose provider is that same Virtual Node:
+
+```ts
+declare const mesh: appmesh.Mesh;
+
+const node = new appmesh.VirtualNode(this, 'node', {
+  mesh,
+  serviceDiscovery: appmesh.ServiceDiscovery.dns('node'),
+});
+
+const virtualService = new appmesh.VirtualService(this, 'service-1', {
+  virtualServiceProvider: appmesh.VirtualServiceProvider.virtualNode(node),
+  virtualServiceName: 'service1.domain.local',
+});
+
+node.addBackend(appmesh.Backend.virtualService(virtualService));
+```
+
 ### Adding TLS to a listener
 
 The `tls` property specifies TLS configuration when creating a listener for a virtual node or a virtual gateway. 

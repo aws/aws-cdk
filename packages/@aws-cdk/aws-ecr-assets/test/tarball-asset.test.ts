@@ -1,11 +1,11 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { expect as ourExpect, haveResource } from '@aws-cdk/assert-internal';
+import { Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
+import { testFutureBehavior } from '@aws-cdk/cdk-build-tools/lib/feature-flag';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { App, Stack } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
-import { testFutureBehavior } from '@aws-cdk/cdk-build-tools/lib/feature-flag';
 import { TarballImageAsset } from '../lib';
 
 /* eslint-disable quote-props */
@@ -64,7 +64,7 @@ describe('image asset', () => {
     asset.repository.grantPull(user);
 
     // THEN
-    ourExpect(stack).to(haveResource('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         'Statement': [
           {
@@ -112,7 +112,7 @@ describe('image asset', () => {
           'Ref': 'MyUserDC45028B',
         },
       ],
-    }));
+    });
   });
 
   testFutureBehavior('docker directory is staged if asset staging is enabled', flags, App, (app) => {

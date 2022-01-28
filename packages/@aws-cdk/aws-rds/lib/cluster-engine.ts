@@ -334,10 +334,14 @@ export class AuroraMysqlEngineVersion {
   public static readonly VER_2_09_1 = AuroraMysqlEngineVersion.builtIn_5_7('2.09.1');
   /** Version "5.7.mysql_aurora.2.09.2". */
   public static readonly VER_2_09_2 = AuroraMysqlEngineVersion.builtIn_5_7('2.09.2');
+  /** Version "5.7.mysql_aurora.2.09.3". */
+  public static readonly VER_2_09_3 = AuroraMysqlEngineVersion.builtIn_5_7('2.09.3');
   /** Version "5.7.mysql_aurora.2.10.0". */
   public static readonly VER_2_10_0 = AuroraMysqlEngineVersion.builtIn_5_7('2.10.0');
   /** Version "5.7.mysql_aurora.2.10.1". */
   public static readonly VER_2_10_1 = AuroraMysqlEngineVersion.builtIn_5_7('2.10.1');
+  /** Version "8.0.mysql_aurora.3.01.0". */
+  public static readonly VER_3_01_0 = AuroraMysqlEngineVersion.builtIn_8_0('3.01.0');
 
   /**
    * Create a new AuroraMysqlEngineVersion with an arbitrary version.
@@ -353,6 +357,10 @@ export class AuroraMysqlEngineVersion {
 
   private static builtIn_5_7(minorVersion: string, addStandardPrefix: boolean = true): AuroraMysqlEngineVersion {
     return new AuroraMysqlEngineVersion(`5.7.${addStandardPrefix ? 'mysql_aurora.' : ''}${minorVersion}`);
+  }
+
+  private static builtIn_8_0(minorVersion: string): AuroraMysqlEngineVersion {
+    return new AuroraMysqlEngineVersion(`8.0.mysql_aurora.${minorVersion}`, '8.0');
   }
 
   /** The full version string, for example, "5.7.mysql_aurora.1.78.3.6". */

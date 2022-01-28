@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
@@ -95,7 +95,7 @@ describe('node group', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::EKS::Nodegroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EKS::Nodegroup', {
       AmiType: 'AL2_x86_64_GPU',
     });
 
@@ -114,7 +114,7 @@ describe('node group', () => {
     new eks.Nodegroup(stack, 'Nodegroup', { cluster });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::EKS::Nodegroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EKS::Nodegroup', {
       ClusterName: {
         Ref: 'Cluster9EE0221C',
       },
@@ -159,7 +159,7 @@ describe('node group', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::EKS::Nodegroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EKS::Nodegroup', {
       ClusterName: {
         Ref: 'Cluster9EE0221C',
       },
@@ -204,7 +204,7 @@ describe('node group', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::EKS::Nodegroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EKS::Nodegroup', {
       ClusterName: {
         Ref: 'Cluster9EE0221C',
       },
@@ -230,9 +230,284 @@ describe('node group', () => {
         MinSize: 1,
       },
     });
-
-
   });
+  /**
+   * When LaunchTemplate and amiType are undefined and instanceTypes are x86_64 instances,
+   * the amiType should be implicitly set as AL2_x86_64.
+   */
+  test('amiType should be AL2_x86_64 with LaunchTemplate and amiType undefined and instanceTypes is x86_64', () => {
+    // GIVEN
+    const { stack, vpc } = testFixture();
+
+    // WHEN
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+    });
+    new eks.Nodegroup(stack, 'Nodegroup', {
+      cluster,
+      instanceTypes: [
+        new ec2.InstanceType('m5.large'),
+        new ec2.InstanceType('c5.large'),
+      ],
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EKS::Nodegroup', {
+      AmiType: 'AL2_x86_64',
+    });
+  });
+  /**
+   * When LaunchTemplate and amiType are both undefined and instanceTypes are ARM64 instances,
+   * the amiType should be implicitly set as AL2_ARM_64.
+   */
+  test('amiType should be AL2_ARM_64 with LaunchTemplate and amiType undefined and instanceTypes is ARM_64', () => {
+    // GIVEN
+    const { stack, vpc } = testFixture();
+
+    // WHEN
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+    });
+    new eks.Nodegroup(stack, 'Nodegroup', {
+      cluster,
+      instanceTypes: [
+        new ec2.InstanceType('c6g.large'),
+        new ec2.InstanceType('t4g.large'),
+      ],
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EKS::Nodegroup', {
+      AmiType: 'AL2_ARM_64',
+    });
+  });
+
+  /**
+   * When LaunchTemplate and amiType are both undefined and instanceTypes are GPU instances,
+   * the amiType should be implicitly set as AL2_x86_64_GPU.
+   */
+  test('amiType should be AL2_x86_64_GPU with LaunchTemplate and amiType undefined and instanceTypes is GPU', () => {
+    // GIVEN
+    const { stack, vpc } = testFixture();
+
+    // WHEN
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+    });
+    new eks.Nodegroup(stack, 'Nodegroup', {
+      cluster,
+      instanceTypes: [
+        new ec2.InstanceType('p3.large'),
+        new ec2.InstanceType('g3.large'),
+      ],
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EKS::Nodegroup', {
+      AmiType: 'AL2_x86_64_GPU',
+    });
+  });
+  /**
+   * When LaunchTemplate is undefined, amiType is AL2_x86_64 and instanceTypes are not x86_64,
+   * we should throw an error.
+   */
+  test('throws when LaunchTemplate is undefined, amiType is AL2_x86_64 and instanceTypes are not x86_64', () => {
+    // GIVEN
+    const { stack, vpc } = testFixture();
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+    });
+    // THEN
+    expect(() => cluster.addNodegroupCapacity('ng', {
+      amiType: NodegroupAmiType.AL2_X86_64,
+      instanceTypes: [
+        new ec2.InstanceType('p3.large'),
+        new ec2.InstanceType('g3.large'),
+      ],
+    })).toThrow(/The specified AMI does not match the instance types architecture, either specify one of AL2_x86_64_GPU or don't specify any/);
+  });
+  /**
+   * When LaunchTemplate is undefined, amiType is AL2_ARM_64 and instanceTypes are not ARM_64,
+   * we should throw an error.
+   */
+  test('throws when LaunchTemplate is undefined, amiType is AL2_ARM_64 and instanceTypes are not ARM_64', () => {
+    // GIVEN
+    const { stack, vpc } = testFixture();
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+    });
+    // THEN
+    expect(() => cluster.addNodegroupCapacity('ng', {
+      amiType: NodegroupAmiType.AL2_ARM_64,
+      instanceTypes: [
+        new ec2.InstanceType('c5.large'),
+        new ec2.InstanceType('m5.large'),
+      ],
+    })).toThrow(/The specified AMI does not match the instance types architecture, either specify one of AL2_x86_64,BOTTLEROCKET_x86_64 or don't specify any/);
+  });
+
+  /**
+   * When LaunchTemplate is undefined, amiType is AL2_x86_64_GPU and instanceTypes are not GPU instances,
+   * we should throw an error.
+   */
+  test('throws when LaunchTemplate is undefined, amiType is AL2_X86_64_GPU and instanceTypes are not X86_64_GPU', () => {
+    // GIVEN
+    const { stack, vpc } = testFixture();
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+    });
+    // THEN
+    expect(() => cluster.addNodegroupCapacity('ng', {
+      amiType: NodegroupAmiType.AL2_X86_64_GPU,
+      instanceTypes: [
+        new ec2.InstanceType('c5.large'),
+        new ec2.InstanceType('m5.large'),
+      ],
+    })).toThrow(/The specified AMI does not match the instance types architecture, either specify one of AL2_x86_64,BOTTLEROCKET_x86_64 or don't specify any/);
+  });
+  /**
+   * When LaunchTemplate is defined, amiType is undefined and instanceTypes are GPU instances,
+   * we should deploy correctly.
+   */
+  test('deploy correctly with defined LaunchTemplate and instanceTypes(GPU) and amiType undefined.', () => {
+    // GIVEN
+    const { stack, vpc } = testFixture();
+
+    // WHEN
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+    });
+    const ng = new eks.Nodegroup(stack, 'Nodegroup', {
+      cluster,
+      instanceTypes: [
+        new ec2.InstanceType('p3.large'),
+        new ec2.InstanceType('g3.large'),
+      ],
+      launchTemplateSpec: {
+        id: 'mock',
+      },
+    });
+
+    // THEN
+    expect(ng).not.toHaveProperty('AmiType');
+  });
+  /**
+   * When LaunchTemplate is defined, amiType is undefined and instanceTypes are x86_64 instances,
+   * we should deploy correctly.
+   */
+  test('deploy correctly with defined LaunchTemplate and instanceTypes(x86_64) and amiType undefined.', () => {
+    // GIVEN
+    const { stack, vpc } = testFixture();
+
+    // WHEN
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+    });
+    const ng = new eks.Nodegroup(stack, 'Nodegroup', {
+      cluster,
+      instanceTypes: [
+        new ec2.InstanceType('c5.large'),
+        new ec2.InstanceType('m5.large'),
+      ],
+      launchTemplateSpec: {
+        id: 'mock',
+      },
+    });
+
+    // THEN
+    expect(ng).not.toHaveProperty('AmiType');
+  });
+  /**
+   * When LaunchTemplate is defined, amiType is undefined and instanceTypes are ARM_64 instances,
+   * we should deploy correctly.
+   */
+  test('deploy correctly with defined LaunchTemplate and instanceTypes(ARM_64) and amiType undefined.', () => {
+    // GIVEN
+    const { stack, vpc } = testFixture();
+
+    // WHEN
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+    });
+    const ng = new eks.Nodegroup(stack, 'Nodegroup', {
+      cluster,
+      instanceTypes: [
+        new ec2.InstanceType('c6g.large'),
+        new ec2.InstanceType('t4g.large'),
+      ],
+      launchTemplateSpec: {
+        id: 'mock',
+      },
+    });
+
+    // THEN
+    expect(ng).not.toHaveProperty('AmiType');
+  });
+
+  /**
+   * BOTTLEROCKET_X86_64 with defined instance types w/o launchTemplateSpec should deploy correctly.
+   */
+  test('BOTTLEROCKET_X86_64 with defined instance types w/o launchTemplateSpec should deploy correctly', () => {
+    // GIVEN
+    const { stack, vpc } = testFixture();
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+    });
+    // THEN
+    cluster.addNodegroupCapacity('bottlerocket', {
+      instanceTypes: [new ec2.InstanceType('m5a.xlarge')],
+      amiType: NodegroupAmiType.BOTTLEROCKET_X86_64,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EKS::Nodegroup', {
+      AmiType: 'BOTTLEROCKET_x86_64',
+    });
+  });
+
+  /**
+     * BOTTLEROCKET_ARM_64 with defined instance types w/o launchTemplateSpec should deploy correctly.
+     */
+  test('BOTTLEROCKET_ARM_64 with defined instance types w/o launchTemplateSpec should deploy correctly', () => {
+    // GIVEN
+    const { stack, vpc } = testFixture();
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+    });
+      // THEN
+    cluster.addNodegroupCapacity('bottlerocket', {
+      instanceTypes: [new ec2.InstanceType('c6g.xlarge')],
+      amiType: NodegroupAmiType.BOTTLEROCKET_ARM_64,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EKS::Nodegroup', {
+      AmiType: 'BOTTLEROCKET_ARM_64',
+    });
+  });
+
   test('aws-auth will be updated', () => {
     // GIVEN
     const { stack, vpc } = testFixture();
@@ -246,8 +521,7 @@ describe('node group', () => {
     new eks.Nodegroup(stack, 'Nodegroup', { cluster });
 
     // THEN
-    // THEN
-    expect(stack).toHaveResource(eks.KubernetesManifest.RESOURCE_TYPE, {
+    Template.fromStack(stack).hasResourceProperties(eks.KubernetesManifest.RESOURCE_TYPE, {
       Manifest: {
         'Fn::Join': [
           '',
@@ -308,7 +582,7 @@ describe('node group', () => {
       },
     });
     // THEN
-    expect(stack).toHaveResource('AWS::EKS::Nodegroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EKS::Nodegroup', {
       RemoteAccess: {
         Ec2SshKey: 'foo',
         SourceSecurityGroups: [
@@ -337,7 +611,7 @@ describe('node group', () => {
     new eks.Nodegroup(stack, 'Nodegroup', { cluster, forceUpdate: false });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::EKS::Nodegroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EKS::Nodegroup', {
       ForceUpdateEnabled: false,
     });
 
@@ -359,7 +633,7 @@ describe('node group', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::EKS::Nodegroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EKS::Nodegroup', {
       InstanceTypes: [
         'm5.large',
       ],
@@ -384,7 +658,7 @@ describe('node group', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::EKS::Nodegroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EKS::Nodegroup', {
       InstanceTypes: [
         'm5.large',
       ],
@@ -413,7 +687,7 @@ describe('node group', () => {
       capacityType: eks.CapacityType.SPOT,
     });
     // THEN
-    expect(stack).toHaveResourceLike('AWS::EKS::Nodegroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EKS::Nodegroup', {
       InstanceTypes: [
         'm5.large',
         't3.large',
@@ -444,7 +718,7 @@ describe('node group', () => {
       capacityType: eks.CapacityType.ON_DEMAND,
     });
     // THEN
-    expect(stack).toHaveResourceLike('AWS::EKS::Nodegroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EKS::Nodegroup', {
       InstanceTypes: [
         'm5.large',
         't3.large',
@@ -491,7 +765,7 @@ describe('node group', () => {
       capacityType: eks.CapacityType.SPOT,
     });
     // THEN
-    expect(stack).toHaveResourceLike('AWS::EKS::Nodegroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EKS::Nodegroup', {
       CapacityType: 'SPOT',
     });
 
@@ -514,7 +788,7 @@ describe('node group', () => {
         // ARM64
         new ec2.InstanceType('m6g.large'),
       ],
-    })).toThrow(/instanceTypes of different CPU architectures is not allowed/);
+    })).toThrow(/instanceTypes of different architectures is not allowed/);
 
   });
   test('throws when amiType provided is incorrect', () => {
@@ -556,7 +830,7 @@ describe('node group', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::EKS::Nodegroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EKS::Nodegroup', {
       RemoteAccess: {
         Ec2SshKey: 'foo',
       },
@@ -582,7 +856,7 @@ describe('node group', () => {
     new cdk.CfnOutput(stack2, 'NodegroupName', { value: imported.nodegroupName });
 
     // THEN
-    expect(stack2).toMatchTemplate({
+    Template.fromStack(stack2).templateMatches({
       Outputs: {
         NodegroupName: {
           Value: {
@@ -606,7 +880,7 @@ describe('node group', () => {
     cluster.addNodegroupCapacity('ng');
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::EKS::Nodegroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EKS::Nodegroup', {
       ClusterName: {
         Ref: 'Cluster9EE0221C',
       },
@@ -655,7 +929,7 @@ describe('node group', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::EKS::Nodegroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EKS::Nodegroup', {
       ClusterName: {
         Ref: 'Cluster9EE0221C',
       },
@@ -710,7 +984,7 @@ describe('node group', () => {
       desiredSize: 4,
     });
     // THEN
-    expect(stack).toHaveResourceLike('AWS::EKS::Nodegroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EKS::Nodegroup', {
       ScalingConfig: {
         MinSize: 2,
         MaxSize: 6,
@@ -736,7 +1010,7 @@ describe('node group', () => {
       desiredSize: cdk.Lazy.number({ produce: () => 20 }),
     });
     // THEN
-    expect(stack).toHaveResourceLike('AWS::EKS::Nodegroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EKS::Nodegroup', {
       ScalingConfig: {
         MinSize: 5,
         MaxSize: 1,
@@ -776,7 +1050,7 @@ describe('node group', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::EKS::Nodegroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EKS::Nodegroup', {
       LaunchTemplate: {
         Id: {
           Ref: 'LaunchTemplate',

@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import { App, CfnOutput, Stack } from '@aws-cdk/core';
 import * as iam from '../lib';
 
@@ -20,7 +20,7 @@ test('use of cross-stack role reference does not lead to URLSuffix being exporte
   // THEN
   app.synth();
 
-  expect(first).toMatchTemplate({
+  Template.fromStack(first).templateMatches({
     Resources: {
       Role1ABCC5F0: {
         Type: 'AWS::IAM::Role',
@@ -144,7 +144,7 @@ test('SAML principal', () => {
 
   // THEN
   expect(stack.resolve(principal.federated)).toStrictEqual({ Ref: 'MyProvider730BA1C8' });
-  expect(stack).toHaveResource('AWS::IAM::Role', {
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
     AssumeRolePolicyDocument: {
       Statement: [
         {
@@ -213,7 +213,7 @@ test('PrincipalWithConditions.addCondition should work', () => {
   });
 
   // THEN
-  expect(stack).toHaveResource('AWS::IAM::Role', {
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
     AssumeRolePolicyDocument: {
       Statement: [
         {
@@ -243,4 +243,52 @@ test('PrincipalWithConditions inherits principalAccount from AccountPrincipal ',
   // THEN
   expect(accountPrincipal.principalAccount).toStrictEqual('123456789012');
   expect(principalWithConditions.principalAccount).toStrictEqual('123456789012');
+});
+
+test('ServicePrincipal in agnostic stack generates lookup table', () => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  new iam.Role(stack, 'Role', {
+    assumedBy: new iam.ServicePrincipal('ssm.amazonaws.com'),
+  });
+
+  // THEN
+  const template = Template.fromStack(stack);
+  const mappings = template.findMappings('ServiceprincipalMap');
+  expect(mappings.ServiceprincipalMap['af-south-1']?.ssm).toEqual('ssm.af-south-1.amazonaws.com');
+  expect(mappings.ServiceprincipalMap['us-east-1']?.ssm).toEqual('ssm.amazonaws.com');
+});
+
+test('Can enable session tags', () => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  new iam.Role(stack, 'Role', {
+    assumedBy: new iam.WebIdentityPrincipal(
+      'cognito-identity.amazonaws.com',
+      {
+        'StringEquals': { 'cognito-identity.amazonaws.com:aud': 'asdf' },
+        'ForAnyValue:StringLike': { 'cognito-identity.amazonaws.com:amr': 'authenticated' },
+      }).withSessionTags(),
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+    AssumeRolePolicyDocument: {
+      Statement: [
+        {
+          Action: ['sts:AssumeRoleWithWebIdentity', 'sts:TagSession'],
+          Condition: {
+            'StringEquals': { 'cognito-identity.amazonaws.com:aud': 'asdf' },
+            'ForAnyValue:StringLike': { 'cognito-identity.amazonaws.com:amr': 'authenticated' },
+          },
+          Effect: 'Allow',
+          Principal: { Federated: 'cognito-identity.amazonaws.com' },
+        },
+      ],
+    },
+  });
 });
