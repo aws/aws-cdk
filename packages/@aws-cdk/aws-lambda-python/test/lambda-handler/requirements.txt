@@ -6,4 +6,4 @@ urllib3==1.26.7
 # Requests used by this lambda
 requests==2.26.0
 # Pillow 6.x so that python 2.7 and 3.x can both use this fixture
-Pillow==8.4.0
+Pillow==9.0.0
