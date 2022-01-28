@@ -55,12 +55,7 @@ test('CodeBuild projects have a description', () => {
   Template.fromStack(pipelineStack).hasResourceProperties(
     'AWS::CodeBuild::Project',
     {
-      Description: {
-        'Fn::Join': [
-          '',
-          ['Pipeline step ', { Ref: 'Pipeline9850B417' }, '/Build/Synth'],
-        ],
-      },
+      Description: 'Pipeline step PipelineStack/Pipeline/Build/Synth',
     },
   );
 });
