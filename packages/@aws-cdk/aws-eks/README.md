@@ -1411,7 +1411,7 @@ You can enable logging for each one separately using the `clusterLogging`
 property. For example:
 
 ```ts
-this.cluster = new eks.Cluster(this, 'Cluster', {
+const cluster = new eks.Cluster(this, 'Cluster', {
   // ...
   clusterLogging: [
     eks.ClusterLoggingTypes.API,
