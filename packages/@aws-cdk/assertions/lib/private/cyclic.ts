@@ -22,7 +22,13 @@ export function checkTemplateForCyclicDependencies(template: Template): void {
     if (free.length === 0) {
       // Oops!
       const cycle = findCycle(dependencies);
-      throw new Error(`Template is undeployable, these resources have a dependency cycle: ${cycle.join(' -> ')}`);
+
+      const cycleResources: any = {};
+      for (const logicalId of cycle) {
+        cycleResources[logicalId] = template.Resources?.[logicalId];
+      }
+
+      throw new Error(`Template is undeployable, these resources have a dependency cycle: ${cycle.join(' -> ')}:\n\n${JSON.stringify(cycleResources, undefined, 2)}`);
     }
 
     for (const [logicalId, _] of free) {
