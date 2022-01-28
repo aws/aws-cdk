@@ -37,13 +37,6 @@
         "distName": "aws-cdk.aws-rekognition",
         "module": "aws_cdk.aws_rekognition"
       }
-    },
-    "metadata": {
-      "jsii": {
-        "rosetta": {
-          "strict": true
-        }
-      }
     }
   },
   "repository": {
