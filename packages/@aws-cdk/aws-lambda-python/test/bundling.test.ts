@@ -230,6 +230,25 @@ test('Bundling with custom build args', () => {
   }));
 });
 
+test('Bundling with custom environment vars`', () => {
+  const entry = path.join(__dirname, 'lambda-handler');
+  Bundling.bundle({
+    entry: entry,
+    runtime: Runtime.PYTHON_3_7,
+    environment: {
+      KEY: 'value',
+    },
+  });
+
+  expect(Code.fromAsset).toHaveBeenCalledWith(entry, expect.objectContaining({
+    bundling: expect.objectContaining({
+      environment: {
+        KEY: 'value',
+      },
+    }),
+  }));
+});
+
 test('Do not build docker image when skipping bundling', () => {
   const entry = path.join(__dirname, 'lambda-handler');
   Bundling.bundle({

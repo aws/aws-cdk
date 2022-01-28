@@ -58,6 +58,7 @@ export class Bundling implements CdkBundlingOptions {
 
   public readonly image: DockerImage;
   public readonly command: string[];
+  public readonly environment?: { [key: string]: string };
 
   constructor(props: BundlingProps) {
     const {
@@ -85,6 +86,7 @@ export class Bundling implements CdkBundlingOptions {
     });
     this.image = image ?? defaultImage;
     this.command = ['bash', '-c', chain(bundlingCommands)];
+    this.environment = props.environment;
   }
 
   private createBundlingCommand(options: BundlingCommandOptions): string[] {
