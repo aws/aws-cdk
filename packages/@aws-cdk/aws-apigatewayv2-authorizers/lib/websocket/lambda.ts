@@ -9,10 +9,7 @@ import {
 import { ServicePrincipal } from '@aws-cdk/aws-iam';
 import { IFunction } from '@aws-cdk/aws-lambda';
 import { Stack, Names } from '@aws-cdk/core';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct as CoreConstruct } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 
 /**
  * Properties to initialize WebSocketTokenAuthorizer.
@@ -68,7 +65,7 @@ export class WebSocketLambdaAuthorizer implements IWebSocketRouteAuthorizer {
       });
 
       this.handler.addPermission(`${Names.nodeUniqueId(this.authorizer.node)}-Permission`, {
-        scope: options.scope as CoreConstruct,
+        scope: options.scope as Construct,
         principal: new ServicePrincipal('apigateway.amazonaws.com'),
         sourceArn: Stack.of(options.route).formatArn({
           service: 'execute-api',

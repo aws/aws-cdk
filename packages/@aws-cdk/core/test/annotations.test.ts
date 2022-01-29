@@ -1,5 +1,6 @@
 import { CloudAssembly } from '@aws-cdk/cx-api';
-import { Construct, App, Stack } from '../lib';
+import { Construct } from 'constructs';
+import { App, Stack } from '../lib';
 import { Annotations } from '../lib/annotations';
 
 const restore = process.env.CDK_BLOCK_DEPRECATIONS;
@@ -18,13 +19,13 @@ describe('annotations', () => {
 
     // WHEN
     delete process.env.CDK_BLOCK_DEPRECATIONS;
-    Annotations.of(c1).addDeprecation('@aws-cdk/core.Construct.node', 'use @aws-cdk.Construct.construct instead');
+    Annotations.of(c1).addDeprecation('@aws-cdk/core.Construct.node', 'use @aws-Construct.construct instead');
 
     // THEN
     expect(getWarnings(app.synth())).toEqual([
       {
         path: '/MyStack/Hello',
-        message: 'The API @aws-cdk/core.Construct.node is deprecated: use @aws-cdk.Construct.construct instead. This API will be removed in the next major release',
+        message: 'The API @aws-cdk/core.Construct.node is deprecated: use @aws-Construct.construct instead. This API will be removed in the next major release',
       },
     ]);
 
@@ -41,26 +42,26 @@ describe('annotations', () => {
 
     // WHEN
     delete process.env.CDK_BLOCK_DEPRECATIONS;
-    Annotations.of(c1).addDeprecation('@aws-cdk/core.Construct.node', 'use @aws-cdk.Construct.construct instead');
-    Annotations.of(c2).addDeprecation('@aws-cdk/core.Construct.node', 'use @aws-cdk.Construct.construct instead');
-    Annotations.of(c1).addDeprecation('@aws-cdk/core.Construct.node', 'use @aws-cdk.Construct.construct instead');
-    Annotations.of(c3).addDeprecation('@aws-cdk/core.Construct.node', 'use @aws-cdk.Construct.construct instead');
-    Annotations.of(c1).addDeprecation('@aws-cdk/core.Construct.node', 'use @aws-cdk.Construct.construct instead');
-    Annotations.of(c1).addDeprecation('@aws-cdk/core.Construct.node', 'use @aws-cdk.Construct.construct instead');
+    Annotations.of(c1).addDeprecation('@aws-cdk/core.Construct.node', 'use @aws-Construct.construct instead');
+    Annotations.of(c2).addDeprecation('@aws-cdk/core.Construct.node', 'use @aws-Construct.construct instead');
+    Annotations.of(c1).addDeprecation('@aws-cdk/core.Construct.node', 'use @aws-Construct.construct instead');
+    Annotations.of(c3).addDeprecation('@aws-cdk/core.Construct.node', 'use @aws-Construct.construct instead');
+    Annotations.of(c1).addDeprecation('@aws-cdk/core.Construct.node', 'use @aws-Construct.construct instead');
+    Annotations.of(c1).addDeprecation('@aws-cdk/core.Construct.node', 'use @aws-Construct.construct instead');
 
     // THEN
     expect(getWarnings(app.synth())).toEqual([
       {
         path: '/MyStack1/Hello',
-        message: 'The API @aws-cdk/core.Construct.node is deprecated: use @aws-cdk.Construct.construct instead. This API will be removed in the next major release',
+        message: 'The API @aws-cdk/core.Construct.node is deprecated: use @aws-Construct.construct instead. This API will be removed in the next major release',
       },
       {
         path: '/MyStack1/World',
-        message: 'The API @aws-cdk/core.Construct.node is deprecated: use @aws-cdk.Construct.construct instead. This API will be removed in the next major release',
+        message: 'The API @aws-cdk/core.Construct.node is deprecated: use @aws-Construct.construct instead. This API will be removed in the next major release',
       },
       {
         path: '/MyStack2/FooBar',
-        message: 'The API @aws-cdk/core.Construct.node is deprecated: use @aws-cdk.Construct.construct instead. This API will be removed in the next major release',
+        message: 'The API @aws-cdk/core.Construct.node is deprecated: use @aws-Construct.construct instead. This API will be removed in the next major release',
       },
     ]);
 
