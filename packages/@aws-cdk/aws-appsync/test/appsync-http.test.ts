@@ -121,26 +121,7 @@ describe('Http Data Source configuration', () => {
               'states:GetExecutionHistory',
             ],
             Effect: 'Allow',
-            Resource: {
-              'Fn::Join': [
-                '',
-                [
-                  'arn:',
-                  {
-                    Ref: 'AWS::Partition',
-                  },
-                  ':states:',
-                  {
-                    Ref: 'AWS::Region',
-                  },
-                  ':',
-                  {
-                    Ref: 'AWS::AccountId',
-                  },
-                  ':execution:hello:*',
-                ],
-              ],
-            },
+            Resource: 'arn:aws:states:us-east-1::execution:hello:*',
           },
           {
             Action: [

@@ -134,12 +134,17 @@ export class StepFunctionInvokeAction extends Action {
     }));
 
     // allow state machine executions to be inspected
+    const { sep, ...arnComponents } = cdk.Stack.of(this.props.stateMachine).splitArn(
+      this.props.stateMachine.stateMachineArn,
+      cdk.ArnFormat.COLON_RESOURCE_NAME,
+    );
     options.role.addToPrincipalPolicy(new iam.PolicyStatement({
       actions: ['states:DescribeExecution'],
       resources: [cdk.Stack.of(this.props.stateMachine).formatArn({
+        ...arnComponents,
         service: 'states',
         resource: 'execution',
-        resourceName: `${cdk.Stack.of(this.props.stateMachine).splitArn(this.props.stateMachine.stateMachineArn, cdk.ArnFormat.COLON_RESOURCE_NAME).resourceName}:${this.props.executionNamePrefix ?? ''}*`,
+        resourceName: `${arnComponents.resourceName}:${this.props.executionNamePrefix ?? ''}*`,
         arnFormat: cdk.ArnFormat.COLON_RESOURCE_NAME,
       })],
     }));

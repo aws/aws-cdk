@@ -110,15 +110,45 @@ describeDeprecated('StartExecution', () => {
                 [
                   'arn:',
                   {
-                    Ref: 'AWS::Partition',
+                    'Fn::Select': [
+                      1,
+                      {
+                        'Fn::Split': [
+                          ':',
+                          {
+                            Ref: 'ChildStateMachine9133117F',
+                          },
+                        ],
+                      },
+                    ],
                   },
                   ':states:',
                   {
-                    Ref: 'AWS::Region',
+                    'Fn::Select': [
+                      3,
+                      {
+                        'Fn::Split': [
+                          ':',
+                          {
+                            Ref: 'ChildStateMachine9133117F',
+                          },
+                        ],
+                      },
+                    ],
                   },
                   ':',
                   {
-                    Ref: 'AWS::AccountId',
+                    'Fn::Select': [
+                      4,
+                      {
+                        'Fn::Split': [
+                          ':',
+                          {
+                            Ref: 'ChildStateMachine9133117F',
+                          },
+                        ],
+                      },
+                    ],
                   },
                   ':execution:',
                   {

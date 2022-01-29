@@ -97,14 +97,16 @@ export class StartExecution implements sfn.IStepFunctionsTask {
 
     // Step Functions use Cloud Watch managed rules to deal with synchronous tasks.
     if (this.integrationPattern === sfn.ServiceIntegrationPattern.SYNC) {
+      const { sep, ...arnComponents } = stack.splitArn(this.stateMachine.stateMachineArn, ArnFormat.COLON_RESOURCE_NAME);
       policyStatements.push(new iam.PolicyStatement({
         actions: ['states:DescribeExecution', 'states:StopExecution'],
         // https://docs.aws.amazon.com/step-functions/latest/dg/concept-create-iam-advanced.html#concept-create-iam-advanced-execution
         resources: [stack.formatArn({
+          ...arnComponents,
           service: 'states',
           resource: 'execution',
           arnFormat: ArnFormat.COLON_RESOURCE_NAME,
-          resourceName: `${stack.splitArn(this.stateMachine.stateMachineArn, ArnFormat.COLON_RESOURCE_NAME).resourceName}*`,
+          resourceName: `${arnComponents.resourceName}*`,
         })],
       }));
 

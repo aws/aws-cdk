@@ -104,15 +104,45 @@ describe('StepFunctions Invoke Action', () => {
                   [
                     'arn:',
                     {
-                      Ref: 'AWS::Partition',
+                      'Fn::Select': [
+                        1,
+                        {
+                          'Fn::Split': [
+                            ':',
+                            {
+                              Ref: 'SimpleStateMachineE8E2CF40',
+                            },
+                          ],
+                        },
+                      ],
                     },
                     ':states:',
                     {
-                      Ref: 'AWS::Region',
+                      'Fn::Select': [
+                        3,
+                        {
+                          'Fn::Split': [
+                            ':',
+                            {
+                              Ref: 'SimpleStateMachineE8E2CF40',
+                            },
+                          ],
+                        },
+                      ],
                     },
                     ':',
                     {
-                      Ref: 'AWS::AccountId',
+                      'Fn::Select': [
+                        4,
+                        {
+                          'Fn::Split': [
+                            ':',
+                            {
+                              Ref: 'SimpleStateMachineE8E2CF40',
+                            },
+                          ],
+                        },
+                      ],
                     },
                     ':execution:',
                     {
