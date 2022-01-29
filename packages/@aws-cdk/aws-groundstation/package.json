@@ -30,6 +30,13 @@
         "distName": "aws-cdk.aws-groundstation",
         "module": "aws_cdk.aws_groundstation"
       }
+    },
+    "metadata": {
+      "jsii": {
+        "rosetta": {
+          "strict": true
+        }
+      }
     }
   },
   "repository": {

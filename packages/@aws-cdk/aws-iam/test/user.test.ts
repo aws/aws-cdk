@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import { App, SecretValue, Stack, Token } from '@aws-cdk/core';
 import { Group, ManagedPolicy, Policy, PolicyStatement, User } from '../lib';
 
@@ -7,7 +7,7 @@ describe('IAM user', () => {
     const app = new App();
     const stack = new Stack(app, 'MyStack');
     new User(stack, 'MyUser');
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       Resources: { MyUserDC45028B: { Type: 'AWS::IAM::User' } },
     });
   });
@@ -19,7 +19,7 @@ describe('IAM user', () => {
       password: SecretValue.plainText('1234'),
     });
 
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       Resources:
       {
         MyUserDC45028B:
@@ -48,7 +48,7 @@ describe('IAM user', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::IAM::User', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::User', {
       ManagedPolicyArns: [
         { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::aws:policy/asdf']] },
       ],
@@ -65,7 +65,7 @@ describe('IAM user', () => {
       permissionsBoundary,
     });
 
-    expect(stack).toHaveResource('AWS::IAM::User', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::User', {
       PermissionsBoundary: {
         'Fn::Join': [
           '',
@@ -212,7 +212,7 @@ describe('IAM user', () => {
     }));
 
     // THEN
-    expect(stack).toHaveResource('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       Users: ['john'],
       PolicyDocument: {
         Statement: [
@@ -243,7 +243,7 @@ describe('IAM user', () => {
     }));
 
     // THEN
-    expect(stack).toHaveResource('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       Users: ['john'],
       PolicyDocument: {
         Statement: [
@@ -270,7 +270,7 @@ describe('IAM user', () => {
     otherGroup.addUser(user);
 
     // THEN
-    expect(stack).toHaveResource('AWS::IAM::UserToGroupAddition', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::UserToGroupAddition', {
       GroupName: {
         Ref: 'GroupC77FDACD',
       },
@@ -279,7 +279,7 @@ describe('IAM user', () => {
       ],
     });
 
-    expect(stack).toHaveResource('AWS::IAM::UserToGroupAddition', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::UserToGroupAddition', {
       GroupName: {
         Ref: 'OtherGroup85E5C653',
       },

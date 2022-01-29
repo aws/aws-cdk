@@ -30,6 +30,13 @@
         "distName": "aws-cdk.aws-cur",
         "module": "aws_cdk.aws_cur"
       }
+    },
+    "metadata": {
+      "jsii": {
+        "rosetta": {
+          "strict": true
+        }
+      }
     }
   },
   "repository": {

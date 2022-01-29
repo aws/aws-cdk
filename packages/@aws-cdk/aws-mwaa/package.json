@@ -28,6 +28,13 @@
         "distName": "aws-cdk.aws-mwaa",
         "module": "aws_cdk.aws_mwaa"
       }
+    },
+    "metadata": {
+      "jsii": {
+        "rosetta": {
+          "strict": true
+        }
+      }
     }
   },
   "repository": {

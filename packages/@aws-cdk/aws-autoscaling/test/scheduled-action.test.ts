@@ -1,5 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
-import { expect, haveResource, MatchStyle } from '@aws-cdk/assert-internal';
+import { Template } from '@aws-cdk/assertions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import { describeDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
@@ -19,12 +18,10 @@ describeDeprecated('scheduled action', () => {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::AutoScaling::ScheduledAction', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::ScheduledAction', {
       Recurrence: '0 8 * * *',
       MinSize: 10,
-    }));
-
-
+    });
   });
 
   test('correctly formats date objects', () => {
@@ -40,11 +37,9 @@ describeDeprecated('scheduled action', () => {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::AutoScaling::ScheduledAction', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::ScheduledAction', {
       StartTime: '2033-09-10T12:00:00Z',
-    }));
-
-
+    });
   });
 
   test('have timezone property', () => {
@@ -60,12 +55,11 @@ describeDeprecated('scheduled action', () => {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::AutoScaling::ScheduledAction', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::ScheduledAction', {
       MinSize: 12,
       Recurrence: '0 12 * * *',
       TimeZone: 'Asia/Seoul',
-    }));
-
+    });
   });
 
   test('autoscaling group has recommended updatepolicy for scheduled actions', () => {
@@ -80,7 +74,7 @@ describeDeprecated('scheduled action', () => {
     });
 
     // THEN
-    expect(stack).toMatch({
+    Template.fromStack(stack).templateMatches({
       Resources: {
         ASG46ED3070: {
           Type: 'AWS::AutoScaling::AutoScalingGroup',
@@ -124,9 +118,7 @@ describeDeprecated('scheduled action', () => {
           Default: '/aws/service/ami-amazon-linux-latest/amzn-ami-hvm-x86_64-gp2',
         },
       },
-    }, MatchStyle.SUPERSET);
-
-
+    });
   });
 });
 

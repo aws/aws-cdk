@@ -30,6 +30,13 @@
         "distName": "aws-cdk.aws-s3objectlambda",
         "module": "aws_cdk.aws_s3objectlambda"
       }
+    },
+    "metadata": {
+      "jsii": {
+        "rosetta": {
+          "strict": true
+        }
+      }
     }
   },
   "repository": {
