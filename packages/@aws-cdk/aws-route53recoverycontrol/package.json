@@ -30,6 +30,13 @@
         "distName": "aws-cdk.aws-route53recoverycontrol",
         "module": "aws_cdk.aws_route53recoverycontrol"
       }
+    },
+    "metadata": {
+      "jsii": {
+        "rosetta": {
+          "strict": true
+        }
+      }
     }
   },
   "repository": {

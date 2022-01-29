@@ -29,7 +29,14 @@
         ]
       }
     },
-    "projectReferences": true
+    "projectReferences": true,
+    "metadata": {
+      "jsii": {
+        "rosetta": {
+          "strict": true
+        }
+      }
+    }
   },
   "repository": {
     "type": "git",
@@ -157,7 +164,9 @@
       "docs-public-apis:@aws-cdk/aws-servicediscovery.PrivateDnsNamespaceAttributes",
       "docs-public-apis:@aws-cdk/aws-servicediscovery.PrivateDnsNamespaceProps",
       "docs-public-apis:@aws-cdk/aws-servicediscovery.PublicDnsNamespaceAttributes",
-      "docs-public-apis:@aws-cdk/aws-servicediscovery.PublicDnsNamespaceProps"
+      "docs-public-apis:@aws-cdk/aws-servicediscovery.PublicDnsNamespaceProps",
+      "resource-attribute:@aws-cdk/aws-servicediscovery.PrivateDnsNamespace.privateDnsNamespaceHostedZoneId",
+      "resource-attribute:@aws-cdk/aws-servicediscovery.PublicDnsNamespace.publicDnsNamespaceHostedZoneId"
     ]
   },
   "stability": "stable",

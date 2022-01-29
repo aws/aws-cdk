@@ -150,6 +150,37 @@ export interface ClientVpnEndpointOptions {
    * @default true
    */
   readonly authorizeAllUsersToVpcCidr?: boolean;
+
+  /**
+   * The maximum VPN session duration time.
+   *
+   * @default ClientVpnSessionTimeout.TWENTY_FOUR_HOURS
+   */
+  readonly sessionTimeout?: ClientVpnSessionTimeout;
+
+  /**
+   * Customizable text that will be displayed in a banner on AWS provided clients
+   * when a VPN session is established.
+   *
+   * UTF-8 encoded characters only. Maximum of 1400 characters.
+   *
+   * @default - no banner is presented to the client
+   */
+  readonly clientLoginBanner?: string;
+}
+
+/**
+ * Maximum VPN session duration time
+ */
+export enum ClientVpnSessionTimeout {
+  /** 8 hours */
+  EIGHT_HOURS = 8,
+  /** 10 hours */
+  TEN_HOURS = 10,
+  /** 12 hours */
+  TWELVE_HOURS = 12,
+  /** 24 hours */
+  TWENTY_FOUR_HOURS = 24,
 }
 
 /**
@@ -284,6 +315,12 @@ export class ClientVpnEndpoint extends Resource implements IClientVpnEndpoint {
       throw new Error('The name of the Lambda function must begin with the `AWSClientVPN-` prefix');
     }
 
+    if (props.clientLoginBanner
+      && !Token.isUnresolved(props.clientLoginBanner)
+      && props.clientLoginBanner.length > 1400) {
+      throw new Error(`The maximum length for the client login banner is 1400, got ${props.clientLoginBanner.length}`);
+    }
+
     const logging = props.logging ?? true;
     const logGroup = logging
       ? props.logGroup ?? new logs.LogGroup(this, 'LogGroup')
@@ -317,6 +354,13 @@ export class ClientVpnEndpoint extends Resource implements IClientVpnEndpoint {
       transportProtocol: props.transportProtocol,
       vpcId: props.vpc.vpcId,
       vpnPort: props.port,
+      sessionTimeoutHours: props.sessionTimeout,
+      clientLoginBannerOptions: props.clientLoginBanner
+        ? {
+          enabled: true,
+          bannerText: props.clientLoginBanner,
+        }
+        : undefined,
     });
 
     this.endpointId = endpoint.ref;

@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
-import { Stack } from '@aws-cdk/core';
-import { Capture, Match, Template } from '@aws-cdk/assertions';
+import { Aspects, CfnResource, Stack } from '@aws-cdk/core';
+import { Annotations, Capture, Match, Template } from '@aws-cdk/assertions';
 
 class Fixture extends Stack {
   constructor(scope: Construct, id: string) {

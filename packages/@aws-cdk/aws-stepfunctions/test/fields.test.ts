@@ -212,3 +212,52 @@ describe('Fields', () => {
     });
   });
 });
+
+describe('intrinsics constructors', () => {
+  test('array', () => {
+    expect(FieldUtils.renderObject({
+      Field: JsonPath.array('asdf', JsonPath.stringAt('$.Id')),
+    })).toEqual({
+      'Field.$': "States.Array('asdf', $.Id)",
+    });
+  });
+
+  test('format', () => {
+    expect(FieldUtils.renderObject({
+      Field: JsonPath.format('Hi my name is {}.', JsonPath.stringAt('$.Name')),
+    })).toEqual({
+      'Field.$': "States.Format('Hi my name is {}.', $.Name)",
+    });
+
+    expect(FieldUtils.renderObject({
+      Field: JsonPath.format(JsonPath.stringAt('$.Format'), JsonPath.stringAt('$.Name')),
+    })).toEqual({
+      'Field.$': 'States.Format($.Format, $.Name)',
+    });
+  });
+
+  test('stringToJson', () => {
+    expect(FieldUtils.renderObject({
+      Field: JsonPath.stringToJson(JsonPath.stringAt('$.Str')),
+    })).toEqual({
+      'Field.$': 'States.StringToJson($.Str)',
+    });
+  });
+
+  test('jsonToString', () => {
+    expect(FieldUtils.renderObject({
+      Field: JsonPath.jsonToString(JsonPath.objectAt('$.Obj')),
+    })).toEqual({
+      'Field.$': 'States.JsonToString($.Obj)',
+    });
+  });
+});
+
+test('find task token even if nested in intrinsic functions', () => {
+  expect(FieldUtils.containsTaskToken({ x: JsonPath.array(JsonPath.taskToken) })).toEqual(true);
+
+  expect(FieldUtils.containsTaskToken({ x: JsonPath.array('nope') })).toEqual(false);
+
+  // Even if it's a hand-written literal and doesn't use our constructors
+  expect(FieldUtils.containsTaskToken({ x: JsonPath.stringAt('States.Array($$.Task.Token)') })).toEqual(true);
+});

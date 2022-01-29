@@ -34,6 +34,14 @@ beforeEach(() => {
   );
 });
 
+test('Create Cluster with an unresolved release label', () => {
+  new EmrCreateCluster(stack, 'Task', {
+    instances: {},
+    name: 'Cluster',
+    releaseLabel: cdk.Token.asString({}),
+  });
+});
+
 test('Create Cluster with FIRE_AND_FORGET integrationPattern', () => {
   // WHEN
   const task = new EmrCreateCluster(stack, 'Task', {

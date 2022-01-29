@@ -996,4 +996,172 @@ describe('DNS Validated Certificate Handler', () => {
         expect(request.isDone()).toBe(true);
       });
   });
+
+  describe('Delete option record cleanup', () => {
+    let describeCertificateFake;
+    let deleteCertificateFake;
+    let changeResourceRecordSetsFake;
+
+    beforeEach(() => {
+      deleteCertificateFake = sinon.fake.resolves({});
+      AWS.mock('ACM', 'deleteCertificate', deleteCertificateFake);
+      changeResourceRecordSetsFake = sinon.fake.resolves({
+        ChangeInfo: {
+          Id: 'bogus'
+        }
+      });
+      AWS.mock('Route53', 'changeResourceRecordSets', changeResourceRecordSetsFake);
+
+      describeCertificateFake = sinon.fake.resolves({
+        Certificate: {
+          CertificateArn: testCertificateArn,
+          DomainValidationOptions: [{
+            ValidationStatus: 'SUCCESS',
+            ResourceRecord: {
+              Name: testRRName,
+              Type: 'CNAME',
+              Value: testRRValue
+            }
+          }]
+        }
+      });
+      AWS.mock('ACM', 'describeCertificate', describeCertificateFake);
+    });
+
+    test('ignores records if CleanupRecords is not set', () => {
+      const request = nock(ResponseURL).put('/', body => {
+        return body.Status === 'SUCCESS';
+      }).reply(200);
+
+      return LambdaTester(handler.certificateRequestHandler)
+        .event({
+          RequestType: 'Delete',
+          RequestId: testRequestId,
+          PhysicalResourceId: testCertificateArn,
+          ResourceProperties: {
+            Region: 'us-east-1',
+            HostedZoneId: testHostedZoneId,
+          }
+        })
+        .expectResolve(() => {
+          sinon.assert.calledWith(describeCertificateFake, sinon.match({
+            CertificateArn: testCertificateArn
+          }));
+          sinon.assert.calledWith(deleteCertificateFake, sinon.match({
+            CertificateArn: testCertificateArn
+          }));
+          sinon.assert.notCalled(changeResourceRecordSetsFake);
+          expect(request.isDone()).toBe(true);
+        });
+    });
+
+    test('ignores records if CleanupRecords is not set to "true"', () => {
+      const request = nock(ResponseURL).put('/', body => {
+        return body.Status === 'SUCCESS';
+      }).reply(200);
+
+      return LambdaTester(handler.certificateRequestHandler)
+        .event({
+          RequestType: 'Delete',
+          RequestId: testRequestId,
+          PhysicalResourceId: testCertificateArn,
+          ResourceProperties: {
+            Region: 'us-east-1',
+            HostedZoneId: testHostedZoneId,
+            CleanupRecords: 'TRUE', // Not "true"
+          }
+        })
+        .expectResolve(() => {
+          sinon.assert.calledWith(describeCertificateFake, sinon.match({
+            CertificateArn: testCertificateArn
+          }));
+          sinon.assert.calledWith(deleteCertificateFake, sinon.match({
+            CertificateArn: testCertificateArn
+          }));
+          sinon.assert.notCalled(changeResourceRecordSetsFake);
+          expect(request.isDone()).toBe(true);
+        });
+    });
+
+    test('deletes records if CleanupRecords is set to true and records are present', () => {
+      const request = nock(ResponseURL).put('/', body => {
+        return body.Status === 'SUCCESS';
+      }).reply(200);
+
+      AWS.mock('Route53', 'changeResourceRecordSets', changeResourceRecordSetsFake);
+
+      return LambdaTester(handler.certificateRequestHandler)
+        .event({
+          RequestType: 'Delete',
+          RequestId: testRequestId,
+          PhysicalResourceId: testCertificateArn,
+          ResourceProperties: {
+            Region: 'us-east-1',
+            HostedZoneId: testHostedZoneId,
+            CleanupRecords: 'true',
+          },
+        })
+        .expectResolve(() => {
+          sinon.assert.calledWith(describeCertificateFake, sinon.match({
+            CertificateArn: testCertificateArn
+          }));
+          sinon.assert.calledWith(deleteCertificateFake, sinon.match({
+            CertificateArn: testCertificateArn
+          }));
+          sinon.assert.calledWith(changeResourceRecordSetsFake, sinon.match({
+            ChangeBatch: {
+              Changes: [{
+                Action: 'DELETE',
+                ResourceRecordSet: {
+                  Name: testRRName,
+                  Type: 'CNAME',
+                  TTL: 60,
+                  ResourceRecords: [{
+                    Value: testRRValue
+                  }]
+                }
+              }]
+            },
+            HostedZoneId: testHostedZoneId
+          }));
+          expect(request.isDone()).toBe(true);
+        });
+    });
+
+    test('fails if CleanupRecords is set to true and records are not present', () => {
+      describeCertificateFake = sinon.fake.resolves({
+        Certificate: {
+          CertificateArn: testCertificateArn,
+        }
+      });
+      AWS.remock('ACM', 'describeCertificate', describeCertificateFake);
+
+      const request = nock(ResponseURL).put('/', body => {
+        return body.Status === 'FAILED' &&
+        body.Reason.startsWith('Response from describeCertificate did not contain DomainValidationOptions');
+      }).reply(200);
+
+      AWS.mock('Route53', 'changeResourceRecordSets', changeResourceRecordSetsFake);
+
+      return LambdaTester(handler.certificateRequestHandler)
+        .event({
+          RequestType: 'Delete',
+          RequestId: testRequestId,
+          PhysicalResourceId: testCertificateArn,
+          ResourceProperties: {
+            Region: 'us-east-1',
+            HostedZoneId: testHostedZoneId,
+            CleanupRecords: 'true',
+          },
+        })
+        .expectResolve(() => {
+          sinon.assert.calledWith(describeCertificateFake, sinon.match({
+            CertificateArn: testCertificateArn
+          }));
+          sinon.assert.notCalled(deleteCertificateFake);
+          sinon.assert.notCalled(changeResourceRecordSetsFake);
+          expect(request.isDone()).toBe(true);
+        });
+    });
+  });
 });

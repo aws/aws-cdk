@@ -30,6 +30,13 @@
         "distName": "aws-cdk.aws-appintegrations",
         "module": "aws_cdk.aws_appintegrations"
       }
+    },
+    "metadata": {
+      "jsii": {
+        "rosetta": {
+          "strict": true
+        }
+      }
     }
   },
   "repository": {

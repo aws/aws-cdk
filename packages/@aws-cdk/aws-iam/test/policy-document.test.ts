@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Lazy, Stack, Token } from '@aws-cdk/core';
 import {
@@ -492,7 +492,7 @@ describe('IAM policy document', () => {
         ),
       });
 
-      expect(stack).toHaveResourceLike('AWS::IAM::Role', {
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
         AssumeRolePolicyDocument: {
           Statement: [
             {
@@ -568,7 +568,7 @@ describe('IAM policy document', () => {
       });
 
       // THEN
-      expect(stack).toHaveResourceLike('AWS::IAM::Role', {
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
         AssumeRolePolicyDocument: {
           Statement: [
             {
