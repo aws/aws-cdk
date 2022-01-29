@@ -25,6 +25,7 @@ export interface ClusterResourceProps {
   readonly onEventLayer?: lambda.ILayerVersion;
   readonly clusterHandlerSecurityGroup?: ec2.ISecurityGroup;
   readonly tags?: { [key: string]: string };
+  readonly logging?: { [key: string]: [ { [key: string]: any } ] };
 }
 
 /**
@@ -87,6 +88,7 @@ export class ClusterResource extends Construct {
             publicAccessCidrs: props.publicAccessCidrs,
           },
           tags: props.tags,
+          logging: props.logging,
         },
         AssumeRoleArn: this.adminRole.roleArn,
 

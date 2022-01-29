@@ -28,6 +28,13 @@
         "distName": "aws-cdk.aws-devopsguru",
         "module": "aws_cdk.aws_devopsguru"
       }
+    },
+    "metadata": {
+      "jsii": {
+        "rosetta": {
+          "strict": true
+        }
+      }
     }
   },
   "repository": {
