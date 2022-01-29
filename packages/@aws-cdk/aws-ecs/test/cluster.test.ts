@@ -176,8 +176,6 @@ describe('cluster', () => {
           Version: '2012-10-17',
         },
       });
-
-
     });
 
     testDeprecated('with only vpc set, it correctly sets default properties', () => {

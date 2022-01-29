@@ -427,6 +427,13 @@ export interface BucketAttributes {
    * @default - it's assumed the bucket is in the same region as the scope it's being imported into
    */
   readonly region?: string;
+
+  /**
+   * The role to be used by the notifications handler
+   *
+   * @default - a new role will be created.
+   */
+  readonly notificationsHandlerRole?: iam.IRole;
 }
 
 /**
@@ -484,14 +491,12 @@ export abstract class BucketBase extends Resource implements IBucket {
    */
   protected abstract disallowPublicAccess?: boolean;
 
-  private readonly notifications: BucketNotifications;
+  private notifications?: BucketNotifications;
+
+  protected notificationsHandlerRole?: iam.IRole;
 
   constructor(scope: Construct, id: string, props: ResourceProps = {}) {
     super(scope, id, props);
-
-    // defines a BucketNotifications construct. Notice that an actual resource will only
-    // be added if there are notifications added, so we don't need to condition this.
-    this.notifications = new BucketNotifications(this, 'Notifications', { bucket: this });
 
     this.node.addValidation({ validate: () => this.policy?.document.validateForResourcePolicy() ?? [] });
   }
@@ -832,7 +837,17 @@ export abstract class BucketBase extends Resource implements IBucket {
    * https://docs.aws.amazon.com/AmazonS3/latest/dev/NotificationHowTo.html
    */
   public addEventNotification(event: EventType, dest: IBucketNotificationDestination, ...filters: NotificationKeyFilter[]) {
-    this.notifications.addNotification(event, dest, ...filters);
+    this.withNotifications(notifications => notifications.addNotification(event, dest, ...filters));
+  }
+
+  private withNotifications(cb: (notifications: BucketNotifications) => void) {
+    if (!this.notifications) {
+      this.notifications = new BucketNotifications(this, 'Notifications', {
+        bucket: this,
+        handlerRole: this.notificationsHandlerRole,
+      });
+    }
+    cb(this.notifications);
   }
 
   /**
@@ -1456,6 +1471,13 @@ export interface BucketProps {
   readonly transferAcceleration?: boolean;
 
   /**
+   * The role to be used by the notifications handler
+   *
+   * @default - a new role will be created.
+   */
+  readonly notificationsHandlerRole?: iam.IRole;
+
+  /**
    * Inteligent Tiering Configurations
    *
    * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/intelligent-tiering.html
@@ -1538,6 +1560,7 @@ export class Bucket extends BucketBase {
       public policy?: BucketPolicy = undefined;
       protected autoCreatePolicy = false;
       protected disallowPublicAccess = false;
+      protected notificationsHandlerRole = attrs.notificationsHandlerRole;
 
       /**
        * Exports this bucket from the stack.
@@ -1624,6 +1647,8 @@ export class Bucket extends BucketBase {
     super(scope, id, {
       physicalName: props.bucketName,
     });
+
+    this.notificationsHandlerRole = props.notificationsHandlerRole;
 
     const { bucketEncryption, encryptionKey } = this.parseEncryption(props);
 
