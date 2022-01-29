@@ -5,7 +5,7 @@ import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as codepipeline_actions from '@aws-cdk/aws-codepipeline-actions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
-import { Stack } from '@aws-cdk/core';
+import { Stack, Token } from '@aws-cdk/core';
 import { Construct, IDependable, Node } from 'constructs';
 import { FileSetLocation, ShellStep, StackOutputReference } from '../blueprint';
 import { PipelineQueries } from '../helpers-internal/pipeline-queries';
