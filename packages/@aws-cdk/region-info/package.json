@@ -28,7 +28,14 @@
         ]
       }
     },
-    "projectReferences": true
+    "projectReferences": true,
+    "metadata": {
+      "jsii": {
+        "rosetta": {
+          "strict": true
+        }
+      }
+    }
   },
   "scripts": {
     "gen": "bash build-tools/generate.sh",

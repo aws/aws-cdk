@@ -92,7 +92,7 @@ export class RotationSchedule extends Resource {
             'secretsmanager:PutSecretValue',
             'secretsmanager:UpdateSecretVersionStage',
           ],
-          resources: [props.secret.secretArn],
+          resources: [props.secret.secretFullArn ? props.secret.secretFullArn : `${props.secret.secretArn}-??????`],
         }),
       );
       props.rotationLambda.addToRolePolicy(

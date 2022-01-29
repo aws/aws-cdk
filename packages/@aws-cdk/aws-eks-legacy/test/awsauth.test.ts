@@ -1,6 +1,6 @@
-import '@aws-cdk/assert-internal/jest';
-import { describeDeprecated } from '@aws-cdk/cdk-build-tools';
+import { Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
+import { describeDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Cluster, KubernetesResource } from '../lib';
 import { AwsAuth } from '../lib/aws-auth';
 import { testFixtureNoVpc } from './util';
@@ -17,7 +17,7 @@ describeDeprecated('awsauth', () => {
     new AwsAuth(stack, 'AwsAuth', { cluster });
 
     // THEN
-    expect(stack).toHaveResource(KubernetesResource.RESOURCE_TYPE, {
+    Template.fromStack(stack).hasResourceProperties(KubernetesResource.RESOURCE_TYPE, {
       Manifest: JSON.stringify([{
         apiVersion: 'v1',
         kind: 'ConfigMap',
@@ -44,8 +44,8 @@ describeDeprecated('awsauth', () => {
     cluster.awsAuth.addAccount('5566776655');
 
     // THEN
-    expect(stack).toCountResources(KubernetesResource.RESOURCE_TYPE, 1);
-    expect(stack).toHaveResource(KubernetesResource.RESOURCE_TYPE, {
+    Template.fromStack(stack).resourceCountIs(KubernetesResource.RESOURCE_TYPE, 1);
+    Template.fromStack(stack).hasResourceProperties(KubernetesResource.RESOURCE_TYPE, {
       Manifest: {
         'Fn::Join': [
           '',
@@ -106,7 +106,7 @@ describeDeprecated('awsauth', () => {
     cluster.awsAuth.addUserMapping(user, { groups: ['group2'] });
 
     // THEN
-    expect(stack).toHaveResource(KubernetesResource.RESOURCE_TYPE, {
+    Template.fromStack(stack).hasResourceProperties(KubernetesResource.RESOURCE_TYPE, {
       Manifest: {
         'Fn::Join': [
           '',

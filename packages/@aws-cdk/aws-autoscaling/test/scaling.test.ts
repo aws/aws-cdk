@@ -1,5 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
-import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert-internal';
+import { Template } from '@aws-cdk/assertions';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
@@ -20,15 +19,13 @@ describe('scaling', () => {
       });
 
       // THEN
-      expect(stack).to(haveResource('AWS::AutoScaling::ScalingPolicy', {
+      Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::ScalingPolicy', {
         PolicyType: 'TargetTrackingScaling',
         TargetTrackingConfiguration: {
           PredefinedMetricSpecification: { PredefinedMetricType: 'ASGAverageCPUUtilization' },
           TargetValue: 30,
         },
-      }));
-
-
+      });
     });
 
     test('network ingress', () => {
@@ -42,15 +39,13 @@ describe('scaling', () => {
       });
 
       // THEN
-      expect(stack).to(haveResource('AWS::AutoScaling::ScalingPolicy', {
+      Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::ScalingPolicy', {
         PolicyType: 'TargetTrackingScaling',
         TargetTrackingConfiguration: {
           PredefinedMetricSpecification: { PredefinedMetricType: 'ASGAverageNetworkIn' },
           TargetValue: 100,
         },
-      }));
-
-
+      });
     });
 
     test('network egress', () => {
@@ -64,15 +59,13 @@ describe('scaling', () => {
       });
 
       // THEN
-      expect(stack).to(haveResource('AWS::AutoScaling::ScalingPolicy', {
+      Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::ScalingPolicy', {
         PolicyType: 'TargetTrackingScaling',
         TargetTrackingConfiguration: {
           PredefinedMetricSpecification: { PredefinedMetricType: 'ASGAverageNetworkOut' },
           TargetValue: 100,
         },
-      }));
-
-
+      });
     });
 
     test('request count per second', () => {
@@ -99,7 +92,7 @@ describe('scaling', () => {
         ],
       };
 
-      expect(stack).to(haveResource('AWS::AutoScaling::ScalingPolicy', {
+      Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::ScalingPolicy', {
         PolicyType: 'TargetTrackingScaling',
         TargetTrackingConfiguration: {
           TargetValue: 600,
@@ -118,9 +111,7 @@ describe('scaling', () => {
             },
           },
         },
-      }));
-
-
+      });
     });
 
     test('request count per minute', () => {
@@ -147,7 +138,7 @@ describe('scaling', () => {
         ],
       };
 
-      expect(stack).to(haveResource('AWS::AutoScaling::ScalingPolicy', {
+      Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::ScalingPolicy', {
         PolicyType: 'TargetTrackingScaling',
         TargetTrackingConfiguration: {
           TargetValue: 10,
@@ -166,9 +157,7 @@ describe('scaling', () => {
             },
           },
         },
-      }));
-
-
+      });
     });
 
     test('custom metric', () => {
@@ -189,7 +178,7 @@ describe('scaling', () => {
       });
 
       // THEN
-      expect(stack).to(haveResource('AWS::AutoScaling::ScalingPolicy', {
+      Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::ScalingPolicy', {
         PolicyType: 'TargetTrackingScaling',
         TargetTrackingConfiguration: {
           CustomizedMetricSpecification: {
@@ -200,9 +189,7 @@ describe('scaling', () => {
           },
           TargetValue: 2,
         },
-      }));
-
-
+      });
     });
   });
 
@@ -227,7 +214,7 @@ describe('scaling', () => {
     });
 
     // THEN: scaling in policy
-    expect(stack).to(haveResource('AWS::AutoScaling::ScalingPolicy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::ScalingPolicy', {
       MetricAggregationType: 'Average',
       PolicyType: 'StepScaling',
       StepAdjustments: [
@@ -241,17 +228,17 @@ describe('scaling', () => {
           ScalingAdjustment: -2,
         },
       ],
-    }));
+    });
 
-    expect(stack).to(haveResource('AWS::CloudWatch::Alarm', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
       ComparisonOperator: 'GreaterThanOrEqualToThreshold',
       Threshold: 3,
       AlarmActions: [{ Ref: 'FixtureASGMetricUpperPolicyC464CAFB' }],
       AlarmDescription: 'Upper threshold scaling alarm',
-    }));
+    });
 
     // THEN: scaling out policy
-    expect(stack).to(haveResource('AWS::AutoScaling::ScalingPolicy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::ScalingPolicy', {
       MetricAggregationType: 'Average',
       PolicyType: 'StepScaling',
       StepAdjustments: [
@@ -260,16 +247,14 @@ describe('scaling', () => {
           ScalingAdjustment: 1,
         },
       ],
-    }));
+    });
 
-    expect(stack).to(haveResource('AWS::CloudWatch::Alarm', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
       ComparisonOperator: 'LessThanOrEqualToThreshold',
       Threshold: 2,
       AlarmActions: [{ Ref: 'FixtureASGMetricLowerPolicy4A1CDE42' }],
       AlarmDescription: 'Lower threshold scaling alarm',
-    }));
-
-
+    });
   });
 });
 
@@ -289,11 +274,12 @@ test('step scaling from percentile metric', () => {
   });
 
   // THEN
-  expect(stack).to(haveResourceLike('AWS::AutoScaling::ScalingPolicy', {
+  Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::ScalingPolicy', {
     PolicyType: 'StepScaling',
     MetricAggregationType: 'Average',
-  }));
-  expect(stack).to(haveResource('AWS::CloudWatch::Alarm', {
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
     ComparisonOperator: 'GreaterThanOrEqualToThreshold',
     EvaluationPeriods: 1,
     AlarmActions: [
@@ -303,7 +289,7 @@ test('step scaling from percentile metric', () => {
     MetricName: 'Metric',
     Namespace: 'Test',
     Threshold: 100,
-  }));
+  });
 });
 
 test('step scaling with evaluation period configured', () => {
@@ -324,18 +310,19 @@ test('step scaling with evaluation period configured', () => {
   });
 
   // THEN
-  expect(stack).to(haveResourceLike('AWS::AutoScaling::ScalingPolicy', {
+  Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::ScalingPolicy', {
     PolicyType: 'StepScaling',
     MetricAggregationType: 'Maximum',
-  }));
-  expect(stack).to(haveResource('AWS::CloudWatch::Alarm', {
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
     ComparisonOperator: 'GreaterThanOrEqualToThreshold',
     EvaluationPeriods: 10,
     ExtendedStatistic: 'p99',
     MetricName: 'Metric',
     Namespace: 'Test',
     Threshold: 100,
-  }));
+  });
 });
 
 class ASGFixture extends Construct {

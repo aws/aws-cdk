@@ -176,8 +176,6 @@ describe('cluster', () => {
           Version: '2012-10-17',
         },
       });
-
-
     });
 
     testDeprecated('with only vpc set, it correctly sets default properties', () => {
@@ -2134,6 +2132,30 @@ describe('cluster', () => {
     }).toThrow(/You must specify an S3 bucket name in the execute command log configuration to enable S3 encryption./);
 
 
+  });
+
+  test('When importing ECS Cluster via Arn', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const clusterName = 'my-cluster';
+    const region = 'service-region';
+    const account = 'service-account';
+    const cluster = ecs.Cluster.fromClusterArn(stack, 'Cluster', `arn:aws:ecs:${region}:${account}:cluster/${clusterName}`);
+
+    // THEN
+    expect(cluster.clusterName).toEqual(clusterName);
+    expect(cluster.env.region).toEqual(region);
+    expect(cluster.env.account).toEqual(account);
+  });
+
+  test('throws error when import ECS Cluster without resource name in arn', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // THEN
+    expect(() => {
+      ecs.Cluster.fromClusterArn(stack, 'Cluster', 'arn:aws:ecs:service-region:service-account:cluster');
+    }).toThrowError(/Missing required Cluster Name from Cluster ARN: /);
   });
 });
 

@@ -28,7 +28,7 @@ export interface SourceCodeProviderConfig {
   /**
    * The repository for the application. Must use the `HTTPS` protocol.
    *
-   * @example https://github.com/aws/aws-cdk
+   * For example, `https://github.com/aws/aws-cdk`.
    */
   readonly repository: string;
 

@@ -288,12 +288,14 @@ describe('Product', () => {
           },
         ],
       });
-    }),
+    });
 
     test('add tag options to product', () => {
-      const tagOptions = new servicecatalog.TagOptions({
-        key1: ['value1', 'value2'],
-        key2: ['value1'],
+      const tagOptions = new servicecatalog.TagOptions(stack, 'TagOptions', {
+        allowedValuesForTags: {
+          key1: ['value1', 'value2'],
+          key2: ['value1'],
+        },
       });
 
       product.associateTagOptions(tagOptions);
@@ -303,9 +305,11 @@ describe('Product', () => {
     }),
 
     test('add tag options as input to product in props', () => {
-      const tagOptions = new servicecatalog.TagOptions({
-        key1: ['value1', 'value2'],
-        key2: ['value1'],
+      const tagOptions = new servicecatalog.TagOptions(stack, 'TagOptions', {
+        allowedValuesForTags: {
+          key1: ['value1', 'value2'],
+          key2: ['value1'],
+        },
       });
 
       new servicecatalog.CloudFormationProduct(stack, 'MyProductWithTagOptions', {
@@ -323,44 +327,19 @@ describe('Product', () => {
       Template.fromStack(stack).resourceCountIs('AWS::ServiceCatalog::TagOptionAssociation', 3);
     }),
 
-    test('adding identical tag options to product is idempotent', () => {
-      const tagOptions1 = new servicecatalog.TagOptions({
-        key1: ['value1', 'value2'],
-        key2: ['value1'],
+    test('adding tag options to product multiple times is idempotent', () => {
+      const tagOptions = new servicecatalog.TagOptions(stack, 'TagOptions', {
+        allowedValuesForTags: {
+          key1: ['value1', 'value2'],
+          key2: ['value1'],
+        },
       });
 
-      const tagOptions2 = new servicecatalog.TagOptions({
-        key1: ['value1', 'value2'],
-      });
-
-      product.associateTagOptions(tagOptions1);
-      product.associateTagOptions(tagOptions2); // If not idempotent this would fail
+      product.associateTagOptions(tagOptions);
+      product.associateTagOptions(tagOptions); // If not idempotent this would fail
 
       Template.fromStack(stack).resourceCountIs('AWS::ServiceCatalog::TagOption', 3); //Generates a resource for each unique key-value pair
       Template.fromStack(stack).resourceCountIs('AWS::ServiceCatalog::TagOptionAssociation', 3);
-    }),
-
-    test('adding duplicate tag options to portfolio and product creates unique tag options and enumerated associations', () => {
-      const tagOptions1 = new servicecatalog.TagOptions({
-        key1: ['value1', 'value2'],
-        key2: ['value1'],
-      });
-
-      const tagOptions2 = new servicecatalog.TagOptions({
-        key1: ['value1', 'value2'],
-        key2: ['value2'],
-      });
-
-      const portfolio = new servicecatalog.Portfolio(stack, 'MyPortfolio', {
-        displayName: 'testPortfolio',
-        providerName: 'testProvider',
-      });
-
-      portfolio.associateTagOptions(tagOptions1);
-      product.associateTagOptions(tagOptions2); // If not idempotent this would fail
-
-      Template.fromStack(stack).resourceCountIs('AWS::ServiceCatalog::TagOption', 4); //Generates a resource for each unique key-value pair
-      Template.fromStack(stack).resourceCountIs('AWS::ServiceCatalog::TagOptionAssociation', 6);
     });
   });
 });

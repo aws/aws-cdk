@@ -28,6 +28,13 @@
         "distName": "aws-cdk.aws-iotwireless",
         "module": "aws_cdk.aws_iotwireless"
       }
+    },
+    "metadata": {
+      "jsii": {
+        "rosetta": {
+          "strict": true
+        }
+      }
     }
   },
   "repository": {

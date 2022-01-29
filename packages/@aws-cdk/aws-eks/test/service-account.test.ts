@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import * as eks from '../lib';
 import { testFixture, testFixtureCluster } from './util';
@@ -15,7 +15,7 @@ describe('service account', () => {
       new eks.ServiceAccount(stack, 'MyServiceAccount', { cluster });
 
       // THEN
-      expect(stack).toHaveResource(eks.KubernetesManifest.RESOURCE_TYPE, {
+      Template.fromStack(stack).hasResourceProperties(eks.KubernetesManifest.RESOURCE_TYPE, {
         ServiceToken: {
           'Fn::GetAtt': [
             'awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B',
@@ -38,7 +38,7 @@ describe('service account', () => {
           ],
         },
       });
-      expect(stack).toHaveResource(iam.CfnRole.CFN_RESOURCE_TYPE_NAME, {
+      Template.fromStack(stack).hasResourceProperties(iam.CfnRole.CFN_RESOURCE_TYPE_NAME, {
         AssumeRolePolicyDocument: {
           Statement: [
             {
@@ -73,7 +73,7 @@ describe('service account', () => {
       cluster.addServiceAccount('MyOtherServiceAccount');
 
       // THEN
-      expect(stack).toHaveResource(eks.KubernetesManifest.RESOURCE_TYPE, {
+      Template.fromStack(stack).hasResourceProperties(eks.KubernetesManifest.RESOURCE_TYPE, {
         ServiceToken: {
           'Fn::GetAtt': [
             'awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B',
@@ -122,7 +122,7 @@ describe('service account', () => {
 
       cluster.addServiceAccount('MyServiceAccount');
 
-      expect(stack).toHaveResource(eks.KubernetesManifest.RESOURCE_TYPE, {
+      Template.fromStack(stack).hasResourceProperties(eks.KubernetesManifest.RESOURCE_TYPE, {
         ServiceToken: {
           'Fn::GetAtt': [
             'StackClusterF0EB02FAKubectlProviderNestedStackStackClusterF0EB02FAKubectlProviderNestedStackResource739D12C4',
@@ -147,7 +147,7 @@ describe('service account', () => {
         },
       });
 
-      expect(stack).toHaveResource(iam.CfnRole.CFN_RESOURCE_TYPE_NAME, {
+      Template.fromStack(stack).hasResourceProperties(iam.CfnRole.CFN_RESOURCE_TYPE_NAME, {
         AssumeRolePolicyDocument: {
           Statement: [
             {

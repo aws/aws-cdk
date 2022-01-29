@@ -14,7 +14,7 @@
 
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
 
-```ts
+```ts nofixture
 import * as acmpca from '@aws-cdk/aws-acmpca';
 ```
 
@@ -62,6 +62,8 @@ If you need to pass the higher-level `ICertificateAuthority` somewhere,
 you can get it from the lower-level `CfnCertificateAuthority` using the same `fromCertificateAuthorityArn` method:
 
 ```ts
+declare const cfnCertificateAuthority: acmpca.CfnCertificateAuthority;
+
 const certificateAuthority = acmpca.CertificateAuthority.fromCertificateAuthorityArn(this, 'CertificateAuthority',
   cfnCertificateAuthority.attrArn);
 ```

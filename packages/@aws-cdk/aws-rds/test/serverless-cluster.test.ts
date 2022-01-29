@@ -1,5 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
-import { ResourcePart, SynthUtils } from '@aws-cdk/assert-internal';
+import { Template } from '@aws-cdk/assertions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
@@ -25,7 +24,7 @@ describe('serverless cluster', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::RDS::DBCluster', {
+    Template.fromStack(stack).hasResource('AWS::RDS::DBCluster', {
       Properties: {
         Engine: 'aurora-postgresql',
         DBClusterParameterGroupName: 'default.aurora-postgresql10',
@@ -47,9 +46,7 @@ describe('serverless cluster', () => {
       },
       DeletionPolicy: 'Snapshot',
       UpdateReplacePolicy: 'Snapshot',
-    }, ResourcePart.CompleteDefinition);
-
-
+    });
   });
 
   test('can create a Serverless Cluster with Aurora Mysql database engine', () => {
@@ -64,7 +61,7 @@ describe('serverless cluster', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::RDS::DBCluster', {
+    Template.fromStack(stack).hasResource('AWS::RDS::DBCluster', {
       Properties: {
         Engine: 'aurora-mysql',
         DBClusterParameterGroupName: 'default.aurora-mysql5.7',
@@ -108,8 +105,7 @@ describe('serverless cluster', () => {
       },
       DeletionPolicy: 'Snapshot',
       UpdateReplacePolicy: 'Snapshot',
-    }, ResourcePart.CompleteDefinition);
-
+    });
   });
 
   test('can create a Serverless cluster with imported vpc and security group', () => {
@@ -129,7 +125,7 @@ describe('serverless cluster', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::RDS::DBCluster', {
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
       Engine: 'aurora-postgresql',
       DBClusterParameterGroupName: 'default.aurora-postgresql10',
       EngineMode: 'serverless',
@@ -160,8 +156,6 @@ describe('serverless cluster', () => {
       },
       VpcSecurityGroupIds: ['SecurityGroupId12345'],
     });
-
-
   });
 
   test("sets the retention policy of the SubnetGroup to 'Retain' if the Serverless Cluster is created with 'Retain'", () => {
@@ -174,12 +168,10 @@ describe('serverless cluster', () => {
       removalPolicy: cdk.RemovalPolicy.RETAIN,
     });
 
-    expect(stack).toHaveResourceLike('AWS::RDS::DBSubnetGroup', {
+    Template.fromStack(stack).hasResource('AWS::RDS::DBSubnetGroup', {
       DeletionPolicy: 'Retain',
       UpdateReplacePolicy: 'Retain',
-    }, ResourcePart.CompleteDefinition);
-
-
+    });
   });
 
   test('creates a secret when master credentials are not specified', () => {
@@ -198,7 +190,7 @@ describe('serverless cluster', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::RDS::DBCluster', {
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
       MasterUsername: {
         'Fn::Join': [
           '',
@@ -225,7 +217,7 @@ describe('serverless cluster', () => {
       },
     });
 
-    expect(stack).toHaveResource('AWS::SecretsManager::Secret', {
+    Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::Secret', {
       GenerateSecretString: {
         ExcludeCharacters: '"@/\\',
         GenerateStringKey: 'password',
@@ -233,8 +225,6 @@ describe('serverless cluster', () => {
         SecretStringTemplate: '{"username":"myuser"}',
       },
     });
-
-
   });
 
   test('create an Serverless cluster with custom KMS key for storage', () => {
@@ -250,7 +240,7 @@ describe('serverless cluster', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::RDS::DBCluster', {
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
       KmsKeyId: {
         'Fn::GetAtt': [
           'Key961B73FD',
@@ -258,8 +248,6 @@ describe('serverless cluster', () => {
         ],
       },
     });
-
-
   });
 
   test('create a cluster using a specific version of Postgresql', () => {
@@ -276,13 +264,11 @@ describe('serverless cluster', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::RDS::DBCluster', {
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
       Engine: 'aurora-postgresql',
       EngineMode: 'serverless',
       EngineVersion: '10.7',
     });
-
-
   });
 
   test('cluster exposes different read and write endpoints', () => {
@@ -302,8 +288,6 @@ describe('serverless cluster', () => {
     // THEN
     expect(stack.resolve(cluster.clusterEndpoint)).not
       .toEqual(stack.resolve(cluster.clusterReadEndpoint));
-
-
   });
 
   test('imported cluster with imported security group honors allowAllOutbound', () => {
@@ -324,11 +308,9 @@ describe('serverless cluster', () => {
     cluster.connections.allowToAnyIpv4(ec2.Port.tcp(443));
 
     // THEN
-    expect(stack).toHaveResource('AWS::EC2::SecurityGroupEgress', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroupEgress', {
       GroupId: 'sg-123456789',
     });
-
-
   });
 
   test('can import a serverless cluster with minimal attributes', () => {
@@ -339,8 +321,6 @@ describe('serverless cluster', () => {
     });
 
     expect(cluster.clusterIdentifier).toEqual('identifier');
-
-
   });
 
   test('minimal imported cluster throws on accessing attributes for missing parameters', () => {
@@ -352,8 +332,6 @@ describe('serverless cluster', () => {
 
     expect(() => cluster.clusterEndpoint).toThrow(/Cannot access `clusterEndpoint` of an imported cluster/);
     expect(() => cluster.clusterReadEndpoint).toThrow(/Cannot access `clusterReadEndpoint` of an imported cluster/);
-
-
   });
 
   test('imported cluster can access properties if attributes are provided', () => {
@@ -371,8 +349,6 @@ describe('serverless cluster', () => {
 
     expect(cluster.clusterEndpoint.socketAddress).toEqual('addr:3306');
     expect(cluster.clusterReadEndpoint.socketAddress).toEqual('reader-address:3306');
-
-
   });
 
   test('throws when trying to add rotation to a serverless cluster without secret', () => {
@@ -392,8 +368,6 @@ describe('serverless cluster', () => {
 
     // THEN
     expect(() => cluster.addRotationSingleUser()).toThrow(/without secret/);
-
-
   });
 
   test('throws when trying to add single user rotation multiple times', () => {
@@ -411,8 +385,6 @@ describe('serverless cluster', () => {
 
     // THEN
     expect(() => cluster.addRotationSingleUser()).toThrow(/A single user rotation was already added to this cluster/);
-
-
   });
 
   test('can set deletion protection', () => {
@@ -428,11 +400,9 @@ describe('serverless cluster', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::RDS::DBCluster', {
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
       DeletionProtection: true,
     });
-
-
   });
 
   test('can set backup retention', () => {
@@ -448,16 +418,15 @@ describe('serverless cluster', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::RDS::DBCluster', {
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
       BackupRetentionPeriod: 2,
     });
-
-
   });
 
   test('does not throw (but adds a node error) if a (dummy) VPC does not have sufficient subnets', () => {
     // GIVEN
-    const stack = testStack();
+    const app = new cdk.App();
+    const stack = testStack(app, 'TestStack');
     const vpc = ec2.Vpc.fromLookup(stack, 'VPC', { isDefault: true });
 
     // WHEN
@@ -470,11 +439,9 @@ describe('serverless cluster', () => {
     });
 
     // THEN
-    const art = SynthUtils.synthesize(stack);
+    const art = app.synth().getStackArtifact('TestStack');
     const meta = art.findMetadataByType('aws:cdk:error');
     expect(meta[0].data).toEqual('Cluster requires at least 2 subnets, got 0');
-
-
   });
 
   test('can set scaling configuration', () => {
@@ -494,7 +461,7 @@ describe('serverless cluster', () => {
     });
 
     //THEN
-    expect(stack).toHaveResource('AWS::RDS::DBCluster', {
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
       ScalingConfiguration: {
         AutoPause: true,
         MaxCapacity: 128,
@@ -502,8 +469,6 @@ describe('serverless cluster', () => {
         SecondsUntilAutoPause: 600,
       },
     });
-
-
   });
 
   test('can enable Data API', () => {
@@ -519,11 +484,9 @@ describe('serverless cluster', () => {
     });
 
     //THEN
-    expect(stack).toHaveResource('AWS::RDS::DBCluster', {
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
       EnableHttpEndpoint: true,
     });
-
-
   });
 
   test('default scaling options', () => {
@@ -539,13 +502,11 @@ describe('serverless cluster', () => {
     });
 
     //THEN
-    expect(stack).toHaveResource('AWS::RDS::DBCluster', {
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
       ScalingConfiguration: {
         AutoPause: true,
       },
     });
-
-
   });
 
   test('auto pause is disabled if a time of zero is specified', () => {
@@ -563,13 +524,11 @@ describe('serverless cluster', () => {
     });
 
     //THEN
-    expect(stack).toHaveResource('AWS::RDS::DBCluster', {
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
       ScalingConfiguration: {
         AutoPause: false,
       },
     });
-
-
   });
 
   test('throws when invalid auto pause time is specified', () => {
@@ -595,8 +554,6 @@ describe('serverless cluster', () => {
           autoPause: cdk.Duration.days(2),
         },
       })).toThrow(/auto pause time must be between 5 minutes and 1 day./);
-
-
   });
 
   test('throws when invalid backup retention period is specified', () => {
@@ -618,8 +575,6 @@ describe('serverless cluster', () => {
         vpc,
         backupRetention: cdk.Duration.days(36),
       })).toThrow(/backup retention period must be between 1 and 35 days. received: 36/);
-
-
   });
 
   test('throws error when min capacity is greater than max capacity', () => {
@@ -637,8 +592,6 @@ describe('serverless cluster', () => {
           maxCapacity: AuroraCapacityUnit.ACU_1,
         },
       })).toThrow(/maximum capacity must be greater than or equal to minimum capacity./);
-
-
   });
 
   test('check that clusterArn property works', () => {
@@ -669,7 +622,6 @@ describe('serverless cluster', () => {
         ],
       ],
     });
-
   });
 
   test('can grant Data API access', () => {
@@ -687,7 +639,7 @@ describe('serverless cluster', () => {
     cluster.grantDataApiAccess(user);
 
     // THEN
-    expect(stack).toHaveResource('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -721,8 +673,6 @@ describe('serverless cluster', () => {
         },
       ],
     });
-
-
   });
 
   test('can grant Data API access on imported cluster with given secret', () => {
@@ -742,7 +692,7 @@ describe('serverless cluster', () => {
     cluster.grantDataApiAccess(user);
 
     // THEN
-    expect(stack).toHaveResource('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -776,8 +726,6 @@ describe('serverless cluster', () => {
         },
       ],
     });
-
-
   });
 
   test('grant Data API access enables the Data API', () => {
@@ -794,11 +742,9 @@ describe('serverless cluster', () => {
     cluster.grantDataApiAccess(user);
 
     //THEN
-    expect(stack).toHaveResource('AWS::RDS::DBCluster', {
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
       EnableHttpEndpoint: true,
     });
-
-
   });
 
   test('grant Data API access throws if the Data API is disabled', () => {
@@ -814,8 +760,6 @@ describe('serverless cluster', () => {
 
     // WHEN
     expect(() => cluster.grantDataApiAccess(user)).toThrow(/Cannot grant Data API access when the Data API is disabled/);
-
-
   });
 
   test('changes the case of the cluster identifier if the lowercaseDbIdentifier feature flag is enabled', () => {
@@ -835,11 +779,9 @@ describe('serverless cluster', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::RDS::DBCluster', {
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
       DBClusterIdentifier: clusterIdentifier.toLowerCase(),
     });
-
-
   });
 
   test('does not change the case of the cluster identifier if the lowercaseDbIdentifier feature flag is disabled', () => {
@@ -857,11 +799,9 @@ describe('serverless cluster', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::RDS::DBCluster', {
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
       DBClusterIdentifier: clusterIdentifier,
     });
-
-
   });
 });
 

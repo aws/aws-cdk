@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as core from '@aws-cdk/core';
 import * as rds from '../../lib';
 
@@ -12,11 +12,9 @@ describe('sql server instance engine', () => {
         }),
       }).bindToInstance({});
 
-      expect(stack).toHaveResourceLike('AWS::RDS::DBParameterGroup', {
+      Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBParameterGroup', {
         Family: 'sqlserver-web-11.0',
       });
-
-
     });
 
     test("has MajorEngineVersion ending in '11.00' for major version 11", () => {
@@ -35,11 +33,9 @@ describe('sql server instance engine', () => {
         ],
       });
 
-      expect(stack).toHaveResourceLike('AWS::RDS::OptionGroup', {
+      Template.fromStack(stack).hasResourceProperties('AWS::RDS::OptionGroup', {
         MajorEngineVersion: '11.00',
       });
-
-
     });
   });
 });

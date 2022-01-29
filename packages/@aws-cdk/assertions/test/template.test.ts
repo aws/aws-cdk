@@ -1088,6 +1088,25 @@ describe('Template', () => {
       expect(Object.keys(result).length).toEqual(0);
     });
   });
+
+  test('throws when given a template with cyclic dependencies', () => {
+    expect(() => {
+      Template.fromJSON({
+        Resources: {
+          Res1: {
+            Type: 'Foo',
+            Properties: {
+              Thing: { Ref: 'Res2' },
+            },
+          },
+          Res2: {
+            Type: 'Foo',
+            DependsOn: ['Res1'],
+          },
+        },
+      });
+    }).toThrow(/dependency cycle/);
+  });
 });
 
 function expectToThrow(fn: () => void, msgs: (RegExp | string)[], done: jest.DoneCallback): void {

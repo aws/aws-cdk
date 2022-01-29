@@ -30,6 +30,13 @@
         "distName": "aws-cdk.aws-location",
         "module": "aws_cdk.aws_location"
       }
+    },
+    "metadata": {
+      "jsii": {
+        "rosetta": {
+          "strict": true
+        }
+      }
     }
   },
   "repository": {
