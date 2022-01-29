@@ -2,8 +2,6 @@
   "name": "aws-cdk",
   "description": "CDK Toolkit, the command line tool for CDK apps",
   "version": "0.0.0",
-  "main": "lib/index.js",
-  "types": "lib/index.d.ts",
   "bin": {
     "cdk": "bin/cdk"
   },
@@ -55,7 +53,7 @@
     "@types/yargs": "^15.0.14",
     "aws-sdk-mock": "^5.6.0",
     "@aws-cdk/cdk-build-tools": "0.0.0",
-    "constructs": "^3.3.69",
+    "constructs": "^10.0.0",
     "jest": "^27.4.7",
     "make-runnable": "^1.3.10",
     "mockery": "^2.1.0",
@@ -105,7 +103,7 @@
   ],
   "homepage": "https://github.com/aws/aws-cdk",
   "engines": {
-    "node": ">= 10.13.0 <13 || >=13.7.0"
+    "node": ">= 14.15.0"
   },
   "nozem": {
     "ostools": [
@@ -123,6 +121,6 @@
   "stability": "stable",
   "maturity": "stable",
   "publishConfig": {
-    "tag": "latest-1"
+    "tag": "latest"
   }
 }
