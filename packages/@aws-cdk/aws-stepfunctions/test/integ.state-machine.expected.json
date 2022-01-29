@@ -45,15 +45,45 @@
                   [
                     "arn:",
                     {
-                      "Ref": "AWS::Partition"
+                      "Fn::Select": [
+                        1,
+                        {
+                          "Fn::Split": [
+                            ":",
+                            {
+                              "Ref": "StateMachine2E01A3A5"
+                            }
+                          ]
+                        }
+                      ]
                     },
                     ":states:",
                     {
-                      "Ref": "AWS::Region"
+                      "Fn::Select": [
+                        3,
+                        {
+                          "Fn::Split": [
+                            ":",
+                            {
+                              "Ref": "StateMachine2E01A3A5"
+                            }
+                          ]
+                        }
+                      ]
                     },
                     ":",
                     {
-                      "Ref": "AWS::AccountId"
+                      "Fn::Select": [
+                        4,
+                        {
+                          "Fn::Split": [
+                            ":",
+                            {
+                              "Ref": "StateMachine2E01A3A5"
+                            }
+                          ]
+                        }
+                      ]
                     },
                     ":execution:",
                     {

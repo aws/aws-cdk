@@ -330,11 +330,11 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
    * Returns the pattern for the execution ARN's of the state machine
    */
   private executionArn(): string {
+    const { sep, ...arnComponents } = Arn.split(this.stateMachineArn, ArnFormat.COLON_RESOURCE_NAME);
     return Stack.of(this).formatArn({
+      ...arnComponents,
       resource: 'execution',
       service: 'states',
-      resourceName: Arn.split(this.stateMachineArn, ArnFormat.COLON_RESOURCE_NAME).resourceName,
-      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
     });
   }
 

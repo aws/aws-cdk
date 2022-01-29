@@ -267,15 +267,45 @@ describe('State Machine Resources', () => {
                 [
                   'arn:',
                   {
-                    Ref: 'AWS::Partition',
+                    'Fn::Select': [
+                      1,
+                      {
+                        'Fn::Split': [
+                          ':',
+                          {
+                            Ref: 'StateMachine2E01A3A5',
+                          },
+                        ],
+                      },
+                    ],
                   },
                   ':states:',
                   {
-                    Ref: 'AWS::Region',
+                    'Fn::Select': [
+                      3,
+                      {
+                        'Fn::Split': [
+                          ':',
+                          {
+                            Ref: 'StateMachine2E01A3A5',
+                          },
+                        ],
+                      },
+                    ],
                   },
                   ':',
                   {
-                    Ref: 'AWS::AccountId',
+                    'Fn::Select': [
+                      4,
+                      {
+                        'Fn::Split': [
+                          ':',
+                          {
+                            Ref: 'StateMachine2E01A3A5',
+                          },
+                        ],
+                      },
+                    ],
                   },
                   ':execution:',
                   {
@@ -307,8 +337,7 @@ describe('State Machine Resources', () => {
           },
         ],
       },
-    },
-    );
+    });
 
   }),
 
@@ -373,15 +402,45 @@ describe('State Machine Resources', () => {
                 [
                   'arn:',
                   {
-                    Ref: 'AWS::Partition',
+                    'Fn::Select': [
+                      1,
+                      {
+                        'Fn::Split': [
+                          ':',
+                          {
+                            Ref: 'StateMachine2E01A3A5',
+                          },
+                        ],
+                      },
+                    ],
                   },
                   ':states:',
                   {
-                    Ref: 'AWS::Region',
+                    'Fn::Select': [
+                      3,
+                      {
+                        'Fn::Split': [
+                          ':',
+                          {
+                            Ref: 'StateMachine2E01A3A5',
+                          },
+                        ],
+                      },
+                    ],
                   },
                   ':',
                   {
-                    Ref: 'AWS::AccountId',
+                    'Fn::Select': [
+                      4,
+                      {
+                        'Fn::Split': [
+                          ':',
+                          {
+                            Ref: 'StateMachine2E01A3A5',
+                          },
+                        ],
+                      },
+                    ],
                   },
                   ':execution:',
                   {
@@ -473,8 +532,9 @@ describe('State Machine Resources', () => {
 
   test('Imported state machine can grant read access to a role', () => {
     // GIVEN
-    const stack = new cdk.Stack();
-    const stateMachineArn = 'arn:aws:states:::my-state-machine';
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack', { env: { region: 'us-east-1' } });
+    const stateMachineArn = 'arn:aws:states:eu-central-1::my-state-machine';
     const stateMachine = stepfunctions.StateMachine.fromStateMachineArn(stack, 'StateMachine', stateMachineArn);
     const role = new iam.Role(stack, 'Role', {
       assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
@@ -502,26 +562,7 @@ describe('State Machine Resources', () => {
               'states:GetExecutionHistory',
             ],
             Effect: 'Allow',
-            Resource: {
-              'Fn::Join': [
-                '',
-                [
-                  'arn:',
-                  {
-                    Ref: 'AWS::Partition',
-                  },
-                  ':states:',
-                  {
-                    Ref: 'AWS::Region',
-                  },
-                  ':',
-                  {
-                    Ref: 'AWS::AccountId',
-                  },
-                  ':execution:*',
-                ],
-              ],
-            },
+            Resource: 'arn:aws:states:eu-central-1::execution:*',
           },
           {
             Action: [
