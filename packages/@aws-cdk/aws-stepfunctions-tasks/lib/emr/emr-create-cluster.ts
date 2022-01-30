@@ -202,7 +202,7 @@ export class EmrCreateCluster extends sfn.TaskStateBase {
 
     this.taskPolicies = this.createPolicyStatements(this._serviceRole, this._clusterRole, this._autoScalingRole);
 
-    if (this.props.releaseLabel !== undefined) {
+    if (this.props.releaseLabel !== undefined && !cdk.Token.isUnresolved(this.props.releaseLabel)) {
       this.validateReleaseLabel(this.props.releaseLabel);
     }
 

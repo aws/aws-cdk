@@ -1,5 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
-import { ABSENT } from '@aws-cdk/assert-internal';
+import { Match, Template } from '@aws-cdk/assertions';
 import * as acmpca from '@aws-cdk/aws-acmpca';
 import * as acm from '@aws-cdk/aws-certificatemanager';
 import * as iam from '@aws-cdk/aws-iam';
@@ -36,29 +35,23 @@ describe('virtual node', () => {
         node.addBackend(appmesh.Backend.virtualService(service2));
 
         // THEN
-        expect(stack).toHaveResourceLike('AWS::AppMesh::VirtualNode', {
+        Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::VirtualNode', {
           Spec: {
             Backends: [
               {
                 VirtualService: {
-                  VirtualServiceName: {
-                    'Fn::GetAtt': ['service1A48078CF', 'VirtualServiceName'],
-                  },
+                  VirtualServiceName: 'service1.domain.local',
                 },
               },
               {
                 VirtualService: {
-                  VirtualServiceName: {
-                    'Fn::GetAtt': ['service27C65CF7D', 'VirtualServiceName'],
-                  },
+                  VirtualServiceName: 'service2.domain.local',
                 },
               },
             ],
           },
-          MeshOwner: ABSENT,
+          MeshOwner: Match.absent(),
         });
-
-
       });
     });
 
@@ -81,7 +74,7 @@ describe('virtual node', () => {
         }));
 
         // THEN
-        expect(stack).toHaveResourceLike('AWS::AppMesh::VirtualNode', {
+        Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::VirtualNode', {
           Spec: {
             Listeners: [
               {
@@ -93,8 +86,6 @@ describe('virtual node', () => {
             ],
           },
         });
-
-
       });
     });
 
@@ -121,7 +112,7 @@ describe('virtual node', () => {
         });
 
         // THEN
-        expect(stack).toHaveResourceLike('AWS::AppMesh::VirtualNode', {
+        Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::VirtualNode', {
           Spec: {
             Listeners: [
               {
@@ -145,8 +136,6 @@ describe('virtual node', () => {
             ],
           },
         });
-
-
       });
     });
 
@@ -171,10 +160,10 @@ describe('virtual node', () => {
         });
 
         // THEN
-        expect(stack).toHaveResourceLike('AWS::AppMesh::VirtualNode', {
+        Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::VirtualNode', {
           Spec: {
             Listeners: [
-              {
+              Match.objectLike({
                 HealthCheck: {
                   HealthyThreshold: 2,
                   IntervalMillis: 5000,
@@ -195,12 +184,10 @@ describe('virtual node', () => {
                     },
                   },
                 },
-              },
+              }),
             ],
           },
         });
-
-
       });
     });
 
@@ -228,10 +215,10 @@ describe('virtual node', () => {
         }));
 
         // THEN
-        expect(stack).toHaveResourceLike('AWS::AppMesh::VirtualNode', {
+        Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::VirtualNode', {
           Spec: {
             Listeners: [
-              {
+              Match.objectLike({
                 HealthCheck: {
                   HealthyThreshold: 2,
                   IntervalMillis: 5000,
@@ -252,12 +239,10 @@ describe('virtual node', () => {
                     },
                   },
                 },
-              },
+              }),
             ],
           },
         });
-
-
       });
     });
 
@@ -287,7 +272,7 @@ describe('virtual node', () => {
         }));
 
         // THEN
-        expect(stack).toHaveResourceLike('AWS::AppMesh::VirtualNode', {
+        Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::VirtualNode', {
           Spec: {
             Listeners: [
               {
@@ -311,8 +296,6 @@ describe('virtual node', () => {
             ],
           },
         });
-
-
       });
     });
 
@@ -342,7 +325,7 @@ describe('virtual node', () => {
         });
 
         // THEN
-        expect(stack).toHaveResourceLike('AWS::AppMesh::VirtualNode', {
+        Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::VirtualNode', {
           Spec: {
             BackendDefaults: {
               ClientPolicy: {
@@ -360,8 +343,6 @@ describe('virtual node', () => {
             },
           },
         });
-
-
       });
     });
 
@@ -390,7 +371,7 @@ describe('virtual node', () => {
         });
 
         // THEN
-        expect(stack).toHaveResourceLike('AWS::AppMesh::VirtualNode', {
+        Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::VirtualNode', {
           Spec: {
             BackendDefaults: {
               ClientPolicy: {
@@ -418,8 +399,6 @@ describe('virtual node', () => {
             },
           },
         });
-
-
       });
     });
 
@@ -453,14 +432,12 @@ describe('virtual node', () => {
         }));
 
         // THEN
-        expect(stack).toHaveResourceLike('AWS::AppMesh::VirtualNode', {
+        Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::VirtualNode', {
           Spec: {
             Backends: [
               {
                 VirtualService: {
-                  VirtualServiceName: {
-                    'Fn::GetAtt': ['service1A48078CF', 'VirtualServiceName'],
-                  },
+                  VirtualServiceName: 'service1.domain.local',
                   ClientPolicy: {
                     TLS: {
                       Ports: [8080, 8081],
@@ -478,8 +455,75 @@ describe('virtual node', () => {
             ],
           },
         });
+      });
 
+      test('you can add a Virtual Service as a backend to a Virtual Node which is the provider for that Virtual Service', () => {
+        // GIVEN
+        const stack = new cdk.Stack();
 
+        // WHEN
+        const mesh = new appmesh.Mesh(stack, 'mesh', {
+          meshName: 'test-mesh',
+        });
+
+        const node = new appmesh.VirtualNode(stack, 'test-node', {
+          mesh,
+          serviceDiscovery: appmesh.ServiceDiscovery.dns('test'),
+        });
+
+        const myVirtualService = new appmesh.VirtualService(stack, 'service-1', {
+          virtualServiceProvider: appmesh.VirtualServiceProvider.virtualNode(node),
+          virtualServiceName: 'service1.domain.local',
+        });
+
+        node.addBackend(appmesh.Backend.virtualService(myVirtualService));
+
+        // THEN
+        Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::VirtualNode', {
+          Spec: {
+            Backends: [
+              {
+                VirtualService: {
+                  VirtualServiceName: 'service1.domain.local',
+                },
+              },
+            ],
+          },
+        });
+      });
+
+      test('you can add a Virtual Service with an automated name as a backend to a Virtual Node which is the provider for that Virtual Service, ', () => {
+        // GIVEN
+        const stack = new cdk.Stack();
+
+        // WHEN
+        const mesh = new appmesh.Mesh(stack, 'mesh', {
+          meshName: 'test-mesh',
+        });
+
+        const node = new appmesh.VirtualNode(stack, 'test-node', {
+          mesh,
+          serviceDiscovery: appmesh.ServiceDiscovery.dns('test'),
+        });
+
+        const myVirtualService = new appmesh.VirtualService(stack, 'service-1', {
+          virtualServiceProvider: appmesh.VirtualServiceProvider.virtualNode(node),
+        });
+
+        node.addBackend(appmesh.Backend.virtualService(myVirtualService));
+
+        // THEN
+        Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::VirtualNode', {
+          Spec: {
+            Backends: [
+              {
+                VirtualService: {
+                  VirtualServiceName: 'service1',
+                },
+              },
+            ],
+          },
+        });
       });
     });
 
@@ -511,10 +555,10 @@ describe('virtual node', () => {
         });
 
         // THEN
-        expect(stack).toHaveResourceLike('AWS::AppMesh::VirtualNode', {
+        Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::VirtualNode', {
           Spec: {
             Listeners: [
-              {
+              Match.objectLike({
                 TLS: {
                   Mode: appmesh.TlsMode.STRICT,
                   Certificate: {
@@ -525,12 +569,10 @@ describe('virtual node', () => {
                     },
                   },
                 },
-              },
+              }),
             ],
           },
         });
-
-
       });
     });
 
@@ -557,10 +599,10 @@ describe('virtual node', () => {
         });
 
         // THEN
-        expect(stack).toHaveResourceLike('AWS::AppMesh::VirtualNode', {
+        Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::VirtualNode', {
           Spec: {
             Listeners: [
-              {
+              Match.objectLike({
                 TLS: {
                   Mode: appmesh.TlsMode.STRICT,
                   Certificate: {
@@ -570,12 +612,10 @@ describe('virtual node', () => {
                     },
                   },
                 },
-              },
+              }),
             ],
           },
         });
-
-
       });
     });
 
@@ -601,10 +641,10 @@ describe('virtual node', () => {
         });
 
         // THEN
-        expect(stack).toHaveResourceLike('AWS::AppMesh::VirtualNode', {
+        Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::VirtualNode', {
           Spec: {
             Listeners: [
-              {
+              Match.objectLike({
                 TLS: {
                   Mode: appmesh.TlsMode.STRICT,
                   Certificate: {
@@ -613,12 +653,10 @@ describe('virtual node', () => {
                     },
                   },
                 },
-              },
+              }),
             ],
           },
         });
-
-
       });
     });
 
@@ -645,10 +683,10 @@ describe('virtual node', () => {
         });
 
         // THEN
-        expect(stack).toHaveResourceLike('AWS::AppMesh::VirtualNode', {
+        Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::VirtualNode', {
           Spec: {
             Listeners: [
-              {
+              Match.objectLike({
                 TLS: {
                   Mode: appmesh.TlsMode.PERMISSIVE,
                   Certificate: {
@@ -658,12 +696,10 @@ describe('virtual node', () => {
                     },
                   },
                 },
-              },
+              }),
             ],
           },
         });
-
-
       });
     });
 
@@ -691,22 +727,20 @@ describe('virtual node', () => {
       });
 
       // THEN
-      expect(stack).toHaveResourceLike('AWS::AppMesh::VirtualNode', {
+      Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::VirtualNode', {
         Spec: {
           Listeners: [
-            {
+            Match.objectLike({
               ConnectionPool: {
                 HTTP: {
                   MaxConnections: 100,
                   MaxPendingRequests: 10,
                 },
               },
-            },
+            }),
           ],
         },
       });
-
-
     });
 
     test('Can add an tcp connection pool to listener', () => {
@@ -732,21 +766,19 @@ describe('virtual node', () => {
       });
 
       // THEN
-      expect(stack).toHaveResourceLike('AWS::AppMesh::VirtualNode', {
+      Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::VirtualNode', {
         Spec: {
-          Listeners: [
-            {
+          Listeners: Match.arrayWith([
+            Match.objectLike({
               ConnectionPool: {
                 TCP: {
                   MaxConnections: 100,
                 },
               },
-            },
-          ],
+            }),
+          ]),
         },
       });
-
-
     });
 
     test('Can add an grpc connection pool to listener', () => {
@@ -772,21 +804,19 @@ describe('virtual node', () => {
       });
 
       // THEN
-      expect(stack).toHaveResourceLike('AWS::AppMesh::VirtualNode', {
+      Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::VirtualNode', {
         Spec: {
-          Listeners: [
-            {
+          Listeners: Match.arrayWith([
+            Match.objectLike({
               ConnectionPool: {
                 GRPC: {
                   MaxRequests: 10,
                 },
               },
-            },
-          ],
+            }),
+          ]),
         },
       });
-
-
     });
 
     test('Can add an http2 connection pool to listener', () => {
@@ -812,21 +842,19 @@ describe('virtual node', () => {
       });
 
       // THEN
-      expect(stack).toHaveResourceLike('AWS::AppMesh::VirtualNode', {
+      Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::VirtualNode', {
         Spec: {
           Listeners: [
-            {
+            Match.objectLike({
               ConnectionPool: {
                 HTTP2: {
                   MaxRequests: 10,
                 },
               },
-            },
+            }),
           ],
         },
       });
-
-
     });
   });
 
@@ -844,8 +872,6 @@ describe('virtual node', () => {
     // THEN
     expect(virtualNode.mesh.meshName).toEqual(meshName);
     expect(virtualNode.virtualNodeName).toEqual(virtualNodeName);
-
-
   });
 
   test('Can import Virtual Nodes using attributes', () => {
@@ -861,8 +887,6 @@ describe('virtual node', () => {
     // THEN
     expect(virtualNode.mesh.meshName).toEqual(meshName);
     expect(virtualNode.virtualNodeName).toEqual(virtualNodeName);
-
-
   });
 
   test('Can grant an identity StreamAggregatedResources for a given VirtualNode', () => {
@@ -888,7 +912,7 @@ describe('virtual node', () => {
     node.grantStreamAggregatedResources(user);
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -901,8 +925,6 @@ describe('virtual node', () => {
         ],
       },
     });
-
-
   });
 
   describe('When creating a VirtualNode', () => {
@@ -925,11 +947,9 @@ describe('virtual node', () => {
         });
 
         // THEN
-        expect(stack).toHaveResourceLike('AWS::AppMesh::VirtualNode', {
+        Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::VirtualNode', {
           MeshOwner: meshEnv.account,
         });
-
-
       });
     });
 
@@ -949,7 +969,7 @@ describe('virtual node', () => {
         });
 
         // THEN
-        expect(stack).toHaveResourceLike('AWS::AppMesh::VirtualNode', {
+        Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::VirtualNode', {
           Spec: {
             ServiceDiscovery: {
               DNS: {
@@ -959,8 +979,6 @@ describe('virtual node', () => {
             },
           },
         });
-
-
       });
     });
 
@@ -994,11 +1012,7 @@ describe('virtual node', () => {
         expect(() => {
           node.addListener(appmesh.VirtualNodeListener.http());
         }).toThrow(/Service discovery information is required for a VirtualNode with a listener/);
-
-
       });
     });
   });
 });
-
-

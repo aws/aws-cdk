@@ -2,7 +2,7 @@ import '@aws-cdk/assert-internal/jest';
 import * as appmesh from '@aws-cdk/aws-appmesh';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as cdk from '@aws-cdk/core';
-import { AppMeshExtension, Container, Environment, ScaleOnCpuUtilization, ServiceDescription, Service } from '../lib';
+import { AppMeshExtension, Container, Environment, ServiceDescription, Service } from '../lib';
 
 describe('appmesh', () => {
   test('should be able to add AWS App Mesh to a service', () => {
@@ -33,7 +33,6 @@ describe('appmesh', () => {
     });
 
     // THEN
-
     // Ensure that task has an App Mesh sidecar
     expect(stack).toHaveResource('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
@@ -276,9 +275,6 @@ describe('appmesh', () => {
       trafficPort: 80,
       image: ecs.ContainerImage.fromRegistry('nathanpeck/name'),
     }));
-    serviceDescription.add(new ScaleOnCpuUtilization({
-      initialTaskCount: 1,
-    }));
 
     const mesh = new appmesh.Mesh(stack, 'my-mesh');
 
@@ -289,6 +285,7 @@ describe('appmesh', () => {
     new Service(stack, 'my-service', {
       environment,
       serviceDescription,
+      desiredCount: 1,
     });
 
     expect(stack).toHaveResourceLike('AWS::ECS::Service', {
@@ -317,9 +314,6 @@ describe('appmesh', () => {
       trafficPort: 80,
       image: ecs.ContainerImage.fromRegistry('nathanpeck/name'),
     }));
-    serviceDescription.add(new ScaleOnCpuUtilization({
-      initialTaskCount: 2,
-    }));
 
     const mesh = new appmesh.Mesh(stack, 'my-mesh');
 
@@ -330,6 +324,7 @@ describe('appmesh', () => {
     new Service(stack, 'my-service', {
       environment,
       serviceDescription,
+      desiredCount: 2,
     });
 
     expect(stack).toHaveResourceLike('AWS::ECS::Service', {
@@ -358,9 +353,6 @@ describe('appmesh', () => {
       trafficPort: 80,
       image: ecs.ContainerImage.fromRegistry('nathanpeck/name'),
     }));
-    serviceDescription.add(new ScaleOnCpuUtilization({
-      initialTaskCount: 3,
-    }));
 
     const mesh = new appmesh.Mesh(stack, 'my-mesh');
 
@@ -371,6 +363,7 @@ describe('appmesh', () => {
     new Service(stack, 'my-service', {
       environment,
       serviceDescription,
+      desiredCount: 3,
     });
 
     expect(stack).toHaveResourceLike('AWS::ECS::Service', {
@@ -399,9 +392,6 @@ describe('appmesh', () => {
       trafficPort: 80,
       image: ecs.ContainerImage.fromRegistry('nathanpeck/name'),
     }));
-    serviceDescription.add(new ScaleOnCpuUtilization({
-      initialTaskCount: 4,
-    }));
 
     const mesh = new appmesh.Mesh(stack, 'my-mesh');
 
@@ -412,6 +402,7 @@ describe('appmesh', () => {
     new Service(stack, 'my-service', {
       environment,
       serviceDescription,
+      desiredCount: 4,
     });
 
     expect(stack).toHaveResourceLike('AWS::ECS::Service', {
@@ -440,9 +431,6 @@ describe('appmesh', () => {
       trafficPort: 80,
       image: ecs.ContainerImage.fromRegistry('nathanpeck/name'),
     }));
-    serviceDescription.add(new ScaleOnCpuUtilization({
-      initialTaskCount: 8,
-    }));
 
     const mesh = new appmesh.Mesh(stack, 'my-mesh');
 
@@ -453,6 +441,7 @@ describe('appmesh', () => {
     new Service(stack, 'my-service', {
       environment,
       serviceDescription,
+      desiredCount: 8,
     });
 
     expect(stack).toHaveResourceLike('AWS::ECS::Service', {

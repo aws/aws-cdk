@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template, Match } from '@aws-cdk/assertions';
 import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as codecommit from '@aws-cdk/aws-codecommit';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
@@ -78,7 +78,7 @@ describe('CloudFormation Pipeline Actions', () => {
       ],
     });
 
-    expect(stack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
       'ArtifactStore': {
         'Location': {
           'Ref': 'MagicPipelineArtifactsBucket212FE7BF',
@@ -212,7 +212,7 @@ describe('CloudFormation Pipeline Actions', () => {
     const roleId = 'PipelineDeployCreateUpdateRole515CB7D4';
 
     // THEN: Action in Pipeline has named IAM capabilities
-    expect(stack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
       'Stages': [
         { 'Name': 'Source' /* don't care about the rest */ },
         {
@@ -235,7 +235,7 @@ describe('CloudFormation Pipeline Actions', () => {
     });
 
     // THEN: Role is created with full permissions
-    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Version: '2012-10-17',
         Statement: [
@@ -281,7 +281,7 @@ describe('CloudFormation Pipeline Actions', () => {
     }));
 
     // THEN: Action has output artifacts
-    expect(stack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
       'Stages': [
         { 'Name': 'Source' /* don't care about the rest */ },
         {
@@ -313,7 +313,7 @@ describe('CloudFormation Pipeline Actions', () => {
     }));
 
     // THEN: Action has output artifacts
-    expect(stack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
       'Stages': [
         { 'Name': 'Source' /* don't care about the rest */ },
         {
@@ -349,7 +349,7 @@ describe('CloudFormation Pipeline Actions', () => {
     }));
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
       'Stages': [
         { 'Name': 'Source' /* don't care about the rest */ },
         {
@@ -397,7 +397,7 @@ describe('CloudFormation Pipeline Actions', () => {
       stackName: 'magicStack',
     }));
 
-    expect(stack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
       'Stages': [
         {
           'Name': 'Source', /* don't care about the rest */
@@ -444,7 +444,7 @@ describe('CloudFormation Pipeline Actions', () => {
     const roleId = 'PipelineDeployCreateUpdateRole515CB7D4';
 
     // THEN: Action in Pipeline has named IAM capabilities
-    expect(stack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
       'Stages': [
         { 'Name': 'Source' /* don't care about the rest */ },
         {
@@ -488,7 +488,7 @@ describe('CloudFormation Pipeline Actions', () => {
     const roleId = 'PipelineDeployCreateUpdateRole515CB7D4';
 
     // THEN: Action in Pipeline has named IAM and AUTOEXPAND capabilities
-    expect(stack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
       'Stages': [
         { 'Name': 'Source' /* don't care about the rest */ },
         {
@@ -531,7 +531,7 @@ describe('CloudFormation Pipeline Actions', () => {
     const roleId = 'PipelineDeployCreateUpdateRole515CB7D4';
 
     // THEN: Action in Pipeline has no capabilities
-    expect(stack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
       'Stages': [
         { 'Name': 'Source' /* don't care about the rest */ },
         {
@@ -572,7 +572,7 @@ describe('CloudFormation Pipeline Actions', () => {
     }));
 
     // THEN: Action in Pipeline has named IAM and AUTOEXPAND capabilities
-    expect(stack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
       'Stages': [
         { 'Name': 'Source' /* don't care about the rest */ },
         {
@@ -636,7 +636,7 @@ describe('CloudFormation Pipeline Actions', () => {
         ],
       });
 
-      expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+      Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
         'Stages': [
           {
             'Name': 'Source',
@@ -663,9 +663,20 @@ describe('CloudFormation Pipeline Actions', () => {
       });
 
       // the pipeline's BucketPolicy should trust both CFN roles
-      expect(pipelineStack).toHaveResourceLike('AWS::S3::BucketPolicy', {
-        'PolicyDocument': {
+      Template.fromStack(pipelineStack).hasResourceProperties('AWS::S3::BucketPolicy', {
+        'PolicyDocument': Match.objectLike({
           'Statement': [
+            {
+              'Action': 's3:*',
+              'Condition': {
+                'Bool': { 'aws:SecureTransport': 'false' },
+              },
+              'Effect': 'Deny',
+              'Principal': {
+                'AWS': '*',
+              },
+              'Resource': Match.anyValue(),
+            },
             {
               'Action': [
                 's3:GetObject*',
@@ -679,6 +690,7 @@ describe('CloudFormation Pipeline Actions', () => {
                     ':iam::123456789012:role/pipelinestack-support-123fndeploymentrole4668d9b5a30ce3dc4508']],
                 },
               },
+              'Resource': Match.anyValue(),
             },
             {
               'Action': [
@@ -693,16 +705,17 @@ describe('CloudFormation Pipeline Actions', () => {
                     ':iam::123456789012:role/pipelinestack-support-123loycfnactionrole56af64af3590f311bc50']],
                 },
               },
+              'Resource': Match.anyValue(),
             },
           ],
-        },
+        }),
       });
 
       const otherStack = app.node.findChild('cross-account-support-stack-123456789012') as cdk.Stack;
-      expect(otherStack).toHaveResourceLike('AWS::IAM::Role', {
+      Template.fromStack(otherStack).hasResourceProperties('AWS::IAM::Role', {
         'RoleName': 'pipelinestack-support-123loycfnactionrole56af64af3590f311bc50',
       });
-      expect(otherStack).toHaveResourceLike('AWS::IAM::Role', {
+      Template.fromStack(otherStack).hasResourceProperties('AWS::IAM::Role', {
         'RoleName': 'pipelinestack-support-123fndeploymentrole4668d9b5a30ce3dc4508',
       });
 
