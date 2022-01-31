@@ -1,5 +1,4 @@
 import * as path from 'path';
-import '@aws-cdk/assert-internal/jest';
 import { Match, Template } from '@aws-cdk/assertions';
 import { Key } from '@aws-cdk/aws-kms';
 import { Asset } from '@aws-cdk/aws-s3-assets';
