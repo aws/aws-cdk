@@ -30,6 +30,13 @@
         "distName": "aws-cdk.aws-finspace",
         "module": "aws_cdk.aws_finspace"
       }
+    },
+    "metadata": {
+      "jsii": {
+        "rosetta": {
+          "strict": true
+        }
+      }
     }
   },
   "repository": {
