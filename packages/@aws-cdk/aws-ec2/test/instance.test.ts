@@ -1,7 +1,7 @@
 import * as path from 'path';
 import '@aws-cdk/assert-internal/jest';
-import { Key } from '@aws-cdk/aws-kms';
 import { Match, Template } from '@aws-cdk/assertions';
+import { Key } from '@aws-cdk/aws-kms';
 import { Asset } from '@aws-cdk/aws-s3-assets';
 import { StringParameter } from '@aws-cdk/aws-ssm';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
