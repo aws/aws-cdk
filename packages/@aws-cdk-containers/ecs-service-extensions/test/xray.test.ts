@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as cdk from '@aws-cdk/core';
 import { Container, Environment, XRayExtension, Service, ServiceDescription } from '../lib';
@@ -27,7 +27,7 @@ describe('xray', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ECS::TaskDefinition', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
         {
           Cpu: 256,
@@ -114,8 +114,5 @@ describe('xray', () => {
         ],
       },
     });
-
-
   });
-
 });
