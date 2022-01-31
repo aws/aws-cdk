@@ -5,7 +5,7 @@ import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as codepipeline_actions from '@aws-cdk/aws-codepipeline-actions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
-import { IDependable, Stack } from '@aws-cdk/core';
+import { IDependable, Stack, Token } from '@aws-cdk/core';
 import { Construct, Node } from 'constructs';
 import { FileSetLocation, ShellStep, StackOutputReference } from '../blueprint';
 import { PipelineQueries } from '../helpers-internal/pipeline-queries';
@@ -271,9 +271,13 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
       projectScope = obtainScope(scope, actionName);
     }
 
+    const safePipelineName = Token.isUnresolved(options.pipeline.pipeline.pipelineName)
+      ? `${Stack.of(options.pipeline).stackName}/${Node.of(options.pipeline.pipeline).id}`
+      : options.pipeline.pipeline.pipelineName;
+
     const project = new codebuild.PipelineProject(projectScope, this.constructId, {
       projectName: this.props.projectName,
-      description: `Pipeline step ${options.pipeline.pipeline.pipelineName}/${stage.stageName}/${actionName}`,
+      description: `Pipeline step ${safePipelineName}/${stage.stageName}/${actionName}`.substring(0, 255),
       environment,
       vpc: projectOptions.vpc,
       subnetSelection: projectOptions.subnetSelection,
