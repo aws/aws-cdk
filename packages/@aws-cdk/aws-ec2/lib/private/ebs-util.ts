@@ -24,11 +24,11 @@ function synthesizeBlockDeviceMappings<RT, NDT>(construct: Construct, blockDevic
   return blockDevices.map<RT>(({ deviceName, volume, mappingEnabled }): RT => {
     const { virtualName, ebsDevice: ebs } = volume;
 
-    let finalEbs: CfnLaunchTemplate.EbsProperty | CfnInstance.EbsProperty | undefined;
+    let finalEbs: any;// CfnLaunchTemplate.EbsProperty | CfnInstance.EbsProperty | undefined;
 
     if (ebs) {
 
-      const { iops, volumeType, kmsKey, ...unchanged } = ebs;
+      const { iops, volumeType, kmsKey, ...rest } = ebs;
       if (!iops) {
         if (volumeType === EbsDeviceVolumeType.IO1) {
           throw new Error('iops property is required with volumeType: EbsDeviceVolumeType.IO1');
@@ -44,7 +44,9 @@ function synthesizeBlockDeviceMappings<RT, NDT>(construct: Construct, blockDevic
 
 
       finalEbs = {
-        ...unchanged,
+        ...rest,
+        iops,
+        volumeType,
         kmsKeyId: kmsKey?.keyArn,
       };
 
