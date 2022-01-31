@@ -11,6 +11,7 @@ import * as signer from '@aws-cdk/aws-signer';
 import * as sqs from '@aws-cdk/aws-sqs';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
+import { Intrinsic, Token } from '@aws-cdk/core';
 import * as constructs from 'constructs';
 import * as _ from 'lodash';
 import * as lambda from '../lib';
@@ -2301,6 +2302,21 @@ describe('function', () => {
         });
       }).toThrow(/Function name can contain only letters, numbers, hyphens, or underscores with no spaces./);
     });
+  });
+
+  test('No error when function name is Tokenized and Unresolved', () => {
+    const stack = new cdk.Stack();
+    expect(() => {
+      const realFunctionName = 'a'.repeat(141);
+      const tokenizedFunctionName = Token.asString(new Intrinsic(realFunctionName));
+
+      new lambda.Function(stack, 'foo', {
+        code: new lambda.InlineCode('foo'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_10_X,
+        functionName: tokenizedFunctionName,
+      });
+    }).not.toThrow();
   });
 });
 

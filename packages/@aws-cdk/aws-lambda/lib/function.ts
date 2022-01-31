@@ -5,7 +5,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as logs from '@aws-cdk/aws-logs';
 import * as sqs from '@aws-cdk/aws-sqs';
-import { Annotations, ArnFormat, CfnResource, Duration, Fn, Lazy, Names, Stack } from '@aws-cdk/core';
+import { Annotations, ArnFormat, CfnResource, Duration, Fn, Lazy, Names, Stack, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { Architecture } from './architecture';
 import { Code, CodeConfig } from './code';
@@ -690,11 +690,13 @@ export class Function extends FunctionBase {
     }
     this._architecture = props.architecture ?? (props.architectures && props.architectures[0]);
 
-    if (props.functionName && props.functionName.length > 140) {
-      throw new Error('Function name can not be longer than 140 characters.');
-    }
-    if (props.functionName && !this.isValidFunctionName(props.functionName)) {
-      throw new Error('Function name can contain only letters, numbers, hyphens, or underscores with no spaces.');
+    if (props.functionName && !Token.isUnresolved(props.functionName)) {
+      if (props.functionName.length > 140) {
+        throw new Error('Function name can not be longer than 140 characters.');
+      }
+      if (!this.validateFunctionName(props.functionName)) {
+        throw new Error('Function name can contain only letters, numbers, hyphens, or underscores with no spaces.');
+      }
     }
 
     const resource: CfnFunction = new CfnFunction(this, 'Resource', {
@@ -1095,7 +1097,7 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
   /**
    * Validate if the string contains only letters, numbers, hyphens, underscore but no spaces
    */
-  private isValidFunctionName(functionName: string) {
+  private validateFunctionName(functionName: string) {
     const regexp = /^[a-zA-Z0-9-_]+$/;
     return functionName.search(regexp) !== -1;
   }
