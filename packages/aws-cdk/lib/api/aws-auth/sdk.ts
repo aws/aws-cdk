@@ -61,6 +61,8 @@ export interface ISDK {
   secretsManager(): AWS.SecretsManager;
   kms(): AWS.KMS;
   stepFunctions(): AWS.StepFunctions;
+  codeBuild(): AWS.CodeBuild
+  cloudWatchLogs(): AWS.CloudWatchLogs;
 }
 
 /**
@@ -178,6 +180,14 @@ export class SDK implements ISDK {
 
   public stepFunctions(): AWS.StepFunctions {
     return this.wrapServiceErrorHandling(new AWS.StepFunctions(this.config));
+  }
+
+  public codeBuild(): AWS.CodeBuild {
+    return this.wrapServiceErrorHandling(new AWS.CodeBuild(this.config));
+  }
+
+  public cloudWatchLogs(): AWS.CloudWatchLogs {
+    return this.wrapServiceErrorHandling(new AWS.CloudWatchLogs(this.config));
   }
 
   public async currentAccount(): Promise<Account> {

@@ -21,7 +21,7 @@ export class SecurityGroupContextProviderPlugin implements ContextProviderPlugin
     }
 
     const options = { assumeRoleArn: args.lookupRoleArn };
-    const ec2 = (await this.aws.forEnvironment(cxapi.EnvironmentUtils.make(account, region), Mode.ForReading, options)).ec2();
+    const ec2 = (await this.aws.forEnvironment(cxapi.EnvironmentUtils.make(account, region), Mode.ForReading, options)).sdk.ec2();
 
     const filters: AWS.EC2.FilterList = [];
     if (args.vpcId) {
