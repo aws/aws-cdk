@@ -1,4 +1,4 @@
-import { expect, haveResource } from '@aws-cdk/assert-internal';
+import { Template } from '@aws-cdk/assertions';
 import * as batch from '@aws-cdk/aws-batch';
 import { ContainerImage } from '@aws-cdk/aws-ecs';
 import * as events from '@aws-cdk/aws-events';
@@ -41,7 +41,7 @@ describe('Batch job event target', () => {
     rule.addTarget(new targets.BatchJob(jobQueue.jobQueueArn, jobQueue, jobDefinition.jobDefinitionArn, jobDefinition));
 
     // THEN
-    expect(stack).to(haveResource('AWS::Events::Rule', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
       ScheduleExpression: 'rate(1 min)',
       State: 'ENABLED',
       Targets: [
@@ -62,9 +62,9 @@ describe('Batch job event target', () => {
           },
         },
       ],
-    }));
+    });
 
-    expect(stack).to(haveResource('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -81,7 +81,7 @@ describe('Batch job event target', () => {
       Roles: [
         { Ref: 'MyJobEventsRoleCF43C336' },
       ],
-    }));
+    });
   });
 
   test('use a Dead Letter Queue for the rule target', () => {
@@ -108,7 +108,7 @@ describe('Batch job event target', () => {
     ));
 
     // THEN
-    expect(stack).to(haveResource('AWS::Events::Rule', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
       Targets: [
         {
           Arn: {
@@ -133,9 +133,9 @@ describe('Batch job event target', () => {
           },
         },
       ],
-    }));
+    });
 
-    expect(stack).to(haveResource('AWS::SQS::QueuePolicy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::SQS::QueuePolicy', {
       PolicyDocument: {
         Statement: [
           {
@@ -170,7 +170,7 @@ describe('Batch job event target', () => {
           Ref: 'Queue4A7E3555',
         },
       ],
-    }));
+    });
   });
 
   test('specifying retry policy', () => {
@@ -199,7 +199,7 @@ describe('Batch job event target', () => {
     ));
 
     // THEN
-    expect(stack).to(haveResource('AWS::Events::Rule', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
       ScheduleExpression: 'rate(1 hour)',
       State: 'ENABLED',
       Targets: [
@@ -235,6 +235,6 @@ describe('Batch job event target', () => {
           },
         },
       ],
-    }));
+    });
   });
 });

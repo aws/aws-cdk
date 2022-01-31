@@ -1146,7 +1146,7 @@ cluster.addHelmChart('test-chart', {
 
 ### OCI Charts
 
-OCI charts are also supported. Before executing ensure the handler lambda has the required ECR IAM permissions.
+OCI charts are also supported.
 Also replace the `${VARS}` with appropriate values.
 
 ```ts

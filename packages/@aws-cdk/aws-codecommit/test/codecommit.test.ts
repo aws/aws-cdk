@@ -1,5 +1,5 @@
-import '@aws-cdk/assert-internal/jest';
 import { join, resolve } from 'path';
+import { Template } from '@aws-cdk/assertions';
 import { Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import { Asset } from '@aws-cdk/aws-s3-assets';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
@@ -19,7 +19,7 @@ describe('codecommit', () => {
 
       new Repository(stack, 'MyRepository', props).notify(snsArn);
 
-      expect(stack).toMatchTemplate({
+      Template.fromStack(stack).templateMatches({
         Resources: {
           MyRepository4C4BD5FC: {
             Type: 'AWS::CodeCommit::Repository',
@@ -258,7 +258,7 @@ describe('codecommit', () => {
       repository.grantPullPush(role);
 
       // THEN
-      expect(stack).toHaveResource('AWS::IAM::Policy', {
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         PolicyDocument: {
           Statement: [
             {
