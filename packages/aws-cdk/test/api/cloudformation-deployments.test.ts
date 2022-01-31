@@ -586,7 +586,25 @@ test('readCurrentTemplateWithNestedStacks() on an undeployed parent stack with a
   const deployedTemplate = await deployments.readCurrentTemplateWithNestedStacks(rootStack);
 
   // THEN
-  expect(deployedTemplate).toEqual({});
+  expect(deployedTemplate).toEqual({
+    Resources: {
+      NestedStack: {
+        Type: 'AWS::CloudFormation::Stack',
+        Properties: {
+          NestedTemplate: {
+            Resources: {
+              NestedStack: {
+                Type: 'AWS::CloudFormation::Stack',
+                Properties: {
+                  NestedTemplate: {},
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  });
 });
 
 test('readCurrentTemplateWithNestedStacks() caches calls to listStackResources()', async () => {

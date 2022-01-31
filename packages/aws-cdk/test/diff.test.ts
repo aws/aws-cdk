@@ -243,12 +243,10 @@ Resources
  └─ [~] Resources
      └─ [~] .SomeResource:
          └─ [+] Added: .Properties
-             └─ {\"Prop\":\"added-value\"}
 [~] AWS::CloudFormation::Stack DeletionChild 
  └─ [~] Resources
      └─ [~] .SomeResource:
          └─ [-] Removed: .Properties
-             └─ {\"Prop\":\"value-to-be-removed\"}
 [~] AWS::CloudFormation::Stack ChangedChild 
  └─ [~] Resources
      └─ [~] .SomeResource:

@@ -272,10 +272,8 @@ class Formatter {
         this.formatObjectDiff(oldValue, newValue, `${linePrefix}   ${key === lastKey ? ' ' : '│'}`);
       } else if (oldValue !== undefined /* && newValue === undefined */) {
         this.print('%s   %s─ %s Removed: %s', linePrefix, treePrefix, REMOVAL, chalk.blue(`.${key}`));
-        this.formatObjectDiff(oldValue, newValue, `${linePrefix}   ${key === lastKey ? ' ' : '│'}`);
       } else /* if (oldValue === undefined && newValue !== undefined */ {
         this.print('%s   %s─ %s Added: %s', linePrefix, treePrefix, ADDITION, chalk.blue(`.${key}`));
-        this.formatObjectDiff(oldValue, newValue, `${linePrefix}   ${key === lastKey ? ' ' : '│'}`);
       }
     }
   }
