@@ -30,6 +30,13 @@
         "distName": "aws-cdk.aws-lookoutvision",
         "module": "aws_cdk.aws_lookoutvision"
       }
+    },
+    "metadata": {
+      "jsii": {
+        "rosetta": {
+          "strict": true
+        }
+      }
     }
   },
   "repository": {
