@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as cdk from '@aws-cdk/core';
 import * as codedeploy from '../../lib';
 
@@ -12,7 +12,7 @@ describe('CodeDeploy DeploymentConfig', () => {
       minimumHealthyHosts: codedeploy.MinimumHealthyHosts.count(1),
     });
 
-    expect(stack).toHaveResource('AWS::CodeDeploy::DeploymentConfig', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeDeploy::DeploymentConfig', {
       'MinimumHealthyHosts': {
         'Type': 'HOST_COUNT',
         'Value': 1,
@@ -27,7 +27,7 @@ describe('CodeDeploy DeploymentConfig', () => {
       minimumHealthyHosts: codedeploy.MinimumHealthyHosts.percentage(75),
     });
 
-    expect(stack).toHaveResource('AWS::CodeDeploy::DeploymentConfig', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeDeploy::DeploymentConfig', {
       'MinimumHealthyHosts': {
         'Type': 'FLEET_PERCENT',
         'Value': 75,

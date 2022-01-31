@@ -17,12 +17,11 @@ The currently implemented actions are: EC2 Actions, SNS Actions, SSM OpsCenter A
 ## EC2 Action Example
 
 ```ts
-import * as cw from "@aws-cdk/aws-cloudwatch";
 // Alarm must be configured with an EC2 per-instance metric
-let alarm: cw.Alarm;
+declare const alarm: cloudwatch.Alarm;
 // Attach a reboot when alarm triggers
 alarm.addAlarmAction(
-  new Ec2Action(Ec2InstanceActions.REBOOT)
+  new actions.Ec2Action(actions.Ec2InstanceAction.REBOOT),
 );
 ```
 
