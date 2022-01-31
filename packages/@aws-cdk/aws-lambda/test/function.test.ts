@@ -2279,7 +2279,7 @@ describe('function', () => {
     expect(fn.architecture?.name).toEqual('arm64');
   });
 
-  test('Error when function name is longer than 140 chars', ()=>{
+  test('Error when function name is longer than 140 chars', () => {
     const stack = new cdk.Stack();
     expect(() => new lambda.Function(stack, 'MyFunction', {
       code: lambda.Code.fromInline('foo'),
@@ -2289,10 +2289,10 @@ describe('function', () => {
     })).toThrow(/Function name can not be longer than 140 characters./);
   });
 
-  test('Error when function name contains invalid characters', ()=>{
+  test('Error when function name contains invalid characters', () => {
     const stack = new cdk.Stack();
-    [' ', '\n', '\r', '[', ']', '<', '>', '$'].forEach(invalidChar=>{
-      expect(()=>{
+    [' ', '\n', '\r', '[', ']', '<', '>', '$'].forEach(invalidChar => {
+      expect(() => {
         new lambda.Function(stack, `foo${invalidChar}`, {
           code: new lambda.InlineCode('foo'),
           handler: 'index.handler',

@@ -690,7 +690,7 @@ export class Function extends FunctionBase {
     }
     this._architecture = props.architecture ?? (props.architectures && props.architectures[0]);
 
-    if (props.functionName && props.functionName.length>140) {
+    if (props.functionName && props.functionName.length > 140) {
       throw new Error('Function name can not be longer than 140 characters.');
     }
     if (props.functionName && !this.isValidFunctionName(props.functionName)) {
