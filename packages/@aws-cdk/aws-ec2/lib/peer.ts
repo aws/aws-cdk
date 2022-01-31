@@ -75,6 +75,13 @@ export class Peer {
     return new PrefixList(prefixListId);
   }
 
+  /**
+   * A security group ID
+   */
+  public static securityGroupId(securityGroupId: string, sourceSecurityGroupOwnerId?: string): IPeer {
+    return new SecurityGroupId(securityGroupId, sourceSecurityGroupOwnerId);
+  }
+
   protected constructor() {
   }
 }
@@ -197,5 +204,54 @@ class PrefixList implements IPeer {
 
   public toEgressRuleConfig(): any {
     return { destinationPrefixListId: this.prefixListId };
+  }
+}
+
+/**
+ * A connection to or from a given security group ID
+ *
+ * For ingress rules, a sourceSecurityGroupOwnerId parameter can be specified if
+ * the security group exists in another account.
+ * This parameter will be ignored for egress rules.
+ */
+class SecurityGroupId implements IPeer {
+  public readonly canInlineRule = true;
+  public readonly connections: Connections = new Connections({ peer: this });
+  public readonly uniqueId: string;
+
+  constructor(private readonly securityGroupId: string, private readonly sourceSecurityGroupOwnerId?: string) {
+    if (!Token.isUnresolved(securityGroupId)) {
+      const securityGroupMatch = securityGroupId.match(/^sg-[a-z0-9]{8,17}$/);
+
+      if (!securityGroupMatch) {
+        throw new Error(`Invalid security group ID: "${securityGroupId}"`);
+      }
+    }
+
+    if (sourceSecurityGroupOwnerId && !Token.isUnresolved(sourceSecurityGroupOwnerId)) {
+      const accountNumberMatch = sourceSecurityGroupOwnerId.match(/^[0-9]{12}$/);
+
+      if (!accountNumberMatch) {
+        throw new Error(`Invalid security group owner ID: "${sourceSecurityGroupOwnerId}"`);
+      }
+    }
+    this.uniqueId = securityGroupId;
+  }
+
+  /**
+   * Produce the ingress rule JSON for the given connection
+   */
+  public toIngressRuleConfig(): any {
+    return {
+      sourceSecurityGroupId: this.securityGroupId,
+      ...(this.sourceSecurityGroupOwnerId && { sourceSecurityGroupOwnerId: this.sourceSecurityGroupOwnerId }),
+    };
+  }
+
+  /**
+   * Produce the egress rule JSON for the given connection
+   */
+  public toEgressRuleConfig(): any {
+    return { destinationSecurityGroupId: this.securityGroupId };
   }
 }

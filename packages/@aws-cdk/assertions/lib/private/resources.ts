@@ -4,7 +4,7 @@ import { formatFailure, matchSection } from './section';
 import { Resource, Template } from './template';
 
 export function findResources(template: Template, type: string, props: any = {}): { [key: string]: { [key: string]: any } } {
-  const section = template.Resources;
+  const section = template.Resources ?? {};
   const result = matchSection(filterType(section, type), props);
 
   if (!result.match) {
@@ -15,7 +15,7 @@ export function findResources(template: Template, type: string, props: any = {})
 }
 
 export function hasResource(template: Template, type: string, props: any): string | void {
-  const section = template.Resources;
+  const section = template.Resources ?? {};
   const result = matchSection(filterType(section, type), props);
   if (result.match) {
     return;
@@ -46,14 +46,14 @@ export function hasResourceProperties(template: Template, type: string, props: a
 }
 
 export function countResources(template: Template, type: string): number {
-  const section = template.Resources;
+  const section = template.Resources ?? {};
   const types = filterType(section, type);
 
   return Object.entries(types).length;
 }
 
 function addEmptyProperties(template: Template): Template {
-  let section = template.Resources;
+  let section = template.Resources ?? {};
 
   Object.keys(section).map((key) => {
     if (!section[key].hasOwnProperty('Properties')) {

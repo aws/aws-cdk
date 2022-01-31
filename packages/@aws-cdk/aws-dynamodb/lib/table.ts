@@ -117,6 +117,12 @@ export enum TableEncryption {
   /**
    * Server-side KMS encryption with a customer master key managed by customer.
    * If `encryptionKey` is specified, this key will be used, otherwise, one will be defined.
+   *
+   * > **NOTE**: if `encryptionKey` is not specified and the `Table` construct creates
+   * > a KMS key for you, the key will be created with default permissions. If you are using
+   * > CDKv2, these permissions will be sufficient to enable the key for use with DynamoDB tables.
+   * > If you are using CDKv1, make sure the feature flag `@aws-cdk/aws-kms:defaultKeyPolicies`
+   * > is set to `true` in your `cdk.json`.
    */
   CUSTOMER_MANAGED = 'CUSTOMER_MANAGED',
 
@@ -197,6 +203,13 @@ export interface TableOptions extends SchemaOptions {
    * Whether server-side encryption with an AWS managed customer master key is enabled.
    *
    * This property cannot be set if `serverSideEncryption` is set.
+   *
+   * > **NOTE**: if you set this to `CUSTOMER_MANAGED` and `encryptionKey` is not
+   * > specified, the key that the Tablet generates for you will be created with
+   * > default permissions. If you are using CDKv2, these permissions will be
+   * > sufficient to enable the key for use with DynamoDB tables.  If you are
+   * > using CDKv1, make sure the feature flag
+   * > `@aws-cdk/aws-kms:defaultKeyPolicies` is set to `true` in your `cdk.json`.
    *
    * @default - server-side encryption is enabled with an AWS owned customer master key
    */
@@ -833,9 +846,23 @@ abstract class TableBase extends Resource implements ITable {
    * How many requests are throttled on this table
    *
    * Default: sum over 5 minutes
+   *
+   * @deprecated Do not use this function. It returns an invalid metric. Use `metricThrottledRequestsForOperation` instead.
    */
   public metricThrottledRequests(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.cannedMetric(DynamoDBMetrics.throttledRequestsSum, props);
+    return this.metric('ThrottledRequests', { statistic: 'sum', ...props });
+  }
+
+  /**
+   * How many requests are throttled on this table, for the given operation
+   *
+   * Default: sum over 5 minutes
+   */
+  public metricThrottledRequestsForOperation(operation: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return new cloudwatch.Metric({
+      ...DynamoDBMetrics.throttledRequestsSum({ Operation: operation, TableName: this.tableName }),
+      ...props,
+    }).attachTo(this);
   }
 
   /**

@@ -539,7 +539,7 @@ To deploy the controller on your EKS cluster, configure the `albController` prop
 new eks.Cluster(this, 'HelloEKS', {
   version: eks.KubernetesVersion.V1_21,
   albController: {
-    version: eks.AlbControllerVersion.V2_3_0,
+    version: eks.AlbControllerVersion.V2_3_1,
   },
 });
 ```
@@ -1396,6 +1396,31 @@ Kubernetes [endpoint access](#endpoint-access), you must also specify:
   connections to the cluster's control security group. For example, the EKS managed [cluster security group](#cluster-security-group).
 * `kubectlPrivateSubnetIds` - a list of private VPC subnets IDs that will be used
   to access the Kubernetes endpoint.
+
+## Logging
+
+EKS supports cluster logging for 5 different types of events: 
+
+* API requests to the cluster.
+* Cluster access via the Kubernetes API.
+* Authentication requests into the cluster.
+* State of cluster controllers.
+* Scheduling decisions.
+
+You can enable logging for each one separately using the `clusterLogging`
+property. For example:
+
+```ts
+const cluster = new eks.Cluster(this, 'Cluster', {
+  // ...
+  version: eks.KubernetesVersion.V1_21,
+  clusterLogging: [
+    eks.ClusterLoggingTypes.API,
+    eks.ClusterLoggingTypes.AUTHENTICATOR,
+    eks.ClusterLoggingTypes.SCHEDULER,
+  ],
+});
+```
 
 ## Known Issues and Limitations
 

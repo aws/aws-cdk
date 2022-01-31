@@ -744,13 +744,26 @@ export interface ClusterProps extends ClusterOptions {
    */
   readonly defaultCapacityType?: DefaultCapacityType;
 
-
   /**
    * The IAM role to pass to the Kubectl Lambda Handler.
    *
    * @default - Default Lambda IAM Execution Role
    */
   readonly kubectlLambdaRole?: iam.IRole;
+
+  /**
+   * The tags assigned to the EKS cluster
+   *
+   * @default - none
+   */
+  readonly tags?: { [key: string]: string };
+
+  /**
+   * The cluster log types which you want to enable.
+   *
+   * @default - none
+   */
+  readonly clusterLogging?: ClusterLoggingTypes[];
 }
 
 /**
@@ -807,6 +820,32 @@ export class KubernetesVersion {
    * @param version cluster version number
    */
   private constructor(public readonly version: string) { }
+}
+
+/**
+ * EKS cluster logging types
+ */
+export enum ClusterLoggingTypes {
+  /**
+   * Logs pertaining to API requests to the cluster.
+   */
+  API = 'api',
+  /**
+   * Logs pertaining to cluster access via the Kubernetes API.
+   */
+  AUDIT = 'audit',
+  /**
+   * Logs pertaining to authentication requests into the cluster.
+   */
+  AUTHENTICATOR = 'authenticator',
+  /**
+   * Logs pertaining to state of cluster controllers.
+   */
+  CONTROLLER_MANAGER = 'controllerManager',
+  /**
+   * Logs pertaining to scheduling decisions.
+   */
+  SCHEDULER = 'scheduler',
 }
 
 abstract class ClusterBase extends Resource implements ICluster {
@@ -1247,6 +1286,8 @@ export class Cluster extends ClusterBase {
 
   private readonly version: KubernetesVersion;
 
+  private readonly logging?: { [key: string]: [ { [key: string]: any } ] };
+
   /**
    * A dummy CloudFormation resource that is used as a wait barrier which
    * represents that the cluster is ready to receive "kubectl" commands.
@@ -1307,6 +1348,14 @@ export class Cluster extends ClusterBase {
     // Get subnetIds for all selected subnets
     const subnetIds = Array.from(new Set(flatten(selectedSubnetIdsPerGroup)));
 
+    this.logging = props.clusterLogging ? {
+      clusterLogging: [
+        {
+          enabled: true,
+          types: Object.values(props.clusterLogging),
+        },
+      ],
+    } : undefined;
 
     this.endpointAccess = props.endpointAccess ?? EndpointAccess.PUBLIC_AND_PRIVATE;
     this.kubectlEnvironment = props.kubectlEnvironment;
@@ -1372,6 +1421,8 @@ export class Cluster extends ClusterBase {
       subnets: placeClusterHandlerInVpc ? privateSubnets : undefined,
       clusterHandlerSecurityGroup: this.clusterHandlerSecurityGroup,
       onEventLayer: this.onEventLayer,
+      tags: props.tags,
+      logging: this.logging,
     });
 
     if (this.endpointAccess._config.privateAccess && privateSubnets.length !== 0) {

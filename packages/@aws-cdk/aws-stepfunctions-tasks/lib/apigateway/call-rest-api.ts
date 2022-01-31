@@ -24,6 +24,25 @@ export interface CallApiGatewayRestApiEndpointProps extends CallApiGatewayEndpoi
 /**
  * Call REST API endpoint as a Task
  *
+ * Be aware that the header values must be arrays. When passing the Task Token
+ * in the headers field `WAIT_FOR_TASK_TOKEN` integration, use
+ * `JsonPath.array()` to wrap the token in an array:
+ *
+ * ```ts
+ * import * as apigateway from '@aws-cdk/aws-apigateway';
+ * declare const api: apigateway.RestApi;
+ *
+ * new tasks.CallApiGatewayRestApiEndpoint(this, 'Endpoint', {
+ *   api,
+ *   stageName: 'Stage',
+ *   method: tasks.HttpMethod.PUT,
+ *   integrationPattern: sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN,
+ *   headers: sfn.TaskInput.fromObject({
+ *     TaskToken: sfn.JsonPath.array(sfn.JsonPath.taskToken),
+ *   }),
+ * });
+ * ```
+ *
  * @see https://docs.aws.amazon.com/step-functions/latest/dg/connect-api-gateway.html
  */
 export class CallApiGatewayRestApiEndpoint extends CallApiGatewayEndpointBase {

@@ -1,5 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
-import { ABSENT } from '@aws-cdk/assert-internal';
+import { Match, Template } from '@aws-cdk/assertions';
 import * as cdk from '@aws-cdk/core';
 import * as appmesh from '../lib';
 
@@ -50,9 +49,9 @@ describe('gateway route', () => {
       });
 
       // THEN
-      expect(stack).toHaveResourceLike('AWS::AppMesh::GatewayRoute', {
+      Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::GatewayRoute', {
         GatewayRouteName: 'gateway-http-route',
-        MeshOwner: ABSENT,
+        MeshOwner: Match.absent(),
         Spec: {
           HttpRoute: {
             Action: {
@@ -70,7 +69,7 @@ describe('gateway route', () => {
           },
         },
       });
-      expect(stack).toHaveResourceLike('AWS::AppMesh::GatewayRoute', {
+      Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::GatewayRoute', {
         GatewayRouteName: 'gateway-http2-route',
         Spec: {
           Http2Route: {
@@ -89,7 +88,7 @@ describe('gateway route', () => {
           },
         },
       });
-      expect(stack).toHaveResourceLike('AWS::AppMesh::GatewayRoute', {
+      Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::GatewayRoute', {
         GatewayRouteName: 'gateway-grpc-route',
         Spec: {
           GrpcRoute: {
@@ -163,11 +162,9 @@ describe('gateway route', () => {
         });
 
         // THEN
-        expect(stack).toHaveResourceLike('AWS::AppMesh::GatewayRoute', {
+        Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::GatewayRoute', {
           MeshOwner: meshEnv.account,
         });
-
-
       });
     });
 
@@ -214,7 +211,7 @@ describe('gateway route', () => {
         });
 
         // THEN
-        expect(stack).toHaveResourceLike('AWS::AppMesh::GatewayRoute', {
+        Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::GatewayRoute', {
           GatewayRouteName: 'gateway-http-route',
           Spec: {
             HttpRoute: {
@@ -229,7 +226,7 @@ describe('gateway route', () => {
           },
         });
 
-        expect(stack).toHaveResourceLike('AWS::AppMesh::GatewayRoute', {
+        Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::GatewayRoute', {
           GatewayRouteName: 'gateway-grpc-route',
           Spec: {
             GrpcRoute: {
@@ -243,8 +240,6 @@ describe('gateway route', () => {
             },
           },
         });
-
-
       });
     });
 
@@ -279,10 +274,8 @@ describe('gateway route', () => {
           }),
           gatewayRouteName: 'gateway-http2-route',
         });
-
-
         // THEN
-        expect(stack).toHaveResourceLike('AWS::AppMesh::GatewayRoute', {
+        Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::GatewayRoute', {
           GatewayRouteName: 'gateway-http2-route',
           Spec: {
             Http2Route: {
@@ -296,8 +289,6 @@ describe('gateway route', () => {
             },
           },
         });
-
-
       });
     });
 
@@ -355,7 +346,7 @@ describe('gateway route', () => {
         });
 
         // THEN
-        expect(stack).toHaveResourceLike('AWS::AppMesh::GatewayRoute', {
+        Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::GatewayRoute', {
           GatewayRouteName: 'gateway-http-route',
           Spec: {
             HttpRoute: {
@@ -370,7 +361,7 @@ describe('gateway route', () => {
           },
         });
 
-        expect(stack).toHaveResourceLike('AWS::AppMesh::GatewayRoute', {
+        Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::GatewayRoute', {
           GatewayRouteName: 'gateway-http2-route',
           Spec: {
             Http2Route: {
@@ -385,18 +376,16 @@ describe('gateway route', () => {
           },
         });
 
-        expect(stack).toHaveResourceLike('AWS::AppMesh::GatewayRoute', {
+        Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::GatewayRoute', {
           GatewayRouteName: 'gateway-http2-route-1',
           Spec: {
             Http2Route: {
               Action: {
-                Rewrite: ABSENT,
+                Rewrite: Match.absent(),
               },
             },
           },
         });
-
-
       });
 
       test("should throw an error if the prefix match does not start and end with '/'", () => {
@@ -429,8 +418,6 @@ describe('gateway route', () => {
             gatewayRouteName: 'gateway-http-route',
           });
         }).toThrow(/Prefix path for the match must start with \'\/\', got: test\//);
-
-
         expect(() => {
           virtualGateway.addGatewayRoute('gateway-http2-route', {
             routeSpec: appmesh.GatewayRouteSpec.http2({
@@ -442,8 +429,6 @@ describe('gateway route', () => {
             gatewayRouteName: 'gateway-http2-route',
           });
         }).toThrow(/When prefix path for the rewrite is specified, prefix path for the match must end with \'\/\', got: \/test/);
-
-
       });
 
       test("should throw an error if the custom prefix does not start and end with '/'", () => {
@@ -488,8 +473,6 @@ describe('gateway route', () => {
             gatewayRouteName: 'gateway-http2-route',
           });
         }).toThrow(/Prefix path for the rewrite must start and end with \'\/\', got: \/rewrittenUri/);
-
-
       });
     });
 
@@ -535,7 +518,7 @@ describe('gateway route', () => {
         });
 
         // THEN
-        expect(stack).toHaveResourceLike('AWS::AppMesh::GatewayRoute', {
+        Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::GatewayRoute', {
           GatewayRouteName: 'gateway-http-route',
           Spec: {
             HttpRoute: {
@@ -545,13 +528,13 @@ describe('gateway route', () => {
                 },
               },
               Action: {
-                Rewrite: ABSENT,
+                Rewrite: Match.absent(),
               },
             },
           },
         });
 
-        expect(stack).toHaveResourceLike('AWS::AppMesh::GatewayRoute', {
+        Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::GatewayRoute', {
           GatewayRouteName: 'gateway-grpc-route',
           Spec: {
             GrpcRoute: {
@@ -563,8 +546,6 @@ describe('gateway route', () => {
             },
           },
         });
-
-
       });
     });
 
@@ -610,7 +591,7 @@ describe('gateway route', () => {
         });
 
         // THEN
-        expect(stack).toHaveResourceLike('AWS::AppMesh::GatewayRoute', {
+        Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::GatewayRoute', {
           GatewayRouteName: 'gateway-grpc-route',
           Spec: {
             GrpcRoute: {
@@ -681,8 +662,6 @@ describe('gateway route', () => {
             },
           },
         });
-
-
       });
 
       test('should throw an error if the array length is invalid', () => {
@@ -742,8 +721,6 @@ describe('gateway route', () => {
             gatewayRouteName: 'gateway-grpc-route',
           });
         }).toThrow(/Number of metadata provided for matching must be between 1 and 10/);
-
-
       });
     });
 
@@ -790,7 +767,7 @@ describe('gateway route', () => {
         });
 
         // THEN
-        expect(stack).toHaveResourceLike('AWS::AppMesh::GatewayRoute', {
+        Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::GatewayRoute', {
           GatewayRouteName: 'gateway-http-route',
           Spec: {
             HttpRoute: {
@@ -861,8 +838,6 @@ describe('gateway route', () => {
             },
           },
         });
-
-
       });
     });
 
@@ -898,7 +873,7 @@ describe('gateway route', () => {
         });
 
         // THEN
-        expect(stack).toHaveResourceLike('AWS::AppMesh::GatewayRoute', {
+        Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::GatewayRoute', {
           GatewayRouteName: 'gateway-http-route',
           Spec: {
             HttpRoute: {
@@ -908,8 +883,6 @@ describe('gateway route', () => {
             },
           },
         });
-
-
       });
     });
 
@@ -956,7 +929,7 @@ describe('gateway route', () => {
         });
 
         // THEN
-        expect(stack).toHaveResourceLike('AWS::AppMesh::GatewayRoute', {
+        Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::GatewayRoute', {
           GatewayRouteName: 'gateway-http-route',
           Spec: {
             HttpRoute: {
@@ -966,13 +939,13 @@ describe('gateway route', () => {
                 },
               },
               Action: {
-                Rewrite: ABSENT,
+                Rewrite: Match.absent(),
               },
             },
           },
         });
 
-        expect(stack).toHaveResourceLike('AWS::AppMesh::GatewayRoute', {
+        Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::GatewayRoute', {
           GatewayRouteName: 'gateway-http2-route',
           Spec: {
             Http2Route: {
@@ -984,8 +957,6 @@ describe('gateway route', () => {
             },
           },
         });
-
-
       });
 
       test('should throw an error if empty string is passed', () => {
@@ -1019,8 +990,6 @@ describe('gateway route', () => {
             gatewayRouteName: 'gateway-http-route',
           });
         }).toThrow(/Exact Path for the rewrite cannot be empty. Unlike startsWith\(\) method, no automatic rewrite on whole path match/);
-
-
       });
     });
 
@@ -1058,7 +1027,7 @@ describe('gateway route', () => {
         });
 
         // THEN
-        expect(stack).toHaveResourceLike('AWS::AppMesh::GatewayRoute', {
+        Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::GatewayRoute', {
           GatewayRouteName: 'gateway-http-route',
           Spec: {
             HttpRoute: {
@@ -1075,8 +1044,6 @@ describe('gateway route', () => {
             },
           },
         });
-
-
       });
     });
   });
@@ -1112,7 +1079,7 @@ describe('gateway route', () => {
       });
 
       // THEN
-      expect(stack).toHaveResourceLike('AWS::AppMesh::GatewayRoute', {
+      Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::GatewayRoute', {
         GatewayRouteName: 'gateway-http-route',
         Spec: {
           HttpRoute: {
@@ -1157,7 +1124,7 @@ describe('gateway route', () => {
       });
 
       // THEN
-      expect(stack).toHaveResourceLike('AWS::AppMesh::GatewayRoute', {
+      Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::GatewayRoute', {
         Spec: {
           Priority: 100,
         },
@@ -1197,7 +1164,7 @@ describe('gateway route', () => {
       });
 
       // THEN
-      expect(stack).toHaveResourceLike('AWS::AppMesh::GatewayRoute', {
+      Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::GatewayRoute', {
         Spec: {
           Priority: 500,
         },

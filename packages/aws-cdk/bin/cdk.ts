@@ -2,7 +2,7 @@
 import 'source-map-support/register';
 import * as cxapi from '@aws-cdk/cx-api';
 import '@jsii/check-node/run';
-import * as colors from 'colors/safe';
+import * as chalk from 'chalk';
 import * as yargs from 'yargs';
 
 import { SdkProvider } from '../lib/api/aws-auth';
@@ -124,6 +124,13 @@ async function parseCommandLineArguments() {
         desc: 'Continuously observe the project files, ' +
           'and deploy the given stack(s) automatically when changes are detected. ' +
           'Implies --hotswap by default',
+      })
+      .options('logs', {
+        type: 'boolean',
+        default: true,
+        desc: 'Show CloudWatch log events from all resources in the selected Stacks in the terminal. ' +
+          "'true' by default, use --no-logs to turn off. " +
+          "Only in effect if specified alongside the '--watch' option",
       }),
     )
     .command('watch [STACKS..]', "Shortcut for 'deploy --watch'", yargs => yargs
@@ -157,6 +164,12 @@ async function parseCommandLineArguments() {
           'which skips CloudFormation and updates the resources directly, ' +
           'and falls back to a full deployment if that is not possible. ' +
           "'true' by default, use --no-hotswap to turn off",
+      })
+      .options('logs', {
+        type: 'boolean',
+        default: true,
+        desc: 'Show CloudWatch log events from all resources in the selected Stacks in the terminal. ' +
+          "'true' by default, use --no-logs to turn off",
       }),
     )
     .command('destroy [STACKS..]', 'Destroy the stack(s) named STACKS', yargs => yargs
@@ -190,7 +203,8 @@ async function parseCommandLineArguments() {
 }
 
 if (!process.stdout.isTTY) {
-  colors.disable();
+  // Disable chalk color highlighting
+  process.env.FORCE_COLOR = '0';
 }
 
 async function initCommandLine() {
@@ -234,7 +248,7 @@ async function initCommandLine() {
       for (const plugin of plugins) {
         const resolved = tryResolve(plugin);
         if (loaded.has(resolved)) { continue; }
-        debug(`Loading plug-in: ${colors.green(plugin)} from ${colors.blue(resolved)}`);
+        debug(`Loading plug-in: ${chalk.green(plugin)} from ${chalk.blue(resolved)}`);
         PluginHost.instance.load(plugin);
         loaded.add(resolved);
       }
@@ -244,7 +258,7 @@ async function initCommandLine() {
       try {
         return require.resolve(plugin);
       } catch (e) {
-        error(`Unable to resolve plugin ${colors.green(plugin)}: ${e.stack}`);
+        error(`Unable to resolve plugin ${chalk.green(plugin)}: ${e.stack}`);
         throw new Error(`Unable to resolve plug-in: ${plugin}`);
       }
     }
@@ -278,7 +292,7 @@ async function initCommandLine() {
 
   async function main(command: string, args: any): Promise<number | string | {} | void> {
     const toolkitStackName: string = ToolkitInfo.determineName(configuration.settings.get(['toolkitStackName']));
-    debug(`Toolkit stack: ${colors.bold(toolkitStackName)}`);
+    debug(`Toolkit stack: ${chalk.bold(toolkitStackName)}`);
 
     if (args.all && args.STACKS) {
       throw new Error('You must either specify a list of Stacks or the `--all` argument');
@@ -375,6 +389,7 @@ async function initCommandLine() {
           rollback: configuration.settings.get(['rollback']),
           hotswap: args.hotswap,
           watch: args.watch,
+          traceLogs: args.logs,
         });
 
       case 'watch':
@@ -394,6 +409,7 @@ async function initCommandLine() {
           progress: configuration.settings.get(['progress']),
           rollback: configuration.settings.get(['rollback']),
           hotswap: args.hotswap,
+          traceLogs: args.logs,
         });
 
       case 'destroy':
