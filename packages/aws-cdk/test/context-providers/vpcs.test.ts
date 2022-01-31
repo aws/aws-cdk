@@ -110,6 +110,144 @@ test('throws when no such VPC is found', async () => {
   })).rejects.toThrow(/Could not find any VPCs matching/);
 });
 
+test('throws when subnet with subnetGroupNameTag not found', async () => {
+  // GIVEN
+  const filter = { foo: 'bar' };
+  const provider = new VpcNetworkContextProviderPlugin(mockSDK);
+
+  mockVpcLookup({
+    subnets: [
+      { SubnetId: 'sub-123456', AvailabilityZone: 'bermuda-triangle-1337', MapPublicIpOnLaunch: true },
+      { SubnetId: 'sub-789012', AvailabilityZone: 'bermuda-triangle-1337', MapPublicIpOnLaunch: false },
+    ],
+    routeTables: [
+      {
+        Associations: [{ SubnetId: 'sub-123456' }],
+        RouteTableId: 'rtb-123456',
+        Routes: [
+          {
+            DestinationCidrBlock: '1.1.1.1/24',
+            GatewayId: 'local',
+            Origin: 'CreateRouteTable',
+            State: 'active',
+          },
+          {
+            DestinationCidrBlock: '0.0.0.0/0',
+            GatewayId: 'igw-xxxxxx',
+            Origin: 'CreateRoute',
+            State: 'active',
+          },
+        ],
+      },
+      {
+        Associations: [{ SubnetId: 'sub-789012' }],
+        RouteTableId: 'rtb-789012',
+        Routes: [
+          {
+            DestinationCidrBlock: '1.1.2.1/24',
+            GatewayId: 'local',
+            Origin: 'CreateRouteTable',
+            State: 'active',
+          },
+          {
+            DestinationCidrBlock: '0.0.0.0/0',
+            NatGatewayId: 'nat-xxxxxx',
+            Origin: 'CreateRoute',
+            State: 'active',
+          },
+        ],
+      },
+    ],
+    vpnGateways: [{ VpnGatewayId: 'gw-abcdef' }],
+  });
+
+  // WHEN
+  await expect(provider.getValue({
+    account: '1234',
+    region: 'us-east-1',
+    subnetGroupNameTag: 'DOES_NOT_EXIST',
+    filter,
+  })).rejects.toThrow(/Invalid subnetGroupNameTag: Subnet .* does not have an associated tag with Key='DOES_NOT_EXIST'/);
+});
+
+test('does not throw when subnet with subnetGroupNameTag is found', async () => {
+  // GIVEN
+  const filter = { foo: 'bar' };
+  const provider = new VpcNetworkContextProviderPlugin(mockSDK);
+
+  mockVpcLookup({
+    subnets: [
+      { SubnetId: 'sub-123456', AvailabilityZone: 'bermuda-triangle-1337', MapPublicIpOnLaunch: true, Tags: [{ Key: 'DOES_EXIST', Value: 'SubnetName1' }] },
+      { SubnetId: 'sub-789012', AvailabilityZone: 'bermuda-triangle-1337', MapPublicIpOnLaunch: false, Tags: [{ Key: 'DOES_EXIST', Value: 'SubnetName2' }] },
+    ],
+    routeTables: [
+      {
+        Associations: [{ SubnetId: 'sub-123456' }],
+        RouteTableId: 'rtb-123456',
+        Routes: [
+          {
+            DestinationCidrBlock: '1.1.1.1/24',
+            GatewayId: 'local',
+            Origin: 'CreateRouteTable',
+            State: 'active',
+          },
+          {
+            DestinationCidrBlock: '0.0.0.0/0',
+            GatewayId: 'igw-xxxxxx',
+            Origin: 'CreateRoute',
+            State: 'active',
+          },
+        ],
+      },
+      {
+        Associations: [{ SubnetId: 'sub-789012' }],
+        RouteTableId: 'rtb-789012',
+        Routes: [
+          {
+            DestinationCidrBlock: '1.1.2.1/24',
+            GatewayId: 'local',
+            Origin: 'CreateRouteTable',
+            State: 'active',
+          },
+          {
+            DestinationCidrBlock: '0.0.0.0/0',
+            NatGatewayId: 'nat-xxxxxx',
+            Origin: 'CreateRoute',
+            State: 'active',
+          },
+        ],
+      },
+    ],
+    vpnGateways: [{ VpnGatewayId: 'gw-abcdef' }],
+  });
+
+  // WHEN
+  const result = await provider.getValue({
+    account: '1234',
+    region: 'us-east-1',
+    subnetGroupNameTag: 'DOES_EXIST',
+    filter,
+  });
+
+  // THEN
+  expect(result).toEqual({
+    vpcId: 'vpc-1234567',
+    vpcCidrBlock: '1.1.1.1/16',
+    availabilityZones: ['bermuda-triangle-1337'],
+    isolatedSubnetIds: undefined,
+    isolatedSubnetNames: undefined,
+    isolatedSubnetRouteTableIds: undefined,
+    privateSubnetIds: ['sub-789012'],
+    privateSubnetNames: ['SubnetName2'],
+    privateSubnetRouteTableIds: ['rtb-789012'],
+    publicSubnetIds: ['sub-123456'],
+    publicSubnetNames: ['SubnetName1'],
+    publicSubnetRouteTableIds: ['rtb-123456'],
+    vpnGatewayId: 'gw-abcdef',
+    subnetGroups: undefined,
+  });
+});
+
 test('throws when multiple VPCs are found', async () => {
   // GIVEN
   const filter = { foo: 'bar' };
