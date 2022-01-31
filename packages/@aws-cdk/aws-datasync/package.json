@@ -28,6 +28,13 @@
         "distName": "aws-cdk.aws-datasync",
         "module": "aws_cdk.aws_datasync"
       }
+    },
+    "metadata": {
+      "jsii": {
+        "rosetta": {
+          "strict": true
+        }
+      }
     }
   },
   "repository": {

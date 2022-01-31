@@ -28,7 +28,14 @@
         ]
       }
     },
-    "projectReferences": true
+    "projectReferences": true,
+    "metadata": {
+      "jsii": {
+        "rosetta": {
+          "strict": true
+        }
+      }
+    }
   },
   "repository": {
     "type": "git",
@@ -83,10 +90,12 @@
     "jest": "^27.4.7"
   },
   "dependencies": {
+    "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "constructs": "^3.3.69"
   },
   "peerDependencies": {
+    "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "constructs": "^3.3.69"
   },
