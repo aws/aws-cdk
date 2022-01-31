@@ -194,8 +194,8 @@ export interface TableOptions extends SchemaOptions {
   readonly serverSideEncryption?: boolean;
 
   /**
-   * Specifiy the table class.
-   * @default STANDARD else STANDARD_INFREQUENT_ACCESS
+   * Specify the table class.
+   * @default STANDARD
    */
   readonly tableClass?: TableClass;
 

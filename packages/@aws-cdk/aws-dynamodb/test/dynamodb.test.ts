@@ -365,6 +365,7 @@ testDeprecated('when specifying every property', () => {
           'Fn::GetAtt': ['MyStream5C050E93', 'Arn'],
         },
       },
+      TableClass: TableClass.STANDARD,
     },
   );
 });
@@ -781,6 +782,7 @@ test('when specifying no table class', () => {
         { AttributeName: 'hashKey', AttributeType: 'S' },
       ],
       TableName: 'MyTable',
+      TableClass: Match.absent(),
     },
   );
 });
