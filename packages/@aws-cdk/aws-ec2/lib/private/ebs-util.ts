@@ -24,7 +24,7 @@ function synthesizeBlockDeviceMappings<RT, NDT>(construct: Construct, blockDevic
   return blockDevices.map<RT>(({ deviceName, volume, mappingEnabled }): RT => {
     const { virtualName, ebsDevice: ebs } = volume;
 
-    let finalEbs:  CfnLaunchTemplate.EbsProperty | CfnInstance.EbsProperty | undefined;
+    let finalEbs: CfnLaunchTemplate.EbsProperty | CfnInstance.EbsProperty | undefined;
 
     if (ebs) {
 
