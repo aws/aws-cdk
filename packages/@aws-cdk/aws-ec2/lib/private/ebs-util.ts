@@ -29,6 +29,7 @@ function synthesizeBlockDeviceMappings<RT, NDT>(construct: Construct, blockDevic
     if (ebs) {
 
       const { iops, volumeType, kmsKey, ...rest } = ebs;
+
       if (!iops) {
         if (volumeType === EbsDeviceVolumeType.IO1) {
           throw new Error('iops property is required with volumeType: EbsDeviceVolumeType.IO1');
@@ -39,9 +40,8 @@ function synthesizeBlockDeviceMappings<RT, NDT>(construct: Construct, blockDevic
 
       /**
        * Because the Ebs properties of the L2 Constructs do not match the Ebs properties of the Cfn Constructs,
-       * we have to do some transformation.
+       * we have to do some transformation and handle all destructed properties
        */
-
 
       finalEbs = {
         ...rest,
