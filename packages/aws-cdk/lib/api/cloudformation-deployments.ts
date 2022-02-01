@@ -300,7 +300,6 @@ export class CloudFormationDeployments {
     const sdk = await this.prepareSdkWithLookupOrDeployRole(rootStackArtifact);
     const deployedTemplate = await this.readCurrentTemplate(rootStackArtifact, sdk);
     await this.replaceNestedStacksInRootStack(rootStackArtifact, deployedTemplate, sdk);
-
     return deployedTemplate;
   }
 
@@ -309,7 +308,6 @@ export class CloudFormationDeployments {
     if (!sdk) {
       sdk = await this.prepareSdkWithLookupOrDeployRole(stackArtifact);
     }
-
     return this.readCurrentStackTemplate(stackArtifact.stackName, sdk);
   }
 
@@ -379,7 +377,6 @@ export class CloudFormationDeployments {
         return result.sdk;
       }
     } catch { }
-
     // fall back to the deploy role
     return (await this.prepareSdkFor(stackArtifact, undefined, Mode.ForReading)).stackSdk;
   }
@@ -407,8 +404,7 @@ export class CloudFormationDeployments {
     sdk: ISDK,
   ): Promise<void> {
     const listStackResources = parentStackName ? new LazyListStackResources(sdk, parentStackName) : undefined;
-    const parentStackResources = Object.entries(generatedParentTemplate.Resources ?? {});
-    for (const [nestedStackLogicalId, nestedStackResource] of parentStackResources) {
+    for (const [nestedStackLogicalId, nestedStackResource] of Object.entries(generatedParentTemplate.Resources ?? {})) {
       if (!this.isCdkManagedNestedStack(nestedStackResource)) {
         continue;
       }
@@ -418,9 +414,9 @@ export class CloudFormationDeployments {
         rootStackArtifact, assetPath, nestedStackLogicalId, parentStackName, listStackResources, sdk,
       );
 
-      if (!generatedParentTemplate.Resources[nestedStackLogicalId].Properties) {
-        generatedParentTemplate.Resources[nestedStackLogicalId].Properties = {};
-      }
+      //if (!generatedParentTemplate.Resources[nestedStackLogicalId].Properties) {
+      //  generatedParentTemplate.Resources[nestedStackLogicalId].Properties = {};
+      //}
       generatedParentTemplate.Resources[nestedStackLogicalId].Properties.NestedTemplate = nestedStackTemplates.generatedNestedTemplate;
 
       if (!deployedParentTemplate.Resources) {

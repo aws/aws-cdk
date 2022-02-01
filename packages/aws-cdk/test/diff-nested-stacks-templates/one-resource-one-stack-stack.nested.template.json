@@ -8,6 +8,9 @@
     },
     "NestedStack": {
       "Type": "AWS::CloudFormation::Stack",
+      "Properties": {
+        "TemplateURL": "https://www.my-magic-url.com"
+      },
       "Metadata": {
         "aws:asset:path": "one-resource-stack.nested.template.json"
       }
