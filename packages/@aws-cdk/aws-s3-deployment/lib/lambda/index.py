@@ -78,7 +78,7 @@ def handler(event, context):
         if dest_bucket_prefix == "/":
             dest_bucket_prefix = ""
 
-        s3_source_zips = map(lambda name, key: "s3://%s/%s" % (name, key), source_bucket_names, source_object_keys)
+        s3_source_zips = list(map(lambda name, key: "s3://%s/%s" % (name, key), source_bucket_names, source_object_keys))
         s3_dest = "s3://%s/%s" % (dest_bucket_name, dest_bucket_prefix)
         old_s3_dest = "s3://%s/%s" % (old_props.get("DestinationBucketName", ""), old_props.get("DestinationBucketKeyPrefix", ""))
 
@@ -129,7 +129,7 @@ def handler(event, context):
 # populate all files from s3_source_zips to a destination bucket
 def s3_deploy(s3_source_zips, s3_dest, user_metadata, system_metadata, prune, exclude, include, source_markers):
     # list lengths are equal
-    if len(list(s3_source_zips)) != len(source_markers):
+    if len(s3_source_zips) != len(source_markers):
         raise Exception("'source_markers' and 's3_source_zips' must be the same length")
 
     # create a temporary working directory in /tmp or if enabled an attached efs volume
@@ -149,7 +149,7 @@ def s3_deploy(s3_source_zips, s3_dest, user_metadata, system_metadata, prune, ex
         # download the archive from the source and extract to "contents"
         for i in range(len(s3_source_zips)):
             s3_source_zip = s3_source_zips[i]
-            markers       = json.loads(source_markers[i])
+            markers       = source_markers[i]
 
             archive=os.path.join(workdir, str(uuid4()))
             logger.info("archive: %s" % archive)

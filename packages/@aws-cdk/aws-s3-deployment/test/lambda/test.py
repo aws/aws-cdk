@@ -608,8 +608,8 @@ class TestHandler(unittest.TestCase):
             "DestinationBucketName": "<dest-bucket-name>",
             "Prune": "false",
             "SourceMarkers": [
-                json.dumps({"_marker1_": "value1-source1", "_marker2_": "value2-source1"}),
-                json.dumps({"_marker1_": "value1-source2"}),
+                { "_marker1_": "value1-source1", "_marker2_": "value2-source1" },
+                { "_marker1_": "value1-source2" },
             ],
         }, outdir=outdir)
 

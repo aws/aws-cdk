@@ -1105,7 +1105,7 @@ test('Source.jsonData() can be used to create a file with a JSON object', () => 
   // verify marker is mapped to the bucket ARN in the resource props
   Template.fromJSON(result.stacks[0].template).hasResourceProperties('Custom::CDKBucketDeployment', {
     SourceMarkers: [
-      '{"<<marker:0xbaba:0>>":{"Fn::GetAtt":["Bucket83908E77","Arn"]}}',
+      { '<<marker:0xbaba:0>>': { 'Fn::GetAtt': ['Bucket83908E77', 'Arn'] } },
     ],
   });
 });

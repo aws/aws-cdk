@@ -8,10 +8,11 @@ const bucket = new Bucket(stack, 'Bucket');
 
 const file1 = Source.data('file1.txt', 'boom');
 const file2 = Source.data('path/to/file2.txt', `bam! ${bucket.bucketName}`);
+const file3 = Source.jsonData('my/config.json', { website_url: bucket.bucketWebsiteUrl });
 
 new BucketDeployment(stack, 'DeployMe', {
   destinationBucket: bucket,
-  sources: [file1, file2],
+  sources: [file1, file2, file3],
   destinationKeyPrefix: 'deploy/here/',
 });
 

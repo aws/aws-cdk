@@ -341,7 +341,7 @@ export class BucketDeployment extends CoreConstruct {
       properties: {
         SourceBucketNames: sources.map(source => source.bucket.bucketName),
         SourceObjectKeys: sources.map(source => source.zipObjectKey),
-        SourceMarkers: sources.map(source => Stack.of(this).toJsonString(source.markers ?? {})),
+        SourceMarkers: sources.map(source => source.markers ?? {}),
         DestinationBucketName: props.destinationBucket.bucketName,
         DestinationBucketKeyPrefix: props.destinationKeyPrefix,
         RetainOnDelete: props.retainOnDelete,
