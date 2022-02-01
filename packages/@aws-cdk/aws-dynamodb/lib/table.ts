@@ -1175,7 +1175,7 @@ export class Table extends TableBase {
       },
       sseSpecification,
       streamSpecification,
-      tableClass: props.tableClass ? props.tableClass : undefined,
+      tableClass: props.tableClass,
       timeToLiveSpecification: props.timeToLiveAttribute ? { attributeName: props.timeToLiveAttribute, enabled: true } : undefined,
       contributorInsightsSpecification: props.contributorInsightsEnabled !== undefined ? { enabled: props.contributorInsightsEnabled } : undefined,
       kinesisStreamSpecification: props.kinesisStream ? { streamArn: props.kinesisStream.streamArn } : undefined,
@@ -1773,10 +1773,10 @@ export enum StreamViewType {
  * @see https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.TableClasses.html
  */
 export enum TableClass {
-  /** Default table class for DynamoDB */
+  /** Default table class for DynamoDB. */
   STANDARD = 'STANDARD',
 
-  /** table class for DynamoDB that reduces storage costs compared to existing DynamoDB Standard tables */
+  /** Table class for DynamoDB that reduces storage costs compared to existing DynamoDB Standard tables. */
   STANDARD_INFREQUENT_ACCESS = 'STANDARD_INFREQUENT_ACCESS',
 }
 
