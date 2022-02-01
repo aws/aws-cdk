@@ -17,6 +17,7 @@ import {
   ProjectionType,
   StreamViewType,
   Table,
+  TableClass,
   TableEncryption,
   Operation,
   CfnTable,
@@ -717,6 +718,47 @@ test('if an encryption key is included, encrypt/decrypt permissions are added to
       }]),
     },
   });
+});
+
+test('when specifying STANDARD_INFREQUENT_ACCESS table class', () => {
+  const stack = new Stack();
+  new Table(stack, CONSTRUCT_NAME, {
+    partitionKey: TABLE_PARTITION_KEY,
+    tableClass: TableClass.STANDARD_INFREQUENT_ACCESS,
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::Table',
+    {
+      TableClass: 'STANDARD_INFREQUENT_ACCESS',
+    },
+  );
+});
+
+test('when specifying STANDARD table class', () => {
+  const stack = new Stack();
+  new Table(stack, CONSTRUCT_NAME, {
+    partitionKey: TABLE_PARTITION_KEY,
+    tableClass: TableClass.STANDARD,
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::Table',
+    {
+      TableClass: 'STANDARD',
+    },
+  );
+});
+
+test('when specifying no table class', () => {
+  const stack = new Stack();
+  new Table(stack, CONSTRUCT_NAME, {
+    partitionKey: TABLE_PARTITION_KEY,
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::Table',
+    {
+      TableClass: Match.absent(),
+    },
+  );
 });
 
 test('when specifying PAY_PER_REQUEST billing mode', () => {
