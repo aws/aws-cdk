@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as sns from '@aws-cdk/aws-sns';
 import * as sqs from '@aws-cdk/aws-sqs';
@@ -33,11 +33,11 @@ describe('queue', () => {
 
     // THEN
     // Ensure creation of default queue and queue policy allowing SNS Topics to send message to the queue
-    expect(stack).toHaveResource('AWS::SQS::Queue', {
+    Template.fromStack(stack).hasResourceProperties('AWS::SQS::Queue', {
       MessageRetentionPeriod: 1209600,
     });
 
-    expect(stack).toHaveResource('AWS::SQS::Queue', {
+    Template.fromStack(stack).hasResourceProperties('AWS::SQS::Queue', {
       RedrivePolicy: {
         deadLetterTargetArn: {
           'Fn::GetAtt': [
@@ -50,7 +50,7 @@ describe('queue', () => {
     });
 
     // Ensure the task role is given permissions to consume messages from the queue
-    expect(stack).toHaveResource('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -75,10 +75,10 @@ describe('queue', () => {
     });
 
     // Ensure there are no SNS Subscriptions created
-    expect(stack).toCountResources('AWS::SNS::Subscription', 0);
+    Template.fromStack(stack).resourceCountIs('AWS::SNS::Subscription', 0);
 
     // Ensure that the queue URL has been correctly appended to the environment variables
-    expect(stack).toHaveResource('AWS::ECS::TaskDefinition', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
         {
           Cpu: 256,
@@ -114,8 +114,6 @@ describe('queue', () => {
         },
       ],
     });
-
-
   });
 
   test('should be able to subscribe default events queue created by the extension to given topics', () => {
@@ -153,11 +151,11 @@ describe('queue', () => {
 
     // THEN
     // Ensure creation of default queue and queue policy allowing SNS Topics to send message to the queue
-    expect(stack).toHaveResource('AWS::SQS::Queue', {
+    Template.fromStack(stack).hasResourceProperties('AWS::SQS::Queue', {
       MessageRetentionPeriod: 1209600,
     });
 
-    expect(stack).toHaveResource('AWS::SQS::Queue', {
+    Template.fromStack(stack).hasResourceProperties('AWS::SQS::Queue', {
       RedrivePolicy: {
         deadLetterTargetArn: {
           'Fn::GetAtt': [
@@ -169,7 +167,7 @@ describe('queue', () => {
       },
     });
 
-    expect(stack).toHaveResource('AWS::SQS::QueuePolicy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::SQS::QueuePolicy', {
       PolicyDocument: {
         Statement: [
           {
@@ -218,7 +216,7 @@ describe('queue', () => {
     });
 
     // Ensure the task role is given permissions to consume messages from the queue
-    expect(stack).toHaveResource('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -243,7 +241,7 @@ describe('queue', () => {
     });
 
     // Ensure SNS Subscriptions for given topics
-    expect(stack).toHaveResource('AWS::SNS::Subscription', {
+    Template.fromStack(stack).hasResourceProperties('AWS::SNS::Subscription', {
       Protocol: 'sqs',
       TopicArn: {
         Ref: 'topic152D84A37',
@@ -256,7 +254,7 @@ describe('queue', () => {
       },
     });
 
-    expect(stack).toHaveResource('AWS::SNS::Subscription', {
+    Template.fromStack(stack).hasResourceProperties('AWS::SNS::Subscription', {
       Protocol: 'sqs',
       TopicArn: {
         Ref: 'topic2A4FB547F',
@@ -270,7 +268,7 @@ describe('queue', () => {
     });
 
     // Ensure that the queue URL has been correctly appended to the environment variables
-    expect(stack).toHaveResource('AWS::ECS::TaskDefinition', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
         {
           Cpu: 256,
@@ -306,8 +304,6 @@ describe('queue', () => {
         },
       ],
     });
-
-
   });
 
   test('should be able to subscribe user-provided queue to given topics', () => {
@@ -346,7 +342,7 @@ describe('queue', () => {
 
     // THEN
     // Ensure queue policy allows SNS Topics to send message to the queue
-    expect(stack).toHaveResource('AWS::SQS::QueuePolicy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::SQS::QueuePolicy', {
       PolicyDocument: {
         Statement: [
           {
@@ -374,7 +370,7 @@ describe('queue', () => {
       },
     });
 
-    expect(stack).toHaveResource('AWS::SQS::QueuePolicy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::SQS::QueuePolicy', {
       PolicyDocument: {
         Statement: [
           {
@@ -403,7 +399,7 @@ describe('queue', () => {
     });
 
     // Ensure the task role is given permissions to consume messages from the queue
-    expect(stack).toHaveResource('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -444,7 +440,7 @@ describe('queue', () => {
     });
 
     // Ensure SNS Subscriptions for given topics
-    expect(stack).toHaveResource('AWS::SNS::Subscription', {
+    Template.fromStack(stack).hasResourceProperties('AWS::SNS::Subscription', {
       Protocol: 'sqs',
       TopicArn: {
         Ref: 'topic152D84A37',
@@ -457,7 +453,7 @@ describe('queue', () => {
       },
     });
 
-    expect(stack).toHaveResource('AWS::SNS::Subscription', {
+    Template.fromStack(stack).hasResourceProperties('AWS::SNS::Subscription', {
       Protocol: 'sqs',
       TopicArn: {
         Ref: 'topic2A4FB547F',
@@ -471,7 +467,7 @@ describe('queue', () => {
     });
 
     // Ensure that the queue URL has been correctly added to the environment variables
-    expect(stack).toHaveResource('AWS::ECS::TaskDefinition', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
         {
           Cpu: 256,
@@ -562,12 +558,12 @@ describe('queue', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::ApplicationAutoScaling::ScalableTarget', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApplicationAutoScaling::ScalableTarget', {
       MaxCapacity: 10,
       MinCapacity: 1,
     });
 
-    expect(stack).toHaveResourceLike('AWS::ApplicationAutoScaling::ScalingPolicy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApplicationAutoScaling::ScalingPolicy', {
       PolicyType: 'TargetTrackingScaling',
       TargetTrackingScalingPolicyConfiguration: {
         CustomizedMetricSpecification: {
@@ -639,12 +635,12 @@ describe('queue', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::ApplicationAutoScaling::ScalableTarget', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApplicationAutoScaling::ScalableTarget', {
       MaxCapacity: 10,
       MinCapacity: 1,
     });
 
-    expect(stack).toHaveResourceLike('AWS::ApplicationAutoScaling::ScalingPolicy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApplicationAutoScaling::ScalingPolicy', {
       PolicyType: 'TargetTrackingScaling',
       TargetTrackingScalingPolicyConfiguration: {
         CustomizedMetricSpecification: {
@@ -668,7 +664,7 @@ describe('queue', () => {
       },
     });
 
-    expect(stack).toHaveResourceLike('AWS::ApplicationAutoScaling::ScalingPolicy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApplicationAutoScaling::ScalingPolicy', {
       PolicyType: 'TargetTrackingScaling',
       TargetTrackingScalingPolicyConfiguration: {
         CustomizedMetricSpecification: {
@@ -692,7 +688,7 @@ describe('queue', () => {
       },
     });
 
-    expect(stack).toHaveResourceLike('AWS::ApplicationAutoScaling::ScalingPolicy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApplicationAutoScaling::ScalingPolicy', {
       PolicyType: 'TargetTrackingScaling',
       TargetTrackingScalingPolicyConfiguration: {
         CustomizedMetricSpecification: {
