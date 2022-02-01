@@ -954,10 +954,7 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
     }
 
     if (props.loggingConfig) {
-      this.loggingBucket = props.loggingConfig.bucket || new s3.Bucket(this, 'LoggingBucket', {
-        encryption: s3.BucketEncryption.S3_MANAGED,
-        enforceSSL: true,
-      });
+      this.loggingBucket = props.loggingConfig.bucket || new s3.Bucket(this, 'LoggingBucket');
       distributionConfig = {
         ...distributionConfig,
         logging: {
