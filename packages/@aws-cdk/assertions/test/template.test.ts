@@ -5,11 +5,11 @@ import { Capture, Match, Template } from '../lib';
 describe('Template', () => {
   test('fromString', () => {
     const template = Template.fromString(`{
-        "Resources": { 
-          "Foo": { 
+        "Resources": {
+          "Foo": {
             "Type": "Baz::Qux",
             "Properties": { "Fred": "Waldo" }
-          } 
+          }
         }
       }`);
 
@@ -79,11 +79,11 @@ describe('Template', () => {
   describe('fromString', () => {
     test('default', () => {
       const assertions = Template.fromString(`{
-        "Resources": { 
-          "Foo": { 
+        "Resources": {
+          "Foo": {
             "Type": "Baz::Qux",
             "Properties": { "Fred": "Waldo" }
-          } 
+          }
         }
       }`);
       assertions.resourceCountIs('Baz::Qux', 1);
@@ -1083,6 +1083,25 @@ describe('Template', () => {
       const result = inspect.findConditions('Foo', { 'Fn::Equals': ['Bar', 'Qux'] });
       expect(Object.keys(result).length).toEqual(0);
     });
+  });
+
+  test('throws when given a template with cyclic dependencies', () => {
+    expect(() => {
+      Template.fromJSON({
+        Resources: {
+          Res1: {
+            Type: 'Foo',
+            Properties: {
+              Thing: { Ref: 'Res2' },
+            },
+          },
+          Res2: {
+            Type: 'Foo',
+            DependsOn: ['Res1'],
+          },
+        },
+      });
+    }).toThrow(/dependency cycle/);
   });
 });
 

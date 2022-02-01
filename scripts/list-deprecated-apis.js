@@ -48,8 +48,8 @@ class StripDeprecatedPrinter {
 
 async function main(printer) {
   const typesystem = new jsiiReflect.TypeSystem();
-  // Decdk depends on everything, so that's a perfect directory to load as closure
-  await typesystem.loadNpmDependencies(path.resolve(__dirname, '..', 'packages', 'decdk'), { validate: false });
+  // aws-cdk-lib depends on everything, so that's a perfect directory to load as closure
+  await typesystem.loadNpmDependencies(path.resolve(__dirname, '..', 'packages', 'aws-cdk-lib'), { validate: false });
 
   printer.printHeader();
 

@@ -75,9 +75,14 @@ declare const loadBalancer: elbv2.ApplicationLoadBalancer;
 const origin = new origins.LoadBalancerV2Origin(loadBalancer, {
   connectionAttempts: 3,
   connectionTimeout: Duration.seconds(5),
+  readTimeout: Duration.seconds(45),
   protocolPolicy: cloudfront.OriginProtocolPolicy.MATCH_VIEWER,
 });
 ```
+
+Note that the `readTimeout` property can extend its value over 60 seconds only if a limit increase request for CloudFront origin response timeout
+quota has been approved in the target account; otherwise, values over 60 seconds will produce an error at deploy time. Consider that this value is
+still limited to a maximum value of 180 seconds, which is a hard limit for that quota.
 
 ## From an HTTP endpoint
 
