@@ -12,7 +12,7 @@ export * from './artifacts/asset-manifest-artifact';
 export * from './artifacts/cloudformation-artifact';
 export * from './artifacts/tree-cloud-artifact';
 export * from './artifacts/nested-cloud-assembly-artifact';
-export * from './artifacts/nested-cloud-assembly-artifact-aug';
+import './artifacts/nested-cloud-assembly-artifact-aug';
 export * from './cloud-assembly';
 export * from './assets';
 export * from './environment';
