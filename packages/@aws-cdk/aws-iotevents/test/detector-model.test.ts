@@ -137,6 +137,63 @@ test('can set multiple events to State', () => {
   });
 });
 
+test('can set states with transitions', () => {
+  // WHEN
+  const firstState = new iotevents.State({
+    stateName: 'firstState',
+    onEnter: [{
+      eventName: 'test-eventName',
+      condition: iotevents.Expression.fromString('test-eventCondition'),
+    }],
+  });
+  const secondState = new iotevents.State({
+    stateName: 'secondState',
+  });
+
+  firstState.transitionTo({
+    eventName: 'firstToSecond',
+    nextState: secondState,
+    condition: iotevents.Expression.fromString('test-eventCondition-12'),
+  });
+  secondState.transitionTo({
+    eventName: 'secondToFirst',
+    nextState: firstState,
+    condition: iotevents.Expression.fromString('test-eventCondition-21'),
+  });
+
+  new iotevents.DetectorModel(stack, 'MyDetectorModel', {
+    initialState: firstState,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::IoTEvents::DetectorModel', {
+    DetectorModelDefinition: {
+      States: [
+        {
+          StateName: 'firstState',
+          OnInput: {
+            TransitionEvents: [{
+              EventName: 'firstToSecond',
+              NextState: 'secondState',
+              Condition: 'test-eventCondition-12',
+            }],
+          },
+        },
+        {
+          StateName: 'secondState',
+          OnInput: {
+            TransitionEvents: [{
+              EventName: 'secondToFirst',
+              NextState: 'firstState',
+              Condition: 'test-eventCondition-21',
+            }],
+          },
+        },
+      ],
+    },
+  });
+});
+
 test('can set role', () => {
   // WHEN
   const role = iam.Role.fromRoleArn(stack, 'test-role', 'arn:aws:iam::123456789012:role/ForTest');

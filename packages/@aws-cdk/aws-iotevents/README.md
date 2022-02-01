@@ -54,12 +54,34 @@ const input = new iotevents.Input(this, 'MyInput', {
   attributeJsonPaths: ['payload.deviceId', 'payload.temperature'],
 });
 
-const onlineState = new iotevents.State({
-  stateName: 'online',
+const normalState = new iotevents.State({
+  stateName: 'normal',
   onEnter: [{
     eventName: 'test-event',
     condition: iotevents.Expression.currentInput(input),
   }],
+});
+const coldState = new iotevents.State({
+  stateName: 'cold',
+});
+
+// transit to coldState when temperature is 10
+normalState.transitionTo({
+  eventName: 'to_coldState',
+  nextState: coldState,
+  condition: iotevents.Expression.eq(
+    iotevents.Expression.inputAttribute(input, 'payload.temperature'),
+    iotevents.Expression.fromString('10'),
+  ),
+});
+// transit to normalState when temperature is 20
+coldState.transitionTo({
+  eventName: 'to_normalState',
+  nextState: normalState,
+  condition: iotevents.Expression.eq(
+    iotevents.Expression.inputAttribute(input, 'payload.temperature'),
+    iotevents.Expression.fromString('20'),
+  ),
 });
 
 new iotevents.DetectorModel(this, 'MyDetectorModel', {

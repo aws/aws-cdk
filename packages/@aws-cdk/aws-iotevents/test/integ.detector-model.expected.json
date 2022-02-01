@@ -37,7 +37,7 @@
       "Type": "AWS::IoTEvents::DetectorModel",
       "Properties": {
         "DetectorModelDefinition": {
-          "InitialStateName": "online",
+          "InitialStateName": "firstState",
           "States": [
             {
               "OnEnter": {
@@ -63,7 +63,50 @@
                   }
                 ]
               },
-              "StateName": "online"
+              "OnInput": {
+                "TransitionEvents": [
+                  {
+                    "Condition": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "$input.",
+                          {
+                            "Ref": "MyInput08947B23"
+                          },
+                          ".payload.temperature == 12"
+                        ]
+                      ]
+                    },
+                    "EventName": "firstToSecond",
+                    "NextState": "secondState"
+                  }
+                ]
+              },
+              "StateName": "firstState"
+            },
+            {
+              "OnInput": {
+                "TransitionEvents": [
+                  {
+                    "Condition": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "$input.",
+                          {
+                            "Ref": "MyInput08947B23"
+                          },
+                          ".payload.temperature == 21"
+                        ]
+                      ]
+                    },
+                    "EventName": "secondToFirst",
+                    "NextState": "firstState"
+                  }
+                ]
+              },
+              "StateName": "secondState"
             }
           ]
         },

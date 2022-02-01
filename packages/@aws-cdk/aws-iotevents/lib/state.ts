@@ -1,4 +1,4 @@
-import { Event } from './event';
+import { IEvent, ITransitionEvent } from './event';
 import { CfnDetectorModel } from './iotevents.generated';
 
 /**
@@ -16,7 +16,7 @@ export interface StateProps {
    *
    * @default - events on enter will not be set
    */
-  readonly onEnter?: Event[];
+  readonly onEnter?: IEvent[];
 }
 
 /**
@@ -28,21 +28,46 @@ export class State {
    */
   public readonly stateName: string;
 
+  private transitionEvents: ITransitionEvent[] = []
+
   constructor(private readonly props: StateProps) {
     this.stateName = props.stateName;
   }
 
   /**
-   * Return the state property JSON
+   * Add a transition event to the state.
+   *
+   * @param transitionEvent the transition event that triggered if condition is evaluated to TRUE
+   */
+  public transitionTo(transitionEvent:ITransitionEvent) {
+    this.transitionEvents.push(transitionEvent);
+  }
+
+  /**
+   * Return the JSON of the states that is transited to.
+   * This function is called recursively and collect the states.
    *
    * @internal
    */
-  public _toStateJson(): CfnDetectorModel.StateProperty {
+  public _getStatesJson(states: CfnDetectorModel.StateProperty[] = []): CfnDetectorModel.StateProperty[] {
     const { stateName, onEnter } = this.props;
-    return {
+
+    if (states.some(s => s.stateName === stateName)) {
+      return states;
+    }
+
+    const newStates: CfnDetectorModel.StateProperty[] = [...states, {
       stateName,
+      onInput: {
+        transitionEvents: this.transitionEvents.length > 0 ?
+          getTransitionEventJson(this.transitionEvents) : undefined,
+      },
       onEnter: onEnter && { events: getEventJson(onEnter) },
-    };
+    }];
+
+    return this.transitionEvents.reduce((acc, transitionEvent) => {
+      return transitionEvent.nextState._getStatesJson(acc);
+    }, newStates);
   }
 
   /**
@@ -55,11 +80,20 @@ export class State {
   }
 }
 
-function getEventJson(events: Event[]): CfnDetectorModel.EventProperty[] {
+function getEventJson(events: IEvent[]): CfnDetectorModel.EventProperty[] {
   return events.map(e => {
     return {
       eventName: e.eventName,
       condition: e.condition?.evaluate(),
+    };
+  });
+}
+function getTransitionEventJson(events: ITransitionEvent[]): CfnDetectorModel.TransitionEventProperty[] {
+  return events.map(e => {
+    return {
+      eventName: e.eventName,
+      condition: e.condition.evaluate(),
+      nextState: e.nextState.stateName,
     };
   });
 }
