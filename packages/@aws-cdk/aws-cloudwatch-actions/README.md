@@ -28,16 +28,13 @@ alarm.addAlarmAction(
 ## SSM OpsCenter Action Example
 
 ```ts
-import * as cw from "@aws-cdk/aws-cloudwatch";
-
-let alarm: cw.Alarm;
+declare const alarm: cloudwatch.Alarm;
 // Create an OpsItem with specific severity and category when alarm triggers
 alarm.addAlarmAction(
-  new SsmAction(
-    OpsItemSeverity.CRITICAL,
-    OpsItemCategory.PERFORMANCE // category is optional
+  new actions.SsmAction(
+    actions.OpsItemSeverity.CRITICAL,
+    actions.OpsItemCategory.PERFORMANCE // category is optional
   )
 );
-```
 
 See `@aws-cdk/aws-cloudwatch` for more information.
