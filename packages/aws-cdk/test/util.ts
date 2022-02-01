@@ -49,25 +49,6 @@ function clone(obj: any) {
   return JSON.parse(JSON.stringify(obj));
 }
 
-function addNestedStacks(templatePath: string, outdir: string, rootStackTemplate?: any) {
-  let template = rootStackTemplate;
-
-  if (!template) {
-    const templatePathWithDir = path.join('diff-nested-stacks-templates', templatePath);
-    template = JSON.parse(fs.readFileSync(path.join(__dirname, templatePathWithDir)).toString());
-    fs.writeFileSync(path.join(outdir, templatePath), JSON.stringify(template, undefined, 2));
-  }
-
-  for (const logicalId in template.Resources) {
-    if (template.Resources[logicalId].Type === 'AWS::CloudFormation::Stack') {
-      if (template.Resources[logicalId].Metadata && template.Resources[logicalId].Metadata['aws:asset:path']) {
-        const nestedTemplatePath = template.Resources[logicalId].Metadata['aws:asset:path'];
-        addNestedStacks(nestedTemplatePath, outdir);
-      }
-    }
-  }
-}
-
 function addAttributes(assembly: TestAssembly, builder: cxapi.CloudAssemblyBuilder) {
   for (const stack of assembly.stacks) {
     const templateFile = `${stack.stackName}.template.json`;
@@ -101,6 +82,25 @@ function addAttributes(assembly: TestAssembly, builder: cxapi.CloudAssemblyBuild
       },
       displayName: stack.displayName,
     });
+  }
+}
+
+function addNestedStacks(templatePath: string, outdir: string, rootStackTemplate?: any) {
+  let template = rootStackTemplate;
+
+  if (!template) {
+    const templatePathWithDir = path.join('diff-nested-stacks-templates', templatePath);
+    template = JSON.parse(fs.readFileSync(path.join(__dirname, templatePathWithDir)).toString());
+    fs.writeFileSync(path.join(outdir, templatePath), JSON.stringify(template, undefined, 2));
+  }
+
+  for (const logicalId in template.Resources) {
+    if (template.Resources[logicalId].Type === 'AWS::CloudFormation::Stack') {
+      if (template.Resources[logicalId].Metadata && template.Resources[logicalId].Metadata['aws:asset:path']) {
+        const nestedTemplatePath = template.Resources[logicalId].Metadata['aws:asset:path'];
+        addNestedStacks(nestedTemplatePath, outdir);
+      }
+    }
   }
 }
 

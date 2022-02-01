@@ -5,8 +5,9 @@ import { CloudFormationDeployments } from '../../lib/api/cloudformation-deployme
 import { deployStack } from '../../lib/api/deploy-stack';
 import { ToolkitInfo } from '../../lib/api/toolkit-info';
 import { CloudFormationStack } from '../../lib/api/util/cloudformation';
-import { instanceMockFrom, testStack } from '../util';
+import { testStack } from '../util';
 import { mockBootstrapStack, MockSdkProvider } from '../util/mock-sdk';
+import { FakeCloudformationStack } from './fake-cloudformation-stack';
 
 let sdkProvider: MockSdkProvider;
 let deployments: CloudFormationDeployments;
@@ -23,11 +24,12 @@ beforeEach(() => {
   sdkProvider.stubCloudFormation({
     listStackResources: ({ StackName: stackName }) => {
       numberOfTimesListStackResourcesWasCalled++;
-      if (!currentCfnStackResources[stackName]) {
+      const stackResources = currentCfnStackResources[stackName];
+      if (!stackResources) {
         throw new Error(`Stack with id ${stackName} does not exist`);
       }
       return {
-        StackResourceSummaries: currentCfnStackResources[stackName],
+        StackResourceSummaries: stackResources,
       };
     },
   });
@@ -163,11 +165,14 @@ test('if toolkit stack cannot be found but SSM parameter name is present deploym
 });
 
 test('readCurrentTemplateWithNestedStacks() can handle non-Resources in the template', async () => {
-  const cfnStack = instanceMockFrom((CloudFormationStack as any));
-  CloudFormationStack.lookup = jest.fn().mockImplementation((_, stackName: string) => {
+  const cfnStack = new FakeCloudformationStack({
+    stackName: 'ParentStackWithOutputAndParameter',
+    stackId: 'StackId',
+  });
+  CloudFormationStack.lookup = (async (_, stackName: string) => {
     switch (stackName) {
-      case 'OutputParamRoot':
-        (cfnStack as any).template = jest.fn().mockReturnValue({
+      case 'ParentStackWithOutputAndParameter':
+        cfnStack.template = async () => ({
           Resources: {
             NestedStack: {
               Type: 'AWS::CloudFormation::Stack',
@@ -183,7 +188,7 @@ test('readCurrentTemplateWithNestedStacks() can handle non-Resources in the temp
         break;
 
       case 'NestedStack':
-        (cfnStack as any).template = jest.fn().mockReturnValue({
+        cfnStack.template = async () => ({
           Resources: {
             NestedResource: {
               Type: 'AWS::Something',
@@ -208,14 +213,14 @@ test('readCurrentTemplateWithNestedStacks() can handle non-Resources in the temp
         break;
 
       default:
-        throw new Error('unknown stack name ' + stackName + ' found in cloudformation-deployments.test.ts');
+        throw new Error('unknown stack name ' + stackName + ' found');
     }
 
     return cfnStack;
   });
 
   const rootStack = testStack({
-    stackName: 'OutputParamRoot',
+    stackName: 'ParentStackWithOutputAndParameter',
     template: {
       Resources: {
         NestedStack: {
@@ -231,14 +236,9 @@ test('readCurrentTemplateWithNestedStacks() can handle non-Resources in the temp
     },
   });
 
-  pushStackResourceSummaries('OutputParamRoot',
+  pushStackResourceSummaries('ParentStackWithOutputAndParameter',
     stackSummaryOf('NestedStack', 'AWS::CloudFormation::Stack',
       'arn:aws:cloudformation:bermuda-triangle-1337:123456789012:stack/NestedStack/abcd',
-    ),
-  );
-  pushStackResourceSummaries('NestedStack',
-    stackSummaryOf('NestedResource', 'AWS::Something',
-      'arn:aws:something:bermuda-triangle-1337:123456789012:property',
     ),
   );
 
@@ -320,11 +320,14 @@ test('readCurrentTemplateWithNestedStacks() can handle non-Resources in the temp
 });
 
 test('readCurrentTemplateWithNestedStacks() with a 3-level nested + sibling structure works', async () => {
-  const cfnStack = instanceMockFrom((CloudFormationStack as any));
-  CloudFormationStack.lookup = jest.fn().mockImplementation((_, stackName: string) => {
+  const cfnStack = new FakeCloudformationStack({
+    stackName: 'MultiLevelRoot',
+    stackId: 'StackId',
+  });
+  CloudFormationStack.lookup = (async (_, stackName: string) => {
     switch (stackName) {
       case 'MultiLevelRoot':
-        (cfnStack as any).template = jest.fn().mockReturnValue({
+        cfnStack.template = async () => ({
           Resources: {
             NestedStack: {
               Type: 'AWS::CloudFormation::Stack',
@@ -340,7 +343,7 @@ test('readCurrentTemplateWithNestedStacks() with a 3-level nested + sibling stru
         break;
 
       case 'NestedStack':
-        (cfnStack as any).template = jest.fn().mockReturnValue({
+        cfnStack.template = async () => ({
           Resources: {
             SomeResource: {
               Type: 'AWS::Something',
@@ -371,7 +374,7 @@ test('readCurrentTemplateWithNestedStacks() with a 3-level nested + sibling stru
         break;
 
       case 'NestedStackA':
-        (cfnStack as any).template = jest.fn().mockReturnValue({
+        cfnStack.template = async () => ({
           Resources: {
             SomeResource: {
               Type: 'AWS::Something',
@@ -384,7 +387,7 @@ test('readCurrentTemplateWithNestedStacks() with a 3-level nested + sibling stru
         break;
 
       case 'NestedStackB':
-        (cfnStack as any).template = jest.fn().mockReturnValue({
+        cfnStack.template = async () => ({
           Resources: {
             SomeResource: {
               Type: 'AWS::Something',
@@ -432,9 +435,6 @@ test('readCurrentTemplateWithNestedStacks() with a 3-level nested + sibling stru
     stackSummaryOf('NestedStackB', 'AWS::CloudFormation::Stack',
       'arn:aws:cloudformation:bermuda-triangle-1337:123456789012:stack/NestedStackB/abcd',
     ),
-    stackSummaryOf('SomeResource', 'AWS::Something',
-      'arn:aws:something:bermuda-triangle-1337:123456789012:property',
-    ),
   );
   pushStackResourceSummaries('NestedStackA',
     stackSummaryOf('NestedStack', 'AWS::CloudFormation::Stack',
@@ -444,16 +444,6 @@ test('readCurrentTemplateWithNestedStacks() with a 3-level nested + sibling stru
   pushStackResourceSummaries('NestedStackB',
     stackSummaryOf('NestedStack', 'AWS::CloudFormation::Stack',
       'arn:aws:cloudformation:bermuda-triangle-1337:123456789012:stack/GrandChildB/abcd',
-    ),
-  );
-  pushStackResourceSummaries('GrandChildA',
-    stackSummaryOf('SomeResource', 'AWS::Something',
-      'arn:aws:something:bermuda-triangle-1337:123456789012:property',
-    ),
-  );
-  pushStackResourceSummaries('GrandChildB',
-    stackSummaryOf('SomeResource', 'AWS::Something',
-      'arn:aws:something:bermuda-triangle-1337:123456789012:property',
     ),
   );
 
@@ -588,9 +578,12 @@ test('readCurrentTemplateWithNestedStacks() with a 3-level nested + sibling stru
 
 test('readCurrentTemplateWithNestedStacks() on an undeployed parent stack with an (also undeployed) nested stack works', async () => {
   // GIVEN
-  const cfnStack = instanceMockFrom((CloudFormationStack as any));
-  CloudFormationStack.lookup = jest.fn().mockImplementation((_cfn: CloudFormation, _stackName: string) => {
-    (cfnStack as any).template = jest.fn().mockReturnValue({ });
+  const cfnStack = new FakeCloudformationStack({
+    stackName: 'UndeployedParent',
+    stackId: 'StackId',
+  });
+  CloudFormationStack.lookup = (async (_cfn, _stackName: string) => {
+    cfnStack.template = async () => ({});
 
     return cfnStack;
   });
@@ -638,9 +631,12 @@ test('readCurrentTemplateWithNestedStacks() on an undeployed parent stack with a
 
 test('readCurrentTemplateWithNestedStacks() caches calls to listStackResources()', async () => {
   // GIVEN
-  const cfnStack = instanceMockFrom((CloudFormationStack as any));
-  CloudFormationStack.lookup = jest.fn().mockImplementation((_cfn: CloudFormation, _stackName: string) => {
-    (cfnStack as any).template = jest.fn().mockReturnValue({
+  const cfnStack = new FakeCloudformationStack({
+    stackName: 'CachingRoot',
+    stackId: 'StackId',
+  });
+  CloudFormationStack.lookup = (async (_cfn, _stackName: string) => {
+    cfnStack.template = async () => ({
       Resources:
       {
         NestedStackA: {
@@ -711,10 +707,13 @@ test('readCurrentTemplateWithNestedStacks() caches calls to listStackResources()
 
 test('readCurrentTemplateWithNestedStacks() succesfully ignores stacks without metadata', async () => {
   // GIVEN
-  const cfnStack = instanceMockFrom((CloudFormationStack as any));
-  CloudFormationStack.lookup = jest.fn().mockImplementation((_cfn: CloudFormation, stackName: string) => {
+  const cfnStack = new FakeCloudformationStack({
+    stackName: 'MetadataRoot',
+    stackId: 'StackId',
+  });
+  CloudFormationStack.lookup = (async (_, stackName: string) => {
     if (stackName === 'MetadataRoot') {
-      (cfnStack as any).template = jest.fn().mockReturnValue({
+      cfnStack.template = async () => ({
         Resources: {
           WithMetadata: {
             Type: 'AWS::CloudFormation::Stack',
@@ -729,7 +728,7 @@ test('readCurrentTemplateWithNestedStacks() succesfully ignores stacks without m
       });
 
     } else {
-      (cfnStack as any).template = jest.fn().mockReturnValue({
+      cfnStack.template = async () => ({
         Resources: {
           SomeResource: {
             Type: 'AWS::Something',
