@@ -4,7 +4,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as s3_assets from '@aws-cdk/aws-s3-assets';
 import { FileSystem, Stack } from '@aws-cdk/core';
-import { renderContent } from './content';
+import { renderData } from './render-data';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
@@ -138,7 +138,7 @@ export class Source {
       bind: (scope: Construct, context?: DeploymentSourceContext) => {
         const workdir = FileSystem.mkdtemp('s3-deployment');
         const outputPath = join(workdir, objectKey);
-        const rendered = renderContent(scope, data);
+        const rendered = renderData(scope, data);
         fs.mkdirSync(dirname(outputPath), { recursive: true });
         fs.writeFileSync(outputPath, rendered.text);
         const asset = this.asset(workdir).bind(scope, context);
