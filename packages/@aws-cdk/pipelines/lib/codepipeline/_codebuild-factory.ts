@@ -1,4 +1,3 @@
-import * as crypto from 'crypto';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as codebuild from '@aws-cdk/aws-codebuild';
@@ -6,11 +5,12 @@ import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as codepipeline_actions from '@aws-cdk/aws-codepipeline-actions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
-import { IDependable, Stack } from '@aws-cdk/core';
+import { IDependable, Stack, Token } from '@aws-cdk/core';
 import { Construct, Node } from 'constructs';
-import { FileSetLocation, ShellStep, StackDeployment, StackOutputReference } from '../blueprint';
+import { FileSetLocation, ShellStep, StackOutputReference } from '../blueprint';
 import { PipelineQueries } from '../helpers-internal/pipeline-queries';
 import { cloudAssemblyBuildSpecDir, obtainScope } from '../private/construct-internals';
+import { hash, stackVariableNamespace } from '../private/identifiers';
 import { mapValues, mkdict, noEmptyObject, noUndefined, partition } from '../private/javascript';
 import { ArtifactMap } from './artifact-map';
 import { CodeBuildStep } from './codebuild-step';
@@ -137,16 +137,16 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
     const factory = CodeBuildFactory.fromShellStep(constructId, step, {
       projectName: step.projectName,
       role: step.role,
-      projectOptions: {
+      ...additional,
+      projectOptions: mergeCodeBuildOptions(additional?.projectOptions, {
         buildEnvironment: step.buildEnvironment,
         rolePolicy: step.rolePolicyStatements,
         securityGroups: step.securityGroups,
         partialBuildSpec: step.partialBuildSpec,
         vpc: step.vpc,
         subnetSelection: step.subnetSelection,
-        ...additional?.projectOptions,
-      },
-      ...additional,
+        timeout: step.timeout,
+      }),
     });
 
     return {
@@ -271,14 +271,20 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
       projectScope = obtainScope(scope, actionName);
     }
 
+    const safePipelineName = Token.isUnresolved(options.pipeline.pipeline.pipelineName)
+      ? `${Stack.of(options.pipeline).stackName}/${Node.of(options.pipeline.pipeline).id}`
+      : options.pipeline.pipeline.pipelineName;
+
     const project = new codebuild.PipelineProject(projectScope, this.constructId, {
       projectName: this.props.projectName,
+      description: `Pipeline step ${safePipelineName}/${stage.stageName}/${actionName}`.substring(0, 255),
       environment,
       vpc: projectOptions.vpc,
       subnetSelection: projectOptions.subnetSelection,
       securityGroups: projectOptions.securityGroups,
       buildSpec: projectBuildSpec,
       role: this.props.role,
+      timeout: projectOptions.timeout,
     });
 
     if (this.props.additionalDependable) {
@@ -333,7 +339,7 @@ function generateInputArtifactLinkCommands(artifacts: ArtifactMap, inputs: FileS
   return inputs.map(input => {
     const fragments = [];
 
-    fragments.push(`[[ ! -d "${input.directory}" ]] || { echo 'additionalInputs: "${input.directory}" must not exist yet. If you want to merge multiple artifacts, use a "cp" command.'; exit 1; }`);
+    fragments.push(`[ ! -d "${input.directory}" ] || { echo 'additionalInputs: "${input.directory}" must not exist yet. If you want to merge multiple artifacts, use a "cp" command.'; exit 1; }`);
 
     const parentDirectory = path.dirname(input.directory);
     if (!['.', '..'].includes(parentDirectory)) {
@@ -393,6 +399,7 @@ export function mergeCodeBuildOptions(...opts: Array<CodeBuildOptions | undefine
       partialBuildSpec: mergeBuildSpecs(a.partialBuildSpec, b.partialBuildSpec),
       vpc: b.vpc ?? a.vpc,
       subnetSelection: b.subnetSelection ?? a.subnetSelection,
+      timeout: b.timeout ?? a.timeout,
     };
   }
 }
@@ -426,12 +433,6 @@ function isDefined<A>(x: A | undefined): x is NonNullable<A> {
   return x !== undefined;
 }
 
-function hash<A>(obj: A) {
-  const d = crypto.createHash('sha256');
-  d.update(JSON.stringify(obj));
-  return d.digest('hex');
-}
-
 /**
  * Serialize a build environment to data (get rid of constructs & objects), so we can JSON.stringify it
  */
@@ -445,10 +446,6 @@ function serializeBuildEnvironment(env: codebuild.BuildEnvironment) {
     imagePullPrincipalType: env.buildImage?.imagePullPrincipalType,
     secretsManagerArn: env.buildImage?.secretsManagerCredentials?.secretArn,
   };
-}
-
-export function stackVariableNamespace(stack: StackDeployment) {
-  return stack.stackArtifactId;
 }
 
 /**

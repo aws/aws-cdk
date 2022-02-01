@@ -25,12 +25,11 @@ createSymlinks() {
 
 runtarget="build"
 run_tests="true"
-extract_snippets="false"
 skip_build=""
 while [[ "${1:-}" != "" ]]; do
     case $1 in
         -h|--help)
-            echo "Usage: transform.sh [--skip-test/build] [--extract]"
+            echo "Usage: transform.sh [--skip-test/build]"
             exit 1
             ;;
         --skip-test|--skip-tests)
@@ -38,9 +37,6 @@ while [[ "${1:-}" != "" ]]; do
             ;;
         --skip-build)
             skip_build="true"
-            ;;
-        --extract)
-            extract_snippets="true"
             ;;
         *)
             echo "Unrecognized options: $1"
@@ -51,9 +47,6 @@ while [[ "${1:-}" != "" ]]; do
 done
 if [ "$run_tests" == "true" ]; then
   runtarget="$runtarget+test"
-fi
-if [ "$extract_snippets" == "true" ]; then
-  runtarget="$runtarget+extract"
 fi
 
 export NODE_OPTIONS="--max-old-space-size=4096 --experimental-worker ${NODE_OPTIONS:-}"
@@ -66,5 +59,6 @@ cd "$individual_packages_folder"
 createSymlinks "$individual_packages_folder"
 
 if [ "$skip_build" != "true" ]; then
-  PHASE=transform yarn lerna run --stream $runtarget
+  TRANSFORM_CONCURRENCY=${TRANSFORM_CONCURRENCY:-8}
+  PHASE=transform yarn lerna run --stream --concurrency ${TRANSFORM_CONCURRENCY} $runtarget
 fi

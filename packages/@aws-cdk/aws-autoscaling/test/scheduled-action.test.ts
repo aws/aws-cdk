@@ -1,11 +1,11 @@
-import '@aws-cdk/assert-internal/jest';
-import { expect, haveResource, MatchStyle } from '@aws-cdk/assert-internal';
+import { Template } from '@aws-cdk/assertions';
 import * as ec2 from '@aws-cdk/aws-ec2';
+import { describeDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
 import * as constructs from 'constructs';
 import * as autoscaling from '../lib';
 
-describe('scheduled action', () => {
+describeDeprecated('scheduled action', () => {
   test('can schedule an action', () => {
     // GIVEN
     const stack = new cdk.Stack();
@@ -18,12 +18,10 @@ describe('scheduled action', () => {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::AutoScaling::ScheduledAction', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::ScheduledAction', {
       Recurrence: '0 8 * * *',
       MinSize: 10,
-    }));
-
-
+    });
   });
 
   test('correctly formats date objects', () => {
@@ -39,11 +37,29 @@ describe('scheduled action', () => {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::AutoScaling::ScheduledAction', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::ScheduledAction', {
       StartTime: '2033-09-10T12:00:00Z',
-    }));
+    });
+  });
 
+  test('have timezone property', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const asg = makeAutoScalingGroup(stack);
 
+    // WHEN
+    asg.scaleOnSchedule('ScaleOutAtMiddaySeoul', {
+      schedule: autoscaling.Schedule.cron({ hour: '12', minute: '0' }),
+      minCapacity: 12,
+      timeZone: 'Asia/Seoul',
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::ScheduledAction', {
+      MinSize: 12,
+      Recurrence: '0 12 * * *',
+      TimeZone: 'Asia/Seoul',
+    });
   });
 
   test('autoscaling group has recommended updatepolicy for scheduled actions', () => {
@@ -58,7 +74,7 @@ describe('scheduled action', () => {
     });
 
     // THEN
-    expect(stack).toMatch({
+    Template.fromStack(stack).templateMatches({
       Resources: {
         ASG46ED3070: {
           Type: 'AWS::AutoScaling::AutoScalingGroup',
@@ -102,9 +118,7 @@ describe('scheduled action', () => {
           Default: '/aws/service/ami-amazon-linux-latest/amzn-ami-hvm-x86_64-gp2',
         },
       },
-    }, MatchStyle.SUPERSET);
-
-
+    });
   });
 });
 

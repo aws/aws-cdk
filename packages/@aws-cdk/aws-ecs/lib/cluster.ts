@@ -6,7 +6,7 @@ import * as kms from '@aws-cdk/aws-kms';
 import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cloudmap from '@aws-cdk/aws-servicediscovery';
-import { Duration, Lazy, IResource, Resource, Stack, Aspects, IAspect, IConstruct } from '@aws-cdk/core';
+import { Duration, Lazy, IResource, Resource, Stack, Aspects, IAspect, IConstruct, ArnFormat } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { BottleRocketImage, EcsOptimizedAmi } from './amis';
 import { InstanceDrainHook } from './drain-hook/instance-drain-hook';
@@ -103,6 +103,41 @@ export class Cluster extends Resource implements ICluster {
    */
   public static fromClusterAttributes(scope: Construct, id: string, attrs: ClusterAttributes): ICluster {
     return new ImportedCluster(scope, id, attrs);
+  }
+
+  /**
+   * Import an existing cluster to the stack from the cluster ARN.
+   * This does not provide access to the vpc, hasEc2Capacity, or connections -
+   * use the `fromClusterAttributes` method to access those properties.
+   */
+  public static fromClusterArn(scope: Construct, id: string, clusterArn: string): ICluster {
+    const stack = Stack.of(scope);
+    const arn = stack.splitArn(clusterArn, ArnFormat.SLASH_RESOURCE_NAME);
+    const clusterName = arn.resourceName;
+
+    if (!clusterName) {
+      throw new Error(`Missing required Cluster Name from Cluster ARN: ${clusterArn}`);
+    }
+
+    const errorSuffix = 'is not available for a Cluster imported using fromClusterArn(), please use fromClusterAttributes() instead.';
+
+    class Import extends Resource implements ICluster {
+      public readonly clusterArn = clusterArn;
+      public readonly clusterName = clusterName!;
+      get hasEc2Capacity(): boolean {
+        throw new Error(`hasEc2Capacity ${errorSuffix}`);
+      }
+      get connections(): ec2.Connections {
+        throw new Error(`connections ${errorSuffix}`);
+      }
+      get vpc(): ec2.IVpc {
+        throw new Error(`vpc ${errorSuffix}`);
+      }
+    }
+
+    return new Import(scope, id, {
+      environmentFromArn: clusterArn,
+    });
   }
 
   /**
@@ -287,11 +322,11 @@ export class Cluster extends Resource implements ICluster {
   }
 
   /**
+   * It is highly recommended to use {@link Cluster.addAsgCapacityProvider} instead of this method.
+   *
    * This method adds compute capacity to a cluster by creating an AutoScalingGroup with the specified options.
    *
    * Returns the AutoScalingGroup so you can add autoscaling settings to it.
-   *
-   * @deprecated Use {@link Cluster.addAsgCapacityProvider} instead.
    */
   public addCapacity(id: string, options: AddCapacityOptions): autoscaling.AutoScalingGroup {
     // Do 2-way defaulting here: if the machineImageType is BOTTLEROCKET, pick the right AMI.
@@ -555,7 +590,7 @@ export class Cluster extends Resource implements ICluster {
     return new cloudwatch.Metric({
       namespace: 'AWS/ECS',
       metricName,
-      dimensions: { ClusterName: this.clusterName },
+      dimensionsMap: { ClusterName: this.clusterName },
       ...props,
     }).attachTo(this);
   }
@@ -996,7 +1031,9 @@ export interface ExecuteCommandLogConfiguration {
  */
 export interface AsgCapacityProviderProps extends AddAutoScalingGroupCapacityOptions {
   /**
-   * The name for the capacity provider.
+   * The name of the capacity provider. If a name is specified,
+   * it cannot start with `aws`, `ecs`, or `fargate`. If no name is specified,
+   * a default name in the CFNStackName-CFNResourceName-RandomString format is used.
    *
    * @default CloudFormation-generated name
    */
@@ -1085,7 +1122,11 @@ export class AsgCapacityProvider extends CoreConstruct {
     if (this.enableManagedTerminationProtection) {
       this.autoScalingGroup.protectNewInstancesFromScaleIn();
     }
-
+    if (props.capacityProviderName) {
+      if (!(/^(?!aws|ecs|fargate).+/gm.test(props.capacityProviderName))) {
+        throw new Error(`Invalid Capacity Provider Name: ${props.capacityProviderName}, If a name is specified, it cannot start with aws, ecs, or fargate.`);
+      }
+    }
     const capacityProvider = new CfnCapacityProvider(this, id, {
       name: props.capacityProviderName,
       autoScalingGroupProvider: {

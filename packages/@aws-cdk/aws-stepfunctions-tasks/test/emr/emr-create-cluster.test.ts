@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
@@ -32,6 +32,14 @@ beforeEach(() => {
       ],
     }),
   );
+});
+
+test('Create Cluster with an unresolved release label', () => {
+  new EmrCreateCluster(stack, 'Task', {
+    instances: {},
+    name: 'Cluster',
+    releaseLabel: cdk.Token.asString({}),
+  });
 });
 
 test('Create Cluster with FIRE_AND_FORGET integrationPattern', () => {
@@ -605,7 +613,7 @@ test('Create Cluster without Roles', () => {
     },
   });
 
-  expect(stack).toHaveResourceLike('AWS::IAM::Role', {
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
     AssumeRolePolicyDocument: {
       Version: '2012-10-17',
       Statement: [
@@ -620,7 +628,7 @@ test('Create Cluster without Roles', () => {
 
   // The stack renders the ec2.amazonaws.com Service principal id with a
   // Join to the URLSuffix
-  expect(stack).toHaveResourceLike('AWS::IAM::Role', {
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
     AssumeRolePolicyDocument: {
       Version: '2012-10-17',
       Statement: [
@@ -646,7 +654,7 @@ test('Create Cluster without Roles', () => {
     },
   });
 
-  expect(stack).toHaveResourceLike('AWS::IAM::Role', {
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
     AssumeRolePolicyDocument: {
       Version: '2012-10-17',
       Statement: [

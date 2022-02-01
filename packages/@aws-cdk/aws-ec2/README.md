@@ -577,6 +577,30 @@ const mySecurityGroupWithoutInlineRules = new ec2.SecurityGroup(this, 'SecurityG
 mySecurityGroupWithoutInlineRules.addIngressRule(ec2.Peer.anyIpv4(), ec2.Port.tcp(22), 'allow ssh access from the world');
 ```
 
+### Importing an existing security group
+
+If you know the ID and the configuration of the security group to import, you can use `SecurityGroup.fromSecurityGroupId`:
+
+```ts
+const sg = ec2.SecurityGroup.fromSecurityGroupId(this, 'SecurityGroupImport', 'sg-1234', {
+  allowAllOutbound: true,
+});
+```
+
+Alternatively, use lookup methods to import security groups if you do not know the ID or the configuration details. Method `SecurityGroup.fromLookupByName` looks up a security group if the secruity group ID is unknown.
+
+```ts fixture=with-vpc
+const sg = ec2.SecurityGroup.fromLookupByName(this, 'SecurityGroupLookup', 'security-group-name', vpc);
+```
+
+If the security group ID is known and configuration details are unknown, use method `SecurityGroup.fromLookupById` instead. This method will lookup property `allowAllOutbound` from the current configuration of the security group.
+
+```ts
+const sg = ec2.SecurityGroup.fromLookupById(this, 'SecurityGroupLookup', 'sg-1234');
+```
+
+The result of `SecurityGroup.fromLookupByName` and `SecurityGroup.fromLookupById` operations will be written to a file called `cdk.context.json`. You must commit this file to source control so that the lookup values are available in non-privileged environments such as CI build steps, and to ensure your template builds are repeatable.
+
 ## Machine Images (AMIs)
 
 AMIs control the OS that gets launched when you start your EC2 instance. The EC2
@@ -830,6 +854,46 @@ You can use the `Instance` class to start up a single EC2 instance. For producti
 you use an `AutoScalingGroup` from the `aws-autoscaling` module instead, as AutoScalingGroups will take
 care of restarting your instance if it ever fails.
 
+```ts
+declare const vpc: ec2.Vpc;
+declare const instanceType: ec2.InstanceType;
+
+// AWS Linux
+new ec2.Instance(this, 'Instance1', {
+  vpc,
+  instanceType,
+  machineImage: new ec2.AmazonLinuxImage(),
+});
+
+// AWS Linux 2
+new ec2.Instance(this, 'Instance2', {
+  vpc,
+  instanceType,
+  machineImage: new ec2.AmazonLinuxImage({
+    generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2,
+  }),
+});
+
+// AWS Linux 2 with kernel 5.x 
+new ec2.Instance(this, 'Instance3', {
+  vpc,
+  instanceType,
+  machineImage: new ec2.AmazonLinuxImage({ 
+    generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2,
+    kernel: ec2.AmazonLinuxKernel.KERNEL5_X,
+  }),
+});
+
+// AWS Linux 2022
+new ec2.Instance(this, 'Instance4', {
+  vpc,
+  instanceType,
+  machineImage: new ec2.AmazonLinuxImage({ 
+    generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2022,
+  }),
+});
+```
+
 ### Configuring Instances using CloudFormation Init (cfn-init)
 
 CloudFormation Init allows you to configure your instances by writing files to them, installing software
@@ -1047,6 +1111,23 @@ instance.userData.addCommands(
   `while ! test -e ${targetDevice}; do sleep 1; done`
   // The volume will now be mounted. You may have to add additional code to format the volume if it has not been prepared.
 );
+```
+
+#### Tagging Volumes
+
+You can configure [tag propagation on volume creation](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-instance.html#cfn-ec2-instance-propagatetagstovolumeoncreation).
+
+```ts
+  declare const vpc: ec2.Vpc;
+  declare const instanceType: ec2.InstanceType;
+  declare const machineImage: ec2.IMachineImage;
+
+  new ec2.Instance(this, 'Instance', {
+    vpc,
+    machineImage,
+    instanceType,
+    propagateTagsToVolumeOnCreation: true,
+  });
 ```
 
 ### Configuring Instance Metadata Service (IMDS)

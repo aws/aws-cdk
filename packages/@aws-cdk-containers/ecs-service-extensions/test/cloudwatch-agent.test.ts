@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as cdk from '@aws-cdk/core';
 import { CloudwatchAgentExtension, Container, Environment, Service, ServiceDescription } from '../lib';
@@ -27,8 +27,7 @@ describe('cloudwatch agent', () => {
     });
 
     // THEN
-
-    expect(stack).toHaveResource('AWS::ECS::TaskDefinition', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
         {
           Cpu: 256,
@@ -103,8 +102,5 @@ describe('cloudwatch agent', () => {
         ],
       },
     });
-
-
   });
-
 });

@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as sns from '@aws-cdk/aws-sns';
 import * as sqs from '@aws-cdk/aws-sqs';
@@ -33,11 +33,11 @@ describe('queue', () => {
 
     // THEN
     // Ensure creation of default queue and queue policy allowing SNS Topics to send message to the queue
-    expect(stack).toHaveResource('AWS::SQS::Queue', {
+    Template.fromStack(stack).hasResourceProperties('AWS::SQS::Queue', {
       MessageRetentionPeriod: 1209600,
     });
 
-    expect(stack).toHaveResource('AWS::SQS::Queue', {
+    Template.fromStack(stack).hasResourceProperties('AWS::SQS::Queue', {
       RedrivePolicy: {
         deadLetterTargetArn: {
           'Fn::GetAtt': [
@@ -50,7 +50,7 @@ describe('queue', () => {
     });
 
     // Ensure the task role is given permissions to consume messages from the queue
-    expect(stack).toHaveResource('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -75,10 +75,10 @@ describe('queue', () => {
     });
 
     // Ensure there are no SNS Subscriptions created
-    expect(stack).toCountResources('AWS::SNS::Subscription', 0);
+    Template.fromStack(stack).resourceCountIs('AWS::SNS::Subscription', 0);
 
     // Ensure that the queue URL has been correctly appended to the environment variables
-    expect(stack).toHaveResource('AWS::ECS::TaskDefinition', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
         {
           Cpu: 256,
@@ -114,8 +114,6 @@ describe('queue', () => {
         },
       ],
     });
-
-
   });
 
   test('should be able to subscribe default events queue created by the extension to given topics', () => {
@@ -153,11 +151,11 @@ describe('queue', () => {
 
     // THEN
     // Ensure creation of default queue and queue policy allowing SNS Topics to send message to the queue
-    expect(stack).toHaveResource('AWS::SQS::Queue', {
+    Template.fromStack(stack).hasResourceProperties('AWS::SQS::Queue', {
       MessageRetentionPeriod: 1209600,
     });
 
-    expect(stack).toHaveResource('AWS::SQS::Queue', {
+    Template.fromStack(stack).hasResourceProperties('AWS::SQS::Queue', {
       RedrivePolicy: {
         deadLetterTargetArn: {
           'Fn::GetAtt': [
@@ -169,7 +167,7 @@ describe('queue', () => {
       },
     });
 
-    expect(stack).toHaveResource('AWS::SQS::QueuePolicy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::SQS::QueuePolicy', {
       PolicyDocument: {
         Statement: [
           {
@@ -218,7 +216,7 @@ describe('queue', () => {
     });
 
     // Ensure the task role is given permissions to consume messages from the queue
-    expect(stack).toHaveResource('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -243,7 +241,7 @@ describe('queue', () => {
     });
 
     // Ensure SNS Subscriptions for given topics
-    expect(stack).toHaveResource('AWS::SNS::Subscription', {
+    Template.fromStack(stack).hasResourceProperties('AWS::SNS::Subscription', {
       Protocol: 'sqs',
       TopicArn: {
         Ref: 'topic152D84A37',
@@ -256,7 +254,7 @@ describe('queue', () => {
       },
     });
 
-    expect(stack).toHaveResource('AWS::SNS::Subscription', {
+    Template.fromStack(stack).hasResourceProperties('AWS::SNS::Subscription', {
       Protocol: 'sqs',
       TopicArn: {
         Ref: 'topic2A4FB547F',
@@ -270,7 +268,7 @@ describe('queue', () => {
     });
 
     // Ensure that the queue URL has been correctly appended to the environment variables
-    expect(stack).toHaveResource('AWS::ECS::TaskDefinition', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
         {
           Cpu: 256,
@@ -306,8 +304,6 @@ describe('queue', () => {
         },
       ],
     });
-
-
   });
 
   test('should be able to subscribe user-provided queue to given topics', () => {
@@ -327,7 +323,9 @@ describe('queue', () => {
 
     const topicSubscription1 = new TopicSubscription({
       topic: new sns.Topic(stack, 'topic1'),
-      queue: new sqs.Queue(stack, 'myQueue'),
+      topicSubscriptionQueue: {
+        queue: new sqs.Queue(stack, 'myQueue'),
+      },
     });
     const topicSubscription2 = new TopicSubscription({
       topic: new sns.Topic(stack, 'topic2'),
@@ -344,7 +342,7 @@ describe('queue', () => {
 
     // THEN
     // Ensure queue policy allows SNS Topics to send message to the queue
-    expect(stack).toHaveResource('AWS::SQS::QueuePolicy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::SQS::QueuePolicy', {
       PolicyDocument: {
         Statement: [
           {
@@ -372,7 +370,7 @@ describe('queue', () => {
       },
     });
 
-    expect(stack).toHaveResource('AWS::SQS::QueuePolicy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::SQS::QueuePolicy', {
       PolicyDocument: {
         Statement: [
           {
@@ -401,7 +399,7 @@ describe('queue', () => {
     });
 
     // Ensure the task role is given permissions to consume messages from the queue
-    expect(stack).toHaveResource('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -442,7 +440,7 @@ describe('queue', () => {
     });
 
     // Ensure SNS Subscriptions for given topics
-    expect(stack).toHaveResource('AWS::SNS::Subscription', {
+    Template.fromStack(stack).hasResourceProperties('AWS::SNS::Subscription', {
       Protocol: 'sqs',
       TopicArn: {
         Ref: 'topic152D84A37',
@@ -455,7 +453,7 @@ describe('queue', () => {
       },
     });
 
-    expect(stack).toHaveResource('AWS::SNS::Subscription', {
+    Template.fromStack(stack).hasResourceProperties('AWS::SNS::Subscription', {
       Protocol: 'sqs',
       TopicArn: {
         Ref: 'topic2A4FB547F',
@@ -469,7 +467,7 @@ describe('queue', () => {
     });
 
     // Ensure that the queue URL has been correctly added to the environment variables
-    expect(stack).toHaveResource('AWS::ECS::TaskDefinition', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
         {
           Cpu: 256,
@@ -501,7 +499,337 @@ describe('queue', () => {
         },
       ],
     });
+  });
 
+  test('should error when providing both the subscriptionQueue and queue (deprecated) props for a topic subscription', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
 
+    // WHEN
+    const serviceDescription = new ServiceDescription();
+
+    serviceDescription.add(new Container({
+      cpu: 256,
+      memoryMiB: 512,
+      trafficPort: 80,
+      image: ecs.ContainerImage.fromRegistry('nathanpeck/name'),
+    }));
+
+    // THEN
+    expect(() => {
+      new TopicSubscription({
+        topic: new sns.Topic(stack, 'topic1'),
+        queue: new sqs.Queue(stack, 'delete-queue'),
+        topicSubscriptionQueue: {
+          queue: new sqs.Queue(stack, 'sign-up-queue'),
+        },
+      });
+    }).toThrow('Either provide the `subscriptionQueue` or the `queue` (deprecated) for the topic subscription, but not both.');
+  });
+
+  test('should be able to add target tracking scaling policy for the Events Queue with no subscriptions', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const environment = new Environment(stack, 'production');
+    const serviceDescription = new ServiceDescription();
+
+    serviceDescription.add(new Container({
+      cpu: 256,
+      memoryMiB: 512,
+      trafficPort: 80,
+      image: ecs.ContainerImage.fromRegistry('nathanpeck/name'),
+    }));
+
+    serviceDescription.add(new QueueExtension({
+      scaleOnLatency: {
+        acceptableLatency: cdk.Duration.minutes(5),
+        messageProcessingTime: cdk.Duration.seconds(20),
+      },
+    }));
+
+    new Service(stack, 'my-service', {
+      environment,
+      serviceDescription,
+      autoScaleTaskCount: {
+        maxTaskCount: 10,
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApplicationAutoScaling::ScalableTarget', {
+      MaxCapacity: 10,
+      MinCapacity: 1,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ApplicationAutoScaling::ScalingPolicy', {
+      PolicyType: 'TargetTrackingScaling',
+      TargetTrackingScalingPolicyConfiguration: {
+        CustomizedMetricSpecification: {
+          Dimensions: [
+            {
+              Name: 'QueueName',
+              Value: {
+                'Fn::GetAtt': [
+                  'EventsQueueB96EB0D2',
+                  'QueueName',
+                ],
+              },
+            },
+          ],
+          MetricName: 'BacklogPerTask',
+          Namespace: 'production-my-service',
+          Statistic: 'Average',
+          Unit: 'Count',
+        },
+        TargetValue: 15,
+      },
+    });
+  });
+
+  test('should be able to add target tracking scaling policy for the SQS Queues', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const environment = new Environment(stack, 'production');
+    const serviceDescription = new ServiceDescription();
+
+    serviceDescription.add(new Container({
+      cpu: 256,
+      memoryMiB: 512,
+      trafficPort: 80,
+      image: ecs.ContainerImage.fromRegistry('nathanpeck/name'),
+    }));
+
+    const topicSubscription1 = new TopicSubscription({
+      topic: new sns.Topic(stack, 'topic1'),
+      topicSubscriptionQueue: {
+        queue: new sqs.Queue(stack, 'myQueue'),
+        scaleOnLatency: {
+          acceptableLatency: cdk.Duration.minutes(10),
+          messageProcessingTime: cdk.Duration.seconds(20),
+        },
+      },
+    });
+    const topicSubscription2 = new TopicSubscription({
+      topic: new sns.Topic(stack, 'topic2'),
+      queue: new sqs.Queue(stack, 'tempQueue'),
+    });
+    serviceDescription.add(new QueueExtension({
+      subscriptions: [topicSubscription1, topicSubscription2],
+      eventsQueue: new sqs.Queue(stack, 'defQueue'),
+      scaleOnLatency: {
+        acceptableLatency: cdk.Duration.minutes(5),
+        messageProcessingTime: cdk.Duration.seconds(20),
+      },
+    }));
+
+    new Service(stack, 'my-service', {
+      environment,
+      serviceDescription,
+      autoScaleTaskCount: {
+        maxTaskCount: 10,
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApplicationAutoScaling::ScalableTarget', {
+      MaxCapacity: 10,
+      MinCapacity: 1,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ApplicationAutoScaling::ScalingPolicy', {
+      PolicyType: 'TargetTrackingScaling',
+      TargetTrackingScalingPolicyConfiguration: {
+        CustomizedMetricSpecification: {
+          Dimensions: [
+            {
+              Name: 'QueueName',
+              Value: {
+                'Fn::GetAtt': [
+                  'defQueue1F91A65B',
+                  'QueueName',
+                ],
+              },
+            },
+          ],
+          MetricName: 'BacklogPerTask',
+          Namespace: 'production-my-service',
+          Statistic: 'Average',
+          Unit: 'Count',
+        },
+        TargetValue: 15,
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ApplicationAutoScaling::ScalingPolicy', {
+      PolicyType: 'TargetTrackingScaling',
+      TargetTrackingScalingPolicyConfiguration: {
+        CustomizedMetricSpecification: {
+          Dimensions: [
+            {
+              Name: 'QueueName',
+              Value: {
+                'Fn::GetAtt': [
+                  'myQueue4FDFF71C',
+                  'QueueName',
+                ],
+              },
+            },
+          ],
+          MetricName: 'BacklogPerTask',
+          Namespace: 'production-my-service',
+          Statistic: 'Average',
+          Unit: 'Count',
+        },
+        TargetValue: 30,
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ApplicationAutoScaling::ScalingPolicy', {
+      PolicyType: 'TargetTrackingScaling',
+      TargetTrackingScalingPolicyConfiguration: {
+        CustomizedMetricSpecification: {
+          Dimensions: [
+            {
+              Name: 'QueueName',
+              Value: {
+                'Fn::GetAtt': [
+                  'tempQueueEF946882',
+                  'QueueName',
+                ],
+              },
+            },
+          ],
+          MetricName: 'BacklogPerTask',
+          Namespace: 'production-my-service',
+          Statistic: 'Average',
+          Unit: 'Count',
+        },
+        TargetValue: 15,
+      },
+    });
+  });
+
+  test('should error when adding scaling policy if scaling target has not been configured', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const environment = new Environment(stack, 'production');
+    const serviceDescription = new ServiceDescription();
+
+    serviceDescription.add(new Container({
+      cpu: 256,
+      memoryMiB: 512,
+      trafficPort: 80,
+      image: ecs.ContainerImage.fromRegistry('nathanpeck/name'),
+    }));
+
+    const topicSubscription1 = new TopicSubscription({
+      topic: new sns.Topic(stack, 'topic1'),
+    });
+
+    serviceDescription.add(new QueueExtension({
+      subscriptions: [topicSubscription1],
+      scaleOnLatency: {
+        acceptableLatency: cdk.Duration.minutes(10),
+        messageProcessingTime: cdk.Duration.seconds(20),
+      },
+    }));
+
+    // THEN
+    expect(() => {
+      new Service(stack, 'my-service', {
+        environment,
+        serviceDescription,
+      });
+    }).toThrow(/Auto scaling target for the service 'my-service' hasn't been configured. Please use Service construct to configure 'minTaskCount' and 'maxTaskCount'./);
+  });
+
+  test('should error when message processing time for the queue is greater than acceptable latency', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const environment = new Environment(stack, 'production');
+    const serviceDescription = new ServiceDescription();
+
+    serviceDescription.add(new Container({
+      cpu: 256,
+      memoryMiB: 512,
+      trafficPort: 80,
+      image: ecs.ContainerImage.fromRegistry('nathanpeck/name'),
+    }));
+
+    const topicSubscription1 = new TopicSubscription({
+      topic: new sns.Topic(stack, 'topic1'),
+      topicSubscriptionQueue: {
+        queue: new sqs.Queue(stack, 'sign-up-queue'),
+      },
+    });
+
+    serviceDescription.add(new QueueExtension({
+      subscriptions: [topicSubscription1],
+      scaleOnLatency: {
+        acceptableLatency: cdk.Duration.seconds(10),
+        messageProcessingTime: cdk.Duration.seconds(20),
+      },
+    }));
+
+    // THEN
+    expect(() => {
+      new Service(stack, 'my-service', {
+        environment,
+        serviceDescription,
+        autoScaleTaskCount: {
+          maxTaskCount: 10,
+        },
+      });
+    }).toThrow('Message processing time (20s) for the queue cannot be greater acceptable queue latency (10s).');
+  });
+
+  test('should error when configuring auto scaling only for topic-specific queue', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const environment = new Environment(stack, 'production');
+    const serviceDescription = new ServiceDescription();
+
+    serviceDescription.add(new Container({
+      cpu: 256,
+      memoryMiB: 512,
+      trafficPort: 80,
+      image: ecs.ContainerImage.fromRegistry('nathanpeck/name'),
+    }));
+
+    const topicSubscription1 = new TopicSubscription({
+      topic: new sns.Topic(stack, 'topic1'),
+      topicSubscriptionQueue: {
+        queue: new sqs.Queue(stack, 'sign-up-queue'),
+        scaleOnLatency: {
+          acceptableLatency: cdk.Duration.minutes(10),
+          messageProcessingTime: cdk.Duration.seconds(20),
+        },
+      },
+    });
+
+    serviceDescription.add(new QueueExtension({
+      subscriptions: [topicSubscription1],
+    }));
+
+    // THEN
+    expect(() => {
+      new Service(stack, 'my-service', {
+        environment,
+        serviceDescription,
+        autoScaleTaskCount: {
+          maxTaskCount: 10,
+        },
+      });
+    }).toThrow(/Autoscaling for a topic-specific queue cannot be configured as autoscaling based on SQS Queues hasn’t been set up for the service 'my-service'. If you want to enable autoscaling for this service, please also specify 'scaleOnLatency' in the 'QueueExtension'/);
   });
 });

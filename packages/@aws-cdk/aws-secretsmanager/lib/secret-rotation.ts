@@ -149,6 +149,8 @@ export class SecretRotationApplication {
       return this.applicationId;
     } else if (partition === 'aws-cn') {
       return `arn:aws-cn:serverlessrepo:cn-north-1:193023089310:applications/${this.applicationName}`;
+    } else if (partition === 'aws-us-gov') {
+      return `arn:aws-us-gov:serverlessrepo:us-gov-west-1:023102451235:applications/${this.applicationName}`;
     } else {
       throw new Error(`unsupported partition: ${partition}`);
     }
@@ -163,6 +165,8 @@ export class SecretRotationApplication {
       return this.semanticVersion;
     } else if (partition === 'aws-cn') {
       return '1.1.37';
+    } else if (partition === 'aws-us-gov') {
+      return '1.1.93';
     } else {
       throw new Error(`unsupported partition: ${partition}`);
     }
@@ -245,6 +249,18 @@ export interface SecretRotationProps {
    * @default - no additional characters are explicitly excluded
    */
   readonly excludeCharacters?: string;
+
+  /**
+   * The VPC interface endpoint to use for the Secrets Manager API
+   *
+   * If you enable private DNS hostnames for your VPC private endpoint (the default), you don't
+   * need to specify an endpoint. The standard Secrets Manager DNS hostname the Secrets Manager
+   * CLI and SDKs use by default (https://secretsmanager.<region>.amazonaws.com) automatically
+   * resolves to your VPC endpoint.
+   *
+   * @default https://secretsmanager.<region>.amazonaws.com
+   */
+  readonly endpoint?: ec2.IInterfaceVpcEndpoint;
 }
 
 /**
@@ -272,7 +288,7 @@ export class SecretRotation extends CoreConstruct {
     props.target.connections.allowDefaultPortFrom(securityGroup);
 
     const parameters: { [key: string]: string } = {
-      endpoint: `https://secretsmanager.${Stack.of(this).region}.${Stack.of(this).urlSuffix}`,
+      endpoint: `https://${props.endpoint ? `${props.endpoint.vpcEndpointId}.` : ''}secretsmanager.${Stack.of(this).region}.${Stack.of(this).urlSuffix}`,
       functionName: rotationFunctionName,
       vpcSubnetIds: props.vpc.selectSubnets(props.vpcSubnets).subnetIds.join(','),
       vpcSecurityGroupIds: securityGroup.securityGroupId,
@@ -303,6 +319,10 @@ export class SecretRotation extends CoreConstruct {
         'aws-cn': {
           applicationId: props.application.applicationArnForPartition('aws-cn'),
           semanticVersion: props.application.semanticVersionForPartition('aws-cn'),
+        },
+        'aws-us-gov': {
+          applicationId: props.application.applicationArnForPartition('aws-us-gov'),
+          semanticVersion: props.application.semanticVersionForPartition('aws-us-gov'),
         },
       },
     });

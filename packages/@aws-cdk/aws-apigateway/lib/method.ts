@@ -1,4 +1,4 @@
-import { Resource, Stack } from '@aws-cdk/core';
+import { ArnFormat, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnMethod, CfnMethodProps } from './apigateway.generated';
 import { Authorizer, IAuthorizer } from './authorizer';
@@ -275,7 +275,7 @@ export class Method extends Resource {
     } else if (options.credentialsPassthrough) {
       // arn:aws:iam::*:user/*
       // eslint-disable-next-line max-len
-      credentials = Stack.of(this).formatArn({ service: 'iam', region: '', account: '*', resource: 'user', sep: '/', resourceName: '*' });
+      credentials = Stack.of(this).formatArn({ service: 'iam', region: '', account: '*', resource: 'user', arnFormat: ArnFormat.SLASH_RESOURCE_NAME, resourceName: '*' });
     }
 
     return {
@@ -346,7 +346,7 @@ export class Method extends Resource {
     }
 
     if (options.requestValidatorOptions) {
-      const validator = this.restApi.addRequestValidator('validator', options.requestValidatorOptions);
+      const validator = (this.api as RestApi).addRequestValidator('validator', options.requestValidatorOptions);
       return validator.requestValidatorId;
     }
 

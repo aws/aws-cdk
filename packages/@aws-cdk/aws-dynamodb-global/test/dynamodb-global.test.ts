@@ -1,5 +1,6 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import { Attribute, AttributeType, StreamViewType, Table } from '@aws-cdk/aws-dynamodb';
+import { describeDeprecated, testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { App, CfnOutput, Stack } from '@aws-cdk/core';
 import { GlobalTable, GlobalTableProps } from '../lib';
 
@@ -18,14 +19,14 @@ const STACK_PROPS: GlobalTableProps = {
   regions: ['us-east-1', 'us-east-2', 'us-west-2'],
 };
 
-describe('Default Global DynamoDB stack', () => {
+describeDeprecated('Default Global DynamoDB stack', () => {
   test('global dynamo', () => {
     const stack = new Stack();
     new GlobalTable(stack, CONSTRUCT_NAME, STACK_PROPS);
     const topStack = stack.node.findChild(CONSTRUCT_NAME) as Stack;
     for ( const reg of STACK_PROPS.regions ) {
       const tableStack = topStack.node.findChild(CONSTRUCT_NAME + '-' + reg) as Stack;
-      expect(tableStack).toHaveResource('AWS::DynamoDB::Table', {
+      Template.fromStack(tableStack).hasResourceProperties('AWS::DynamoDB::Table', {
         'KeySchema': [
           {
             'AttributeName': 'hashKey',
@@ -45,12 +46,12 @@ describe('Default Global DynamoDB stack', () => {
       });
     }
     const customResourceStack = stack.node.findChild(CONSTRUCT_NAME + '-CustomResource') as Stack;
-    expect(customResourceStack).toHaveResource('AWS::Lambda::Function', {
+    Template.fromStack(customResourceStack).hasResourceProperties('AWS::Lambda::Function', {
       Description: 'Lambda to make DynamoDB a global table',
       Handler: 'index.handler',
       Timeout: 300,
     });
-    expect(customResourceStack).toHaveResource('AWS::CloudFormation::CustomResource', {
+    Template.fromStack(customResourceStack).hasResourceProperties('AWS::CloudFormation::CustomResource', {
       Regions: STACK_PROPS.regions,
       ResourceType: 'Custom::DynamoGlobalTableCoordinator',
       TableName: TABLE_NAME,
@@ -58,7 +59,7 @@ describe('Default Global DynamoDB stack', () => {
   });
 });
 
-test('GlobalTable generated stacks inherit their account from the parent stack', () => {
+testDeprecated('GlobalTable generated stacks inherit their account from the parent stack', () => {
   const app = new App({ context: { '@aws-cdk/core:stackRelativeExports': true } });
   const stack = new Stack(app, 'GlobalTableStack', { env: { account: '123456789012', region: 'us-east-1' } });
 
@@ -74,7 +75,7 @@ test('GlobalTable generated stacks inherit their account from the parent stack',
     value: globalTable.regionalTables[0].tableStreamArn!,
   });
 
-  expect(stack).toMatchTemplate({
+  Template.fromStack(stack).templateMatches({
     'Outputs': {
       'DynamoDbOutput': {
         'Value': {
@@ -85,7 +86,7 @@ test('GlobalTable generated stacks inherit their account from the parent stack',
   });
 });
 
-describe('Enforce StreamSpecification', () => {
+describeDeprecated('Enforce StreamSpecification', () => {
   test('global dynamo should only allow NEW_AND_OLD_IMAGES', () => {
     const stack = new Stack();
 
@@ -100,7 +101,7 @@ describe('Enforce StreamSpecification', () => {
   });
 });
 
-describe('Check getting tables', () => {
+describeDeprecated('Check getting tables', () => {
   test('global dynamo should only allow NEW_AND_OLD_IMAGES', () => {
     const stack = new Stack();
     const regTables = new GlobalTable(stack, CONSTRUCT_NAME, {

@@ -1,6 +1,6 @@
 import * as childProcess from 'child_process';
 import * as process from 'process';
-import * as colors from 'colors/safe';
+import * as chalk from 'chalk';
 import * as yargs from 'yargs';
 import { debug, print, warning } from '../../lib/logging';
 import { CommandOptions } from '../command-api';
@@ -32,10 +32,10 @@ export function handler(args: yargs.Arguments) {
 }
 
 export async function realHandler(options: CommandOptions): Promise<number> {
-  const url = 'https://docs.aws.amazon.com/cdk/api/latest/';
-  print(colors.green(url));
+  const url = 'https://docs.aws.amazon.com/cdk/api/v2/';
+  print(chalk.green(url));
   const browserCommand = (options.args.browser as string).replace(/%u/g, url);
-  debug(`Opening documentation ${colors.green(browserCommand)}`);
+  debug(`Opening documentation ${chalk.green(browserCommand)}`);
   return new Promise<number>((resolve, _reject) => {
     childProcess.exec(browserCommand, (err, stdout, stderr) => {
       if (err) {

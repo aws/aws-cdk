@@ -22,9 +22,11 @@ const portfolio = new servicecatalog.Portfolio(stack, 'TestPortfolio', {
 portfolio.giveAccessToRole(role);
 portfolio.giveAccessToGroup(group);
 
-const tagOptions = new servicecatalog.TagOptions({
-  key1: ['value1', 'value2'],
-  key2: ['value1'],
+const tagOptions = new servicecatalog.TagOptions(stack, 'TagOptions', {
+  allowedValuesForTags: {
+    key1: ['value1', 'value2'],
+    key2: ['value1'],
+  },
 });
 portfolio.associateTagOptions(tagOptions);
 
@@ -40,6 +42,7 @@ const product = new servicecatalog.CloudFormationProduct(stack, 'TestProduct', {
         'https://awsdocs.s3.amazonaws.com/servicecatalog/development-environment.template'),
     },
   ],
+  tagOptions: tagOptions,
 });
 
 portfolio.addProduct(product);

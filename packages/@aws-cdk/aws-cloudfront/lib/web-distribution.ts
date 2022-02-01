@@ -721,19 +721,17 @@ export interface CloudFrontWebDistributionAttributes {
  * Here's how you can use this construct:
  *
  * ```ts
- * import { CloudFrontWebDistribution } from '@aws-cdk/aws-cloudfront'
+ * const sourceBucket = new s3.Bucket(this, 'Bucket');
  *
- * const sourceBucket = new Bucket(this, 'Bucket');
- *
- * const distribution = new CloudFrontWebDistribution(this, 'MyDistribution', {
- *  originConfigs: [
- *    {
- *      s3OriginSource: {
- *      s3BucketSource: sourceBucket
- *      },
- *      behaviors : [ {isDefaultBehavior: true}]
- *    }
- *  ]
+ * const distribution = new cloudfront.CloudFrontWebDistribution(this, 'MyDistribution', {
+ *   originConfigs: [
+ *     {
+ *       s3OriginSource: {
+ *       s3BucketSource: sourceBucket,
+ *       },
+ *       behaviors : [ {isDefaultBehavior: true}],
+ *     },
+ *   ],
  * });
  * ```
  *
@@ -956,7 +954,10 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
     }
 
     if (props.loggingConfig) {
-      this.loggingBucket = props.loggingConfig.bucket || new s3.Bucket(this, 'LoggingBucket');
+      this.loggingBucket = props.loggingConfig.bucket || new s3.Bucket(this, 'LoggingBucket', {
+        encryption: s3.BucketEncryption.S3_MANAGED,
+        enforceSSL: true,
+      });
       distributionConfig = {
         ...distributionConfig,
         logging: {

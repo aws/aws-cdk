@@ -37,14 +37,14 @@
         "Code": {
           "ZipFile": "exports.handler = function helloCode(_event, _context, callback) {\n    return callback(undefined, {\n        statusCode: 200,\n        body: 'hello, world!',\n    });\n}"
         },
-        "Handler": "index.handler",
         "Role": {
           "Fn::GetAtt": [
             "HelloServiceRole1E55EA16",
             "Arn"
           ]
         },
-        "Runtime": "nodejs10.x"
+        "Handler": "index.handler",
+        "Runtime": "nodejs14.x"
       },
       "DependsOn": [
         "HelloServiceRole1E55EA16"
@@ -124,7 +124,10 @@
           "Ref": "helloapiDeploymentFA89AEEC3622d8c965f356a33fd95586d24bf138"
         },
         "StageName": "prod"
-      }
+      },
+      "DependsOn": [
+        "helloapiAccountD8C38BCE"
+      ]
     },
     "helloapihello4AA00177": {
       "Type": "AWS::ApiGateway::Resource",
@@ -333,7 +336,10 @@
           "Ref": "secondapiDeployment20F2C70088fa5a027620045bea3e5043c6d31f5a"
         },
         "StageName": "prod"
-      }
+      },
+      "DependsOn": [
+        "secondapiAccountDF729874"
+      ]
     },
     "secondapihello7264EB69": {
       "Type": "AWS::ApiGateway::Resource",

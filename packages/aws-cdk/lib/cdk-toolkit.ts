@@ -1,7 +1,8 @@
 import * as path from 'path';
 import { format } from 'util';
 import * as cxapi from '@aws-cdk/cx-api';
-import * as colors from 'colors/safe';
+import * as chokidar from 'chokidar';
+import * as chalk from 'chalk';
 import * as fs from 'fs-extra';
 import * as promptly from 'promptly';
 import { environmentsFromDescriptors, globEnvironmentsFromStacks, looksLikeGlob } from '../lib/api/cxapp/environments';
@@ -10,11 +11,13 @@ import { Bootstrapper, BootstrapEnvironmentOptions } from './api/bootstrap';
 import { CloudFormationDeployments } from './api/cloudformation-deployments';
 import { CloudAssembly, DefaultSelection, ExtendedStackSelection, StackCollection, StackSelector } from './api/cxapp/cloud-assembly';
 import { CloudExecutable } from './api/cxapp/cloud-executable';
+import { findCloudWatchLogGroups } from './api/logs/find-cloudwatch-logs';
+import { CloudWatchLogEventMonitor } from './api/logs/logs-monitor';
 import { StackActivityProgress } from './api/util/cloudformation/stack-activity-monitor';
 import { printSecurityDiff, printStackDiff, RequireApproval } from './diff';
-import { data, error, highlight, print, success, warning } from './logging';
+import { data, debug, error, highlight, print, success, warning } from './logging';
 import { deserializeStructure } from './serialize';
-import { Configuration } from './settings';
+import { Configuration, PROJECT_CONFIG } from './settings';
 import { numberFromBool, partition } from './util';
 
 export interface CdkToolkitProps {
@@ -100,7 +103,7 @@ export class CdkToolkit {
     } else {
       // Compare N stacks against deployed templates
       for (const stack of stacks.stackArtifacts) {
-        stream.write(format('Stack %s\n', colors.bold(stack.displayName)));
+        stream.write(format('Stack %s\n', chalk.bold(stack.displayName)));
         const currentTemplate = await this.props.cloudFormation.readCurrentTemplate(stack);
         diffs += options.securityOnly
           ? numberFromBool(printSecurityDiff(currentTemplate, stack, RequireApproval.Broadening))
@@ -112,7 +115,14 @@ export class CdkToolkit {
   }
 
   public async deploy(options: DeployOptions) {
-    const stacks = await this.selectStacksForDeploy(options.selector, options.exclusively);
+    if (options.watch) {
+      return this.watch(options);
+    }
+
+    const startSynthTime = new Date().getTime();
+    const stacks = await this.selectStacksForDeploy(options.selector, options.exclusively, options.cacheCloudAssembly);
+    const elapsedSynthTime = new Date().getTime() - startSynthTime;
+    print('\n✨  Synthesis time: %ss\n', formatTime(elapsedSynthTime));
 
     const requireApproval = options.requireApproval ?? RequireApproval.Broadening;
 
@@ -148,9 +158,9 @@ export class CdkToolkit {
 
       if (Object.keys(stack.template.Resources || {}).length === 0) { // The generated stack has no resources
         if (!await this.props.cloudFormation.stackExists({ stack })) {
-          warning('%s: stack has no resources, skipping deployment.', colors.bold(stack.displayName));
+          warning('%s: stack has no resources, skipping deployment.', chalk.bold(stack.displayName));
         } else {
-          warning('%s: stack has no resources, deleting existing stack.', colors.bold(stack.displayName));
+          warning('%s: stack has no resources, deleting existing stack.', chalk.bold(stack.displayName));
           await this.destroy({
             selector: { patterns: [stack.stackName] },
             exclusively: true,
@@ -178,13 +188,15 @@ export class CdkToolkit {
         }
       }
 
-      print('%s: deploying...', colors.bold(stack.displayName));
+      print('%s: deploying...', chalk.bold(stack.displayName));
+      const startDeployTime = new Date().getTime();
 
       let tags = options.tags;
       if (!tags || tags.length === 0) {
         tags = tagsForStack(stack);
       }
 
+      let elapsedDeployTime = 0;
       try {
         const result = await this.props.cloudFormation.deployStack({
           stack,
@@ -203,6 +215,7 @@ export class CdkToolkit {
           ci: options.ci,
           rollback: options.rollback,
           hotswap: options.hotswap,
+          extraUserAgent: options.extraUserAgent,
         });
 
         const message = result.noOp
@@ -210,25 +223,31 @@ export class CdkToolkit {
           : ' ✅  %s';
 
         success('\n' + message, stack.displayName);
+        elapsedDeployTime = new Date().getTime() - startDeployTime;
+        print('\n✨  Deployment time: %ss\n', formatTime(elapsedDeployTime));
 
         if (Object.keys(result.outputs).length > 0) {
-          print('\nOutputs:');
+          print('Outputs:');
 
           stackOutputs[stack.stackName] = result.outputs;
         }
 
         for (const name of Object.keys(result.outputs).sort()) {
           const value = result.outputs[name];
-          print('%s.%s = %s', colors.cyan(stack.id), colors.cyan(name), colors.underline(colors.cyan(value)));
+          print('%s.%s = %s', chalk.cyan(stack.id), chalk.cyan(name), chalk.underline(chalk.cyan(value)));
         }
 
-        print('\nStack ARN:');
+        print('Stack ARN:');
 
         data(result.stackArn);
       } catch (e) {
-        error('\n ❌  %s failed: %s', colors.bold(stack.displayName), e);
+        error('\n ❌  %s failed: %s', chalk.bold(stack.displayName), e);
         throw e;
       } finally {
+        if (options.cloudWatchLogMonitor) {
+          const foundLogGroupsResult = await findCloudWatchLogGroups(this.props.sdkProvider, stack);
+          options.cloudWatchLogMonitor.addLogGroups(foundLogGroupsResult.env, foundLogGroupsResult.sdk, foundLogGroupsResult.logGroupNames);
+        }
         // If an outputs file has been specified, create the file path and write stack outputs to it once.
         // Outputs are written after all stacks have been deployed. If a stack deployment fails,
         // all of the outputs from successfully deployed stacks before the failure will still be written.
@@ -240,7 +259,98 @@ export class CdkToolkit {
           });
         }
       }
+      print('\n✨  Total time: %ss\n', formatTime(elapsedSynthTime + elapsedDeployTime));
     }
+  }
+
+  public async watch(options: WatchOptions) {
+    const rootDir = path.dirname(path.resolve(PROJECT_CONFIG));
+    debug("root directory used for 'watch' is: %s", rootDir);
+
+    const watchSettings: { include?: string | string[], exclude: string | string [] } | undefined =
+        this.props.configuration.settings.get(['watch']);
+    if (!watchSettings) {
+      throw new Error("Cannot use the 'watch' command without specifying at least one directory to monitor. " +
+        'Make sure to add a "watch" key to your cdk.json');
+    }
+
+    // For the "include" subkey under the "watch" key, the behavior is:
+    // 1. No "watch" setting? We error out.
+    // 2. "watch" setting without an "include" key? We default to observing "./**".
+    // 3. "watch" setting with an empty "include" key? We default to observing "./**".
+    // 4. Non-empty "include" key? Just use the "include" key.
+    const watchIncludes = this.patternsArrayForWatch(watchSettings.include, { rootDir, returnRootDirIfEmpty: true });
+    debug("'include' patterns for 'watch': %s", watchIncludes);
+
+    // For the "exclude" subkey under the "watch" key,
+    // the behavior is to add some default excludes in addition to the ones specified by the user:
+    // 1. The CDK output directory.
+    // 2. Any file whose name starts with a dot.
+    // 3. Any directory's content whose name starts with a dot.
+    // 4. Any node_modules and its content (even if it's not a JS/TS project, you might be using a local aws-cli package)
+    const outputDir = this.props.configuration.settings.get(['output']);
+    const watchExcludes = this.patternsArrayForWatch(watchSettings.exclude, { rootDir, returnRootDirIfEmpty: false }).concat(
+      `${outputDir}/**`,
+      '**/.*',
+      '**/.*/**',
+      '**/node_modules/**',
+    );
+    debug("'exclude' patterns for 'watch': %s", watchExcludes);
+
+    // Since 'cdk deploy' is a relatively slow operation for a 'watch' process,
+    // introduce a concurrency latch that tracks the state.
+    // This way, if file change events arrive when a 'cdk deploy' is still executing,
+    // we will batch them, and trigger another 'cdk deploy' after the current one finishes,
+    // making sure 'cdk deploy's  always execute one at a time.
+    // Here's a diagram showing the state transitions:
+    // --------------                --------    file changed     --------------    file changed     --------------  file changed
+    // |            |  ready event   |      | ------------------> |            | ------------------> |            | --------------|
+    // | pre-ready  | -------------> | open |                     | deploying  |                     |   queued   |               |
+    // |            |                |      | <------------------ |            | <------------------ |            | <-------------|
+    // --------------                --------  'cdk deploy' done  --------------  'cdk deploy' done  --------------
+    let latch: 'pre-ready' | 'open' | 'deploying' | 'queued' = 'pre-ready';
+
+    const cloudWatchLogMonitor = options.traceLogs ? new CloudWatchLogEventMonitor() : undefined;
+    const deployAndWatch = async () => {
+      latch = 'deploying';
+      cloudWatchLogMonitor?.deactivate();
+
+      await this.invokeDeployFromWatch(options, cloudWatchLogMonitor);
+
+      // If latch is still 'deploying' after the 'await', that's fine,
+      // but if it's 'queued', that means we need to deploy again
+      while ((latch as 'deploying' | 'queued') === 'queued') {
+        // TypeScript doesn't realize latch can change between 'awaits',
+        // and thinks the above 'while' condition is always 'false' without the cast
+        latch = 'deploying';
+        print("Detected file changes during deployment. Invoking 'cdk deploy' again");
+        await this.invokeDeployFromWatch(options, cloudWatchLogMonitor);
+      }
+      latch = 'open';
+      cloudWatchLogMonitor?.activate();
+    };
+
+    chokidar.watch(watchIncludes, {
+      ignored: watchExcludes,
+      cwd: rootDir,
+      // ignoreInitial: true,
+    }).on('ready', async () => {
+      latch = 'open';
+      debug("'watch' received the 'ready' event. From now on, all file changes will trigger a deployment");
+      print("Triggering initial 'cdk deploy'");
+      await deployAndWatch();
+    }).on('all', async (event: 'add' | 'addDir' | 'change' | 'unlink' | 'unlinkDir', filePath?: string) => {
+      if (latch === 'pre-ready') {
+        print(`'watch' is observing ${event === 'addDir' ? 'directory' : 'the file'} '%s' for changes`, filePath);
+      } else if (latch === 'open') {
+        print("Detected change to '%s' (type: %s). Triggering 'cdk deploy'", filePath, event);
+        await deployAndWatch();
+      } else { // this means latch is either 'deploying' or 'queued'
+        latch = 'queued';
+        print("Detected change to '%s' (type: %s) while 'cdk deploy' is still running. " +
+            'Will queue for another deployment after this one finishes', filePath, event);
+      }
+    });
   }
 
   public async destroy(options: DestroyOptions) {
@@ -251,7 +361,7 @@ export class CdkToolkit {
 
     if (!options.force) {
       // eslint-disable-next-line max-len
-      const confirmed = await promptly.confirm(`Are you sure you want to delete: ${colors.blue(stacks.stackArtifacts.map(s => s.hierarchicalId).join(', '))} (y/n)?`);
+      const confirmed = await promptly.confirm(`Are you sure you want to delete: ${chalk.blue(stacks.stackArtifacts.map(s => s.hierarchicalId).join(', '))} (y/n)?`);
       if (!confirmed) {
         return;
       }
@@ -259,16 +369,16 @@ export class CdkToolkit {
 
     const action = options.fromDeploy ? 'deploy' : 'destroy';
     for (const stack of stacks.stackArtifacts) {
-      success('%s: destroying...', colors.blue(stack.displayName));
+      success('%s: destroying...', chalk.blue(stack.displayName));
       try {
         await this.props.cloudFormation.destroyStack({
           stack,
           deployName: stack.stackName,
           roleArn: options.roleArn,
         });
-        success(`\n ✅  %s: ${action}ed`, colors.blue(stack.displayName));
+        success(`\n ✅  %s: ${action}ed`, chalk.blue(stack.displayName));
       } catch (e) {
-        error(`\n ❌  %s: ${action} failed`, colors.blue(stack.displayName), e);
+        error(`\n ❌  %s: ${action} failed`, chalk.blue(stack.displayName), e);
         throw e;
       }
     }
@@ -282,7 +392,7 @@ export class CdkToolkit {
       const long = [];
       for (const stack of stacks.stackArtifacts) {
         long.push({
-          id: stack.id,
+          id: stack.hierarchicalId,
           name: stack.stackName,
           environment: stack.environment,
         });
@@ -331,8 +441,8 @@ export class CdkToolkit {
     }
 
     // not outputting template to stdout, let's explain things to the user a little bit...
-    success(`Successfully synthesized to ${colors.blue(path.resolve(stacks.assembly.directory))}`);
-    print(`Supply a stack id (${stacks.stackArtifacts.map(s => colors.green(s.id)).join(', ')}) to display its template.`);
+    success(`Successfully synthesized to ${chalk.blue(path.resolve(stacks.assembly.directory))}`);
+    print(`Supply a stack id (${stacks.stackArtifacts.map(s => chalk.green(s.id)).join(', ')}) to display its template.`);
 
     return undefined;
   }
@@ -374,15 +484,15 @@ export class CdkToolkit {
     }
 
     await Promise.all(environments.map(async (environment) => {
-      success(' ⏳  Bootstrapping environment %s...', colors.blue(environment.name));
+      success(' ⏳  Bootstrapping environment %s...', chalk.blue(environment.name));
       try {
         const result = await bootstrapper.bootstrapEnvironment(environment, this.props.sdkProvider, options);
         const message = result.noOp
           ? ' ✅  Environment %s bootstrapped (no changes).'
           : ' ✅  Environment %s bootstrapped.';
-        success(message, colors.blue(environment.name));
+        success(message, chalk.blue(environment.name));
       } catch (e) {
-        error(' ❌  Environment %s failed bootstrapping: %s', colors.blue(environment.name), e);
+        error(' ❌  Environment %s failed bootstrapping: %s', chalk.blue(environment.name), e);
         throw e;
       }
     }));
@@ -397,8 +507,8 @@ export class CdkToolkit {
     return stacks;
   }
 
-  private async selectStacksForDeploy(selector: StackSelector, exclusively?: boolean): Promise<StackCollection> {
-    const assembly = await this.assembly();
+  private async selectStacksForDeploy(selector: StackSelector, exclusively?: boolean, cacheCloudAssembly?: boolean): Promise<StackCollection> {
+    const assembly = await this.assembly(cacheCloudAssembly);
     const stacks = await assembly.selectStacks(selector, {
       extend: exclusively ? ExtendedStackSelection.None : ExtendedStackSelection.Upstream,
       defaultBehavior: DefaultSelection.OnlySingle,
@@ -480,10 +590,41 @@ export class CdkToolkit {
     return assembly.stackById(stacks.firstStack.id);
   }
 
-  private assembly(): Promise<CloudAssembly> {
-    return this.props.cloudExecutable.synthesize();
+  private assembly(cacheCloudAssembly?: boolean): Promise<CloudAssembly> {
+    return this.props.cloudExecutable.synthesize(cacheCloudAssembly);
   }
 
+  private patternsArrayForWatch(patterns: string | string[] | undefined, options: { rootDir: string, returnRootDirIfEmpty: boolean }): string[] {
+    const patternsArray: string[] = patterns !== undefined
+      ? (Array.isArray(patterns) ? patterns : [patterns])
+      : [];
+    return patternsArray.length > 0
+      ? patternsArray
+      : (options.returnRootDirIfEmpty ? [options.rootDir] : []);
+  }
+
+  private async invokeDeployFromWatch(options: WatchOptions, cloudWatchLogMonitor?: CloudWatchLogEventMonitor): Promise<void> {
+    // 'watch' has different defaults than regular 'deploy'
+    const hotswap = options.hotswap === undefined ? true : options.hotswap;
+    const deployOptions: DeployOptions = {
+      ...options,
+      requireApproval: RequireApproval.Never,
+      // if 'watch' is called by invoking 'cdk deploy --watch',
+      // we need to make sure to not call 'deploy' with 'watch' again,
+      // as that would lead to a cycle
+      watch: false,
+      cloudWatchLogMonitor,
+      cacheCloudAssembly: false,
+      hotswap: hotswap,
+      extraUserAgent: `cdk-watch/hotswap-${hotswap ? 'on' : 'off'}`,
+    };
+
+    try {
+      await this.deploy(deployOptions);
+    } catch (e) {
+      // just continue - deploy will show the error
+    }
+  }
 }
 
 export interface DiffOptions {
@@ -542,7 +683,7 @@ export interface DiffOptions {
   securityOnly?: boolean;
 }
 
-export interface DeployOptions {
+interface WatchOptions {
   /**
    * Criteria for selecting stacks to deploy
    */
@@ -568,33 +709,9 @@ export interface DeployOptions {
   roleArn?: string;
 
   /**
-   * ARNs of SNS topics that CloudFormation will notify with stack related events
-   */
-  notificationArns?: string[];
-
-  /**
-   * What kind of security changes require approval
-   *
-   * @default RequireApproval.Broadening
-   */
-  requireApproval?: RequireApproval;
-
-  /**
    * Reuse the assets with the given asset IDs
    */
   reuseAssets?: string[];
-
-  /**
-   * Tags to pass to CloudFormation for deployment
-   */
-  tags?: Tag[];
-
-  /**
-   * Whether to execute the ChangeSet
-   * Not providing `execute` parameter will result in execution of ChangeSet
-   * @default true
-   */
-  execute?: boolean;
 
   /**
    * Optional name to use for the CloudFormation change set.
@@ -607,6 +724,71 @@ export interface DeployOptions {
    * @default false
    */
   force?: boolean;
+
+  /**
+   * Display mode for stack deployment progress.
+   *
+   * @default - StackActivityProgress.Bar - stack events will be displayed for
+   *   the resource currently being deployed.
+   */
+  progress?: StackActivityProgress;
+
+  /**
+   * Rollback failed deployments
+   *
+   * @default true
+   */
+  readonly rollback?: boolean;
+
+  /**
+   * Whether to perform a 'hotswap' deployment.
+   * A 'hotswap' deployment will attempt to short-circuit CloudFormation
+   * and update the affected resources like Lambda functions directly.
+   *
+   * @default - false for regular deployments, true for 'watch' deployments
+   */
+  readonly hotswap?: boolean;
+
+  /**
+   * The extra string to append to the User-Agent header when performing AWS SDK calls.
+   *
+   * @default - nothing extra is appended to the User-Agent header
+   */
+  readonly extraUserAgent?: string;
+
+  /**
+   * Whether to show CloudWatch logs for hotswapped resources
+   * locally in the users terminal
+   *
+   * @default - false
+   */
+  readonly traceLogs?: boolean;
+}
+
+export interface DeployOptions extends WatchOptions {
+  /**
+   * ARNs of SNS topics that CloudFormation will notify with stack related events
+   */
+  notificationArns?: string[];
+
+  /**
+   * What kind of security changes require approval
+   *
+   * @default RequireApproval.Broadening
+   */
+  requireApproval?: RequireApproval;
+
+  /**
+   * Tags to pass to CloudFormation for deployment
+   */
+  tags?: Tag[];
+
+  /**
+   * Whether to execute the ChangeSet
+   * Not providing `execute` parameter will result in execution of ChangeSet
+   * @default true
+   */
+  execute?: boolean;
 
   /**
    * Additional parameters for CloudFormation at deploy time
@@ -624,14 +806,6 @@ export interface DeployOptions {
   usePreviousParameters?: boolean;
 
   /**
-   * Display mode for stack deployment progress.
-   *
-   * @default - StackActivityProgress.Bar - stack events will be displayed for
-   *   the resource currently being deployed.
-   */
-  progress?: StackActivityProgress;
-
-  /**
    * Path to file where stack outputs will be written after a successful deploy as JSON
    * @default - Outputs are not written to any file
    */
@@ -645,19 +819,28 @@ export interface DeployOptions {
   readonly ci?: boolean;
 
   /**
-   * Rollback failed deployments
+   * Whether this 'deploy' command should actually delegate to the 'watch' command.
+   *
+   * @default false
+   */
+  readonly watch?: boolean;
+
+  /**
+   * Whether we should cache the Cloud Assembly after the first time it has been synthesized.
+   * The default is 'true', we only don't want to do it in case the deployment is triggered by
+   * 'cdk watch'.
    *
    * @default true
    */
-  readonly rollback?: boolean;
-  /*
-   * Whether to perform a 'hotswap' deployment.
-   * A 'hotswap' deployment will attempt to short-circuit CloudFormation
-   * and update the affected resources like Lambda functions directly.
+  readonly cacheCloudAssembly?: boolean;
+
+  /**
+   * Allows adding CloudWatch log groups to the log monitor via
+   * cloudWatchLogMonitor.setLogGroups();
    *
-   * @default - false (do not perform a 'hotswap' deployment)
+   * @default - not monitoring CloudWatch logs
    */
-  readonly hotswap?: boolean;
+  readonly cloudWatchLogMonitor?: CloudWatchLogEventMonitor;
 }
 
 export interface DestroyOptions {
@@ -697,4 +880,28 @@ function tagsForStack(stack: cxapi.CloudFormationStackArtifact): Tag[] {
 export interface Tag {
   readonly Key: string;
   readonly Value: string;
+}
+
+/**
+ * Formats time in milliseconds (which we get from 'Date.getTime()')
+ * to a human-readable time; returns time in seconds rounded to 2
+ * decimal places.
+ */
+function formatTime(num: number): number {
+  return roundPercentage(millisecondsToSeconds(num));
+}
+
+/**
+ * Rounds a decimal number to two decimal points.
+ * The function is useful for fractions that need to be outputted as percentages.
+ */
+function roundPercentage(num: number): number {
+  return Math.round(100 * num) / 100;
+}
+
+/**
+ * Given a time in miliseconds, return an equivalent amount in seconds.
+ */
+function millisecondsToSeconds(num: number): number {
+  return num / 1000;
 }

@@ -1,13 +1,13 @@
-import '@aws-cdk/assert-internal/jest';
-import { arrayWith, objectLike } from '@aws-cdk/assert-internal';
+import { Template, Match } from '@aws-cdk/assertions';
 import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
+import { describeDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Stack } from '@aws-cdk/core';
 import * as cpactions from '../../lib';
 
 /* eslint-disable quote-props */
 
-describe('BitBucket source Action', () => {
+describeDeprecated('BitBucket source Action', () => {
   describe('BitBucket source Action', () => {
     test('produces the correct configuration when added to a pipeline', () => {
       const stack = new Stack();
@@ -16,7 +16,7 @@ describe('BitBucket source Action', () => {
         codeBuildCloneOutput: false,
       });
 
-      expect(stack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+      Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
         'Stages': [
           {
             'Name': 'Source',
@@ -57,7 +57,7 @@ describe('BitBucket source Action', () => {
       codeBuildCloneOutput: true,
     });
 
-    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       'PolicyDocument': {
         'Statement': [
           {
@@ -87,11 +87,14 @@ describe('BitBucket source Action', () => {
     createBitBucketAndCodeBuildPipeline(stack, {
       codeBuildCloneOutput: true,
     });
-    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       'PolicyDocument': {
-        'Statement': arrayWith(
-          objectLike({
-            'Action': 's3:PutObjectAcl',
+        'Statement': Match.arrayWith([
+          Match.objectLike({
+            'Action': [
+              's3:PutObjectAcl',
+              's3:PutObjectVersionAcl',
+            ],
             'Effect': 'Allow',
             'Resource': {
               'Fn::Join': [
@@ -108,7 +111,7 @@ describe('BitBucket source Action', () => {
               ],
             },
           }),
-        ),
+        ]),
       },
     });
 
@@ -120,7 +123,7 @@ describe('BitBucket source Action', () => {
       triggerOnPush: false,
     });
 
-    expect(stack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
       'Stages': [
         {
           'Name': 'Source',
