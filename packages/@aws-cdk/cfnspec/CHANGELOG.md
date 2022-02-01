@@ -1,3 +1,102 @@
+# CloudFormation Resource Specification v54.0.0
+
+## New Resource Types
+
+* AWS::KafkaConnect::Connector
+* AWS::Rekognition::Collection
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::IVS::RecordingConfiguration ThumbnailConfiguration (__added__)
+* AWS::Location::GeofenceCollection PricingPlan.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::Location::Map PricingPlan.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::Location::PlaceIndex PricingPlan.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::Location::RouteCalculator PricingPlan.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::Location::Tracker PricingPlan.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::SecretsManager::RotationSchedule RotateImmediatelyOnUpdate (__added__)
+* AWS::Timestream::Table MagneticStoreWriteProperties (__added__)
+
+## Property Type Changes
+
+* AWS::GuardDuty::Detector.CFNKubernetesAuditLogsConfiguration (__added__)
+* AWS::GuardDuty::Detector.CFNKubernetesConfiguration (__added__)
+* AWS::IVS::RecordingConfiguration.ThumbnailConfiguration (__added__)
+* AWS::MSK::Cluster.ProvisionedThroughput (__added__)
+* AWS::ECS::TaskDefinition.EFSVolumeConfiguration AuthorizationConfig.PrimitiveType (__deleted__)
+* AWS::GuardDuty::Detector.CFNDataSourceConfigurations Kubernetes (__added__)
+* AWS::MSK::Cluster.BrokerNodeGroupInfo StorageInfo.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::MSK::Cluster.EBSStorageInfo ProvisionedThroughput (__added__)
+* AWS::MSK::Cluster.EBSStorageInfo VolumeSize.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::MSK::Cluster.StorageInfo EBSStorageInfo.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Route53::RecordSetGroup.RecordSet Comment (__deleted__)
+* AWS::SecretsManager::RotationSchedule.RotationRules Duration (__added__)
+* AWS::SecretsManager::RotationSchedule.RotationRules ScheduleExpression (__added__)
+
+## Unapplied changes
+
+* AWS::AppIntegrations is at 53.1.0
+
+# CloudFormation Resource Specification v53.1.0
+
+## New Resource Types
+
+* AWS::Lightsail::Certificate
+* AWS::Lightsail::Container
+* AWS::Lightsail::Distribution
+
+## Attribute Changes
+
+* AWS::ServiceDiscovery::PrivateDnsNamespace HostedZoneId (__added__)
+* AWS::ServiceDiscovery::PublicDnsNamespace HostedZoneId (__added__)
+
+## Property Changes
+
+* AWS::DMS::Endpoint GcpMySQLSettings (__added__)
+* AWS::SageMaker::Device Device.PrimitiveType (__deleted__)
+* AWS::SageMaker::Pipeline ParallelismConfiguration (__added__)
+
+## Property Type Changes
+
+* AWS::ApplicationInsights::Application.HAClusterPrometheusExporter (__added__)
+* AWS::ApplicationInsights::Application.HANAPrometheusExporter (__added__)
+* AWS::DMS::Endpoint.GcpMySQLSettings (__added__)
+* AWS::SSM::MaintenanceWindowTask.CloudWatchOutputConfig (__added__)
+* AWS::ApplicationInsights::Application.ConfigurationDetails HAClusterPrometheusExporter (__added__)
+* AWS::ApplicationInsights::Application.ConfigurationDetails HANAPrometheusExporter (__added__)
+* AWS::DataBrew::Job.OutputLocation BucketOwner (__added__)
+* AWS::DataBrew::Job.S3Location BucketOwner (__added__)
+* AWS::RoboMaker::SimulationApplication.RobotSoftwareSuite Version.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::RoboMaker::SimulationApplication.SimulationSoftwareSuite Version.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::SSM::MaintenanceWindowTask.MaintenanceWindowRunCommandParameters CloudWatchOutputConfig (__added__)
+* AWS::SSM::MaintenanceWindowTask.MaintenanceWindowRunCommandParameters DocumentVersion (__added__)
+
+## Unapplied changes
+
+* AWS::ECS is at 51.0.0
+
 
 ## Unapplied changes
 
