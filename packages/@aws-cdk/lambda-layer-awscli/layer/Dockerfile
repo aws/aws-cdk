@@ -4,7 +4,8 @@ FROM public.ecr.aws/lambda/provided:latest
 # versions
 #
 
-ARG AWSCLI_VERSION=1.18.198
+# This is the last version that still supports Python 2.7
+ARG AWSCLI_VERSION=1.19.112
 
 USER root
 RUN mkdir -p /opt
