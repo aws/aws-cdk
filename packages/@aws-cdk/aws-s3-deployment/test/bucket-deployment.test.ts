@@ -1,3 +1,4 @@
+import { readFileSync } from 'fs';
 import * as path from 'path';
 import { Match, Template } from '@aws-cdk/assertions';
 import * as cloudfront from '@aws-cdk/aws-cloudfront';
@@ -1057,12 +1058,12 @@ test('bucket has multiple deployments', () => {
   });
 });
 
-test('Source.content() can be used to create a file with contents', () => {
+test('Source.data() can be used to create a file with string contents', () => {
   const app = new cdk.App();
   const stack = new cdk.Stack(app, 'Test');
   const bucket = new s3.Bucket(stack, 'Bucket');
 
-  const source = s3deploy.Source.content('my/path.txt', 'hello, world');
+  const source = s3deploy.Source.data('my/path.txt', 'hello, world');
 
   new s3deploy.BucketDeployment(stack, 'DeployWithVpc3', {
     sources: [source],
@@ -1071,5 +1072,46 @@ test('Source.content() can be used to create a file with contents', () => {
   });
 
   const result = app.synth();
-  expect(result.stacks[0].assets).toStrictEqual([]);
+  const content = readDataFile(result, 'c5b1c01fc092abf1da35f6772e7c507e566aaa69404025c080ba074c69741755', 'my/path.txt');
+  expect(content).toStrictEqual('hello, world');
 });
+
+test('Source.jsonData() can be used to create a file with a JSON object', () => {
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'Test');
+  const bucket = new s3.Bucket(stack, 'Bucket');
+
+  const config = {
+    foo: 'bar',
+    sub: {
+      hello: bucket.bucketArn,
+    },
+  };
+
+  new s3deploy.BucketDeployment(stack, 'DeployWithVpc3', {
+    sources: [s3deploy.Source.jsonData('app-config.json', config)],
+    destinationBucket: bucket,
+  });
+
+  const result = app.synth();
+  const obj = JSON.parse(readDataFile(result, '6a9e1763f42401799363d87d16b238c89bf75a56f2a3f67498a3224573062b0c', 'app-config.json'));
+  expect(obj).toStrictEqual({
+    foo: 'bar',
+    sub: {
+      hello: '<<marker:0xbaba:0>>',
+    },
+  });
+
+  // verify marker is mapped to the bucket ARN in the resource props
+  Template.fromJSON(result.stacks[0].template).hasResourceProperties('Custom::CDKBucketDeployment', {
+    SourceMarkers: [
+      '{"<<marker:0xbaba:0>>":{"Fn::GetAtt":["Bucket83908E77","Arn"]}}',
+    ],
+  });
+});
+
+function readDataFile(casm: cxapi.CloudAssembly, assetId: string, filePath: string): string {
+  const asset = casm.stacks[0].assets.find(a => a.id === assetId);
+  if (!asset) { throw new Error('Asset not found'); }
+  return readFileSync(path.join(casm.directory, asset.path, filePath), 'utf-8');
+}

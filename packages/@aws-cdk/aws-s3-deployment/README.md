@@ -49,6 +49,7 @@ The following source types are supported for bucket deployments:
 - Local .zip file: `s3deploy.Source.asset('/path/to/local/file.zip')`
 - Local directory: `s3deploy.Source.asset('/path/to/local/directory')`
 - Another bucket: `s3deploy.Source.bucket(bucket, zipObjectKey)`
+- Textual data: `s3deploy.Source.data('object-key.txt', 'hello, world!')`
 
 To create a source from a single file, you can pass `AssetOptions` to exclude
 all but a single file:
@@ -268,6 +269,32 @@ new s3deploy.BucketDeployment(this, 'DeployMeWithEfsStorage', {
 });
 ```
 
+## Data with deploy-time values
+
+The content passed to `Source.data()` or `Source.jsonData()` can include
+references that will get resolved only during deployment.
+
+For example:
+
+```ts
+declare const destinationBucket: s3.Bucket;
+declare const topic: sns.Topic;
+
+const appConfig = {
+  topic_arn: topic.topicArn,
+  base_url: 'https://my-endpoint',
+};
+
+new s3deploy.BucketDeployment(this, 'BucketDeployment', {
+  sources: [s3deploy.Source.jsonData('config.json', config)],
+  destinationBucket,
+});
+```
+
+The value in `topic.topicArn` is a deploy-time value. It only gets resolved
+during deployment by placing a marker in the generated source file and
+substituting it when its deployed to the destination with the actual value.
+
 ## Notes
 
 - This library uses an AWS CloudFormation custom resource which about 10MiB in
@@ -282,7 +309,7 @@ new s3deploy.BucketDeployment(this, 'DeployMeWithEfsStorage', {
   be good enough: the custom resource will simply not run if the properties don't
   change.
   - If you use assets (`s3deploy.Source.asset()`) you don't need to worry
-    about this: the asset system will make sure that if the files have changed, 
+    about this: the asset system will make sure that if the files have changed,
     the file name is unique and the deployment will run.
 
 ## Development

@@ -39,7 +39,7 @@ export function renderContent(scope: Construct, content: string): Content {
         createMarker(part);
       }
     }
-  } else if (obj.Ref) {
+  } else if (obj.Ref || obj['Fn::GetAtt']) {
     createMarker(obj);
   } else {
     throw new Error('Unexpected resolved value. Expecting Fn::Join or Ref');

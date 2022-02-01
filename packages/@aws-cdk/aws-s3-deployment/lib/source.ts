@@ -3,7 +3,7 @@ import { join, dirname } from 'path';
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as s3_assets from '@aws-cdk/aws-s3-assets';
-import { FileSystem } from '@aws-cdk/core';
+import { FileSystem, Stack } from '@aws-cdk/core';
 import { renderContent } from './content';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
@@ -26,6 +26,7 @@ export interface SourceConfig {
 
   /**
    * A set of markers to substitute in the source content.
+   * @default - no markers
    */
   readonly markers?: Record<string, any>;
 }
@@ -59,6 +60,8 @@ export interface ISource {
  *     Source.bucket(bucket, key)
  *     Source.asset('/local/path/to/directory')
  *     Source.asset('/local/path/to/a/file.zip')
+ *     Source.data('hello/world/file.txt', 'Hello, world!')
+ *     Source.data('config.json', { baz: topic.topicArn })
  *
  */
 export class Source {
@@ -120,19 +123,22 @@ export class Source {
   }
 
   /**
-   * Deploys a file with the specified textual contents into the bucket. The
-   * content can include deploy-time values that will get resolved only during
-   * deployment.
+   * Deploys an object with the specified string contents into the bucket. The
+   * content can include deploy-time values (such as `snsTopic.topicArn`) that
+   * will get resolved only during deployment.
    *
-   * @param objectKey The S3 object key to use for this file.
-   * @param content The contents
+   * To store a JSON object use `Source.jsonData()`.
+   *
+   * @param objectKey The destination S3 object key (relative to the root of the
+   * S3 deployment).
+   * @param data The data to be stored in the object.
    */
-  public static content(objectKey: string, content: string): ISource {
+  public static data(objectKey: string, data: string): ISource {
     return {
       bind: (scope: Construct, context?: DeploymentSourceContext) => {
         const workdir = FileSystem.mkdtemp('s3-deployment');
         const outputPath = join(workdir, objectKey);
-        const rendered = renderContent(scope, content);
+        const rendered = renderContent(scope, data);
         fs.mkdirSync(dirname(outputPath), { recursive: true });
         fs.writeFileSync(outputPath, rendered.text);
         const asset = this.asset(workdir).bind(scope, context);
@@ -141,6 +147,23 @@ export class Source {
           zipObjectKey: asset.zipObjectKey,
           markers: rendered.markers,
         };
+      },
+    };
+  }
+
+  /**
+   * Deploys an object with the specified JSON object into the bucket. The
+   * object can include deploy-time values (such as `snsTopic.topicArn`) that
+   * will get resolved only during deployment.
+   *
+   * @param objectKey The destination S3 object key (relative to the root of the
+   * S3 deployment).
+   * @param obj A JSON object.
+   */
+  public static jsonData(objectKey: string, obj: any): ISource {
+    return {
+      bind: (scope: Construct, context?: DeploymentSourceContext) => {
+        return Source.data(objectKey, Stack.of(scope).toJsonString(obj)).bind(scope, context);
       },
     };
   }

@@ -6,8 +6,8 @@ const app = new App();
 const stack = new Stack(app, 'TestBucketDeploymentContent');
 const bucket = new Bucket(stack, 'Bucket');
 
-const file1 = Source.content('file1.txt', 'boom');
-const file2 = Source.content('path/to/file2.txt', `bam! ${bucket.bucketName}`);
+const file1 = Source.data('file1.txt', 'boom');
+const file2 = Source.data('path/to/file2.txt', `bam! ${bucket.bucketName}`);
 
 new BucketDeployment(stack, 'DeployMe', {
   destinationBucket: bucket,
