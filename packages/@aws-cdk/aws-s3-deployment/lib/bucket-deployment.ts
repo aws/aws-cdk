@@ -14,6 +14,10 @@ import { ISource, SourceConfig } from './source';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
+import { Stack } from '@aws-cdk/core';
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
 import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 // tag key has a limit of 128 characters
@@ -323,6 +327,13 @@ export class BucketDeployment extends CoreConstruct {
       }));
     }
 
+    const markers: Record<string, any> = {};
+    for (const source of sources) {
+      for (const [k, v] of Object.entries(source.markers ?? {})) {
+        markers[k] = v;
+      }
+    }
+
     const crUniqueId = `CustomResource${this.renderUniqueId(props.memoryLimit, props.vpc)}`;
     const cr = new cdk.CustomResource(this, crUniqueId, {
       serviceToken: handler.functionArn,
@@ -330,6 +341,7 @@ export class BucketDeployment extends CoreConstruct {
       properties: {
         SourceBucketNames: sources.map(source => source.bucket.bucketName),
         SourceObjectKeys: sources.map(source => source.zipObjectKey),
+        SourceMarkers: sources.map(source => Stack.of(this).toJsonString(source.markers ?? {})),
         DestinationBucketName: props.destinationBucket.bucketName,
         DestinationBucketKeyPrefix: props.destinationKeyPrefix,
         RetainOnDelete: props.retainOnDelete,
