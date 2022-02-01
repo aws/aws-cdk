@@ -1,28 +1,32 @@
-import '@aws-cdk/assert/jest';
-import { ABSENT } from '@aws-cdk/assert';
+import { Match, Template } from '@aws-cdk/assertions';
+import { Certificate } from '@aws-cdk/aws-certificatemanager';
 import { Metric } from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import { Duration, Stack } from '@aws-cdk/core';
-import { HttpApi, HttpIntegrationType, HttpMethod, HttpRouteIntegrationBindOptions, HttpRouteIntegrationConfig, IHttpRouteIntegration, PayloadFormatVersion } from '../../lib';
+import {
+  CorsHttpMethod, DomainName,
+  HttpApi, HttpAuthorizer, HttpIntegrationType, HttpMethod, HttpRouteAuthorizerBindOptions, HttpRouteAuthorizerConfig,
+  HttpRouteIntegrationBindOptions, HttpRouteIntegrationConfig, IHttpRouteAuthorizer, HttpRouteIntegration, HttpNoneAuthorizer, PayloadFormatVersion,
+} from '../../lib';
 
 describe('HttpApi', () => {
   test('default', () => {
     const stack = new Stack();
     const api = new HttpApi(stack, 'api');
 
-    expect(stack).toHaveResource('AWS::ApiGatewayV2::Api', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Api', {
       Name: 'api',
       ProtocolType: 'HTTP',
     });
 
-    expect(stack).toHaveResource('AWS::ApiGatewayV2::Stage', {
-      ApiId: stack.resolve(api.httpApiId),
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Stage', {
+      ApiId: stack.resolve(api.apiId),
       StageName: '$default',
       AutoDeploy: true,
     });
 
-    expect(stack).not.toHaveResource('AWS::ApiGatewayV2::Route');
-    expect(stack).not.toHaveResource('AWS::ApiGatewayV2::Integration');
+    Template.fromStack(stack).resourceCountIs('AWS::ApiGatewayV2::Route', 0);
+    Template.fromStack(stack).resourceCountIs('AWS::ApiGatewayV2::Integration', 0);
 
     expect(api.url).toBeDefined();
   });
@@ -31,7 +35,7 @@ describe('HttpApi', () => {
     const stack = new Stack();
     const imported = HttpApi.fromHttpApiAttributes(stack, 'imported', { httpApiId: 'http-1234', apiEndpoint: 'api-endpoint' });
 
-    expect(imported.httpApiId).toEqual('http-1234');
+    expect(imported.apiId).toEqual('http-1234');
     expect(imported.apiEndpoint).toEqual('api-endpoint');
   });
 
@@ -41,7 +45,7 @@ describe('HttpApi', () => {
       createDefaultStage: false,
     });
 
-    expect(stack).not.toHaveResource('AWS::ApiGatewayV2::Stage');
+    Template.fromStack(stack).resourceCountIs('AWS::ApiGatewayV2::Stage', 0);
     expect(api.url).toBeUndefined();
   });
 
@@ -51,13 +55,13 @@ describe('HttpApi', () => {
       defaultIntegration: new DummyRouteIntegration(),
     });
 
-    expect(stack).toHaveResourceLike('AWS::ApiGatewayV2::Route', {
-      ApiId: stack.resolve(httpApi.httpApiId),
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Route', {
+      ApiId: stack.resolve(httpApi.apiId),
       RouteKey: '$default',
     });
 
-    expect(stack).toHaveResourceLike('AWS::ApiGatewayV2::Integration', {
-      ApiId: stack.resolve(httpApi.httpApiId),
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Integration', {
+      ApiId: stack.resolve(httpApi.apiId),
     });
   });
 
@@ -71,13 +75,13 @@ describe('HttpApi', () => {
       integration: new DummyRouteIntegration(),
     });
 
-    expect(stack).toHaveResourceLike('AWS::ApiGatewayV2::Route', {
-      ApiId: stack.resolve(httpApi.httpApiId),
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Route', {
+      ApiId: stack.resolve(httpApi.apiId),
       RouteKey: 'GET /pets',
     });
 
-    expect(stack).toHaveResourceLike('AWS::ApiGatewayV2::Route', {
-      ApiId: stack.resolve(httpApi.httpApiId),
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Route', {
+      ApiId: stack.resolve(httpApi.apiId),
       RouteKey: 'PATCH /pets',
     });
   });
@@ -91,8 +95,8 @@ describe('HttpApi', () => {
       integration: new DummyRouteIntegration(),
     });
 
-    expect(stack).toHaveResourceLike('AWS::ApiGatewayV2::Route', {
-      ApiId: stack.resolve(httpApi.httpApiId),
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Route', {
+      ApiId: stack.resolve(httpApi.apiId),
       RouteKey: 'ANY /pets',
     });
   });
@@ -103,16 +107,16 @@ describe('HttpApi', () => {
       new HttpApi(stack, 'HttpApi', {
         corsPreflight: {
           allowHeaders: ['Authorization'],
-          allowMethods: [HttpMethod.GET, HttpMethod.HEAD, HttpMethod.OPTIONS, HttpMethod.POST],
+          allowMethods: [CorsHttpMethod.GET, CorsHttpMethod.HEAD, CorsHttpMethod.OPTIONS, CorsHttpMethod.POST, CorsHttpMethod.ANY],
           allowOrigins: ['*'],
           maxAge: Duration.seconds(36400),
         },
       });
 
-      expect(stack).toHaveResource('AWS::ApiGatewayV2::Api', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Api', {
         CorsConfiguration: {
           AllowHeaders: ['Authorization'],
-          AllowMethods: ['GET', 'HEAD', 'OPTIONS', 'POST'],
+          AllowMethods: ['GET', 'HEAD', 'OPTIONS', 'POST', '*'],
           AllowOrigins: ['*'],
           MaxAge: 36400,
         },
@@ -123,8 +127,8 @@ describe('HttpApi', () => {
       const stack = new Stack();
       new HttpApi(stack, 'HttpApi');
 
-      expect(stack).toHaveResource('AWS::ApiGatewayV2::Api', {
-        CorsConfiguration: ABSENT,
+      Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Api', {
+        CorsConfiguration: Match.absent(),
       });
     });
 
@@ -144,9 +148,9 @@ describe('HttpApi', () => {
       const api = new HttpApi(stack, 'test-api', {
         createDefaultStage: false,
       });
-      const metricName = '4xxError';
+      const metricName = '4xx';
       const statistic = 'Sum';
-      const apiId = api.httpApiId;
+      const apiId = api.apiId;
 
       // WHEN
       const countMetric = api.metric(metricName, { statistic });
@@ -165,7 +169,7 @@ describe('HttpApi', () => {
         createDefaultStage: false,
       });
       const color = '#00ff00';
-      const apiId = api.httpApiId;
+      const apiId = api.apiId;
 
       // WHEN
       const metrics = new Array<Metric>();
@@ -181,6 +185,8 @@ describe('HttpApi', () => {
         expect(metric.dimensions).toEqual({ ApiId: apiId });
         expect(metric.color).toEqual(color);
       }
+      const metricNames = metrics.map(m => m.metricName);
+      expect(metricNames).toEqual(['4xx', '5xx', 'DataProcessed', 'Latency', 'IntegrationLatency', 'Count']);
     });
 
     test('Metrics from imported resource', () => {
@@ -188,7 +194,7 @@ describe('HttpApi', () => {
       const stack = new Stack();
       const apiId = 'importedId';
       const api = HttpApi.fromHttpApiAttributes(stack, 'test-api', { httpApiId: apiId });
-      const metricName = '4xxError';
+      const metricName = '4xx';
       const statistic = 'Sum';
 
       // WHEN
@@ -208,7 +214,7 @@ describe('HttpApi', () => {
       description: 'My Api',
     });
 
-    expect(stack).toHaveResource('AWS::ApiGatewayV2::Api', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Api', {
       Name: 'api',
       ProtocolType: 'HTTP',
       Description: 'My Api',
@@ -221,7 +227,7 @@ describe('HttpApi', () => {
       disableExecuteApiEndpoint: true,
     });
 
-    expect(stack).toHaveResource('AWS::ApiGatewayV2::Api', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Api', {
       Name: 'api',
       ProtocolType: 'HTTP',
       DisableExecuteApiEndpoint: true,
@@ -240,10 +246,10 @@ describe('HttpApi', () => {
     api.addVpcLink({ vpc: vpc2, vpcLinkName: 'Link-2' });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ApiGatewayV2::VpcLink', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::VpcLink', {
       Name: 'Link-1',
     });
-    expect(stack).toHaveResource('AWS::ApiGatewayV2::VpcLink', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::VpcLink', {
       Name: 'Link-2',
     });
   });
@@ -259,12 +265,12 @@ describe('HttpApi', () => {
     api.addVpcLink({ vpc, vpcLinkName: 'Link-2' });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ApiGatewayV2::VpcLink', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::VpcLink', {
       Name: 'Link-1',
     });
-    expect(stack).not.toHaveResource('AWS::ApiGatewayV2::VpcLink', {
+    expect(Object.keys(Template.fromStack(stack).findResources('AWS::ApiGatewayV2::VpcLink', {
       Name: 'Link-2',
-    });
+    })).length).toEqual(0);
   });
 
   test('apiEndpoint is exported', () => {
@@ -272,6 +278,83 @@ describe('HttpApi', () => {
     const api = new HttpApi(stack, 'api');
 
     expect(api.apiEndpoint).toBeDefined();
+  });
+
+  test('can attach authorizer to route', () => {
+    const stack = new Stack();
+    const httpApi = new HttpApi(stack, 'api');
+
+    const authorizer = new DummyAuthorizer();
+
+    httpApi.addRoutes({
+      path: '/pets',
+      integration: new DummyRouteIntegration(),
+      authorizer,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Api', {
+      Name: 'api',
+      ProtocolType: 'HTTP',
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Route', {
+      AuthorizerId: 'auth-1234',
+      AuthorizationType: 'JWT',
+    });
+  });
+
+  test('can import existing authorizer and attach to route', () => {
+    // GIVEN
+    const stack = new Stack();
+    const api = new HttpApi(stack, 'HttpApi');
+
+    const authorizer = HttpAuthorizer.fromHttpAuthorizerAttributes(stack, 'auth', {
+      authorizerId: '12345',
+      authorizerType: 'JWT',
+    });
+
+    // WHEN
+    api.addRoutes({
+      integration: new DummyRouteIntegration(),
+      path: '/books',
+      authorizer,
+    });
+
+    api.addRoutes({
+      integration: new DummyRouteIntegration(),
+      path: '/pets',
+      authorizer,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Route', {
+      AuthorizerId: '12345',
+    });
+  });
+
+  test('can attach custom scopes to authorizer route', () => {
+    const stack = new Stack();
+    const httpApi = new HttpApi(stack, 'api');
+
+    const authorizer = new DummyAuthorizer();
+
+    httpApi.addRoutes({
+      path: '/pets',
+      integration: new DummyRouteIntegration(),
+      authorizer,
+      authorizationScopes: ['read:scopes'],
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Api', {
+      Name: 'api',
+      ProtocolType: 'HTTP',
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Route', {
+      AuthorizerId: 'auth-1234',
+      AuthorizationType: 'JWT',
+      AuthorizationScopes: ['read:scopes'],
+    });
   });
 
   test('throws when accessing apiEndpoint and disableExecuteApiEndpoint is true', () => {
@@ -291,14 +374,182 @@ describe('HttpApi', () => {
 
     expect(() => api.apiEndpoint).toThrow(/apiEndpoint is not configured/);
   });
+
+  test('domainUrl can be retrieved for default stage', () => {
+    const stack = new Stack();
+    const dn = new DomainName(stack, 'DN', {
+      domainName: 'example.com',
+      certificate: Certificate.fromCertificateArn(stack, 'cert', 'arn:aws:acm:us-east-1:111111111111:certificate'),
+    });
+
+    const api = new HttpApi(stack, 'Api', {
+      createDefaultStage: true,
+      defaultDomainMapping: {
+        domainName: dn,
+      },
+    });
+
+    expect(stack.resolve(api.defaultStage?.domainUrl)).toEqual({
+      'Fn::Join': ['', [
+        'https://', { Ref: 'DNFDC76583' }, '/',
+      ]],
+    });
+  });
+
+
+  describe('default authorization settings', () => {
+    test('can add default authorizer', () => {
+      const stack = new Stack();
+
+      const authorizer = new DummyAuthorizer();
+
+      const httpApi = new HttpApi(stack, 'api', {
+        defaultAuthorizer: authorizer,
+        defaultAuthorizationScopes: ['read:pets'],
+      });
+
+      httpApi.addRoutes({
+        path: '/pets',
+        methods: [HttpMethod.GET],
+        integration: new DummyRouteIntegration(),
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Route', {
+        AuthorizerId: 'auth-1234',
+        AuthorizationType: 'JWT',
+        AuthorizationScopes: ['read:pets'],
+      });
+    });
+
+    test('can add default authorizer when using default integration', () => {
+      const stack = new Stack();
+
+      const authorizer = new DummyAuthorizer();
+
+      new HttpApi(stack, 'api', {
+        defaultIntegration: new DummyRouteIntegration(),
+        defaultAuthorizer: authorizer,
+        defaultAuthorizationScopes: ['read:pets'],
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Route', {
+        AuthorizerId: 'auth-1234',
+        AuthorizationType: 'JWT',
+        AuthorizationScopes: ['read:pets'],
+      });
+    });
+
+    test('can add default authorizer, but remove it for a route', () => {
+      const stack = new Stack();
+      const authorizer = new DummyAuthorizer();
+
+      const httpApi = new HttpApi(stack, 'api', {
+        defaultAuthorizer: authorizer,
+        defaultAuthorizationScopes: ['read:pets'],
+      });
+
+      httpApi.addRoutes({
+        path: '/pets',
+        methods: [HttpMethod.GET],
+        integration: new DummyRouteIntegration(),
+      });
+
+      httpApi.addRoutes({
+        path: '/chickens',
+        methods: [HttpMethod.GET],
+        integration: new DummyRouteIntegration(),
+        authorizer: new HttpNoneAuthorizer(),
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Route', {
+        RouteKey: 'GET /pets',
+        AuthorizerId: 'auth-1234',
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Route', {
+        RouteKey: 'GET /chickens',
+        AuthorizationType: 'NONE',
+        AuthorizerId: Match.absent(),
+      });
+    });
+
+    test('can remove default scopes for a route', () => {
+      const stack = new Stack();
+
+      const authorizer = new DummyAuthorizer();
+
+      const httpApi = new HttpApi(stack, 'api', {
+        defaultAuthorizer: authorizer,
+        defaultAuthorizationScopes: ['read:books'],
+      });
+
+      httpApi.addRoutes({
+        path: '/pets',
+        methods: [HttpMethod.GET, HttpMethod.PATCH],
+        integration: new DummyRouteIntegration(),
+        authorizationScopes: [],
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Route', {
+        AuthorizationScopes: Match.absent(),
+      });
+    });
+
+    test('can override scopes for a route', () => {
+      const stack = new Stack();
+
+      const authorizer = new DummyAuthorizer();
+
+      const httpApi = new HttpApi(stack, 'api', {
+        defaultAuthorizer: authorizer,
+        defaultAuthorizationScopes: ['read:pets'],
+      });
+
+      httpApi.addRoutes({
+        path: '/pets',
+        methods: [HttpMethod.GET, HttpMethod.PATCH],
+        integration: new DummyRouteIntegration(),
+      });
+
+      httpApi.addRoutes({
+        path: '/chickens',
+        methods: [HttpMethod.GET, HttpMethod.PATCH],
+        integration: new DummyRouteIntegration(),
+        authorizationScopes: ['read:chickens'],
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Route', {
+        RouteKey: 'GET /pets',
+        AuthorizationScopes: ['read:pets'],
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Route', {
+        RouteKey: 'GET /chickens',
+        AuthorizationScopes: ['read:chickens'],
+      });
+    });
+  });
 });
 
-class DummyRouteIntegration implements IHttpRouteIntegration {
+class DummyRouteIntegration extends HttpRouteIntegration {
+  constructor() {
+    super('DummyRouteIntegration');
+  }
+
   public bind(_: HttpRouteIntegrationBindOptions): HttpRouteIntegrationConfig {
     return {
       payloadFormatVersion: PayloadFormatVersion.VERSION_2_0,
       type: HttpIntegrationType.HTTP_PROXY,
       uri: 'some-uri',
+    };
+  }
+}
+
+class DummyAuthorizer implements IHttpRouteAuthorizer {
+  public bind(_: HttpRouteAuthorizerBindOptions): HttpRouteAuthorizerConfig {
+    return {
+      authorizerId: 'auth-1234',
+      authorizationType: 'JWT',
     };
   }
 }

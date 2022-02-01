@@ -7,9 +7,11 @@ import { CfnCreationPolicy, CfnDeletionPolicy, CfnUpdatePolicy } from './cfn-res
 import { Construct, IConstruct, Node } from 'constructs';
 import { addDependency } from './deps';
 import { CfnReference } from './private/cfn-reference';
+import { CLOUDFORMATION_TOKEN_RESOLVER } from './private/cloudformation-lang';
 import { Reference } from './reference';
 import { RemovalPolicy, RemovalPolicyOptions } from './removal-policy';
 import { TagManager } from './tag-manager';
+import { Tokenization } from './token';
 import { capitalizePropertyNames, ignoreEmpty, PostResolveToken } from './util';
 
 export interface CfnResourceProps {
@@ -99,6 +101,14 @@ export class CfnResource extends CfnRefElement {
 
   /**
    * Sets the deletion policy of the resource based on the removal policy specified.
+   *
+   * The Removal Policy controls what happens to this resource when it stops
+   * being managed by CloudFormation, either because you've removed it from the
+   * CDK application or because you've made a change that requires the resource
+   * to be replaced.
+   *
+   * The resource can be deleted (`RemovalPolicy.DESTROY`), or left in your AWS
+   * account for data recovery and cleanup later (`RemovalPolicy.RETAIN`).
    */
   public applyRemovalPolicy(policy: RemovalPolicy | undefined, options: RemovalPolicyOptions = {}) {
     policy = policy || options.default || RemovalPolicy.RETAIN;
@@ -320,13 +330,20 @@ export class CfnResource extends CfnRefElement {
             Description: this.cfnOptions.description,
             Metadata: ignoreEmpty(this.cfnOptions.metadata),
             Condition: this.cfnOptions.condition && this.cfnOptions.condition.logicalId,
-          }, props => {
-            const renderedProps = this.renderProperties(props.Properties || {});
+          }, resourceDef => {
+            const renderedProps = this.renderProperties(resourceDef.Properties || {});
             if (renderedProps) {
               const hasDefined = Object.values(renderedProps).find(v => v !== undefined);
-              props.Properties = hasDefined !== undefined ? renderedProps : undefined;
+              resourceDef.Properties = hasDefined !== undefined ? renderedProps : undefined;
             }
-            return deepMerge(props, this.rawOverrides);
+            const resolvedRawOverrides = Tokenization.resolve(this.rawOverrides, {
+              scope: this,
+              resolver: CLOUDFORMATION_TOKEN_RESOLVER,
+              // we need to preserve the empty elements here,
+              // as that's how removing overrides are represented as
+              removeEmpty: false,
+            });
+            return deepMerge(resourceDef, resolvedRawOverrides);
           }),
         },
       };

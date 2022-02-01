@@ -1,5 +1,5 @@
 import { join } from 'path';
-import '@aws-cdk/assert/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import * as appsync from '../lib';
@@ -38,11 +38,12 @@ describe('grant Permissions', () => {
     api.grant(role, appsync.IamResource.custom('types/Mutation/fields/addTest'), 'appsync:GraphQL');
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
             Action: 'appsync:GraphQL',
+            Effect: 'Allow',
             Resource: {
               'Fn::Join': ['', [
                 'arn:',
@@ -67,11 +68,12 @@ describe('grant Permissions', () => {
     api.grant(role, appsync.IamResource.ofType('Mutation'), 'appsync:GraphQL');
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
             Action: 'appsync:GraphQL',
+            Effect: 'Allow',
             Resource: {
               'Fn::Join': ['', [
                 'arn:',
@@ -96,11 +98,12 @@ describe('grant Permissions', () => {
     api.grant(role, appsync.IamResource.ofType('Mutation', 'addTest'), 'appsync:GraphQL');
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
             Action: 'appsync:GraphQL',
+            Effect: 'Allow',
             Resource: {
               'Fn::Join': ['', [
                 'arn:',
@@ -125,11 +128,12 @@ describe('grant Permissions', () => {
     api.grant(role, appsync.IamResource.all(), 'appsync:GraphQL');
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
             Action: 'appsync:GraphQL',
+            Effect: 'Allow',
             Resource: {
               'Fn::Join': ['', [
                 'arn:',
@@ -154,11 +158,12 @@ describe('grant Permissions', () => {
     api.grant(role, appsync.IamResource.custom('I', 'am', 'custom'), 'appsync:GraphQL');
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
             Action: 'appsync:GraphQL',
+            Effect: 'Allow',
             Resource: [
               {
                 'Fn::Join': ['', [
@@ -211,11 +216,12 @@ describe('grant Permissions', () => {
     api.grant(role, appsync.IamResource.ofType('I', 'am', 'custom'), 'appsync:GraphQL');
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
             Action: 'appsync:GraphQL',
+            Effect: 'Allow',
             Resource: [
               {
                 'Fn::Join': ['', [
@@ -258,11 +264,12 @@ describe('grantMutation Permissions', () => {
     api.grantMutation(role);
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
             Action: 'appsync:GraphQL',
+            Effect: 'Allow',
             Resource: {
               'Fn::Join': ['', [
                 'arn:',
@@ -287,11 +294,12 @@ describe('grantMutation Permissions', () => {
     api.grantMutation(role, 'addTest');
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
             Action: 'appsync:GraphQL',
+            Effect: 'Allow',
             Resource: {
               'Fn::Join': ['', [
                 'arn:',
@@ -316,11 +324,12 @@ describe('grantMutation Permissions', () => {
     api.grantMutation(role, 'addTest', 'removeTest');
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
             Action: 'appsync:GraphQL',
+            Effect: 'Allow',
             Resource: [
               {
                 'Fn::Join': ['', [
@@ -363,11 +372,12 @@ describe('grantQuery Permissions', () => {
     api.grantQuery(role);
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
             Action: 'appsync:GraphQL',
+            Effect: 'Allow',
             Resource: {
               'Fn::Join': ['', [
                 'arn:',
@@ -392,11 +402,12 @@ describe('grantQuery Permissions', () => {
     api.grantQuery(role, 'getTest');
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
             Action: 'appsync:GraphQL',
+            Effect: 'Allow',
             Resource: {
               'Fn::Join': ['', [
                 'arn:',
@@ -421,11 +432,12 @@ describe('grantQuery Permissions', () => {
     api.grantQuery(role, 'getTests', 'getTest');
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
             Action: 'appsync:GraphQL',
+            Effect: 'Allow',
             Resource: [
               {
                 'Fn::Join': ['', [
@@ -468,11 +480,12 @@ describe('grantSubscription Permissions', () => {
     api.grantSubscription(role);
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
             Action: 'appsync:GraphQL',
+            Effect: 'Allow',
             Resource: {
               'Fn::Join': ['', [
                 'arn:',
@@ -496,11 +509,12 @@ describe('grantSubscription Permissions', () => {
     api.grantSubscription(role, 'subscribe');
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
             Action: 'appsync:GraphQL',
+            Effect: 'Allow',
             Resource: {
               'Fn::Join': ['', [
                 'arn:',
@@ -525,11 +539,12 @@ describe('grantSubscription Permissions', () => {
     api.grantSubscription(role, 'subscribe', 'custom');
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
             Action: 'appsync:GraphQL',
+            Effect: 'Allow',
             Resource: [
               {
                 'Fn::Join': ['', [

@@ -80,6 +80,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
 
   public readonly connections: ec2.Connections;
   public readonly ipAddressType?: IpAddressType;
+  public readonly listeners: ApplicationListener[];
 
   constructor(scope: Construct, id: string, props: ApplicationLoadBalancerProps) {
     super(scope, id, props, {
@@ -95,6 +96,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
       allowAllOutbound: false,
     })];
     this.connections = new ec2.Connections({ securityGroups });
+    this.listeners = [];
 
     if (props.http2Enabled === false) { this.setAttribute('routing.http2.enabled', 'false'); }
     if (props.idleTimeout !== undefined) { this.setAttribute('idle_timeout.timeout_seconds', props.idleTimeout.toSeconds().toString()); }
@@ -104,10 +106,12 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
    * Add a new listener to this load balancer
    */
   public addListener(id: string, props: BaseApplicationListenerProps): ApplicationListener {
-    return new ApplicationListener(this, id, {
+    const listener = new ApplicationListener(this, id, {
       loadBalancer: this,
       ...props,
     });
+    this.listeners.push(listener);
+    return listener;
   }
 
   /**
@@ -119,7 +123,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
     return this.addListener(`Redirect${sourcePort}To${targetPort}`, {
       protocol: props.sourceProtocol ?? ApplicationProtocol.HTTP,
       port: sourcePort,
-      open: true,
+      open: props.open ?? true,
       defaultAction: ListenerAction.redirect({
         port: targetPort,
         protocol: props.targetProtocol ?? ApplicationProtocol.HTTPS,
@@ -144,7 +148,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
     return new cloudwatch.Metric({
       namespace: 'AWS/ApplicationELB',
       metricName,
-      dimensions: { LoadBalancer: this.loadBalancerFullName },
+      dimensionsMap: { LoadBalancer: this.loadBalancerFullName },
       ...props,
     });
   }
@@ -488,6 +492,12 @@ export interface IApplicationLoadBalancer extends ILoadBalancerV2, ec2.IConnecta
   readonly ipAddressType?: IpAddressType;
 
   /**
+   * A list of listeners that have been added to the load balancer.
+   * This list is only valid for owned constructs.
+   */
+  readonly listeners: ApplicationListener[];
+
+  /**
    * Add a new listener to this load balancer
    */
   addListener(id: string, props: BaseApplicationListenerProps): ApplicationListener;
@@ -554,6 +564,10 @@ class ImportedApplicationLoadBalancer extends Resource implements IApplicationLo
    */
   public readonly loadBalancerArn: string;
 
+  public get listeners(): ApplicationListener[] {
+    throw Error('.listeners can only be accessed if the class was constructed as an owned, not imported, load balancer');
+  }
+
   /**
    * VPC of the load balancer
    *
@@ -562,7 +576,10 @@ class ImportedApplicationLoadBalancer extends Resource implements IApplicationLo
   public readonly vpc?: ec2.IVpc;
 
   constructor(scope: Construct, id: string, private readonly props: ApplicationLoadBalancerAttributes) {
-    super(scope, id);
+    super(scope, id, {
+      environmentFromArn: props.loadBalancerArn,
+    });
+
     this.vpc = props.vpc;
     this.loadBalancerArn = props.loadBalancerArn;
     this.connections = new ec2.Connections({
@@ -600,8 +617,14 @@ class LookedUpApplicationLoadBalancer extends Resource implements IApplicationLo
   public readonly connections: ec2.Connections;
   public readonly vpc?: ec2.IVpc;
 
+  public get listeners(): ApplicationListener[] {
+    throw Error('.listeners can only be accessed if the class was constructed as an owned, not looked up, load balancer');
+  }
+
   constructor(scope: Construct, id: string, props: cxapi.LoadBalancerContextResponse) {
-    super(scope, id);
+    super(scope, id, {
+      environmentFromArn: props.loadBalancerArn,
+    });
 
     this.loadBalancerArn = props.loadBalancerArn;
     this.loadBalancerCanonicalHostedZoneId = props.loadBalancerCanonicalHostedZoneId;
@@ -619,7 +642,7 @@ class LookedUpApplicationLoadBalancer extends Resource implements IApplicationLo
 
     this.connections = new ec2.Connections();
     for (const securityGroupId of props.securityGroupIds) {
-      const securityGroup = ec2.SecurityGroup.fromLookup(this, `SecurityGroup-${securityGroupId}`, securityGroupId);
+      const securityGroup = ec2.SecurityGroup.fromLookupById(this, `SecurityGroup-${securityGroupId}`, securityGroupId);
       this.connections.addSecurityGroup(securityGroup);
     }
   }
@@ -664,5 +687,20 @@ export interface ApplicationLoadBalancerRedirectConfig {
    * @default 443
    */
   readonly targetPort?: number;
+
+  /**
+   * Allow anyone to connect to this listener
+   *
+   * If this is specified, the listener will be opened up to anyone who can reach it.
+   * For internal load balancers this is anyone in the same VPC. For public load
+   * balancers, this is anyone on the internet.
+   *
+   * If you want to be more selective about who can access this load
+   * balancer, set this to `false` and use the listener's `connections`
+   * object to selectively grant access to the listener.
+   *
+   * @default true
+   */
+  readonly open?: boolean;
 
 }

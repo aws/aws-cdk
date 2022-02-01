@@ -18,7 +18,6 @@ package_exists_on_npm() {
     curl -I 2>/dev/null https://registry.npmjs.org/$pkg/$ver | head -n 1 | grep 200 >/dev/null
 }
 
-
 #----------------------------------------------------------------------
 
 list_jsii_packages() {
@@ -33,12 +32,11 @@ jsii_package_dirs=$(list_jsii_packages)
 
 #----------------------------------------------------------------------
 
-# Input a directory, output the package name IF it exists on GitHub
-dirs_to_existing_names() {
+# Input a directory, output the directory IF it exists on NPM
+dirs_for_existing_pkgs() {
     local dir="$1"
-    local name=$(package_name "$dir")
-    if package_exists_on_npm $name; then
-        echo "$name"
+    if package_exists_on_npm $(package_name $dir); then
+        echo "$dir"
         echo -n "." >&2
     else
         echo -n "x" >&2
@@ -47,26 +45,27 @@ dirs_to_existing_names() {
 
 export -f package_name
 export -f package_exists_on_npm
-export -f dirs_to_existing_names
+export -f dirs_for_existing_pkgs
 
 if ! ${SKIP_DOWNLOAD:-false}; then
     echo "Filtering on existing packages on NPM..." >&2
     # In parallel
-    existing_names=$(echo "$jsii_package_dirs" | xargs -n1 -P4 -I {} bash -c 'dirs_to_existing_names "$@"' _ {})
+    existing_pkg_dirs=$(echo "$jsii_package_dirs" | xargs -n1 -P4 -I {} bash -c 'dirs_for_existing_pkgs "$@"' _ {})
+    existing_names=$(echo "$existing_pkg_dirs" | xargs -n1 -P4 -I {} bash -c 'package_name "$@"' _ {})
     echo " Done." >&2
 
     echo "Determining baseline version..." >&2
     version=$(node -p 'require("./scripts/resolve-version.js").version')
-    disttag=$(node -p 'require("./scripts/resolve-version.js").npmDistTag')
     echo "  Current version is $version." >&2
 
     if ! package_exists_on_npm aws-cdk $version; then
-      echo "  Version $version does not exist in npm. Falling back to resolved dist tag '$disttag'" >&2
-      version=$disttag
+        major_version=$(echo "$version" | sed -e 's/\..*//g')
+        echo "  Version $version does not exist in npm. Falling back to package major version ${major_version}" >&2
+        existing_names=$(echo "$existing_names" | sed -e "s/$/@$major_version/")
+    else
+        echo "Using version '$version' as the baseline..."
+        existing_names=$(echo "$existing_names" | sed -e "s/$/@$version/")
     fi
-
-    echo "Using version '$version' as the baseline..."
-    existing_names=$(echo "$existing_names" | sed -e "s/$/@$version/")
 
     rm -rf $tmpdir
     mkdir -p $tmpdir

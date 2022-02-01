@@ -27,7 +27,9 @@
           "EmailSubject": "Verify your new account",
           "SmsMessage": "The verification code to your new account is {####}"
         }
-      }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
     "UserPoolDomainD0EA232A": {
       "Type": "AWS::Cognito::UserPoolDomain",

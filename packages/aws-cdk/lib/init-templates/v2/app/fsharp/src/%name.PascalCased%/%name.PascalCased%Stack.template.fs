@@ -1,6 +1,6 @@
 namespace %name.PascalCased%
 
-open Amazon.CDK.Lib
+open Amazon.CDK
 
 type %name.PascalCased%Stack(scope, id, props) as this =
     inherit Stack(scope, id, props)

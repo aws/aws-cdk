@@ -276,18 +276,18 @@ export abstract class ResourceBase extends ResourceConstruct implements IResourc
     //
     // statusCode
 
-    const statusCode = options.statusCode !== undefined ? options.statusCode : 204;
+    const statusCode = options.statusCode ?? 204;
 
     //
     // prepare responseParams
 
     const integrationResponseParams: { [p: string]: string } = { };
-    const methodReponseParams: { [p: string]: boolean } = { };
+    const methodResponseParams: { [p: string]: boolean } = { };
 
     for (const [name, value] of Object.entries(headers)) {
       const key = `method.response.header.${name}`;
       integrationResponseParams[key] = value;
-      methodReponseParams[key] = true;
+      methodResponseParams[key] = true;
     }
 
     return this.addMethod('OPTIONS', new MockIntegration({
@@ -297,7 +297,7 @@ export abstract class ResourceBase extends ResourceConstruct implements IResourc
       ],
     }), {
       methodResponses: [
-        { statusCode: `${statusCode}`, responseParameters: methodReponseParams },
+        { statusCode: `${statusCode}`, responseParameters: methodResponseParams },
       ],
     });
 
@@ -373,7 +373,51 @@ export abstract class ResourceBase extends ResourceConstruct implements IResourc
   }
 }
 
+/**
+ * Attributes that can be specified when importing a Resource
+ */
+export interface ResourceAttributes {
+  /**
+   * The ID of the resource.
+   */
+  readonly resourceId: string;
+
+  /**
+   * The rest API that this resource is part of.
+   */
+  readonly restApi: IRestApi;
+
+  /**
+   * The full path of this resource.
+   */
+  readonly path: string;
+}
+
 export class Resource extends ResourceBase {
+  /**
+   * Import an existing resource
+   */
+  public static fromResourceAttributes(scope: Construct, id: string, attrs: ResourceAttributes): IResource {
+    class Import extends ResourceBase {
+      public readonly api = attrs.restApi;
+      public readonly resourceId = attrs.resourceId;
+      public readonly path = attrs.path;
+      public readonly defaultIntegration?: Integration = undefined;
+      public readonly defaultMethodOptions?: MethodOptions = undefined;
+      public readonly defaultCorsPreflightOptions?: CorsOptions = undefined;
+
+      public get parentResource(): IResource {
+        throw new Error('parentResource is not configured for imported resource.');
+      }
+
+      public get restApi(): RestApi {
+        throw new Error('restApi is not configured for imported resource.');
+      }
+    }
+
+    return new Import(scope, id);
+  }
+
   public readonly parentResource?: IResource;
   public readonly api: IRestApi;
   public readonly resourceId: string;
@@ -478,7 +522,7 @@ export class ProxyResource extends Resource {
       defaultMethodOptions: props.defaultMethodOptions,
     });
 
-    const anyMethod = props.anyMethod !== undefined ? props.anyMethod : true;
+    const anyMethod = props.anyMethod ?? true;
     if (anyMethod) {
       this.anyMethod = this.addMethod('ANY');
     }

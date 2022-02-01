@@ -1,5 +1,6 @@
 import * as path from 'path';
-import '@aws-cdk/assert/jest';
+import { Template } from '@aws-cdk/assertions';
+import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as core from '@aws-cdk/core';
 import * as constructs from 'constructs';
 import * as inc from '../lib';
@@ -18,15 +19,42 @@ describe('CDK Include', () => {
   test('can ingest a template with all long-form CloudFormation functions and output it unchanged', () => {
     includeTestTemplate(stack, 'long-form-vpc.yaml');
 
-    expect(stack).toMatchTemplate(
+    Template.fromStack(stack).templateMatches(
       loadTestFileToJsObject('long-form-vpc.yaml'),
     );
+  });
+
+  test('can ingest a template with year-month-date parsed as string instead of Date', () => {
+    includeTestTemplate(stack, 'year-month-date-as-strings.yaml');
+
+    Template.fromStack(stack).templateMatches({
+      "AWSTemplateFormatVersion": "2010-09-09",
+      "Resources": {
+        "Role": {
+          "Type": "AWS::IAM::Role",
+          "Properties": {
+            "AssumeRolePolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Principal": {
+                    "Service": ["ec2.amazonaws.com"],
+                  },
+                  "Action": ["sts:AssumeRole"],
+                },
+              ],
+            },
+          },
+        },
+      },
+    });
   });
 
   test('can ingest a template with the short form Base64 function', () => {
     includeTestTemplate(stack, 'short-form-base64.yaml');
 
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       "Resources": {
         "Base64Bucket": {
           "Type": "AWS::S3::Bucket",
@@ -43,7 +71,7 @@ describe('CDK Include', () => {
   test('can ingest a template with the short form !Cidr function', () => {
     includeTestTemplate(stack, 'short-form-cidr.yaml');
 
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       "Resources": {
         "CidrVpc1": {
           "Type": "AWS::EC2::VPC",
@@ -76,7 +104,7 @@ describe('CDK Include', () => {
   test('can ingest a template with the short form !FindInMap function, in both hyphen and bracket notation', () => {
     includeTestTemplate(stack, 'short-form-find-in-map.yaml');
 
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       "Mappings": {
         "RegionMap": {
           "region-1": {
@@ -117,7 +145,7 @@ describe('CDK Include', () => {
   test('can ingest a template with the short form !GetAtt function', () => {
     includeTestTemplate(stack, 'short-form-get-att.yaml');
 
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       "Resources": {
         "ELB": {
           "Type": "AWS::ElasticLoadBalancing::LoadBalancer",
@@ -159,7 +187,7 @@ describe('CDK Include', () => {
   test('can ingest a template with short form Select, GetAZs, and Ref functions', () => {
     includeTestTemplate(stack, 'short-form-select.yaml');
 
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       "Resources": {
         "Subnet1": {
           "Type": "AWS::EC2::Subnet",
@@ -192,7 +220,7 @@ describe('CDK Include', () => {
   test('can ingest a template with the short form !ImportValue function', () => {
     includeTestTemplate(stack, 'short-form-import-value.yaml');
 
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       "Resources": {
         "Bucket1": {
           "Type": "AWS::S3::Bucket",
@@ -209,7 +237,7 @@ describe('CDK Include', () => {
   test('can ingest a template with the short form !Join function', () => {
     includeTestTemplate(stack, 'short-form-join.yaml');
 
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       "Resources": {
         "Bucket": {
           "Type": "AWS::S3::Bucket",
@@ -229,7 +257,7 @@ describe('CDK Include', () => {
   test('can ingest a template with the short form !Split function that uses both brackets and hyphens', () => {
     includeTestTemplate(stack, 'short-form-split.yaml');
 
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       "Resources": {
         "Bucket1": {
           "Type": "AWS::S3::Bucket",
@@ -259,7 +287,7 @@ describe('CDK Include', () => {
     // Note that this yaml template fails validation. It is unclear how to invoke !Transform.
     includeTestTemplate(stack, 'invalid/short-form-transform.yaml');
 
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       "Resources": {
         "Bucket": {
           "Type": "AWS::S3::Bucket",
@@ -282,7 +310,7 @@ describe('CDK Include', () => {
   test('can ingest a template with the short form conditionals', () => {
     includeTestTemplate(stack, 'short-form-conditionals.yaml');
 
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       "Conditions": {
         "AlwaysTrueCond": {
           "Fn::And": [
@@ -320,7 +348,7 @@ describe('CDK Include', () => {
   test('can ingest a template with the short form Conditions', () => {
     includeTestTemplate(stack, 'short-form-conditions.yaml');
 
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       "Conditions": {
         "AlwaysTrueCond": {
           "Fn::Not": [
@@ -365,37 +393,64 @@ describe('CDK Include', () => {
   test('can ingest a yaml with long-form functions and output it unchanged', () => {
     includeTestTemplate(stack, 'long-form-subnet.yaml');
 
-    expect(stack).toMatchTemplate(
+    Template.fromStack(stack).templateMatches(
       loadTestFileToJsObject('long-form-subnet.yaml'),
     );
   });
 
-  test('can ingest a YAML tempalte with Fn::Sub in string form and output it unchanged', () => {
+  test('can ingest a YAML template with Fn::Sub in string form and output it unchanged', () => {
     includeTestTemplate(stack, 'short-form-fnsub-string.yaml');
 
-    expect(stack).toMatchTemplate(
+    Template.fromStack(stack).templateMatches(
       loadTestFileToJsObject('short-form-fnsub-string.yaml'),
     );
   });
 
-  test('can ingest a YAML tmeplate with Fn::Sub in map form and output it unchanged', () => {
+  test('can ingest a YAML template with Fn::Sub in map form and output it unchanged', () => {
     includeTestTemplate(stack, 'short-form-sub-map.yaml');
 
-    expect(stack).toMatchTemplate(
+    Template.fromStack(stack).templateMatches(
       loadTestFileToJsObject('short-form-sub-map.yaml'),
     );
   });
 
-  test('the parser throws an error on a YAML tmeplate with short form import value that uses short form sub', () => {
+  test('can correctly substitute values inside a string containing JSON passed to Fn::Sub', () => {
+    const cfnInclude = includeTestTemplate(stack, 'json-in-fn-sub.yaml', {
+      Stage: 'test',
+    });
+
+    const dashboard = cfnInclude.getResource('Dashboard') as cloudwatch.CfnDashboard;
+    // we need to resolve the Fn::Sub expression to get to its argument
+    const resolvedDashboardBody = stack.resolve(dashboard.dashboardBody)['Fn::Sub'];
+    expect(JSON.parse(resolvedDashboardBody)).toStrictEqual({
+      "widgets": [
+        {
+          "type": "text",
+          "properties": {
+            "markdown": "test test",
+          },
+        },
+        {
+          "type": "text",
+          "properties": {
+            "markdown": "test test",
+          },
+        },
+      ],
+    });
+  });
+
+  test('the parser throws an error on a YAML template with short form import value that uses short form sub', () => {
     expect(() => {
       includeTestTemplate(stack, 'invalid/short-form-import-sub.yaml');
     }).toThrow(/A node can have at most one tag/);
   });
 });
 
-function includeTestTemplate(scope: constructs.Construct, testTemplate: string): inc.CfnInclude {
+function includeTestTemplate(scope: constructs.Construct, testTemplate: string, parameters?: { [key: string]: string }): inc.CfnInclude {
   return new inc.CfnInclude(scope, 'MyScope', {
     templateFile: _testTemplateFilePath(testTemplate),
+    parameters,
   });
 }
 

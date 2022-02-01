@@ -116,7 +116,7 @@ export interface PassProps {
 /**
  * Define a Pass in the state machine
  *
- * A Pass state can be used to transform the current exeuction's state.
+ * A Pass state can be used to transform the current execution's state.
  */
 export class Pass extends State implements INextable {
   public readonly endStates: INextable[];
@@ -145,7 +145,7 @@ export class Pass extends State implements INextable {
     return {
       Type: StateType.PASS,
       Comment: this.comment,
-      Result: this.result ? this.result.value : undefined,
+      Result: this.result?.value,
       ResultPath: renderJsonPath(this.resultPath),
       ...this.renderInputOutput(),
       ...this.renderParameters(),

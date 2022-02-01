@@ -438,6 +438,20 @@
       "Properties": {
         "Port": 80,
         "Protocol": "HTTP",
+        "TargetGroupAttributes": [
+          {
+            "Key": "stickiness.enabled",
+            "Value": "true"
+          },
+          {
+            "Key": "stickiness.type",
+            "Value": "lb_cookie"
+          },
+          {
+            "Key": "stickiness.lb_cookie.duration_seconds",
+            "Value": "300"
+          }
+        ],
         "Targets": [
           {
             "Id": "10.0.128.4"
@@ -454,6 +468,28 @@
       "Properties": {
         "Port": 80,
         "Protocol": "HTTP",
+        "TargetGroupAttributes": [
+          {
+            "Key": "slow_start.duration_seconds",
+            "Value": "60"
+          },
+          {
+            "Key": "stickiness.enabled",
+            "Value": "true"
+          },
+          {
+            "Key": "stickiness.type",
+            "Value": "app_cookie"
+          },
+          {
+            "Key": "stickiness.app_cookie.cookie_name",
+            "Value": "MyDeliciousCookie"
+          },
+          {
+            "Key": "stickiness.app_cookie.duration_seconds",
+            "Value": "300"
+          }
+        ],
         "Targets": [
           {
             "Id": "10.0.128.5"

@@ -4,7 +4,14 @@ import {
   AwsLogDriver, BaseService, CloudMapOptions, Cluster, ContainerDefinition, ContainerImage, ICluster, LogDriver, PropagatedTagSource,
   Protocol, Secret,
 } from '@aws-cdk/aws-ecs';
-import { ApplicationListener, ApplicationLoadBalancer, ApplicationProtocol, ApplicationTargetGroup } from '@aws-cdk/aws-elasticloadbalancingv2';
+import {
+  ApplicationListener,
+  ApplicationLoadBalancer,
+  ApplicationProtocol,
+  ApplicationTargetGroup, ListenerCertificate,
+  ListenerCondition,
+  SslPolicy,
+} from '@aws-cdk/aws-elasticloadbalancingv2';
 import { IRole } from '@aws-cdk/aws-iam';
 import { ARecord, IHostedZone, RecordTarget } from '@aws-cdk/aws-route53';
 import { LoadBalancerTarget } from '@aws-cdk/aws-route53-targets';
@@ -47,7 +54,9 @@ export interface ApplicationMultipleTargetGroupsServiceBaseProps {
   /**
    * The desired number of instantiations of the task definition to keep running on the service.
    *
-   * @default 1
+   * @default - If the feature flag, ECS_REMOVE_DEFAULT_DESIRED_COUNT is false, the default is 1;
+   * if true, the default is 1 for all new services and uses the existing services desired count
+   * when updating an existing service.
    */
   readonly desiredCount?: number;
 
@@ -186,6 +195,13 @@ export interface ApplicationLoadBalancedTaskImageProps {
    * @default - Automatically generated name.
    */
   readonly family?: string;
+
+  /**
+   * A key/value map of labels to add to the container.
+   *
+   * @default - No labels.
+   */
+  readonly dockerLabels?: { [key: string]: string };
 }
 
 /**
@@ -323,17 +339,31 @@ export interface ApplicationListenerProps {
    * created for the load balancer's specified domain name.
    */
   readonly certificate?: ICertificate;
+
+  /**
+   * The security policy that defines which ciphers and protocols are supported by the ALB Listener.
+   *
+   * @default - The recommended elastic load balancing security policy
+   */
+  readonly sslPolicy?: SslPolicy;
 }
 
 /**
  * The base class for ApplicationMultipleTargetGroupsEc2Service and ApplicationMultipleTargetGroupsFargateService classes.
  */
 export abstract class ApplicationMultipleTargetGroupsServiceBase extends CoreConstruct {
+  /**
+   * The desired number of instantiations of the task definition to keep running on the service.
+   * @deprecated - Use `internalDesiredCount` instead.
+   */
+  public readonly desiredCount: number;
 
   /**
    * The desired number of instantiations of the task definition to keep running on the service.
+   * The default is 1 for all new services and uses the existing services desired count
+   * when updating an existing service, if one is not provided.
    */
-  public readonly desiredCount: number;
+  public readonly internalDesiredCount?: number;
 
   /**
    * The default Application Load Balancer for the service (first added load balancer).
@@ -365,7 +395,10 @@ export abstract class ApplicationMultipleTargetGroupsServiceBase extends CoreCon
     this.validateInput(props);
 
     this.cluster = props.cluster || this.getDefaultCluster(this, props.vpc);
+
     this.desiredCount = props.desiredCount || 1;
+    this.internalDesiredCount = props.desiredCount;
+
     if (props.taskImageOptions) {
       this.logDriver = this.createLogDriver(props.taskImageOptions.enableLogging, props.taskImageOptions.logDriver);
     }
@@ -388,6 +421,7 @@ export abstract class ApplicationMultipleTargetGroupsServiceBase extends CoreCon
             listenerName: listenerProps.name,
             loadBalancer: lb,
             port: listenerProps.port,
+            sslPolicy: listenerProps.sslPolicy,
           });
           this.listeners.push(listener);
         }
@@ -442,6 +476,14 @@ export abstract class ApplicationMultipleTargetGroupsServiceBase extends CoreCon
 
   protected registerECSTargets(service: BaseService, container: ContainerDefinition, targets: ApplicationTargetProps[]): ApplicationTargetGroup {
     for (const targetProps of targets) {
+      const conditions: Array<ListenerCondition> = [];
+      if (targetProps.hostHeader) {
+        conditions.push(ListenerCondition.hostHeaders([targetProps.hostHeader]));
+      }
+      if (targetProps.pathPattern) {
+        conditions.push(ListenerCondition.pathPatterns([targetProps.pathPattern]));
+      }
+
       const targetGroup = this.findListener(targetProps.listener).addTargets(`ECSTargetGroup${container.containerName}${targetProps.containerPort}`, {
         port: 80,
         targets: [
@@ -451,8 +493,7 @@ export abstract class ApplicationMultipleTargetGroupsServiceBase extends CoreCon
             protocol: targetProps.protocol,
           }),
         ],
-        hostHeader: targetProps.hostHeader,
-        pathPattern: targetProps.pathPattern,
+        conditions,
         priority: targetProps.priority,
       });
       this.targetGroups.push(targetGroup);
@@ -478,15 +519,13 @@ export abstract class ApplicationMultipleTargetGroupsServiceBase extends CoreCon
    * Create log driver if logging is enabled.
    */
   private createLogDriver(enableLoggingProp?: boolean, logDriverProp?: LogDriver): LogDriver | undefined {
-    const enableLogging = enableLoggingProp !== undefined ? enableLoggingProp : true;
-    const logDriver = logDriverProp !== undefined
-      ? logDriverProp : enableLogging
-        ? this.createAWSLogDriver(this.node.id) : undefined;
+    const enableLogging = enableLoggingProp ?? true;
+    const logDriver = logDriverProp ?? (enableLogging ? this.createAWSLogDriver(this.node.id) : undefined);
     return logDriver;
   }
 
   private configListener(protocol: ApplicationProtocol, props: ListenerConfig): ApplicationListener {
-    const listener = this.createListener(props.listenerName, props.loadBalancer, protocol, props.port);
+    const listener = this.createListener(props, protocol);
     let certificate;
     if (protocol === ApplicationProtocol.HTTPS) {
       certificate = this.createListenerCertificate(props.listenerName, props.certificate, props.domainName, props.domainZone);
@@ -494,7 +533,7 @@ export abstract class ApplicationMultipleTargetGroupsServiceBase extends CoreCon
       certificate = undefined;
     }
     if (certificate !== undefined) {
-      listener.addCertificateArns(`Arns${props.listenerName}`, [certificate.certificateArn]);
+      listener.addCertificates(`Arns${props.listenerName}`, [ListenerCertificate.fromArn(certificate.certificateArn)]);
     }
 
     return listener;
@@ -522,7 +561,7 @@ export abstract class ApplicationMultipleTargetGroupsServiceBase extends CoreCon
   }
 
   private createLoadBalancer(name: string, publicLoadBalancer?: boolean): ApplicationLoadBalancer {
-    const internetFacing = publicLoadBalancer !== undefined ? publicLoadBalancer : true;
+    const internetFacing = publicLoadBalancer ?? true;
     const lbProps = {
       vpc: this.cluster.vpc,
       internetFacing,
@@ -532,7 +571,7 @@ export abstract class ApplicationMultipleTargetGroupsServiceBase extends CoreCon
   }
 
   private createListenerProtocol(listenerProtocol?: ApplicationProtocol, certificate?: ICertificate): ApplicationProtocol {
-    return listenerProtocol !== undefined ? listenerProtocol : (certificate ? ApplicationProtocol.HTTPS : ApplicationProtocol.HTTP);
+    return listenerProtocol ?? (certificate ? ApplicationProtocol.HTTPS : ApplicationProtocol.HTTP);
   }
 
   private createListenerCertificate(listenerName: string, certificate?: ICertificate, domainName?: string, domainZone?: IHostedZone): ICertificate {
@@ -550,11 +589,12 @@ export abstract class ApplicationMultipleTargetGroupsServiceBase extends CoreCon
     }
   }
 
-  private createListener(name: string, lb: ApplicationLoadBalancer, protocol?: ApplicationProtocol, port?: number): ApplicationListener {
-    return lb.addListener(name, {
+  private createListener({ loadBalancer, listenerName, port, sslPolicy }: ListenerConfig, protocol?: ApplicationProtocol): ApplicationListener {
+    return loadBalancer.addListener(listenerName, {
       protocol,
       open: true,
       port,
+      sslPolicy,
     });
   }
 
@@ -604,6 +644,13 @@ interface ListenerConfig {
    * @default none
    */
   readonly certificate?: ICertificate;
+
+  /**
+   * SSL Policy for the listener
+   *
+   * @default null
+   */
+  readonly sslPolicy?: SslPolicy;
 
   /**
    * The domain name for the service, e.g. "api.example.com."

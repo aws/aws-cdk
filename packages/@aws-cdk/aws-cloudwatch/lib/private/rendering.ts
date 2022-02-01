@@ -55,6 +55,9 @@ function metricGraphJson(metric: IMetric, yAxis?: string, id?: string) {
 
     withExpression(expr) {
       options.expression = expr.expression;
+      if (expr.searchAccount) { options.accountId = accountIfDifferentFromStack(expr.searchAccount); }
+      if (expr.searchRegion) { options.region = regionIfDifferentFromStack(expr.searchRegion); }
+      if (expr.period && expr.period !== 300) { options.period = expr.period; }
     },
   });
 

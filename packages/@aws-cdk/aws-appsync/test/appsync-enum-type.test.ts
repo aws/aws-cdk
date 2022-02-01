@@ -1,4 +1,4 @@
-import '@aws-cdk/assert/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as cdk from '@aws-cdk/core';
 import * as appsync from '../lib';
 import * as t from './scalar-type-defintions';
@@ -23,10 +23,10 @@ describe('testing Enum Type properties', () => {
     api.addType(test);
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::GraphQLSchema', {
       Definition: `${out}`,
     });
-    expect(stack).not.toHaveResource('AWS::AppSync::Resolver');
+    Template.fromStack(stack).resourceCountIs('AWS::AppSync::Resolver', 0);
   });
 
   test('EnumType can addField', () => {
@@ -38,7 +38,7 @@ describe('testing Enum Type properties', () => {
     test.addField({ fieldName: 'test3' });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::GraphQLSchema', {
       Definition: `${out}`,
     });
   });
@@ -57,7 +57,7 @@ describe('testing Enum Type properties', () => {
     const obj = 'type Test2 {\n  enum: Test\n}\n';
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::GraphQLSchema', {
       Definition: `${out}${obj}`,
     });
   });

@@ -1,9 +1,13 @@
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as s3 from '@aws-cdk/aws-s3';
-import { Construct, Duration } from '@aws-cdk/core';
+import { Duration } from '@aws-cdk/core';
 import { kebab as toKebabCase } from 'case';
 import { Action } from '../action';
 import { deployArtifactBounds } from '../common';
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
 
 // Class copied verbatim from the aws-s3-deployment module.
 // Yes, it sucks that we didn't abstract this properly in a common class,

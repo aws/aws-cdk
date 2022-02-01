@@ -36,13 +36,13 @@ export class FullActionDescriptor {
     this.owner = actionProperties.owner || 'AWS';
     this.provider = actionProperties.provider;
     this.version = actionProperties.version || '1';
-    this.runOrder = actionProperties.runOrder === undefined ? 1 : actionProperties.runOrder;
+    this.runOrder = actionProperties.runOrder ?? 1;
     this.artifactBounds = actionProperties.artifactBounds;
     this.namespace = actionProperties.variablesNamespace;
     this.inputs = deduplicateArtifacts(actionProperties.inputs);
     this.outputs = deduplicateArtifacts(actionProperties.outputs);
     this.region = props.actionRegion || actionProperties.region;
-    this.role = actionProperties.role !== undefined ? actionProperties.role : props.actionRole;
+    this.role = actionProperties.role ?? props.actionRole;
 
     this.configuration = props.actionConfig.configuration;
   }

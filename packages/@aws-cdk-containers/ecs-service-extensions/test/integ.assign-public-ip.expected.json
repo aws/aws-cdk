@@ -291,6 +291,18 @@
             ],
             "Essential": true,
             "Image": "nathanpeck/name",
+            "LogConfiguration": {
+              "LogDriver": "awslogs",
+              "Options": {
+                "awslogs-group": {
+                  "Ref": "namelogsF4B17D31"
+                },
+                "awslogs-stream-prefix": "name",
+                "awslogs-region": {
+                  "Ref": "AWS::Region"
+                }
+              }
+            },
             "Memory": 512,
             "Name": "app",
             "PortMappings": [
@@ -309,6 +321,12 @@
           }
         ],
         "Cpu": "256",
+        "ExecutionRoleArn": {
+          "Fn::GetAtt": [
+            "nametaskdefinitionExecutionRole45AC5C9A",
+            "Arn"
+          ]
+        },
         "Family": "awsecsintegnametaskdefinition0EA6A1A0",
         "Memory": "512",
         "NetworkMode": "awsvpc",
@@ -328,6 +346,71 @@
         "nameserviceTaskRecordManagerRuleRunningCD85F46F",
         "nameserviceTaskRecordManagerRuleStopped66D08B70"
       ]
+    },
+    "nametaskdefinitionExecutionRole45AC5C9A": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "ecs-tasks.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      },
+      "DependsOn": [
+        "nameserviceTaskRecordManagerCleanupE19F1043",
+        "nameserviceTaskRecordManagerRuleRunningCD85F46F",
+        "nameserviceTaskRecordManagerRuleStopped66D08B70"
+      ]
+    },
+    "nametaskdefinitionExecutionRoleDefaultPolicyF7942D20": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "namelogsF4B17D31",
+                  "Arn"
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "nametaskdefinitionExecutionRoleDefaultPolicyF7942D20",
+        "Roles": [
+          {
+            "Ref": "nametaskdefinitionExecutionRole45AC5C9A"
+          }
+        ]
+      },
+      "DependsOn": [
+        "nameserviceTaskRecordManagerCleanupE19F1043",
+        "nameserviceTaskRecordManagerRuleRunningCD85F46F",
+        "nameserviceTaskRecordManagerRuleStopped66D08B70"
+      ]
+    },
+    "namelogsF4B17D31": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "name-logs",
+        "RetentionInDays": 30
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
     "nameserviceService8015C8D6": {
       "Type": "AWS::ECS::Service",
@@ -400,7 +483,9 @@
       "Type": "AWS::SQS::Queue",
       "Properties": {
         "MessageRetentionPeriod": 1209600
-      }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
     "nameserviceTaskRecordManagerEventsQueueF805A6C1": {
       "Type": "AWS::SQS::Queue",
@@ -415,7 +500,9 @@
           "maxReceiveCount": 500
         },
         "VisibilityTimeout": 30
-      }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
     "nameserviceTaskRecordManagerEventsQueuePolicy65CC6F9E": {
       "Type": "AWS::SQS::QueuePolicy",
@@ -710,7 +797,7 @@
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "AssetParametersc02a0f4f3094701fe7fc414690fc416909b3a1f04dcba086e366807a15f2b0b4S3Bucket52DB41A7"
+            "Ref": "AssetParameters8f06a3db22794ebc7ff89b4745fd706afd46e17816fe46da72e5125cabae725dS3Bucket1E7F92B6"
           },
           "S3Key": {
             "Fn::Join": [
@@ -723,7 +810,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParametersc02a0f4f3094701fe7fc414690fc416909b3a1f04dcba086e366807a15f2b0b4S3VersionKey0F583551"
+                          "Ref": "AssetParameters8f06a3db22794ebc7ff89b4745fd706afd46e17816fe46da72e5125cabae725dS3VersionKey86FCA825"
                         }
                       ]
                     }
@@ -736,7 +823,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParametersc02a0f4f3094701fe7fc414690fc416909b3a1f04dcba086e366807a15f2b0b4S3VersionKey0F583551"
+                          "Ref": "AssetParameters8f06a3db22794ebc7ff89b4745fd706afd46e17816fe46da72e5125cabae725dS3VersionKey86FCA825"
                         }
                       ]
                     }
@@ -746,14 +833,12 @@
             ]
           }
         },
-        "Handler": "index.queue_handler",
         "Role": {
           "Fn::GetAtt": [
             "nameserviceTaskRecordManagerEventHandlerServiceRoleE66EE52A",
             "Arn"
           ]
         },
-        "Runtime": "python3.8",
         "Environment": {
           "Variables": {
             "HOSTED_ZONE_ID": {
@@ -777,7 +862,9 @@
             }
           }
         },
+        "Handler": "index.queue_handler",
         "ReservedConcurrentExecutions": 1,
+        "Runtime": "python3.8",
         "Timeout": 30
       },
       "DependsOn": [
@@ -788,14 +875,14 @@
     "nameserviceTaskRecordManagerEventHandlerSqsEventSourceawsecsintegnameserviceTaskRecordManagerEventsQueueC5EE9A869F1EB155": {
       "Type": "AWS::Lambda::EventSourceMapping",
       "Properties": {
+        "FunctionName": {
+          "Ref": "nameserviceTaskRecordManagerEventHandler4B8C6905"
+        },
         "EventSourceArn": {
           "Fn::GetAtt": [
             "nameserviceTaskRecordManagerEventsQueueF805A6C1",
             "Arn"
           ]
-        },
-        "FunctionName": {
-          "Ref": "nameserviceTaskRecordManagerEventHandler4B8C6905"
         }
       }
     },
@@ -873,7 +960,7 @@
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "AssetParametersc02a0f4f3094701fe7fc414690fc416909b3a1f04dcba086e366807a15f2b0b4S3Bucket52DB41A7"
+            "Ref": "AssetParameters8f06a3db22794ebc7ff89b4745fd706afd46e17816fe46da72e5125cabae725dS3Bucket1E7F92B6"
           },
           "S3Key": {
             "Fn::Join": [
@@ -886,7 +973,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParametersc02a0f4f3094701fe7fc414690fc416909b3a1f04dcba086e366807a15f2b0b4S3VersionKey0F583551"
+                          "Ref": "AssetParameters8f06a3db22794ebc7ff89b4745fd706afd46e17816fe46da72e5125cabae725dS3VersionKey86FCA825"
                         }
                       ]
                     }
@@ -899,7 +986,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParametersc02a0f4f3094701fe7fc414690fc416909b3a1f04dcba086e366807a15f2b0b4S3VersionKey0F583551"
+                          "Ref": "AssetParameters8f06a3db22794ebc7ff89b4745fd706afd46e17816fe46da72e5125cabae725dS3VersionKey86FCA825"
                         }
                       ]
                     }
@@ -909,13 +996,13 @@
             ]
           }
         },
-        "Handler": "index.cleanup_resource_handler",
         "Role": {
           "Fn::GetAtt": [
             "nameserviceTaskRecordManagerCleanupResourceProviderHandlerServiceRoleCCA462F0",
             "Arn"
           ]
         },
+        "Handler": "index.cleanup_resource_handler",
         "Runtime": "python3.8",
         "Timeout": 300
       },
@@ -1022,14 +1109,12 @@
             ]
           }
         },
-        "Handler": "framework.onEvent",
         "Role": {
           "Fn::GetAtt": [
             "nameserviceTaskRecordManagerCleanupResourceProviderframeworkonEventServiceRoleF0570BD0",
             "Arn"
           ]
         },
-        "Runtime": "nodejs10.x",
         "Description": "AWS CDK resource provider framework - onEvent (aws-ecs-integ/name-service/TaskRecordManager/CleanupResourceProvider)",
         "Environment": {
           "Variables": {
@@ -1041,6 +1126,8 @@
             }
           }
         },
+        "Handler": "framework.onEvent",
+        "Runtime": "nodejs12.x",
         "Timeout": 900
       },
       "DependsOn": [
@@ -1107,56 +1194,36 @@
           ]
         },
         "Create": {
-          "service": "SQS",
-          "action": "sendMessage",
-          "parameters": {
-            "QueueUrl": {
-              "Ref": "nameserviceTaskRecordManagerEventsQueueF805A6C1"
-            },
-            "DelaySeconds": 10,
-            "MessageBody": "{ \"prime\": true }",
-            "MessageAttributes": {
-              "HostedZoneId": {
-                "DataType": "String",
-                "StringValue": {
-                  "Ref": "zoneEB40FF1E"
-                }
+          "Fn::Join": [
+            "",
+            [
+              "{\"service\":\"SQS\",\"action\":\"sendMessage\",\"parameters\":{\"QueueUrl\":\"",
+              {
+                "Ref": "nameserviceTaskRecordManagerEventsQueueF805A6C1"
               },
-              "RecordName": {
-                "DataType": "String",
-                "StringValue": "test-record"
-              }
-            }
-          },
-          "physicalResourceId": {
-            "responsePath": "MessageId"
-          }
+              "\",\"DelaySeconds\":10,\"MessageBody\":\"{ \\\"prime\\\": true }\",\"MessageAttributes\":{\"HostedZoneId\":{\"DataType\":\"String\",\"StringValue\":\"",
+              {
+                "Ref": "zoneEB40FF1E"
+              },
+              "\"},\"RecordName\":{\"DataType\":\"String\",\"StringValue\":\"test-record\"}}},\"physicalResourceId\":{\"responsePath\":\"MessageId\"}}"
+            ]
+          ]
         },
         "Update": {
-          "service": "SQS",
-          "action": "sendMessage",
-          "parameters": {
-            "QueueUrl": {
-              "Ref": "nameserviceTaskRecordManagerEventsQueueF805A6C1"
-            },
-            "DelaySeconds": 10,
-            "MessageBody": "{ \"prime\": true }",
-            "MessageAttributes": {
-              "HostedZoneId": {
-                "DataType": "String",
-                "StringValue": {
-                  "Ref": "zoneEB40FF1E"
-                }
+          "Fn::Join": [
+            "",
+            [
+              "{\"service\":\"SQS\",\"action\":\"sendMessage\",\"parameters\":{\"QueueUrl\":\"",
+              {
+                "Ref": "nameserviceTaskRecordManagerEventsQueueF805A6C1"
               },
-              "RecordName": {
-                "DataType": "String",
-                "StringValue": "test-record"
-              }
-            }
-          },
-          "physicalResourceId": {
-            "responsePath": "MessageId"
-          }
+              "\",\"DelaySeconds\":10,\"MessageBody\":\"{ \\\"prime\\\": true }\",\"MessageAttributes\":{\"HostedZoneId\":{\"DataType\":\"String\",\"StringValue\":\"",
+              {
+                "Ref": "zoneEB40FF1E"
+              },
+              "\"},\"RecordName\":{\"DataType\":\"String\",\"StringValue\":\"test-record\"}}},\"physicalResourceId\":{\"responsePath\":\"MessageId\"}}"
+            ]
+          ]
         },
         "InstallLatestAwsSdk": true
       },
@@ -1206,7 +1273,7 @@
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "AssetParametersb64b129569a5ac7a9abf88a18ac0b504d1fb1208872460476ed3fd435830eb94S3Bucket38F1BB8E"
+            "Ref": "AssetParameters3744fa896361f81b76b1efde632ac07b1920ce09a4ca1ff15ab486f262a19b87S3Bucket36F31A16"
           },
           "S3Key": {
             "Fn::Join": [
@@ -1219,7 +1286,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParametersb64b129569a5ac7a9abf88a18ac0b504d1fb1208872460476ed3fd435830eb94S3VersionKeyCCDC67C0"
+                          "Ref": "AssetParameters3744fa896361f81b76b1efde632ac07b1920ce09a4ca1ff15ab486f262a19b87S3VersionKeyF80D542B"
                         }
                       ]
                     }
@@ -1232,7 +1299,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParametersb64b129569a5ac7a9abf88a18ac0b504d1fb1208872460476ed3fd435830eb94S3VersionKeyCCDC67C0"
+                          "Ref": "AssetParameters3744fa896361f81b76b1efde632ac07b1920ce09a4ca1ff15ab486f262a19b87S3VersionKeyF80D542B"
                         }
                       ]
                     }
@@ -1242,13 +1309,13 @@
             ]
           }
         },
-        "Handler": "index.handler",
         "Role": {
           "Fn::GetAtt": [
             "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2",
             "Arn"
           ]
         },
+        "Handler": "index.handler",
         "Runtime": "nodejs12.x",
         "Timeout": 120
       },
@@ -1258,17 +1325,17 @@
     }
   },
   "Parameters": {
-    "AssetParametersc02a0f4f3094701fe7fc414690fc416909b3a1f04dcba086e366807a15f2b0b4S3Bucket52DB41A7": {
+    "AssetParameters8f06a3db22794ebc7ff89b4745fd706afd46e17816fe46da72e5125cabae725dS3Bucket1E7F92B6": {
       "Type": "String",
-      "Description": "S3 bucket for asset \"c02a0f4f3094701fe7fc414690fc416909b3a1f04dcba086e366807a15f2b0b4\""
+      "Description": "S3 bucket for asset \"8f06a3db22794ebc7ff89b4745fd706afd46e17816fe46da72e5125cabae725d\""
     },
-    "AssetParametersc02a0f4f3094701fe7fc414690fc416909b3a1f04dcba086e366807a15f2b0b4S3VersionKey0F583551": {
+    "AssetParameters8f06a3db22794ebc7ff89b4745fd706afd46e17816fe46da72e5125cabae725dS3VersionKey86FCA825": {
       "Type": "String",
-      "Description": "S3 key for asset version \"c02a0f4f3094701fe7fc414690fc416909b3a1f04dcba086e366807a15f2b0b4\""
+      "Description": "S3 key for asset version \"8f06a3db22794ebc7ff89b4745fd706afd46e17816fe46da72e5125cabae725d\""
     },
-    "AssetParametersc02a0f4f3094701fe7fc414690fc416909b3a1f04dcba086e366807a15f2b0b4ArtifactHash85B8E84D": {
+    "AssetParameters8f06a3db22794ebc7ff89b4745fd706afd46e17816fe46da72e5125cabae725dArtifactHash0F81F2AB": {
       "Type": "String",
-      "Description": "Artifact hash for asset \"c02a0f4f3094701fe7fc414690fc416909b3a1f04dcba086e366807a15f2b0b4\""
+      "Description": "Artifact hash for asset \"8f06a3db22794ebc7ff89b4745fd706afd46e17816fe46da72e5125cabae725d\""
     },
     "AssetParametersdaeb79e3cee39c9b902dc0d5c780223e227ed573ea60976252947adab5fb2be1S3BucketDC4B98B1": {
       "Type": "String",
@@ -1282,17 +1349,17 @@
       "Type": "String",
       "Description": "Artifact hash for asset \"daeb79e3cee39c9b902dc0d5c780223e227ed573ea60976252947adab5fb2be1\""
     },
-    "AssetParametersb64b129569a5ac7a9abf88a18ac0b504d1fb1208872460476ed3fd435830eb94S3Bucket38F1BB8E": {
+    "AssetParameters3744fa896361f81b76b1efde632ac07b1920ce09a4ca1ff15ab486f262a19b87S3Bucket36F31A16": {
       "Type": "String",
-      "Description": "S3 bucket for asset \"b64b129569a5ac7a9abf88a18ac0b504d1fb1208872460476ed3fd435830eb94\""
+      "Description": "S3 bucket for asset \"3744fa896361f81b76b1efde632ac07b1920ce09a4ca1ff15ab486f262a19b87\""
     },
-    "AssetParametersb64b129569a5ac7a9abf88a18ac0b504d1fb1208872460476ed3fd435830eb94S3VersionKeyCCDC67C0": {
+    "AssetParameters3744fa896361f81b76b1efde632ac07b1920ce09a4ca1ff15ab486f262a19b87S3VersionKeyF80D542B": {
       "Type": "String",
-      "Description": "S3 key for asset version \"b64b129569a5ac7a9abf88a18ac0b504d1fb1208872460476ed3fd435830eb94\""
+      "Description": "S3 key for asset version \"3744fa896361f81b76b1efde632ac07b1920ce09a4ca1ff15ab486f262a19b87\""
     },
-    "AssetParametersb64b129569a5ac7a9abf88a18ac0b504d1fb1208872460476ed3fd435830eb94ArtifactHash782948FC": {
+    "AssetParameters3744fa896361f81b76b1efde632ac07b1920ce09a4ca1ff15ab486f262a19b87ArtifactHash40DDF5EE": {
       "Type": "String",
-      "Description": "Artifact hash for asset \"b64b129569a5ac7a9abf88a18ac0b504d1fb1208872460476ed3fd435830eb94\""
+      "Description": "Artifact hash for asset \"3744fa896361f81b76b1efde632ac07b1920ce09a4ca1ff15ab486f262a19b87\""
     }
   },
   "Outputs": {

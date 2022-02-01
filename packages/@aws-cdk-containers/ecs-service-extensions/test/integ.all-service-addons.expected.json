@@ -102,14 +102,14 @@
     "productionenvironmentvpcPublicSubnet1NATGateway6075E4CA": {
       "Type": "AWS::EC2::NatGateway",
       "Properties": {
+        "SubnetId": {
+          "Ref": "productionenvironmentvpcPublicSubnet1Subnet8D92C089"
+        },
         "AllocationId": {
           "Fn::GetAtt": [
             "productionenvironmentvpcPublicSubnet1EIP54BA88DB",
             "AllocationId"
           ]
-        },
-        "SubnetId": {
-          "Ref": "productionenvironmentvpcPublicSubnet1Subnet8D92C089"
         },
         "Tags": [
           {
@@ -199,14 +199,14 @@
     "productionenvironmentvpcPublicSubnet2NATGatewayE1850FCC": {
       "Type": "AWS::EC2::NatGateway",
       "Properties": {
+        "SubnetId": {
+          "Ref": "productionenvironmentvpcPublicSubnet2Subnet298E6C31"
+        },
         "AllocationId": {
           "Fn::GetAtt": [
             "productionenvironmentvpcPublicSubnet2EIP14CA46AA",
             "AllocationId"
           ]
-        },
-        "SubnetId": {
-          "Ref": "productionenvironmentvpcPublicSubnet2Subnet298E6C31"
         },
         "Tags": [
           {
@@ -296,14 +296,14 @@
     "productionenvironmentvpcPublicSubnet3NATGateway94604057": {
       "Type": "AWS::EC2::NatGateway",
       "Properties": {
+        "SubnetId": {
+          "Ref": "productionenvironmentvpcPublicSubnet3SubnetC7B5665D"
+        },
         "AllocationId": {
           "Fn::GetAtt": [
             "productionenvironmentvpcPublicSubnet3EIP53405AED",
             "AllocationId"
           ]
-        },
-        "SubnetId": {
-          "Ref": "productionenvironmentvpcPublicSubnet3SubnetC7B5665D"
         },
         "Tags": [
           {
@@ -949,7 +949,11 @@
                 "Fn::Join": [
                   "",
                   [
-                    "arn:aws:ecr:",
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":ecr:",
                     {
                       "Ref": "AWS::Region"
                     },
@@ -1349,7 +1353,6 @@
             "MeshName"
           ]
         },
-        "RouteName": "name-route",
         "Spec": {
           "HttpRoute": {
             "Action": {
@@ -1375,7 +1378,8 @@
             "namevirtualrouterC00E1ACE",
             "VirtualRouterName"
           ]
-        }
+        },
+        "RouteName": "name-route"
       }
     },
     "namevirtualservice3DDDDF1E": {
@@ -1818,7 +1822,11 @@
                 "Fn::Join": [
                   "",
                   [
-                    "arn:aws:ecr:",
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":ecr:",
                     {
                       "Ref": "AWS::Region"
                     },
@@ -2218,7 +2226,6 @@
             "MeshName"
           ]
         },
-        "RouteName": "greeting-route",
         "Spec": {
           "HttpRoute": {
             "Action": {
@@ -2244,7 +2251,8 @@
             "greetingvirtualrouter0F898D1A",
             "VirtualRouterName"
           ]
-        }
+        },
+        "RouteName": "greeting-route"
       }
     },
     "greetingvirtualservice60AD3AD9": {
@@ -2383,6 +2391,10 @@
           {
             "Key": "deregistration_delay.timeout_seconds",
             "Value": "10"
+          },
+          {
+            "Key": "stickiness.enabled",
+            "Value": "false"
           }
         ],
         "TargetType": "ip",
@@ -2806,7 +2818,11 @@
                 "Fn::Join": [
                   "",
                   [
-                    "arn:aws:ecr:",
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":ecr:",
                     {
                       "Ref": "AWS::Region"
                     },
@@ -3169,22 +3185,12 @@
           "Backends": [
             {
               "VirtualService": {
-                "VirtualServiceName": {
-                  "Fn::GetAtt": [
-                    "namevirtualservice3DDDDF1E",
-                    "VirtualServiceName"
-                  ]
-                }
+                "VirtualServiceName": "name.production"
               }
             },
             {
               "VirtualService": {
-                "VirtualServiceName": {
-                  "Fn::GetAtt": [
-                    "greetingvirtualservice60AD3AD9",
-                    "VirtualServiceName"
-                  ]
-                }
+                "VirtualServiceName": "greeting.production"
               }
             }
           ],
@@ -3242,7 +3248,6 @@
             "MeshName"
           ]
         },
-        "RouteName": "greeter-route",
         "Spec": {
           "HttpRoute": {
             "Action": {
@@ -3268,7 +3273,8 @@
             "greetervirtualrouter193840BB",
             "VirtualRouterName"
           ]
-        }
+        },
+        "RouteName": "greeter-route"
       }
     },
     "greetervirtualservice6559950C": {
@@ -3316,6 +3322,12 @@
       "ca-central-1": {
         "ecrRepo": "840364872350"
       },
+      "cn-north-1": {
+        "ecrRepo": "919366029133"
+      },
+      "cn-northwest-1": {
+        "ecrRepo": "919830735681"
+      },
       "eu-central-1": {
         "ecrRepo": "840364872350"
       },
@@ -3354,6 +3366,9 @@
       },
       "ap-east-1": {
         "ecrRepo": "856666278305"
+      },
+      "af-south-1": {
+        "ecrRepo": "924023996002"
       }
     },
     "greetingenvoyimageaccountmapping": {
@@ -3375,6 +3390,12 @@
       "ca-central-1": {
         "ecrRepo": "840364872350"
       },
+      "cn-north-1": {
+        "ecrRepo": "919366029133"
+      },
+      "cn-northwest-1": {
+        "ecrRepo": "919830735681"
+      },
       "eu-central-1": {
         "ecrRepo": "840364872350"
       },
@@ -3413,6 +3434,9 @@
       },
       "ap-east-1": {
         "ecrRepo": "856666278305"
+      },
+      "af-south-1": {
+        "ecrRepo": "924023996002"
       }
     },
     "greeterenvoyimageaccountmapping": {
@@ -3434,6 +3458,12 @@
       "ca-central-1": {
         "ecrRepo": "840364872350"
       },
+      "cn-north-1": {
+        "ecrRepo": "919366029133"
+      },
+      "cn-northwest-1": {
+        "ecrRepo": "919830735681"
+      },
       "eu-central-1": {
         "ecrRepo": "840364872350"
       },
@@ -3472,6 +3502,9 @@
       },
       "ap-east-1": {
         "ecrRepo": "856666278305"
+      },
+      "af-south-1": {
+        "ecrRepo": "924023996002"
       }
     }
   },

@@ -137,6 +137,16 @@ export interface HealthCheck {
   readonly unhealthyThresholdCount?: number;
 
   /**
+   * GRPC code to use when checking for a successful response from a target.
+   *
+   * You can specify values between 0 and 99. You can specify multiple values
+   * (for example, "0,1") or a range of values (for example, "0-5").
+   *
+   * @default - 12
+   */
+  readonly healthyGrpcCodes?: string;
+
+  /**
    * HTTP code to use when checking for a successful response from a target.
    *
    * For Application Load Balancers, you can specify values between 200 and
@@ -176,7 +186,7 @@ export abstract class TargetGroupBase extends CoreConstruct implements ITargetGr
    * This identifier is emitted as a dimensions of the metrics of this target
    * group.
    *
-   * @example app/my-load-balancer/123456789
+   * Example value: `app/my-load-balancer/123456789`
    */
   public abstract readonly firstLoadBalancerFullName: string;
 
@@ -246,20 +256,21 @@ export abstract class TargetGroupBase extends CoreConstruct implements ITargetGr
       vpcId: cdk.Lazy.string({ produce: () => this.vpc && this.targetType !== TargetType.LAMBDA ? this.vpc.vpcId : undefined }),
 
       // HEALTH CHECK
-      healthCheckEnabled: cdk.Lazy.any({ produce: () => this.healthCheck && this.healthCheck.enabled }),
+      healthCheckEnabled: cdk.Lazy.any({ produce: () => this.healthCheck?.enabled }),
       healthCheckIntervalSeconds: cdk.Lazy.number({
-        produce: () => this.healthCheck && this.healthCheck.interval && this.healthCheck.interval.toSeconds(),
+        produce: () => this.healthCheck?.interval?.toSeconds(),
       }),
-      healthCheckPath: cdk.Lazy.string({ produce: () => this.healthCheck && this.healthCheck.path }),
-      healthCheckPort: cdk.Lazy.string({ produce: () => this.healthCheck && this.healthCheck.port }),
-      healthCheckProtocol: cdk.Lazy.string({ produce: () => this.healthCheck && this.healthCheck.protocol }),
+      healthCheckPath: cdk.Lazy.string({ produce: () => this.healthCheck?.path }),
+      healthCheckPort: cdk.Lazy.string({ produce: () => this.healthCheck?.port }),
+      healthCheckProtocol: cdk.Lazy.string({ produce: () => this.healthCheck?.protocol }),
       healthCheckTimeoutSeconds: cdk.Lazy.number({
-        produce: () => this.healthCheck && this.healthCheck.timeout && this.healthCheck.timeout.toSeconds(),
+        produce: () => this.healthCheck?.timeout?.toSeconds(),
       }),
-      healthyThresholdCount: cdk.Lazy.number({ produce: () => this.healthCheck && this.healthCheck.healthyThresholdCount }),
-      unhealthyThresholdCount: cdk.Lazy.number({ produce: () => this.healthCheck && this.healthCheck.unhealthyThresholdCount }),
+      healthyThresholdCount: cdk.Lazy.number({ produce: () => this.healthCheck?.healthyThresholdCount }),
+      unhealthyThresholdCount: cdk.Lazy.number({ produce: () => this.healthCheck?.unhealthyThresholdCount }),
       matcher: cdk.Lazy.any({
-        produce: () => this.healthCheck && this.healthCheck.healthyHttpCodes !== undefined ? {
+        produce: () => this.healthCheck?.healthyHttpCodes !== undefined || this.healthCheck?.healthyGrpcCodes !== undefined ? {
+          grpcCode: this.healthCheck.healthyGrpcCodes,
           httpCode: this.healthCheck.healthyHttpCodes,
         } : undefined,
       }),
@@ -365,6 +376,11 @@ export interface TargetGroupImportProps extends TargetGroupAttributes {
  * A target group
  */
 export interface ITargetGroup extends cdk.IConstruct {
+  /**
+   * The name of the target group
+   */
+  readonly targetGroupName: string;
+
   /**
    * ARN of the target group
    */

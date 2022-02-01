@@ -4,12 +4,84 @@ import { IEventSourceDlq } from './dlq';
 import { IFunction } from './function-base';
 import { CfnEventSourceMapping } from './lambda.generated';
 
+/**
+ * The type of authentication protocol or the VPC components for your event source's SourceAccessConfiguration
+ * @see https://docs.aws.amazon.com/lambda/latest/dg/API_SourceAccessConfiguration.html#SSS-Type-SourceAccessConfiguration-Type
+ */
+export class SourceAccessConfigurationType {
+
+  /**
+   * (MQ) The Secrets Manager secret that stores your broker credentials.
+   */
+  public static readonly BASIC_AUTH = new SourceAccessConfigurationType('BASIC_AUTH');
+
+  /**
+   * The subnets associated with your VPC. Lambda connects to these subnets to fetch data from your Self-Managed Apache Kafka cluster.
+   */
+  public static readonly VPC_SUBNET = new SourceAccessConfigurationType('VPC_SUBNET');
+
+  /**
+   * The VPC security group used to manage access to your Self-Managed Apache Kafka brokers.
+   */
+  public static readonly VPC_SECURITY_GROUP = new SourceAccessConfigurationType('VPC_SECURITY_GROUP');
+
+  /**
+   * The Secrets Manager ARN of your secret key used for SASL SCRAM-256 authentication of your Self-Managed Apache Kafka brokers.
+   */
+  public static readonly SASL_SCRAM_256_AUTH = new SourceAccessConfigurationType('SASL_SCRAM_256_AUTH');
+
+  /**
+   * The Secrets Manager ARN of your secret key used for SASL SCRAM-512 authentication of your Self-Managed Apache Kafka brokers.
+   */
+  public static readonly SASL_SCRAM_512_AUTH = new SourceAccessConfigurationType('SASL_SCRAM_512_AUTH');
+
+  /**
+   * The Secrets Manager ARN of your secret key containing the certificate chain (X.509 PEM), private key (PKCS#8 PEM),
+   * and private key password (optional) used for mutual TLS authentication of your MSK/Apache Kafka brokers.
+   */
+  public static readonly CLIENT_CERTIFICATE_TLS_AUTH = new SourceAccessConfigurationType('CLIENT_CERTIFICATE_TLS_AUTH');
+
+  /** A custom source access configuration property */
+  public static of(name: string): SourceAccessConfigurationType {
+    return new SourceAccessConfigurationType(name);
+  }
+
+  /**
+   * The key to use in `SourceAccessConfigurationProperty.Type` property in CloudFormation
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lambda-eventsourcemapping-sourceaccessconfiguration.html#cfn-lambda-eventsourcemapping-sourceaccessconfiguration-type
+   */
+  public readonly type: string;
+
+  private constructor(type: string) {
+    this.type = type;
+  }
+}
+
+/**
+ * Specific settings like the authentication protocol or the VPC components to secure access to your event source.
+ */
+export interface SourceAccessConfiguration {
+  /**
+   * The type of authentication protocol or the VPC components for your event source. For example: "SASL_SCRAM_512_AUTH".
+   */
+  readonly type: SourceAccessConfigurationType,
+  /**
+   * The value for your chosen configuration in type.
+   * For example: "URI": "arn:aws:secretsmanager:us-east-1:01234567890:secret:MyBrokerSecretName".
+   * The exact string depends on the type.
+   * @see SourceAccessConfigurationType
+   */
+  readonly uri: string
+}
+
 export interface EventSourceMappingOptions {
   /**
    * The Amazon Resource Name (ARN) of the event source. Any record added to
    * this stream can invoke the Lambda function.
+   *
+   * @default - not set if using a self managed Kafka cluster, throws an error otherwise
    */
-  readonly eventSourceArn: string;
+  readonly eventSourceArn?: string;
 
   /**
    * The largest number of records that AWS Lambda will retrieve from your event
@@ -53,6 +125,15 @@ export interface EventSourceMappingOptions {
    * @default - Required for Amazon Kinesis, Amazon DynamoDB, and Amazon MSK Streams sources.
    */
   readonly startingPosition?: StartingPosition;
+
+  /**
+   * Allow functions to return partially successful responses for a batch of records.
+   *
+   * @see https://docs.aws.amazon.com/lambda/latest/dg/with-ddb.html#services-ddb-batchfailurereporting
+   *
+   * @default false
+   */
+  readonly reportBatchItemFailures?: boolean;
 
   /**
    * The maximum amount of time to gather records before invoking the function.
@@ -101,6 +182,34 @@ export interface EventSourceMappingOptions {
    * @default - no topic
    */
   readonly kafkaTopic?: string;
+
+  /**
+   * The size of the tumbling windows to group records sent to DynamoDB or Kinesis
+   *
+   * @see https://docs.aws.amazon.com/lambda/latest/dg/with-ddb.html#services-ddb-windows
+   *
+   * Valid Range: 0 - 15 minutes
+   *
+   * @default - None
+   */
+  readonly tumblingWindow?: cdk.Duration;
+
+  /**
+   * A list of host and port pairs that are the addresses of the Kafka brokers in a self managed "bootstrap" Kafka cluster
+   * that a Kafka client connects to initially to bootstrap itself.
+   * They are in the format `abc.example.com:9096`.
+   *
+   * @default - none
+   */
+  readonly kafkaBootstrapServers?: string[]
+
+  /**
+   * Specific settings like the authentication protocol or the VPC components to secure access to your event source.
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lambda-eventsourcemapping-sourceaccessconfiguration.html
+   *
+   * @default - none
+   */
+  readonly sourceAccessConfigurations?: SourceAccessConfiguration[]
 }
 
 /**
@@ -154,6 +263,18 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
   constructor(scope: Construct, id: string, props: EventSourceMappingProps) {
     super(scope, id);
 
+    if (props.eventSourceArn == undefined && props.kafkaBootstrapServers == undefined) {
+      throw new Error('Either eventSourceArn or kafkaBootstrapServers must be set');
+    }
+
+    if (props.eventSourceArn !== undefined && props.kafkaBootstrapServers !== undefined) {
+      throw new Error('eventSourceArn and kafkaBootstrapServers are mutually exclusive');
+    }
+
+    if (props.kafkaBootstrapServers && (props.kafkaBootstrapServers?.length < 1)) {
+      throw new Error('kafkaBootStrapServers must not be empty if set');
+    }
+
     if (props.maxBatchingWindow && props.maxBatchingWindow.toSeconds() > 300) {
       throw new Error(`maxBatchingWindow cannot be over 300 seconds, got ${props.maxBatchingWindow.toSeconds()}`);
     }
@@ -174,6 +295,10 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
       }
     });
 
+    if (props.tumblingWindow && !cdk.Token.isUnresolved(props.tumblingWindow) && props.tumblingWindow.toSeconds() > 900) {
+      throw new Error(`tumblingWindow cannot be over 900 seconds, got ${props.tumblingWindow.toSeconds()}`);
+    }
+
 
     let destinationConfig;
 
@@ -181,6 +306,11 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
       destinationConfig = {
         onFailure: props.onFailure.bind(this, props.target),
       };
+    }
+
+    let selfManagedEventSource;
+    if (props.kafkaBootstrapServers) {
+      selfManagedEventSource = { endpoints: { kafkaBootstrapServers: props.kafkaBootstrapServers } };
     }
 
     const cfnEventSourceMapping = new CfnEventSourceMapping(this, 'Resource', {
@@ -191,11 +321,15 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
       eventSourceArn: props.eventSourceArn,
       functionName: props.target.functionName,
       startingPosition: props.startingPosition,
+      functionResponseTypes: props.reportBatchItemFailures ? ['ReportBatchItemFailures'] : undefined,
       maximumBatchingWindowInSeconds: props.maxBatchingWindow?.toSeconds(),
       maximumRecordAgeInSeconds: props.maxRecordAge?.toSeconds(),
       maximumRetryAttempts: props.retryAttempts,
       parallelizationFactor: props.parallelizationFactor,
       topics: props.kafkaTopic !== undefined ? [props.kafkaTopic] : undefined,
+      tumblingWindowInSeconds: props.tumblingWindow?.toSeconds(),
+      sourceAccessConfigurations: props.sourceAccessConfigurations?.map((o) => {return { type: o.type.type, uri: o.uri };}),
+      selfManagedEventSource,
     });
     this.eventSourceMappingId = cfnEventSourceMapping.ref;
   }

@@ -42,7 +42,9 @@
                 "kinesis:GetRecords",
                 "kinesis:GetShardIterator",
                 "kinesis:ListShards",
-                "kinesis:SubscribeToShard"
+                "kinesis:SubscribeToShard",
+                "kinesis:DescribeStream",
+                "kinesis:ListStreams"
               ],
               "Effect": "Allow",
               "Resource": {
@@ -79,13 +81,13 @@
         "Code": {
           "ZipFile": "exports.handler = async function handler(event) {\n    console.log('event:', JSON.stringify(event, undefined, 2));\n    return { event };\n}"
         },
-        "Handler": "index.handler",
         "Role": {
           "Fn::GetAtt": [
             "FServiceRole3AC82EE1",
             "Arn"
           ]
         },
+        "Handler": "index.handler",
         "Runtime": "nodejs10.x"
       },
       "DependsOn": [
@@ -96,16 +98,17 @@
     "FKinesisEventSourcelambdaeventsourcekinesisQ645CE7DB2D6BCCF5": {
       "Type": "AWS::Lambda::EventSourceMapping",
       "Properties": {
+        "FunctionName": {
+          "Ref": "FC4345940"
+        },
+        "BatchSize": 100,
         "EventSourceArn": {
           "Fn::GetAtt": [
             "Q63C6E3AB",
             "Arn"
           ]
         },
-        "FunctionName": {
-          "Ref": "FC4345940"
-        },
-        "BatchSize": 100,
+        "TumblingWindowInSeconds": 60,
         "StartingPosition": "TRIM_HORIZON"
       }
     },
@@ -113,6 +116,9 @@
       "Type": "AWS::Kinesis::Stream",
       "Properties": {
         "ShardCount": 1,
+        "StreamModeDetails": {
+          "StreamMode": "PROVISIONED"
+        },
         "RetentionPeriodHours": 24,
         "StreamEncryption": {
           "Fn::If": [

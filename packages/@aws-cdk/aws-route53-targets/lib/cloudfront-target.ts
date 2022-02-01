@@ -40,10 +40,10 @@ export class CloudFrontTarget implements route53.IAliasRecordTarget {
   constructor(private readonly distribution: cloudfront.IDistribution) {
   }
 
-  public bind(_record: route53.IRecordSet): route53.AliasRecordTargetConfig {
+  public bind(_record: route53.IRecordSet, _zone?: route53.IHostedZone): route53.AliasRecordTargetConfig {
     return {
       hostedZoneId: CloudFrontTarget.getHostedZoneId(this.distribution),
-      dnsName: this.distribution.domainName,
+      dnsName: this.distribution.distributionDomainName,
     };
   }
 }

@@ -186,7 +186,6 @@ interface DirectiveOptions {
  *
  * i.e. @aws_iam or @aws_subscribe
  *
- * @experimental
  */
 export class Directive {
   /**

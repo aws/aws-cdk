@@ -1,6 +1,10 @@
-import '@aws-cdk/assert/jest';
-import { Construct, Stack } from '@aws-cdk/core';
+import { Template } from '@aws-cdk/assertions';
+import { Stack } from '@aws-cdk/core';
 import * as iam from '../lib';
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
 
 /* eslint-disable quote-props */
 
@@ -29,7 +33,7 @@ describe('ImmutableRole', () => {
 
     immutableRole.attachInlinePolicy(policy);
 
-    expect(stack).toHaveResource('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       'PolicyDocument': {
         'Statement': [
           {
@@ -54,7 +58,7 @@ describe('ImmutableRole', () => {
 
     immutableRole.addManagedPolicy({ managedPolicyArn: 'Arn2' });
 
-    expect(stack).toHaveResourceLike('AWS::IAM::Role', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
       'ManagedPolicyArns': [
         'Arn1',
       ],
@@ -72,7 +76,7 @@ describe('ImmutableRole', () => {
       actions: ['s3:*'],
     }));
 
-    expect(stack).toHaveResource('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       'PolicyDocument': {
         'Version': '2012-10-17',
         'Statement': [
@@ -94,7 +98,7 @@ describe('ImmutableRole', () => {
       resourceArns: ['*'],
     });
 
-    expect(stack).not.toHaveResourceLike('AWS::IAM::Policy', {
+    expect(Template.fromStack(stack).findResources('AWS::IAM::Policy', {
       'PolicyDocument': {
         'Statement': [
           {
@@ -104,7 +108,7 @@ describe('ImmutableRole', () => {
           },
         ],
       },
-    });
+    })).toEqual({});
   });
 
   // this pattern is used here:

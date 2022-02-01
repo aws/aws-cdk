@@ -1,9 +1,13 @@
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as targets from '@aws-cdk/aws-events-targets';
 import * as s3 from '@aws-cdk/aws-s3';
-import { Construct, Names, Token } from '@aws-cdk/core';
+import { Names, Token } from '@aws-cdk/core';
 import { Action } from '../action';
 import { sourceArtifactBounds } from '../common';
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
 
 /**
  * How should the S3 Action detect changes.
@@ -68,7 +72,10 @@ export interface S3SourceActionProps extends codepipeline.CommonAwsActionProps {
   readonly trigger?: S3Trigger;
 
   /**
-   * The Amazon S3 bucket that stores the source code
+   * The Amazon S3 bucket that stores the source code.
+   *
+   * If you import an encrypted bucket in your stack, please specify
+   * the encryption key at import time by using `Bucket.fromBucketAttributes()` method.
    */
   readonly bucket: s3.IBucket;
 }
@@ -118,7 +125,7 @@ export class S3SourceAction extends Action {
     }
 
     // we need to read from the source bucket...
-    this.props.bucket.grantRead(options.role);
+    this.props.bucket.grantRead(options.role, this.props.bucketKey);
 
     // ...and write to the Pipeline bucket
     options.bucket.grantWrite(options.role);

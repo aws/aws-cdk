@@ -16,7 +16,8 @@ class TestStack extends Stack {
       removalPolicy: RemovalPolicy.DESTROY,
     });
 
-    new efs.CfnFileSystem(this, 'FileSystem');
+    const fs = new efs.CfnFileSystem(this, 'FileSystem');
+    fs.applyRemovalPolicy(RemovalPolicy.DESTROY);
 
     const vault = new backup.BackupVault(this, 'Vault', {
       removalPolicy: RemovalPolicy.DESTROY,

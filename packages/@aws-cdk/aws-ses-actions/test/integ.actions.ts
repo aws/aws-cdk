@@ -1,3 +1,4 @@
+/// !cdk-integ pragma:ignore-assets
 import * as kms from '@aws-cdk/aws-kms';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as s3 from '@aws-cdk/aws-s3';

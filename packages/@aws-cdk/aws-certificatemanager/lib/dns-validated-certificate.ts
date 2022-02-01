@@ -5,11 +5,11 @@ import * as route53 from '@aws-cdk/aws-route53';
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CertificateProps, ICertificate } from './certificate';
+import { CertificateBase } from './certificate-base';
 
 /**
  * Properties to create a DNS validated certificate managed by AWS Certificate Manager
  *
- * @experimental
  */
 export interface DnsValidatedCertificateProps extends CertificateProps {
   /**
@@ -32,7 +32,7 @@ export interface DnsValidatedCertificateProps extends CertificateProps {
    * aws-cn partition, the default endpoint is not working now, hence the right endpoint
    * need to be specified through this prop.
    *
-   * Route53 is not been offically launched in China, it is only available for AWS
+   * Route53 is not been officially launched in China, it is only available for AWS
    * internal accounts now. To make DnsValidatedCertificate work for internal accounts
    * now, a special endpoint needs to be provided.
    *
@@ -46,6 +46,18 @@ export interface DnsValidatedCertificateProps extends CertificateProps {
    * @default - A new role will be created
    */
   readonly customResourceRole?: iam.IRole;
+
+  /**
+   * When set to true, when the DnsValidatedCertificate is deleted,
+   * the associated Route53 validation records are removed.
+   *
+   * CAUTION: If multiple certificates share the same domains (and same validation records),
+   * this can cause the other certificates to fail renewal and/or not validate.
+   * Not recommended for production use.
+   *
+   * @default false
+   */
+  readonly cleanupRoute53Records?: boolean;
 }
 
 /**
@@ -53,16 +65,25 @@ export interface DnsValidatedCertificateProps extends CertificateProps {
  * validated using DNS validation against the specified Route 53 hosted zone.
  *
  * @resource AWS::CertificateManager::Certificate
- * @experimental
  */
-export class DnsValidatedCertificate extends cdk.Resource implements ICertificate {
+export class DnsValidatedCertificate extends CertificateBase implements ICertificate, cdk.ITaggable {
   public readonly certificateArn: string;
+
+  /**
+  * Resource Tags.
+  * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-certificatemanager-certificate.html#cfn-certificatemanager-certificate-tags
+  */
+
+  public readonly tags: cdk.TagManager;
+  protected readonly region?: string;
   private normalizedZoneName: string;
   private hostedZoneId: string;
   private domainName: string;
 
   constructor(scope: Construct, id: string, props: DnsValidatedCertificateProps) {
     super(scope, id);
+
+    this.region = props.region;
 
     this.domainName = props.domainName;
     this.normalizedZoneName = props.hostedZone.zoneName;
@@ -73,16 +94,17 @@ export class DnsValidatedCertificate extends cdk.Resource implements ICertificat
 
     // Remove any `/hostedzone/` prefix from the Hosted Zone ID
     this.hostedZoneId = props.hostedZone.hostedZoneId.replace(/^\/hostedzone\//, '');
+    this.tags = new cdk.TagManager(cdk.TagType.MAP, 'AWS::CertificateManager::Certificate');
 
     const requestorFunction = new lambda.Function(this, 'CertificateRequestorFunction', {
       code: lambda.Code.fromAsset(path.resolve(__dirname, '..', 'lambda-packages', 'dns_validated_certificate_handler', 'lib')),
       handler: 'index.certificateRequestHandler',
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_12_X,
       timeout: cdk.Duration.minutes(15),
       role: props.customResourceRole,
     });
     requestorFunction.addToRolePolicy(new iam.PolicyStatement({
-      actions: ['acm:RequestCertificate', 'acm:DescribeCertificate', 'acm:DeleteCertificate'],
+      actions: ['acm:RequestCertificate', 'acm:DescribeCertificate', 'acm:DeleteCertificate', 'acm:AddTagsToCertificate'],
       resources: ['*'],
     }));
     requestorFunction.addToRolePolicy(new iam.PolicyStatement({
@@ -102,6 +124,9 @@ export class DnsValidatedCertificate extends cdk.Resource implements ICertificat
         HostedZoneId: this.hostedZoneId,
         Region: props.region,
         Route53Endpoint: props.route53Endpoint,
+        // Custom resources properties are always converted to strings; might as well be explict here.
+        CleanupRecords: props.cleanupRoute53Records ? 'true' : undefined,
+        Tags: cdk.Lazy.list({ produce: () => this.tags.renderTags() }),
       },
     });
 
@@ -112,8 +137,8 @@ export class DnsValidatedCertificate extends cdk.Resource implements ICertificat
     const errors: string[] = [];
     // Ensure the zone name is a parent zone of the certificate domain name
     if (!cdk.Token.isUnresolved(this.normalizedZoneName) &&
-              this.domainName !== this.normalizedZoneName &&
-              !this.domainName.endsWith('.' + this.normalizedZoneName)) {
+      this.domainName !== this.normalizedZoneName &&
+      !this.domainName.endsWith('.' + this.normalizedZoneName)) {
       errors.push(`DNS zone ${this.normalizedZoneName} is not authoritative for certificate domain name ${this.domainName}`);
     }
     return errors;

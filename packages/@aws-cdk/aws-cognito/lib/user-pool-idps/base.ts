@@ -4,6 +4,15 @@ import { IUserPool } from '../user-pool';
  * An attribute available from a third party identity provider.
  */
 export class ProviderAttribute {
+  /** The email attribute provided by Apple */
+  public static readonly APPLE_EMAIL = new ProviderAttribute('email');
+  /** The name attribute provided by Apple */
+  public static readonly APPLE_NAME = new ProviderAttribute('name');
+  /** The first name attribute provided by Apple */
+  public static readonly APPLE_FIRST_NAME = new ProviderAttribute('firstName');
+  /** The last name attribute provided by Apple */
+  public static readonly APPLE_LAST_NAME = new ProviderAttribute('lastName');
+
   /** The user id attribute provided by Amazon */
   public static readonly AMAZON_USER_ID = new ProviderAttribute('user_id');
   /** The email attribute provided by Amazon */
@@ -38,17 +47,17 @@ export class ProviderAttribute {
   public static readonly GOOGLE_GENDER = new ProviderAttribute('gender');
   /** The birthday attribute provided by Google */
   public static readonly GOOGLE_BIRTHDAYS = new ProviderAttribute('birthdays');
-  /** The birthday attribute provided by Google */
+  /** The phone number attribute provided by Google */
   public static readonly GOOGLE_PHONE_NUMBERS = new ProviderAttribute('phoneNumbers');
   /** The email attribute provided by Google */
   public static readonly GOOGLE_EMAIL = new ProviderAttribute('email');
   /** The name attribute provided by Google */
   public static readonly GOOGLE_NAME = new ProviderAttribute('name');
-  /** The email attribute provided by Google */
+  /** The picture attribute provided by Google */
   public static readonly GOOGLE_PICTURE = new ProviderAttribute('picture');
-  /** The email attribute provided by Google */
+  /** The given name attribute provided by Google */
   public static readonly GOOGLE_GIVEN_NAME = new ProviderAttribute('given_name');
-  /** The email attribute provided by Google */
+  /** The family name attribute provided by Google */
   public static readonly GOOGLE_FAMILY_NAME = new ProviderAttribute('family_name');
 
   /**

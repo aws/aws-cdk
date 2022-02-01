@@ -88,7 +88,7 @@ export interface BasicTargetTrackingScalingPolicyProps extends BaseTargetTrackin
    *
    * Only used for predefined metric ALBRequestCountPerTarget.
    *
-   * @example app/<load-balancer-name>/<load-balancer-id>/targetgroup/<target-group-name>/<target-group-id>
+   * Example value: `app/<load-balancer-name>/<load-balancer-id>/targetgroup/<target-group-name>/<target-group-id>`
    *
    * @default - No resource label.
    */
@@ -136,6 +136,11 @@ export class TargetTrackingScalingPolicy extends CoreConstruct {
 
     super(scope, id);
 
+    // replace dummy value in DYNAMODB_WRITE_CAPACITY_UTILIZATION due to a jsii bug (https://github.com/aws/jsii/issues/2782)
+    const predefinedMetric = props.predefinedMetric === PredefinedMetric.DYNAMODB_WRITE_CAPACITY_UTILIZATION ?
+      PredefinedMetric.DYANMODB_WRITE_CAPACITY_UTILIZATION :
+      props.predefinedMetric;
+
     const resource = new CfnScalingPolicy(this, 'Resource', {
       policyName: props.policyName || cdk.Names.uniqueId(this),
       policyType: 'TargetTrackingScaling',
@@ -143,8 +148,8 @@ export class TargetTrackingScalingPolicy extends CoreConstruct {
       targetTrackingScalingPolicyConfiguration: {
         customizedMetricSpecification: renderCustomMetric(props.customMetric),
         disableScaleIn: props.disableScaleIn,
-        predefinedMetricSpecification: props.predefinedMetric !== undefined ? {
-          predefinedMetricType: props.predefinedMetric,
+        predefinedMetricSpecification: predefinedMetric !== undefined ? {
+          predefinedMetricType: predefinedMetric,
           resourceLabel: props.resourceLabel,
         } : undefined,
         scaleInCooldown: props.scaleInCooldown && props.scaleInCooldown.toSeconds(),
@@ -184,8 +189,19 @@ export enum PredefinedMetric {
    */
   DYNAMODB_READ_CAPACITY_UTILIZATION = 'DynamoDBReadCapacityUtilization',
   /**
+   * DYNAMODB_WRITE_CAPACITY_UTILIZATION
+   *
+   * Suffix `dummy` is necessary due to jsii bug (https://github.com/aws/jsii/issues/2782).
+   * Duplicate values will be dropped, so this suffix is added as a workaround.
+   * The value will be replaced when this enum is used.
+   *
+   * @see https://docs.aws.amazon.com/autoscaling/application/APIReference/API_PredefinedMetricSpecification.html
+   */
+  DYNAMODB_WRITE_CAPACITY_UTILIZATION = 'DynamoDBWriteCapacityUtilization-dummy',
+  /**
    * DYANMODB_WRITE_CAPACITY_UTILIZATION
    * @see https://docs.aws.amazon.com/autoscaling/application/APIReference/API_PredefinedMetricSpecification.html
+   * @deprecated use `PredefinedMetric.DYNAMODB_WRITE_CAPACITY_UTILIZATION`
    */
   DYANMODB_WRITE_CAPACITY_UTILIZATION = 'DynamoDBWriteCapacityUtilization',
   /**
@@ -243,4 +259,19 @@ export enum PredefinedMetric {
    * @see https://docs.aws.amazon.com/autoscaling/application/APIReference/API_PredefinedMetricSpecification.html
    */
   KAFKA_BROKER_STORAGE_UTILIZATION = 'KafkaBrokerStorageUtilization',
+  /**
+   * ELASTIC_CACHE_PRIMARY_ENGINE_CPU_UTILIZATION
+   * @see https://docs.aws.amazon.com/autoscaling/application/APIReference/API_PredefinedMetricSpecification.html
+   */
+  ELASTICACHE_PRIMARY_ENGINE_CPU_UTILIZATION = 'ElastiCachePrimaryEngineCPUUtilization',
+  /**
+   * ELASTIC_CACHE_REPLICA_ENGINE_CPU_UTILIZATION
+   * @see https://docs.aws.amazon.com/autoscaling/application/APIReference/API_PredefinedMetricSpecification.html
+   */
+  ELASTICACHE_REPLICA_ENGINE_CPU_UTILIZATION = 'ElastiCacheReplicaEngineCPUUtilization',
+  /**
+   * ELASTIC_CACHE_REPLICA_ENGINE_CPU_UTILIZATION
+   * @see https://docs.aws.amazon.com/autoscaling/application/APIReference/API_PredefinedMetricSpecification.html
+   */
+  ELASTICACHE_DATABASE_MEMORY_USAGE_COUNTED_FOR_EVICT_PERCENTAGE = 'ElastiCacheDatabaseMemoryUsageCountedForEvictPercentage',
 }

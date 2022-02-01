@@ -1,4 +1,3 @@
-import '@aws-cdk/assert/jest';
 import * as apigateway from '../lib';
 
 describe('access log', () => {

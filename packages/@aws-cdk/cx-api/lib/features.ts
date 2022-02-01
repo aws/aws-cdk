@@ -83,11 +83,111 @@ export const KMS_DEFAULT_KEY_POLICIES = '@aws-cdk/aws-kms:defaultKeyPolicies';
 /**
  * Change the old 's3:PutObject*' permission to 's3:PutObject' on Bucket,
  * as the former includes 's3:PutObjectAcl',
- * which allows changing the visibility of an object written to the Bucket.
+ * which could be used to grant read/write object access to IAM principals in other accounts.
  * Use a feature flag to make sure existing customers who might be relying
  * on the overly-broad permissions are not broken.
  */
 export const S3_GRANT_WRITE_WITHOUT_ACL = '@aws-cdk/aws-s3:grantWriteWithoutAcl';
+
+/**
+ * ApplicationLoadBalancedServiceBase, ApplicationMultipleTargetGroupServiceBase,
+ * NetworkLoadBalancedServiceBase, NetworkMultipleTargetGroupServiceBase, and
+ * QueueProcessingServiceBase currently determine a default value for the desired count of
+ * a CfnService if a desiredCount is not provided.
+ *
+ * If this flag is not set, the default behaviour for CfnService.desiredCount is to set a
+ * desiredCount of 1, if one is not provided. If true, a default will not be defined for
+ * CfnService.desiredCount and as such desiredCount will be undefined, if one is not provided.
+ *
+ * This is a feature flag as the old behavior was technically incorrect, but
+ * users may have come to depend on it.
+ */
+export const ECS_REMOVE_DEFAULT_DESIRED_COUNT = '@aws-cdk/aws-ecs-patterns:removeDefaultDesiredCount';
+
+/**
+ * ServerlessCluster.clusterIdentifier currently can has uppercase letters,
+ * and ServerlessCluster pass it through to CfnDBCluster.dbClusterIdentifier.
+ * The identifier is saved as lowercase string in AWS and is resolved as original string in CloudFormation.
+ *
+ * If this flag is not set, original value that one set to ServerlessCluster.clusterIdentifier
+ * is passed to CfnDBCluster.dbClusterIdentifier.
+ * If this flag is true, ServerlessCluster.clusterIdentifier is converted into a string containing
+ * only lowercase characters by the `toLowerCase` function and passed to CfnDBCluster.dbClusterIdentifier.
+ *
+ * This feature flag make correct the ServerlessCluster.clusterArn when
+ * clusterIdentifier contains a Upper case letters.
+ */
+export const RDS_LOWERCASE_DB_IDENTIFIER = '@aws-cdk/aws-rds:lowercaseDbIdentifier';
+
+/**
+ * The UsagePlanKey resource connects an ApiKey with a UsagePlan. API Gateway does not allow more than one UsagePlanKey
+ * for any given UsagePlan and ApiKey combination. For this reason, CloudFormation cannot replace this resource without
+ * either the UsagePlan or ApiKey changing.
+ *
+ * The feature addition to support multiple UsagePlanKey resources - 142bd0e2 - recognized this and attempted to keep
+ * existing UsagePlanKey logical ids unchanged.
+ * However, this intentionally caused the logical id of the UsagePlanKey to be sensitive to order. That is, when
+ * the 'first' UsagePlanKey resource is removed, the logical id of the 'second' assumes what was originally the 'first',
+ * which again is disallowed.
+ *
+ * In effect, there is no way to get out of this mess in a backwards compatible way, while supporting existing stacks.
+ * This flag changes the logical id layout of UsagePlanKey to not be sensitive to order.
+ */
+export const APIGATEWAY_USAGEPLANKEY_ORDERINSENSITIVE_ID = '@aws-cdk/aws-apigateway:usagePlanKeyOrderInsensitiveId';
+
+/**
+ * Enable this feature flag to have elastic file systems encrypted at rest by default.
+ *
+ * Encryption can also be configured explicitly using the `encrypted` property.
+ */
+export const EFS_DEFAULT_ENCRYPTION_AT_REST = '@aws-cdk/aws-efs:defaultEncryptionAtRest';
+
+/**
+ * Enable this feature flag to opt in to the updated logical id calculation for Lambda Version created using the
+ * `fn.currentVersion`.
+ *
+ * The previous calculation incorrectly considered properties of the `AWS::Lambda::Function` resource that did
+ * not constitute creating a new Version.
+ *
+ * See 'currentVersion' section in the aws-lambda module's README for more details.
+ */
+export const LAMBDA_RECOGNIZE_VERSION_PROPS = '@aws-cdk/aws-lambda:recognizeVersionProps';
+
+/**
+ * Enable this feature flag to have cloudfront distributions use the security policy TLSv1.2_2021 by default.
+ *
+ * The security policy can also be configured explicitly using the `minimumProtocolVersion` property.
+ */
+export const CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021 = '@aws-cdk/aws-cloudfront:defaultSecurityPolicyTLSv1.2_2021';
+
+/**
+ * What regions to include in lookup tables of environment agnostic stacks
+ *
+ * Has no effect on stacks that have a defined region, but will limit the amount
+ * of unnecessary regions included in stacks without a known region.
+ *
+ * The type of this value should be a list of strings.
+ */
+export const TARGET_PARTITIONS = '@aws-cdk/core:target-partitions';
+
+/**
+ * Enable this feature flag to configure default logging behavior for the ECS Service Extensions. This will enable the
+ * `awslogs` log driver for the application container of the service to send the container logs to CloudWatch Logs.
+ *
+ * This is a feature flag as the new behavior provides a better default experience for the users.
+ */
+export const ECS_SERVICE_EXTENSIONS_ENABLE_DEFAULT_LOG_DRIVER = '@aws-cdk-containers/ecs-service-extensions:enableDefaultLogDriver';
+
+/**
+ * Enable this feature flag to have Launch Templates generated by the `InstanceRequireImdsv2Aspect` use unique names.
+ *
+ * Previously, the generated Launch Template names were only unique within a stack because they were based only on the
+ * `Instance` construct ID. If another stack that has an `Instance` with the same construct ID is deployed in the same
+ * account and region, the deployments would always fail as the generated Launch Template names were the same.
+ *
+ * The new implementation addresses this issue by generating the Launch Template name with the `Names.uniqueId` method.
+ */
+export const EC2_UNIQUE_IMDSV2_LAUNCH_TEMPLATE_NAME = '@aws-cdk/aws-ec2:uniqueImdsv2TemplateName';
 
 /**
  * This map includes context keys and values for feature flags that enable
@@ -102,24 +202,47 @@ export const S3_GRANT_WRITE_WITHOUT_ACL = '@aws-cdk/aws-s3:grantWriteWithoutAcl'
  *
  * Tests must cover the default (disabled) case and the future (enabled) case.
  */
-export const FUTURE_FLAGS = {
-  [ENABLE_STACK_NAME_DUPLICATES_CONTEXT]: 'true',
-  [ENABLE_DIFF_NO_FAIL_CONTEXT]: 'true',
-  [STACK_RELATIVE_EXPORTS_CONTEXT]: 'true',
+export const FUTURE_FLAGS: { [key: string]: boolean } = {
+  [APIGATEWAY_USAGEPLANKEY_ORDERINSENSITIVE_ID]: true,
+  [ENABLE_STACK_NAME_DUPLICATES_CONTEXT]: true,
+  [ENABLE_DIFF_NO_FAIL_CONTEXT]: true,
+  [STACK_RELATIVE_EXPORTS_CONTEXT]: true,
   [DOCKER_IGNORE_SUPPORT]: true,
   [SECRETS_MANAGER_PARSE_OWNED_SECRET_NAME]: true,
   [KMS_DEFAULT_KEY_POLICIES]: true,
   [S3_GRANT_WRITE_WITHOUT_ACL]: true,
+  [ECS_REMOVE_DEFAULT_DESIRED_COUNT]: true,
+  [RDS_LOWERCASE_DB_IDENTIFIER]: true,
+  [EFS_DEFAULT_ENCRYPTION_AT_REST]: true,
+  [LAMBDA_RECOGNIZE_VERSION_PROPS]: true,
+  [CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021]: true,
+  [ECS_SERVICE_EXTENSIONS_ENABLE_DEFAULT_LOG_DRIVER]: true,
+  [EC2_UNIQUE_IMDSV2_LAUNCH_TEMPLATE_NAME]: true,
 
   // We will advertise this flag when the feature is complete
   // [NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: 'true',
 };
 
 /**
+ * Values that will be set by default in a new project, which are not necessarily booleans (and don't expire)
+ */
+export const NEW_PROJECT_DEFAULT_CONTEXT: { [key: string]: any} = {
+  [TARGET_PARTITIONS]: ['aws', 'aws-cn'],
+};
+
+/**
+ * The list of future flags that are now expired. This is going to be used to identify
+ * and block usages of old feature flags in the new major version of CDK.
+ */
+export const FUTURE_FLAGS_EXPIRED: string[] = [
+];
+
+/**
  * The set of defaults that should be applied if the feature flag is not
  * explicitly configured.
  */
 const FUTURE_FLAGS_DEFAULTS: { [key: string]: boolean } = {
+  [APIGATEWAY_USAGEPLANKEY_ORDERINSENSITIVE_ID]: false,
   [ENABLE_STACK_NAME_DUPLICATES_CONTEXT]: false,
   [ENABLE_DIFF_NO_FAIL_CONTEXT]: false,
   [STACK_RELATIVE_EXPORTS_CONTEXT]: false,
@@ -128,8 +251,15 @@ const FUTURE_FLAGS_DEFAULTS: { [key: string]: boolean } = {
   [SECRETS_MANAGER_PARSE_OWNED_SECRET_NAME]: false,
   [KMS_DEFAULT_KEY_POLICIES]: false,
   [S3_GRANT_WRITE_WITHOUT_ACL]: false,
+  [ECS_REMOVE_DEFAULT_DESIRED_COUNT]: false,
+  [RDS_LOWERCASE_DB_IDENTIFIER]: false,
+  [EFS_DEFAULT_ENCRYPTION_AT_REST]: false,
+  [LAMBDA_RECOGNIZE_VERSION_PROPS]: false,
+  [CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021]: false,
+  [ECS_SERVICE_EXTENSIONS_ENABLE_DEFAULT_LOG_DRIVER]: false,
+  [EC2_UNIQUE_IMDSV2_LAUNCH_TEMPLATE_NAME]: false,
 };
 
-export function futureFlagDefault(flag: string): boolean {
+export function futureFlagDefault(flag: string): boolean | undefined {
   return FUTURE_FLAGS_DEFAULTS[flag];
 }

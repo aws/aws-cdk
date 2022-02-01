@@ -62,7 +62,7 @@ abstract class ReceiptRuleSetBase extends Resource implements IReceiptRuleSet {
    */
   public addRule(id: string, options?: ReceiptRuleOptions): ReceiptRule {
     this.lastAddedRule = new ReceiptRule(this, id, {
-      after: this.lastAddedRule ? this.lastAddedRule : undefined,
+      after: this.lastAddedRule ?? undefined,
       ruleSet: this,
       ...options,
     });
@@ -109,12 +109,12 @@ export class ReceiptRuleSet extends ReceiptRuleSetBase {
     this.receiptRuleSetName = resource.ref;
 
     if (props) {
-      const rules = props.rules || [];
-      rules.forEach((ruleOption, idx) => this.addRule(`Rule${idx}`, ruleOption));
-
       if (props.dropSpam) {
         this.addDropSpamRule();
       }
+
+      const rules = props.rules || [];
+      rules.forEach((ruleOption, idx) => this.addRule(`Rule${idx}`, ruleOption));
     }
   }
 }

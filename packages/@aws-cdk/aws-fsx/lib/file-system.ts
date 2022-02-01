@@ -1,6 +1,6 @@
 import { Connections, IConnectable, ISecurityGroup, IVpc } from '@aws-cdk/aws-ec2';
 import { IKey } from '@aws-cdk/aws-kms';
-import { Resource } from '@aws-cdk/core';
+import { RemovalPolicy, Resource } from '@aws-cdk/core';
 
 /**
  * Interface to implement FSx File Systems.
@@ -52,6 +52,13 @@ export interface FileSystemProps {
    * For SCRATCH_2 and PERSISTENT_1 types, valid values are 1,200, 2,400, then continuing in increments of 2,400 GiB.
    */
   readonly storageCapacityGiB: number;
+
+  /**
+   * Policy to apply when the file system is removed from the stack
+   *
+   * @default RemovalPolicy.RETAIN
+   */
+  readonly removalPolicy?: RemovalPolicy;
 }
 
 /**

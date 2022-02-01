@@ -1,7 +1,7 @@
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { ApplicationProtocol, Protocol } from './enums';
 
-export type Attributes = {[key: string]: string | undefined};
+export type Attributes = { [key: string]: string | undefined };
 
 /**
  * Render an attribute dict to a list of { key, value } pairs
@@ -67,7 +67,7 @@ export function determineProtocolAndPort(protocol: ApplicationProtocol | undefin
  * Helper function to default undefined input props
  */
 export function ifUndefined<T>(x: T | undefined, def: T) {
-  return x !== undefined ? x : def;
+  return x ?? def;
 }
 
 /**

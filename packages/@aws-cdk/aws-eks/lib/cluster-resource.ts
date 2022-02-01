@@ -1,6 +1,7 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
+import * as lambda from '@aws-cdk/aws-lambda';
 import { ArnComponents, CustomResource, Token, Stack, Lazy } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CLUSTER_RESOURCE_TYPE } from './cluster-resource-handler/consts';
@@ -15,6 +16,7 @@ export interface ClusterResourceProps {
   readonly resourcesVpcConfig: CfnCluster.ResourcesVpcConfigProperty;
   readonly roleArn: string;
   readonly encryptionConfig?: Array<CfnCluster.EncryptionConfigProperty>;
+  readonly kubernetesNetworkConfig?: CfnCluster.KubernetesNetworkConfigProperty;
   readonly name: string;
   readonly version?: string;
   readonly endpointPrivateAccess: boolean;
@@ -24,6 +26,10 @@ export interface ClusterResourceProps {
   readonly environment?: { [key: string]: string };
   readonly subnets?: ec2.ISubnet[];
   readonly secretsEncryptionKey?: kms.IKey;
+  readonly onEventLayer?: lambda.ILayerVersion;
+  readonly clusterHandlerSecurityGroup?: ec2.ISecurityGroup;
+  readonly tags?: { [key: string]: string };
+  readonly logging?: { [key: string]: [ { [key: string]: any } ] };
 }
 
 /**
@@ -62,6 +68,8 @@ export class ClusterResource extends CoreConstruct {
       subnets: props.subnets,
       vpc: props.vpc,
       environment: props.environment,
+      onEventLayer: props.onEventLayer,
+      securityGroup: props.clusterHandlerSecurityGroup,
     });
 
     const resource = new CustomResource(this, 'Resource', {
@@ -75,6 +83,7 @@ export class ClusterResource extends CoreConstruct {
           version: props.version,
           roleArn: props.roleArn,
           encryptionConfig: props.encryptionConfig,
+          kubernetesNetworkConfig: props.kubernetesNetworkConfig,
           resourcesVpcConfig: {
             subnetIds: (props.resourcesVpcConfig as CfnCluster.ResourcesVpcConfigProperty).subnetIds,
             securityGroupIds: (props.resourcesVpcConfig as CfnCluster.ResourcesVpcConfigProperty).securityGroupIds,
@@ -82,6 +91,8 @@ export class ClusterResource extends CoreConstruct {
             endpointPrivateAccess: props.endpointPrivateAccess,
             publicAccessCidrs: props.publicAccessCidrs,
           },
+          tags: props.tags,
+          logging: props.logging,
         },
         AssumeRoleArn: this.adminRole.roleArn,
 
@@ -144,14 +155,6 @@ export class ClusterResource extends CoreConstruct {
 
     creationRole.addToPolicy(new iam.PolicyStatement({
       actions: [
-        'ec2:DescribeSubnets',
-        'ec2:DescribeRouteTables',
-      ],
-      resources: ['*'],
-    }));
-
-    creationRole.addToPolicy(new iam.PolicyStatement({
-      actions: [
         'eks:CreateCluster',
         'eks:DescribeCluster',
         'eks:DescribeUpdate',
@@ -181,13 +184,19 @@ export class ClusterResource extends CoreConstruct {
     }));
 
     // see https://github.com/aws/aws-cdk/issues/9027
+    // these actions are the combined 'ec2:Describe*' actions taken from the EKS SLR policies.
+    // (AWSServiceRoleForAmazonEKS, AWSServiceRoleForAmazonEKSForFargate, AWSServiceRoleForAmazonEKSNodegroup)
     creationRole.addToPolicy(new iam.PolicyStatement({
-      actions: ['ec2:DescribeVpcs'],
-      resources: [stack.formatArn({
-        service: 'ec2',
-        resource: 'vpc',
-        resourceName: props.vpc.vpcId,
-      })],
+      actions: [
+        'ec2:DescribeInstances',
+        'ec2:DescribeNetworkInterfaces',
+        'ec2:DescribeSecurityGroups',
+        'ec2:DescribeSubnets',
+        'ec2:DescribeRouteTables',
+        'ec2:DescribeDhcpOptions',
+        'ec2:DescribeVpcs',
+      ],
+      resources: ['*'],
     }));
 
     // grant cluster creation role sufficient permission to access the specified key

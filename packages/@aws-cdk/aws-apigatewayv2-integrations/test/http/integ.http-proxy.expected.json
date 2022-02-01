@@ -37,13 +37,13 @@
         "Code": {
           "ZipFile": "exports.handler = async function(event, context) { return { statusCode: 200, body: \"success\" }; };"
         },
-        "Handler": "index.handler",
         "Role": {
           "Fn::GetAtt": [
             "AlwaysSuccessServiceRole6DB8C2F6",
             "Arn"
           ]
         },
+        "Handler": "index.handler",
         "Runtime": "nodejs12.x"
       },
       "DependsOn": [
@@ -57,7 +57,7 @@
         "ProtocolType": "HTTP"
       }
     },
-    "LambdaProxyApiDefaultRouteinteghttpproxyLambdaProxyApiDefaultRoute17D52FE1Permission4875FF59": {
+    "LambdaProxyApiDefaultRouteDefaultIntegrationPermission39F587FC": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
@@ -94,7 +94,7 @@
         }
       }
     },
-    "LambdaProxyApiDefaultRouteDefaultRouteIntegration97D5250B": {
+    "LambdaProxyApiDefaultRouteDefaultIntegrationAE9908C8": {
       "Type": "AWS::ApiGatewayV2::Integration",
       "Properties": {
         "ApiId": {
@@ -117,13 +117,14 @@
           "Ref": "LambdaProxyApi67594471"
         },
         "RouteKey": "$default",
+        "AuthorizationType": "NONE",
         "Target": {
           "Fn::Join": [
             "",
             [
               "integrations/",
               {
-                "Ref": "LambdaProxyApiDefaultRouteDefaultRouteIntegration97D5250B"
+                "Ref": "LambdaProxyApiDefaultRouteDefaultIntegrationAE9908C8"
               }
             ]
           ]
@@ -147,7 +148,7 @@
         "ProtocolType": "HTTP"
       }
     },
-    "HttpProxyApiDefaultRouteDefaultRouteIntegrationF2E17850": {
+    "HttpProxyApiDefaultRouteDefaultIntegration95D23B0D": {
       "Type": "AWS::ApiGatewayV2::Integration",
       "Properties": {
         "ApiId": {
@@ -185,13 +186,14 @@
           "Ref": "HttpProxyApiD0217C67"
         },
         "RouteKey": "$default",
+        "AuthorizationType": "NONE",
         "Target": {
           "Fn::Join": [
             "",
             [
               "integrations/",
               {
-                "Ref": "HttpProxyApiDefaultRouteDefaultRouteIntegrationF2E17850"
+                "Ref": "HttpProxyApiDefaultRouteDefaultIntegration95D23B0D"
               }
             ]
           ]

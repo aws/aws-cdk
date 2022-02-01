@@ -1,4 +1,4 @@
-import '@aws-cdk/assert/jest';
+import { Template } from '@aws-cdk/assertions';
 import { App, Aws, Stack } from '@aws-cdk/core';
 import { OriginRequestPolicy, OriginRequestCookieBehavior, OriginRequestHeaderBehavior, OriginRequestQueryStringBehavior } from '../lib';
 
@@ -22,7 +22,7 @@ describe('OriginRequestPolicy', () => {
   test('minimal example', () => {
     new OriginRequestPolicy(stack, 'OriginRequestPolicy');
 
-    expect(stack).toHaveResource('AWS::CloudFront::OriginRequestPolicy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::OriginRequestPolicy', {
       OriginRequestPolicyConfig: {
         Name: 'StackOriginRequestPolicy6B17D9ED',
         CookiesConfig: {
@@ -47,7 +47,7 @@ describe('OriginRequestPolicy', () => {
       queryStringBehavior: OriginRequestQueryStringBehavior.allowList('username'),
     });
 
-    expect(stack).toHaveResource('AWS::CloudFront::OriginRequestPolicy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::OriginRequestPolicy', {
       OriginRequestPolicyConfig: {
         Name: 'MyPolicy',
         Comment: 'A default policy',
@@ -75,6 +75,24 @@ describe('OriginRequestPolicy', () => {
     expect(() => new OriginRequestPolicy(stack, 'OriginRequestPolicy4', { originRequestPolicyName: 'MyPolicy' })).not.toThrow();
     expect(() => new OriginRequestPolicy(stack, 'OriginRequestPolicy5', { originRequestPolicyName: 'My-Policy' })).not.toThrow();
     expect(() => new OriginRequestPolicy(stack, 'OriginRequestPolicy6', { originRequestPolicyName: 'My_Policy' })).not.toThrow();
+  });
+
+  test('throws if prohibited headers are being passed', () => {
+    const errorMessage = /you cannot pass `Authorization` or `Accept-Encoding` as header values/;
+    expect(() => new OriginRequestPolicy(stack, 'OriginRequestPolicy1', { headerBehavior: OriginRequestHeaderBehavior.allowList('Authorization') })).toThrow(errorMessage);
+    expect(() => new OriginRequestPolicy(stack, 'OriginRequestPolicy2', { headerBehavior: OriginRequestHeaderBehavior.allowList('Accept-Encoding') })).toThrow(errorMessage);
+    expect(() => new OriginRequestPolicy(stack, 'OriginRequestPolicy3', { headerBehavior: OriginRequestHeaderBehavior.allowList('authorization') })).toThrow(errorMessage);
+    expect(() => new OriginRequestPolicy(stack, 'OriginRequestPolicy4', { headerBehavior: OriginRequestHeaderBehavior.allowList('accept-encoding') })).toThrow(errorMessage);
+    expect(() => new OriginRequestPolicy(stack, 'OriginRequestPolicy5', { headerBehavior: OriginRequestHeaderBehavior.allowList('Foo', 'Authorization', 'Bar') })).toThrow(errorMessage);
+    expect(() => new OriginRequestPolicy(stack, 'OriginRequestPolicy6', { headerBehavior: OriginRequestHeaderBehavior.allowList('Foo', 'Accept-Encoding', 'Bar') })).toThrow(errorMessage);
+
+    expect(() => new OriginRequestPolicy(stack, 'OriginRequestPolicy7', { headerBehavior: OriginRequestHeaderBehavior.allowList('Foo', 'Bar') })).not.toThrow();
+  });
+
+  test('accepts headers with disallowed keywords as part of the header', () => {
+    expect(() => new OriginRequestPolicy(stack, 'OriginRequestPolicy1', { headerBehavior: OriginRequestHeaderBehavior.allowList('x-wp-access-authorization') })).not.toThrow();
+    expect(() => new OriginRequestPolicy(stack, 'OriginRequestPolicy2', { headerBehavior: OriginRequestHeaderBehavior.allowList('do-not-accept-encoding') })).not.toThrow();
+    expect(() => new OriginRequestPolicy(stack, 'OriginRequestPolicy3', { headerBehavior: OriginRequestHeaderBehavior.allowList('authorization-Header') })).not.toThrow();
   });
 
   test('does not throw if originRequestPolicyName is a token', () => {

@@ -6,32 +6,31 @@
  */
 
 import * as path from 'path';
-import * as fs from 'fs-extra';
 import * as md5 from 'md5';
 import { schema } from '../lib';
-import { decorateResourceTypes, forEachSection, massageSpec, merge, normalize, patch } from './massage-spec';
+import { massageSpec, normalize } from './massage-spec';;
+import { writeSorted, applyPatchSet, applyAndWrite } from './patch-set';
 
 async function main() {
   const inputDir = path.join(process.cwd(), 'spec-source');
-  const files = await fs.readdir(inputDir);
+  const outDir = path.join(process.cwd(), 'spec');
+
+  await generateResourceSpecification(inputDir, path.join(outDir, 'specification.json'));
+  await applyAndWrite(path.join(outDir, 'cfn-lint.json'), path.join(inputDir, 'cfn-lint'));
+  await applyAndWrite(path.join(outDir, 'cfn-docs.json'), path.join(inputDir, 'cfn-docs'));
+}
+
+/**
+ * Generate CloudFormation resource specification from sources and patches
+ */
+async function generateResourceSpecification(inputDir: string, outFile: string) {
   const spec: schema.Specification = { PropertyTypes: {}, ResourceTypes: {}, Fingerprint: '' };
-  for (const file of files.filter(n => n.endsWith('.json')).sort()) {
-    const data = await fs.readJson(path.join(inputDir, file));
-    if (file.indexOf('patch') === -1) {
-      decorateResourceTypes(data);
-      forEachSection(spec, data, merge);
-    } else {
-      forEachSection(spec, data, patch);
-    }
-  }
 
+  Object.assign(spec, await applyPatchSet(path.join(inputDir, 'specification')));
   massageSpec(spec);
-
   spec.Fingerprint = md5(JSON.stringify(normalize(spec)));
 
-  const outDir = path.join(process.cwd(), 'spec');
-  await fs.mkdirp(outDir);
-  await fs.writeJson(path.join(outDir, 'specification.json'), spec, { spaces: 2 });
+  await writeSorted(outFile, spec);
 }
 
 main()

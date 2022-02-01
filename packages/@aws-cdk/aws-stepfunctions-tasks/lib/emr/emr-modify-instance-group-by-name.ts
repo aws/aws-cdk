@@ -9,7 +9,6 @@ import { InstanceGroupModifyConfigPropertyToJson } from './private/cluster-utils
 /**
  * Properties for EmrModifyInstanceGroupByName
  *
- * @experimental
  */
 export interface EmrModifyInstanceGroupByNameProps extends sfn.TaskStateBaseProps {
   /**
@@ -35,7 +34,6 @@ export interface EmrModifyInstanceGroupByNameProps extends sfn.TaskStateBaseProp
 /**
  * A Step Functions Task to to modify an InstanceGroup on an EMR Cluster.
  *
- * @experimental
  */
 export class EmrModifyInstanceGroupByName extends sfn.TaskStateBase {
   protected readonly taskPolicies?: iam.PolicyStatement[];
@@ -81,7 +79,6 @@ export namespace EmrModifyInstanceGroupByName {
    *
    * @see https://docs.aws.amazon.com/emr/latest/APIReference/API_InstanceResizePolicy.html
    *
-   * @experimental
    */
   export interface InstanceResizePolicyProperty {
     /**
@@ -111,7 +108,6 @@ export namespace EmrModifyInstanceGroupByName {
    *
    * @see https://docs.aws.amazon.com/emr/latest/APIReference/API_ShrinkPolicy.html
    *
-   * @experimental
    */
   export interface ShrinkPolicyProperty {
     /**
@@ -134,7 +130,6 @@ export namespace EmrModifyInstanceGroupByName {
    *
    * @see https://docs.aws.amazon.com/emr/latest/APIReference/API_InstanceGroupModifyConfig.html
    *
-   * @experimental
    */
   export interface InstanceGroupModifyConfigProperty {
     /**

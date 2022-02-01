@@ -242,8 +242,9 @@ export class EcsRunTask extends sfn.TaskStateBase implements ec2.IConnectable {
 
     validatePatternSupported(this.integrationPattern, EcsRunTask.SUPPORTED_INTEGRATION_PATTERNS);
 
-    if (this.integrationPattern === sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN && !sfn.FieldUtils.containsTaskToken(props.containerOverrides)) {
-      throw new Error('Task Token is required in `containerOverrides` for callback. Use Context.taskToken to set the token.');
+    if (this.integrationPattern === sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN
+      && !sfn.FieldUtils.containsTaskToken(props.containerOverrides?.map(override => override.environment))) {
+      throw new Error('Task Token is required in at least one `containerOverrides.environment` for callback. Use JsonPath.taskToken to set the token.');
     }
 
     if (!this.props.taskDefinition.defaultContainer) {
@@ -261,7 +262,7 @@ export class EcsRunTask extends sfn.TaskStateBase implements ec2.IConnectable {
     for (const override of this.props.containerOverrides ?? []) {
       const name = override.containerDefinition.containerName;
       if (!cdk.Token.isUnresolved(name)) {
-        const cont = this.props.taskDefinition.node.tryFindChild(name);
+        const cont = this.props.taskDefinition.findContainer(name);
         if (!cont) {
           throw new Error(`Overrides mention container with name '${name}', but no such container in task definition`);
         }
@@ -279,7 +280,7 @@ export class EcsRunTask extends sfn.TaskStateBase implements ec2.IConnectable {
       Resource: integrationResourceArn('ecs', 'runTask', this.integrationPattern),
       Parameters: sfn.FieldUtils.renderObject({
         Cluster: this.props.cluster.clusterArn,
-        TaskDefinition: this.props.taskDefinition.taskDefinitionArn,
+        TaskDefinition: this.props.taskDefinition.family,
         NetworkConfiguration: this.networkConfiguration,
         Overrides: renderOverrides(this.props.containerOverrides),
         ...this.props.launchTarget.bind(this, { taskDefinition: this.props.taskDefinition, cluster: this.props.cluster }).parameters,
@@ -318,7 +319,7 @@ export class EcsRunTask extends sfn.TaskStateBase implements ec2.IConnectable {
     const policyStatements = [
       new iam.PolicyStatement({
         actions: ['ecs:RunTask'],
-        resources: [this.props.taskDefinition.taskDefinitionArn],
+        resources: [this.getTaskDefinitionFamilyArn()],
       }),
       new iam.PolicyStatement({
         actions: ['ecs:StopTask', 'ecs:DescribeTasks'],
@@ -346,6 +347,31 @@ export class EcsRunTask extends sfn.TaskStateBase implements ec2.IConnectable {
     }
 
     return policyStatements;
+  }
+
+  /**
+   * Returns the ARN of the task definition family by removing the
+   * revision from the task definition ARN
+   * Before - arn:aws:ecs:us-west-2:123456789012:task-definition/hello_world:8
+   * After - arn:aws:ecs:us-west-2:123456789012:task-definition/hello_world
+   */
+  private getTaskDefinitionFamilyArn(): string {
+    const arnComponents = cdk.Stack.of(this).splitArn(this.props.taskDefinition.taskDefinitionArn, cdk.ArnFormat.SLASH_RESOURCE_NAME);
+    let { resourceName } = arnComponents;
+
+    if (resourceName) {
+      resourceName = resourceName.split(':')[0];
+    }
+
+    return cdk.Stack.of(this).formatArn({
+      partition: arnComponents.partition,
+      service: arnComponents.service,
+      account: arnComponents.account,
+      region: arnComponents.region,
+      resource: arnComponents.resource,
+      arnFormat: arnComponents.arnFormat,
+      resourceName,
+    });
   }
 
   private taskExecutionRoles(): iam.IRole[] {

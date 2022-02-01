@@ -32,8 +32,9 @@ export interface LambdaIntegrationOptions extends IntegrationOptions {
  *
  * @example
  *
- *    const handler = new lambda.Function(this, 'MyFunction', ...);
- *    api.addMethod('GET', new LambdaIntegration(handler));
+ *    declare const resource: apigateway.Resource;
+ *    declare const handler: lambda.Function;
+ *    resource.addMethod('GET', new apigateway.LambdaIntegration(handler));
  *
  */
 export class LambdaIntegration extends AwsIntegration {
@@ -41,7 +42,7 @@ export class LambdaIntegration extends AwsIntegration {
   private readonly enableTest: boolean;
 
   constructor(handler: lambda.IFunction, options: LambdaIntegrationOptions = { }) {
-    const proxy = options.proxy === undefined ? true : options.proxy;
+    const proxy = options.proxy ?? true;
 
     super({
       proxy,
@@ -51,7 +52,7 @@ export class LambdaIntegration extends AwsIntegration {
     });
 
     this.handler = handler;
-    this.enableTest = options.allowTestInvoke === undefined ? true : options.allowTestInvoke;
+    this.enableTest = options.allowTestInvoke ?? true;
   }
 
   public bind(method: Method): IntegrationConfig {

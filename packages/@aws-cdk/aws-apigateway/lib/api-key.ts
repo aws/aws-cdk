@@ -1,5 +1,5 @@
 import * as iam from '@aws-cdk/aws-iam';
-import { IResource as IResourceBase, Resource, Stack } from '@aws-cdk/core';
+import { ArnFormat, IResource as IResourceBase, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnApiKey } from './apigateway.generated';
 import { ResourceOptions } from './resource';
@@ -40,6 +40,13 @@ export interface ApiKeyOptions extends ResourceOptions {
    * @default none
    */
   readonly value?: string;
+
+  /**
+   * A description of the purpose of the API key.
+   * @link http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigateway-apikey.html#cfn-apigateway-apikey-description
+   * @default none
+   */
+  readonly description?: string;
 }
 
 /**
@@ -58,13 +65,6 @@ export interface ApiKeyProps extends ApiKeyOptions {
    * @default none
    */
   readonly customerId?: string;
-
-  /**
-   * A description of the purpose of the API key.
-   * @link http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigateway-apikey.html#cfn-apigateway-apikey-description
-   * @default none
-   */
-  readonly description?: string;
 
   /**
    * Indicates whether the API key can be used by clients.
@@ -146,7 +146,7 @@ export class ApiKey extends ApiKeyBase {
         service: 'apigateway',
         account: '',
         resource: '/apikeys',
-        sep: '/',
+        arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
         resourceName: apiKeyId,
       });
     }
@@ -165,7 +165,7 @@ export class ApiKey extends ApiKeyBase {
     const resource = new CfnApiKey(this, 'Resource', {
       customerId: props.customerId,
       description: props.description,
-      enabled: props.enabled || true,
+      enabled: props.enabled ?? true,
       generateDistinctId: props.generateDistinctId,
       name: this.physicalName,
       stageKeys: this.renderStageKeys(props.resources),
@@ -177,7 +177,7 @@ export class ApiKey extends ApiKeyBase {
       service: 'apigateway',
       account: '',
       resource: '/apikeys',
-      sep: '/',
+      arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
       resourceName: this.keyId,
     });
   }
@@ -236,12 +236,12 @@ export class RateLimitedApiKey extends ApiKeyBase {
     const resource = new ApiKey(this, 'Resource', props);
 
     if (props.apiStages || props.quota || props.throttle) {
-      new UsagePlan(this, 'UsagePlanResource', {
-        apiKey: resource,
+      const usageplan = new UsagePlan(this, 'UsagePlanResource', {
         apiStages: props.apiStages,
         quota: props.quota,
         throttle: props.throttle,
       });
+      usageplan.addApiKey(resource);
     }
 
     this.keyId = resource.keyId;

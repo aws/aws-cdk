@@ -1,10 +1,10 @@
 import * as cdk from '@aws-cdk/core';
 import { Group } from './group';
 import {
-  AccountPrincipal, AccountRootPrincipal, Anyone, ArnPrincipal, CanonicalUserPrincipal,
+  AccountPrincipal, AccountRootPrincipal, AnyPrincipal, ArnPrincipal, CanonicalUserPrincipal,
   FederatedPrincipal, IPrincipal, PrincipalBase, PrincipalPolicyFragment, ServicePrincipal, ServicePrincipalOpts,
 } from './principals';
-import { mergePrincipal } from './util';
+import { LITERAL_STRING_KEY, mergePrincipal } from './util';
 
 const ensureArrayOrUndefined = (field: any) => {
   if (field === undefined) {
@@ -30,7 +30,7 @@ export class PolicyStatement {
    * @param obj the PolicyStatement in object form.
    */
   public static fromJson(obj: any) {
-    return new PolicyStatement({
+    const ret = new PolicyStatement({
       sid: obj.Sid,
       actions: ensureArrayOrUndefined(obj.Action),
       resources: ensureArrayOrUndefined(obj.Resource),
@@ -41,6 +41,14 @@ export class PolicyStatement {
       principals: obj.Principal ? [new JsonPrincipal(obj.Principal)] : undefined,
       notPrincipals: obj.NotPrincipal ? [new JsonPrincipal(obj.NotPrincipal)] : undefined,
     });
+
+    // validate that the PolicyStatement has the correct shape
+    const errors = ret.validateForAnyPolicy();
+    if (errors.length > 0) {
+      throw new Error('Incorrect Policy Statement: ' + errors.join('\n'));
+    }
+
+    return ret;
   }
 
   /**
@@ -64,7 +72,8 @@ export class PolicyStatement {
   constructor(props: PolicyStatementProps = {}) {
     // Validate actions
     for (const action of [...props.actions || [], ...props.notActions || []]) {
-      if (!/^(\*|[a-zA-Z0-9-]+:[a-zA-Z0-9*]+)$/.test(action)) {
+
+      if (!/^(\*|[a-zA-Z0-9-]+:[a-zA-Z0-9*]+)$/.test(action) && !cdk.Token.isUnresolved(action)) {
         throw new Error(`Action '${action}' is invalid. An action string consists of a service namespace, a colon, and the name of an action. Action names can include wildcards.`);
       }
     }
@@ -230,7 +239,7 @@ export class PolicyStatement {
    * Adds all identities in all accounts ("*") to this policy statement
    */
   public addAnyPrincipal() {
-    this.addPrincipals(new Anyone());
+    this.addPrincipals(new AnyPrincipal());
   }
 
   //
@@ -275,7 +284,7 @@ export class PolicyStatement {
   }
 
   /**
-   * Indicates if this permission as at least one resource associated with it.
+   * Indicates if this permission has at least one resource associated with it.
    */
   public get hasResource() {
     return this.resource && this.resource.length > 0;
@@ -316,18 +325,18 @@ export class PolicyStatement {
    */
   public toStatementJson(): any {
     return noUndef({
-      Action: _norm(this.action),
-      NotAction: _norm(this.notAction),
+      Action: _norm(this.action, { unique: true }),
+      NotAction: _norm(this.notAction, { unique: true }),
       Condition: _norm(this.condition),
       Effect: _norm(this.effect),
       Principal: _normPrincipal(this.principal),
       NotPrincipal: _normPrincipal(this.notPrincipal),
-      Resource: _norm(this.resource),
-      NotResource: _norm(this.notResource),
+      Resource: _norm(this.resource, { unique: true }),
+      NotResource: _norm(this.notResource, { unique: true }),
       Sid: _norm(this.sid),
     });
 
-    function _norm(values: any) {
+    function _norm(values: any, { unique }: { unique: boolean } = { unique: false }) {
 
       if (typeof(values) === 'undefined') {
         return undefined;
@@ -346,7 +355,7 @@ export class PolicyStatement {
           return values[0];
         }
 
-        return values;
+        return unique ? [...new Set(values)] : values;
       }
 
       if (typeof(values) === 'object') {
@@ -361,15 +370,17 @@ export class PolicyStatement {
     function _normPrincipal(principal: { [key: string]: any[] }) {
       const keys = Object.keys(principal);
       if (keys.length === 0) { return undefined; }
+
+      if (LITERAL_STRING_KEY in principal) {
+        return principal[LITERAL_STRING_KEY][0];
+      }
+
       const result: any = {};
       for (const key of keys) {
         const normVal = _norm(principal[key]);
         if (normVal) {
           result[key] = normVal;
         }
-      }
-      if (Object.keys(result).length === 1 && result.AWS === '*') {
-        return '*';
       }
       return result;
     }
@@ -594,9 +605,13 @@ class JsonPrincipal extends PrincipalBase {
   constructor(json: any = { }) {
     super();
 
-    // special case: if principal is a string, turn it into an "AWS" principal
+    // special case: if principal is a string, turn it into a "LiteralString" principal,
+    // so we render the exact same string back out.
     if (typeof(json) === 'string') {
-      json = { AWS: json };
+      json = { [LITERAL_STRING_KEY]: [json] };
+    }
+    if (typeof(json) !== 'object') {
+      throw new Error(`JSON IAM principal should be an object, got ${JSON.stringify(json)}`);
     }
 
     this.policyFragment = {

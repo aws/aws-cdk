@@ -1,6 +1,6 @@
 {
   "Resources": {
-    "Evala0d2ce44871b4e7487a1f5e63d7c3bdcServiceRoleDC85DDD3": {
+    "Evalda2d1181604e4a4586941a6abd7fe42dServiceRoleED144118": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -31,12 +31,12 @@
         ]
       }
     },
-    "Evala0d2ce44871b4e7487a1f5e63d7c3bdc4DAC06E1": {
+    "Evalda2d1181604e4a4586941a6abd7fe42dF371675D": {
       "Type": "AWS::Lambda::Function",
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "AssetParameters640b7d3e1a6ff78c1cad25c2d7396d04c74d6eee31b116f4c86d910338d480d0S3BucketA16CB30E"
+            "Ref": "AssetParametersbc320c7bd6a0eba90db647aa586cf65548560a54c141153fdc12f22eb3b2626bS3Bucket743A2950"
           },
           "S3Key": {
             "Fn::Join": [
@@ -49,7 +49,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParameters640b7d3e1a6ff78c1cad25c2d7396d04c74d6eee31b116f4c86d910338d480d0S3VersionKey102DBBD9"
+                          "Ref": "AssetParametersbc320c7bd6a0eba90db647aa586cf65548560a54c141153fdc12f22eb3b2626bS3VersionKey2DBCB833"
                         }
                       ]
                     }
@@ -62,7 +62,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParameters640b7d3e1a6ff78c1cad25c2d7396d04c74d6eee31b116f4c86d910338d480d0S3VersionKey102DBBD9"
+                          "Ref": "AssetParametersbc320c7bd6a0eba90db647aa586cf65548560a54c141153fdc12f22eb3b2626bS3VersionKey2DBCB833"
                         }
                       ]
                     }
@@ -72,17 +72,17 @@
             ]
           }
         },
-        "Handler": "index.handler",
         "Role": {
           "Fn::GetAtt": [
-            "Evala0d2ce44871b4e7487a1f5e63d7c3bdcServiceRoleDC85DDD3",
+            "Evalda2d1181604e4a4586941a6abd7fe42dServiceRoleED144118",
             "Arn"
           ]
         },
-        "Runtime": "nodejs10.x"
+        "Handler": "index.handler",
+        "Runtime": "nodejs14.x"
       },
       "DependsOn": [
-        "Evala0d2ce44871b4e7487a1f5e63d7c3bdcServiceRoleDC85DDD3"
+        "Evalda2d1181604e4a4586941a6abd7fe42dServiceRoleED144118"
       ]
     },
     "StateMachineRoleB840431D": {
@@ -123,7 +123,7 @@
               "Effect": "Allow",
               "Resource": {
                 "Fn::GetAtt": [
-                  "Evala0d2ce44871b4e7487a1f5e63d7c3bdc4DAC06E1",
+                  "Evalda2d1181604e4a4586941a6abd7fe42dF371675D",
                   "Arn"
                 ]
               }
@@ -155,21 +155,21 @@
               "{\"StartAt\":\"Sum\",\"States\":{\"Sum\":{\"Next\":\"Multiply\",\"Type\":\"Task\",\"ResultPath\":\"$.c\",\"Resource\":\"",
               {
                 "Fn::GetAtt": [
-                  "Evala0d2ce44871b4e7487a1f5e63d7c3bdc4DAC06E1",
+                  "Evalda2d1181604e4a4586941a6abd7fe42dF371675D",
                   "Arn"
                 ]
               },
               "\",\"Parameters\":{\"expression\":\"$.a + $.b\",\"expressionAttributeValues\":{\"$.a.$\":\"$.a\",\"$.b.$\":\"$.b\"}}},\"Multiply\":{\"Next\":\"Wait\",\"Type\":\"Task\",\"ResultPath\":\"$.d\",\"Resource\":\"",
               {
                 "Fn::GetAtt": [
-                  "Evala0d2ce44871b4e7487a1f5e63d7c3bdc4DAC06E1",
+                  "Evalda2d1181604e4a4586941a6abd7fe42dF371675D",
                   "Arn"
                 ]
               },
               "\",\"Parameters\":{\"expression\":\"$.c * 2\",\"expressionAttributeValues\":{\"$.c.$\":\"$.c\"}}},\"Wait\":{\"Type\":\"Wait\",\"SecondsPath\":\"$.d\",\"Next\":\"Now\"},\"Now\":{\"End\":true,\"Type\":\"Task\",\"ResultPath\":\"$.now\",\"Resource\":\"",
               {
                 "Fn::GetAtt": [
-                  "Evala0d2ce44871b4e7487a1f5e63d7c3bdc4DAC06E1",
+                  "Evalda2d1181604e4a4586941a6abd7fe42dF371675D",
                   "Arn"
                 ]
               },
@@ -185,17 +185,17 @@
     }
   },
   "Parameters": {
-    "AssetParameters640b7d3e1a6ff78c1cad25c2d7396d04c74d6eee31b116f4c86d910338d480d0S3BucketA16CB30E": {
+    "AssetParametersbc320c7bd6a0eba90db647aa586cf65548560a54c141153fdc12f22eb3b2626bS3Bucket743A2950": {
       "Type": "String",
-      "Description": "S3 bucket for asset \"640b7d3e1a6ff78c1cad25c2d7396d04c74d6eee31b116f4c86d910338d480d0\""
+      "Description": "S3 bucket for asset \"bc320c7bd6a0eba90db647aa586cf65548560a54c141153fdc12f22eb3b2626b\""
     },
-    "AssetParameters640b7d3e1a6ff78c1cad25c2d7396d04c74d6eee31b116f4c86d910338d480d0S3VersionKey102DBBD9": {
+    "AssetParametersbc320c7bd6a0eba90db647aa586cf65548560a54c141153fdc12f22eb3b2626bS3VersionKey2DBCB833": {
       "Type": "String",
-      "Description": "S3 key for asset version \"640b7d3e1a6ff78c1cad25c2d7396d04c74d6eee31b116f4c86d910338d480d0\""
+      "Description": "S3 key for asset version \"bc320c7bd6a0eba90db647aa586cf65548560a54c141153fdc12f22eb3b2626b\""
     },
-    "AssetParameters640b7d3e1a6ff78c1cad25c2d7396d04c74d6eee31b116f4c86d910338d480d0ArtifactHash43D553D7": {
+    "AssetParametersbc320c7bd6a0eba90db647aa586cf65548560a54c141153fdc12f22eb3b2626bArtifactHashAD6C554B": {
       "Type": "String",
-      "Description": "Artifact hash for asset \"640b7d3e1a6ff78c1cad25c2d7396d04c74d6eee31b116f4c86d910338d480d0\""
+      "Description": "Artifact hash for asset \"bc320c7bd6a0eba90db647aa586cf65548560a54c141153fdc12f22eb3b2626b\""
     }
   },
   "Outputs": {

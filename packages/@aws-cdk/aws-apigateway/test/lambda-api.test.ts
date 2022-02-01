@@ -1,4 +1,4 @@
-import '@aws-cdk/assert/jest';
+import { Match, Template } from '@aws-cdk/assertions';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
 import * as apigw from '../lib';
@@ -23,11 +23,11 @@ describe('lambda api', () => {
     }).toThrow();
 
     // THEN -- template proxies everything
-    expect(stack).toHaveResource('AWS::ApiGateway::Resource', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Resource', {
       PathPart: '{proxy+}',
     });
 
-    expect(stack).toHaveResource('AWS::ApiGateway::Method', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
       HttpMethod: 'ANY',
       ResourceId: {
         Ref: 'lambdarestapiproxyE3AE07E3',
@@ -91,11 +91,11 @@ describe('lambda api', () => {
     }).toThrow();
 
     // THEN -- template proxies everything
-    expect(stack).toHaveResource('AWS::ApiGateway::Resource', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Resource', {
       PathPart: '{proxy+}',
     });
 
-    expect(stack).toHaveResource('AWS::ApiGateway::Method', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
       HttpMethod: 'ANY',
       ResourceId: {
         Ref: 'lambdarestapiproxyE3AE07E3',
@@ -149,20 +149,20 @@ describe('lambda api', () => {
     tasks.addMethod('POST');
 
     // THEN
-    expect(stack).not.toHaveResource('AWS::ApiGateway::Resource', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Resource', Match.not({
       PathPart: '{proxy+}',
-    });
+    }));
 
-    expect(stack).toHaveResource('AWS::ApiGateway::Resource', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Resource', {
       PathPart: 'tasks',
     });
 
-    expect(stack).toHaveResource('AWS::ApiGateway::Method', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
       HttpMethod: 'GET',
       ResourceId: { Ref: 'lambdarestapitasks224418C8' },
     });
 
-    expect(stack).toHaveResource('AWS::ApiGateway::Method', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
       HttpMethod: 'POST',
       ResourceId: { Ref: 'lambdarestapitasks224418C8' },
     });
@@ -180,7 +180,7 @@ describe('lambda api', () => {
 
     expect(() => new apigw.LambdaRestApi(stack, 'lambda-rest-api', {
       handler,
-      options: { defaultIntegration: new apigw.HttpIntegration('https://foo/bar') },
+      defaultIntegration: new apigw.HttpIntegration('https://foo/bar'),
     })).toThrow(/Cannot specify \"defaultIntegration\" since Lambda integration is automatically defined/);
 
     expect(() => new apigw.LambdaRestApi(stack, 'lambda-rest-api', {
@@ -209,7 +209,7 @@ describe('lambda api', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ApiGateway::Method', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
       HttpMethod: 'OPTIONS',
       ResourceId: { Ref: 'lambdarestapiproxyE3AE07E3' },
       Integration: {

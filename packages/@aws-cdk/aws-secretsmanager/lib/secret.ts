@@ -1,6 +1,6 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
-import { FeatureFlags, Fn, IResource, RemovalPolicy, Resource, SecretValue, Stack, Token } from '@aws-cdk/core';
+import { ArnFormat, FeatureFlags, Fn, IResource, Lazy, RemovalPolicy, Resource, SecretValue, Stack, Token, TokenComparison } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { IConstruct, Construct } from 'constructs';
 import { ResourcePolicy } from './policy';
@@ -115,6 +115,8 @@ export interface SecretProps {
   /**
    * Configuration for how to generate a secret value.
    *
+   * Only one of `secretString` and `generateSecretString` can be provided.
+   *
    * @default - 32 characters with upper-case letters, lower-case letters, punctuation and numbers (at least one from each
    * category), per the default values of ``SecretStringGenerator``.
    */
@@ -129,11 +131,111 @@ export interface SecretProps {
   readonly secretName?: string;
 
   /**
+   * Initial value for the secret
+   *
+   * **NOTE:** *It is **highly** encouraged to leave this field undefined and allow SecretsManager to create the secret value.
+   * The secret string -- if provided -- will be included in the output of the cdk as part of synthesis,
+   * and will appear in the CloudFormation template in the console. This can be secure(-ish) if that value is merely reference to
+   * another resource (or one of its attributes), but if the value is a plaintext string, it will be visible to anyone with access
+   * to the CloudFormation template (via the AWS Console, SDKs, or CLI).
+   *
+   * Specifies text data that you want to encrypt and store in this new version of the secret.
+   * May be a simple string value, or a string representation of a JSON structure.
+   *
+   * Only one of `secretString` and `generateSecretString` can be provided.
+   *
+   * @default - SecretsManager generates a new secret value.
+   */
+  readonly secretStringBeta1?: SecretStringValueBeta1;
+
+  /**
    * Policy to apply when the secret is removed from this stack.
    *
    * @default - Not set.
    */
   readonly removalPolicy?: RemovalPolicy;
+
+  /**
+   * A list of regions where to replicate this secret.
+   *
+   * @default - Secret is not replicated
+   */
+  readonly replicaRegions?: ReplicaRegion[];
+}
+
+/**
+ * Secret replica region
+ */
+export interface ReplicaRegion {
+  /**
+   * The name of the region
+   */
+  readonly region: string;
+
+  /**
+   * The customer-managed encryption key to use for encrypting the secret value.
+   *
+   * @default - A default KMS key for the account and region is used.
+   */
+  readonly encryptionKey?: kms.IKey;
+}
+
+/**
+ * An experimental class used to specify an initial secret value for a Secret.
+ * The class wraps a simple string (or JSON representation) in order to provide some safety checks and warnings
+ * about the dangers of using plaintext strings as initial secret seed values via CDK/CloudFormation.
+ */
+export class SecretStringValueBeta1 {
+
+  /**
+   * Creates a `SecretStringValueBeta1` from a plaintext value.
+   * This approach is inherently unsafe, as the secret value may be visible in your source control repository
+   * and will also appear in plaintext in the resulting CloudFormation template, including in the AWS Console or APIs.
+   * Usage of this method is discouraged, especially for production workloads.
+   */
+  public static fromUnsafePlaintext(secretValue: string) { return new SecretStringValueBeta1(secretValue); }
+
+  /**
+   * Creates a `SecretValueValueBeta1` from a string value coming from a Token.
+   * The intent is to enable creating secrets from references (e.g., `Ref`, `Fn::GetAtt`) from other resources.
+   * This might be the direct output of another Construct, or the output of a Custom Resource.
+   * This method throws if it determines the input is an unsafe plaintext string.
+   *
+   * For example:
+   * ```ts
+   *     // Creates a new IAM user, access and secret keys, and stores the secret access key in a Secret.
+   *     const user = new iam.User(this, 'User');
+   *     const accessKey = new iam.AccessKey(this, 'AccessKey', { user });
+   *     const secretValue = secretsmanager.SecretStringValueBeta1.fromToken(accessKey.secretAccessKey.toString());
+   *     new secretsmanager.Secret(this, 'Secret', {
+   *       secretStringBeta1: secretValue,
+   *     });
+   * ```
+   *
+   * The secret may also be embedded in a string representation of a JSON structure:
+   *     const secretValue = secretsmanager.SecretStringValueBeta1.fromToken(JSON.stringify({
+   *       username: user.userName,
+   *       database: 'foo',
+   *       password: accessKey.secretAccessKey.toString(),
+   *     }));
+   *
+   * Note that the value being a Token does *not* guarantee safety. For example, a Lazy-evaluated string
+   * (e.g., `Lazy.string({ produce: () => 'myInsecurePassword' }))`) is a Token, but as the output is
+   * ultimately a plaintext string, and so insecure.
+   *
+   * @param secretValueFromToken a secret value coming from a Construct attribute or Custom Resource output
+   */
+  public static fromToken(secretValueFromToken: string) {
+    if (!Token.isUnresolved(secretValueFromToken)) {
+      throw new Error('SecretStringValueBeta1 appears to be plaintext (unsafe) string (or resolved Token); use fromUnsafePlaintext if this is intentional');
+    }
+    return new SecretStringValueBeta1(secretValueFromToken);
+  }
+
+  private constructor(private readonly _secretValue: string) { }
+
+  /** Returns the secret value */
+  public secretValue(): string { return this._secretValue; }
 }
 
 /**
@@ -183,14 +285,16 @@ abstract class SecretBase extends Resource implements ISecret {
   public grantRead(grantee: iam.IGrantable, versionStages?: string[]): iam.Grant {
     // @see https://docs.aws.amazon.com/secretsmanager/latest/userguide/auth-and-access_identity-based-policies.html
 
-    const result = iam.Grant.addToPrincipal({
+    const result = iam.Grant.addToPrincipalOrResource({
       grantee,
       actions: ['secretsmanager:GetSecretValue', 'secretsmanager:DescribeSecret'],
       resourceArns: [this.arnForPolicies],
-      scope: this,
+      resource: this,
     });
-    if (versionStages != null && result.principalStatement) {
-      result.principalStatement.addCondition('ForAnyValue:StringEquals', {
+
+    const statement = result.principalStatement || result.resourceStatement;
+    if (versionStages != null && statement) {
+      statement.addCondition('ForAnyValue:StringEquals', {
         'secretsmanager:VersionStage': versionStages,
       });
     }
@@ -202,16 +306,23 @@ abstract class SecretBase extends Resource implements ISecret {
       );
     }
 
+    const crossAccount = Token.compareStrings(Stack.of(this).account, grantee.grantPrincipal.principalAccount || '');
+
+    // Throw if secret is not imported and it's shared cross account and no KMS key is provided
+    if (this instanceof Secret && result.resourceStatement && (!this.encryptionKey && crossAccount === TokenComparison.DIFFERENT)) {
+      throw new Error('KMS Key must be provided for cross account access to Secret');
+    }
+
     return result;
   }
 
   public grantWrite(grantee: iam.IGrantable): iam.Grant {
     // See https://docs.aws.amazon.com/secretsmanager/latest/userguide/auth-and-access_identity-based-policies.html
-    const result = iam.Grant.addToPrincipal({
+    const result = iam.Grant.addToPrincipalOrResource({
       grantee,
       actions: ['secretsmanager:PutSecretValue', 'secretsmanager:UpdateSecret'],
       resourceArns: [this.arnForPolicies],
-      scope: this,
+      resource: this,
     });
 
     if (this.encryptionKey) {
@@ -219,6 +330,11 @@ abstract class SecretBase extends Resource implements ISecret {
       this.encryptionKey.grantEncrypt(
         new kms.ViaServicePrincipal(`secretsmanager.${Stack.of(this).region}.amazonaws.com`, grantee.grantPrincipal),
       );
+    }
+
+    // Throw if secret is not imported and it's shared cross account and no KMS key is provided
+    if (this instanceof Secret && result.resourceStatement && !this.encryptionKey) {
+      throw new Error('KMS Key must be provided for cross account access to Secret');
     }
 
     return result;
@@ -267,10 +383,14 @@ abstract class SecretBase extends Resource implements ISecret {
   }
 
   /**
-   * Provides an identifier for this secret for use in IAM policies. Typically, this is just the secret ARN.
-   * However, secrets imported by name require a different format.
+   * Provides an identifier for this secret for use in IAM policies.
+   * If there is a full ARN, this is just the ARN;
+   * if we have a partial ARN -- due to either importing by secret name or partial ARN --
+   * then we need to add a suffix to capture the full ARN's format.
    */
-  protected get arnForPolicies() { return this.secretArn; }
+  protected get arnForPolicies() {
+    return this.secretFullArn ? this.secretFullArn : `${this.secretArn}-??????`;
+  }
 
   /**
    * Attach a target to this secret
@@ -333,7 +453,7 @@ export class Secret extends SecretBase {
           service: 'secretsmanager',
           resource: 'secret',
           resourceName: this.secretName + '*',
-          sep: ':',
+          arnFormat: ArnFormat.COLON_RESOURCE_NAME,
         });
       }
     }(scope, id);
@@ -351,18 +471,13 @@ export class Secret extends SecretBase {
       public readonly secretArn = this.partialArn;
       protected readonly autoCreatePolicy = false;
       public get secretFullArn() { return undefined; }
-      // Overrides the secretArn for grant* methods, where the secretArn must be in ARN format.
-      // Also adds a wildcard to the resource name to support the SecretsManager-provided suffix.
-      protected get arnForPolicies(): string {
-        return this.partialArn + '-??????';
-      }
       // Creates a "partial" ARN from the secret name. The "full" ARN would include the SecretsManager-provided suffix.
       private get partialArn(): string {
         return Stack.of(this).formatArn({
           service: 'secretsmanager',
           resource: 'secret',
           resourceName: secretName,
-          sep: ':',
+          arnFormat: ArnFormat.COLON_RESOURCE_NAME,
         });
       }
     }(scope, id);
@@ -402,12 +517,14 @@ export class Secret extends SecretBase {
       public readonly secretName = parseSecretName(scope, secretArn);
       protected readonly autoCreatePolicy = false;
       public get secretFullArn() { return secretArnIsPartial ? undefined : secretArn; }
-    }(scope, id);
+    }(scope, id, { environmentFromArn: secretArn });
   }
 
   public readonly encryptionKey?: kms.IKey;
   public readonly secretArn: string;
   public readonly secretName: string;
+
+  private replicaRegions: secretsmanager.CfnSecret.ReplicaRegionProperty[] = [];
 
   protected readonly autoCreatePolicy = true;
 
@@ -422,22 +539,28 @@ export class Secret extends SecretBase {
       throw new Error('`secretStringTemplate` and `generateStringKey` must be specified together.');
     }
 
+    if (props.generateSecretString && props.secretStringBeta1) {
+      throw new Error('Cannot specify both `generateSecretString` and `secretStringBeta1`.');
+    }
+
     const resource = new secretsmanager.CfnSecret(this, 'Resource', {
       description: props.description,
       kmsKeyId: props.encryptionKey && props.encryptionKey.keyArn,
-      generateSecretString: props.generateSecretString || {},
+      generateSecretString: props.generateSecretString ?? (props.secretStringBeta1 ? undefined : {}),
+      secretString: props.secretStringBeta1?.secretValue(),
       name: this.physicalName,
+      replicaRegions: Lazy.any({ produce: () => this.replicaRegions }, { omitEmptyArray: true }),
     });
 
-    if (props.removalPolicy) {
-      resource.applyRemovalPolicy(props.removalPolicy);
-    }
+    resource.applyRemovalPolicy(props.removalPolicy, {
+      default: RemovalPolicy.DESTROY,
+    });
 
     this.secretArn = this.getResourceArnAttribute(resource.ref, {
       service: 'secretsmanager',
       resource: 'secret',
       resourceName: this.physicalName,
-      sep: ':',
+      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
     });
 
     this.encryptionKey = props.encryptionKey;
@@ -451,6 +574,10 @@ export class Secret extends SecretBase {
       new kms.ViaServicePrincipal(`secretsmanager.${Stack.of(this).region}.amazonaws.com`, new iam.AccountPrincipal(Stack.of(this).account));
     this.encryptionKey?.grantEncryptDecrypt(principal);
     this.encryptionKey?.grant(principal, 'kms:CreateGrant', 'kms:DescribeKey');
+
+    for (const replica of props.replicaRegions ?? []) {
+      this.addReplicaRegion(replica.region, replica.encryptionKey);
+    }
   }
 
   /**
@@ -464,6 +591,24 @@ export class Secret extends SecretBase {
     return new SecretTargetAttachment(this, id, {
       secret: this,
       ...options,
+    });
+  }
+
+  /**
+   * Adds a replica region for the secret
+   *
+   * @param region The name of the region
+   * @param encryptionKey The customer-managed encryption key to use for encrypting the secret value.
+   */
+  public addReplicaRegion(region: string, encryptionKey?: kms.IKey): void {
+    const stack = Stack.of(this);
+    if (!Token.isUnresolved(stack.region) && !Token.isUnresolved(region) && region === stack.region) {
+      throw new Error('Cannot add the region where this stack is deployed as a replica region.');
+    }
+
+    this.replicaRegions.push({
+      region,
+      kmsKeyId: encryptionKey?.keyArn,
     });
   }
 }
@@ -544,8 +689,6 @@ export interface SecretAttachmentTargetProps {
 
 /**
  * Options to add a secret attachment to a secret.
- *
- * @deprecated use `secret.attach()` instead
  */
 export interface AttachedSecretOptions {
   /**
@@ -698,7 +841,7 @@ export interface SecretStringGenerator {
 
 /** Parses the secret name from the ARN. */
 function parseSecretName(construct: IConstruct, secretArn: string) {
-  const resourceName = Stack.of(construct).parseArn(secretArn, ':').resourceName;
+  const resourceName = Stack.of(construct).splitArn(secretArn, ArnFormat.COLON_RESOURCE_NAME).resourceName;
   if (resourceName) {
     // Can't operate on the token to remove the SecretsManager suffix, so just return the full secret name
     if (Token.isUnresolved(resourceName)) {
@@ -724,7 +867,7 @@ function parseSecretName(construct: IConstruct, secretArn: string) {
  * explicit between the Secret and wherever the secretName might be used (i.e., using Tokens).
  */
 function parseSecretNameForOwnedSecret(construct: Construct, secretArn: string, secretName?: string) {
-  const resourceName = Stack.of(construct).parseArn(secretArn, ':').resourceName;
+  const resourceName = Stack.of(construct).splitArn(secretArn, ArnFormat.COLON_RESOURCE_NAME).resourceName;
   if (!resourceName) {
     throw new Error('invalid ARN format; no secret name provided');
   }

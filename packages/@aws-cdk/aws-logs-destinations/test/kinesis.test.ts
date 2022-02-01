@@ -1,4 +1,4 @@
-import '@aws-cdk/assert/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as kinesis from '@aws-cdk/aws-kinesis';
 import * as logs from '@aws-cdk/aws-logs';
 import * as cdk from '@aws-cdk/core';
@@ -18,13 +18,13 @@ test('stream can be subscription destination', () => {
   });
 
   // THEN: subscription target is Stream
-  expect(stack).toHaveResource('AWS::Logs::SubscriptionFilter', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Logs::SubscriptionFilter', {
     DestinationArn: { 'Fn::GetAtt': ['MyStream5C050E93', 'Arn'] },
     RoleArn: { 'Fn::GetAtt': ['SubscriptionCloudWatchLogsCanPutRecords9C1223EC', 'Arn'] },
   });
 
   // THEN: we have a role to write to the Stream
-  expect(stack).toHaveResource('AWS::IAM::Role', {
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
     AssumeRolePolicyDocument: {
       Version: '2012-10-17',
       Statement: [{
@@ -44,7 +44,7 @@ test('stream can be subscription destination', () => {
     },
   });
 
-  expect(stack).toHaveResource('AWS::IAM::Policy', {
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
     PolicyDocument: {
       Version: '2012-10-17',
       Statement: [
@@ -88,13 +88,13 @@ test('stream can be subscription destination twice, without duplicating permissi
   });
 
   // THEN: subscription target is Stream
-  expect(stack).toHaveResource('AWS::Logs::SubscriptionFilter', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Logs::SubscriptionFilter', {
     DestinationArn: { 'Fn::GetAtt': ['MyStream5C050E93', 'Arn'] },
     RoleArn: { 'Fn::GetAtt': ['SubscriptionCloudWatchLogsCanPutRecords9C1223EC', 'Arn'] },
   });
 
   // THEN: we have a role to write to the Stream
-  expect(stack).toHaveResource('AWS::IAM::Role', {
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
     AssumeRolePolicyDocument: {
       Version: '2012-10-17',
       Statement: [{
@@ -114,7 +114,7 @@ test('stream can be subscription destination twice, without duplicating permissi
     },
   });
 
-  expect(stack).toHaveResource('AWS::IAM::Policy', {
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
     PolicyDocument: {
       Version: '2012-10-17',
       Statement: [

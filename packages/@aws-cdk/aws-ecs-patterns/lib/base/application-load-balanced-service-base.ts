@@ -1,9 +1,12 @@
 import { Certificate, CertificateValidation, ICertificate } from '@aws-cdk/aws-certificatemanager';
 import { IVpc } from '@aws-cdk/aws-ec2';
-import { AwsLogDriver, BaseService, CloudMapOptions, Cluster, ContainerImage, DeploymentController, ICluster, LogDriver, PropagatedTagSource, Secret } from '@aws-cdk/aws-ecs';
 import {
-  ApplicationListener, ApplicationLoadBalancer, ApplicationProtocol, ApplicationTargetGroup,
-  IApplicationLoadBalancer, ListenerCertificate, ListenerAction, AddApplicationTargetsProps,
+  AwsLogDriver, BaseService, CloudMapOptions, Cluster, ContainerImage, DeploymentController, DeploymentCircuitBreaker,
+  ICluster, LogDriver, PropagatedTagSource, Secret,
+} from '@aws-cdk/aws-ecs';
+import {
+  ApplicationListener, ApplicationLoadBalancer, ApplicationProtocol, ApplicationProtocolVersion, ApplicationTargetGroup,
+  IApplicationLoadBalancer, ListenerCertificate, ListenerAction, AddApplicationTargetsProps, SslPolicy,
 } from '@aws-cdk/aws-elasticloadbalancingv2';
 import { IRole } from '@aws-cdk/aws-iam';
 import { ARecord, IHostedZone, RecordTarget, CnameRecord } from '@aws-cdk/aws-route53';
@@ -78,7 +81,9 @@ export interface ApplicationLoadBalancedServiceBaseProps {
    * The desired number of instantiations of the task definition to keep running on the service.
    * The minimum value is 1
    *
-   * @default 1
+   * @default - If the feature flag, ECS_REMOVE_DEFAULT_DESIRED_COUNT is false, the default is 1;
+   * if true, the default is 1 for all new services and uses the existing services desired count
+   * when updating an existing service.
    */
   readonly desiredCount?: number;
 
@@ -111,6 +116,13 @@ export interface ApplicationLoadBalancedServiceBaseProps {
    * set by default to HTTPS.
    */
   readonly protocol?: ApplicationProtocol;
+
+  /**
+   * The protocol version to use
+   *
+   * @default ApplicationProtocolVersion.HTTP1
+   */
+  readonly protocolVersion?: ApplicationProtocolVersion;
 
   /**
    * The domain name for the service, e.g. "api.example.com."
@@ -179,6 +191,13 @@ export interface ApplicationLoadBalancedServiceBaseProps {
   readonly listenerPort?: number;
 
   /**
+   * The security policy that defines which ciphers and protocols are supported by the ALB Listener.
+   *
+   * @default - The recommended elastic load balancing security policy
+   */
+  readonly sslPolicy?: SslPolicy;
+
+  /**
    * Specifies whether to propagate the tags from the task definition or the service to the tasks in the service.
    * Tags can only be propagated to the tasks within the service during service creation.
    *
@@ -224,6 +243,21 @@ export interface ApplicationLoadBalancedServiceBaseProps {
    * @default - Rolling update (ECS)
    */
   readonly deploymentController?: DeploymentController;
+
+  /**
+   * Whether to enable the deployment circuit breaker. If this property is defined, circuit breaker will be implicitly
+   * enabled.
+   * @default - disabled
+   */
+  readonly circuitBreaker?: DeploymentCircuitBreaker;
+
+  /**
+   * Name of the load balancer
+   *
+   * @default - Automatically generated name.
+   */
+  readonly loadBalancerName?: string;
+
 }
 
 export interface ApplicationLoadBalancedTaskImageOptions {
@@ -305,17 +339,31 @@ export interface ApplicationLoadBalancedTaskImageOptions {
    * @default - Automatically generated name.
    */
   readonly family?: string;
+
+  /**
+   * A key/value map of labels to add to the container.
+   *
+   * @default - No labels.
+   */
+  readonly dockerLabels?: { [key: string]: string };
 }
 
 /**
  * The base class for ApplicationLoadBalancedEc2Service and ApplicationLoadBalancedFargateService services.
  */
 export abstract class ApplicationLoadBalancedServiceBase extends CoreConstruct {
+  /**
+   * The desired number of instantiations of the task definition to keep running on the service.
+   * @deprecated - Use `internalDesiredCount` instead.
+   */
+  public readonly desiredCount: number;
 
   /**
    * The desired number of instantiations of the task definition to keep running on the service.
+   * The default is 1 for all new services and uses the existing services desired count
+   * when updating an existing service if one is not provided.
    */
-  public readonly desiredCount: number;
+  public readonly internalDesiredCount?: number;
 
   /**
    * The Application Load Balancer for the service.
@@ -368,23 +416,24 @@ export abstract class ApplicationLoadBalancedServiceBase extends CoreConstruct {
     if (props.desiredCount !== undefined && props.desiredCount < 1) {
       throw new Error('You must specify a desiredCount greater than 0');
     }
-    this.desiredCount = props.desiredCount || 1;
 
-    const internetFacing = props.publicLoadBalancer !== undefined ? props.publicLoadBalancer : true;
+    this.desiredCount = props.desiredCount || 1;
+    this.internalDesiredCount = props.desiredCount;
+
+    const internetFacing = props.publicLoadBalancer ?? true;
 
     const lbProps = {
       vpc: this.cluster.vpc,
+      loadBalancerName: props.loadBalancerName,
       internetFacing,
     };
 
-    const loadBalancer = props.loadBalancer !== undefined ? props.loadBalancer
-      : new ApplicationLoadBalancer(this, 'LB', lbProps);
+    const loadBalancer = props.loadBalancer ?? new ApplicationLoadBalancer(this, 'LB', lbProps);
 
     if (props.certificate !== undefined && props.protocol !== undefined && props.protocol !== ApplicationProtocol.HTTPS) {
       throw new Error('The HTTPS protocol must be used when a certificate is given');
     }
-    const protocol = props.protocol !== undefined ? props.protocol :
-      (props.certificate ? ApplicationProtocol.HTTPS : ApplicationProtocol.HTTP);
+    const protocol = props.protocol ?? (props.certificate ? ApplicationProtocol.HTTPS : ApplicationProtocol.HTTP);
 
     if (protocol !== ApplicationProtocol.HTTPS && props.redirectHTTP === true) {
       throw new Error('The HTTPS protocol must be used when redirecting HTTP traffic');
@@ -392,23 +441,26 @@ export abstract class ApplicationLoadBalancedServiceBase extends CoreConstruct {
 
     const targetProps: AddApplicationTargetsProps = {
       protocol: props.targetProtocol ?? ApplicationProtocol.HTTP,
+      protocolVersion: props.protocolVersion,
     };
 
     this.listener = loadBalancer.addListener('PublicListener', {
       protocol,
       port: props.listenerPort,
       open: props.openListener ?? true,
+      sslPolicy: props.sslPolicy,
     });
     this.targetGroup = this.listener.addTargets('ECS', targetProps);
 
     if (protocol === ApplicationProtocol.HTTPS) {
-      if (typeof props.domainName === 'undefined' || typeof props.domainZone === 'undefined') {
-        throw new Error('A domain name and zone is required when using the HTTPS protocol');
-      }
 
       if (props.certificate !== undefined) {
         this.certificate = props.certificate;
       } else {
+        if (typeof props.domainName === 'undefined' || typeof props.domainZone === 'undefined') {
+          throw new Error('A domain name and zone is required when using the HTTPS protocol');
+        }
+
         this.certificate = new Certificate(this, 'Certificate', {
           domainName: props.domainName,
           validation: CertificateValidation.fromDns(props.domainZone),

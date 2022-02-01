@@ -302,23 +302,7 @@
         "KeyPolicy": {
           "Statement": [
             {
-              "Action": [
-                "kms:Create*",
-                "kms:Describe*",
-                "kms:Enable*",
-                "kms:List*",
-                "kms:Put*",
-                "kms:Update*",
-                "kms:Revoke*",
-                "kms:Disable*",
-                "kms:Get*",
-                "kms:Delete*",
-                "kms:ScheduleKeyDeletion",
-                "kms:CancelKeyDeletion",
-                "kms:GenerateDataKey",
-                "kms:TagResource",
-                "kms:UntagResource"
-              ],
+              "Action": "kms:*",
               "Effect": "Allow",
               "Principal": {
                 "AWS": {
@@ -335,25 +319,6 @@
                       },
                       ":root"
                     ]
-                  ]
-                }
-              },
-              "Resource": "*"
-            },
-            {
-              "Action": [
-                "kms:Decrypt",
-                "kms:DescribeKey",
-                "kms:Encrypt",
-                "kms:ReEncrypt*",
-                "kms:GenerateDataKey*"
-              ],
-              "Effect": "Allow",
-              "Principal": {
-                "AWS": {
-                  "Fn::GetAtt": [
-                    "MyUserDC45028B",
-                    "Arn"
                   ]
                 }
               },
@@ -468,7 +433,6 @@
           "Statement": [
             {
               "Action": [
-                "glue:BatchDeletePartition",
                 "glue:BatchGetPartition",
                 "glue:GetPartition",
                 "glue:GetPartitions",
@@ -517,7 +481,11 @@
                 "s3:GetBucket*",
                 "s3:List*",
                 "s3:DeleteObject*",
-                "s3:PutObject*",
+                "s3:PutObject",
+                "s3:PutObjectLegalHold",
+                "s3:PutObjectRetention",
+                "s3:PutObjectTagging",
+                "s3:PutObjectVersionTagging",
                 "s3:Abort*"
               ],
               "Effect": "Allow",
@@ -546,7 +514,6 @@
             },
             {
               "Action": [
-                "glue:BatchDeletePartition",
                 "glue:BatchGetPartition",
                 "glue:GetPartition",
                 "glue:GetPartitions",
@@ -595,7 +562,11 @@
                 "s3:GetBucket*",
                 "s3:List*",
                 "s3:DeleteObject*",
-                "s3:PutObject*",
+                "s3:PutObject",
+                "s3:PutObjectLegalHold",
+                "s3:PutObjectRetention",
+                "s3:PutObjectTagging",
+                "s3:PutObjectVersionTagging",
                 "s3:Abort*"
               ],
               "Effect": "Allow",
@@ -659,7 +630,6 @@
           "Statement": [
             {
               "Action": [
-                "glue:BatchDeletePartition",
                 "glue:BatchGetPartition",
                 "glue:GetPartition",
                 "glue:GetPartitions",
@@ -708,7 +678,11 @@
                 "s3:GetBucket*",
                 "s3:List*",
                 "s3:DeleteObject*",
-                "s3:PutObject*",
+                "s3:PutObject",
+                "s3:PutObjectLegalHold",
+                "s3:PutObjectRetention",
+                "s3:PutObjectTagging",
+                "s3:PutObjectVersionTagging",
                 "s3:Abort*"
               ],
               "Effect": "Allow",
@@ -737,7 +711,6 @@
             },
             {
               "Action": [
-                "glue:BatchDeletePartition",
                 "glue:BatchGetPartition",
                 "glue:GetPartition",
                 "glue:GetPartitions",
@@ -782,7 +755,6 @@
             },
             {
               "Action": [
-                "glue:BatchDeletePartition",
                 "glue:BatchGetPartition",
                 "glue:GetPartition",
                 "glue:GetPartitions",

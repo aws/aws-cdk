@@ -26,9 +26,9 @@ import { App } from '@aws-cdk/core';
 
 const app = new App();
 new GlobalTable(app, 'globdynamodb', {
-  partitionKey: { name: 'hashKey', type: AttributeType.String },
+  partitionKey: { name: 'hashKey', type: AttributeType.STRING },
   tableName: 'GlobalTable',
-  regions: [ "us-east-1", "us-east-2", "us-west-2" ]
+  regions: [ "us-east-1", "us-east-2", "us-west-2" ],
 });
 app.synth();
 ```

@@ -20,12 +20,24 @@ export interface IResolveContext {
   /**
    * Resolve an inner object
    */
-  resolve(x: any): any;
+  resolve(x: any, options?: ResolveChangeContextOptions): any;
 
   /**
    * Use this postprocessor after the entire token structure has been resolved
    */
   registerPostProcessor(postProcessor: IPostProcessor): void;
+}
+
+/**
+ * Options that can be changed while doing a recursive resolve
+ */
+export interface ResolveChangeContextOptions {
+  /**
+   * Change the 'allowIntrinsicKeys' option
+   *
+   * @default - Unchanged
+   */
+  readonly allowIntrinsicKeys?: boolean;
 }
 
 /**
@@ -93,7 +105,6 @@ export interface ITokenResolver {
  *
  * Interface so it could potentially be exposed over jsii.
  *
- * @experimental
  */
 export interface IFragmentConcatenator {
   /**
@@ -118,7 +129,6 @@ export class StringConcat implements IFragmentConcatenator {
 /**
  * Default resolver implementation
  *
- * @experimental
  */
 export class DefaultTokenResolver implements ITokenResolver {
   constructor(private readonly concat: IFragmentConcatenator) {

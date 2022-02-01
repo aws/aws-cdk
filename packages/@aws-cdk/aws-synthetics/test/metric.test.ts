@@ -1,4 +1,3 @@
-import '@aws-cdk/assert/jest';
 import { App, Stack } from '@aws-cdk/core';
 import * as synthetics from '../lib';
 

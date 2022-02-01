@@ -1,5 +1,6 @@
+import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
-import { Bucket, EventType, NotificationKeyFilter } from '../bucket';
+import { IBucket, EventType, NotificationKeyFilter, Bucket } from '../bucket';
 import { BucketNotificationDestinationType, IBucketNotificationDestination } from '../destination';
 import { NotificationsResourceHandler } from './notifications-resource-handler';
 
@@ -10,11 +11,13 @@ import { Construct } from '@aws-cdk/core';
 interface NotificationsProps {
   /**
    * The bucket to manage notifications for.
-   *
-   * This cannot be an `IBucket` because the bucket maintains the 1:1
-   * relationship with this resource.
    */
-  bucket: Bucket;
+  bucket: IBucket;
+
+  /**
+   * The role to be used by the lambda handler
+   */
+  handlerRole?: iam.IRole;
 }
 
 /**
@@ -37,11 +40,13 @@ export class BucketNotifications extends Construct {
   private readonly queueNotifications = new Array<QueueConfiguration>();
   private readonly topicNotifications = new Array<TopicConfiguration>();
   private resource?: cdk.CfnResource;
-  private readonly bucket: Bucket;
+  private readonly bucket: IBucket;
+  private readonly handlerRole?: iam.IRole;
 
   constructor(scope: Construct, id: string, props: NotificationsProps) {
     super(scope, id);
     this.bucket = props.bucket;
+    this.handlerRole = props.handlerRole;
   }
 
   /**
@@ -104,14 +109,26 @@ export class BucketNotifications extends Construct {
    */
   private createResourceOnce() {
     if (!this.resource) {
-      const handlerArn = NotificationsResourceHandler.singleton(this);
+      const handler = NotificationsResourceHandler.singleton(this, {
+        role: this.handlerRole,
+      });
+
+      const managed = this.bucket instanceof Bucket;
+
+      if (!managed) {
+        handler.addToRolePolicy(new iam.PolicyStatement({
+          actions: ['s3:GetBucketNotification'],
+          resources: ['*'],
+        }));
+      }
 
       this.resource = new cdk.CfnResource(this, 'Resource', {
         type: 'Custom::S3BucketNotifications',
         properties: {
-          ServiceToken: handlerArn,
+          ServiceToken: handler.functionArn,
           BucketName: this.bucket.bucketName,
           NotificationConfiguration: cdk.Lazy.any({ produce: () => this.renderNotificationConfiguration() }),
+          Managed: managed,
         },
       });
     }

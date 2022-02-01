@@ -30,7 +30,7 @@ $ npm i @aws-cdk/aws-codebuild
 
 Import it into your code:
 
-```ts
+```ts nofixture
 import * as codebuild from '@aws-cdk/aws-codebuild';
 ```
 
@@ -56,7 +56,6 @@ CodeBuild!`:
 Use an AWS CodeCommit repository as the source of this build:
 
 ```ts
-import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as codecommit from '@aws-cdk/aws-codecommit';
 
 const repository = new codecommit.Repository(this, 'MyRepo', { repositoryName: 'foo' });
@@ -70,17 +69,17 @@ new codebuild.Project(this, 'MyFirstCodeCommitProject', {
 Create a CodeBuild project with an S3 bucket as the source:
 
 ```ts
-import * as codebuild from '@aws-cdk/aws-codebuild';
-import * as s3 from '@aws-cdk/aws-s3';
-
 const bucket = new s3.Bucket(this, 'MyBucket');
+
 new codebuild.Project(this, 'MyProject', {
   source: codebuild.Source.s3({
-    bucket,
+    bucket: bucket,
     path: 'path/to/file.zip',
   }),
 });
 ```
+
+The CodeBuild role will be granted to read just the given path from the given `bucket`.
 
 ### `GitHubSource` and `GitHubEnterpriseSource`
 
@@ -138,7 +137,9 @@ const gitHubSource = codebuild.Source.gitHub({
 CodeBuild Projects can produce Artifacts and upload them to S3. For example:
 
 ```ts
-const project = codebuild.Project(stack, 'MyProject', {
+declare const bucket: s3.Bucket;
+
+const project = new codebuild.Project(this, 'MyProject', {
   buildSpec: codebuild.BuildSpec.fromObject({
     version: '0.2',
   }),
@@ -151,6 +152,9 @@ const project = codebuild.Project(stack, 'MyProject', {
     }),
 });
 ```
+
+If you'd prefer your buildspec to be rendered as YAML in the template,
+use the `fromObjectToYaml()` method instead of `fromObject()`.
 
 Because we've not set the `name` property, this example will set the
 `overrideArtifactName` parameter, and produce an artifact named as defined in
@@ -180,23 +184,53 @@ You can save time when your project builds by using a cache. A cache can store r
 
 ### S3 Caching
 
-With S3 caching, the cache is stored in an S3 bucket which is available from multiple hosts.
+With S3 caching, the cache is stored in an S3 bucket which is available
+regardless from what CodeBuild instance gets selected to run your CodeBuild job
+on. When using S3 caching, you must also add in a `cache` section to your
+buildspec which indicates the files to be cached:
 
 ```ts
+declare const myCachingBucket: s3.Bucket;
+
 new codebuild.Project(this, 'Project', {
   source: codebuild.Source.bitBucket({
     owner: 'awslabs',
     repo: 'aws-cdk',
   }),
-  cache: codebuild.Cache.bucket(new Bucket(this, 'Bucket'))
+
+  cache: codebuild.Cache.bucket(myCachingBucket),
+
+  // BuildSpec with a 'cache' section necessary for S3 caching. This can
+  // also come from 'buildspec.yml' in your source.
+  buildSpec: codebuild.BuildSpec.fromObject({
+    version: '0.2',
+    phases: {
+      build: {
+        commands: ['...'],
+      },
+    },
+    cache: {
+      paths: [
+        // The '**/*' is required to indicate all files in this directory
+        '/root/cachedir/**/*',
+      ],
+    },
+  }),
 });
 ```
 
+Note that two different CodeBuild Projects using the same S3 bucket will *not*
+share their cache: each Project will get a unique file in the S3 bucket to store
+the cache in.
+
 ### Local Caching
 
-With local caching, the cache is stored on the codebuild instance itself. This is simple,
-cheap and fast, but CodeBuild cannot guarantee a reuse of instance and hence cannot
-guarantee cache hits. For example, when a build starts and caches files locally, if two subsequent builds start at the same time afterwards only one of those builds would get the cache. Three different cache modes are supported, which can be turned on individually.
+With local caching, the cache is stored on the codebuild instance itself. This
+is simple, cheap and fast, but CodeBuild cannot guarantee a reuse of instance
+and hence cannot guarantee cache hits. For example, when a build starts and
+caches files locally, if two subsequent builds start at the same time afterwards
+only one of those builds would get the cache. Three different cache modes are
+supported, which can be turned on individually.
 
 * `LocalCacheMode.SOURCE` caches Git metadata for primary and secondary sources.
 * `LocalCacheMode.DOCKER_LAYER` caches existing Docker layers.
@@ -209,7 +243,24 @@ new codebuild.Project(this, 'Project', {
   }),
 
   // Enable Docker AND custom caching
-  cache: codebuild.Cache.local(LocalCacheMode.DOCKER_LAYER, LocalCacheMode.CUSTOM)
+  cache: codebuild.Cache.local(codebuild.LocalCacheMode.DOCKER_LAYER, codebuild.LocalCacheMode.CUSTOM),
+
+  // BuildSpec with a 'cache' section necessary for 'CUSTOM' caching. This can
+  // also come from 'buildspec.yml' in your source.
+  buildSpec: codebuild.BuildSpec.fromObject({
+    version: '0.2',
+    phases: {
+      build: {
+        commands: ['...'],
+      },
+    },
+    cache: {
+      paths: [
+        // The '**/*' is required to indicate all files in this directory
+        '/root/cachedir/**/*',
+      ],
+    },
+  }),
 });
 ```
 
@@ -220,6 +271,7 @@ can use the `environment` property to customize the build environment:
 
 * `buildImage` defines the Docker image used. See [Images](#images) below for
   details on how to define build images.
+* `certificate` defines the location of a PEM encoded certificate to import.
 * `computeType` defines the instance type used for the build.
 * `privileged` can be set to `true` to allow privileged access.
 * `environmentVariables` can be set at this level (and also at the project
@@ -254,11 +306,18 @@ Note that the `WindowsBuildImage` version of the static methods accepts an optio
 which can be either `WindowsImageType.STANDARD`, the default, or `WindowsImageType.SERVER_2019`:
 
 ```ts
+declare const ecrRepository: ecr.Repository;
+
 new codebuild.Project(this, 'Project', {
   environment: {
     buildImage: codebuild.WindowsBuildImage.fromEcrRepository(ecrRepository, 'v1.0', codebuild.WindowsImageType.SERVER_2019),
+    // optional certificate to include in the build image
+    certificate: {
+      bucket: s3.Bucket.fromBucketName(this, 'Bucket', 'my-bucket'),
+      objectKey: 'path/to/cert.pem',
+    },
   },
-  ...
+  // ...
 })
 ```
 
@@ -285,7 +344,7 @@ new codebuild.Project(this, 'Project', {
   environment: {
     buildImage: codebuild.LinuxGpuBuildImage.DLC_TENSORFLOW_2_1_0_INFERENCE,
   },
-  ...
+  // ...
 })
 ```
 
@@ -304,9 +363,11 @@ new codebuild.Project(this, 'Project', {
     buildImage: codebuild.LinuxGpuBuildImage.awsDeepLearningContainersImage(
       'tensorflow-inference', '2.1.0-gpu-py36-cu101-ubuntu18.04', '123456789012'),
   },
-  ...
+  // ...
 })
 ```
+
+Alternatively, you can reference an image available in an ECR repository using the `LinuxGpuBuildImage.fromEcrRepository(repo[, tag])` method.
 
 ## Logs
 
@@ -320,10 +381,9 @@ By default, logs will go to cloudwatch.
 new codebuild.Project(this, 'Project', {
   logging: {
     cloudWatch: {
-      logGroup: new cloudwatch.LogGroup(this, `MyLogGroup`),
+      logGroup: new logs.LogGroup(this, `MyLogGroup`),
     }
   },
-  ...
 })
 ```
 
@@ -336,7 +396,6 @@ new codebuild.Project(this, 'Project', {
       bucket: new s3.Bucket(this, `LogBucket`)
     }
   },
-  ...
 })
 ```
 
@@ -347,7 +406,7 @@ like GitHub:
 
 ```ts
 new codebuild.GitHubSourceCredentials(this, 'CodeBuildGitHubCreds', {
-  accessToken: cdk.SecretValue.secretsManager('my-token'),
+  accessToken: SecretValue.secretsManager('my-token'),
 });
 // GitHub Enterprise is almost the same,
 // except the class is called GitHubEnterpriseSourceCredentials
@@ -357,8 +416,8 @@ and BitBucket:
 
 ```ts
 new codebuild.BitBucketSourceCredentials(this, 'CodeBuildBitBucketCreds', {
-  username: cdk.SecretValue.secretsManager('my-bitbucket-creds', { jsonField: 'username' }),
-  password: cdk.SecretValue.secretsManager('my-bitbucket-creds', { jsonField: 'password' }),
+  username: SecretValue.secretsManager('my-bitbucket-creds', { jsonField: 'username' }),
+  password: SecretValue.secretsManager('my-bitbucket-creds', { jsonField: 'password' }),
 });
 ```
 
@@ -398,8 +457,10 @@ if you'd rather not have those permissions added,
 you can opt out of it when creating the project:
 
 ```ts
+declare const source: codebuild.Source;
+
 const project = new codebuild.Project(this, 'Project', {
-  // ...
+  source,
   grantReportGroupPermissions: false,
 });
 ```
@@ -408,10 +469,13 @@ Alternatively, you can specify an ARN of an existing resource group,
 instead of a simple name, in your buildspec:
 
 ```ts
+declare const source: codebuild.Source;
+
 // create a new ReportGroup
 const reportGroup = new codebuild.ReportGroup(this, 'ReportGroup');
 
 const project = new codebuild.Project(this, 'Project', {
+  source,
   buildSpec: codebuild.BuildSpec.fromObject({
     // ...
     reports: {
@@ -427,6 +491,9 @@ const project = new codebuild.Project(this, 'Project', {
 If you do that, you need to grant the project's role permissions to write reports to that report group:
 
 ```ts
+declare const project: codebuild.Project;
+declare const reportGroup: codebuild.ReportGroup;
+
 reportGroup.grantWrite(project);
 ```
 
@@ -445,7 +512,11 @@ project as a AWS CloudWatch event rule target:
 
 ```ts
 // start build when a commit is pushed
+import * as codecommit from '@aws-cdk/aws-codecommit';
 import * as targets from '@aws-cdk/aws-events-targets';
+
+declare const codeCommitRepository: codecommit.Repository;
+declare const project: codebuild.Project;
 
 codeCommitRepository.onCommit('OnCommit', {
   target: new targets.CodeBuildProject(project),
@@ -458,9 +529,32 @@ To define Amazon CloudWatch event rules for build projects, use one of the `onXx
 methods:
 
 ```ts
+import * as targets from '@aws-cdk/aws-events-targets';
+declare const fn: lambda.Function;
+declare const project: codebuild.Project;
+
 const rule = project.onStateChange('BuildStateChange', {
   target: new targets.LambdaFunction(fn)
 });
+```
+
+## CodeStar Notifications
+
+To define CodeStar Notification rules for Projects, use one of the `notifyOnXxx()` methods.
+They are very similar to `onXxx()` methods for CloudWatch events:
+
+```ts
+import * as chatbot from '@aws-cdk/aws-chatbot';
+
+declare const project: codebuild.Project;
+
+const target = new chatbot.SlackChannelConfiguration(this, 'MySlackChannel', {
+  slackChannelConfigurationName: 'YOUR_CHANNEL_NAME',
+  slackWorkspaceId: 'YOUR_SLACK_WORKSPACE_ID',
+  slackChannelId: 'YOUR_SLACK_CHANNEL_ID',
+});
+
+const rule = project.notifyOnBuildSucceeded('NotifyOnBuildSucceeded', target);
 ```
 
 ## Secondary sources and artifacts
@@ -469,6 +563,10 @@ CodeBuild Projects can get their sources from multiple places, and produce
 multiple outputs. For example:
 
 ```ts
+import * as codecommit from '@aws-cdk/aws-codecommit';
+declare const repo: codecommit.Repository;
+declare const bucket: s3.Bucket;
+
 const project = new codebuild.Project(this, 'MyProject', {
   secondarySources: [
     codebuild.Source.codeCommit({
@@ -560,6 +658,8 @@ to access the resources that it needs by using the
 For example:
 
 ```ts
+declare const loadBalancer: elbv2.ApplicationLoadBalancer;
+
 const vpc = new ec2.Vpc(this, 'MyVPC');
 const project = new codebuild.Project(this, 'MyProject', {
   vpc: vpc,
@@ -582,7 +682,7 @@ The only supported file system type is `EFS`.
 For example:
 
 ```ts
-new codebuild.Project(stack, 'MyProject', {
+new codebuild.Project(this, 'MyProject', {
   buildSpec: codebuild.BuildSpec.fromObject({
     version: '0.2',
   }),
@@ -600,3 +700,56 @@ new codebuild.Project(stack, 'MyProject', {
 Here's a CodeBuild project with a simple example that creates a project mounted on AWS EFS:
 
 [Minimal Example](./test/integ.project-file-system-location.ts)
+
+## Batch builds
+
+To enable batch builds you should call `enableBatchBuilds()` on the project instance.
+
+It returns an object containing the batch service role that was created,
+or `undefined` if batch builds could not be enabled, for example if the project was imported.
+
+```ts
+declare const source: codebuild.Source;
+
+const project = new codebuild.Project(this, 'MyProject', { source, });
+
+if (project.enableBatchBuilds()) {
+  console.log('Batch builds were enabled');
+}
+```
+
+## Timeouts
+
+There are two types of timeouts that can be set when creating your Project.
+The `timeout` property can be used to set an upper limit on how long your Project is able to run without being marked as completed.
+The default is 60 minutes.
+An example of overriding the default follows.
+
+```ts
+new codebuild.Project(this, 'MyProject', {
+  timeout: Duration.minutes(90)
+});
+```
+
+The `queuedTimeout` property can be used to set an upper limit on how your Project remains queued to run.
+There is no default value for this property.
+As an example, to allow your Project to queue for up to thirty (30) minutes before the build fails,
+use the following code.
+
+```ts
+new codebuild.Project(this, 'MyProject', {
+  queuedTimeout: Duration.minutes(30)
+});
+```
+
+## Limiting concurrency
+
+By default if a new build is triggered it will be run even if there is a previous build already in progress.
+It is possible to limit the maximum concurrent builds to value between 1 and the account specific maximum limit.
+By default there is no explicit limit.
+
+```ts
+new codebuild.Project(this, 'MyProject', {
+  concurrentBuildLimit: 1
+});
+```

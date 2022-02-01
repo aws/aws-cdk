@@ -1,26 +1,27 @@
-import subprocess
-import os
-import tempfile
-import json
-import json
-import traceback
-import logging
-import shutil
-import boto3
 import contextlib
-from datetime import datetime
-from uuid import uuid4
-
+import json
+import logging
+import os
+import shutil
+import subprocess
+import tempfile
 from urllib.request import Request, urlopen
+from uuid import uuid4
 from zipfile import ZipFile
+
+import boto3
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 cloudfront = boto3.client('cloudfront')
+s3 = boto3.client('s3')
 
 CFN_SUCCESS = "SUCCESS"
 CFN_FAILED = "FAILED"
+ENV_KEY_MOUNT_PATH = "MOUNT_PATH"
+
+CUSTOM_RESOURCE_OWNER_TAG = "aws-cdk:cr-owned"
 
 def handler(event, context):
 
@@ -29,7 +30,9 @@ def handler(event, context):
         cfn_send(event, context, CFN_FAILED, reason=message)
 
     try:
-        logger.info(event)
+        # We are not logging ResponseURL as this is a pre-signed S3 URL, and could be used to tamper
+        # with the response CloudFormation sees from this Custom Resource execution.
+        logger.info({ key:value for (key, value) in event.items() if key != 'ResponseURL'})
 
         # cloudformation request type (create/update/delete)
         request_type = event['RequestType']
@@ -49,6 +52,8 @@ def handler(event, context):
             user_metadata       = props.get('UserMetadata', {})
             system_metadata     = props.get('SystemMetadata', {})
             prune               = props.get('Prune', 'true').lower() == 'true'
+            exclude             = props.get('Exclude', [])
+            include             = props.get('Include', [])
 
             default_distribution_path = dest_bucket_prefix
             if not default_distribution_path.endswith("/"):
@@ -68,8 +73,8 @@ def handler(event, context):
 
         s3_source_zips = map(lambda name, key: "s3://%s/%s" % (name, key), source_bucket_names, source_object_keys)
         s3_dest = "s3://%s/%s" % (dest_bucket_name, dest_bucket_prefix)
-
         old_s3_dest = "s3://%s/%s" % (old_props.get("DestinationBucketName", ""), old_props.get("DestinationBucketKeyPrefix", ""))
+
 
         # obviously this is not
         if old_s3_dest == "s3:///":
@@ -89,7 +94,8 @@ def handler(event, context):
 
         # delete or create/update (only if "retain_on_delete" is false)
         if request_type == "Delete" and not retain_on_delete:
-            aws_command("s3", "rm", s3_dest, "--recursive")
+            if not bucket_owned(dest_bucket_name, dest_bucket_prefix):
+                aws_command("s3", "rm", s3_dest, "--recursive")
 
         # if we are updating without retention and the destination changed, delete first
         if request_type == "Update" and not retain_on_delete and old_s3_dest != s3_dest:
@@ -100,7 +106,7 @@ def handler(event, context):
             aws_command("s3", "rm", old_s3_dest, "--recursive")
 
         if request_type == "Update" or request_type == "Create":
-            s3_deploy(s3_source_zips, s3_dest, user_metadata, system_metadata, prune)
+            s3_deploy(s3_source_zips, s3_dest, user_metadata, system_metadata, prune, exclude, include)
 
         if distribution_id:
             cloudfront_invalidate(distribution_id, distribution_paths)
@@ -114,36 +120,50 @@ def handler(event, context):
 
 #---------------------------------------------------------------------------------------------------
 # populate all files from s3_source_zips to a destination bucket
-def s3_deploy(s3_source_zips, s3_dest, user_metadata, system_metadata, prune):
-    # create a temporary working directory
-    workdir=tempfile.mkdtemp()
+def s3_deploy(s3_source_zips, s3_dest, user_metadata, system_metadata, prune, exclude, include):
+    # create a temporary working directory in /tmp or if enabled an attached efs volume
+    if ENV_KEY_MOUNT_PATH in os.environ:
+        workdir = os.getenv(ENV_KEY_MOUNT_PATH) + "/" + str(uuid4())
+        os.mkdir(workdir)
+    else:
+        workdir = tempfile.mkdtemp()
+
     logger.info("| workdir: %s" % workdir)
 
     # create a directory into which we extract the contents of the zip file
     contents_dir=os.path.join(workdir, 'contents')
     os.mkdir(contents_dir)
 
-    # download the archive from the source and extract to "contents"
-    for s3_source_zip in s3_source_zips:
-        archive=os.path.join(workdir, str(uuid4()))
-        logger.info("archive: %s" % archive)
-        aws_command("s3", "cp", s3_source_zip, archive)
-        logger.info("| extracting archive to: %s\n" % contents_dir)
-        with ZipFile(archive, "r") as zip:
-          zip.extractall(contents_dir)
+    try:
+        # download the archive from the source and extract to "contents"
+        for s3_source_zip in s3_source_zips:
+            archive=os.path.join(workdir, str(uuid4()))
+            logger.info("archive: %s" % archive)
+            aws_command("s3", "cp", s3_source_zip, archive)
+            logger.info("| extracting archive to: %s\n" % contents_dir)
+            with ZipFile(archive, "r") as zip:
+              zip.extractall(contents_dir)
 
-    # sync from "contents" to destination
+        # sync from "contents" to destination
 
-    s3_command = ["s3", "sync"]
+        s3_command = ["s3", "sync"]
 
-    if prune:
-      s3_command.append("--delete")
+        if prune:
+          s3_command.append("--delete")
 
-    s3_command.extend([contents_dir, s3_dest])
-    s3_command.extend(create_metadata_args(user_metadata, system_metadata))
-    aws_command(*s3_command)
+        if exclude:
+          for filter in exclude:
+            s3_command.extend(["--exclude", filter])
 
-    shutil.rmtree(workdir)
+        if include:
+          for filter in include:
+            s3_command.extend(["--include", filter])
+
+        s3_command.extend([contents_dir, s3_dest])
+        s3_command.extend(create_metadata_args(user_metadata, system_metadata))
+        aws_command(*s3_command)
+    finally:
+        shutil.rmtree(workdir)
 
 #---------------------------------------------------------------------------------------------------
 # invalidate files in the CloudFront distribution edge caches
@@ -169,7 +189,7 @@ def create_metadata_args(raw_user_metadata, raw_system_metadata):
         return []
 
     format_system_metadata_key = lambda k: k.lower()
-    format_user_metadata_key = lambda k: k.lower() if k.lower().startswith("x-amz-meta-") else f"x-amz-meta-{k.lower()}"
+    format_user_metadata_key = lambda k: k.lower()
 
     system_metadata = { format_system_metadata_key(k): v for k, v in raw_system_metadata.items() }
     user_metadata = { format_user_metadata_key(k): v for k, v in raw_user_metadata.items() }
@@ -219,3 +239,21 @@ def cfn_send(event, context, responseStatus, responseData={}, physicalResourceId
     except Exception as e:
         logger.error("| unable to send response to CloudFormation")
         logger.exception(e)
+
+
+#---------------------------------------------------------------------------------------------------
+# check if bucket is owned by a custom resource
+# if it is then we don't want to delete content
+def bucket_owned(bucketName, keyPrefix):
+    tag = CUSTOM_RESOURCE_OWNER_TAG
+    if keyPrefix != "":
+        tag = tag + ':' + keyPrefix
+    try:
+        request = s3.get_bucket_tagging(
+            Bucket=bucketName,
+        )
+        return any((x["Key"].startswith(tag)) for x in request["TagSet"])
+    except Exception as e:
+        logger.info("| error getting tags from bucket")
+        logger.exception(e)
+        return False

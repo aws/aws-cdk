@@ -1,9 +1,10 @@
-import { nodeunitShim, Test } from 'nodeunit-shim';
-import { Aws, CfnMapping, CfnResource, Fn, Stack } from '../lib';
+import { ArtifactMetadataEntryType } from '@aws-cdk/cloud-assembly-schema';
+import { CloudAssembly } from '@aws-cdk/cx-api';
+import { App, Aws, CfnMapping, CfnResource, Fn, Stack } from '../lib';
 import { toCloudFormation } from './util';
 
-nodeunitShim({
-  'mappings can be added as another type of entity, and mapping.findInMap can be used to get a token'(test: Test) {
+describe('mappings', () => {
+  test('mappings can be added as another type of entity, and mapping.findInMap can be used to get a token', () => {
     const stack = new Stack();
     const mapping = new CfnMapping(stack, 'MyMapping', {
       mapping: {
@@ -24,14 +25,14 @@ nodeunitShim({
         RefToValueInMap: mapping.findInMap('TopLevelKey1', 'SecondLevelKey1'),
       },
     });
-    test.throws(() => mapping.findInMap('NotFoundTopLevel', 'NotFound'), 'Mapping doesn\'t contain top-level key \'NotFoundTopLevel\'');
-    test.throws(() => mapping.findInMap('TopLevelKey1', 'NotFound'), 'Mapping doesn\'t contain second-level key \'NotFound\'');
+    expect(() => mapping.findInMap('NotFoundTopLevel', 'NotFound')).toThrow('Mapping doesn\'t contain top-level key \'NotFoundTopLevel\'');
+    expect(() => mapping.findInMap('TopLevelKey1', 'NotFound')).toThrow('Mapping doesn\'t contain second-level key \'NotFound\'');
 
     // set value can be used to set/modify a specific value
     mapping.setValue('TopLevelKey2', 'SecondLevelKey2', 'Hi');
     mapping.setValue('TopLevelKey1', 'SecondLevelKey1', [1, 2, 3, 4]);
 
-    test.deepEqual(toCloudFormation(stack), {
+    expect(toCloudFormation(stack)).toEqual({
       Mappings:
       {
         MyMapping:
@@ -58,10 +59,10 @@ nodeunitShim({
       },
     });
 
-    test.done();
-  },
 
-  'allow using unresolved tokens in find-in-map'(test: Test) {
+  });
+
+  test('allow using unresolved tokens in find-in-map', () => {
     const stack = new Stack();
 
     const mapping = new CfnMapping(stack, 'mapping', {
@@ -76,12 +77,19 @@ nodeunitShim({
     const v2 = Fn.findInMap(mapping.logicalId, 'instanceCount', Aws.REGION);
 
     const expected = { 'Fn::FindInMap': ['mapping', 'instanceCount', { Ref: 'AWS::Region' }] };
-    test.deepEqual(stack.resolve(v1), expected);
-    test.deepEqual(stack.resolve(v2), expected);
-    test.done();
-  },
+    expect(stack.resolve(v1)).toEqual(expected);
+    expect(stack.resolve(v2)).toEqual(expected);
+    expect(toCloudFormation(stack).Mappings).toEqual({
+      mapping: {
+        instanceCount: {
+          'us-east-1': 12,
+        },
+      },
+    });
 
-  'no validation if first key is token and second is a static string'(test: Test) {
+  });
+
+  test('no validation if first key is token and second is a static string', () => {
     // GIVEN
     const stack = new Stack();
     const mapping = new CfnMapping(stack, 'mapping', {
@@ -96,13 +104,20 @@ nodeunitShim({
     const v = mapping.findInMap(Aws.REGION, 'size');
 
     // THEN
-    test.deepEqual(stack.resolve(v), {
+    expect(stack.resolve(v)).toEqual({
       'Fn::FindInMap': ['mapping', { Ref: 'AWS::Region' }, 'size'],
     });
-    test.done();
-  },
+    expect(toCloudFormation(stack).Mappings).toEqual({
+      mapping: {
+        'us-east-1': {
+          size: 12,
+        },
+      },
+    });
 
-  'validate first key if it is a string and second is a token'(test: Test) {
+  });
+
+  test('validate first key if it is a string and second is a token', () => {
     // GIVEN
     const stack = new Stack();
     const mapping = new CfnMapping(stack, 'mapping', {
@@ -117,8 +132,137 @@ nodeunitShim({
     const v = mapping.findInMap('size', Aws.REGION);
 
     // THEN
-    test.throws(() => mapping.findInMap('not-found', Aws.REGION), /Mapping doesn't contain top-level key 'not-found'/);
-    test.deepEqual(stack.resolve(v), { 'Fn::FindInMap': ['mapping', 'size', { Ref: 'AWS::Region' }] });
-    test.done();
-  },
+    expect(() => mapping.findInMap('not-found', Aws.REGION)).toThrow(/Mapping doesn't contain top-level key 'not-found'/);
+    expect(stack.resolve(v)).toEqual({ 'Fn::FindInMap': ['mapping', 'size', { Ref: 'AWS::Region' }] });
+    expect(toCloudFormation(stack).Mappings).toEqual({
+      mapping: {
+        size: {
+          'us-east-1': 12,
+        },
+      },
+    });
+
+  });
 });
+
+describe('lazy mapping', () => {
+  let stack: Stack;
+  let mapping: CfnMapping;
+  const backing = {
+    TopLevelKey1: {
+      SecondLevelKey1: [1, 2, 3],
+      SecondLevelKey2: { Hello: 'World' },
+    },
+  };
+
+  beforeEach(() => {
+    stack = new Stack();
+    mapping = new CfnMapping(stack, 'Lazy Mapping', {
+      mapping: backing,
+      lazy: true,
+    });
+  });
+
+  it('does not create CfnMapping if findInMap keys can be resolved', () => {
+    const retrievedValue = mapping.findInMap('TopLevelKey1', 'SecondLevelKey1');
+
+    expect(stack.resolve(retrievedValue)).toStrictEqual([1, 2, 3]);
+    expect(toCloudFormation(stack)).toStrictEqual({});
+  });
+
+  it('does not create CfnMapping if findInMap is not called', () => {
+    expect(toCloudFormation(stack)).toStrictEqual({});
+  });
+
+  it('creates CfnMapping if top level key cannot be resolved', () => {
+    const retrievedValue = mapping.findInMap(Aws.REGION, 'SecondLevelKey1');
+
+    expect(stack.resolve(retrievedValue)).toStrictEqual({ 'Fn::FindInMap': ['LazyMapping', { Ref: 'AWS::Region' }, 'SecondLevelKey1'] });
+    expect(toCloudFormation(stack)).toStrictEqual({
+      Mappings: {
+        LazyMapping: backing,
+      },
+    });
+  });
+
+  it('creates CfnMapping if second level key cannot be resolved', () => {
+    const retrievedValue = mapping.findInMap('TopLevelKey1', Aws.REGION);
+
+    expect(stack.resolve(retrievedValue)).toStrictEqual({ 'Fn::FindInMap': ['LazyMapping', 'TopLevelKey1', { Ref: 'AWS::Region' }] });
+    expect(toCloudFormation(stack)).toStrictEqual({
+      Mappings: {
+        LazyMapping: backing,
+      },
+    });
+  });
+
+  it('throws if keys can be resolved but are not found in backing', () => {
+    expect(() => mapping.findInMap('NonExistentKey', 'SecondLevelKey1'))
+      .toThrowError(/Mapping doesn't contain top-level key .*/);
+    expect(() => mapping.findInMap('TopLevelKey1', 'NonExistentKey'))
+      .toThrowError(/Mapping doesn't contain second-level key .*/);
+  });
+});
+
+describe('eager by default', () => {
+  const backing = {
+    TopLevelKey1: {
+      SecondLevelKey1: [1, 2, 3],
+      SecondLevelKey2: { Hello: 'World' },
+    },
+  };
+
+  let app: App;
+  let stack: Stack;
+  let mapping: CfnMapping;
+
+  beforeEach(() => {
+    app = new App();
+    stack = new Stack(app, 'Stack');
+    mapping = new CfnMapping(stack, 'Lazy Mapping', {
+      mapping: backing,
+    });
+  });
+
+  it('emits warning if no findInMap called', () => {
+    const assembly = app.synth();
+
+    expect(getInfoAnnotations(assembly)).toStrictEqual([{
+      path: '/Stack/Lazy Mapping',
+      message: 'Consider making this CfnMapping a lazy mapping by providing `lazy: true`: either no findInMap was called or every findInMap could be immediately resolved without using Fn::FindInMap',
+    }]);
+  });
+
+  it('emits warning if every findInMap resolves immediately', () => {
+    mapping.findInMap('TopLevelKey1', 'SecondLevelKey1');
+
+    const assembly = app.synth();
+
+    expect(getInfoAnnotations(assembly)).toStrictEqual([{
+      path: '/Stack/Lazy Mapping',
+      message: 'Consider making this CfnMapping a lazy mapping by providing `lazy: true`: either no findInMap was called or every findInMap could be immediately resolved without using Fn::FindInMap',
+    }]);
+  });
+
+  it('does not emit warning if a findInMap could not resolve immediately', () => {
+    mapping.findInMap('TopLevelKey1', Aws.REGION);
+
+    const assembly = app.synth();
+
+    expect(getInfoAnnotations(assembly)).toStrictEqual([]);
+  });
+});
+
+function getInfoAnnotations(casm: CloudAssembly) {
+  const result = new Array<{ path: string, message: string }>();
+  for (const stack of Object.values(casm.manifest.artifacts ?? {})) {
+    for (const [path, md] of Object.entries(stack.metadata ?? {})) {
+      for (const x of md) {
+        if (x.type === ArtifactMetadataEntryType.INFO) {
+          result.push({ path, message: x.data as string });
+        }
+      }
+    }
+  }
+  return result;
+}

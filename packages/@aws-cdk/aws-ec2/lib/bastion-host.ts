@@ -1,10 +1,11 @@
 import { IPrincipal, IRole, PolicyStatement } from '@aws-cdk/aws-iam';
 import { CfnOutput, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import { AmazonLinuxGeneration, InstanceClass, InstanceSize, InstanceType } from '.';
+import { AmazonLinuxGeneration, InstanceArchitecture, InstanceClass, InstanceSize, InstanceType } from '.';
+import { CloudFormationInit } from './cfn-init';
 import { Connections } from './connections';
-import { IInstance, Instance } from './instance';
-import { IMachineImage, MachineImage } from './machine-image';
+import { ApplyCloudFormationInitOptions, IInstance, Instance } from './instance';
+import { AmazonLinuxCpuType, IMachineImage, MachineImage } from './machine-image';
 import { IPeer } from './peer';
 import { Port } from './port';
 import { ISecurityGroup } from './security-group';
@@ -14,7 +15,7 @@ import { IVpc, SubnetSelection } from './vpc';
 /**
  * Properties of the bastion host
  *
- * @experimental
+ *
  */
 export interface BastionHostLinuxProps {
 
@@ -60,10 +61,10 @@ export interface BastionHostLinuxProps {
   readonly instanceType?: InstanceType;
 
   /**
-   * The machine image to use
+   * The machine image to use, assumed to have SSM Agent preinstalled.
    *
    * @default - An Amazon Linux 2 image which is kept up-to-date automatically (the instance
-   * may be replaced on every deployment).
+   * may be replaced on every deployment) and already has SSM Agent installed.
    */
   readonly machineImage?: IMachineImage;
 
@@ -80,6 +81,22 @@ export interface BastionHostLinuxProps {
    * @default - Uses the block device mapping of the AMI
    */
   readonly blockDevices?: BlockDevice[];
+
+  /**
+   * Apply the given CloudFormation Init configuration to the instance at startup
+   *
+   * @default - no CloudFormation init
+   */
+  readonly init?: CloudFormationInit;
+
+  /**
+   * Use the given options for applying CloudFormation Init
+   *
+   * Describes the configsets to use and the timeout to wait
+   *
+   * @default - default options
+   */
+  readonly initOptions?: ApplyCloudFormationInitOptions;
 }
 
 /**
@@ -90,7 +107,7 @@ export interface BastionHostLinuxProps {
  *
  * You can also configure this bastion host to allow connections via SSH
  *
- * @experimental
+ *
  * @resource AWS::EC2::Instance
  */
 export class BastionHostLinux extends Resource implements IInstance {
@@ -146,16 +163,21 @@ export class BastionHostLinux extends Resource implements IInstance {
   constructor(scope: Construct, id: string, props: BastionHostLinuxProps) {
     super(scope, id);
     this.stack = Stack.of(scope);
-
+    const instanceType = props.instanceType ?? InstanceType.of(InstanceClass.T3, InstanceSize.NANO);
     this.instance = new Instance(this, 'Resource', {
       vpc: props.vpc,
       availabilityZone: props.availabilityZone,
       securityGroup: props.securityGroup,
       instanceName: props.instanceName ?? 'BastionHost',
-      instanceType: props.instanceType ?? InstanceType.of(InstanceClass.T3, InstanceSize.NANO),
-      machineImage: props.machineImage ?? MachineImage.latestAmazonLinux({ generation: AmazonLinuxGeneration.AMAZON_LINUX_2 }),
+      instanceType,
+      machineImage: props.machineImage ?? MachineImage.latestAmazonLinux({
+        generation: AmazonLinuxGeneration.AMAZON_LINUX_2,
+        cpuType: this.toAmazonLinuxCpuType(instanceType.architecture),
+      }),
       vpcSubnets: props.subnetSelection ?? {},
       blockDevices: props.blockDevices ?? undefined,
+      init: props.init,
+      initOptions: props.initOptions,
     });
     this.instance.addToRolePolicy(new PolicyStatement({
       actions: [
@@ -165,8 +187,6 @@ export class BastionHostLinux extends Resource implements IInstance {
       ],
       resources: ['*'],
     }));
-    this.instance.addUserData('yum install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm');
-
     this.connections = this.instance.connections;
     this.role = this.instance.role;
     this.grantPrincipal = this.instance.role;
@@ -181,6 +201,20 @@ export class BastionHostLinux extends Resource implements IInstance {
       description: 'Instance ID of the bastion host. Use this to connect via SSM Session Manager',
       value: this.instanceId,
     });
+  }
+
+  /**
+   * Returns the AmazonLinuxCpuType corresponding to the given instance architecture
+   * @param architecture the instance architecture value to convert
+   */
+  private toAmazonLinuxCpuType(architecture: InstanceArchitecture): AmazonLinuxCpuType {
+    if (architecture === InstanceArchitecture.ARM_64) {
+      return AmazonLinuxCpuType.ARM_64;
+    } else if (architecture === InstanceArchitecture.X86_64) {
+      return AmazonLinuxCpuType.X86_64;
+    }
+
+    throw new Error(`Unsupported instance architecture '${architecture}'`);
   }
 
   /**

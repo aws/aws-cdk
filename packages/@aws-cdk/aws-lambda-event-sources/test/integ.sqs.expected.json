@@ -69,13 +69,13 @@
         "Code": {
           "ZipFile": "exports.handler = async function handler(event) {\n    console.log('event:', JSON.stringify(event, undefined, 2));\n    return { event };\n}"
         },
-        "Handler": "index.handler",
         "Role": {
           "Fn::GetAtt": [
             "FServiceRole3AC82EE1",
             "Arn"
           ]
         },
+        "Handler": "index.handler",
         "Runtime": "nodejs10.x"
       },
       "DependsOn": [
@@ -86,20 +86,22 @@
     "FSqsEventSourcelambdaeventsourcesqsQ67DE9201754EC819": {
       "Type": "AWS::Lambda::EventSourceMapping",
       "Properties": {
+        "FunctionName": {
+          "Ref": "FC4345940"
+        },
+        "BatchSize": 5,
         "EventSourceArn": {
           "Fn::GetAtt": [
             "Q63C6E3AB",
             "Arn"
           ]
-        },
-        "FunctionName": {
-          "Ref": "FC4345940"
-        },
-        "BatchSize": 5
+        }
       }
     },
     "Q63C6E3AB": {
-      "Type": "AWS::SQS::Queue"
+      "Type": "AWS::SQS::Queue",
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     }
   }
 }

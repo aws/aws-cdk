@@ -1,4 +1,4 @@
-import { App, CfnOutput, Stack } from '@aws-cdk/core';
+import { App, CfnOutput, RemovalPolicy, Stack } from '@aws-cdk/core';
 import { ProviderAttribute, UserPool, UserPoolIdentityProviderGoogle } from '../lib';
 
 /*
@@ -9,7 +9,9 @@ import { ProviderAttribute, UserPool, UserPoolIdentityProviderGoogle } from '../
 const app = new App();
 const stack = new Stack(app, 'integ-user-pool-idp-google');
 
-const userpool = new UserPool(stack, 'pool');
+const userpool = new UserPool(stack, 'pool', {
+  removalPolicy: RemovalPolicy.DESTROY,
+});
 
 new UserPoolIdentityProviderGoogle(stack, 'google', {
   userPool: userpool,

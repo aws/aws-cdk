@@ -1,5 +1,6 @@
-import { IResource, Resource } from '@aws-cdk/core';
+import { IResource, RemovalPolicy, Resource } from '@aws-cdk/core';
 import { Construct } from 'constructs';
+import { Architecture } from './architecture';
 import { Code } from './code';
 import { CfnLayerVersion, CfnLayerVersionPermission } from './lambda.generated';
 import { Runtime } from './runtime';
@@ -28,6 +29,14 @@ export interface LayerVersionOptions {
    * @default - A name will be generated.
    */
   readonly layerVersionName?: string;
+
+  /**
+   * Whether to retain this version of the layer when a new version is added
+   * or when the stack is deleted.
+   *
+   * @default RemovalPolicy.DESTROY
+   */
+  readonly removalPolicy?: RemovalPolicy;
 }
 
 export interface LayerVersionProps extends LayerVersionOptions {
@@ -37,6 +46,12 @@ export interface LayerVersionProps extends LayerVersionOptions {
    * @default - All runtimes are supported.
    */
   readonly compatibleRuntimes?: Runtime[];
+
+  /**
+   * The system architectures compatible with this layer.
+   * @default [Architecture.X86_64]
+   */
+  readonly compatibleArchitectures?: Architecture[];
 
   /**
    * The content of this Layer.
@@ -188,6 +203,7 @@ export class LayerVersion extends LayerVersionBase {
 
     const resource: CfnLayerVersion = new CfnLayerVersion(this, 'Resource', {
       compatibleRuntimes: props.compatibleRuntimes && props.compatibleRuntimes.map(r => r.name),
+      compatibleArchitectures: props.compatibleArchitectures?.map(a => a.name),
       content: {
         s3Bucket: code.s3Location.bucketName,
         s3Key: code.s3Location.objectKey,
@@ -197,6 +213,10 @@ export class LayerVersion extends LayerVersionBase {
       layerName: this.physicalName,
       licenseInfo: props.license,
     });
+
+    if (props.removalPolicy) {
+      resource.applyRemovalPolicy(props.removalPolicy);
+    }
 
     props.code.bindToResource(resource, {
       resourceProperty: 'Content',

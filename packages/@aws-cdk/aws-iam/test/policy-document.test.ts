@@ -1,8 +1,9 @@
-import '@aws-cdk/assert/jest';
+import { Template } from '@aws-cdk/assertions';
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Lazy, Stack, Token } from '@aws-cdk/core';
 import {
   AccountPrincipal, Anyone, AnyPrincipal, ArnPrincipal, CanonicalUserPrincipal, CompositePrincipal,
-  Effect, FederatedPrincipal, IPrincipal, PolicyDocument, PolicyStatement, PrincipalPolicyFragment, ServicePrincipal,
+  Effect, FederatedPrincipal, IPrincipal, PolicyDocument, PolicyStatement, PrincipalPolicyFragment, ServicePrincipal, Role,
 } from '../lib';
 
 describe('IAM policy document', () => {
@@ -100,6 +101,19 @@ describe('IAM policy document', () => {
         notActions: ['service:action', '*', 'service:acti*', 'in:val:id'],
       });
     }).toThrow(/Action 'in:val:id' is invalid/);
+  });
+
+  // https://github.com/aws/aws-cdk/issues/13479
+  test('Does not validate unresolved tokens', () => {
+    const stack = new Stack();
+    const perm = new PolicyStatement({
+      actions: [`${Lazy.string({ produce: () => 'sqs:sendMessage' })}`],
+    });
+
+    expect(stack.resolve(perm.toStatementJson())).toEqual({
+      Effect: 'Allow',
+      Action: 'sqs:sendMessage',
+    });
   });
 
   test('Cannot combine Resources and NotResources', () => {
@@ -270,7 +284,7 @@ describe('IAM policy document', () => {
 
       expect(stack.resolve(p)).toEqual({
         Statement: [
-          { Effect: 'Allow', Principal: '*' },
+          { Effect: 'Allow', Principal: { AWS: '*' } },
         ],
         Version: '2012-10-17',
       });
@@ -284,7 +298,7 @@ describe('IAM policy document', () => {
 
       expect(stack.resolve(p)).toEqual({
         Statement: [
-          { Effect: 'Allow', Principal: '*' },
+          { Effect: 'Allow', Principal: { AWS: '*' } },
         ],
         Version: '2012-10-17',
       });
@@ -300,7 +314,7 @@ describe('IAM policy document', () => {
 
       expect(stack.resolve(p)).toEqual({
         Statement: [
-          { Effect: 'Allow', Principal: '*' },
+          { Effect: 'Allow', Principal: { AWS: '*' } },
         ],
         Version: '2012-10-17',
       });
@@ -318,6 +332,40 @@ describe('IAM policy document', () => {
       Effect: 'Allow',
       Action: ['a', 'b', 'c'],
       Resource: ['x', 'y', 'z'],
+    });
+  });
+
+  test('addResources()/addActions() will not add duplicates', () => {
+    const stack = new Stack();
+
+    const statement = new PolicyStatement();
+    statement.addActions('a');
+    statement.addActions('a');
+
+    statement.addResources('x');
+    statement.addResources('x');
+
+    expect(stack.resolve(statement.toStatementJson())).toEqual({
+      Effect: 'Allow',
+      Action: ['a'],
+      Resource: ['x'],
+    });
+  });
+
+  test('addNotResources()/addNotActions() will not add duplicates', () => {
+    const stack = new Stack();
+
+    const statement = new PolicyStatement();
+    statement.addNotActions('a');
+    statement.addNotActions('a');
+
+    statement.addNotResources('x');
+    statement.addNotResources('x');
+
+    expect(stack.resolve(statement.toStatementJson())).toEqual({
+      Effect: 'Allow',
+      NotAction: ['a'],
+      NotResource: ['x'],
     });
   });
 
@@ -397,7 +445,8 @@ describe('IAM policy document', () => {
       });
     });
 
-    test('regional service principals resolve appropriately (with user-set region)', () => {
+    // Deprecated: 'region' parameter to ServicePrincipal shouldn't be used.
+    testDeprecated('regional service principals resolve appropriately (with user-set region)', () => {
       const stack = new Stack(undefined, undefined, { env: { region: 'cn-northeast-1' } });
       const s = new PolicyStatement();
       s.addActions('test:Action');
@@ -434,10 +483,46 @@ describe('IAM policy document', () => {
       expect(stack.resolve(statement.toStatementJson())).toEqual({ Effect: 'Allow', Principal: { AWS: 'i:am:an:arn' } });
     });
 
-    test('conditions are not allowed on individual principals of a composite', () => {
-      const p = new CompositePrincipal(new ArnPrincipal('i:am'));
-      expect(() => p.addPrincipals(new FederatedPrincipal('federated', { StringEquals: { 'aws:some-key': 'some-value' } })))
-        .toThrow(/Components of a CompositePrincipal must not have conditions/);
+    test('conditions are allowed in an assumerolepolicydocument', () => {
+      const stack = new Stack();
+      new Role(stack, 'Role', {
+        assumedBy: new CompositePrincipal(
+          new ArnPrincipal('i:am'),
+          new FederatedPrincipal('federated', { StringEquals: { 'aws:some-key': 'some-value' } }),
+        ),
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+        AssumeRolePolicyDocument: {
+          Statement: [
+            {
+              Action: 'sts:AssumeRole',
+              Effect: 'Allow',
+              Principal: { AWS: 'i:am' },
+            },
+            {
+              Action: 'sts:AssumeRole',
+              Condition: {
+                StringEquals: { 'aws:some-key': 'some-value' },
+              },
+              Effect: 'Allow',
+              Principal: { Federated: 'federated' },
+            },
+          ],
+        },
+      });
+    });
+
+    test('conditions are not allowed when used in a single statement', () => {
+
+      expect(() => {
+        new PolicyStatement({
+          actions: ['s3:test'],
+          principals: [new CompositePrincipal(
+            new ArnPrincipal('i:am'),
+            new FederatedPrincipal('federated', { StringEquals: { 'aws:some-key': 'some-value' } }))],
+        });
+      }).toThrow(/Components of a CompositePrincipal must not have conditions/);
     });
 
     test('principals and conditions are a big nice merge', () => {
@@ -472,13 +557,33 @@ describe('IAM policy document', () => {
       });
     });
 
-    test('cannot mix types of assumeRoleAction in a single composite', () => {
-      // GIVEN
-      const p = new CompositePrincipal(new ArnPrincipal('arn')); // assumeRoleAction is "sts:AssumeRule"
+    test('can mix types of assumeRoleAction in a single composite', () => {
+      const stack = new Stack();
+
+      // WHEN
+      new Role(stack, 'Role', {
+        assumedBy: new CompositePrincipal(
+          new ArnPrincipal('arn'),
+          new FederatedPrincipal('fed', {}, 'sts:Boom')),
+      });
 
       // THEN
-      expect(() => p.addPrincipals(new FederatedPrincipal('fed', {}, 'sts:Boom')))
-        .toThrow(/Cannot add multiple principals with different "assumeRoleAction". Expecting "sts:AssumeRole", got "sts:Boom"/);
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+        AssumeRolePolicyDocument: {
+          Statement: [
+            {
+              Action: 'sts:AssumeRole',
+              Effect: 'Allow',
+              Principal: { AWS: 'arn' },
+            },
+            {
+              Action: 'sts:Boom',
+              Effect: 'Allow',
+              Principal: { Federated: 'fed' },
+            },
+          ],
+        },
+      });
     });
   });
 
@@ -717,6 +822,7 @@ describe('IAM policy document', () => {
         });
       }).toThrow(/Statement must be an array/);
     });
+
   });
 
   test('adding another condition with the same operator does not delete the original', () => {

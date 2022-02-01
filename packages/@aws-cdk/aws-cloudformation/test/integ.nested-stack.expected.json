@@ -1,7 +1,9 @@
 {
   "Resources": {
     "SubscriberQueueC193DC66": {
-      "Type": "AWS::SQS::Queue"
+      "Type": "AWS::SQS::Queue",
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
     "SubscriberQueuePolicy25A0799E": {
       "Type": "AWS::SQS::QueuePolicy",
@@ -196,7 +198,9 @@
             "Ref": "SubscriberQueueC193DC66"
           }
         }
-      }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
     "NestedStack2NestedStackNestedStack2NestedStackResourceFDF82E43": {
       "Type": "AWS::CloudFormation::Stack",
@@ -250,7 +254,9 @@
         "Parameters": {
           "TopicNamePrefix": "Prefix2"
         }
-      }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     }
   },
   "Parameters": {

@@ -28,7 +28,14 @@
         ]
       }
     },
-    "projectReferences": true
+    "projectReferences": true,
+    "metadata": {
+      "jsii": {
+        "rosetta": {
+          "strict": true
+        }
+      }
+    }
   },
   "repository": {
     "type": "git",
@@ -50,7 +57,9 @@
     "build+test": "yarn build && yarn test",
     "compat": "cdk-compat",
     "gen": "cfn2ts",
-    "rosetta:extract": "yarn --silent jsii-rosetta extract"
+    "rosetta:extract": "yarn --silent jsii-rosetta extract",
+    "build+extract": "yarn build && yarn rosetta:extract",
+    "build+test+extract": "yarn build+test && yarn rosetta:extract"
   },
   "cdk-build": {
     "cloudformation": "AWS::AppMesh",
@@ -75,13 +84,13 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "0.0.0",
-    "@types/nodeunit": "^0.0.31",
-    "cdk-build-tools": "0.0.0",
-    "cdk-integ-tools": "0.0.0",
-    "cfn2ts": "0.0.0",
-    "nodeunit": "^0.11.3",
-    "pkglint": "0.0.0"
+    "@aws-cdk/assertions": "0.0.0",
+    "@aws-cdk/cdk-build-tools": "0.0.0",
+    "@aws-cdk/cdk-integ-tools": "0.0.0",
+    "@aws-cdk/cfn2ts": "0.0.0",
+    "@aws-cdk/pkglint": "0.0.0",
+    "@types/jest": "^27.4.0",
+    "jest": "^27.4.7"
   },
   "dependencies": {
     "@aws-cdk/aws-acmpca": "0.0.0",
@@ -90,7 +99,7 @@
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/aws-servicediscovery": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.2.0"
+    "constructs": "^3.3.69"
   },
   "peerDependencies": {
     "@aws-cdk/aws-acmpca": "0.0.0",
@@ -99,7 +108,7 @@
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/aws-servicediscovery": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.2.0"
+    "constructs": "^3.3.69"
   },
   "engines": {
     "node": ">= 10.13.0 <13 || >=13.7.0"
@@ -183,12 +192,16 @@
       "duration-prop-type:@aws-cdk/aws-appmesh.TcpVirtualNodeListenerOptions.timeout",
       "duration-prop-type:@aws-cdk/aws-appmesh.GrpcRouteSpecOptions.timeout",
       "duration-prop-type:@aws-cdk/aws-appmesh.HttpRouteSpecOptions.timeout",
-      "duration-prop-type:@aws-cdk/aws-appmesh.TcpRouteSpecOptions.timeout"
+      "duration-prop-type:@aws-cdk/aws-appmesh.TcpRouteSpecOptions.timeout",
+      "no-unused-type:@aws-cdk/aws-appmesh.Protocol"
     ]
   },
-  "stability": "experimental",
-  "maturity": "developer-preview",
+  "stability": "stable",
+  "maturity": "stable",
   "awscdkio": {
     "announce": false
+  },
+  "publishConfig": {
+    "tag": "latest"
   }
 }

@@ -1,5 +1,4 @@
-import { ResourcePart } from '@aws-cdk/assert';
-import '@aws-cdk/assert/jest';
+import { Match, Template } from '@aws-cdk/assertions';
 import * as kms from '@aws-cdk/aws-kms';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as s3 from '@aws-cdk/aws-s3';
@@ -25,7 +24,7 @@ test('add header action', () => {
     value: 'value',
   }));
 
-  expect(stack).toHaveResource('AWS::SES::ReceiptRule', {
+  Template.fromStack(stack).hasResourceProperties('AWS::SES::ReceiptRule', {
     Rule: {
       Actions: [
         {
@@ -62,7 +61,7 @@ test('add bounce action', () => {
     topic,
   }));
 
-  expect(stack).toHaveResource('AWS::SES::ReceiptRule', {
+  Template.fromStack(stack).hasResourceProperties('AWS::SES::ReceiptRule', {
     Rule: {
       Actions: [
         {
@@ -95,7 +94,7 @@ test('add lambda action', () => {
     topic,
   }));
 
-  expect(stack).toHaveResource('AWS::SES::ReceiptRule', {
+  Template.fromStack(stack).hasResource('AWS::SES::ReceiptRule', {
     Properties: {
       Rule: {
         Actions: [
@@ -123,9 +122,9 @@ test('add lambda action', () => {
     DependsOn: [
       'FunctionAllowSes1829904A',
     ],
-  }, ResourcePart.CompleteDefinition);
+  });
 
-  expect(stack).toHaveResource('AWS::Lambda::Permission', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
     Action: 'lambda:InvokeFunction',
     FunctionName: {
       'Fn::GetAtt': [
@@ -151,7 +150,7 @@ test('add s3 action', () => {
     topic,
   }));
 
-  expect(stack).toHaveResource('AWS::SES::ReceiptRule', {
+  Template.fromStack(stack).hasResource('AWS::SES::ReceiptRule', {
     Properties: {
       Rule: {
         Actions: [
@@ -182,9 +181,9 @@ test('add s3 action', () => {
     DependsOn: [
       'BucketPolicyE9A3008A',
     ],
-  }, ResourcePart.CompleteDefinition);
+  });
 
-  expect(stack).toHaveResource('AWS::S3::BucketPolicy', {
+  Template.fromStack(stack).hasResourceProperties('AWS::S3::BucketPolicy', {
     Bucket: {
       Ref: 'Bucket83908E77',
     },
@@ -223,72 +222,30 @@ test('add s3 action', () => {
     },
   });
 
-  expect(stack).toHaveResource('AWS::KMS::Key', {
+  Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
     KeyPolicy: {
-      Statement: [
-        {
-          Action: [
-            'kms:Create*',
-            'kms:Describe*',
-            'kms:Enable*',
-            'kms:List*',
-            'kms:Put*',
-            'kms:Update*',
-            'kms:Revoke*',
-            'kms:Disable*',
-            'kms:Get*',
-            'kms:Delete*',
-            'kms:ScheduleKeyDeletion',
-            'kms:CancelKeyDeletion',
-            'kms:GenerateDataKey',
-            'kms:TagResource',
-            'kms:UntagResource',
-          ],
-          Effect: 'Allow',
-          Principal: {
-            AWS: {
-              'Fn::Join': [
-                '',
-                [
-                  'arn:',
-                  {
-                    Ref: 'AWS::Partition',
-                  },
-                  ':iam::',
-                  {
-                    Ref: 'AWS::AccountId',
-                  },
-                  ':root',
-                ],
-              ],
+      Statement: Match.arrayWith([{
+        Action: [
+          'kms:Encrypt',
+          'kms:GenerateDataKey',
+        ],
+        Condition: {
+          Null: {
+            'kms:EncryptionContext:aws:ses:rule-name': 'false',
+            'kms:EncryptionContext:aws:ses:message-id': 'false',
+          },
+          StringEquals: {
+            'kms:EncryptionContext:aws:ses:source-account': {
+              Ref: 'AWS::AccountId',
             },
           },
-          Resource: '*',
         },
-        {
-          Action: [
-            'kms:Encrypt',
-            'kms:GenerateDataKey',
-          ],
-          Condition: {
-            Null: {
-              'kms:EncryptionContext:aws:ses:rule-name': 'false',
-              'kms:EncryptionContext:aws:ses:message-id': 'false',
-            },
-            StringEquals: {
-              'kms:EncryptionContext:aws:ses:source-account': {
-                Ref: 'AWS::AccountId',
-              },
-            },
-          },
-          Effect: 'Allow',
-          Principal: {
-            Service: 'ses.amazonaws.com',
-          },
-          Resource: '*',
+        Effect: 'Allow',
+        Principal: {
+          Service: 'ses.amazonaws.com',
         },
-      ],
-      Version: '2012-10-17',
+        Resource: '*',
+      }]),
     },
   });
 });
@@ -299,7 +256,7 @@ test('add sns action', () => {
     topic,
   }));
 
-  expect(stack).toHaveResource('AWS::SES::ReceiptRule', {
+  Template.fromStack(stack).hasResourceProperties('AWS::SES::ReceiptRule', {
     Rule: {
       Actions: [
         {
@@ -321,7 +278,7 @@ test('add stop action', () => {
     topic,
   }));
 
-  expect(stack).toHaveResource('AWS::SES::ReceiptRule', {
+  Template.fromStack(stack).hasResourceProperties('AWS::SES::ReceiptRule', {
     Rule: {
       Actions: [
         {
