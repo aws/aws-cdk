@@ -36,5 +36,6 @@ alarm.addAlarmAction(
     actions.OpsItemCategory.PERFORMANCE // category is optional
   )
 );
+```
 
 See `@aws-cdk/aws-cloudwatch` for more information.
