@@ -172,7 +172,7 @@ test('readCurrentTemplateWithNestedStacks() can handle non-Resources in the temp
             NestedStack: {
               Type: 'AWS::CloudFormation::Stack',
               Properties: {
-                TemplateURL: 'https://www.my-magic-url.com',
+                TemplateURL: 'https://www.magic-url.com',
               },
               Metadata: {
                 'aws:asset:path': 'one-output-one-param-stack.nested.template.json',
@@ -221,7 +221,7 @@ test('readCurrentTemplateWithNestedStacks() can handle non-Resources in the temp
         NestedStack: {
           Type: 'AWS::CloudFormation::Stack',
           Properties: {
-            TemplateURL: 'https://www.my-magic-url.com',
+            TemplateURL: 'https://www.magic-url.com',
           },
           Metadata: {
             'aws:asset:path': 'one-output-one-param-stack.nested.template.json',
@@ -251,7 +251,7 @@ test('readCurrentTemplateWithNestedStacks() can handle non-Resources in the temp
       NestedStack: {
         Type: 'AWS::CloudFormation::Stack',
         Properties: {
-          TemplateURL: 'https://www.my-magic-url.com',
+          TemplateURL: 'https://www.magic-url.com',
           NestedTemplate: {
             Resources: {
               NestedResource: {
@@ -287,7 +287,7 @@ test('readCurrentTemplateWithNestedStacks() can handle non-Resources in the temp
       NestedStack: {
         Type: 'AWS::CloudFormation::Stack',
         Properties: {
-          TemplateURL: 'https://www.my-magic-url.com',
+          TemplateURL: 'https://www.magic-url.com',
           NestedTemplate: {
             Resources: {
               NestedResource: {
@@ -329,7 +329,7 @@ test('readCurrentTemplateWithNestedStacks() with a 3-level nested + sibling stru
             NestedStack: {
               Type: 'AWS::CloudFormation::Stack',
               Properties: {
-                TemplateURL: 'https://www.my-magic-url.com',
+                TemplateURL: 'https://www.magic-url.com',
               },
               Metadata: {
                 'aws:asset:path': 'one-resource-two-stacks-stack.nested.template.json',
@@ -351,7 +351,7 @@ test('readCurrentTemplateWithNestedStacks() with a 3-level nested + sibling stru
             NestedStackA: {
               Type: 'AWS::CloudFormation::Stack',
               Properties: {
-                TemplateURL: 'https://www.my-magic-url.com',
+                TemplateURL: 'https://www.magic-url.com',
               },
               Metadata: {
                 'aws:asset:path': 'one-resource-stack.nested.template.json',
@@ -360,7 +360,7 @@ test('readCurrentTemplateWithNestedStacks() with a 3-level nested + sibling stru
             NestedStackB: {
               Type: 'AWS::CloudFormation::Stack',
               Properties: {
-                TemplateURL: 'https://www.my-magic-url.com',
+                TemplateURL: 'https://www.magic-url.com',
               },
               Metadata: {
                 'aws:asset:path': 'one-resource-stack.nested.template.json',
@@ -410,7 +410,7 @@ test('readCurrentTemplateWithNestedStacks() with a 3-level nested + sibling stru
         NestedStack: {
           Type: 'AWS::CloudFormation::Stack',
           Properties: {
-            TemplateURL: 'https://www.my-magic-url.com',
+            TemplateURL: 'https://www.magic-url.com',
           },
           Metadata: {
             'aws:asset:path': 'one-resource-two-stacks-stack.nested.template.json',
@@ -466,13 +466,13 @@ test('readCurrentTemplateWithNestedStacks() with a 3-level nested + sibling stru
       NestedStack: {
         Type: 'AWS::CloudFormation::Stack',
         Properties: {
-          TemplateURL: 'https://www.my-magic-url.com',
+          TemplateURL: 'https://www.magic-url.com',
           NestedTemplate: {
             Resources: {
               NestedStackA: {
                 Type: 'AWS::CloudFormation::Stack',
                 Properties: {
-                  TemplateURL: 'https://www.my-magic-url.com',
+                  TemplateURL: 'https://www.magic-url.com',
                   NestedTemplate: {
                     Resources: {
                       SomeResource: {
@@ -491,7 +491,7 @@ test('readCurrentTemplateWithNestedStacks() with a 3-level nested + sibling stru
               NestedStackB: {
                 Type: 'AWS::CloudFormation::Stack',
                 Properties: {
-                  TemplateURL: 'https://www.my-magic-url.com',
+                  TemplateURL: 'https://www.magic-url.com',
                   NestedTemplate: {
                     Resources: {
                       SomeResource: {
@@ -528,13 +528,13 @@ test('readCurrentTemplateWithNestedStacks() with a 3-level nested + sibling stru
       NestedStack: {
         Type: 'AWS::CloudFormation::Stack',
         Properties: {
-          TemplateURL: 'https://www.my-magic-url.com',
+          TemplateURL: 'https://www.magic-url.com',
           NestedTemplate: {
             Resources: {
               NestedStackA: {
                 Type: 'AWS::CloudFormation::Stack',
                 Properties: {
-                  TemplateURL: 'https://www.my-magic-url.com',
+                  TemplateURL: 'https://www.magic-url.com',
                   NestedTemplate: {
                     Resources: {
                       SomeResource: {
@@ -553,7 +553,7 @@ test('readCurrentTemplateWithNestedStacks() with a 3-level nested + sibling stru
               NestedStackB: {
                 Type: 'AWS::CloudFormation::Stack',
                 Properties: {
-                  TemplateURL: 'https://www.my-magic-url.com',
+                  TemplateURL: 'https://www.magic-url.com',
                   NestedTemplate: {
                     Resources: {
                       SomeResource: {
@@ -601,7 +601,7 @@ test('readCurrentTemplateWithNestedStacks() on an undeployed parent stack with a
         NestedStack: {
           Type: 'AWS::CloudFormation::Stack',
           Properties: {
-            TemplateURL: 'https://www.my-magic-url.com',
+            TemplateURL: 'https://www.magic-url.com',
           },
           Metadata: {
             'aws:asset:path': 'one-resource-one-stack-stack.nested.template.json',
@@ -646,7 +646,7 @@ test('readCurrentTemplateWithNestedStacks() caches calls to listStackResources()
         NestedStackA: {
           Type: 'AWS::CloudFormation::Stack',
           Properties: {
-            TemplateURL: 'https://www.my-magic-url.com',
+            TemplateURL: 'https://www.magic-url.com',
           },
           Metadata: {
             'aws:asset:path': 'one-resource-stack.nested.template.json',
@@ -655,7 +655,7 @@ test('readCurrentTemplateWithNestedStacks() caches calls to listStackResources()
         NestedStackB: {
           Type: 'AWS::CloudFormation::Stack',
           Properties: {
-            TemplateURL: 'https://www.my-magic-url.com',
+            TemplateURL: 'https://www.magic-url.com',
           },
           Metadata: {
             'aws:asset:path': 'one-resource-stack.nested.template.json',
@@ -674,7 +674,7 @@ test('readCurrentTemplateWithNestedStacks() caches calls to listStackResources()
         NestedStackA: {
           Type: 'AWS::CloudFormation::Stack',
           Properties: {
-            TemplateURL: 'https://www.my-magic-url.com',
+            TemplateURL: 'https://www.magic-url.com',
           },
           Metadata: {
             'aws:asset:path': 'one-resource-stack.nested.template.json',
@@ -683,7 +683,7 @@ test('readCurrentTemplateWithNestedStacks() caches calls to listStackResources()
         NestedStackB: {
           Type: 'AWS::CloudFormation::Stack',
           Properties: {
-            TemplateURL: 'https://www.my-magic-url.com',
+            TemplateURL: 'https://www.magic-url.com',
           },
           Metadata: {
             'aws:asset:path': 'one-resource-stack.nested.template.json',
@@ -719,7 +719,7 @@ test('readCurrentTemplateWithNestedStacks() succesfully ignores stacks without m
           WithMetadata: {
             Type: 'AWS::CloudFormation::Stack',
             Properties: {
-              TemplateURL: 'https://www.my-magic-url.com',
+              TemplateURL: 'https://www.magic-url.com',
             },
             Metadata: {
               'aws:asset:path': 'one-resource-stack.nested.template.json',
@@ -750,21 +750,21 @@ test('readCurrentTemplateWithNestedStacks() succesfully ignores stacks without m
       Resources: {
         WithoutMetadata: {
           Properties: {
-            TemplateURL: 'https://www.my-magic-url.com',
+            TemplateURL: 'https://www.magic-url.com',
           },
           Type: 'AWS::CloudFormation::Stack',
         },
         WithEmptyMetadata: {
           Type: 'AWS::CloudFormation::Stack',
           Properties: {
-            TemplateURL: 'https://www.my-magic-url.com',
+            TemplateURL: 'https://www.magic-url.com',
           },
           Metadata: {},
         },
         WithMetadata: {
           Type: 'AWS::CloudFormation::Stack',
           Properties: {
-            TemplateURL: 'https://www.my-magic-url.com',
+            TemplateURL: 'https://www.magic-url.com',
           },
           Metadata: {
             'aws:asset:path': 'one-resource-stack.nested.template.json',
@@ -787,7 +787,7 @@ test('readCurrentTemplateWithNestedStacks() succesfully ignores stacks without m
       WithMetadata: {
         Type: 'AWS::CloudFormation::Stack',
         Properties: {
-          TemplateURL: 'https://www.my-magic-url.com',
+          TemplateURL: 'https://www.magic-url.com',
           NestedTemplate: {
             Resources: {
               SomeResource: {
@@ -811,20 +811,20 @@ test('readCurrentTemplateWithNestedStacks() succesfully ignores stacks without m
       WithoutMetadata: { // Unchanged
         Type: 'AWS::CloudFormation::Stack',
         Properties: {
-          TemplateURL: 'https://www.my-magic-url.com',
+          TemplateURL: 'https://www.magic-url.com',
         },
       },
       WithEmptyMetadata: { // Unchanged
         Type: 'AWS::CloudFormation::Stack',
         Properties: {
-          TemplateURL: 'https://www.my-magic-url.com',
+          TemplateURL: 'https://www.magic-url.com',
         },
         Metadata: {},
       },
       WithMetadata: { // Changed
         Type: 'AWS::CloudFormation::Stack',
         Properties: {
-          TemplateURL: 'https://www.my-magic-url.com',
+          TemplateURL: 'https://www.magic-url.com',
           NestedTemplate: {
             Resources: {
               SomeResource: {
@@ -854,7 +854,7 @@ test('readCurrentTemplateWithNestedStacks() does not erase the AWS::CloudFormati
           WithProperties: {
             Type: 'AWS::CloudFormation::Stack',
             Properties: {
-              TemplateURL: 'https://www.my-magic-url.com',
+              TemplateURL: 'https://www.magic-url.com',
               TimeoutInMinutes: 5,
             },
             Metadata: {
@@ -887,7 +887,7 @@ test('readCurrentTemplateWithNestedStacks() does not erase the AWS::CloudFormati
         WithProperties: {
           Type: 'AWS::CloudFormation::Stack',
           Properties: {
-            TemplateURL: 'https://www.my-magic-url.com',
+            TemplateURL: 'https://www.magic-url.com',
             TimeoutInMinutes: 5,
           },
           Metadata: {
@@ -912,7 +912,7 @@ test('readCurrentTemplateWithNestedStacks() does not erase the AWS::CloudFormati
         Type: 'AWS::CloudFormation::Stack',
         Properties: {
           TimeoutInMinutes: 5,
-          TemplateURL: 'https://www.my-magic-url.com',
+          TemplateURL: 'https://www.magic-url.com',
           NestedTemplate: {
             Resources: {
               SomeResource: {
@@ -936,7 +936,7 @@ test('readCurrentTemplateWithNestedStacks() does not erase the AWS::CloudFormati
       WithProperties: {
         Type: 'AWS::CloudFormation::Stack',
         Properties: {
-          TemplateURL: 'https://www.my-magic-url.com',
+          TemplateURL: 'https://www.magic-url.com',
           TimeoutInMinutes: 5,
           NestedTemplate: {
             Resources: {
