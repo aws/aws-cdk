@@ -25,5 +25,3 @@ export interface AwsCloudFormationStackProperties {
    */
   readonly terminationProtection?: boolean;
 }
-
-export { CloudArtifact } from './cloud-assembly';
