@@ -49,7 +49,10 @@ The following source types are supported for bucket deployments:
 - Local .zip file: `s3deploy.Source.asset('/path/to/local/file.zip')`
 - Local directory: `s3deploy.Source.asset('/path/to/local/directory')`
 - Another bucket: `s3deploy.Source.bucket(bucket, zipObjectKey)`
-- Textual data: `s3deploy.Source.data('object-key.txt', 'hello, world!')`
+- String data: `s3deploy.Source.data('object-key.txt', 'hello, world!')`
+  (supports [deploy-time values](#data-with-deploy-time-values))
+- JSON data: `s3deploy.Source.jsonData('object-key.json', { json: 'object' })`
+  (supports [deploy-time values](#data-with-deploy-time-values))
 
 To create a source from a single file, you can pass `AssetOptions` to exclude
 all but a single file:
