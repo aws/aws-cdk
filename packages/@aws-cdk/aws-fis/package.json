@@ -30,6 +30,13 @@
         "distName": "aws-cdk.aws-fis",
         "module": "aws_cdk.aws_fis"
       }
+    },
+    "metadata": {
+      "jsii": {
+        "rosetta": {
+          "strict": true
+        }
+      }
     }
   },
   "repository": {

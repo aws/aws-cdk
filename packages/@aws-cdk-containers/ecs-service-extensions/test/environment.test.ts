@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as autoscaling from '@aws-cdk/aws-autoscaling';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
@@ -27,9 +27,9 @@ describe('environment', () => {
     });
 
     // THEN
-    expect(stack).toCountResources('AWS::ECS::Service', 1);
+    Template.fromStack(stack).resourceCountIs('AWS::ECS::Service', 1);
 
-    expect(stack).toHaveResource('AWS::ECS::TaskDefinition', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
         {
           Cpu: 256,
@@ -67,8 +67,6 @@ describe('environment', () => {
         ],
       },
     });
-
-
   });
 
   test('should be able to create a Fargate environment with a given VPC and cluster', () => {
@@ -98,9 +96,9 @@ describe('environment', () => {
     });
 
     // THEN
-    expect(stack).toCountResources('AWS::ECS::Service', 1);
+    Template.fromStack(stack).resourceCountIs('AWS::ECS::Service', 1);
 
-    expect(stack).toHaveResource('AWS::ECS::TaskDefinition', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
         {
           Cpu: 256,
@@ -138,8 +136,6 @@ describe('environment', () => {
         ],
       },
     });
-
-
   });
 
   test('should be able to create an environment for EC2', () => {
@@ -177,9 +173,9 @@ describe('environment', () => {
     });
 
     // THEN
-    expect(stack).toCountResources('AWS::ECS::Service', 1);
+    Template.fromStack(stack).resourceCountIs('AWS::ECS::Service', 1);
 
-    expect(stack).toHaveResource('AWS::ECS::TaskDefinition', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
         {
           Cpu: 256,
@@ -217,8 +213,6 @@ describe('environment', () => {
         ],
       },
     });
-
-
   });
 
   test('should be able to create an environment from attributes', () => {
@@ -246,7 +240,5 @@ describe('environment', () => {
     expect(environment.cluster).toEqual(cluster);
     expect(environment.vpc).toEqual(vpc);
     expect(environment.id).toEqual('Environment');
-
-
   });
 });

@@ -80,6 +80,10 @@ export class VpcNetworkContextProviderPlugin implements ContextProviderPlugin {
         throw new Error(`Subnet ${subnet.SubnetArn} has invalid subnet type ${type} (must be ${SubnetType.Public}, ${SubnetType.Private} or ${SubnetType.Isolated})`);
       }
 
+      if (args.subnetGroupNameTag && !getTag(args.subnetGroupNameTag, subnet.Tags)) {
+        throw new Error(`Invalid subnetGroupNameTag: Subnet ${subnet.SubnetArn} does not have an associated tag with Key='${args.subnetGroupNameTag}'`);
+      }
+
       const name = getTag(args.subnetGroupNameTag || 'aws-cdk:subnet-name', subnet.Tags) || type;
       const routeTableId = routeTables.routeTableIdForSubnetId(subnet.SubnetId);
 
