@@ -451,10 +451,10 @@ export class CloudFormationDeployments {
       const stackResources = await listStackResources?.listStackResources();
       return stackResources?.find(sr => sr.LogicalResourceId === nestedStackLogicalId)?.PhysicalResourceId;
     } catch (e) {
-      if (!(e.message.startsWith('Stack with id ') && e.message.endsWith(' does not exist'))) {
-        throw e;
+      if (e.message.startsWith('Stack with id ') && e.message.endsWith(' does not exist')) {
+        return;
       }
-      return;
+      throw e;
     }
   }
 

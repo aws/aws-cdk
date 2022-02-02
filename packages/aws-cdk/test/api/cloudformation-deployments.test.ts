@@ -166,12 +166,12 @@ test('if toolkit stack cannot be found but SSM parameter name is present deploym
 
 test('readCurrentTemplateWithNestedStacks() can handle non-Resources in the template', async () => {
   const cfnStack = new FakeCloudformationStack({
-    stackName: 'ParentStackWithOutputAndParameter',
+    stackName: 'ParentOfStackWithOutputAndParameter',
     stackId: 'StackId',
   });
   CloudFormationStack.lookup = (async (_, stackName: string) => {
     switch (stackName) {
-      case 'ParentStackWithOutputAndParameter':
+      case 'ParentOfStackWithOutputAndParameter':
         cfnStack.template = async () => ({
           Resources: {
             NestedStack: {
@@ -220,7 +220,7 @@ test('readCurrentTemplateWithNestedStacks() can handle non-Resources in the temp
   });
 
   const rootStack = testStack({
-    stackName: 'ParentStackWithOutputAndParameter',
+    stackName: 'ParentOfStackWithOutputAndParameter',
     template: {
       Resources: {
         NestedStack: {
@@ -236,7 +236,7 @@ test('readCurrentTemplateWithNestedStacks() can handle non-Resources in the temp
     },
   });
 
-  pushStackResourceSummaries('ParentStackWithOutputAndParameter',
+  pushStackResourceSummaries('ParentOfStackWithOutputAndParameter',
     stackSummaryOf('NestedStack', 'AWS::CloudFormation::Stack',
       'arn:aws:cloudformation:bermuda-triangle-1337:123456789012:stack/NestedStack/abcd',
     ),
@@ -351,7 +351,7 @@ test('readCurrentTemplateWithNestedStacks() with a 3-level nested + sibling stru
                 Property: 'old-value',
               },
             },
-            NestedStackA: {
+            GrandChildStackA: {
               Type: 'AWS::CloudFormation::Stack',
               Properties: {
                 TemplateURL: 'https://www.magic-url.com',
@@ -360,7 +360,7 @@ test('readCurrentTemplateWithNestedStacks() with a 3-level nested + sibling stru
                 'aws:asset:path': 'one-resource-stack.nested.template.json',
               },
             },
-            NestedStackB: {
+            GrandChildStackB: {
               Type: 'AWS::CloudFormation::Stack',
               Properties: {
                 TemplateURL: 'https://www.magic-url.com',
@@ -373,7 +373,7 @@ test('readCurrentTemplateWithNestedStacks() with a 3-level nested + sibling stru
         });
         break;
 
-      case 'NestedStackA':
+      case 'GrandChildStackA':
         cfnStack.template = async () => ({
           Resources: {
             SomeResource: {
@@ -386,7 +386,7 @@ test('readCurrentTemplateWithNestedStacks() with a 3-level nested + sibling stru
         });
         break;
 
-      case 'NestedStackB':
+      case 'GrandChildStackB':
         cfnStack.template = async () => ({
           Resources: {
             SomeResource: {
@@ -429,19 +429,19 @@ test('readCurrentTemplateWithNestedStacks() with a 3-level nested + sibling stru
     ),
   );
   pushStackResourceSummaries('NestedStack',
-    stackSummaryOf('NestedStackA', 'AWS::CloudFormation::Stack',
-      'arn:aws:cloudformation:bermuda-triangle-1337:123456789012:stack/NestedStackA/abcd',
+    stackSummaryOf('GrandChildStackA', 'AWS::CloudFormation::Stack',
+      'arn:aws:cloudformation:bermuda-triangle-1337:123456789012:stack/GrandChildStackA/abcd',
     ),
-    stackSummaryOf('NestedStackB', 'AWS::CloudFormation::Stack',
-      'arn:aws:cloudformation:bermuda-triangle-1337:123456789012:stack/NestedStackB/abcd',
+    stackSummaryOf('GrandChildStackB', 'AWS::CloudFormation::Stack',
+      'arn:aws:cloudformation:bermuda-triangle-1337:123456789012:stack/GrandChildStackB/abcd',
     ),
   );
-  pushStackResourceSummaries('NestedStackA',
+  pushStackResourceSummaries('GrandChildStackA',
     stackSummaryOf('NestedStack', 'AWS::CloudFormation::Stack',
       'arn:aws:cloudformation:bermuda-triangle-1337:123456789012:stack/GrandChildA/abcd',
     ),
   );
-  pushStackResourceSummaries('NestedStackB',
+  pushStackResourceSummaries('GrandChildStackB',
     stackSummaryOf('NestedStack', 'AWS::CloudFormation::Stack',
       'arn:aws:cloudformation:bermuda-triangle-1337:123456789012:stack/GrandChildB/abcd',
     ),
@@ -459,7 +459,7 @@ test('readCurrentTemplateWithNestedStacks() with a 3-level nested + sibling stru
           TemplateURL: 'https://www.magic-url.com',
           NestedTemplate: {
             Resources: {
-              NestedStackA: {
+              GrandChildStackA: {
                 Type: 'AWS::CloudFormation::Stack',
                 Properties: {
                   TemplateURL: 'https://www.magic-url.com',
@@ -478,7 +478,7 @@ test('readCurrentTemplateWithNestedStacks() with a 3-level nested + sibling stru
                   'aws:asset:path': 'one-resource-stack.nested.template.json',
                 },
               },
-              NestedStackB: {
+              GrandChildStackB: {
                 Type: 'AWS::CloudFormation::Stack',
                 Properties: {
                   TemplateURL: 'https://www.magic-url.com',
@@ -521,7 +521,7 @@ test('readCurrentTemplateWithNestedStacks() with a 3-level nested + sibling stru
           TemplateURL: 'https://www.magic-url.com',
           NestedTemplate: {
             Resources: {
-              NestedStackA: {
+              GrandChildStackA: {
                 Type: 'AWS::CloudFormation::Stack',
                 Properties: {
                   TemplateURL: 'https://www.magic-url.com',
@@ -540,7 +540,7 @@ test('readCurrentTemplateWithNestedStacks() with a 3-level nested + sibling stru
                   'aws:asset:path': 'one-resource-stack.nested.template.json',
                 },
               },
-              NestedStackB: {
+              GrandChildStackB: {
                 Type: 'AWS::CloudFormation::Stack',
                 Properties: {
                   TemplateURL: 'https://www.magic-url.com',

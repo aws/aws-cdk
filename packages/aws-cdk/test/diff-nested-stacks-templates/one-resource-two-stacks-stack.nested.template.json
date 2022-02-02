@@ -6,7 +6,7 @@
         "Property": "new-value"
       }
     },
-    "NestedStackA": {
+    "GrandChildStackA": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
         "TemplateURL": "https://www.magic-url.com"
@@ -15,7 +15,7 @@
         "aws:asset:path": "one-resource-stack.nested.template.json"
       }
     },
-    "NestedStackB": {
+    "GrandChildStackB": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
         "TemplateURL": "https://www.magic-url.com"
