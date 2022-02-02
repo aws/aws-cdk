@@ -160,14 +160,7 @@ test('can set states with transitions', () => {
   firstState.transitionTo(secondState, {
     condition: iotevents.Expression.eq(
       iotevents.Expression.inputAttribute(input, 'payload.temperature'),
-      iotevents.Expression.fromString('12.1'),
-    ),
-  });
-  // transition as 1st -> 2nd, make duprecated transition with different condition
-  firstState.transitionTo(secondState, {
-    condition: iotevents.Expression.eq(
-      iotevents.Expression.inputAttribute(input, 'payload.temperature'),
-      iotevents.Expression.fromString('12.2'),
+      iotevents.Expression.fromString('12'),
     ),
   });
   // transition as 2nd -> 1st, make circular reference
@@ -197,18 +190,11 @@ test('can set states with transitions', () => {
         {
           StateName: 'firstState',
           OnInput: {
-            TransitionEvents: [
-              {
-                EventName: 'firstState_to_secondState',
-                NextState: 'secondState',
-                Condition: '$input.test-input.payload.temperature == 12.1',
-              },
-              {
-                EventName: 'firstState_to_secondState',
-                NextState: 'secondState',
-                Condition: '$input.test-input.payload.temperature == 12.2',
-              },
-            ],
+            TransitionEvents: [{
+              EventName: 'firstState_to_secondState',
+              NextState: 'secondState',
+              Condition: '$input.test-input.payload.temperature == 12',
+            }],
           },
         },
         {
@@ -288,6 +274,34 @@ test('cannot create without event', () => {
       }),
     });
   }).toThrow('Detector Model must have at least one Input with a condition');
+});
+
+test('cannot create transitions that transit to duprecated target state', () => {
+  const firstState = new iotevents.State({
+    stateName: 'firstState',
+    onEnter: [{
+      eventName: 'test-eventName',
+    }],
+  });
+  const secondState = new iotevents.State({
+    stateName: 'secondState',
+  });
+
+  firstState.transitionTo(secondState, {
+    condition: iotevents.Expression.eq(
+      iotevents.Expression.inputAttribute(input, 'payload.temperature'),
+      iotevents.Expression.fromString('12.1'),
+    ),
+  });
+
+  expect(() => {
+    firstState.transitionTo(secondState, {
+      condition: iotevents.Expression.eq(
+        iotevents.Expression.inputAttribute(input, 'payload.temperature'),
+        iotevents.Expression.fromString('12.2'),
+      ),
+    });
+  }).toThrow('A state cannot have transitions that transit to duprecated target state, target state name: secondState');
 });
 
 describe('Expression', () => {

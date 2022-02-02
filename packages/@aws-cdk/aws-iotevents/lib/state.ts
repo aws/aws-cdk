@@ -80,6 +80,11 @@ export class State {
    * @param options transition options including the condition that causes the state transition
    */
   public transitionTo(targetState: State, options: TransitionOptions) {
+    const alreadyAdded = this.transitionEvents.some((event) => event.nextState === targetState);
+    if (alreadyAdded) {
+      throw new Error(`A state cannot have transitions that transit to duprecated target state, target state name: ${targetState.stateName}`);
+    }
+
     this.transitionEvents.push({
       eventName: options.eventName ?? `${this.stateName}_to_${targetState.stateName}`,
       nextState: targetState,
