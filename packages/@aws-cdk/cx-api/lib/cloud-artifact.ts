@@ -34,6 +34,19 @@ export interface AwsCloudFormationStackProperties {
  * Represents an artifact within a cloud assembly.
  */
 export class CloudArtifact {
+  /**
+   * Returns a subclass of `CloudArtifact` based on the artifact type defined in the artifact manifest.
+   *
+   * @param assembly The cloud assembly from which to load the artifact
+   * @param id The artifact ID
+   * @param artifact The artifact manifest
+   * @returns the `CloudArtifact` that matches the artifact type or `undefined` if it's an artifact type that is unrecognized by this module.
+   */
+  public static fromManifest(assembly: CloudAssembly, id: string, artifact: cxschema.ArtifactManifest): CloudArtifact | undefined {
+    // Implementation is defined in a separate file to break cyclic dependencies
+    void(assembly), void(id), void(artifact);
+    throw new Error('Implementation not overridden yet');
+  }
 
   /**
    * The artifact's manifest
@@ -130,18 +143,4 @@ export class CloudArtifact {
   public get hierarchicalId(): string {
     return this.manifest.displayName ?? this.id;
   }
-}
-
-export namespace CloudArtifact {
-  /**
-   * Returns a subclass of `CloudArtifact` based on the artifact type defined in the artifact manifest.
-   *
-   * @param assembly The cloud assembly from which to load the artifact
-   * @param id The artifact ID
-   * @param artifact The artifact manifest
-   * @returns the `CloudArtifact` that matches the artifact type or `undefined` if it's an artifact type that is unrecognized by this module.
-   */
-  export declare function fromManifest(assembly: CloudAssembly, id: string, artifact: cxschema.ArtifactManifest): CloudArtifact | undefined;
-
-  // fromManifest function declared in separate file
 }
