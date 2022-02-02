@@ -1,7 +1,7 @@
 # base lambda image
 FROM public.ecr.aws/lambda/nodejs:latest
 
-ARG PROXY_AGENT_VERSION=5.0.0
+ARG PROXY_AGENT_VERSION=0.0.0
 
 USER root
 RUN mkdir -p /opt
