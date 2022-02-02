@@ -37,7 +37,6 @@ export interface IInput extends IResource {
   grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant
 }
 
-
 abstract class InputBase extends Resource implements IInput {
   public abstract readonly inputName: string;
 
