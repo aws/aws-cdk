@@ -86,6 +86,6 @@ new iotevents.DetectorModel(this, 'MyDetectorModel', {
   description: 'test-detector-model-description', // optional property, default is none
   evaluationMethod: iotevents.EventEvaluation.SERIAL, // optional property, default is iotevents.EventEvaluation.BATCH
   detectorKey: 'payload.deviceId', // optional property, default is none and single detector instance will be created and all inputs will be routed to it
-  initialState: onlineState,
+  initialState: normalState,
 });
 ```
