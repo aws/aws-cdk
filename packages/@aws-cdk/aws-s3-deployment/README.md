@@ -289,7 +289,7 @@ const appConfig = {
 };
 
 new s3deploy.BucketDeployment(this, 'BucketDeployment', {
-  sources: [s3deploy.Source.jsonData('config.json', config)],
+  sources: [s3deploy.Source.jsonData('config.json', appConfig)],
   destinationBucket,
 });
 ```
