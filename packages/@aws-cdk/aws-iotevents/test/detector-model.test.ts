@@ -150,14 +150,11 @@ test('can set states with transitions', () => {
     stateName: 'secondState',
   });
 
-  firstState.transitionTo({
-    eventName: 'firstToSecond',
-    nextState: secondState,
+  firstState.transitionTo(secondState, {
     condition: iotevents.Expression.fromString('test-eventCondition-12'),
   });
-  secondState.transitionTo({
+  secondState.transitionTo(firstState, {
     eventName: 'secondToFirst',
-    nextState: firstState,
     condition: iotevents.Expression.fromString('test-eventCondition-21'),
   });
 
@@ -173,7 +170,7 @@ test('can set states with transitions', () => {
           StateName: 'firstState',
           OnInput: {
             TransitionEvents: [{
-              EventName: 'firstToSecond',
+              EventName: 'firstState_to_secondState',
               NextState: 'secondState',
               Condition: 'test-eventCondition-12',
             }],

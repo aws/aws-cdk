@@ -66,18 +66,15 @@ const coldState = new iotevents.State({
 });
 
 // transit to coldState when temperature is 10
-normalState.transitionTo({
-  eventName: 'to_coldState',
-  nextState: coldState,
+normalState.transitionTo(coldState, {
+  eventName: 'to_coldState', // optional property, default by combining the names of the States
   condition: iotevents.Expression.eq(
     iotevents.Expression.inputAttribute(input, 'payload.temperature'),
     iotevents.Expression.fromString('10'),
   ),
 });
 // transit to normalState when temperature is 20
-coldState.transitionTo({
-  eventName: 'to_normalState',
-  nextState: normalState,
+coldState.transitionTo(normalState, {
   condition: iotevents.Expression.eq(
     iotevents.Expression.inputAttribute(input, 'payload.temperature'),
     iotevents.Expression.fromString('20'),

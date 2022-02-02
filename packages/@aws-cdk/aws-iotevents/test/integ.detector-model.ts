@@ -29,18 +29,14 @@ class TestStack extends cdk.Stack {
     });
 
     // 1st => 2nd
-    firstState.transitionTo({
-      eventName: 'firstToSecond',
-      nextState: secondState,
+    firstState.transitionTo(secondState, {
       condition: iotevents.Expression.eq(
         iotevents.Expression.inputAttribute(input, 'payload.temperature'),
         iotevents.Expression.fromString('12'),
       ),
     });
     // 2st => 1st
-    secondState.transitionTo({
-      eventName: 'secondToFirst',
-      nextState: firstState,
+    secondState.transitionTo(firstState, {
       condition: iotevents.Expression.eq(
         iotevents.Expression.inputAttribute(input, 'payload.temperature'),
         iotevents.Expression.fromString('21'),

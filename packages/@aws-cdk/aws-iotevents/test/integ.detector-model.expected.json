@@ -78,7 +78,7 @@
                         ]
                       ]
                     },
-                    "EventName": "firstToSecond",
+                    "EventName": "firstState_to_secondState",
                     "NextState": "secondState"
                   }
                 ]
@@ -101,7 +101,7 @@
                         ]
                       ]
                     },
-                    "EventName": "secondToFirst",
+                    "EventName": "secondState_to_firstState",
                     "NextState": "firstState"
                   }
                 ]
