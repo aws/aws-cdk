@@ -9,7 +9,7 @@ WORKDIR /tmp
 #
 
 RUN yum update -y \
-    && yum install -y zip unzip wget tar gzip python3
+    && yum install -y zip unzip wget tar gzip
 
 #
 # aws cli
