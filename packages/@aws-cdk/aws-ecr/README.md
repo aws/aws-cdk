@@ -79,6 +79,32 @@ You can set tag immutability on images in our repository using the `imageTagMuta
 new ecr.Repository(this, 'Repo', { imageTagMutability: ecr.TagMutability.IMMUTABLE });
 ```
 
+### Encryption
+
+By default, Amazon ECR uses server-side encryption with Amazon S3-managed encryption keys which encrypts your data at rest using an AES-256 encryption algorithm. For more control over the encryption for your Amazon ECR repositories, you can use server-side encryption with KMS keys stored in AWS Key Management Service (AWS KMS). Read more about this feature in the [ECR Developer Guide](https://docs.aws.amazon.com/AmazonECR/latest/userguide/encryption-at-rest.html).
+
+When you use AWS KMS to encrypt your data, you can either use the default AWS managed key, which is managed by Amazon ECR, by specifying `RepositoryEncryption.KMS` in the `encryption` property. Or specify your own customer managed KMS key, by specifying the `encryptionKey` property. 
+
+When `encryptionKey` is set, the `encryption` property must be `KMS` or empty.
+
+In the case `encryption` is set to `KMS` but no `encryptionKey` is set, an AWS managed KMS key is used.
+
+```ts
+new ecr.Repository(this, 'Repo', {
+  encryption: ecr.RepositoryEncryption.KMS
+});
+```
+
+Otherwise, a customer-managed KMS key is used if `encryptionKey` was set and `encryption` was optionally set to `KMS`.
+
+```ts
+import * as kms from '@aws-cdk/aws-kms';
+
+new ecr.Repository(this, 'Repo', {
+  encryptionKey: new kms.Key(this, 'Key'),
+});
+```
+
 ## Automatically clean up repositories
 
 You can set life cycle rules to automatically clean up old images from your
