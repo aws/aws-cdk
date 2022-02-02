@@ -1,0 +1,12 @@
+{
+  "name": "proxy-agent-layer",
+  "private": true,
+  "version": "0.0.0",
+  "description": "",
+  "dependencies": {
+    "proxy-agent": "^5.0.0"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

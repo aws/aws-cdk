@@ -3,13 +3,11 @@ set -euo pipefail
 
 cd $(dirname $0)
 
-version=$(cat ../proxyagent.version)
-
-echo ">> Building AWS Lambda layer inside a docker image for Proxy Agent ${version}..."
+echo ">> Building AWS Lambda layer inside a docker image for Proxy Agent..."
 
 TAG='aws-lambda-node-proxy-agent'
 
-docker build -t ${TAG} . --build-arg PROXY_AGENT_VERSION=${version}
+docker build -t ${TAG} .
 
 echo ">> Extrating layer.zip from the build container..."
 CONTAINER=$(docker run -d ${TAG} false)
