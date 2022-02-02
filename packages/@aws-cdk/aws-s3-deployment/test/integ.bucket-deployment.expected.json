@@ -285,9 +285,6 @@
             ]
           }
         ],
-        "SourceMarkers": [
-          {}
-        ],
         "DestinationBucketName": {
           "Ref": "Destination920A3C57"
         },
@@ -1199,9 +1196,6 @@
             ]
           }
         ],
-        "SourceMarkers": [
-          {}
-        ],
         "DestinationBucketName": {
           "Ref": "Destination920A3C57"
         },
@@ -1912,9 +1906,6 @@
             ]
           }
         ],
-        "SourceMarkers": [
-          {}
-        ],
         "DestinationBucketName": {
           "Ref": "Destination281A09BDF"
         },
@@ -2105,9 +2096,6 @@
             ]
           }
         ],
-        "SourceMarkers": [
-          {}
-        ],
         "DestinationBucketName": {
           "Ref": "Destination3E3DC043D"
         },
@@ -2219,9 +2207,6 @@
             ]
           }
         ],
-        "SourceMarkers": [
-          {}
-        ],
         "DestinationBucketName": {
           "Ref": "Destination920A3C57"
         },
@@ -2323,9 +2308,6 @@
               ]
             ]
           }
-        ],
-        "SourceMarkers": [
-          {}
         ],
         "DestinationBucketName": {
           "Ref": "Destination920A3C57"

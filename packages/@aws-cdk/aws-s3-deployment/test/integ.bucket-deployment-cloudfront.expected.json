@@ -318,9 +318,6 @@
             ]
           }
         ],
-        "SourceMarkers": [
-          {}
-        ],
         "DestinationBucketName": {
           "Ref": "Destination3E3DC043D"
         },

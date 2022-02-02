@@ -323,12 +323,9 @@ export class BucketDeployment extends CoreConstruct {
       }));
     }
 
-    const markers: Record<string, any> = {};
-    for (const source of sources) {
-      for (const [k, v] of Object.entries(source.markers ?? {})) {
-        markers[k] = v;
-      }
-    }
+    // to avoid redundant stack updates, only include "SourceMarkers" if one of
+    // the sources actually has markers.
+    const hasMarkers = sources.some(source => source.markers);
 
     const crUniqueId = `CustomResource${this.renderUniqueId(props.memoryLimit, props.vpc)}`;
     const cr = new cdk.CustomResource(this, crUniqueId, {
@@ -337,7 +334,7 @@ export class BucketDeployment extends CoreConstruct {
       properties: {
         SourceBucketNames: sources.map(source => source.bucket.bucketName),
         SourceObjectKeys: sources.map(source => source.zipObjectKey),
-        SourceMarkers: sources.map(source => source.markers ?? {}),
+        SourceMarkers: hasMarkers ? sources.map(source => source.markers ?? {}) : undefined,
         DestinationBucketName: props.destinationBucket.bucketName,
         DestinationBucketKeyPrefix: props.destinationKeyPrefix,
         RetainOnDelete: props.retainOnDelete,

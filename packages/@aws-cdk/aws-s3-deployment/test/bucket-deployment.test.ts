@@ -1062,6 +1062,26 @@ test('bucket has multiple deployments', () => {
   });
 });
 
+test('"SourceMarkers" is not included if none of the sources have markers', () => {
+  const stack = new cdk.Stack();
+  const bucket = new s3.Bucket(stack, 'Bucket');
+  new s3deploy.BucketDeployment(stack, 'DeployWithVpc3', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+    destinationBucket: bucket,
+  });
+
+  const map = Template.fromStack(stack).findResources('Custom::CDKBucketDeployment');
+  expect(map).toBeDefined();
+  const resource = map[Object.keys(map)[0]];
+  expect(Object.keys(resource.Properties)).toStrictEqual([
+    'ServiceToken',
+    'SourceBucketNames',
+    'SourceObjectKeys',
+    'DestinationBucketName',
+    'Prune',
+  ]);
+});
+
 test('Source.data() can be used to create a file with string contents', () => {
   const app = new cdk.App();
   const stack = new cdk.Stack(app, 'Test');
@@ -1113,6 +1133,7 @@ test('Source.jsonData() can be used to create a file with a JSON object', () => 
     ],
   });
 });
+
 
 function readDataFile(casm: cxapi.CloudAssembly, assetId: string, filePath: string): string {
   const asset = casm.stacks[0].assets.find(a => a.id === assetId);
