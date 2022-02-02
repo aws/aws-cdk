@@ -84,6 +84,8 @@ You can optionally pass networking mode to the `docker build` command by specify
 the `networkMode` property:
 
 ```ts
+import { DockerImageAsset, NetworkMode } from '@aws-cdk/aws-ecr-assets';
+
 const asset = new DockerImageAsset(this, 'MyBuildImage', {
   directory: path.join(__dirname, 'my-image'),
   networkMode: NetworkMode.HOST,
