@@ -1,12 +1,11 @@
-import { expect, haveResource } from '@aws-cdk/assert-internal';
+import { Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
-import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as ecs from '../lib';
 
-nodeunitShim({
-  'When creating a new TaskDefinition': {
-    'A task definition with both compatibilities defaults to networkmode AwsVpc'(test: Test) {
+describe('task definition', () => {
+  describe('When creating a new TaskDefinition', () => {
+    test('A task definition with both compatibilities defaults to networkmode AwsVpc', () => {
       // GIVEN
       const stack = new cdk.Stack();
 
@@ -18,16 +17,16 @@ nodeunitShim({
       });
 
       // THEN
-      expect(stack).to(haveResource('AWS::ECS::TaskDefinition', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
         NetworkMode: 'awsvpc',
-      }));
+      });
 
-      test.done();
-    },
-  },
 
-  'When importing from an existing Task definition': {
-    'can import using a task definition arn'(test: Test) {
+    });
+  });
+
+  describe('When importing from an existing Task definition', () => {
+    test('can import using a task definition arn', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const taskDefinitionArn = 'TDArn';
@@ -36,14 +35,14 @@ nodeunitShim({
       const taskDefinition = ecs.TaskDefinition.fromTaskDefinitionArn(stack, 'TD_ID', taskDefinitionArn);
 
       // THEN
-      test.equal(taskDefinition.taskDefinitionArn, taskDefinitionArn);
-      test.equal(taskDefinition.compatibility, ecs.Compatibility.EC2_AND_FARGATE);
-      test.equal(taskDefinition.executionRole, undefined);
+      expect(taskDefinition.taskDefinitionArn).toEqual(taskDefinitionArn);
+      expect(taskDefinition.compatibility).toEqual(ecs.Compatibility.EC2_AND_FARGATE);
+      expect(taskDefinition.executionRole).toEqual(undefined);
 
-      test.done();
-    },
 
-    'can import a Task Definition using attributes'(test: Test) {
+    });
+
+    test('can import a Task Definition using attributes', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const expectTaskDefinitionArn = 'TD_ARN';
@@ -62,16 +61,16 @@ nodeunitShim({
       });
 
       // THEN
-      test.equal(taskDefinition.taskDefinitionArn, expectTaskDefinitionArn);
-      test.equal(taskDefinition.compatibility, expectCompatibility);
-      test.equal(taskDefinition.executionRole, undefined);
-      test.equal(taskDefinition.networkMode, expectNetworkMode);
-      test.equal(taskDefinition.taskRole, expectTaskRole);
+      expect(taskDefinition.taskDefinitionArn).toEqual(expectTaskDefinitionArn);
+      expect(taskDefinition.compatibility).toEqual(expectCompatibility);
+      expect(taskDefinition.executionRole).toEqual(undefined);
+      expect(taskDefinition.networkMode).toEqual(expectNetworkMode);
+      expect(taskDefinition.taskRole).toEqual(expectTaskRole);
 
-      test.done();
-    },
 
-    'returns an imported TaskDefinition that will throw an error when trying to access its yet to defined networkMode'(test: Test) {
+    });
+
+    test('returns an imported TaskDefinition that will throw an error when trying to access its yet to defined networkMode', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const expectTaskDefinitionArn = 'TD_ARN';
@@ -88,15 +87,15 @@ nodeunitShim({
       });
 
       // THEN
-      test.throws(() => {
+      expect(() => {
         taskDefinition.networkMode;
-      }, 'This operation requires the networkMode in ImportedTaskDefinition to be defined. ' +
+      }).toThrow('This operation requires the networkMode in ImportedTaskDefinition to be defined. ' +
         'Add the \'networkMode\' in ImportedTaskDefinitionProps to instantiate ImportedTaskDefinition');
 
-      test.done();
-    },
 
-    'returns an imported TaskDefinition that will throw an error when trying to access its yet to defined taskRole'(test: Test) {
+    });
+
+    test('returns an imported TaskDefinition that will throw an error when trying to access its yet to defined taskRole', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const expectTaskDefinitionArn = 'TD_ARN';
@@ -111,12 +110,12 @@ nodeunitShim({
       });
 
       // THEN
-      test.throws(() => {
+      expect(() => {
         taskDefinition.taskRole;
-      }, 'This operation requires the taskRole in ImportedTaskDefinition to be defined. ' +
+      }).toThrow('This operation requires the taskRole in ImportedTaskDefinition to be defined. ' +
         'Add the \'taskRole\' in ImportedTaskDefinitionProps to instantiate ImportedTaskDefinition');
 
-      test.done();
-    },
-  },
+
+    });
+  });
 });

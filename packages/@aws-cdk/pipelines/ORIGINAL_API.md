@@ -2,8 +2,203 @@
 
 This document describes the API the CDK Pipelines library originally went into
 Developer Preview with. The API has since been reworked, but the original one
-left in place because of popular uptake. The original API still works and is
-still supported, but the revised one is preferred for future projects.
+left in place because of popular adoption. The original API still works and is
+still supported, but the revised one is preferred for future projects as it
+is more flexible and abstracts more unnecessary details from the user.
+
+## Migrating from the original to the modern API
+
+It's possible to migrate a pipeline in-place from the original to the modern API.
+The changes necessary are the following:
+
+### The Pipeline
+
+Replace `new CdkPipeline` with `new CodePipeline`. Some
+configuration properties have been changed:
+
+| Old API                        | New API                                                                                        |
+|--------------------------------|------------------------------------------------------------------------------------------------|
+| `cloudAssemblyArtifact`        | removed                                                                                        |
+| `sourceAction`                 | removed                                                                                        |
+| `synthAction`                  | `synth`                                                                                        |
+| `crossAccountKeys`             | new default is `false`; specify `crossAccountKeys: true` if you need cross-account deployments |
+| `cdkCliVersion`                | `cliVersion`                                                                                   |
+| `selfMutating`                 | `selfMutation`                                                                                 |
+| `vpc`, `subnetSelection`       | `codeBuildDefaults.vpc`, `codeBuildDefaults.subnetSelection`                                    |
+| `selfMutationBuildSpec`        | `selfMutationCodeBuildDefaults.partialBuildSpec`                                               |
+| `assetBuildSpec`               | `assetPublishingCodeBuildDefaults.partialBuildSpec`                                            |
+| `assetPreinstallCommands`      | use `assetPublishingCodeBuildDefaults.partialBuildSpec` instead                                |
+| `singlePublisherPerType: true` | `publishAssetsInParallel: false`                                                               |
+| `supportDockerAssets`          | `dockerEnabledForSelfMutation`                                                                 |
+
+### The synth
+
+As the argument to `synth`, use `new ShellStep` or `new CodeBuildStep`,
+depending on whether or not you want to customize the AWS CodeBuild Project that gets generated.
+
+Contrary to `SimpleSynthAction.standardNpmSynth`, you need to specify
+all commands necessary to do a full CDK build and synth, so do include
+installing dependencies and running the CDK CLI. For example, the old API:
+
+```ts
+const sourceArtifact = new codepipeline.Artifact();
+const cloudAssemblyArtifact = new codepipeline.Artifact();
+pipelines.SimpleSynthAction.standardNpmSynth({
+  sourceArtifact,
+  cloudAssemblyArtifact,
+
+  // Use this if you need a build step (if you're not using ts-node
+  // or if you have TypeScript Lambdas that need to be compiled).
+  buildCommand: 'npm run build',
+}),
+```
+
+Becomes:
+
+```ts
+new pipelines.ShellStep('Synth', {
+  input: pipelines.CodePipelineSource.connection('my-org/my-app', 'main', {
+    connectionArn: 'arn:aws:codestar-connections:us-east-1:222222222222:connection/7d2469ff-514a-4e4f-9003-5ca4a43cdc41', // Created using the AWS console * });',
+  }),
+  commands: [
+    'npm ci',
+    'npm run build',
+    'npx cdk synth',
+  ],
+});
+```
+
+Instead of specifying the pipeline source with the `sourceAction` property to
+the pipeline, specify it as the `input` property to the `ShellStep` instead.
+You can use any of the factory functions on `CodePipelineSource`.
+
+For example, for a GitHub source, the following old API:
+
+```ts
+sourceAction: new cpactions.GitHubSourceAction({
+  actionName: 'GitHub',
+  output: sourceArtifact,
+  // Replace these with your actual GitHub project name
+  owner: 'OWNER',
+  repo: 'REPO',
+  branch: 'main', // default: 'master'
+}),
+```
+
+Translates into:
+
+```ts
+input: pipelines.CodePipelineSource.gitHub('OWNER/REPO', 'main', {
+  authentication: cdk.SecretValue.secretsManager('GITHUB_TOKEN_NAME'),
+}),
+```
+
+### Deployments
+
+Adding CDK Stages to deploy is done by calling `addStage()`, or
+potentially `addWave().addStage()`. All stages inside a wave are
+deployed in parallel, which was not a capability of the original API.
+
+| Old API                       | New API                                                                                                                       |
+|-------------------------------|-------------------------------------------------------------------------------------------------------------------------------|
+| `addApplicationStage()`       | `addStage()`                                                                                                                  |
+| `addStage().addApplication()` | `addStage()`. Adding multiple CDK Stages into a single Pipeline stage is not supported, add multiple Pipeline stages instead. |
+
+### Approvals
+
+Approvals are added by adding `pre` and `post` options to `addStage()`, with
+steps to execute before and after the deployments, respectively. We recommend
+putting manual approvals in `pre` steps, and automated approvals in `post` steps.
+
+#### Manual approvals
+
+For example, specifying a manual approval on a stage deployment in old API:
+
+```ts
+declare const pipeline: pipelines.CdkPipeline;
+const stage = pipeline.addApplicationStage(...);
+stage.addAction(new pipelines.ManualApprovalAction({
+  actionName: 'ManualApproval',
+  runOrder: testingStage.nextSequentialRunOrder(),
+}));
+```
+
+Becomes:
+
+```ts
+const stage = new MyApplicationStage(this, 'MyApplication');
+pipeline.addStage(stage, {
+  pre: [
+    new pipelines.ManualApprovalStep('ManualApproval'),
+  ],
+});
+```
+
+Note that this we've used `pre` to put the manual approval *before* a Stage
+deployment (this was not possible in the old API). Be sure to put the manual
+approval in the `pre` steps list of the *next* Stage to keep
+it in the same location in the pipeline.
+
+#### Automated approvals
+
+For example, specifying an automated approval after a stage is deployed in the following old API:
+
+```ts
+const stage = pipeline.addApplicationStage(...);
+stage.addActions(new pipelines.ShellScriptAction({
+  actionName: 'MyValidation',
+  commands: ['curl -Ssf $VAR'],
+  useOutputs: {
+    VAR: pipeline.stackOutput(stage.cfnOutput),
+  },
+  // Optionally specify a BuildEnvironment
+  environment: { ... },
+}));
+```
+
+Becomes:
+
+```ts
+const stage = new MyApplicationStage(this, 'MyApplication');
+pipeline.addStage(stage, {
+  post: [
+    new pipelines.CodeBuildStep('MyValidation', {
+      commands: ['curl -Ssf $VAR'],
+      envFromCfnOutput: {
+        VAR: stage.cfnOutput,
+      },
+      // Optionally specify a BuildEnvironment
+      buildEnvironment: { ... },
+    }),
+  ],
+});
+```
+
+You can also use `ShellStep` if you don't need any of the CodeBuild Project
+customizations (like `buildEnvironment`).
+
+#### Change set approvals
+
+In the old API, there were two properties that were used to add actions to the pipeline
+in between the `CreateChangeSet` and `ExecuteChangeSet` actions: `manualApprovals` and `extraRunOrderSpace`.
+This can be achieved in the modern API via the `stackSteps` property, which allows steps to be added
+at the stack level:
+
+```ts
+const stage = new MyApplicationStage(this, 'MyApplication');
+pipeline.addStage(stage, {
+  stackSteps: [{
+    stack: stage.stack1,
+    changeSet: [new pipelines.ManualApprovalStep('ChangeSet Approval')],
+  }],
+});
+```
+
+### Custom CodePipeline Actions
+
+See the section [**Arbitrary CodePipeline actions** in the
+main `README`](https://github.com/aws/aws-cdk/blob/master/packages/@aws-cdk/pipelines/README.md#arbitrary-codepipeline-actions) for an example of how to inject arbitrary
+CodeBuild Actions.
 
 ## Definining the pipeline
 
@@ -13,7 +208,6 @@ artifacts:
 
 ```ts
 import { Construct, Stage, Stack, StackProps, StageProps } from '@aws-cdk/core';
-import { CdkPipeline } from '@aws-cdk/pipelines';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 
 /**
@@ -26,20 +220,20 @@ class MyPipelineStack extends Stack {
     const sourceArtifact = new codepipeline.Artifact();
     const cloudAssemblyArtifact = new codepipeline.Artifact();
 
-    const pipeline = new CdkPipeline(this, 'Pipeline', {
+    const pipeline = new pipelines.CdkPipeline(this, 'Pipeline', {
       cloudAssemblyArtifact,
 
-      sourceAction: new codepipeline_actions.GitHubSourceAction({
+      sourceAction: new cpactions.GitHubSourceAction({
         actionName: 'GitHub',
         output: sourceArtifact,
-        oauthToken: SecretValue.secretsManager('GITHUB_TOKEN_NAME'),
+        oauthToken: cdk.SecretValue.secretsManager('GITHUB_TOKEN_NAME'),
         // Replace these with your actual GitHub project name
         owner: 'OWNER',
         repo: 'REPO',
         branch: 'main', // default: 'master'
       }),
 
-      synthAction: SimpleSynthAction.standardNpmSynth({
+      synthAction: pipelines.SimpleSynthAction.standardNpmSynth({
         sourceArtifact,
         cloudAssemblyArtifact,
 
@@ -97,21 +291,21 @@ class MyPipelineStack extends Stack {
     const sourceArtifact = new codepipeline.Artifact();
     const cloudAssemblyArtifact = new codepipeline.Artifact();
 
-    const pipeline = new CdkPipeline(this, 'Pipeline', {
+    const pipeline = new pipelines.CdkPipeline(this, 'Pipeline', {
       pipelineName: 'MyAppPipeline',
       cloudAssemblyArtifact,
 
-      sourceAction: new codepipeline_actions.GitHubSourceAction({
+      sourceAction: new cpactions.GitHubSourceAction({
         actionName: 'GitHub',
         output: sourceArtifact,
-        oauthToken: SecretValue.secretsManager('GITHUB_TOKEN_NAME'),
+        oauthToken: cdk.SecretValue.secretsManager('GITHUB_TOKEN_NAME'),
         // Replace these with your actual GitHub project name
         owner: 'OWNER',
         repo: 'REPO',
         branch: 'main', // default: 'master'
       }),
 
-      synthAction: SimpleSynthAction.standardNpmSynth({
+      synthAction: pipelines.SimpleSynthAction.standardNpmSynth({
         sourceArtifact,
         cloudAssemblyArtifact,
 
@@ -139,7 +333,7 @@ If you prefer more control over the underlying CodePipeline object, you can
 create one yourself, including custom Source and Build stages:
 
 ```ts
-const codePipeline = new cp.Pipeline(pipelineStack, 'CodePipeline', {
+const codePipeline = new codepipeline.Pipeline(pipelineStack, 'CodePipeline', {
   stages: [
     {
       stageName: 'CustomSource',
@@ -153,7 +347,7 @@ const codePipeline = new cp.Pipeline(pipelineStack, 'CodePipeline', {
 });
 
 const app = new App();
-const cdkPipeline = new CdkPipeline(app, 'CdkPipeline', {
+const cdkPipeline = new pipelines.CdkPipeline(app, 'CdkPipeline', {
   codePipeline,
   cloudAssemblyArtifact,
 });
@@ -183,9 +377,9 @@ using these, the source repository does not need to have a `buildspec.yml`. An e
 of using `SimpleSynthAction` to run a Maven build followed by a CDK synth:
 
 ```ts
-const pipeline = new CdkPipeline(this, 'Pipeline', {
+const pipeline = new pipelines.CdkPipeline(this, 'Pipeline', {
   // ...
-  synthAction: new SimpleSynthAction({
+  synthAction: new pipelines.SimpleSynthAction({
     sourceArtifact,
     cloudAssemblyArtifact,
     installCommands: ['npm install -g aws-cdk'],
@@ -219,16 +413,16 @@ from the CA repo instead of NPM.
 class MyPipelineStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     ...
-    const pipeline = new CdkPipeline(this, 'Pipeline', {
+    const pipeline = new pipelines.CdkPipeline(this, 'Pipeline', {
       ...
-      synthAction: SimpleSynthAction.standardNpmSynth({
+      synthAction: pipelines.SimpleSynthAction.standardNpmSynth({
         sourceArtifact,
         cloudAssemblyArtifact,
 
         // Use this to customize and a permissions required for the build
         // and synth
         rolePolicyStatements: [
-          new PolicyStatement({
+          new iam.PolicyStatement({
             actions: ['codeartifact:*', 'sts:GetServiceBearerToken'],
             resources: ['arn:codeartifact:repo:arn'],
           }),
@@ -300,7 +494,7 @@ const testingStage = pipeline.addApplicationStage(new MyApplication(this, 'Testi
 // Add a action -- in this case, a Manual Approval action
 // (for illustration purposes: testingStage.addManualApprovalAction() is a
 // convenience shorthand that does the same)
-testingStage.addAction(new ManualApprovalAction({
+testingStage.addAction(new pipelines.ManualApprovalAction({
   actionName: 'ManualApproval',
   runOrder: testingStage.nextSequentialRunOrder(),
 }));
@@ -345,7 +539,7 @@ In its simplest form, adding validation actions looks like this:
 ```ts
 const stage = pipeline.addApplicationStage(new MyApplication(/* ... */));
 
-stage.addActions(new ShellScriptAction({
+stage.addActions(new pipelines.ShellScriptAction({
   actionName: 'MyValidation',
   commands: ['curl -Ssf https://my.webservice.com/'],
   // Optionally specify a VPC if, for example, the service is deployed with a private load balancer
@@ -386,7 +580,7 @@ const lbApp = new MyLbApplication(this, 'MyApp', {
   env: { /* ... */ }
 });
 const stage = pipeline.addApplicationStage(lbApp);
-stage.addActions(new ShellScriptAction({
+stage.addActions(new pipelines.ShellScriptAction({
   // ...
   useOutputs: {
     // When the test is executed, this will make $URL contain the
@@ -417,7 +611,7 @@ two ways.
 Either pass additional policy statements in the `rolePolicyStatements` property:
 
 ```ts
-new ShellScriptAction({
+new pipelines.ShellScriptAction({
   // ...
   rolePolicyStatements: [
     new iam.PolicyStatement({
@@ -431,7 +625,7 @@ new ShellScriptAction({
 The Action can also be used as a Grantable after having been added to a Pipeline:
 
 ```ts
-const action = new ShellScriptAction({ /* ... */ });
+const action = new pipelines.ShellScriptAction({ /* ... */ });
 pipeline.addStage('Test').addActions(action);
 
 bucket.grantRead(action);
@@ -446,11 +640,11 @@ if they are executable shell scripts themselves). Pass the `sourceArtifact`:
 ```ts
 const sourceArtifact = new codepipeline.Artifact();
 
-const pipeline = new CdkPipeline(this, 'Pipeline', {
+const pipeline = new pipelines.CdkPipeline(this, 'Pipeline', {
   // ...
 });
 
-const validationAction = new ShellScriptAction({
+const validationAction = new pipelines.ShellScriptAction({
   actionName: 'TestUsingSourceArtifact',
   additionalArtifacts: [sourceArtifact],
 
@@ -474,8 +668,8 @@ in the `ShellScriptAction`'s `additionalArtifacts`:
 const cloudAssemblyArtifact = new codepipeline.Artifact('CloudAsm');
 const integTestsArtifact = new codepipeline.Artifact('IntegTests');
 
-const pipeline = new CdkPipeline(this, 'Pipeline', {
-  synthAction: SimpleSynthAction.standardNpmSynth({
+const pipeline = new pipelines.CdkPipeline(this, 'Pipeline', {
+  synthAction: pipelines.SimpleSynthAction.standardNpmSynth({
     sourceArtifact,
     cloudAssemblyArtifact,
     buildCommands: ['npm run build'],
@@ -489,7 +683,7 @@ const pipeline = new CdkPipeline(this, 'Pipeline', {
   // ...
 });
 
-const validationAction = new ShellScriptAction({
+const validationAction = new pipelines.ShellScriptAction({
   actionName: 'TestUsingBuildArtifact',
   additionalArtifacts: [integTestsArtifact],
   // 'test.js' was produced from 'test/test.ts' during the synth step
@@ -538,12 +732,11 @@ create an SNS Topic, subscribe your own email address, and pass it in via
 ```ts
 import * as sns from '@aws-cdk/aws-sns';
 import * as subscriptions from '@aws-cdk/aws-sns-subscriptions';
-import * as pipelines from '@aws-cdk/pipelines';
 
 const topic = new sns.Topic(this, 'SecurityChangesTopic');
 topic.addSubscription(new subscriptions.EmailSubscription('test@email.com'));
 
-const pipeline = new CdkPipeline(app, 'Pipeline', { /* ... */ });
+const pipeline = new pipelines.CdkPipeline(app, 'Pipeline', { /* ... */ });
 const stage = pipeline.addApplicationStage(new MyApplication(this, 'PreProd'), {
   confirmBroadeningPermissions: true,
   securityNotificationTopic: topic,

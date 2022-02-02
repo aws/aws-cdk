@@ -1,21 +1,20 @@
-import { countResources, expect, haveResourceLike, not } from '@aws-cdk/assert-internal';
+import { Template, Match } from '@aws-cdk/assertions';
 import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as s3 from '@aws-cdk/aws-s3';
 import { Lazy, Stack } from '@aws-cdk/core';
-import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as cpactions from '../../lib';
 
 /* eslint-disable quote-props */
 
-nodeunitShim({
-  'S3 Source Action': {
-    'by default polls for source changes and does not use Events'(test: Test) {
+describe('S3 source Action', () => {
+  describe('S3 Source Action', () => {
+    test('by default polls for source changes and does not use Events', () => {
       const stack = new Stack();
 
       minimalPipeline(stack, undefined);
 
-      expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+      Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', Match.objectLike({
         'Stages': [
           {
             'Actions': [
@@ -29,42 +28,42 @@ nodeunitShim({
         ],
       }));
 
-      expect(stack).to(not(haveResourceLike('AWS::Events::Rule')));
+      Template.fromStack(stack).resourceCountIs('AWS::Events::Rule', 0);
 
-      test.done();
-    },
 
-    'does not poll for source changes and uses Events for S3Trigger.EVENTS'(test: Test) {
+    });
+
+    test('does not poll for source changes and uses Events for S3Trigger.EVENTS', () => {
       const stack = new Stack();
 
       minimalPipeline(stack, { trigger: cpactions.S3Trigger.EVENTS });
 
-      expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+      Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', Match.objectLike({
         'Stages': [
           {
-            'Actions': [
-              {
+            'Actions': Match.arrayWith([
+              Match.objectLike({
                 'Configuration': {
                   'PollForSourceChanges': false,
                 },
-              },
-            ],
+              }),
+            ]),
           },
           {},
         ],
       }));
 
-      expect(stack).to(countResources('AWS::Events::Rule', 1));
+      Template.fromStack(stack).resourceCountIs('AWS::Events::Rule', 1);
 
-      test.done();
-    },
 
-    'polls for source changes and does not use Events for S3Trigger.POLL'(test: Test) {
+    });
+
+    test('polls for source changes and does not use Events for S3Trigger.POLL', () => {
       const stack = new Stack();
 
       minimalPipeline(stack, { trigger: cpactions.S3Trigger.POLL });
 
-      expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+      Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', Match.objectLike({
         'Stages': [
           {
             'Actions': [
@@ -79,17 +78,17 @@ nodeunitShim({
         ],
       }));
 
-      expect(stack).to(not(haveResourceLike('AWS::Events::Rule')));
+      Template.fromStack(stack).resourceCountIs('AWS::Events::Rule', 0);
 
-      test.done();
-    },
 
-    'does not poll for source changes and does not use Events for S3Trigger.NONE'(test: Test) {
+    });
+
+    test('does not poll for source changes and does not use Events for S3Trigger.NONE', () => {
       const stack = new Stack();
 
       minimalPipeline(stack, { trigger: cpactions.S3Trigger.NONE });
 
-      expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+      Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', Match.objectLike({
         'Stages': [
           {
             'Actions': [
@@ -104,27 +103,25 @@ nodeunitShim({
         ],
       }));
 
-      expect(stack).to(not(haveResourceLike('AWS::Events::Rule')));
+      Template.fromStack(stack).resourceCountIs('AWS::Events::Rule', 0);
+    });
 
-      test.done();
-    },
-
-    'does not allow passing an empty string for the bucketKey property'(test: Test) {
+    test('does not allow passing an empty string for the bucketKey property', () => {
       const stack = new Stack();
 
-      test.throws(() => {
+      expect(() => {
         new cpactions.S3SourceAction({
           actionName: 'Source',
           bucket: new s3.Bucket(stack, 'MyBucket'),
           bucketKey: '',
           output: new codepipeline.Artifact(),
         });
-      }, /Property bucketKey cannot be an empty string/);
+      }).toThrow(/Property bucketKey cannot be an empty string/);
 
-      test.done();
-    },
 
-    'allows using the same bucket with events trigger mutliple times with different bucket paths'(test: Test) {
+    });
+
+    test('allows using the same bucket with events trigger mutliple times with different bucket paths', () => {
       const stack = new Stack();
 
       const bucket = new s3.Bucket(stack, 'MyBucket');
@@ -141,10 +138,10 @@ nodeunitShim({
         output: new codepipeline.Artifact(),
       }));
 
-      test.done();
-    },
 
-    'throws an error if the same bucket and path with trigger = Events are added to the same pipeline twice'(test: Test) {
+    });
+
+    test('throws an error if the same bucket and path with trigger = Events are added to the same pipeline twice', () => {
       const stack = new Stack();
 
       const bucket = new s3.Bucket(stack, 'MyBucket');
@@ -169,14 +166,12 @@ nodeunitShim({
         output: new codepipeline.Artifact(),
       });
 
-      test.throws(() => {
+      expect(() => {
         sourceStage.addAction(duplicateBucketAndPath);
-      }, /S3 source action with path 'my\/other\/path' is already present in the pipeline for this source bucket/);
+      }).toThrow(/S3 source action with path 'my\/other\/path' is already present in the pipeline for this source bucket/);
+    });
 
-      test.done();
-    },
-
-    'allows using a Token bucketKey with trigger = Events, multiple times'(test: Test) {
+    test('allows using a Token bucketKey with trigger = Events, multiple times', () => {
       const stack = new Stack();
 
       const bucket = new s3.Bucket(stack, 'MyBucket');
@@ -193,9 +188,9 @@ nodeunitShim({
         output: new codepipeline.Artifact(),
       }));
 
-      expect(stack, /* skipValidation = */ true).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
-        'Stages': [
-          {
+      Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', Match.objectLike({
+        'Stages': Match.arrayWith([
+          Match.objectLike({
             'Actions': [
               {
                 'Configuration': {
@@ -208,14 +203,12 @@ nodeunitShim({
                 },
               },
             ],
-          },
-        ],
+          }),
+        ]),
       }));
+    });
 
-      test.done();
-    },
-
-    'exposes variables for other actions to consume'(test: Test) {
+    test('exposes variables for other actions to consume', () => {
       const stack = new Stack();
 
       const sourceOutput = new codepipeline.Artifact();
@@ -247,7 +240,7 @@ nodeunitShim({
         ],
       });
 
-      expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+      Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', Match.objectLike({
         'Stages': [
           {
             'Name': 'Source',
@@ -265,10 +258,8 @@ nodeunitShim({
           },
         ],
       }));
-
-      test.done();
-    },
-  },
+    });
+  });
 });
 
 interface MinimalPipelineOptions {

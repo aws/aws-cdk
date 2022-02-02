@@ -1,4 +1,3 @@
-import { nodeunitShim, Test } from 'nodeunit-shim';
 import { App, CfnOutput, CfnResource, ConstructNode, Stack, ValidationError } from '../lib';
 import { toCloudFormation } from './util';
 
@@ -9,8 +8,8 @@ beforeEach(() => {
   stack = new Stack(app, 'Stack');
 });
 
-nodeunitShim({
-  'outputs can be added to the stack'(test: Test) {
+describe('output', () => {
+  test('outputs can be added to the stack', () => {
     const res = new CfnResource(stack, 'MyResource', { type: 'R' });
     const ref = res.ref;
 
@@ -19,7 +18,7 @@ nodeunitShim({
       value: ref,
       description: 'CfnOutput properties',
     });
-    test.deepEqual(toCloudFormation(stack), {
+    expect(toCloudFormation(stack)).toEqual({
       Resources: { MyResource: { Type: 'R' } },
       Outputs:
      {
@@ -31,15 +30,15 @@ nodeunitShim({
       },
      },
     });
-    test.done();
-  },
 
-  'No export is created by default'(test: Test) {
+  });
+
+  test('No export is created by default', () => {
     // WHEN
     new CfnOutput(stack, 'SomeOutput', { value: 'x' });
 
     // THEN
-    test.deepEqual(toCloudFormation(stack), {
+    expect(toCloudFormation(stack)).toEqual({
       Outputs: {
         SomeOutput: {
           Value: 'x',
@@ -47,10 +46,10 @@ nodeunitShim({
       },
     });
 
-    test.done();
-  },
 
-  'importValue can be used to obtain a Fn::ImportValue expression'(test: Test) {
+  });
+
+  test('importValue can be used to obtain a Fn::ImportValue expression', () => {
     // GIVEN
     const stack2 = new Stack(app, 'Stack2');
 
@@ -64,7 +63,7 @@ nodeunitShim({
     });
 
     // THEN
-    test.deepEqual(toCloudFormation(stack2), {
+    expect(toCloudFormation(stack2)).toEqual({
       Resources: {
         Resource: {
           Type: 'Some::Resource',
@@ -75,10 +74,10 @@ nodeunitShim({
       },
     });
 
-    test.done();
-  },
 
-  'importValue used inside the same stack produces an error'(test: Test) {
+  });
+
+  test('importValue used inside the same stack produces an error', () => {
     // WHEN
     const output = new CfnOutput(stack, 'SomeOutput', { value: 'x', exportName: 'asdf' });
     new CfnResource(stack, 'Resource', {
@@ -91,10 +90,10 @@ nodeunitShim({
     // THEN
     expect(() => toCloudFormation(stack)).toThrow(/should only be used in a different Stack/);
 
-    test.done();
-  },
 
-  'error message if importValue is used and Output is not exported'(test: Test) {
+  });
+
+  test('error message if importValue is used and Output is not exported', () => {
     // GIVEN
     const stack2 = new Stack(app, 'Stack2');
 
@@ -107,14 +106,14 @@ nodeunitShim({
       },
     });
 
-    test.throws(() => {
+    expect(() => {
       toCloudFormation(stack2);
-    }, /Add an exportName to the CfnOutput/);
+    }).toThrow(/Add an exportName to the CfnOutput/);
 
-    test.done();
-  },
 
-  'Verify maximum length of export name'(test: Test) {
+  });
+
+  test('Verify maximum length of export name', () => {
     new CfnOutput(stack, 'SomeOutput', { value: 'x', exportName: 'x'.repeat(260) });
 
     const errors = ConstructNode.validate(stack.node).map((v: ValidationError) => v.message);
@@ -123,6 +122,6 @@ nodeunitShim({
       expect.stringContaining('Export name cannot exceed 255 characters'),
     ]);
 
-    test.done();
-  },
+
+  });
 });

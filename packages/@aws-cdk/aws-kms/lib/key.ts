@@ -1,8 +1,10 @@
 import * as iam from '@aws-cdk/aws-iam';
-import { FeatureFlags, IResource, Lazy, RemovalPolicy, Resource, Stack, Duration } from '@aws-cdk/core';
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
+import { FeatureFlags, IResource, Lazy, RemovalPolicy, Resource, Stack, Duration, Token, ContextProvider, Arn, ArnFormat } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { IConstruct, Construct } from 'constructs';
 import { Alias } from './alias';
+import { KeyLookupOptions } from './key-lookup';
 import { CfnKey } from './kms.generated';
 import * as perms from './private/perms';
 
@@ -477,7 +479,7 @@ export class Key extends KeyBase {
       }
     }
 
-    const keyResourceName = Stack.of(scope).parseArn(keyArn).resourceName;
+    const keyResourceName = Stack.of(scope).splitArn(keyArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName;
     if (!keyResourceName) {
       throw new Error(`KMS key ARN must be in the format 'arn:aws:kms:<region>:<account>:key/<keyId>', got: '${keyArn}'`);
     }
@@ -532,6 +534,60 @@ export class Key extends KeyBase {
       protected readonly policy = keyPolicy;
       protected readonly trustAccountIdentities = false;
     }(cfnKey, id);
+  }
+
+  /**
+   * Import an existing Key by querying the AWS environment this stack is deployed to.
+   *
+   * This function only needs to be used to use Keys not defined in your CDK
+   * application. If you are looking to share a Key between stacks, you can
+   * pass the `Key` object between stacks and use it as normal. In addition,
+   * it's not necessary to use this method if an interface accepts an `IKey`.
+   * In this case, `Alias.fromAliasName()` can be used which returns an alias
+   * that extends `IKey`.
+   *
+   * Calling this method will lead to a lookup when the CDK CLI is executed.
+   * You can therefore not use any values that will only be available at
+   * CloudFormation execution time (i.e., Tokens).
+   *
+   * The Key information will be cached in `cdk.context.json` and the same Key
+   * will be used on future runs. To refresh the lookup, you will have to
+   * evict the value from the cache using the `cdk context` command. See
+   * https://docs.aws.amazon.com/cdk/latest/guide/context.html for more information.
+   */
+  public static fromLookup(scope: Construct, id: string, options: KeyLookupOptions): IKey {
+    class Import extends KeyBase {
+      public readonly keyArn: string;
+      public readonly keyId: string;
+      protected readonly policy?: iam.PolicyDocument | undefined = undefined;
+      // defaulting true: if we are importing the key the key policy is
+      // undefined and impossible to change here; this means updating identity
+      // policies is really the only option
+      protected readonly trustAccountIdentities: boolean = true;
+
+      constructor(keyId: string, keyArn: string) {
+        super(scope, id);
+
+        this.keyId = keyId;
+        this.keyArn = keyArn;
+      }
+    }
+    if (Token.isUnresolved(options.aliasName)) {
+      throw new Error('All arguments to Key.fromLookup() must be concrete (no Tokens)');
+    }
+
+    const attributes: cxapi.KeyContextResponse = ContextProvider.getValue(scope, {
+      provider: cxschema.ContextProvider.KEY_PROVIDER,
+      props: {
+        aliasName: options.aliasName,
+      } as cxschema.KeyContextQuery,
+      dummyValue: {
+        keyId: '1234abcd-12ab-34cd-56ef-1234567890ab',
+      },
+    }).value;
+
+    return new Import(attributes.keyId,
+      Arn.format({ resource: 'key', service: 'kms', resourceName: attributes.keyId }, Stack.of(scope)));
   }
 
   public readonly keyArn: string;

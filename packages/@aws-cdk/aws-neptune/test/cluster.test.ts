@@ -1,5 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
-import { ABSENT, ResourcePart } from '@aws-cdk/assert-internal';
+import { Match, Template } from '@aws-cdk/assertions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
@@ -21,7 +20,7 @@ describe('DatabaseCluster', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::Neptune::DBCluster', {
+    Template.fromStack(stack).hasResource('AWS::Neptune::DBCluster', {
       Properties: {
         DBSubnetGroupName: { Ref: 'DatabaseSubnets3C9252C9' },
         VpcSecurityGroupIds: [{ 'Fn::GetAtt': ['DatabaseSecurityGroup5C91FDCB', 'GroupId'] }],
@@ -29,14 +28,14 @@ describe('DatabaseCluster', () => {
       },
       DeletionPolicy: 'Retain',
       UpdateReplacePolicy: 'Retain',
-    }, ResourcePart.CompleteDefinition);
+    });
 
-    expect(stack).toHaveResource('AWS::Neptune::DBInstance', {
+    Template.fromStack(stack).hasResource('AWS::Neptune::DBInstance', {
       DeletionPolicy: 'Retain',
       UpdateReplacePolicy: 'Retain',
-    }, ResourcePart.CompleteDefinition);
+    });
 
-    expect(stack).toHaveResource('AWS::Neptune::DBSubnetGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Neptune::DBSubnetGroup', {
       SubnetIds: [
         { Ref: 'VPCPrivateSubnet1Subnet8BCA10E0' },
         { Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A' },
@@ -58,7 +57,7 @@ describe('DatabaseCluster', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::Neptune::DBCluster', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Neptune::DBCluster', {
       DBSubnetGroupName: { Ref: 'DatabaseSubnets3C9252C9' },
       VpcSecurityGroupIds: [{ 'Fn::GetAtt': ['DatabaseSecurityGroup5C91FDCB', 'GroupId'] }],
     });
@@ -112,7 +111,7 @@ describe('DatabaseCluster', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::Neptune::DBCluster', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Neptune::DBCluster', {
       EngineVersion: '1.0.4.1',
       DBSubnetGroupName: { Ref: 'DatabaseSubnets3C9252C9' },
       VpcSecurityGroupIds: [{ 'Fn::GetAtt': ['DatabaseSecurityGroup5C91FDCB', 'GroupId'] }],
@@ -136,7 +135,7 @@ describe('DatabaseCluster', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::Neptune::DBCluster', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Neptune::DBCluster', {
       DBSubnetGroupName: { Ref: 'DatabaseSubnets3C9252C9' },
       VpcSecurityGroupIds: ['SecurityGroupId12345'],
     });
@@ -161,7 +160,7 @@ describe('DatabaseCluster', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::Neptune::DBCluster', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Neptune::DBCluster', {
       DBClusterParameterGroupName: { Ref: 'ParamsA8366201' },
     });
   });
@@ -184,7 +183,7 @@ describe('DatabaseCluster', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::Neptune::DBCluster', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Neptune::DBCluster', {
       AssociatedRoles: [
         {
           RoleArn: {
@@ -213,7 +212,7 @@ describe('DatabaseCluster', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::Neptune::DBCluster', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Neptune::DBCluster', {
       DBClusterParameterGroupName: 'ParamGroupName',
     });
   });
@@ -231,7 +230,7 @@ describe('DatabaseCluster', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::Neptune::DBCluster', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Neptune::DBCluster', {
       KmsKeyId: {
         'Fn::GetAtt': [
           'Key961B73FD',
@@ -254,7 +253,7 @@ describe('DatabaseCluster', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::Neptune::DBCluster', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Neptune::DBCluster', {
       StorageEncrypted: true,
     });
   });
@@ -307,7 +306,7 @@ describe('DatabaseCluster', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::Neptune::DBInstance', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Neptune::DBInstance', {
       DBInstanceIdentifier: `${instanceIdentifierBase}1`,
     });
   });
@@ -326,7 +325,7 @@ describe('DatabaseCluster', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::Neptune::DBInstance', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Neptune::DBInstance', {
       DBInstanceIdentifier: `${clusterIdentifier}instance1`,
     });
   });
@@ -373,7 +372,7 @@ describe('DatabaseCluster', () => {
     cluster.connections.allowToAnyIpv4(ec2.Port.tcp(443));
 
     // THEN
-    expect(stack).toHaveResource('AWS::EC2::SecurityGroupEgress', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroupEgress', {
       GroupId: 'sg-123456789',
     });
   });
@@ -391,7 +390,7 @@ describe('DatabaseCluster', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::Neptune::DBCluster', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Neptune::DBCluster', {
       BackupRetentionPeriod: 20,
     });
   });
@@ -410,7 +409,7 @@ describe('DatabaseCluster', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::Neptune::DBCluster', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Neptune::DBCluster', {
       BackupRetentionPeriod: 20,
       PreferredBackupWindow: '07:34-08:04',
     });
@@ -429,7 +428,7 @@ describe('DatabaseCluster', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::Neptune::DBCluster', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Neptune::DBCluster', {
       PreferredMaintenanceWindow: '07:34-08:04',
     });
   });
@@ -446,8 +445,8 @@ describe('DatabaseCluster', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::Neptune::DBCluster', {
-      IamAuthEnabled: ABSENT,
+    Template.fromStack(stack).hasResourceProperties('AWS::Neptune::DBCluster', {
+      IamAuthEnabled: Match.absent(),
     });
   });
 
@@ -467,10 +466,10 @@ describe('DatabaseCluster', () => {
     cluster.grantConnect(role);
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::Neptune::DBCluster', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Neptune::DBCluster', {
       IamAuthEnabled: true,
     });
-    expect(stack).toHaveResource('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [{
           Effect: 'Allow',
@@ -524,6 +523,46 @@ describe('DatabaseCluster', () => {
     // THEN
     expect(() => { cluster.grantConnect(role); }).toThrow(/Cannot grant connect when IAM authentication is disabled/);
   });
+
+  test('autoMinorVersionUpgrade is enabled when configured', () => {
+
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Cluster', {
+      vpc,
+      instanceType: InstanceType.R5_LARGE,
+      autoMinorVersionUpgrade: true,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Neptune::DBInstance', {
+      AutoMinorVersionUpgrade: true,
+    });
+
+  });
+
+  test('autoMinorVersionUpgrade is not enabled when not configured', () => {
+
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Cluster', {
+      vpc,
+      instanceType: InstanceType.R5_LARGE,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Neptune::DBInstance', {
+      AutoMinorVersionUpgrade: false,
+    });
+
+  });
+
 });
 
 function testStack() {

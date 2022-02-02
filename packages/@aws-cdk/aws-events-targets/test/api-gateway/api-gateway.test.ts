@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as api from '@aws-cdk/aws-apigateway';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
@@ -20,7 +20,7 @@ test('use api gateway rest api as an event rule target', () => {
   rule.addTarget(new targets.ApiGateway(restApi));
 
   // THEN
-  expect(stack).toHaveResource('AWS::Events::Rule', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
     Targets: [
       {
         Arn: {
@@ -81,7 +81,7 @@ test('with stage, path, method setting', () => {
   }));
 
   // THEN
-  expect(stack).toHaveResource('AWS::Events::Rule', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
     Targets: [
       {
         Arn: {
@@ -147,7 +147,7 @@ test('with http parameters', () => {
   }));
 
   // THEN
-  expect(stack).toHaveResourceLike('AWS::Events::Rule', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
     Targets: [
       {
         HttpParameters: {
@@ -204,7 +204,7 @@ test('with an explicit event role', () => {
   }));
 
   // THEN
-  expect(stack).toHaveResourceLike('AWS::Events::Rule', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
     Targets: [
       {
         RoleArn: {
@@ -234,7 +234,7 @@ test('use a Dead Letter Queue', () => {
   }));
 
   // THEN
-  expect(stack).toHaveResourceLike('AWS::Events::Rule', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
     Targets: [
       {
         DeadLetterConfig: {

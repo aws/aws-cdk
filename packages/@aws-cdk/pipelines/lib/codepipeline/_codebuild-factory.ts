@@ -1,4 +1,3 @@
-import * as crypto from 'crypto';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as codebuild from '@aws-cdk/aws-codebuild';
@@ -6,11 +5,12 @@ import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as codepipeline_actions from '@aws-cdk/aws-codepipeline-actions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
-import { IDependable, Stack } from '@aws-cdk/core';
+import { IDependable, Stack, Token } from '@aws-cdk/core';
 import { Construct, Node } from 'constructs';
-import { FileSetLocation, ShellStep, StackDeployment, StackOutputReference } from '../blueprint';
+import { FileSetLocation, ShellStep, StackOutputReference } from '../blueprint';
 import { PipelineQueries } from '../helpers-internal/pipeline-queries';
 import { cloudAssemblyBuildSpecDir, obtainScope } from '../private/construct-internals';
+import { hash, stackVariableNamespace } from '../private/identifiers';
 import { mapValues, mkdict, noEmptyObject, noUndefined, partition } from '../private/javascript';
 import { ArtifactMap } from './artifact-map';
 import { CodeBuildStep } from './codebuild-step';
@@ -113,22 +113,22 @@ export interface CodeBuildFactoryProps {
 }
 
 /**
- * Produce a CodeBuild project from a RunScript step and some CodeBuild-specific customizations
+ * Produce a CodeBuild project from a ShellStep and some CodeBuild-specific customizations
  *
  * The functionality here is shared between the `CodePipeline` translating a `ShellStep` into
  * a CodeBuild project, as well as the `CodeBuildStep` straight up.
  */
 export class CodeBuildFactory implements ICodePipelineActionFactory {
   // eslint-disable-next-line max-len
-  public static fromShellStep(constructId: string, scriptStep: ShellStep, additional?: Partial<CodeBuildFactoryProps>): ICodePipelineActionFactory {
+  public static fromShellStep(constructId: string, shellStep: ShellStep, additional?: Partial<CodeBuildFactoryProps>): ICodePipelineActionFactory {
     return new CodeBuildFactory(constructId, {
-      commands: scriptStep.commands,
-      env: scriptStep.env,
-      envFromCfnOutputs: scriptStep.envFromCfnOutputs,
-      inputs: scriptStep.inputs,
-      outputs: scriptStep.outputs,
-      stepId: scriptStep.id,
-      installCommands: scriptStep.installCommands,
+      commands: shellStep.commands,
+      env: shellStep.env,
+      envFromCfnOutputs: shellStep.envFromCfnOutputs,
+      inputs: shellStep.inputs,
+      outputs: shellStep.outputs,
+      stepId: shellStep.id,
+      installCommands: shellStep.installCommands,
       ...additional,
     });
   }
@@ -137,16 +137,16 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
     const factory = CodeBuildFactory.fromShellStep(constructId, step, {
       projectName: step.projectName,
       role: step.role,
-      projectOptions: {
+      ...additional,
+      projectOptions: mergeCodeBuildOptions(additional?.projectOptions, {
         buildEnvironment: step.buildEnvironment,
         rolePolicy: step.rolePolicyStatements,
         securityGroups: step.securityGroups,
         partialBuildSpec: step.partialBuildSpec,
         vpc: step.vpc,
         subnetSelection: step.subnetSelection,
-        ...additional?.projectOptions,
-      },
-      ...additional,
+        timeout: step.timeout,
+      }),
     });
 
     return {
@@ -224,8 +224,8 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
         environmentVariables: noEmptyObject(mapValues(mkdict(projectEnvs), value => ({ value }))),
       });
 
-    const fullBuildSpec = options.codeBuildDefaults?.partialBuildSpec
-      ? codebuild.mergeBuildSpecs(options.codeBuildDefaults?.partialBuildSpec, buildSpecHere)
+    const fullBuildSpec = projectOptions?.partialBuildSpec
+      ? codebuild.mergeBuildSpecs(projectOptions.partialBuildSpec, buildSpecHere)
       : buildSpecHere;
 
     const osFromEnvironment = environment.buildImage && environment.buildImage instanceof codebuild.WindowsBuildImage
@@ -241,7 +241,15 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
       // Write to disk and replace with a reference
       const relativeSpecFile = `buildspec-${Node.of(scope).addr}-${this.constructId}.yaml`;
       const absSpecFile = path.join(cloudAssemblyBuildSpecDir(scope), relativeSpecFile);
-      fs.writeFileSync(absSpecFile, Stack.of(scope).resolve(actualBuildSpec.toBuildSpec()), { encoding: 'utf-8' });
+
+      // This should resolve to a pure JSON string. If it resolves to an object, it's a CFN
+      // expression, and we can't support that yet. Maybe someday if we think really hard about it.
+      const fileContents = Stack.of(scope).resolve(actualBuildSpec.toBuildSpec());
+
+      if (typeof fileContents !== 'string') {
+        throw new Error(`This BuildSpec contains CloudFormation references and is supported by publishInParallel=false: ${JSON.stringify(fileContents, undefined, 2)}`);
+      }
+      fs.writeFileSync(absSpecFile, fileContents, { encoding: 'utf-8' });
       projectBuildSpec = codebuild.BuildSpec.fromSourceFilename(relativeSpecFile);
     } else {
       projectBuildSpec = actualBuildSpec;
@@ -263,14 +271,20 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
       projectScope = obtainScope(scope, actionName);
     }
 
+    const safePipelineName = Token.isUnresolved(options.pipeline.pipeline.pipelineName)
+      ? `${Stack.of(options.pipeline).stackName}/${Node.of(options.pipeline.pipeline).id}`
+      : options.pipeline.pipeline.pipelineName;
+
     const project = new codebuild.PipelineProject(projectScope, this.constructId, {
       projectName: this.props.projectName,
+      description: `Pipeline step ${safePipelineName}/${stage.stageName}/${actionName}`.substring(0, 255),
       environment,
       vpc: projectOptions.vpc,
       subnetSelection: projectOptions.subnetSelection,
       securityGroups: projectOptions.securityGroups,
       buildSpec: projectBuildSpec,
       role: this.props.role,
+      timeout: projectOptions.timeout,
     });
 
     if (this.props.additionalDependable) {
@@ -325,13 +339,16 @@ function generateInputArtifactLinkCommands(artifacts: ArtifactMap, inputs: FileS
   return inputs.map(input => {
     const fragments = [];
 
-    if (!['.', '..'].includes(path.dirname(input.directory))) {
-      fragments.push(`mkdir -p "${input.directory}"`);
+    fragments.push(`[ ! -d "${input.directory}" ] || { echo 'additionalInputs: "${input.directory}" must not exist yet. If you want to merge multiple artifacts, use a "cp" command.'; exit 1; }`);
+
+    const parentDirectory = path.dirname(input.directory);
+    if (!['.', '..'].includes(parentDirectory)) {
+      fragments.push(`mkdir -p -- "${parentDirectory}"`);
     }
 
     const artifact = artifacts.toCodePipeline(input.fileSet);
 
-    fragments.push(`ln -s "$CODEBUILD_SRC_DIR_${artifact.artifactName}" "${input.directory}"`);
+    fragments.push(`ln -s -- "$CODEBUILD_SRC_DIR_${artifact.artifactName}" "${input.directory}"`);
 
     return fragments.join(' && ');
   });
@@ -382,6 +399,7 @@ export function mergeCodeBuildOptions(...opts: Array<CodeBuildOptions | undefine
       partialBuildSpec: mergeBuildSpecs(a.partialBuildSpec, b.partialBuildSpec),
       vpc: b.vpc ?? a.vpc,
       subnetSelection: b.subnetSelection ?? a.subnetSelection,
+      timeout: b.timeout ?? a.timeout,
     };
   }
 }
@@ -415,12 +433,6 @@ function isDefined<A>(x: A | undefined): x is NonNullable<A> {
   return x !== undefined;
 }
 
-function hash<A>(obj: A) {
-  const d = crypto.createHash('sha256');
-  d.update(JSON.stringify(obj));
-  return d.digest('hex');
-}
-
 /**
  * Serialize a build environment to data (get rid of constructs & objects), so we can JSON.stringify it
  */
@@ -434,10 +446,6 @@ function serializeBuildEnvironment(env: codebuild.BuildEnvironment) {
     imagePullPrincipalType: env.buildImage?.imagePullPrincipalType,
     secretsManagerArn: env.buildImage?.secretsManagerCredentials?.secretArn,
   };
-}
-
-export function stackVariableNamespace(stack: StackDeployment) {
-  return stack.stackArtifactId;
 }
 
 /**

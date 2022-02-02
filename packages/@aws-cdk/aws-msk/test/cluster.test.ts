@@ -1,6 +1,4 @@
-import { ResourcePart, SynthUtils } from '@aws-cdk/assert-internal';
-import '@aws-cdk/assert-internal/jest';
-
+import { Template } from '@aws-cdk/assertions';
 import * as acmpca from '@aws-cdk/aws-acmpca';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as kms from '@aws-cdk/aws-kms';
@@ -15,7 +13,12 @@ describe('MSK Cluster', () => {
   let vpc: ec2.IVpc;
 
   beforeEach(() => {
-    stack = new core.Stack();
+    const app = new core.App({
+      context: {
+        '@aws-cdk/core:newStyleStackSynthesis': false,
+      },
+    });
+    stack = new core.Stack(app);
     vpc = new ec2.Vpc(stack, 'Vpc');
   });
 
@@ -26,32 +29,31 @@ describe('MSK Cluster', () => {
       vpc,
     });
 
-    expect(stack).toHaveResourceLike(
+    Template.fromStack(stack).hasResource(
       'AWS::MSK::Cluster',
       {
         DeletionPolicy: 'Retain',
         UpdateReplacePolicy: 'Retain',
       },
-      ResourcePart.CompleteDefinition,
     );
-    expect(stack).toHaveResourceLike('AWS::MSK::Cluster', {
+    Template.fromStack(stack).hasResourceProperties('AWS::MSK::Cluster', {
       KafkaVersion: '2.6.1',
     });
-    expect(stack).toHaveResourceLike('AWS::MSK::Cluster', {
+    Template.fromStack(stack).hasResourceProperties('AWS::MSK::Cluster', {
       EncryptionInfo: {
         EncryptionInTransit: { ClientBroker: 'TLS', InCluster: true },
       },
     });
-    expect(stack).toHaveResourceLike('AWS::MSK::Cluster', {
+    Template.fromStack(stack).hasResourceProperties('AWS::MSK::Cluster', {
       NumberOfBrokerNodes: 2,
     });
-    expect(stack).toHaveResourceLike('AWS::MSK::Cluster', {
+    Template.fromStack(stack).hasResourceProperties('AWS::MSK::Cluster', {
       BrokerNodeGroupInfo: {
         StorageInfo: { EBSStorageInfo: { VolumeSize: 1000 } },
       },
     });
-    expect(stack).toHaveResource('AWS::EC2::SecurityGroup');
-    expect(stack).toHaveResourceLike('AWS::MSK::Cluster', {
+    Template.fromStack(stack).resourceCountIs('AWS::EC2::SecurityGroup', 1);
+    Template.fromStack(stack).hasResourceProperties('AWS::MSK::Cluster', {
       BrokerNodeGroupInfo: {
         SecurityGroups: [
           {
@@ -141,7 +143,7 @@ describe('MSK Cluster', () => {
             iam: true,
           }),
         });
-        expect(stack).toHaveResourceLike('AWS::MSK::Cluster', {
+        Template.fromStack(stack).hasResourceProperties('AWS::MSK::Cluster', {
           ClientAuthentication: {
             Sasl: { Iam: { Enabled: true } },
           },
@@ -202,13 +204,13 @@ describe('MSK Cluster', () => {
       });
 
       test('with alias msk/${clusterName}/sasl/scram', () => {
-        expect(stack).toHaveResourceLike('AWS::KMS::Alias', {
+        Template.fromStack(stack).hasResourceProperties('AWS::KMS::Alias', {
           AliasName: 'alias/msk/cluster/sasl/scram',
         });
       });
 
       test('with a policy allowing the secrets manager service to use the key', () => {
-        expect(stack).toHaveResourceLike('AWS::KMS::Key', {
+        Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
           KeyPolicy: {
             Statement: [
               {
@@ -281,6 +283,7 @@ describe('MSK Cluster', () => {
                 Effect: 'Allow',
                 Principal: { AWS: '*' },
                 Resource: '*',
+                Sid: 'Allow access through AWS Secrets Manager for all principals in the account that are authorized to use AWS Secrets Manager',
               },
             ],
           },
@@ -319,7 +322,7 @@ describe('MSK Cluster', () => {
         ),
       });
 
-      expect(stack).toHaveResourceLike('AWS::MSK::Cluster', {
+      Template.fromStack(stack).hasResourceProperties('AWS::MSK::Cluster', {
         BrokerNodeGroupInfo: { InstanceType: 'kafka.m5.xlarge' },
       });
     });
@@ -336,7 +339,7 @@ describe('MSK Cluster', () => {
       ),
     });
 
-    expect(stack).toHaveResourceLike('AWS::MSK::Cluster', {
+    Template.fromStack(stack).hasResourceProperties('AWS::MSK::Cluster', {
       BrokerNodeGroupInfo: { InstanceType: 'kafka.m5.xlarge' },
     });
   });
@@ -352,7 +355,7 @@ describe('MSK Cluster', () => {
         },
       });
 
-      expect(stack).toHaveResourceLike('AWS::MSK::Cluster', {
+      Template.fromStack(stack).hasResourceProperties('AWS::MSK::Cluster', {
         LoggingInfo: {
           BrokerLogs: {
             CloudWatchLogs: {
@@ -376,7 +379,7 @@ describe('MSK Cluster', () => {
         },
       });
 
-      expect(stack).toHaveResourceLike('AWS::MSK::Cluster', {
+      Template.fromStack(stack).hasResourceProperties('AWS::MSK::Cluster', {
         LoggingInfo: {
           BrokerLogs: {
             S3: {
@@ -400,7 +403,7 @@ describe('MSK Cluster', () => {
         },
       });
 
-      expect(stack).toHaveResourceLike('AWS::MSK::Cluster', {
+      Template.fromStack(stack).hasResourceProperties('AWS::MSK::Cluster', {
         LoggingInfo: {
           BrokerLogs: {
             Firehose: {
@@ -445,7 +448,7 @@ describe('MSK Cluster', () => {
       ebsStorageInfo: { encryptionKey: new kms.Key(stack, 'Key') },
     });
 
-    expect(stack).toHaveResourceLike('AWS::MSK::Cluster', {
+    Template.fromStack(stack).hasResourceProperties('AWS::MSK::Cluster', {
       EncryptionInfo: {
         EncryptionAtRest: {
           DataVolumeKMSKeyId: {
@@ -526,7 +529,7 @@ describe('MSK Cluster', () => {
     );
 
     // THEN
-    expect(SynthUtils.toCloudFormation(stack)).toMatchSnapshot();
+    expect(Template.fromStack(stack)).toMatchSnapshot();
   });
 
   describe('when creating sasl/scram users', () => {
@@ -555,7 +558,7 @@ describe('MSK Cluster', () => {
       const username = 'my-user';
       cluster.addUser(username);
 
-      expect(stack).toHaveResourceLike('AWS::SecretsManager::Secret', {
+      Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::Secret', {
         'Name': {
           'Fn::Join': [
             '',

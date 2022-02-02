@@ -4,7 +4,14 @@ import {
   AwsLogDriver, BaseService, CloudMapOptions, Cluster, ContainerDefinition, ContainerImage, ICluster, LogDriver, PropagatedTagSource,
   Protocol, Secret,
 } from '@aws-cdk/aws-ecs';
-import { ApplicationListener, ApplicationLoadBalancer, ApplicationProtocol, ApplicationTargetGroup } from '@aws-cdk/aws-elasticloadbalancingv2';
+import {
+  ApplicationListener,
+  ApplicationLoadBalancer,
+  ApplicationProtocol,
+  ApplicationTargetGroup, ListenerCertificate,
+  ListenerCondition,
+  SslPolicy,
+} from '@aws-cdk/aws-elasticloadbalancingv2';
 import { IRole } from '@aws-cdk/aws-iam';
 import { ARecord, IHostedZone, RecordTarget } from '@aws-cdk/aws-route53';
 import { LoadBalancerTarget } from '@aws-cdk/aws-route53-targets';
@@ -332,6 +339,13 @@ export interface ApplicationListenerProps {
    * created for the load balancer's specified domain name.
    */
   readonly certificate?: ICertificate;
+
+  /**
+   * The security policy that defines which ciphers and protocols are supported by the ALB Listener.
+   *
+   * @default - The recommended elastic load balancing security policy
+   */
+  readonly sslPolicy?: SslPolicy;
 }
 
 /**
@@ -407,6 +421,7 @@ export abstract class ApplicationMultipleTargetGroupsServiceBase extends CoreCon
             listenerName: listenerProps.name,
             loadBalancer: lb,
             port: listenerProps.port,
+            sslPolicy: listenerProps.sslPolicy,
           });
           this.listeners.push(listener);
         }
@@ -461,6 +476,14 @@ export abstract class ApplicationMultipleTargetGroupsServiceBase extends CoreCon
 
   protected registerECSTargets(service: BaseService, container: ContainerDefinition, targets: ApplicationTargetProps[]): ApplicationTargetGroup {
     for (const targetProps of targets) {
+      const conditions: Array<ListenerCondition> = [];
+      if (targetProps.hostHeader) {
+        conditions.push(ListenerCondition.hostHeaders([targetProps.hostHeader]));
+      }
+      if (targetProps.pathPattern) {
+        conditions.push(ListenerCondition.pathPatterns([targetProps.pathPattern]));
+      }
+
       const targetGroup = this.findListener(targetProps.listener).addTargets(`ECSTargetGroup${container.containerName}${targetProps.containerPort}`, {
         port: 80,
         targets: [
@@ -470,8 +493,7 @@ export abstract class ApplicationMultipleTargetGroupsServiceBase extends CoreCon
             protocol: targetProps.protocol,
           }),
         ],
-        hostHeader: targetProps.hostHeader,
-        pathPattern: targetProps.pathPattern,
+        conditions,
         priority: targetProps.priority,
       });
       this.targetGroups.push(targetGroup);
@@ -503,7 +525,7 @@ export abstract class ApplicationMultipleTargetGroupsServiceBase extends CoreCon
   }
 
   private configListener(protocol: ApplicationProtocol, props: ListenerConfig): ApplicationListener {
-    const listener = this.createListener(props.listenerName, props.loadBalancer, protocol, props.port);
+    const listener = this.createListener(props, protocol);
     let certificate;
     if (protocol === ApplicationProtocol.HTTPS) {
       certificate = this.createListenerCertificate(props.listenerName, props.certificate, props.domainName, props.domainZone);
@@ -511,7 +533,7 @@ export abstract class ApplicationMultipleTargetGroupsServiceBase extends CoreCon
       certificate = undefined;
     }
     if (certificate !== undefined) {
-      listener.addCertificateArns(`Arns${props.listenerName}`, [certificate.certificateArn]);
+      listener.addCertificates(`Arns${props.listenerName}`, [ListenerCertificate.fromArn(certificate.certificateArn)]);
     }
 
     return listener;
@@ -567,11 +589,12 @@ export abstract class ApplicationMultipleTargetGroupsServiceBase extends CoreCon
     }
   }
 
-  private createListener(name: string, lb: ApplicationLoadBalancer, protocol?: ApplicationProtocol, port?: number): ApplicationListener {
-    return lb.addListener(name, {
+  private createListener({ loadBalancer, listenerName, port, sslPolicy }: ListenerConfig, protocol?: ApplicationProtocol): ApplicationListener {
+    return loadBalancer.addListener(listenerName, {
       protocol,
       open: true,
       port,
+      sslPolicy,
     });
   }
 
@@ -621,6 +644,13 @@ interface ListenerConfig {
    * @default none
    */
   readonly certificate?: ICertificate;
+
+  /**
+   * SSL Policy for the listener
+   *
+   * @default null
+   */
+  readonly sslPolicy?: SslPolicy;
 
   /**
    * The domain name for the service, e.g. "api.example.com."

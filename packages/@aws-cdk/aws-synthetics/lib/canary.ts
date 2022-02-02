@@ -5,6 +5,7 @@ import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { Code } from './code';
+import { Runtime } from './runtime';
 import { Schedule } from './schedule';
 import { CloudWatchSyntheticsMetrics } from './synthetics-canned-metrics.generated';
 import { CfnCanary } from './synthetics.generated';
@@ -62,81 +63,6 @@ export interface CustomTestOptions {
    * The handler for the code. Must end with `.handler`.
    */
   readonly handler: string,
-}
-
-/**
- * Runtime options for a canary
- */
-export class Runtime {
-  /**
-   * `syn-1.0` includes the following:
-   *
-   * - Synthetics library 1.0
-   * - Synthetics handler code 1.0
-   * - Lambda runtime Node.js 10.x
-   * - Puppeteer-core version 1.14.0
-   * - The Chromium version that matches Puppeteer-core 1.14.0
-   *
-   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_nodejs_puppeteer.html#CloudWatch_Synthetics_runtimeversion-1.0
-   */
-  public static readonly SYNTHETICS_1_0 = new Runtime('syn-1.0');
-
-  /**
-   * `syn-nodejs-2.0` includes the following:
-   * - Lambda runtime Node.js 10.x
-   * - Puppeteer-core version 3.3.0
-   * - Chromium version 83.0.4103.0
-   *
-   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_nodejs_puppeteer.html#CloudWatch_Synthetics_runtimeversion-2.0
-   */
-  public static readonly SYNTHETICS_NODEJS_2_0 = new Runtime('syn-nodejs-2.0');
-
-
-  /**
-   * `syn-nodejs-2.1` includes the following:
-   * - Lambda runtime Node.js 10.x
-   * - Puppeteer-core version 3.3.0
-   * - Chromium version 83.0.4103.0
-   *
-   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_nodejs_puppeteer.html#CloudWatch_Synthetics_runtimeversion-2.1
-   */
-  public static readonly SYNTHETICS_NODEJS_2_1 = new Runtime('syn-nodejs-2.1');
-
-  /**
-   * `syn-nodejs-2.2` includes the following:
-   * - Lambda runtime Node.js 10.x
-   * - Puppeteer-core version 3.3.0
-   * - Chromium version 83.0.4103.0
-   *
-   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_nodejs_puppeteer.html#CloudWatch_Synthetics_runtimeversion-2.2
-   */
-  public static readonly SYNTHETICS_NODEJS_2_2 = new Runtime('syn-nodejs-2.2');
-
-  /**
-   * `syn-nodejs-puppeteer-3.0` includes the following:
-   * - Lambda runtime Node.js 12.x
-   * - Puppeteer-core version 5.5.0
-   * - Chromium version 88.0.4298.0
-   *
-   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_nodejs_puppeteer.html#CloudWatch_Synthetics_runtimeversion-nodejs-puppeteer-3.0
-   */
-  public static readonly SYNTHETICS_NODEJS_PUPPETEER_3_0 = new Runtime('syn-nodejs-puppeteer-3.0');
-
-  /**
-   * `syn-nodejs-puppeteer-3.1` includes the following:
-   * - Lambda runtime Node.js 12.x
-   * - Puppeteer-core version 5.5.0
-   * - Chromium version 88.0.4298.0
-   *
-   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_nodejs_puppeteer.html#CloudWatch_Synthetics_runtimeversion-nodejs-puppeteer-3.1
-   */
-  public static readonly SYNTHETICS_NODEJS_PUPPETEER_3_1 = new Runtime('syn-nodejs-puppeteer-3.1');
-
-  /**
-   * @param name The name of the runtime version
-   */
-  public constructor(public readonly name: string) {
-  }
 }
 
 /**
@@ -300,6 +226,7 @@ export class Canary extends cdk.Resource {
 
     this.artifactsBucket = props.artifactsBucketLocation?.bucket ?? new s3.Bucket(this, 'ArtifactsBucket', {
       encryption: s3.BucketEncryption.KMS_MANAGED,
+      enforceSSL: true,
     });
 
     this.role = props.role ?? this.createDefaultRole(props.artifactsBucketLocation?.prefix);
@@ -330,7 +257,11 @@ export class Canary extends cdk.Resource {
    * @default avg over 5 minutes
    */
   public metricDuration(options?: MetricOptions): Metric {
-    return this.cannedMetric(CloudWatchSyntheticsMetrics.durationAverage, options);
+    return new Metric({
+      ...CloudWatchSyntheticsMetrics.durationMaximum({ CanaryName: this.canaryName }),
+      ...{ statistic: 'Average' },
+      ...options,
+    }).attachTo(this);
   }
 
   /**
@@ -369,8 +300,12 @@ export class Canary extends cdk.Resource {
           actions: ['s3:ListAllMyBuckets'],
         }),
         new iam.PolicyStatement({
+          resources: [this.artifactsBucket.bucketArn],
+          actions: ['s3:GetBucketLocation'],
+        }),
+        new iam.PolicyStatement({
           resources: [this.artifactsBucket.arnForObjects(`${prefix ? prefix+'/*' : '*'}`)],
-          actions: ['s3:PutObject', 's3:GetBucketLocation'],
+          actions: ['s3:PutObject'],
         }),
         new iam.PolicyStatement({
           resources: ['*'],
@@ -398,7 +333,7 @@ export class Canary extends cdk.Resource {
   private createCode(props: CanaryProps): CfnCanary.CodeProperty {
     const codeConfig = {
       handler: props.test.handler,
-      ...props.test.code.bind(this, props.test.handler),
+      ...props.test.code.bind(this, props.test.handler, props.runtime.family),
     };
     return {
       handler: codeConfig.handler,

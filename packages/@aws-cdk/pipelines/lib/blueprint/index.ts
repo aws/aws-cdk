@@ -1,6 +1,6 @@
 export * from './asset-type';
 export * from './file-set';
-export * from './script-step';
+export * from './shell-step';
 export * from './stack-deployment';
 export * from './stage-deployment';
 export * from './step';

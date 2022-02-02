@@ -17,6 +17,8 @@ import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
  * Props for a PublishAssetsAction
+ *
+ * @deprecated This class is part of the old API. Use the API based on the `CodePipeline` class instead
  */
 export interface PublishAssetsActionProps {
   /**
@@ -78,6 +80,14 @@ export interface PublishAssetsActionProps {
    */
   readonly subnetSelection?: ec2.SubnetSelection;
 
+
+  /**
+   * Custom BuildSpec that is merged with generated one
+   *
+   * @default - none
+   */
+  readonly buildSpec?: codebuild.BuildSpec;
+
   /**
    * Use a file buildspec written to the cloud assembly instead of an inline buildspec.
    * This prevents size limitation errors as inline specs have a max length of 25600 characters
@@ -103,6 +113,8 @@ export interface PublishAssetsActionProps {
  *
  * You do not need to instantiate this action -- it will automatically
  * be added by the pipeline when you add stacks that use assets.
+ *
+ * @deprecated This class is part of the old API. Use the API based on the `CodePipeline` class instead
  */
 export class PublishAssetsAction extends CoreConstruct implements codepipeline.IAction {
   private readonly action: codepipeline.IAction;
@@ -116,7 +128,7 @@ export class PublishAssetsAction extends CoreConstruct implements codepipeline.I
     const installSuffix = props.cdkCliVersion ? `@${props.cdkCliVersion}` : '';
     const installCommand = `npm install -g cdk-assets${installSuffix}`;
 
-    this.buildSpec = codebuild.BuildSpec.fromObject({
+    const buildSpec = codebuild.BuildSpec.fromObject({
       version: '0.2',
       phases: {
         install: {
@@ -127,6 +139,7 @@ export class PublishAssetsAction extends CoreConstruct implements codepipeline.I
         },
       },
     });
+    this.buildSpec = props.buildSpec ? codebuild.mergeBuildSpecs(props.buildSpec, buildSpec) : buildSpec;
 
     const project = new codebuild.PipelineProject(this, 'Default', {
       projectName: this.props.projectName,

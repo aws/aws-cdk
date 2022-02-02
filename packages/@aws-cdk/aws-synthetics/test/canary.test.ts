@@ -1,4 +1,4 @@
-import { Match, TemplateAssertions } from '@aws-cdk/assertions';
+import { Match, Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
 import { Duration, Lazy, Stack } from '@aws-cdk/core';
@@ -23,7 +23,7 @@ test('Basic canary properties work', () => {
   });
 
   // THEN
-  TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Synthetics::Canary', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Synthetics::Canary', {
     Name: 'mycanary',
     SuccessRetentionPeriod: 10,
     FailureRetentionPeriod: 10,
@@ -47,7 +47,7 @@ test('Canary can have generated name', () => {
   });
 
   // THEN
-  TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Synthetics::Canary', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Synthetics::Canary', {
     Name: 'canary',
   });
 });
@@ -67,7 +67,7 @@ test('Name validation does not fail when using Tokens', () => {
   });
 
   // THEN: no exception
-  TemplateAssertions.fromStack(stack).resourceCountIs('AWS::Synthetics::Canary', 1);
+  Template.fromStack(stack).resourceCountIs('AWS::Synthetics::Canary', 1);
 });
 
 test('Throws when name is specified incorrectly', () => {
@@ -123,7 +123,7 @@ test('An existing role can be specified instead of auto-created', () => {
   });
 
   // THEN
-  TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Synthetics::Canary', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Synthetics::Canary', {
     ExecutionRoleArn: stack.resolve(role.roleArn),
   });
 });
@@ -145,7 +145,7 @@ test('An existing bucket and prefix can be specified instead of auto-created', (
   });
 
   // THEN
-  TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Synthetics::Canary', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Synthetics::Canary', {
     ArtifactS3Location: stack.resolve(bucket.s3UrlForObject(prefix)),
   });
 });
@@ -164,8 +164,27 @@ test('Runtime can be specified', () => {
   });
 
   // THEN
-  TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Synthetics::Canary', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Synthetics::Canary', {
     RuntimeVersion: 'syn-1.0',
+  });
+});
+
+test('Python runtime can be specified', () => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  new synthetics.Canary(stack, 'Canary', {
+    runtime: synthetics.Runtime.SYNTHETICS_PYTHON_SELENIUM_1_0,
+    test: synthetics.Test.custom({
+      handler: 'index.handler',
+      code: synthetics.Code.fromInline('# Synthetics handler code'),
+    }),
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Synthetics::Canary', {
+    RuntimeVersion: 'syn-python-selenium-1.0',
   });
 });
 
@@ -188,7 +207,7 @@ test('environment variables can be specified', () => {
   });
 
   // THEN
-  TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Synthetics::Canary', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Synthetics::Canary', {
     RunConfig: {
       EnvironmentVariables: environmentVariables,
     },
@@ -209,8 +228,8 @@ test('environment variables are skipped if not provided', () => {
   });
 
   // THEN
-  TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Synthetics::Canary', {
-    RunConfig: Match.absentProperty(),
+  Template.fromStack(stack).hasResourceProperties('AWS::Synthetics::Canary', {
+    RunConfig: Match.absent(),
   });
 });
 
@@ -220,7 +239,7 @@ test('Runtime can be customized', () => {
 
   // WHEN
   new synthetics.Canary(stack, 'Canary', {
-    runtime: new synthetics.Runtime('fancy-future-runtime-1337.42'),
+    runtime: new synthetics.Runtime('fancy-future-runtime-1337.42', synthetics.RuntimeFamily.OTHER),
     test: synthetics.Test.custom({
       handler: 'index.handler',
       code: synthetics.Code.fromInline('/* Synthetics handler code */'),
@@ -228,7 +247,7 @@ test('Runtime can be customized', () => {
   });
 
   // THEN
-  TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Synthetics::Canary', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Synthetics::Canary', {
     RuntimeVersion: 'fancy-future-runtime-1337.42',
   });
 });
@@ -248,7 +267,7 @@ test('Schedule can be set with Rate', () => {
   });
 
   // THEN
-  TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Synthetics::Canary', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Synthetics::Canary', {
     Schedule: Match.objectLike({ Expression: 'rate(3 minutes)' }),
   });
 });
@@ -268,10 +287,31 @@ test('Schedule can be set to 1 minute', () => {
   });
 
   // THEN
-  TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Synthetics::Canary', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Synthetics::Canary', {
     Schedule: Match.objectLike({ Expression: 'rate(1 minute)' }),
   });
 });
+
+test('Schedule can be set with Cron', () => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  new synthetics.Canary(stack, 'Canary', {
+    schedule: synthetics.Schedule.cron({ minute: '30' }),
+    test: synthetics.Test.custom({
+      handler: 'index.handler',
+      code: synthetics.Code.fromInline('/* Synthetics handler code */'),
+    }),
+    runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_3,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Synthetics::Canary', {
+    Schedule: Match.objectLike({ Expression: 'cron(30 * * * ? *)' }),
+  });
+});
+
 
 test('Schedule can be set with Expression', () => {
   // GIVEN
@@ -288,7 +328,7 @@ test('Schedule can be set with Expression', () => {
   });
 
   // THEN
-  TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Synthetics::Canary', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Synthetics::Canary', {
     Schedule: Match.objectLike({ Expression: 'rate(1 hour)' }),
   });
 });
@@ -308,7 +348,7 @@ test('Schedule can be set to run once', () => {
   });
 
   // THEN
-  TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Synthetics::Canary', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Synthetics::Canary', {
     Schedule: Match.objectLike({ Expression: 'rate(0 minutes)' }),
   });
 });
@@ -390,7 +430,7 @@ test('can specify custom test', () => {
   });
 
   // THEN
-  TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Synthetics::Canary', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Synthetics::Canary', {
     Code: {
       Handler: 'index.handler',
       Script: `

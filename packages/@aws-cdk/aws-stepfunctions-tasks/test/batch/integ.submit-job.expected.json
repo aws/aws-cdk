@@ -869,15 +869,20 @@
                 {
                   "Ref": "AWS::URLSuffix"
                 },
-                "/aws-cdk/assets:10112d0d2c68a9d76297acc4623b1af0d5e9fd11b2226eee455e09c6fcf1b776"
+                "/aws-cdk/assets:3691f011ed75cf0fd05152b8fae3d684323da3da9eaf3be68cba18cb9def2562"
               ]
             ]
           },
-          "Memory": 4,
           "Privileged": false,
           "ReadonlyRootFilesystem": false,
-          "Vcpus": 1
+          "ResourceRequirements": [
+            { "Type": "VCPU", "Value": "1" },
+            { "Type": "MEMORY", "Value": "4" }
+          ]
         },
+        "PlatformCapabilities": [
+          "EC2"
+        ],
         "RetryStrategy": {
           "Attempts": 1
         },

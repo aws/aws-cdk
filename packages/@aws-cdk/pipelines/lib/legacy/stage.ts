@@ -5,10 +5,11 @@ import { CodeBuildAction } from '@aws-cdk/aws-codepipeline-actions';
 import * as sns from '@aws-cdk/aws-sns';
 import { Stage, Aspects } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
-import { Construct } from 'constructs';
+import { Construct, Node } from 'constructs';
 import { AssetType } from '../blueprint/asset-type';
 import { ApplicationSecurityCheck } from '../private/application-security-check';
 import { AssetManifestReader, DockerImageManifestEntry, FileManifestEntry } from '../private/asset-manifest';
+import { pipelineSynth } from '../private/construct-internals';
 import { topologicalSort } from '../private/toposort';
 import { DeployCdkStackAction } from './actions';
 import { CdkPipeline } from './pipeline';
@@ -19,6 +20,8 @@ import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
  * Construction properties for a CdkStage
+ *
+ * @deprecated This class is part of the old API. Use the API based on the `CodePipeline` class instead
  */
 export interface CdkStageProps {
   /**
@@ -69,6 +72,8 @@ export interface CdkStageProps {
  *
  * You don't need to instantiate this class directly. Use
  * `cdkPipeline.addStage()` instead.
+ *
+ * @deprecated This class is part of the old API. Use the API based on the `CodePipeline` class instead
  */
 export class CdkStage extends CoreConstruct {
   private _nextSequentialRunOrder = 1; // Must start at 1 eh
@@ -113,7 +118,7 @@ export class CdkStage extends CoreConstruct {
    * publishing stage.
    */
   public addApplication(appStage: Stage, options: AddStageOptions = {}) {
-    const asm = appStage.synth({ validateOnSynthesis: true });
+    const asm = pipelineSynth(appStage);
     const extraRunOrderSpace = options.extraRunOrderSpace ?? 0;
 
     if (options.confirmBroadeningPermissions ?? this.confirmBroadeningPermissions) {
@@ -311,7 +316,7 @@ export class CdkStage extends CoreConstruct {
       variablesNamespace: `${appStageName}SecurityCheck`,
       environmentVariables: {
         STAGE_PATH: {
-          value: this.pipelineStage.pipeline.stack.stackName,
+          value: Node.of(appStage).path,
           type: codebuild.BuildEnvironmentVariableType.PLAINTEXT,
         },
         STAGE_NAME: {
@@ -395,6 +400,8 @@ export class CdkStage extends CoreConstruct {
 
 /**
  * Additional options for adding a stack deployment
+ *
+ * @deprecated This class is part of the old API. Use the API based on the `CodePipeline` class instead
  */
 export interface AddStackOptions {
   /**
@@ -414,6 +421,8 @@ export interface AddStackOptions {
 
 /**
  * A single output of a Stack
+ *
+ * @deprecated This class is part of the old API. Use the API based on the `CodePipeline` class instead
  */
 export class StackOutput {
   /**
@@ -447,6 +456,8 @@ function isAssetManifest(s: cxapi.CloudArtifact): s is cxapi.AssetManifestArtifa
 
 /**
  * Features that the Stage needs from its environment
+ *
+ * @deprecated This class is part of the old API. Use the API based on the `CodePipeline` class instead
  */
 export interface IStageHost {
   /**
@@ -462,6 +473,8 @@ export interface IStageHost {
 
 /**
  * Instructions to publish certain assets
+ *
+ * @deprecated This class is part of the old API. Use the API based on the `CodePipeline` class instead
  */
 export interface AssetPublishingCommand {
   /**
@@ -492,6 +505,8 @@ export interface AssetPublishingCommand {
 
 /**
  * Base options for a pipelines stage
+ *
+ * @deprecated This class is part of the old API. Use the API based on the `CodePipeline` class instead
  */
 export interface BaseStageOptions {
   /**
@@ -521,6 +536,8 @@ export interface BaseStageOptions {
 
 /**
  * Options for adding an application stage to a pipeline
+ *
+ * @deprecated This class is part of the old API. Use the API based on the `CodePipeline` class instead
  */
 export interface AddStageOptions extends BaseStageOptions {
   /**
@@ -545,6 +562,8 @@ export interface AddStageOptions extends BaseStageOptions {
 
 /**
  * Options for addManualApproval
+ *
+ * @deprecated This class is part of the old API. Use the API based on the `CodePipeline` class instead
  */
 export interface AddManualApprovalOptions {
   /**

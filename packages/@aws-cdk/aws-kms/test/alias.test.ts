@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import { ArnPrincipal, PolicyStatement } from '@aws-cdk/aws-iam';
 import { App, CfnOutput, Stack } from '@aws-cdk/core';
 import { Alias } from '../lib/alias';
@@ -15,7 +15,7 @@ test('default alias', () => {
 
   new Alias(stack, 'Alias', { targetKey: key, aliasName: 'alias/foo' });
 
-  expect(stack).toHaveResource('AWS::KMS::Alias', {
+  Template.fromStack(stack).hasResourceProperties('AWS::KMS::Alias', {
     AliasName: 'alias/foo',
     TargetKeyId: { 'Fn::GetAtt': ['Key961B73FD', 'Arn'] },
   });
@@ -35,7 +35,7 @@ test('add "alias/" prefix if not given.', () => {
     targetKey: key,
   });
 
-  expect(stack).toHaveResource('AWS::KMS::Alias', {
+  Template.fromStack(stack).hasResourceProperties('AWS::KMS::Alias', {
     AliasName: 'alias/foo',
     TargetKeyId: { 'Fn::GetAtt': ['Key961B73FD', 'Arn'] },
   });
@@ -51,7 +51,7 @@ test('can create alias directly while creating the key', () => {
     alias: 'foo',
   });
 
-  expect(stack).toHaveResource('AWS::KMS::Alias', {
+  Template.fromStack(stack).hasResourceProperties('AWS::KMS::Alias', {
     AliasName: 'alias/foo',
     TargetKeyId: { 'Fn::GetAtt': ['Key961B73FD', 'Arn'] },
   });
@@ -124,7 +124,7 @@ test('can be used wherever a key is expected', () => {
     aliasName: 'alias/myAlias',
   });
 
-  /* eslint-disable cdk/no-core-construct */
+  /* eslint-disable @aws-cdk/no-core-construct */
   class MyConstruct extends Construct {
     constructor(scope: Construct, id: string, key: IKey) {
       super(scope, id);
@@ -138,15 +138,13 @@ test('can be used wherever a key is expected', () => {
     }
   }
   new MyConstruct(stack, 'MyConstruct', myAlias);
-  /* eslint-enable cdk/no-core-construct */
+  /* eslint-enable @aws-cdk/no-core-construct */
 
-  expect(stack).toHaveOutput({
-    outputName: 'OutId',
-    outputValue: 'alias/myAlias',
+  Template.fromStack(stack).hasOutput('OutId', {
+    Value: 'alias/myAlias',
   });
-  expect(stack).toHaveOutput({
-    outputName: 'OutArn',
-    outputValue: {
+  Template.fromStack(stack).hasOutput('OutArn', {
+    Value: {
       'Fn::Join': ['', [
         'arn:',
         { Ref: 'AWS::Partition' },
@@ -165,7 +163,7 @@ test('imported alias by name - can be used where a key is expected', () => {
 
   const myAlias = Alias.fromAliasName(stack, 'MyAlias', 'alias/myAlias');
 
-  /* eslint-disable cdk/no-core-construct */
+  /* eslint-disable @aws-cdk/no-core-construct */
   class MyConstruct extends Construct {
     constructor(scope: Construct, id: string, key: IKey) {
       super(scope, id);
@@ -179,15 +177,13 @@ test('imported alias by name - can be used where a key is expected', () => {
     }
   }
   new MyConstruct(stack, 'MyConstruct', myAlias);
-  /* eslint-enable cdk/no-core-construct */
+  /* eslint-enable @aws-cdk/no-core-construct */
 
-  expect(stack).toHaveOutput({
-    outputName: 'OutId',
-    outputValue: 'alias/myAlias',
+  Template.fromStack(stack).hasOutput('OutId', {
+    Value: 'alias/myAlias',
   });
-  expect(stack).toHaveOutput({
-    outputName: 'OutArn',
-    outputValue: {
+  Template.fromStack(stack).hasOutput('OutArn', {
+    Value: {
       'Fn::Join': ['', [
         'arn:',
         { Ref: 'AWS::Partition' },

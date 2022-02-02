@@ -1,6 +1,7 @@
 import { CfnDynamicReference, CfnDynamicReferenceService } from './cfn-dynamic-reference';
 import { CfnParameter } from './cfn-parameter';
 import { Intrinsic } from './private/intrinsic';
+import { Token } from './token';
 
 /**
  * Work with secret values in the CDK
@@ -39,7 +40,7 @@ export class SecretValue extends Intrinsic {
       throw new Error('secretId cannot be empty');
     }
 
-    if (!secretId.startsWith('arn:') && secretId.includes(':')) {
+    if (!Token.isUnresolved(secretId) && !secretId.startsWith('arn:') && secretId.includes(':')) {
       throw new Error(`secret id "${secretId}" is not an ARN but contains ":"`);
     }
 
@@ -66,12 +67,13 @@ export class SecretValue extends Intrinsic {
    * Parameter Store. The parameter name is case-sensitive.
    *
    * @param version An integer that specifies the version of the parameter to
-   * use. You must specify the exact version. You cannot currently specify that
-   * AWS CloudFormation use the latest version of a parameter.
+   * use. If you don't specify the exact version, AWS CloudFormation uses the
+   * latest version of the parameter.
    */
-  public static ssmSecure(parameterName: string, version: string): SecretValue {
-    const parts = [parameterName, version];
-    return this.cfnDynamicReference(new CfnDynamicReference(CfnDynamicReferenceService.SSM_SECURE, parts.join(':')));
+  public static ssmSecure(parameterName: string, version?: string): SecretValue {
+    return this.cfnDynamicReference(
+      new CfnDynamicReference(CfnDynamicReferenceService.SSM_SECURE,
+        version ? `${parameterName}:${version}` : parameterName));
   }
 
   /**

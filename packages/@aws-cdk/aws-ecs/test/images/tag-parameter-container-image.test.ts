@@ -1,12 +1,11 @@
-import { expect, haveResourceLike, SynthUtils } from '@aws-cdk/assert-internal';
+import { Match, Template } from '@aws-cdk/assertions';
 import * as ecr from '@aws-cdk/aws-ecr';
 import * as cdk from '@aws-cdk/core';
-import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as ecs from '../../lib';
 
-nodeunitShim({
-  'TagParameter container image': {
-    'throws an error when tagParameterName() is used without binding the image'(test: Test) {
+describe('tag parameter container image', () => {
+  describe('TagParameter container image', () => {
+    test('throws an error when tagParameterName() is used without binding the image', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const repository = new ecr.Repository(stack, 'Repository');
@@ -15,14 +14,12 @@ nodeunitShim({
         value: tagParameterContainerImage.tagParameterName,
       });
 
-      test.throws(() => {
-        SynthUtils.synthesize(stack);
-      }, /TagParameterContainerImage must be used in a container definition when using tagParameterName/);
+      expect(() => {
+        Template.fromStack(stack);
+      }).toThrow(/TagParameterContainerImage must be used in a container definition when using tagParameterName/);
+    });
 
-      test.done();
-    },
-
-    'throws an error when tagParameterValue() is used without binding the image'(test: Test) {
+    test('throws an error when tagParameterValue() is used without binding the image', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const repository = new ecr.Repository(stack, 'Repository');
@@ -31,14 +28,12 @@ nodeunitShim({
         value: tagParameterContainerImage.tagParameterValue,
       });
 
-      test.throws(() => {
-        SynthUtils.synthesize(stack);
-      }, /TagParameterContainerImage must be used in a container definition when using tagParameterValue/);
+      expect(() => {
+        Template.fromStack(stack);
+      }).toThrow(/TagParameterContainerImage must be used in a container definition when using tagParameterValue/);
+    });
 
-      test.done();
-    },
-
-    'can be used in a cross-account manner'(test: Test) {
+    test('can be used in a cross-account manner', () => {
       // GIVEN
       const app = new cdk.App();
       const pipelineStack = new cdk.Stack(app, 'PipelineStack', {
@@ -67,7 +62,7 @@ nodeunitShim({
       });
 
       // THEN
-      expect(pipelineStack).to(haveResourceLike('AWS::ECR::Repository', {
+      Template.fromStack(pipelineStack).hasResourceProperties('AWS::ECR::Repository', {
         RepositoryName: repositoryName,
         RepositoryPolicyText: {
           Statement: [{
@@ -88,13 +83,13 @@ nodeunitShim({
             },
           }],
         },
-      }));
-      expect(serviceStack).to(haveResourceLike('AWS::IAM::Role', {
+      });
+      Template.fromStack(serviceStack).hasResourceProperties('AWS::IAM::Role', {
         RoleName: 'servicestackionexecutionrolee7e2d9a783a54eb795f4',
-      }));
-      expect(serviceStack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+      });
+      Template.fromStack(serviceStack).hasResourceProperties('AWS::ECS::TaskDefinition', {
         ContainerDefinitions: [
-          {
+          Match.objectLike({
             Image: {
               'Fn::Join': ['', [
                 {
@@ -126,11 +121,9 @@ nodeunitShim({
                 { Ref: 'ServiceTaskDefinitionContainerImageTagParamCEC9D0BA' },
               ]],
             },
-          },
+          }),
         ],
-      }));
-
-      test.done();
-    },
-  },
+      });
+    });
+  });
 });

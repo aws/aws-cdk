@@ -1,0 +1,8 @@
+#!/bin/bash
+
+set -euo pipefail
+scriptdir=$(cd $(dirname $0) && pwd)
+
+node $scriptdir/../transform-packages.js
+yarn lerna bootstrap
+node $scriptdir/../restore-package-jsons.js

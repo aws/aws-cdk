@@ -3,19 +3,25 @@
 
 ---
 
-![cdk-constructs: Developer Preview](https://img.shields.io/badge/cdk--constructs-developer--preview-informational.svg?style=for-the-badge)
-
-> The APIs of higher level constructs in this module are in **developer preview** before they
-> become stable. We will only make breaking changes to address unforeseen API issues. Therefore,
-> these APIs are not subject to [Semantic Versioning](https://semver.org/), and breaking changes
-> will be announced in release notes. This means that while you may use them, you may need to
-> update your source code when upgrading to a newer version of this package.
+![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
 
 <!--END STABILITY BANNER-->
 
 A construct library for painless Continuous Delivery of CDK applications.
+
+CDK Pipelines is an *opinionated construct library*. It is purpose-built to
+deploy one or more copies of your CDK applications using CloudFormation with a
+minimal amount of effort on your part. It is *not* intended to support arbitrary
+deployment pipelines, and very specifically it is not built to use CodeDeploy to
+applications to instances, or deploy your custom-built ECR images to an ECS
+cluster directly: use CDK file assets with CloudFormation Init for instances, or
+CDK container assets for ECS clusters instead.
+
+Give the CDK Pipelines way of doing things a shot first: you might find it does
+everything you need. If you want or need more control, we recommend you drop
+down to using the `aws-codepipeline` construct library directly.
 
 > This module contains two sets of APIs: an **original** and a **modern** version of
 CDK Pipelines. The *modern* API has been updated to be easier to work with and
@@ -28,7 +34,7 @@ to the new version if possible.
 > allows more control of CodeBuild project generation; supports deployment
 > engines other than CodePipeline.
 >
-> The README for the original API can be found in [our GitHub repository](https://github.com/aws/aws-cdk/blob/master/packages/@aws-cdk/pipelines/ORIGINAL_API.md).
+> The README for the original API, as well as a migration guide, can be found in [our GitHub repository](https://github.com/aws/aws-cdk/blob/master/packages/@aws-cdk/pipelines/ORIGINAL_API.md).
 
 ## At a glance
 
@@ -44,19 +50,36 @@ with the same amount of code. The *CDK Pipelines* library takes care of the
 details.
 
 CDK Pipelines supports multiple *deployment engines* (see below), and comes with
-a deployment engine that deployes CDK apps using AWS CodePipeline. To use the
+a deployment engine that deploys CDK apps using AWS CodePipeline. To use the
 CodePipeline engine, define a `CodePipeline` construct.  The following
 example creates a CodePipeline that deploys an application from GitHub:
 
 ```ts
-/** The stacks for our app are defined in my-stacks.ts.  The internals of these
+/** The stacks for our app are minimally defined here.  The internals of these
   * stacks aren't important, except that DatabaseStack exposes an attribute
   * "table" for a database table it defines, and ComputeStack accepts a reference
   * to this table in its properties.
   */
-import { DatabaseStack, ComputeStack } from '../lib/my-stacks';
-import { Construct, Stage, Stack, StackProps, StageProps } from '@aws-cdk/core';
-import { CodePipeline, CodePipelineSource, ShellStep } from '@aws-cdk/pipelines';
+class DatabaseStack extends Stack {
+  public readonly table: dynamodb.Table;
+
+  constructor(scope: Construct, id: string) {
+    super(scope, id);
+    this.table = new dynamodb.Table(this, 'Table', {
+      partitionKey: { name: 'id', type: dynamodb.AttributeType.STRING }
+    });
+  }
+}
+
+interface ComputeProps {
+  readonly table: dynamodb.Table;
+}
+
+class ComputeStack extends Stack {
+  constructor(scope: Construct, id: string, props: ComputeProps) {
+    super(scope, id);
+  }
+}
 
 /**
  * Stack to hold the pipeline
@@ -65,11 +88,11 @@ class MyPipelineStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    const pipeline = new CodePipeline(this, 'Pipeline', {
-      synth: new ShellStep('Synth', {
+    const pipeline = new pipelines.CodePipeline(this, 'Pipeline', {
+      synth: new pipelines.ShellStep('Synth', {
         // Use a connection created using the AWS console to authenticate to GitHub
         // Other sources are available.
-        input: CodePipelineSource.connection('my-org/my-app', 'main', {
+        input: pipelines.CodePipelineSource.connection('my-org/my-app', 'main', {
           connectionArn: 'arn:aws:codestar-connections:us-east-1:222222222222:connection/7d2469ff-514a-4e4f-9003-5ca4a43cdc41', // Created using the AWS console * });',
         }),
         commands: [
@@ -87,7 +110,7 @@ class MyPipelineStack extends Stack {
       env: {
         account: '123456789012',
         region: 'eu-west-1',
-      }
+      },
     }));
   }
 }
@@ -112,7 +135,7 @@ class MyApplication extends Stage {
 }
 
 // In your main file
-new MyPipelineStack(app, 'PipelineStack', {
+new MyPipelineStack(this, 'PipelineStack', {
   env: {
     account: '123456789012',
     region: 'eu-west-1',
@@ -144,8 +167,8 @@ by adding the following to `cdk.json`:
 
 ## Provisioning the pipeline
 
-To provision the pipeline you have defined, making sure the target environment
-has been bootstrapped (see below), and then executing deploying the
+To provision the pipeline you have defined, make sure the target environment
+has been bootstrapped (see below), and then execute deploying the
 `PipelineStack` *once*. Afterwards, the pipeline will keep itself up-to-date.
 
 > **Important**: be sure to `git commit` and `git push` before deploying the
@@ -164,7 +187,7 @@ $ cdk deploy PipelineStack
 ```
 
 Administrative permissions to the account are only necessary up until
-this point. We recommend you shed access to these credentials after doing this.
+this point. We recommend you remove access to these credentials after doing this.
 
 ### Working on the pipeline
 
@@ -178,15 +201,25 @@ off temporarily, by passing `selfMutation: false` property, example:
 
 ```ts
 // Modern API
-const pipeline = new CodePipeline(this, 'Pipeline', {
+const modernPipeline = new pipelines.CodePipeline(this, 'Pipeline', {
   selfMutation: false,
-  ...
+  synth: new pipelines.ShellStep('Synth', {
+    input: pipelines.CodePipelineSource.connection('my-org/my-app', 'main', {
+      connectionArn: 'arn:aws:codestar-connections:us-east-1:222222222222:connection/7d2469ff-514a-4e4f-9003-5ca4a43cdc41', // Created using the AWS console * });',
+    }),
+    commands: [
+      'npm ci',
+      'npm run build',
+      'npx cdk synth',
+    ],
+  }),
 });
 
 // Original API
-const pipeline = new CdkPipeline(this, 'Pipeline', {
+const cloudAssemblyArtifact = new codepipeline.Artifact();
+const originalPipeline = new pipelines.CdkPipeline(this, 'Pipeline', {
   selfMutating: false,
-  ...
+  cloudAssemblyArtifact,
 });
 ```
 
@@ -204,16 +237,16 @@ expected to produce the CDK Cloud Assembly as its single output (the contents of
 the `cdk.out` directory after running `cdk synth`). "Steps" are arbitrary
 actions in the pipeline, typically used to run scripts or commands.
 
-For the synth, use a `ShellStep` and specify the commands necessary to build
-your project and run `cdk synth`; the specific commands required will depend on
-the programming language you are using. For a typical NPM-based project, the synth
-will look like this:
+For the synth, use a `ShellStep` and specify the commands necessary to install
+dependencies, the CDK CLI, build your project and run `cdk synth`; the specific
+commands required will depend on the programming language you are using. For a
+typical NPM-based project, the synth will look like this:
 
 ```ts
-const source = /* the repository source */;
+declare const source: pipelines.IFileSetProducer; // the repository source
 
-const pipeline = new CodePipeline(this, 'Pipeline', {
-  synth: new ShellStep('Synth', {
+const pipeline = new pipelines.CodePipeline(this, 'Pipeline', {
+  synth: new pipelines.ShellStep('Synth', {
     input: source,
     commands: [
       'npm ci',
@@ -230,8 +263,10 @@ CDK project lives in a subdirectory, be sure to adjust the
 `primaryOutputDirectory` to match:
 
 ```ts
-const pipeline = new CodePipeline(this, 'Pipeline', {
-  synth: new ShellStep('Synth', {
+declare const source: pipelines.IFileSetProducer; // the repository source
+
+const pipeline = new pipelines.CodePipeline(this, 'Pipeline', {
+  synth: new pipelines.ShellStep('Synth', {
     input: source,
     commands: [
       'cd mysubdir',
@@ -250,6 +285,69 @@ earlier by calling `pipeline.buildPipeline()`. After you've called
 that method, you can inspect the constructs that were produced by
 accessing the properties of the `pipeline` object.
 
+#### Commands for other languages and package managers
+
+The commands you pass to `new ShellStep` will be very similar to the commands
+you run on your own workstation to install dependencies and synth your CDK
+project. Here are some (non-exhaustive) examples for what those commands might
+look like in a number of different situations.
+
+For Yarn, the install commands are different:
+
+```ts
+declare const source: pipelines.IFileSetProducer; // the repository source
+
+const pipeline = new pipelines.CodePipeline(this, 'Pipeline', {
+  synth: new pipelines.ShellStep('Synth', {
+    input: source,
+    commands: [
+      'yarn install --frozen-lockfile',
+      'yarn build',
+      'npx cdk synth',
+    ],
+  })
+});
+```
+
+For Python projects, remember to install the CDK CLI globally (as
+there is no `package.json` to automatically install it for you):
+
+```ts
+declare const source: pipelines.IFileSetProducer; // the repository source
+
+const pipeline = new pipelines.CodePipeline(this, 'Pipeline', {
+  synth: new pipelines.ShellStep('Synth', {
+    input: source,
+    commands: [
+      'pip install -r requirements.txt',
+      'npm install -g aws-cdk',
+      'cdk synth',
+    ],
+  })
+});
+```
+
+For Java projects, remember to install the CDK CLI globally (as
+there is no `package.json` to automatically install it for you),
+and the Maven compilation step is automatically executed for you
+as you run `cdk synth`:
+
+```ts
+declare const source: pipelines.IFileSetProducer; // the repository source
+
+const pipeline = new pipelines.CodePipeline(this, 'Pipeline', {
+  synth: new pipelines.ShellStep('Synth', {
+    input: source,
+    commands: [
+      'npm install -g aws-cdk',
+      'cdk synth',
+    ],
+  })
+});
+```
+
+You can adapt these examples to your own situation.
+
 #### CodePipeline Sources
 
 In CodePipeline, *Sources* define where the source of your application lives.
@@ -263,7 +361,7 @@ You will first use the AWS Console to authenticate to the source control
 provider, and then use the connection ARN in your pipeline definition:
 
 ```ts
-CodePipelineSource.connection('org/repo', 'branch', {
+pipelines.CodePipelineSource.connection('org/repo', 'branch', {
   connectionArn: 'arn:aws:codestar-connections:us-east-1:222222222222:connection/7d2469ff-514a-4e4f-9003-5ca4a43cdc41',
 });
 ```
@@ -277,9 +375,9 @@ you can change the name. The token should have the **repo** and **admin:repo_hoo
 scopes.
 
 ```ts
-CodePipelineSource.gitHub('org/repo', 'branch', {
+pipelines.CodePipelineSource.gitHub('org/repo', 'branch', {
   // This is optional
-  authentication: SecretValue.secretsManager('my-token'),
+  authentication: cdk.SecretValue.secretsManager('my-token'),
 });
 ```
 
@@ -290,8 +388,8 @@ that the CodeCommit repository and then use `CodePipelineSource.codeCommit`
 to reference it:
 
 ```ts
-const repository = codecommit.fromRepositoryName(this, 'Repository', 'my-repository');
-CodePipelineSource.codeCommit(repository);
+const repository = codecommit.Repository.fromRepositoryName(this, 'Repository', 'my-repository');
+pipelines.CodePipelineSource.codeCommit(repository, 'main');
 ```
 
 ##### S3
@@ -301,7 +399,7 @@ triggered every time the file in S3 is changed:
 
 ```ts
 const bucket = s3.Bucket.fromBucketName(this, 'Bucket', 'my-bucket');
-CodePipelineSource.s3(bucket, 'my/source.zip');
+pipelines.CodePipelineSource.s3(bucket, 'my/source.zip');
 ```
 
 #### Additional inputs
@@ -312,17 +410,17 @@ output file set can be used as an input, such as a `CodePipelineSource`, but
 also other `ShellStep`:
 
 ```ts
-const prebuild = new ShellStep('Prebuild', {
-  input: CodePipelineSource.gitHub('myorg/repo1'),
+const prebuild = new pipelines.ShellStep('Prebuild', {
+  input: pipelines.CodePipelineSource.gitHub('myorg/repo1', 'main'),
   primaryOutputDirectory: './build',
   commands: ['./build.sh'],
 });
 
-const pipeline = new CodePipeline(this, 'Pipeline', {
-  synth: new ShellStep('Synth', {
-    input: CodePipelineSource.gitHub('myorg/repo2'),
+const pipeline = new pipelines.CodePipeline(this, 'Pipeline', {
+  synth: new pipelines.ShellStep('Synth', {
+    input: pipelines.CodePipelineSource.gitHub('myorg/repo2', 'main'),
     additionalInputs: {
-      'subdir': CodePipelineSource.gitHub('myorg/repo3'),
+      'subdir': pipelines.CodePipelineSource.gitHub('myorg/repo3', 'main'),
       '../siblingdir': prebuild,
     },
 
@@ -338,6 +436,7 @@ more CDK `Stages` which will be deployed to their target environments. To do
 so, call `pipeline.addStage()` on the Stage object:
 
 ```ts
+declare const pipeline: pipelines.CodePipeline;
 // Do this as many times as necessary with any account and region
 // Account and region may different from the pipeline's.
 pipeline.addStage(new MyApplicationStage(this, 'Prod', {
@@ -370,6 +469,7 @@ deployed in sequence. For example, the following will deploy two copies of your
 application to `eu-west-1` and `eu-central-1` in parallel:
 
 ```ts
+declare const pipeline: pipelines.CodePipeline;
 const europeWave = pipeline.addWave('Europe');
 europeWave.addStage(new MyApplicationStage(this, 'Ireland', {
   env: { region: 'eu-west-1' }
@@ -394,9 +494,19 @@ KMS key.
 Example:
 
 ```ts
-const pipeline = new CodePipeline(this, 'Pipeline', {
+const pipeline = new pipelines.CodePipeline(this, 'Pipeline', {
   // Encrypt artifacts, required for cross-account deployments
   crossAccountKeys: true,
+  synth: new pipelines.ShellStep('Synth', {
+    input: pipelines.CodePipelineSource.connection('my-org/my-app', 'main', {
+      connectionArn: 'arn:aws:codestar-connections:us-east-1:222222222222:connection/7d2469ff-514a-4e4f-9003-5ca4a43cdc41', // Created using the AWS console * });',
+    }),
+    commands: [
+      'npm ci',
+      'npm run build',
+      'npx cdk synth',
+    ],
+  }),
 });
 ```
 
@@ -405,28 +515,81 @@ const pipeline = new CodePipeline(this, 'Pipeline', {
 Every `addStage()` and `addWave()` command takes additional options. As part of these options,
 you can specify `pre` and `post` steps, which are arbitrary steps that run before or after
 the contents of the stage or wave, respectively. You can use these to add validations like
-manual or automated gates to your pipeline.
+manual or automated gates to your pipeline. We recommend putting manual approval gates in the set of `pre` steps, and automated approval gates in
+the set of `post` steps.
 
 The following example shows both an automated approval in the form of a `ShellStep`, and
-a manual approvel in the form of a `ManualApprovalStep` added to the pipeline. Both must
+a manual approval in the form of a `ManualApprovalStep` added to the pipeline. Both must
 pass in order to promote from the `PreProd` to the `Prod` environment:
 
 ```ts
-const preprod = new MyApplicationStage(this, 'PreProd', { ... });
-const prod = new MyApplicationStage(this, 'Prod', { ... });
+declare const pipeline: pipelines.CodePipeline;
+const preprod = new MyApplicationStage(this, 'PreProd');
+const prod = new MyApplicationStage(this, 'Prod');
 
 pipeline.addStage(preprod, {
   post: [
-    new ShellStep('Validate Endpoint', {
+    new pipelines.ShellStep('Validate Endpoint', {
       commands: ['curl -Ssf https://my.webservice.com/'],
     }),
   ],
 });
 pipeline.addStage(prod, {
   pre: [
-    new ManualApprovalStep('PromoteToProd'),
+    new pipelines.ManualApprovalStep('PromoteToProd'),
   ],
 });
+```
+
+You can also specify steps to be executed at the stack level. To achieve this, you can specify the stack and step via the `stackSteps` property:
+
+```ts
+class MyStacksStage extends Stage {
+  public readonly stack1: Stack;
+  public readonly stack2: Stack;
+
+  constructor(scope: Construct, id: string, props?: StageProps) {
+    super(scope, id, props);
+    this.stack1 = new Stack(this, 'stack1');
+    this.stack2 = new Stack(this, 'stack2');
+  }
+}
+
+declare const pipeline: pipelines.CodePipeline;
+const prod = new MyStacksStage(this, 'Prod');
+
+pipeline.addStage(prod, {
+  stackSteps: [{
+    stack: prod.stack1,
+    pre: [new pipelines.ManualApprovalStep('Pre-Stack Check')], // Executed before stack is prepared
+    changeSet: [new pipelines.ManualApprovalStep('ChangeSet Approval')], // Executed after stack is prepared but before the stack is deployed
+    post: [new pipelines.ManualApprovalStep('Post-Deploy Check')], // Executed after stack is deployed
+  }, {
+    stack: prod.stack2,
+    post: [new pipelines.ManualApprovalStep('Post-Deploy Check')], // Executed after stack is deployed
+  }],
+});
+```
+
+If you specify multiple steps, they will execute in parallel by default. You can add dependencies between them
+to if you wish to specify an order. To add a dependency, call `step.addStepDependency()`:
+
+```ts
+const firstStep = new pipelines.ManualApprovalStep('A');
+const secondStep = new pipelines.ManualApprovalStep('B');
+secondStep.addStepDependency(firstStep);
+```
+
+For convenience, `Step.sequence()` will take an array of steps and dependencies between adjacent steps,
+so that the whole list executes in order:
+
+```ts
+// Step A will depend on step B and step B will depend on step C
+const orderedSteps = pipelines.Step.sequence([
+  new pipelines.ManualApprovalStep('A'),
+  new pipelines.ManualApprovalStep('B'),
+  new pipelines.ManualApprovalStep('C'),
+]);
 ```
 
 #### Using CloudFormation Stack Outputs in approvals
@@ -439,21 +602,26 @@ To use Stack Outputs, expose the `CfnOutput` object you're interested in, and
 pass it to `envFromCfnOutputs` of the `ShellStep`:
 
 ```ts
-class MyApplicationStage extends Stage {
+class MyOutputStage extends Stage {
   public readonly loadBalancerAddress: CfnOutput;
-  // ...
+
+  constructor(scope: Construct, id: string, props?: StageProps) {
+    super(scope, id, props);
+    this.loadBalancerAddress = new CfnOutput(this, 'Output', {value: 'value'});
+  }
 }
 
-const lbApp = new MyApplicationStage(this, 'MyApp', { /* ... */ });
+const lbApp = new MyOutputStage(this, 'MyApp');
+declare const pipeline: pipelines.CodePipeline;
 pipeline.addStage(lbApp, {
   post: [
-    new ShellStep('HitEndpoint', {
+    new pipelines.ShellStep('HitEndpoint', {
       envFromCfnOutputs: {
         // Make the load balancer address available as $URL inside the commands
         URL: lbApp.loadBalancerAddress,
       },
       commands: ['curl -Ssf $URL'],
-    });
+    }),
   ],
 });
 ```
@@ -471,13 +639,18 @@ Here's an example that captures an additional output directory in the synth
 step and runs tests from there:
 
 ```ts
-const synth = new ShellStep('Synth', { /* ... */ });
-const pipeline = new CodePipeline(this, 'Pipeline', { synth });
+declare const synth: pipelines.ShellStep;
+const stage = new MyApplicationStage(this, 'MyApplication');
+const pipeline = new pipelines.CodePipeline(this, 'Pipeline', { synth });
 
-new ShellStep('Approve', {
-  // Use the contents of the 'integ' directory from the synth step as the input
-  input: synth.addOutputDirectory('integ'),
-  commands: ['cd integ && ./run.sh'],
+pipeline.addStage(stage, {
+  post: [
+    new pipelines.ShellStep('Approve', {
+      // Use the contents of the 'integ' directory from the synth step as the input
+      input: synth.addOutputDirectory('integ'),
+      commands: ['cd integ && ./run.sh'],
+    }),
+  ],
 });
 ```
 
@@ -490,8 +663,10 @@ generated, use a `CodeBuildStep` instead of a `ShellStep`. This class has a numb
 of properties that allow you to customize various aspects of the projects:
 
 ```ts
-new CodeBuildStep('Synth', {
-  // ...standard RunScript props...
+declare const vpc: ec2.Vpc;
+declare const mySecurityGroup: ec2.SecurityGroup;
+new pipelines.CodeBuildStep('Synth', {
+  // ...standard ShellStep props...
   commands: [/* ... */],
   env: { /* ... */ },
 
@@ -512,6 +687,7 @@ new CodeBuildStep('Synth', {
   buildEnvironment: {
     computeType: codebuild.ComputeType.LARGE,
   },
+  timeout: Duration.minutes(90),
 
   // Control Elastic Network Interface creation
   vpc: vpc,
@@ -519,19 +695,31 @@ new CodeBuildStep('Synth', {
   securityGroups: [mySecurityGroup],
 
   // Additional policy statements for the execution role
-  rolePolicy: [
+  rolePolicyStatements: [
     new iam.PolicyStatement({ /* ... */ }),
   ],
 });
 ```
 
 You can also configure defaults for *all* CodeBuild projects by passing `codeBuildDefaults`,
-or just for the asset publishing and self-mutation projects by passing `assetPublishingCodeBuildDefaults`
-or `selfMutationCodeBuildDefaults`:
+or just for the synth, asset publishing, and self-mutation projects by passing `synthCodeBuildDefaults`,
+`assetPublishingCodeBuildDefaults`, or `selfMutationCodeBuildDefaults`:
 
 ```ts
-new CodePipeline(this, 'Pipeline', {
-  // ...
+declare const vpc: ec2.Vpc;
+declare const mySecurityGroup: ec2.SecurityGroup;
+new pipelines.CodePipeline(this, 'Pipeline', {
+  // Standard CodePipeline properties
+  synth: new pipelines.ShellStep('Synth', {
+    input: pipelines.CodePipelineSource.connection('my-org/my-app', 'main', {
+      connectionArn: 'arn:aws:codestar-connections:us-east-1:222222222222:connection/7d2469ff-514a-4e4f-9003-5ca4a43cdc41', // Created using the AWS console * });',
+    }),
+    commands: [
+      'npm ci',
+      'npm run build',
+      'npx cdk synth',
+    ],
+  }),
 
   // Defaults for all CodeBuild projects
   codeBuildDefaults: {
@@ -557,6 +745,7 @@ new CodePipeline(this, 'Pipeline', {
     ],
   },
 
+  synthCodeBuildDefaults: { /* ... */ },
   assetPublishingCodeBuildDefaults: { /* ... */ },
   selfMutationCodeBuildDefaults: { /* ... */ },
 });
@@ -568,18 +757,22 @@ If you want to add a type of CodePipeline action to the CDK Pipeline that
 doesn't have a matching class yet, you can define your own step class that extends
 `Step` and implements `ICodePipelineActionFactory`.
 
-Here's a simple example that adds a Jenkins step:
+Here's an example that adds a Jenkins step:
 
 ```ts
-class MyJenkinsStep extends Step implements ICodePipelineActionFactory {
-  constructor(private readonly provider: codepipeline_actions.JenkinsProvider, private readonly input: FileSet) {
+class MyJenkinsStep extends pipelines.Step implements pipelines.ICodePipelineActionFactory {
+  constructor(
+    private readonly provider: cpactions.JenkinsProvider,
+    private readonly input: pipelines.FileSet,
+  ) {
+    super('MyJenkinsStep');
   }
 
-  public produceAction(stage: codepipeline.IStage, options: ProduceActionOptions): CodePipelineActionFactoryResult {
+  public produceAction(stage: codepipeline.IStage, options: pipelines.ProduceActionOptions): pipelines.CodePipelineActionFactoryResult {
 
     // This is where you control what type of Action gets added to the
     // CodePipeline
-    stage.addAction(new codepipeline_actions.JenkinsAction({
+    stage.addAction(new cpactions.JenkinsAction({
       // Copy 'actionName' and 'runOrder' from the options
       actionName: options.actionName,
       runOrder: options.runOrder,
@@ -627,8 +820,13 @@ stacks the pipeline is deploying), for example by the use of `LinuxBuildImage.fr
 you need to pass `dockerEnabledForSelfMutation: true` to the pipeline. For example:
 
 ```ts
-const pipeline = new CodePipeline(this, 'Pipeline', {
-  // ...
+const pipeline = new pipelines.CodePipeline(this, 'Pipeline', {
+  synth: new pipelines.ShellStep('Synth', {
+    input: pipelines.CodePipelineSource.connection('my-org/my-app', 'main', {
+      connectionArn: 'arn:aws:codestar-connections:us-east-1:222222222222:connection/7d2469ff-514a-4e4f-9003-5ca4a43cdc41', // Created using the AWS console * });',
+    }),
+    commands: ['npm ci','npm run build','npx cdk synth'],
+  }),
 
   // Turn this on because the pipeline uses Docker image assets
   dockerEnabledForSelfMutation: true,
@@ -636,16 +834,16 @@ const pipeline = new CodePipeline(this, 'Pipeline', {
 
 pipeline.addWave('MyWave', {
   post: [
-    new CodeBuildStep('RunApproval', {
+    new pipelines.CodeBuildStep('RunApproval', {
       commands: ['command-from-image'],
       buildEnvironment: {
         // The user of a Docker image asset in the pipeline requires turning on
         // 'dockerEnabledForSelfMutation'.
-        buildImage: LinuxBuildImage.fromAsset(this, 'Image', {
+        buildImage: codebuild.LinuxBuildImage.fromAsset(this, 'Image', {
           directory: './docker-image',
-        })
+        }),
       },
-    })
+    }),
   ],
 });
 ```
@@ -661,8 +859,13 @@ if you add a construct like `@aws-cdk/aws-lambda-nodejs`), you need to pass
 `dockerEnabledForSynth: true` to the pipeline. For example:
 
 ```ts
-const pipeline = new CodePipeline(this, 'Pipeline', {
-  // ...
+const pipeline = new pipelines.CodePipeline(this, 'Pipeline', {
+  synth: new pipelines.ShellStep('Synth', {
+    input: pipelines.CodePipelineSource.connection('my-org/my-app', 'main', {
+      connectionArn: 'arn:aws:codestar-connections:us-east-1:222222222222:connection/7d2469ff-514a-4e4f-9003-5ca4a43cdc41', // Created using the AWS console * });',
+    }),
+    commands: ['npm ci','npm run build','npx cdk synth'],
+  }),
 
   // Turn this on because the application uses bundled file assets
   dockerEnabledForSynth: true,
@@ -683,16 +886,21 @@ different environment (e.g., ECR repo) or to avoid throttling (e.g., DockerHub).
 ```ts
 const dockerHubSecret = secretsmanager.Secret.fromSecretCompleteArn(this, 'DHSecret', 'arn:aws:...');
 const customRegSecret = secretsmanager.Secret.fromSecretCompleteArn(this, 'CRSecret', 'arn:aws:...');
-const repo1 = ecr.Repository.fromRepositoryArn(stack, 'Repo', 'arn:aws:ecr:eu-west-1:0123456789012:repository/Repo1');
-const repo2 = ecr.Repository.fromRepositoryArn(stack, 'Repo', 'arn:aws:ecr:eu-west-1:0123456789012:repository/Repo2');
+const repo1 = ecr.Repository.fromRepositoryArn(this, 'Repo', 'arn:aws:ecr:eu-west-1:0123456789012:repository/Repo1');
+const repo2 = ecr.Repository.fromRepositoryArn(this, 'Repo', 'arn:aws:ecr:eu-west-1:0123456789012:repository/Repo2');
 
-const pipeline = new CodePipeline(this, 'Pipeline', {
+const pipeline = new pipelines.CodePipeline(this, 'Pipeline', {
   dockerCredentials: [
-    DockerCredential.dockerHub(dockerHubSecret),
-    DockerCredential.customRegistry('dockerregistry.example.com', customRegSecret),
-    DockerCredential.ecr([repo1, repo2]);
+    pipelines.DockerCredential.dockerHub(dockerHubSecret),
+    pipelines.DockerCredential.customRegistry('dockerregistry.example.com', customRegSecret),
+    pipelines.DockerCredential.ecr([repo1, repo2]),
   ],
-  // ...
+  synth: new pipelines.ShellStep('Synth', {
+    input: pipelines.CodePipelineSource.connection('my-org/my-app', 'main', {
+      connectionArn: 'arn:aws:codestar-connections:us-east-1:222222222222:connection/7d2469ff-514a-4e4f-9003-5ca4a43cdc41', // Created using the AWS console * });',
+    }),
+    commands: ['npm ci','npm run build','npx cdk synth'],
+  }),
 });
 ```
 
@@ -711,7 +919,7 @@ the **Synth**, **Self-Update**, and **Asset Publishing** actions within the
 ```ts
 const dockerHubSecret = secretsmanager.Secret.fromSecretCompleteArn(this, 'DHSecret', 'arn:aws:...');
 // Only the image asset publishing actions will be granted read access to the secret.
-const creds = DockerCredential.dockerHub(dockerHubSecret, { usages: [DockerCredentialUsage.ASSET_PUBLISHING] });
+const creds = pipelines.DockerCredential.dockerHub(dockerHubSecret, { usages: [pipelines.DockerCredentialUsage.ASSET_PUBLISHING] });
 ```
 
 ## CDK Environment Bootstrapping
@@ -735,9 +943,9 @@ to it, it's important that you don't delete the stack or change its *Qualifier*,
 or future deployments to this environment will fail. If you want to upgrade
 the bootstrap stack to a newer version, do that by updating it in-place.
 
-> This library requires a newer version of the bootstrapping stack which has
-> been updated specifically to support cross-account continuous delivery. In the future,
-> this new bootstrapping stack will become the default, but for now it is still
+> This library requires the *modern* bootstrapping stack which has
+> been updated specifically to support cross-account continuous delivery. Starting,
+> in CDK v2 this new bootstrapping stack will become the default, but for now it is still
 > opt-in.
 >
 > The commands below assume you are running `cdk bootstrap` in a directory
@@ -788,17 +996,27 @@ These command lines explained:
   flag out if either the AWS default credentials or the `AWS_*` environment
   variables confer these permissions.
 * `--cloudformation-execution-policies`: ARN of the managed policy that future CDK
-  deployments should execute with. You can tailor this to the needs of your organization
-  and give more constrained permissions than `AdministratorAccess`.
+  deployments should execute with. By default this is `AdministratorAccess`, but
+  if you also specify the `--trust` flag to give another Account permissions to
+  deploy into the current account, you must specify a value here.
 * `--trust`: indicates which other account(s) should have permissions to deploy
   CDK applications into this account. In this case we indicate the Pipeline's account,
   but you could also use this for developer accounts (don't do that for production
   application accounts though!).
-* `--trust-for-lookup`: similar to `--trust`, but gives a more limited set of permissions to the
-  trusted account, allowing it to only look up values, such as availability zones, EC2 images and
-  VPCs. Note that if you provide an account using `--trust`, that account can also do lookups.
-  So you only need to pass `--trust-for-lookup` if you need to use a different account.
+* `--trust-for-lookup`: gives a more limited set of permissions to the
+  trusted account, only allowing it to look up values such as availability zones, EC2 images and
+  VPCs. `--trust-for-lookup` does not give permissions to modify anything in the account.
+  Note that `--trust` implies `--trust-for-lookup`, so you don't need to specify
+  the same acocunt twice.
 * `aws://222222222222/us-east-2`: the account and region we're bootstrapping.
+
+> Be aware that anyone who has access to the trusted Accounts **effectively has all
+> permissions conferred by the configured CloudFormation execution policies**,
+> allowing them to do things like read arbitrary S3 buckets and create arbitrary
+> infrastructure in the bootstrapped account.  Restrict the list of `--trust`ed Accounts,
+> or restrict the policies configured by `--cloudformation-execution-policies`.
+
+<br>
 
 > **Security tip**: we recommend that you use administrative credentials to an
 > account only to bootstrap it and provision the initial pipeline. Otherwise,
@@ -839,6 +1057,69 @@ bootstrap stack. This will create a new S3 file asset bucket in your account
 and orphan the old bucket. You should manually delete the orphaned bucket
 after you are sure you have redeployed all CDK applications and there are no
 more references to the old asset bucket.
+
+## Context Lookups
+
+You might be using CDK constructs that need to look up [runtime
+context](https://docs.aws.amazon.com/cdk/latest/guide/context.html#context_methods),
+which is information from the target AWS Account and Region the CDK needs to
+synthesize CloudFormation templates appropriate for that environment. Examples
+of this kind of context lookups are the number of Availability Zones available
+to you, a Route53 Hosted Zone ID, or the ID of an AMI in a given region. This
+information is automatically looked up when you run `cdk synth`.
+
+By default, a `cdk synth` performed in a pipeline will not have permissions
+to perform these lookups, and the lookups will fail. This is by design.
+
+**Our recommended way of using lookups** is by running `cdk synth` on the
+developer workstation and checking in the `cdk.context.json` file, which
+contains the results of the context lookups. This will make sure your
+synthesized infrastructure is consistent and repeatable. If you do not commit
+`cdk.context.json`, the results of the lookups may suddenly be different in
+unexpected ways, and even produce results that cannot be deployed or will cause
+data loss.  To give an account permissions to perform lookups against an
+environment, without being able to deploy to it and make changes, run
+`cdk bootstrap --trust-for-lookup=<account>`.
+
+If you want to use lookups directly from the pipeline, you either need to accept
+the risk of nondeterminism, or make sure you save and load the
+`cdk.context.json` file somewhere between synth runs. Finally, you should
+give the synth CodeBuild execution role permissions to assume the bootstrapped
+lookup roles. As an example, doing so would look like this:
+
+```ts
+new pipelines.CodePipeline(this, 'Pipeline', {
+  synth: new pipelines.CodeBuildStep('Synth', {
+    input: pipelines.CodePipelineSource.connection('my-org/my-app', 'main', {
+      connectionArn: 'arn:aws:codestar-connections:us-east-1:222222222222:connection/7d2469ff-514a-4e4f-9003-5ca4a43cdc41', // Created using the AWS console * });',
+    }),
+    commands: [
+      // Commands to load cdk.context.json from somewhere here
+      '...',
+      'npm ci',
+      'npm run build',
+      'npx cdk synth',
+      // Commands to store cdk.context.json back here
+      '...',
+    ],
+    rolePolicyStatements: [
+      new iam.PolicyStatement({
+        actions: ['sts:AssumeRole'],
+        resources: ['*'],
+        conditions: {
+          StringEquals: {
+            'iam:ResourceTag/aws-cdk:bootstrap-role': 'lookup',
+          },
+        },
+      }),
+    ],
+  }),
+});
+```
+
+The above example requires that the target environments have all
+been bootstrapped with bootstrap stack version `8`, released with
+CDK CLI `1.114.0`.
 
 ## Security Considerations
 
@@ -890,10 +1171,11 @@ Pipeline
 You can insert the security check by using a `ConfirmPermissionsBroadening` step:
 
 ```ts
+declare const pipeline: pipelines.CodePipeline;
 const stage = new MyApplicationStage(this, 'MyApplication');
 pipeline.addStage(stage, {
   pre: [
-    new ConfirmPermissionsBroadening('Check', { stage }),
+    new pipelines.ConfirmPermissionsBroadening('Check', { stage }),
   ],
 });
 ```
@@ -903,17 +1185,14 @@ create an SNS Topic, subscribe your own email address, and pass it in as
 as the `notificationTopic` property:
 
 ```ts
-import * as sns from '@aws-cdk/aws-sns';
-import * as subscriptions from '@aws-cdk/aws-sns-subscriptions';
-import * as pipelines from '@aws-cdk/pipelines';
-
+declare const pipeline: pipelines.CodePipeline;
 const topic = new sns.Topic(this, 'SecurityChangesTopic');
 topic.addSubscription(new subscriptions.EmailSubscription('test@email.com'));
 
 const stage = new MyApplicationStage(this, 'MyApplication');
 pipeline.addStage(stage, {
   pre: [
-    new ConfirmPermissionsBroadening('Check', {
+    new pipelines.ConfirmPermissionsBroadening('Check', {
       stage,
       notificationTopic: topic,
     }),
@@ -952,6 +1231,20 @@ Policy contains a statement with one or more invalid principals.
 One of the target (account, region) environments has not been bootstrapped
 with the new bootstrap stack. Check your target environments and make sure
 they are all bootstrapped.
+
+### Message: no matching base directory path found for cdk.out
+
+If you see this error during the **Synth** step, it means that CodeBuild
+is expecting to find a `cdk.out` directory in the root of your CodeBuild project,
+but the directory wasn't there. There are two common causes for this:
+
+* `cdk synth` is not being executed: `cdk synth` used to be run
+  implicitly for you, but you now have to explicitly include the command.
+  For NPM-based projects, add `npx cdk synth` to the end of the `commands`
+  property, for other languages add `npm install -g aws-cdk` and `cdk synth`.
+* Your CDK project lives in a subdirectory: you added a `cd <somedirectory>` command
+  to the list of commands; don't forget to tell the `ScriptStep` about the
+  different location of `cdk.out`, by passing `primaryOutputDirectory: '<somedirectory>/cdk.out'`.
 
 ### <Stack> is in ROLLBACK_COMPLETE state and can not be updated
 
@@ -1004,19 +1297,19 @@ that bundles asset using tools run via Docker, like `aws-lambda-nodejs`, `aws-la
 
 Make sure you set the `privileged` environment variable to `true` in the synth definition:
 
-```typescript
-    const pipeline = new CdkPipeline(this, 'MyPipeline', {
-      ...
-
-      synthAction: SimpleSynthAction.standardNpmSynth({
-        sourceArtifact: ...,
-        cloudAssemblyArtifact: ...,
-
-        environment: {
-          privileged: true,
-        },
-      }),
-    });
+```ts
+const sourceArtifact = new codepipeline.Artifact();
+const cloudAssemblyArtifact = new codepipeline.Artifact();
+const pipeline = new pipelines.CdkPipeline(this, 'MyPipeline', {
+  cloudAssemblyArtifact,
+  synthAction: pipelines.SimpleSynthAction.standardNpmSynth({
+    sourceArtifact,
+    cloudAssemblyArtifact,
+    environment: {
+      privileged: true,
+    },
+  }),
+});
 ```
 
 After turning on `privilegedMode: true`, you will need to do a one-time manual cdk deploy of your
@@ -1043,10 +1336,11 @@ This happens because the pipeline is not self-mutating and, as a consequence, th
 build projects get out-of-sync with the generated templates. To fix this, make sure the
 `selfMutating` property is set to `true`:
 
-```typescript
-const pipeline = new CdkPipeline(this, 'MyPipeline', {
+```ts
+const cloudAssemblyArtifact = new codepipeline.Artifact();
+const pipeline = new pipelines.CdkPipeline(this, 'MyPipeline', {
   selfMutating: true,
-  ...
+  cloudAssemblyArtifact,
 });
 ```
 
@@ -1073,8 +1367,8 @@ A hypothetical recovery workflow would look something like this:
 
 ```sh
 $ env CDK_NEW_BOOTSTRAP=1 npx cdk bootstrap \
-    --qualifier randchars1234
-    --toolkit-stack-name CDKToolkitTemp
+    --qualifier random1234 \
+    --toolkit-stack-name CDKToolkitTemp \
     aws://111111111111/us-east-1
 ```
 
@@ -1082,9 +1376,9 @@ $ env CDK_NEW_BOOTSTRAP=1 npx cdk bootstrap \
 See https://docs.aws.amazon.com/cdk/latest/guide/bootstrapping.html for more info.
 
 ```ts
-new MyStack(this, 'MyStack', {
+new Stack(this, 'MyStack', {
   // Update this qualifier to match the one used above.
-  synthesizer: new DefaultStackSynthesizer({
+  synthesizer: new cdk.DefaultStackSynthesizer({
     qualifier: 'randchars1234',
   }),
 });
@@ -1115,6 +1409,27 @@ encryption key policy for the artifacts bucket may have a statement that looks l
 ```
 
 Any resource or policy that references the qualifier (`hnb659fds` by default) will need to be updated.
+
+### This CDK CLI is not compatible with the CDK library used by your application
+
+The CDK CLI version used in your pipeline is too old to read the Cloud Assembly
+produced by your CDK app.
+
+Most likely this happens in the `SelfMutate` action, you are passing the `cliVersion`
+parameter to control the version of the CDK CLI, and you just updated the CDK
+framework version that your application uses. You either forgot to change the
+`cliVersion` parameter, or changed the `cliVersion` in the same commit in which
+you changed the framework version. Because a change to the pipeline settings needs
+a successful run of the `SelfMutate` step to be applied, the next iteration of the
+`SelfMutate` step still executes with the *old* CLI version, and that old CLI version
+is not able to read the cloud assembly produced by the new framework version.
+
+Solution: change the `cliVersion` first, commit, push and deploy, and only then
+change the framework version.
+
+We recommend you avoid specifying the `cliVersion` parameter at all. By default
+the pipeline will use the latest CLI version, which will support all cloud assembly
+versions.
 
 ## Known Issues
 

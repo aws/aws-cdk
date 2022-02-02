@@ -1,4 +1,5 @@
-import '@aws-cdk/assert-internal/jest';
+import { Match, Template } from '@aws-cdk/assertions';
+import { User } from '@aws-cdk/aws-iam';
 import { Stack } from '@aws-cdk/core';
 import { WebSocketApi, WebSocketStage } from '../../lib';
 
@@ -15,7 +16,7 @@ describe('WebSocketStage', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ApiGatewayV2::Stage', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Stage', {
       ApiId: stack.resolve(api.apiId),
       StageName: 'dev',
     });
@@ -58,5 +59,52 @@ describe('WebSocketStage', () => {
     // THEN
     expect(defaultStage.callbackUrl.endsWith('/dev')).toBe(true);
     expect(defaultStage.callbackUrl.startsWith('https://')).toBe(true);
+  });
+
+  describe('grantManageConnections', () => {
+    test('adds an IAM policy to the principal', () => {
+      // GIVEN
+      const stack = new Stack();
+      const api = new WebSocketApi(stack, 'Api');
+      const defaultStage = new WebSocketStage(stack, 'Stage', {
+        webSocketApi: api,
+        stageName: 'dev',
+      });
+      const principal = new User(stack, 'User');
+
+      // WHEN
+      defaultStage.grantManagementApiAccess(principal);
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: Match.arrayWith([{
+            Action: 'execute-api:ManageConnections',
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': ['', [
+                'arn:',
+                {
+                  Ref: 'AWS::Partition',
+                },
+                ':execute-api:',
+                {
+                  Ref: 'AWS::Region',
+                },
+                ':',
+                {
+                  Ref: 'AWS::AccountId',
+                },
+                ':',
+                {
+                  Ref: 'ApiF70053CD',
+                },
+                `/${defaultStage.stageName}/*/@connections/*`,
+              ]],
+            },
+          }]),
+        },
+      });
+    });
   });
 });

@@ -14,6 +14,8 @@ import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
  * Props for the UpdatePipelineAction
+ *
+ * @deprecated This class is part of the old API. Use the API based on the `CodePipeline` class instead
  */
 export interface UpdatePipelineActionProps {
   /**
@@ -62,6 +64,13 @@ export interface UpdatePipelineActionProps {
    * @default []
    */
   readonly dockerCredentials?: DockerCredential[];
+
+  /**
+   * Custom BuildSpec that is merged with generated one
+   *
+   * @default - none
+   */
+  readonly buildSpec?: codebuild.BuildSpec;
 }
 
 /**
@@ -72,6 +81,8 @@ export interface UpdatePipelineActionProps {
  *
  * You do not need to instantiate this action -- it will automatically
  * be added by the pipeline.
+ *
+ * @deprecated This class is part of the old API. Use the API based on the `CodePipeline` class instead
  */
 export class UpdatePipelineAction extends CoreConstruct implements codepipeline.IAction {
   private readonly action: codepipeline.IAction;
@@ -82,29 +93,30 @@ export class UpdatePipelineAction extends CoreConstruct implements codepipeline.
     const installSuffix = props.cdkCliVersion ? `@${props.cdkCliVersion}` : '';
 
     const stackIdentifier = props.pipelineStackHierarchicalId ?? props.pipelineStackName;
+    const buildSpec = codebuild.BuildSpec.fromObject({
+      version: '0.2',
+      phases: {
+        install: {
+          commands: [
+            `npm install -g aws-cdk${installSuffix}`,
+            ...dockerCredentialsInstallCommands(DockerCredentialUsage.SELF_UPDATE, props.dockerCredentials),
+          ],
+        },
+        build: {
+          commands: [
+            // Cloud Assembly is in *current* directory.
+            `cdk -a ${embeddedAsmPath(scope)} deploy ${stackIdentifier} --require-approval=never --verbose`,
+          ],
+        },
+      },
+    });
     const selfMutationProject = new codebuild.PipelineProject(this, 'SelfMutation', {
       projectName: props.projectName,
       environment: {
         buildImage: codebuild.LinuxBuildImage.STANDARD_5_0,
         privileged: props.privileged ?? false,
       },
-      buildSpec: codebuild.BuildSpec.fromObject({
-        version: '0.2',
-        phases: {
-          install: {
-            commands: [
-              `npm install -g aws-cdk${installSuffix}`,
-              ...dockerCredentialsInstallCommands(DockerCredentialUsage.SELF_UPDATE, props.dockerCredentials),
-            ],
-          },
-          build: {
-            commands: [
-              // Cloud Assembly is in *current* directory.
-              `cdk -a ${embeddedAsmPath(scope)} deploy ${stackIdentifier} --require-approval=never --verbose`,
-            ],
-          },
-        },
-      }),
+      buildSpec: props.buildSpec ? codebuild.mergeBuildSpecs(props.buildSpec, buildSpec) : buildSpec,
     });
 
     // allow the self-mutating project permissions to assume the bootstrap Action role
@@ -142,8 +154,7 @@ export class UpdatePipelineAction extends CoreConstruct implements codepipeline.
   /**
    * Exists to implement IAction
    */
-  public bind(scope: CoreConstruct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
-  codepipeline.ActionConfig {
+  public bind(scope: CoreConstruct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions): codepipeline.ActionConfig {
     return this.action.bind(scope, stage, options);
   }
 

@@ -8,7 +8,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
-import { Aws, Duration, IResource, Lazy, Names, PhysicalName, Reference, Resource, SecretValue, Stack, Token, TokenComparison, Tokenization } from '@aws-cdk/core';
+import { ArnFormat, Aws, Duration, IResource, Lazy, Names, PhysicalName, Reference, Resource, SecretValue, Stack, Token, TokenComparison, Tokenization } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { IArtifacts } from './artifacts';
 import { BuildSpec } from './build-spec';
@@ -29,12 +29,28 @@ import { CODEPIPELINE_SOURCE_ARTIFACTS_TYPE, NO_SOURCE_TYPE } from './source-typ
 // eslint-disable-next-line
 import { Construct as CoreConstruct } from '@aws-cdk/core';
 
+const VPC_POLICY_SYM = Symbol.for('@aws-cdk/aws-codebuild.roleVpcPolicy');
+
 /**
  * The type returned from {@link IProject#enableBatchBuilds}.
  */
 export interface BatchBuildConfig {
   /** The IAM batch service Role of this Project. */
   readonly role: iam.IRole;
+}
+
+/**
+ * Location of a PEM certificate on S3
+ */
+export interface BuildEnvironmentCertificate {
+  /**
+   * The bucket where the certificate is
+   */
+  readonly bucket: s3.IBucket;
+  /**
+   * The full path and name of the key file
+   */
+  readonly objectKey: string;
 }
 
 /**
@@ -396,7 +412,7 @@ abstract class ProjectBase extends Resource implements IProject {
     return new cloudwatch.Metric({
       namespace: 'AWS/CodeBuild',
       metricName,
-      dimensions: { ProjectName: this.projectName },
+      dimensionsMap: { ProjectName: this.projectName },
       ...props,
     }).attachTo(this);
   }
@@ -735,7 +751,7 @@ export interface BindToCodePipelineOptions {
 export class Project extends ProjectBase {
 
   public static fromProjectArn(scope: Construct, id: string, projectArn: string): IProject {
-    const parsedArn = Stack.of(scope).parseArn(projectArn);
+    const parsedArn = Stack.of(scope).splitArn(projectArn, ArnFormat.SLASH_RESOURCE_NAME);
 
     class Import extends ProjectBase {
       public readonly grantPrincipal: iam.IPrincipal;
@@ -858,7 +874,7 @@ export class Project extends ProjectBase {
           // 2. A Token.
           // 3. A simple value, like 'secret-id'.
           if (envVariableValue.startsWith('arn:')) {
-            const parsedArn = stack.parseArn(envVariableValue, ':');
+            const parsedArn = stack.splitArn(envVariableValue, ArnFormat.COLON_RESOURCE_NAME);
             if (!parsedArn.resourceName) {
               throw new Error('SecretManager ARN is missing the name of the secret: ' + envVariableValue);
             }
@@ -873,7 +889,7 @@ export class Project extends ProjectBase {
               // (CodeBuild supports both),
               // stick a "*" at the end, which makes it work for both
               resourceName: `${secretName}*`,
-              sep: ':',
+              arnFormat: ArnFormat.COLON_RESOURCE_NAME,
               partition: parsedArn.partition,
               account: parsedArn.account,
               region: parsedArn.region,
@@ -887,7 +903,7 @@ export class Project extends ProjectBase {
                 // We do not know the ID of the key, but since this is a cross-account access,
                 // the key policies have to allow this access, so a wildcard is safe here
                 resourceName: '*',
-                sep: '/',
+                arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
                 partition: parsedArn.partition,
                 account: parsedArn.account,
                 region: parsedArn.region,
@@ -915,7 +931,7 @@ export class Project extends ProjectBase {
                     // We do not know the ID of the key, but since this is a cross-account access,
                     // the key policies have to allow this access, so a wildcard is safe here
                     resourceName: '*',
-                    sep: '/',
+                    arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
                     partition: resourceStack.partition,
                     account: resourceStack.account,
                     region: resourceStack.region,
@@ -941,7 +957,7 @@ export class Project extends ProjectBase {
               service: 'secretsmanager',
               resource: 'secret',
               resourceName: `${secretName}-??????`,
-              sep: ':',
+              arnFormat: ArnFormat.COLON_RESOURCE_NAME,
             }));
           }
         }
@@ -1122,9 +1138,8 @@ export class Project extends ProjectBase {
     }
 
     // bind
-    const bindFunction = (this.buildImage as any).bind;
-    if (bindFunction) {
-      bindFunction.call(this.buildImage, this, this, {});
+    if (isBindableBuildImage(this.buildImage)) {
+      this.buildImage.bind(this, this, {});
     }
   }
 
@@ -1241,7 +1256,7 @@ export class Project extends ProjectBase {
     const logGroupArn = Stack.of(this).formatArn({
       service: 'logs',
       resource: 'log-group',
-      sep: ':',
+      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
       resourceName: `/aws/codebuild/${this.projectName}`,
     });
 
@@ -1310,6 +1325,7 @@ export class Project extends ProjectBase {
           credential: secret.secretFullArn ?? secret.secretName,
         }
         : undefined,
+      certificate: env.certificate?.bucket.arnForObjects(env.certificate.objectKey),
       privilegedMode: env.privileged || false,
       computeType: env.computeType || this.buildImage.defaultComputeType,
       environmentVariables: hasEnvironmentVars
@@ -1437,23 +1453,33 @@ export class Project extends ProjectBase {
       },
     }));
 
-    const policy = new iam.Policy(this, 'PolicyDocument', {
-      statements: [
-        new iam.PolicyStatement({
-          resources: ['*'],
-          actions: [
-            'ec2:CreateNetworkInterface',
-            'ec2:DescribeNetworkInterfaces',
-            'ec2:DeleteNetworkInterface',
-            'ec2:DescribeSubnets',
-            'ec2:DescribeSecurityGroups',
-            'ec2:DescribeDhcpOptions',
-            'ec2:DescribeVpcs',
-          ],
-        }),
-      ],
-    });
-    this.role.attachInlinePolicy(policy);
+    // If the same Role is used for multiple Projects, always creating a new `iam.Policy`
+    // will attach the same policy multiple times, probably exceeding the maximum size of the
+    // Role policy. Make sure we only do it once for the same role.
+    //
+    // This deduplication could be a feature of the Role itself, but that feels risky and
+    // is hard to implement (what with Tokens and all). Safer to fix it locally for now.
+    let policy: iam.Policy | undefined = (this.role as any)[VPC_POLICY_SYM];
+    if (!policy) {
+      policy = new iam.Policy(this, 'PolicyDocument', {
+        statements: [
+          new iam.PolicyStatement({
+            resources: ['*'],
+            actions: [
+              'ec2:CreateNetworkInterface',
+              'ec2:DescribeNetworkInterfaces',
+              'ec2:DeleteNetworkInterface',
+              'ec2:DescribeSubnets',
+              'ec2:DescribeSecurityGroups',
+              'ec2:DescribeDhcpOptions',
+              'ec2:DescribeVpcs',
+            ],
+          }),
+        ],
+      });
+      this.role.attachInlinePolicy(policy);
+      (this.role as any)[VPC_POLICY_SYM] = policy;
+    }
 
     // add an explicit dependency between the EC2 Policy and this Project -
     // otherwise, creating the Project fails, as it requires these permissions
@@ -1529,6 +1555,13 @@ export interface BuildEnvironment {
    * @default false
    */
   readonly privileged?: boolean;
+
+  /**
+   * The location of the PEM-encoded certificate for the build project
+   *
+   * @default - No external certificate is added to the project
+   */
+  readonly certificate?: BuildEnvironmentCertificate;
 
   /**
    * The environment variables that your builds can use.
@@ -1622,8 +1655,9 @@ class ArmBuildImage implements IBuildImage {
   public validate(buildEnvironment: BuildEnvironment): string[] {
     const ret = [];
     if (buildEnvironment.computeType &&
+        buildEnvironment.computeType !== ComputeType.SMALL &&
         buildEnvironment.computeType !== ComputeType.LARGE) {
-      ret.push(`ARM images only support ComputeType '${ComputeType.LARGE}' - ` +
+      ret.push(`ARM images only support ComputeTypes '${ComputeType.SMALL}' and '${ComputeType.LARGE}' - ` +
         `'${buildEnvironment.computeType}' was given`);
     }
     return ret;
@@ -1690,6 +1724,8 @@ export class LinuxBuildImage implements IBuildImage {
   public static readonly AMAZON_LINUX_2_3 = LinuxBuildImage.codeBuildImage('aws/codebuild/amazonlinux2-x86_64-standard:3.0');
 
   public static readonly AMAZON_LINUX_2_ARM: IBuildImage = new ArmBuildImage('aws/codebuild/amazonlinux2-aarch64-standard:1.0');
+  /** Image "aws/codebuild/amazonlinux2-aarch64-standard:2.0". */
+  public static readonly AMAZON_LINUX_2_ARM_2: IBuildImage = new ArmBuildImage('aws/codebuild/amazonlinux2-aarch64-standard:2.0');
 
   /** @deprecated Use {@link STANDARD_2_0} and specify runtime in buildspec runtime-versions section */
   public static readonly UBUNTU_14_04_BASE = LinuxBuildImage.codeBuildImage('aws/codebuild/ubuntu-base:14.04');
@@ -2085,4 +2121,8 @@ export enum ProjectNotificationEvents {
    * Trigger notification when project build phase success
    */
   BUILD_PHASE_SUCCEEDED = 'codebuild-project-build-phase-success',
+}
+
+function isBindableBuildImage(x: unknown): x is IBindableBuildImage {
+  return typeof x === 'object' && !!x && !!(x as any).bind;
 }

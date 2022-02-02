@@ -1,9 +1,9 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import { AssetManifest } from 'cdk-assets';
 import { Tag } from '../cdk-toolkit';
-import { debug } from '../logging';
+import { debug, warning } from '../logging';
 import { publishAssets } from '../util/asset-publishing';
-import { Mode, SdkProvider } from './aws-auth';
+import { Mode, SdkProvider, ISDK } from './aws-auth';
 import { deployStack, DeployStackResult, destroyStack } from './deploy-stack';
 import { ToolkitInfo } from './toolkit-info';
 import { CloudFormationStack, Template } from './util/cloudformation';
@@ -27,6 +27,92 @@ export async function replaceEnvPlaceholders<A extends { }>(object: A, env: cxap
   });
 }
 
+/**
+ * SDK obtained by assuming the lookup role
+ * for a given environment
+ */
+export interface PreparedSdkWithLookupRoleForEnvironment {
+  /**
+   * The SDK for the given environment
+   */
+  readonly sdk: ISDK;
+
+  /**
+   * The resolved environment for the stack
+   * (no more 'unknown-account/unknown-region')
+   */
+  readonly resolvedEnvironment: cxapi.Environment;
+
+  /**
+   * Whether or not the assume role was successful.
+   * If the assume role was not successful (false)
+   * then that means that the 'sdk' returned contains
+   * the default credentials (not the assume role credentials)
+   */
+  readonly didAssumeRole: boolean;
+}
+
+/**
+  * Try to use the bootstrap lookupRole. There are two scenarios that are handled here
+  *  1. The lookup role may not exist (it was added in bootstrap stack version 7)
+  *  2. The lookup role may not have the correct permissions (ReadOnlyAccess was added in
+  *      bootstrap stack version 8)
+  *
+  * In the case of 1 (lookup role doesn't exist) `forEnvironment` will either:
+  *   1. Return the default credentials if the default credentials are for the stack account
+  *   2. Throw an error if the default credentials are not for the stack account.
+  *
+  * If we successfully assume the lookup role we then proceed to 2 and check whether the bootstrap
+  * stack version is valid. If it is not we throw an error which should be handled in the calling
+  * function (and fallback to use a different role, etc)
+  *
+  * If we do not successfully assume the lookup role, but do get back the default credentials
+  * then return those and note that we are returning the default credentials. The calling
+  * function can then decide to use them or fallback to another role.
+  */
+export async function prepareSdkWithLookupRoleFor(
+  sdkProvider: SdkProvider,
+  stack: cxapi.CloudFormationStackArtifact,
+): Promise<PreparedSdkWithLookupRoleForEnvironment> {
+  const resolvedEnvironment = await sdkProvider.resolveEnvironment(stack.environment);
+
+  // Substitute any placeholders with information about the current environment
+  const arns = await replaceEnvPlaceholders({
+    lookupRoleArn: stack.lookupRole?.arn,
+  }, resolvedEnvironment, sdkProvider);
+
+  // try to assume the lookup role
+  const warningMessage = `Could not assume ${arns.lookupRoleArn}, proceeding anyway.`;
+  const upgradeMessage = `(To get rid of this warning, please upgrade to bootstrap version >= ${stack.lookupRole?.requiresBootstrapStackVersion})`;
+  try {
+    const stackSdk = await sdkProvider.forEnvironment(resolvedEnvironment, Mode.ForReading, {
+      assumeRoleArn: arns.lookupRoleArn,
+      assumeRoleExternalId: stack.lookupRole?.assumeRoleExternalId,
+    });
+
+    // if we succeed in assuming the lookup role, make sure we have the correct bootstrap stack version
+    if (stackSdk.didAssumeRole && stack.lookupRole?.bootstrapStackVersionSsmParameter && stack.lookupRole.requiresBootstrapStackVersion) {
+      const version = await ToolkitInfo.versionFromSsmParameter(stackSdk.sdk, stack.lookupRole.bootstrapStackVersionSsmParameter);
+      if (version < stack.lookupRole.requiresBootstrapStackVersion) {
+        throw new Error(`Bootstrap stack version '${stack.lookupRole.requiresBootstrapStackVersion}' is required, found version '${version}'.`);
+      }
+      // we may not have assumed the lookup role because one was not provided
+      // if that is the case then don't print the upgrade warning
+    } else if (!stackSdk.didAssumeRole && stack.lookupRole?.requiresBootstrapStackVersion) {
+      warning(upgradeMessage);
+    }
+    return { ...stackSdk, resolvedEnvironment };
+  } catch (e) {
+    debug(e);
+    // only print out the warnings if the lookupRole exists AND there is a required
+    // bootstrap version, otherwise the warnings will print `undefined`
+    if (stack.lookupRole && stack.lookupRole.requiresBootstrapStackVersion) {
+      warning(warningMessage);
+      warning(upgradeMessage);
+    }
+    throw (e);
+  }
+}
 
 export interface DeployStackOptions {
   /**
@@ -129,6 +215,29 @@ export interface DeployStackOptions {
    * @default false
    */
   readonly ci?: boolean;
+
+  /**
+   * Rollback failed deployments
+   *
+   * @default true
+   */
+  readonly rollback?: boolean;
+
+  /*
+   * Whether to perform a 'hotswap' deployment.
+   * A 'hotswap' deployment will attempt to short-circuit CloudFormation
+   * and update the affected resources like Lambda functions directly.
+   *
+   * @default - false for regular deployments, true for 'watch' deployments
+   */
+  readonly hotswap?: boolean;
+
+  /**
+   * The extra string to append to the User-Agent header when performing AWS SDK calls.
+   *
+   * @default - nothing extra is appended to the User-Agent header
+   */
+  readonly extraUserAgent?: string;
 }
 
 export interface DestroyStackOptions {
@@ -149,6 +258,29 @@ export interface ProvisionerProps {
 }
 
 /**
+ * SDK obtained by assuming the deploy role
+ * for a given environment
+ */
+export interface PreparedSdkForEnvironment {
+  /**
+   * The SDK for the given environment
+   */
+  readonly stackSdk: ISDK;
+
+  /**
+   * The resolved environment for the stack
+   * (no more 'unknown-account/unknown-region')
+   */
+  readonly resolvedEnvironment: cxapi.Environment;
+  /**
+   * The Execution Role that should be passed to CloudFormation.
+   *
+   * @default - no execution role is used
+   */
+  readonly cloudFormationRoleArn?: string;
+}
+
+/**
  * Helper class for CloudFormation deployments
  *
  * Looks us the right SDK and Bootstrap stack to deploy a given
@@ -163,7 +295,19 @@ export class CloudFormationDeployments {
 
   public async readCurrentTemplate(stackArtifact: cxapi.CloudFormationStackArtifact): Promise<Template> {
     debug(`Reading existing template for stack ${stackArtifact.displayName}.`);
-    const { stackSdk } = await this.prepareSdkFor(stackArtifact, undefined, Mode.ForReading);
+    let stackSdk: ISDK | undefined = undefined;
+    // try to assume the lookup role and fallback to the deploy role
+    try {
+      const result = await prepareSdkWithLookupRoleFor(this.sdkProvider, stackArtifact);
+      if (result.didAssumeRole) {
+        stackSdk = result.sdk;
+      }
+    } catch { }
+
+    if (!stackSdk) {
+      stackSdk = (await this.prepareSdkFor(stackArtifact, undefined, Mode.ForReading)).stackSdk;
+    }
+
     const cfn = stackSdk.cloudFormation();
 
     const stack = await CloudFormationStack.lookup(cfn, stackArtifact.stackName);
@@ -204,6 +348,9 @@ export class CloudFormationDeployments {
       usePreviousParameters: options.usePreviousParameters,
       progress: options.progress,
       ci: options.ci,
+      rollback: options.rollback,
+      hotswap: options.hotswap,
+      extraUserAgent: options.extraUserAgent,
     });
   }
 
@@ -234,7 +381,11 @@ export class CloudFormationDeployments {
    * - SDK loaded with the right credentials for calling `CreateChangeSet`.
    * - The Execution Role that should be passed to CloudFormation.
    */
-  private async prepareSdkFor(stack: cxapi.CloudFormationStackArtifact, roleArn?: string, mode = Mode.ForWriting) {
+  private async prepareSdkFor(
+    stack: cxapi.CloudFormationStackArtifact,
+    roleArn?: string,
+    mode = Mode.ForWriting,
+  ): Promise<PreparedSdkForEnvironment> {
     if (!stack.environment) {
       throw new Error(`The stack ${stack.displayName} does not have an environment`);
     }
@@ -255,7 +406,7 @@ export class CloudFormationDeployments {
     });
 
     return {
-      stackSdk,
+      stackSdk: stackSdk.sdk,
       resolvedEnvironment,
       cloudFormationRoleArn: arns.cloudFormationRoleArn,
     };

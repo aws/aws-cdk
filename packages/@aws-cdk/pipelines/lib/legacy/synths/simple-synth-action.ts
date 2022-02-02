@@ -19,6 +19,8 @@ import { Construct } from '@aws-cdk/core';
 
 /**
  * Configuration options for a SimpleSynth
+ *
+ * @deprecated This class is part of the old API. Use the API based on the `CodePipeline` class instead
  */
 export interface SimpleSynthOptions {
   /**
@@ -117,10 +119,19 @@ export interface SimpleSynthOptions {
    * @default - All private subnets.
    */
   readonly subnetSelection?: ec2.SubnetSelection;
+
+  /**
+   * custom BuildSpec that is merged with the generated one
+   *
+   * @default - none
+   */
+  readonly buildSpec?: codebuild.BuildSpec;
 }
 
 /**
  * Construction props for SimpleSynthAction
+ *
+ * @deprecated This class is part of the old API. Use the API based on the `CodePipeline` class instead
  */
 export interface SimpleSynthActionProps extends SimpleSynthOptions {
   /**
@@ -185,6 +196,8 @@ export interface SimpleSynthActionProps extends SimpleSynthOptions {
 
 /**
  * Specification of an additional artifact to generate
+ *
+ * @deprecated This class is part of the old API. Use the API based on the `CodePipeline` class instead
  */
 export interface AdditionalArtifact {
   /**
@@ -200,6 +213,8 @@ export interface AdditionalArtifact {
 
 /**
  * A standard synth with a generated buildspec
+ *
+ * @deprecated This class is part of the old API. Use the API based on the `CodePipeline` class instead
  */
 export class SimpleSynthAction implements codepipeline.IAction, iam.IGrantable {
 
@@ -358,13 +373,15 @@ export class SimpleSynthAction implements codepipeline.IAction, iam.IGrantable {
       ...copyEnvironmentVariables(...this.props.copyEnvironmentVariables || []),
     };
 
+    const mergedBuildSpec = this.props.buildSpec ? codebuild.mergeBuildSpecs(this.props.buildSpec, buildSpec) : buildSpec;
+
     // A hash over the values that make the CodeBuild Project unique (and necessary
     // to restart the pipeline if one of them changes). projectName is not necessary to include
     // here because the pipeline will definitely restart if projectName changes.
     // (Resolve tokens)
     const projectConfigHash = hash(Stack.of(scope).resolve({
       environment: serializeBuildEnvironment(environment),
-      buildSpecString: buildSpec.toBuildSpec(),
+      buildSpecString: mergedBuildSpec.toBuildSpec(),
       environmentVariables,
     }));
 
@@ -373,7 +390,7 @@ export class SimpleSynthAction implements codepipeline.IAction, iam.IGrantable {
       environment,
       vpc: this.props.vpc,
       subnetSelection: this.props.subnetSelection,
-      buildSpec,
+      buildSpec: mergedBuildSpec,
       environmentVariables,
     });
 
@@ -470,6 +487,8 @@ export class SimpleSynthAction implements codepipeline.IAction, iam.IGrantable {
 
 /**
  * Options for a convention-based synth using NPM
+ *
+ * @deprecated This class is part of the old API. Use the API based on the `CodePipeline` class instead
  */
 export interface StandardNpmSynthOptions extends SimpleSynthOptions {
   /**
@@ -511,6 +530,8 @@ export interface StandardNpmSynthOptions extends SimpleSynthOptions {
 
 /**
  * Options for a convention-based synth using Yarn
+ *
+ * @deprecated This class is part of the old API. Use the API based on the `CodePipeline` class instead
  */
 export interface StandardYarnSynthOptions extends SimpleSynthOptions {
   /**

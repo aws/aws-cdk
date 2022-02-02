@@ -28,14 +28,14 @@ Currently supported are:
 * Put a record to a Kinesis stream
 * [Log an event into a LogGroup](#log-an-event-into-a-loggroup)
 * Put a record to a Kinesis Data Firehose stream
-* Put an event on an EventBridge bus
+* [Put an event on an EventBridge bus](#put-an-event-on-an-eventbridge-bus)
 
 See the README of the `@aws-cdk/aws-events` library for more information on
 EventBridge.
 
 ## Event retry policy and using dead-letter queues
 
-The Codebuild, CodePipeline, Lambda, StepFunctions and LogGroup targets support attaching a [dead letter queue and setting retry policies](https://docs.aws.amazon.com/eventbridge/latest/userguide/rule-dlq.html). See the [lambda example](#invoke-a-lambda-function).
+The Codebuild, CodePipeline, Lambda, StepFunctions, LogGroup and SQSQueue targets support attaching a [dead letter queue and setting retry policies](https://docs.aws.amazon.com/eventbridge/latest/userguide/rule-dlq.html). See the [lambda example](#invoke-a-lambda-function).
 Use [escape hatches](https://docs.aws.amazon.com/cdk/latest/guide/cfn_layer.html) for the other target types.
 
 ## Invoke a Lambda function
@@ -65,7 +65,7 @@ const queue = new sqs.Queue(this, 'Queue');
 
 rule.addTarget(new targets.LambdaFunction(fn, {
   deadLetterQueue: queue, // Optional: add a dead letter queue
-  maxEventAge: cdk.Duration.hours(2), // Otional: set the maxEventAge retry policy
+  maxEventAge: cdk.Duration.hours(2), // Optional: set the maxEventAge retry policy
   retryAttempts: 2, // Optional: set the max number of retry attempts
 }));
 ```
@@ -265,4 +265,24 @@ rule.addTarget(
     deadLetterQueue: dlq
   } ),
 )
+```
+
+## Put an event on an EventBridge bus
+
+Use the `EventBus` target to route event to a different EventBus.
+
+The code snippet below creates the scheduled event rule that route events to an imported event bus.
+
+```ts
+const rule = new events.Rule(this, 'Rule', {
+  schedule: events.Schedule.expression('rate(1 minute)'),
+});
+
+rule.addTarget(new targets.EventBus(
+  events.EventBus.fromEventBusArn(
+    this,
+    'External',
+    `arn:aws:events:eu-west-1:999999999999:event-bus/test-bus`,
+  ),
+));
 ```

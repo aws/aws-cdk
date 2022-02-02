@@ -1,10 +1,11 @@
+import { Duration } from '@aws-cdk/core';
 import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import { ShellStep, ShellStepProps } from '../blueprint';
 
 /**
- * Construction props for SimpleSynthAction
+ * Construction props for a CodeBuildStep
  */
 export interface CodeBuildStepProps extends ShellStepProps {
   /**
@@ -82,6 +83,15 @@ export interface CodeBuildStepProps extends ShellStepProps {
    * @default - Security group will be automatically created.
    */
   readonly securityGroups?: ec2.ISecurityGroup[];
+
+  /**
+   * The number of minutes after which AWS CodeBuild stops the build if it's
+   * not complete. For valid values, see the timeoutInMinutes field in the AWS
+   * CodeBuild User Guide.
+   *
+   * @default Duration.hours(1)
+   */
+  readonly timeout?: Duration;
 }
 
 /**
@@ -144,6 +154,15 @@ export class CodeBuildStep extends ShellStep {
    */
   readonly securityGroups?: ec2.ISecurityGroup[];
 
+  /**
+   * The number of minutes after which AWS CodeBuild stops the build if it's
+   * not complete. For valid values, see the timeoutInMinutes field in the AWS
+   * CodeBuild User Guide.
+   *
+   * @default Duration.hours(1)
+   */
+  readonly timeout?: Duration;
+
   private _project?: codebuild.IProject;
 
   constructor(id: string, props: CodeBuildStepProps) {
@@ -157,16 +176,17 @@ export class CodeBuildStep extends ShellStep {
     this.role = props.role;
     this.rolePolicyStatements = props.rolePolicyStatements;
     this.securityGroups = props.securityGroups;
+    this.timeout = props.timeout;
   }
 
   /**
-   * CodeBiuld Project generated for the pipeline
+   * CodeBuild Project generated for the pipeline
    *
    * Will only be available after the pipeline has been built.
    */
   public get project(): codebuild.IProject {
     if (!this._project) {
-      throw new Error('Project becomes available after the pipeline has been built');
+      throw new Error('Call pipeline.buildPipeline() before reading this property');
     }
     return this._project;
   }

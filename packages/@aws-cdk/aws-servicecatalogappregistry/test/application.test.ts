@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as cdk from '@aws-cdk/core';
 import * as appreg from '../lib';
 
@@ -6,7 +6,12 @@ describe('Application', () => {
   let stack: cdk.Stack;
 
   beforeEach(() => {
-    stack = new cdk.Stack();
+    const app = new cdk.App({
+      context: {
+        '@aws-cdk/core:newStyleStackSynthesis': false,
+      },
+    });
+    stack = new cdk.Stack(app);
   });
 
   test('default application creation', () => {
@@ -14,7 +19,7 @@ describe('Application', () => {
       applicationName: 'testApplication',
     });
 
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       Resources: {
         MyApplication5C63EC1D: {
           Type: 'AWS::ServiceCatalogAppRegistry::Application',
@@ -33,7 +38,7 @@ describe('Application', () => {
       description: description,
     });
 
-    expect(stack).toHaveResourceLike('AWS::ServiceCatalogAppRegistry::Application', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ServiceCatalogAppRegistry::Application', {
       Description: description,
     });
   }),
@@ -46,7 +51,7 @@ describe('Application', () => {
     cdk.Tags.of(application).add('key1', 'value1');
     cdk.Tags.of(application).add('key2', 'value2');
 
-    expect(stack).toHaveResourceLike('AWS::ServiceCatalogAppRegistry::Application', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ServiceCatalogAppRegistry::Application', {
       Tags: {
         key1: 'value1',
         key2: 'value2',
@@ -76,7 +81,7 @@ describe('Application', () => {
       description: tokenDescription.valueAsString,
     });
 
-    expect(stack).toHaveResourceLike('AWS::ServiceCatalogAppRegistry::Application', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ServiceCatalogAppRegistry::Application', {
       Description: {
         Ref: 'Description',
       },
@@ -90,7 +95,7 @@ describe('Application', () => {
       applicationName: tokenApplicationName.valueAsString,
     });
 
-    expect(stack).toHaveResourceLike('AWS::ServiceCatalogAppRegistry::Application', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ServiceCatalogAppRegistry::Application', {
       Name: {
         Ref: 'ApplicationName',
       },
@@ -147,7 +152,7 @@ describe('Application', () => {
 
       application.associateAttributeGroup(attributeGroup);
 
-      expect(stack).toHaveResourceLike('AWS::ServiceCatalogAppRegistry::AttributeGroupAssociation', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ServiceCatalogAppRegistry::AttributeGroupAssociation', {
         Application: { 'Fn::GetAtt': ['MyApplication5C63EC1D', 'Id'] },
         AttributeGroup: { 'Fn::GetAtt': ['AttributeGroup409C6335', 'Id'] },
       });
@@ -163,7 +168,7 @@ describe('Application', () => {
       application.associateAttributeGroup(attributeGroup);
       application.associateAttributeGroup(attributeGroup);
 
-      expect(stack).toCountResources('AWS::ServiceCatalogAppRegistry::AttributeGroupAssociation', 1);
+      Template.fromStack(stack).resourceCountIs('AWS::ServiceCatalogAppRegistry::AttributeGroupAssociation', 1);
     }),
 
     test('multiple applications and attribute groups can associate', () => {
@@ -187,7 +192,7 @@ describe('Application', () => {
       application2.associateAttributeGroup(attributeGroup1);
       application2.associateAttributeGroup(attributeGroup2);
 
-      expect(stack).toCountResources('AWS::ServiceCatalogAppRegistry::AttributeGroupAssociation', 4);
+      Template.fromStack(stack).resourceCountIs('AWS::ServiceCatalogAppRegistry::AttributeGroupAssociation', 4);
     }),
 
     test('associate resource', () => {
@@ -195,7 +200,7 @@ describe('Application', () => {
 
       application.associateStack(resource);
 
-      expect(stack).toHaveResourceLike('AWS::ServiceCatalogAppRegistry::ResourceAssociation', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ServiceCatalogAppRegistry::ResourceAssociation', {
         Application: { 'Fn::GetAtt': ['MyApplication5C63EC1D', 'Id'] },
         Resource: { 'Fn::ImportValue': 'MyStack:MyStackExportsOutputRefAWSStackId23D778D8' },
       });
@@ -208,7 +213,7 @@ describe('Application', () => {
       application.associateStack(resource);
       application.associateStack(resource);
 
-      expect(stack).toCountResources('AWS::ServiceCatalogAppRegistry::ResourceAssociation', 1);
+      Template.fromStack(stack).resourceCountIs('AWS::ServiceCatalogAppRegistry::ResourceAssociation', 1);
     });
   });
 });

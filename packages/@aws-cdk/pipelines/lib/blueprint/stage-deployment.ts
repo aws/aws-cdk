@@ -1,8 +1,9 @@
 import * as cdk from '@aws-cdk/core';
 import { CloudFormationStackArtifact } from '@aws-cdk/cx-api';
 import { isStackArtifact } from '../private/cloud-assembly-internals';
+import { pipelineSynth } from '../private/construct-internals';
 import { StackDeployment } from './stack-deployment';
-import { Step } from './step';
+import { StackSteps, Step } from './step';
 
 /**
  * Properties for a `StageDeployment`
@@ -28,6 +29,13 @@ export interface StageDeploymentProps {
    * @default - No additional steps
    */
   readonly post?: Step[];
+
+  /**
+   * Instructions for additional steps that are run at the stack level
+   *
+   * @default - No additional instructions
+   */
+  readonly stackSteps?: StackSteps[];
 }
 
 /**
@@ -44,7 +52,7 @@ export class StageDeployment {
    * in dependency order.
    */
   public static fromStage(stage: cdk.Stage, props: StageDeploymentProps = {}) {
-    const assembly = stage.synth();
+    const assembly = pipelineSynth(stage);
     if (assembly.stacks.length === 0) {
       // If we don't check here, a more puzzling "stage contains no actions"
       // error will be thrown come deployment time.
@@ -55,6 +63,16 @@ export class StageDeployment {
     for (const artifact of assembly.stacks) {
       const step = StackDeployment.fromArtifact(artifact);
       stepFromArtifact.set(artifact, step);
+    }
+    if (props.stackSteps) {
+      for (const stackstep of props.stackSteps) {
+        const stackArtifact = assembly.getStackArtifact(stackstep.stack.artifactId);
+        const thisStep = stepFromArtifact.get(stackArtifact);
+        if (!thisStep) {
+          throw new Error('Logic error: we just added a step for this artifact but it disappeared.');
+        }
+        thisStep.addStackSteps(stackstep.pre ?? [], stackstep.changeSet ?? [], stackstep.post ?? []);
+      }
     }
 
     for (const artifact of assembly.stacks) {
@@ -94,12 +112,18 @@ export class StageDeployment {
    */
   public readonly post: Step[];
 
+  /**
+   * Instructions for additional steps that are run at stack level
+   */
+  public readonly stackSteps: StackSteps[];
+
   private constructor(
     /** The stacks deployed in this stage */
     public readonly stacks: StackDeployment[], props: StageDeploymentProps = {}) {
     this.stageName = props.stageName ?? '';
     this.pre = props.pre ?? [];
     this.post = props.post ?? [];
+    this.stackSteps = props.stackSteps ?? [];
   }
 
   /**

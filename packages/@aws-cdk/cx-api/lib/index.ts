@@ -6,6 +6,7 @@ export * from './context/availability-zones';
 export * from './context/endpoint-service-availability-zones';
 export * from './context/security-group';
 export * from './context/ecr';
+export * from './context/key';
 export * from './cloud-artifact';
 export * from './artifacts/asset-manifest-artifact';
 export * from './artifacts/cloudformation-artifact';

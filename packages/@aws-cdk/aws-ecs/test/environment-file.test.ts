@@ -1,23 +1,22 @@
 import * as path from 'path';
 import * as cdk from '@aws-cdk/core';
-import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as ecs from '../lib';
 
 /* eslint-disable dot-notation */
 
-nodeunitShim({
-  'ecs.EnvironmentFile.fromAsset': {
-    'fails if asset is not a single file'(test: Test) {
+describe('environment file', () => {
+  describe('ecs.EnvironmentFile.fromAsset', () => {
+    test('fails if asset is not a single file', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const fileAsset = ecs.EnvironmentFile.fromAsset(path.join(__dirname, 'demo-envfiles'));
 
       // THEN
-      test.throws(() => defineContainerDefinition(stack, fileAsset), /Asset must be a single file/);
-      test.done();
-    },
+      expect(() => defineContainerDefinition(stack, fileAsset)).toThrow(/Asset must be a single file/);
 
-    'only one environment file asset object is created even if multiple container definitions use the same file'(test: Test) {
+    });
+
+    test('only one environment file asset object is created even if multiple container definitions use the same file', () => {
       // GIVEN
       const app = new cdk.App();
       const stack = new cdk.Stack(app);
@@ -41,10 +40,10 @@ nodeunitShim({
       const synthesized = assembly.stacks[0];
 
       // container one has an asset, container two does not
-      test.deepEqual(synthesized.assets.length, 1);
-      test.done();
-    },
-  },
+      expect(synthesized.assets.length).toEqual(1);
+
+    });
+  });
 });
 
 function defineContainerDefinition(stack: cdk.Stack, environmentFile: ecs.EnvironmentFile) {

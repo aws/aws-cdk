@@ -1,14 +1,13 @@
-import { expect, haveResourceLike } from '@aws-cdk/assert-internal';
+import { Template, Match } from '@aws-cdk/assertions';
 import * as codecommit from '@aws-cdk/aws-codecommit';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import { Stack } from '@aws-cdk/core';
-import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as cpactions from '../../lib';
 
 /* eslint-disable quote-props */
 
-nodeunitShim({
-  'addAction succesfully leads to creation of codepipeline service catalog action with properly formatted TemplateFilePath'(test: Test) {
+describe('ServiceCatalog Deploy Action', () => {
+  test('addAction succesfully leads to creation of codepipeline service catalog action with properly formatted TemplateFilePath', () => {
     // GIVEN
     const stack = new TestFixture();
     // WHEN
@@ -20,13 +19,13 @@ nodeunitShim({
       productId: 'prod-xxxxxxxxx',
     }));
     // THEN
-    expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
-      'Stages': [
-        { 'Name': 'Source' /* don't care about the rest */ },
-        {
+    Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+      'Stages': Match.arrayWith([
+        Match.objectLike({ 'Name': 'Source' /* don't care about the rest */ }),
+        Match.objectLike({
           'Name': 'Deploy',
-          'Actions': [
-            {
+          'Actions': Match.arrayWith([
+            Match.objectLike({
               'ActionTypeId': {
                 'Category': 'Deploy',
                 'Owner': 'AWS',
@@ -46,15 +45,15 @@ nodeunitShim({
                 },
               ],
               'Name': 'ServiceCatalogTest',
-            },
-          ],
-        },
-      ],
-    }));
+            }),
+          ]),
+        }),
+      ]),
+    });
 
-    test.done();
-  },
-  'deployment without a description works successfully'(test: Test) {
+
+  });
+  test('deployment without a description works successfully', () => {
     // GIVEN
     const stack = new TestFixture();
     // WHEN
@@ -65,13 +64,13 @@ nodeunitShim({
       productId: 'prod-xxxxxxxxx',
     }));
     // THEN
-    expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
-      'Stages': [
-        { 'Name': 'Source' /* don't care about the rest */ },
-        {
+    Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+      'Stages': Match.arrayWith([
+        Match.objectLike({ 'Name': 'Source' /* don't care about the rest */ }),
+        Match.objectLike({
           'Name': 'Deploy',
-          'Actions': [
-            {
+          'Actions': Match.arrayWith([
+            Match.objectLike({
               'ActionTypeId': {
                 'Category': 'Deploy',
                 'Owner': 'AWS',
@@ -90,14 +89,14 @@ nodeunitShim({
                 },
               ],
               'Name': 'ServiceCatalogTest',
-            },
-          ],
-        },
-      ],
-    }));
+            }),
+          ]),
+        }),
+      ]),
+    });
 
-    test.done();
-  },
+
+  });
 });
 
 /**
