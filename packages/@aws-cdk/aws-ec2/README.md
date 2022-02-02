@@ -614,6 +614,7 @@ As an example, if we wanted to allow a connection from a security group in one s
 we would make the connection like:
 
 **If Stack1 depends on Stack2**
+
 ```ts
 // Stack 1
 const sg1 = new ec2.SecurityGroup(this, 'SG1', {
@@ -638,6 +639,7 @@ in `Stack 1` which avoids the cyclic reference.
 
 
 **If Stack2 depends on Stack1**
+
 ```ts
 // Stack 1
 const sg1 = new ec2.SecurityGroup(this, 'SG1', {
