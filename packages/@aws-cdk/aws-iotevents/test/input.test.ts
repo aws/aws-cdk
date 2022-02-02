@@ -42,19 +42,6 @@ test('can get input name', () => {
   });
 });
 
-test('can set physical name', () => {
-  // WHEN
-  new iotevents.Input(stack, 'MyInput', {
-    inputName: 'test_input',
-    attributeJsonPaths: ['payload.temperature'],
-  });
-
-  // THEN
-  Template.fromStack(stack).hasResourceProperties('AWS::IoTEvents::Input', {
-    InputName: 'test_input',
-  });
-});
-
 test('can get input ARN', () => {
   // GIVEN
   const input = new iotevents.Input(stack, 'MyInput', {
@@ -83,6 +70,19 @@ test('can get input ARN', () => {
         { Ref: 'MyInput08947B23' },
       ]],
     },
+  });
+});
+
+test('can set physical name', () => {
+  // WHEN
+  new iotevents.Input(stack, 'MyInput', {
+    inputName: 'test_input',
+    attributeJsonPaths: ['payload.temperature'],
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::IoTEvents::Input', {
+    InputName: 'test_input',
   });
 });
 
