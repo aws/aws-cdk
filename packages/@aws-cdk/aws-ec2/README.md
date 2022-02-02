@@ -601,6 +601,65 @@ const sg = ec2.SecurityGroup.fromLookupById(this, 'SecurityGroupLookup', 'sg-123
 
 The result of `SecurityGroup.fromLookupByName` and `SecurityGroup.fromLookupById` operations will be written to a file called `cdk.context.json`. You must commit this file to source control so that the lookup values are available in non-privileged environments such as CI build steps, and to ensure your template builds are repeatable.
 
+### Cross Stack Connections
+
+If you are attempting to add a connection from a peer in one stack to a peer in a different stack, sometimes it is necessary to ensure that you are making the connection in
+a specific stack in order to avoid a cyclic reference. If there are no other dependencies between stacks then it will not matter in which stack you make
+the connection, but if there are existing dependencies (i.e. stack1 already depends on stack2), then it is important to make the connection in the dependent stack (i.e. stack1).
+
+Whenever you make a `connections` function call, the ingress and egress security group rules will be added to the stack that the calling object exists in.
+So if you are doing something like `peer1.connections.allowFrom(peer2)`, then the security group rules (both ingress and egress) will be created in `peer1`'s Stack.
+
+As an example, if we wanted to allow a connection from a security group in one stack (egress) to a security group in a different stack (ingress),
+we would make the connection like:
+
+**If Stack1 depends on Stack2**
+```ts
+// Stack 1
+const sg1 = new ec2.SecurityGroup(this, 'SG1', {
+  allowAllOutbound: false, // if this is `true` then no egress rule will be created
+  vpc,
+});
+
+// Stack 2
+const sg2 = new ec2.SecurityGroup(this, 'SG2', {
+  allowAllOutbound: false, // if this is `true` then no egress rule will be created
+  vpc,
+});
+
+
+// `connections.allowTo` on `sg1` since we want the
+// rules to be created in Stack1
+sg1.connections.allowTo(sg2, ec2.Port.tcp(3333));
+```
+
+In this case both the Ingress Rule for `sg2` and the Egress Rule for `sg1` will both be created
+in `Stack 1` which avoids the cyclic reference.
+
+
+**If Stack2 depends on Stack1**
+```ts
+// Stack 1
+const sg1 = new ec2.SecurityGroup(this, 'SG1', {
+  allowAllOutbound: false, // if this is `true` then no egress rule will be created
+  vpc,
+});
+
+// Stack 2
+const sg2 = new ec2.SecurityGroup(this, 'SG2', {
+  allowAllOutbound: false, // if this is `true` then no egress rule will be created
+  vpc,
+});
+
+
+// `connections.allowFrom` on `sg2` since we want the
+// rules to be created in Stack2
+sg2.connections.allowFrom(sg1, ec2.Port.tcp(3333));
+```
+
+In this case both the Ingress Rule for `sg2` and the Egress Rule for `sg1` will both be created
+in `Stack 2` which avoids the cyclic reference.
+
 ## Machine Images (AMIs)
 
 AMIs control the OS that gets launched when you start your EC2 instance. The EC2
