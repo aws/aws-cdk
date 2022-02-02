@@ -9,7 +9,7 @@ WORKDIR /tmp
 #
 
 RUN yum update -y \
-    && yum install -y zip unzip wget tar gzip
+    && yum install -y zip unzip wget tar gzip python3
 
 #
 # aws cli
@@ -26,6 +26,13 @@ RUN rm -rf \
     /opt/awscli/pip* \
     /opt/awscli/setuptools* \
     /opt/awscli/awscli/examples
+
+#
+# Test that the CLI works
+#
+
+RUN yum install -y groff
+RUN /opt/awscli/aws help
 
 #
 # create the bundle
