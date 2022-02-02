@@ -60,7 +60,7 @@ def handler(event, context):
             # backwards compatibility - if "SourceMarkers" is not specified,
             # assume all sources have an empty market map
             if source_markers is None:
-                source_markers = [json.dumps({}) for i in range(len(source_bucket_names))]
+                source_markers = [{} for i in range(len(source_bucket_names))]
 
             default_distribution_path = dest_bucket_prefix
             if not default_distribution_path.endswith("/"):
