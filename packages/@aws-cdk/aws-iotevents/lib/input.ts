@@ -4,11 +4,11 @@ import { Construct } from 'constructs';
 import { CfnInput } from './iotevents.generated';
 
 /**
- * Represents an AWS IoT Events input
+ * Represents an AWS IoT Events input.
  */
 export interface IInput extends IResource {
   /**
-   * The name of the input
+   * The name of the input.
    *
    * @attribute
    */
@@ -51,18 +51,16 @@ abstract class InputBase extends Resource implements IInput {
       grantee,
       actions,
       resourceArns: [this.inputArn],
-      scope: this,
     });
   }
 }
 
-
 /**
- * Properties for defining an AWS IoT Events input
+ * Properties for defining an AWS IoT Events input.
  */
 export interface InputProps {
   /**
-   * The name of the input
+   * The name of the input.
    *
    * @default - CloudFormation will generate a unique name of the input
    */
@@ -83,7 +81,7 @@ export interface InputProps {
  */
 export class Input extends InputBase {
   /**
-   * Import an existing input
+   * Import an existing input.
    */
   public static fromInputName(scope: Construct, id: string, inputName: string): IInput {
     return new class Import extends InputBase {

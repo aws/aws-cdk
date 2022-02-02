@@ -105,7 +105,6 @@ test('cannot be created with an empty array of attributeJsonPaths', () => {
   }).toThrow('attributeJsonPaths property cannot be empty');
 });
 
-
 test('can grant the permission to put message', () => {
   const role = iam.Role.fromRoleArn(stack, 'MyRole', 'arn:aws:iam::account-id:role/role-name');
   const input = new iotevents.Input(stack, 'MyInput', {
