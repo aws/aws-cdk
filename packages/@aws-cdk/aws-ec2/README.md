@@ -615,7 +615,7 @@ we would make the connection like:
 
 **If Stack1 depends on Stack2**
 
-```ts
+```ts fixture=with-vpc
 // Stack 1
 const sg1 = new ec2.SecurityGroup(this, 'SG1', {
   allowAllOutbound: false, // if this is `true` then no egress rule will be created
@@ -640,7 +640,7 @@ in `Stack 1` which avoids the cyclic reference.
 
 **If Stack2 depends on Stack1**
 
-```ts
+```ts fixture=with-vpc
 // Stack 1
 const sg1 = new ec2.SecurityGroup(this, 'SG1', {
   allowAllOutbound: false, // if this is `true` then no egress rule will be created
