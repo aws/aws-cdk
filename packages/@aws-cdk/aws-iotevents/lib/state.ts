@@ -28,7 +28,7 @@ export class State {
    */
   public readonly stateName: string;
 
-  private transitionEvents: ITransitionEvent[] = []
+  private readonly transitionEvents: ITransitionEvent[] = [];
 
   constructor(private readonly props: StateProps) {
     this.stateName = props.stateName;
