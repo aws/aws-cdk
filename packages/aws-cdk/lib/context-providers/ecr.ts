@@ -15,7 +15,7 @@ export class ECRContextProviderPlugin implements ContextProviderPlugin {
     const region: string = args.region!;
 
     const options = { assumeRoleArn: args.lookupRoleArn };
-    const ecr = (await this.aws.forEnvironment(cxapi.EnvironmentUtils.make(account, region), Mode.ForReading, options)).ecr();
+    const ecr = (await this.aws.forEnvironment(cxapi.EnvironmentUtils.make(account, region), Mode.ForReading, options)).sdk.ecr();
 
     const repositoryName = args.repositoryName;
     debug(`Describing repository ${args.account}:${args.region}:${repositoryName}`);
