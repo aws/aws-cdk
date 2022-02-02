@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.142.0](https://github.com/aws/aws-cdk/compare/v1.141.0...v1.142.0) (2022-01-28)
+
+
+### Features
+
+* **cfnspec:** cloudformation spec v53.1.0 ([#18680](https://github.com/aws/aws-cdk/issues/18680)) ([f385059](https://github.com/aws/aws-cdk/commit/f38505911a3e140a9cb6b269bdf22abe9803c515))
+* **cloudfront-origins:** extend `readTimeout` maximum value for `HttpOriginProps` ([#18697](https://github.com/aws/aws-cdk/issues/18697)) ([e64de67](https://github.com/aws/aws-cdk/commit/e64de677cdfc014f68e92b204f4728e60a8bb111)), closes [#18628](https://github.com/aws/aws-cdk/issues/18628)
+* **eks:** cluster logging ([#18112](https://github.com/aws/aws-cdk/issues/18112)) ([872277b](https://github.com/aws/aws-cdk/commit/872277b9e853dbf5f2cac84b5afb6d26e0ed5659)), closes [#4159](https://github.com/aws/aws-cdk/issues/4159)
+* **iotevents:** allow setting description, evaluation method and key of DetectorModel ([#18644](https://github.com/aws/aws-cdk/issues/18644)) ([2eeaebc](https://github.com/aws/aws-cdk/commit/2eeaebc3cdc9c5c7ef3fa312b3d1abca265dcbb6))
+* **lambda-python:** support setting environment vars for bundling ([#18635](https://github.com/aws/aws-cdk/issues/18635)) ([30e2233](https://github.com/aws/aws-cdk/commit/30e223333fef0b0d7f12287dab170a34e092d7fa))
+
+
+### Bug Fixes
+
+* **aws-lambda-nodejs:** pre compilation with tsc is not being run ([#18062](https://github.com/aws/aws-cdk/issues/18062)) ([7ac7221](https://github.com/aws/aws-cdk/commit/7ac7221aff3c612ab80e7812c371b11c56e5db0a)), closes [#18002](https://github.com/aws/aws-cdk/issues/18002)
+* **pipelines:** undeployable due to dependency cycle ([#18686](https://github.com/aws/aws-cdk/issues/18686)) ([009d689](https://github.com/aws/aws-cdk/commit/009d68912267de9dcf4136a7d80a652a891b7bb9)), closes [#18492](https://github.com/aws/aws-cdk/issues/18492) [#18673](https://github.com/aws/aws-cdk/issues/18673)
+
 ## [1.141.0](https://github.com/aws/aws-cdk/compare/v1.140.0...v1.141.0) (2022-01-27)
 
 
