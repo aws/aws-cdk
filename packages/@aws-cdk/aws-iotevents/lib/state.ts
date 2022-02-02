@@ -82,7 +82,7 @@ export class State {
   public transitionTo(targetState: State, options: TransitionOptions) {
     const alreadyAdded = this.transitionEvents.some((event) => event.nextState === targetState);
     if (alreadyAdded) {
-      throw new Error(`A state cannot have transitions that transit to duprecated target state, target state name: ${targetState.stateName}`);
+      throw new Error(`State '${this.stateName}' already has a transition defined to '${targetState.stateName}'`);
     }
 
     this.transitionEvents.push({
