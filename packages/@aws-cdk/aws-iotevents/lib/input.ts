@@ -15,7 +15,7 @@ export interface IInput extends IResource {
   readonly inputName: string;
 
   /**
-   * The ARN of the input
+   * The ARN of the input.
    *
    * @attribute
    */
