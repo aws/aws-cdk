@@ -10,8 +10,8 @@ class TestStack extends cdk.Stack {
       attributeJsonPaths: ['payload.deviceId', 'payload.temperature'],
     });
 
-    const firstState = new iotevents.State({
-      stateName: 'firstState',
+    const onlineState = new iotevents.State({
+      stateName: 'online',
       onEnter: [{
         eventName: 'test-event',
         // meaning `condition: 'currentInput("test_input") && $input.test_input.payload.temperature == 31.5'`
@@ -24,19 +24,19 @@ class TestStack extends cdk.Stack {
         ),
       }],
     });
-    const secondState = new iotevents.State({
-      stateName: 'secondState',
+    const offlineState = new iotevents.State({
+      stateName: 'offline',
     });
 
     // 1st => 2nd
-    firstState.transitionTo(secondState, {
+    onlineState.transitionTo(offlineState, {
       condition: iotevents.Expression.eq(
         iotevents.Expression.inputAttribute(input, 'payload.temperature'),
         iotevents.Expression.fromString('12'),
       ),
     });
     // 2st => 1st
-    secondState.transitionTo(firstState, {
+    offlineState.transitionTo(onlineState, {
       condition: iotevents.Expression.eq(
         iotevents.Expression.inputAttribute(input, 'payload.temperature'),
         iotevents.Expression.fromString('21'),
@@ -48,7 +48,7 @@ class TestStack extends cdk.Stack {
       description: 'test-detector-model-description',
       evaluationMethod: iotevents.EventEvaluation.SERIAL,
       detectorKey: 'payload.deviceId',
-      initialState: firstState,
+      initialState: onlineState,
     });
   }
 }

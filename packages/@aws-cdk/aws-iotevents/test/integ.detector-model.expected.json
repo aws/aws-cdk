@@ -37,7 +37,7 @@
       "Type": "AWS::IoTEvents::DetectorModel",
       "Properties": {
         "DetectorModelDefinition": {
-          "InitialStateName": "firstState",
+          "InitialStateName": "online",
           "States": [
             {
               "OnEnter": {
@@ -78,12 +78,12 @@
                         ]
                       ]
                     },
-                    "EventName": "firstState_to_secondState",
-                    "NextState": "secondState"
+                    "EventName": "online_to_offline",
+                    "NextState": "offline"
                   }
                 ]
               },
-              "StateName": "firstState"
+              "StateName": "online"
             },
             {
               "OnInput": {
@@ -101,12 +101,12 @@
                         ]
                       ]
                     },
-                    "EventName": "secondState_to_firstState",
-                    "NextState": "firstState"
+                    "EventName": "offline_to_online",
+                    "NextState": "online"
                   }
                 ]
               },
-              "StateName": "secondState"
+              "StateName": "offline"
             }
           ]
         },
