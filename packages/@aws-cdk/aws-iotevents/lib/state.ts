@@ -107,8 +107,8 @@ export class State {
 
     return [
       this.toStateJson(),
-      ...this.transitionEvents.flatMap(({ nextState }) => {
-        return nextState._collectStateJsons(collectedStates);
+      ...this.transitionEvents.flatMap(transitionEvent => {
+        return transitionEvent.nextState._collectStateJsons(collectedStates);
       }),
     ];
   }
