@@ -32,7 +32,8 @@
   },
   "resolutions": {
     "colors": "1.4.0",
-    "string-width": "^4.2.3"
+    "string-width": "^4.2.3",
+    "markdown-it": "^12.3.2"
   },
   "repository": {
     "type": "git",

@@ -2522,6 +2522,31 @@
         "Object": "The object specified in the Zendesk flow source."
       }
     },
+    "AWS::AppIntegrations::DataIntegration": {
+      "attributes": {
+        "DataIntegrationArn": "The Amazon Resource Name (ARN) for the DataIntegration.",
+        "Id": "A unique identifier.",
+        "Ref": "`Ref` returns the DataIntegration name. For example:\n\n`{ \"Ref\": \"myDataIntegrationName\" }`"
+      },
+      "description": "Creates and persists a DataIntegration resource.",
+      "properties": {
+        "Description": "A description of the DataIntegration.",
+        "KmsKey": "The KMS key for the DataIntegration.",
+        "Name": "The name of the DataIntegration.",
+        "ScheduleConfig": "The name of the data and how often it should be pulled from the source.",
+        "SourceURI": "The URI of the data source.",
+        "Tags": "An array of key-value pairs to apply to this resource.\n\nFor more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) ."
+      }
+    },
+    "AWS::AppIntegrations::DataIntegration.ScheduleConfig": {
+      "attributes": {},
+      "description": "The name of the data and how often it should be pulled from the source.",
+      "properties": {
+        "FirstExecutionFrom": "The start date for objects to import in the first flow run as an Unix/epoch timestamp in milliseconds or in ISO-8601 format.",
+        "Object": "The name of the object to pull from the data source.",
+        "ScheduleExpression": "How often the data should be pulled from data source."
+      }
+    },
     "AWS::AppIntegrations::EventIntegration": {
       "attributes": {
         "Associations": "The association status of the event integration, returned as an array of EventIntegrationAssociation objects.",
@@ -5529,7 +5554,7 @@
         "Ref": "`Ref` returns `BackupPlanId` .",
         "VersionId": "Unique, randomly generated, Unicode, UTF-8 encoded strings that are at most 1,024 bytes long. Version Ids cannot be edited."
       },
-      "description": "Contains an optional backup plan display name and an array of `BackupRule` objects, each of which specifies a backup rule. Each rule in a backup plan is a separate scheduled task and can back up a different selection of AWS resources.",
+      "description": "Contains an optional backup plan display name and an array of `BackupRule` objects, each of which specifies a backup rule. Each rule in a backup plan is a separate scheduled task and can back up a different selection of AWS resources.\n\nFor a sample AWS CloudFormation template, see the [AWS Backup Developer Guide](https://docs.aws.amazon.com/aws-backup/latest/devguide/assigning-resources.html#assigning-resources-cfn) .",
       "properties": {
         "BackupPlan": "Uniquely identifies the backup plan to be associated with the selection of resources.",
         "BackupPlanTags": "To help organize your resources, you can assign your own metadata to the resources that you create. Each tag is a key-value pair. The specified tags are assigned to all backups created with this plan."
@@ -8892,7 +8917,7 @@
       "attributes": {
         "Ref": "`Ref` returns the OrganizationConfigRuleName."
       },
-      "description": "An organization config rule that has information about config rules that AWS Config creates in member accounts.Only a master account and a delegated administrator can create or update an organization config rule.\n\n`OrganizationConfigRule` resource enables organization service access through `EnableAWSServiceAccess` action and creates a service linked role in the master account of your organization. The service linked role is created only when the role does not exist in the master account. AWS Config verifies the existence of role with `GetRole` action.\n\nWhen creating custom organization config rules using a centralized Lambda function, you will need to allow Lambda permissions to sub-accounts and you will need to create an IAM role will to pass to the Lambda function. For more information, see [How to Centrally Manage AWS Config Rules across Multiple AWS Accounts](https://docs.aws.amazon.com/devops/how-to-centrally-manage-aws-config-rules-across-multiple-aws-accounts/) .",
+      "description": "An organization config rule that has information about config rules that AWS Config creates in member accounts. Only a master account and a delegated administrator can create or update an organization config rule.\n\n`OrganizationConfigRule` resource enables organization service access through `EnableAWSServiceAccess` action and creates a service linked role in the master account of your organization. The service linked role is created only when the role does not exist in the master account. AWS Config verifies the existence of role with `GetRole` action.\n\nWhen creating custom organization config rules using a centralized Lambda function, you will need to allow Lambda permissions to sub-accounts and you will need to create an IAM role will to pass to the Lambda function. For more information, see [How to Centrally Manage AWS Config Rules across Multiple AWS Accounts](https://docs.aws.amazon.com/devops/how-to-centrally-manage-aws-config-rules-across-multiple-aws-accounts/) .",
       "properties": {
         "ExcludedAccounts": "A comma-separated list of accounts excluded from organization config rule.",
         "OrganizationConfigRuleName": "The name that you assign to organization config rule.",
@@ -10584,7 +10609,7 @@
         "StreamArn": "The ARN of the DynamoDB stream, such as `arn:aws:dynamodb:us-east-1:123456789012:table/testddbstack-myDynamoDBTable-012A1SL7SMP5Q/stream/2015-11-30T20:10:00.000` . The `StreamArn` returned is that of the replica in the region the stack is deployed to.\n\n> You must specify the `StreamSpecification` property to use this attribute.",
         "TableId": "Unique identifier for the table, such as `a123b456-01ab-23cd-123a-111222aaabbb` . The `TableId` returned is that of the replica in the region the stack is deployed to."
       },
-      "description": "The `AWS::DynamoDB::GlobalTable` resource enables you to create and manage a Version 2019.11.21 global table. This resource cannot be used to create or manage a Version 2017.11.29 global table.\n\n> You cannot convert a resource of type `AWS::DynamoDB::Table` into a resource of type `AWS::DynamoDB::GlobalTable` by changing its type in your template. *Doing so might result in the deletion of your DynamoDB table.* \n\nYou should be aware of the following behaviors when working with DynamoDB global tables.\n\n- The IAM Principal executing the stack operation must have the permissions listed below in all regions where you plan to have a global table replica. The IAM Principal's permissions should not have restrictions based on IP source address. Some global tables operations (for example, adding a replica) are asynchronous, and require that the IAM Principal is valid until they complete. You should not delete the Principal (user or IAM role) until CloudFormation has finished updating your stack.\n\n- `dynamodb:CreateTable`\n- `dynamodb:UpdateTable`\n- `dynamodb:DeleteTable`\n- `dynamodb:DescribeContinuousBackups`\n- `dynamodb:DescribeContributorInsights`\n- `dynamodb:DescribeTable`\n- `dynamodb:DescribeTableReplicaAutoScaling`\n- `dynamodb:DescribeTimeToLive`\n- `dynamodb:ListTables`\n- `dynamodb:UpdateTimeToLive`\n- `dynamodb:UpdateContributorInsights`\n- `dynamodb:UpdateContinuousBackups`\n- `dynamodb:ListTagsOfResource`\n- `dynamodb:TagResource`\n- `dynamodb:UntagResource`\n- `dynamodb:BatchWriteItem`\n- `dynamodb:CreateTableReplica`\n- `dynamodb:DeleteItem`\n- `dynamodb:DeleteTableReplica`\n- `dynamodb:DisableKinesisStreamingDestination`\n- `dynamodb:EnableKinesisStreamingDestination`\n- `dynamodb:GetItem`\n- `dynamodb:PutItem`\n- `dynamodb:Query`\n- `dynamodb:Scan`\n- `dynamodb:UpdateItem`\n- `dynamodb:DescribeTableReplicaAutoScaling`\n- `dynamodb:UpdateTableReplicaAutoScaling`\n- `iam:CreateServiceLinkedRole`\n- `kms:CreateGrant`\n- `kms:DescribeKey`\n- `application-autoscaling:DeleteScalingPolicy`\n- `application-autoscaling:DeleteScheduledAction`\n- `application-autoscaling:DeregisterScalableTarget`\n- `application-autoscaling:DescribeScalingPolicies`\n- `application-autoscaling:DescribeScalableTargets`\n- `application-autoscaling:PutScalingPolicy`\n- `application-autoscaling:PutScheduledAction`\n- `application-autoscaling:RegisterScalableTarget`\n- When using provisioned billing mode, CloudFormation will create an auto scaling policy on each of your replicas to control their write capacities. You must configure this policy using the `WriteProvisionedThroughputSettings` property. CloudFormation will ensure that all replicas have the same write capacity auto scaling property. You cannot directly specify a value for write capacity for a global table.\n- If your table uses provisioned capacity, you must configure auto scaling directly in the `AWS::DynamoDB::GlobalTable` resource. You should not configure additional auto scaling policies on any of the table replicas or global secondary indexes, either via API or via `AWS::ApplicationAutoScaling::ScalableTarget` or `AWS::ApplicationAutoScaling::ScalingPolicy` . Doing so might result in unexpected behavior and is unsupported.\n- In AWS CloudFormation , each global table is controlled by a single stack, in a single region, regardless of the number of replicas. When you deploy your template, CloudFormation will create/update all replicas as part of a single stack operation. You should not deploy the same `AWS::DynamoDB::GlobalTable` resource in multiple regions. Doing so will result in errors, and is unsupported. If you deploy your application template in multiple regions, you can use conditions to only create the resource in a single region. Alternatively, you can choose to define your `AWS::DynamoDB::GlobalTable` resources in a stack separate from your application stack, and make sure it is only deployed to a single region.",
+      "description": "The `AWS::DynamoDB::GlobalTable` resource enables you to create and manage a Version 2019.11.21 global table. This resource cannot be used to create or manage a Version 2017.11.29 global table.\n\n> You cannot convert a resource of type `AWS::DynamoDB::Table` into a resource of type `AWS::DynamoDB::GlobalTable` by changing its type in your template. *Doing so might result in the deletion of your DynamoDB table.*\n> \n> You can instead use the GlobalTable resource to create a new table in a single Region. This will be billed the same as a single Region table. If you later update the stack to add other Regions then Global Tables pricing will apply. \n\nYou should be aware of the following behaviors when working with DynamoDB global tables.\n\n- The IAM Principal executing the stack operation must have the permissions listed below in all regions where you plan to have a global table replica. The IAM Principal's permissions should not have restrictions based on IP source address. Some global tables operations (for example, adding a replica) are asynchronous, and require that the IAM Principal is valid until they complete. You should not delete the Principal (user or IAM role) until CloudFormation has finished updating your stack.\n\n- `dynamodb:CreateTable`\n- `dynamodb:UpdateTable`\n- `dynamodb:DeleteTable`\n- `dynamodb:DescribeContinuousBackups`\n- `dynamodb:DescribeContributorInsights`\n- `dynamodb:DescribeTable`\n- `dynamodb:DescribeTableReplicaAutoScaling`\n- `dynamodb:DescribeTimeToLive`\n- `dynamodb:ListTables`\n- `dynamodb:UpdateTimeToLive`\n- `dynamodb:UpdateContributorInsights`\n- `dynamodb:UpdateContinuousBackups`\n- `dynamodb:ListTagsOfResource`\n- `dynamodb:TagResource`\n- `dynamodb:UntagResource`\n- `dynamodb:BatchWriteItem`\n- `dynamodb:CreateTableReplica`\n- `dynamodb:DeleteItem`\n- `dynamodb:DeleteTableReplica`\n- `dynamodb:DisableKinesisStreamingDestination`\n- `dynamodb:EnableKinesisStreamingDestination`\n- `dynamodb:GetItem`\n- `dynamodb:PutItem`\n- `dynamodb:Query`\n- `dynamodb:Scan`\n- `dynamodb:UpdateItem`\n- `dynamodb:DescribeTableReplicaAutoScaling`\n- `dynamodb:UpdateTableReplicaAutoScaling`\n- `iam:CreateServiceLinkedRole`\n- `kms:CreateGrant`\n- `kms:DescribeKey`\n- `application-autoscaling:DeleteScalingPolicy`\n- `application-autoscaling:DeleteScheduledAction`\n- `application-autoscaling:DeregisterScalableTarget`\n- `application-autoscaling:DescribeScalingPolicies`\n- `application-autoscaling:DescribeScalableTargets`\n- `application-autoscaling:PutScalingPolicy`\n- `application-autoscaling:PutScheduledAction`\n- `application-autoscaling:RegisterScalableTarget`\n- When using provisioned billing mode, CloudFormation will create an auto scaling policy on each of your replicas to control their write capacities. You must configure this policy using the `WriteProvisionedThroughputSettings` property. CloudFormation will ensure that all replicas have the same write capacity auto scaling property. You cannot directly specify a value for write capacity for a global table.\n- If your table uses provisioned capacity, you must configure auto scaling directly in the `AWS::DynamoDB::GlobalTable` resource. You should not configure additional auto scaling policies on any of the table replicas or global secondary indexes, either via API or via `AWS::ApplicationAutoScaling::ScalableTarget` or `AWS::ApplicationAutoScaling::ScalingPolicy` . Doing so might result in unexpected behavior and is unsupported.\n- In AWS CloudFormation , each global table is controlled by a single stack, in a single region, regardless of the number of replicas. When you deploy your template, CloudFormation will create/update all replicas as part of a single stack operation. You should not deploy the same `AWS::DynamoDB::GlobalTable` resource in multiple regions. Doing so will result in errors, and is unsupported. If you deploy your application template in multiple regions, you can use conditions to only create the resource in a single region. Alternatively, you can choose to define your `AWS::DynamoDB::GlobalTable` resources in a stack separate from your application stack, and make sure it is only deployed to a single region.",
       "properties": {
         "AttributeDefinitions": "A list of attributes that describe the key schema for the global table and indexes.",
         "BillingMode": "Specifies how you are charged for read and write throughput and how you manage capacity. Valid values are:\n\n- `PAY_PER_REQUEST`\n- `PROVISIONED`\n\nAll replicas in your global table will have the same billing mode. If you use `PROVISIONED` billing mode, you must provide an auto scaling configuration via the `WriteProvisionedThroughputSettings` property. The default value of this property is `PROVISIONED` .",
@@ -10595,7 +10620,7 @@
         "SSESpecification": "Specifies the settings to enable server-side encryption. These settings will be applied to all replicas. If you plan to use customer-managed KMS keys, you must provide a key for each replica using the `ReplicaSpecification.ReplicaSSESpecification` property.",
         "StreamSpecification": "Specifies the streams settings on your global table. You must provide a value for this property if your global table contains more than one replica. You can only change the streams settings if your global table has only one replica.",
         "TableName": "A name for the global table. If you don't specify a name, AWS CloudFormation generates a unique ID and uses that ID as the table name. For more information, see [Name type](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-name.html) .\n\n> If you specify a name, you cannot perform updates that require replacement of this resource. You can perform updates that require no or some interruption. If you must replace the resource, specify a new name.",
-        "TimeToLiveSpecification": "Specifies the Time to Live (TTL) settings for the table. This setting will be applied to all replicas.\n\n> For detailed information about the TTL feature of DynamoDB, see [Expiring Items with Time to Live](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/TTL.html) in the Amazon DynamoDB Developer Guide.",
+        "TimeToLiveSpecification": "Specifies the time to live (TTL) settings for the table. This setting will be applied to all replicas.",
         "WriteProvisionedThroughputSettings": "Specifies an auto scaling policy for write capacity. This policy will be applied to all replicas. This setting must be specified if `BillingMode` is set to `PROVISIONED` ."
       }
     },
@@ -10765,7 +10790,7 @@
         "TableClass": "The table class of the new table. Valid values are `STANDARD` and `STANDARD_INFREQUENT_ACCESS` .",
         "TableName": "A name for the table. If you don't specify a name, AWS CloudFormation generates a unique physical ID and uses that ID for the table name. For more information, see [Name Type](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-name.html) .\n\n> If you specify a name, you cannot perform updates that require replacement of this resource. You can perform updates that require no or some interruption. If you must replace the resource, specify a new name.",
         "Tags": "An array of key-value pairs to apply to this resource.\n\nFor more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) .",
-        "TimeToLiveSpecification": "Specifies the Time to Live (TTL) settings for the table.\n\n> For detailed information about the TTL feature of DynamoDB, see [Expiring Items with Time to Live](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/TTL.html) in the Amazon DynamoDB Developer Guide."
+        "TimeToLiveSpecification": "Specifies the Time to Live (TTL) settings for the table.\n\n> For detailed information about the limits in DynamoDB, see [Limits in Amazon DynamoDB](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Limits.html) in the Amazon DynamoDB Developer Guide."
       }
     },
     "AWS::DynamoDB::Table.AttributeDefinition": {
@@ -10835,7 +10860,7 @@
     },
     "AWS::DynamoDB::Table.ProvisionedThroughput": {
       "attributes": {},
-      "description": "Throughput for the specified table, which consists of values for `ReadCapacityUnits` and `WriteCapacityUnits` .",
+      "description": "Throughput for the specified table, which consists of values for `ReadCapacityUnits` and `WriteCapacityUnits` . For more information about the contents of a provisioned throughput structure, see [Amazon DynamoDB Table ProvisionedThroughput](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-provisionedthroughput.html) .",
       "properties": {
         "ReadCapacityUnits": "The maximum number of strongly consistent reads consumed per second before DynamoDB returns a `ThrottlingException` . For more information, see [Specifying Read and Write Requirements](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/WorkingWithTables.html#ProvisionedThroughput) in the *Amazon DynamoDB Developer Guide* .\n\nIf read/write capacity mode is `PAY_PER_REQUEST` the value is set to 0.",
         "WriteCapacityUnits": "The maximum number of writes consumed per second before DynamoDB returns a `ThrottlingException` . For more information, see [Specifying Read and Write Requirements](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/WorkingWithTables.html#ProvisionedThroughput) in the *Amazon DynamoDB Developer Guide* .\n\nIf read/write capacity mode is `PAY_PER_REQUEST` the value is set to 0."
@@ -11492,6 +11517,7 @@
         "Arn": "The ARN of the scope.",
         "IpamArn": "The ARN of an IPAM.",
         "IpamScopeId": "The ID of an IPAM scope.",
+        "IpamScopeType": "The type of the scope.",
         "IsDefault": "Defines if the scope is the default scope or not.",
         "PoolCount": "The number of pools in a scope.",
         "Ref": "`Ref` returns the IPAM scope ID."
@@ -11500,7 +11526,6 @@
       "properties": {
         "Description": "The description of the scope.",
         "IpamId": "The ID of the IPAM for which you're creating this scope.",
-        "IpamScopeType": "The type of the scope.",
         "Tags": "The key/value combination of a tag assigned to the resource. Use the tag key in the filter name and the tag value as the filter value. For example, to find all resources that have a tag with the key `Owner` and the value `TeamA` , specify `tag:Owner` for the filter name and `TeamA` for the filter value."
       }
     },
@@ -11658,7 +11683,6 @@
       "attributes": {},
       "description": "Specifies a network interface that is to be attached to an instance.\n\nYou can create a network interface when launching an instance. For an example, see the [AWS::EC2::Instance examples](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-instance.html#aws-properties-ec2-instance--examples--Automatically_assign_a_public_IP_address) .\n\nAlternatively, you can attach an existing network interface when launching an instance. For an example, see the [AWS::EC2:NetworkInterface examples](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-network-interface.html#aws-resource-ec2-network-interface--examples--Basic_network_interface) .",
       "properties": {
-        "AssociateCarrierIpAddress": "",
         "AssociatePublicIpAddress": "Indicates whether to assign a public IPv4 address to an instance. Applies only if creating a network interface when launching an instance. The network interface must be the primary network interface. If launching into a default subnet, the default value is `true` .",
         "DeleteOnTermination": "Indicates whether the network interface is deleted when the instance is terminated. Applies only if creating a network interface when launching an instance.",
         "Description": "The description of the network interface. Applies only if creating a network interface when launching an instance.",
@@ -13282,8 +13306,6 @@
         "EnableDnsHostnames": "Indicates whether the instances launched in the VPC get DNS hostnames. If enabled, instances in the VPC get DNS hostnames; otherwise, they do not. Disabled by default for nondefault VPCs. For more information, see [DNS attributes in your VPC](https://docs.aws.amazon.com/vpc/latest/userguide/vpc-dns.html#vpc-dns-support) .\n\nYou can only enable DNS hostnames if you've enabled DNS support.",
         "EnableDnsSupport": "Indicates whether the DNS resolution is supported for the VPC. If enabled, queries to the Amazon provided DNS server at the 169.254.169.253 IP address, or the reserved IP address at the base of the VPC network range \"plus two\" succeed. If disabled, the Amazon provided DNS service in the VPC that resolves public DNS hostnames to IP addresses is not enabled. Enabled by default. For more information, see [DNS attributes in your VPC](https://docs.aws.amazon.com/vpc/latest/userguide/vpc-dns.html#vpc-dns-support) .",
         "InstanceTenancy": "The allowed tenancy of instances launched into the VPC.\n\n- `\"default\"` : An instance launched into the VPC runs on shared hardware by default, unless you explicitly specify a different tenancy during instance launch.\n- `\"dedicated\"` : An instance launched into the VPC is a Dedicated Instance by default, unless you explicitly specify a tenancy of host during instance launch. You cannot specify a tenancy of default during instance launch.\n\nUpdating `InstanceTenancy` requires no replacement only if you are updating its value from `\"dedicated\"` to `\"default\"` . Updating `InstanceTenancy` from `\"default\"` to `\"dedicated\"` requires replacement.",
-        "Ipv4IpamPoolId": "The ID of an IPv4 IPAM pool you want to use for allocating this VPC's CIDR. For more information, see [What is IPAM?](https://docs.aws.amazon.com//vpc/latest/ipam/what-is-it-ipam.html) in the *Amazon VPC IPAM User Guide* .",
-        "Ipv4NetmaskLength": "The netmask length of the IPv4 CIDR you want to allocate to this VPC from an Amazon VPC IP Address Manager (IPAM) pool. For more information about IPAM, see [What is IPAM?](https://docs.aws.amazon.com//vpc/latest/ipam/what-is-it-ipam.html) in the *Amazon VPC IPAM User Guide* .",
         "Tags": "The tags for the VPC."
       }
     },
@@ -13295,11 +13317,7 @@
       "properties": {
         "AmazonProvidedIpv6CidrBlock": "Requests an Amazon-provided IPv6 CIDR block with a /56 prefix length for the VPC. You cannot specify the range of IPv6 addresses, or the size of the CIDR block.",
         "CidrBlock": "An IPv4 CIDR block to associate with the VPC.",
-        "Ipv4IpamPoolId": "Associate a CIDR allocated from an IPv4 IPAM pool to a VPC. For more information about Amazon VPC IP Address Manager (IPAM), see [What is IPAM?](https://docs.aws.amazon.com//vpc/latest/ipam/what-is-it-ipam.html) in the *Amazon VPC IPAM User Guide* .",
-        "Ipv4NetmaskLength": "The netmask length of the IPv4 CIDR you would like to associate from an Amazon VPC IP Address Manager (IPAM) pool. For more information about IPAM, see [What is IPAM?](https://docs.aws.amazon.com//vpc/latest/ipam/what-is-it-ipam.html) in the *Amazon VPC IPAM User Guide* .",
         "Ipv6CidrBlock": "An IPv6 CIDR block from the IPv6 address pool. You must also specify `Ipv6Pool` in the request.\n\nTo let Amazon choose the IPv6 CIDR block for you, omit this parameter.",
-        "Ipv6IpamPoolId": "Associates a CIDR allocated from an IPv6 IPAM pool to a VPC. For more information about Amazon VPC IP Address Manager (IPAM), see [What is IPAM?](https://docs.aws.amazon.com//vpc/latest/ipam/what-is-it-ipam.html) in the *Amazon VPC IPAM User Guide* .",
-        "Ipv6NetmaskLength": "The netmask length of the IPv6 CIDR you would like to associate from an Amazon VPC IP Address Manager (IPAM) pool. For more information about IPAM, see [What is IPAM?](https://docs.aws.amazon.com//vpc/latest/ipam/what-is-it-ipam.html) in the *Amazon VPC IPAM User Guide* .",
         "Ipv6Pool": "The ID of an IPv6 address pool from which to allocate the IPv6 CIDR block.",
         "VpcId": "The ID of the VPC."
       }
@@ -16596,7 +16614,7 @@
         "EventPattern": "The EventBridge event pattern that defines how the metric is recorded.\n\nFor more information about EventBridge event patterns, see [Amazon EventBridge event patterns](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-event-patterns.html) .",
         "MetricName": "A name for the metric. It can include up to 255 characters.",
         "UnitLabel": "A label for the units that the metric is measuring.",
-        "ValueKey": "A label for the units that the metric is measuring."
+        "ValueKey": "The JSON path to reference the numerical metric value in the event."
       }
     },
     "AWS::Evidently::Experiment.OnlineAbConfigObject": {
@@ -19590,9 +19608,24 @@
     },
     "AWS::GuardDuty::Detector.CFNDataSourceConfigurations": {
       "attributes": {},
-      "description": "Describes whether S3 data event logs will be enabled as a data source when the detector is created.",
+      "description": "Describes whether S3 data event logs or Kubernetes audit logs will be enabled as a data source when the detector is created.",
       "properties": {
+        "Kubernetes": "Describes which Kuberentes data sources are enabled for a detector.",
         "S3Logs": "Describes whether S3 data event logs are enabled as a data source."
+      }
+    },
+    "AWS::GuardDuty::Detector.CFNKubernetesAuditLogsConfiguration": {
+      "attributes": {},
+      "description": "Describes which optional data sources are enabled for a detector.",
+      "properties": {
+        "Enable": "Describes whether Kubernetes audit logs are enabled as a data source for the detector."
+      }
+    },
+    "AWS::GuardDuty::Detector.CFNKubernetesConfiguration": {
+      "attributes": {},
+      "description": "Describes which Kubernetes protection data sources are enabled for the detector.",
+      "properties": {
+        "AuditLogs": "Describes whether Kubernetes audit logs are enabled as a data source for the detector."
       }
     },
     "AWS::GuardDuty::Detector.CFNS3LogsConfiguration": {
@@ -19613,7 +19646,7 @@
         "DetectorId": "The ID of the detector belonging to the GuardDuty account that you want to create a filter for.",
         "FindingCriteria": "Represents the criteria to be used in the filter for querying findings.",
         "Name": "The name of the filter. Minimum length of 3. Maximum length of 64. Valid characters include alphanumeric characters, dot (.), underscore (_), and dash (-). Spaces are not allowed.",
-        "Rank": "Specifies the position of the filter in the list of current filters. Also specifies the order in which this filter is applied to the findings.\n\n> By default filters may not be created in the same order as they are ranked. To ensure filters are created in the correct order you can use the optional `DependsOn` attribute with the following syntax: `\"DependsOn\":[ \"ObjectName\" ]` . You can find more information on using this attribute [here](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-attribute-dependson.html) ."
+        "Rank": ""
       }
     },
     "AWS::GuardDuty::Filter.Condition": {
@@ -19970,7 +20003,8 @@
       "properties": {
         "DestinationConfiguration": "A destination configuration contains information about where recorded video will be stored. See the [DestinationConfiguration](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ivs-recordingconfiguration-destinationconfiguration.html) property type for more information.",
         "Name": "Recording-configuration name. The value does not need to be unique.",
-        "Tags": "An array of key-value pairs to apply to this resource.\n\nFor more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) ."
+        "Tags": "An array of key-value pairs to apply to this resource.\n\nFor more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) .",
+        "ThumbnailConfiguration": "A thumbnail configuration enables/disables the recording of thumbnails for a live session and controls the interval at which thumbnails are generated for the live session. See the [ThumbnailConfiguration](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ivs-recordingconfiguration-thunbnailconfiguration.html) property type for more information."
       }
     },
     "AWS::IVS::RecordingConfiguration.DestinationConfiguration": {
@@ -19985,6 +20019,14 @@
       "description": "The S3DestinationConfiguration property type describes an S3 location where recorded videos will be stored.",
       "properties": {
         "BucketName": "Location (S3 bucket name) where recorded videos will be stored."
+      }
+    },
+    "AWS::IVS::RecordingConfiguration.ThumbnailConfiguration": {
+      "attributes": {},
+      "description": "The ThumbnailConfiguration property type describes a configuration of thumbnails for recorded video.",
+      "properties": {
+        "RecordingMode": "Thumbnail recording mode. Valid values:\n\n- `DISABLED` : Use DISABLED to disable the generation of thumbnails for recorded video.\n- `INTERVAL` : Use INTERVAL to enable the generation of thumbnails for recorded video at a time interval controlled by the [TargetIntervalSeconds](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ivs-recordingconfiguration-thumbnailconfiguration.html#cfn-ivs-recordingconfiguration-thumbnailconfiguration-targetintervalseconds) property.\n\n*Default* : `INTERVAL`",
+        "TargetIntervalSeconds": "The targeted thumbnail-generation interval in seconds. This is configurable (and required) only if [RecordingMode](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ivs-recordingconfiguration-thumbnailconfiguration.html#cfn-ivs-recordingconfiguration-thumbnailconfiguration-recordingmode) is `INTERVAL` .\n\n> Setting a value for `TargetIntervalSeconds` does not guarantee that thumbnails are generated at the specified interval. For thumbnails to be generated at the `TargetIntervalSeconds` interval, the `IDR/Keyframe` value for the input video must be less than the `TargetIntervalSeconds` value. See [Amazon IVS Streaming Configuration](https://docs.aws.amazon.com/ivs/latest/userguide/streaming-config.html) for information on setting `IDR/Keyframe` to the recommended value in video-encoder settings. \n\n*Default* : 60\n\n*Valid Range* : Minumum value of 5. Maximum value of 60."
       }
     },
     "AWS::IVS::StreamKey": {
@@ -22697,7 +22739,7 @@
         "KeyId": "The key ID of the KMS key, such as `1234abcd-12ab-34cd-56ef-1234567890ab` .\n\nFor information about the key ID of a KMS key, see [Key ID](https://docs.aws.amazon.com/kms/latest/developerguide/concepts.html#key-id-key-id) in the *AWS Key Management Service Developer Guide* .",
         "Ref": "`Ref` returns the key ID, such as `1234abcd-12ab-34cd-56ef-1234567890ab` ."
       },
-      "description": "The `AWS::KMS::Key` resource specifies a [symmetric or asymmetric](https://docs.aws.amazon.com/kms/latest/developerguide/symmetric-asymmetric.html) [KMS key](https://docs.aws.amazon.com/kms/latest/developerguide/concepts.html#kms_keys) in AWS Key Management Service ( AWS KMS ).\n\nYou can use the `AWS::KMS::Key` resource to specify a multi-Region primary key (symmetric or asymmetric). To specify a replica key, use the [AWS::KMS::ReplicaKey](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kms-replicakey.html) resource. For information about multi-Region keys, see [Multi-Region keys](https://docs.aws.amazon.com/kms/latest/developerguide/multi-region-keys-overview.html) in the *AWS Key Management Service Developer Guide* .\n\n> AWS KMS is replacing the term *customer master key (CMK)* with *AWS KMS key* and *KMS key* . The concept has not changed. To prevent breaking changes, AWS KMS is keeping some variations of this term. \n\nYou can use symmetric KMS keys to encrypt and decrypt small amounts of data, but they are more commonly used to generate data keys and data key pairs. You can also use symmetric KMS key to encrypt data stored in AWS services that are [integrated with AWS KMS](https://docs.aws.amazon.com//kms/features/#AWS_Service_Integration) . For more information, see [What is AWS Key Management Service ?](https://docs.aws.amazon.com/kms/latest/developerguide/overview.html) in the *AWS Key Management Service Developer Guide* .\n\nYou can use asymmetric KMS keys to encrypt and decrypt data or sign messages and verify signatures. To create an asymmetric key, you must specify an asymmetric `KeySpec` value and a `KeyUsage` value.\n\n> If you change the value of a `Replacement` property, such as `KeyUsage` or `KeySpec` , on an existing KMS key, the existing KMS key is [scheduled for deletion](https://docs.aws.amazon.com/kms/latest/developerguide/deleting-keys.html) and a new KMS key is created with the specified value.\n> \n> While scheduled for deletion, the existing KMS key becomes unusable. If you don't [cancel the scheduled deletion](https://docs.aws.amazon.com/kms/latest/developerguide/deleting-keys.html#deleting-keys-scheduling-key-deletion) of the existing KMS key outside of CloudFormation, all data encrypted under the existing KMS key becomes unrecoverable when the KMS key is deleted.",
+      "description": "The `AWS::KMS::Key` resource specifies a [symmetric or asymmetric](https://docs.aws.amazon.com/kms/latest/developerguide/symmetric-asymmetric.html) [KMS key](https://docs.aws.amazon.com/kms/latest/developerguide/concepts.html#kms_keys) in AWS Key Management Service ( AWS KMS ).\n\nYou can use the `AWS::KMS::Key` resource to specify a symmetric or asymmetric multi-Region primary key. To specify a replica key, use the [AWS::KMS::ReplicaKey](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kms-replicakey.html) resource. For information about multi-Region keys, see [Multi-Region keys](https://docs.aws.amazon.com/kms/latest/developerguide/multi-region-keys-overview.html) in the *AWS Key Management Service Developer Guide* .\n\nYou cannot use the `AWS::KMS::Key` resource to specify a KMS key with [imported key material](https://docs.aws.amazon.com/kms/latest/developerguide/importing-keys.html) or a KMS key in a [custom key store](https://docs.aws.amazon.com/kms/latest/developerguide/custom-key-store-overview.html) .\n\n> AWS KMS is replacing the term *customer master key (CMK)* with *AWS KMS key* and *KMS key* . The concept has not changed. To prevent breaking changes, AWS KMS is keeping some variations of this term. \n\nYou can use symmetric KMS keys to encrypt and decrypt small amounts of data, but they are more commonly used to generate data keys and data key pairs. You can also use symmetric KMS key to encrypt data stored in AWS services that are [integrated with AWS KMS](https://docs.aws.amazon.com//kms/features/#AWS_Service_Integration) . For more information, see [What is AWS Key Management Service ?](https://docs.aws.amazon.com/kms/latest/developerguide/overview.html) in the *AWS Key Management Service Developer Guide* .\n\nYou can use asymmetric KMS keys to encrypt and decrypt data or sign messages and verify signatures. To create an asymmetric key, you must specify an asymmetric `KeySpec` value and a `KeyUsage` value.\n\n> If you change the value of the `KeyUsage` , `KeySpec` , or `MultiRegion` property on an existing KMS key, the existing KMS key is [scheduled for deletion](https://docs.aws.amazon.com/kms/latest/developerguide/deleting-keys.html) and a new KMS key is created with the specified value.\n> \n> While scheduled for deletion, the existing KMS key becomes unusable. If you don't [cancel the scheduled deletion](https://docs.aws.amazon.com/kms/latest/developerguide/deleting-keys.html#deleting-keys-scheduling-key-deletion) of the existing KMS key outside of CloudFormation, all data encrypted under the existing KMS key becomes unrecoverable when the KMS key is deleted. \n\n*Regions*\n\nAWS KMS CloudFormation resources are supported in all Regions in which AWS CloudFormation is supported. However, in the  (ap-southeast-3), you cannot use a CloudFormation template to create or manage asymmetric KMS keys or multi-Region KMS keys (primary or replica).",
       "properties": {
         "Description": "A description of the KMS key. Use a description that helps you to distinguish this KMS key from others in the account, such as its intended use.",
         "EnableKeyRotation": "Enables automatic rotation of the key material for the specified KMS key. By default, automatic key rotation is not enabled.\n\nAWS KMS does not support automatic key rotation on asymmetric KMS keys. For asymmetric KMS keys, omit the `EnableKeyRotation` property or set it to `false` .\n\nWhen you enable automatic rotation, AWS KMS automatically creates new key material for the KMS key 365 days after the enable (or reenable) date and every 365 days thereafter. AWS KMS retains all key material until you delete the KMS key. For detailed information about automatic key rotation, see [Rotating KMS keys](https://docs.aws.amazon.com/kms/latest/developerguide/rotate-keys.html) in the *AWS Key Management Service Developer Guide* .",
@@ -22716,7 +22758,7 @@
         "KeyId": "The key ID of the replica key, such as `mrk-1234abcd12ab34cd56ef1234567890ab` .\n\nRelated multi-Region keys have the same key ID. For information about the key IDs of multi-Region keys, see [How multi-Region keys work](https://docs.aws.amazon.com/kms/latest/developerguide/multi-region-keys-overview.html#mrk-how-it-works) in the *AWS Key Management Service Developer Guide* .",
         "Ref": "`Ref` returns the key ID, such as `mrk-1234abcd12ab34cd56ef1234567890ab` ."
       },
-      "description": "The `AWS::KMS::ReplicaKey` resource specifies a multi-Region replica key that is based on a multi-Region primary key.\n\n*Multi-Region keys* are an AWS KMS feature that lets you create multiple interoperable KMS keys in different AWS Regions . Because these KMS keys have the same key ID, key material, and other metadata, you can use them to encrypt data in one AWS Region and decrypt it in a different AWS Region without making a cross-Region call or exposing the plaintext data. For more information, see [Multi-Region keys](https://docs.aws.amazon.com/kms/latest/developerguide/multi-region-keys-overview.html) in the *AWS Key Management Service Developer Guide* .\n\nA multi-Region *primary key* is a fully functional symmetric or asymmetric KMS key that is also the model for replica keys in other AWS Regions . To create a multi-Region primary key, add an [AWS::KMS::Key](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kms-key.html) resource to your CloudFormation stack. Set its `MultiRegion` property to true.\n\nA multi-Region *replica key* is a fully functional symmetric or asymmetric KMS key that has the same key ID and key material as a multi-Region primary key, but is located in a different AWS Region of the same AWS partition. There can be multiple replicas of a primary key, but each must be in a different AWS Region .\n\nA primary key and its replicas have the same key ID and key material. They also have the same key spec, key usage, key material origin, and automatic key rotation status. These properties are known as *shared properties* . If they change, AWS KMS synchronizes the change to all related multi-Region keys. All other properties of a replica key can differ, including its key policy, tags, aliases, and key state. AWS KMS does not synchronize these properties.",
+      "description": "The `AWS::KMS::ReplicaKey` resource specifies a multi-Region replica key that is based on a multi-Region primary key.\n\n*Multi-Region keys* are an AWS KMS feature that lets you create multiple interoperable KMS keys in different AWS Regions . Because these KMS keys have the same key ID, key material, and other metadata, you can use them to encrypt data in one AWS Region and decrypt it in a different AWS Region without making a cross-Region call or exposing the plaintext data. For more information, see [Multi-Region keys](https://docs.aws.amazon.com/kms/latest/developerguide/multi-region-keys-overview.html) in the *AWS Key Management Service Developer Guide* .\n\nA multi-Region *primary key* is a fully functional symmetric or asymmetric KMS key that is also the model for replica keys in other AWS Regions . To create a multi-Region primary key, add an [AWS::KMS::Key](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kms-key.html) resource to your CloudFormation stack. Set its `MultiRegion` property to true.\n\nA multi-Region *replica key* is a fully functional symmetric or asymmetric KMS key that has the same key ID and key material as a multi-Region primary key, but is located in a different AWS Region of the same AWS partition. There can be multiple replicas of a primary key, but each must be in a different AWS Region .\n\nA primary key and its replicas have the same key ID and key material. They also have the same key spec, key usage, key material origin, and automatic key rotation status. These properties are known as *shared properties* . If they change, AWS KMS synchronizes the change to all related multi-Region keys. All other properties of a replica key can differ, including its key policy, tags, aliases, and key state. AWS KMS does not synchronize these properties.\n\n*Regions*\n\nAWS KMS CloudFormation resources are supported in all Regions in which AWS CloudFormation is supported. However, in the  (ap-southeast-3), you cannot use a CloudFormation template to create or manage multi-Region KMS keys (primary or replica).",
       "properties": {
         "Description": "A description of the KMS key.\n\nThe default value is an empty string (no description).\n\nThe description is not a shared property of multi-Region keys. You can specify the same description or a different description for each key in a set of related multi-Region keys. AWS Key Management Service does not synchronize this property.",
         "Enabled": "Specifies whether the replica key is enabled. Disabled KMS keys cannot be used in cryptographic operations.\n\nWhen `Enabled` is `true` , the *key state* of the KMS key is `Enabled` . When `Enabled` is `false` , the key state of the KMS key is `Disabled` . The default value is `true` .\n\nThe actual key state of the replica might be affected by actions taken outside of CloudFormation, such as running the [EnableKey](https://docs.aws.amazon.com/kms/latest/APIReference/API_EnableKey.html) , [DisableKey](https://docs.aws.amazon.com/kms/latest/APIReference/API_DisableKey.html) , or [ScheduleKeyDeletion](https://docs.aws.amazon.com/kms/latest/APIReference/API_ScheduleKeyDeletion.html) operations. Also, while the replica key is being created, its key state is `Creating` . When the process is complete, the key state of the replica key changes to `Enabled` .\n\nFor information about the key states of a KMS key, see [Key state: Effect on your KMS key](https://docs.aws.amazon.com/kms/latest/developerguide/key-state.html) in the *AWS Key Management Service Developer Guide* .",
@@ -25943,8 +25985,8 @@
         "CollectionName": "The name for the geofence collection.",
         "Description": "An optional description for the geofence collection.",
         "KmsKeyId": "A key identifier for an [AWS KMS customer managed key](https://docs.aws.amazon.com/kms/latest/developerguide/create-keys.html) . Enter a key ID, key ARN, alias name, or alias ARN.",
-        "PricingPlan": "Specifies the pricing plan for the geofence collection.\n\nFor additional details and restrictions on each pricing plan option, see the [Amazon Location Service pricing page](https://docs.aws.amazon.com/location/pricing/) .",
-        "PricingPlanDataSource": "Specifies the data provider for the geofence collection.\n\n- Required value for the following pricing plans: `MobileAssetTracking` | `MobileAssetManagement`\n\nFor more information about [Data Providers](https://docs.aws.amazon.com/location/data-providers/) , and [Pricing plans](https://docs.aws.amazon.com/location/pricing/) , see the Amazon Location Service product page.\n\n> Amazon Location Service only uses `PricingPlanDataSource` to calculate billing for your geofence collection. Your data will not be shared with the data provider, and will remain in your AWS account or region unless you move it. \n\nValid Values: `Esri` | `Here`"
+        "PricingPlan": "No longer used. If included, the only allowed value is `RequestBasedUsage` .\n\n*Allowed Values* : `RequestBasedUsage`",
+        "PricingPlanDataSource": "This parameter is no longer used."
       }
     },
     "AWS::Location::Map": {
@@ -25961,7 +26003,7 @@
         "Configuration": "Specifies the map style selected from an available data provider.",
         "Description": "An optional description for the map resource.",
         "MapName": "The name for the map resource.\n\nRequirements:\n\n- Must contain only alphanumeric characters (A\u2013Z, a\u2013z, 0\u20139), hyphens (-), periods (.), and underscores (_).\n- Must be a unique map resource name.\n- No spaces allowed. For example, `ExampleMap` .",
-        "PricingPlan": "Specifies the pricing plan for your map resource.\n\nFor additional details and restrictions on each pricing plan option, see the [Amazon Location Service pricing page](https://docs.aws.amazon.com/location/pricing/) ."
+        "PricingPlan": "No longer used. If included, the only allowed value is `RequestBasedUsage` .\n\n*Allowed Values* : `RequestBasedUsage`"
       }
     },
     "AWS::Location::Map.MapConfiguration": {
@@ -25985,7 +26027,7 @@
         "DataSourceConfiguration": "Specifies the data storage option for requesting Places.",
         "Description": "The optional description for the place index resource.",
         "IndexName": "The name of the place index resource.\n\nRequirements:\n\n- Contain only alphanumeric characters (A\u2013Z, a\u2013z, 0\u20139), hyphens (-), periods (.), and underscores (_).\n- Must be a unique place index resource name.\n- No spaces allowed. For example, `ExamplePlaceIndex` .",
-        "PricingPlan": "Specifies the pricing plan for your place index resource.\n\nFor additional details and restrictions on each pricing plan option, see the [Amazon Location Service pricing page](https://docs.aws.amazon.com/location/pricing/) ."
+        "PricingPlan": "No longer used. If included, the only allowed value is `RequestBasedUsage` .\n\n*Allowed Values* : `RequestBasedUsage`"
       }
     },
     "AWS::Location::PlaceIndex.DataSourceConfiguration": {
@@ -26008,7 +26050,7 @@
         "CalculatorName": "The name of the route calculator resource.\n\nRequirements:\n\n- Can use alphanumeric characters (A\u2013Z, a\u2013z, 0\u20139) , hyphens (-), periods (.), and underscores (_).\n- Must be a unique route calculator resource name.\n- No spaces allowed. For example, `ExampleRouteCalculator` .",
         "DataSource": "Specifies the data provider of traffic and road network data.\n\n> This field is case-sensitive. Enter the valid values as shown. For example, entering `HERE` returns an error. \n\nValid values include:\n\n- `Esri`\n- `Here`\n\nFor more information about data providers, see the [Amazon Location Service data providers page](https://docs.aws.amazon.com/location/latest/developerguide/what-is-data-provider.html) .",
         "Description": "The optional description for the route calculator resource.",
-        "PricingPlan": "Specifies the pricing plan for your route calculator resource.\n\nFor additional details and restrictions on each pricing plan option, see the [Amazon Location Service pricing page](https://docs.aws.amazon.com/location/pricing/) ."
+        "PricingPlan": "No longer used. If included, the only allowed value is `RequestBasedUsage` .\n\n*Allowed Values* : `RequestBasedUsage`"
       }
     },
     "AWS::Location::Tracker": {
@@ -26023,9 +26065,9 @@
       "properties": {
         "Description": "An optional description for the tracker resource.",
         "KmsKeyId": "A key identifier for an [AWS KMS customer managed key](https://docs.aws.amazon.com/kms/latest/developerguide/create-keys.html) . Enter a key ID, key ARN, alias name, or alias ARN.",
-        "PositionFiltering": "Specifies the position filtering for the tracker resource.\n\nValid values:\n\n- `TimeBased` - Location updates are evaluated against linked geofence collections, but not every location update is stored. If your update frequency is more often than 30 seconds, only one update per 30 seconds is stored for each unique device ID.\n- `DistanceBased` - If the device has moved less than 30 m (98.4 ft), location updates are ignored. Location updates within this area are neither evaluated against linked geofence collections, nor stored. This helps control costs by reducing the number of geofence evaluations and historical device positions to paginate through. Distance-based filtering can also reduce the effects of GPS noise when displaying device trajectories on a map.\n\nThis field is optional. If not specified, the default value is `TimeBased` .",
-        "PricingPlan": "Specifies the pricing plan for the tracker resource.\n\nFor additional details and restrictions on each pricing plan option, see the [Amazon Location Service pricing page](https://docs.aws.amazon.com/location/pricing/) .",
-        "PricingPlanDataSource": "Specifies the data provider for the tracker resource.\n\n- Required value for the following pricing plans: `MobileAssetTracking` | `MobileAssetManagement`\n\nFor more information about [Data Providers](https://docs.aws.amazon.com/location/data-providers/) , and [Pricing plans](https://docs.aws.amazon.com/location/pricing/) , see the Amazon Location Service product page.\n\n> Amazon Location Service only uses `PricingPlanDataSource` to calculate billing for your tracker resource. Your data will not be shared with the data provider, and will remain in your AWS account or region unless you move it. \n\nValid Values: `Esri` | `Here`",
+        "PositionFiltering": "Specifies the position filtering for the tracker resource.\n\nValid values:\n\n- `TimeBased` - Location updates are evaluated against linked geofence collections, but not every location update is stored. If your update frequency is more often than 30 seconds, only one update per 30 seconds is stored for each unique device ID.\n- `DistanceBased` - If the device has moved less than 30 m (98.4 ft), location updates are ignored. Location updates within this area are neither evaluated against linked geofence collections, nor stored. This helps control costs by reducing the number of geofence evaluations and historical device positions to paginate through. Distance-based filtering can also reduce the effects of GPS noise when displaying device trajectories on a map.\n- `AccuracyBased` - If the device has moved less than the measured accuracy, location updates are ignored. For example, if two consecutive updates from a device have a horizontal accuracy of 5 m and 10 m, the second update is ignored if the device has moved less than 15 m. Ignored location updates are neither evaluated against linked geofence collections, nor stored. This can reduce the effects of GPS noise when displaying device trajectories on a map, and can help control your costs by reducing the number of geofence evaluations.\n\nThis field is optional. If not specified, the default value is `TimeBased` .",
+        "PricingPlan": "No longer used. If included, the only allowed value is `RequestBasedUsage` .",
+        "PricingPlanDataSource": "This parameter is no longer used.",
         "TrackerName": "The name for the tracker resource.\n\nRequirements:\n\n- Contain only alphanumeric characters (A-Z, a-z, 0-9) , hyphens (-), periods (.), and underscores (_).\n- Must be a unique tracker resource name.\n- No spaces allowed. For example, `ExampleTracker` ."
       }
     },
@@ -33069,6 +33111,17 @@
         "Url": "The URL to route traffic to. The URL must be an [rfc3986-formatted URL](https://docs.aws.amazon.com/https://datatracker.ietf.org/doc/html/rfc3986) . If the host is a domain name, the name must be resolvable over the public internet. If the scheme is `https` , the top level domain of the host must be listed in the [IANA root zone database](https://docs.aws.amazon.com/https://www.iana.org/domains/root/db) ."
       }
     },
+    "AWS::Rekognition::Collection": {
+      "attributes": {
+        "Arn": "Returns the Amazon Resource Name of the collection.",
+        "Ref": "`Ref` returns the collection ID. For example:\n\n`{ \"Ref\": \"MyCollection\" }`"
+      },
+      "description": "The `AWS::Rekognition::Collection` type creates a server-side container called a collection. You can use a collection to store information about detected faces and search for known faces in images, stored videos, and streaming videos.",
+      "properties": {
+        "CollectionId": "ID for the collection that you are creating.",
+        "Tags": "A set of tags (key-value pairs) that you want to attach to the collection."
+      }
+    },
     "AWS::Rekognition::Project": {
       "attributes": {
         "Arn": "Returns the Amazon Resource Name of the project.",
@@ -33759,7 +33812,7 @@
         "FirewallRuleGroupId": "The unique identifier of the firewall rule group.",
         "MutationProtection": "If enabled, this setting disallows modification or removal of the association, to help prevent against accidentally altering DNS firewall protections.",
         "Name": "The name of the association.",
-        "Priority": "The setting that determines the processing order of the rule group among the rule groups that are associated with a single VPC. DNS Firewall filters VPC traffic starting from rule group with the lowest numeric priority setting.\n\nYou must specify a unique priority for each rule group that you associate with a single VPC. To make it easier to insert rule groups later, leave space between the numbers, for example, use 101, 200, and so on. You can change the priority setting for a rule group association after you create it.\n\nThe allowed values for `Priority` are between 100 and 9900.",
+        "Priority": "The setting that determines the processing order of the rule group among the rule groups that are associated with a single VPC. DNS Firewall filters VPC traffic starting from rule group with the lowest numeric priority setting.\n\nYou must specify a unique priority for each rule group that you associate with a single VPC. To make it easier to insert rule groups later, leave space between the numbers, for example, use 101, 200, and so on. You can change the priority setting for a rule group association after you create it.\n\nThe allowed values for `Priority` are between 100 and 9900 (excluding 100 and 9900).",
         "Tags": "A list of the tag keys and values that you want to associate with the rule group.",
         "VpcId": "The unique identifier of the VPC that is associated with the rule group."
       }
@@ -34133,7 +34186,6 @@
       "attributes": {},
       "description": "Specifies a metrics configuration for the CloudWatch request metrics (specified by the metrics configuration ID) from an Amazon S3 bucket. If you're updating an existing metrics configuration, note that this is a full replacement of the existing metrics configuration. If you don't include the elements you want to keep, they are erased. For examples, see [AWS::S3::Bucket](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-bucket.html#aws-properties-s3-bucket--examples) . For more information, see [PUT Bucket metrics](https://docs.aws.amazon.com/AmazonS3/latest/API/RESTBucketPUTMetricConfiguration.html) in the *Amazon S3 API Reference* .",
       "properties": {
-        "AccessPointArn": "The access point that was used while performing operations on the object. The metrics configuration only includes objects that meet the filter's criteria.",
         "Id": "The ID used to identify the metrics configuration. This can be any value you choose that helps you identify your metrics configuration.",
         "Prefix": "The prefix that an object must have to be included in the metrics results.",
         "TagFilters": "Specifies a list of tag filters to use as a metrics configuration filter. The metrics configuration includes only objects that meet the filter's criteria."
@@ -34160,7 +34212,6 @@
       "attributes": {},
       "description": "Describes the notification configuration for an Amazon S3 bucket.\n\n> If you create the target resource and related permissions in the same template, you might have a circular dependency.\n> \n> For example, you might use the `AWS::Lambda::Permission` resource to grant the bucket permission to invoke an AWS Lambda function. However, AWS CloudFormation can't create the bucket until the bucket has permission to invoke the function ( AWS CloudFormation checks whether the bucket can invoke the function). If you're using Refs to pass the bucket name, this leads to a circular dependency.\n> \n> To avoid this dependency, you can create all resources without specifying the notification configuration. Then, update the stack with a notification configuration.\n> \n> For more information on permissions, see [AWS::Lambda::Permission](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lambda-permission.html) and [Granting Permissions to Publish Event Notification Messages to a Destination](https://docs.aws.amazon.com/AmazonS3/latest/dev/NotificationHowTo.html#grant-destinations-permissions-to-s3) .",
       "properties": {
-        "EventBridgeConfiguration": "Enables delivery of events to Amazon EventBridge.",
         "LambdaConfigurations": "Describes the AWS Lambda functions to invoke and the events for which to invoke them.",
         "QueueConfigurations": "The Amazon Simple Queue Service queues to publish messages to and the events for which to publish messages.",
         "TopicConfigurations": "The topic to which notifications are sent and the events for which notifications are generated."
@@ -34441,12 +34492,7 @@
     "AWS::S3::Bucket.WebsiteConfiguration": {
       "attributes": {},
       "description": "Specifies website configuration parameters for an Amazon S3 bucket.",
-      "properties": {
-        "ErrorDocument": "The name of the error document for the website.",
-        "IndexDocument": "The name of the index document for the website.",
-        "RedirectAllRequestsTo": "The redirect behavior for every request to this bucket's website endpoint.\n\n> If you specify this property, you can't specify any other property.",
-        "RoutingRules": "Rules that define when a redirect is applied and the redirect behavior."
-      }
+      "properties": {}
     },
     "AWS::S3::BucketPolicy": {
       "attributes": {},
@@ -34763,7 +34809,7 @@
       "attributes": {
         "Ref": "`Ref` returns the resource name."
       },
-      "description": "The name of the configuration set.\n\nConfiguration sets let you create groups of rules that you can apply to the emails you send using Amazon SES. For more information about using configuration sets, see [Using Amazon SES Configuration Sets](https://docs.aws.amazon.com/ses/latest/DeveloperGuide/using-configuration-sets.html) in the [Amazon SES Developer Guide](https://docs.aws.amazon.com/ses/latest/DeveloperGuide/) .",
+      "description": "The name of the configuration set.\n\nConfiguration sets let you create groups of rules that you can apply to the emails you send using Amazon SES. For more information about using configuration sets, see [Using Amazon SES Configuration Sets](https://docs.aws.amazon.com/ses/latest/dg/using-configuration-sets.html) in the [Amazon SES Developer Guide](https://docs.aws.amazon.com/ses/latest/dg/) .",
       "properties": {
         "Name": ""
       }
@@ -34778,14 +34824,14 @@
     },
     "AWS::SES::ConfigurationSetEventDestination.CloudWatchDestination": {
       "attributes": {},
-      "description": "Contains information associated with an Amazon CloudWatch event destination to which email sending events are published.\n\nEvent destinations, such as Amazon CloudWatch, are associated with configuration sets, which enable you to publish email sending events. For information about using configuration sets, see the [Amazon SES Developer Guide](https://docs.aws.amazon.com/ses/latest/DeveloperGuide/monitor-sending-activity.html) .",
+      "description": "Contains information associated with an Amazon CloudWatch event destination to which email sending events are published.\n\nEvent destinations, such as Amazon CloudWatch, are associated with configuration sets, which enable you to publish email sending events. For information about using configuration sets, see the [Amazon SES Developer Guide](https://docs.aws.amazon.com/ses/latest/dg/monitor-sending-activity.html) .",
       "properties": {
         "DimensionConfigurations": "A list of dimensions upon which to categorize your emails when you publish email sending events to Amazon CloudWatch."
       }
     },
     "AWS::SES::ConfigurationSetEventDestination.DimensionConfiguration": {
       "attributes": {},
-      "description": "Contains the dimension configuration to use when you publish email sending events to Amazon CloudWatch.\n\nFor information about publishing email sending events to Amazon CloudWatch, see the [Amazon SES Developer Guide](https://docs.aws.amazon.com/ses/latest/DeveloperGuide/monitor-sending-activity.html) .",
+      "description": "Contains the dimension configuration to use when you publish email sending events to Amazon CloudWatch.\n\nFor information about publishing email sending events to Amazon CloudWatch, see the [Amazon SES Developer Guide](https://docs.aws.amazon.com/ses/latest/dg/monitor-sending-activity.html) .",
       "properties": {
         "DefaultDimensionValue": "The default value of the dimension that is published to Amazon CloudWatch if you do not provide the value of the dimension when you send an email. The default value must meet the following requirements:\n\n- Contain only ASCII letters (a-z, A-Z), numbers (0-9), underscores (_), dashes (-), at signs (@), or periods (.).\n- Contain 256 characters or fewer.",
         "DimensionName": "The name of an Amazon CloudWatch dimension associated with an email sending metric. The name must meet the following requirements:\n\n- Contain only ASCII letters (a-z, A-Z), numbers (0-9), underscores (_), or dashes (-).\n- Contain 256 characters or fewer.",
@@ -34794,7 +34840,7 @@
     },
     "AWS::SES::ConfigurationSetEventDestination.EventDestination": {
       "attributes": {},
-      "description": "Contains information about an event destination.\n\n> When you create or update an event destination, you must provide one, and only one, destination. The destination can be Amazon CloudWatch, Amazon Kinesis Firehose or Amazon Simple Notification Service (Amazon SNS). \n\nEvent destinations are associated with configuration sets, which enable you to publish email sending events to Amazon CloudWatch, Amazon Kinesis Firehose, or Amazon Simple Notification Service (Amazon SNS). For information about using configuration sets, see the [Amazon SES Developer Guide](https://docs.aws.amazon.com/ses/latest/DeveloperGuide/monitor-sending-activity.html) .",
+      "description": "Contains information about an event destination.\n\n> When you create or update an event destination, you must provide one, and only one, destination. The destination can be Amazon CloudWatch, Amazon Kinesis Firehose or Amazon Simple Notification Service (Amazon SNS). \n\nEvent destinations are associated with configuration sets, which enable you to publish email sending events to Amazon CloudWatch, Amazon Kinesis Firehose, or Amazon Simple Notification Service (Amazon SNS). For information about using configuration sets, see the [Amazon SES Developer Guide](https://docs.aws.amazon.com/ses/latest/dg/monitor-sending-activity.html) .",
       "properties": {
         "CloudWatchDestination": "An object that contains the names, default values, and sources of the dimensions associated with an Amazon CloudWatch event destination.",
         "Enabled": "Sets whether Amazon SES publishes events to this destination when you send an email with the associated configuration set. Set to `true` to enable publishing to this destination; set to `false` to prevent publishing to this destination. The default value is `false` .",
@@ -34805,7 +34851,7 @@
     },
     "AWS::SES::ConfigurationSetEventDestination.KinesisFirehoseDestination": {
       "attributes": {},
-      "description": "Contains the delivery stream ARN and the IAM role ARN associated with an Amazon Kinesis Firehose event destination.\n\nEvent destinations, such as Amazon Kinesis Firehose, are associated with configuration sets, which enable you to publish email sending events. For information about using configuration sets, see the [Amazon SES Developer Guide](https://docs.aws.amazon.com/ses/latest/DeveloperGuide/monitor-sending-activity.html) .",
+      "description": "Contains the delivery stream ARN and the IAM role ARN associated with an Amazon Kinesis Firehose event destination.\n\nEvent destinations, such as Amazon Kinesis Firehose, are associated with configuration sets, which enable you to publish email sending events. For information about using configuration sets, see the [Amazon SES Developer Guide](https://docs.aws.amazon.com/ses/latest/dg/monitor-sending-activity.html) .",
       "properties": {
         "DeliveryStreamARN": "The ARN of the Amazon Kinesis Firehose stream that email sending events should be published to.",
         "IAMRoleARN": "The ARN of the IAM role under which Amazon SES publishes email sending events to the Amazon Kinesis Firehose stream."
@@ -34850,7 +34896,7 @@
     },
     "AWS::SES::ReceiptFilter.IpFilter": {
       "attributes": {},
-      "description": "A receipt IP address filter enables you to specify whether to accept or reject mail originating from an IP address or range of IP addresses.\n\nFor information about setting up IP address filters, see the [Amazon SES Developer Guide](https://docs.aws.amazon.com/ses/latest/DeveloperGuide/receiving-email-ip-filters.html) .",
+      "description": "A receipt IP address filter enables you to specify whether to accept or reject mail originating from an IP address or range of IP addresses.\n\nFor information about setting up IP address filters, see the [Amazon SES Developer Guide](https://docs.aws.amazon.com/ses/latest/dg/receiving-email-ip-filtering-console-walkthrough.html) .",
       "properties": {
         "Cidr": "A single IP address or a range of IP addresses to block or allow, specified in Classless Inter-Domain Routing (CIDR) notation. An example of a single email address is 10.0.0.1. An example of a range of IP addresses is 10.0.0.1/24. For more information about CIDR notation, see [RFC 2317](https://docs.aws.amazon.com/https://tools.ietf.org/html/rfc2317) .",
         "Policy": "Indicates whether to block or allow incoming mail from the specified IP addresses."
@@ -34869,7 +34915,7 @@
     },
     "AWS::SES::ReceiptRule.Action": {
       "attributes": {},
-      "description": "An action that Amazon SES can take when it receives an email on behalf of one or more email addresses or domains that you own. An instance of this data type can represent only one action.\n\nFor information about setting up receipt rules, see the [Amazon SES Developer Guide](https://docs.aws.amazon.com/ses/latest/DeveloperGuide/receiving-email-receipt-rules.html) .",
+      "description": "An action that Amazon SES can take when it receives an email on behalf of one or more email addresses or domains that you own. An instance of this data type can represent only one action.\n\nFor information about setting up receipt rules, see the [Amazon SES Developer Guide](https://docs.aws.amazon.com/ses/latest/dg/receiving-email-receipt-rules-console-walkthrough.html) .",
       "properties": {
         "AddHeaderAction": "Adds a header to the received email.",
         "BounceAction": "Rejects the received email by returning a bounce response to the sender and, optionally, publishes a notification to Amazon Simple Notification Service (Amazon SNS).",
@@ -34882,7 +34928,7 @@
     },
     "AWS::SES::ReceiptRule.AddHeaderAction": {
       "attributes": {},
-      "description": "When included in a receipt rule, this action adds a header to the received email.\n\nFor information about adding a header using a receipt rule, see the [Amazon SES Developer Guide](https://docs.aws.amazon.com/ses/latest/DeveloperGuide/receiving-email-action-add-header.html) .",
+      "description": "When included in a receipt rule, this action adds a header to the received email.\n\nFor information about adding a header using a receipt rule, see the [Amazon SES Developer Guide](https://docs.aws.amazon.com/ses/latest/dg/receiving-email-action-add-header.html) .",
       "properties": {
         "HeaderName": "The name of the header to add to the incoming message. The name must contain at least one character, and can contain up to 50 characters. It consists of alphanumeric (a\u2013z, A\u2013Z, 0\u20139) characters and dashes.",
         "HeaderValue": "The content to include in the header. This value can contain up to 2048 characters. It can't contain newline ( `\\n` ) or carriage return ( `\\r` ) characters."
@@ -34890,7 +34936,7 @@
     },
     "AWS::SES::ReceiptRule.BounceAction": {
       "attributes": {},
-      "description": "When included in a receipt rule, this action rejects the received email by returning a bounce response to the sender and, optionally, publishes a notification to Amazon Simple Notification Service (Amazon SNS).\n\nFor information about sending a bounce message in response to a received email, see the [Amazon SES Developer Guide](https://docs.aws.amazon.com/ses/latest/DeveloperGuide/receiving-email-action-bounce.html) .",
+      "description": "When included in a receipt rule, this action rejects the received email by returning a bounce response to the sender and, optionally, publishes a notification to Amazon Simple Notification Service (Amazon SNS).\n\nFor information about sending a bounce message in response to a received email, see the [Amazon SES Developer Guide](https://docs.aws.amazon.com/ses/latest/dg/receiving-email-action-bounce.html) .",
       "properties": {
         "Message": "Human-readable text to include in the bounce message.",
         "Sender": "The email address of the sender of the bounced email. This is the address from which the bounce message is sent.",
@@ -34901,7 +34947,7 @@
     },
     "AWS::SES::ReceiptRule.LambdaAction": {
       "attributes": {},
-      "description": "When included in a receipt rule, this action calls an AWS Lambda function and, optionally, publishes a notification to Amazon Simple Notification Service (Amazon SNS).\n\nTo enable Amazon SES to call your AWS Lambda function or to publish to an Amazon SNS topic of another account, Amazon SES must have permission to access those resources. For information about giving permissions, see the [Amazon SES Developer Guide](https://docs.aws.amazon.com/ses/latest/DeveloperGuide/receiving-email-permissions.html) .\n\nFor information about using AWS Lambda actions in receipt rules, see the [Amazon SES Developer Guide](https://docs.aws.amazon.com/ses/latest/DeveloperGuide/receiving-email-action-lambda.html) .",
+      "description": "When included in a receipt rule, this action calls an AWS Lambda function and, optionally, publishes a notification to Amazon Simple Notification Service (Amazon SNS).\n\nTo enable Amazon SES to call your AWS Lambda function or to publish to an Amazon SNS topic of another account, Amazon SES must have permission to access those resources. For information about giving permissions, see the [Amazon SES Developer Guide](https://docs.aws.amazon.com/ses/latest/dg/receiving-email-permissions.html) .\n\nFor information about using AWS Lambda actions in receipt rules, see the [Amazon SES Developer Guide](https://docs.aws.amazon.com/ses/latest/dg/receiving-email-action-lambda.html) .",
       "properties": {
         "FunctionArn": "The Amazon Resource Name (ARN) of the AWS Lambda function. An example of an AWS Lambda function ARN is `arn:aws:lambda:us-west-2:account-id:function:MyFunction` . For more information about AWS Lambda, see the [AWS Lambda Developer Guide](https://docs.aws.amazon.com/lambda/latest/dg/welcome.html) .",
         "InvocationType": "The invocation type of the AWS Lambda function. An invocation type of `RequestResponse` means that the execution of the function immediately results in a response, and a value of `Event` means that the function is invoked asynchronously. The default value is `Event` . For information about AWS Lambda invocation types, see the [AWS Lambda Developer Guide](https://docs.aws.amazon.com/lambda/latest/dg/API_Invoke.html) .\n\n> There is a 30-second timeout on `RequestResponse` invocations. You should use `Event` invocation in most cases. Use `RequestResponse` only to make a mail flow decision, such as whether to stop the receipt rule or the receipt rule set.",
@@ -34910,7 +34956,7 @@
     },
     "AWS::SES::ReceiptRule.Rule": {
       "attributes": {},
-      "description": "Receipt rules enable you to specify which actions Amazon SES should take when it receives mail on behalf of one or more email addresses or domains that you own.\n\nEach receipt rule defines a set of email addresses or domains that it applies to. If the email addresses or domains match at least one recipient address of the message, Amazon SES executes all of the receipt rule's actions on the message.\n\nFor information about setting up receipt rules, see the [Amazon SES Developer Guide](https://docs.aws.amazon.com/ses/latest/DeveloperGuide/receiving-email-receipt-rules.html) .",
+      "description": "Receipt rules enable you to specify which actions Amazon SES should take when it receives mail on behalf of one or more email addresses or domains that you own.\n\nEach receipt rule defines a set of email addresses or domains that it applies to. If the email addresses or domains match at least one recipient address of the message, Amazon SES executes all of the receipt rule's actions on the message.\n\nFor information about setting up receipt rules, see the [Amazon SES Developer Guide](https://docs.aws.amazon.com/ses/latest/dg/receiving-email-receipt-rules-console-walkthrough.html) .",
       "properties": {
         "Actions": "An ordered list of actions to perform on messages that match at least one of the recipient email addresses or domains specified in the receipt rule.",
         "Enabled": "If `true` , the receipt rule is active. The default value is `false` .",
@@ -34922,17 +34968,17 @@
     },
     "AWS::SES::ReceiptRule.S3Action": {
       "attributes": {},
-      "description": "When included in a receipt rule, this action saves the received message to an Amazon Simple Storage Service (Amazon S3) bucket and, optionally, publishes a notification to Amazon Simple Notification Service (Amazon SNS).\n\nTo enable Amazon SES to write emails to your Amazon S3 bucket, use an AWS KMS key to encrypt your emails, or publish to an Amazon SNS topic of another account, Amazon SES must have permission to access those resources. For information about granting permissions, see the [Amazon SES Developer Guide](https://docs.aws.amazon.com/ses/latest/DeveloperGuide/receiving-email-permissions.html) .\n\n> When you save your emails to an Amazon S3 bucket, the maximum email size (including headers) is 30 MB. Emails larger than that bounces. \n\nFor information about specifying Amazon S3 actions in receipt rules, see the [Amazon SES Developer Guide](https://docs.aws.amazon.com/ses/latest/DeveloperGuide/receiving-email-action-s3.html) .",
+      "description": "When included in a receipt rule, this action saves the received message to an Amazon Simple Storage Service (Amazon S3) bucket and, optionally, publishes a notification to Amazon Simple Notification Service (Amazon SNS).\n\nTo enable Amazon SES to write emails to your Amazon S3 bucket, use an AWS KMS key to encrypt your emails, or publish to an Amazon SNS topic of another account, Amazon SES must have permission to access those resources. For information about granting permissions, see the [Amazon SES Developer Guide](https://docs.aws.amazon.com/ses/latest/dg/receiving-email-permissions.html) .\n\n> When you save your emails to an Amazon S3 bucket, the maximum email size (including headers) is 30 MB. Emails larger than that bounces. \n\nFor information about specifying Amazon S3 actions in receipt rules, see the [Amazon SES Developer Guide](https://docs.aws.amazon.com/ses/latest/dg/receiving-email-action-s3.html) .",
       "properties": {
         "BucketName": "The name of the Amazon S3 bucket for incoming email.",
-        "KmsKeyArn": "The customer master key that Amazon SES should use to encrypt your emails before saving them to the Amazon S3 bucket. You can use the default master key or a custom master key that you created in AWS KMS as follows:\n\n- To use the default master key, provide an ARN in the form of `arn:aws:kms:REGION:ACCOUNT-ID-WITHOUT-HYPHENS:alias/aws/ses` . For example, if your AWS account ID is 123456789012 and you want to use the default master key in the US West (Oregon) Region, the ARN of the default master key would be `arn:aws:kms:us-west-2:123456789012:alias/aws/ses` . If you use the default master key, you don't need to perform any extra steps to give Amazon SES permission to use the key.\n- To use a custom master key that you created in AWS KMS, provide the ARN of the master key and ensure that you add a statement to your key's policy to give Amazon SES permission to use it. For more information about giving permissions, see the [Amazon SES Developer Guide](https://docs.aws.amazon.com/ses/latest/DeveloperGuide/receiving-email-permissions.html) .\n\nFor more information about key policies, see the [AWS KMS Developer Guide](https://docs.aws.amazon.com/kms/latest/developerguide/concepts.html) . If you do not specify a master key, Amazon SES does not encrypt your emails.\n\n> Your mail is encrypted by Amazon SES using the Amazon S3 encryption client before the mail is submitted to Amazon S3 for storage. It is not encrypted using Amazon S3 server-side encryption. This means that you must use the Amazon S3 encryption client to decrypt the email after retrieving it from Amazon S3, as the service has no access to use your AWS KMS keys for decryption. This encryption client is currently available with the [AWS SDK for Java](https://docs.aws.amazon.com/sdk-for-java/) and [AWS SDK for Ruby](https://docs.aws.amazon.com/sdk-for-ruby/) only. For more information about client-side encryption using AWS KMS master keys, see the [Amazon S3 Developer Guide](https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingClientSideEncryption.html) .",
+        "KmsKeyArn": "The customer master key that Amazon SES should use to encrypt your emails before saving them to the Amazon S3 bucket. You can use the default master key or a custom master key that you created in AWS KMS as follows:\n\n- To use the default master key, provide an ARN in the form of `arn:aws:kms:REGION:ACCOUNT-ID-WITHOUT-HYPHENS:alias/aws/ses` . For example, if your AWS account ID is 123456789012 and you want to use the default master key in the US West (Oregon) Region, the ARN of the default master key would be `arn:aws:kms:us-west-2:123456789012:alias/aws/ses` . If you use the default master key, you don't need to perform any extra steps to give Amazon SES permission to use the key.\n- To use a custom master key that you created in AWS KMS, provide the ARN of the master key and ensure that you add a statement to your key's policy to give Amazon SES permission to use it. For more information about giving permissions, see the [Amazon SES Developer Guide](https://docs.aws.amazon.com/ses/latest/dg/receiving-email-permissions.html) .\n\nFor more information about key policies, see the [AWS KMS Developer Guide](https://docs.aws.amazon.com/kms/latest/developerguide/concepts.html) . If you do not specify a master key, Amazon SES does not encrypt your emails.\n\n> Your mail is encrypted by Amazon SES using the Amazon S3 encryption client before the mail is submitted to Amazon S3 for storage. It is not encrypted using Amazon S3 server-side encryption. This means that you must use the Amazon S3 encryption client to decrypt the email after retrieving it from Amazon S3, as the service has no access to use your AWS KMS keys for decryption. This encryption client is currently available with the [AWS SDK for Java](https://docs.aws.amazon.com/sdk-for-java/) and [AWS SDK for Ruby](https://docs.aws.amazon.com/sdk-for-ruby/) only. For more information about client-side encryption using AWS KMS master keys, see the [Amazon S3 Developer Guide](https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingClientSideEncryption.html) .",
         "ObjectKeyPrefix": "The key prefix of the Amazon S3 bucket. The key prefix is similar to a directory name that enables you to store similar data under the same directory in a bucket.",
         "TopicArn": "The ARN of the Amazon SNS topic to notify when the message is saved to the Amazon S3 bucket. You can find the ARN of a topic by using the [ListTopics](https://docs.aws.amazon.com/sns/latest/api/API_ListTopics.html) operation in Amazon SNS.\n\nFor more information about Amazon SNS topics, see the [Amazon SNS Developer Guide](https://docs.aws.amazon.com/sns/latest/dg/CreateTopic.html) ."
       }
     },
     "AWS::SES::ReceiptRule.SNSAction": {
       "attributes": {},
-      "description": "When included in a receipt rule, this action publishes a notification to Amazon Simple Notification Service (Amazon SNS). This action includes a complete copy of the email content in the Amazon SNS notifications. Amazon SNS notifications for all other actions simply provide information about the email. They do not include the email content itself.\n\nIf you own the Amazon SNS topic, you don't need to do anything to give Amazon SES permission to publish emails to it. However, if you don't own the Amazon SNS topic, you need to attach a policy to the topic to give Amazon SES permissions to access it. For information about giving permissions, see the [Amazon SES Developer Guide](https://docs.aws.amazon.com/ses/latest/DeveloperGuide/receiving-email-permissions.html) .\n\n> You can only publish emails that are 150 KB or less (including the header) to Amazon SNS. Larger emails bounce. If you anticipate emails larger than 150 KB, use the S3 action instead. \n\nFor information about using a receipt rule to publish an Amazon SNS notification, see the [Amazon SES Developer Guide](https://docs.aws.amazon.com/ses/latest/DeveloperGuide/receiving-email-action-sns.html) .",
+      "description": "When included in a receipt rule, this action publishes a notification to Amazon Simple Notification Service (Amazon SNS). This action includes a complete copy of the email content in the Amazon SNS notifications. Amazon SNS notifications for all other actions simply provide information about the email. They do not include the email content itself.\n\nIf you own the Amazon SNS topic, you don't need to do anything to give Amazon SES permission to publish emails to it. However, if you don't own the Amazon SNS topic, you need to attach a policy to the topic to give Amazon SES permissions to access it. For information about giving permissions, see the [Amazon SES Developer Guide](https://docs.aws.amazon.com/ses/latest/dg/receiving-email-permissions.html) .\n\n> You can only publish emails that are 150 KB or less (including the header) to Amazon SNS. Larger emails bounce. If you anticipate emails larger than 150 KB, use the S3 action instead. \n\nFor information about using a receipt rule to publish an Amazon SNS notification, see the [Amazon SES Developer Guide](https://docs.aws.amazon.com/ses/latest/dg/receiving-email-action-sns.html) .",
       "properties": {
         "Encoding": "The encoding to use for the email within the Amazon SNS notification. UTF-8 is easier to use, but may not preserve all special characters when a message was encoded with a different encoding format. Base64 preserves all special characters. The default value is UTF-8.",
         "TopicArn": "The Amazon Resource Name (ARN) of the Amazon SNS topic to notify. You can find the ARN of a topic by using the [ListTopics](https://docs.aws.amazon.com/sns/latest/api/API_ListTopics.html) operation in Amazon SNS.\n\nFor more information about Amazon SNS topics, see the [Amazon SNS Developer Guide](https://docs.aws.amazon.com/sns/latest/dg/CreateTopic.html) ."
@@ -34940,7 +34986,7 @@
     },
     "AWS::SES::ReceiptRule.StopAction": {
       "attributes": {},
-      "description": "When included in a receipt rule, this action terminates the evaluation of the receipt rule set and, optionally, publishes a notification to Amazon Simple Notification Service (Amazon SNS).\n\nFor information about setting a stop action in a receipt rule, see the [Amazon SES Developer Guide](https://docs.aws.amazon.com/ses/latest/DeveloperGuide/receiving-email-action-stop.html) .",
+      "description": "When included in a receipt rule, this action terminates the evaluation of the receipt rule set and, optionally, publishes a notification to Amazon Simple Notification Service (Amazon SNS).\n\nFor information about setting a stop action in a receipt rule, see the [Amazon SES Developer Guide](https://docs.aws.amazon.com/ses/latest/dg/receiving-email-action-stop.html) .",
       "properties": {
         "Scope": "The scope of the StopAction. The only acceptable value is `RuleSet` .",
         "TopicArn": "The Amazon Resource Name (ARN) of the Amazon SNS topic to notify when the stop action is taken. You can find the ARN of a topic by using the [ListTopics](https://docs.aws.amazon.com/sns/latest/api/API_ListTopics.html) Amazon SNS operation.\n\nFor more information about Amazon SNS topics, see the [Amazon SNS Developer Guide](https://docs.aws.amazon.com/sns/latest/dg/CreateTopic.html) ."
@@ -34948,7 +34994,7 @@
     },
     "AWS::SES::ReceiptRule.WorkmailAction": {
       "attributes": {},
-      "description": "When included in a receipt rule, this action calls Amazon WorkMail and, optionally, publishes a notification to Amazon Simple Notification Service (Amazon SNS). It usually isn't necessary to set this up manually, because Amazon WorkMail adds the rule automatically during its setup procedure.\n\nFor information using a receipt rule to call Amazon WorkMail, see the [Amazon SES Developer Guide](https://docs.aws.amazon.com/ses/latest/DeveloperGuide/receiving-email-action-workmail.html) .",
+      "description": "When included in a receipt rule, this action calls Amazon WorkMail and, optionally, publishes a notification to Amazon Simple Notification Service (Amazon SNS). It usually isn't necessary to set this up manually, because Amazon WorkMail adds the rule automatically during its setup procedure.\n\nFor information using a receipt rule to call Amazon WorkMail, see the [Amazon SES Developer Guide](https://docs.aws.amazon.com/ses/latest/dg/receiving-email-action-workmail.html) .",
       "properties": {
         "OrganizationArn": "The Amazon Resource Name (ARN) of the Amazon WorkMail organization. Amazon WorkMail ARNs use the following format:\n\n`arn:aws:workmail:<region>:<awsAccountId>:organization/<workmailOrganizationId>`\n\nYou can find the ID of your organization by using the [ListOrganizations](https://docs.aws.amazon.com/workmail/latest/APIReference/API_ListOrganizations.html) operation in Amazon WorkMail. Amazon WorkMail organization IDs begin with \" `m-` \", followed by a string of alphanumeric characters.\n\nFor information about Amazon WorkMail organizations, see the [Amazon WorkMail Administrator Guide](https://docs.aws.amazon.com/workmail/latest/adminguide/organizations_overview.html) .",
         "TopicArn": "The Amazon Resource Name (ARN) of the Amazon SNS topic to notify when the WorkMail action is called. You can find the ARN of a topic by using the [ListTopics](https://docs.aws.amazon.com/sns/latest/api/API_ListTopics.html) operation in Amazon SNS.\n\nFor more information about Amazon SNS topics, see the [Amazon SNS Developer Guide](https://docs.aws.amazon.com/sns/latest/dg/CreateTopic.html) ."
@@ -34958,7 +35004,7 @@
       "attributes": {
         "Ref": "`Ref` returns the resource name. For example:"
       },
-      "description": "Creates an empty receipt rule set.\n\nFor information about setting up receipt rule sets, see the [Amazon SES Developer Guide](https://docs.aws.amazon.com/ses/latest/DeveloperGuide/receiving-email-receipt-rule-set.html) .\n\nYou can execute this operation no more than once per second.",
+      "description": "Creates an empty receipt rule set.\n\nFor information about setting up receipt rule sets, see the [Amazon SES Developer Guide](https://docs.aws.amazon.com/ses/latest/dg/receiving-email-concepts.html#receiving-email-concepts-rules) .\n\nYou can execute this operation no more than once per second.",
       "properties": {
         "RuleSetName": "The name of the receipt rule set to reorder."
       }
@@ -34967,12 +35013,12 @@
       "attributes": {},
       "description": "Specifies an email template. Email templates enable you to send personalized email to one or more destinations in a single API operation.",
       "properties": {
-        "Template": "The content of the email, composed of a subject line, an HTML part, and a text-only part."
+        "Template": "The content of the email, composed of a subject line and either an HTML part or a text-only part."
       }
     },
     "AWS::SES::Template.Template": {
       "attributes": {},
-      "description": "The content of the email, composed of a subject line, an HTML part, and a text-only part.",
+      "description": "The content of the email, composed of a subject line and either an HTML part or a text-only part.",
       "properties": {
         "HtmlPart": "The HTML body of the email.",
         "SubjectPart": "The subject line of the email.",
@@ -35073,7 +35119,7 @@
         "AutomationTargetParameterName": "Choose the parameter that will define how your automation will branch out. This target is required for associations that use an Automation runbook and target resources by using rate controls. Automation is a capability of AWS Systems Manager .",
         "CalendarNames": "The names or Amazon Resource Names (ARNs) of the Change Calendar type documents your associations are gated under. The associations only run when that Change Calendar is open. For more information, see [AWS Systems Manager Change Calendar](https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-change-calendar) .",
         "ComplianceSeverity": "The severity level that is assigned to the association.",
-        "DocumentVersion": "The version of the SSM document to associate with the target.\n\n> `DocumentVersion` is not valid for documents owned by AWS , such as `AWS-RunPatchBaseline` or `AWS-UpdateSSMAgent` . If you specify `DocumentVersion` for an AWS document, the system returns the following error: \"Error occurred during operation 'CreateAssociation'.\" (RequestToken: <token>, HandlerErrorCode: GeneralServiceException).",
+        "DocumentVersion": "The version of the SSM document to associate with the target.\n\n> Note the following important information.\n> \n> - State Manager doesn't support running associations that use a new version of a document if that document is shared from another account. State Manager always runs the `default` version of a document if shared from another account, even though the Systems Manager console shows that a new version was processed. If you want to run an association using a new version of a document shared form another account, you must set the document version to `default` .\n> - `DocumentVersion` is not valid for documents owned by AWS , such as `AWS-RunPatchBaseline` or `AWS-UpdateSSMAgent` . If you specify `DocumentVersion` for an AWS document, the system returns the following error: \"Error occurred during operation 'CreateAssociation'.\" (RequestToken: <token>, HandlerErrorCode: GeneralServiceException).",
         "InstanceId": "The ID of the instance that the SSM document is associated with. You must specify the `InstanceId` or `Targets` property.\n\n> `InstanceId` has been deprecated. To specify an instance ID for an association, use the `Targets` parameter. If you use the parameter `InstanceId` , you cannot use the parameters `AssociationName` , `DocumentVersion` , `MaxErrors` , `MaxConcurrency` , `OutputLocation` , or `ScheduleExpression` . To use these parameters, you must use the `Targets` parameter.",
         "MaxConcurrency": "The maximum number of targets allowed to run the association at the same time. You can specify a number, for example 10, or a percentage of the target set, for example 10%. The default value is 100%, which means all targets run the association at the same time.\n\nIf a new managed node starts and attempts to run an association while Systems Manager is running `MaxConcurrency` associations, the association is allowed to run. During the next association interval, the new managed node will process its association within the limit specified for `MaxConcurrency` .",
         "MaxErrors": "The number of errors that are allowed before the system stops sending requests to run the association on additional targets. You can specify either an absolute number of errors, for example 10, or a percentage of the target set, for example 10%. If you specify 3, for example, the system stops sending requests when the fourth error is received. If you specify 0, then the system stops sending requests after the first error is returned. If you run an association on 50 managed nodes and set `MaxError` to 10%, then the system stops sending the request when the sixth error is received.\n\nExecutions that are already running an association when `MaxErrors` is reached are allowed to complete, but some of these executions may fail as well. If you need to ensure that there won't be more than max-errors failed executions, set `MaxConcurrency` to 1 so that executions proceed one at a time.",
@@ -37079,7 +37125,7 @@
       "attributes": {},
       "description": "A structure that defines the rotation configuration for the secret.",
       "properties": {
-        "AutomaticallyAfterDays": "Specifies the number of days between automatic scheduled rotations of the secret.\n\nSecrets Manager schedules the next rotation when the previous one is complete. Secrets Manager schedules the date by adding the rotation interval (number of days) to the actual date of the last rotation. The service chooses the hour within that 24-hour date window randomly. The minute is also chosen somewhat randomly, but weighted towards the top of the hour and influenced by a variety of factors that help distribute load."
+        "AutomaticallyAfterDays": "The number of days between automatic scheduled rotations of the secret. You can use this value to check that your secret meets your compliance guidelines for how often secrets must be rotated.\n\nIn `DescribeSecret` and `ListSecrets` , this value is calculated from the rotation schedule after every successful rotation. In `RotateSecret` , you can set the rotation schedule in `RotationRules` with `AutomaticallyAfterDays` or `ScheduleExpression` , but not both."
       }
     },
     "AWS::SecretsManager::Secret": {
