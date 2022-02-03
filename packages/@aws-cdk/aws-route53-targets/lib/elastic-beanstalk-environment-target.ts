@@ -20,9 +20,7 @@ export class ElasticBeanstalkEnvironmentEndpointTarget implements route53.IAlias
 
     const dnsName = this.environmentEndpoint;
     const subDomains = cdk.Fn.split('.', dnsName);
-    
-    // <...>.<region>.elasticbeanstalk.com
-    const regionSubdomainIndex = subDomains.length - 3; 
+    const regionSubdomainIndex = subDomains.length - 3;
     const region = cdk.Fn.select(regionSubdomainIndex, subDomains);
     const { ebsEnvEndpointHostedZoneId: hostedZoneId } = RegionInfo.get(region);
 
