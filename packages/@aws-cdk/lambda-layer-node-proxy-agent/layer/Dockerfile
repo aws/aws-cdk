@@ -17,7 +17,7 @@ RUN yum update -y \
 #
 
 RUN mkdir -p /opt/nodejs
-COPY package*.json /opt/nodejs
+COPY package*.json /opt/nodejs/
 RUN cd /opt/nodejs && npm ci && rm package*.json
 
 #
