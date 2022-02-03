@@ -4,6 +4,7 @@ import * as fs from 'fs-extra';
 import { Match } from './match';
 import { Matcher } from './matcher';
 import { findConditions, hasCondition } from './private/conditions';
+import { checkTemplateForCyclicDependencies } from './private/cyclic';
 import { findMappings, hasMapping } from './private/mappings';
 import { findOutputs, hasOutput } from './private/outputs';
 import { findParameters, hasParameter } from './private/parameters';
@@ -47,6 +48,7 @@ export class Template {
 
   private constructor(template: { [key: string]: any }) {
     this.template = template as TemplateType;
+    checkTemplateForCyclicDependencies(this.template);
   }
 
   /**
@@ -129,7 +131,8 @@ export class Template {
    * @param logicalId the name of the parameter. Provide `'*'` to match all parameters in the template.
    * @param props by default, matches all Parameters in the template.
    * When a literal object is provided, performs a partial match via `Match.objectLike()`.
-   * Use the `Match` APIs to configure a different behaviour.   */
+   * Use the `Match` APIs to configure a different behaviour.
+   */
   public findParameters(logicalId: string, props: any = {}): { [key: string]: { [key: string]: any } } {
     return findParameters(this.template, logicalId, props);
   }

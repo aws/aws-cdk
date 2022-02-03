@@ -71,8 +71,9 @@ export class SecretValue extends Intrinsic {
    * latest version of the parameter.
    */
   public static ssmSecure(parameterName: string, version?: string): SecretValue {
-    const parts = [parameterName, version ?? ''];
-    return this.cfnDynamicReference(new CfnDynamicReference(CfnDynamicReferenceService.SSM_SECURE, parts.join(':')));
+    return this.cfnDynamicReference(
+      new CfnDynamicReference(CfnDynamicReferenceService.SSM_SECURE,
+        version ? `${parameterName}:${version}` : parameterName));
   }
 
   /**

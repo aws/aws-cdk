@@ -118,6 +118,12 @@
                 "Required": false,
                 "UpdateType": "Mutable"
               },
+              "RoutingControlArn": {
+                "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-route53-healthcheck-healthcheckconfig.html#cfn-route53-healthcheck-healthcheckconfig-routingcontrolarn",
+                "PrimitiveType": "String",
+                "Required": false,
+                "UpdateType": "Mutable"
+              },
               "SearchString": {
                 "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-route53-healthcheck-healthcheckconfig.html#cfn-route53-healthcheck-healthcheckconfig-searchstring",
                 "PrimitiveType": "String",
