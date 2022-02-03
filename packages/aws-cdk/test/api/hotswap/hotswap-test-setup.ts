@@ -6,17 +6,19 @@ import * as lambda from 'aws-sdk/clients/lambda';
 import * as stepfunctions from 'aws-sdk/clients/stepfunctions';
 import { DeployStackResult } from '../../../lib/api';
 import * as deployments from '../../../lib/api/hotswap-deployments';
-import { Template } from '../../../lib/api/util/cloudformation';
+import { CloudFormationStack, Template } from '../../../lib/api/util/cloudformation';
 import { testStack, TestStackArtifact } from '../../util';
 import { MockSdkProvider, SyncHandlerSubsetOf } from '../../util/mock-sdk';
 import { FakeCloudformationStack } from '../fake-cloudformation-stack';
+import { CloudFormationStackArtifact } from '@aws-cdk/cx-api';
 
-const STACK_NAME = 'withouterrors';
+export const STACK_NAME = 'withouterrors'; // TODO: need to make it LambdaRoot for our first test, but we need to provide a way of configuring it (optional param to all methods that use it)
 export const STACK_ID = 'stackId';
 
 let hotswapMockSdkProvider: HotswapMockSdkProvider;
 let currentCfnStack: FakeCloudformationStack;
 const currentCfnStackResources: CloudFormation.StackResourceSummary[] = [];
+let stackTemplates: {[key:string]: any};
 
 export function setupHotswapTests() {
   jest.resetAllMocks();
@@ -27,6 +29,12 @@ export function setupHotswapTests() {
     stackName: STACK_NAME,
     stackId: STACK_ID,
   });
+  stackTemplates = {};
+  CloudFormationStack.lookup = async (_: CloudFormation, stackName: string) => {
+    currentCfnStack.template = async () => stackTemplates[stackName];
+
+    return currentCfnStack;
+  };
 
   return hotswapMockSdkProvider;
 }
@@ -45,6 +53,10 @@ export function pushStackResourceSummaries(...items: CloudFormation.StackResourc
 export function setCurrentCfnStackTemplate(template: Template) {
   const templateDeepCopy = JSON.parse(JSON.stringify(template)); // deep copy the template, so our tests can mutate one template instead of creating two
   currentCfnStack.setTemplate(templateDeepCopy);
+}
+
+export function addTemplateToCloudFormationLookupMock(stackArtifact: CloudFormationStackArtifact) {
+  stackTemplates[stackArtifact.stackName] = stackArtifact.template;
 }
 
 export function stackSummaryOf(logicalId: string, resourceType: string, physicalResourceId: string): CloudFormation.StackResourceSummary {

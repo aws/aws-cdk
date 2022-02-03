@@ -12,6 +12,7 @@ import { isHotswappableLambdaFunctionChange } from './hotswap/lambda-functions';
 import { isHotswappableS3BucketDeploymentChange } from './hotswap/s3-bucket-deployments';
 import { isHotswappableStateMachineChange } from './hotswap/stepfunctions-state-machines';
 import { CloudFormationStack } from './util/cloudformation';
+import { CloudFormationDeployments } from './cloudformation-deployments';
 
 /**
  * Perform a hotswap deployment,
@@ -43,8 +44,13 @@ export async function tryHotswapDeployment(
     listStackResources,
   });
 
-  const currentTemplate = await cloudFormationStack.template();
+  const cloudFormationDeployments = new CloudFormationDeployments({
+    sdkProvider,
+  });
+  const currentTemplate = await cloudFormationDeployments.readCurrentTemplateWithNestedStacks(stackArtifact);
+  //const currentTemplate = await cloudFormationStack.template();
   const stackChanges = cfn_diff.diffTemplate(currentTemplate, stackArtifact.template);
+  console.log(stackChanges.resources.changes);
   const hotswappableChanges = await findAllHotswappableChanges(stackChanges, evaluateCfnTemplate);
   if (!hotswappableChanges) {
     // this means there were changes to the template that cannot be short-circuited
