@@ -188,11 +188,21 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
   readonly deadLetterQueueEnabled?: boolean;
 
   /**
-   * The SQS queue or SNS topic to use if DLQ is enabled.
+   * The SQS queue to use if DLQ is enabled.
+   * If SNS topic is desired, specify `deadLetterTopic` property instead.
    *
    * @default - SQS queue with 14 day retention period if `deadLetterQueueEnabled` is `true`
    */
-  readonly deadLetterQueue?: sqs.IQueue | sns.ITopic;
+  readonly deadLetterQueue?: sqs.IQueue;
+
+  /**
+   * The SNS topic to use as DLQ.
+   * Note that topic will not be created and used as DLQ even if `deadLetterQueueEnabled`
+   * is set to `true`. Using topic requires this property to be set explicitly
+   *
+   * @default - no SNS topic
+   */
+  readonly deadLetterTopic?: sns.ITopic;
 
   /**
    * Enable AWS X-Ray Tracing for Lambda Function.
@@ -1040,23 +1050,27 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
       throw Error('deadLetterQueue defined but deadLetterQueueEnabled explicitly set to false');
     }
 
-    if (!props.deadLetterQueue && !props.deadLetterQueueEnabled) {
+    let deadLetterQueue: sqs.IQueue | sns.ITopic;
+
+    if (!props.deadLetterQueue && !props.deadLetterQueueEnabled && !props.deadLetterTopic) {
       return undefined;
-    }
-
-    const deadLetterQueue = props.deadLetterQueue || new sqs.Queue(this, 'DeadLetterQueue', {
-      retentionPeriod: Duration.days(14),
-    });
-
-    if (this.isQueue(deadLetterQueue)) {
-      this.addToRolePolicy(new iam.PolicyStatement({
-        actions: ['sqs:SendMessage'],
-        resources: [deadLetterQueue.queueArn],
-      }));
-    } else {
+    } else if (props.deadLetterTopic && props.deadLetterQueue) {
+      throw new Error('deadLetterQueue and deadLetterTopic cannot be specified together at the same time');
+    } else if (props.deadLetterTopic && (props.deadLetterQueueEnabled === false || props.deadLetterQueueEnabled === true)) {
+      throw new Error('deadLetterQueueEnabled and deadLetterTopic cannot be specified together at the same time');
+    } else if (props.deadLetterTopic && !props.deadLetterQueueEnabled) {
+      deadLetterQueue = props.deadLetterTopic;
       this.addToRolePolicy(new iam.PolicyStatement({
         actions: ['sns:Publish'],
         resources: [deadLetterQueue.topicArn],
+      }));
+    } else {
+      deadLetterQueue = props.deadLetterQueue || new sqs.Queue(this, 'DeadLetterQueue', {
+        retentionPeriod: Duration.days(14),
+      });
+      this.addToRolePolicy(new iam.PolicyStatement({
+        actions: ['sqs:SendMessage'],
+        resources: [deadLetterQueue.queueArn],
       }));
     }
 

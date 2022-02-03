@@ -688,15 +688,13 @@ describe('function', () => {
   test('default function with SNS DLQ when client provides Topic to be used as DLQ', () => {
     const stack = new cdk.Stack();
 
-    const dlQueue = new sns.Topic(stack, 'DeadLetterQueue', {
-      topicName: 'MyLambda_DLQ',
-    });
+    const dlTopic = new sns.Topic(stack, 'DeadLetterTopic');
 
     new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS_10_X,
-      deadLetterQueue: dlQueue,
+      deadLetterTopic: dlTopic,
     });
 
     const tpl = Template.fromStack(stack);
@@ -707,7 +705,7 @@ describe('function', () => {
             Action: 'sns:Publish',
             Effect: 'Allow',
             Resource: {
-              Ref: 'DeadLetterQueue9F481546',
+              Ref: 'DeadLetterTopicC237650B',
             },
           },
         ],
@@ -726,17 +724,44 @@ describe('function', () => {
   test('error when default function with SNS DLQ when client provides Topic to be used as DLQ and deadLetterQueueEnabled set to false', () => {
     const stack = new cdk.Stack();
 
-    const dlQueue = new sns.Topic(stack, 'DeadLetterQueue', {
-      topicName: 'MyLambda_DLQ',
-    });
+    const dlTopic = new sns.Topic(stack, 'DeadLetterTopic');
 
     expect(() => new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS_10_X,
       deadLetterQueueEnabled: false,
+      deadLetterTopic: dlTopic,
+    })).toThrow(/deadLetterQueueEnabled and deadLetterTopic cannot be specified together at the same time/);
+  });
+
+  test('error when default function with SNS DLQ when client provides Topic to be used as DLQ and deadLetterQueueEnabled set to true', () => {
+    const stack = new cdk.Stack();
+
+    const dlTopic = new sns.Topic(stack, 'DeadLetterTopic');
+
+    expect(() => new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_10_X,
+      deadLetterQueueEnabled: true,
+      deadLetterTopic: dlTopic,
+    })).toThrow(/deadLetterQueueEnabled and deadLetterTopic cannot be specified together at the same time/);
+  });
+
+  test('error when both topic and queue are presented as DLQ', () => {
+    const stack = new cdk.Stack();
+
+    const dlQueue = new sqs.Queue(stack, 'DLQ');
+    const dlTopic = new sns.Topic(stack, 'DeadLetterTopic');
+
+    expect(() => new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_10_X,
       deadLetterQueue: dlQueue,
-    })).toThrow(/deadLetterQueue defined but deadLetterQueueEnabled explicitly set to false/);
+      deadLetterTopic: dlTopic,
+    })).toThrow(/deadLetterQueue and deadLetterTopic cannot be specified together at the same time/);
   });
 
   test('default function with Active tracing', () => {
@@ -1622,7 +1647,7 @@ describe('function', () => {
   test('dlq is returned when provided by user and is Topic', () => {
     const stack = new cdk.Stack();
 
-    const dlQueue = new sns.Topic(stack, 'DeadLetterQueue', {
+    const dlTopic = new sns.Topic(stack, 'DeadLetterQueue', {
       topicName: 'MyLambda_DLQ',
     });
 
@@ -1630,7 +1655,7 @@ describe('function', () => {
       handler: 'foo',
       runtime: lambda.Runtime.NODEJS_10_X,
       code: lambda.Code.fromInline('foo'),
-      deadLetterQueue: dlQueue,
+      deadLetterTopic: dlTopic,
     });
     const deadLetterQueue = fn.deadLetterQueue;
     expect(deadLetterQueue).toBeDefined();
