@@ -301,7 +301,7 @@ test('cannot create transitions that transit to duprecated target state', () => 
         iotevents.Expression.fromString('12.2'),
       ),
     });
-  }).toThrow('A state cannot have transitions that transit to duprecated target state, target state name: secondState');
+  }).toThrow('State `firstState` already has a transition defined to `secondState`');
 });
 
 describe('Expression', () => {

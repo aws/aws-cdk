@@ -99,7 +99,7 @@ export class State {
    *
    * @internal
    */
-  public _collectStateJsons(collectedStates = new Set<State>()): CfnDetectorModel.StateProperty[] {
+  public _collectStateJsons(collectedStates: Set<State>): CfnDetectorModel.StateProperty[] {
     if (collectedStates.has(this)) {
       return [];
     }
@@ -123,36 +123,36 @@ export class State {
   }
 
   private toStateJson(): CfnDetectorModel.StateProperty {
-    const { stateName, onEnter } = this.props;
+    const { onEnter } = this.props;
     return {
-      stateName,
+      stateName: this.stateName,
+      onEnter: onEnter && { events: toEventsJson(onEnter) },
       onInput: {
-        transitionEvents: toTransitionEventJson(this.transitionEvents),
+        transitionEvents: toTransitionEventsJson(this.transitionEvents),
       },
-      onEnter: onEnter && { events: toEventJson(onEnter) },
     };
   }
 }
 
-function toEventJson(events: Event[]): CfnDetectorModel.EventProperty[] {
-  return events.map(e => {
+function toEventsJson(events: Event[]): CfnDetectorModel.EventProperty[] {
+  return events.map(event => {
     return {
-      eventName: e.eventName,
-      condition: e.condition?.evaluate(),
+      eventName: event.eventName,
+      condition: event.condition?.evaluate(),
     };
   });
 }
 
-function toTransitionEventJson(events: TransitionEvent[]): CfnDetectorModel.TransitionEventProperty[] | undefined {
-  if (events.length === 0) {
+function toTransitionEventsJson(transitionEvents: TransitionEvent[]): CfnDetectorModel.TransitionEventProperty[] | undefined {
+  if (transitionEvents.length === 0) {
     return undefined;
   }
 
-  return events.map(e => {
+  return transitionEvents.map(transitionEvent => {
     return {
-      eventName: e.eventName,
-      condition: e.condition.evaluate(),
-      nextState: e.nextState.stateName,
+      eventName: transitionEvent.eventName,
+      condition: transitionEvent.condition.evaluate(),
+      nextState: transitionEvent.nextState.stateName,
     };
   });
 }

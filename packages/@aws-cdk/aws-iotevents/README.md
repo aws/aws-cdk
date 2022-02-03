@@ -54,8 +54,8 @@ const input = new iotevents.Input(this, 'MyInput', {
   attributeJsonPaths: ['payload.deviceId', 'payload.temperature'],
 });
 
-const normalState = new iotevents.State({
-  stateName: 'normal',
+const warmState = new iotevents.State({
+  stateName: 'warm',
   onEnter: [{
     eventName: 'test-event',
     condition: iotevents.Expression.currentInput(input),
@@ -66,15 +66,15 @@ const coldState = new iotevents.State({
 });
 
 // transit to coldState when temperature is 10
-normalState.transitionTo(coldState, {
+warmState.transitionTo(coldState, {
   eventName: 'to_coldState', // optional property, default by combining the names of the States
   condition: iotevents.Expression.eq(
     iotevents.Expression.inputAttribute(input, 'payload.temperature'),
     iotevents.Expression.fromString('10'),
   ),
 });
-// transit to normalState when temperature is 20
-coldState.transitionTo(normalState, {
+// transit to warmState when temperature is 20
+coldState.transitionTo(warmState, {
   condition: iotevents.Expression.eq(
     iotevents.Expression.inputAttribute(input, 'payload.temperature'),
     iotevents.Expression.fromString('20'),
@@ -86,6 +86,6 @@ new iotevents.DetectorModel(this, 'MyDetectorModel', {
   description: 'test-detector-model-description', // optional property, default is none
   evaluationMethod: iotevents.EventEvaluation.SERIAL, // optional property, default is iotevents.EventEvaluation.BATCH
   detectorKey: 'payload.deviceId', // optional property, default is none and single detector instance will be created and all inputs will be routed to it
-  initialState: normalState,
+  initialState: warmState,
 });
 ```
