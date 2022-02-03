@@ -79,7 +79,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as iotevents from '@aws-cdk/aws-iotevents';
 
 declare const grantable: iam.IGrantable;
-const input = new iotevents.Input.fromInputName(this, 'MyInput', 'my_input');
+const input = iotevents.Input.fromInputName(this, 'MyInput', 'my_input');
 
 input.grantWrite(grantable);
 ```
