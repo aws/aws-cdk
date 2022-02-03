@@ -280,6 +280,8 @@ references that will get resolved only during deployment.
 For example:
 
 ```ts
+import * as sns from '@aws-cdk/aws-sns';
+
 declare const destinationBucket: s3.Bucket;
 declare const topic: sns.Topic;
 
