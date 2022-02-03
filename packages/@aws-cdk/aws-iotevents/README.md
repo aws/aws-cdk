@@ -76,9 +76,10 @@ you can use the `grantWrite()` method:
 
 ```ts
 import * as iam from '@aws-cdk/aws-iam';
+import * as iotevents from '@aws-cdk/aws-iotevents';
 
-declare const principal: iam.IGrantable;
+declare const grantable: iam.IGrantable;
 const input = new iotevents.Input.fromInputName(this, 'MyInput', 'my_input');
 
-input.grantWrite(lambdaFn);
+input.grantWrite(grantable);
 ```
