@@ -1596,19 +1596,19 @@ export class Bucket extends BucketBase {
     const errors: string[] = [];
 
     // Rules codified from https://docs.aws.amazon.com/AmazonS3/latest/dev/BucketRestrictions.html
-    if (bucketName.length < 3 || bucketName.length > 63) {
+    if (bucketName.indexOf('*') == -1 && (bucketName.length < 3 || bucketName.length > 63)) {
       errors.push('Bucket name must be at least 3 and no more than 63 characters');
     }
-    const charsetMatch = bucketName.match(/[^a-z0-9.-]/);
+    const charsetMatch = bucketName.match(/[^*a-z0-9.-]/);
     if (charsetMatch) {
       errors.push('Bucket name must only contain lowercase characters and the symbols, period (.) and dash (-) '
         + `(offset: ${charsetMatch.index})`);
     }
-    if (!/[a-z0-9]/.test(bucketName.charAt(0))) {
+    if (!/[*a-z0-9]/.test(bucketName.charAt(0))) {
       errors.push('Bucket name must start and end with a lowercase character or number '
         + '(offset: 0)');
     }
-    if (!/[a-z0-9]/.test(bucketName.charAt(bucketName.length - 1))) {
+    if (!/[*a-z0-9]/.test(bucketName.charAt(bucketName.length - 1))) {
       errors.push('Bucket name must start and end with a lowercase character or number '
         + `(offset: ${bucketName.length - 1})`);
     }

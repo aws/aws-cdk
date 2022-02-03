@@ -715,6 +715,34 @@ describe('bucket', () => {
     });
   });
 
+  test('import allows short bucket name with wild card', () => {
+    const stack = new cdk.Stack(undefined, undefined, {
+      env: { region: 'us-east-1' },
+    });
+
+    const bucket = s3.Bucket.fromBucketAttributes(stack, 'ImportedBucket', {
+      bucketName: 'm*',
+    });
+
+    expect(stack.resolve(bucket.bucketArn)).toEqual({
+      'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':s3:::m*']],
+    });
+  });
+
+  test('import allows bucket name with wild card', () => {
+    const stack = new cdk.Stack(undefined, undefined, {
+      env: { region: 'us-east-1' },
+    });
+
+    const bucket = s3.Bucket.fromBucketAttributes(stack, 'ImportedBucket', {
+      bucketName: 'my-bucket*',
+    });
+
+    expect(stack.resolve(bucket.bucketArn)).toEqual({
+      'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':s3:::my-bucket*']],
+    });
+  });
+
   test('grantRead', () => {
     const stack = new cdk.Stack();
     const reader = new iam.User(stack, 'Reader');
