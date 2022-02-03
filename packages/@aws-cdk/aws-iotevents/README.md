@@ -75,6 +75,6 @@ To grant permissions to put messages in the input,
 you can use the `grantPutMessage()` method:
 
 ```ts
-declare const principal: iam.IGrantable;
-input.grantPutMessage(principal);
+declare const lambdaFn: lambda.Function;
+input.grantWrite(lambdaFn);
 ```
