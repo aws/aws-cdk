@@ -2,7 +2,7 @@ import { Event } from './event';
 import { CfnDetectorModel } from './iotevents.generated';
 
 /**
- * Properties for defining a state of a detector
+ * Properties for defining a state of a detector.
  */
 export interface StateProps {
   /**
@@ -20,11 +20,11 @@ export interface StateProps {
 }
 
 /**
- * Defines a state of a detector
+ * Defines a state of a detector.
  */
 export class State {
   /**
-   * The name of the state
+   * The name of the state.
    */
   public readonly stateName: string;
 
@@ -33,7 +33,7 @@ export class State {
   }
 
   /**
-   * Return the state property JSON
+   * Return the state property JSON.
    *
    * @internal
    */
@@ -46,7 +46,7 @@ export class State {
   }
 
   /**
-   * returns true if this state has at least one condition via events
+   * Returns true if this state has at least one condition via events.
    *
    * @internal
    */
