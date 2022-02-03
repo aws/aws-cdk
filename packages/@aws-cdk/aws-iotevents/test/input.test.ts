@@ -112,7 +112,7 @@ test('can grant the permission to put message', () => {
   });
 
   // WHEN
-  input.grantPutMessage(role);
+  input.grantWrite(role);
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {

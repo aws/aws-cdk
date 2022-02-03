@@ -22,11 +22,11 @@ export interface IInput extends IResource {
   readonly inputArn: string;
 
   /**
-   * Grant the putting message permission to the given IAM principal (Role/Group/User).
+   * Grant write permissions on this input and its contents to an IAM principal (Role/Group/User).
    *
    * @param grantee the principal
    */
-  grantPutMessage(grantee: iam.IGrantable): iam.Grant
+  grantWrite(grantee: iam.IGrantable): iam.Grant
 
   /**
    * Grant the indicated permissions on this input to the given IAM principal (Role/Group/User).
@@ -42,7 +42,7 @@ abstract class InputBase extends Resource implements IInput {
 
   public abstract readonly inputArn: string;
 
-  public grantPutMessage(grantee: iam.IGrantable) {
+  public grantWrite(grantee: iam.IGrantable) {
     return this.grant(grantee, 'iotevents:BatchPutMessage');
   }
 
