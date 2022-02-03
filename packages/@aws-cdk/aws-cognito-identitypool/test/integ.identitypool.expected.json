@@ -402,11 +402,6 @@
         }
       },
       "DependsOn": [
-        "identitypoolAuthenticatedRoleDefaultPolicyCB4D2992",
-        "identitypoolAuthenticatedRoleB074B49D",
-        "identitypoolE2A6D099",
-        "identitypoolUnauthenticatedRoleDefaultPolicyBFACCE98",
-        "identitypoolUnauthenticatedRoleE61CAC70",
         "OtherPool7DA7F2F7",
         "OtherPoolUserPoolAuthenticationProviderClient08F670F8",
         "PoolD3F588B8",

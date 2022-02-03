@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as cdk from '@aws-cdk/core';
 import { Container, Environment, ScaleOnCpuUtilization, Service, ServiceDescription } from '../lib';
@@ -27,7 +27,7 @@ describe('scale on cpu utilization', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::ECS::Service', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
       DeploymentConfiguration: {
         MaximumPercent: 200,
         MinimumHealthyPercent: 100,
@@ -35,7 +35,7 @@ describe('scale on cpu utilization', () => {
       DesiredCount: 2,
     });
 
-    expect(stack).toHaveResource('AWS::ApplicationAutoScaling::ScalableTarget', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApplicationAutoScaling::ScalableTarget', {
       MaxCapacity: 8,
       MinCapacity: 2,
       ResourceId: {
@@ -76,7 +76,7 @@ describe('scale on cpu utilization', () => {
       ServiceNamespace: 'ecs',
     });
 
-    expect(stack).toHaveResource('AWS::ApplicationAutoScaling::ScalingPolicy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApplicationAutoScaling::ScalingPolicy', {
       PolicyName: 'myserviceserviceTaskCountTargetmyservicetargetcpuutilization50E6628660',
       PolicyType: 'TargetTrackingScaling',
       ScalingTargetId: {
@@ -91,8 +91,6 @@ describe('scale on cpu utilization', () => {
         TargetValue: 50,
       },
     });
-
-
   });
 
   test('should be able to set a custom scaling policy as well', () => {
@@ -125,7 +123,7 @@ describe('scale on cpu utilization', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::ECS::Service', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
       DeploymentConfiguration: {
         MaximumPercent: 200,
         MinimumHealthyPercent: 100,
@@ -133,20 +131,18 @@ describe('scale on cpu utilization', () => {
       DesiredCount: 25,
     });
 
-    expect(stack).toHaveResourceLike('AWS::ApplicationAutoScaling::ScalableTarget', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApplicationAutoScaling::ScalableTarget', {
       MaxCapacity: 30,
       MinCapacity: 15,
     });
 
-    expect(stack).toHaveResourceLike('AWS::ApplicationAutoScaling::ScalingPolicy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApplicationAutoScaling::ScalingPolicy', {
       TargetTrackingScalingPolicyConfiguration: {
         ScaleInCooldown: 180,
         ScaleOutCooldown: 180,
         TargetValue: 75,
       },
     });
-
-
   });
 
   test('should error if configuring autoscaling target both in the extension and the Service', () => {
@@ -176,5 +172,4 @@ describe('scale on cpu utilization', () => {
       });
     }).toThrow('Cannot specify \'autoScaleTaskCount\' in the Service construct and also provide a  \'ScaleOnCpuUtilization\' extension. \'ScaleOnCpuUtilization\' is deprecated. Please only provide \'autoScaleTaskCount\'.');
   });
-
 });
