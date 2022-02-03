@@ -24,6 +24,7 @@ In addition, the library also supports defining Kubernetes resource manifests wi
   * [Fargate Profiles](#fargate-profiles)
   * [Self-managed nodes](#self-managed-nodes)
   * [Endpoint Access](#endpoint-access)
+  * [ALB Controller](#alb-controller)
   * [VPC Support](#vpc-support)
   * [Kubectl Support](#kubectl-support)
   * [ARM64 Support](#arm64-support)
@@ -521,6 +522,53 @@ const cluster = new eks.Cluster(this, 'hello-eks', {
 
 The default value is `eks.EndpointAccess.PUBLIC_AND_PRIVATE`. Which means the cluster endpoint is accessible from outside of your VPC, but worker node traffic and `kubectl` commands issued by this library stay within your VPC.
 
+### Alb Controller
+
+Some Kubernetes resources are commonly implemented on AWS with the help of the [ALB Controller](https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.3/).
+
+From the docs:
+
+> AWS Load Balancer Controller is a controller to help manage Elastic Load Balancers for a Kubernetes cluster.
+>
+> * It satisfies Kubernetes Ingress resources by provisioning Application Load Balancers.
+> * It satisfies Kubernetes Service resources by provisioning Network Load Balancers.
+
+To deploy the controller on your EKS cluster, configure the `albController` property:
+
+```ts
+new eks.Cluster(this, 'HelloEKS', {
+  version: eks.KubernetesVersion.V1_21,
+  albController: {
+    version: eks.AlbControllerVersion.V2_3_1,
+  },
+});
+```
+
+Querying the controller pods should look something like this:
+
+```console
+❯ kubectl get pods -n kube-system
+NAME                                            READY   STATUS    RESTARTS   AGE
+aws-load-balancer-controller-76bd6c7586-d929p   1/1     Running   0          109m
+aws-load-balancer-controller-76bd6c7586-fqxph   1/1     Running   0          109m
+...
+...
+```
+
+Every Kubernetes manifest that utilizes the ALB Controller is effectively dependant on the controller.
+If the controller is deleted before the manifest, it might result in dangling ELB/ALB resources.
+Currently, the EKS construct library does not detect such dependencies, and they should be done explicitly.
+
+For example:
+
+```ts
+declare const cluster: eks.Cluster;
+const manifest = cluster.addManifest('manifest', {/* ... */});
+if (cluster.albController) {
+  manifest.node.addDependency(cluster.albController);
+}
+```
+
 ### VPC Support
 
 You can specify the VPC of the cluster using the `vpc` and `vpcSubnets` properties:
@@ -565,7 +613,7 @@ Breaking this down, it means that if the endpoint exposes private access (via `E
 
 If the endpoint does not expose private access (via `EndpointAccess.PUBLIC`) **or** the VPC does not contain private subnets, the function will not be provisioned within the VPC.
 
-If your use-case requires control over the IAM role that the KubeCtl Handler assumes, a custom role can be passed through the ClusterProps (as `kubectlLambdaRole`) of the EKS Cluster construct. 
+If your use-case requires control over the IAM role that the KubeCtl Handler assumes, a custom role can be passed through the ClusterProps (as `kubectlLambdaRole`) of the EKS Cluster construct.
 
 #### Cluster Handler
 
@@ -591,6 +639,22 @@ const cluster = new eks.Cluster(this, 'hello-eks', {
 ### Kubectl Support
 
 The resources are created in the cluster by running `kubectl apply` from a python lambda function.
+
+By default, CDK will create a new python lambda function to apply your k8s manifests. If you want to use an existing kubectl provider function, for example with tight trusted entities on your IAM Roles - you can import the existing provider and then use the imported provider when importing the cluster:
+
+```ts
+const handlerRole = iam.Role.fromRoleArn(this, 'HandlerRole', 'arn:aws:iam::123456789012:role/lambda-role');
+const kubectlProvider = eks.KubectlProvider.fromKubectlProviderAttributes(this, 'KubectlProvider', {
+  functionArn: 'arn:aws:lambda:us-east-2:123456789012:function:my-function:1',
+  kubectlRoleArn: 'arn:aws:iam::123456789012:role/kubectl-role',
+  handlerRole,
+});
+
+const cluster = eks.Cluster.fromClusterAttributes(this, 'Cluster', {
+  clusterName: 'cluster',
+  kubectlProvider,
+});
+```
 
 #### Environment
 
@@ -660,7 +724,7 @@ By default, the kubectl provider is configured with 1024MiB of memory. You can u
 ```ts
 new eks.Cluster(this, 'MyCluster', {
   kubectlMemory: Size.gibibytes(4),
-  version: eks.KubernetesVersion.V1_21, 
+  version: eks.KubernetesVersion.V1_21,
 });
 
 // or
@@ -931,6 +995,18 @@ new eks.KubernetesManifest(this, 'hello-kub', {
 cluster.addManifest('hello-kub', service, deployment);
 ```
 
+#### ALB Controller Integration
+
+The `KubernetesManifest` construct can detect ingress resources inside your manifest and automatically add the necessary annotations
+so they are picked up by the ALB Controller.
+
+> See [Alb Controller](#alb-controller)
+
+To that end, it offers the following properties:
+
+* `ingressAlb` - Signal that the ingress detection should be done.
+* `ingressAlbScheme` - Which ALB scheme should be applied. Defaults to `internal`.
+
 #### Adding resources from a URL
 
 The following example will deploy the resource manifest hosting on remote server:
@@ -1053,6 +1129,21 @@ are being passed down (such as `repo`, `values`, `version`, `namespace`, `wait`,
 This means that if the chart is added to CDK with the same release name, it will try to update
 the chart in the cluster.
 
+Additionally, the `chartAsset` property can be an `aws-s3-assets.Asset`. This allows the use of local, private helm charts.
+
+```ts
+import * as s3Assets from '@aws-cdk/aws-s3-assets';
+
+declare const cluster: eks.Cluster;
+const chartAsset = new s3Assets.Asset(this, 'ChartAsset', {
+  path: '/path/to/asset'
+});
+
+cluster.addHelmChart('test-chart', {
+  chartAsset: chartAsset,
+});
+```
+
 Helm charts are implemented as CloudFormation resources in CDK.
 This means that if the chart is deleted from your code (or the stack is
 deleted), the next `cdk deploy` will issue a `helm uninstall` command and the
@@ -1094,13 +1185,16 @@ To get started, add the following dependencies to your `package.json` file:
 
 ```json
 "dependencies": {
-  "cdk8s": "0.30.0",
-  "cdk8s-plus": "0.30.0",
-  "constructs": "3.0.4"
+  "cdk8s": "^1.0.0",
+  "cdk8s-plus-21": "^1.0.0-beta.38",
+  "constructs": "^3.3.69"
 }
 ```
 
-> Note that the version of `cdk8s` must be `>=0.30.0`.
+Note that here we are using `cdk8s-plus-21` as we are targeting Kubernetes version 1.21.0. If you operate a different kubernetes version, you should
+use the corresponding `cdk8s-plus-XX` library.
+See [Select the appropriate cdk8s+ library](https://cdk8s.io/docs/latest/plus/#i-operate-kubernetes-version-1xx-which-cdk8s-library-should-i-be-using)
+for more details.
 
 Similarly to how you would create a stack by extending `@aws-cdk/core.Stack`, we recommend you create a chart of your own that extends `cdk8s.Chart`,
 and add your kubernetes resources to it. You can use `aws-cdk` construct attributes and properties inside your `cdk8s` construct freely.
@@ -1116,7 +1210,7 @@ For this reason, to avoid possible confusion, we will create the chart in a sepa
 import * as s3 from '@aws-cdk/aws-s3';
 import * as constructs from 'constructs';
 import * as cdk8s from 'cdk8s';
-import * as kplus from 'cdk8s-plus';
+import * as kplus from 'cdk8s-plus-21';
 
 export interface MyChartProps {
   readonly bucket: s3.Bucket;
@@ -1164,7 +1258,7 @@ This is why we used `new cdk8s.App()` as the scope of the chart above.
 ```ts nofixture
 import * as constructs from 'constructs';
 import * as cdk8s from 'cdk8s';
-import * as kplus from 'cdk8s-plus';
+import * as kplus from 'cdk8s-plus-21';
 
 export interface LoadBalancedWebService {
   readonly port: number;
@@ -1184,7 +1278,8 @@ export class LoadBalancedWebService extends constructs.Construct {
       containers: [ new kplus.Container({ image: props.image }) ],
     });
 
-    deployment.expose(props.port, {
+    deployment.exposeViaService({
+      port: props.port,
       serviceType: kplus.ServiceType.LOAD_BALANCER,
     });
   }
@@ -1301,6 +1396,31 @@ Kubernetes [endpoint access](#endpoint-access), you must also specify:
   connections to the cluster's control security group. For example, the EKS managed [cluster security group](#cluster-security-group).
 * `kubectlPrivateSubnetIds` - a list of private VPC subnets IDs that will be used
   to access the Kubernetes endpoint.
+
+## Logging
+
+EKS supports cluster logging for 5 different types of events: 
+
+* API requests to the cluster.
+* Cluster access via the Kubernetes API.
+* Authentication requests into the cluster.
+* State of cluster controllers.
+* Scheduling decisions.
+
+You can enable logging for each one separately using the `clusterLogging`
+property. For example:
+
+```ts
+const cluster = new eks.Cluster(this, 'Cluster', {
+  // ...
+  version: eks.KubernetesVersion.V1_21,
+  clusterLogging: [
+    eks.ClusterLoggingTypes.API,
+    eks.ClusterLoggingTypes.AUTHENTICATOR,
+    eks.ClusterLoggingTypes.SCHEDULER,
+  ],
+});
+```
 
 ## Known Issues and Limitations
 

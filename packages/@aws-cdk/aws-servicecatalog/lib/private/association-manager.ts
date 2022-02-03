@@ -9,7 +9,7 @@ import { IPortfolio } from '../portfolio';
 import { IProduct } from '../product';
 import {
   CfnLaunchNotificationConstraint, CfnLaunchRoleConstraint, CfnLaunchTemplateConstraint, CfnPortfolioProductAssociation,
-  CfnResourceUpdateConstraint, CfnStackSetConstraint, CfnTagOption, CfnTagOptionAssociation,
+  CfnResourceUpdateConstraint, CfnStackSetConstraint, CfnTagOptionAssociation,
 } from '../servicecatalog.generated';
 import { TagOptions } from '../tag-options';
 import { hashValues } from './util';
@@ -139,32 +139,16 @@ export class AssociationManager {
     }
   }
 
-  public static associateTagOptions(portfolio: IPortfolio, tagOptions: TagOptions): void {
-    const portfolioStack = cdk.Stack.of(portfolio);
-    for (const [key, tagOptionsList] of Object.entries(tagOptions.tagOptionsMap)) {
-      InputValidator.validateLength(portfolio.node.addr, 'TagOption key', 1, 128, key);
-      tagOptionsList.forEach((value: string) => {
-        InputValidator.validateLength(portfolio.node.addr, 'TagOption value', 1, 256, value);
-        const tagOptionKey = hashValues(key, value, portfolioStack.node.addr);
-        const tagOptionConstructId = `TagOption${tagOptionKey}`;
-        let cfnTagOption = portfolioStack.node.tryFindChild(tagOptionConstructId) as CfnTagOption;
-        if (!cfnTagOption) {
-          cfnTagOption = new CfnTagOption(portfolioStack, tagOptionConstructId, {
-            key: key,
-            value: value,
-            active: true,
-          });
-        }
-        const tagAssocationKey = hashValues(key, value, portfolio.node.addr);
-        const tagAssocationConstructId = `TagOptionAssociation${tagAssocationKey}`;
-        if (!portfolio.node.tryFindChild(tagAssocationConstructId)) {
-          new CfnTagOptionAssociation(portfolio as unknown as cdk.Resource, tagAssocationConstructId, {
-            resourceId: portfolio.portfolioId,
-            tagOptionId: cfnTagOption.ref,
-          });
-        }
-      });
-    };
+  public static associateTagOptions(resource: cdk.IResource, resourceId: string, tagOptions: TagOptions): void {
+    for (const cfnTagOption of tagOptions._cfnTagOptions) {
+      const tagAssocationConstructId = `TagOptionAssociation${hashValues(cfnTagOption.key, cfnTagOption.value, resource.node.addr)}`;
+      if (!resource.node.tryFindChild(tagAssocationConstructId)) {
+        new CfnTagOptionAssociation(resource as cdk.Resource, tagAssocationConstructId, {
+          resourceId: resourceId,
+          tagOptionId: cfnTagOption.ref,
+        });
+      }
+    }
   }
 
   private static setLaunchRoleConstraint(

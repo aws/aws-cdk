@@ -1,12 +1,14 @@
-import '@aws-cdk/assert-internal/jest';
+import { readFileSync } from 'fs';
 import * as path from 'path';
+import { Match, Template } from '@aws-cdk/assertions';
 import * as cloudfront from '@aws-cdk/aws-cloudfront';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
+import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
+import { testDeprecated, testFutureBehavior } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
-import { testFutureBehavior } from '@aws-cdk/cdk-build-tools/lib/feature-flag';
 import * as s3deploy from '../lib';
 
 /* eslint-disable max-len */
@@ -25,7 +27,7 @@ test('deploy from local directory asset', () => {
   });
 
   // THEN
-  expect(stack).toHaveResource('Custom::CDKBucketDeployment', {
+  Template.fromStack(stack).hasResourceProperties('Custom::CDKBucketDeployment', {
     ServiceToken: {
       'Fn::GetAtt': [
         'CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C81C01536',
@@ -74,6 +76,22 @@ test('deploy from local directory asset', () => {
   });
 });
 
+test('deploy with configured log retention', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const bucket = new s3.Bucket(stack, 'Dest');
+
+  // WHEN
+  new s3deploy.BucketDeployment(stack, 'Deploy', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+    destinationBucket: bucket,
+    logRetention: logs.RetentionDays.ONE_WEEK,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('Custom::LogRetention', { RetentionInDays: 7 });
+});
+
 test('deploy from local directory assets', () => {
   // GIVEN
   const stack = new cdk.Stack();
@@ -89,7 +107,7 @@ test('deploy from local directory assets', () => {
   });
 
   // THEN
-  expect(stack).toHaveResource('Custom::CDKBucketDeployment', {
+  Template.fromStack(stack).hasResourceProperties('Custom::CDKBucketDeployment', {
     ServiceToken: {
       'Fn::GetAtt': [
         'CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C81C01536',
@@ -217,7 +235,7 @@ test('deploy from a local .zip file when efs is enabled', () => {
   });
 
   //THEN
-  expect(stack).toHaveResource('AWS::Lambda::Function', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
     Environment: {
       Variables: {
         MOUNT_PATH: '/mnt/lambda',
@@ -277,7 +295,13 @@ test('deploy from a local .zip file when efs is enabled', () => {
   });
 });
 
-test('honors passed asset options', () => {
+testDeprecated('honors passed asset options', () => {
+  // The 'exclude' property is deprecated and not deprecated in AssetOptions interface.
+  // The interface through a complex set of inheritance chain has a 'exclude' prop that is deprecated
+  // and another 'exclude' prop that is not deprecated.
+  // Using 'testDeprecated' block here since there's no way to work around this craziness.
+  // When the deprecated property is removed from source, this block can be dropped.
+
   // GIVEN
   const stack = new cdk.Stack();
   const bucket = new s3.Bucket(stack, 'Dest');
@@ -291,7 +315,7 @@ test('honors passed asset options', () => {
   });
 
   // THEN
-  expect(stack).toHaveResource('Custom::CDKBucketDeployment', {
+  Template.fromStack(stack).hasResourceProperties('Custom::CDKBucketDeployment', {
     ServiceToken: {
       'Fn::GetAtt': [
         'CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C81C01536',
@@ -353,7 +377,7 @@ test('retainOnDelete can be used to retain files when resource is deleted', () =
   });
 
   // THEN
-  expect(stack).toHaveResource('Custom::CDKBucketDeployment', {
+  Template.fromStack(stack).hasResourceProperties('Custom::CDKBucketDeployment', {
     RetainOnDelete: true,
   });
 });
@@ -374,7 +398,7 @@ test('user metadata is correctly transformed', () => {
   });
 
   // THEN
-  expect(stack).toHaveResource('Custom::CDKBucketDeployment', {
+  Template.fromStack(stack).hasResourceProperties('Custom::CDKBucketDeployment', {
     UserMetadata: { a: '1', b: '2' },
   });
 });
@@ -403,7 +427,7 @@ test('system metadata is correctly transformed', () => {
   });
 
   // THEN
-  expect(stack).toHaveResource('Custom::CDKBucketDeployment', {
+  Template.fromStack(stack).hasResourceProperties('Custom::CDKBucketDeployment', {
     SystemMetadata: {
       'content-type': 'text/html',
       'content-language': 'en',
@@ -448,7 +472,7 @@ test.each(Object.entries(accessControlMap) as [s3.BucketAccessControl, string][]
     });
 
     // THEN
-    expect(stack).toHaveResource('Custom::CDKBucketDeployment', {
+    Template.fromStack(stack).hasResourceProperties('Custom::CDKBucketDeployment', {
       SystemMetadata: {
         acl: systemMetadataKeyword,
       },
@@ -513,7 +537,7 @@ test('distribution can be used to provide a CloudFront distribution for invalida
     distributionPaths: ['/images/*'],
   });
 
-  expect(stack).toHaveResource('Custom::CDKBucketDeployment', {
+  Template.fromStack(stack).hasResourceProperties('Custom::CDKBucketDeployment', {
     DistributionId: {
       Ref: 'DistributionCFDistribution882A7313',
     },
@@ -543,7 +567,7 @@ test('invalidation can happen without distributionPaths provided', () => {
     distribution,
   });
 
-  expect(stack).toHaveResource('Custom::CDKBucketDeployment', {
+  Template.fromStack(stack).hasResourceProperties('Custom::CDKBucketDeployment', {
     DistributionId: {
       Ref: 'DistributionCFDistribution882A7313',
     },
@@ -602,7 +626,7 @@ testFutureBehavior('lambda execution role gets permissions to read from the sour
   });
 
   // THEN
-  expect(stack).toHaveResource('AWS::IAM::Policy', {
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
     PolicyDocument: {
       Statement: [
         {
@@ -642,6 +666,10 @@ testFutureBehavior('lambda execution role gets permissions to read from the sour
             's3:List*',
             's3:DeleteObject*',
             's3:PutObject',
+            's3:PutObjectLegalHold',
+            's3:PutObjectRetention',
+            's3:PutObjectTagging',
+            's3:PutObjectVersionTagging',
             's3:Abort*',
           ],
           Effect: 'Allow',
@@ -711,9 +739,9 @@ test('memoryLimit can be used to specify the memory limit for the deployment res
 
   // we expect to find only two handlers, one for each configuration
 
-  expect(stack).toCountResources('AWS::Lambda::Function', 2);
-  expect(stack).toHaveResource('AWS::Lambda::Function', { MemorySize: 256 });
-  expect(stack).toHaveResource('AWS::Lambda::Function', { MemorySize: 1024 });
+  Template.fromStack(stack).resourceCountIs('AWS::Lambda::Function', 2);
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', { MemorySize: 256 });
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', { MemorySize: 1024 });
 });
 
 test('deployment allows custom role to be supplied', () => {
@@ -733,9 +761,9 @@ test('deployment allows custom role to be supplied', () => {
   });
 
   // THEN
-  expect(stack).toCountResources('AWS::IAM::Role', 1);
-  expect(stack).toCountResources('AWS::Lambda::Function', 1);
-  expect(stack).toHaveResource('AWS::Lambda::Function', {
+  Template.fromStack(stack).resourceCountIs('AWS::IAM::Role', 1);
+  Template.fromStack(stack).resourceCountIs('AWS::Lambda::Function', 1);
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
     Role: {
       'Fn::GetAtt': [
         'Role1ABCC5F0',
@@ -758,13 +786,12 @@ test('deploy without deleting missing files from destination', () => {
     prune: false,
   });
 
-  expect(stack).toHaveResourceLike('Custom::CDKBucketDeployment', {
+  Template.fromStack(stack).hasResourceProperties('Custom::CDKBucketDeployment', {
     Prune: false,
   });
 });
 
 test('deploy with excluded files from destination', () => {
-
   // GIVEN
   const stack = new cdk.Stack();
   const bucket = new s3.Bucket(stack, 'Dest');
@@ -776,7 +803,7 @@ test('deploy with excluded files from destination', () => {
     exclude: ['sample.js'],
   });
 
-  expect(stack).toHaveResourceLike('Custom::CDKBucketDeployment', {
+  Template.fromStack(stack).hasResourceProperties('Custom::CDKBucketDeployment', {
     Exclude: ['sample.js'],
   });
 });
@@ -794,7 +821,7 @@ test('deploy with included files from destination', () => {
     include: ['sample.js'],
   });
 
-  expect(stack).toHaveResourceLike('Custom::CDKBucketDeployment', {
+  Template.fromStack(stack).hasResourceProperties('Custom::CDKBucketDeployment', {
     Include: ['sample.js'],
   });
 });
@@ -813,7 +840,7 @@ test('deploy with excluded and included files from destination', () => {
     include: ['sample/include.json'],
   });
 
-  expect(stack).toHaveResourceLike('Custom::CDKBucketDeployment', {
+  Template.fromStack(stack).hasResourceProperties('Custom::CDKBucketDeployment', {
     Exclude: ['sample/*'],
     Include: ['sample/include.json'],
   });
@@ -833,7 +860,7 @@ test('deploy with multiple exclude and include filters', () => {
     include: ['sample/include.json', 'another/include.json'],
   });
 
-  expect(stack).toHaveResourceLike('Custom::CDKBucketDeployment', {
+  Template.fromStack(stack).hasResourceProperties('Custom::CDKBucketDeployment', {
     Exclude: ['sample/*', 'another/*'],
     Include: ['sample/include.json', 'another/include.json'],
   });
@@ -854,7 +881,7 @@ test('deployment allows vpc to be implicitly supplied to lambda', () => {
   });
 
   // THEN
-  expect(stack).toHaveResource('AWS::Lambda::Function', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
     VpcConfig: {
       SecurityGroupIds: [
         {
@@ -899,7 +926,7 @@ test('deployment allows vpc and subnets to be implicitly supplied to lambda', ()
   });
 
   // THEN
-  expect(stack).toHaveResource('AWS::Lambda::Function', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
     VpcConfig: {
       SecurityGroupIds: [
         {
@@ -917,3 +944,199 @@ test('deployment allows vpc and subnets to be implicitly supplied to lambda', ()
     },
   });
 });
+
+test('resource id includes memory and vpc', () => {
+
+  // GIVEN
+  const stack = new cdk.Stack();
+  const bucket = new s3.Bucket(stack, 'Dest');
+  const vpc: ec2.IVpc = new ec2.Vpc(stack, 'SomeVpc2', {});
+
+  // WHEN
+  new s3deploy.BucketDeployment(stack, 'DeployWithVpc2', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+    destinationBucket: bucket,
+    vpc,
+    memoryLimit: 256,
+  });
+
+  // THEN
+  Template.fromStack(stack).templateMatches({
+    Resources: Match.objectLike({
+      DeployWithVpc2CustomResource256MiBc8a39596cb8641929fcf6a288bc9db5ab7b0f656ad3C5F6E78: Match.objectLike({
+        Type: 'Custom::CDKBucketDeployment',
+      }),
+    }),
+  });
+});
+
+test('bucket includes custom resource owner tag', () => {
+
+  // GIVEN
+  const stack = new cdk.Stack();
+  const bucket = new s3.Bucket(stack, 'Dest');
+  const vpc: ec2.IVpc = new ec2.Vpc(stack, 'SomeVpc2', {});
+
+  // WHEN
+  new s3deploy.BucketDeployment(stack, 'DeployWithVpc2', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+    destinationBucket: bucket,
+    destinationKeyPrefix: '/a/b/c',
+    vpc,
+    memoryLimit: 256,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+    Tags: [{
+      Key: 'aws-cdk:cr-owned:/a/b/c:971e1fa8',
+      Value: 'true',
+    }],
+  });
+});
+
+test('throws if destinationKeyPrefix is too long', () => {
+
+  // GIVEN
+  const stack = new cdk.Stack();
+  const bucket = new s3.Bucket(stack, 'Dest');
+
+  // WHEN
+  expect(() => new s3deploy.BucketDeployment(stack, 'DeployWithVpc2', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+    destinationBucket: bucket,
+    destinationKeyPrefix: '/this/is/a/random/key/prefix/that/is/a/lot/of/characters/do/we/think/that/it/will/ever/be/this/long??????',
+    memoryLimit: 256,
+  })).toThrow(/The BucketDeployment construct requires that/);
+
+});
+
+test('bucket has multiple deployments', () => {
+
+  // GIVEN
+  const stack = new cdk.Stack();
+  const bucket = new s3.Bucket(stack, 'Dest');
+  const vpc: ec2.IVpc = new ec2.Vpc(stack, 'SomeVpc2', {});
+
+  // WHEN
+  new s3deploy.BucketDeployment(stack, 'DeployWithVpc2', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+    destinationBucket: bucket,
+    destinationKeyPrefix: '/a/b/c',
+    vpc,
+    memoryLimit: 256,
+  });
+
+  new s3deploy.BucketDeployment(stack, 'DeployWithVpc2Exclude', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'), {
+      exclude: ['index.html'],
+    })],
+    destinationBucket: bucket,
+    destinationKeyPrefix: '/a/b/c',
+    vpc,
+    memoryLimit: 256,
+  });
+
+  new s3deploy.BucketDeployment(stack, 'DeployWithVpc3', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+    destinationBucket: bucket,
+    destinationKeyPrefix: '/x/z',
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+    Tags: [
+      {
+        Key: 'aws-cdk:cr-owned:/a/b/c:6da0a4ab',
+        Value: 'true',
+      },
+      {
+        Key: 'aws-cdk:cr-owned:/a/b/c:971e1fa8',
+        Value: 'true',
+      },
+      {
+        Key: 'aws-cdk:cr-owned:/x/z:2db04622',
+        Value: 'true',
+      },
+    ],
+  });
+});
+
+test('"SourceMarkers" is not included if none of the sources have markers', () => {
+  const stack = new cdk.Stack();
+  const bucket = new s3.Bucket(stack, 'Bucket');
+  new s3deploy.BucketDeployment(stack, 'DeployWithVpc3', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+    destinationBucket: bucket,
+  });
+
+  const map = Template.fromStack(stack).findResources('Custom::CDKBucketDeployment');
+  expect(map).toBeDefined();
+  const resource = map[Object.keys(map)[0]];
+  expect(Object.keys(resource.Properties)).toStrictEqual([
+    'ServiceToken',
+    'SourceBucketNames',
+    'SourceObjectKeys',
+    'DestinationBucketName',
+    'Prune',
+  ]);
+});
+
+test('Source.data() can be used to create a file with string contents', () => {
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'Test');
+  const bucket = new s3.Bucket(stack, 'Bucket');
+
+  const source = s3deploy.Source.data('my/path.txt', 'hello, world');
+
+  new s3deploy.BucketDeployment(stack, 'DeployWithVpc3', {
+    sources: [source],
+    destinationBucket: bucket,
+    destinationKeyPrefix: '/x/z',
+  });
+
+  const result = app.synth();
+  const content = readDataFile(result, 'c5b1c01fc092abf1da35f6772e7c507e566aaa69404025c080ba074c69741755', 'my/path.txt');
+  expect(content).toStrictEqual('hello, world');
+});
+
+test('Source.jsonData() can be used to create a file with a JSON object', () => {
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'Test');
+  const bucket = new s3.Bucket(stack, 'Bucket');
+
+  const config = {
+    foo: 'bar',
+    sub: {
+      hello: bucket.bucketArn,
+    },
+  };
+
+  new s3deploy.BucketDeployment(stack, 'DeployWithVpc3', {
+    sources: [s3deploy.Source.jsonData('app-config.json', config)],
+    destinationBucket: bucket,
+  });
+
+  const result = app.synth();
+  const obj = JSON.parse(readDataFile(result, '6a9e1763f42401799363d87d16b238c89bf75a56f2a3f67498a3224573062b0c', 'app-config.json'));
+  expect(obj).toStrictEqual({
+    foo: 'bar',
+    sub: {
+      hello: '<<marker:0xbaba:0>>',
+    },
+  });
+
+  // verify marker is mapped to the bucket ARN in the resource props
+  Template.fromJSON(result.stacks[0].template).hasResourceProperties('Custom::CDKBucketDeployment', {
+    SourceMarkers: [
+      { '<<marker:0xbaba:0>>': { 'Fn::GetAtt': ['Bucket83908E77', 'Arn'] } },
+    ],
+  });
+});
+
+
+function readDataFile(casm: cxapi.CloudAssembly, assetId: string, filePath: string): string {
+  const asset = casm.stacks[0].assets.find(a => a.id === assetId);
+  if (!asset) { throw new Error('Asset not found'); }
+  return readFileSync(path.join(casm.directory, asset.path, filePath), 'utf-8');
+}

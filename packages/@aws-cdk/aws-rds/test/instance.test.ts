@@ -1,5 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
-import { ABSENT, ResourcePart, anything } from '@aws-cdk/assert-internal';
+import { Match, Template } from '@aws-cdk/assertions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as targets from '@aws-cdk/aws-events-targets';
 import { ManagedPolicy, Role, ServicePrincipal, AccountPrincipal } from '@aws-cdk/aws-iam';
@@ -7,9 +6,9 @@ import * as kms from '@aws-cdk/aws-kms';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
+import { testFutureBehavior } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
-import { testFutureBehavior } from '@aws-cdk/cdk-build-tools/lib/feature-flag';
 import * as rds from '../lib';
 
 let stack: cdk.Stack;
@@ -49,7 +48,7 @@ describe('instance', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::RDS::DBInstance', {
+    Template.fromStack(stack).hasResource('AWS::RDS::DBInstance', {
       Properties: {
         DBInstanceClass: 'db.t2.medium',
         AllocatedStorage: '100',
@@ -117,9 +116,9 @@ describe('instance', () => {
       },
       DeletionPolicy: 'Snapshot',
       UpdateReplacePolicy: 'Snapshot',
-    }, ResourcePart.CompleteDefinition);
+    });
 
-    expect(stack).toHaveResource('AWS::RDS::DBSubnetGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBSubnetGroup', {
       DBSubnetGroupDescription: 'Subnet group for Instance database',
       SubnetIds: [
         {
@@ -131,11 +130,11 @@ describe('instance', () => {
       ],
     });
 
-    expect(stack).toHaveResource('AWS::EC2::SecurityGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroup', {
       GroupDescription: 'Security group for Instance database',
     });
 
-    expect(stack).toHaveResource('AWS::IAM::Role', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
       AssumeRolePolicyDocument: {
         Statement: [
           {
@@ -164,7 +163,7 @@ describe('instance', () => {
       ],
     });
 
-    expect(stack).toHaveResource('AWS::SecretsManager::Secret', {
+    Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::Secret', {
       Description: {
         'Fn::Join': [
           '',
@@ -184,7 +183,7 @@ describe('instance', () => {
       },
     });
 
-    expect(stack).toHaveResource('AWS::SecretsManager::SecretTargetAttachment', {
+    Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::SecretTargetAttachment', {
       SecretId: {
         Ref: 'InstanceSecret478E0A47',
       },
@@ -194,9 +193,7 @@ describe('instance', () => {
       TargetType: 'AWS::RDS::DBInstance',
     });
 
-    expect(stack).toCountResources('Custom::LogRetention', 4);
-
-
+    Template.fromStack(stack).resourceCountIs('Custom::LogRetention', 4);
   });
 
   test('throws when create database with specific AZ and multiAZ enabled', () => {
@@ -239,7 +236,7 @@ describe('instance', () => {
       parameterGroup,
     });
 
-    expect(stack).toHaveResource('AWS::RDS::DBInstance', {
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
       DBParameterGroupName: {
         Ref: 'ParameterGroup5E32DECB',
       },
@@ -247,8 +244,6 @@ describe('instance', () => {
         Ref: 'OptionGroupACA43DC1',
       },
     });
-
-
   });
 
   test('can specify subnet type', () => {
@@ -258,18 +253,18 @@ describe('instance', () => {
       }),
       credentials: rds.Credentials.fromUsername('syscdk'),
       vpc,
-      vpcPlacement: {
-        subnetType: ec2.SubnetType.PRIVATE,
+      vpcSubnets: {
+        subnetType: ec2.SubnetType.PRIVATE_WITH_NAT,
       },
     });
 
-    expect(stack).toHaveResource('AWS::RDS::DBInstance', {
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
       DBSubnetGroupName: {
         Ref: 'InstanceSubnetGroupF2CBA54F',
       },
       PubliclyAccessible: false,
     });
-    expect(stack).toHaveResource('AWS::RDS::DBSubnetGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBSubnetGroup', {
       DBSubnetGroupDescription: 'Subnet group for Instance database',
       SubnetIds: [
         {
@@ -280,8 +275,6 @@ describe('instance', () => {
         },
       ],
     });
-
-
   });
 
   describe('DatabaseInstanceFromSnapshot', () => {
@@ -293,45 +286,12 @@ describe('instance', () => {
         vpc,
       });
 
-      expect(stack).toHaveResource('AWS::RDS::DBInstance', {
+      Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
         DBSnapshotIdentifier: 'my-snapshot',
       });
-
-
     });
 
     test('can generate a new snapshot password', () => {
-      new rds.DatabaseInstanceFromSnapshot(stack, 'Instance', {
-        snapshotIdentifier: 'my-snapshot',
-        engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
-        vpc,
-        credentials: rds.SnapshotCredentials.fromGeneratedPassword('admin', {
-          excludeCharacters: '"@/\\',
-        }),
-      });
-
-      expect(stack).toHaveResourceLike('AWS::RDS::DBInstance', {
-        MasterUsername: ABSENT,
-        MasterUserPassword: {
-          'Fn::Join': ['', ['{{resolve:secretsmanager:', { Ref: 'InstanceSecret478E0A47' }, ':SecretString:password::}}']],
-        },
-      });
-      expect(stack).toHaveResource('AWS::SecretsManager::Secret', {
-        Description: {
-          'Fn::Join': ['', ['Generated by the CDK for stack: ', { Ref: 'AWS::StackName' }]],
-        },
-        GenerateSecretString: {
-          ExcludeCharacters: '\"@/\\',
-          GenerateStringKey: 'password',
-          PasswordLength: 30,
-          SecretStringTemplate: '{"username":"admin"}',
-        },
-      });
-
-
-    });
-
-    test('fromGeneratedSecret', () => {
       new rds.DatabaseInstanceFromSnapshot(stack, 'Instance', {
         snapshotIdentifier: 'my-snapshot',
         engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
@@ -341,11 +301,25 @@ describe('instance', () => {
         }),
       });
 
-      expect(stack).toHaveResourceLike('AWS::RDS::DBInstance', {
-        MasterUsername: ABSENT,
+      Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+        MasterUsername: Match.absent(),
         MasterUserPassword: {
-          // logical id of secret has a hash
-          'Fn::Join': ['', ['{{resolve:secretsmanager:', { Ref: 'InstanceSecretB6DFA6BE8ee0a797cad8a68dbeb85f8698cdb5bb' }, ':SecretString:password::}}']],
+          'Fn::Join': ['', [
+            '{{resolve:secretsmanager:',
+            { Ref: 'InstanceSecretB6DFA6BE8ee0a797cad8a68dbeb85f8698cdb5bb' },
+            ':SecretString:password::}}',
+          ]],
+        },
+      });
+      Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::Secret', {
+        Description: {
+          'Fn::Join': ['', ['Generated by the CDK for stack: ', { Ref: 'AWS::StackName' }]],
+        },
+        GenerateSecretString: {
+          ExcludeCharacters: '\"@/\\',
+          GenerateStringKey: 'password',
+          PasswordLength: 30,
+          SecretStringTemplate: '{"username":"admin"}',
         },
       });
     });
@@ -360,7 +334,7 @@ describe('instance', () => {
         }),
       });
 
-      expect(stack).toHaveResource('AWS::SecretsManager::Secret', {
+      Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::Secret', {
         ReplicaRegions: [
           {
             Region: 'eu-west-1',
@@ -376,8 +350,6 @@ describe('instance', () => {
         vpc,
         credentials: { generatePassword: true },
       })).toThrow(/`credentials` `username` must be specified when `generatePassword` is set to true/);
-
-
     });
 
     test('can set a new snapshot password from an existing SecretValue', () => {
@@ -389,12 +361,10 @@ describe('instance', () => {
       });
 
       // TODO - Expect this to be broken
-      expect(stack).toHaveResourceLike('AWS::RDS::DBInstance', {
-        MasterUsername: ABSENT,
+      Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+        MasterUsername: Match.absent(),
         MasterUserPassword: 'mysecretpassword',
       });
-
-
     });
 
     test('can set a new snapshot password from an existing Secret', () => {
@@ -409,14 +379,12 @@ describe('instance', () => {
         credentials: rds.SnapshotCredentials.fromSecret(secret),
       });
 
-      expect(stack).toHaveResourceLike('AWS::RDS::DBInstance', {
-        MasterUsername: ABSENT,
+      Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+        MasterUsername: Match.absent(),
         MasterUserPassword: {
           'Fn::Join': ['', ['{{resolve:secretsmanager:', { Ref: 'DBSecretD58955BC' }, ':SecretString:password::}}']],
         },
       });
-
-
     });
 
     test('can create a new database instance with fromDatabaseInstanceAttributes using a token for the port', () => {
@@ -440,9 +408,9 @@ describe('instance', () => {
       });
 
       // THEN
-      expect(stack).toHaveOutput({
-        exportName: 'databaseUrl',
-        outputValue: {
+      Template.fromStack(stack).hasOutput('portOutput', {
+        Export: { Name: 'databaseUrl' },
+        Value: {
           Ref: 'DatabasePort',
         },
       });
@@ -464,7 +432,7 @@ describe('instance', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::RDS::DBInstance', {
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
       SourceDBInstanceIdentifier: {
         'Fn::Join': ['', [
           'arn:',
@@ -481,8 +449,6 @@ describe('instance', () => {
         Ref: 'ReadReplicaSubnetGroup680C605C',
       },
     });
-
-
   });
 
   test('on event', () => {
@@ -500,7 +466,7 @@ describe('instance', () => {
     instance.onEvent('InstanceEvent', { target: new targets.LambdaFunction(fn) });
 
     // THEN
-    expect(stack).toHaveResource('AWS::Events::Rule', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
       EventPattern: {
         source: [
           'aws.rds',
@@ -543,8 +509,6 @@ describe('instance', () => {
         },
       ],
     });
-
-
   });
 
   test('on event without target', () => {
@@ -557,7 +521,7 @@ describe('instance', () => {
     instance.onEvent('InstanceEvent');
 
     // THEN
-    expect(stack).toHaveResource('AWS::Events::Rule', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
       EventPattern: {
         source: [
           'aws.rds',
@@ -589,8 +553,6 @@ describe('instance', () => {
         ],
       },
     });
-
-
   });
 
   test('can use metricCPUUtilization', () => {
@@ -608,8 +570,6 @@ describe('instance', () => {
       period: cdk.Duration.minutes(5),
       statistic: 'Average',
     });
-
-
   });
 
   test('can resolve endpoint port and socket address', () => {
@@ -633,8 +593,6 @@ describe('instance', () => {
         ],
       ],
     });
-
-
   });
 
   test('can deactivate backup', () => {
@@ -646,11 +604,9 @@ describe('instance', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::RDS::DBInstance', {
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
       BackupRetentionPeriod: 0,
     });
-
-
   });
 
   test('imported instance with imported security group with allowAllOutbound set to false', () => {
@@ -667,11 +623,9 @@ describe('instance', () => {
     instance.connections.allowToAnyIpv4(ec2.Port.tcp(443));
 
     // THEN
-    expect(stack).toHaveResource('AWS::EC2::SecurityGroupEgress', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroupEgress', {
       GroupId: 'sg-123456789',
     });
-
-
   });
 
   test('create an instance with imported monitoring role', () => {
@@ -691,14 +645,12 @@ describe('instance', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::RDS::DBInstance', {
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
       MonitoringInterval: 60,
       MonitoringRoleArn: {
         'Fn::GetAtt': ['MonitoringRole90457BF9', 'Arn'],
       },
-    }, ResourcePart.Properties);
-
-
+    });
   });
 
   test('create an instance with an existing security group', () => {
@@ -715,11 +667,11 @@ describe('instance', () => {
     instance.connections.allowDefaultPortFromAnyIpv4();
 
     // THEN
-    expect(stack).toHaveResource('AWS::RDS::DBInstance', {
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
       VPCSecurityGroups: ['sg-123456789'],
     });
 
-    expect(stack).toHaveResource('AWS::EC2::SecurityGroupIngress', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroupIngress', {
       FromPort: {
         'Fn::GetAtt': [
           'InstanceC1063A87',
@@ -734,8 +686,6 @@ describe('instance', () => {
         ],
       },
     });
-
-
   });
 
   test('addRotationSingleUser()', () => {
@@ -749,7 +699,7 @@ describe('instance', () => {
     instance.addRotationSingleUser();
 
     // THEN
-    expect(stack).toHaveResource('AWS::SecretsManager::RotationSchedule', {
+    Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::RotationSchedule', {
       SecretId: {
         Ref: 'DatabaseSecretAttachmentE5D1B020',
       },
@@ -777,7 +727,7 @@ describe('instance', () => {
     instance.addRotationMultiUser('user', { secret: userSecret.attach(instance) });
 
     // THEN
-    expect(stack).toHaveResource('AWS::SecretsManager::RotationSchedule', {
+    Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::RotationSchedule', {
       SecretId: {
         Ref: 'UserSecretAttachment16ACBE6D',
       },
@@ -792,7 +742,7 @@ describe('instance', () => {
       },
     });
 
-    expect(stack).toHaveResourceLike('AWS::Serverless::Application', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Serverless::Application', {
       Parameters: {
         masterSecretArn: {
           Ref: 'DatabaseSecretAttachmentE5D1B020',
@@ -827,13 +777,13 @@ describe('instance', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::SecretsManager::RotationSchedule', {
+    Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::RotationSchedule', {
       RotationRules: {
         AutomaticallyAfterDays: 15,
       },
     });
 
-    expect(stack).toHaveResource('AWS::Serverless::Application', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Serverless::Application', {
       Parameters: {
         endpoint: {
           'Fn::Join': ['', [
@@ -885,7 +835,7 @@ describe('instance', () => {
     instance.addRotationSingleUser({ endpoint });
 
     // THEN
-    expect(stack).toHaveResource('AWS::Serverless::Application', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Serverless::Application', {
       Parameters: {
         endpoint: {
           'Fn::Join': ['', [
@@ -925,8 +875,6 @@ describe('instance', () => {
 
     // THEN
     expect(() => instance.addRotationSingleUser()).toThrow(/without secret/);
-
-
   });
 
   test('throws when trying to add single user rotation multiple times', () => {
@@ -942,8 +890,6 @@ describe('instance', () => {
 
     // THEN
     expect(() => instance.addRotationSingleUser()).toThrow(/A single user rotation was already added to this instance/);
-
-
   });
 
   test('throws when timezone is set for non-sqlserver database engine', () => {
@@ -968,8 +914,6 @@ describe('instance', () => {
         vpc,
       })).toThrow(/timezone property can not be configured for/);
     });
-
-
   });
 
   test('create an instance from snapshot with maximum allocated storage', () => {
@@ -982,12 +926,10 @@ describe('instance', () => {
       maxAllocatedStorage: 200,
     });
 
-    expect(stack).toHaveResource('AWS::RDS::DBInstance', {
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
       DBSnapshotIdentifier: 'my-snapshot',
       MaxAllocatedStorage: 200,
     });
-
-
   });
 
   test('create a DB instance with maximum allocated storage', () => {
@@ -1000,12 +942,10 @@ describe('instance', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::RDS::DBInstance', {
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
       BackupRetentionPeriod: 0,
       MaxAllocatedStorage: 250,
     });
-
-
   });
 
   test('iam authentication - off by default', () => {
@@ -1014,11 +954,9 @@ describe('instance', () => {
       vpc,
     });
 
-    expect(stack).toHaveResourceLike('AWS::RDS::DBInstance', {
-      EnableIAMDatabaseAuthentication: ABSENT,
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+      EnableIAMDatabaseAuthentication: Match.absent(),
     });
-
-
   });
 
   test('createGrant - creates IAM policy and enables IAM auth', () => {
@@ -1031,10 +969,10 @@ describe('instance', () => {
     });
     instance.grantConnect(role);
 
-    expect(stack).toHaveResourceLike('AWS::RDS::DBInstance', {
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
       EnableIAMDatabaseAuthentication: true,
     });
-    expect(stack).toHaveResource('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [{
           Effect: 'Allow',
@@ -1046,8 +984,6 @@ describe('instance', () => {
         Version: '2012-10-17',
       },
     });
-
-
   });
 
   test('createGrant - throws if IAM auth disabled', () => {
@@ -1061,8 +997,6 @@ describe('instance', () => {
     });
 
     expect(() => { instance.grantConnect(role); }).toThrow(/Cannot grant connect when IAM authentication is disabled/);
-
-
   });
 
   test('domain - sets domain property', () => {
@@ -1076,11 +1010,9 @@ describe('instance', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::RDS::DBInstance', {
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
       Domain: domain,
     });
-
-
   });
 
   test('domain - uses role if provided', () => {
@@ -1096,12 +1028,10 @@ describe('instance', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::RDS::DBInstance', {
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
       Domain: domain,
       DomainIAMRoleName: stack.resolve(role.roleName),
     });
-
-
   });
 
   test('domain - creates role if not provided', () => {
@@ -1115,12 +1045,12 @@ describe('instance', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::RDS::DBInstance', {
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
       Domain: domain,
-      DomainIAMRoleName: anything(),
+      DomainIAMRoleName: Match.anyValue(),
     });
 
-    expect(stack).toHaveResource('AWS::IAM::Role', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
       AssumeRolePolicyDocument: {
         Statement: [
           {
@@ -1148,8 +1078,6 @@ describe('instance', () => {
         },
       ],
     });
-
-
   });
 
   test('throws when domain is set for mariadb database engine', () => {
@@ -1176,8 +1104,6 @@ describe('instance', () => {
         vpc,
       })).toThrow(expectedError);
     });
-
-
   });
 
   describe('performance insights', () => {
@@ -1190,13 +1116,11 @@ describe('instance', () => {
         performanceInsightEncryptionKey: new kms.Key(stack, 'Key'),
       });
 
-      expect(stack).toHaveResource('AWS::RDS::DBInstance', {
+      Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
         EnablePerformanceInsights: true,
         PerformanceInsightsRetentionPeriod: 731,
         PerformanceInsightsKMSKeyId: { 'Fn::GetAtt': ['Key961B73FD', 'Arn'] },
       });
-
-
     });
 
     test('setting performance insights fields enables performance insights', () => {
@@ -1206,12 +1130,10 @@ describe('instance', () => {
         performanceInsightRetention: rds.PerformanceInsightRetention.LONG_TERM,
       });
 
-      expect(stack).toHaveResource('AWS::RDS::DBInstance', {
+      Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
         EnablePerformanceInsights: true,
         PerformanceInsightsRetentionPeriod: 731,
       });
-
-
     });
 
     test('throws if performance insights fields are set but performance insights is disabled', () => {
@@ -1223,8 +1145,6 @@ describe('instance', () => {
           performanceInsightRetention: rds.PerformanceInsightRetention.DEFAULT,
         });
       }).toThrow(/`enablePerformanceInsights` disabled, but `performanceInsightRetention` or `performanceInsightEncryptionKey` was set/);
-
-
     });
   });
 
@@ -1235,12 +1155,10 @@ describe('instance', () => {
       subnetGroup: rds.SubnetGroup.fromSubnetGroupName(stack, 'SubnetGroup', 'my-subnet-group'),
     });
 
-    expect(stack).toHaveResourceLike('AWS::RDS::DBInstance', {
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
       DBSubnetGroupName: 'my-subnet-group',
     });
-    expect(stack).toCountResources('AWS::RDS::DBSubnetGroup', 0);
-
-
+    Template.fromStack(stack).resourceCountIs('AWS::RDS::DBSubnetGroup', 0);
   });
 
   test('defaultChild returns the DB Instance', () => {
@@ -1251,8 +1169,6 @@ describe('instance', () => {
 
     // THEN
     expect(instance.node.defaultChild instanceof rds.CfnDBInstance).toBeTruthy();
-
-
   });
 
   test("PostgreSQL database instance uses a different default master username than 'admin', which is a reserved word", () => {
@@ -1264,13 +1180,11 @@ describe('instance', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::SecretsManager::Secret', {
+    Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::Secret', {
       GenerateSecretString: {
         SecretStringTemplate: '{"username":"postgres"}',
       },
     });
-
-
   });
 
   describe('S3 Import/Export', () => {
@@ -1284,7 +1198,7 @@ describe('instance', () => {
         s3ExportBuckets: [new s3.Bucket(stack, 'S3Export')],
       });
 
-      expect(stack).toHaveResource('AWS::RDS::DBInstance', {
+      Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
         AssociatedRoles: [
           {
             FeatureName: 'S3_INTEGRATION',
@@ -1295,7 +1209,7 @@ describe('instance', () => {
       });
 
       // Can read from import bucket, and read/write from export bucket
-      expect(stack).toHaveResource('AWS::IAM::Policy', {
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         PolicyDocument: {
           Statement: [{
             Action: [
@@ -1316,6 +1230,10 @@ describe('instance', () => {
               's3:List*',
               's3:DeleteObject*',
               's3:PutObject',
+              's3:PutObjectLegalHold',
+              's3:PutObjectRetention',
+              's3:PutObjectTagging',
+              's3:PutObjectVersionTagging',
               's3:Abort*',
             ],
             Effect: 'Allow',
@@ -1327,8 +1245,6 @@ describe('instance', () => {
           Version: '2012-10-17',
         },
       });
-
-
     });
 
     test('throws if using s3 import on unsupported engine', () => {
@@ -1350,8 +1266,6 @@ describe('instance', () => {
           s3ImportRole,
         });
       }).toThrow(/Engine 'mysql-8.0.19' does not support S3 import/);
-
-
     });
 
     test('throws if using s3 export on unsupported engine', () => {
@@ -1373,8 +1287,6 @@ describe('instance', () => {
           s3ExportRole: s3ExportRole,
         });
       }).toThrow(/Engine 'mysql-8.0.19' does not support S3 export/);
-
-
     });
 
     test('throws if provided two different roles for import/export', () => {
@@ -1393,8 +1305,6 @@ describe('instance', () => {
           s3ExportRole,
         });
       }).toThrow(/S3 import and export roles must be the same/);
-
-
     });
   });
 
@@ -1407,7 +1317,7 @@ describe('instance', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::RDS::DBInstance', {
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
       MasterUsername: 'postgres', // username is a string
       MasterUserPassword: {
         'Fn::Join': [
@@ -1435,7 +1345,7 @@ describe('instance', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::SecretsManager::Secret', {
+    Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::Secret', {
       ReplicaRegions: [
         {
           Region: 'eu-west-1',
@@ -1453,7 +1363,7 @@ describe('instance', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::RDS::DBInstance', {
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
       MasterUsername: 'postgres', // username is a string
       MasterUserPassword: '{{resolve:ssm-secure:/dbPassword:1}}', // reference to SSM
     });
@@ -1475,7 +1385,7 @@ describe('instance', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::SecretsManager::Secret', {
+    Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::Secret', {
       Name: secretName,
     });
   });
@@ -1492,7 +1402,7 @@ describe('instance', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::SecretsManager::Secret', {
+    Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::Secret', {
       Name: secretName,
     });
   });
@@ -1509,11 +1419,9 @@ describe('instance', () => {
       publiclyAccessible: false,
     });
 
-    expect(stack).toHaveResource('AWS::RDS::DBInstance', {
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
       PubliclyAccessible: false,
     });
-
-
   });
 
   test('can set publiclyAccessible to true with private subnets', () => {
@@ -1528,7 +1436,7 @@ describe('instance', () => {
       publiclyAccessible: true,
     });
 
-    expect(stack).toHaveResource('AWS::RDS::DBInstance', {
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
       PubliclyAccessible: true,
     });
   });
@@ -1552,7 +1460,7 @@ describe('instance', () => {
     } );
 
     // THEN
-    expect(stack).toHaveResource('AWS::RDS::DBInstance', {
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
       DBInstanceIdentifier: instanceIdentifier.toLowerCase(),
     });
   });
@@ -1574,17 +1482,101 @@ describe('instance', () => {
     } );
 
     // THEN
-    expect(stack).toHaveResource('AWS::RDS::DBInstance', {
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
       DBInstanceIdentifier: instanceIdentifier,
     });
   });
 
+  test('throws with backupRetention on a read replica if engine does not support it', () => {
+    // GIVEN
+    const instanceType = ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.SMALL);
+    const backupRetention = cdk.Duration.days(5);
+    const source = new rds.DatabaseInstance(stack, 'Source', {
+      engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_13 }),
+      backupRetention,
+      instanceType,
+      vpc,
+    });
+
+    expect(() => {
+      new rds.DatabaseInstanceReadReplica(stack, 'Replica', {
+        sourceDatabaseInstance: source,
+        backupRetention,
+        instanceType,
+        vpc,
+      });
+    }).toThrow(/Cannot set 'backupRetention', as engine 'postgres-13' does not support automatic backups for read replicas/);
+  });
+
+  test('can set parameter group on read replica', () => {
+    // GIVEN
+    const instanceType = ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.SMALL);
+    const engine = rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_13 });
+    const parameterGroup = new rds.ParameterGroup(stack, 'ParameterGroup', { engine });
+    const source = new rds.DatabaseInstance(stack, 'Source', {
+      engine,
+      instanceType,
+      vpc,
+    });
+
+    // WHEN
+    new rds.DatabaseInstanceReadReplica(stack, 'Replica', {
+      sourceDatabaseInstance: source,
+      parameterGroup,
+      instanceType,
+      vpc,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+      DBParameterGroupName: {
+        Ref: 'ParameterGroup5E32DECB',
+      },
+    });
+  });
+
+  test('instance with port provided as a number', () => {
+    // WHEN
+    new rds.DatabaseInstance(stack, 'Database', {
+      engine: rds.DatabaseInstanceEngine.MYSQL,
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+      vpc,
+      port: 3306,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+      Port: '3306',
+    });
+  });
+
+  test('instance with port provided as a CloudFormation parameter', () => {
+    // GIVEN
+    const port = new cdk.CfnParameter(stack, 'Port', {
+      type: 'Number',
+    }).valueAsNumber;
+
+    // WHEN
+    new rds.DatabaseInstance(stack, 'Database', {
+      engine: rds.DatabaseInstanceEngine.MYSQL,
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+      vpc,
+      port,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+      Port: {
+        Ref: 'Port',
+      },
+    });
+  });
 });
 
 test.each([
   [cdk.RemovalPolicy.RETAIN, 'Retain', 'Retain'],
-  [cdk.RemovalPolicy.SNAPSHOT, 'Snapshot', ABSENT],
-  [cdk.RemovalPolicy.DESTROY, 'Delete', ABSENT],
+  [cdk.RemovalPolicy.SNAPSHOT, 'Snapshot', Match.absent()],
+  [cdk.RemovalPolicy.DESTROY, 'Delete', Match.absent()],
 ])('if Instance RemovalPolicy is \'%s\', the instance has DeletionPolicy \'%s\' and the DBSubnetGroup has \'%s\'', (instanceRemovalPolicy, instanceValue, subnetValue) => {
   // GIVEN
   stack = new cdk.Stack();
@@ -1601,15 +1593,15 @@ test.each([
   });
 
   // THEN
-  expect(stack).toHaveResourceLike('AWS::RDS::DBInstance', {
+  Template.fromStack(stack).hasResource('AWS::RDS::DBInstance', {
     DeletionPolicy: instanceValue,
     UpdateReplacePolicy: instanceValue,
-  }, ResourcePart.CompleteDefinition);
+  });
 
-  expect(stack).toHaveResourceLike('AWS::RDS::DBSubnetGroup', {
+  Template.fromStack(stack).hasResource('AWS::RDS::DBSubnetGroup', {
     DeletionPolicy: subnetValue,
     UpdateReplacePolicy: subnetValue,
-  }, ResourcePart.CompleteDefinition);
+  });
 });
 
 describe('cross-account instance', () => {
@@ -1638,7 +1630,7 @@ describe('cross-account instance', () => {
       value: instance.instanceIdentifier,
     });
 
-    expect(outputStack).toMatchTemplate({
+    Template.fromStack(outputStack).templateMatches({
       Outputs: {
         DatabaseInstanceArn: {
           Value: {

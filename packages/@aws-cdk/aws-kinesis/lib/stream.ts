@@ -1,7 +1,7 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
-import { Aws, CfnCondition, Duration, Fn, IResolvable, IResource, Resource, Stack, Token } from '@aws-cdk/core';
+import { ArnFormat, Aws, CfnCondition, Duration, Fn, IResolvable, IResource, Resource, Stack, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { KinesisMetrics } from './kinesis-fixed-canned-metrics';
 import { CfnStream } from './kinesis.generated';
@@ -394,7 +394,7 @@ abstract class StreamBase extends Resource implements IStream {
     return new cloudwatch.Metric({
       namespace: 'AWS/Kinesis',
       metricName,
-      dimensions: {
+      dimensionsMap: {
         StreamName: this.streamName,
       },
       ...props,
@@ -673,6 +673,9 @@ export interface StreamProps {
 
   /**
    * The number of shards for the stream.
+   *
+   * Can only be provided if streamMode is Provisioned.
+   *
    * @default 1
    */
   readonly shardCount?: number;
@@ -699,6 +702,13 @@ export interface StreamProps {
    *   will be created and associated with this stream.
    */
   readonly encryptionKey?: kms.IKey;
+
+  /**
+   * The capacity mode of this stream.
+   *
+   * @default StreamMode.PROVISIONED
+   */
+  readonly streamMode?: StreamMode;
 }
 
 /**
@@ -727,7 +737,7 @@ export class Stream extends StreamBase {
   public static fromStreamAttributes(scope: Construct, id: string, attrs: StreamAttributes): IStream {
     class Import extends StreamBase {
       public readonly streamArn = attrs.streamArn;
-      public readonly streamName = Stack.of(scope).parseArn(attrs.streamArn).resourceName!;
+      public readonly streamName = Stack.of(scope).splitArn(attrs.streamArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName!;
       public readonly encryptionKey = attrs.encryptionKey;
     }
 
@@ -745,7 +755,16 @@ export class Stream extends StreamBase {
       physicalName: props.streamName,
     });
 
-    const shardCount = props.shardCount || 1;
+    let shardCount = props.shardCount;
+    const streamMode = props.streamMode ?? StreamMode.PROVISIONED;
+
+    if (streamMode === StreamMode.ON_DEMAND && shardCount !== undefined) {
+      throw new Error(`streamMode must be set to ${StreamMode.PROVISIONED} (default) when specifying shardCount`);
+    }
+    if (streamMode === StreamMode.PROVISIONED && shardCount === undefined) {
+      shardCount = 1;
+    }
+
     const retentionPeriodHours = props.retentionPeriod?.toHours() ?? 24;
     if (!Token.isUnresolved(retentionPeriodHours)) {
       if (retentionPeriodHours < 24 || retentionPeriodHours > 8760) {
@@ -760,6 +779,7 @@ export class Stream extends StreamBase {
       retentionPeriodHours,
       shardCount,
       streamEncryption,
+      streamModeDetails: streamMode ? { streamMode } : undefined,
     });
 
     this.streamArn = this.getResourceArnAttribute(this.stream.attrArn, {
@@ -857,4 +877,21 @@ export enum StreamEncryption {
    * Server-side encryption with a master key managed by Amazon Kinesis
    */
   MANAGED = 'MANAGED'
+}
+
+/**
+ * Specifies the capacity mode to apply to this stream.
+ */
+export enum StreamMode {
+  /**
+   * Specify the provisioned capacity mode. The stream will have `shardCount` shards unless
+   * modified and will be billed according to the provisioned capacity.
+   */
+  PROVISIONED = 'PROVISIONED',
+
+  /**
+   * Specify the on-demand capacity mode. The stream will autoscale and be billed according to the
+   * volume of data ingested and retrieved.
+   */
+  ON_DEMAND = 'ON_DEMAND'
 }

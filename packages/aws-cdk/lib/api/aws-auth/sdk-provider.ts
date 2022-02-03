@@ -1,4 +1,3 @@
-import * as https from 'https';
 import * as os from 'os';
 import * as path from 'path';
 import * as cxapi from '@aws-cdk/cx-api';
@@ -79,6 +78,33 @@ const CACHED_ACCOUNT = Symbol('cached_account');
 const CACHED_DEFAULT_CREDENTIALS = Symbol('cached_default_credentials');
 
 /**
+ * SDK configuration for a given environment
+ * 'forEnvironment' will attempt to assume a role and if it
+ * is not successful, then it will either:
+ *   1. Check to see if the default credentials (local credentials the CLI was executed with)
+ *      are for the given environment. If they are then return those.
+ *   2. If the default credentials are not for the given environment then
+ *      throw an error
+ *
+ * 'didAssumeRole' allows callers to whether they are receiving the assume role
+ * credentials or the default credentials.
+ */
+export interface SdkForEnvironment {
+  /**
+   * The SDK for the given environment
+   */
+  readonly sdk: ISDK;
+
+  /**
+   * Whether or not the assume role was successful.
+   * If the assume role was not successful (false)
+   * then that means that the 'sdk' returned contains
+   * the default credentials (not the assume role credentials)
+   */
+  readonly didAssumeRole: boolean;
+}
+
+/**
  * Creates instances of the AWS SDK appropriate for a given account/region.
  *
  * Behavior is as follows:
@@ -141,7 +167,11 @@ export class SdkProvider {
    *
    * The `environment` parameter is resolved first (see `resolveEnvironment()`).
    */
-  public async forEnvironment(environment: cxapi.Environment, mode: Mode, options?: CredentialsOptions): Promise<ISDK> {
+  public async forEnvironment(
+    environment: cxapi.Environment,
+    mode: Mode,
+    options?: CredentialsOptions,
+  ): Promise<SdkForEnvironment> {
     const env = await this.resolveEnvironment(environment);
     const baseCreds = await this.obtainBaseCredentials(env.account, mode);
 
@@ -152,7 +182,7 @@ export class SdkProvider {
     // account.
     if (options?.assumeRoleArn === undefined) {
       if (baseCreds.source === 'incorrectDefault') { throw new Error(fmtObtainCredentialsError(env.account, baseCreds)); }
-      return new SDK(baseCreds.credentials, env.region, this.sdkOptions);
+      return { sdk: new SDK(baseCreds.credentials, env.region, this.sdkOptions), didAssumeRole: false };
     }
 
     // We will proceed to AssumeRole using whatever we've been given.
@@ -162,7 +192,7 @@ export class SdkProvider {
     // we can determine whether the AssumeRole call succeeds or not.
     try {
       await sdk.forceCredentialRetrieval();
-      return sdk;
+      return { sdk, didAssumeRole: true };
     } catch (e) {
       // AssumeRole failed. Proceed and warn *if and only if* the baseCredentials were already for the right account
       // or returned from a plugin. This is to cover some current setups for people using plugins or preferring to
@@ -171,7 +201,7 @@ export class SdkProvider {
       if (baseCreds.source === 'correctDefault' || baseCreds.source === 'plugin') {
         debug(e.message);
         warning(`${fmtObtainedCredentials(baseCreds)} could not be used to assume '${options.assumeRoleArn}', but are for the right account. Proceeding anyway.`);
-        return new SDK(baseCreds.credentials, env.region, this.sdkOptions);
+        return { sdk: new SDK(baseCreds.credentials, env.region, this.sdkOptions), didAssumeRole: false };
       }
 
       throw e;
@@ -375,30 +405,22 @@ function parseHttpOptions(options: SdkHttpOptions) {
   config.customUserAgent = userAgent;
 
   const caBundlePath = options.caBundlePath || caBundlePathFromEnvironment();
-
-  if (options.proxyAddress && caBundlePath) {
-    throw new Error(`At the moment, cannot specify Proxy (${options.proxyAddress}) and CA Bundle (${caBundlePath}) at the same time. See https://github.com/aws/aws-cdk/issues/5804`);
-    // Maybe it's possible after all, but I've been staring at
-    // https://github.com/TooTallNate/node-proxy-agent/blob/master/index.js#L79
-    // a while now trying to figure out what to pass in so that the underlying Agent
-    // object will get the 'ca' argument. It's not trivial and I don't want to risk it.
-  }
-
   if (caBundlePath) {
     debug('Using CA bundle path: %s', caBundlePath);
-    config.httpOptions.agent = new https.Agent({
-      ca: readIfPossible(caBundlePath),
-      keepAlive: true,
-    });
-  } else {
-    // Configure the proxy agent. By default, this will use HTTPS?_PROXY and
-    // NO_PROXY environment variables to determine which proxy to use for each
-    // request.
-    //
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const ProxyAgent: any = require('proxy-agent');
-    config.httpOptions.agent = new ProxyAgent();
+    (config.httpOptions as any).ca = readIfPossible(caBundlePath);
   }
+
+  if (options.proxyAddress) {
+    debug('Proxy server from command-line arguments: %s', options.proxyAddress);
+  }
+
+  // Configure the proxy agent. By default, this will use HTTPS?_PROXY and
+  // NO_PROXY environment variables to determine which proxy to use for each
+  // request.
+  //
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const ProxyAgent = require('proxy-agent');
+  config.httpOptions.agent = new ProxyAgent(options.proxyAddress);
 
   return config;
 }
