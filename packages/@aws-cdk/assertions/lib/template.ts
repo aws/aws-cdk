@@ -4,6 +4,7 @@ import * as fs from 'fs-extra';
 import { Match } from './match';
 import { Matcher } from './matcher';
 import { findConditions, hasCondition } from './private/conditions';
+import { checkTemplateForCyclicDependencies } from './private/cyclic';
 import { findMappings, hasMapping } from './private/mappings';
 import { findOutputs, hasOutput } from './private/outputs';
 import { findParameters, hasParameter } from './private/parameters';
@@ -47,6 +48,7 @@ export class Template {
 
   private constructor(template: { [key: string]: any }) {
     this.template = template as TemplateType;
+    checkTemplateForCyclicDependencies(this.template);
   }
 
   /**
