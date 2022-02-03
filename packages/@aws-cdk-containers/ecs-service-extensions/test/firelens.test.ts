@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Match, Template } from '@aws-cdk/assertions';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as cdk from '@aws-cdk/core';
 import { Container, Environment, FireLensExtension, Service, ServiceDescription } from '../lib';
@@ -29,11 +29,11 @@ describe('firelens', () => {
     // THEN
 
     // Ensure that the log group was created
-    expect(stack).toHaveResource('AWS::Logs::LogGroup');
+    Template.fromStack(stack).hasResource('AWS::Logs::LogGroup', Match.anyValue());
 
     // Ensure that task has a Firelens sidecar and a log configuration
     // pointing at the sidecar
-    expect(stack).toHaveResource('AWS::ECS::TaskDefinition', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
         {
           Cpu: 256,
@@ -114,8 +114,5 @@ describe('firelens', () => {
         ],
       },
     });
-
-
   });
-
 });

@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Match, Template } from '@aws-cdk/assertions';
 import * as cdk from '@aws-cdk/core';
 import * as ecs from '../lib';
 
@@ -10,8 +10,6 @@ describe('fluentd log driver', () => {
   beforeEach(() => {
     stack = new cdk.Stack();
     td = new ecs.Ec2TaskDefinition(stack, 'TaskDefinition');
-
-
   });
 
   test('create a fluentd log driver with options', () => {
@@ -25,20 +23,18 @@ describe('fluentd log driver', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
-        {
+        Match.objectLike({
           LogConfiguration: {
             LogDriver: 'fluentd',
             Options: {
               tag: 'hello',
             },
           },
-        },
+        }),
       ],
     });
-
-
   });
 
   test('create a fluentd log driver without options', () => {
@@ -50,17 +46,15 @@ describe('fluentd log driver', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
-        {
+        Match.objectLike({
           LogConfiguration: {
             LogDriver: 'fluentd',
           },
-        },
+        }),
       ],
     });
-
-
   });
 
   test('create a fluentd log driver with all possible options', () => {
@@ -91,9 +85,9 @@ describe('fluentd log driver', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
-        {
+        Match.objectLike({
           LogConfiguration: {
             LogDriver: 'fluentd',
             Options: {
@@ -109,11 +103,9 @@ describe('fluentd log driver', () => {
               'env-regex': '[0-9]{1}',
             },
           },
-        },
+        }),
       ],
     });
-
-
   });
 
   test('create a fluentd log driver using fluentd', () => {
@@ -125,16 +117,14 @@ describe('fluentd log driver', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
-        {
+        Match.objectLike({
           LogConfiguration: {
             LogDriver: 'fluentd',
           },
-        },
+        }),
       ],
     });
-
-
   });
 });

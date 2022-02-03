@@ -48,7 +48,7 @@ Alternatively, an entry file and handler can be specified:
 
 ```ts
 new lambda.NodejsFunction(this, 'MyFunction', {
-  entry: '/path/to/my/file.ts', // accepts .js, .jsx, .ts and .tsx files
+  entry: '/path/to/my/file.ts', // accepts .js, .jsx, .ts, .tsx and .mjs files
   handler: 'myExportedFunc', // defaults to 'handler'
 });
 ```
@@ -115,6 +115,11 @@ OR
 ```console
 $ yarn add --dev esbuild@0
 ```
+
+If you're using a monorepo layout, the `esbuild` dependency needs to be installed in the "root" `package.json` file,
+not in the workspace. From the reference architecture described [above](#reference-project-architecture), the `esbuild`
+dev dependency needs to be in `./package.json`, not `packages/cool-package/package.json` or
+`packages/super-package/package.json`.
 
 To force bundling in a Docker container even if `esbuild` is available in your environment,
 set `bundling.forceDockerBundling` to `true`. This is useful if your function relies on node
@@ -191,6 +196,8 @@ new lambda.NodejsFunction(this, 'my-handler', {
     banner: '/* comments */', // requires esbuild >= 0.9.0, defaults to none
     footer: '/* comments */', // requires esbuild >= 0.9.0, defaults to none
     charset: lambda.Charset.UTF8, // do not escape non-ASCII characters, defaults to Charset.ASCII
+    format: lambda.OutputFormat.ESM, // ECMAScript module output format, defaults to OutputFormat.CJS (OutputFormat.ESM requires Node.js 14.x)
+    mainFields: ['module', 'main'], // prefer ECMAScript versions of dependencies
   },
 });
 ```
@@ -251,7 +258,7 @@ new lambda.NodejsFunction(this, 'my-handler', {
 });
 ```
 
-Note: A [`tsconfig.json` file](https://www.typescriptlang.org/docs/handbook/tsconfig-json.html) is required 
+Note: A [`tsconfig.json` file](https://www.typescriptlang.org/docs/handbook/tsconfig-json.html) is required
 
 ## Customizing Docker bundling
 
