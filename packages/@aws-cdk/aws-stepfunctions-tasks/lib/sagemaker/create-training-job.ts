@@ -33,6 +33,13 @@ export interface SageMakerCreateTrainingJobProps extends sfn.TaskStateBaseProps 
   readonly algorithmSpecification: AlgorithmSpecification;
 
   /**
+   * Isolates the training container. No inbound or outbound network calls can be made to or from the training container.
+   *
+   * @default false
+   */
+  readonly enableNetworkIsolation?: boolean;
+
+  /**
    * Algorithm-specific parameters that influence the quality of the model. Set hyperparameters before you start the learning process.
    * For a list of hyperparameters provided by Amazon SageMaker
    * @see https://docs.aws.amazon.com/sagemaker/latest/dg/algos.html
@@ -217,6 +224,7 @@ export class SageMakerCreateTrainingJob extends sfn.TaskStateBase implements iam
   private renderParameters(): { [key: string]: any } {
     return {
       TrainingJobName: this.props.trainingJobName,
+      EnableNetworkIsolation: this.props.enableNetworkIsolation,
       RoleArn: this._role!.roleArn,
       ...this.renderAlgorithmSpecification(this.algorithmSpecification),
       ...this.renderInputDataConfig(this.inputDataConfig),
@@ -277,7 +285,8 @@ export class SageMakerCreateTrainingJob extends sfn.TaskStateBase implements iam
     return {
       ResourceConfig: {
         InstanceCount: config.instanceCount,
-        InstanceType: 'ml.' + config.instanceType,
+        InstanceType: sfn.JsonPath.isEncodedJsonPath(config.instanceType.toString())
+          ? config.instanceType.toString() : `ml.${config.instanceType}`,
         VolumeSizeInGB: config.volumeSize.toGibibytes(),
         ...(config.volumeEncryptionKey ? { VolumeKmsKeyId: config.volumeEncryptionKey.keyArn } : {}),
       },

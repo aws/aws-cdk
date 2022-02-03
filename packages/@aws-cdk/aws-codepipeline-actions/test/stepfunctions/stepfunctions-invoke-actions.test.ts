@@ -1,21 +1,20 @@
-import { expect, haveResourceLike } from '@aws-cdk/assert-internal';
+import { Template, Match } from '@aws-cdk/assertions';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as stepfunction from '@aws-cdk/aws-stepfunctions';
 import { Stack } from '@aws-cdk/core';
-import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as cpactions from '../../lib';
 
-nodeunitShim({
-  'StepFunctions Invoke Action': {
-    'Verify stepfunction configuration properties are set to specific values'(test: Test) {
+describe('StepFunctions Invoke Action', () => {
+  describe('StepFunctions Invoke Action', () => {
+    test('Verify stepfunction configuration properties are set to specific values', () => {
       const stack = new Stack();
 
       // when
       minimalPipeline(stack);
 
       // then
-      expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+      Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', Match.objectLike({
         Stages: [
           //  Must have a source stage
           {
@@ -60,17 +59,18 @@ nodeunitShim({
         ],
       }));
 
-      test.done();
-    },
 
-    'Allows the pipeline to invoke this stepfunction'(test: Test) {
+    });
+
+    test('Allows the pipeline to invoke this stepfunction', () => {
       const stack = new Stack();
 
       minimalPipeline(stack);
 
-      expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        PolicyName: 'MyPipelineInvokeCodePipelineActionRoleDefaultPolicy07A602B1',
         PolicyDocument: {
-          Statement: [
+          Statement: Match.arrayWith([
             {
               Action: ['states:StartExecution', 'states:DescribeStateMachine'],
               Resource: {
@@ -78,21 +78,21 @@ nodeunitShim({
               },
               Effect: 'Allow',
             },
-          ],
+          ]),
         },
-      }));
+      });
 
-      expect(stack).to(haveResourceLike('AWS::IAM::Role'));
+      Template.fromStack(stack).resourceCountIs('AWS::IAM::Role', 4);
 
-      test.done();
-    },
 
-    'Allows the pipeline to describe this stepfunction execution'(test: Test) {
+    });
+
+    test('Allows the pipeline to describe this stepfunction execution', () => {
       const stack = new Stack();
 
       minimalPipeline(stack);
 
-      expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         PolicyDocument: {
           Statement: [
             {},
@@ -136,14 +136,14 @@ nodeunitShim({
             },
           ],
         },
-      }));
+      });
 
-      expect(stack).to(haveResourceLike('AWS::IAM::Role'));
+      Template.fromStack(stack).resourceCountIs('AWS::IAM::Role', 4);
 
-      test.done();
-    },
 
-  },
+    });
+
+  });
 });
 
 function minimalPipeline(stack: Stack): codepipeline.IStage {

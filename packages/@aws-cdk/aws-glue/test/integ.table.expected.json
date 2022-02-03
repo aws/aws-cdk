@@ -433,7 +433,6 @@
           "Statement": [
             {
               "Action": [
-                "glue:BatchDeletePartition",
                 "glue:BatchGetPartition",
                 "glue:GetPartition",
                 "glue:GetPartitions",
@@ -483,6 +482,10 @@
                 "s3:List*",
                 "s3:DeleteObject*",
                 "s3:PutObject",
+                "s3:PutObjectLegalHold",
+                "s3:PutObjectRetention",
+                "s3:PutObjectTagging",
+                "s3:PutObjectVersionTagging",
                 "s3:Abort*"
               ],
               "Effect": "Allow",
@@ -511,7 +514,6 @@
             },
             {
               "Action": [
-                "glue:BatchDeletePartition",
                 "glue:BatchGetPartition",
                 "glue:GetPartition",
                 "glue:GetPartitions",
@@ -561,6 +563,10 @@
                 "s3:List*",
                 "s3:DeleteObject*",
                 "s3:PutObject",
+                "s3:PutObjectLegalHold",
+                "s3:PutObjectRetention",
+                "s3:PutObjectTagging",
+                "s3:PutObjectVersionTagging",
                 "s3:Abort*"
               ],
               "Effect": "Allow",
@@ -624,7 +630,6 @@
           "Statement": [
             {
               "Action": [
-                "glue:BatchDeletePartition",
                 "glue:BatchGetPartition",
                 "glue:GetPartition",
                 "glue:GetPartitions",
@@ -674,6 +679,10 @@
                 "s3:List*",
                 "s3:DeleteObject*",
                 "s3:PutObject",
+                "s3:PutObjectLegalHold",
+                "s3:PutObjectRetention",
+                "s3:PutObjectTagging",
+                "s3:PutObjectVersionTagging",
                 "s3:Abort*"
               ],
               "Effect": "Allow",
@@ -702,7 +711,6 @@
             },
             {
               "Action": [
-                "glue:BatchDeletePartition",
                 "glue:BatchGetPartition",
                 "glue:GetPartition",
                 "glue:GetPartitions",
@@ -747,7 +755,6 @@
             },
             {
               "Action": [
-                "glue:BatchDeletePartition",
                 "glue:BatchGetPartition",
                 "glue:GetPartition",
                 "glue:GetPartitions",

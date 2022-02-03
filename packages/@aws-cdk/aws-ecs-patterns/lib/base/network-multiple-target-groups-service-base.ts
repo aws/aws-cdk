@@ -186,6 +186,13 @@ export interface NetworkLoadBalancedTaskImageProps {
    * @default - Automatically generated name.
    */
   readonly family?: string;
+
+  /**
+   * A key/value map of labels to add to the container.
+   *
+   * @default - No labels.
+   */
+  readonly dockerLabels?: { [key: string]: string };
 }
 
 /**
@@ -367,7 +374,7 @@ export abstract class NetworkMultipleTargetGroupsServiceBase extends CoreConstru
   protected registerECSTargets(service: BaseService, container: ContainerDefinition, targets: NetworkTargetProps[]): NetworkTargetGroup {
     for (const targetProps of targets) {
       const targetGroup = this.findListener(targetProps.listener).addTargets(`ECSTargetGroup${container.containerName}${targetProps.containerPort}`, {
-        port: 80,
+        port: targetProps.containerPort ?? 80,
         targets: [
           service.loadBalancerTarget({
             containerName: container.containerName,

@@ -48,6 +48,19 @@
         "Threshold": 100000
       }
     },
+    "Alarm548383B2F": {
+      "Type": "AWS::CloudWatch::Alarm",
+      "Properties": {
+        "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+        "EvaluationPeriods": 3,
+        "AlarmName": "Alarm with space in name",
+        "MetricName": "Metric",
+        "Namespace": "CDK/Test",
+        "Period": 300,
+        "Statistic": "Average",
+        "Threshold": 100000
+      }
+    },
     "CompositeAlarmF4C3D082": {
       "Type": "AWS::CloudWatch::CompositeAlarm",
       "Properties": {
@@ -56,35 +69,42 @@
           "Fn::Join": [
             "",
             [
-              "(((ALARM(",
+              "(((ALARM(\"",
               {
                 "Fn::GetAtt": [
                   "Alarm1F9009D71",
                   "Arn"
                 ]
               },
-              ") OR OK(",
+              "\") OR OK(\"",
               {
                 "Fn::GetAtt": [
                   "Alarm2A7122E13",
                   "Arn"
                 ]
               },
-              ") OR ALARM(",
+              "\") OR ALARM(\"",
               {
                 "Fn::GetAtt": [
                   "Alarm32341D8D9",
                   "Arn"
                 ]
               },
-              ")) AND (NOT (INSUFFICIENT_DATA(",
+              "\") OR ALARM(\"",
+              {
+                "Fn::GetAtt": [
+                  "Alarm548383B2F",
+                  "Arn"
+                ]
+              },
+              "\")) AND (NOT (INSUFFICIENT_DATA(\"",
               {
                 "Fn::GetAtt": [
                   "Alarm4671832C8",
                   "Arn"
                 ]
               },
-              ")))) OR FALSE)"
+              "\")))) OR FALSE)"
             ]
           ]
         }

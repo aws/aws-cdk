@@ -128,8 +128,33 @@ export interface AwsSdkCall {
    * Example for ECS / updateService: 'service.deploymentConfiguration.maximumPercent'
    *
    * @default - return all data
+   *
+   * @deprecated use outputPaths instead
    */
   readonly outputPath?: string;
+
+  /**
+   * Restrict the data returned by the custom resource to specific paths in
+   * the API response. Use this to limit the data returned by the custom
+   * resource if working with API calls that could potentially result in custom
+   * response objects exceeding the hard limit of 4096 bytes.
+   *
+   * Example for ECS / updateService: ['service.deploymentConfiguration.maximumPercent']
+   *
+   * @default - return all data
+   */
+  readonly outputPaths?: string[];
+
+  /**
+   * Used for running the SDK calls in underlying lambda with a different role
+   * Can be used primarily for cross-account requests to for example connect
+   * hostedzone with a shared vpc
+   *
+   * Example for Route53 / associateVPCWithHostedZone
+   *
+   * @default - run without assuming role
+   */
+  readonly assumedRoleArn?: string;
 }
 
 /**
@@ -355,10 +380,16 @@ export class AwsCustomResource extends CoreConstruct implements iam.IGrantable {
     } else {
       // Derive statements from AWS SDK calls
       for (const call of [props.onCreate, props.onUpdate, props.onDelete]) {
-        if (call) {
+        if (call && call.assumedRoleArn == null) {
           const statement = new iam.PolicyStatement({
             actions: [awsSdkToIamAction(call.service, call.action)],
             resources: props.policy.resources,
+          });
+          statements.push(statement);
+        } else if (call && call.assumedRoleArn != null) {
+          const statement = new iam.PolicyStatement({
+            actions: ['sts:AssumeRole'],
+            resources: [call.assumedRoleArn],
           });
           statements.push(statement);
         }

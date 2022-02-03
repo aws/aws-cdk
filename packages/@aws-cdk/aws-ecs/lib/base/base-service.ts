@@ -5,10 +5,10 @@ import * as elb from '@aws-cdk/aws-elasticloadbalancing';
 import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cloudmap from '@aws-cdk/aws-servicediscovery';
-import { Annotations, Duration, IResolvable, IResource, Lazy, Resource, Stack } from '@aws-cdk/core';
+import { Annotations, Duration, IResolvable, IResource, Lazy, Resource, Stack, ArnFormat } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { LoadBalancerTargetOptions, NetworkMode, TaskDefinition } from '../base/task-definition';
-import { ICluster, CapacityProviderStrategy } from '../cluster';
+import { ICluster, CapacityProviderStrategy, ExecuteCommandLogging, Cluster } from '../cluster';
 import { ContainerDefinition, Protocol } from '../container-definition';
 import { CfnService } from '../ecs.generated';
 import { ScalableTaskCount } from './scalable-task-count';
@@ -160,6 +160,15 @@ export interface BaseServiceOptions {
   readonly propagateTags?: PropagatedTagSource;
 
   /**
+   * Specifies whether to propagate the tags from the task definition or the service to the tasks in the service.
+   * Tags can only be propagated to the tasks within the service during service creation.
+   *
+   * @deprecated Use `propagateTags` instead.
+   * @default PropagatedTagSource.NONE
+   */
+  readonly propagateTaskTagsFrom?: PropagatedTagSource;
+
+  /**
    * Specifies whether to enable Amazon ECS managed tags for the tasks within the service. For more information, see
    * [Tagging Your Amazon ECS Resources](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-using-tags.html)
    *
@@ -189,6 +198,13 @@ export interface BaseServiceOptions {
    *
    */
   readonly capacityProviderStrategies?: CapacityProviderStrategy[];
+
+  /**
+   * Whether to enable the ability to execute into a container
+   *
+   *  @default - undefined
+   */
+  readonly enableExecuteCommand?: boolean;
 }
 
 /**
@@ -203,7 +219,7 @@ export interface BaseServiceProps extends BaseServiceOptions {
    *
    * @see - https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ecs-service.html#cfn-ecs-service-capacityproviderstrategy
    *
-   * Valid values are: LaunchType.ECS or LaunchType.FARGATE
+   * Valid values are: LaunchType.ECS or LaunchType.FARGATE or LaunchType.EXTERNAL
    */
   readonly launchType: LaunchType;
 }
@@ -299,6 +315,46 @@ export interface IBaseService extends IService {
  */
 export abstract class BaseService extends Resource
   implements IBaseService, elbv2.IApplicationLoadBalancerTarget, elbv2.INetworkLoadBalancerTarget, elb.ILoadBalancerTarget {
+  /**
+   * Import an existing ECS/Fargate Service using the service cluster format.
+   * The format is the "new" format "arn:aws:ecs:region:aws_account_id:service/cluster-name/service-name".
+   * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-account-settings.html#ecs-resource-ids
+   */
+  public static fromServiceArnWithCluster(scope: Construct, id: string, serviceArn: string): IBaseService {
+    const stack = Stack.of(scope);
+    const arn = stack.splitArn(serviceArn, ArnFormat.SLASH_RESOURCE_NAME);
+    const resourceName = arn.resourceName;
+    if (!resourceName) {
+      throw new Error('Missing resource Name from service ARN: ${serviceArn}');
+    }
+    const resourceNameParts = resourceName.split('/');
+    if (resourceNameParts.length !== 2) {
+      throw new Error(`resource name ${resourceName} from service ARN: ${serviceArn} is not using the ARN cluster format`);
+    }
+    const clusterName = resourceNameParts[0];
+    const serviceName = resourceNameParts[1];
+
+    const clusterArn = Stack.of(scope).formatArn({
+      partition: arn.partition,
+      region: arn.region,
+      account: arn.account,
+      service: 'ecs',
+      resource: 'cluster',
+      resourceName: clusterName,
+    });
+
+    const cluster = Cluster.fromClusterArn(scope, `${id}Cluster`, clusterArn);
+
+    class Import extends Resource implements IBaseService {
+      public readonly serviceArn = serviceArn;
+      public readonly serviceName = serviceName;
+      public readonly cluster = cluster;
+    }
+
+    return new Import(scope, id, {
+      environmentFromArn: serviceArn,
+    });
+  }
 
   /**
    * The security groups which manage the allowed network traffic for the service.
@@ -366,12 +422,18 @@ export abstract class BaseService extends Resource
       physicalName: props.serviceName,
     });
 
+    if (props.propagateTags && props.propagateTaskTagsFrom) {
+      throw new Error('You can only specify either propagateTags or propagateTaskTagsFrom. Alternatively, you can leave both blank');
+    }
+
     this.taskDefinition = taskDefinition;
 
     // launchType will set to undefined if using external DeploymentController or capacityProviderStrategies
     const launchType = props.deploymentController?.type === DeploymentControllerType.EXTERNAL ||
       props.capacityProviderStrategies !== undefined ?
       undefined : props.launchType;
+
+    const propagateTagsFromSource = props.propagateTaskTagsFrom ?? props.propagateTags ?? PropagatedTagSource.NONE;
 
     this.resource = new CfnService(this, 'Service', {
       desiredCount: props.desiredCount,
@@ -385,12 +447,13 @@ export abstract class BaseService extends Resource
           rollback: props.circuitBreaker.rollback ?? false,
         } : undefined,
       },
-      propagateTags: props.propagateTags === PropagatedTagSource.NONE ? undefined : props.propagateTags,
+      propagateTags: propagateTagsFromSource === PropagatedTagSource.NONE ? undefined : props.propagateTags,
       enableEcsManagedTags: props.enableECSManagedTags ?? false,
       deploymentController: props.circuitBreaker ? {
         type: DeploymentControllerType.ECS,
       } : props.deploymentController,
       launchType: launchType,
+      enableExecuteCommand: props.enableExecuteCommand,
       capacityProviderStrategy: props.capacityProviderStrategies,
       healthCheckGracePeriodSeconds: this.evaluateHealthGracePeriod(props.healthCheckGracePeriod),
       /* role: never specified, supplanted by Service Linked Role */
@@ -415,6 +478,20 @@ export abstract class BaseService extends Resource
     if (props.cloudMapOptions) {
       this.enableCloudMap(props.cloudMapOptions);
     }
+
+    if (props.enableExecuteCommand) {
+      this.enableExecuteCommand();
+
+      const logging = this.cluster.executeCommandConfiguration?.logging ?? ExecuteCommandLogging.DEFAULT;
+
+      if (this.cluster.executeCommandConfiguration?.kmsKey) {
+        this.enableExecuteCommandEncryption(logging);
+      }
+      if (logging !== ExecuteCommandLogging.NONE) {
+        this.executeCommandLogConfiguration();
+      }
+    }
+    this.node.defaultChild = this.resource;
   }
 
   /**
@@ -422,6 +499,84 @@ export abstract class BaseService extends Resource
    */
   public get cloudMapService(): cloudmap.IService | undefined {
     return this.cloudmapService;
+  }
+
+  private executeCommandLogConfiguration() {
+    const logConfiguration = this.cluster.executeCommandConfiguration?.logConfiguration;
+    this.taskDefinition.addToTaskRolePolicy(new iam.PolicyStatement({
+      actions: [
+        'logs:DescribeLogGroups',
+      ],
+      resources: ['*'],
+    }));
+
+    const logGroupArn = logConfiguration?.cloudWatchLogGroup ? `arn:${this.stack.partition}:logs:${this.stack.region}:${this.stack.account}:log-group:${logConfiguration.cloudWatchLogGroup.logGroupName}:*` : '*';
+    this.taskDefinition.addToTaskRolePolicy(new iam.PolicyStatement({
+      actions: [
+        'logs:CreateLogStream',
+        'logs:DescribeLogStreams',
+        'logs:PutLogEvents',
+      ],
+      resources: [logGroupArn],
+    }));
+
+    if (logConfiguration?.s3Bucket?.bucketName) {
+      this.taskDefinition.addToTaskRolePolicy(new iam.PolicyStatement({
+        actions: [
+          's3:GetBucketLocation',
+        ],
+        resources: ['*'],
+      }));
+      this.taskDefinition.addToTaskRolePolicy(new iam.PolicyStatement({
+        actions: [
+          's3:PutObject',
+        ],
+        resources: [`arn:${this.stack.partition}:s3:::${logConfiguration.s3Bucket.bucketName}/*`],
+      }));
+      if (logConfiguration.s3EncryptionEnabled) {
+        this.taskDefinition.addToTaskRolePolicy(new iam.PolicyStatement({
+          actions: [
+            's3:GetEncryptionConfiguration',
+          ],
+          resources: [`arn:${this.stack.partition}:s3:::${logConfiguration.s3Bucket.bucketName}`],
+        }));
+      }
+    }
+  }
+
+  private enableExecuteCommandEncryption(logging: ExecuteCommandLogging) {
+    this.taskDefinition.addToTaskRolePolicy(new iam.PolicyStatement({
+      actions: [
+        'kms:Decrypt',
+        'kms:GenerateDataKey',
+      ],
+      resources: [`${this.cluster.executeCommandConfiguration?.kmsKey?.keyArn}`],
+    }));
+
+    this.cluster.executeCommandConfiguration?.kmsKey?.addToResourcePolicy(new iam.PolicyStatement({
+      actions: [
+        'kms:*',
+      ],
+      resources: ['*'],
+      principals: [new iam.ArnPrincipal(`arn:${this.stack.partition}:iam::${this.stack.account}:root`)],
+    }));
+
+    if (logging === ExecuteCommandLogging.DEFAULT || this.cluster.executeCommandConfiguration?.logConfiguration?.cloudWatchEncryptionEnabled) {
+      this.cluster.executeCommandConfiguration?.kmsKey?.addToResourcePolicy(new iam.PolicyStatement({
+        actions: [
+          'kms:Encrypt*',
+          'kms:Decrypt*',
+          'kms:ReEncrypt*',
+          'kms:GenerateDataKey*',
+          'kms:Describe*',
+        ],
+        resources: ['*'],
+        principals: [new iam.ServicePrincipal(`logs.${this.stack.region}.amazonaws.com`)],
+        conditions: {
+          ArnLike: { 'kms:EncryptionContext:aws:logs:arn': `arn:${this.stack.partition}:logs:${this.stack.region}:${this.stack.account}:*` },
+        },
+      }));
+    }
   }
 
   /**
@@ -455,6 +610,8 @@ export abstract class BaseService extends Resource
    *
    * @example
    *
+   * declare const listener: elbv2.ApplicationListener;
+   * declare const service: ecs.BaseService;
    * listener.addTargets('ECS', {
    *   port: 80,
    *   targets: [service.loadBalancerTarget({
@@ -490,6 +647,8 @@ export abstract class BaseService extends Resource
    *
    * @example
    *
+   * declare const listener: elbv2.ApplicationListener;
+   * declare const service: ecs.BaseService;
    * service.registerLoadBalancerTargets(
    *   {
    *     containerName: 'web',
@@ -631,13 +790,13 @@ export abstract class BaseService extends Resource
     return new cloudwatch.Metric({
       namespace: 'AWS/ECS',
       metricName,
-      dimensions: { ClusterName: this.cluster.clusterName, ServiceName: this.serviceName },
+      dimensionsMap: { ClusterName: this.cluster.clusterName, ServiceName: this.serviceName },
       ...props,
     }).attachTo(this);
   }
 
   /**
-   * This method returns the CloudWatch metric for this clusters memory utilization.
+   * This method returns the CloudWatch metric for this service's memory utilization.
    *
    * @default average over 5 minutes
    */
@@ -646,7 +805,7 @@ export abstract class BaseService extends Resource
   }
 
   /**
-   * This method returns the CloudWatch metric for this clusters CPU utilization.
+   * This method returns the CloudWatch metric for this service's CPU utilization.
    *
    * @default average over 5 minutes
    */
@@ -788,6 +947,18 @@ export abstract class BaseService extends Resource
       produce: () => providedHealthCheckGracePeriod?.toSeconds() ?? (this.loadBalancers.length > 0 ? 60 : undefined),
     });
   }
+
+  private enableExecuteCommand() {
+    this.taskDefinition.addToTaskRolePolicy(new iam.PolicyStatement({
+      actions: [
+        'ssmmessages:CreateControlChannel',
+        'ssmmessages:CreateDataChannel',
+        'ssmmessages:OpenControlChannel',
+        'ssmmessages:OpenDataChannel',
+      ],
+      resources: ['*'],
+    }));
+  }
 }
 
 /**
@@ -818,7 +989,7 @@ export interface CloudMapOptions {
   /**
    * The amount of time that you want DNS resolvers to cache the settings for this record.
    *
-   * @default 60
+   * @default Duration.minutes(1)
    */
   readonly dnsTtl?: Duration;
 
@@ -905,7 +1076,12 @@ export enum LaunchType {
   /**
    * The service will be launched using the FARGATE launch type
    */
-  FARGATE = 'FARGATE'
+  FARGATE = 'FARGATE',
+
+  /**
+   * The service will be launched using the EXTERNAL launch type
+   */
+  EXTERNAL = 'EXTERNAL'
 }
 
 /**

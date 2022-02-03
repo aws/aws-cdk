@@ -6,6 +6,7 @@
 [![PyPI version](https://badge.fury.io/py/aws-cdk.core.svg)](https://badge.fury.io/py/aws-cdk.core)
 [![NuGet version](https://badge.fury.io/nu/Amazon.CDK.svg)](https://badge.fury.io/nu/Amazon.CDK)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/software.amazon.awscdk/core/badge.svg)](https://maven-badges.herokuapp.com/maven-central/software.amazon.awscdk/core)
+[![Go Reference](https://pkg.go.dev/badge/github.com/aws/aws-cdk-go/awscdk.svg)](https://pkg.go.dev/github.com/aws/aws-cdk-go/awscdk)
 [![Mergify](https://img.shields.io/endpoint.svg?url=https://gh.mergify.io/badges/aws/aws-cdk&style=flat)](https://mergify.io)
 
 The **AWS Cloud Development Kit (AWS CDK)** is an open-source software development
@@ -18,12 +19,13 @@ infrastructure definition and share it without worrying about boilerplate logic.
 
 The CDK is available in the following languages:
 
-* JavaScript, TypeScript ([Node.js ≥ 10.13.0](https://nodejs.org/download/release/latest-v10.x/))
+* JavaScript, TypeScript ([Node.js ≥ 14.15.0](https://nodejs.org/download/release/latest-v14.x/))
   - We recommend using a version in [Active LTS](https://nodejs.org/en/about/releases/)
-  - ⚠️ versions `13.0.0` to `13.6.0` are not supported due to compatibility issues with our dependencies.
 * Python ([Python ≥ 3.6](https://www.python.org/downloads/))
 * Java ([Java ≥ 8](https://www.oracle.com/technetwork/java/javase/downloads/index.html) and [Maven ≥ 3.5.4](https://maven.apache.org/download.cgi))
 * .NET ([.NET Core ≥ 3.1](https://dotnet.microsoft.com/download))
+* Go ([Go ≥ 1.16.4](https://golang.org/))
+  - Go is currently in developer preview and is not recommended for production use.
 
 \
 Jump To:
@@ -74,8 +76,7 @@ in the CDK Developer Guide.
 For a detailed walkthrough, see the [tutorial](https://docs.aws.amazon.com/cdk/latest/guide/getting_started.html#hello_world_tutorial) in the AWS CDK [Developer Guide](https://docs.aws.amazon.com/cdk/latest/guide/home.html).
 
 ### At a glance
-Install or update the [AWS CDK CLI] from npm (requires [Node.js ≥ 10.13.0](https://nodejs.org/download/release/latest-v10.x/)). We recommend using a version in [Active LTS](https://nodejs.org/en/about/releases/)
-⚠️ versions `13.0.0` to `13.6.0` are not supported due to compatibility issues with our dependencies.
+Install or update the [AWS CDK CLI] from npm (requires [Node.js ≥ 14.15.0](https://nodejs.org/download/release/latest-v14.x/)). We recommend using a version in [Active LTS](https://nodejs.org/en/about/releases/)
 
 ```console
 $ npm i -g aws-cdk
@@ -133,7 +134,7 @@ You may also find help on these community resources:
 * Ask a question on [Stack Overflow](https://stackoverflow.com/questions/tagged/aws-cdk)
   and tag it with `aws-cdk`
 
-### Roadmap
+## Roadmap
 
 The [AWS CDK Roadmap project board](https://github.com/orgs/aws/projects/7) lets developers know about our upcoming features and priorities to help them plan how to best leverage the CDK and identify opportunities to contribute to the project. See [ROADMAP.md](https://github.com/aws/aws-cdk/blob/master/ROADMAP.md) for more information and FAQs.
 
@@ -143,8 +144,30 @@ We welcome community contributions and pull requests. See
 [CONTRIBUTING.md](./CONTRIBUTING.md) for information on how to set up a development
 environment and submit code.
 
+## Metrics collection
+This solution collects anonymous operational metrics to help AWS improve the
+quality and features of the CDK. For more information, including how to disable
+this capability, please see the 
+[developer guide](https://docs.aws.amazon.com/cdk/latest/guide/cli.html#version_reporting).
+
 ## More Resources
 * [CDK Workshop](https://cdkworkshop.com/)
+* [Construct Hub](https://constructs.dev) - Find and use open-source Cloud Development Kit (CDK) libraries
+* Best Practices
+  * [Best practices for developing cloud applications with AWS CDK](https://aws.amazon.com/blogs/devops/best-practices-for-developing-cloud-applications-with-aws-cdk/)
+  * [Align with best practices while creating infrastructure using cdk aspects](https://aws.amazon.com/blogs/devops/align-with-best-practices-while-creating-infrastructure-using-cdk-aspects/)
+  * [Recommended AWS CDK project structure for Python applications](https://aws.amazon.com/blogs/developer/recommended-aws-cdk-project-structure-for-python-applications/)
+  * [Best practices for discoverability of a construct library on Construct Hub](https://aws.amazon.com/blogs/opensource/best-practices-for-discoverability-of-a-construct-library-on-construct-hub/)
+* [All developer blog posts about AWS CDK](https://aws.amazon.com/blogs/developer/category/developer-tools/aws-cloud-development-kit/)
+* **[CDK Construction Zone](https://www.twitch.tv/collections/9kCOGphNZBYVdA)** - A Twitch live coding series hosted by the CDK team, season one episodes:
+  * Triggers: Join us as we implement [Triggers](https://github.com/aws/aws-cdk-rfcs/issues/71), a Construct for configuring deploy time actions. Episodes 1-3:
+    * [S1E1](https://www.twitch.tv/videos/917691798): Triggers (part 1); **Participants:** @NetaNir, @eladb, @richardhboyd
+    * [S1E2](https://www.twitch.tv/videos/925801382): Triggers (part 2); **Participants:** @NetaNir, @eladb, @iliapolo 
+    * [S1E3](https://www.twitch.tv/videos/944565768): Triggers (part 3); **Participants:** @NetaNir, @eladb, @iliapolo, @RomainMuller
+  * [S1E4](https://www.twitch.tv/aws/video/960287598): [Tokens](https://docs.aws.amazon.com/cdk/latest/guide/tokens.html) Deep Dive; **Participants:** @NetaNir,@rix0rrr, @iliapolo, @RomainMuller
+  * [S1E5](https://www.twitch.tv/videos/981481112): [Assets](https://docs.aws.amazon.com/cdk/latest/guide/assets.html) Deep Dive; **Participants:** @NetaNir, @eladb, @jogold
+  * [S1E6](https://www.twitch.tv/aws/video/1005334364): [Best Practices](https://aws.amazon.com/blogs/devops/best-practices-for-developing-cloud-applications-with-aws-cdk/); **Participants:** @skinny85, @eladb, @rix0rrr, @alexpulver
+  * [S1E7](https://www.twitch.tv/videos/1019059654): Tips and Tricks From The CDK Team; **Participants:** All the CDK team! 
 * [Examples](https://github.com/aws-samples/aws-cdk-examples)
 * [Changelog](./CHANGELOG.md)
 * [NOTICE](./NOTICE)

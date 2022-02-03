@@ -2,6 +2,7 @@ import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnRoute } from './appmesh.generated';
 import { IMesh } from './mesh';
+import { renderMeshOwner } from './private/utils';
 import { RouteSpec } from './route-spec';
 import { IVirtualRouter, VirtualRouter } from './virtual-router';
 
@@ -74,7 +75,7 @@ export class Route extends cdk.Resource implements IRoute {
     return new class extends cdk.Resource implements IRoute {
       readonly routeArn = routeArn;
       readonly virtualRouter = VirtualRouter.fromVirtualRouterArn(this, 'VirtualRouter', routeArn);
-      readonly routeName = cdk.Fn.select(4, cdk.Fn.split('/', cdk.Stack.of(scope).parseArn(routeArn).resourceName!));
+      readonly routeName = cdk.Fn.select(4, cdk.Fn.split('/', cdk.Stack.of(scope).splitArn(routeArn, cdk.ArnFormat.SLASH_RESOURCE_NAME).resourceName!));
     }(scope, id);
   }
 
@@ -120,6 +121,7 @@ export class Route extends cdk.Resource implements IRoute {
     const route = new CfnRoute(this, 'Resource', {
       routeName: this.physicalName,
       meshName: this.virtualRouter.mesh.meshName,
+      meshOwner: renderMeshOwner(this.env.account, this.virtualRouter.mesh.env.account),
       virtualRouterName: this.virtualRouter.virtualRouterName,
       spec: {
         tcpRoute: spec.tcpRouteSpec,

@@ -52,6 +52,13 @@ export interface SubscriptionOptions {
    * @default - No dead letter queue enabled.
    */
   readonly deadLetterQueue?: IQueue;
+
+  /**
+   * Arn of role allowing access to firehose delivery stream.
+   * Required for a firehose subscription protocol.
+   * @default - No subscription role is provided
+   */
+  readonly subscriptionRoleArn?: string;
 }
 /**
  * Properties for creating a new subscription
@@ -81,8 +88,15 @@ export class Subscription extends Resource {
   constructor(scope: Construct, id: string, props: SubscriptionProps) {
     super(scope, id);
 
-    if (props.rawMessageDelivery && ['http', 'https', 'sqs'].indexOf(props.protocol) < 0) {
-      throw new Error('Raw message delivery can only be enabled for HTTP/S and SQS subscriptions.');
+    if (props.rawMessageDelivery &&
+      [
+        SubscriptionProtocol.HTTP,
+        SubscriptionProtocol.HTTPS,
+        SubscriptionProtocol.SQS,
+        SubscriptionProtocol.FIREHOSE,
+      ]
+        .indexOf(props.protocol) < 0) {
+      throw new Error('Raw message delivery can only be enabled for HTTP, HTTPS, SQS, and Firehose subscriptions.');
     }
 
     if (props.filterPolicy) {
@@ -103,6 +117,10 @@ export class Subscription extends Resource {
       }
     }
 
+    if (props.protocol === SubscriptionProtocol.FIREHOSE && !props.subscriptionRoleArn) {
+      throw new Error('Subscription role arn is required field for subscriptions with a firehose protocol.');
+    }
+
     this.deadLetterQueue = this.buildDeadLetterQueue(props);
 
     new CfnSubscription(this, 'Resource', {
@@ -113,6 +131,7 @@ export class Subscription extends Resource {
       filterPolicy: this.filterPolicy,
       region: props.region,
       redrivePolicy: this.buildDeadLetterConfig(this.deadLetterQueue),
+      subscriptionRoleArn: props.subscriptionRoleArn,
     });
 
   }
@@ -189,5 +208,10 @@ export enum SubscriptionProtocol {
   /**
    * Notifications trigger a Lambda function.
    */
-  LAMBDA = 'lambda'
+  LAMBDA = 'lambda',
+
+  /**
+   * Notifications put records into a firehose delivery stream.
+   */
+  FIREHOSE = 'firehose'
 }

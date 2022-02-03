@@ -19,7 +19,7 @@ export interface BlockDevice {
   /**
    * The device name exposed to the EC2 instance
    *
-   * @example '/dev/sdh', 'xvdh'
+   * For example, a value like `/dev/sdh`, `xvdh`.
    *
    * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/device_naming.html
    */
@@ -28,8 +28,7 @@ export interface BlockDevice {
   /**
    * Defines the block device volume, to be either an Amazon EBS volume or an ephemeral instance store volume
    *
-   * @example BlockDeviceVolume.ebs(15), BlockDeviceVolume.ephemeral(0)
-   *
+   * For example, a value like `BlockDeviceVolume.ebs(15)`, `BlockDeviceVolume.ephemeral(0)`.
    */
   readonly volume: BlockDeviceVolume;
 
@@ -90,6 +89,17 @@ export interface EbsDeviceOptions extends EbsDeviceOptionsBase {
    * @default false
    */
   readonly encrypted?: boolean;
+
+  /**
+   * The ARN of the AWS Key Management Service (AWS KMS) CMK used for encryption.
+   *
+   * You have to ensure that the KMS CMK has the correct permissions to be used by the service launching the ec2 instances.
+   *
+   * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSEncryption.html#ebs-encryption-requirements
+   *
+   * @default - If encrypted is true, the default aws/ebs KMS key will be used.
+   */
+  readonly kmsKey?: IKey;
 }
 
 /**
@@ -109,7 +119,7 @@ export interface EbsDeviceSnapshotOptions extends EbsDeviceOptionsBase {
 /**
  * Properties of an EBS block device
  */
-export interface EbsDeviceProps extends EbsDeviceSnapshotOptions {
+export interface EbsDeviceProps extends EbsDeviceSnapshotOptions, EbsDeviceOptions {
   /**
    * The snapshot ID of the volume to use
    *
@@ -613,6 +623,8 @@ export class Volume extends VolumeBase {
       volumeType: props.volumeType ?? EbsDeviceVolumeType.GENERAL_PURPOSE_SSD,
     });
     resource.applyRemovalPolicy(props.removalPolicy);
+
+    if (props.volumeName) Tags.of(resource).add('Name', props.volumeName);
 
     this.volumeId = resource.ref;
     this.availabilityZone = props.availabilityZone;

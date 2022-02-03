@@ -35,6 +35,12 @@ export class SourceAccessConfigurationType {
    */
   public static readonly SASL_SCRAM_512_AUTH = new SourceAccessConfigurationType('SASL_SCRAM_512_AUTH');
 
+  /**
+   * The Secrets Manager ARN of your secret key containing the certificate chain (X.509 PEM), private key (PKCS#8 PEM),
+   * and private key password (optional) used for mutual TLS authentication of your MSK/Apache Kafka brokers.
+   */
+  public static readonly CLIENT_CERTIFICATE_TLS_AUTH = new SourceAccessConfigurationType('CLIENT_CERTIFICATE_TLS_AUTH');
+
   /** A custom source access configuration property */
   public static of(name: string): SourceAccessConfigurationType {
     return new SourceAccessConfigurationType(name);
@@ -119,6 +125,15 @@ export interface EventSourceMappingOptions {
    * @default - Required for Amazon Kinesis, Amazon DynamoDB, and Amazon MSK Streams sources.
    */
   readonly startingPosition?: StartingPosition;
+
+  /**
+   * Allow functions to return partially successful responses for a batch of records.
+   *
+   * @see https://docs.aws.amazon.com/lambda/latest/dg/with-ddb.html#services-ddb-batchfailurereporting
+   *
+   * @default false
+   */
+  readonly reportBatchItemFailures?: boolean;
 
   /**
    * The maximum amount of time to gather records before invoking the function.
@@ -306,6 +321,7 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
       eventSourceArn: props.eventSourceArn,
       functionName: props.target.functionName,
       startingPosition: props.startingPosition,
+      functionResponseTypes: props.reportBatchItemFailures ? ['ReportBatchItemFailures'] : undefined,
       maximumBatchingWindowInSeconds: props.maxBatchingWindow?.toSeconds(),
       maximumRecordAgeInSeconds: props.maxRecordAge?.toSeconds(),
       maximumRetryAttempts: props.retryAttempts,

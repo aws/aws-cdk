@@ -1,12 +1,12 @@
 import * as path from 'path';
+import { Template } from '@aws-cdk/assertions';
 import * as ec2 from '@aws-cdk/aws-ec2';
+import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as logs from '@aws-cdk/aws-logs';
 import { Duration, Stack } from '@aws-cdk/core';
 import * as cr from '../../lib';
 import * as util from '../../lib/provider-framework/util';
-
-import '@aws-cdk/assert-internal/jest';
 
 test('security groups are applied to all framework functions', () => {
 
@@ -33,7 +33,7 @@ test('security groups are applied to all framework functions', () => {
     securityGroups: [securityGroup],
   });
 
-  expect(stack).toHaveResourceLike('AWS::Lambda::Function', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
     Handler: 'framework.onEvent',
     VpcConfig: {
       SecurityGroupIds: [
@@ -47,7 +47,7 @@ test('security groups are applied to all framework functions', () => {
     },
   });
 
-  expect(stack).toHaveResourceLike('AWS::Lambda::Function', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
     Handler: 'framework.isComplete',
     VpcConfig: {
       SecurityGroupIds: [
@@ -61,7 +61,7 @@ test('security groups are applied to all framework functions', () => {
     },
   });
 
-  expect(stack).toHaveResourceLike('AWS::Lambda::Function', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
     Handler: 'framework.onTimeout',
     VpcConfig: {
       SecurityGroupIds: [
@@ -100,7 +100,7 @@ test('vpc is applied to all framework functions', () => {
     vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE },
   });
 
-  expect(stack).toHaveResourceLike('AWS::Lambda::Function', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
     Handler: 'framework.onEvent',
     VpcConfig: {
       SubnetIds: [
@@ -110,7 +110,7 @@ test('vpc is applied to all framework functions', () => {
     },
   });
 
-  expect(stack).toHaveResourceLike('AWS::Lambda::Function', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
     Handler: 'framework.isComplete',
     VpcConfig: {
       SubnetIds: [
@@ -120,7 +120,7 @@ test('vpc is applied to all framework functions', () => {
     },
   });
 
-  expect(stack).toHaveResourceLike('AWS::Lambda::Function', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
     Handler: 'framework.onTimeout',
     VpcConfig: {
       SubnetIds: [
@@ -148,23 +148,23 @@ test('minimal setup', () => {
   // THEN
 
   // framework "onEvent" handler
-  expect(stack).toHaveResource('AWS::Lambda::Function', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
     Handler: 'framework.onEvent',
     Environment: { Variables: { USER_ON_EVENT_FUNCTION_ARN: { 'Fn::GetAtt': ['MyHandler6B74D312', 'Arn'] } } },
     Timeout: 900,
   });
 
   // user "onEvent" handler
-  expect(stack).toHaveResource('AWS::Lambda::Function', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
     Handler: 'index.onEvent',
   });
 
   // no framework "is complete" handler or state machine
-  expect(stack).not.toHaveResource('AWS::StepFunctions::StateMachine');
-  expect(stack).not.toHaveResource('AWS::Lambda::Function', {
+  Template.fromStack(stack).resourceCountIs('AWS::StepFunctions::StateMachine', 0);
+  expect(Template.fromStack(stack).findResources('AWS::Lambda::Function', {
     Handler: 'framework.isComplete',
     Timeout: 900,
-  });
+  })).toEqual({});
 });
 
 test('if isComplete is specified, the isComplete framework handler is also included', () => {
@@ -192,7 +192,7 @@ test('if isComplete is specified, the isComplete framework handler is also inclu
     },
   };
 
-  expect(stack).toHaveResource('AWS::Lambda::Function', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
     Handler: 'framework.onEvent',
     Timeout: 900,
     Environment: {
@@ -203,19 +203,19 @@ test('if isComplete is specified, the isComplete framework handler is also inclu
     },
   });
 
-  expect(stack).toHaveResource('AWS::Lambda::Function', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
     Handler: 'framework.isComplete',
     Timeout: 900,
     Environment: expectedEnv,
   });
 
-  expect(stack).toHaveResource('AWS::Lambda::Function', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
     Handler: 'framework.onTimeout',
     Timeout: 900,
     Environment: expectedEnv,
   });
 
-  expect(stack).toHaveResource('AWS::StepFunctions::StateMachine', {
+  Template.fromStack(stack).hasResourceProperties('AWS::StepFunctions::StateMachine', {
     DefinitionString: {
       'Fn::Join': [
         '',
@@ -309,7 +309,7 @@ describe('log retention', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('Custom::LogRetention', {
+    Template.fromStack(stack).hasResourceProperties('Custom::LogRetention', {
       LogGroupName: {
         'Fn::Join': [
           '',
@@ -339,6 +339,84 @@ describe('log retention', () => {
     });
 
     // THEN
-    expect(stack).not.toHaveResource('Custom::LogRetention');
+    Template.fromStack(stack).resourceCountIs('Custom::LogRetention', 0);
   });
 });
+
+describe('role', () => {
+  it('uses custom role when present', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new cr.Provider(stack, 'MyProvider', {
+      onEventHandler: new lambda.Function(stack, 'MyHandler', {
+        code: lambda.Code.fromAsset(path.join(__dirname, './integration-test-fixtures/s3-file-handler')),
+        handler: 'index.onEvent',
+        runtime: lambda.Runtime.NODEJS_10_X,
+      }),
+      role: new iam.Role(stack, 'MyRole', {
+        assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+        managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaBasicExecutionRole')],
+      }),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+      Role: {
+        'Fn::GetAtt': [
+          'MyRoleF48FFE04',
+          'Arn',
+        ],
+      },
+    });
+  });
+
+  it('uses default role otherwise', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new cr.Provider(stack, 'MyProvider', {
+      onEventHandler: new lambda.Function(stack, 'MyHandler', {
+        code: lambda.Code.fromAsset(path.join(__dirname, './integration-test-fixtures/s3-file-handler')),
+        handler: 'index.onEvent',
+        runtime: lambda.Runtime.NODEJS_10_X,
+      }),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+      Role: {
+        'Fn::GetAtt': [
+          'MyProviderframeworkonEventServiceRole8761E48D',
+          'Arn',
+        ],
+      },
+    });
+  });
+});
+
+describe('name', () => {
+  it('uses custom name when present', () => {
+    // GIVEN
+    const stack = new Stack();
+    const providerFunctionName = 'test-name';
+
+    // WHEN
+    new cr.Provider(stack, 'MyProvider', {
+      onEventHandler: new lambda.Function(stack, 'MyHandler', {
+        code: lambda.Code.fromAsset(path.join(__dirname, './integration-test-fixtures/s3-file-handler')),
+        handler: 'index.onEvent',
+        runtime: lambda.Runtime.NODEJS_10_X,
+      }),
+      providerFunctionName,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+      FunctionName: providerFunctionName,
+    });
+  });
+});
+

@@ -1,14 +1,10 @@
-import {
-  countResources,
-  expect as expectCDK,
-  haveResource,
-  haveResourceLike,
-} from '@aws-cdk/assert-internal';
+import { Template } from '@aws-cdk/assertions';
 import {
   CfnInstanceProfile,
   Role,
   ServicePrincipal,
 } from '@aws-cdk/aws-iam';
+import { Key } from '@aws-cdk/aws-kms';
 import {
   App,
   Duration,
@@ -34,6 +30,7 @@ import {
   WindowsImage,
   WindowsVersion,
 } from '../lib';
+import { stringLike } from './util';
 
 /* eslint-disable jest/expect-expect */
 
@@ -54,7 +51,7 @@ describe('LaunchTemplate', () => {
     // Note: The following is intentionally a haveResource instead of haveResourceLike
     // to ensure that only the bare minimum of properties have values when no properties
     // are given to a LaunchTemplate.
-    expectCDK(stack).to(haveResource('AWS::EC2::LaunchTemplate', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::LaunchTemplate', {
       LaunchTemplateData: {
         TagSpecifications: [
           {
@@ -77,8 +74,8 @@ describe('LaunchTemplate', () => {
           },
         ],
       },
-    }));
-    expectCDK(stack).notTo(haveResource('AWS::IAM::InstanceProfile'));
+    });
+    Template.fromStack(stack).resourceCountIs('AWS::IAM::InstanceProfile', 0);
     expect(() => { template.grantPrincipal; }).toThrow();
     expect(() => { template.connections; }).toThrow();
     expect(template.osType).toBeUndefined();
@@ -129,9 +126,9 @@ describe('LaunchTemplate', () => {
     });
 
     // THEN
-    expectCDK(stack).to(haveResourceLike('AWS::EC2::LaunchTemplate', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::LaunchTemplate', {
       LaunchTemplateName: 'LTName',
-    }));
+    });
   });
 
   test('Given instanceType', () => {
@@ -141,11 +138,11 @@ describe('LaunchTemplate', () => {
     });
 
     // THEN
-    expectCDK(stack).to(haveResourceLike('AWS::EC2::LaunchTemplate', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::LaunchTemplate', {
       LaunchTemplateData: {
         InstanceType: 'tt.test',
       },
-    }));
+    });
   });
 
   test('Given machineImage (Linux)', () => {
@@ -155,11 +152,13 @@ describe('LaunchTemplate', () => {
     });
 
     // THEN
-    expectCDK(stack).to(haveResourceLike('AWS::EC2::LaunchTemplate', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::LaunchTemplate', {
       LaunchTemplateData: {
-        ImageId: '{{resolve:ssm:/aws/service/ami-amazon-linux-latest/amzn-ami-hvm-x86_64-gp2}}',
+        ImageId: {
+          Ref: stringLike('SsmParameterValueawsserviceamiamazonlinuxlatestamznami.*Parameter'),
+        },
       },
-    }));
+    });
     expect(template.osType).toBe(OperatingSystemType.LINUX);
     expect(template.userData).toBeUndefined();
   });
@@ -171,11 +170,13 @@ describe('LaunchTemplate', () => {
     });
 
     // THEN
-    expectCDK(stack).to(haveResourceLike('AWS::EC2::LaunchTemplate', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::LaunchTemplate', {
       LaunchTemplateData: {
-        ImageId: '{{resolve:ssm:/aws/service/ami-windows-latest/Windows_Server-2019-English-Full-Base}}',
+        ImageId: {
+          Ref: stringLike('SsmParameterValueawsserviceamiwindowslatestWindowsServer2019EnglishFullBase.*Parameter'),
+        },
       },
-    }));
+    });
     expect(template.osType).toBe(OperatingSystemType.WINDOWS);
     expect(template.userData).toBeUndefined();
   });
@@ -191,13 +192,13 @@ describe('LaunchTemplate', () => {
     });
 
     // THEN
-    expectCDK(stack).to(haveResourceLike('AWS::EC2::LaunchTemplate', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::LaunchTemplate', {
       LaunchTemplateData: {
         UserData: {
           'Fn::Base64': '#!/bin/bash\necho Test',
         },
       },
-    }));
+    });
     expect(template.userData).toBeDefined();
   });
 
@@ -213,15 +214,15 @@ describe('LaunchTemplate', () => {
     });
 
     // THEN
-    expectCDK(stack).to(countResources('AWS::IAM::Role', 1));
-    expectCDK(stack).to(haveResourceLike('AWS::IAM::InstanceProfile', {
+    Template.fromStack(stack).resourceCountIs('AWS::IAM::Role', 1);
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::InstanceProfile', {
       Roles: [
         {
           Ref: 'TestRole6C9272DF',
         },
       ],
-    }));
-    expectCDK(stack).to(haveResource('AWS::EC2::LaunchTemplate', {
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::LaunchTemplate', {
       LaunchTemplateData: {
         IamInstanceProfile: {
           Arn: stack.resolve((template.node.findChild('Profile') as CfnInstanceProfile).getAtt('Arn')),
@@ -247,13 +248,14 @@ describe('LaunchTemplate', () => {
           },
         ],
       },
-    }));
+    });
     expect(template.role).toBeDefined();
     expect(template.grantPrincipal).toBeDefined();
   });
 
   test('Given blockDeviceMapping', () => {
     // GIVEN
+    const kmsKey = new Key(stack, 'EbsKey');
     const blockDevices: BlockDevice[] = [
       {
         deviceName: 'ebs',
@@ -261,6 +263,16 @@ describe('LaunchTemplate', () => {
         volume: BlockDeviceVolume.ebs(15, {
           deleteOnTermination: true,
           encrypted: true,
+          volumeType: EbsDeviceVolumeType.IO1,
+          iops: 5000,
+        }),
+      }, {
+        deviceName: 'ebs-cmk',
+        mappingEnabled: true,
+        volume: BlockDeviceVolume.ebs(15, {
+          deleteOnTermination: true,
+          encrypted: true,
+          kmsKey: kmsKey,
           volumeType: EbsDeviceVolumeType.IO1,
           iops: 5000,
         }),
@@ -284,7 +296,7 @@ describe('LaunchTemplate', () => {
     });
 
     // THEN
-    expectCDK(stack).to(haveResourceLike('AWS::EC2::LaunchTemplate', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::LaunchTemplate', {
       LaunchTemplateData: {
         BlockDeviceMappings: [
           {
@@ -292,6 +304,22 @@ describe('LaunchTemplate', () => {
             Ebs: {
               DeleteOnTermination: true,
               Encrypted: true,
+              Iops: 5000,
+              VolumeSize: 15,
+              VolumeType: 'io1',
+            },
+          },
+          {
+            DeviceName: 'ebs-cmk',
+            Ebs: {
+              DeleteOnTermination: true,
+              Encrypted: true,
+              KmsKeyId: {
+                'Fn::GetAtt': [
+                  'EbsKeyD3FEE551',
+                  'Arn',
+                ],
+              },
               Iops: 5000,
               VolumeSize: 15,
               VolumeType: 'io1',
@@ -313,7 +341,7 @@ describe('LaunchTemplate', () => {
           },
         ],
       },
-    }));
+    });
   });
 
   test.each([
@@ -326,13 +354,13 @@ describe('LaunchTemplate', () => {
     });
 
     // THEN
-    expectCDK(stack).to(haveResourceLike('AWS::EC2::LaunchTemplate', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::LaunchTemplate', {
       LaunchTemplateData: {
         CreditSpecification: {
           CpuCredits: expected,
         },
       },
-    }));
+    });
   });
 
   test.each([
@@ -345,11 +373,11 @@ describe('LaunchTemplate', () => {
     });
 
     // THEN
-    expectCDK(stack).to(haveResourceLike('AWS::EC2::LaunchTemplate', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::LaunchTemplate', {
       LaunchTemplateData: {
         DisableApiTermination: expected,
       },
-    }));
+    });
   });
 
   test.each([
@@ -362,11 +390,11 @@ describe('LaunchTemplate', () => {
     });
 
     // THEN
-    expectCDK(stack).to(haveResourceLike('AWS::EC2::LaunchTemplate', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::LaunchTemplate', {
       LaunchTemplateData: {
         EbsOptimized: expected,
       },
-    }));
+    });
   });
 
   test.each([
@@ -379,13 +407,13 @@ describe('LaunchTemplate', () => {
     });
 
     // THEN
-    expectCDK(stack).to(haveResourceLike('AWS::EC2::LaunchTemplate', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::LaunchTemplate', {
       LaunchTemplateData: {
         EnclaveOptions: {
           Enabled: expected,
         },
       },
-    }));
+    });
   });
 
   test.each([
@@ -398,11 +426,11 @@ describe('LaunchTemplate', () => {
     });
 
     // THEN
-    expectCDK(stack).to(haveResourceLike('AWS::EC2::LaunchTemplate', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::LaunchTemplate', {
       LaunchTemplateData: {
         InstanceInitiatedShutdownBehavior: expected,
       },
-    }));
+    });
   });
 
   test('Given keyName', () => {
@@ -412,11 +440,11 @@ describe('LaunchTemplate', () => {
     });
 
     // THEN
-    expectCDK(stack).to(haveResourceLike('AWS::EC2::LaunchTemplate', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::LaunchTemplate', {
       LaunchTemplateData: {
         KeyName: 'TestKeyname',
       },
-    }));
+    });
   });
 
   test.each([
@@ -429,13 +457,13 @@ describe('LaunchTemplate', () => {
     });
 
     // THEN
-    expectCDK(stack).to(haveResourceLike('AWS::EC2::LaunchTemplate', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::LaunchTemplate', {
       LaunchTemplateData: {
         Monitoring: {
           Enabled: expected,
         },
       },
-    }));
+    });
   });
 
   test('Given securityGroup', () => {
@@ -449,7 +477,7 @@ describe('LaunchTemplate', () => {
     });
 
     // THEN
-    expectCDK(stack).to(haveResourceLike('AWS::EC2::LaunchTemplate', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::LaunchTemplate', {
       LaunchTemplateData: {
         SecurityGroupIds: [
           {
@@ -460,7 +488,7 @@ describe('LaunchTemplate', () => {
           },
         ],
       },
-    }));
+    });
     expect(template.connections).toBeDefined();
     expect(template.connections.securityGroups).toHaveLength(1);
     expect(template.connections.securityGroups[0]).toBe(sg);
@@ -474,7 +502,7 @@ describe('LaunchTemplate', () => {
     Tags.of(template).add('TestKey', 'TestValue');
 
     // THEN
-    expectCDK(stack).to(haveResourceLike('AWS::EC2::LaunchTemplate', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::LaunchTemplate', {
       LaunchTemplateData: {
         TagSpecifications: [
           {
@@ -505,7 +533,23 @@ describe('LaunchTemplate', () => {
           },
         ],
       },
-    }));
+    });
+  });
+
+  test('Requires IMDSv2', () => {
+    // WHEN
+    new LaunchTemplate(stack, 'Template', {
+      requireImdsv2: true,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::LaunchTemplate', {
+      LaunchTemplateData: {
+        MetadataOptions: {
+          HttpTokens: 'required',
+        },
+      },
+    });
   });
 });
 
@@ -525,13 +569,13 @@ describe('LaunchTemplate marketOptions', () => {
     });
 
     // THEN
-    expectCDK(stack).to(haveResourceLike('AWS::EC2::LaunchTemplate', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::LaunchTemplate', {
       LaunchTemplateData: {
         InstanceMarketOptions: {
           MarketType: 'spot',
         },
       },
-    }));
+    });
   });
 
   test.each([
@@ -548,7 +592,7 @@ describe('LaunchTemplate marketOptions', () => {
     });
 
     // THEN
-    expect(template.node.metadata).toHaveLength(expectedErrors);
+    expect(template.node.metadataEntry).toHaveLength(expectedErrors);
   });
 
   test('for bad duration', () => {
@@ -571,7 +615,7 @@ describe('LaunchTemplate marketOptions', () => {
     });
 
     // THEN
-    expectCDK(stack).to(haveResourceLike('AWS::EC2::LaunchTemplate', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::LaunchTemplate', {
       LaunchTemplateData: {
         InstanceMarketOptions: {
           MarketType: 'spot',
@@ -580,7 +624,7 @@ describe('LaunchTemplate marketOptions', () => {
           },
         },
       },
-    }));
+    });
   });
 
   test.each([
@@ -596,7 +640,7 @@ describe('LaunchTemplate marketOptions', () => {
     });
 
     // THEN
-    expectCDK(stack).to(haveResourceLike('AWS::EC2::LaunchTemplate', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::LaunchTemplate', {
       LaunchTemplateData: {
         InstanceMarketOptions: {
           MarketType: 'spot',
@@ -605,7 +649,7 @@ describe('LaunchTemplate marketOptions', () => {
           },
         },
       },
-    }));
+    });
   });
 
   test.each([
@@ -621,7 +665,7 @@ describe('LaunchTemplate marketOptions', () => {
     });
 
     // THEN
-    expectCDK(stack).to(haveResourceLike('AWS::EC2::LaunchTemplate', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::LaunchTemplate', {
       LaunchTemplateData: {
         InstanceMarketOptions: {
           MarketType: 'spot',
@@ -630,7 +674,7 @@ describe('LaunchTemplate marketOptions', () => {
           },
         },
       },
-    }));
+    });
   });
 
   test.each([
@@ -645,7 +689,7 @@ describe('LaunchTemplate marketOptions', () => {
     });
 
     // THEN
-    expectCDK(stack).to(haveResourceLike('AWS::EC2::LaunchTemplate', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::LaunchTemplate', {
       LaunchTemplateData: {
         InstanceMarketOptions: {
           MarketType: 'spot',
@@ -654,7 +698,7 @@ describe('LaunchTemplate marketOptions', () => {
           },
         },
       },
-    }));
+    });
   });
 
   test('given validUntil', () => {
@@ -666,7 +710,7 @@ describe('LaunchTemplate marketOptions', () => {
     });
 
     // THEN
-    expectCDK(stack).to(haveResourceLike('AWS::EC2::LaunchTemplate', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::LaunchTemplate', {
       LaunchTemplateData: {
         InstanceMarketOptions: {
           MarketType: 'spot',
@@ -675,6 +719,6 @@ describe('LaunchTemplate marketOptions', () => {
           },
         },
       },
-    }));
+    });
   });
 });

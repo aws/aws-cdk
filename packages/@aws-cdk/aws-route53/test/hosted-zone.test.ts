@@ -1,12 +1,11 @@
-import { expect } from '@aws-cdk/assert-internal';
+import { Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
-import { nodeunitShim, Test } from 'nodeunit-shim';
 import { HostedZone, PublicHostedZone } from '../lib';
 
-nodeunitShim({
-  'Hosted Zone': {
-    'Hosted Zone constructs the ARN'(test: Test) {
+describe('hosted zone', () => {
+  describe('Hosted Zone', () => {
+    test('Hosted Zone constructs the ARN', () => {
       // GIVEN
       const stack = new cdk.Stack(undefined, 'TestStack', {
         env: { account: '123456789012', region: 'us-east-1' },
@@ -16,7 +15,7 @@ nodeunitShim({
         zoneName: 'testZone',
       });
 
-      test.deepEqual(stack.resolve(testZone.hostedZoneArn), {
+      expect(stack.resolve(testZone.hostedZoneArn)).toEqual({
         'Fn::Join': [
           '',
           [
@@ -27,12 +26,10 @@ nodeunitShim({
           ],
         ],
       });
+    });
+  });
 
-      test.done();
-    },
-  },
-
-  'Supports tags'(test: Test) {
+  test('Supports tags', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -43,7 +40,7 @@ nodeunitShim({
     cdk.Tags.of(hostedZone).add('zoneTag', 'inMyZone');
 
     // THEN
-    expect(stack).toMatch({
+    Template.fromStack(stack).templateMatches({
       Resources: {
         HostedZoneDB99F866: {
           Type: 'AWS::Route53::HostedZone',
@@ -59,11 +56,9 @@ nodeunitShim({
         },
       },
     });
+  });
 
-    test.done();
-  },
-
-  'with crossAccountZoneDelegationPrincipal'(test: Test) {
+  test('with crossAccountZoneDelegationPrincipal', () => {
     // GIVEN
     const stack = new cdk.Stack(undefined, 'TestStack', {
       env: { account: '123456789012', region: 'us-east-1' },
@@ -73,10 +68,11 @@ nodeunitShim({
     new PublicHostedZone(stack, 'HostedZone', {
       zoneName: 'testZone',
       crossAccountZoneDelegationPrincipal: new iam.AccountPrincipal('223456789012'),
+      crossAccountZoneDelegationRoleName: 'myrole',
     });
 
     // THEN
-    expect(stack).toMatch({
+    Template.fromStack(stack).templateMatches({
       Resources: {
         HostedZoneDB99F866: {
           Type: 'AWS::Route53::HostedZone',
@@ -87,6 +83,7 @@ nodeunitShim({
         HostedZoneCrossAccountZoneDelegationRole685DF755: {
           Type: 'AWS::IAM::Role',
           Properties: {
+            RoleName: 'myrole',
             AssumeRolePolicyDocument: {
               Statement: [
                 {
@@ -133,6 +130,11 @@ nodeunitShim({
                         ],
                       },
                     },
+                    {
+                      Action: 'route53:ListHostedZonesByName',
+                      Effect: 'Allow',
+                      Resource: '*',
+                    },
                   ],
                   Version: '2012-10-17',
                 },
@@ -143,7 +145,20 @@ nodeunitShim({
         },
       },
     });
+  });
 
-    test.done();
-  },
+  test('with crossAccountZoneDelegationPrincipal, throws if name provided without principal', () => {
+    // GIVEN
+    const stack = new cdk.Stack(undefined, 'TestStack', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+
+    // THEN
+    expect(() => {
+      new PublicHostedZone(stack, 'HostedZone', {
+        zoneName: 'testZone',
+        crossAccountZoneDelegationRoleName: 'myrole',
+      });
+    }).toThrow(/crossAccountZoneDelegationRoleName property is not supported without crossAccountZoneDelegationPrincipal/);
+  });
 });

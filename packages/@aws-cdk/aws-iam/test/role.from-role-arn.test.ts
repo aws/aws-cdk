@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import { App, Aws, CfnElement, Lazy, Stack } from '@aws-cdk/core';
 import { AnyPrincipal, ArnPrincipal, IRole, Policy, PolicyStatement, Role } from '../lib';
 
@@ -196,7 +196,7 @@ describe('IAM Role.fromRoleArn', () => {
           });
 
           test("does NOT generate a default Policy resource pointing at the imported role's physical name", () => {
-            expect(roleStack).not.toHaveResourceLike('AWS::IAM::Policy');
+            Template.fromStack(roleStack).resourceCountIs('AWS::IAM::Policy', 0);
           });
         });
 
@@ -283,7 +283,7 @@ describe('IAM Role.fromRoleArn', () => {
         });
 
         test("does NOT generate a default Policy resource pointing at the imported role's physical name", () => {
-          expect(roleStack).not.toHaveResourceLike('AWS::IAM::Policy');
+          Template.fromStack(roleStack).resourceCountIs('AWS::IAM::Policy', 0);
         });
       });
 
@@ -299,6 +299,30 @@ describe('IAM Role.fromRoleArn', () => {
           test('does NOT attach the Policy to the imported role', () => {
             assertPolicyDidNotAttachToRole(policyStack, 'MyPolicy');
           });
+        });
+      });
+    });
+
+    describe('and with mutable=false and addGrantsToResources=true', () => {
+      beforeEach(() => {
+        roleStack = new Stack(app, 'RoleStack');
+        importedRole = Role.fromRoleArn(roleStack, 'ImportedRole',
+          `arn:aws:iam::${roleAccount}:role/${roleName}`, { mutable: false, addGrantsToResources: true });
+      });
+
+      describe('then adding a PolicyStatement to it', () => {
+        let addToPolicyResult: boolean;
+
+        beforeEach(() => {
+          addToPolicyResult = importedRole.addToPolicy(somePolicyStatement());
+        });
+
+        test('pretends to fail', () => {
+          expect(addToPolicyResult).toBe(false);
+        });
+
+        test("does NOT generate a default Policy resource pointing at the imported role's physical name", () => {
+          Template.fromStack(roleStack).resourceCountIs('AWS::IAM::Policy', 0);
         });
       });
     });
@@ -333,7 +357,7 @@ describe('IAM Role.fromRoleArn', () => {
           assumedBy: new ArnPrincipal(importedRole.roleName),
         });
 
-        expect(roleStack).toHaveResourceLike('AWS::IAM::Role', {
+        Template.fromStack(roleStack).hasResourceProperties('AWS::IAM::Role', {
           'AssumeRolePolicyDocument': {
             'Statement': [
               {
@@ -491,7 +515,7 @@ describe('IAM Role.fromRoleArn', () => {
           roles: [importedRole],
         });
 
-        expect(roleStack).toHaveResourceLike('AWS::IAM::Policy', {
+        Template.fromStack(roleStack).hasResourceProperties('AWS::IAM::Policy', {
           'Roles': [
             'codebuild-role',
           ],
@@ -511,7 +535,7 @@ describe('IAM Role.fromRoleArn', () => {
           roles: [importedRole],
         });
 
-        expect(roleStack).toHaveResourceLike('AWS::IAM::Policy', {
+        Template.fromStack(roleStack).hasResourceProperties('AWS::IAM::Policy', {
           'Roles': [
             'codebuild-role',
           ],
@@ -587,5 +611,5 @@ function _assertStackContainsPolicyResource(stack: Stack, roleNames: any[], name
     expected.PolicyName = nameOfPolicy;
   }
 
-  expect(stack).toHaveResourceLike('AWS::IAM::Policy', expected);
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', expected);
 }

@@ -1,6 +1,8 @@
+import { EOL } from 'os';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
-import { IResource, Lazy, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/core';
+import * as kms from '@aws-cdk/aws-kms';
+import { ArnFormat, IResource, Lazy, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/core';
 import { IConstruct, Construct } from 'constructs';
 import { CfnRepository } from './ecr.generated';
 import { LifecycleRule, TagStatus } from './lifecycle';
@@ -166,7 +168,7 @@ export abstract class RepositoryBase extends Resource implements IRepository {
    * @private
    */
   private repositoryUriWithSuffix(suffix?: string): string {
-    const parts = this.stack.parseArn(this.repositoryArn);
+    const parts = this.stack.splitArn(this.repositoryArn, ArnFormat.SLASH_RESOURCE_NAME);
     return `${parts.account}.dkr.ecr.${parts.region}.${this.stack.urlSuffix}/${this.repositoryName}${suffix}`;
   }
 
@@ -327,6 +329,27 @@ export interface RepositoryProps {
   readonly repositoryName?: string;
 
   /**
+   * The kind of server-side encryption to apply to this repository.
+   *
+   * If you choose KMS, you can specify a KMS key via `encryptionKey`. If
+   * encryptionKey is not specified, an AWS managed KMS key is used.
+   *
+   * @default - `KMS` if `encryptionKey` is specified, or `AES256` otherwise.
+   */
+  readonly encryption?: RepositoryEncryption;
+
+  /**
+   * External KMS key to use for repository encryption.
+   *
+   * The 'encryption' property must be either not specified or set to "KMS".
+   * An error will be emitted if encryption is set to "AES256".
+   *
+   * @default - If encryption is set to `KMS` and this property is undefined,
+   * an AWS managed KMS key is used.
+   */
+  readonly encryptionKey?: kms.IKey;
+
+  /**
    * Life cycle rules to apply to this registry
    *
    * @default No life cycle rules
@@ -410,7 +433,9 @@ export class Repository extends RepositoryBase {
       }
     }
 
-    return new Import(scope, id);
+    return new Import(scope, id, {
+      environmentFromArn: repositoryArn,
+    });
   }
 
   public static fromRepositoryName(scope: Construct, id: string, repositoryName: string): IRepository {
@@ -440,6 +465,31 @@ export class Repository extends RepositoryBase {
     });
   }
 
+
+  private static validateRepositoryName(physicalName: string) {
+    const repositoryName = physicalName;
+    if (!repositoryName || Token.isUnresolved(repositoryName)) {
+      // the name is a late-bound value, not a defined string,
+      // so skip validation
+      return;
+    }
+
+    const errors: string[] = [];
+
+    // Rules codified from https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ecr-repository.html
+    if (repositoryName.length < 2 || repositoryName.length > 256) {
+      errors.push('Repository name must be at least 2 and no more than 256 characters');
+    }
+    const isPatternMatch = /^(?:[a-z0-9]+(?:[._-][a-z0-9]+)*\/)*[a-z0-9]+(?:[._-][a-z0-9]+)*$/.test(repositoryName);
+    if (!isPatternMatch) {
+      errors.push('Repository name must follow the specified pattern: (?:[a-z0-9]+(?:[._-][a-z0-9]+)*/)*[a-z0-9]+(?:[._-][a-z0-9]+)*');
+    }
+
+    if (errors.length > 0) {
+      throw new Error(`Invalid ECR repository name (value: ${repositoryName})${EOL}${errors.join(EOL)}`);
+    }
+  }
+
   public readonly repositoryName: string;
   public readonly repositoryArn: string;
   private readonly lifecycleRules = new Array<LifecycleRule>();
@@ -451,15 +501,18 @@ export class Repository extends RepositoryBase {
       physicalName: props.repositoryName,
     });
 
+    Repository.validateRepositoryName(this.physicalName);
+
     const resource = new CfnRepository(this, 'Resource', {
       repositoryName: this.physicalName,
       // It says "Text", but they actually mean "Object".
       repositoryPolicyText: Lazy.any({ produce: () => this.policyDocument }),
       lifecyclePolicy: Lazy.any({ produce: () => this.renderLifecyclePolicy() }),
       imageScanningConfiguration: !props.imageScanOnPush ? undefined : {
-        ScanOnPush: true,
+        scanOnPush: true,
       },
       imageTagMutability: props.imageTagMutability || undefined,
+      encryptionConfiguration: this.parseEncryption(props),
     });
 
     resource.applyRemovalPolicy(props.removalPolicy);
@@ -572,6 +625,34 @@ export class Repository extends RepositoryBase {
     validateAnyRuleLast(ret);
     return ret;
   }
+
+  /**
+   * Set up key properties and return the Repository encryption property from the
+   * user's configuration.
+   */
+  private parseEncryption(props: RepositoryProps): CfnRepository.EncryptionConfigurationProperty | undefined {
+
+    // default based on whether encryptionKey is specified
+    const encryptionType = props.encryption ?? (props.encryptionKey ? RepositoryEncryption.KMS : RepositoryEncryption.AES_256);
+
+    // if encryption key is set, encryption must be set to KMS.
+    if (encryptionType !== RepositoryEncryption.KMS && props.encryptionKey) {
+      throw new Error(`encryptionKey is specified, so 'encryption' must be set to KMS (value: ${encryptionType.value})`);
+    }
+
+    if (encryptionType === RepositoryEncryption.AES_256) {
+      return undefined;
+    }
+
+    if (encryptionType === RepositoryEncryption.KMS) {
+      return {
+        encryptionType: 'KMS',
+        kmsKey: props.encryptionKey?.keyArn,
+      };
+    }
+
+    throw new Error(`Unexpected 'encryptionType': ${encryptionType}`);
+  }
 }
 
 function validateAnyRuleLast(rules: LifecycleRule[]) {
@@ -633,4 +714,25 @@ export enum TagMutability {
    */
   IMMUTABLE = 'IMMUTABLE',
 
+}
+
+/**
+ * Indicates whether server-side encryption is enabled for the object, and whether that encryption is
+ * from the AWS Key Management Service (AWS KMS) or from Amazon S3 managed encryption (SSE-S3).
+ * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html#SysMetadata
+ */
+export class RepositoryEncryption {
+  /**
+   * 'AES256'
+   */
+  public static readonly AES_256 = new RepositoryEncryption('AES256');
+  /**
+   * 'KMS'
+   */
+  public static readonly KMS = new RepositoryEncryption('KMS');
+
+  /**
+   * @param value the string value of the encryption
+   */
+  protected constructor(public readonly value: string) { }
 }

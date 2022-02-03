@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as route53 from '@aws-cdk/aws-route53';
 import * as s3 from '@aws-cdk/aws-s3';
 import { App, Stack } from '@aws-cdk/core';
@@ -23,7 +23,7 @@ test('use S3 bucket website as record target', () => {
   });
 
   // THEN
-  expect(stack).toHaveResource('AWS::Route53::RecordSet', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Route53::RecordSet', {
     AliasTarget: {
       DNSName: 's3-website-us-east-1.amazonaws.com',
       HostedZoneId: 'Z3AQBSTGFYJSTF',
@@ -47,7 +47,7 @@ test('use S3 bucket website as record target (fromBucketName)', () => {
   });
 
   // THEN
-  expect(stack).toHaveResource('AWS::Route53::RecordSet', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Route53::RecordSet', {
     AliasTarget: {
       DNSName: 's3-website-us-east-1.amazonaws.com',
       HostedZoneId: 'Z3AQBSTGFYJSTF',
@@ -74,10 +74,10 @@ test('throws if region agnostic', () => {
   }).toThrow(/Cannot use an S3 record alias in region-agnostic stacks/);
 });
 
-test('throws if bucket website hosting is unavailable (cn-northwest-1)', () => {
+test('throws if bucket website hosting is unavailable (cn-north-1)', () => {
   // GIVEN
   const app = new App();
-  const stack = new Stack(app, 'test', { env: { region: 'cn-northwest-1' } });
+  const stack = new Stack(app, 'test', { env: { region: 'cn-north-1' } });
 
   const bucketWebsite = new s3.Bucket(stack, 'Bucket');
 

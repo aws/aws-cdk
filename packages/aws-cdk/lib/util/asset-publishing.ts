@@ -27,6 +27,8 @@ export async function publishAssets(manifest: cdk_assets.AssetManifest, sdk: Sdk
 }
 
 class PublishingAws implements cdk_assets.IAws {
+  private sdkCache: Map<String, ISDK> = new Map();
+
   constructor(
     /**
      * The base SDK to work with
@@ -48,7 +50,15 @@ class PublishingAws implements cdk_assets.IAws {
   }
 
   public async discoverCurrentAccount(): Promise<cdk_assets.Account> {
-    return (await this.sdk({})).currentAccount();
+    const account = await this.aws.defaultAccount();
+    return account ?? {
+      accountId: '<unknown account>',
+      partition: 'aws',
+    };
+  }
+
+  public async discoverTargetAccount(options: cdk_assets.ClientOptions): Promise<cdk_assets.Account> {
+    return (await this.sdk(options)).currentAccount();
   }
 
   public async s3Client(options: cdk_assets.ClientOptions): Promise<AWS.S3> {
@@ -59,19 +69,37 @@ class PublishingAws implements cdk_assets.IAws {
     return (await this.sdk(options)).ecr();
   }
 
+  public async secretsManagerClient(options: cdk_assets.ClientOptions): Promise<AWS.SecretsManager> {
+    return (await this.sdk(options)).secretsManager();
+  }
+
   /**
    * Get an SDK appropriate for the given client options
    */
-  private sdk(options: cdk_assets.ClientOptions): Promise<ISDK> {
+  private async sdk(options: cdk_assets.ClientOptions): Promise<ISDK> {
     const env = {
       ...this.targetEnv,
       region: options.region ?? this.targetEnv.region, // Default: same region as the stack
     };
 
-    return this.aws.forEnvironment(env, Mode.ForWriting, {
-      assumeRoleArn: options.assumeRoleArn,
+    const cacheKey = JSON.stringify({
+      env, // region, name, account
+      assumeRuleArn: options.assumeRoleArn,
       assumeRoleExternalId: options.assumeRoleExternalId,
     });
+
+    const maybeSdk = this.sdkCache.get(cacheKey);
+    if (maybeSdk) {
+      return maybeSdk;
+    }
+
+    const sdk = (await this.aws.forEnvironment(env, Mode.ForWriting, {
+      assumeRoleArn: options.assumeRoleArn,
+      assumeRoleExternalId: options.assumeRoleExternalId,
+    })).sdk;
+    this.sdkCache.set(cacheKey, sdk);
+
+    return sdk;
   }
 }
 

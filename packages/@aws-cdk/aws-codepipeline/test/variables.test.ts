@@ -1,47 +1,58 @@
-import { expect, haveResourceLike } from '@aws-cdk/assert-internal';
+import { Match, Template } from '@aws-cdk/assertions';
 import * as cdk from '@aws-cdk/core';
-import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as codepipeline from '../lib';
 import { FakeBuildAction } from './fake-build-action';
 import { FakeSourceAction } from './fake-source-action';
 
 /* eslint-disable quote-props */
 
-nodeunitShim({
-  'Pipeline Variables': {
-    'uses the passed namespace when its passed when constructing the Action'(test: Test) {
+describe('variables', () => {
+  describe('Pipeline Variables', () => {
+    test('uses the passed namespace when its passed when constructing the Action', () => {
       const stack = new cdk.Stack();
-      new codepipeline.Pipeline(stack, 'Pipeline', {
+      const sourceArtifact = new codepipeline.Artifact();
+      const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
         stages: [
           {
             stageName: 'Source',
             actions: [new FakeSourceAction({
               actionName: 'Source',
-              output: new codepipeline.Artifact(),
+              output: sourceArtifact,
               variablesNamespace: 'MyNamespace',
             })],
           },
         ],
       });
 
-      expect(stack, true).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
-        'Stages': [
+      // -- stages and actions here are needed to satisfy validation rules
+      const first = pipeline.addStage({ stageName: 'FirstStage' });
+      first.addAction(new FakeBuildAction({
+        actionName: 'dummyAction',
+        input: sourceArtifact,
+      }));
+      const second = pipeline.addStage({ stageName: 'SecondStage' });
+      second.addAction(new FakeBuildAction({
+        actionName: 'dummyAction',
+        input: sourceArtifact,
+      }));
+      // --
+
+      Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+        'Stages': Match.arrayWith([
           {
             'Name': 'Source',
             'Actions': [
-              {
+              Match.objectLike({
                 'Name': 'Source',
                 'Namespace': 'MyNamespace',
-              },
+              }),
             ],
           },
-        ],
-      }));
+        ]),
+      });
+    });
 
-      test.done();
-    },
-
-    'allows using the variable in the configuration of a different action'(test: Test) {
+    test('allows using the variable in the configuration of a different action', () => {
       const stack = new cdk.Stack();
       const sourceOutput = new codepipeline.Artifact();
       const fakeSourceAction = new FakeSourceAction({
@@ -66,7 +77,7 @@ nodeunitShim({
         ],
       });
 
-      expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+      Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
         'Stages': [
           {
             'Name': 'Source',
@@ -83,12 +94,10 @@ nodeunitShim({
             ],
           },
         ],
-      }));
+      });
+    });
 
-      test.done();
-    },
-
-    'fails when trying add an action using variables with an empty string for the namespace to a pipeline'(test: Test) {
+    test('fails when trying add an action using variables with an empty string for the namespace to a pipeline', () => {
       const stack = new cdk.Stack();
       const pipeline = new codepipeline.Pipeline(stack, 'Pipeline');
       const sourceStage = pipeline.addStage({ stageName: 'Source' });
@@ -99,46 +108,50 @@ nodeunitShim({
         variablesNamespace: '',
       });
 
-      test.throws(() => {
+      expect(() => {
         sourceStage.addAction(sourceAction);
-      }, /Namespace name must match regular expression:/);
+      }).toThrow(/Namespace name must match regular expression:/);
+    });
 
-      test.done();
-    },
-
-    'can use global variables'(test: Test) {
+    test('can use global variables', () => {
       const stack = new cdk.Stack();
 
+      const sourceArtifact = new codepipeline.Artifact();
       new codepipeline.Pipeline(stack, 'Pipeline', {
         stages: [
           {
             stageName: 'Source',
+            actions: [new FakeSourceAction({
+              actionName: 'Source',
+              output: sourceArtifact,
+            })],
+          },
+          {
+            stageName: 'Build',
             actions: [new FakeBuildAction({
               actionName: 'Build',
-              input: new codepipeline.Artifact(),
+              input: sourceArtifact,
               customConfigKey: codepipeline.GlobalVariables.executionId,
             })],
           },
         ],
       });
 
-      expect(stack, true).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
-        'Stages': [
+      Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+        'Stages': Match.arrayWith([
           {
-            'Name': 'Source',
+            'Name': 'Build',
             'Actions': [
-              {
+              Match.objectLike({
                 'Name': 'Build',
                 'Configuration': {
                   'CustomConfigKey': '#{codepipeline.PipelineExecutionId}',
                 },
-              },
+              }),
             ],
           },
-        ],
-      }));
-
-      test.done();
-    },
-  },
+        ]),
+      });
+    });
+  });
 });

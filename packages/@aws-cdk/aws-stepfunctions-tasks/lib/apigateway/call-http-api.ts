@@ -44,6 +44,7 @@ export class CallApiGatewayHttpApiEndpoint extends CallApiGatewayEndpointBase {
 
     this.apiEndpoint = this.getApiEndpoint();
     this.arnForExecuteApi = this.getArnForExecuteApi();
+    this.stageName = props.stageName;
 
     this.taskPolicies = this.createPolicyStatements();
   }
@@ -59,7 +60,7 @@ export class CallApiGatewayHttpApiEndpoint extends CallApiGatewayEndpointBase {
     return this.props.apiStack.formatArn({
       service: 'execute-api',
       resource: apiId,
-      sep: '/',
+      arnFormat: cdk.ArnFormat.SLASH_RESOURCE_NAME,
       resourceName: `${stageName}/${method}${apiPath}`,
     });
   }

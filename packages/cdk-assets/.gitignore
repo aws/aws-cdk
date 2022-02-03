@@ -17,10 +17,12 @@ nyc.config.js
 
 !test/integ/run-wrappers/dist
 !test/integ/cli/**/*
-.*
 assets.json
 npm-shrinkwrap.json
 !.eslintrc.js
 !jest.config.js
 
 junit.xml
+
+# Ignore this symlink, we recreate it at test time
+test/test-archive-follow/data/linked

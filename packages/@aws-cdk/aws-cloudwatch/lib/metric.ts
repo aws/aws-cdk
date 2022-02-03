@@ -12,6 +12,8 @@ import { Construct } from '@aws-cdk/core';
 
 export type DimensionHash = {[dim: string]: any};
 
+export type DimensionsMap = { [dim: string]: string };
+
 /**
  * Options shared by most methods accepting metric options
  */
@@ -43,8 +45,17 @@ export interface CommonMetricOptions {
    * Dimensions of the metric
    *
    * @default - No dimensions.
+   *
+   * @deprecated Use 'dimensionsMap' instead.
    */
   readonly dimensions?: DimensionHash;
+
+  /**
+   * Dimensions of the metric
+   *
+   * @default - No dimensions.
+   */
+  readonly dimensionsMap?: DimensionsMap;
 
   /**
    * Unit used to filter the metric stream
@@ -138,6 +149,26 @@ export interface MathExpressionOptions {
    * @default Duration.minutes(5)
    */
   readonly period?: cdk.Duration;
+
+  /**
+   * Account to evaluate search expressions within.
+   *
+   * Specifying a searchAccount has no effect to the account used
+   * for metrics within the expression (passed via usingMetrics).
+   *
+   * @default - Deployment account.
+   */
+  readonly searchAccount?: string;
+
+  /**
+    * Region to evaluate search expressions within.
+    *
+    * Specifying a searchRegion has no effect to the region used
+    * for metrics within the expression (passed via usingMetrics).
+    *
+    * @default - Deployment region.
+    */
+  readonly searchRegion?: string;
 }
 
 /**
@@ -146,6 +177,9 @@ export interface MathExpressionOptions {
 export interface MathExpressionProps extends MathExpressionOptions {
   /**
    * The expression defining the metric.
+   *
+   * When an expression contains a SEARCH function, it cannot be used
+   * within an Alarm.
    */
   readonly expression: string;
 
@@ -154,8 +188,10 @@ export interface MathExpressionProps extends MathExpressionOptions {
    *
    * The key is the identifier that represents the given metric in the
    * expression, and the value is the actual Metric object.
+   *
+   * @default - Empty map.
    */
-  readonly usingMetrics: Record<string, IMetric>;
+  readonly usingMetrics?: Record<string, IMetric>;
 }
 
 /**
@@ -216,8 +252,7 @@ export class Metric implements IMetric {
     if (periodSec !== 1 && periodSec !== 5 && periodSec !== 10 && periodSec !== 30 && periodSec % 60 !== 0) {
       throw new Error(`'period' must be 1, 5, 10, 30, or a multiple of 60 seconds, received ${periodSec}`);
     }
-
-    this.dimensions = props.dimensions;
+    this.dimensions = this.validateDimensions(props.dimensionsMap ?? props.dimensions);
     this.namespace = props.namespace;
     this.metricName = props.metricName;
     // Try parsing, this will throw if it's not a valid stat
@@ -247,12 +282,13 @@ export class Metric implements IMetric {
       // For these we're not going to do deep equality, misses some opportunity for optimization
       // but that's okay.
       && (props.dimensions === undefined)
+      && (props.dimensionsMap === undefined)
       && (props.period === undefined || props.period.toSeconds() === this.period.toSeconds())) {
       return this;
     }
 
     return new Metric({
-      dimensions: ifUndefined(props.dimensions, this.dimensions),
+      dimensionsMap: props.dimensionsMap ?? props.dimensions ?? this.dimensions,
       namespace: this.namespace,
       metricName: this.metricName,
       period: ifUndefined(props.period, this.period),
@@ -395,6 +431,32 @@ export class Metric implements IMetric {
 
     return list;
   }
+
+  private validateDimensions(dims?: DimensionHash): DimensionHash | undefined {
+    if (!dims) {
+      return dims;
+    }
+
+    var dimsArray = Object.keys(dims);
+    if (dimsArray?.length > 10) {
+      throw new Error(`The maximum number of dimensions is 10, received ${dimsArray.length}`);
+    }
+
+    dimsArray.map(key => {
+      if (dims[key] === undefined || dims[key] === null) {
+        throw new Error(`Dimension value of '${dims[key]}' is invalid`);
+      };
+      if (key.length < 1 || key.length > 255) {
+        throw new Error(`Dimension name must be at least 1 and no more than 255 characters; received ${key}`);
+      };
+
+      if (dims[key].length < 1 || dims[key].length > 255) {
+        throw new Error(`Dimension value must be at least 1 and no more than 255 characters; received ${dims[key]}`);
+      };
+    });
+
+    return dims;
+  }
 }
 
 function asString(x?: unknown): string | undefined {
@@ -412,6 +474,10 @@ function asString(x?: unknown): string | undefined {
  * It also contains metadata which is used only in graphs, such as color and label.
  * It makes sense to embed this in here, so that compound constructs can attach
  * that metadata to metrics they expose.
+ *
+ * MathExpression can also be used for search expressions. In this case,
+ * it also optionally accepts a searchRegion and searchAccount property for cross-environment
+ * search expressions.
  *
  * This class does not represent a resource, so hence is not a construct. Instead,
  * MathExpression is an abstraction that makes it easy to specify metrics for use in both
@@ -444,14 +510,26 @@ export class MathExpression implements IMetric {
    */
   public readonly period: cdk.Duration;
 
+  /**
+   * Account to evaluate search expressions within.
+   */
+  public readonly searchAccount?: string;
+
+  /**
+   * Region to evaluate search expressions within.
+   */
+  public readonly searchRegion?: string;
+
   constructor(props: MathExpressionProps) {
     this.period = props.period || cdk.Duration.minutes(5);
     this.expression = props.expression;
-    this.usingMetrics = changeAllPeriods(props.usingMetrics, this.period);
+    this.usingMetrics = changeAllPeriods(props.usingMetrics ?? {}, this.period);
     this.label = props.label;
     this.color = props.color;
+    this.searchAccount = props.searchAccount;
+    this.searchRegion = props.searchRegion;
 
-    const invalidVariableNames = Object.keys(props.usingMetrics).filter(x => !validVariableName(x));
+    const invalidVariableNames = Object.keys(this.usingMetrics).filter(x => !validVariableName(x));
     if (invalidVariableNames.length > 0) {
       throw new Error(`Invalid variable names in expression: ${invalidVariableNames}. Must start with lowercase letter and only contain alphanumerics.`);
     }
@@ -470,7 +548,9 @@ export class MathExpression implements IMetric {
     // Short-circuit creating a new object if there would be no effective change
     if ((props.label === undefined || props.label === this.label)
       && (props.color === undefined || props.color === this.color)
-      && (props.period === undefined || props.period.toSeconds() === this.period.toSeconds())) {
+      && (props.period === undefined || props.period.toSeconds() === this.period.toSeconds())
+      && (props.searchAccount === undefined || props.searchAccount === this.searchAccount)
+      && (props.searchRegion === undefined || props.searchRegion === this.searchRegion)) {
       return this;
     }
 
@@ -480,6 +560,8 @@ export class MathExpression implements IMetric {
       label: ifUndefined(props.label, this.label),
       color: ifUndefined(props.color, this.color),
       period: ifUndefined(props.period, this.period),
+      searchAccount: ifUndefined(props.searchAccount, this.searchAccount),
+      searchRegion: ifUndefined(props.searchRegion, this.searchRegion),
     });
   }
 
@@ -503,6 +585,8 @@ export class MathExpression implements IMetric {
         period: this.period.toSeconds(),
         expression: this.expression,
         usingMetrics: this.usingMetrics,
+        searchAccount: this.searchAccount,
+        searchRegion: this.searchRegion,
       },
       renderingProperties: {
         label: this.label,

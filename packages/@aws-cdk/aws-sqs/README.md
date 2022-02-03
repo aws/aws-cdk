@@ -22,7 +22,7 @@ without losing messages or requiring other services to be available.
 
 Import to your project:
 
-```ts
+```ts nofixture
 import * as sqs from '@aws-cdk/aws-sqs';
 ```
 
@@ -44,15 +44,15 @@ can manage yourself.
 ```ts
 // Use managed key
 new sqs.Queue(this, 'Queue', {
-    encryption: QueueEncryption.KMS_MANAGED,
+  encryption: sqs.QueueEncryption.KMS_MANAGED,
 });
 
 // Use custom key
 const myKey = new kms.Key(this, 'Key');
 
 new sqs.Queue(this, 'Queue', {
-    encryption: QueueEncryption.KMS,
-    encryptionMasterKey: myKey
+  encryption: sqs.QueueEncryption.KMS,
+  encryptionMasterKey: myKey,
 });
 ```
 
@@ -63,4 +63,5 @@ features in order to help guarantee exactly-once processing. For more informatio
 the SQS manual. Note that FIFO queues are not available in all AWS regions.
 
 A queue can be made a FIFO queue by either setting `fifo: true`, giving it a name which ends
-in `".fifo"`, or enabling content-based deduplication (which requires FIFO queues).
+in `".fifo"`, or by enabling a FIFO specific feature such as: content-based deduplication, 
+deduplication scope or fifo throughput limit.

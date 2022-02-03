@@ -1,13 +1,12 @@
-import '@aws-cdk/assert-internal/jest';
 import * as path from 'path';
-import { InspectionFailure } from '@aws-cdk/assert-internal';
+import { Match, Template } from '@aws-cdk/assertions';
 import * as ecr_assets from '@aws-cdk/aws-ecr-assets';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import * as ssm from '@aws-cdk/aws-ssm';
+import { testFutureBehavior } from '@aws-cdk/cdk-build-tools/lib/feature-flag';
 import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
-import { testFutureBehavior } from 'cdk-build-tools/lib/feature-flag';
 import * as ecs from '../lib';
 
 describe('container definition', () => {
@@ -24,7 +23,7 @@ describe('container definition', () => {
       });
 
       // THEN
-      expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
         ContainerDefinitions: [
           {
             Essential: true,
@@ -48,6 +47,7 @@ describe('container definition', () => {
         taskDefinition,
         memoryLimitMiB: 1024,
         memoryReservationMiB: 512,
+        containerName: 'Example Container',
         command: ['CMD-SHELL'],
         cpu: 128,
         disableNetworking: true,
@@ -84,10 +84,13 @@ describe('container definition', () => {
         secrets: {
           SECRET: ecs.Secret.fromSecretsManager(secret),
         },
+        systemControls: [
+          { namespace: 'SomeNamespace', value: 'SomeValue' },
+        ],
       });
 
       // THEN
-      expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
         ContainerDefinitions: [
           {
             Command: [
@@ -128,7 +131,11 @@ describe('container definition', () => {
                 'Fn::Join': [
                   '',
                   [
-                    'arn:aws:s3:::',
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':s3:::',
                     {
                       Ref: 'AssetParameters872561bf078edd1685d50c9ff821cdd60d2b2ddfb0013c4087e79bf2bb50724dS3Bucket7B2069B7',
                     },
@@ -198,7 +205,7 @@ describe('container definition', () => {
             },
             Memory: 1024,
             MemoryReservation: 512,
-            Name: 'Container',
+            Name: 'Example Container',
             Privileged: true,
             ReadonlyRootFilesystem: true,
             ResourceRequirements: [
@@ -217,6 +224,12 @@ describe('container definition', () => {
             ],
             StartTimeout: 2,
             StopTimeout: 5,
+            SystemControls: [
+              {
+                Namespace: 'SomeNamespace',
+                Value: 'SomeValue',
+              },
+            ],
             User: 'rootUser',
             WorkingDirectory: 'a/b/c',
           },
@@ -481,16 +494,9 @@ describe('container definition', () => {
         });
 
         // THEN
-        expect(stack).toHaveResource('AWS::ECS::TaskDefinition', (props: any, inspection: InspectionFailure) => {
-          if (props.NetworkMode === undefined) {
-            return true;
-          }
-
-          inspection.failureReason = 'CF template should not have NetworkMode defined for a task definition that relies on NAT network mode.';
-          return false;
+        Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
+          NetworkMode: Match.absent(),
         });
-
-
       });
     });
   });
@@ -680,27 +686,55 @@ describe('container definition', () => {
     const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
 
     // WHEN
-    taskDefinition.addContainer('cont', {
+    const container = taskDefinition.addContainer('cont', {
       image: ecs.ContainerImage.fromRegistry('test'),
       memoryLimitMiB: 1024,
       environment: {
         TEST_ENVIRONMENT_VARIABLE: 'test environment variable value',
       },
     });
+    container.addEnvironment('SECOND_ENVIRONEMENT_VARIABLE', 'second test value');
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
-        {
+        Match.objectLike({
           Environment: [{
             Name: 'TEST_ENVIRONMENT_VARIABLE',
             Value: 'test environment variable value',
+          },
+          {
+            Name: 'SECOND_ENVIRONEMENT_VARIABLE',
+            Value: 'second test value',
           }],
-        },
+        }),
       ],
     });
+  });
 
+  test('can add environment variables to container definition with no environment', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
 
+    // WHEN
+    const container = taskDefinition.addContainer('cont', {
+      image: ecs.ContainerImage.fromRegistry('test'),
+      memoryLimitMiB: 1024,
+    });
+    container.addEnvironment('SECOND_ENVIRONEMENT_VARIABLE', 'second test value');
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
+      ContainerDefinitions: [
+        Match.objectLike({
+          Environment: [{
+            Name: 'SECOND_ENVIRONEMENT_VARIABLE',
+            Value: 'second test value',
+          }],
+        }),
+      ],
+    });
   });
 
   test('can add port mappings to the container definition by props', () => {
@@ -716,11 +750,11 @@ describe('container definition', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
-        {
-          PortMappings: [{ ContainerPort: 80 }],
-        },
+        Match.objectLike({
+          PortMappings: [Match.objectLike({ ContainerPort: 80 })],
+        }),
       ],
     });
   });
@@ -740,14 +774,48 @@ describe('container definition', () => {
     containerDefinition.addPortMappings({ containerPort: 443 });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
-        {
+        Match.objectLike({
           PortMappings: [
-            { ContainerPort: 80 },
-            { ContainerPort: 443 },
+            Match.objectLike({ ContainerPort: 80 }),
+            Match.objectLike({ ContainerPort: 443 }),
           ],
-        },
+        }),
+      ],
+    });
+  });
+
+  test('can specify system controls', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
+
+    // WHEN
+    taskDefinition.addContainer('cont', {
+      image: ecs.ContainerImage.fromRegistry('test'),
+      memoryLimitMiB: 1024,
+      systemControls: [
+        { namespace: 'SomeNamespace1', value: 'SomeValue1' },
+        { namespace: 'SomeNamespace2', value: 'SomeValue2' },
+      ],
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
+      ContainerDefinitions: [
+        Match.objectLike({
+          SystemControls: [
+            {
+              Namespace: 'SomeNamespace1',
+              Value: 'SomeValue1',
+            },
+            {
+              Namespace: 'SomeNamespace2',
+              Value: 'SomeValue2',
+            },
+          ],
+        }),
       ],
     });
   });
@@ -767,16 +835,20 @@ describe('container definition', () => {
         });
 
         // THEN
-        expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+        Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
           ContainerDefinitions: [
-            {
+            Match.objectLike({
               EnvironmentFiles: [{
                 Type: 's3',
                 Value: {
                   'Fn::Join': [
                     '',
                     [
-                      'arn:aws:s3:::',
+                      'arn:',
+                      {
+                        Ref: 'AWS::Partition',
+                      },
+                      ':s3:::',
                       {
                         Ref: 'AssetParameters872561bf078edd1685d50c9ff821cdd60d2b2ddfb0013c4087e79bf2bb50724dS3Bucket7B2069B7',
                       },
@@ -811,10 +883,9 @@ describe('container definition', () => {
                   ],
                 },
               }],
-            },
+            }),
           ],
         });
-
 
       });
       test('can add s3 bucket environment file to the container definition', () => {
@@ -833,16 +904,20 @@ describe('container definition', () => {
         });
 
         // THEN
-        expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+        Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
           ContainerDefinitions: [
-            {
+            Match.objectLike({
               EnvironmentFiles: [{
                 Type: 's3',
                 Value: {
                   'Fn::Join': [
                     '',
                     [
-                      'arn:aws:s3:::',
+                      'arn:',
+                      {
+                        Ref: 'AWS::Partition',
+                      },
+                      ':s3:::',
                       {
                         Ref: 'Bucket83908E77',
                       },
@@ -851,13 +926,12 @@ describe('container definition', () => {
                   ],
                 },
               }],
-            },
+            }),
           ],
         });
-
-
       });
     });
+
     describe('with Fargate task definitions', () => {
       test('can add asset environment file to the container definition', () => {
         // GIVEN
@@ -872,16 +946,20 @@ describe('container definition', () => {
         });
 
         // THEN
-        expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+        Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
           ContainerDefinitions: [
-            {
+            Match.objectLike({
               EnvironmentFiles: [{
                 Type: 's3',
                 Value: {
                   'Fn::Join': [
                     '',
                     [
-                      'arn:aws:s3:::',
+                      'arn:',
+                      {
+                        Ref: 'AWS::Partition',
+                      },
+                      ':s3:::',
                       {
                         Ref: 'AssetParameters872561bf078edd1685d50c9ff821cdd60d2b2ddfb0013c4087e79bf2bb50724dS3Bucket7B2069B7',
                       },
@@ -916,12 +994,11 @@ describe('container definition', () => {
                   ],
                 },
               }],
-            },
+            }),
           ],
         });
-
-
       });
+
       test('can add s3 bucket environment file to the container definition', () => {
         // GIVEN
         const stack = new cdk.Stack();
@@ -938,16 +1015,20 @@ describe('container definition', () => {
         });
 
         // THEN
-        expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+        Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
           ContainerDefinitions: [
-            {
+            Match.objectLike({
               EnvironmentFiles: [{
                 Type: 's3',
                 Value: {
                   'Fn::Join': [
                     '',
                     [
-                      'arn:aws:s3:::',
+                      'arn:',
+                      {
+                        Ref: 'AWS::Partition',
+                      },
+                      ':s3:::',
                       {
                         Ref: 'Bucket83908E77',
                       },
@@ -956,11 +1037,9 @@ describe('container definition', () => {
                   ],
                 },
               }],
-            },
+            }),
           ],
         });
-
-
       });
     });
   });
@@ -979,9 +1058,9 @@ describe('container definition', () => {
       });
 
       // THEN
-      expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
         ContainerDefinitions: [
-          {
+          Match.objectLike({
             Image: 'test',
             ResourceRequirements: [
               {
@@ -989,11 +1068,9 @@ describe('container definition', () => {
                 Value: '4',
               },
             ],
-          },
+          }),
         ],
       });
-
-
     });
   });
 
@@ -1021,14 +1098,14 @@ describe('container definition', () => {
       });
 
       // THEN
-      expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
         Family: 'Ec2TaskDef',
         InferenceAccelerators: [{
           DeviceName: 'device1',
           DeviceType: 'eia2.medium',
         }],
         ContainerDefinitions: [
-          {
+          Match.objectLike({
             Image: 'test',
             ResourceRequirements: [
               {
@@ -1036,12 +1113,11 @@ describe('container definition', () => {
                 Value: 'device1',
               },
             ],
-          },
+          }),
         ],
       });
-
-
     });
+
     test('correctly adds resource requirements to container definition using both props and addInferenceAcceleratorResource method', () => {
       // GIVEN
       const stack = new cdk.Stack();
@@ -1070,7 +1146,7 @@ describe('container definition', () => {
       container.addInferenceAcceleratorResource('device2');
 
       // THEN
-      expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
         Family: 'Ec2TaskDef',
         InferenceAccelerators: [{
           DeviceName: 'device1',
@@ -1080,7 +1156,7 @@ describe('container definition', () => {
           DeviceType: 'eia2.large',
         }],
         ContainerDefinitions: [
-          {
+          Match.objectLike({
             Image: 'test',
             ResourceRequirements: [
               {
@@ -1092,11 +1168,11 @@ describe('container definition', () => {
                 Value: 'device2',
               },
             ],
-          },
+          }),
         ],
       });
-
     });
+
     test('throws when the value of inference accelerator resource does not match any inference accelerators defined in the Task Definition', () => {
       // GIVEN
       const stack = new cdk.Stack();
@@ -1146,14 +1222,14 @@ describe('container definition', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
       Family: 'Ec2TaskDef',
       InferenceAccelerators: [{
         DeviceName: 'device1',
         DeviceType: 'eia2.medium',
       }],
       ContainerDefinitions: [
-        {
+        Match.objectLike({
           Image: 'test',
           ResourceRequirements: [{
             Type: 'InferenceAccelerator',
@@ -1162,7 +1238,7 @@ describe('container definition', () => {
             Type: 'GPU',
             Value: '2',
           }],
-        },
+        }),
       ],
     });
   });
@@ -1189,9 +1265,9 @@ describe('container definition', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
-        {
+        Match.objectLike({
           Secrets: [
             {
               Name: 'SECRET',
@@ -1223,11 +1299,11 @@ describe('container definition', () => {
               },
             },
           ],
-        },
+        }),
       ],
     });
 
-    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -1273,8 +1349,6 @@ describe('container definition', () => {
         Version: '2012-10-17',
       },
     });
-
-
   });
 
   test('use a specific secret JSON key as environment variable', () => {
@@ -1294,9 +1368,9 @@ describe('container definition', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
-        {
+        Match.objectLike({
           Secrets: [
             {
               Name: 'SECRET_KEY',
@@ -1313,11 +1387,9 @@ describe('container definition', () => {
               },
             },
           ],
-        },
+        }),
       ],
     });
-
-
   });
 
   test('use a specific secret JSON field as environment variable for a Fargate task', () => {
@@ -1337,9 +1409,9 @@ describe('container definition', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
-        {
+        Match.objectLike({
           Secrets: [
             {
               Name: 'SECRET_KEY',
@@ -1356,11 +1428,9 @@ describe('container definition', () => {
               },
             },
           ],
-        },
+        }),
       ],
     });
-
-
   });
 
   test('can add AWS logging to container definition', () => {
@@ -1376,9 +1446,9 @@ describe('container definition', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
-        {
+        Match.objectLike({
           LogConfiguration: {
             LogDriver: 'awslogs',
             Options: {
@@ -1387,11 +1457,11 @@ describe('container definition', () => {
               'awslogs-region': { Ref: 'AWS::Region' },
             },
           },
-        },
+        }),
       ],
     });
 
-    expect(stack).toHaveResource('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -1403,8 +1473,6 @@ describe('container definition', () => {
         Version: '2012-10-17',
       },
     });
-
-
   });
 
   test('can set Health Check with defaults', () => {
@@ -1423,20 +1491,18 @@ describe('container definition', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
-        {
+        Match.objectLike({
           HealthCheck: {
             Command: ['CMD-SHELL', hcCommand],
             Interval: 30,
             Retries: 3,
             Timeout: 5,
           },
-        },
+        }),
       ],
     });
-
-
   });
 
   test('throws when setting Health Check with no commands', () => {
@@ -1455,7 +1521,7 @@ describe('container definition', () => {
 
     // THEN
     expect(() => {
-      expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
         ContainerDefinitions: [
           {
             HealthCheck: {
@@ -1491,9 +1557,9 @@ describe('container definition', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
-        {
+        Match.objectLike({
           HealthCheck: {
             Command: ['CMD-SHELL', hcCommand],
             Interval: 20,
@@ -1501,11 +1567,9 @@ describe('container definition', () => {
             Timeout: 5,
             StartPeriod: 10,
           },
-        },
+        }),
       ],
     });
-
-
   });
 
   test('can specify Health Check values in array form starting with CMD-SHELL', () => {
@@ -1527,9 +1591,9 @@ describe('container definition', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
-        {
+        Match.objectLike({
           HealthCheck: {
             Command: ['CMD-SHELL', hcCommand],
             Interval: 20,
@@ -1537,11 +1601,9 @@ describe('container definition', () => {
             Timeout: 5,
             StartPeriod: 10,
           },
-        },
+        }),
       ],
     });
-
-
   });
 
   test('can specify Health Check values in array form starting with CMD', () => {
@@ -1563,9 +1625,9 @@ describe('container definition', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
-        {
+        Match.objectLike({
           HealthCheck: {
             Command: ['CMD', hcCommand],
             Interval: 20,
@@ -1573,11 +1635,9 @@ describe('container definition', () => {
             Timeout: 5,
             StartPeriod: 10,
           },
-        },
+        }),
       ],
     });
-
-
   });
 
   test('can specify private registry credentials', () => {
@@ -1597,18 +1657,18 @@ describe('container definition', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
-        {
+        Match.objectLike({
           Image: 'user-x/my-app',
           RepositoryCredentials: {
             CredentialsParameter: mySecretArn,
           },
-        },
+        }),
       ],
     });
 
-    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -1622,8 +1682,6 @@ describe('container definition', () => {
         ],
       },
     });
-
-
   });
 
   describe('_linkContainer works properly', () => {
@@ -1680,18 +1738,16 @@ describe('container definition', () => {
       });
 
       // THEN
-      expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
         ContainerDefinitions: [
-          {
+          Match.objectLike({
             Image: 'test',
             LinuxParameters: {
               Capabilities: {},
             },
-          },
+          }),
         ],
       });
-
-
     });
 
     test('before calling addContainer', () => {
@@ -1715,9 +1771,9 @@ describe('container definition', () => {
       });
 
       // THEN
-      expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
         ContainerDefinitions: [
-          {
+          Match.objectLike({
             Image: 'test',
             LinuxParameters: {
               Capabilities: {
@@ -1727,11 +1783,9 @@ describe('container definition', () => {
               InitProcessEnabled: true,
               SharedMemorySize: 1024,
             },
-          },
+          }),
         ],
       });
-
-
     });
 
     test('after calling addContainer', () => {
@@ -1757,9 +1811,9 @@ describe('container definition', () => {
       linuxParameters.dropCapabilities(ecs.Capability.SETUID);
 
       // THEN
-      expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
         ContainerDefinitions: [
-          {
+          Match.objectLike({
             Image: 'test',
             LinuxParameters: {
               Capabilities: {
@@ -1769,11 +1823,9 @@ describe('container definition', () => {
               InitProcessEnabled: true,
               SharedMemorySize: 1024,
             },
-          },
+          }),
         ],
       });
-
-
     });
 
     test('with one or more host devices', () => {
@@ -1798,9 +1850,9 @@ describe('container definition', () => {
       });
 
       // THEN
-      expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
         ContainerDefinitions: [
-          {
+          Match.objectLike({
             Image: 'test',
             LinuxParameters: {
               Devices: [
@@ -1811,11 +1863,9 @@ describe('container definition', () => {
               InitProcessEnabled: true,
               SharedMemorySize: 1024,
             },
-          },
+          }),
         ],
       });
-
-
     });
 
     test('with the tmpfs mount for a container', () => {
@@ -1841,9 +1891,9 @@ describe('container definition', () => {
       });
 
       // THEN
-      expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
         ContainerDefinitions: [
-          {
+          Match.objectLike({
             Image: 'test',
             LinuxParameters: {
               Tmpfs: [
@@ -1855,11 +1905,9 @@ describe('container definition', () => {
               InitProcessEnabled: true,
               SharedMemorySize: 1024,
             },
-          },
+          }),
         ],
       });
-
-
     });
   });
 
@@ -1878,7 +1926,7 @@ describe('container definition', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ECS::TaskDefinition', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
         {
           Essential: true,
@@ -1891,7 +1939,7 @@ describe('container definition', () => {
                 { Ref: 'AWS::Region' },
                 '.',
                 { Ref: 'AWS::URLSuffix' },
-                '/aws-cdk/assets:b2c69bfbfe983b634456574587443159b3b7258849856a118ad3d2772238f1a5',
+                '/aws-cdk/assets:8c1d9ca9f5d37b1c4870c13a9f855301bb42c1848dbcdd5edc8fe2c6c7261d48',
               ],
             ],
           },
@@ -1900,7 +1948,7 @@ describe('container definition', () => {
         },
       ],
     });
-    expect(stack).toHaveResource('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -1947,14 +1995,40 @@ describe('container definition', () => {
     const asm = app.synth();
     expect(asm.getStackArtifact(stack.artifactId).assets[0]).toEqual({
       repositoryName: 'aws-cdk/assets',
-      imageTag: 'ce3419d7c5d2d44e2789b13ccbd2d54ddf682557669f68bcee753231f5f1c0a5',
-      id: 'ce3419d7c5d2d44e2789b13ccbd2d54ddf682557669f68bcee753231f5f1c0a5',
+      imageTag: '9d913132f812bc1ad436aeb5a51f9216c5776b8079318c1883ad2f79f0ef1a4b',
+      id: '9d913132f812bc1ad436aeb5a51f9216c5776b8079318c1883ad2f79f0ef1a4b',
       packaging: 'container-image',
-      path: 'asset.ce3419d7c5d2d44e2789b13ccbd2d54ddf682557669f68bcee753231f5f1c0a5',
-      sourceHash: 'ce3419d7c5d2d44e2789b13ccbd2d54ddf682557669f68bcee753231f5f1c0a5',
+      path: 'asset.9d913132f812bc1ad436aeb5a51f9216c5776b8079318c1883ad2f79f0ef1a4b',
+      sourceHash: '9d913132f812bc1ad436aeb5a51f9216c5776b8079318c1883ad2f79f0ef1a4b',
       target: 'build-target',
       file: 'index.py',
     });
 
+  });
+
+  test('exposes image name', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef');
+
+    // WHEN
+    const container = taskDefinition.addContainer('cont', {
+      image: ecs.ContainerImage.fromAsset(path.join(__dirname, 'demo-image')),
+    });
+
+    // THEN
+    expect(stack.resolve(container.imageName)).toEqual({
+      'Fn::Join': [
+        '',
+        [
+          { Ref: 'AWS::AccountId' },
+          '.dkr.ecr.',
+          { Ref: 'AWS::Region' },
+          '.',
+          { Ref: 'AWS::URLSuffix' },
+          '/aws-cdk/assets:baa2d6eb2a17c75424df631c8c70ff39f2d5f3bee8b9e1a109ee24ca17300540',
+        ],
+      ],
+    });
   });
 });

@@ -1,7 +1,6 @@
-import { expect, haveResource } from '@aws-cdk/assert-internal';
+import { Template } from '@aws-cdk/assertions';
 import { ArnPrincipal } from '@aws-cdk/aws-iam';
 import { Stack } from '@aws-cdk/core';
-import { nodeunitShim, Test } from 'nodeunit-shim';
 
 // eslint-disable-next-line max-len
 import { IVpcEndpointServiceLoadBalancer, Vpc, VpcEndpointService } from '../lib';
@@ -19,9 +18,9 @@ class DummyEndpointLoadBalacer implements IVpcEndpointServiceLoadBalancer {
   }
 }
 
-nodeunitShim({
-  'test vpc endpoint service': {
-    'create endpoint service with no principals'(test: Test) {
+describe('vpc endpoint service', () => {
+  describe('test vpc endpoint service', () => {
+    test('create endpoint service with no principals', () => {
       // GIVEN
       const stack = new Stack();
       new Vpc(stack, 'MyVPC');
@@ -34,21 +33,21 @@ nodeunitShim({
         allowedPrincipals: [new ArnPrincipal('arn:aws:iam::123456789012:root')],
       });
       // THEN
-      expect(stack).to(haveResource('AWS::EC2::VPCEndpointService', {
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpointService', {
         NetworkLoadBalancerArns: ['arn:aws:elasticloadbalancing:us-east-1:123456789012:loadbalancer/net/Test/9bn6qkf4e9jrw77a'],
         AcceptanceRequired: false,
-      }));
+      });
 
-      expect(stack).notTo(haveResource('AWS::EC2::VPCEndpointServicePermissions', {
+      const servicePermissions = Template.fromStack(stack).findResources('AWS::EC2::VPCEndpointServicePermissions', {
         ServiceId: {
           Ref: 'EndpointServiceED36BE1F',
         },
         AllowedPrincipals: [],
-      }));
+      });
+      expect(Object.keys(servicePermissions).length).toBe(0);
 
-      test.done();
-    },
-    'create endpoint service with a principal'(test: Test) {
+    });
+    test('create endpoint service with a principal', () => {
       // GIVEN
       const stack = new Stack();
 
@@ -61,22 +60,22 @@ nodeunitShim({
       });
 
       // THEN
-      expect(stack).to(haveResource('AWS::EC2::VPCEndpointService', {
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpointService', {
         NetworkLoadBalancerArns: ['arn:aws:elasticloadbalancing:us-east-1:123456789012:loadbalancer/net/Test/9bn6qkf4e9jrw77a'],
         AcceptanceRequired: false,
-      }));
+      });
 
-      expect(stack).to(haveResource('AWS::EC2::VPCEndpointServicePermissions', {
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpointServicePermissions', {
         ServiceId: {
           Ref: 'EndpointServiceED36BE1F',
         },
         AllowedPrincipals: ['arn:aws:iam::123456789012:root'],
-      }));
+      });
 
-      test.done();
-    },
 
-    'with acceptance requried'(test: Test) {
+    });
+
+    test('with acceptance requried', () => {
       // GIVEN
       const stack = new Stack();
 
@@ -89,19 +88,19 @@ nodeunitShim({
       });
 
       // THEN
-      expect(stack).to(haveResource('AWS::EC2::VPCEndpointService', {
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpointService', {
         NetworkLoadBalancerArns: ['arn:aws:elasticloadbalancing:us-east-1:123456789012:loadbalancer/net/Test/9bn6qkf4e9jrw77a'],
         AcceptanceRequired: true,
-      }));
+      });
 
-      expect(stack).to(haveResource('AWS::EC2::VPCEndpointServicePermissions', {
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpointServicePermissions', {
         ServiceId: {
           Ref: 'EndpointServiceED36BE1F',
         },
         AllowedPrincipals: ['arn:aws:iam::123456789012:root'],
-      }));
+      });
 
-      test.done();
-    },
-  },
+
+    });
+  });
 });

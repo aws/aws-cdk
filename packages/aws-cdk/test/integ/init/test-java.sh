@@ -22,5 +22,6 @@ for template in $templates; do
     setup
 
     cdk init -l java $template
+    mvn package
     cdk synth
 done

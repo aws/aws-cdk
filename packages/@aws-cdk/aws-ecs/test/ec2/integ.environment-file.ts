@@ -13,6 +13,7 @@ const stack = new cdk.Stack(app, 'aws-ecs-integ');
 const bucket = new s3.Bucket(stack, 'Bucket', {
   blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
   removalPolicy: cdk.RemovalPolicy.DESTROY,
+  autoDeleteObjects: true,
 });
 const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 2 });
 
@@ -47,7 +48,6 @@ const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDefinition', {
 // deploy an envfile to S3 and delete when the bucket is deleted
 const envFileDeployment = new s3deployment.BucketDeployment(stack, 'EnvFileDeployment', {
   destinationBucket: bucket,
-  retainOnDelete: false,
   sources: [s3deployment.Source.asset(path.join(__dirname, '../demo-envfiles'))],
 });
 

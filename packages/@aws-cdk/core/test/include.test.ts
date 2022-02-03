@@ -1,14 +1,14 @@
-import { nodeunitShim, Test } from 'nodeunit-shim';
+import { describeDeprecated } from '@aws-cdk/cdk-build-tools';
 import { CfnInclude, CfnOutput, CfnParameter, CfnResource, Stack } from '../lib';
 import { toCloudFormation } from './util';
 
-nodeunitShim({
-  'the Include construct can be used to embed an existing template as-is into a stack'(test: Test) {
+describeDeprecated('include', () => {
+  test('the Include construct can be used to embed an existing template as-is into a stack', () => {
     const stack = new Stack();
 
     new CfnInclude(stack, 'T1', { template: clone(template) });
 
-    test.deepEqual(toCloudFormation(stack), {
+    expect(toCloudFormation(stack)).toEqual({
       Parameters: { MyParam: { Type: 'String', Default: 'Hello' } },
       Resources: {
         MyResource1: { Type: 'ResourceType1', Properties: { P1: 1, P2: 2 } },
@@ -16,10 +16,10 @@ nodeunitShim({
       },
     });
 
-    test.done();
-  },
 
-  'included templates can co-exist with elements created programmatically'(test: Test) {
+  });
+
+  test('included templates can co-exist with elements created programmatically', () => {
     const stack = new Stack();
 
     new CfnInclude(stack, 'T1', { template: clone(template) });
@@ -27,7 +27,7 @@ nodeunitShim({
     new CfnOutput(stack, 'MyOutput', { description: 'Out!', value: 'hey' });
     new CfnParameter(stack, 'MyParam2', { type: 'Integer' });
 
-    test.deepEqual(toCloudFormation(stack), {
+    expect(toCloudFormation(stack)).toEqual({
       Parameters: {
         MyParam: { Type: 'String', Default: 'Hello' },
         MyParam2: { Type: 'Integer' },
@@ -40,10 +40,10 @@ nodeunitShim({
       Outputs: { MyOutput: { Description: 'Out!', Value: 'hey' } },
     });
 
-    test.done();
-  },
 
-  'exception is thrown in construction if an entity from an included template has the same id as a programmatic entity'(test: Test) {
+  });
+
+  test('exception is thrown in construction if an entity from an included template has the same id as a programmatic entity', () => {
     const stack = new Stack();
 
     new CfnInclude(stack, 'T1', { template });
@@ -51,11 +51,11 @@ nodeunitShim({
     new CfnOutput(stack, 'MyOutput', { description: 'Out!', value: 'in' });
     new CfnParameter(stack, 'MyParam', { type: 'Integer' }); // duplicate!
 
-    test.throws(() => toCloudFormation(stack));
-    test.done();
-  },
+    expect(() => toCloudFormation(stack)).toThrow();
 
-  'correctly merges template sections that contain strings'(test: Test) {
+  });
+
+  test('correctly merges template sections that contain strings', () => {
     const stack = new Stack();
 
     new CfnInclude(stack, 'T1', {
@@ -71,13 +71,13 @@ nodeunitShim({
       },
     });
 
-    test.deepEqual(toCloudFormation(stack), {
+    expect(toCloudFormation(stack)).toEqual({
       AWSTemplateFormatVersion: '2010-09-09',
       Description: 'Test 1\nTest 2',
     });
 
-    test.done();
-  },
+
+  });
 });
 
 const template = {

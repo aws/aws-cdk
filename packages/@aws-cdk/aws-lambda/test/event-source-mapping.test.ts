@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Match, Template } from '@aws-cdk/assertions';
 import * as cdk from '@aws-cdk/core';
 import { Code, EventSourceMapping, Function, Runtime } from '../lib';
 
@@ -164,7 +164,7 @@ describe('event source mapping', () => {
       kafkaTopic: topicNameParam.valueAsString,
     });
 
-    expect(stack).toHaveResourceLike('AWS::Lambda::EventSourceMapping', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
       Topics: [{
         Ref: 'TopicNameParam',
       }],
@@ -233,7 +233,7 @@ describe('event source mapping', () => {
       kafkaTopic: topicNameParam.valueAsString,
     });
 
-    expect(stack).toHaveResourceLike('AWS::Lambda::EventSourceMapping', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
       EventSourceArn: eventSourceArn,
     });
   });
@@ -257,7 +257,7 @@ describe('event source mapping', () => {
       kafkaTopic: topicNameParam.valueAsString,
     });
 
-    expect(stack).toHaveResourceLike('AWS::Lambda::EventSourceMapping', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
       SelfManagedEventSource: { Endpoints: { KafkaBootstrapServers: kafkaBootstrapServers } },
     });
   });
@@ -290,6 +290,65 @@ describe('event source mapping', () => {
       target: fn,
       eventSourceArn: '',
       tumblingWindow: lazyDuration,
+    });
+  });
+
+  test('transforms reportBatchItemFailures into functionResponseTypes with ReportBatchItemFailures', () => {
+    const stack = new cdk.Stack();
+
+    const fn = new Function(stack, 'fn', {
+      handler: 'index.handler',
+      code: Code.fromInline('exports.handler = ${handler.toString()}'),
+      runtime: Runtime.NODEJS_10_X,
+    });
+
+    new EventSourceMapping(stack, 'test', {
+      target: fn,
+      eventSourceArn: '',
+      reportBatchItemFailures: true,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+      FunctionResponseTypes: ['ReportBatchItemFailures'],
+    });
+  });
+
+  test('transforms missing reportBatchItemFailures into absent FunctionResponseTypes', () => {
+    const stack = new cdk.Stack();
+
+    const fn = new Function(stack, 'fn', {
+      handler: 'index.handler',
+      code: Code.fromInline('exports.handler = ${handler.toString()}'),
+      runtime: Runtime.NODEJS_10_X,
+    });
+
+    new EventSourceMapping(stack, 'test', {
+      target: fn,
+      eventSourceArn: '',
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+      FunctionResponseTypes: Match.absent(),
+    });
+  });
+
+  test('transforms reportBatchItemFailures false into absent FunctionResponseTypes', () => {
+    const stack = new cdk.Stack();
+
+    const fn = new Function(stack, 'fn', {
+      handler: 'index.handler',
+      code: Code.fromInline('exports.handler = ${handler.toString()}'),
+      runtime: Runtime.NODEJS_10_X,
+    });
+
+    new EventSourceMapping(stack, 'test', {
+      target: fn,
+      eventSourceArn: '',
+      reportBatchItemFailures: false,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+      FunctionResponseTypes: Match.absent(),
     });
   });
 });
