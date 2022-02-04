@@ -1,12 +1,59 @@
+# CloudFormation Resource Specification v54.0.0
+
+## New Resource Types
+
+* AWS::KafkaConnect::Connector
+* AWS::Rekognition::Collection
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::IVS::RecordingConfiguration ThumbnailConfiguration (__added__)
+* AWS::Location::GeofenceCollection PricingPlan.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::Location::Map PricingPlan.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::Location::PlaceIndex PricingPlan.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::Location::RouteCalculator PricingPlan.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::Location::Tracker PricingPlan.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::SecretsManager::RotationSchedule RotateImmediatelyOnUpdate (__added__)
+* AWS::Timestream::Table MagneticStoreWriteProperties (__added__)
+
+## Property Type Changes
+
+* AWS::GuardDuty::Detector.CFNKubernetesAuditLogsConfiguration (__added__)
+* AWS::GuardDuty::Detector.CFNKubernetesConfiguration (__added__)
+* AWS::IVS::RecordingConfiguration.ThumbnailConfiguration (__added__)
+* AWS::MSK::Cluster.ProvisionedThroughput (__added__)
+* AWS::ECS::TaskDefinition.EFSVolumeConfiguration AuthorizationConfig.PrimitiveType (__deleted__)
+* AWS::GuardDuty::Detector.CFNDataSourceConfigurations Kubernetes (__added__)
+* AWS::MSK::Cluster.BrokerNodeGroupInfo StorageInfo.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::MSK::Cluster.EBSStorageInfo ProvisionedThroughput (__added__)
+* AWS::MSK::Cluster.EBSStorageInfo VolumeSize.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::MSK::Cluster.StorageInfo EBSStorageInfo.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Route53::RecordSetGroup.RecordSet Comment (__deleted__)
+* AWS::SecretsManager::RotationSchedule.RotationRules Duration (__added__)
+* AWS::SecretsManager::RotationSchedule.RotationRules ScheduleExpression (__added__)
 
 ## Unapplied changes
 
-* AWS::ECS is at 51.0.0
-
-
-## Unapplied changes
-
-* AWS::ECS is at 51.0.0
+* AWS::AppIntegrations is at 53.1.0
 
 # CloudFormation Resource Specification v53.1.0
 
