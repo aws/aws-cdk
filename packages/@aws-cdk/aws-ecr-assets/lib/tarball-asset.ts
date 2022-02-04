@@ -78,7 +78,7 @@ export class TarballImageAsset extends CoreConstruct implements IAsset {
       executable: [
         'sh',
         '-c',
-        `docker load -i ${relativePathInOutDir} | sed "s/Loaded image: //g"`,
+        `docker load -i ${relativePathInOutDir} | sed -nr 's/^Loaded image: (.*)$/\1/p'`,
       ],
     });
 
