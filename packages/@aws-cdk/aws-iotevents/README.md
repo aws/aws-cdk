@@ -89,3 +89,16 @@ new iotevents.DetectorModel(this, 'MyDetectorModel', {
   initialState: warmState,
 });
 ```
+
+To grant permissions to put messages in the input,
+you can use the `grantWrite()` method:
+
+```ts
+import * as iam from '@aws-cdk/aws-iam';
+import * as iotevents from '@aws-cdk/aws-iotevents';
+
+declare const grantable: iam.IGrantable;
+const input = iotevents.Input.fromInputName(this, 'MyInput', 'my_input');
+
+input.grantWrite(grantable);
+```

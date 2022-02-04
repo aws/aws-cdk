@@ -42,7 +42,7 @@ interface TransitionEvent {
 }
 
 /**
- * Properties for defining a state of a detector
+ * Properties for defining a state of a detector.
  */
 export interface StateProps {
   /**
@@ -60,11 +60,11 @@ export interface StateProps {
 }
 
 /**
- * Defines a state of a detector
+ * Defines a state of a detector.
  */
 export class State {
   /**
-   * The name of the state
+   * The name of the state.
    */
   public readonly stateName: string;
 
