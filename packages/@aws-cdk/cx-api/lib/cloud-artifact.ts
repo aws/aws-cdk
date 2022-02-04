@@ -1,5 +1,5 @@
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
-import { CloudAssembly } from './cloud-assembly';
+import type { CloudAssembly } from './cloud-assembly';
 import { MetadataEntryResult, SynthesisMessage, SynthesisMessageLevel } from './metadata';
 
 /**
@@ -36,24 +36,16 @@ export interface AwsCloudFormationStackProperties {
 export class CloudArtifact {
   /**
    * Returns a subclass of `CloudArtifact` based on the artifact type defined in the artifact manifest.
+   *
    * @param assembly The cloud assembly from which to load the artifact
    * @param id The artifact ID
    * @param artifact The artifact manifest
    * @returns the `CloudArtifact` that matches the artifact type or `undefined` if it's an artifact type that is unrecognized by this module.
    */
   public static fromManifest(assembly: CloudAssembly, id: string, artifact: cxschema.ArtifactManifest): CloudArtifact | undefined {
-    switch (artifact.type) {
-      case cxschema.ArtifactType.AWS_CLOUDFORMATION_STACK:
-        return new CloudFormationStackArtifact(assembly, id, artifact);
-      case cxschema.ArtifactType.CDK_TREE:
-        return new TreeCloudArtifact(assembly, id, artifact);
-      case cxschema.ArtifactType.ASSET_MANIFEST:
-        return new AssetManifestArtifact(assembly, id, artifact);
-      case cxschema.ArtifactType.NESTED_CLOUD_ASSEMBLY:
-        return new NestedCloudAssemblyArtifact(assembly, id, artifact);
-      default:
-        return undefined;
-    }
+    // Implementation is defined in a separate file to break cyclic dependencies
+    void(assembly), void(id), void(artifact);
+    throw new Error('Implementation not overridden yet');
   }
 
   /**
@@ -152,9 +144,3 @@ export class CloudArtifact {
     return this.manifest.displayName ?? this.id;
   }
 }
-
-// needs to be defined at the end to avoid a cyclic dependency
-import { AssetManifestArtifact } from './artifacts/asset-manifest-artifact';
-import { CloudFormationStackArtifact } from './artifacts/cloudformation-artifact';
-import { NestedCloudAssemblyArtifact } from './artifacts/nested-cloud-assembly-artifact';
-import { TreeCloudArtifact } from './artifacts/tree-cloud-artifact';
