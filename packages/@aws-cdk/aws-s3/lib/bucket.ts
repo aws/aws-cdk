@@ -1540,7 +1540,7 @@ export class Bucket extends BucketBase {
     if (!bucketName) {
       throw new Error('Bucket name is required');
     }
-    Bucket.validateBucketName(bucketName);
+    Bucket.validateBucketName(bucketName, true);
 
     const newUrlFormat = attrs.bucketWebsiteNewUrlFormat === undefined
       ? false
@@ -1585,7 +1585,7 @@ export class Bucket extends BucketBase {
    *
    * @param physicalName name of the bucket.
    */
-  public static validateBucketName(physicalName: string): void {
+  public static validateBucketName(physicalName: string, allowWildcard: boolean = false): void {
     const bucketName = physicalName;
     if (!bucketName || Token.isUnresolved(bucketName)) {
       // the name is a late-bound value, not a defined string,
@@ -1596,7 +1596,7 @@ export class Bucket extends BucketBase {
     const errors: string[] = [];
 
     // Rules codified from https://docs.aws.amazon.com/AmazonS3/latest/dev/BucketRestrictions.html
-    if (bucketName.indexOf('*') == -1 && (bucketName.length < 3 || bucketName.length > 63)) {
+    if ((!allowWildcard || bucketName.indexOf('*') === -1) && (bucketName.length < 3 || bucketName.length > 63)) {
       errors.push('Bucket name must be at least 3 and no more than 63 characters');
     }
     const charsetMatch = bucketName.match(/[^*a-z0-9.-]/);
@@ -1604,11 +1604,12 @@ export class Bucket extends BucketBase {
       errors.push('Bucket name must only contain lowercase characters and the symbols, period (.) and dash (-) '
         + `(offset: ${charsetMatch.index})`);
     }
-    if (!/[*a-z0-9]/.test(bucketName.charAt(0))) {
+    const allowedCharsStartEnd = allowWildcard ? /[*a-z0-9]/ : /[a-z0-9]/;
+    if (!allowedCharsStartEnd.test(bucketName.charAt(0))) {
       errors.push('Bucket name must start and end with a lowercase character or number '
         + '(offset: 0)');
     }
-    if (!/[*a-z0-9]/.test(bucketName.charAt(bucketName.length - 1))) {
+    if (!allowedCharsStartEnd.test(bucketName.charAt(bucketName.length - 1))) {
       errors.push('Bucket name must start and end with a lowercase character or number '
         + `(offset: ${bucketName.length - 1})`);
     }
