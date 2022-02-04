@@ -200,6 +200,12 @@ export interface TableOptions extends SchemaOptions {
   readonly serverSideEncryption?: boolean;
 
   /**
+   * Specify the table class.
+   * @default STANDARD
+   */
+  readonly tableClass?: TableClass;
+
+  /**
    * Whether server-side encryption with an AWS managed customer master key is enabled.
    *
    * This property cannot be set if `serverSideEncryption` is set.
@@ -1182,6 +1188,7 @@ export class Table extends TableBase {
       },
       sseSpecification,
       streamSpecification,
+      tableClass: props.tableClass,
       timeToLiveSpecification: props.timeToLiveAttribute ? { attributeName: props.timeToLiveAttribute, enabled: true } : undefined,
       contributorInsightsSpecification: props.contributorInsightsEnabled !== undefined ? { enabled: props.contributorInsightsEnabled } : undefined,
       kinesisStreamSpecification: props.kinesisStream ? { streamArn: props.kinesisStream.streamArn } : undefined,
@@ -1771,6 +1778,19 @@ export enum StreamViewType {
   NEW_AND_OLD_IMAGES = 'NEW_AND_OLD_IMAGES',
   /** Only the key attributes of the modified item are written to the stream. */
   KEYS_ONLY = 'KEYS_ONLY'
+}
+
+/**
+ * DynamoDB's table class.
+ *
+ * @see https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.TableClasses.html
+ */
+export enum TableClass {
+  /** Default table class for DynamoDB. */
+  STANDARD = 'STANDARD',
+
+  /** Table class for DynamoDB that reduces storage costs compared to existing DynamoDB Standard tables. */
+  STANDARD_INFREQUENT_ACCESS = 'STANDARD_INFREQUENT_ACCESS',
 }
 
 /**
