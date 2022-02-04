@@ -5,7 +5,7 @@ import { CfnDetectorModel } from './iotevents.generated';
 import { State } from './state';
 
 /**
- * Represents an AWS IoT Events detector model
+ * Represents an AWS IoT Events detector model.
  */
 export interface IDetectorModel extends IResource {
   /**
@@ -33,7 +33,7 @@ export enum EventEvaluation {
 }
 
 /**
- * Properties for defining an AWS IoT Events detector model
+ * Properties for defining an AWS IoT Events detector model.
  */
 export interface DetectorModelProps {
   /**
