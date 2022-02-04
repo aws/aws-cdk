@@ -10,9 +10,10 @@ export interface Event {
   readonly eventName: string;
 
   /**
-   * The Boolean expression that, when TRUE, causes the actions to be performed.
+   * The condition that is used to determine to cause the actions.
+   * When this was evaluated to TRUE, the actions are triggered.
    *
    * @default - none (the actions are always executed)
    */
-  readonly condition?: Expression;
+  readonly when?: Expression;
 }

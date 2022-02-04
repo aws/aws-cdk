@@ -17,7 +17,7 @@ test('Default property', () => {
       stateName: 'test-state',
       onEnter: [{
         eventName: 'test-eventName',
-        condition: iotevents.Expression.fromString('test-eventCondition'),
+        when: iotevents.Expression.fromString('test-eventCondition'),
       }],
     }),
   });
@@ -59,7 +59,7 @@ test('can get detector model name', () => {
       stateName: 'test-state',
       onEnter: [{
         eventName: 'test-eventName',
-        condition: iotevents.Expression.fromString('test-eventCondition'),
+        when: iotevents.Expression.fromString('test-eventCondition'),
       }],
     }),
   });
@@ -91,7 +91,7 @@ test.each([
       stateName: 'test-state',
       onEnter: [{
         eventName: 'test-eventName',
-        condition: iotevents.Expression.fromString('test-eventCondition'),
+        when: iotevents.Expression.fromString('test-eventCondition'),
       }],
     }),
   });
@@ -108,7 +108,7 @@ test('can set multiple events to State', () => {
       onEnter: [
         {
           eventName: 'test-eventName1',
-          condition: iotevents.Expression.fromString('test-eventCondition'),
+          when: iotevents.Expression.fromString('test-eventCondition'),
         },
         {
           eventName: 'test-eventName2',
@@ -145,7 +145,7 @@ test('can set states with transitions', () => {
     stateName: 'firstState',
     onEnter: [{
       eventName: 'test-eventName',
-      condition: iotevents.Expression.currentInput(input),
+      when: iotevents.Expression.currentInput(input),
     }],
   });
   const secondState = new iotevents.State({
@@ -158,7 +158,7 @@ test('can set states with transitions', () => {
   // WHEN
   // transition as 1st -> 2nd
   firstState.transitionTo(secondState, {
-    condition: iotevents.Expression.eq(
+    when: iotevents.Expression.eq(
       iotevents.Expression.inputAttribute(input, 'payload.temperature'),
       iotevents.Expression.fromString('12'),
     ),
@@ -166,14 +166,14 @@ test('can set states with transitions', () => {
   // transition as 2nd -> 1st, make circular reference
   secondState.transitionTo(firstState, {
     eventName: 'secondToFirst',
-    condition: iotevents.Expression.eq(
+    when: iotevents.Expression.eq(
       iotevents.Expression.inputAttribute(input, 'payload.temperature'),
       iotevents.Expression.fromString('21'),
     ),
   });
   // transition as 2nd -> 3rd, to test recursive calling
   secondState.transitionTo(thirdState, {
-    condition: iotevents.Expression.eq(
+    when: iotevents.Expression.eq(
       iotevents.Expression.inputAttribute(input, 'payload.temperature'),
       iotevents.Expression.fromString('23'),
     ),
@@ -231,7 +231,7 @@ test('can set role', () => {
       stateName: 'test-state',
       onEnter: [{
         eventName: 'test-eventName',
-        condition: iotevents.Expression.fromString('test-eventCondition'),
+        when: iotevents.Expression.fromString('test-eventCondition'),
       }],
     }),
   });
@@ -288,7 +288,7 @@ test('cannot create transitions that transit to duprecated target state', () => 
   });
 
   firstState.transitionTo(secondState, {
-    condition: iotevents.Expression.eq(
+    when: iotevents.Expression.eq(
       iotevents.Expression.inputAttribute(input, 'payload.temperature'),
       iotevents.Expression.fromString('12.1'),
     ),
@@ -296,7 +296,7 @@ test('cannot create transitions that transit to duprecated target state', () => 
 
   expect(() => {
     firstState.transitionTo(secondState, {
-      condition: iotevents.Expression.eq(
+      when: iotevents.Expression.eq(
         iotevents.Expression.inputAttribute(input, 'payload.temperature'),
         iotevents.Expression.fromString('12.2'),
       ),
@@ -312,7 +312,7 @@ describe('Expression', () => {
         stateName: 'test-state',
         onEnter: [{
           eventName: 'test-eventName',
-          condition: iotevents.Expression.currentInput(input),
+          when: iotevents.Expression.currentInput(input),
         }],
       }),
     });
@@ -340,7 +340,7 @@ describe('Expression', () => {
         stateName: 'test-state',
         onEnter: [{
           eventName: 'test-eventName',
-          condition: iotevents.Expression.inputAttribute(input, 'json.path'),
+          when: iotevents.Expression.inputAttribute(input, 'json.path'),
         }],
       }),
     });
@@ -368,7 +368,7 @@ describe('Expression', () => {
         stateName: 'test-state',
         onEnter: [{
           eventName: 'test-eventName',
-          condition: iotevents.Expression.eq(
+          when: iotevents.Expression.eq(
             iotevents.Expression.fromString('"aaa"'),
             iotevents.Expression.fromString('"bbb"'),
           ),
@@ -399,7 +399,7 @@ describe('Expression', () => {
         stateName: 'test-state',
         onEnter: [{
           eventName: 'test-eventName',
-          condition: iotevents.Expression.and(
+          when: iotevents.Expression.and(
             iotevents.Expression.fromString('true'),
             iotevents.Expression.fromString('false'),
           ),

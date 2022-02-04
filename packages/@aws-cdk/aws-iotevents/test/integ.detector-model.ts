@@ -14,8 +14,8 @@ class TestStack extends cdk.Stack {
       stateName: 'online',
       onEnter: [{
         eventName: 'test-event',
-        // meaning `condition: 'currentInput("test_input") && $input.test_input.payload.temperature == 31.5'`
-        condition: iotevents.Expression.and(
+        // meaning `when: 'currentInput("test_input") && $input.test_input.payload.temperature == 31.5'`
+        when: iotevents.Expression.and(
           iotevents.Expression.currentInput(input),
           iotevents.Expression.eq(
             iotevents.Expression.inputAttribute(input, 'payload.temperature'),
@@ -30,14 +30,14 @@ class TestStack extends cdk.Stack {
 
     // 1st => 2nd
     onlineState.transitionTo(offlineState, {
-      condition: iotevents.Expression.eq(
+      when: iotevents.Expression.eq(
         iotevents.Expression.inputAttribute(input, 'payload.temperature'),
         iotevents.Expression.fromString('12'),
       ),
     });
     // 2st => 1st
     offlineState.transitionTo(onlineState, {
-      condition: iotevents.Expression.eq(
+      when: iotevents.Expression.eq(
         iotevents.Expression.inputAttribute(input, 'payload.temperature'),
         iotevents.Expression.fromString('21'),
       ),

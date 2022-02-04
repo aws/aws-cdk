@@ -58,7 +58,7 @@ const warmState = new iotevents.State({
   stateName: 'warm',
   onEnter: [{
     eventName: 'test-event',
-    condition: iotevents.Expression.currentInput(input),
+    when: iotevents.Expression.currentInput(input),
   }],
 });
 const coldState = new iotevents.State({
@@ -68,14 +68,14 @@ const coldState = new iotevents.State({
 // transit to coldState when temperature is 10
 warmState.transitionTo(coldState, {
   eventName: 'to_coldState', // optional property, default by combining the names of the States
-  condition: iotevents.Expression.eq(
+  when: iotevents.Expression.eq(
     iotevents.Expression.inputAttribute(input, 'payload.temperature'),
     iotevents.Expression.fromString('10'),
   ),
 });
 // transit to warmState when temperature is 20
 coldState.transitionTo(warmState, {
-  condition: iotevents.Expression.eq(
+  when: iotevents.Expression.eq(
     iotevents.Expression.inputAttribute(input, 'payload.temperature'),
     iotevents.Expression.fromString('20'),
   ),
