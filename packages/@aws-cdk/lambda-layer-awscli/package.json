@@ -74,6 +74,7 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/assertions": "0.0.0",
+    "@aws-cdk/custom-resources": "0.0.0",
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/cdk-integ-tools": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
