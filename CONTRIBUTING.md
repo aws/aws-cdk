@@ -662,7 +662,7 @@ extension](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-e
 
 #### pkglint
 
-The `pkglint` tool "lints" package.json files across the repo according to [rules.ts](tools/pkglint/lib/rules.ts).
+The `pkglint` tool "lints" package.json files across the repo according to [rules.ts](tools/@aws-cdk/pkglint/lib/rules.ts).
 
 To evaluate (and attempt to fix) all package linting issues in the repo, run the following command from the root of the
 repository (after bootstrapping):
