@@ -452,6 +452,9 @@
                         },
                         {
                             "$ref": "#/definitions/KeyContextQuery"
+                        },
+                        {
+                            "$ref": "#/definitions/PluginContextQuery"
                         }
                     ]
                 }
@@ -472,6 +475,7 @@
                 "key-provider",
                 "load-balancer",
                 "load-balancer-listener",
+                "plugin",
                 "security-group",
                 "ssm",
                 "vpc-provider"
@@ -832,6 +836,20 @@
                 "account",
                 "aliasName",
                 "region"
+            ]
+        },
+        "PluginContextQuery": {
+            "description": "Query input for plugins\n\nThis alternate branch is necessary because it needs to be able to escape all type checking\nwe do on on the cloud assembly -- we cannot know the properties that will be used a priori.",
+            "type": "object",
+            "additionalProperties": {},
+            "properties": {
+                "pluginName": {
+                    "description": "The name of the plugin",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "pluginName"
             ]
         },
         "RuntimeInfo": {
