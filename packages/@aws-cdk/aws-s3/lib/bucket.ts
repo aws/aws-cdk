@@ -356,9 +356,7 @@ export interface IBucket extends IResource {
 }
 
 /**
- * A reference to a bucket. The easiest way to instantiate is to call
- * `bucket.export()`. Then, the consumer can use `Bucket.import(this, ref)` and
- * get a `Bucket`.
+ * A reference to a bucket outside this stack
  */
 export interface BucketAttributes {
   /**
@@ -429,6 +427,13 @@ export interface BucketAttributes {
    * @default - it's assumed the bucket is in the same region as the scope it's being imported into
    */
   readonly region?: string;
+
+  /**
+   * The role to be used by the notifications handler
+   *
+   * @default - a new role will be created.
+   */
+  readonly notificationsHandlerRole?: iam.IRole;
 }
 
 /**
@@ -486,14 +491,12 @@ export abstract class BucketBase extends Resource implements IBucket {
    */
   protected abstract disallowPublicAccess?: boolean;
 
-  private readonly notifications: BucketNotifications;
+  private notifications?: BucketNotifications;
+
+  protected notificationsHandlerRole?: iam.IRole;
 
   constructor(scope: Construct, id: string, props: ResourceProps = {}) {
     super(scope, id, props);
-
-    // defines a BucketNotifications construct. Notice that an actual resource will only
-    // be added if there are notifications added, so we don't need to condition this.
-    this.notifications = new BucketNotifications(this, 'Notifications', { bucket: this });
   }
 
   /**
@@ -838,7 +841,17 @@ export abstract class BucketBase extends Resource implements IBucket {
    * https://docs.aws.amazon.com/AmazonS3/latest/dev/NotificationHowTo.html
    */
   public addEventNotification(event: EventType, dest: IBucketNotificationDestination, ...filters: NotificationKeyFilter[]) {
-    this.notifications.addNotification(event, dest, ...filters);
+    this.withNotifications(notifications => notifications.addNotification(event, dest, ...filters));
+  }
+
+  private withNotifications(cb: (notifications: BucketNotifications) => void) {
+    if (!this.notifications) {
+      this.notifications = new BucketNotifications(this, 'Notifications', {
+        bucket: this,
+        handlerRole: this.notificationsHandlerRole,
+      });
+    }
+    cb(this.notifications);
   }
 
   /**
@@ -863,10 +876,6 @@ export abstract class BucketBase extends Resource implements IBucket {
    */
   public addObjectRemovedNotification(dest: IBucketNotificationDestination, ...filters: NotificationKeyFilter[]) {
     return this.addEventNotification(EventType.OBJECT_REMOVED, dest, ...filters);
-  }
-
-  protected enableEventBridgeNotification() {
-    this.notifications.enableEventBridgeNotification();
   }
 
   private get writeActions(): string[] {
@@ -1093,7 +1102,7 @@ export enum InventoryFormat {
    */
   PARQUET = 'Parquet',
   /**
-   * Generate the inventory list as Parquet.
+   * Generate the inventory list as ORC.
    */
   ORC = 'ORC',
 }
@@ -1346,13 +1355,6 @@ export interface BucketProps {
   readonly versioned?: boolean;
 
   /**
-   * Whether this bucket should send notifications to Amazon EventBridge or not.
-   *
-   * @default false
-   */
-  readonly eventBridgeEnabled?: boolean;
-
-  /**
    * Rules that define how Amazon S3 manages objects during their lifetime.
    *
    * @default - No lifecycle rules.
@@ -1473,6 +1475,13 @@ export interface BucketProps {
   readonly transferAcceleration?: boolean;
 
   /**
+   * The role to be used by the notifications handler
+   *
+   * @default - a new role will be created.
+   */
+  readonly notificationsHandlerRole?: iam.IRole;
+
+  /**
    * Inteligent Tiering Configurations
    *
    * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/intelligent-tiering.html
@@ -1555,6 +1564,7 @@ export class Bucket extends BucketBase {
       public policy?: BucketPolicy = undefined;
       protected autoCreatePolicy = false;
       protected disallowPublicAccess = false;
+      protected notificationsHandlerRole = attrs.notificationsHandlerRole;
 
       /**
        * Exports this bucket from the stack.
@@ -1632,7 +1642,6 @@ export class Bucket extends BucketBase {
   private accessControl?: BucketAccessControl;
   private readonly lifecycleRules: LifecycleRule[] = [];
   private readonly versioned?: boolean;
-  private readonly eventBridgeEnabled?: boolean;
   private readonly metrics: BucketMetrics[] = [];
   private readonly cors: CorsRule[] = [];
   private readonly inventories: Inventory[] = [];
@@ -1642,6 +1651,8 @@ export class Bucket extends BucketBase {
     super(scope, id, {
       physicalName: props.bucketName,
     });
+
+    this.notificationsHandlerRole = props.notificationsHandlerRole;
 
     const { bucketEncryption, encryptionKey } = this.parseEncryption(props);
 
@@ -1672,7 +1683,6 @@ export class Bucket extends BucketBase {
 
     this.versioned = props.versioned;
     this.encryptionKey = encryptionKey;
-    this.eventBridgeEnabled = props.eventBridgeEnabled;
 
     this.bucketName = this.getResourceNameAttribute(resource.ref);
     this.bucketArn = this.getResourceArnAttribute(resource.attrArn, {
@@ -1722,10 +1732,6 @@ export class Bucket extends BucketBase {
       }
 
       this.enableAutoDeleteObjects();
-    }
-
-    if (this.eventBridgeEnabled) {
-      this.enableEventBridgeNotification();
     }
   }
 

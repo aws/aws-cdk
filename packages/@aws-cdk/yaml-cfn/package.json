@@ -48,7 +48,14 @@
         ]
       }
     },
-    "projectReferences": true
+    "projectReferences": true,
+    "metadata": {
+      "jsii": {
+        "rosetta": {
+          "strict": true
+        }
+      }
+    }
   },
   "scripts": {
     "build": "cdk-build",
@@ -69,7 +76,7 @@
     "yaml": "1.10.2"
   },
   "devDependencies": {
-    "@aws-cdk/assert-internal": "0.0.0",
+    "@aws-cdk/assertions": "0.0.0",
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
     "@types/jest": "^27.4.0",

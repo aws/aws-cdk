@@ -42,6 +42,7 @@ export const ROUTE_53_BUCKET_WEBSITE_ZONE_IDS: { [region: string]: string } = {
   'ap-south-1': 'Z11RGJOFQNVJUP',
   'ap-southeast-1': 'Z3O0J2DXBE1FTB',
   'ap-southeast-2': 'Z1WCIGYICN2BYD',
+  'ap-southeast-3': 'Z01613992JD795ZI93075',
   'ca-central-1': 'Z1QDHH18159H29',
   'cn-northwest-1': 'Z282HJ1KT0DH03',
   'eu-central-1': 'Z21DNDUVLTQW6Q',
@@ -102,6 +103,7 @@ export const PARTITION_MAP: { [region: string]: Region } = {
 };
 
 // https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-access-logs.html#access-logging-bucket-permissions
+// https://docs.aws.amazon.com/elasticloadbalancing/latest/classic/enable-access-logs.html#attach-bucket-policy
 export const ELBV2_ACCOUNTS: { [region: string]: string } = {
   'af-south-1': '098369216593',
   'ap-east-1': '754344448648',
@@ -111,6 +113,7 @@ export const ELBV2_ACCOUNTS: { [region: string]: string } = {
   'ap-south-1': '718504428378',
   'ap-southeast-1': '114774131450',
   'ap-southeast-2': '783225319266',
+  'ap-southeast-3': '589379963580',
   'ca-central-1': '985666609251',
   'cn-north-1': '638102146993',
   'cn-northwest-1': '037604701340',
