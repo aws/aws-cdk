@@ -7,7 +7,7 @@ import { singletonActionRole } from './private/role';
 /**
  * SNS topic action message format options.
  */
-export declare enum MessageFormat {
+export enum SnsActionMessageFormat {
   RAW = 'RAW',
   JSON = 'JSON'
 }
@@ -23,9 +23,9 @@ export interface SnsTopicActionProps extends CommonActionProps {
    * SNS uses this setting to determine if the payload should be parsed and relevant platform-specific bits of the payload should be extracted.
    * @see https://docs.aws.amazon.com/sns/latest/dg/sns-message-and-json-formats.html
    *
-   * @default MessageFormat.RAW
+   * @default SnsActionMessageFormat.RAW
    */
-  readonly messageFormat?: MessageFormat;
+  readonly messageFormat?: SnsActionMessageFormat;
 }
 
 /**
@@ -34,7 +34,7 @@ export interface SnsTopicActionProps extends CommonActionProps {
 export class SnsTopicAction implements iot.IAction {
   private readonly role?: iam.IRole;
   private readonly topic: sns.ITopic;
-  private readonly messageFormat?: MessageFormat;
+  private readonly messageFormat?: SnsActionMessageFormat;
 
   /**
    * @param topic The Amazon SNS topic to publish data on.

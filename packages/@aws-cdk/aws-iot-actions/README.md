@@ -273,7 +273,7 @@ const topicRule = new iot.TopicRule(this, 'TopicRule', {
   ),
   actions: [
     new actions.SnsQueueAction(topic, {
-      messageFormat: actions.MessageFormat.JSON, // optional property, default is MessageFormat.RAW
+      messageFormat: actions.MessageFormat.JSON, // optional property, default is SnsActionMessageFormat.RAW
     }),
   ],
 });

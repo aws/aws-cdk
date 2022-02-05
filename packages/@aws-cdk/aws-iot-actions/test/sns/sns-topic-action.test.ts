@@ -1,4 +1,4 @@
-import { Template } from '@aws-cdk/assertions';
+import { Match, Template } from '@aws-cdk/assertions';
 // import * as iam from '@aws-cdk/aws-iam';
 import * as iot from '@aws-cdk/aws-iot';
 import * as sns from '@aws-cdk/aws-sns';
@@ -8,14 +8,19 @@ import * as actions from '../../lib';
 const SNS_TOPIC_ARN = 'arn:aws:sns::123456789012:test-topic';
 const RULE_ROLE_ID = 'MyTopicRuleTopicRuleActionRoleCE2D05DA';
 
-test('Default SNS topic action', () => {
-  // GIVEN
-  const stack = new cdk.Stack();
-  const topicRule = new iot.TopicRule(stack, 'MyTopicRule', {
+let stack: cdk.Stack;
+let topicRule: iot.TopicRule;
+let snsTopic: sns.ITopic;
+
+beforeEach(() => {
+  stack = new cdk.Stack();
+  topicRule = new iot.TopicRule(stack, 'MyTopicRule', {
     sql: iot.IotSql.fromStringAsVer20160323("SELECT topic(2) as device_id FROM 'device/+/data'"),
   });
-  const snsTopic = sns.Topic.fromTopicArn(stack, 'MySnsTopic', SNS_TOPIC_ARN);
+  snsTopic = sns.Topic.fromTopicArn(stack, 'MySnsTopic', SNS_TOPIC_ARN);
+});
 
+test('Default SNS topic action', () => {
   // WHEN
   topicRule.addAction(new actions.SnsTopicAction(snsTopic));
 
@@ -65,5 +70,21 @@ test('Default SNS topic action', () => {
     Roles: [
       { Ref: RULE_ROLE_ID },
     ],
+  });
+});
+
+test('Can set messageFormat', () => {
+  // WHEN
+  topicRule.addAction(new actions.SnsTopicAction(snsTopic, {
+    messageFormat: actions.SnsActionMessageFormat.JSON,
+  }));
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::IoT::TopicRule', {
+    TopicRulePayload: {
+      Actions: [
+        Match.objectLike({ Sns: { MessageFormat: 'JSON' } }),
+      ],
+    },
   });
 });
