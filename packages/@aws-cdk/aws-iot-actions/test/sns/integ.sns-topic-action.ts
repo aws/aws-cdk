@@ -1,3 +1,12 @@
+/**
+ * Stack verification steps:
+ * * aws sns subscribe --topic-arn "arn:aws:sns:<region>:<account>:test-stack-MyTopic86869434-10F6E3DMK3E5P" --protocol email --notification-endpoint <email-addr>
+ * * confirm subscription from email
+ * * echo '{"message": "hello world"}' > testfile.txt
+ * * aws iot-data publish --topic device/mydevice/data --qos 1 --payload fileb://testfile.txt
+ * * verify that an email was sent from the SNS
+ * * rm testfile.txt
+ */
 /// !cdk-integ pragma:ignore-assets
 import * as iot from '@aws-cdk/aws-iot';
 import * as sns from '@aws-cdk/aws-sns';
