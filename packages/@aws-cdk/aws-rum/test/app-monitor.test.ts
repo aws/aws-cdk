@@ -34,13 +34,13 @@ describe('App monitor', () => {
     });
   });
 
-  test('App monitor with cw log enabled', () => {
+  test('App monitor with persistence will be set CwLogEnabled to true', () => {
     const stack = new cdk.Stack();
 
     new rum.AppMonitor(stack, 'MyAppMonitor', {
       appMonitorName: 'my-app-monitor',
       domain: 'amazon.com',
-      cwLogEnabled: true,
+      persistence: true,
     });
 
     Template.fromStack(stack).templateMatches({

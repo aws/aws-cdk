@@ -413,7 +413,7 @@ export interface AppMonitorProps {
    *
    * @default false
    */
-  readonly cwLogEnabled?: boolean;
+  readonly persistence?: boolean;
 }
 
 /**
@@ -454,7 +454,7 @@ export class AppMonitor extends Resource {
     this.appMonitor = new rum.CfnAppMonitor(this, 'AppMonitor', {
       name: props.appMonitorName,
       domain: props.domain,
-      cwLogEnabled: props.cwLogEnabled,
+      cwLogEnabled: props.persistence,
       appMonitorConfiguration: {
         ...this.appMonitorConfig,
         guestRoleArn: this.authorizer.guestRoleArn,
