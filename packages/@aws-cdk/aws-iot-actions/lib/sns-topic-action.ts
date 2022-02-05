@@ -30,7 +30,9 @@ export interface SnsTopicActionProps extends CommonActionProps {
 
 /**
  * The action to write the data from an MQTT message to an Amazon SNS topic.
- */
+ *
+ * @see https://docs.aws.amazon.com/iot/latest/developerguide/sns-rule-action.html
+ */eval
 export class SnsTopicAction implements iot.IAction {
   private readonly role?: iam.IRole;
   private readonly topic: sns.ITopic;
