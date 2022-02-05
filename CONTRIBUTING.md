@@ -587,7 +587,7 @@ cases where some of those do not apply - good judgement is to be applied):
 
 - Make use of `declare` statements directly in examples for values that are
   necessary for compilation but unimportant to the example:
-  
+
   ```ts
   // An example about adding a stage to a pipeline in the @aws-cdk/pipelines library
   declare const pipeline: pipelines.CodePipeline;
