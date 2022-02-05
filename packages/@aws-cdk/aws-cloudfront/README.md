@@ -476,6 +476,13 @@ new cloudfront.Distribution(this, 'distro', {
 });
 ```
 
+Write your Lambda@Edge code in Typescript in the same manner as [NodejsFunction](NOT SURE HOW TO LINK HERE).
+
+```ts
+// Lambda@Edge code written in Typescript
+const myFunc = new cloudfront.experimental.NodejsEdgeFunction(this, 'edge');
+```
+
 ### CloudFront Function
 
 You can also deploy CloudFront functions and add them to a CloudFront distribution.
