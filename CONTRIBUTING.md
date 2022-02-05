@@ -22,7 +22,7 @@ let us know if it's not up-to-date (even better, submit a PR with your  correcti
   - [Step 5: Merge](#step-5-merge)
 - [Breaking Changes](#breaking-changes)
 - [Documentation](#documentation)
-  - [rosetta](#rosetta)
+  - [Rosetta](#rosetta)
 - [Tools](#tools)
   - [Linters](#linters)
   - [cfn2ts](#cfn2ts)
@@ -217,6 +217,8 @@ Work your magic. Here are some guidelines:
     Watch out for their error messages and adjust your code accordingly.
 * Every change requires a unit test
 * If you change APIs, make sure to update the module's README file
+  * When you add new examples to the module's README file, you must also ensure they compile - the PR build will fail
+    if they do not. To learn more about how to ensure that they compile, see [Documentation](#documentation).
 * Try to maintain a single feature/bugfix per pull request. It's okay to introduce a little bit of housekeeping
   changes along the way, but try to avoid conflating multiple features. Eventually, all these are going to go into a
   single commit, so you can use that to frame your scope.
@@ -508,7 +510,7 @@ the README for the `aws-ec2` module - https://docs.aws.amazon.com/cdk/api/latest
 
 ### Rosetta
 
-The README file contains code snippets written as typescript code.  Code snippets typed in fenced code blocks
+The README file contains code snippets written as typescript code. Code snippets typed in fenced code blocks
 (such as `` ```ts ``) will be automatically extracted, compiled and translated to other languages when the
 during the [pack](#pack) step. We call this feature 'rosetta'.
 
@@ -541,11 +543,12 @@ When no fixture is specified, the fixture with the name
 `rosetta/default.ts-fixture` will be used if present. `nofixture` can be used to
 opt out of that behavior.
 
-In an `@example` block, which is unfenced, the first line of the example can
-contain three slashes to achieve the same effect:
+In an `@example` block, which is unfenced, additional information pertaining to
+the example can be provided via the `@exampleMetadata` tag:
 
 ```
 /**
+ * @exampleMetadata fixture=with-bucket
  * @example
  *   /// fixture=with-bucket
  *   bucket.addLifecycleTransition({ ...props });
@@ -582,20 +585,20 @@ cases where some of those do not apply - good judgement is to be applied):
   // ...rest of the example...
   ```
 
-- Within `.ts-fixture` files, make use of `declare` statements instead of
-  writing a compatible value (this will make your fixtures more durable):
-
+- Make use of `declare` statements directly in examples for values that are
+  necessary for compilation but unimportant to the example:
+  
   ```ts
-  // An hypothetical 'rosetta/default.ts-fixture' file in `@aws-cdk/core`
-  import * as kms from '@aws-cdk/aws-kms';
-  import * as s3 from '@aws-cdk/aws-s3';
-  import { StackProps } from '@aws-cdk/core';
-
-  declare const kmsKey: kms.IKey;
-  declare const bucket: s3.Bucket;
-
-  declare const props: StackProps;
+  // An example about adding a stage to a pipeline in the @aws-cdk/pipelines library
+  declare const pipeline: pipelines.CodePipeline;
+  declare const myStage: Stage;
+  pipeline.addStage(myStage);   
   ```
+
+- Utilize the `default.ts-fixture` that already exists rather than writing new
+  `.ts-fixture` files. This is because values stored in `.ts-fixture` files do
+  not surface to the examples visible in the docs, so while they help successful
+  compilation, they do not help users understand the example.
 
 ## Tools (Advanced)
 
