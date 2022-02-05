@@ -108,3 +108,12 @@ test('Can set role', () => {
     },
   });
 });
+
+test('Action with FIFO topic throws error', () => {
+  // GIVEN
+  const snsFifoTopic = sns.Topic.fromTopicArn(stack, 'MyFifoTopic', `${SNS_TOPIC_ARN}.fifo`);
+
+  expect(() => {
+    topicRule.addAction(new actions.SnsTopicAction(snsFifoTopic));
+  }).toThrowError('An SNS topic IoT Rule action cannot be configured with a FIFO topic, only standard topics are allowed.');
+});
