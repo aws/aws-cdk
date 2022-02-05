@@ -30,10 +30,9 @@ interface TransitionEvent {
   readonly eventName: string;
 
   /**
-   * The condition that is used to determine to cause the state transition and the actions.
-   * When this was evaluated to TRUE, the state transition and the actions are triggered.
+   * The Boolean expression that, when TRUE, causes the state transition and the actions to be performed.
    */
-  readonly when: Expression;
+  readonly condition: Expression;
 
   /**
    * The next state to transit to. When the resuld of condition expression is TRUE, the state is transited.
@@ -82,7 +81,7 @@ export class State {
    * @param options transition options including the condition that causes the state transition
    */
   public transitionTo(targetState: State, options: TransitionOptions) {
-    const alreadyAdded = this.transitionEvents.some((event) => event.nextState === targetState);
+    const alreadyAdded = this.transitionEvents.some(transitionEvent => transitionEvent.nextState === targetState);
     if (alreadyAdded) {
       throw new Error(`State '${this.stateName}' already has a transition defined to '${targetState.stateName}'`);
     }
@@ -90,7 +89,7 @@ export class State {
     this.transitionEvents.push({
       eventName: options.eventName ?? `${this.stateName}_to_${targetState.stateName}`,
       nextState: targetState,
-      when: options.when,
+      condition: options.when,
     });
   }
 
@@ -116,12 +115,12 @@ export class State {
   }
 
   /**
-   * Returns true if this state has at least one condition as `Event.when`s.
+   * Returns true if this state has at least one condition via events.
    *
    * @internal
    */
   public _onEnterEventsHaveAtLeastOneCondition(): boolean {
-    return this.props.onEnter?.some(event => event.when) ?? false;
+    return this.props.onEnter?.some(event => event.condition) ?? false;
   }
 
   private toStateJson(): CfnDetectorModel.StateProperty {
@@ -137,12 +136,10 @@ export class State {
 }
 
 function toEventsJson(events: Event[]): CfnDetectorModel.EventProperty[] {
-  return events.map(event => {
-    return {
-      eventName: event.eventName,
-      condition: event.when?.evaluate(),
-    };
-  });
+  return events.map(event => ({
+    eventName: event.eventName,
+    condition: event.condition?.evaluate(),
+  }));
 }
 
 function toTransitionEventsJson(transitionEvents: TransitionEvent[]): CfnDetectorModel.TransitionEventProperty[] | undefined {
@@ -150,11 +147,9 @@ function toTransitionEventsJson(transitionEvents: TransitionEvent[]): CfnDetecto
     return undefined;
   }
 
-  return transitionEvents.map(transitionEvent => {
-    return {
-      eventName: transitionEvent.eventName,
-      condition: transitionEvent.when.evaluate(),
-      nextState: transitionEvent.nextState.stateName,
-    };
-  });
+  return transitionEvents.map(transitionEvent => ({
+    eventName: transitionEvent.eventName,
+    condition: transitionEvent.condition.evaluate(),
+    nextState: transitionEvent.nextState.stateName,
+  }));
 }

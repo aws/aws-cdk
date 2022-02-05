@@ -17,7 +17,7 @@ test('Default property', () => {
       stateName: 'test-state',
       onEnter: [{
         eventName: 'test-eventName',
-        when: iotevents.Expression.fromString('test-eventCondition'),
+        condition: iotevents.Expression.fromString('test-eventCondition'),
       }],
     }),
   });
@@ -59,7 +59,7 @@ test('can get detector model name', () => {
       stateName: 'test-state',
       onEnter: [{
         eventName: 'test-eventName',
-        when: iotevents.Expression.fromString('test-eventCondition'),
+        condition: iotevents.Expression.fromString('test-eventCondition'),
       }],
     }),
   });
@@ -91,7 +91,7 @@ test.each([
       stateName: 'test-state',
       onEnter: [{
         eventName: 'test-eventName',
-        when: iotevents.Expression.fromString('test-eventCondition'),
+        condition: iotevents.Expression.fromString('test-eventCondition'),
       }],
     }),
   });
@@ -108,7 +108,7 @@ test('can set multiple events to State', () => {
       onEnter: [
         {
           eventName: 'test-eventName1',
-          when: iotevents.Expression.fromString('test-eventCondition'),
+          condition: iotevents.Expression.fromString('test-eventCondition'),
         },
         {
           eventName: 'test-eventName2',
@@ -145,7 +145,7 @@ test('can set states with transitions', () => {
     stateName: 'firstState',
     onEnter: [{
       eventName: 'test-eventName',
-      when: iotevents.Expression.currentInput(input),
+      condition: iotevents.Expression.currentInput(input),
     }],
   });
   const secondState = new iotevents.State({
@@ -231,7 +231,7 @@ test('can set role', () => {
       stateName: 'test-state',
       onEnter: [{
         eventName: 'test-eventName',
-        when: iotevents.Expression.fromString('test-eventCondition'),
+        condition: iotevents.Expression.fromString('test-eventCondition'),
       }],
     }),
   });
@@ -312,7 +312,7 @@ describe('Expression', () => {
         stateName: 'test-state',
         onEnter: [{
           eventName: 'test-eventName',
-          when: iotevents.Expression.currentInput(input),
+          condition: iotevents.Expression.currentInput(input),
         }],
       }),
     });
@@ -340,7 +340,7 @@ describe('Expression', () => {
         stateName: 'test-state',
         onEnter: [{
           eventName: 'test-eventName',
-          when: iotevents.Expression.inputAttribute(input, 'json.path'),
+          condition: iotevents.Expression.inputAttribute(input, 'json.path'),
         }],
       }),
     });
@@ -368,7 +368,7 @@ describe('Expression', () => {
         stateName: 'test-state',
         onEnter: [{
           eventName: 'test-eventName',
-          when: iotevents.Expression.eq(
+          condition: iotevents.Expression.eq(
             iotevents.Expression.fromString('"aaa"'),
             iotevents.Expression.fromString('"bbb"'),
           ),
@@ -399,7 +399,7 @@ describe('Expression', () => {
         stateName: 'test-state',
         onEnter: [{
           eventName: 'test-eventName',
-          when: iotevents.Expression.and(
+          condition: iotevents.Expression.and(
             iotevents.Expression.fromString('true'),
             iotevents.Expression.fromString('false'),
           ),

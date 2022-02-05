@@ -58,7 +58,7 @@ const warmState = new iotevents.State({
   stateName: 'warm',
   onEnter: [{
     eventName: 'test-event',
-    when: iotevents.Expression.currentInput(input),
+    condition: iotevents.Expression.currentInput(input),
   }],
 });
 const coldState = new iotevents.State({
