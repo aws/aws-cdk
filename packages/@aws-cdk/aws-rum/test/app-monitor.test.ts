@@ -1,18 +1,18 @@
 /* eslint-disable quote-props */
 import { Template } from '@aws-cdk/assertions';
+import { Role } from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import * as rum from '../lib';
-import { AppMonitorTelemetory } from '../lib';
+import { CognitoIdentityPoolAuthorizer, PageIdFormat } from '../lib';
 
-describe('app monitor', () => {
-  test('default app monitor', () => {
+describe('App monitor', () => {
+  test('Default app monitor', () => {
     const stack = new cdk.Stack();
 
     new rum.AppMonitor(stack, 'MyAppMonitor', {
       appMonitorName: 'my-app-monitor',
       domain: 'amazon.com',
     });
-
     Template.fromStack(stack).templateMatches({
       'Resources': {
         'MyAppMonitor37592055': {
@@ -34,7 +34,7 @@ describe('app monitor', () => {
     });
   });
 
-  test('app monitor with cw log enabled', () => {
+  test('App monitor with cw log enabled', () => {
     const stack = new cdk.Stack();
 
     new rum.AppMonitor(stack, 'MyAppMonitor', {
@@ -65,7 +65,7 @@ describe('app monitor', () => {
     });
   });
 
-  test('app monitor with allow cookies', () => {
+  test('App monitor with allow cookies', () => {
     const stack = new cdk.Stack();
 
     new rum.AppMonitor(stack, 'MyAppMonitor', {
@@ -98,7 +98,7 @@ describe('app monitor', () => {
     });
   });
 
-  test('app monitor with enable X-Ray', () => {
+  test('App monitor with enable X-Ray', () => {
     const stack = new cdk.Stack();
 
     new rum.AppMonitor(stack, 'MyAppMonitor', {
@@ -131,7 +131,7 @@ describe('app monitor', () => {
     });
   });
 
-  test('app monitor with exclude pages', () => {
+  test('App monitor with exclude pages', () => {
     const stack = new cdk.Stack();
 
     new rum.AppMonitor(stack, 'MyAppMonitor', {
@@ -164,7 +164,7 @@ describe('app monitor', () => {
     });
   });
 
-  test('app monitor with include pages', () => {
+  test('App monitor with include pages', () => {
     const stack = new cdk.Stack();
 
     new rum.AppMonitor(stack, 'MyAppMonitor', {
@@ -197,7 +197,7 @@ describe('app monitor', () => {
     });
   });
 
-  test('app monitor with favorite pages', () => {
+  test('App monitor with favorite pages', () => {
     const stack = new cdk.Stack();
 
     new rum.AppMonitor(stack, 'MyAppMonitor', {
@@ -230,7 +230,7 @@ describe('app monitor', () => {
     });
   });
 
-  test('app monitor with session sample rate', () => {
+  test('App monitor with session sample rate', () => {
     const stack = new cdk.Stack();
 
     new rum.AppMonitor(stack, 'MyAppMonitor', {
@@ -263,14 +263,18 @@ describe('app monitor', () => {
     });
   });
 
-  test('app monitor with telemetries', () => {
+  test('App monitor with telemetries', () => {
     const stack = new cdk.Stack();
 
     new rum.AppMonitor(stack, 'MyAppMonitor', {
       appMonitorName: 'my-app-monitor',
       domain: 'amazon.com',
       appMonitorConfiguration: {
-        telemetries: [AppMonitorTelemetory.ERRORS, AppMonitorTelemetory.PERFORMANCE, AppMonitorTelemetory.HTTP],
+        telemetries: [
+          rum.Telemetry.ERRORS,
+          rum.Telemetry.PERFORMANCE,
+          rum.Telemetry.HTTP,
+        ],
       },
     });
 
@@ -296,16 +300,16 @@ describe('app monitor', () => {
     });
   });
 
-  test('app monitor with exist identity pool', () => {
+  test('App monitor with exist identity pool', () => {
     const stack = new cdk.Stack();
 
     new rum.AppMonitor(stack, 'MyAppMonitor', {
       appMonitorName: 'my-app-monitor',
       domain: 'amazon.com',
-      appMonitorConfiguration: {
+      authorizer: new rum.CognitoIdentityPoolAuthorizer({
         identityPoolId: 'test-user-pool',
-        guestRoleArn: 'arn:aws:iam::1111111:role/guest-role',
-      },
+        unauthenticatedRole: Role.fromRoleArn(stack, 'GuestRole', 'arn:aws:iam::1111111:role/guest-role'),
+      }),
     });
 
     Template.fromStack(stack).templateMatches({
@@ -325,7 +329,7 @@ describe('app monitor', () => {
     });
   });
 
-  test('get app monitor id', () => {
+  test('Get app monitor id', () => {
     const stack = new cdk.Stack();
 
     const appMonitor = new rum.AppMonitor(stack, 'MyAppMonitor', {
@@ -335,7 +339,7 @@ describe('app monitor', () => {
     expect(stack.resolve(appMonitor.appMonitorId)).toEqual({ 'Fn::GetAtt': ['MyAppMonitorCustomGetAppMonitor15BA2BBF', 'AppMonitor.Id'] });
   });
 
-  test('get app monitor ARN', () => {
+  test('Get app monitor ARN', () => {
     const stack = new cdk.Stack();
 
     const appMonitor = new rum.AppMonitor(stack, 'MyAppMonitor', {
@@ -353,5 +357,104 @@ describe('app monitor', () => {
         ],
       ],
     });
+  });
+});
+
+describe('Generate code snippet', () => {
+  test('Common script', () => {
+    const stack = new cdk.Stack();
+    const appMonitor = new rum.AppMonitor(stack, 'MyAppMonitor', {
+      appMonitorName: 'my-app-monitor',
+      domain: 'amazon.com',
+    });
+    const codeSnippet = appMonitor.generateCodeSnippet();
+    expect(codeSnippet).toContain(`(function(n,i,v,r,s,c,x,z){x=window.AwsRumClient={q:[],n:n,i:i,v:v,r:r,c:c};window[n]=function(c,p){x.q.push({c:c,p:p});};z=document.createElement(\'script\');z.async=true;z.src=s;document.head.insertBefore(z,document.getElementsByTagName(\'script\')[0]);})(\'cwr\','${appMonitor.appMonitorId}','1.0.0','${stack.region}','https://client.rum.us-east-1.amazonaws.com/1.0.2/cwr.js',{`);
+  });
+
+  test('Without option', () => {
+    const stack = new cdk.Stack();
+    const appMonitor = new rum.AppMonitor(stack, 'MyAppMonitor', {
+      appMonitorName: 'my-app-monitor',
+      domain: 'amazon.com',
+      authorizer: new CognitoIdentityPoolAuthorizer({
+        identityPoolId: 'my-identity-pool-id',
+        unauthenticatedRole: Role.fromRoleArn(stack, 'Role', 'arn:aws:iam::123456789012:role/Nexus-Monitor-us-east-1-123456789012_Unauth_5889316876161'),
+      }),
+    });
+    const codeSnippet = appMonitor.generateCodeSnippet();
+    expect(codeSnippet).toContain('{' +
+      `endpoint:'https://dataplane.rum.${stack.region}.amazonaws.com',` +
+      'guestRoleArn:\'arn:aws:iam::123456789012:role/Nexus-Monitor-us-east-1-123456789012_Unauth_5889316876161\',' +
+      'identityPoolId:\'my-identity-pool-id\',' +
+      'sessionSampleRate:1' +
+      '}');
+  });
+
+  test('With option', () => {
+    const stack = new cdk.Stack();
+    const appMonitor = new rum.AppMonitor(stack, 'MyAppMonitor', {
+      appMonitorName: 'my-app-monitor',
+      domain: 'amazon.com',
+      authorizer: new CognitoIdentityPoolAuthorizer({
+        identityPoolId: 'my-identity-pool-id',
+        unauthenticatedRole: Role.fromRoleArn(stack, 'Role', 'arn:aws:iam::123456789012:role/Nexus-Monitor-us-east-1-123456789012_Unauth_5889316876161'),
+      }),
+    });
+    const codeSnippet = appMonitor.generateCodeSnippet({
+      allowCookies: true,
+      cookieAttibutes: {},
+      disableAutoPageView: true,
+      enableRumClient: true,
+      enableXRay: true,
+      endpoint: 'https://dataplane.rum.some-region.amazonaws.com',
+      guestRoleArn: 'arn:aws:iam::123456789012:role/my-role',
+      identityPoolId: 'some-identity-pool-id',
+      pageIdFormat: PageIdFormat.PATH_AND_HASH,
+      pagesToInclude: ['/\\/home/'],
+      pagesToExclude: ['/\\/home/'],
+      recordResourceUrl: true,
+      sessionEventLimit: 200,
+      sessionSampleRate: 1,
+      telemetries: {
+        errors: {
+          stackTraceLength: 200,
+        },
+        http: {
+          urlsToInclude: ['/\\/home/'],
+        },
+        performance: {
+          eventLimit: 10,
+        },
+        interaction: {
+          events: [
+            {
+              event: 'click', elementId: 'mybutton',
+            },
+          ],
+        },
+      },
+    });
+    expect(codeSnippet).toContain('{' +
+      'allowCookies:true,' +
+      'cookieAttibutes:{},' +
+      'disableAutoPageView:true,' +
+      'enableRumClient:true,' +
+      'enableXRay:true,' +
+      'endpoint:\'https://dataplane.rum.some-region.amazonaws.com\',' +
+      'guestRoleArn:\'arn:aws:iam::123456789012:role/my-role\',' +
+      'identityPoolId:\'some-identity-pool-id\',' +
+      'pageIdFormat:\'PATH_AND_HASH\',' +
+      'pagesToInclude:[/\\/home/],' +
+      'pagesToExclude:[/\\/home/],' +
+      'recordResourceUrl:true,' +
+      'sessionEventLimit:200,' +
+      'sessionSampleRate:1,' +
+      'telemetries:[' +
+      '[\'errors\',{stackTraceLength:200}],'+
+      '[\'http\',{urlsToInclude:[/\\/home/]}],'+
+      '[\'performance\',{eventLimit:10}],'+
+      '[\'interaction\',{events:[{event:\'click\',elementId:\'mybutton\'}]}]'+
+      ']' +
+      '}');
   });
 });
