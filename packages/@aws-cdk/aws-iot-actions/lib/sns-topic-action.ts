@@ -32,7 +32,7 @@ export interface SnsTopicActionProps extends CommonActionProps {
  * The action to write the data from an MQTT message to an Amazon SNS topic.
  *
  * @see https://docs.aws.amazon.com/iot/latest/developerguide/sns-rule-action.html
- */eval
+ */
 export class SnsTopicAction implements iot.IAction {
   private readonly role?: iam.IRole;
   private readonly topic: sns.ITopic;
@@ -43,8 +43,7 @@ export class SnsTopicAction implements iot.IAction {
    * @param props Properties to configure the action.
    */
   constructor(topic: sns.ITopic, props: SnsTopicActionProps = {}) {
-    // TODO check if necessary, check if desireable
-    if (topic.topicName.endsWith('.fifo')) { // TODO add boolean flag to ITopic to check if FIFO? (SQS has this, not ITopic)
+    if (topic.topicName.endsWith('.fifo')) {
       throw Error('An SNS topic IoT Rule action cannot be configured with a FIFO topic, only standard topics are allowed.');
     }
 
@@ -59,8 +58,6 @@ export class SnsTopicAction implements iot.IAction {
       actions: ['sns:Publish'],
       resources: [this.topic.topicArn],
     }));
-
-    // TODO any way to see if the topic is encrypted and set policies accordingly? (IQueue has this, not ITopic)
 
     return {
       configuration: {
