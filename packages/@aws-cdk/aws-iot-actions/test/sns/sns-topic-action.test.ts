@@ -1,5 +1,5 @@
 import { Match, Template } from '@aws-cdk/assertions';
-// import * as iam from '@aws-cdk/aws-iam';
+import * as iam from '@aws-cdk/aws-iam';
 import * as iot from '@aws-cdk/aws-iot';
 import * as sns from '@aws-cdk/aws-sns';
 import * as cdk from '@aws-cdk/core';
@@ -84,6 +84,26 @@ test('Can set messageFormat', () => {
     TopicRulePayload: {
       Actions: [
         Match.objectLike({ Sns: { MessageFormat: 'JSON' } }),
+      ],
+    },
+  });
+});
+
+test('Can set role', () => {
+  // GIVEN
+  const roleArn = 'arn:aws:iam::123456789012:role/testrole';
+  const role = iam.Role.fromRoleArn(stack, 'MyRole', roleArn);
+
+  // WHEN
+  topicRule.addAction(new actions.SnsTopicAction(snsTopic, {
+    role,
+  }));
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::IoT::TopicRule', {
+    TopicRulePayload: {
+      Actions: [
+        Match.objectLike({ Sns: { RoleArn: roleArn } }),
       ],
     },
   });
