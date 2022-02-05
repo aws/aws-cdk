@@ -563,7 +563,13 @@ To do this, use [escape hatches](https://docs.aws.amazon.com/cdk/v2/guide/cfn_la
 Example:
 
 ```ts
-const myDistribution: cloudfront.Distribution;
+declare const sourceBucket: s3.Bucket;
+
+const myDistribution = new cloudfront.Distribution(this, 'MyCfWebDistribution', {
+  defaultBehavior: {
+    origin: new origins.S3Origin(sourceBucket),
+  },
+});
 const cfnDistribution = myDistribution.node.defaultChild as cloudfront.CfnDistribution;
 cfnDistribution.overrideLogicalId('MyDistributionCFDistribution3H55TI9Q');
 ```
@@ -574,9 +580,9 @@ The modern API makes use of the [CloudFront Origins](https://docs.aws.amazon.com
 
 ```ts
 declare const sourceBucket: s3.Bucket;
+declare const oai: cloudfront.OriginAccessIdentity;
 
-const oai = new OriginAccessIdentity(this, 'OriginAccessIdentity');
-new CloudFrontWebDistribution(this, 'MyCfWebDistribution', {
+new cloudfront.CloudFrontWebDistribution(this, 'MyCfWebDistribution', {
   originConfigs: [
     {
       s3OriginSource: {
@@ -594,9 +600,9 @@ Becomes:
 ```ts
 declare const sourceBucket: s3.Bucket;
 
-const distribution = new Distribution(this, 'MyCfWebDistribution', {
+const distribution = new cloudfront.Distribution(this, 'MyCfWebDistribution', {
   defaultBehavior: {
-    origin: new S3Origin(sourceBucket) // This class automatically creates an Origin Access Identity
+    origin: new origins.S3Origin(sourceBucket) // This class automatically creates an Origin Access Identity
   },
 });
 ```
@@ -605,8 +611,9 @@ In the original API all behaviors are defined in the `originConfigs` property. T
 
 ```ts
 declare const sourceBucket: s3.Bucket;
+declare const oai: cloudfront.OriginAccessIdentity;
 
-new CloudFrontWebDistribution(this, 'MyCfWebDistribution', {
+new cloudfront.CloudFrontWebDistribution(this, 'MyCfWebDistribution', {
   originConfigs: [
     {
       s3OriginSource: {
@@ -630,13 +637,13 @@ Becomes:
 ```ts
 declare const sourceBucket: s3.Bucket;
 
-const distribution = new Distribution(this, 'MyCfWebDistribution', {
+const distribution = new cloudfront.Distribution(this, 'MyCfWebDistribution', {
   defaultBehavior: {
-    origin: new S3Origin(sourceBucket)
+    origin: new origins.S3Origin(sourceBucket) // This class automatically creates an Origin Access Identity
   },
   additionalBehaviors: {
     '/somewhere': {
-      origin: new HttpOrigin('MYALIAS'),
+      origin: new origins.HttpOrigin('MYALIAS'),
     }
   }
 });
@@ -650,11 +657,11 @@ Any aliases used before in the `ViewerCertificate` class should be passed in to 
 ```ts
 declare const certificate: acm.Certificate;
 
-const viewerCertificate = ViewerCertificate.fromAcmCertificate(certificate, {
+const viewerCertificate = cloudfront.ViewerCertificate.fromAcmCertificate(certificate, {
   aliases: ['MYALIAS'],
 });
 
-new CloudFrontWebDistribution(this, 'MyCfWebDistribution', {
+new cloudfront.CloudFrontWebDistribution(this, 'MyCfWebDistribution', {
   originConfigs: [
     {
       s3OriginSource: {
@@ -672,9 +679,9 @@ Becomes:
 ```ts
 declare const certificate: acm.Certificate;
 
-const distribution = new Distribution(this, 'MyCfWebDistribution', {
+const distribution = new cloudfront.Distribution(this, 'MyCfWebDistribution', {
   defaultBehavior: {
-    origin: new S3Origin(sourceBucket),
+    origin: new origins.S3Origin(sourceBucket),
   },
   domainNames: ['MYALIAS'],
   certificate: certificate,
@@ -685,11 +692,11 @@ IAM certificates aren't directly supported by the new API, but can be easily con
 
 ```ts
 declare const sourceBucket: s3.Bucket;
-const viewerCertificate = ViewerCertificate.fromIamCertificate('MYIAMROLEIDENTIFIER', {
+const viewerCertificate = cloudfront.ViewerCertificate.fromIamCertificate('MYIAMROLEIDENTIFIER', {
   aliases: ['MYALIAS'],
 });
 
-new CloudFrontWebDistribution(this, 'MyCfWebDistribution', {
+new cloudfront.CloudFrontWebDistribution(this, 'MyCfWebDistribution', {
   originConfigs: [
     {
       s3OriginSource: {
@@ -706,9 +713,9 @@ Becomes:
 
 ```ts
 declare const sourceBucket: s3.Bucket;
-const distribution = new Distribution(this, 'MyCfWebDistribution', {
+const distribution = new cloudfront.Distribution(this, 'MyCfWebDistribution', {
   defaultBehavior: {
-    origin: new S3Origin(sourceBucket),
+    origin: new origins.S3Origin(sourceBucket),
   },
   domainNames: ['MYALIAS'],
 });
