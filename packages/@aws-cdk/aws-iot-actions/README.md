@@ -272,8 +272,8 @@ const topicRule = new iot.TopicRule(this, 'TopicRule', {
     "SELECT topic(2) as device_id, year, month, day FROM 'device/+/data'",
   ),
   actions: [
-    new actions.SnsQueueAction(topic, {
-      messageFormat: actions.MessageFormat.JSON, // optional property, default is SnsActionMessageFormat.RAW
+    new actions.SnsTopicAction(topic, {
+      messageFormat: actions.SnsActionMessageFormat.JSON, // optional property, default is SnsActionMessageFormat.RAW
     }),
   ],
 });
