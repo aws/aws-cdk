@@ -8,7 +8,13 @@ import { singletonActionRole } from './private/role';
  * SNS topic action message format options.
  */
 export enum SnsActionMessageFormat {
+  /**
+   * RAW message format.
+   */
   RAW = 'RAW',
+  /**
+   * JSON message format.
+   */
   JSON = 'JSON'
 }
 
