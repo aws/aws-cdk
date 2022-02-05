@@ -1786,6 +1786,21 @@ describe('container definition', () => {
   });
 
   describe('Can specify linux parameters', () => {
+    test('validation throws with out of range params', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      const maxSwapValues = [-1, 30.5];
+      maxSwapValues.forEach(maxSwap => expect(() =>
+        new ecs.LinuxParameters(stack, `LinuxParametersWithMaxSwap(${maxSwap})`, { maxSwap }))
+        .toThrowError(`maxSwap: Must be a positive integer; received ${maxSwap}.`));
+
+      const swappinessValues = [-1, 30.5, 101];
+      swappinessValues.forEach(swappiness => expect(() =>
+        new ecs.LinuxParameters(stack, `LinuxParametersWithSwappiness(${swappiness})`, { swappiness }))
+        .toThrowError(`swappiness: Must be an integer between 0 and 100; received ${swappiness}.`));
+    });
+
     test('with only required properties set, it correctly sets default properties', () => {
       // GIVEN
       const stack = new cdk.Stack();
