@@ -697,10 +697,10 @@ describe('function', () => {
       deadLetterTopic: dlTopic,
     });
 
-    const tpl = Template.fromStack(stack);
+    const template = Template.fromStack(stack);
     tpl.hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
-        Statement: [
+        Statement: Match.arrayWith([
           {
             Action: 'sns:Publish',
             Effect: 'Allow',

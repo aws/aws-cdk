@@ -196,9 +196,9 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
   readonly deadLetterQueue?: sqs.IQueue;
 
   /**
-   * The SNS topic to use as DLQ.
-   * Note that topic will not be created and used as DLQ even if `deadLetterQueueEnabled`
-   * is set to `true`. Using topic requires this property to be set explicitly
+   * The SNS topic to use as a DLQ.
+   * Note that if `deadLetterQueueEnabled` is set to `true`, an SQS queue will be created
+   * rather than an SNS topic. Using an SNS topic as a DLQ requires this property to be set explicitly.
    *
    * @default - no SNS topic
    */
@@ -1045,7 +1045,7 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
     return (<sqs.IQueue>deadLetterQueue).queueArn !== undefined;
   }
 
-  private buildDeadLetterQueue(props: FunctionProps) {
+  private buildDeadLetterQueue(props: FunctionProps): sqs.Queue | sns.Topic {
     if (props.deadLetterQueue && props.deadLetterQueueEnabled === false) {
       throw Error('deadLetterQueue defined but deadLetterQueueEnabled explicitly set to false');
     }
