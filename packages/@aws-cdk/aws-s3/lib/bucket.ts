@@ -879,7 +879,7 @@ export abstract class BucketBase extends Resource implements IBucket {
   }
 
   protected enableEventBridgeNotification() {
-    this.notifications.enableEventBridgeNotification();
+    this.withNotifications(notifications => notifications.enableEventBridgeNotification());
   }
 
   private get writeActions(): string[] {
@@ -1106,7 +1106,7 @@ export enum InventoryFormat {
    */
   PARQUET = 'Parquet',
   /**
-   * Generate the inventory list as ORC.
+   * Generate the inventory list as Parquet.
    */
   ORC = 'ORC',
 }
