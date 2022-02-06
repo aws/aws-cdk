@@ -3,7 +3,7 @@ const project = new typescript.TypeScriptProject({
   name: '@aws-cdk/node-bundle',
   github: false,
   devDeps: ['@types/madge'],
-  deps: ['esbuild', 'madge', 'chalk', 'shlex'],
+  deps: ['esbuild', 'madge'],
 
   // required by projen even though 'github' is false.
   defaultReleaseBranch: 'main',

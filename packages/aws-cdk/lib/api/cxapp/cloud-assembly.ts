@@ -9,6 +9,7 @@ import { versionNumber } from '../../version';
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const minimatch = require('minimatch');
 
+
 export enum DefaultSelection {
   /**
    * Returns an empty selection in case there are no selectors.

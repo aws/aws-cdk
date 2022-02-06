@@ -76,19 +76,11 @@
       "type": "build"
     },
     {
-      "name": "chalk",
-      "type": "runtime"
-    },
-    {
       "name": "esbuild",
       "type": "runtime"
     },
     {
       "name": "madge",
-      "type": "runtime"
-    },
-    {
-      "name": "shlex",
       "type": "runtime"
     }
   ],

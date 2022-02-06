@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as util from 'util';
-import * as bundle from 'node-bundle-projen';
+import type { BundleProps } from '@aws-cdk/node-bundle';
 
 const readdir = util.promisify(fs.readdir);
 const stat = util.promisify(fs.stat);
@@ -186,7 +186,7 @@ export interface CDKBuildOptions {
    *
    * @default - default configuration.
    */
-  bundleProps?: bundle.BundleProps;
+  bundleProps?: BundleProps;
 }
 
 export interface CDKPackageOptions {

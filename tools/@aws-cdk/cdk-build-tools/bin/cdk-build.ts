@@ -1,4 +1,4 @@
-import { Bundle } from 'node-bundle-projen';
+import { Bundle } from '@aws-cdk/node-bundle';
 import * as yargs from 'yargs';
 import { compileCurrentPackage } from '../lib/compile';
 import { lintCurrentPackage } from '../lib/lint';

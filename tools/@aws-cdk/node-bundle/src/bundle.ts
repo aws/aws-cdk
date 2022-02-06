@@ -53,7 +53,7 @@ export class Bundle {
 
     const entrypoint = bin[0][1];
 
-    console.log('esbuild | bundling dry-run');
+    console.log('validate | discovering dependencies');
 
     const bundle = await esbuild.build({
       entryPoints: [bin[0][1]],
@@ -66,22 +66,26 @@ export class Bundle {
       write: false,
     });
 
-    if (bundle.warnings.length > 0 && (options.failOnWarnings ?? true)) {
-      // the warnings themselves are printed during esbuild execution.
-      throw new Error(`${bundle.warnings.length} bundling warnings detected!`);
+    if (bundle.warnings.length > 0 && options.failOnWarnings) {
+      // the warnings themselves are printed on screen via esbuild
+      console.log(`✖ Found ${bundle.warnings.length} bundling warnings (See above)`);
+      process.exit(1);
     }
 
     const inputs = Object.keys(bundle.metafile!.outputs[path.basename(entrypoint)].inputs);
     const dependencies = new Set(inputs.map(i => this.findPackage(i)));
 
-    console.log('madge | detecting circular imports');
-
-    // we don't use the programatic API since we want to eventually print circles
-    // which the madge cli already does.
-    await shell([`${require.resolve('madge/bin/cli.js')} --no-color --no-spinner --circular --extensions js`, ...dependencies].join(' '));
+    for (const dep of dependencies) {
+      console.log(`validate | detecting circular imports (${dep})`);
+      // we don't use the programatic API since we want to eventually
+      // print circles, which the madge cli already does.
+      // also, for easier error reporting we run a separate command for each dependency.
+      // may need to reconsider this if it slows down the build too much.
+      await shell([`${require.resolve('madge/bin/cli.js')}`, '--warning', '--no-color', '--no-spinner', '--circular', '--extensions', 'js', dep]);
+    }
 
     const attributions = new Attributions(dependencies);
-    console.log('attributions | validate');
+    console.log('validate | attributions');
     attributions.validate();
   }
 
