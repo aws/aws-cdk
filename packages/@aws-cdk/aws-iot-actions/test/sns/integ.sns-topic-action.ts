@@ -13,8 +13,6 @@ import * as sns from '@aws-cdk/aws-sns';
 import * as cdk from '@aws-cdk/core';
 import * as actions from '../../lib';
 
-const app = new cdk.App();
-
 class TestStack extends cdk.Stack {
   constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
@@ -30,5 +28,6 @@ class TestStack extends cdk.Stack {
   }
 }
 
-new TestStack(app, 'test-stack');
+const app = new cdk.App();
+new TestStack(app, 'sns-topic-action-test-stack');
 app.synth();

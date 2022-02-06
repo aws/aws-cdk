@@ -12,6 +12,7 @@ export enum SnsActionMessageFormat {
    * RAW message format.
    */
   RAW = 'RAW',
+
   /**
    * JSON message format.
    */

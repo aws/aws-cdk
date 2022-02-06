@@ -27,49 +27,34 @@ test('Default SNS topic action', () => {
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::IoT::TopicRule', {
     TopicRulePayload: {
-      Actions: [
-        {
-          Sns: {
-            RoleArn: {
-              'Fn::GetAtt': [
-                RULE_ROLE_ID,
-                'Arn',
-              ],
-            },
-            TargetArn: SNS_TOPIC_ARN,
-          },
+      Actions: [{
+        Sns: {
+          RoleArn: { 'Fn::GetAtt': [RULE_ROLE_ID, 'Arn'] },
+          TargetArn: SNS_TOPIC_ARN,
         },
-      ],
+      }],
     },
   });
 
   Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
     AssumeRolePolicyDocument: {
-      Statement: [
-        {
-          Action: 'sts:AssumeRole',
-          Effect: 'Allow',
-          Principal: {
-            Service: 'iot.amazonaws.com',
-          },
-        },
-      ],
+      Statement: [{
+        Action: 'sts:AssumeRole',
+        Effect: 'Allow',
+        Principal: { Service: 'iot.amazonaws.com' },
+      }],
     },
   });
 
   Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
     PolicyDocument: {
-      Statement: [
-        {
-          Action: 'sns:Publish',
-          Effect: 'Allow',
-          Resource: SNS_TOPIC_ARN,
-        },
-      ],
+      Statement: [{
+        Action: 'sns:Publish',
+        Effect: 'Allow',
+        Resource: SNS_TOPIC_ARN,
+      }],
     },
-    Roles: [
-      { Ref: RULE_ROLE_ID },
-    ],
+    Roles: [{ Ref: RULE_ROLE_ID }],
   });
 });
 
