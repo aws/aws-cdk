@@ -583,9 +583,14 @@ export class Function extends FunctionBase {
   public readonly grantPrincipal: iam.IPrincipal;
 
   /**
-   * The DLQ associated with this Lambda Function (this is an optional attribute).
+   * The DLQ (as queue) associated with this Lambda Function (this is an optional attribute).
    */
-  public readonly deadLetterQueue?: sqs.IQueue | sns.ITopic;
+  public readonly deadLetterQueue?: sqs.IQueue
+
+  /**
+   * The DLQ (as topic) associated with this Lambda Function (this is an optional attribute).
+   */
+  public readonly deadLetterTopic?: sns.ITopic
 
   /**
    * The architecture of this Lambda Function (this is an optional attribute and defaults to X86_64).
@@ -683,7 +688,15 @@ export class Function extends FunctionBase {
       this.addEnvironment(key, value);
     }
 
-    this.deadLetterQueue = this.buildDeadLetterQueue(props);
+    // DLQ can be either sns.ITopic or sqs.IQueue
+    const dlqTopicOrQueue = this.buildDeadLetterQueue(props);
+    if (dlqTopicOrQueue !== undefined) {
+      if (this.isQueue(dlqTopicOrQueue)) {
+        this.deadLetterQueue = dlqTopicOrQueue;
+      } else {
+        this.deadLetterTopic = dlqTopicOrQueue;
+      }
+    }
 
     let fileSystemConfigs: CfnFunction.FileSystemConfigProperty[] | undefined = undefined;
     if (props.filesystem) {
@@ -722,7 +735,7 @@ export class Function extends FunctionBase {
       environment: Lazy.uncachedAny({ produce: () => this.renderEnvironment() }),
       memorySize: props.memorySize,
       vpcConfig: this.configureVpc(props),
-      deadLetterConfig: this.buildDeadLetterConfig(this.deadLetterQueue),
+      deadLetterConfig: this.buildDeadLetterConfig(dlqTopicOrQueue),
       tracingConfig: this.buildTracingConfig(props),
       reservedConcurrentExecutions: props.reservedConcurrentExecutions,
       imageConfig: undefinedIfNoKeys({
@@ -1045,36 +1058,35 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
     return (<sqs.IQueue>deadLetterQueue).queueArn !== undefined;
   }
 
-  private buildDeadLetterQueue(props: FunctionProps): sqs.Queue | sns.Topic {
+  private buildDeadLetterQueue(props: FunctionProps): sqs.IQueue | sns.ITopic | undefined {
+    if (!props.deadLetterQueue && !props.deadLetterQueueEnabled && !props.deadLetterTopic) {
+      return undefined;
+    }
     if (props.deadLetterQueue && props.deadLetterQueueEnabled === false) {
       throw Error('deadLetterQueue defined but deadLetterQueueEnabled explicitly set to false');
     }
-
-    let deadLetterQueue: sqs.IQueue | sns.ITopic;
-
-    if (!props.deadLetterQueue && !props.deadLetterQueueEnabled && !props.deadLetterTopic) {
-      return undefined;
-    } else if (props.deadLetterTopic && props.deadLetterQueue) {
+    if (props.deadLetterTopic && (props.deadLetterQueue || props.deadLetterQueueEnabled !== undefined)) {
       throw new Error('deadLetterQueue and deadLetterTopic cannot be specified together at the same time');
-    } else if (props.deadLetterTopic && (props.deadLetterQueueEnabled === false || props.deadLetterQueueEnabled === true)) {
-      throw new Error('deadLetterQueueEnabled and deadLetterTopic cannot be specified together at the same time');
-    } else if (props.deadLetterTopic && !props.deadLetterQueueEnabled) {
-      deadLetterQueue = props.deadLetterTopic;
+    }
+
+    let dlqOrDlt: sqs.IQueue | sns.ITopic;
+    if (props.deadLetterTopic) {
+      dlqOrDlt = props.deadLetterTopic;
       this.addToRolePolicy(new iam.PolicyStatement({
         actions: ['sns:Publish'],
-        resources: [deadLetterQueue.topicArn],
+        resources: [dlqOrDlt.topicArn],
       }));
     } else {
-      deadLetterQueue = props.deadLetterQueue || new sqs.Queue(this, 'DeadLetterQueue', {
+      dlqOrDlt = props.deadLetterQueue || new sqs.Queue(this, 'DeadLetterQueue', {
         retentionPeriod: Duration.days(14),
       });
       this.addToRolePolicy(new iam.PolicyStatement({
         actions: ['sqs:SendMessage'],
-        resources: [deadLetterQueue.queueArn],
+        resources: [dlqOrDlt.queueArn],
       }));
     }
 
-    return deadLetterQueue;
+    return dlqOrDlt;
   }
 
   private buildDeadLetterConfig(deadLetterQueue?: sqs.IQueue | sns.ITopic) {

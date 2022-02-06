@@ -698,7 +698,7 @@ describe('function', () => {
     });
 
     const template = Template.fromStack(stack);
-    tpl.hasResourceProperties('AWS::IAM::Policy', {
+    template.hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: Match.arrayWith([
           {
@@ -708,14 +708,13 @@ describe('function', () => {
               Ref: 'DeadLetterTopicC237650B',
             },
           },
-        ],
-        Version: '2012-10-17',
+        ]),
       },
     });
-    tpl.hasResourceProperties('AWS::Lambda::Function', {
+    template.hasResourceProperties('AWS::Lambda::Function', {
       DeadLetterConfig: {
         TargetArn: {
-          Ref: 'DeadLetterQueue9F481546',
+          Ref: 'DeadLetterTopicC237650B',
         },
       },
     });
@@ -732,7 +731,7 @@ describe('function', () => {
       runtime: lambda.Runtime.NODEJS_10_X,
       deadLetterQueueEnabled: false,
       deadLetterTopic: dlTopic,
-    })).toThrow(/deadLetterQueueEnabled and deadLetterTopic cannot be specified together at the same time/);
+    })).toThrow(/deadLetterQueue and deadLetterTopic cannot be specified together at the same time/);
   });
 
   test('error when default function with SNS DLQ when client provides Topic to be used as DLQ and deadLetterQueueEnabled set to true', () => {
@@ -746,7 +745,7 @@ describe('function', () => {
       runtime: lambda.Runtime.NODEJS_10_X,
       deadLetterQueueEnabled: true,
       deadLetterTopic: dlTopic,
-    })).toThrow(/deadLetterQueueEnabled and deadLetterTopic cannot be specified together at the same time/);
+    })).toThrow(/deadLetterQueue and deadLetterTopic cannot be specified together at the same time/);
   });
 
   test('error when both topic and queue are presented as DLQ', () => {
@@ -1640,6 +1639,10 @@ describe('function', () => {
       deadLetterQueue: dlQueue,
     });
     const deadLetterQueue = fn.deadLetterQueue;
+    const deadLetterTopic = fn.deadLetterTopic;
+
+    expect(deadLetterTopic).toBeUndefined();
+
     expect(deadLetterQueue).toBeDefined();
     expect(deadLetterQueue).toBeInstanceOf(sqs.Queue);
   });
@@ -1658,8 +1661,12 @@ describe('function', () => {
       deadLetterTopic: dlTopic,
     });
     const deadLetterQueue = fn.deadLetterQueue;
-    expect(deadLetterQueue).toBeDefined();
-    expect(deadLetterQueue).toBeInstanceOf(sns.Topic);
+    const deadLetterTopic = fn.deadLetterTopic;
+
+    expect(deadLetterQueue).toBeUndefined();
+
+    expect(deadLetterTopic).toBeDefined();
+    expect(deadLetterTopic).toBeInstanceOf(sns.Topic);
   });
 
   test('dlq is returned when setup by cdk and is Queue', () => {
@@ -1671,6 +1678,10 @@ describe('function', () => {
       deadLetterQueueEnabled: true,
     });
     const deadLetterQueue = fn.deadLetterQueue;
+    const deadLetterTopic = fn.deadLetterTopic;
+
+    expect(deadLetterTopic).toBeUndefined();
+
     expect(deadLetterQueue).toBeDefined();
     expect(deadLetterQueue).toBeInstanceOf(sqs.Queue);
   });
@@ -1683,7 +1694,10 @@ describe('function', () => {
       code: lambda.Code.fromInline('foo'),
     });
     const deadLetterQueue = fn.deadLetterQueue;
+    const deadLetterTopic = fn.deadLetterTopic;
+
     expect(deadLetterQueue).toBeUndefined();
+    expect(deadLetterTopic).toBeUndefined();
   });
 
   test('one and only one child LogRetention construct will be created', () => {
