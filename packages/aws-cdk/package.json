@@ -5,7 +5,13 @@
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "bin": {
-    "cdk": "bin/cdk"
+    "cdk": "bin/cdk.js"
+  },
+  "cdk-build": {
+    "bundle": true,
+    "bundleProps": {
+      "externals": ["fsevents"]
+    }
   },
   "scripts": {
     "build": "cdk-build",

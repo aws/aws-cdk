@@ -1,11 +1,2 @@
 #!/usr/bin/env node
-try {
-  require('./cdk-bundle.js');
-} catch (e) {
-  if (e.message.includes('Cannot find module')) {
-    // require('./cdk.js');
-    throw new Error('FAIL')
-  } else {
-    throw e;
-  }
-}
+require('./cdk.js');

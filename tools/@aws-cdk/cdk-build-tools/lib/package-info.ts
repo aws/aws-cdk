@@ -1,6 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as util from 'util';
+import * as bundle from 'node-bundle-projen';
 
 const readdir = util.promisify(fs.readdir);
 const stat = util.promisify(fs.stat);
@@ -172,6 +173,20 @@ export interface CDKBuildOptions {
    * @see https://aws.github.io/jsii/user-guides/lib-author/toolchain/jsii/#-strip-deprecated
    */
   stripDeprecated?: boolean;
+
+  /**
+   * Should the package be bundled.
+   *
+   * @default false
+   */
+  bundle?: boolean;
+
+  /**
+   * Bundling configuration.
+   *
+   * @default - default configuration.
+   */
+  bundleProps?: bundle.BundleProps;
 }
 
 export interface CDKPackageOptions {

@@ -1,3 +1,4 @@
+import { Bundle } from 'node-bundle-projen';
 import * as yargs from 'yargs';
 import { compileCurrentPackage } from '../lib/compile';
 import { lintCurrentPackage } from '../lib/lint';
@@ -52,6 +53,11 @@ async function main() {
   const overrides: CompilerOverrides = { eslint: args.eslint, jsii: args.jsii, tsc: args.tsc };
   await compileCurrentPackage(options, timers, overrides);
   await lintCurrentPackage(options, { ...overrides, fix: args.fix });
+
+  if (options.bundle) {
+    const bundle = new Bundle(process.cwd(), options.bundleProps);
+    await bundle.validate({ failOnWarnings: true });
+  }
 
   if (options.post) {
     const commands = options.post.join(' && ');
