@@ -514,12 +514,12 @@ You can also use a `sns.Topic` instead of an `sqs.Queue` as dead-letter queue:
 ```ts
 import * as sns from '@aws-cdk/aws-sns';
 
-const dlq = new sns.Topic(this, 'DLQ');
+const dlt = new sns.Topic(this, 'DLQ');
 const fn = new lambda.Function(this, 'MyFunction', {
   runtime: lambda.Runtime.NODEJS_12_X,
   handler: 'index.handler',
   code: lambda.Code.fromInline('// your code here'),
-  deadLetterQueue: dlq,
+  deadLetterTopic: dlt,
 });
 ```
 
