@@ -91,7 +91,7 @@ export class NotificationsResourceHandler extends Construct {
     const handlerSourceWithoutComments = handlerSource.replace(/^ *#.*\n?/gm, '');
 
     if (handlerSourceWithoutComments.length > 4096) {
-      throw new Error(`Source of Notifications Resource Handler is too large (${handlerSourceWithoutComments.length} > 4096) ${handlerSource.length}`);
+      throw new Error(`Source of Notifications Resource Handler is too large (${handlerSourceWithoutComments.length} > 4096)`);
     }
 
     const resource = new InLineLambda(this, 'Resource', {
