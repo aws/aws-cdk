@@ -21,13 +21,14 @@ export interface IDetectorModel extends IResource {
  */
 export enum EventEvaluation {
   /**
-   * When setting to SERIAL, variables are updated and event conditions are evaluated in the order
-   * that the events are defined.
-   */
-  BATCH = 'BATCH',
-  /**
    * When setting to BATCH, variables within a state are updated and events within a state are
    * performed only after all event conditions are evaluated.
+   */
+  BATCH = 'BATCH',
+
+  /**
+   * When setting to SERIAL, variables are updated and event conditions are evaluated in the order
+   * that the events are defined.
    */
   SERIAL = 'SERIAL',
 }
