@@ -585,12 +585,12 @@ export class Function extends FunctionBase {
   /**
    * The DLQ (as queue) associated with this Lambda Function (this is an optional attribute).
    */
-  public readonly deadLetterQueue?: sqs.IQueue
+  public readonly deadLetterQueue?: sqs.IQueue;
 
   /**
    * The DLQ (as topic) associated with this Lambda Function (this is an optional attribute).
    */
-  public readonly deadLetterTopic?: sns.ITopic
+  public readonly deadLetterTopic?: sns.ITopic;
 
   /**
    * The architecture of this Lambda Function (this is an optional attribute and defaults to X86_64).
