@@ -28,6 +28,13 @@
         "distName": "aws-cdk.aws-mediaconnect",
         "module": "aws_cdk.aws_mediaconnect"
       }
+    },
+    "metadata": {
+      "jsii": {
+        "rosetta": {
+          "strict": true
+        }
+      }
     }
   },
   "repository": {

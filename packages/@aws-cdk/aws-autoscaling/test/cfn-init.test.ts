@@ -1,5 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
-import { anything, arrayWith, expect, haveResourceLike, ResourcePart } from '@aws-cdk/assert-internal';
+import { Match, Template } from '@aws-cdk/assertions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import { Duration, Stack } from '@aws-cdk/core';
 import * as autoscaling from '../lib';
@@ -37,13 +36,13 @@ test('Signals.waitForAll uses desiredCapacity if available', () => {
   });
 
   // THEN
-  expect(stack).to(haveResourceLike('AWS::AutoScaling::AutoScalingGroup', {
+  Template.fromStack(stack).hasResource('AWS::AutoScaling::AutoScalingGroup', {
     CreationPolicy: {
       ResourceSignal: {
         Count: 5,
       },
     },
-  }, ResourcePart.CompleteDefinition));
+  });
 });
 
 test('Signals.waitForAll uses minCapacity if desiredCapacity is not available', () => {
@@ -55,13 +54,13 @@ test('Signals.waitForAll uses minCapacity if desiredCapacity is not available', 
   });
 
   // THEN
-  expect(stack).to(haveResourceLike('AWS::AutoScaling::AutoScalingGroup', {
+  Template.fromStack(stack).hasResource('AWS::AutoScaling::AutoScalingGroup', {
     CreationPolicy: {
       ResourceSignal: {
         Count: 2,
       },
     },
-  }, ResourcePart.CompleteDefinition));
+  });
 });
 
 test('Signals.waitForMinCapacity uses minCapacity', () => {
@@ -72,13 +71,13 @@ test('Signals.waitForMinCapacity uses minCapacity', () => {
   });
 
   // THEN
-  expect(stack).to(haveResourceLike('AWS::AutoScaling::AutoScalingGroup', {
+  Template.fromStack(stack).hasResource('AWS::AutoScaling::AutoScalingGroup', {
     CreationPolicy: {
       ResourceSignal: {
         Count: 2,
       },
     },
-  }, ResourcePart.CompleteDefinition));
+  });
 });
 
 test('Signals.waitForCount uses given number', () => {
@@ -89,13 +88,13 @@ test('Signals.waitForCount uses given number', () => {
   });
 
   // THEN
-  expect(stack).to(haveResourceLike('AWS::AutoScaling::AutoScalingGroup', {
+  Template.fromStack(stack).hasResource('AWS::AutoScaling::AutoScalingGroup', {
     CreationPolicy: {
       ResourceSignal: {
         Count: 10,
       },
     },
-  }, ResourcePart.CompleteDefinition));
+  });
 });
 
 test('When signals are given appropriate IAM policy is added', () => {
@@ -106,15 +105,15 @@ test('When signals are given appropriate IAM policy is added', () => {
   });
 
   // THEN
-  expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
     PolicyDocument: {
-      Statement: arrayWith({
+      Statement: Match.arrayWith([{
         Action: 'cloudformation:SignalResource',
         Effect: 'Allow',
         Resource: { Ref: 'AWS::StackId' },
-      }),
+      }]),
     },
-  }));
+  });
 });
 
 test('UpdatePolicy.rollingUpdate() still correctly inserts IgnoreUnmodifiedGroupSizeProperties', () => {
@@ -125,13 +124,13 @@ test('UpdatePolicy.rollingUpdate() still correctly inserts IgnoreUnmodifiedGroup
   });
 
   // THEN
-  expect(stack).to(haveResourceLike('AWS::AutoScaling::AutoScalingGroup', {
+  Template.fromStack(stack).hasResource('AWS::AutoScaling::AutoScalingGroup', {
     UpdatePolicy: {
       AutoScalingScheduledAction: {
         IgnoreUnmodifiedGroupSizeProperties: true,
       },
     },
-  }, ResourcePart.CompleteDefinition));
+  });
 });
 
 test('UpdatePolicy.rollingUpdate() with Signals uses those defaults', () => {
@@ -146,7 +145,7 @@ test('UpdatePolicy.rollingUpdate() with Signals uses those defaults', () => {
   });
 
   // THEN
-  expect(stack).to(haveResourceLike('AWS::AutoScaling::AutoScalingGroup', {
+  Template.fromStack(stack).hasResource('AWS::AutoScaling::AutoScalingGroup', {
     CreationPolicy: {
       AutoScalingCreationPolicy: {
         MinSuccessfulInstancesPercent: 50,
@@ -163,7 +162,7 @@ test('UpdatePolicy.rollingUpdate() with Signals uses those defaults', () => {
         WaitOnResourceSignals: true,
       },
     },
-  }, ResourcePart.CompleteDefinition));
+  });
 });
 
 test('UpdatePolicy.rollingUpdate() without Signals', () => {
@@ -174,12 +173,12 @@ test('UpdatePolicy.rollingUpdate() without Signals', () => {
   });
 
   // THEN
-  expect(stack).to(haveResourceLike('AWS::AutoScaling::AutoScalingGroup', {
+  Template.fromStack(stack).hasResource('AWS::AutoScaling::AutoScalingGroup', {
     UpdatePolicy: {
       AutoScalingRollingUpdate: {
       },
     },
-  }, ResourcePart.CompleteDefinition));
+  });
 });
 
 test('UpdatePolicy.replacingUpdate() renders correct UpdatePolicy', () => {
@@ -190,13 +189,13 @@ test('UpdatePolicy.replacingUpdate() renders correct UpdatePolicy', () => {
   });
 
   // THEN
-  expect(stack).to(haveResourceLike('AWS::AutoScaling::AutoScalingGroup', {
+  Template.fromStack(stack).hasResource('AWS::AutoScaling::AutoScalingGroup', {
     UpdatePolicy: {
       AutoScalingReplacingUpdate: {
         WillReplace: true,
       },
     },
-  }, ResourcePart.CompleteDefinition));
+  });
 });
 
 test('Using init config in ASG leads to default updatepolicy', () => {
@@ -210,11 +209,11 @@ test('Using init config in ASG leads to default updatepolicy', () => {
   });
 
   // THEN
-  expect(stack).to(haveResourceLike('AWS::AutoScaling::AutoScalingGroup', {
+  Template.fromStack(stack).hasResource('AWS::AutoScaling::AutoScalingGroup', {
     UpdatePolicy: {
-      AutoScalingRollingUpdate: anything(),
+      AutoScalingRollingUpdate: Match.anyValue(),
     },
-  }, ResourcePart.CompleteDefinition));
+  });
 });
 
 test('Using init config in ASG leads to correct UserData and permissions', () => {
@@ -228,7 +227,7 @@ test('Using init config in ASG leads to correct UserData and permissions', () =>
   });
 
   // THEN
-  expect(stack).to(haveResourceLike('AWS::AutoScaling::LaunchConfiguration', {
+  Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::LaunchConfiguration', {
     UserData: {
       'Fn::Base64': {
         'Fn::Join': ['', [
@@ -244,14 +243,15 @@ test('Using init config in ASG leads to correct UserData and permissions', () =>
         ]],
       },
     },
-  }));
-  expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
     PolicyDocument: {
-      Statement: arrayWith({
+      Statement: Match.arrayWith([{
         Action: ['cloudformation:DescribeStackResource', 'cloudformation:SignalResource'],
         Effect: 'Allow',
         Resource: { Ref: 'AWS::StackId' },
-      }),
+      }]),
     },
-  }));
+  });
 });
