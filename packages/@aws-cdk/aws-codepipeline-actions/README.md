@@ -607,7 +607,7 @@ directly from a CodeCommit repository, with a manual approval step in between to
 See [the AWS documentation](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/continuous-delivery-codepipeline.html)
 for more details about using CloudFormation in CodePipeline.
 
-#### Actions defined by this package
+#### Actions for updating individual CloudFormation Stacks
 
 This package contains the following CloudFormation actions:
 
@@ -619,8 +619,56 @@ This package contains the following CloudFormation actions:
   to manually verify the changes that are being staged, or if you want to separate the people (or system) preparing the
   changes from the people (or system) applying the changes.
 * **CloudFormationExecuteChangeSetAction** - Execute a change set prepared previously.
-* **CloudFormationStackSetAction** - Deploy a CloudFormation StackSet directly from the pipeline. The indicated StackSet is created,
-  or updated if it already exists.
+
+#### Actions for deploying CloudFormation StackSets to multiple accounts
+
+You can use CloudFormation StackSets to deploy the same CloudFormation template to multiple
+accounts in a managed way. If you use AWS Organizations, StackSets can be deployed to
+all accounts in a particular Organizational Unit (OU), and even automatically to new
+accounts as soon as they are added to a particular OU. For more information, see
+the [Working with StackSets](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/what-is-cfnstacksets.html)
+section of the CloudFormation developer guide.
+
+The actions available for updating StackSets are:
+
+* **CloudFormationStackSetAction** - Create or update a CloudFormation StackSet directly from the pipeline, optionally
+  immediately create and update Stack Instances as well.
+* **CloudFormationStackInstancesAction** - Update outdated Stack Instaces using the current version of the StackSet.
+
+Here's an example of using both of these actions:
+
+```ts
+declare const pipeline: codepipeline.Pipeline;
+
+pipeline.addStage({
+  stageName: 'DeployStackSets',
+  actions: [
+    // First, update the StackSet itself with the newest template
+    new cpactions.CloudFormationStackSetAction({
+      actionName: 'UpdateStackSet',
+      runOrder: 1,
+      stackSetName: 'MyStackSet',
+      templatePath: sourceOutput.atPath('template.yaml'),
+
+      // Change this to 'StackSetDeploymentModel.organizations()' if you want to deploy to OUs
+      deploymentModel: codepipeline.StackSetDeploymentModel.selfManaged(),
+      // This deploys to a set of accounts
+      stackInstances: cpactions.StackInstances.fromList(['111111111111'], ['us-east-1', 'eu-west-1']),
+    }),
+
+    // Afterwards, update/create additional instances in other accounts
+    new cpactions.CloudFormationStackInstancesAction({
+      actionName: 'AddMoreInstances',
+      runOrder: 2,
+      stackSetName: 'MyStackSet',
+      stackInstances: cpactions.StackInstances.fromList(
+        ['222222222222', '333333333333'],
+        ['us-east-1', 'eu-west-1']
+      ),
+    }),
+  ],
+});
+```
 
 #### Lambda deployed through CodePipeline
 
@@ -794,7 +842,7 @@ const deployStage = pipeline.addStage({
 ```
 
 When deploying across accounts, especially in a CDK Pipelines self-mutating pipeline,
-it is recommended to provide the `role` property to the `EcsDeployAction`. 
+it is recommended to provide the `role` property to the `EcsDeployAction`.
 The Role will need to have permissions assigned to it for ECS deployment.
 See [the CodePipeline documentation](https://docs.aws.amazon.com/codepipeline/latest/userguide/how-to-custom-role.html#how-to-update-role-new-services)
 for the permissions needed.
