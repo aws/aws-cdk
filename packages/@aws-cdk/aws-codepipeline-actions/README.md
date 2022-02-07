@@ -639,29 +639,30 @@ Here's an example of using both of these actions:
 
 ```ts
 declare const pipeline: codepipeline.Pipeline;
+declare const sourceOutput: codepipeline.Artifact;
 
 pipeline.addStage({
   stageName: 'DeployStackSets',
   actions: [
     // First, update the StackSet itself with the newest template
-    new cpactions.CloudFormationStackSetAction({
+    new codepipeline_actions.CloudFormationStackSetAction({
       actionName: 'UpdateStackSet',
       runOrder: 1,
       stackSetName: 'MyStackSet',
       templatePath: sourceOutput.atPath('template.yaml'),
 
       // Change this to 'StackSetDeploymentModel.organizations()' if you want to deploy to OUs
-      deploymentModel: codepipeline.StackSetDeploymentModel.selfManaged(),
+      deploymentModel: codepipeline_actions.StackSetDeploymentModel.selfManaged(),
       // This deploys to a set of accounts
-      stackInstances: cpactions.StackInstances.fromList(['111111111111'], ['us-east-1', 'eu-west-1']),
+      stackInstances: codepipeline_actions.StackInstances.fromList(['111111111111'], ['us-east-1', 'eu-west-1']),
     }),
 
     // Afterwards, update/create additional instances in other accounts
-    new cpactions.CloudFormationStackInstancesAction({
+    new codepipeline_actions.CloudFormationStackInstancesAction({
       actionName: 'AddMoreInstances',
       runOrder: 2,
       stackSetName: 'MyStackSet',
-      stackInstances: cpactions.StackInstances.fromList(
+      stackInstances: codepipeline_actions.StackInstances.fromList(
         ['222222222222', '333333333333'],
         ['us-east-1', 'eu-west-1']
       ),
