@@ -43,7 +43,7 @@ describe('k8s patch', () => {
     });
 
     // also make sure a dependency on the barrier is added to the patch construct.
-    expect(patch.node.dependencies.map(d => Names.nodeUniqueId(d.target.node))).toEqual(['MyClusterKubectlReadyBarrier7547948A']);
+    expect(patch.node.dependencies.map(d => Names.nodeUniqueId(d.node))).toEqual(['MyClusterKubectlReadyBarrier7547948A']);
 
 
   });
