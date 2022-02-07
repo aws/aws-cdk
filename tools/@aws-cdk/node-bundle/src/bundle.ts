@@ -170,6 +170,16 @@ export class Bundle {
 
   private async createPackage(target: string) {
 
+    if (!fs.existsSync(target)) {
+      console.log(`✖ Target doesnt exist: ${target}`);
+      process.exit(1);
+    }
+
+    if (!fs.lstatSync(target).isDirectory()) {
+      console.log(`✖ Target must be a directory: ${target}`);
+      process.exit(1);
+    }
+
     const workdir = await fs.mkdtemp(path.join(os.tmpdir(), path.sep));
     try {
       fs.copySync(this.packageDir, workdir, { filter: n => !n.includes('node_modules') && !n.includes('.git') });
@@ -192,8 +202,7 @@ export class Bundle {
 
       // create the tarball
       const tarball = (await shell('npm pack')).trim();
-      await fs.mkdirp(target);
-      await fs.move(tarball, path.join(target, path.basename(tarball)));
+      await fs.copy(tarball, target);
 
     } finally {
       fs.removeSync(workdir);
