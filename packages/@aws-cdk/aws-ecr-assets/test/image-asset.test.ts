@@ -154,7 +154,7 @@ describe('image asset', () => {
     expect(assetMetadata && (assetMetadata.data as cxschema.ContainerImageAssetMetadataEntry).file).toEqual('Dockerfile.Custom');
   });
 
-  testLegacyBehavior('with networkMode', app, (app) => {
+  testLegacyBehavior('with networkMode', App, (app) => {
     // GIVEN
     const stack = new Stack(app);
     // WHEN
