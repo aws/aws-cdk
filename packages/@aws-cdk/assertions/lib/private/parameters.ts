@@ -1,8 +1,8 @@
 import { filterLogicalId, formatFailure, matchSection } from './section';
-import { Template } from './template';
+import { Template, Parameter } from './template';
 
-export function findParameters(template: Template, logicalId: string, props: any = {}): { [key: string]: { [key: string]: any } } {
-  const section: { [key: string] : {} } = template.Parameters ?? {};
+export function findParameters(template: Template, logicalId: string, props: any = {}): { [key: string]: Parameter } {
+  const section = template.Parameters ?? {};
   const result = matchSection(filterLogicalId(section, logicalId), props);
 
   if (!result.match) {
@@ -13,7 +13,7 @@ export function findParameters(template: Template, logicalId: string, props: any
 }
 
 export function hasParameter(template: Template, logicalId: string, props: any): string | void {
-  const section: { [key: string] : {} } = template.Parameters ?? {};
+  const section = template.Parameters ?? {};
   const result = matchSection(filterLogicalId(section, logicalId), props);
   if (result.match) {
     return;

@@ -2,9 +2,8 @@ import { MatchResult } from '../matcher';
 import { Messages } from './message';
 import { filterLogicalId, formatFailure, matchSection } from './section';
 
-export function findMessage(messages: Messages, logicalId: string, props: any = {}): { [key: string]: { [key: string]: any } } {
-  const section: { [key: string]: {} } = messages;
-  const result = matchSection(filterLogicalId(section, logicalId), props);
+export function findMessage(messages: Messages, logicalId: string, props: any = {}): Messages {
+  const result = matchSection(filterLogicalId(messages, logicalId), props);
 
   if (!result.match) {
     return {};
@@ -14,8 +13,7 @@ export function findMessage(messages: Messages, logicalId: string, props: any = 
 }
 
 export function hasMessage(messages: Messages, logicalId: string, props: any): string | void {
-  const section: { [key: string]: {} } = messages;
-  const result = matchSection(filterLogicalId(section, logicalId), props);
+  const result = matchSection(filterLogicalId(messages, logicalId), props);
 
   if (result.match) {
     return;

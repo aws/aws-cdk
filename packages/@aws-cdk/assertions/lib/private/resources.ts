@@ -3,7 +3,7 @@ import { AbsentMatch } from './matchers/absent';
 import { formatFailure, matchSection } from './section';
 import { Resource, Template } from './template';
 
-export function findResources(template: Template, type: string, props: any = {}): { [key: string]: { [key: string]: any } } {
+export function findResources(template: Template, type: string, props: any = {}): { [key: string]: Resource } {
   const section = template.Resources ?? {};
   const result = matchSection(filterType(section, type), props);
 

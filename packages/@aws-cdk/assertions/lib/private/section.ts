@@ -1,13 +1,13 @@
 import { Match } from '../match';
 import { Matcher, MatchResult } from '../matcher';
 
-export type MatchSuccess = { match: true, matches: {[key: string]: any} };
+export type MatchSuccess<T> = { match: true, matches: {[key: string]: T} };
 export type MatchFailure = { match: false, closestResult?: MatchResult, analyzedCount: number };
 
-export function matchSection(section: any, props: any): MatchSuccess | MatchFailure {
+export function matchSection<T>(section: { [key: string]: T }, props: any): MatchSuccess<T> | MatchFailure {
   const matcher = Matcher.isMatcher(props) ? props : Match.objectLike(props);
   let closestResult: MatchResult | undefined = undefined;
-  let matching: {[key: string]: any} = {};
+  let matching: {[key: string]: T} = {};
   let count = 0;
 
   eachEntryInSection(
@@ -33,12 +33,12 @@ export function matchSection(section: any, props: any): MatchSuccess | MatchFail
   }
 }
 
-function eachEntryInSection(
-  section: any,
-  cb: (logicalId: string, entry: {[key: string]: any}) => void): void {
+function eachEntryInSection<T>(
+  section: { [key: string]: T },
+  cb: (logicalId: string, entry: T) => void): void {
 
   for (const logicalId of Object.keys(section ?? {})) {
-    const resource: { [key: string]: any } = section[logicalId];
+    const resource = section[logicalId];
     cb(logicalId, resource);
   }
 }
@@ -57,7 +57,7 @@ function leftPad(x: string, indent: number = 2): string {
   return pad + x.split('\n').join(`\n${pad}`);
 }
 
-export function filterLogicalId(section: { [key: string]: {} }, logicalId: string): { [key: string]: {} } {
+export function filterLogicalId<T>(section: { [key: string]: T }, logicalId: string): { [key: string]: T } {
   // default signal for all logicalIds is '*'
   if (logicalId === '*') return section;
 
