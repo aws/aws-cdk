@@ -34,8 +34,13 @@ export const JavaScript = {
           .filter(([_, v]) => v !== undefined)
           .map(([k, v]) => `${k}:${JavaScript.stringify(v)}`);
         return `{${properties.join(',')}}`;
-      case 'string': return `'${value}'`;
-      default: return value.toString();
+      case 'string':
+        return `'${value.replace(/'/g, '"')}'`;
+      case 'number':
+      case 'bigint':
+      case 'boolean':
+        return value.toString();
+      default: return '';
     }
   },
 };
