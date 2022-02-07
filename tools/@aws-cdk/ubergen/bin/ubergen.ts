@@ -511,6 +511,14 @@ async function copyOrTransformFiles(from: string, to: string, libraries: readonl
 async function copyLiterateSources(from: string, to: string, libraries: readonly LibraryReference[], uberPackageJson: PackageJson) {
   const libRoot = resolveLibRoot(uberPackageJson);
   await Promise.all((await fs.readdir(from)).flatMap(async name => {
+    const source = path.join(from, name);
+    const stat = await fs.stat(source);
+
+    if (stat.isDirectory()) {
+      await copyLiterateSources(source, path.join(to, name), libraries, uberPackageJson);
+      return;
+    }
+
     if (!name.endsWith('.lit.ts')) {
       return [];
     }
