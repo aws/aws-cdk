@@ -89,7 +89,7 @@
     "semver"
   ],
   "engines": {
-    "node": ">= 10.13.0 <13 || >=13.7.0"
+    "node": ">= 14.15.0"
   },
   "stability": "stable",
   "maturity": "stable",
@@ -158,6 +158,6 @@
     "announce": false
   },
   "publishConfig": {
-    "tag": "latest-1"
+    "tag": "latest"
   }
 }
