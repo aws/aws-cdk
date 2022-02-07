@@ -154,7 +154,7 @@ describe('image asset', () => {
     expect(assetMetadata && (assetMetadata.data as cxschema.ContainerImageAssetMetadataEntry).file).toEqual('Dockerfile.Custom');
   });
 
-  testFutureBehavior('with networkMode', flags, App, (app) => {
+  testLegacyBehavior('with networkMode', app, (app) => {
     // GIVEN
     const stack = new Stack(app);
     // WHEN
@@ -168,7 +168,7 @@ describe('image asset', () => {
     expect(assetMetadata && (assetMetadata.data as cxschema.ContainerImageAssetMetadataEntry).networkMode).toEqual('default');
   });
 
-  testFutureBehavior('asset.repository.grantPull can be used to grant a principal permissions to use the image', flags, App, (app) => {
+  testLegacyBehavior('asset.repository.grantPull can be used to grant a principal permissions to use the image', App, (app) => {
     // GIVEN
     const stack = new Stack(app);
     const user = new iam.User(stack, 'MyUser');
