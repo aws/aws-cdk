@@ -203,6 +203,15 @@ export interface DockerImageAssetSource {
    * @deprecated repository name should be specified at the environment-level and not at the image level
    */
   readonly repositoryName?: string;
+
+  /**
+   * Networking mode for the RUN commands during build. _Requires Docker Engine API v1.25+_.
+   *
+   * Specify this property to build images on a specific networking mode.
+   *
+   * @default - no networking mode specified
+   */
+  readonly networkMode?: string;
 }
 
 /**
