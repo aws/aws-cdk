@@ -19,6 +19,7 @@ let hotswapMockSdkProvider: HotswapMockSdkProvider;
 let currentCfnStack: FakeCloudformationStack;
 const currentCfnStackResources: CloudFormation.StackResourceSummary[] = [];
 let stackTemplates: {[key:string]: any};
+let currentNestedCfnStackResources: { [key: string]: CloudFormation.StackResourceSummary[] };
 
 export function setupHotswapTests() {
   jest.resetAllMocks();
@@ -27,6 +28,18 @@ export function setupHotswapTests() {
   hotswapMockSdkProvider = new HotswapMockSdkProvider();
   currentCfnStack = new FakeCloudformationStack({
     stackName: STACK_NAME,
+    stackId: STACK_ID,
+  });
+
+  return hotswapMockSdkProvider;
+}
+
+export function setupHotswapNestedStackTests(rootStackName: string) {
+  jest.resetAllMocks();
+  currentNestedCfnStackResources = {};
+  hotswapMockSdkProvider = new HotswapMockSdkProvider(rootStackName);
+  currentCfnStack = new FakeCloudformationStack({
+    stackName: rootStackName,
     stackId: STACK_ID,
   });
   stackTemplates = {};
@@ -48,6 +61,14 @@ export function cdkStackArtifactOf(testStackArtifact: Partial<TestStackArtifact>
 
 export function pushStackResourceSummaries(...items: CloudFormation.StackResourceSummary[]) {
   currentCfnStackResources.push(...items);
+}
+
+export function pushNestedStackResourceSummaries(stackName: string, ...items: CloudFormation.StackResourceSummary[]) {
+  if (!currentNestedCfnStackResources[stackName]) {
+    currentNestedCfnStackResources[stackName] = [];
+  }
+
+  currentNestedCfnStackResources[stackName].push(...items);
 }
 
 export function setCurrentCfnStackTemplate(template: Template) {
@@ -72,16 +93,16 @@ export function stackSummaryOf(logicalId: string, resourceType: string, physical
 export class HotswapMockSdkProvider {
   public readonly mockSdkProvider: MockSdkProvider;
 
-  constructor() {
+  constructor(rootStackName?: string) {
     this.mockSdkProvider = new MockSdkProvider({ realSdk: false });
 
     this.mockSdkProvider.stubCloudFormation({
       listStackResources: ({ StackName: stackName }) => {
-        if (stackName !== STACK_NAME) {
-          throw new Error(`Expected Stack name in listStackResources() call to be: '${STACK_NAME}', but received: ${stackName}'`);
+        if (stackName !== (rootStackName ?? STACK_NAME)) {
+          throw new Error(`Expected Stack name in listStackResources() call to be: '${rootStackName ?? STACK_NAME}', but received: ${stackName}'`);
         }
         return {
-          StackResourceSummaries: currentCfnStackResources,
+          StackResourceSummaries: rootStackName ? currentNestedCfnStackResources[stackName] : currentCfnStackResources,
         };
       },
     });

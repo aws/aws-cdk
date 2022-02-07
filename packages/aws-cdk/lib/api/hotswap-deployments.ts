@@ -50,7 +50,7 @@ export async function tryHotswapDeployment(
   const currentTemplate = await cloudFormationDeployments.readCurrentTemplateWithNestedStacks(stackArtifact);
   //const currentTemplate = await cloudFormationStack.template();
   const stackChanges = cfn_diff.diffTemplate(currentTemplate, stackArtifact.template);
-  console.log(stackChanges.resources.changes);
+  //console.log(stackChanges.resources.changes);
   const hotswappableChanges = await findAllHotswappableChanges(stackChanges, evaluateCfnTemplate);
   if (!hotswappableChanges) {
     // this means there were changes to the template that cannot be short-circuited
@@ -72,8 +72,14 @@ async function findAllHotswappableChanges(
   const promises: Array<Array<Promise<ChangeHotswapResult>>> = [];
   // gather the results of the detector functions
   for (const [logicalId, change] of Object.entries(resourceDifferences)) {
-    const resourceHotswapEvaluation = isCandidateForHotswapping(change);
+    // TODO: test the True && false case here
+    // TODO: we need to pass the hotswappableResources array thing between recursive calls because otherwise the hotswappable resources of higher level stacks will be forgotten
+    if (change.newValue?.Type === 'AWS::CloudFormation::Stack' && change.oldValue?.Type === 'AWS::CloudFormation::Stack') {
+      const nestedDiff = cfn_diff.diffTemplate(change.oldValue.Properties?.NestedTemplate, change.newValue.Properties?.NestedTemplate);
+      return findAllHotswappableChanges(nestedDiff, evaluateCfnTemplate);
+    }
 
+    const resourceHotswapEvaluation = isCandidateForHotswapping(change);
     if (resourceHotswapEvaluation === ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT) {
       foundNonHotswappableChange = true;
     } else if (resourceHotswapEvaluation === ChangeHotswapImpact.IRRELEVANT) {

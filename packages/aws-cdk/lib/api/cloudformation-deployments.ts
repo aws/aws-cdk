@@ -299,11 +299,15 @@ export class CloudFormationDeployments {
   public async readCurrentTemplateWithNestedStacks(rootStackArtifact: cxapi.CloudFormationStackArtifact): Promise<Template> {
     const sdk = await this.prepareSdkWithLookupOrDeployRole(rootStackArtifact);
     const deployedTemplate = await this.readCurrentTemplate(rootStackArtifact, sdk);
+    //console.log('---------------------------------------------')
+    //console.log(deployedTemplate.Resources.NestedStack)
     await this.addNestedTemplatesToGeneratedAndDeployedStacks(rootStackArtifact, sdk, {
       generatedTemplate: rootStackArtifact.template,
       deployedTemplate: deployedTemplate,
       deployedStackName: rootStackArtifact.stackName,
     });
+    //console.log(deployedTemplate.Resources.NestedStack.Properties)
+    //console.log('---------------------------------------------')
     return deployedTemplate;
   }
 
