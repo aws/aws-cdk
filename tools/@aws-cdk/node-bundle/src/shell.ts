@@ -1,17 +1,29 @@
 import * as child_process from 'child_process';
+import * as shlex from 'shlex';
 
-export async function shell(command: string[]): Promise<string> {
-  const child = child_process.spawn(command[0], command.slice(1), {
+export interface ShellOptions {
+  readonly cwd?: string;
+  readonly quiet?: boolean;
+}
+
+export async function shell(command: string, options: ShellOptions = {}): Promise<string> {
+  const parts = shlex.split(command);
+  const child = child_process.spawn(parts[0], parts.slice(1), {
     // Need this for Windows where we want .cmd and .bat to be found as well.
     shell: true,
+    cwd: options.cwd,
     stdio: ['ignore', 'pipe', 'pipe'],
   });
 
   return new Promise<string>((resolve, reject) => {
     const stdout = new Array<any>();
 
+    const quiet = options.quiet ?? false;
+
     child.stdout!.on('data', chunk => {
-      process.stdout.write(chunk);
+      if (!quiet) {
+        process.stdout.write(chunk);
+      }
       stdout.push(chunk);
     });
 

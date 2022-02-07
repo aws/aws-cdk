@@ -5,6 +5,10 @@
       "type": "build"
     },
     {
+      "name": "@types/license-checker",
+      "type": "build"
+    },
+    {
       "name": "@types/madge",
       "type": "build"
     },
@@ -80,7 +84,23 @@
       "type": "runtime"
     },
     {
+      "name": "fs-extra",
+      "type": "runtime"
+    },
+    {
+      "name": "license-checker",
+      "type": "runtime"
+    },
+    {
       "name": "madge",
+      "type": "runtime"
+    },
+    {
+      "name": "shlex",
+      "type": "runtime"
+    },
+    {
+      "name": "yargs",
       "type": "runtime"
     }
   ],
