@@ -17,7 +17,8 @@ const s3GrantWriteCtx = { [cxapi.S3_GRANT_WRITE_WITHOUT_ACL]: true };
 
 test('deploy from local directory asset', () => {
   // GIVEN
-  const stack = new cdk.Stack();
+  const app = new cdk.App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
+  const stack = new cdk.Stack(app);
   const bucket = new s3.Bucket(stack, 'Dest');
 
   // WHEN
@@ -94,7 +95,8 @@ test('deploy with configured log retention', () => {
 
 test('deploy from local directory assets', () => {
   // GIVEN
-  const stack = new cdk.Stack();
+  const app = new cdk.App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
+  const stack = new cdk.Stack(app);
   const bucket = new s3.Bucket(stack, 'Dest');
 
   // WHEN
@@ -303,7 +305,8 @@ testDeprecated('honors passed asset options', () => {
   // When the deprecated property is removed from source, this block can be dropped.
 
   // GIVEN
-  const stack = new cdk.Stack();
+  const app = new cdk.App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
+  const stack = new cdk.Stack(app);
   const bucket = new s3.Bucket(stack, 'Dest');
 
   // WHEN
