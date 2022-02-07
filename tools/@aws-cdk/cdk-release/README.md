@@ -15,7 +15,7 @@ like messing up the headings,
 and having problems with both V1 and V2 tags in the same repo).
 
 This library is called from the
-[`bump.js` file](../../scripts/bump.js),
-which is called from the [`bump.sh` script](../../bump.sh),
+[`bump.js` file](../../../scripts/bump.js),
+which is called from the [`bump.sh` script](../../../bump.sh),
 which is called by a CodeBuild job that creates the 'bump'
 PR every time we perform a CDK release.
