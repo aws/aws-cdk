@@ -696,6 +696,9 @@ new pipelines.CodeBuildStep('Synth', {
   subnetSelection: { subnetType: ec2.SubnetType.PRIVATE },
   securityGroups: [mySecurityGroup],
 
+  // You can customize the variable namespace of exported variables if needed
+  variablesNamespace: 'MyNamespace',
+
   // Additional policy statements for the execution role
   rolePolicyStatements: [
     new iam.PolicyStatement({ /* ... */ }),

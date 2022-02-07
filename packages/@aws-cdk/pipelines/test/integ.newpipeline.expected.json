@@ -299,6 +299,7 @@
                   }
                 ],
                 "Name": "Synth",
+                "Namespace": "Synth",
                 "OutputArtifacts": [
                   {
                     "Name": "Synth_Output"
@@ -336,6 +337,7 @@
                   }
                 ],
                 "Name": "SelfMutate",
+                "Namespace": "SelfMutate",
                 "RoleArn": {
                   "Fn::GetAtt": [
                     "PipelineUpdatePipelineSelfMutateCodePipelineActionRoleD6D4E5CF",

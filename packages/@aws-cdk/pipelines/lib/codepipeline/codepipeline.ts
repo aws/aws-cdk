@@ -226,6 +226,13 @@ export interface CodeBuildOptions {
   readonly rolePolicy?: iam.PolicyStatement[];
 
   /**
+   * The name of the namespace to use for variables emitted by this action.
+   *
+   * @default The projectName will be used if it is defined. Otherwise, the construct ID will be used.
+   */
+  readonly variablesNamespace?: string;
+
+  /**
    * Partial buildspec, will be combined with other buildspecs that apply
    *
    * The BuildSpec must be available inline--it cannot reference a file

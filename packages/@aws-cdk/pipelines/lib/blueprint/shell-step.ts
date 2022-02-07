@@ -88,6 +88,12 @@ export interface ShellStepProps {
    */
   readonly primaryOutputDirectory?: string;
 
+  /**
+   * The name of the namespace to use for variables emitted by this action.
+   *
+   * @default No namespace.
+   */
+  readonly variablesNamespace?: string;
 }
 
 /**
@@ -140,6 +146,13 @@ export class ShellStep extends Step {
    */
   public readonly outputs: FileSetLocation[] = [];
 
+  /**
+   * The name of the namespace to use for variables emitted by this action.
+   *
+   * @default Id of the step.
+   */
+  public readonly variablesNamespace: string;
+
   private readonly _additionalOutputs: Record<string, FileSet> = {};
 
   private _primaryOutputDirectory?: string;
@@ -151,6 +164,7 @@ export class ShellStep extends Step {
     this.installCommands = props.installCommands ?? [];
     this.env = props.env ?? {};
     this.envFromCfnOutputs = mapValues(props.envFromCfnOutputs ?? {}, StackOutputReference.fromCfnOutput);
+    this.variablesNamespace = props.variablesNamespace ?? id;
 
     // Inputs
     if (props.input) {
@@ -228,6 +242,17 @@ export class ShellStep extends Step {
       this.outputs.push({ directory, fileSet });
     }
     return fileSet;
+  }
+
+  /**
+   * Reference a CodePipeline variable defined by the ShellStep.
+   *
+   * Variables in CodeBuild actions are defined using the 'exported-variables' subsection of the 'env' section of the buildspec.
+   *
+   * @param variableName the name of the variable for reference.
+   */
+  public variable(variableName: string): string {
+    return `#{${this.variablesNamespace}.${variableName}}`;
   }
 }
 
