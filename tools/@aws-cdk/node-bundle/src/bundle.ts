@@ -27,54 +27,28 @@ export interface BundleProps {
 }
 
 /**
- * Validation options.
- */
-export interface ValidateOptions {
-  /**
-   * Fail validation on any bundling warnings that may arrise.
-   *
-   * @default true
-   */
-  readonly failOnWarnings?: boolean;
-}
-
-/**
- * Fix options.
- */
-export interface FixOptions extends ValidateOptions {
-
-}
-
-/**
- * Packaging options.
- */
-export interface PackOptions extends ValidateOptions {
-  /**
-   * Directory to produce the tarball in.
-   *
-   * @default - current working directory
-   */
-  readonly outDir?: string;
-}
-
-/**
  * Bundle class to validate and pack nodejs bundles.
  */
 export class Bundle {
 
   private readonly manifest: any;
-  // private readonly script: string;
+  private readonly script: string;
   private readonly entrypoint: string;
+  private readonly outfile: string;
 
-  constructor(private readonly packageDir: string, private readonly props: BundleProps = {}) {
+  private readonly externals: string[] = [];
+  private readonly resources: {[src: string]: string} = {};
+
+  constructor(private readonly packageDir: string, props: BundleProps = {}) {
     const packageJson = path.join(packageDir, 'package.json');
     if (!fs.existsSync(packageJson)) {
       console.error(`✖ Unable to find ${packageJson}`);
       process.exit(1);
     }
     this.manifest = fs.readJsonSync(packageJson);
+    this.externals = props.externals ?? [];
+    this.resources = props.resources ?? {};
 
-    // support only a single entrypoint for now
     const bin: [string, string][] = Object.entries(this.manifest.bin ?? {});
     if (bin.length === 0) {
       console.error('✖ No entry-points detected. You must configure exactly one entrypoint in the \'bin\' section of your manifest');
@@ -84,92 +58,48 @@ export class Bundle {
       console.error('✖ Multiple entry-points detected. You must configure exactly one entrypoint in the \'bin\' section of your manifest');
       process.exit(1);
     }
-    // this.script = bin[0][0];
+    this.script = bin[0][0];
     this.entrypoint = bin[0][1];
+    this.outfile = path.join(path.dirname(this.entrypoint), 'node-cli-bundle.js');
   }
 
-  public async validate(options: ValidateOptions = {}): Promise<{bundle: esbuild.BuildResult; attributions: Attributions}> {
+  public async validate() {
 
-    console.log('Discovering dependencies');
+    console.log('Creating bundle');
+    const dependencies = await this.esbuild();
 
-    const bundle = await esbuild.build({
-      entryPoints: [this.entrypoint],
-      bundle: true,
-      target: 'node12',
-      platform: 'node',
-      metafile: true,
-      absWorkingDir: this.packageDir,
-      external: this.props.externals,
-      write: false,
-    });
+    console.log('Validating circular imports');
+    await this.validateCircularImports(dependencies);
 
-    if (bundle.warnings.length > 0 && options.failOnWarnings) {
-      // the warnings themselves are printed on screen via esbuild
-      console.error(`✖ Found ${bundle.warnings.length} bundling warnings (See above)`);
-      process.exit(1);
-    }
+    console.log('Validating attributions');
+    await this.validateAttributions(dependencies);
+  }
 
-    const inputs = Object.keys(bundle.metafile!.outputs[path.basename(this.entrypoint)].inputs);
-    const dependencies = Array.from(new Set(Array.from(inputs).map(i => this.findPackage(i)))).map(p => this.createDependency(p));
+  public async fix() {
 
-    for (const dep of dependencies) {
-      console.log(`Detecting circular imports (${dep.path})`);
-      // we don't use the programatic API since we want to eventually
-      // print circles, which the madge cli already does.
-      // also, for easier error reporting we run a separate command for each dependency.
-      // may need to reconsider this if it slows down the build too much.
-      await shell(`${require.resolve('madge/bin/cli.js')} --warning --no-color --no-spinner --circular --extensions js ${dep.path}`);
-    }
+    console.log('Creating bundle');
+    const dependencies = await this.esbuild();
 
+    console.log('Generating attributions');
     const attributions = new Attributions(dependencies);
-    await attributions.validate();
-
-    return { bundle, attributions };
-  }
-
-  public async fix(options: FixOptions = {}) {
-    const { attributions } = await this.validate(options);
     await attributions.create();
   }
 
-  public async pack(options: PackOptions = {}) {
-    const { bundle } = await this.validate(options);
-    const outputFiles = (bundle.outputFiles ?? []);
+  public async pack(target?: string) {
 
-    if (outputFiles.length === 0) {
-      console.error('✖ Bundling failed to produce any bundle files');
-      process.exit(1);
+    console.log('Creating bundle');
+    await this.esbuild();
+
+    console.log('Copying resources');
+    for (const [src, dst] of Object.entries(this.resources)) {
+      fs.copySync(src, dst);
     }
 
-    if (outputFiles.length > 1) {
-      console.error('✖ Bundling produced multiple bundle files:');
-      console.error(outputFiles.map(b => `  - ${b}`).join('\n'));
-      process.exit(1);
-    }
+    // console.log('Validating circular imports');
+    // await this.validateCircularImports(dependencies);
 
-    // const outputFile = outputFiles[0].path;
-    const workdir = await fs.mkdtemp(path.join(os.tmpdir(), path.sep));
-    const cwd = process.cwd();
-
-    try {
-      fs.copySync(cwd, workdir, { filter: n => !n.startsWith('node_modules') && !n.startsWith('.git') });
-
-      // const manifest = { ...this.manifest };
-      // for (const [d, v] of Object.entries(manifest.dependencies)) {
-      //   manifest.devDependencies[d] = v;
-      // }
-      // delete manifest.dependencies;
-
-      // const entrypointContent = ['#!/usr/bin/env node', `require('./${path.basename(outputFile)}');`];
-      // const entrypointPath = path.join(path.dirname(outputFile), 'entrypoint.bundle');
-      // manifest.bin = { [this.script]: path.relative() };
-
-      // fs.writeFileSync(path.join(path.dirname(outputFile), 'entrypoint.bundle'), entrypoint.join('\n'));
-      // fs.writeFileSync('package.json', JSON.stringify(manifest));
-
-    } finally {
-      fs.removeSync(workdir);
-    }
+    console.log('Creating package');
+    await this.createPackage(target ?? process.cwd());
   }
 
   private findPackage(inputFile: string): string {
@@ -192,6 +122,83 @@ export class Bundle {
     const manifestPath = path.join(packageDir, 'package.json');
     const manifest = JSON.parse(fs.readFileSync(manifestPath, { encoding: 'utf-8' }));
     return { path: packageDir, name: manifest.name, version: manifest.version };
+  }
+
+  private async esbuild(): Promise<Dependency[]> {
+
+    const bundle = await esbuild.build({
+      entryPoints: [this.entrypoint],
+      bundle: true,
+      target: 'node12',
+      platform: 'node',
+      metafile: true,
+      absWorkingDir: this.packageDir,
+      external: this.externals,
+      write: true,
+      outfile: this.outfile,
+      allowOverwrite: true,
+    });
+
+    if (bundle.warnings.length) {
+      // esbuild warnings are usually important, lets try to be strict here.
+      // the warnings themselves are printed on screen.
+      console.error(`✖ Found ${bundle.warnings.length} bundling warnings (See above)`);
+      process.exit(1);
+    }
+
+    const inputs = Object.keys(bundle.metafile!.outputs[this.outfile].inputs);
+    return Array.from(new Set(Array.from(inputs).map(i => this.findPackage(i)))).map(p => this.createDependency(p));
+  }
+
+  private async validateCircularImports(dependencies: Dependency[]) {
+
+    for (const dep of dependencies) {
+      console.log(`Detecting circular imports (${dep.path})`);
+      // we don't use the programatic API since we want to eventually
+      // print circles, which the madge cli already does.
+      // also, for easier error reporting we run a separate command for each dependency.
+      // may need to reconsider this if it slows down the build too much.
+      await shell(`${require.resolve('madge/bin/cli.js')} --warning --no-color --no-spinner --circular --extensions js ${dep.path}`);
+    }
+
+  }
+
+  private async validateAttributions(dependencies: Dependency[]) {
+    const attributions = new Attributions(dependencies);
+    await attributions.validate();
+  }
+
+  private async createPackage(target: string) {
+
+    const workdir = await fs.mkdtemp(path.join(os.tmpdir(), path.sep));
+    try {
+      fs.copySync(this.packageDir, workdir, { filter: n => !n.includes('node_modules') && !n.includes('.git') });
+
+      const bundleManifest = { ...this.manifest };
+
+      // move all 'dependencies' to 'devDependencies' so that npm doesn't install anything when consuming
+      for (const [d, v] of Object.entries(this.manifest.dependencies)) {
+        bundleManifest.devDependencies[d] = v;
+      }
+      bundleManifest.dependencies = {};
+
+      // inject a new entrypoint referencing the bundle file
+      const entrypointContent = ['#!/usr/bin/env node', `require('./${path.basename(this.outfile)}');`];
+      const entrypointPath = path.join(path.dirname(this.entrypoint), 'entrypoint.bundle');
+      bundleManifest.bin = { [this.script]: entrypointPath };
+
+      fs.writeFileSync(path.join(workdir, entrypointPath), entrypointContent.join('\n'));
+      fs.writeFileSync(path.join(workdir, 'package.json'), JSON.stringify(bundleManifest, null, 2));
+
+      // create the tarball
+      const tarball = (await shell('npm pack')).trim();
+      await fs.mkdirp(target);
+      await fs.move(tarball, path.join(target, path.basename(tarball)));
+
+    } finally {
+      fs.removeSync(workdir);
+    }
+
   }
 
 }
