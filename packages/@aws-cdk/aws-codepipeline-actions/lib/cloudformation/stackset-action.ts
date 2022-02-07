@@ -323,7 +323,7 @@ export abstract class StackSetParameters {
    *  Asset1: 'true',
    * });
    */
-  public static fromLiteral(parameters: Record<string, string | undefined>, usePreviousValues?: string[]): StackSetParameters {
+  public static fromLiteral(parameters: Record<string, string>, usePreviousValues?: string[]): StackSetParameters {
     return new class extends StackSetParameters {
       public readonly artifactsReferenced: codepipeline.Artifact[] = [];
 
