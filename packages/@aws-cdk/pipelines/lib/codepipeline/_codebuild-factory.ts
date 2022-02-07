@@ -98,6 +98,7 @@ export interface CodeBuildFactoryProps {
 
   readonly env?: Record<string, string>;
   readonly envFromCfnOutputs?: Record<string, StackOutputReference>;
+  readonly variablesNamespace?: string;
 
   /**
    * If given, override the scope from the produce call with this scope.
@@ -128,6 +129,7 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
       inputs: shellStep.inputs,
       outputs: shellStep.outputs,
       stepId: shellStep.id,
+      variablesNamespace: shellStep.variablesNamespace,
       installCommands: shellStep.installCommands,
       ...additional,
     });
@@ -145,6 +147,7 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
         partialBuildSpec: step.partialBuildSpec,
         vpc: step.vpc,
         subnetSelection: step.subnetSelection,
+        variablesNamespace: step.variablesNamespace,
         timeout: step.timeout,
       }),
     });
@@ -314,6 +317,7 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
       outputs: outputArtifacts,
       project,
       runOrder: options.runOrder,
+      variablesNamespace: this.props.variablesNamespace,
 
       // Inclusion of the hash here will lead to the pipeline structure for any changes
       // made the config of the underlying CodeBuild Project.

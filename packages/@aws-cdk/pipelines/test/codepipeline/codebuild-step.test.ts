@@ -142,3 +142,27 @@ test('envFromOutputs works even with very long stage and stack names', () => {
 
   // THEN - did not throw an error about identifier lengths
 });
+
+test('variable namespace is set in CodeBuildStep', () => {
+  // WHEN
+  const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk');
+  const myApp = new AppWithOutput(app, 'VariableNamespaceApp');
+
+  const step1 = new cdkp.CodeBuildStep('Synth', {
+    commands: ['/bin/true'],
+    input: cdkp.CodePipelineSource.gitHub('test/test', 'main'),
+    variablesNamespace: 'CodeBuildStep-namespace',
+  });
+  const step2 = new cdkp.ShellStep('Approve', {
+    commands: ['/bin/true'],
+    variablesNamespace: 'ShellStep-namespace',
+  });
+  pipeline.addStage(myApp, {
+    pre: [step1],
+    post: [step2],
+  });
+
+  // THEN
+  expect(step1.variable('test')).toEqual('#{CodeBuildStep-namespace.test}');
+  expect(step2.variable('test')).toEqual('#{ShellStep-namespace.test}');
+});
