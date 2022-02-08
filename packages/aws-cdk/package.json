@@ -53,7 +53,7 @@
     "@types/uuid": "^8.3.4",
     "@types/wrap-ansi": "^3.0.0",
     "@types/yargs": "^15.0.14",
-    "aws-sdk-mock": "5.6.2",
+    "aws-sdk-mock": "5.6.0",
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "constructs": "^3.3.69",
     "jest": "^27.5.1",
