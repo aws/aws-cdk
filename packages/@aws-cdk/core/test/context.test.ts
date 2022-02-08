@@ -170,6 +170,11 @@ describe('context', () => {
 
 
   });
+
+  test('can skip account/region from attach to context', () => {
+    const stack = new Stack(undefined, 'TestStack', { env: { account: '12345', region: 'us-east-1' } });
+    expect(ContextProvider.getKey(stack, { provider: 'asdf', includeEnvironment: false }).key).toEqual('asdf:');
+  });
 });
 
 /**
