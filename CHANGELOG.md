@@ -2,6 +2,39 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.144.0](https://github.com/aws/aws-cdk/compare/v1.143.0...v1.144.0) (2022-02-08)
+
+
+### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
+
+* **cxapi:** of behavior.
+
+Instead, this PR gets rid of the entire set of `FUTURE_FLAGS_DEFAULTS`
+set to `false` -- there's no point to having them anyway, and it
+gets rid of the associated merge conflicts.
+
+Also shore up the docs for these flags a little.
+
+### Features
+
+* **assets:** support networking mode for DockerImageAsset ([#18114](https://github.com/aws/aws-cdk/issues/18114)) ([a7b39f5](https://github.com/aws/aws-cdk/commit/a7b39f527976e29a7f39c1ba1813efba2e0aa209)), closes [#15516](https://github.com/aws/aws-cdk/issues/15516)
+* **cfnspec:** cloudformation spec v55.0.0 ([#18827](https://github.com/aws/aws-cdk/issues/18827)) ([a1d94b3](https://github.com/aws/aws-cdk/commit/a1d94b3624eb1b6b543d8ce209ec85af8e85beda))
+* **cli:** `cdk diff` works for Nested Stacks ([#18207](https://github.com/aws/aws-cdk/issues/18207)) ([1337b24](https://github.com/aws/aws-cdk/commit/1337b247e82d9462074416623e665cf9526d2cc0)), closes [#5722](https://github.com/aws/aws-cdk/issues/5722)
+* **iotevents:** add grant method to Input class ([#18617](https://github.com/aws/aws-cdk/issues/18617)) ([e89688e](https://github.com/aws/aws-cdk/commit/e89688ec1dd7a3b072d23287cddcb73bccc16fd4))
+* **iotevents:** support transition events ([#18768](https://github.com/aws/aws-cdk/issues/18768)) ([ccc1988](https://github.com/aws/aws-cdk/commit/ccc198864f92620857da09c68013123e9cd3f01d)), closes [#17711](https://github.com/aws/aws-cdk/issues/17711)
+* **s3-deployment:** deploy data with deploy-time values ([#18659](https://github.com/aws/aws-cdk/issues/18659)) ([d40e332](https://github.com/aws/aws-cdk/commit/d40e332578f7590a0c949fdd01622a644cf9359b)), closes [#12903](https://github.com/aws/aws-cdk/issues/12903)
+
+
+### Bug Fixes
+
+* **aws-appsync:** Strip unsupported characters from Lambda DataSource ([#18765](https://github.com/aws/aws-cdk/issues/18765)) ([bb8d6f6](https://github.com/aws/aws-cdk/commit/bb8d6f6bf5941b76ef0590c99fe8e26440e09c18))
+* **tooling:** update vscode devcontainer image ([#18455](https://github.com/aws/aws-cdk/issues/18455)) ([28647f7](https://github.com/aws/aws-cdk/commit/28647f7105da6bd02975aa7d90300d77fe85d0e6))
+
+
+### Miscellaneous Chores
+
+* **cxapi:** reduce merge conflicts in feature flags ([#18411](https://github.com/aws/aws-cdk/issues/18411)) ([dcdb58a](https://github.com/aws/aws-cdk/commit/dcdb58a0481448031ef18c171535c1c4f5872bdd))
+
 ## [1.143.0](https://github.com/aws/aws-cdk/compare/v1.142.0...v1.143.0) (2022-02-02)
 
 
