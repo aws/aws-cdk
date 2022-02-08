@@ -426,10 +426,7 @@ export class Distribution extends Resource implements IDistribution {
       throw new Error('Explicitly disabled logging but provided a logging bucket.');
     }
 
-    const bucket = props.logBucket ?? new s3.Bucket(this, 'LoggingBucket', {
-      encryption: s3.BucketEncryption.S3_MANAGED,
-      enforceSSL: true,
-    });
+    const bucket = props.logBucket ?? new s3.Bucket(this, 'LoggingBucket');
     return {
       bucket: bucket.bucketRegionalDomainName,
       includeCookies: props.logIncludesCookies,

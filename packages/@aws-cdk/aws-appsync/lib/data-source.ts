@@ -107,7 +107,8 @@ export abstract class BaseDataSource extends Construct {
     if (extended.type !== 'NONE') {
       this.serviceRole = props.serviceRole || new Role(this, 'ServiceRole', { assumedBy: new ServicePrincipal('appsync') });
     }
-    const name = props.name ?? id;
+    // Replace unsupported characters from DataSource name. The only allowed pattern is: {[_A-Za-z][_0-9A-Za-z]*}
+    const name = (props.name ?? id).replace(/[\W]+/g, '');
     this.ds = new CfnDataSource(this, 'Resource', {
       apiId: props.api.apiId,
       name: name,

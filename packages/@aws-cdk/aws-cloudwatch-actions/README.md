@@ -11,7 +11,7 @@
 
 This library contains a set of classes which can be used as CloudWatch Alarm actions.
 
-The currently implemented actions are: EC2 Actions, SNS Actions, Autoscaling Actions and Aplication Autoscaling Actions
+The currently implemented actions are: EC2 Actions, SNS Actions, SSM OpsCenter Actions, Autoscaling Actions and Application Autoscaling Actions
 
 
 ## EC2 Action Example
@@ -22,6 +22,19 @@ declare const alarm: cloudwatch.Alarm;
 // Attach a reboot when alarm triggers
 alarm.addAlarmAction(
   new actions.Ec2Action(actions.Ec2InstanceAction.REBOOT),
+);
+```
+
+## SSM OpsCenter Action Example
+
+```ts
+declare const alarm: cloudwatch.Alarm;
+// Create an OpsItem with specific severity and category when alarm triggers
+alarm.addAlarmAction(
+  new actions.SsmAction(
+    actions.OpsItemSeverity.CRITICAL,
+    actions.OpsItemCategory.PERFORMANCE // category is optional
+  )
 );
 ```
 

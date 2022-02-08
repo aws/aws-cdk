@@ -1,3 +1,141 @@
+# CloudFormation Resource Specification v55.0.0
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::RoboMaker::RobotApplication Environment (__added__)
+* AWS::RoboMaker::RobotApplication RobotSoftwareSuite.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::RoboMaker::RobotApplication Sources.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::RoboMaker::RobotApplication Tags.PrimitiveType (__deleted__)
+* AWS::RoboMaker::RobotApplication Tags.PrimitiveItemType (__added__)
+* AWS::RoboMaker::RobotApplication Tags.Type (__added__)
+
+## Property Type Changes
+
+* AWS::EC2::LaunchTemplate.PrivateDnsNameOptions (__added__)
+* AWS::Events::Rule.SageMakerPipelineParameter (__added__)
+* AWS::Events::Rule.SageMakerPipelineParameters (__added__)
+* AWS::ApplicationInsights::Application.HANAPrometheusExporter AgreeToInstallHANADBClient.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::ApplicationInsights::Application.HANAPrometheusExporter HANAPort.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::ApplicationInsights::Application.HANAPrometheusExporter HANASID.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::ApplicationInsights::Application.HANAPrometheusExporter HANASecretName.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::Cognito::UserPool.SmsConfiguration SnsRegion (__added__)
+* AWS::DMS::Endpoint.S3Settings AddColumnName (__added__)
+* AWS::DMS::Endpoint.S3Settings CannedAclForObjects (__added__)
+* AWS::DMS::Endpoint.S3Settings CdcInsertsAndUpdates (__added__)
+* AWS::DMS::Endpoint.S3Settings CdcInsertsOnly (__added__)
+* AWS::DMS::Endpoint.S3Settings CdcMaxBatchInterval (__added__)
+* AWS::DMS::Endpoint.S3Settings CdcMinFileSize (__added__)
+* AWS::DMS::Endpoint.S3Settings CdcPath (__added__)
+* AWS::DMS::Endpoint.S3Settings CsvNoSupValue (__added__)
+* AWS::DMS::Endpoint.S3Settings CsvNullValue (__added__)
+* AWS::DMS::Endpoint.S3Settings DataFormat (__added__)
+* AWS::DMS::Endpoint.S3Settings DataPageSize (__added__)
+* AWS::DMS::Endpoint.S3Settings DatePartitionDelimiter (__added__)
+* AWS::DMS::Endpoint.S3Settings DatePartitionEnabled (__added__)
+* AWS::DMS::Endpoint.S3Settings DatePartitionSequence (__added__)
+* AWS::DMS::Endpoint.S3Settings DatePartitionTimezone (__added__)
+* AWS::DMS::Endpoint.S3Settings DictPageSizeLimit (__added__)
+* AWS::DMS::Endpoint.S3Settings EnableStatistics (__added__)
+* AWS::DMS::Endpoint.S3Settings EncodingType (__added__)
+* AWS::DMS::Endpoint.S3Settings EncryptionMode (__added__)
+* AWS::DMS::Endpoint.S3Settings IgnoreHeaderRows (__added__)
+* AWS::DMS::Endpoint.S3Settings IncludeOpForFullLoad (__added__)
+* AWS::DMS::Endpoint.S3Settings MaxFileSize (__added__)
+* AWS::DMS::Endpoint.S3Settings ParquetTimestampInMillisecond (__added__)
+* AWS::DMS::Endpoint.S3Settings ParquetVersion (__added__)
+* AWS::DMS::Endpoint.S3Settings PreserveTransactions (__added__)
+* AWS::DMS::Endpoint.S3Settings Rfc4180 (__added__)
+* AWS::DMS::Endpoint.S3Settings RowGroupLength (__added__)
+* AWS::DMS::Endpoint.S3Settings ServerSideEncryptionKmsKeyId (__added__)
+* AWS::DMS::Endpoint.S3Settings TimestampColumnName (__added__)
+* AWS::DMS::Endpoint.S3Settings UseCsvNoSupValue (__added__)
+* AWS::DMS::Endpoint.S3Settings UseTaskStartTimeForFullLoadTimestamp (__added__)
+* AWS::EC2::LaunchTemplate.LaunchTemplateData PrivateDnsNameOptions (__added__)
+* AWS::EC2::LaunchTemplate.MetadataOptions InstanceMetadataTags (__added__)
+* AWS::Events::Rule.Target SageMakerPipelineParameters (__added__)
+* AWS::RoboMaker::RobotApplication.RobotSoftwareSuite Version.Required (__changed__)
+  * Old: true
+  * New: false
+
+## Unapplied changes
+
+* AWS::AppIntegrations is at 53.1.0
+
+# CloudFormation Resource Specification v54.0.0
+
+## New Resource Types
+
+* AWS::KafkaConnect::Connector
+* AWS::Rekognition::Collection
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::IVS::RecordingConfiguration ThumbnailConfiguration (__added__)
+* AWS::Location::GeofenceCollection PricingPlan.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::Location::Map PricingPlan.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::Location::PlaceIndex PricingPlan.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::Location::RouteCalculator PricingPlan.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::Location::Tracker PricingPlan.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::SecretsManager::RotationSchedule RotateImmediatelyOnUpdate (__added__)
+* AWS::Timestream::Table MagneticStoreWriteProperties (__added__)
+
+## Property Type Changes
+
+* AWS::GuardDuty::Detector.CFNKubernetesAuditLogsConfiguration (__added__)
+* AWS::GuardDuty::Detector.CFNKubernetesConfiguration (__added__)
+* AWS::IVS::RecordingConfiguration.ThumbnailConfiguration (__added__)
+* AWS::MSK::Cluster.ProvisionedThroughput (__added__)
+* AWS::ECS::TaskDefinition.EFSVolumeConfiguration AuthorizationConfig.PrimitiveType (__deleted__)
+* AWS::GuardDuty::Detector.CFNDataSourceConfigurations Kubernetes (__added__)
+* AWS::MSK::Cluster.BrokerNodeGroupInfo StorageInfo.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::MSK::Cluster.EBSStorageInfo ProvisionedThroughput (__added__)
+* AWS::MSK::Cluster.EBSStorageInfo VolumeSize.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::MSK::Cluster.StorageInfo EBSStorageInfo.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Route53::RecordSetGroup.RecordSet Comment (__deleted__)
+* AWS::SecretsManager::RotationSchedule.RotationRules Duration (__added__)
+* AWS::SecretsManager::RotationSchedule.RotationRules ScheduleExpression (__added__)
+
+## Unapplied changes
+
+* AWS::AppIntegrations is at 53.1.0
+
 # CloudFormation Resource Specification v53.1.0
 
 ## New Resource Types

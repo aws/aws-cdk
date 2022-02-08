@@ -1,13 +1,41 @@
 {
-  "$version": "53.1.0",
+  "$version": "55.0.0",
   "PropertyTypes": {
     "AWS::GuardDuty::Detector.CFNDataSourceConfigurations": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-guardduty-detector-cfndatasourceconfigurations.html",
       "Properties": {
+        "Kubernetes": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-guardduty-detector-cfndatasourceconfigurations.html#cfn-guardduty-detector-cfndatasourceconfigurations-kubernetes",
+          "Required": false,
+          "Type": "CFNKubernetesConfiguration",
+          "UpdateType": "Mutable"
+        },
         "S3Logs": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-guardduty-detector-cfndatasourceconfigurations.html#cfn-guardduty-detector-cfndatasourceconfigurations-s3logs",
           "Required": false,
           "Type": "CFNS3LogsConfiguration",
+          "UpdateType": "Mutable"
+        }
+      }
+    },
+    "AWS::GuardDuty::Detector.CFNKubernetesAuditLogsConfiguration": {
+      "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-guardduty-detector-cfnkubernetesauditlogsconfiguration.html",
+      "Properties": {
+        "Enable": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-guardduty-detector-cfnkubernetesauditlogsconfiguration.html#cfn-guardduty-detector-cfnkubernetesauditlogsconfiguration-enable",
+          "PrimitiveType": "Boolean",
+          "Required": false,
+          "UpdateType": "Mutable"
+        }
+      }
+    },
+    "AWS::GuardDuty::Detector.CFNKubernetesConfiguration": {
+      "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-guardduty-detector-cfnkubernetesconfiguration.html",
+      "Properties": {
+        "AuditLogs": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-guardduty-detector-cfnkubernetesconfiguration.html#cfn-guardduty-detector-cfnkubernetesconfiguration-auditlogs",
+          "Required": false,
+          "Type": "CFNKubernetesAuditLogsConfiguration",
           "UpdateType": "Mutable"
         }
       }
