@@ -1,3 +1,11 @@
+/**
+ * Stack verification steps:
+ * * put a message
+ *   * aws iotevents-data batch-put-message --messages=messageId=(date | md5),inputName=test_input,payload=(echo '{"payload":{"temperature":31.9,"deviceId":"000"}}' | base64)
+ * * describe the detector
+ *   * aws iotevents-data describe-detector --detector-model-name test-detector-model --key-value=000
+ * * verify `stateName` and `variables` of the detector
+ */
 import * as cdk from '@aws-cdk/core';
 import * as iotevents from '../lib';
 
@@ -10,38 +18,46 @@ class TestStack extends cdk.Stack {
       attributeJsonPaths: ['payload.deviceId', 'payload.temperature'],
     });
 
+    const inputted = iotevents.Expression.currentInput(input);
+    const temperatureAttr = iotevents.Expression.inputAttribute(input, 'payload.temperature');
+    const temperatureEqual = (temperature: string) => iotevents.Expression.eq(
+      temperatureAttr,
+      iotevents.Expression.fromString(temperature),
+    );
+
+    const setTemperatureAction = {
+      bind: () => ({
+        configuration: {
+          setVariable: { variableName: 'temperature', value: temperatureAttr.evaluate() },
+        },
+      }),
+    };
+
     const onlineState = new iotevents.State({
       stateName: 'online',
       onEnter: [{
-        eventName: 'test-event',
+        eventName: 'test-enter-event',
         // meaning `condition: 'currentInput("test_input") && $input.test_input.payload.temperature == 31.5'`
-        condition: iotevents.Expression.and(
-          iotevents.Expression.currentInput(input),
-          iotevents.Expression.eq(
-            iotevents.Expression.inputAttribute(input, 'payload.temperature'),
-            iotevents.Expression.fromString('31.5'),
-          ),
-        ),
+        condition: iotevents.Expression.and(inputted, temperatureEqual('31.5')),
+        actions: [setTemperatureAction],
+      }],
+      onInput: [{
+        eventName: 'test-input-event',
+        condition: temperatureEqual('31.6'),
+        actions: [setTemperatureAction],
+      }],
+      onExit: [{
+        eventName: 'test-exit-event',
+        condition: temperatureEqual('31.7'),
+        actions: [setTemperatureAction],
       }],
     });
     const offlineState = new iotevents.State({
       stateName: 'offline',
     });
 
-    // 1st => 2nd
-    onlineState.transitionTo(offlineState, {
-      when: iotevents.Expression.eq(
-        iotevents.Expression.inputAttribute(input, 'payload.temperature'),
-        iotevents.Expression.fromString('12'),
-      ),
-    });
-    // 2st => 1st
-    offlineState.transitionTo(onlineState, {
-      when: iotevents.Expression.eq(
-        iotevents.Expression.inputAttribute(input, 'payload.temperature'),
-        iotevents.Expression.fromString('21'),
-      ),
-    });
+    onlineState.transitionTo(offlineState, { when: temperatureEqual('12'), actions: [setTemperatureAction] });
+    offlineState.transitionTo(onlineState, { when: temperatureEqual('21') });
 
     new iotevents.DetectorModel(this, 'MyDetectorModel', {
       detectorModelName: 'test-detector-model',

@@ -109,6 +109,7 @@ test('can set multiple events to State', () => {
         {
           eventName: 'test-eventName1',
           condition: iotevents.Expression.fromString('test-eventCondition'),
+          actions: [{ bind: () => ({ configuration: { setTimer: { timerName: 'test-timer' } } }) }],
         },
         {
           eventName: 'test-eventName2',
@@ -127,6 +128,7 @@ test('can set multiple events to State', () => {
               {
                 EventName: 'test-eventName1',
                 Condition: 'test-eventCondition',
+                Actions: [{ SetTimer: { TimerName: 'test-timer' } }],
               },
               {
                 EventName: 'test-eventName2',
@@ -134,6 +136,29 @@ test('can set multiple events to State', () => {
             ],
           },
         }),
+      ],
+    },
+  });
+});
+
+test.each([
+  ['onInput', { onInput: [{ eventName: 'test-eventName1' }] }, { OnInput: { Events: [{ EventName: 'test-eventName1' }] } }],
+  ['onExit', { onExit: [{ eventName: 'test-eventName1' }] }, { OnExit: { Events: [{ EventName: 'test-eventName1' }] } }],
+])('can set %s to State', (_, events, expected) => {
+  // WHEN
+  new iotevents.DetectorModel(stack, 'MyDetectorModel', {
+    initialState: new iotevents.State({
+      stateName: 'test-state',
+      onEnter: [{ eventName: 'test-eventName1', condition: iotevents.Expression.currentInput(input) }],
+      ...events,
+    }),
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::IoTEvents::DetectorModel', {
+    DetectorModelDefinition: {
+      States: [
+        Match.objectLike(expected),
       ],
     },
   });
@@ -162,6 +187,7 @@ test('can set states with transitions', () => {
       iotevents.Expression.inputAttribute(input, 'payload.temperature'),
       iotevents.Expression.fromString('12'),
     ),
+    actions: [{ bind: () => ({ configuration: { setTimer: { timerName: 'test-timer' } } }) }],
   });
   // transition as 2nd -> 1st, make circular reference
   secondState.transitionTo(firstState, {
@@ -194,6 +220,7 @@ test('can set states with transitions', () => {
               EventName: 'firstState_to_secondState',
               NextState: 'secondState',
               Condition: '$input.test-input.payload.temperature == 12',
+              Actions: [{ SetTimer: { TimerName: 'test-timer' } }],
             }],
           },
         },

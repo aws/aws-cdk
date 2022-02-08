@@ -1,3 +1,4 @@
+export * from './action';
 export * from './detector-model';
 export * from './event';
 export * from './expression';

@@ -43,6 +43,25 @@
               "OnEnter": {
                 "Events": [
                   {
+                    "Actions": [
+                      {
+                        "SetVariable": {
+                          "Value": {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "$input.",
+                                {
+                                  "Ref": "MyInput08947B23"
+                                },
+                                ".payload.temperature"
+                              ]
+                            ]
+                          },
+                          "VariableName": "temperature"
+                        }
+                      }
+                    ],
                     "Condition": {
                       "Fn::Join": [
                         "",
@@ -59,13 +78,106 @@
                         ]
                       ]
                     },
-                    "EventName": "test-event"
+                    "EventName": "test-enter-event"
+                  }
+                ]
+              },
+              "OnExit": {
+                "Events": [
+                  {
+                    "Actions": [
+                      {
+                        "SetVariable": {
+                          "Value": {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "$input.",
+                                {
+                                  "Ref": "MyInput08947B23"
+                                },
+                                ".payload.temperature"
+                              ]
+                            ]
+                          },
+                          "VariableName": "temperature"
+                        }
+                      }
+                    ],
+                    "Condition": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "$input.",
+                          {
+                            "Ref": "MyInput08947B23"
+                          },
+                          ".payload.temperature == 31.7"
+                        ]
+                      ]
+                    },
+                    "EventName": "test-exit-event"
                   }
                 ]
               },
               "OnInput": {
+                "Events": [
+                  {
+                    "Actions": [
+                      {
+                        "SetVariable": {
+                          "Value": {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "$input.",
+                                {
+                                  "Ref": "MyInput08947B23"
+                                },
+                                ".payload.temperature"
+                              ]
+                            ]
+                          },
+                          "VariableName": "temperature"
+                        }
+                      }
+                    ],
+                    "Condition": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "$input.",
+                          {
+                            "Ref": "MyInput08947B23"
+                          },
+                          ".payload.temperature == 31.6"
+                        ]
+                      ]
+                    },
+                    "EventName": "test-input-event"
+                  }
+                ],
                 "TransitionEvents": [
                   {
+                    "Actions": [
+                      {
+                        "SetVariable": {
+                          "Value": {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "$input.",
+                                {
+                                  "Ref": "MyInput08947B23"
+                                },
+                                ".payload.temperature"
+                              ]
+                            ]
+                          },
+                          "VariableName": "temperature"
+                        }
+                      }
+                    ],
                     "Condition": {
                       "Fn::Join": [
                         "",
@@ -86,6 +198,8 @@
               "StateName": "online"
             },
             {
+              "OnEnter": {},
+              "OnExit": {},
               "OnInput": {
                 "TransitionEvents": [
                   {

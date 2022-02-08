@@ -40,11 +40,41 @@ Import it into your code:
 import * as iotevents from '@aws-cdk/aws-iotevents';
 ```
 
-## `DetectorModel`
+## Overview
 
-The following example creates an AWS IoT Events detector model to your stack.
-The detector model need a reference to at least one AWS IoT Events input.
-AWS IoT Events inputs enable the detector to get MQTT payload values from IoT Core rules.
+The following example is a minimal set of an AWS IoT Events detector model.
+It has no feature but it maybe help you to understand overview.
+
+```ts
+import * as iotevents from '@aws-cdk/aws-iotevents';
+
+// First, define the input of the detector model
+const input = new iotevents.Input(this, 'MyInput', {
+  attributeJsonPaths: ['payload.deviceId', 'payload.temperature'],
+});
+
+// Second, define states of the detector model.
+// You can define multiple states and its transitions.
+const state = new iotevents.State({
+  stateName: 'warm',
+  onEnter: [{
+    eventName: 'onEnter',
+    condition: iotevents.Expression.currentInput(input),
+  }],
+});
+
+// Finally, define the detector model.
+new iotevents.DetectorModel(this, 'MyDetectorModel', {
+  initialState: state,
+});
+```
+
+Each part is explained in detail below.
+
+## `Input`
+
+You can create `Input` as following. You can put messages to the Input with AWS IoT Core Topic Rule, AWS IoT Analytics and more.
+For more information, see [the documentation](https://docs.aws.amazon.com/iotevents/latest/developerguide/iotevents-getting-started.html).
 
 ```ts
 import * as iotevents from '@aws-cdk/aws-iotevents';
@@ -52,41 +82,6 @@ import * as iotevents from '@aws-cdk/aws-iotevents';
 const input = new iotevents.Input(this, 'MyInput', {
   inputName: 'my_input', // optional
   attributeJsonPaths: ['payload.deviceId', 'payload.temperature'],
-});
-
-const warmState = new iotevents.State({
-  stateName: 'warm',
-  onEnter: [{
-    eventName: 'test-event',
-    condition: iotevents.Expression.currentInput(input),
-  }],
-});
-const coldState = new iotevents.State({
-  stateName: 'cold',
-});
-
-// transit to coldState when temperature is 10
-warmState.transitionTo(coldState, {
-  eventName: 'to_coldState', // optional property, default by combining the names of the States
-  when: iotevents.Expression.eq(
-    iotevents.Expression.inputAttribute(input, 'payload.temperature'),
-    iotevents.Expression.fromString('10'),
-  ),
-});
-// transit to warmState when temperature is 20
-coldState.transitionTo(warmState, {
-  when: iotevents.Expression.eq(
-    iotevents.Expression.inputAttribute(input, 'payload.temperature'),
-    iotevents.Expression.fromString('20'),
-  ),
-});
-
-new iotevents.DetectorModel(this, 'MyDetectorModel', {
-  detectorModelName: 'test-detector-model', // optional
-  description: 'test-detector-model-description', // optional property, default is none
-  evaluationMethod: iotevents.EventEvaluation.SERIAL, // optional property, default is iotevents.EventEvaluation.BATCH
-  detectorKey: 'payload.deviceId', // optional property, default is none and single detector instance will be created and all inputs will be routed to it
-  initialState: warmState,
 });
 ```
 
@@ -101,4 +96,155 @@ declare const grantable: iam.IGrantable;
 const input = iotevents.Input.fromInputName(this, 'MyInput', 'my_input');
 
 input.grantWrite(grantable);
+```
+
+## `State`
+
+You can create `State` as following.
+In `onEnter` of a detector model's initial state, at least one reference of input via `condition` is needed.
+And if the `condition` is evaluated to `TRUE`, the detector instance are created.
+You can set the reference of input with `iotevents.Expression.currentInput()` or `iotevents.Expression.inputAttribute()` as following.
+In other states, `onEnter` is optional.
+
+```ts
+import * as iotevents from '@aws-cdk/aws-iotevents';
+
+declare const input: iotevents.IInput;
+
+const initialState = new iotevents.State({
+  stateName: 'MyState',
+  onEnter: [{
+    eventName: 'onEnter',
+    condition: iotevents.Expression.currentInput(input),
+  }],
+});
+```
+
+You can set actions to the `onEnter` event. It is caused if `condition` is evaluated to `TRUE`.
+If you omit `condition`, actions is caused on every enter events of the state.
+For more information, see [supported actions](https://docs.aws.amazon.com/iotevents/latest/developerguide/iotevents-supported-actions.html).
+
+```ts
+import * as iotevents from '@aws-cdk/aws-iotevents';
+
+declare const input: iotevents.IInput;
+
+const setTemperatureAction = {
+  bind: () => ({
+    configuration: {
+      setVariable: { variableName: 'temperature', value: temperatureAttr.evaluate() },
+    },
+  }),
+};
+
+const state = new iotevents.State({
+  stateName: 'MyState',
+  onEnter: [{ // optional
+    eventName: 'onEnter',
+    actions: [setTemperatureAction], // optional
+    condition: iotevents.Expression.eq(
+      iotevents.Expression.inputAttribute(input, 'payload.temperature'),
+      iotevents.Expression.fromString('10'),
+    ), // optional
+  }],
+});
+```
+
+Also you can use `onInput` and `onExit`. `onInput` is triggered when messages are put to the input
+that is refered from the detector model. `onExit` is triggered when exiting this state.
+
+```ts
+import * as iotevents from '@aws-cdk/aws-iotevents';
+
+const state = new iotevents.State({
+  stateName: 'warm',
+  onEnter: [{ // optional
+    eventName: 'onEnter',
+  }],
+  onInput: [{ // optional
+    eventName: 'onInput',
+  }],
+  onExit: [{ // optional
+    eventName: 'onExit',
+  }],
+});
+```
+
+You can set transitions of the states as following:
+
+```ts
+import * as iotevents from '@aws-cdk/aws-iotevents';
+
+declare const input: iotevents.IInput;
+declare const action: iotevents.IAction;
+declare const stateA: iotevents.State;
+declare const stateB: iotevents.State;
+
+// transit from stateA to stateB when temperature is 10
+stateA.transitionTo(stateB, {
+  eventName: 'to_coldState', // optional property, default by combining the names of the States
+  actions: [action], // optional,
+  when: iotevents.Expression.eq(
+    iotevents.Expression.inputAttribute(input, 'payload.temperature'),
+    iotevents.Expression.fromString('10'),
+  ),
+});
+```
+
+## `DetectorModel`
+
+You can create `DetectorModel` as following.
+
+```ts
+import * as iotevents from '@aws-cdk/aws-iotevents';
+
+declare const state: iotevents.State;
+
+new iotevents.DetectorModel(this, 'MyDetectorModel', {
+  detectorModelName: 'test-detector-model', // optional
+  description: 'test-detector-model-description', // optional property, default is none
+  evaluationMethod: iotevents.EventEvaluation.SERIAL, // optional property, default is iotevents.EventEvaluation.BATCH
+  detectorKey: 'payload.deviceId', // optional property, default is none and single detector instance will be created and all inputs will be routed to it
+  initialState: state,
+});
+```
+
+## Examples
+
+The following example creates an AWS IoT Events detector model to your stack.
+The State of this detector model transits according to the temperature.
+
+```ts
+import * as iotevents from '@aws-cdk/aws-iotevents';
+
+const input = new iotevents.Input(this, 'MyInput', {
+  attributeJsonPaths: ['payload.deviceId', 'payload.temperature'],
+});
+
+const warmState = new iotevents.State({
+  stateName: 'warm',
+  onEnter: [{
+    eventName: 'onEnter',
+    condition: iotevents.Expression.currentInput(input),
+  }],
+});
+const coldState = new iotevents.State({
+  stateName: 'cold',
+});
+
+const temperatureEqual = (temperature: string) =>
+  iotevents.Expression.eq(
+    iotevents.Expression.inputAttribute(input, 'payload.temperature'),
+    iotevents.Expression.fromString('10'),
+  )
+
+// transit to coldState when temperature is 10
+warmState.transitionTo(coldState, { when: temperatureEqual('10') });
+// transit to warmState when temperature is 20
+coldState.transitionTo(warmState, { when: temperatureEqual('20') });
+
+new iotevents.DetectorModel(this, 'MyDetectorModel', {
+  detectorKey: 'payload.deviceId',
+  initialState: warmState,
+});
 ```

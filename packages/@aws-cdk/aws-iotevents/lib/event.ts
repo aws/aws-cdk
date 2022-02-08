@@ -1,3 +1,4 @@
+import { IAction } from './action';
 import { Expression } from './expression';
 
 /**
@@ -15,4 +16,11 @@ export interface Event {
    * @default - none (the actions are always executed)
    */
   readonly condition?: Expression;
+
+  /**
+   * The actions to be performed.
+   *
+   * @default - none
+   */
+  readonly actions?: IAction[];
 }
