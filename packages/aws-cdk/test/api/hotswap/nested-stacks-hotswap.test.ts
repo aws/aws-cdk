@@ -8,6 +8,7 @@ let hotswapMockSdkProvider: setup.HotswapMockSdkProvider;
 beforeEach(() => {
 });
 
+/*
 test('can hotswap a lambda function in a 1-level nested stack', async () => {
   // GIVEN
   hotswapMockSdkProvider = setup.setupHotswapNestedStackTests('LambdaRoot');
@@ -74,11 +75,35 @@ test('can hotswap a lambda function in a 1-level nested stack', async () => {
     S3Key: 'new-key',
   });
 });
+*/
 
 
-test('can hotswap two lambda functions in a 2-level nested stack', async () => {
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+test('hotswappable changes do not override hotswappable changes in their ancestors', async () => {
   // GIVEN
-  hotswapMockSdkProvider = setup.setupHotswapNestedStackTests('LambdaRoot');
+  hotswapMockSdkProvider = setup.setupHotswapNestedStackTests('TwoLevelLambdaRoot', ['ChildStack']);
   mockUpdateLambdaCode = jest.fn().mockReturnValue({});
   hotswapMockSdkProvider.stubLambda({
     updateFunctionCode: mockUpdateLambdaCode,
@@ -113,13 +138,13 @@ test('can hotswap two lambda functions in a 2-level nested stack', async () => {
               S3Bucket: 'current-bucket',
               S3Key: 'current-key',
             },
-            FunctionName: 'my-function',
+            FunctionName: 'child-function',
           },
           Metadata: {
             'aws:asset:path': 'old-path',
           },
         },
-        NestedStack: {
+        GrandChildStack: {
           Type: 'AWS::CloudFormation::Stack',
           Properties: {
             TemplateURL: 'https://www.magic-url.com',
@@ -131,20 +156,50 @@ test('can hotswap two lambda functions in a 2-level nested stack', async () => {
       },
     },
   }));
+  setup.addTemplateToCloudFormationLookupMock(testStack({
+    stackName: 'GrandChildStack',
+    template: {
+      Resources: {
+        Func: {
+          Type: 'AWS::Lambda::Function',
+          Properties: {
+            Code: {
+              S3Bucket: 'current-bucket',
+              S3Key: 'current-key',
+            },
+            FunctionName: 'my-function',
+          },
+          Metadata: {
+            'aws:asset:path': 'old-path',
+          },
+        },
+      },
+    },
+  }));
 
-  setup.pushNestedStackResourceSummaries('LambdaRoot',
-    setup.stackSummaryOf('NestedStack', 'AWS::CloudFormation::Stack',
-      'arn:aws:cloudformation:bermuda-triangle-1337:123456789012:stack/NestedStack/abcd',
+  setup.pushNestedStackResourceSummaries('TwoLevelLambdaRoot',
+    setup.stackSummaryOf('ChildStack', 'AWS::CloudFormation::Stack',
+      'arn:aws:cloudformation:bermuda-triangle-1337:123456789012:stack/ChildStack/abcd',
+    ),
+  );
+  setup.pushNestedStackResourceSummaries('ChildStack',
+    setup.stackSummaryOf('GrandChildStack', 'AWS::CloudFormation::Stack',
+      'arn:aws:cloudformation:bermuda-triangle-1337:123456789012:stack/GrandChildStack/abcd',
     ),
   );
 
-  const cdkStackArtifact = testStack({ stackName: 'LambdaRoot', template: lambdaRoot.template });
+  const cdkStackArtifact = testStack({ stackName: 'TwoLevelLambdaRoot', template: lambdaRoot.template });
 
   // WHEN
   const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(cdkStackArtifact);
 
   // THEN
   expect(deployStackResult).not.toBeUndefined();
+  expect(mockUpdateLambdaCode).toHaveBeenCalledWith({
+    FunctionName: 'child-function',
+    S3Bucket: 'new-bucket',
+    S3Key: 'current-key',
+  });
   expect(mockUpdateLambdaCode).toHaveBeenCalledWith({
     FunctionName: 'my-function',
     S3Bucket: 'current-bucket',

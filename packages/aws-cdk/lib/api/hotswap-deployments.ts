@@ -74,9 +74,11 @@ async function findAllHotswappableChanges(
   for (const [logicalId, change] of Object.entries(resourceDifferences)) {
     // TODO: test the True && false case here
     // TODO: we need to pass the hotswappableResources array thing between recursive calls because otherwise the hotswappable resources of higher level stacks will be forgotten
+    // TODO: the early return is also breaking our current test case. This needs some rethinking
     if (change.newValue?.Type === 'AWS::CloudFormation::Stack' && change.oldValue?.Type === 'AWS::CloudFormation::Stack') {
       const nestedDiff = cfn_diff.diffTemplate(change.oldValue.Properties?.NestedTemplate, change.newValue.Properties?.NestedTemplate);
-      return findAllHotswappableChanges(nestedDiff, evaluateCfnTemplate);
+      return findAllHotswappableChanges(nestedDiff, evaluateCfnTemplate); // TODO: this is bork. If hotswappable changes exist in the other entries, before this loop processes them, then this ignores those changes.
+                                                                          // any test with two sibling stacks, each with hotswappable resources, will expose this bug
     }
 
     const resourceHotswapEvaluation = isCandidateForHotswapping(change);
