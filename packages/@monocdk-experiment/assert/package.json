@@ -52,7 +52,6 @@
   },
   "peerDependencies": {
     "jest": "^27.5.1",
-
     "constructs": "^10.0.0",
     "monocdk": "^0.0.0"
   },
