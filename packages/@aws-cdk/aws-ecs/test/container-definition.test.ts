@@ -2019,7 +2019,7 @@ describe('container definition', () => {
 
   });
 
-  testFutureBehavior('exposes image name', { '@aws-cdk/core:newStyleStackSynthesis': true }, cdk.App, (app) => {
+  testLegacyBehavior('exposes image name', cdk.App, (app) => {
     // GIVEN
     const stack = new cdk.Stack(app, 'MyStack');
     const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef');
