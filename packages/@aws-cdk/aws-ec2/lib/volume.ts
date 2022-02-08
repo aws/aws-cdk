@@ -89,6 +89,17 @@ export interface EbsDeviceOptions extends EbsDeviceOptionsBase {
    * @default false
    */
   readonly encrypted?: boolean;
+
+  /**
+   * The ARN of the AWS Key Management Service (AWS KMS) CMK used for encryption.
+   *
+   * You have to ensure that the KMS CMK has the correct permissions to be used by the service launching the ec2 instances.
+   *
+   * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSEncryption.html#ebs-encryption-requirements
+   *
+   * @default - If encrypted is true, the default aws/ebs KMS key will be used.
+   */
+  readonly kmsKey?: IKey;
 }
 
 /**
@@ -108,7 +119,7 @@ export interface EbsDeviceSnapshotOptions extends EbsDeviceOptionsBase {
 /**
  * Properties of an EBS block device
  */
-export interface EbsDeviceProps extends EbsDeviceSnapshotOptions {
+export interface EbsDeviceProps extends EbsDeviceSnapshotOptions, EbsDeviceOptions {
   /**
    * The snapshot ID of the volume to use
    *

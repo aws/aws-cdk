@@ -4,6 +4,7 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as efs from '@aws-cdk/aws-efs';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
+import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import { AwsCliLayer } from '@aws-cdk/lambda-layer-awscli';
@@ -100,6 +101,14 @@ export interface BucketDeploymentProps {
    * @default - All files under the destination bucket key prefix will be invalidated.
    */
   readonly distributionPaths?: string[];
+
+
+  /**
+   * The number of days that the lambda function's log events are kept in CloudWatch Logs.
+   *
+   * @default logs.RetentionDays.INFINITE
+   */
+  readonly logRetention?: logs.RetentionDays;
 
   /**
    * The amount of memory (in MiB) to allocate to the AWS Lambda function which
@@ -297,6 +306,7 @@ export class BucketDeployment extends CoreConstruct {
         accessPoint,
         mountPath,
       ) : undefined,
+      logRetention: props.logRetention,
     });
 
     const handlerRole = handler.role;
@@ -313,6 +323,10 @@ export class BucketDeployment extends CoreConstruct {
       }));
     }
 
+    // to avoid redundant stack updates, only include "SourceMarkers" if one of
+    // the sources actually has markers.
+    const hasMarkers = sources.some(source => source.markers);
+
     const crUniqueId = `CustomResource${this.renderUniqueId(props.memoryLimit, props.vpc)}`;
     const cr = new cdk.CustomResource(this, crUniqueId, {
       serviceToken: handler.functionArn,
@@ -320,6 +334,7 @@ export class BucketDeployment extends CoreConstruct {
       properties: {
         SourceBucketNames: sources.map(source => source.bucket.bucketName),
         SourceObjectKeys: sources.map(source => source.zipObjectKey),
+        SourceMarkers: hasMarkers ? sources.map(source => source.markers ?? {}) : undefined,
         DestinationBucketName: props.destinationBucket.bucketName,
         DestinationBucketKeyPrefix: props.destinationKeyPrefix,
         RetainOnDelete: props.retainOnDelete,

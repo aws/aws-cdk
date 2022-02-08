@@ -23,8 +23,8 @@
 
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
 
-```ts
-import apprunner = require('@aws-cdk/aws-apprunner');
+```ts nofixture
+import * as apprunner from '@aws-cdk/aws-apprunner';
 ```
 
 ## Introduction
@@ -46,8 +46,8 @@ The `Service` construct allows you to create AWS App Runner services with `ECR P
 To create a `Service` with ECR Public:
 
 ```ts
-new Service(stack, 'Service', {
-  source: Source.fromEcrPublic({
+new apprunner.Service(this, 'Service', {
+  source: apprunner.Source.fromEcrPublic({
     imageConfiguration: { port: 8000 },
     imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
   }),
@@ -59,10 +59,12 @@ new Service(stack, 'Service', {
 To create a `Service` from an existing ECR repository:
 
 ```ts
-new Service(stack, 'Service', {
-  source: Source.fromEcr({
+import * as ecr from '@aws-cdk/aws-ecr';
+
+new apprunner.Service(this, 'Service', {
+  source: apprunner.Source.fromEcr({
     imageConfiguration: { port: 80 },
-    repository: ecr.Repository.fromRepositoryName(stack, 'NginxRepository', 'nginx'),
+    repository: ecr.Repository.fromRepositoryName(this, 'NginxRepository', 'nginx'),
     tag: 'latest',
   }),
 });
@@ -71,11 +73,13 @@ new Service(stack, 'Service', {
 To create a `Service` from local docker image asset directory  built and pushed to Amazon ECR:
 
 ```ts
-const imageAsset = new assets.DockerImageAsset(stack, 'ImageAssets', {
+import * as assets from '@aws-cdk/aws-ecr-assets';
+
+const imageAsset = new assets.DockerImageAsset(this, 'ImageAssets', {
   directory: path.join(__dirname, './docker.assets'),
 });
-new Service(stack, 'Service', {
-  source: Source.fromAsset({
+new apprunner.Service(this, 'Service', {
+  source: apprunner.Source.fromAsset({
     imageConfiguration: { port: 8000 },
     asset: imageAsset,
   }),
@@ -89,12 +93,12 @@ To create a `Service` from the GitHub repository, you need to specify an existin
 See [Managing App Runner connections](https://docs.aws.amazon.com/apprunner/latest/dg/manage-connections.html) for more details.
 
 ```ts
-new Service(stack, 'Service', {
-  source: Source.fromGitHub({
+new apprunner.Service(this, 'Service', {
+  source: apprunner.Source.fromGitHub({
     repositoryUrl: 'https://github.com/aws-containers/hello-app-runner',
     branch: 'main',
-    configurationSource: ConfigurationSourceType.REPOSITORY,
-    connection: GitHubConnection.fromConnectionArn('CONNECTION_ARN'),
+    configurationSource: apprunner.ConfigurationSourceType.REPOSITORY,
+    connection: apprunner.GitHubConnection.fromConnectionArn('CONNECTION_ARN'),
   }),
 });
 ```
@@ -102,22 +106,21 @@ new Service(stack, 'Service', {
 Use `codeConfigurationValues` to override configuration values with the `API` configuration source type.
 
 ```ts
-new Service(stack, 'Service', {
-  source: Source.fromGitHub({
+new apprunner.Service(this, 'Service', {
+  source: apprunner.Source.fromGitHub({
     repositoryUrl: 'https://github.com/aws-containers/hello-app-runner',
     branch: 'main',
-    configurationSource: ConfigurationSourceType.API,
+    configurationSource: apprunner.ConfigurationSourceType.API,
     codeConfigurationValues: {
-      runtime: Runtime.PYTHON_3,
+      runtime: apprunner.Runtime.PYTHON_3,
       port: '8000',
       startCommand: 'python app.py',
       buildCommand: 'yum install -y pycairo && pip install -r requirements.txt',
     },
-    connection: GitHubConnection.fromConnectionArn('CONNECTION_ARN'),
+    connection: apprunner.GitHubConnection.fromConnectionArn('CONNECTION_ARN'),
   }),
 });
 ```
-
 
 ## IAM Roles
 

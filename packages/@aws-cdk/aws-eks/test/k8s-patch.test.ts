@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import { Names, Stack } from '@aws-cdk/core';
 import * as eks from '../lib';
 import { KubernetesPatch, PatchType } from '../lib/k8s-patch';
@@ -20,7 +20,7 @@ describe('k8s patch', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('Custom::AWSCDK-EKS-KubernetesPatch', {
+    Template.fromStack(stack).hasResourceProperties('Custom::AWSCDK-EKS-KubernetesPatch', {
       ServiceToken: {
         'Fn::GetAtt': [
           'awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B',
@@ -59,7 +59,7 @@ describe('k8s patch', () => {
       restorePatch: { restore: { patch: 123 } },
       resourceName: 'myResourceName',
     });
-    expect(stack).toHaveResource('Custom::AWSCDK-EKS-KubernetesPatch', {
+    Template.fromStack(stack).hasResourceProperties('Custom::AWSCDK-EKS-KubernetesPatch', {
       PatchType: 'strategic',
     });
 
@@ -92,15 +92,15 @@ describe('k8s patch', () => {
       patchType: PatchType.STRATEGIC,
     });
 
-    expect(stack).toHaveResource('Custom::AWSCDK-EKS-KubernetesPatch', {
+    Template.fromStack(stack).hasResourceProperties('Custom::AWSCDK-EKS-KubernetesPatch', {
       ResourceName: 'jsonPatchResource',
       PatchType: 'json',
     });
-    expect(stack).toHaveResource('Custom::AWSCDK-EKS-KubernetesPatch', {
+    Template.fromStack(stack).hasResourceProperties('Custom::AWSCDK-EKS-KubernetesPatch', {
       ResourceName: 'mergePatchResource',
       PatchType: 'merge',
     });
-    expect(stack).toHaveResource('Custom::AWSCDK-EKS-KubernetesPatch', {
+    Template.fromStack(stack).hasResourceProperties('Custom::AWSCDK-EKS-KubernetesPatch', {
       ResourceName: 'strategicPatchResource',
       PatchType: 'strategic',
     });

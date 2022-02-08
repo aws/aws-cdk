@@ -854,6 +854,46 @@ You can use the `Instance` class to start up a single EC2 instance. For producti
 you use an `AutoScalingGroup` from the `aws-autoscaling` module instead, as AutoScalingGroups will take
 care of restarting your instance if it ever fails.
 
+```ts
+declare const vpc: ec2.Vpc;
+declare const instanceType: ec2.InstanceType;
+
+// AWS Linux
+new ec2.Instance(this, 'Instance1', {
+  vpc,
+  instanceType,
+  machineImage: new ec2.AmazonLinuxImage(),
+});
+
+// AWS Linux 2
+new ec2.Instance(this, 'Instance2', {
+  vpc,
+  instanceType,
+  machineImage: new ec2.AmazonLinuxImage({
+    generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2,
+  }),
+});
+
+// AWS Linux 2 with kernel 5.x 
+new ec2.Instance(this, 'Instance3', {
+  vpc,
+  instanceType,
+  machineImage: new ec2.AmazonLinuxImage({ 
+    generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2,
+    kernel: ec2.AmazonLinuxKernel.KERNEL5_X,
+  }),
+});
+
+// AWS Linux 2022
+new ec2.Instance(this, 'Instance4', {
+  vpc,
+  instanceType,
+  machineImage: new ec2.AmazonLinuxImage({ 
+    generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2022,
+  }),
+});
+```
+
 ### Configuring Instances using CloudFormation Init (cfn-init)
 
 CloudFormation Init allows you to configure your instances by writing files to them, installing software
@@ -1011,6 +1051,37 @@ new ec2.Instance(this, 'Instance', {
 
 ```
 
+It is also possible to encrypt the block devices. In this example we will create an customer managed key encrypted EBS-backed root device:
+
+```ts
+import { Key } from '@aws-cdk/aws-kms';
+
+declare const vpc: ec2.Vpc;
+declare const instanceType: ec2.InstanceType;
+declare const machineImage: ec2.IMachineImage;
+
+const kmsKey = new Key(this, 'KmsKey')
+
+new ec2.Instance(this, 'Instance', {
+  vpc,
+  instanceType,
+  machineImage,
+
+  // ...
+
+  blockDevices: [
+    {
+      deviceName: '/dev/sda1',
+      volume: ec2.BlockDeviceVolume.ebs(50, {
+        encrypted: true,
+        kmsKey: kmsKey,
+      }),
+    },
+  ],
+});
+
+```
+
 ### Volumes
 
 Whereas a `BlockDeviceVolume` is an EBS volume that is created and destroyed as part of the creation and destruction of a specific instance. A `Volume` is for when you want an EBS volume separate from any particular instance. A `Volume` is an EBS block device that can be attached to, or detached from, any instance at any time. Some types of `Volume`s can also be attached to multiple instances at the same time to allow you to have shared storage between those instances.
@@ -1071,6 +1142,23 @@ instance.userData.addCommands(
   `while ! test -e ${targetDevice}; do sleep 1; done`
   // The volume will now be mounted. You may have to add additional code to format the volume if it has not been prepared.
 );
+```
+
+#### Tagging Volumes
+
+You can configure [tag propagation on volume creation](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-instance.html#cfn-ec2-instance-propagatetagstovolumeoncreation).
+
+```ts
+  declare const vpc: ec2.Vpc;
+  declare const instanceType: ec2.InstanceType;
+  declare const machineImage: ec2.IMachineImage;
+
+  new ec2.Instance(this, 'Instance', {
+    vpc,
+    machineImage,
+    instanceType,
+    propagateTagsToVolumeOnCreation: true,
+  });
 ```
 
 ### Configuring Instance Metadata Service (IMDS)

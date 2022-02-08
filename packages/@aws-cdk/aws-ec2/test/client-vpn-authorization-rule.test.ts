@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { App, Stack } from '@aws-cdk/core';
 import { Connections, IClientVpnEndpoint } from '../lib';
@@ -23,12 +23,13 @@ describe('ClientVpnAuthorizationRule constructor', () => {
       env: { account: 'myAccount', region: 'us-east-1' },
       connections: new Connections(),
       node: stack.node,
+      applyRemovalPolicy: () => { },
     };
     new ClientVpnAuthorizationRule(stack, 'NormalRule', {
       cidr: '10.0.10.0/32',
       clientVpnEndpoint,
     });
-    expect(stack).toCountResources('AWS::EC2::ClientVpnAuthorizationRule', 1);
+    Template.fromStack(stack).resourceCountIs('AWS::EC2::ClientVpnAuthorizationRule', 1);
     expect(stack.node.children.length).toBe(1);
   });
   test('either clientVpnEndoint (deprecated, typo) or clientVpnEndpoint is required', () => {
@@ -50,6 +51,7 @@ describe('ClientVpnAuthorizationRule constructor', () => {
       env: { account: 'myAccount', region: 'us-east-1' },
       connections: new Connections(),
       node: stack.node,
+      applyRemovalPolicy: () => { },
     };
     const clientVpnEndpoint: IClientVpnEndpoint = {
       endpointId: 'myClientVpnEndpoint',
@@ -58,6 +60,7 @@ describe('ClientVpnAuthorizationRule constructor', () => {
       env: { account: 'myAccount', region: 'us-east-1' },
       connections: new Connections(),
       node: stack.node,
+      applyRemovalPolicy: () => { },
     };
     expect(() => {
       new ClientVpnAuthorizationRule(stack, 'RuleBothEndointAndEndpoint', {
@@ -88,12 +91,13 @@ describe('ClientVpnAuthorizationRule constructor', () => {
       env: { account: 'myAccount', region: 'us-east-1' },
       connections: new Connections(),
       node: stack.node,
+      applyRemovalPolicy: () => { },
     };
     new ClientVpnAuthorizationRule(stack, 'RuleWithEndointTypo', {
       cidr: '10.0.10.0/32',
       clientVpnEndoint,
     });
-    expect(stack).toCountResources('AWS::EC2::ClientVpnAuthorizationRule', 1);
+    Template.fromStack(stack).resourceCountIs('AWS::EC2::ClientVpnAuthorizationRule', 1);
     expect(stack.node.children.length).toBe(1);
   });
 });

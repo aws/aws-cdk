@@ -146,6 +146,13 @@ export interface PipelineProps {
    * @default - false (key rotation is disabled)
    */
   readonly enableKeyRotation?: boolean;
+
+  /**
+   * Reuse the same cross region support stack for all pipelines in the App.
+   *
+   * @default - true (Use the same support stack for all pipelines in App)
+   */
+  readonly reuseCrossRegionSupportStacks?: boolean;
 }
 
 abstract class PipelineBase extends Resource implements IPipeline {
@@ -342,6 +349,7 @@ export class Pipeline extends PipelineBase {
   private readonly _crossAccountSupport: { [account: string]: Stack } = {};
   private readonly crossAccountKeys: boolean;
   private readonly enableKeyRotation?: boolean;
+  private readonly reuseCrossRegionSupportStacks: boolean;
 
   constructor(scope: Construct, id: string, props: PipelineProps = {}) {
     super(scope, id, {
@@ -363,6 +371,8 @@ export class Pipeline extends PipelineBase {
     if (this.enableKeyRotation && !this.crossAccountKeys) {
       throw new Error("Setting 'enableKeyRotation' to true also requires 'crossAccountKeys' to be enabled");
     }
+
+    this.reuseCrossRegionSupportStacks = props.reuseCrossRegionSupportStacks ?? true;
 
     // If a bucket has been provided, use it - otherwise, create a bucket.
     let propsBucket = this.getArtifactBucketFromProps(props);
@@ -389,6 +399,7 @@ export class Pipeline extends PipelineBase {
         bucketName: PhysicalName.GENERATE_IF_NEEDED,
         encryptionKey,
         encryption: encryptionKey ? s3.BucketEncryption.KMS : s3.BucketEncryption.KMS_MANAGED,
+        enforceSSL: true,
         blockPublicAccess: new s3.BlockPublicAccess(s3.BlockPublicAccess.BLOCK_ALL),
         removalPolicy: RemovalPolicy.RETAIN,
       });
@@ -631,7 +642,7 @@ export class Pipeline extends PipelineBase {
     }
 
     const app = this.supportScope();
-    const supportStackId = `cross-region-stack-${pipelineAccount}:${actionRegion}`;
+    const supportStackId = `cross-region-stack-${this.reuseCrossRegionSupportStacks ? pipelineAccount : pipelineStack.stackName}:${actionRegion}`;
     let supportStack = app.node.tryFindChild(supportStackId) as CrossRegionSupportStack;
     if (!supportStack) {
       supportStack = new CrossRegionSupportStack(app, supportStackId, {

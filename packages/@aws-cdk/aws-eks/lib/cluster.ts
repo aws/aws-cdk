@@ -18,7 +18,7 @@ import { INSTANCE_TYPES } from './instance-types';
 import { KubernetesManifest, KubernetesManifestOptions } from './k8s-manifest';
 import { KubernetesObjectValue } from './k8s-object-value';
 import { KubernetesPatch } from './k8s-patch';
-import { KubectlProvider } from './kubectl-provider';
+import { IKubectlProvider, KubectlProvider } from './kubectl-provider';
 import { Nodegroup, NodegroupOptions } from './managed-nodegroup';
 import { OpenIdConnectProvider } from './oidc-provider';
 import { BottleRocketImage } from './private/bottlerocket';
@@ -133,6 +133,13 @@ export interface ICluster extends IResource, ec2.IConnectable {
    * If not defined, a default layer will be used.
    */
   readonly kubectlLayer?: lambda.ILayerVersion;
+
+  /**
+   * Kubectl Provider for issuing kubectl commands against it
+   *
+   * If not defined, a default provider will be used
+   */
+  readonly kubectlProvider?: IKubectlProvider;
 
   /**
    * Amount of memory to allocate to the provider's lambda function.
@@ -334,6 +341,13 @@ export interface ClusterAttributes {
    * @default - a layer bundled with this module.
    */
   readonly kubectlLayer?: lambda.ILayerVersion;
+
+  /**
+   * KubectlProvider for issuing kubectl commands.
+   *
+   * @default - Default CDK provider
+   */
+  readonly kubectlProvider?: IKubectlProvider;
 
   /**
    * Amount of memory to allocate to the provider's lambda function.
@@ -730,13 +744,26 @@ export interface ClusterProps extends ClusterOptions {
    */
   readonly defaultCapacityType?: DefaultCapacityType;
 
-
   /**
    * The IAM role to pass to the Kubectl Lambda Handler.
    *
    * @default - Default Lambda IAM Execution Role
    */
   readonly kubectlLambdaRole?: iam.IRole;
+
+  /**
+   * The tags assigned to the EKS cluster
+   *
+   * @default - none
+   */
+  readonly tags?: { [key: string]: string };
+
+  /**
+   * The cluster log types which you want to enable.
+   *
+   * @default - none
+   */
+  readonly clusterLogging?: ClusterLoggingTypes[];
 }
 
 /**
@@ -745,21 +772,25 @@ export interface ClusterProps extends ClusterOptions {
 export class KubernetesVersion {
   /**
    * Kubernetes version 1.14
+   * @deprecated Use newer version of EKS
    */
   public static readonly V1_14 = KubernetesVersion.of('1.14');
 
   /**
    * Kubernetes version 1.15
+   * @deprecated Use newer version of EKS
    */
   public static readonly V1_15 = KubernetesVersion.of('1.15');
 
   /**
    * Kubernetes version 1.16
+   * @deprecated Use newer version of EKS
    */
   public static readonly V1_16 = KubernetesVersion.of('1.16');
 
   /**
    * Kubernetes version 1.17
+   * @deprecated Use newer version of EKS
    */
   public static readonly V1_17 = KubernetesVersion.of('1.17');
 
@@ -793,6 +824,32 @@ export class KubernetesVersion {
    * @param version cluster version number
    */
   private constructor(public readonly version: string) { }
+}
+
+/**
+ * EKS cluster logging types
+ */
+export enum ClusterLoggingTypes {
+  /**
+   * Logs pertaining to API requests to the cluster.
+   */
+  API = 'api',
+  /**
+   * Logs pertaining to cluster access via the Kubernetes API.
+   */
+  AUDIT = 'audit',
+  /**
+   * Logs pertaining to authentication requests into the cluster.
+   */
+  AUTHENTICATOR = 'authenticator',
+  /**
+   * Logs pertaining to state of cluster controllers.
+   */
+  CONTROLLER_MANAGER = 'controllerManager',
+  /**
+   * Logs pertaining to scheduling decisions.
+   */
+  SCHEDULER = 'scheduler',
 }
 
 abstract class ClusterBase extends Resource implements ICluster {
@@ -1233,6 +1290,8 @@ export class Cluster extends ClusterBase {
 
   private readonly version: KubernetesVersion;
 
+  private readonly logging?: { [key: string]: [ { [key: string]: any } ] };
+
   /**
    * A dummy CloudFormation resource that is used as a wait barrier which
    * represents that the cluster is ready to receive "kubectl" commands.
@@ -1293,6 +1352,14 @@ export class Cluster extends ClusterBase {
     // Get subnetIds for all selected subnets
     const subnetIds = Array.from(new Set(flatten(selectedSubnetIdsPerGroup)));
 
+    this.logging = props.clusterLogging ? {
+      clusterLogging: [
+        {
+          enabled: true,
+          types: Object.values(props.clusterLogging),
+        },
+      ],
+    } : undefined;
 
     this.endpointAccess = props.endpointAccess ?? EndpointAccess.PUBLIC_AND_PRIVATE;
     this.kubectlEnvironment = props.kubectlEnvironment;
@@ -1358,6 +1425,8 @@ export class Cluster extends ClusterBase {
       subnets: placeClusterHandlerInVpc ? privateSubnets : undefined,
       clusterHandlerSecurityGroup: this.clusterHandlerSecurityGroup,
       onEventLayer: this.onEventLayer,
+      tags: props.tags,
+      logging: this.logging,
     });
 
     if (this.endpointAccess._config.privateAccess && privateSubnets.length !== 0) {
@@ -1969,9 +2038,10 @@ class ImportedCluster extends ClusterBase {
   public readonly kubectlSecurityGroup?: ec2.ISecurityGroup | undefined;
   public readonly kubectlPrivateSubnets?: ec2.ISubnet[] | undefined;
   public readonly kubectlLayer?: lambda.ILayerVersion;
+  public readonly kubectlProvider?: IKubectlProvider;
+  public readonly onEventLayer?: lambda.ILayerVersion;
   public readonly kubectlMemory?: Size;
   public readonly clusterHandlerSecurityGroup?: ec2.ISecurityGroup | undefined;
-  public readonly onEventLayer?: lambda.ILayerVersion;
   public readonly prune: boolean;
 
   // so that `clusterSecurityGroup` on `ICluster` can be configured without optionality, avoiding users from having
@@ -1990,6 +2060,7 @@ class ImportedCluster extends ClusterBase {
     this.kubectlLayer = props.kubectlLayer;
     this.kubectlMemory = props.kubectlMemory;
     this.clusterHandlerSecurityGroup = props.clusterHandlerSecurityGroupId ? ec2.SecurityGroup.fromSecurityGroupId(this, 'ClusterHandlerSecurityGroup', props.clusterHandlerSecurityGroupId) : undefined;
+    this.kubectlProvider = props.kubectlProvider;
     this.onEventLayer = props.onEventLayer;
     this.prune = props.prune ?? true;
 
