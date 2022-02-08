@@ -7,7 +7,8 @@
   "types": "lib/index.d.ts",
   "repository": {
     "type": "git",
-    "url": "https://github.com/aws/aws-cdk.git"
+    "url": "https://github.com/aws/aws-cdk.git",
+    "directory": "packages/cdk-dasm"
   },
   "bin": {
     "cdk-dasm": "bin/cdk-dasm"
@@ -43,7 +44,9 @@
     "cdk"
   ],
   "nozem": {
-    "ostools": ["chmod"]
+    "ostools": [
+      "chmod"
+    ]
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "engines": {

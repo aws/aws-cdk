@@ -1,3 +1,4 @@
+import { readdirSync, readFileSync, existsSync } from 'fs';
 import * as path from 'path';
 import { Match, Template } from '@aws-cdk/assertions';
 import * as cloudfront from '@aws-cdk/aws-cloudfront';
@@ -1063,3 +1064,88 @@ test('bucket has multiple deployments', () => {
     ],
   });
 });
+
+test('"SourceMarkers" is not included if none of the sources have markers', () => {
+  const stack = new cdk.Stack();
+  const bucket = new s3.Bucket(stack, 'Bucket');
+  new s3deploy.BucketDeployment(stack, 'DeployWithVpc3', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+    destinationBucket: bucket,
+  });
+
+  const map = Template.fromStack(stack).findResources('Custom::CDKBucketDeployment');
+  expect(map).toBeDefined();
+  const resource = map[Object.keys(map)[0]];
+  expect(Object.keys(resource.Properties)).toStrictEqual([
+    'ServiceToken',
+    'SourceBucketNames',
+    'SourceObjectKeys',
+    'DestinationBucketName',
+    'Prune',
+  ]);
+});
+
+test('Source.data() can be used to create a file with string contents', () => {
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'Test');
+  const bucket = new s3.Bucket(stack, 'Bucket');
+
+  const source = s3deploy.Source.data('my/path.txt', 'hello, world');
+
+  new s3deploy.BucketDeployment(stack, 'DeployWithVpc3', {
+    sources: [source],
+    destinationBucket: bucket,
+    destinationKeyPrefix: '/x/z',
+  });
+
+  const result = app.synth();
+  const content = readDataFile(result, 'my/path.txt');
+  expect(content).toStrictEqual('hello, world');
+});
+
+test('Source.jsonData() can be used to create a file with a JSON object', () => {
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'Test');
+  const bucket = new s3.Bucket(stack, 'Bucket');
+
+  const config = {
+    foo: 'bar',
+    sub: {
+      hello: bucket.bucketArn,
+    },
+  };
+
+  new s3deploy.BucketDeployment(stack, 'DeployWithVpc3', {
+    sources: [s3deploy.Source.jsonData('app-config.json', config)],
+    destinationBucket: bucket,
+  });
+
+  const result = app.synth();
+  const obj = JSON.parse(readDataFile(result, 'app-config.json'));
+  expect(obj).toStrictEqual({
+    foo: 'bar',
+    sub: {
+      hello: '<<marker:0xbaba:0>>',
+    },
+  });
+
+  // verify marker is mapped to the bucket ARN in the resource props
+  Template.fromJSON(result.stacks[0].template).hasResourceProperties('Custom::CDKBucketDeployment', {
+    SourceMarkers: [
+      { '<<marker:0xbaba:0>>': { 'Fn::GetAtt': ['Bucket83908E77', 'Arn'] } },
+    ],
+  });
+});
+
+
+function readDataFile(casm: cxapi.CloudAssembly, relativePath: string): string {
+  const assetDirs = readdirSync(casm.directory).filter(f => f.startsWith('asset.'));
+  for (const dir of assetDirs) {
+    const candidate = path.join(casm.directory, dir, relativePath);
+    if (existsSync(candidate)) {
+      return readFileSync(candidate, 'utf8');
+    }
+  }
+
+  throw new Error(`File ${relativePath} not found in any of the assets of the assembly`);
+}
