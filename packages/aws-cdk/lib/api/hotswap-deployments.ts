@@ -234,4 +234,3 @@ async function applyHotswappableChange(sdk: ISDK, hotswapOperation: HotswapOpera
     sdk.removeCustomUserAgent(customUserAgent);
   }
 }
-
