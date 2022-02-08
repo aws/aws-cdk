@@ -6,7 +6,6 @@ import * as cdk from '@aws-cdk/core';
 import * as actions from '../../lib';
 
 const SNS_TOPIC_ARN = 'arn:aws:sns::123456789012:test-topic';
-const RULE_ROLE_ID = 'MyTopicRuleTopicRuleActionRoleCE2D05DA';
 
 let stack: cdk.Stack;
 let topicRule: iot.TopicRule;
@@ -29,7 +28,7 @@ test('Default SNS topic action', () => {
     TopicRulePayload: {
       Actions: [{
         Sns: {
-          RoleArn: { 'Fn::GetAtt': [RULE_ROLE_ID, 'Arn'] },
+          RoleArn: { 'Fn::GetAtt': ['MyTopicRuleTopicRuleActionRoleCE2D05DA', 'Arn'] },
           TargetArn: SNS_TOPIC_ARN,
         },
       }],
@@ -54,7 +53,7 @@ test('Default SNS topic action', () => {
         Resource: SNS_TOPIC_ARN,
       }],
     },
-    Roles: [{ Ref: RULE_ROLE_ID }],
+    Roles: [{ Ref: 'MyTopicRuleTopicRuleActionRoleCE2D05DA' }],
   });
 });
 
@@ -100,5 +99,5 @@ test('Action with FIFO topic throws error', () => {
 
   expect(() => {
     topicRule.addAction(new actions.SnsTopicAction(snsFifoTopic));
-  }).toThrowError('An SNS topic IoT Rule action cannot be configured with a FIFO topic, only standard topics are allowed.');
+  }).toThrowError('IoT Rule actions cannot be used with FIFO SNS Topics, please pass a non-FIFO Topic instead');
 });

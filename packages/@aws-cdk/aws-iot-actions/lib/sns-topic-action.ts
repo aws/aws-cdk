@@ -23,7 +23,6 @@ export enum SnsActionMessageFormat {
  * Configuration options for the SNS topic action.
  */
 export interface SnsTopicActionProps extends CommonActionProps {
-
   /**
    * The message format of the message to publish.
    *
@@ -51,7 +50,7 @@ export class SnsTopicAction implements iot.IAction {
    */
   constructor(topic: sns.ITopic, props: SnsTopicActionProps = {}) {
     if (topic.topicName.endsWith('.fifo')) {
-      throw Error('An SNS topic IoT Rule action cannot be configured with a FIFO topic, only standard topics are allowed.');
+      throw Error('IoT Rule actions cannot be used with FIFO SNS Topics, please pass a non-FIFO Topic instead');
     }
 
     this.topic = topic;
