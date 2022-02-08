@@ -5,16 +5,6 @@ All notable changes to this project will be documented in this file. See [standa
 ## [1.144.0](https://github.com/aws/aws-cdk/compare/v1.143.0...v1.144.0) (2022-02-08)
 
 
-### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
-
-* **cxapi:** of behavior.
-
-Instead, this PR gets rid of the entire set of `FUTURE_FLAGS_DEFAULTS`
-set to `false` -- there's no point to having them anyway, and it
-gets rid of the associated merge conflicts.
-
-Also shore up the docs for these flags a little.
-
 ### Features
 
 * **assets:** support networking mode for DockerImageAsset ([#18114](https://github.com/aws/aws-cdk/issues/18114)) ([a7b39f5](https://github.com/aws/aws-cdk/commit/a7b39f527976e29a7f39c1ba1813efba2e0aa209)), closes [#15516](https://github.com/aws/aws-cdk/issues/15516)
@@ -29,11 +19,6 @@ Also shore up the docs for these flags a little.
 
 * **aws-appsync:** Strip unsupported characters from Lambda DataSource ([#18765](https://github.com/aws/aws-cdk/issues/18765)) ([bb8d6f6](https://github.com/aws/aws-cdk/commit/bb8d6f6bf5941b76ef0590c99fe8e26440e09c18))
 * **tooling:** update vscode devcontainer image ([#18455](https://github.com/aws/aws-cdk/issues/18455)) ([28647f7](https://github.com/aws/aws-cdk/commit/28647f7105da6bd02975aa7d90300d77fe85d0e6))
-
-
-### Miscellaneous Chores
-
-* **cxapi:** reduce merge conflicts in feature flags ([#18411](https://github.com/aws/aws-cdk/issues/18411)) ([dcdb58a](https://github.com/aws/aws-cdk/commit/dcdb58a0481448031ef18c171535c1c4f5872bdd))
 
 ## [1.143.0](https://github.com/aws/aws-cdk/compare/v1.142.0...v1.143.0) (2022-02-02)
 
