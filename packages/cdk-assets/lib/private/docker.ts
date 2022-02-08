@@ -14,6 +14,7 @@ interface BuildOptions {
   readonly target?: string;
   readonly file?: string;
   readonly buildArgs?: Record<string, string>;
+  readonly networkMode?: string;
 }
 
 export interface DockerCredentialsConfig {
@@ -53,6 +54,7 @@ export class Docker {
       '--tag', options.tag,
       ...options.target ? ['--target', options.target] : [],
       ...options.file ? ['--file', options.file] : [],
+      ...options.networkMode ? ['--network', options.networkMode] : [],
       '.',
     ];
     await this.execute(buildCommand, { cwd: options.directory });

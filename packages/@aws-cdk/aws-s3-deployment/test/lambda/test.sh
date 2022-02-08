@@ -6,6 +6,9 @@
 set -e
 scriptdir=$(cd $(dirname $0) && pwd)
 
+rm -f ${scriptdir}/index.py
+rm -fr ${scriptdir}/__pycache__
+
 # prepare staging directory
 staging=$(mktemp -d)
 mkdir -p ${staging}

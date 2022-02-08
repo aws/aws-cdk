@@ -2018,4 +2018,20 @@ describe('container definition', () => {
     });
 
   });
+
+  testLegacyBehavior('exposes image name', cdk.App, (app) => {
+    // GIVEN
+    const stack = new cdk.Stack(app, 'MyStack');
+    const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef');
+
+    // WHEN
+    const container = taskDefinition.addContainer('cont', {
+      image: ecs.ContainerImage.fromAsset(path.join(__dirname, 'demo-image')),
+    });
+
+    // THEN
+    expect(stack.resolve(container.imageName)).toEqual({
+      'Fn::Sub': '${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:baa2d6eb2a17c75424df631c8c70ff39f2d5f3bee8b9e1a109ee24ca17300540',
+    });
+  });
 });

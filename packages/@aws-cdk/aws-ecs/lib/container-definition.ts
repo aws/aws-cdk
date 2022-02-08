@@ -405,6 +405,11 @@ export class ContainerDefinition extends Construct {
   public readonly referencesSecretJsonField?: boolean;
 
   /**
+   * The name of the image referenced by this container.
+   */
+  public readonly imageName: string;
+
+  /**
    * The inference accelerators referenced by this container.
    */
   private readonly inferenceAcceleratorResources: string[] = [];
@@ -437,6 +442,8 @@ export class ContainerDefinition extends Construct {
     this.containerName = props.containerName ?? this.node.id;
 
     this.imageConfig = props.image.bind(this, this);
+    this.imageName = this.imageConfig.imageName;
+
     if (props.logging) {
       this.logDriverConfig = props.logging.bind(this, this);
     }

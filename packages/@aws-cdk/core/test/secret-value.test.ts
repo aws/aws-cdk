@@ -127,7 +127,7 @@ describe('secret value', () => {
     const v = SecretValue.ssmSecure('param-name');
 
     // THEN
-    expect(stack.resolve(v)).toEqual('{{resolve:ssm-secure:param-name:}}');
+    expect(stack.resolve(v)).toEqual('{{resolve:ssm-secure:param-name}}');
   });
 
   test('cfnDynamicReference', () => {

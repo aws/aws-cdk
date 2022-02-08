@@ -19,7 +19,6 @@ marker=$(node -p "require('./scripts/resolve-version').marker.replace(/\./g, '\\
 # Exclude a couple of specific ones that we don't care about.
 package_jsons=$(find . -name package.json |\
     grep -v node_modules |\
-    grep -v packages/decdk/test/fixture/package.json |\
     grep -v .github/actions/prlinter/package.json)
 
 if grep -l "[^0-9]${marker}" $package_jsons; then
