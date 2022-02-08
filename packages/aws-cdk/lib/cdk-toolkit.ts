@@ -1,8 +1,8 @@
 import * as path from 'path';
 import { format } from 'util';
 import * as cxapi from '@aws-cdk/cx-api';
-import * as chokidar from 'chokidar';
 import * as chalk from 'chalk';
+import * as chokidar from 'chokidar';
 import * as fs from 'fs-extra';
 import * as promptly from 'promptly';
 import { environmentsFromDescriptors, globEnvironmentsFromStacks, looksLikeGlob } from '../lib/api/cxapp/environments';
@@ -104,7 +104,7 @@ export class CdkToolkit {
       // Compare N stacks against deployed templates
       for (const stack of stacks.stackArtifacts) {
         stream.write(format('Stack %s\n', chalk.bold(stack.displayName)));
-        const currentTemplate = await this.props.cloudFormation.readCurrentTemplate(stack);
+        const currentTemplate = await this.props.cloudFormation.readCurrentTemplateWithNestedStacks(stack);
         diffs += options.securityOnly
           ? numberFromBool(printSecurityDiff(currentTemplate, stack, RequireApproval.Broadening))
           : printStackDiff(currentTemplate, stack, strict, contextLines, stream);

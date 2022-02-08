@@ -772,21 +772,25 @@ export interface ClusterProps extends ClusterOptions {
 export class KubernetesVersion {
   /**
    * Kubernetes version 1.14
+   * @deprecated Use newer version of EKS
    */
   public static readonly V1_14 = KubernetesVersion.of('1.14');
 
   /**
    * Kubernetes version 1.15
+   * @deprecated Use newer version of EKS
    */
   public static readonly V1_15 = KubernetesVersion.of('1.15');
 
   /**
    * Kubernetes version 1.16
+   * @deprecated Use newer version of EKS
    */
   public static readonly V1_16 = KubernetesVersion.of('1.16');
 
   /**
    * Kubernetes version 1.17
+   * @deprecated Use newer version of EKS
    */
   public static readonly V1_17 = KubernetesVersion.of('1.17');
 

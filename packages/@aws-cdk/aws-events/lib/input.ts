@@ -11,8 +11,12 @@ export abstract class RuleTargetInput {
   /**
    * Pass text to the event target
    *
-   * May contain strings returned by EventField.from() to substitute in parts of the
+   * May contain strings returned by `EventField.from()` to substitute in parts of the
    * matched event.
+   *
+   * The Rule Target input value will be a single string: the string you pass
+   * here.  Do not use this method to pass a complex value like a JSON object to
+   * a Rule Target.  Use `RuleTargetInput.fromObject()` instead.
    */
   public static fromText(text: string): RuleTargetInput {
     return new FieldAwareEventInput(text, InputType.Text);
@@ -24,7 +28,7 @@ export abstract class RuleTargetInput {
    * This is only useful when passing to a target that does not
    * take a single argument.
    *
-   * May contain strings returned by EventField.from() to substitute in parts
+   * May contain strings returned by `EventField.from()` to substitute in parts
    * of the matched event.
    */
   public static fromMultilineText(text: string): RuleTargetInput {
@@ -34,7 +38,7 @@ export abstract class RuleTargetInput {
   /**
    * Pass a JSON object to the event target
    *
-   * May contain strings returned by EventField.from() to substitute in parts of the
+   * May contain strings returned by `EventField.from()` to substitute in parts of the
    * matched event.
    */
   public static fromObject(obj: any): RuleTargetInput {

@@ -131,6 +131,13 @@ export interface ContainerImageAssetMetadataEntry extends BaseAssetMetadataEntry
    * @default - no file is passed
    */
   readonly file?: string;
+
+  /**
+   * Networking mode for the RUN commands during build.
+   *
+   * @default - no networking mode specified
+   */
+  readonly networkMode?: string;
 }
 
 /**

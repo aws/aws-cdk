@@ -1,0 +1,10 @@
+{
+  "Resources": {
+    "SomeResource": {
+      "Type": "AWS::Something",
+      "Properties": {
+        "Property": "new-value"
+      }
+    }
+  }
+}
