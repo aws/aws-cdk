@@ -39,13 +39,8 @@
   },
   "peerDependencies": {
     "@aws-cdk/core": "0.0.0",
-<<<<<<< HEAD
     "constructs": "^10.0.0",
-    "jest": "^27.4.7"
-=======
-    "constructs": "^3.3.69",
     "jest": "^27.5.1"
->>>>>>> d450d3f29 (chore: npm-check-updates && yarn upgrade (#18866))
   },
   "repository": {
     "url": "https://github.com/aws/aws-cdk.git",

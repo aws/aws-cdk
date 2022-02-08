@@ -83,13 +83,8 @@
     "@aws-cdk/cdk-integ-tools": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
     "@types/jest": "^27.4.0",
-<<<<<<< HEAD
     "constructs": "^10.0.0",
-    "jest": "^27.4.7"
-=======
-    "constructs": "^3.3.69",
     "jest": "^27.5.1"
->>>>>>> d450d3f29 (chore: npm-check-updates && yarn upgrade (#18866))
   },
   "dependencies": {
     "@aws-cdk/aws-cloudwatch": "0.0.0",

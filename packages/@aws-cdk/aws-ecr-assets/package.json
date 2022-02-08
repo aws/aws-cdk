@@ -91,13 +91,8 @@
     "@aws-cdk/aws-s3": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
-<<<<<<< HEAD
     "constructs": "^10.0.0",
-    "minimatch": "^3.0.4"
-=======
-    "constructs": "^3.3.69",
     "minimatch": "^3.0.5"
->>>>>>> d450d3f29 (chore: npm-check-updates && yarn upgrade (#18866))
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
