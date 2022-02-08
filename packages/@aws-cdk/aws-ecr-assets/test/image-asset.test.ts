@@ -164,7 +164,7 @@ describe('image asset', () => {
     });
 
     // THEN
-    const assetMetadata = stack.node.metadataEntry.find(({ type }) => type === cxschema.ArtifactMetadataEntryType.ASSET);
+    const assetMetadata = stack.node.metadata.find(({ type }) => type === cxschema.ArtifactMetadataEntryType.ASSET);
     expect(assetMetadata && (assetMetadata.data as cxschema.ContainerImageAssetMetadataEntry).networkMode).toEqual('default');
   });
 
