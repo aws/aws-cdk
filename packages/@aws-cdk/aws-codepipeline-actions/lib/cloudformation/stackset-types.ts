@@ -165,7 +165,7 @@ export abstract class StackSetParameters {
    *
    * @example
    *
-   * const parameters = cpactions.StackSetParameters.fromLiteral({
+   * const parameters = codepipeline_actions.StackSetParameters.fromLiteral({
    *  BucketName: 'my-bucket',
    *  Asset1: 'true',
    * });
@@ -286,7 +286,7 @@ export abstract class StackSetDeploymentModel {
    * ```ts
    * const existingAdminRole = iam.Role.fromRoleName(this, 'AdminRole', 'AWSCloudFormationStackSetAdministrationRole');
    *
-   * const deploymentModel = cpactions.StackSetDeploymentModel.selfManaged({
+   * const deploymentModel = codepipeline_actions.StackSetDeploymentModel.selfManaged({
    *   // Use an existing Role. Leave this out to create a new Role.
    *   administrationRole: existingAdminRole,
    * });
