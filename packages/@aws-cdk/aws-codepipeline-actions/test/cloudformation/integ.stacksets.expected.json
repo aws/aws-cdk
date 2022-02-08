@@ -1,124 +1,9 @@
 {
   "Resources": {
-    "PipelineArtifactsBucketEncryptionKey01D58D69": {
-      "Type": "AWS::KMS::Key",
-      "Properties": {
-        "KeyPolicy": {
-          "Statement": [
-            {
-              "Action": "kms:*",
-              "Effect": "Allow",
-              "Principal": {
-                "AWS": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "arn:",
-                      {
-                        "Ref": "AWS::Partition"
-                      },
-                      ":iam::12345678:root"
-                    ]
-                  ]
-                }
-              },
-              "Resource": "*"
-            }
-          ],
-          "Version": "2012-10-17"
-        }
-      },
-      "UpdateReplacePolicy": "Delete",
-      "DeletionPolicy": "Delete"
-    },
-    "PipelineArtifactsBucketEncryptionKeyAlias5C510EEE": {
-      "Type": "AWS::KMS::Alias",
-      "Properties": {
-        "AliasName": "alias/codepipeline-stacksetpipelinestackpipelinec8a435d2",
-        "TargetKeyId": {
-          "Fn::GetAtt": [
-            "PipelineArtifactsBucketEncryptionKey01D58D69",
-            "Arn"
-          ]
-        }
-      },
-      "UpdateReplacePolicy": "Delete",
-      "DeletionPolicy": "Delete"
-    },
-    "PipelineArtifactsBucket22248F97": {
+    "ArtifactBucket7410C9EF": {
       "Type": "AWS::S3::Bucket",
-      "Properties": {
-        "BucketEncryption": {
-          "ServerSideEncryptionConfiguration": [
-            {
-              "ServerSideEncryptionByDefault": {
-                "KMSMasterKeyID": {
-                  "Fn::GetAtt": [
-                    "PipelineArtifactsBucketEncryptionKey01D58D69",
-                    "Arn"
-                  ]
-                },
-                "SSEAlgorithm": "aws:kms"
-              }
-            }
-          ]
-        },
-        "PublicAccessBlockConfiguration": {
-          "BlockPublicAcls": true,
-          "BlockPublicPolicy": true,
-          "IgnorePublicAcls": true,
-          "RestrictPublicBuckets": true
-        }
-      },
-      "UpdateReplacePolicy": "Retain",
-      "DeletionPolicy": "Retain"
-    },
-    "PipelineArtifactsBucketPolicyD4F9712A": {
-      "Type": "AWS::S3::BucketPolicy",
-      "Properties": {
-        "Bucket": {
-          "Ref": "PipelineArtifactsBucket22248F97"
-        },
-        "PolicyDocument": {
-          "Statement": [
-            {
-              "Action": "s3:*",
-              "Condition": {
-                "Bool": {
-                  "aws:SecureTransport": "false"
-                }
-              },
-              "Effect": "Deny",
-              "Principal": {
-                "AWS": "*"
-              },
-              "Resource": [
-                {
-                  "Fn::GetAtt": [
-                    "PipelineArtifactsBucket22248F97",
-                    "Arn"
-                  ]
-                },
-                {
-                  "Fn::Join": [
-                    "",
-                    [
-                      {
-                        "Fn::GetAtt": [
-                          "PipelineArtifactsBucket22248F97",
-                          "Arn"
-                        ]
-                      },
-                      "/*"
-                    ]
-                  ]
-                }
-              ]
-            }
-          ],
-          "Version": "2012-10-17"
-        }
-      }
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
     "PipelineRoleD68726F7": {
       "Type": "AWS::IAM::Role",
@@ -159,7 +44,7 @@
               "Resource": [
                 {
                   "Fn::GetAtt": [
-                    "PipelineArtifactsBucket22248F97",
+                    "ArtifactBucket7410C9EF",
                     "Arn"
                   ]
                 },
@@ -169,7 +54,7 @@
                     [
                       {
                         "Fn::GetAtt": [
-                          "PipelineArtifactsBucket22248F97",
+                          "ArtifactBucket7410C9EF",
                           "Arn"
                         ]
                       },
@@ -178,22 +63,6 @@
                   ]
                 }
               ]
-            },
-            {
-              "Action": [
-                "kms:Decrypt",
-                "kms:DescribeKey",
-                "kms:Encrypt",
-                "kms:ReEncrypt*",
-                "kms:GenerateDataKey*"
-              ],
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "PipelineArtifactsBucketEncryptionKey01D58D69",
-                  "Arn"
-                ]
-              }
             },
             {
               "Action": "sts:AssumeRole",
@@ -372,17 +241,8 @@
           }
         ],
         "ArtifactStore": {
-          "EncryptionKey": {
-            "Id": {
-              "Fn::GetAtt": [
-                "PipelineArtifactsBucketEncryptionKey01D58D69",
-                "Arn"
-              ]
-            },
-            "Type": "KMS"
-          },
           "Location": {
-            "Ref": "PipelineArtifactsBucket22248F97"
+            "Ref": "ArtifactBucket7410C9EF"
           },
           "Type": "S3"
         }
@@ -506,7 +366,7 @@
               "Resource": [
                 {
                   "Fn::GetAtt": [
-                    "PipelineArtifactsBucket22248F97",
+                    "ArtifactBucket7410C9EF",
                     "Arn"
                   ]
                 },
@@ -516,7 +376,7 @@
                     [
                       {
                         "Fn::GetAtt": [
-                          "PipelineArtifactsBucket22248F97",
+                          "ArtifactBucket7410C9EF",
                           "Arn"
                         ]
                       },
@@ -525,21 +385,6 @@
                   ]
                 }
               ]
-            },
-            {
-              "Action": [
-                "kms:Encrypt",
-                "kms:ReEncrypt*",
-                "kms:GenerateDataKey*",
-                "kms:Decrypt"
-              ],
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "PipelineArtifactsBucketEncryptionKey01D58D69",
-                  "Arn"
-                ]
-              }
             }
           ],
           "Version": "2012-10-17"
@@ -628,7 +473,7 @@
               "Resource": [
                 {
                   "Fn::GetAtt": [
-                    "PipelineArtifactsBucket22248F97",
+                    "ArtifactBucket7410C9EF",
                     "Arn"
                   ]
                 },
@@ -638,7 +483,7 @@
                     [
                       {
                         "Fn::GetAtt": [
-                          "PipelineArtifactsBucket22248F97",
+                          "ArtifactBucket7410C9EF",
                           "Arn"
                         ]
                       },
@@ -647,19 +492,6 @@
                   ]
                 }
               ]
-            },
-            {
-              "Action": [
-                "kms:Decrypt",
-                "kms:DescribeKey"
-              ],
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "PipelineArtifactsBucketEncryptionKey01D58D69",
-                  "Arn"
-                ]
-              }
             }
           ],
           "Version": "2012-10-17"
