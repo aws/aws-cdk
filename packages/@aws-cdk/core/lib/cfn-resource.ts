@@ -185,6 +185,12 @@ export class CfnResource extends CfnRefElement {
    * }
    * ```
    *
+   * The `value` argument to `addOverride` will not be processed or translated
+   * in any way. Pass raw JSON values in here with the correct capitalization
+   * for CloudFormation. If you pass CDK classes or structs, they will be
+   * rendered with lowercased key names, and CloudFormation will reject the
+   * template.
+   *
    * @param path - The path of the property, you can use dot notation to
    *        override values in complex types. Any intermdediate keys
    *        will be created as needed.

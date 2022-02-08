@@ -1,12 +1,12 @@
 import { IInput } from './input';
 
 /**
- * Expression for events in Detector Model state
+ * Expression for events in Detector Model state.
  * @see https://docs.aws.amazon.com/iotevents/latest/developerguide/iotevents-expressions.html
  */
 export abstract class Expression {
   /**
-   * Create a expression from the given string
+   * Create a expression from the given string.
    */
   public static fromString(value: string): Expression {
     return new StringExpression(value);
@@ -28,14 +28,14 @@ export abstract class Expression {
   }
 
   /**
-   * Create a expression for the Equal operator
+   * Create a expression for the Equal operator.
    */
   public static eq(left: Expression, right: Expression): Expression {
     return new BinaryOperationExpression(left, '==', right);
   }
 
   /**
-   * Create a expression for the AND operator
+   * Create a expression for the AND operator.
    */
   public static and(left: Expression, right: Expression): Expression {
     return new BinaryOperationExpression(left, '&&', right);
@@ -45,7 +45,7 @@ export abstract class Expression {
   }
 
   /**
-   * this is called to evaluate the expression
+   * This is called to evaluate the expression.
    */
   public abstract evaluate(): string;
 }
