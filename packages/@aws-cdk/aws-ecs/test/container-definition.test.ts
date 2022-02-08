@@ -131,7 +131,11 @@ describe('container definition', () => {
                 'Fn::Join': [
                   '',
                   [
-                    'arn:aws:s3:::',
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':s3:::',
                     {
                       Ref: 'AssetParameters872561bf078edd1685d50c9ff821cdd60d2b2ddfb0013c4087e79bf2bb50724dS3Bucket7B2069B7',
                     },
@@ -840,7 +844,11 @@ describe('container definition', () => {
                   'Fn::Join': [
                     '',
                     [
-                      'arn:aws:s3:::',
+                      'arn:',
+                      {
+                        Ref: 'AWS::Partition',
+                      },
+                      ':s3:::',
                       {
                         Ref: 'AssetParameters872561bf078edd1685d50c9ff821cdd60d2b2ddfb0013c4087e79bf2bb50724dS3Bucket7B2069B7',
                       },
@@ -905,7 +913,11 @@ describe('container definition', () => {
                   'Fn::Join': [
                     '',
                     [
-                      'arn:aws:s3:::',
+                      'arn:',
+                      {
+                        Ref: 'AWS::Partition',
+                      },
+                      ':s3:::',
                       {
                         Ref: 'Bucket83908E77',
                       },
@@ -943,7 +955,11 @@ describe('container definition', () => {
                   'Fn::Join': [
                     '',
                     [
-                      'arn:aws:s3:::',
+                      'arn:',
+                      {
+                        Ref: 'AWS::Partition',
+                      },
+                      ':s3:::',
                       {
                         Ref: 'AssetParameters872561bf078edd1685d50c9ff821cdd60d2b2ddfb0013c4087e79bf2bb50724dS3Bucket7B2069B7',
                       },
@@ -1008,7 +1024,11 @@ describe('container definition', () => {
                   'Fn::Join': [
                     '',
                     [
-                      'arn:aws:s3:::',
+                      'arn:',
+                      {
+                        Ref: 'AWS::Partition',
+                      },
+                      ':s3:::',
                       {
                         Ref: 'Bucket83908E77',
                       },
@@ -1984,5 +2004,21 @@ describe('container definition', () => {
       file: 'index.py',
     });
 
+  });
+
+  testFutureBehavior('exposes image name', { '@aws-cdk/core:newStyleStackSynthesis': true }, cdk.App, (app) => {
+    // GIVEN
+    const stack = new cdk.Stack(app, 'MyStack');
+    const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef');
+
+    // WHEN
+    const container = taskDefinition.addContainer('cont', {
+      image: ecs.ContainerImage.fromAsset(path.join(__dirname, 'demo-image')),
+    });
+
+    // THEN
+    expect(stack.resolve(container.imageName)).toEqual({
+      'Fn::Sub': '${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:baa2d6eb2a17c75424df631c8c70ff39f2d5f3bee8b9e1a109ee24ca17300540',
+    });
   });
 });

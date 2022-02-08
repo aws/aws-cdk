@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as autoscaling from '@aws-cdk/aws-autoscaling';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
@@ -46,9 +46,9 @@ describe('container', () => {
     });
 
     // THEN
-    expect(stack).toCountResources('AWS::ECS::Service', 1);
+    Template.fromStack(stack).resourceCountIs('AWS::ECS::Service', 1);
 
-    expect(stack).toHaveResource('AWS::ECS::TaskDefinition', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
         {
           Cpu: 256,
@@ -86,8 +86,6 @@ describe('container', () => {
         ],
       },
     });
-
-
   });
 
   test('should be able to enable default logging behavior - with enable default log driver feature flag', () => {
@@ -129,12 +127,12 @@ describe('container', () => {
     });
 
     // THEN
-    expect(stack).toCountResources('AWS::ECS::Service', 1);
+    Template.fromStack(stack).resourceCountIs('AWS::ECS::Service', 1);
 
     // Ensure that the log group was created
-    expect(stack).toHaveResource('AWS::Logs::LogGroup');
+    Template.fromStack(stack).resourceCountIs('AWS::Logs::LogGroup', 1);
 
-    expect(stack).toHaveResource('AWS::ECS::TaskDefinition', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
         {
           Cpu: 256,
@@ -184,8 +182,6 @@ describe('container', () => {
         ],
       },
     });
-
-
   });
 
   test('should be able to add user-provided log group in the log driver options', () => {
@@ -228,12 +224,12 @@ describe('container', () => {
     });
 
     // THEN
-    expect(stack).toCountResources('AWS::ECS::Service', 1);
+    Template.fromStack(stack).resourceCountIs('AWS::ECS::Service', 1);
 
     // Ensure that the log group was created
-    expect(stack).toHaveResource('AWS::Logs::LogGroup');
+    Template.fromStack(stack).resourceCountIs('AWS::Logs::LogGroup', 1);
 
-    expect(stack).toHaveResource('AWS::ECS::TaskDefinition', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
         {
           Cpu: 256,
@@ -283,8 +279,6 @@ describe('container', () => {
         ],
       },
     });
-
-
   });
 
   test('should error when log group is provided in the container extension and another observability extension is added', () => {
@@ -312,5 +306,4 @@ describe('container', () => {
       });
     }).toThrow(/Log configuration already specified. You cannot provide a log group for the application container of service 'my-service' while also adding log configuration separately using service extensions./);
   });
-
 });
