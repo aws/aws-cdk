@@ -3,6 +3,8 @@ export * from './bitbucket/source-action';
 export * from './codestar-connections/source-action';
 export * from './cloudformation/pipeline-actions';
 export * from './cloudformation/stackset-action';
+export * from './cloudformation/stackinstances-action';
+export * from './cloudformation/stackset-types';
 export * from './codebuild/build-action';
 export * from './codecommit/source-action';
 export * from './codedeploy/ecs-deploy-action';

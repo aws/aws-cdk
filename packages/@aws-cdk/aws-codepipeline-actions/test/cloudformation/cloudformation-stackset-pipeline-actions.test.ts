@@ -2,7 +2,7 @@ import { Match, Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import * as cpactions from '../../lib';
-import { TestFixture } from './TestFixture';
+import { TestFixture } from './test-fixture';
 /* eslint-disable quote-props */
 
 let stack: TestFixture;
@@ -21,7 +21,7 @@ describe('StackSetAction', () => {
       cfnCapabilities: [cdk.CfnCapabilities.NAMED_IAM],
       failureTolerancePercentage: 50,
       maxConcurrentPercentage: 25,
-      templatePath: stack.sourceOutput.atPath('template.yaml'),
+      template: cpactions.StackSetTemplate.fromArtifactPath(stack.sourceOutput.atPath('template.yaml')),
       parameters: cpactions.StackSetParameters.fromArtifactPath(stack.sourceOutput.atPath('parameters.json')),
     };
   };

@@ -649,7 +649,7 @@ pipeline.addStage({
       actionName: 'UpdateStackSet',
       runOrder: 1,
       stackSetName: 'MyStackSet',
-      templatePath: sourceOutput.atPath('template.yaml'),
+      template: codepipeline_actions.StackSetTemplate.fromArtifactPath(sourceOutput.atPath('template.yaml')),
 
       // Change this to 'StackSetDeploymentModel.organizations()' if you want to deploy to OUs
       deploymentModel: codepipeline_actions.StackSetDeploymentModel.selfManaged(),

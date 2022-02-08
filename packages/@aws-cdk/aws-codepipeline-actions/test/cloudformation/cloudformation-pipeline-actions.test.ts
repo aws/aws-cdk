@@ -5,7 +5,7 @@ import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import { PolicyStatement, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import * as cpactions from '../../lib';
-import { TestFixture } from './TestFixture';
+import { TestFixture } from './test-fixture';
 
 /* eslint-disable quote-props */
 

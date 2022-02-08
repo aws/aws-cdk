@@ -1,6 +1,7 @@
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
+import * as s3 from '@aws-cdk/aws-s3';
 import { Asset } from '@aws-cdk/aws-s3-assets';
-import { App, Stack, StackProps } from '@aws-cdk/core';
+import { App, RemovalPolicy, Stack, StackProps } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import * as cpactions from '../../lib';
 
@@ -8,7 +9,11 @@ export class StackSetPipelineStack extends Stack {
   constructor(scope: Construct, id: string, props: StackProps) {
     super(scope, id, props);
 
-    const pipeline = new codepipeline.Pipeline(this, 'Pipeline');
+    const pipeline = new codepipeline.Pipeline(this, 'Pipeline', {
+      artifactBucket: new s3.Bucket(this, 'ArtifactBucket', {
+        removalPolicy: RemovalPolicy.DESTROY,
+      }),
+    });
 
     const asset = new Asset(this, 'Asset', {
       path: `${__dirname}/test-artifact`,
@@ -36,7 +41,7 @@ export class StackSetPipelineStack extends Stack {
         new cpactions.CloudFormationStackSetAction({
           actionName: 'StackSet',
           stackSetName: 'TestStackSet',
-          templatePath: sourceOutput.atPath('template.yaml'),
+          template: cpactions.StackSetTemplate.fromArtifactPath(sourceOutput.atPath('template.yaml')),
           stackInstances: cpactions.StackInstances.fromList(accounts, ['us-east-1', 'eu-west-1']),
           runOrder: 1,
         }),
