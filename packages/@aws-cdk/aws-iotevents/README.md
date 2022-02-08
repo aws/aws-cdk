@@ -238,9 +238,7 @@ const temperatureEqual = (temperature: string) =>
     iotevents.Expression.fromString('10'),
   )
 
-// transit to coldState when temperature is 10
 warmState.transitionTo(coldState, { when: temperatureEqual('10') });
-// transit to warmState when temperature is 20
 coldState.transitionTo(warmState, { when: temperatureEqual('20') });
 
 new iotevents.DetectorModel(this, 'MyDetectorModel', {
