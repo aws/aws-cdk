@@ -64,23 +64,33 @@ export async function tryHotswapDeployment(
 }
 
 async function findAllHotswappableChanges(
-  stackChanges: cfn_diff.TemplateDiff, evaluateCfnTemplate: EvaluateCloudFormationTemplate,
+  stackChanges: cfn_diff.TemplateDiff, evaluateCfnTemplate: EvaluateCloudFormationTemplate, hotswappableResources?: HotswapOperation[],
 ): Promise<HotswapOperation[] | undefined> {
   const resourceDifferences = getStackResourceDifferences(stackChanges);
 
   let foundNonHotswappableChange = false;
   const promises: Array<Array<Promise<ChangeHotswapResult>>> = [];
-  // gather the results of the detector functions
-  for (const [logicalId, change] of Object.entries(resourceDifferences)) {
-    // TODO: test the True && false case here
-    // TODO: we need to pass the hotswappableResources array thing between recursive calls because otherwise the hotswappable resources of higher level stacks will be forgotten
-    // TODO: the early return is also breaking our current test case. This needs some rethinking
+
+  if (!hotswappableResources) {
+    hotswappableResources = new Array<HotswapOperation>();
+  }
+
+  const resourceDifferenceEntries = Object.entries(resourceDifferences);
+
+  // process any resources in nested stacks, and remove the nested stack change from the diff, so that we don't process it again below
+  for (const [logicalId, change] of resourceDifferenceEntries) {
+    // TODO: test the True && false case here, should be a full deployment
     if (change.newValue?.Type === 'AWS::CloudFormation::Stack' && change.oldValue?.Type === 'AWS::CloudFormation::Stack') {
       const nestedDiff = cfn_diff.diffTemplate(change.oldValue.Properties?.NestedTemplate, change.newValue.Properties?.NestedTemplate);
-      return findAllHotswappableChanges(nestedDiff, evaluateCfnTemplate); // TODO: this is bork. If hotswappable changes exist in the other entries, before this loop processes them, then this ignores those changes.
-                                                                          // any test with two sibling stacks, each with hotswappable resources, will expose this bug
-    }
 
+      // any test with two sibling stacks, each with hotswappable resources, will expose this bug
+      await findAllHotswappableChanges(nestedDiff, evaluateCfnTemplate, hotswappableResources); // TODO: this is bork. If hotswappable changes exist in the other entries, before this loop processes them, then this ignores those changes.
+      resourceDifferenceEntries.splice(resourceDifferenceEntries.indexOf([logicalId, change]), 1);
+    }
+  }
+
+  // gather the results of the detector functions
+  for (const [logicalId, change] of resourceDifferenceEntries) {
     const resourceHotswapEvaluation = isCandidateForHotswapping(change);
     if (resourceHotswapEvaluation === ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT) {
       foundNonHotswappableChange = true;
@@ -104,7 +114,7 @@ async function findAllHotswappableChanges(
     changesDetectionResults.push(hotswapDetectionResults);
   }
 
-  const hotswappableResources = new Array<HotswapOperation>();
+  //const hotswappableResources = new Array<HotswapOperation>();
   for (const hotswapDetectionResults of changesDetectionResults) {
     const perChangeHotswappableResources = new Array<HotswapOperation>();
 
