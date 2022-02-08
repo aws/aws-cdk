@@ -71,7 +71,7 @@
     "@types/jest": "^27.4.0",
     "@types/mock-fs": "^4.13.1",
     "@types/semver": "^7.3.9",
-    "jest": "^27.4.7",
+    "jest": "^27.5.1",
     "madge": "^5.0.1",
     "mock-fs": "^4.14.0"
   },
