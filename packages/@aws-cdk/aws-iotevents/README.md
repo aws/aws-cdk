@@ -102,7 +102,7 @@ input.grantWrite(grantable);
 
 You can create `State` as following.
 In `onEnter` of a detector model's initial state, at least one reference of input via `condition` is needed.
-And if the `condition` is evaluated to `TRUE`, the detector instance are created.
+And if messages is put to the input, the detector instance are created regardless of the evaluation result of the `condition`.
 You can set the reference of input with `iotevents.Expression.currentInput()` or `iotevents.Expression.inputAttribute()` as following.
 In other states, `onEnter` is optional.
 
@@ -120,8 +120,8 @@ const initialState = new iotevents.State({
 });
 ```
 
-You can set actions to the `onEnter` event. It is caused if `condition` is evaluated to `TRUE`.
-If you omit `condition`, actions is caused on every enter events of the state.
+You can set actions to the `onEnter` event. It is performed if `condition` is evaluated to `TRUE`.
+If you omit `condition`, actions is performed on every enter events of the state.
 For more information, see [supported actions](https://docs.aws.amazon.com/iotevents/latest/developerguide/iotevents-supported-actions.html).
 
 ```ts
@@ -132,7 +132,10 @@ declare const input: iotevents.IInput;
 const setTemperatureAction = {
   bind: () => ({
     configuration: {
-      setVariable: { variableName: 'temperature', value: temperatureAttr.evaluate() },
+      setVariable: { 
+        variableName: 'temperature', 
+        value: iotevents.Expression.inputAttribute(input, 'payload.temperature').evaluate(),
+      },
     },
   }),
 };
@@ -142,10 +145,7 @@ const state = new iotevents.State({
   onEnter: [{ // optional
     eventName: 'onEnter',
     actions: [setTemperatureAction], // optional
-    condition: iotevents.Expression.eq(
-      iotevents.Expression.inputAttribute(input, 'payload.temperature'),
-      iotevents.Expression.fromString('10'),
-    ), // optional
+    condition: iotevents.Expression.currentInput(input), // optional
   }],
 });
 ```

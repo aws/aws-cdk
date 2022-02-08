@@ -6,15 +6,15 @@ import { CfnDetectorModel } from './iotevents.generated';
  */
 export interface IAction {
   /**
-   * Returns the detector model action specification.
+   * Returns the AWS IoT Events action specification.
    *
-   * @param detectorModel The DetectorModel that would trigger this action.
+   * @param detectorModel The DetectorModel that has the state this action is set in.
    */
   bind(detectorModel: IDetectorModel): ActionConfig;
 }
 
 /**
- * Properties for a detector model action
+ * Properties for a AWS IoT Events action
  */
 export interface ActionConfig {
   /**

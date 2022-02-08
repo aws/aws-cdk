@@ -157,9 +157,7 @@ test.each([
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::IoTEvents::DetectorModel', {
     DetectorModelDefinition: {
-      States: [
-        Match.objectLike(expected),
-      ],
+      States: [Match.objectLike(expected)],
     },
   });
 });
