@@ -60,10 +60,7 @@ export class SnsTopicAction implements iot.IAction {
 
   bind(rule: iot.ITopicRule): iot.ActionConfig {
     const role = this.role ?? singletonActionRole(rule);
-    role.addToPrincipalPolicy(new iam.PolicyStatement({
-      actions: ['sns:Publish'],
-      resources: [this.topic.topicArn],
-    }));
+    this.topic.grantPublish(role);
 
     return {
       configuration: {
