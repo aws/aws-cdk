@@ -109,7 +109,7 @@
     "fs-extra": "^9.1.0",
     "ignore": "^5.2.0",
     "jsonschema": "^1.4.0",
-    "minimatch": "^3.0.4",
+    "minimatch": "^3.0.5",
     "punycode": "^2.1.1",
     "semver": "^7.3.5",
     "yaml": "1.10.2"
@@ -350,8 +350,13 @@
     "@aws-cdk/ubergen": "0.0.0",
     "@types/fs-extra": "^8.1.2",
     "@types/node": "^10.17.60",
+<<<<<<< HEAD
     "constructs": "^10.0.0",
     "esbuild": "^0.14.18",
+=======
+    "constructs": "^3.3.69",
+    "esbuild": "^0.14.20",
+>>>>>>> d450d3f29 (chore: npm-check-updates && yarn upgrade (#18866))
     "fs-extra": "^9.1.0",
     "ts-node": "^9.1.1",
     "typescript": "~3.8.3"
