@@ -247,7 +247,7 @@ describe('ThirdPartyAttributions', () => {
     });
     const dirPath = await fakeModule.tmpdir();
 
-    const rule = new rules.ThirdPartyAttributions();
+    const rule = new rules.NoticeFile();
 
     const pkgJson = new PackageJson(path.join(dirPath, 'package.json'));
     rule.validate(pkgJson);
@@ -278,7 +278,7 @@ describe('ThirdPartyAttributions', () => {
     });
     const dirPath = await fakeModule.tmpdir();
 
-    const rule = new rules.ThirdPartyAttributions();
+    const rule = new rules.NoticeFile();
 
     const pkgJson = new PackageJson(path.join(dirPath, 'package.json'));
     rule.validate(pkgJson);
@@ -309,7 +309,7 @@ describe('ThirdPartyAttributions', () => {
     });
     const dirPath = await fakeModule.tmpdir();
 
-    const rule = new rules.ThirdPartyAttributions();
+    const rule = new rules.NoticeFile();
 
     const pkgJson = new PackageJson(path.join(dirPath, 'package.json'));
     rule.validate(pkgJson);
@@ -335,7 +335,7 @@ describe('ThirdPartyAttributions', () => {
     });
     const dirPath = await fakeModule.tmpdir();
 
-    const rule = new rules.ThirdPartyAttributions();
+    const rule = new rules.NoticeFile();
 
     const pkgJson = new PackageJson(path.join(dirPath, 'package.json'));
     rule.validate(pkgJson);
@@ -360,7 +360,7 @@ describe('ThirdPartyAttributions', () => {
     });
     const dirPath = await fakeModule.tmpdir();
 
-    const rule = new rules.ThirdPartyAttributions();
+    const rule = new rules.NoticeFile();
 
     const pkgJson = new PackageJson(path.join(dirPath, 'package.json'));
     rule.validate(pkgJson);
@@ -382,7 +382,7 @@ describe('ThirdPartyAttributions', () => {
     });
     const dirPath = await fakeModule.tmpdir();
 
-    const rule = new rules.ThirdPartyAttributions();
+    const rule = new rules.NoticeFile();
 
     const pkgJson = new PackageJson(path.join(dirPath, 'package.json'));
     rule.validate(pkgJson);
@@ -404,7 +404,7 @@ describe('ThirdPartyAttributions', () => {
     });
     const dirPath = await fakeModule.tmpdir();
 
-    const rule = new rules.ThirdPartyAttributions();
+    const rule = new rules.NoticeFile();
 
     const pkgJson = new PackageJson(path.join(dirPath, 'package.json'));
     rule.validate(pkgJson);

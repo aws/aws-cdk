@@ -7,16 +7,10 @@
   "bin": {
     "cdk": "bin/cdk.js"
   },
-  "cdk-build": {
-    "bundle": true,
-    "bundleProps": {
-      "externals": ["fsevents"]
-    }
-  },
   "scripts": {
     "build": "cdk-build",
     "watch": "cdk-watch",
-    "lint": "cdk-lint && madge --circular --extensions js lib",
+    "lint": "cdk-lint",
     "pkglint": "pkglint -f",
     "test": "cdk-test",
     "integ": "jest --testMatch '**/?(*.)+(integ-test).js'",
@@ -36,7 +30,24 @@
     "build+test+extract": "yarn build+test"
   },
   "cdk-package": {
-    "shrinkWrap": true
+    "bundle": {
+      "externals": [
+        "fsevents"
+      ],
+      "copyright": "AWS Cloud Development Kit (AWS CDK)\nCopyright 2018-2022 Amazon.com, Inc. or its affiliates. All Rights Reserved.\n",
+      "licenses": [
+        "Apache-2.0",
+        "MIT",
+        "BSD-3-Clause",
+        "ISC",
+        "BSD-2-Clause",
+        "0BSD"
+      ],
+      "dontAttribute": "(^@aws-cdk)",
+      "resources": {
+        "../../node_modules/vm2/lib/contextify.js": "bin"
+      }
+    }
   },
   "author": {
     "name": "Amazon Web Services",

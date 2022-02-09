@@ -1,7 +1,8 @@
 import * as path from 'path';
+import { Bundle } from '@aws-cdk/node-bundle';
+import * as yarnCling from '@aws-cdk/yarn-cling';
 import * as fs from 'fs-extra';
 import * as yargs from 'yargs';
-import * as yarnCling from '@aws-cdk/yarn-cling';
 import { shell } from '../lib/os';
 import { cdkPackageOptions, isJsii, isPrivate } from '../lib/package-info';
 import { Timers } from '../lib/timer';
@@ -48,6 +49,10 @@ async function main() {
       ...args.targets ? flatMap(args.targets, (target: string) => ['-t', target]) : [],
       '-o', outdir];
     await shell(command, { timers });
+  } else if (options.bundle) {
+    // bundled packages have their own bundler.
+    const bundle = new Bundle({ packageDir: process.cwd(), ...options.bundle });
+    bundle.pack(path.join(outdir, 'js'));
   } else {
     // just "npm pack" and deploy to "outdir"
     const tarball = (await shell(['npm', 'pack'], { timers })).trim();

@@ -199,6 +199,11 @@ export interface CDKPackageOptions {
    * An optional command (formatted as a list of strings) to run after packaging
   */
   post?: string[];
+
+  /**
+   * Should this package be bundled. (and if so, how)
+   */
+  bundle?: Omit<BundleProps, 'packageDir'>;
 }
 
 /**

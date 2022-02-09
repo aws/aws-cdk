@@ -14,6 +14,7 @@ import {
   findInnerPackages,
   monoRepoRoot,
 } from './util';
+import { Bundle } from '@aws-cdk/node-bundle';
 
 const PKGLINT_VERSION = require('../package.json').version; // eslint-disable-line @typescript-eslint/no-require-imports
 const AWS_SERVICE_NAMES = require('./aws-service-official-names.json'); // eslint-disable-line @typescript-eslint/no-require-imports
@@ -166,6 +167,131 @@ export class LicenseFile extends ValidationRule {
   }
 }
 
+export class BundledCLI extends ValidationRule {
+  public readonly name = 'bundle';
+
+  private static readonly VALID_LICENSES = [
+    'Apache-2.0',
+    'MIT',
+    'BSD-3-Clause',
+    'ISC',
+    'BSD-2-Clause',
+    '0BSD',
+  ];
+
+  private static readonly DONT_ATTRIBUTE = '(^@aws-cdk)';
+
+
+  public validate(pkg: PackageJson): void {
+    const bundleProps = pkg.json['cdk-package']?.bundle;
+
+    if (!bundleProps) {
+      return;
+    }
+
+    const validConfig = this.validateConfig(pkg, bundleProps);
+    if (validConfig) {
+      this.validateBundle(pkg, bundleProps);
+    }
+  }
+
+  /**
+   * Validate package.json contains the necessary information for properly bundling the package.
+   * This will ensure that configuration can be safely used during packaging.
+   */
+  private validateConfig(pkg: PackageJson, bundleProps: any): boolean {
+    let valid = true;
+
+    if (bundleProps.copyright !== NOTICE) {
+      pkg.report({
+        message: `'cdk-package.bundle.copyright' must be set to "${NOTICE}"`,
+        ruleName: `${this.name}/configuration`,
+        fix: () => pkg.json['cdk-package'].bundle.copyright = NOTICE,
+      })
+      valid = false;
+    }
+
+    if (bundleProps.licenses.join(',') !== BundledCLI.VALID_LICENSES.join(',')) {
+      pkg.report({
+        message: `'cdk-package.bundle.licenses' must be set to "${BundledCLI.VALID_LICENSES}"`,
+        ruleName: `${this.name}/configuration`,
+        fix: () => pkg.json['cdk-package'].bundle.licenses = BundledCLI.VALID_LICENSES,
+      })
+      valid = false;
+    }
+
+    if (bundleProps.dontAttribute !== BundledCLI.DONT_ATTRIBUTE) {
+      pkg.report({
+        message: `'cdk-package.bundle.dontAttribute' must be set to "${BundledCLI.DONT_ATTRIBUTE}"`,
+        ruleName: `${this.name}/configuration`,
+        fix: () => pkg.json['cdk-package'].bundle.dontAttribute = BundledCLI.DONT_ATTRIBUTE,
+      })
+      valid = false;
+    }
+
+    return valid;
+
+  }
+
+  /**
+   * Validate the package is ready for bundling. We do this here instead of cdk-build/cdk-lint
+   * to leverage the automatic fixing capabilities this mechanism has.
+   */
+  private validateBundle(pkg: PackageJson, bundleProps: any) {
+
+    // now lets validate the bundle itself
+    const bundle = new Bundle({ packageDir: pkg.packageRoot, ...bundleProps });
+    const violations = bundle.validate();
+
+    if (violations?.imports?.summary) {
+      pkg.report({
+        message: `Circular imports detected:\n\n${violations.imports.summary}`,
+        ruleName: `${this.name}/circular-imports`
+      })
+    }
+
+    for (const attr of violations?.notice?.invalidLicense ?? []) {
+      pkg.report({
+        message: `Dependency ${attr.package} has an invalid license: ${attr.license}`,
+        ruleName: `${this.name}/invalid-dependency-license`
+      })
+    }
+
+    for (const attr of violations?.notice?.noLicense ?? []) {
+      pkg.report({
+        message: `Dependency ${attr.package} has no license`,
+        ruleName: `${this.name}/missing-dependency-license`
+      })
+    }
+
+    for (const attr of violations?.notice?.multiLicense ?? []) {
+      pkg.report({
+        message: `Dependency ${attr.package} has multiple licenses: ${attr.license}`,
+        ruleName: `${this.name}/multiple-dependency-license`
+      })
+    }
+
+    const fix = () => bundle.fix();
+
+    for (const attr of violations?.notice?.missing ?? []) {
+      pkg.report({
+        message: `Dependency ${attr.package} is missing an attribution`,
+        ruleName: `${this.name}/missing-attribution`,
+        fix,
+      })
+    }
+
+    for (const attr of violations?.notice?.unnecessary ?? []) {
+      pkg.report({
+        message: `Dependency ${attr.package} attribution is unnecessary`,
+        ruleName: `${this.name}/unnecessary-attribution`,
+        fix,
+      })
+    }
+
+  }
+}
+
 /**
  * There must be a NOTICE file.
  */
@@ -184,6 +310,13 @@ export class ThirdPartyAttributions extends ValidationRule {
   public readonly name = 'license/3p-attributions';
 
   public validate(pkg: PackageJson): void {
+
+    if (pkg.json['cdk-package']?.bundle) {
+      // otherwise its attributions will be reported as unnecessary
+      // since bundled packages don't defined "bundledDependencies"
+      return;
+    }
+
     const alwaysCheck = ['monocdk', 'aws-cdk-lib'];
     if (pkg.json.private && !alwaysCheck.includes(pkg.json.name)) {
       return;
