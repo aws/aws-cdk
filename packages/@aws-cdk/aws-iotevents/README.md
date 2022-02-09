@@ -196,7 +196,7 @@ stateA.transitionTo(stateB, {
 
 ## `DetectorModel`
 
-You can create `DetectorModel` as following.
+You can create a Detector Model as follows:
 
 ```ts
 import * as iotevents from '@aws-cdk/aws-iotevents';
