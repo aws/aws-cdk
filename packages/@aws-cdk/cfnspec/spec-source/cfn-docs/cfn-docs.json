@@ -3778,13 +3778,13 @@
       },
       "description": "Specify an AWS App Runner service by using the `AWS::AppRunner::Service` resource in an AWS CloudFormation template. \n\nThe `AWS::AppRunner::Service` resource is an AWS App Runner resource type that specifies an App Runner service.",
       "properties": {
-        "AutoScalingConfigurationArn": "The Amazon Resource Name (ARN) of an App Runner automatic scaling configuration resource that you want to associate with your service. If not provided, App Runner associates the latest revision of a default auto scaling configuration.",
+        "AutoScalingConfigurationArn": "The Amazon Resource Name (ARN) of an App Runner automatic scaling configuration resource that you want to associate with the App Runner service. If not provided, App Runner associates the latest revision of a default auto scaling configuration.",
         "EncryptionConfiguration": "An optional custom encryption key that App Runner uses to encrypt the copy of your source repository that it maintains and your service logs. By default, App Runner uses an AWS managed key .",
-        "HealthCheckConfiguration": "The settings for the health check that AWS App Runner performs to monitor the health of your service.",
+        "HealthCheckConfiguration": "The settings for the health check that AWS App Runner performs to monitor the health of the App Runner service.",
         "InstanceConfiguration": "The runtime configuration of instances (scaling units) of the App Runner service.",
-        "ServiceName": "A name for the new service. It must be unique across all the running App Runner services in your AWS account in the AWS Region .",
+        "ServiceName": "A name for the App Runner service. It must be unique across all the running App Runner services in your AWS account in the AWS Region .",
         "SourceConfiguration": "The source to deploy to the App Runner service. It can be a code or an image repository.",
-        "Tags": "An optional list of metadata items that you can associate with your service resource. A tag is a key-value pair."
+        "Tags": "An optional list of metadata items that you can associate with the App Runner service resource. A tag is a key-value pair."
       }
     },
     "AWS::AppRunner::Service.AuthenticationConfiguration": {
@@ -14461,14 +14461,14 @@
         "InstanceTypes": "Specify the instance types for a node group. If you specify a GPU instance type, be sure to specify `AL2_x86_64_GPU` with the `amiType` parameter. If you specify `launchTemplate` , then you can specify zero or one instance type in your launch template *or* you can specify 0-20 instance types for `instanceTypes` . If however, you specify an instance type in your launch template *and* specify any `instanceTypes` , the node group deployment will fail. If you don't specify an instance type in a launch template or for `instanceTypes` , then `t3.medium` is used, by default. If you specify `Spot` for `capacityType` , then we recommend specifying multiple values for `instanceTypes` . For more information, see [Managed node group capacity types](https://docs.aws.amazon.com/eks/latest/userguide/managed-node-groups.html#managed-node-group-capacity-types) and [Launch template support](https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html) in the *Amazon EKS User Guide* .",
         "Labels": "The Kubernetes labels to be applied to the nodes in the node group when they are created.",
         "LaunchTemplate": "An object representing a node group's launch template specification. If specified, then do not specify `instanceTypes` , `diskSize` , or `remoteAccess` and make sure that the launch template meets the requirements in `launchTemplateSpecification` .",
-        "NodeRole": "The Amazon Resource Name (ARN) of the IAM role to associate with your node group. The Amazon EKS worker node `kubelet` daemon makes calls to AWS APIs on your behalf. Nodes receive permissions for these API calls through an IAM instance profile and associated policies. Before you can launch nodes and register them into a cluster, you must create an IAM role for those nodes to use when they are launched. For more information, see [Amazon EKS node IAM role](https://docs.aws.amazon.com/eks/latest/userguide/worker_node_IAM_role.html) in the **Amazon EKS User Guide** . If you specify `launchTemplate` , then don't specify [`IamInstanceProfile`](https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_IamInstanceProfile.html) in your launch template, or the node group deployment will fail. For more information about using launch templates with Amazon EKS, see [Launch template support](https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html) in the *Amazon EKS User Guide* .",
+        "NodeRole": "The Amazon Resource Name (ARN) of the IAM role to associate with your node group. The Amazon EKS worker node `kubelet` daemon makes calls to AWS APIs on your behalf. Nodes receive permissions for these API calls through an IAM instance profile and associated policies. Before you can launch nodes and register them into a cluster, you must create an IAM role for those nodes to use when they are launched. For more information, see [Amazon EKS node IAM role](https://docs.aws.amazon.com/eks/latest/userguide/create-node-role.html) in the **Amazon EKS User Guide** . If you specify `launchTemplate` , then don't specify [`IamInstanceProfile`](https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_IamInstanceProfile.html) in your launch template, or the node group deployment will fail. For more information about using launch templates with Amazon EKS, see [Launch template support](https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html) in the *Amazon EKS User Guide* .",
         "NodegroupName": "The unique name to give your node group.",
         "ReleaseVersion": "The AMI version of the Amazon EKS optimized AMI to use with your node group (for example, `1.14.7- *YYYYMMDD*` ). By default, the latest available AMI version for the node group's current Kubernetes version is used. For more information, see [Amazon EKS optimized Linux AMI Versions](https://docs.aws.amazon.com/eks/latest/userguide/eks-linux-ami-versions.html) in the *Amazon EKS User Guide* .\n\n> Changing this value triggers an update of the node group if one is available. However, only the latest available AMI release version is valid as an input. You cannot roll back to a previous AMI release version.",
         "RemoteAccess": "The remote access (SSH) configuration to use with your node group. If you specify `launchTemplate` , then don't specify `remoteAccess` , or the node group deployment will fail. For more information about using launch templates with Amazon EKS, see [Launch template support](https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html) in the *Amazon EKS User Guide* .",
         "ScalingConfig": "The scaling configuration details for the Auto Scaling group that is created for your node group.",
         "Subnets": "The subnets to use for the Auto Scaling group that is created for your node group. If you specify `launchTemplate` , then don't specify [`SubnetId`](https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_CreateNetworkInterface.html) in your launch template, or the node group deployment will fail. For more information about using launch templates with Amazon EKS, see [Launch template support](https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html) in the *Amazon EKS User Guide* .",
         "Tags": "The metadata to apply to the node group to assist with categorization and organization. Each tag consists of a key and an optional value. You define both. Node group tags do not propagate to any other resources associated with the node group, such as the Amazon EC2 instances or subnets.",
-        "Taints": "The Kubernetes taints to be applied to the nodes in the node group when they are created. Effect is one of `No_Schedule` , `Prefer_No_Schedule` , or `No_Execute` . Kubernetes taints can be used together with tolerations to control how workloads are scheduled to your nodes.",
+        "Taints": "The Kubernetes taints to be applied to the nodes in the node group when they are created. Effect is one of `No_Schedule` , `Prefer_No_Schedule` , or `No_Execute` . Kubernetes taints can be used together with tolerations to control how workloads are scheduled to your nodes. For more information, see [Node taints on managed node groups](https://docs.aws.amazon.com/eks/latest/userguide/node-taints-managed-node-groups.html) .",
         "UpdateConfig": "The node group update configuration.",
         "Version": "The Kubernetes version to use for your managed nodes. By default, the Kubernetes version of the cluster is used, and this is the only accepted specified value. If you specify `launchTemplate` , and your launch template uses a custom AMI, then don't specify `version` , or the node group deployment will fail. For more information about using launch templates with Amazon EKS, see [Launch template support](https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html) in the *Amazon EKS User Guide* ."
       }
@@ -14501,7 +14501,7 @@
     },
     "AWS::EKS::Nodegroup.Taint": {
       "attributes": {},
-      "description": "A property that allows a node to repel a set of pods.",
+      "description": "A property that allows a node to repel a set of pods. For more information, see [Node taints on managed node groups](https://docs.aws.amazon.com/eks/latest/userguide/node-taints-managed-node-groups.html) .",
       "properties": {
         "Effect": "The effect of the taint.",
         "Key": "The key of the taint.",
@@ -16024,7 +16024,7 @@
       "description": "Specifies a target group for a load balancer.\n\nBefore you register a Lambda function as a target, you must create a `AWS::Lambda::Permission` resource that grants the Elastic Load Balancing service principal permission to invoke the Lambda function.",
       "properties": {
         "HealthCheckEnabled": "Indicates whether health checks are enabled. If the target type is `lambda` , health checks are disabled by default but can be enabled. If the target type is `instance` , `ip` , or `alb` , health checks are always enabled and cannot be disabled.",
-        "HealthCheckIntervalSeconds": "The approximate amount of time, in seconds, between health checks of an individual target. If the target group protocol is TCP, TLS, UDP, or TCP_UDP, the supported values are 10 and 30 seconds. If the target group protocol is HTTP or HTTPS, the default is 30 seconds. If the target group protocol is GENEVE, the default is 10 seconds. If the target type is `lambda` , the default is 35 seconds.",
+        "HealthCheckIntervalSeconds": "The approximate amount of time, in seconds, between health checks of an individual target. If the target group protocol is HTTP or HTTPS, the default is 30 seconds. If the target group protocol is TCP, TLS, UDP, or TCP_UDP, the supported values are 10 and 30 seconds and the default is 30 seconds. If the target group protocol is GENEVE, the default is 10 seconds. If the target type is `lambda` , the default is 35 seconds.",
         "HealthCheckPath": "[HTTP/HTTPS health checks] The destination for health checks on the targets.\n\n[HTTP1 or HTTP2 protocol version] The ping path. The default is /.\n\n[GRPC protocol version] The path of a custom health check method with the format /package.service/method. The default is / AWS .ALB/healthcheck.",
         "HealthCheckPort": "The port the load balancer uses when performing health checks on targets. If the protocol is HTTP, HTTPS, TCP, TLS, UDP, or TCP_UDP, the default is `traffic-port` , which is the port on which each target receives traffic from the load balancer. If the protocol is GENEVE, the default is port 80.",
         "HealthCheckProtocol": "The protocol the load balancer uses when performing health checks on targets. For Application Load Balancers, the default is HTTP. For Network Load Balancers and Gateway Load Balancers, the default is TCP. The TCP protocol is not supported for health checks if the protocol of the target group is HTTP or HTTPS. The GENEVE, TLS, UDP, and TCP_UDP protocols are not supported for health checks.",
@@ -22815,29 +22815,29 @@
       "attributes": {},
       "description": "Specifies the attachment settings for the Confluence data source. Attachment settings are optional, if you don't specify settings attachments, Amazon Kendra won't index them.",
       "properties": {
-        "AttachmentFieldMappings": "Defines how attachment metadata fields should be mapped to index fields. Before you can map a field, you must first create an index field with a matching type using the console or the `UpdateIndex` operation.\n\nIf you specify the `AttachentFieldMappings` parameter, you must specify at least one field mapping.",
+        "AttachmentFieldMappings": "Defines how attachment metadata fields should be mapped to index fields. Before you can map a field, you must first create an index field with a matching type using the console or the `UpdateIndex` API.\n\nIf you specify the `AttachentFieldMappings` parameter, you must specify at least one field mapping.",
         "CrawlAttachments": "Indicates whether Amazon Kendra indexes attachments to the pages and blogs in the Confluence data source."
       }
     },
     "AWS::Kendra::DataSource.ConfluenceAttachmentToIndexFieldMapping": {
       "attributes": {},
-      "description": "Defines the mapping between a field in the Confluence data source to a Amazon Kendra index field.\n\nYou must first create the index field using the `UpdateIndex` operation.",
+      "description": "Defines the mapping between a field in the Confluence data source to a Amazon Kendra index field.\n\nYou must first create the index field using the `UpdateIndex` API.",
       "properties": {
-        "DataSourceFieldName": "The name of the field in the data source.\n\nYou must first create the index field using the `UpdateIndex` operation.",
+        "DataSourceFieldName": "The name of the field in the data source.\n\nYou must first create the index field using the `UpdateIndex` API.",
         "DateFieldFormat": "The format for date fields in the data source. If the field specified in `DataSourceFieldName` is a date field you must specify the date format. If the field is not a date field, an exception is thrown.",
         "IndexFieldName": "The name of the index field to map to the Confluence data source field. The index field type must match the Confluence field type."
       }
     },
     "AWS::Kendra::DataSource.ConfluenceBlogConfiguration": {
       "attributes": {},
-      "description": "Specifies the blog settings for the Confluence data source. Blogs are always indexed unless filtered from the index by the `ExclusionPatterns` or `InclusionPatterns` fields in the `ConfluenceConfiguration` type.",
+      "description": "Specifies the blog settings for the Confluence data source. Blogs are always indexed unless filtered from the index by the `ExclusionPatterns` or `InclusionPatterns` fields in the `ConfluenceConfiguration` object.",
       "properties": {
-        "BlogFieldMappings": "Defines how blog metadata fields should be mapped to index fields. Before you can map a field, you must first create an index field with a matching type using the console or the `UpdateIndex` operation.\n\nIf you specify the `BlogFieldMappings` parameter, you must specify at least one field mapping."
+        "BlogFieldMappings": "Defines how blog metadata fields should be mapped to index fields. Before you can map a field, you must first create an index field with a matching type using the console or the `UpdateIndex` API.\n\nIf you specify the `BlogFieldMappings` parameter, you must specify at least one field mapping."
       }
     },
     "AWS::Kendra::DataSource.ConfluenceBlogToIndexFieldMapping": {
       "attributes": {},
-      "description": "Defines the mapping between a blog field in the Confluence data source to a Amazon Kendra index field.\n\nYou must first create the index field using the `UpdateIndex` operation.",
+      "description": "Defines the mapping between a blog field in the Confluence data source to a Amazon Kendra index field.\n\nYou must first create the index field using the `UpdateIndex` API.",
       "properties": {
         "DataSourceFieldName": "The name of the field in the data source.",
         "DateFieldFormat": "The format for date fields in the data source. If the field specified in `DataSourceFieldName` is a date field you must specify the date format. If the field is not a date field, an exception is thrown.",
@@ -22846,7 +22846,7 @@
     },
     "AWS::Kendra::DataSource.ConfluenceConfiguration": {
       "attributes": {},
-      "description": "Provides configuration information for data sources that connect to Confluence.",
+      "description": "Provides the configuration information to connect to Confluence as your data source.",
       "properties": {
         "AttachmentConfiguration": "Specifies configuration information for indexing attachments to Confluence blogs and pages.",
         "BlogConfiguration": "Specifies configuration information for indexing Confluence blogs.",
@@ -22864,12 +22864,12 @@
       "attributes": {},
       "description": "Specifies the page settings for the Confluence data source.",
       "properties": {
-        "PageFieldMappings": "Defines how page metadata fields should be mapped to index fields. Before you can map a field, you must first create an index field with a matching type using the console or the `UpdateIndex` operation.\n\nIf you specify the `PageFieldMappings` parameter, you must specify at least one field mapping."
+        "PageFieldMappings": "Defines how page metadata fields should be mapped to index fields. Before you can map a field, you must first create an index field with a matching type using the console or the `UpdateIndex` API.\n\nIf you specify the `PageFieldMappings` parameter, you must specify at least one field mapping."
       }
     },
     "AWS::Kendra::DataSource.ConfluencePageToIndexFieldMapping": {
       "attributes": {},
-      "description": "Defines the mapping between a field in the Confluence data source to a Amazon Kendra index field.\n\nYou must first create the index field using the `UpdateIndex` operation.",
+      "description": "Defines the mapping between a field in the Confluence data source to a Amazon Kendra index field.\n\nYou must first create the index field using the `UpdateIndex` API.",
       "properties": {
         "DataSourceFieldName": "The name of the field in the data source.",
         "DateFieldFormat": "The format for date fields in the data source. If the field specified in `DataSourceFieldName` is a date field you must specify the date format. If the field is not a date field, an exception is thrown.",
@@ -22884,12 +22884,12 @@
         "CrawlPersonalSpaces": "Specifies whether Amazon Kendra should index personal spaces. Users can add restrictions to items in personal spaces. If personal spaces are indexed, queries without user context information may return restricted items from a personal space in their results. For more information, see [Filtering on user context](https://docs.aws.amazon.com/kendra/latest/dg/user-context-filter.html) .",
         "ExcludeSpaces": "A list of space keys of Confluence spaces. If you include a key, the blogs, documents, and attachments in the space are not indexed. If a space is in both the `ExcludeSpaces` and the `IncludeSpaces` list, the space is excluded.",
         "IncludeSpaces": "A list of space keys for Confluence spaces. If you include a key, the blogs, documents, and attachments in the space are indexed. Spaces that aren't in the list aren't indexed. A space in the list must exist. Otherwise, Amazon Kendra logs an error when the data source is synchronized. If a space is in both the `IncludeSpaces` and the `ExcludeSpaces` list, the space is excluded.",
-        "SpaceFieldMappings": "Defines how space metadata fields should be mapped to index fields. Before you can map a field, you must first create an index field with a matching type using the console or the `UpdateIndex` operation.\n\nIf you specify the `SpaceFieldMappings` parameter, you must specify at least one field mapping."
+        "SpaceFieldMappings": "Defines how space metadata fields should be mapped to index fields. Before you can map a field, you must first create an index field with a matching type using the console or the `UpdateIndex` API.\n\nIf you specify the `SpaceFieldMappings` parameter, you must specify at least one field mapping."
       }
     },
     "AWS::Kendra::DataSource.ConfluenceSpaceToIndexFieldMapping": {
       "attributes": {},
-      "description": "Defines the mapping between a field in the Confluence data source to a Amazon Kendra index field.\n\nYou must first create the index field using the `UpdateIndex` operation.",
+      "description": "Defines the mapping between a field in the Confluence data source to an Amazon Kendra index field.\n\nYou must first create the index field using the `UpdateIndex` API.",
       "properties": {
         "DataSourceFieldName": "The name of the field in the data source.",
         "DateFieldFormat": "The format for date fields in the data source. If the field specified in `DataSourceFieldName` is a date field you must specify the date format. If the field is not a date field, an exception is thrown.",
@@ -22898,7 +22898,7 @@
     },
     "AWS::Kendra::DataSource.ConnectionConfiguration": {
       "attributes": {},
-      "description": "Provides the information necessary to connect to a database.",
+      "description": "Provides the configuration information that's required to connect to a database.",
       "properties": {
         "DatabaseHost": "The name of the host for the database. Can be either a string (host.subdomain.domain.tld) or an IPv4 or IPv6 address.",
         "DatabaseName": "The name of the database containing the document data.",
@@ -22909,18 +22909,18 @@
     },
     "AWS::Kendra::DataSource.DataSourceConfiguration": {
       "attributes": {},
-      "description": "Configuration information for an Amazon Kendra data source.",
+      "description": "Provides the configuration information for an Amazon Kendra data source.",
       "properties": {
         "ConfluenceConfiguration": "Provides configuration information for connecting to a Confluence data source.",
-        "DatabaseConfiguration": "Provides information necessary to create a data source connector for a database.",
-        "GoogleDriveConfiguration": "Provides configuration for data sources that connect to Google Drive.",
-        "OneDriveConfiguration": "Provides configuration for data sources that connect to Microsoft OneDrive.",
-        "S3Configuration": "Provides information to create a data source connector for a document repository in an Amazon S3 bucket.",
-        "SalesforceConfiguration": "Provides configuration information for data sources that connect to a Salesforce site.",
-        "ServiceNowConfiguration": "Provides configuration for data sources that connect to ServiceNow instances.",
-        "SharePointConfiguration": "Provides information necessary to create a data source connector for a Microsoft SharePoint site.",
+        "DatabaseConfiguration": "Provides the configuration information to connect to a database as your data source.",
+        "GoogleDriveConfiguration": "Provides the configuration information to connect to Google Drive as your data source.",
+        "OneDriveConfiguration": "Provides the configuration information to connect to Microsoft OneDrive as your data source.",
+        "S3Configuration": "Provides the configuration information to connect to an Amazon S3 bucket as your data source.",
+        "SalesforceConfiguration": "Provides the configuration information to connect to Salesforce as your data source.",
+        "ServiceNowConfiguration": "Provides the configuration information to connect to ServiceNow as your data source.",
+        "SharePointConfiguration": "Provides the configuration information to connect to Microsoft SharePoint as your data source.",
         "WebCrawlerConfiguration": "Provides the configuration information required for Amazon Kendra Web Crawler.",
-        "WorkDocsConfiguration": "Provides the configuration information to connect to WorkDocs as your data source."
+        "WorkDocsConfiguration": "Provides the configuration information to connect to Amazon WorkDocs as your data source."
       }
     },
     "AWS::Kendra::DataSource.DataSourceToIndexFieldMapping": {
@@ -22934,7 +22934,7 @@
     },
     "AWS::Kendra::DataSource.DataSourceVpcConfiguration": {
       "attributes": {},
-      "description": "Provides information for connecting to an Amazon VPC.",
+      "description": "Provides the configuration information to connect to an Amazon VPC.",
       "properties": {
         "SecurityGroupIds": "A list of identifiers of security groups within your Amazon VPC. The security groups should enable Amazon Kendra to connect to the data source.",
         "SubnetIds": "A list of identifiers for subnets within your Amazon VPC. The subnets should be able to connect to each other in the VPC, and they should have outgoing access to the Internet through a NAT device."
@@ -22942,11 +22942,11 @@
     },
     "AWS::Kendra::DataSource.DatabaseConfiguration": {
       "attributes": {},
-      "description": "Provides the information necessary to connect a database to an index.",
+      "description": "Provides the configuration information to connect to a index.",
       "properties": {
         "AclConfiguration": "Information about the database column that provides information for user context filtering.",
         "ColumnConfiguration": "Information about where the index should get the document information from the database.",
-        "ConnectionConfiguration": "The information necessary to connect to a database.",
+        "ConnectionConfiguration": "Configuration information that's required to connect to a database.",
         "DatabaseEngineType": "The type of database engine that runs the database.",
         "SqlConfiguration": "Provides information about how Amazon Kendra uses quote marks around SQL identifiers when querying a database data source.",
         "VpcConfiguration": "Provides information for connecting to an Amazon VPC."
@@ -22961,20 +22961,20 @@
     },
     "AWS::Kendra::DataSource.GoogleDriveConfiguration": {
       "attributes": {},
-      "description": "Provides configuration information for data sources that connect to Google Drive.",
+      "description": "Provides the configuration information to connect to Google Drive as your data source.",
       "properties": {
         "ExcludeMimeTypes": "A list of MIME types to exclude from the index. All documents matching the specified MIME type are excluded.\n\nFor a list of MIME types, see [Using a Google Workspace Drive data source](https://docs.aws.amazon.com/kendra/latest/dg/data-source-google-drive.html) .",
         "ExcludeSharedDrives": "A list of identifiers or shared drives to exclude from the index. All files and folders stored on the shared drive are excluded.",
         "ExcludeUserAccounts": "A list of email addresses of the users. Documents owned by these users are excluded from the index. Documents shared with excluded users are indexed unless they are excluded in another way.",
         "ExclusionPatterns": "A list of regular expression patterns that apply to the path on Google Drive. Items that match the pattern are excluded from the index from both shared drives and users' My Drives. Items that don't match the pattern are included in the index. If an item matches both an exclusion pattern and an inclusion pattern, it is excluded from the index.",
-        "FieldMappings": "Defines mapping between a field in the Google Drive and a Amazon Kendra index field.\n\nIf you are using the console, you can define index fields when creating the mapping. If you are using the API, you must first create the field using the `UpdateIndex` operation.",
+        "FieldMappings": "Defines mapping between a field in the Google Drive and a Amazon Kendra index field.\n\nIf you are using the console, you can define index fields when creating the mapping. If you are using the API, you must first create the field using the `UpdateIndex` API.",
         "InclusionPatterns": "A list of regular expression patterns that apply to path on Google Drive. Items that match the pattern are included in the index from both shared drives and users' My Drives. Items that don't match the pattern are excluded from the index. If an item matches both an inclusion pattern and an exclusion pattern, it is excluded from the index.",
         "SecretArn": "The Amazon Resource Name (ARN) of a AWS Secrets Manager secret that contains the credentials required to connect to Google Drive. For more information, see [Using a Google Workspace Drive data source](https://docs.aws.amazon.com/kendra/latest/dg/data-source-google-drive.html) ."
       }
     },
     "AWS::Kendra::DataSource.OneDriveConfiguration": {
       "attributes": {},
-      "description": "Provides configuration information for data sources that connect to OneDrive.",
+      "description": "Provides the configuration information to connect to OneDrive as your data source.",
       "properties": {
         "DisableLocalGroups": "A Boolean value that specifies whether local groups are disabled ( `True` ) or enabled ( `False` ).",
         "ExclusionPatterns": "List of regular expressions applied to documents. Items that match the exclusion pattern are not indexed. If you provide both an inclusion pattern and an exclusion pattern, any item that matches the exclusion pattern isn't indexed.\n\nThe exclusion pattern is applied to the file name.",
@@ -23004,7 +23004,7 @@
     },
     "AWS::Kendra::DataSource.S3DataSourceConfiguration": {
       "attributes": {},
-      "description": "Provides configuration information for a data source to index documents in an Amazon S3 bucket.",
+      "description": "Provides the configuration information to connect to an Amazon S3 bucket.",
       "properties": {
         "AccessControlListConfiguration": "Provides the path to the S3 bucket that contains the user context filtering files for the data source. For the format of the file, see [Access control for S3 data sources](https://docs.aws.amazon.com/kendra/latest/dg/s3-acl.html) .",
         "BucketName": "The name of the bucket that contains the documents.",
@@ -23024,7 +23024,7 @@
     },
     "AWS::Kendra::DataSource.SalesforceChatterFeedConfiguration": {
       "attributes": {},
-      "description": "Defines configuration for syncing a Salesforce chatter feed. The contents of the object comes from the Salesforce FeedItem table.",
+      "description": "The configuration information for syncing a Salesforce chatter feed. The contents of the object comes from the Salesforce FeedItem table.",
       "properties": {
         "DocumentDataFieldName": "The name of the column in the Salesforce FeedItem table that contains the content to index. Typically this is the `Body` column.",
         "DocumentTitleFieldName": "The name of the column in the Salesforce FeedItem table that contains the title of the document. This is typically the `Title` column.",
@@ -23043,7 +23043,7 @@
         "KnowledgeArticleConfiguration": "Specifies configuration information for the knowledge article types that Amazon Kendra indexes. Amazon Kendra indexes standard knowledge articles and the standard fields of knowledge articles, or the custom fields of custom knowledge articles, but not both.",
         "SecretArn": "The Amazon Resource Name (ARN) of an AWS Secrets Manager secret that contains the key/value pairs required to connect to your Salesforce instance. The secret must contain a JSON structure with the following keys:\n\n- authenticationUrl - The OAUTH endpoint that Amazon Kendra connects to get an OAUTH token.\n- consumerKey - The application public key generated when you created your Salesforce application.\n- consumerSecret - The application private key generated when you created your Salesforce application.\n- password - The password associated with the user logging in to the Salesforce instance.\n- securityToken - The token associated with the user account logging in to the Salesforce instance.\n- username - The user name of the user logging in to the Salesforce instance.",
         "ServerUrl": "The instance URL for the Salesforce site that you want to index.",
-        "StandardObjectAttachmentConfiguration": "Provides configuration information for processing attachments to Salesforce standard objects.",
+        "StandardObjectAttachmentConfiguration": "Configuration information for processing attachments to Salesforce standard objects.",
         "StandardObjectConfigurations": "Specifies the Salesforce standard objects that Amazon Kendra indexes."
       }
     },
@@ -23059,16 +23059,16 @@
     },
     "AWS::Kendra::DataSource.SalesforceKnowledgeArticleConfiguration": {
       "attributes": {},
-      "description": "Specifies configuration information for the knowledge article types that Amazon Kendra indexes. Amazon Kendra indexes standard knowledge articles and the standard fields of knowledge articles, or the custom fields of custom knowledge articles, but not both",
+      "description": "Provides the configuration information for the knowledge article types that Amazon Kendra indexes. Amazon Kendra indexes standard knowledge articles and the standard fields of knowledge articles, or the custom fields of custom knowledge articles, but not both",
       "properties": {
-        "CustomKnowledgeArticleTypeConfigurations": "Provides configuration information for custom Salesforce knowledge articles.",
+        "CustomKnowledgeArticleTypeConfigurations": "Configuration information for custom Salesforce knowledge articles.",
         "IncludedStates": "Specifies the document states that should be included when Amazon Kendra indexes knowledge articles. You must specify at least one state.",
-        "StandardKnowledgeArticleTypeConfiguration": "Provides configuration information for standard Salesforce knowledge articles."
+        "StandardKnowledgeArticleTypeConfiguration": "Configuration information for standard Salesforce knowledge articles."
       }
     },
     "AWS::Kendra::DataSource.SalesforceStandardKnowledgeArticleTypeConfiguration": {
       "attributes": {},
-      "description": "Provides configuration information for standard Salesforce knowledge articles.",
+      "description": "Configuration information for standard Salesforce knowledge articles.",
       "properties": {
         "DocumentDataFieldName": "The name of the field that contains the document data to index.",
         "DocumentTitleFieldName": "The name of the field that contains the document title.",
@@ -23077,7 +23077,7 @@
     },
     "AWS::Kendra::DataSource.SalesforceStandardObjectAttachmentConfiguration": {
       "attributes": {},
-      "description": "Provides configuration information for processing attachments to Salesforce standard objects.",
+      "description": "Provides the configuration information for processing attachments to Salesforce standard objects.",
       "properties": {
         "DocumentTitleFieldName": "The name of the field used for the document title.",
         "FieldMappings": "One or more objects that map fields in attachments to Amazon Kendra index fields."
@@ -23095,19 +23095,19 @@
     },
     "AWS::Kendra::DataSource.ServiceNowConfiguration": {
       "attributes": {},
-      "description": "Provides configuration information required to connect to a ServiceNow data source.",
+      "description": "Provides the configuration information to connect to ServiceNow as your data source.",
       "properties": {
         "AuthenticationType": "Determines the type of authentication used to connect to the ServiceNow instance. If you choose `HTTP_BASIC` , Amazon Kendra is authenticated using the user name and password provided in the AWS Secrets Manager secret in the `SecretArn` field. When you choose `OAUTH2` , Amazon Kendra is authenticated using the OAuth token and secret provided in the Secrets Manager secret, and the user name and password are used to determine which information Amazon Kendra has access to.\n\nWhen you use `OAUTH2` authentication, you must generate a token and a client secret using the ServiceNow console. For more information, see [Using a ServiceNow data source](https://docs.aws.amazon.com/kendra/latest/dg/data-source-servicenow.html) .",
         "HostUrl": "The ServiceNow instance that the data source connects to. The host endpoint should look like the following: `{instance}.service-now.com.`",
-        "KnowledgeArticleConfiguration": "Provides configuration information for crawling knowledge articles in the ServiceNow site.",
+        "KnowledgeArticleConfiguration": "Configuration information for crawling knowledge articles in the ServiceNow site.",
         "SecretArn": "The Amazon Resource Name (ARN) of the AWS Secrets Manager secret that contains the user name and password required to connect to the ServiceNow instance.",
-        "ServiceCatalogConfiguration": "Provides configuration information for crawling service catalogs in the ServiceNow site.",
+        "ServiceCatalogConfiguration": "Configuration information for crawling service catalogs in the ServiceNow site.",
         "ServiceNowBuildVersion": "The identifier of the release that the ServiceNow host is running. If the host is not running the `LONDON` release, use `OTHERS` ."
       }
     },
     "AWS::Kendra::DataSource.ServiceNowKnowledgeArticleConfiguration": {
       "attributes": {},
-      "description": "Provides configuration information for crawling knowledge articles in the ServiceNow site.",
+      "description": "Provides the configuration information for crawling knowledge articles in the ServiceNow site.",
       "properties": {
         "CrawlAttachments": "Indicates whether Amazon Kendra should index attachments to knowledge articles.",
         "DocumentDataFieldName": "The name of the ServiceNow field that is mapped to the index document contents field in the Amazon Kendra index.",
@@ -23120,7 +23120,7 @@
     },
     "AWS::Kendra::DataSource.ServiceNowServiceCatalogConfiguration": {
       "attributes": {},
-      "description": "Provides configuration information for crawling service catalog items in the ServiceNow site",
+      "description": "Provides the configuration information for crawling service catalog items in the ServiceNow site",
       "properties": {
         "CrawlAttachments": "Indicates whether Amazon Kendra should crawl attachments to the service catalog items.",
         "DocumentDataFieldName": "The name of the ServiceNow field that is mapped to the index document contents field in the Amazon Kendra index.",
@@ -23132,7 +23132,7 @@
     },
     "AWS::Kendra::DataSource.SharePointConfiguration": {
       "attributes": {},
-      "description": "Provides configuration information for connecting to a Microsoft SharePoint data source.",
+      "description": "Provides the configuration information to connect to Microsoft SharePoint as your data source.",
       "properties": {
         "CrawlAttachments": "`TRUE` to include attachments to documents stored in your Microsoft SharePoint site in the index; otherwise, `FALSE` .",
         "DisableLocalGroups": "A Boolean value that specifies whether local groups are disabled ( `True` ) or enabled ( `False` ).",
@@ -23175,12 +23175,12 @@
       "attributes": {},
       "description": "Provides the configuration information required for Amazon Kendra Web Crawler.",
       "properties": {
-        "AuthenticationConfiguration": "Provides configuration information required to connect to websites using authentication.\n\nYou can connect to websites using basic authentication of user name and password.\n\nYou must provide the website host name and port number. For example, the host name of https://a.example.com/page1.html is \"a.example.com\" and the port is 443, the standard port for HTTPS. You use a secret in [AWS Secrets Manager](https://docs.aws.amazon.com/secretsmanager/latest/userguide/intro.html) to store your authentication credentials.",
+        "AuthenticationConfiguration": "Configuration information required to connect to websites using authentication.\n\nYou can connect to websites using basic authentication of user name and password.\n\nYou must provide the website host name and port number. For example, the host name of https://a.example.com/page1.html is \"a.example.com\" and the port is 443, the standard port for HTTPS. You use a secret in [AWS Secrets Manager](https://docs.aws.amazon.com/secretsmanager/latest/userguide/intro.html) to store your authentication credentials.",
         "CrawlDepth": "Specifies the number of levels in a website that you want to crawl.\n\nThe first level begins from the website seed or starting point URL. For example, if a website has 3 levels \u2013 index level (i.e. seed in this example), sections level, and subsections level \u2013 and you are only interested in crawling information up to the sections level (i.e. levels 0-1), you can set your depth to 1.\n\nThe default crawl depth is set to 2.",
         "MaxContentSizePerPageInMegaBytes": "The maximum size (in MB) of a webpage or attachment to crawl.\n\nFiles larger than this size (in MB) are skipped/not crawled.\n\nThe default maximum size of a webpage or attachment is set to 50 MB.",
         "MaxLinksPerPage": "The maximum number of URLs on a webpage to include when crawling a website. This number is per webpage.\n\nAs a website\u2019s webpages are crawled, any URLs the webpages link to are also crawled. URLs on a webpage are crawled in order of appearance.\n\nThe default maximum links per page is 100.",
         "MaxUrlsPerMinuteCrawlRate": "The maximum number of URLs crawled per website host per minute.\n\nA minimum of one URL is required.\n\nThe default maximum number of URLs crawled per website host per minute is 300.",
-        "ProxyConfiguration": "Provides configuration information required to connect to your internal websites via a web proxy.\n\nYou must provide the website host name and port number. For example, the host name of https://a.example.com/page1.html is \"a.example.com\" and the port is 443, the standard port for HTTPS.\n\nWeb proxy credentials are optional and you can use them to connect to a web proxy server that requires basic authentication. To store web proxy credentials, you use a secret in [AWS Secrets Manager](https://docs.aws.amazon.com/secretsmanager/latest/userguide/intro.html) .",
+        "ProxyConfiguration": "Configuration information required to connect to your internal websites via a web proxy.\n\nYou must provide the website host name and port number. For example, the host name of https://a.example.com/page1.html is \"a.example.com\" and the port is 443, the standard port for HTTPS.\n\nWeb proxy credentials are optional and you can use them to connect to a web proxy server that requires basic authentication. To store web proxy credentials, you use a secret in [AWS Secrets Manager](https://docs.aws.amazon.com/secretsmanager/latest/userguide/intro.html) .",
         "UrlExclusionPatterns": "The regular expression pattern to exclude certain URLs to crawl.\n\nIf there is a regular expression pattern to include certain URLs that conflicts with the exclude pattern, the exclude pattern takes precedence.",
         "UrlInclusionPatterns": "The regular expression pattern to include certain URLs to crawl.\n\nIf there is a regular expression pattern to exclude certain URLs that conflicts with the include pattern, the exclude pattern takes precedence.",
         "Urls": "Specifies the seed or starting point URLs of the websites or the sitemap URLs of the websites you want to crawl.\n\nYou can include website subdomains. You can list up to 100 seed URLs and up to three sitemap URLs.\n\nYou can only crawl websites that use the secure communication protocol, Hypertext Transfer Protocol Secure (HTTPS). If you receive an error when crawling a website, it could be that the website is blocked from crawling.\n\n*When selecting websites to index, you must adhere to the [Amazon Acceptable Use Policy](https://docs.aws.amazon.com/aup/) and all other Amazon terms. Remember that you must only use Amazon Kendra Web Crawler to index your own webpages, or webpages that you have authorization to index.*"
@@ -23205,8 +23205,8 @@
       "attributes": {},
       "description": "Specifies the seed or starting point URLs of the websites or the sitemap URLs of the websites you want to crawl.\n\nYou can include website subdomains. You can list up to 100 seed URLs and up to three sitemap URLs.\n\nYou can only crawl websites that use the secure communication protocol, Hypertext Transfer Protocol Secure (HTTPS). If you receive an error when crawling a website, it could be that the website is blocked from crawling.\n\n*When selecting websites to index, you must adhere to the [Amazon Acceptable Use Policy](https://docs.aws.amazon.com/aup/) and all other Amazon terms. Remember that you must only use the Amazon Kendra web crawler to index your own webpages, or webpages that you have authorization to index.*",
       "properties": {
-        "SeedUrlConfiguration": "Provides the configuration of the seed or starting point URLs of the websites you want to crawl.\n\nYou can choose to crawl only the website host names, or the website host names with subdomains, or the website host names with subdomains and other domains that the webpages link to.\n\nYou can list up to 100 seed URLs.",
-        "SiteMapsConfiguration": "Provides the configuration of the sitemap URLs of the websites you want to crawl.\n\nOnly URLs belonging to the same website host names are crawled. You can list up to three sitemap URLs."
+        "SeedUrlConfiguration": "Configuration of the seed or starting point URLs of the websites you want to crawl.\n\nYou can choose to crawl only the website host names, or the website host names with subdomains, or the website host names with subdomains and other domains that the webpages link to.\n\nYou can list up to 100 seed URLs.",
+        "SiteMapsConfiguration": "Configuration of the sitemap URLs of the websites you want to crawl.\n\nOnly URLs belonging to the same website host names are crawled. You can list up to three sitemap URLs."
       }
     },
     "AWS::Kendra::DataSource.WorkDocsConfiguration": {
@@ -23215,7 +23215,7 @@
       "properties": {
         "CrawlComments": "`TRUE` to include comments on documents in your index. Including comments in your index means each comment is a document that can be searched on.\n\nThe default is set to `FALSE` .",
         "ExclusionPatterns": "A list of regular expression patterns to exclude certain files in your Amazon WorkDocs site repository. Files that match the patterns are excluded from the index. Files that don\u2019t match the patterns are included in the index. If a file matches both an inclusion pattern and an exclusion pattern, the exclusion pattern takes precedence and the file isn\u2019t included in the index.",
-        "FieldMappings": "A list of `DataSourceToIndexFieldMapping` objects that map Amazon WorkDocs field names to custom index field names in Amazon Kendra. You must first create the custom index fields using the `UpdateIndex` operation before you map to Amazon WorkDocs fields. For more information, see [Mapping Data Source Fields](https://docs.aws.amazon.com/kendra/latest/dg/field-mapping.html) . The Amazon WorkDocs data source field names need to exist in your Amazon WorkDocs custom metadata.",
+        "FieldMappings": "A list of `DataSourceToIndexFieldMapping` objects that map Amazon WorkDocs field names to custom index field names in Amazon Kendra. You must first create the custom index fields using the `UpdateIndex` API before you map to Amazon WorkDocs fields. For more information, see [Mapping Data Source Fields](https://docs.aws.amazon.com/kendra/latest/dg/field-mapping.html) . The Amazon WorkDocs data source field names need to exist in your Amazon WorkDocs custom metadata.",
         "InclusionPatterns": "A list of regular expression patterns to include certain files in your Amazon WorkDocs site repository. Files that match the patterns are included in the index. Files that don't match the patterns are excluded from the index. If a file matches both an inclusion pattern and an exclusion pattern, the exclusion pattern takes precedence and the file isn\u2019t included in the index.",
         "OrganizationId": "The identifier of the directory corresponding to your Amazon WorkDocs site repository.\n\nYou can find the organization ID in the [AWS Directory Service](https://docs.aws.amazon.com/directoryservicev2/) by going to *Active Directory* , then *Directories* . Your Amazon WorkDocs site directory has an ID, which is the organization ID. You can also set up a new Amazon WorkDocs directory in the AWS Directory Service console and enable a Amazon WorkDocs site for the directory in the Amazon WorkDocs console.",
         "UseChangeLog": "`TRUE` to use the change logs to update documents in your index instead of scanning all documents.\n\nIf you are syncing your Amazon WorkDocs data source with your index for the first time, all documents are scanned. After your first sync, you can use the change logs to update your documents in your index for future syncs.\n\nThe default is set to `FALSE` ."
@@ -23286,7 +23286,7 @@
     },
     "AWS::Kendra::Index.JsonTokenTypeConfiguration": {
       "attributes": {},
-      "description": "Configuration information for the JSON token type.",
+      "description": "Provides the configuration information for the JSON token type.",
       "properties": {
         "GroupAttributeField": "The group attribute field.",
         "UserNameAttributeField": "The user name attribute field."
@@ -23294,7 +23294,7 @@
     },
     "AWS::Kendra::Index.JwtTokenTypeConfiguration": {
       "attributes": {},
-      "description": "Configuration information for the JWT token type.",
+      "description": "Provides the configuration information for the JWT token type.",
       "properties": {
         "ClaimRegex": "The regular expression that identifies the claim.",
         "GroupAttributeField": "The group attribute field.",
@@ -23335,7 +23335,7 @@
     },
     "AWS::Kendra::Index.UserTokenConfiguration": {
       "attributes": {},
-      "description": "Provides configuration information for a token configuration.",
+      "description": "Provides the configuration information for a token.",
       "properties": {
         "JsonTokenTypeConfiguration": "Information about the JSON token type configuration.",
         "JwtTokenTypeConfiguration": "Information about the JWT token type configuration."
@@ -25977,7 +25977,7 @@
         "Arn": "The Amazon Resource Name (ARN) for the geofence collection resource. Used when you need to specify a resource across all AWS .\n\n- Format example: `arn:aws:geo:region:account-id:geofence-collection/ExampleGeofenceCollection`",
         "CollectionArn": "Synonym for `Arn` . The Amazon Resource Name (ARN) for the geofence collection resource. Used when you need to specify a resource across all AWS .\n\n- Format example: `arn:aws:geo:region:account-id:geofence-collection/ExampleGeofenceCollection`",
         "CreateTime": "The timestamp for when the geofence collection resource was created in [ISO 8601](https://docs.aws.amazon.com/https://www.iso.org/iso-8601-date-and-time-format.html) format: `YYYY-MM-DDThh:mm:ss.sssZ` .",
-        "Ref": "`Ref` returns the `GeofenceCollection` ARN.",
+        "Ref": "`Ref` returns the `GeofenceCollection` name.",
         "UpdateTime": "The timestamp for when the geofence collection resource was last updated in [ISO 8601](https://docs.aws.amazon.com/https://www.iso.org/iso-8601-date-and-time-format.html) format: `YYYY-MM-DDThh:mm:ss.sssZ` ."
       },
       "description": "The `AWS::Location::GeofenceCollection` resource specifies the ability to detect and act when a tracked device enters or exits a defined geographical boundary known as a geofence.",
@@ -25995,7 +25995,7 @@
         "CreateTime": "The timestamp for when the map resource was created in [ISO 8601](https://docs.aws.amazon.com/https://www.iso.org/iso-8601-date-and-time-format.html) format: `YYYY-MM-DDThh:mm:ss.sssZ` .",
         "DataSource": "The data provider for the associated map tiles.",
         "MapArn": "Synonym for `Arn` . The Amazon Resource Name (ARN) for the map resource. Used to specify a resource across all AWS .\n\n- Format example: `arn:aws:geo:region:account-id:maps/ExampleMap`",
-        "Ref": "`Ref` returns the `Map` ARN.",
+        "Ref": "`Ref` returns the `Map` name.",
         "UpdateTime": "The timestamp for when the map resource was last updated in [ISO 8601](https://docs.aws.amazon.com/https://www.iso.org/iso-8601-date-and-time-format.html) format: `YYYY-MM-DDThh:mm:ss.sssZ` ."
       },
       "description": "The `AWS::Location::Map` resource specifies a map resource in your AWS account, which provides map tiles of different styles sourced from global location data providers.",
@@ -26018,7 +26018,7 @@
         "Arn": "The Amazon Resource Name (ARN) for the place index resource. Used to specify a resource across AWS .\n\n- Format example: `arn:aws:geo:region:account-id:place-index/ExamplePlaceIndex`",
         "CreateTime": "The timestamp for when the place index resource was created in [ISO 8601](https://docs.aws.amazon.com/https://www.iso.org/iso-8601-date-and-time-format.html) format: `YYYY-MM-DDThh:mm:ss.sssZ` .",
         "IndexArn": "Synonym for `Arn` . The Amazon Resource Name (ARN) for the place index resource. Used to specify a resource across AWS .\n\n- Format example: `arn:aws:geo:region:account-id:place-index/ExamplePlaceIndex`",
-        "Ref": "`Ref` returns the `PlaceIndex` ARN.",
+        "Ref": "`Ref` returns the `PlaceIndex` name.",
         "UpdateTime": "The timestamp for when the place index resource was last updated in [ISO 8601](https://docs.aws.amazon.com/https://www.iso.org/iso-8601-date-and-time-format.html) format: `YYYY-MM-DDThh:mm:ss.sssZ` ."
       },
       "description": "The `AWS::Location::PlaceIndex` resource specifies a place index resource in your AWS account, which supports Places functions with geospatial data sourced from your chosen data provider.",
@@ -26042,7 +26042,7 @@
         "Arn": "The Amazon Resource Name (ARN) for the route calculator resource. Use the ARN when you specify a resource across all AWS .\n\n- Format example: `arn:aws:geo:region:account-id:route-calculator/ExampleCalculator`",
         "CalculatorArn": "Synonym for `Arn` . The Amazon Resource Name (ARN) for the route calculator resource. Use the ARN when you specify a resource across all AWS .\n\n- Format example: `arn:aws:geo:region:account-id:route-calculator/ExampleCalculator`",
         "CreateTime": "The timestamp for when the route calculator resource was created in [ISO 8601](https://docs.aws.amazon.com/https://www.iso.org/iso-8601-date-and-time-format.html) format: `YYYY-MM-DDThh:mm:ss.sssZ` .",
-        "Ref": "`Ref` returns the `RouteCalculator` ARN.",
+        "Ref": "`Ref` returns the `RouteCalculator` name.",
         "UpdateTime": "The timestamp for when the route calculator resource was last updated in [ISO 8601](https://docs.aws.amazon.com/https://www.iso.org/iso-8601-date-and-time-format.html) format: `YYYY-MM-DDThh:mm:ss.sssZ` ."
       },
       "description": "The `AWS::Location::RouteCalculator` resource specifies a route calculator resource in your AWS account.\n\nYou can send requests to a route calculator resource to estimate travel time, distance, and get directions. A route calculator sources traffic and road network data from your chosen data provider.",
@@ -26057,7 +26057,7 @@
       "attributes": {
         "Arn": "The Amazon Resource Name (ARN) for the tracker resource. Used when you need to specify a resource across all AWS .\n\n- Format example: `arn:aws:geo:region:account-id:tracker/ExampleTracker`",
         "CreateTime": "The timestamp for when the tracker resource was created in [ISO 8601](https://docs.aws.amazon.com/https://www.iso.org/iso-8601-date-and-time-format.html) format: `YYYY-MM-DDThh:mm:ss.sssZ` .",
-        "Ref": "`Ref` returns the `Tracker` ARN.",
+        "Ref": "`Ref` returns the `Tracker` name.",
         "TrackerArn": "Synonym for `Arn` . The Amazon Resource Name (ARN) for the tracker resource. Used when you need to specify a resource across all AWS .\n\n- Format example: `arn:aws:geo:region:account-id:tracker/ExampleTracker`",
         "UpdateTime": "The timestamp for when the tracker resource was last updated in [ISO 8601](https://docs.aws.amazon.com/https://www.iso.org/iso-8601-date-and-time-format.html) format: `YYYY-MM-DDThh:mm:ss.sssZ` ."
       },
@@ -26073,7 +26073,7 @@
     },
     "AWS::Location::TrackerConsumer": {
       "attributes": {
-        "Ref": "`Ref` returns the `GeofenceCollection` ARN."
+        "Ref": "`Ref` returns the `GeofenceCollection` name."
       },
       "description": "The `AWS::Location::TrackerConsumer` resource specifies an association between a geofence collection and a tracker resource. The geofence collection is referred to as the *consumer* of the tracker. This allows the tracker resource to communicate location data to the linked geofence collection.\n\n> Currently not supported \u2014 Cross-account configurations, such as creating associations between a tracker resource in one account and a geofence collection in another account.",
       "properties": {
@@ -33421,7 +33421,7 @@
         "NameServers": "Returns the set of name servers for the specific hosted zone. For example: `ns1.example.com` .\n\nThis attribute is not supported for private hosted zones.",
         "Ref": "`Ref` returns the hosted zone ID, such as `Z23ABC4XYZL05B` ."
       },
-      "description": "Creates a new public or private hosted zone. You create records in a public hosted zone to define how you want to route traffic on the internet for a domain, such as example.com, and its subdomains (apex.example.com, acme.example.com). You create records in a private hosted zone to define how you want to route traffic for a domain and its subdomains within one or more Amazon Virtual Private Clouds (Amazon VPCs).\n\n> You can't convert a public hosted zone to a private hosted zone or vice versa. Instead, you must create a new hosted zone with the same name and create new resource record sets. \n\nFor more information about charges for hosted zones, see [Amazon Route 53 Pricing](https://docs.aws.amazon.com/route53/pricing/) .\n\nNote the following:\n\n- You can't create a hosted zone for a top-level domain (TLD) such as .com.\n- For public hosted zones, Route 53 automatically creates a default SOA record and four NS records for the zone. For more information about SOA and NS records, see [NS and SOA Records that Route 53 Creates for a Hosted Zone](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/SOA-NSrecords.html) in the *Amazon Route 53 Developer Guide* .\n\nIf you want to use the same name servers for multiple public hosted zones, you can optionally associate a reusable delegation set with the hosted zone. See the `DelegationSetId` element.\n- If your domain is registered with a registrar other than Route 53, you must update the name servers with your registrar to make Route 53 the DNS service for the domain. For more information, see [Migrating DNS Service for an Existing Domain to Amazon Route 53](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/MigratingDNS.html) in the *Amazon Route 53 Developer Guide* .\n\nWhen you submit a `CreateHostedZone` request, the initial status of the hosted zone is `PENDING` . For public hosted zones, this means that the NS and SOA records are not yet available on all Route 53 DNS servers. When the NS and SOA records are available, the status of the zone changes to `INSYNC` .\n\nThe `CreateHostedZone` request requires the caller to have an `ec2:DescribeVpcs` permission.",
+      "description": "Creates a new public or private hosted zone. You create records in a public hosted zone to define how you want to route traffic on the internet for a domain, such as example.com, and its subdomains (apex.example.com, acme.example.com). You create records in a private hosted zone to define how you want to route traffic for a domain and its subdomains within one or more Amazon Virtual Private Clouds (Amazon VPCs).\n\n> You can't convert a public hosted zone to a private hosted zone or vice versa. Instead, you must create a new hosted zone with the same name and create new resource record sets. \n\nFor more information about charges for hosted zones, see [Amazon Route 53 Pricing](https://docs.aws.amazon.com/route53/pricing/) .\n\nNote the following:\n\n- You can't create a hosted zone for a top-level domain (TLD) such as .com.\n- For public hosted zones, Route 53 automatically creates a default SOA record and four NS records for the zone. For more information about SOA and NS records, see [NS and SOA Records that Route 53 Creates for a Hosted Zone](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/SOA-NSrecords.html) in the *Amazon Route 53 Developer Guide* .\n\nIf you want to use the same name servers for multiple public hosted zones, you can optionally associate a reusable delegation set with the hosted zone. See the `DelegationSetId` element.\n- If your domain is registered with a registrar other than Route 53, you must update the name servers with your registrar to make Route 53 the DNS service for the domain. For more information, see [Migrating DNS Service for an Existing Domain to Amazon Route 53](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/MigratingDNS.html) in the *Amazon Route 53 Developer Guide* .\n\nWhen you submit a `CreateHostedZone` request, the initial status of the hosted zone is `PENDING` . For public hosted zones, this means that the NS and SOA records are not yet available on all Route 53 DNS servers. When the NS and SOA records are available, the status of the zone changes to `INSYNC` .\n\nThe `CreateHostedZone` request requires the caller to have an `ec2:DescribeVpcs` permission.\n\n> When creating private hosted zones, the Amazon VPC must belong to the same partition where the hosted zone is created. A partition is a group of AWS Regions . Each AWS account is scoped to one partition.\n> \n> The following are the supported partitions:\n> \n> - `aws` - AWS Regions\n> - `aws-cn` - China Regions\n> - `aws-us-gov` - AWS GovCloud (US) Region\n> \n> For more information, see [Access Management](https://docs.aws.amazon.com/general/latest/gr/aws-arns-and-namespaces.html) in the *AWS General Reference* .",
       "properties": {
         "HostedZoneConfig": "A complex type that contains an optional comment.\n\nIf you don't want to specify a comment, omit the `HostedZoneConfig` and `Comment` elements.",
         "HostedZoneTags": "Adds, edits, or deletes tags for a health check or a hosted zone.\n\nFor information about using tags for cost allocation, see [Using Cost Allocation Tags](https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/cost-alloc-tags.html) in the *AWS Billing and Cost Management User Guide* .",
@@ -35702,7 +35702,7 @@
       "attributes": {},
       "description": "Specifies the ARN's of a SageMaker image and SageMaker image version, and the instance type that the version runs on.",
       "properties": {
-        "InstanceType": "The instance type that the image version runs on.",
+        "InstanceType": "The instance type that the image version runs on.\n\n> JupyterServer Apps only support the `system` value.",
         "SageMakerImageArn": "The ARN of the SageMaker image that the image version belongs to.",
         "SageMakerImageVersionArn": "The ARN of the image version created on the instance."
       }
@@ -35985,14 +35985,14 @@
       "description": "The KernelGateway app settings.",
       "properties": {
         "CustomImages": "A list of custom SageMaker images that are configured to run as a KernelGateway app.",
-        "DefaultResourceSpec": "The default instance type and the Amazon Resource Name (ARN) of the default SageMaker image used by the KernelGateway app."
+        "DefaultResourceSpec": "The default instance type and the Amazon Resource Name (ARN) of the default SageMaker image used by the KernelGateway app.\n\n> The Amazon SageMaker Studio UI does not use the default instance type value set here. The default instance type set here is used when Apps are created using the AWS Command Line Interface or AWS CloudFormation and the instance type parameter value is not passed."
       }
     },
     "AWS::SageMaker::Domain.ResourceSpec": {
       "attributes": {},
       "description": "Specifies the ARN's of a SageMaker image and SageMaker image version, and the instance type that the version runs on.",
       "properties": {
-        "InstanceType": "The instance type that the image version runs on.",
+        "InstanceType": "The instance type that the image version runs on.\n\n> JupyterServer Apps only support the `system` value.",
         "SageMakerImageArn": "The ARN of the SageMaker image that the image version belongs to.",
         "SageMakerImageVersionArn": "The ARN of the image version created on the instance."
       }
@@ -36214,7 +36214,7 @@
         "ImageArn": "The Amazon Resource Name (ARN) of the image.\n\n*Type* : String\n\n*Length Constraints* : Maximum length of 256.\n\n*Pattern* : `^arn:aws(-[\\w]+)*:sagemaker:.+:[0-9]{12}:image/[a-z0-9]([-.]?[a-z0-9])*$`",
         "Ref": "`Ref` returns the ImageArn."
       },
-      "description": "Creates a custom SageMaker image. A SageMaker image is a set of image versions. Each image version represents a container image stored in Amazon Container Registry (ECR). For more information, see [Bring your own SageMaker image](https://docs.aws.amazon.com/sagemaker/latest/dg/studio-byoi.html) .",
+      "description": "Creates a custom SageMaker image. A SageMaker image is a set of image versions. Each image version represents a container image stored in Amazon Elastic Container Registry (ECR). For more information, see [Bring your own SageMaker image](https://docs.aws.amazon.com/sagemaker/latest/dg/studio-byoi.html) .",
       "properties": {
         "ImageDescription": "The description of the image.\n\n*Length Constraints* : Minimum length of 1. Maximum length of 512.\n\n*Pattern* : `.*`",
         "ImageDisplayName": "The display name of the image.\n\n*Length Constraints* : Minimum length of 1. Maximum length of 128.\n\n*Pattern* : `^\\S(.*\\S)?$`",
@@ -37022,14 +37022,14 @@
       "description": "The KernelGateway app settings.",
       "properties": {
         "CustomImages": "A list of custom SageMaker images that are configured to run as a KernelGateway app.",
-        "DefaultResourceSpec": "The default instance type and the Amazon Resource Name (ARN) of the default SageMaker image used by the KernelGateway app."
+        "DefaultResourceSpec": "The default instance type and the Amazon Resource Name (ARN) of the default SageMaker image used by the KernelGateway app.\n\n> The Amazon SageMaker Studio UI does not use the default instance type value set here. The default instance type set here is used when Apps are created using the AWS Command Line Interface or AWS CloudFormation and the instance type parameter value is not passed."
       }
     },
     "AWS::SageMaker::UserProfile.ResourceSpec": {
       "attributes": {},
       "description": "Specifies the ARN's of a SageMaker image and SageMaker image version, and the instance type that the version runs on.",
       "properties": {
-        "InstanceType": "The instance type that the image version runs on.",
+        "InstanceType": "The instance type that the image version runs on.\n\n> JupyterServer Apps only support the `system` value.",
         "SageMakerImageArn": "The ARN of the SageMaker image that the image version belongs to.",
         "SageMakerImageVersionArn": "The ARN of the image version created on the instance."
       }
@@ -37057,14 +37057,14 @@
     "AWS::SageMaker::Workteam": {
       "attributes": {
         "Ref": "",
-        "WorkteamName": ""
+        "WorkteamName": "The name of the work team."
       },
       "description": "Creates a new work team for labeling your data. A work team is defined by one or more Amazon Cognito user pools. You must first create the user pools before you can create a work team.\n\nYou cannot create more than 25 work teams in an account and region.",
       "properties": {
         "Description": "A description of the work team.",
         "MemberDefinitions": "A list of `MemberDefinition` objects that contains objects that identify the workers that make up the work team.\n\nWorkforces can be created using Amazon Cognito or your own OIDC Identity Provider (IdP). For private workforces created using Amazon Cognito use `CognitoMemberDefinition` . For workforces created using your own OIDC identity provider (IdP) use `OidcMemberDefinition` .",
         "NotificationConfiguration": "Configures SNS notifications of available or expiring work items for work teams.",
-        "Tags": "",
+        "Tags": "An array of key-value pairs.",
         "WorkteamName": "The name of the work team."
       }
     },
@@ -37072,9 +37072,9 @@
       "attributes": {},
       "description": "Identifies a Amazon Cognito user group. A user group can be used in on or more work teams.",
       "properties": {
-        "CognitoClientId": "",
-        "CognitoUserGroup": "",
-        "CognitoUserPool": ""
+        "CognitoClientId": "An identifier for an application client. You must create the app client ID using Amazon Cognito.",
+        "CognitoUserGroup": "An identifier for a user group.",
+        "CognitoUserPool": "An identifier for a user pool. The user pool must be in the same region as the service that you are calling."
       }
     },
     "AWS::SageMaker::Workteam.MemberDefinition": {
