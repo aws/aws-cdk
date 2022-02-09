@@ -59,7 +59,7 @@
     "jsii": "^1.52.1",
     "jsii-pacmak": "^1.52.1",
     "jsii-reflect": "^1.52.1",
-    "markdownlint-cli": "^0.31.0",
+    "markdownlint-cli": "^0.31.1",
     "nyc": "^15.1.0",
     "semver": "^7.3.5",
     "ts-jest": "^27.1.3",
