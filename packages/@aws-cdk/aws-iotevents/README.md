@@ -40,38 +40,7 @@ Import it into your code:
 import * as iotevents from '@aws-cdk/aws-iotevents';
 ```
 
-## Overview
-
-The following example is a minimal set of an AWS IoT Events detector model.
-It has no feature but it maybe help you to understand overview.
-
-```ts
-import * as iotevents from '@aws-cdk/aws-iotevents';
-
-// First, define the input of the detector model
-const input = new iotevents.Input(this, 'MyInput', {
-  attributeJsonPaths: ['payload.deviceId', 'payload.temperature'],
-});
-
-// Second, define states of the detector model.
-// You can define multiple states and its transitions.
-const state = new iotevents.State({
-  stateName: 'warm',
-  onEnter: [{
-    eventName: 'onEnter',
-    condition: iotevents.Expression.currentInput(input),
-  }],
-});
-
-// Finally, define the detector model.
-new iotevents.DetectorModel(this, 'MyDetectorModel', {
-  initialState: state,
-});
-```
-
-Each part is explained in detail below.
-
-## `Input`
+## Input
 
 You can create `Input` as following. You can put messages to the Input with AWS IoT Core Topic Rule, AWS IoT Analytics and more.
 For more information, see [the documentation](https://docs.aws.amazon.com/iotevents/latest/developerguide/iotevents-getting-started.html).
@@ -85,7 +54,7 @@ const input = new iotevents.Input(this, 'MyInput', {
 });
 ```
 
-To grant permissions to put messages in the input,
+To grant permissions to put messages in the Input,
 you can use the `grantWrite()` method:
 
 ```ts
@@ -93,19 +62,18 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as iotevents from '@aws-cdk/aws-iotevents';
 
 declare const grantable: iam.IGrantable;
-const input = iotevents.Input.fromInputName(this, 'MyInput', 'my_input');
+declare const input: iotevents.IInput;
 
 input.grantWrite(grantable);
 ```
 
-## `State`
+## State
 
 You can create `State` as following.
-If a State is used for a Detector Model's initial state,
-it's required that its `onEnter` Event is non-null,
+If a State is used for a Detector Model's initial State, it's required that its `onEnter` Event is non-null,
 and contains a reference to an Input via the `condition` property.
-And if a message is put to the input, the detector instances are created regardless of the evaluation result of `condition`.
-You can set the reference to input with `iotevents.Expression.currentInput()` or `iotevents.Expression.inputAttribute()`.
+And if a message is put to the Input, the detector instances are created regardless of the evaluation result of `condition`.
+You can set the reference to Input with `iotevents.Expression.currentInput()` or `iotevents.Expression.inputAttribute()`.
 In other states, `onEnter` is optional.
 
 ```ts
@@ -123,7 +91,7 @@ const initialState = new iotevents.State({
 ```
 
 You can set actions on the `onEnter` event. They are performed if `condition` evaluates to `true`.
-If you omit `condition`, actions are performed every time the state is entered.
+If you omit `condition`, actions are performed every time the State is entered.
 For more information, see [supported actions](https://docs.aws.amazon.com/iotevents/latest/developerguide/iotevents-supported-actions.html).
 
 ```ts
@@ -153,8 +121,8 @@ const state = new iotevents.State({
 ```
 
 You can also use the `onInput` and `onExit` properties.
-`onInput` is triggered when messages are put to the input that is referenced from the detector model.
-`onExit` is triggered when exiting this state.
+`onInput` is triggered when messages are put to the Input that is referenced from the detector model.
+`onExit` is triggered when exiting this State.
 
 ```ts
 import * as iotevents from '@aws-cdk/aws-iotevents';
@@ -186,15 +154,15 @@ declare const stateB: iotevents.State;
 // transit from stateA to stateB when temperature is 10
 stateA.transitionTo(stateB, {
   eventName: 'to_coldState', // optional property, default by combining the names of the States
-  actions: [action], // optional,
   when: iotevents.Expression.eq(
     iotevents.Expression.inputAttribute(input, 'payload.temperature'),
     iotevents.Expression.fromString('10'),
   ),
+  actions: [action], // optional,
 });
 ```
 
-## `DetectorModel`
+## DetectorModel
 
 You can create a Detector Model as follows:
 
