@@ -77,7 +77,8 @@ export function setCurrentCfnStackTemplate(template: Template) {
 }
 
 export function addTemplateToCloudFormationLookupMock(stackArtifact: CloudFormationStackArtifact) {
-  stackTemplates[stackArtifact.stackName] = stackArtifact.template;
+  const templateDeepCopy = JSON.parse(JSON.stringify(stackArtifact.template));
+  stackTemplates[stackArtifact.stackName] = templateDeepCopy;
 }
 
 export function stackSummaryOf(logicalId: string, resourceType: string, physicalResourceId: string): CloudFormation.StackResourceSummary {

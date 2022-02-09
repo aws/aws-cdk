@@ -78,15 +78,23 @@ async function findAllHotswappableChanges(
   const resourceDifferenceEntries = Object.entries(resourceDifferences);
 
   // process any resources in nested stacks, and remove the nested stack change from the diff, so that we don't process it again below
-  for (const [logicalId, change] of resourceDifferenceEntries) {
+  let idx = 0;
+  for (const [_logicalId, change] of resourceDifferenceEntries) {
     // TODO: test the True && false case here, should be a full deployment
     if (change.newValue?.Type === 'AWS::CloudFormation::Stack' && change.oldValue?.Type === 'AWS::CloudFormation::Stack') {
       const nestedDiff = cfn_diff.diffTemplate(change.oldValue.Properties?.NestedTemplate, change.newValue.Properties?.NestedTemplate);
 
-      // any test with two sibling stacks, each with hotswappable resources, will expose this bug
-      await findAllHotswappableChanges(nestedDiff, evaluateCfnTemplate, hotswappableResources); // TODO: this is bork. If hotswappable changes exist in the other entries, before this loop processes them, then this ignores those changes.
-      resourceDifferenceEntries.splice(resourceDifferenceEntries.indexOf([logicalId, change]), 1);
+      if (await findAllHotswappableChanges(nestedDiff, evaluateCfnTemplate, hotswappableResources) === undefined) {
+        //return undefined; // TODO: test this. Also, since we're forced to return undefined here, it makes more sense to not have hotswappableResources be mutable, and instead we should just always make it 
+                            // empty and then initialize each time, doing the append here if the result is not undefined
+                            // test case is: non-hotswappable changes in nested stacks are not ignored
+      }
+      // why doesn't think work? the indexOf returns -1, why?
+      //resourceDifferenceEntries.splice(resourceDifferenceEntries.indexOf([logicalId, change]), 1);
+      resourceDifferenceEntries.splice(idx, 1);
     }
+
+    idx++;
   }
 
   // gather the results of the detector functions
