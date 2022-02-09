@@ -8,8 +8,8 @@ export enum ContextProvider {
    * AMI provider
    */
   AMI_PROVIDER = 'ami',
-  /**
 
+  /**
    * AZ provider
    */
   AVAILABILITY_ZONE_PROVIDER = 'availability-zones',
