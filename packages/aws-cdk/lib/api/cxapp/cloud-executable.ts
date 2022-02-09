@@ -173,7 +173,7 @@ export class CloudExecutable {
       //
       // Be sure to flush the changes we just made back to disk. The on-disk format is always
       // JSON.
-      await fs.writeFile(stack.templateFullPath, JSON.stringify(stack.template, undefined, 2), { encoding: 'utf-8' });
+      await fs.writeFile(stack.templateFullPath, JSON.stringify(stack.template), { encoding: 'utf-8' });
     }
   }
 
