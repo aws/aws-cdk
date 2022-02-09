@@ -1,19 +1,29 @@
 import * as fs from 'fs';
-import { Dependency } from '.';
+import * as path from 'path';
+import type { Dependency, Attribution, NoticeViolations } from './model';
 import { shell } from './shell';
 
+/**
+ * Valid licenses that are ok to redistribute.
+ */
+const DEFAULT_VALID_LICENSES = [
+  'Apache-2.0',
+  'MIT',
+  'BSD-3-Clause',
+  'ISC',
+  'BSD-2-Clause',
+  '0BSD',
+];
+
+/**
+ * NOTICE file path.
+ */
 const FILE_PATH = 'NOTICE';
 
 /**
- * <prefix-goes-here>
- *
- * | attributions.start |
- *
- * <attributions-go-here>
- *
- * | attributions.end |
+ * String signifying the attributions segement is to follow.
  */
-const NOTICE_FORMAT_REGEX = /([\S\s]*)\| attributions\.start \|([\S\s]*)\| attributions\.end \|/;
+const ATTRIBUTIONS_START = 'This package includes the following third-party software:';
 
 /**
  * ---------------
@@ -29,35 +39,128 @@ const ATTRIBUTIONS_SEPARATOR = `\n${'-'.repeat(15)}\n`;
  */
 const ATTRIBUTION_FORMAT_REGEX = /\*\* (\S*) - (\S*) \| (\S*)([\S\s]*)/;
 
-export interface NoticeGenerateOptions {
+
+/**
+ * Properties for `Notice`.
+ */
+export interface NoticeProps {
   /**
-   * Prefix to prepend to the NOTICE file before the attributions segment starts.
+   * The package root directory.
    */
-  readonly prefix?: string;
+  readonly packageDir: string;
+  /**
+   * Package dependencies.
+   */
+  readonly dependencies: Dependency[];
+  /**
+   * List of valid licenses.
+   *
+   * @default - predefined list.
+   */
+  readonly validLicenses?: string[];
+   /**
+   * Dependencies matching this pattern will be excluded from attribution.
+   *
+   * @default - no exclusions.
+   */
+  readonly exclude?: string;
 }
 
+/**
+ * `Notice` represents a NOTICE file containing various attributions.
+ */
 export class Notice {
 
-  public static parse(): Notice {
+  private readonly packageDir: string;
+  private readonly dependencies: Dependency[];
+  private readonly validLicenses: string[];
 
-    if (!fs.existsSync(FILE_PATH)) {
-      return new Notice(new Map());
+  private readonly expectedAttributions: Map<string, Attribution>;
+
+  constructor(props: NoticeProps) {
+    this.packageDir = props.packageDir;
+    this.dependencies = props.dependencies.filter(d => !props.exclude || !new RegExp(props.exclude).test(d.name));
+    this.validLicenses = (props.validLicenses ?? DEFAULT_VALID_LICENSES).map(l => l.toLowerCase());
+
+    // without the expected attributions, this object is pretty much
+    // useless, so lets generate those of the bat.
+    this.expectedAttributions = this.generateAttributions();
+  }
+
+  /**
+   * Validate the current notice file.
+   *
+   * This method will parse attributions of the current NOTICE file and compare
+   * them against the expected attributions based on the provided dependencies.
+   *
+   * It throws an exception in case the NOTICE file is malformed and cannot be parsed.
+   * Otherwise it returns a report of attribution violations. The Caller is responsible
+   * for inspecting those violations and act accordingaly.
+   *
+   * If no violations are found, the return value will be undefined.
+   */
+  public validate(): NoticeViolations | undefined {
+
+    const currentAttributions = this.parseAttributions();
+
+    const { invalidLicense, noLicense, multiLicense } = this.validateAttributionLicense(currentAttributions);
+    const missing = Array.from(this.expectedAttributions.values()).filter(a => !currentAttributions.has(a.package));
+    const unnecessary = Array.from(currentAttributions.values()).filter(a => !this.expectedAttributions.has(a.package));
+
+    if (invalidLicense.length === 0 && noLicense.length === 0 && multiLicense.length === 0 && missing.length === 0 && unnecessary.length === 0) {
+      return undefined;
     }
 
-    const notice = fs.readFileSync(FILE_PATH, { encoding: 'utf-8' }).match(NOTICE_FORMAT_REGEX);
-    if (!notice) {
-      console.error(`✖ Malformed ${FILE_PATH} file (fix with 'node-bundle fix'):`);
-      process.exit(1);
+    // we convert empty arrays to undefined so its eaiser for callers to check for violations.
+    const emptyToUndefined = (arr: Attribution[]) => arr.length > 0 ? arr : undefined;
+
+    return {
+      invalidLicense: emptyToUndefined(invalidLicense),
+      noLicense: emptyToUndefined(noLicense),
+      multiLicense: emptyToUndefined(multiLicense),
+      missing: emptyToUndefined(missing),
+      unnecessary: emptyToUndefined(unnecessary),
+    };
+  }
+
+  /**
+   * Render the notice file based on the expected attributions
+   * and write it to disk. The copyright is placed in the beginning of the file.
+   */
+  public create(copyright: string) {
+    const notice = [copyright, '', '-'.repeat(40), ''];
+
+    if (this.expectedAttributions.size > 0) {
+      notice.push(ATTRIBUTIONS_START);
+      notice.push('');
     }
+
+    for (const attr of this.expectedAttributions.values()) {
+      notice.push(`** ${attr.package} - ${attr.url} | ${attr.license}`);
+      notice.push(attr.licenseText ?? '');
+      notice.push(ATTRIBUTIONS_SEPARATOR);
+    }
+
+    fs.writeFileSync(path.join(this.packageDir, FILE_PATH), notice.join('\n'));
+  }
+
+  private parseAttributions(): Map<string, Attribution> {
+
+    const noticePath = path.join(this.packageDir, FILE_PATH);
+
+    if (!fs.existsSync(noticePath)) {
+      return new Map();
+    }
+
+    const notice = fs.readFileSync(noticePath, { encoding: 'utf-8' }).split('\n');
+    const attributionsSegment = notice.slice(notice.indexOf(ATTRIBUTIONS_START) + 1).join('\n').trim();
 
     const attributions: Map<string, Attribution> = new Map();
-    const malformed = [];
 
-    for (const section of notice[2].split(ATTRIBUTIONS_SEPARATOR)) {
+    for (const section of attributionsSegment === '' ? [] : attributionsSegment.split(ATTRIBUTIONS_SEPARATOR)) {
       const matched = section.match(ATTRIBUTION_FORMAT_REGEX);
       if (!matched) {
-        malformed.push(section.trim().split('\n')[0]);
-        continue;
+        throw new Error(`Malformed ${FILE_PATH} file (delete it)`);
       }
       const pkg = matched[1];
       attributions.set(pkg, {
@@ -68,105 +171,94 @@ export class Notice {
       });
     }
 
-    if (malformed.length > 0) {
-      console.error(`✖ Found ${malformed.length} malformed attributions (fix with 'node-bundle fix'):`);
-      console.error(malformed.map(l => `  - ${l}`));
-      process.exit(1);
-    }
-
-    return new Notice(attributions, notice[1]);
+    return attributions;
   }
 
-  public static async generate(dependencies: Dependency[], options: NoticeGenerateOptions = {}): Promise<Notice> {
+  private generateAttributions(): Map<string, Attribution> {
 
     const attributions: Map<string, Attribution> = new Map();
 
-    const multiLicense = [];
-    const missingLicense = [];
+    const pkg = (d: Dependency) => `${d.name}@${d.version}`;
 
-    for (const dep of dependencies) {
-      const pkg = `${dep.name}@${dep.version}`;
-      const output = await shell(`${require.resolve('license-checker/bin/license-checker')} --json --packages ${pkg}`, { cwd: dep.path, quiet: true });
-      const info = JSON.parse(output)[pkg];
-      const licenses: string[] = info.licenses ? info.licenses.split(',') : [];
+    const dependenciesRoot = lcp(this.dependencies.map(d => d.path));
+    const packages = this.dependencies.map(d => pkg(d)).join(';');
+    const output = shell(`${require.resolve('license-checker/bin/license-checker')} --json --packages "${packages}"`, { cwd: dependenciesRoot, quiet: true });
+    const infos = JSON.parse(output);
 
-      if (licenses.length > 0) {
-        multiLicense.push(`${dep} (${licenses})`);
-        continue;
+    for (const dep of this.dependencies) {
+
+      const key = pkg(dep);
+      const info = infos[key];
+
+      if (!info) {
+        // make sure all dependencies are accounted for.
+        throw new Error(`Unable to locate license information for ${key}`);
       }
 
-      if (licenses.length === 0) {
-        missingLicense.push(dep);
-        continue;
-      }
+      // for some reason, the license-checker package falls back to the README.md file of the package for license
+      // text. this seems strange, disabling that for now.
+      // see https://github.com/davglass/license-checker/blob/master/lib/license-files.js#L9
+      // note that a non existing license file is ok as long as the license type could be extracted.
+      const licenseFile = info.licenseFile?.toLowerCase().endsWith('.md') ? undefined : info.licenseFile;
 
-      attributions.set(pkg, {
-        package: pkg,
+      attributions.set(key, {
+        package: key,
         url: `https://www.npmjs.com/package/${dep.name}/v/${dep.version}`,
-        license: licenses[0],
-        licenseText: (info.licenseFile && fs.existsSync(info.licenseFile)) ? fs.readFileSync(info.licenseFile, { encoding: 'utf-8' }) : undefined,
+        license: info.licenses,
+        licenseText: (licenseFile && fs.existsSync(licenseFile)) ? fs.readFileSync(licenseFile, { encoding: 'utf-8' }) : undefined,
       });
     }
 
-    if (multiLicense.length > 0) {
-      console.error(`✖ Found ${multiLicense.length} dependencies with multiple licenses (these are unsupported for now, please remove their usage):`);
-      console.error(multiLicense.map(l => `  - ${l}`).join('\n'));
-      process.exit(1);
+    // make sure all attributions have a valid license
+    const { invalidLicense, noLicense, multiLicense } = this.validateAttributionLicense(attributions);
+
+    const error = [];
+
+    if (invalidLicense.length > 0) {
+      error.push('Following dependencies have invalid licenses: (either remove them or update the valid licenses list)');
+      error.push(invalidLicense.map(a => `  - ${a.package}: ${a.license}`));
+      error.push('');
+    }
+
+    if (noLicense.length > 0) {
+      error.push('Following dependencies have no licenses: (remove them)');
+      error.push(noLicense.map(a => `  - ${a.package}`));
+      error.push('');
     }
 
     if (multiLicense.length > 0) {
-      console.error(`✖ Found ${multiLicense.length} dependencies with no license information (these are unsupported for now, please remove their usage):`);
-      console.error(multiLicense.map(l => `  - ${l}`).join('\n'));
-      process.exit(1);
+      error.push('Following dependencies have multiple licenses: (remove them)');
+      error.push(noLicense.map(a => `  - ${a.package}: ${a.license}`));
+      error.push('');
     }
 
-    return new Notice(attributions, options.prefix);
-  }
-
-  private constructor(public readonly attributions: Map<string, Attribution>, public readonly prefix?: string) {
-
-  }
-
-  /**
-   * Query whether a specific attribution exists in this notice.
-   */
-  public includesAttribution(attr: Attribution): boolean {
-    const candidate = this.attributions.get(attr.package);
-
-    if (!candidate) {
-      return false;
+    if (error.length > 0) {
+      throw new Error(`Errors while generating attributions:\n\n${error.join('\n')}`);
     }
-    if (candidate.url !== attr.url) {
-      return false;
-    }
-    if (candidate.license !== attr.license) {
-      return false;
-    }
-    if (candidate.licenseText !== attr.licenseText) {
-      return false;
-    }
-    return true;
+
+    return attributions;
   }
 
-  /**
-   * Write the NOTICE file to disk.
-   */
-  public flush() {
-
+  private validateAttributionLicense(attributions: Map<string, Attribution>) {
+    const invalidLicense = Array.from(attributions.values()).filter(a => a.license && !this.validLicenses.includes(a.license.toLowerCase()));
+    const noLicense = Array.from(attributions.values()).filter(a => !a.license);
+    const multiLicense = Array.from(attributions.values()).filter(a => a.license && a.license.split(',').length > 1);
+    return { invalidLicense, noLicense, multiLicense };
   }
 
-  /**
-   * Find attributions in the current notice that are missing
-   * from the the input ones.
-   */
-  public findMissing(other: Notice): Attribution[] {
-    return Array.from(this.attributions.values()).filter(a => !other.includesAttribution(a));
-  }
 }
 
-export interface Attribution {
-  readonly package: string;
-  readonly url: string;
-  readonly license: string;
-  readonly licenseText?: string;
+function lcp(strs: string[]) {
+  let prefix = '';
+  if (strs === null || strs.length === 0) return prefix;
+  for (let i=0; i < strs[0].length; i++) {
+    const char = strs[0][i]; // loop through all characters of the very first string.
+
+    for (let j = 1; j < strs.length; j++) {
+        // loop through all other strings in the array
+      if (strs[j][i] !== char) return prefix;
+    }
+    prefix = prefix + char;
+  }
+  return prefix;
 }
