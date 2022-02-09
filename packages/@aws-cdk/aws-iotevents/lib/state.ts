@@ -85,7 +85,7 @@ export interface StateProps {
    * Specifies the events on exit. The conditions of the events are evaluated when an exiting this state.
    * If the condition evaluates to `true`, the actions of the event will be executed.
    *
-   * @default - events on exit will not be set
+   * @default - no events will trigger on exiting this state
    */
   readonly onExit?: Event[];
 }
