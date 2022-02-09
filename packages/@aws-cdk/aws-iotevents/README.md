@@ -152,8 +152,9 @@ const state = new iotevents.State({
 });
 ```
 
-Also you can use `onInput` and `onExit`. `onInput` is triggered when messages are put to the input
-that is refered from the detector model. `onExit` is triggered when exiting this state.
+You can also use the `onInput` and `onExit` properties.
+`onInput` is triggered when messages are put to the input that is referenced from the detector model.
+`onExit` is triggered when exiting this state.
 
 ```ts
 import * as iotevents from '@aws-cdk/aws-iotevents';
