@@ -90,8 +90,7 @@
     "@aws-cdk/aws-s3": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
-    "constructs": "^3.3.69",
-    "minimatch": "^3.0.4"
+    "constructs": "^3.3.69"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
@@ -109,9 +108,6 @@
   "engines": {
     "node": ">= 10.13.0 <13 || >=13.7.0"
   },
-  "bundledDependencies": [
-    "minimatch"
-  ],
   "stability": "stable",
   "maturity": "stable",
   "awscdkio": {
