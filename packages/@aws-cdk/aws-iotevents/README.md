@@ -101,9 +101,11 @@ input.grantWrite(grantable);
 ## `State`
 
 You can create `State` as following.
-In `onEnter` of a detector model's initial state, at least one reference of input via `condition` is needed.
-And if messages is put to the input, the detector instance are created regardless of the evaluation result of the `condition`.
-You can set the reference of input with `iotevents.Expression.currentInput()` or `iotevents.Expression.inputAttribute()` as following.
+If a State is used for a Detector Model's initial state,
+it's required that its `onEnter` Event is non-null,
+and contains a reference to an Input via the `condition` property.
+And if a message is put to the input, the detector instances are created regardless of the evaluation result of `condition`.
+You can set the reference to input with `iotevents.Expression.currentInput()` or `iotevents.Expression.inputAttribute()`.
 In other states, `onEnter` is optional.
 
 ```ts
