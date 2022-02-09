@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.12.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.11.0-alpha.0...v2.12.0-alpha.0) (2022-02-08)
+
+
+### Features
+
+* **iotevents:** support transition events ([#18768](https://github.com/aws/aws-cdk/issues/18768)) ([ccc1988](https://github.com/aws/aws-cdk/commit/ccc198864f92620857da09c68013123e9cd3f01d)), closes [#17711](https://github.com/aws/aws-cdk/issues/17711)
+
+## [2.11.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.10.0-alpha.0...v2.11.0-alpha.0) (2022-02-08)
+
+
+### Features
+
+* **amplify:** support performance mode in Branch ([#18598](https://github.com/aws/aws-cdk/issues/18598)) ([bdeb8eb](https://github.com/aws/aws-cdk/commit/bdeb8eb604f5012ce3180d2f6d887fed1834e4f4)), closes [#18557](https://github.com/aws/aws-cdk/issues/18557)
+* **iot:** add Action to republish MQTT messages to another MQTT topic ([#18661](https://github.com/aws/aws-cdk/issues/18661)) ([7ac1215](https://github.com/aws/aws-cdk/commit/7ac121546776cae972bbfb89c2a11949762e7c47))
+* **iotevents:** add grant method to Input class ([#18617](https://github.com/aws/aws-cdk/issues/18617)) ([e89688e](https://github.com/aws/aws-cdk/commit/e89688ec1dd7a3b072d23287cddcb73bccc16fd4))
+
+
+### Bug Fixes
+
+* **aws-appsync:** Strip unsupported characters from Lambda DataSource ([#18765](https://github.com/aws/aws-cdk/issues/18765)) ([bb8d6f6](https://github.com/aws/aws-cdk/commit/bb8d6f6bf5941b76ef0590c99fe8e26440e09c18))
+
 ## [2.10.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.9.0-alpha.0...v2.10.0-alpha.0) (2022-01-29)
 
 
