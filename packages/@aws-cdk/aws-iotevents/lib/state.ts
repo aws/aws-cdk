@@ -74,8 +74,8 @@ export interface StateProps {
   readonly onEnter?: Event[];
 
   /**
-   * Specifies the events on inputted. the conditions of the events are evaluated when an input is received.
-   * If the condition is `TRUE`, the actions of the event are performed.
+   * Specifies the events on input. The conditions of the events will be evaluated when any input is received.
+   * If the condition of the event evaluates to `true`, the actions of the event will be executed.
    *
    * @default - no events will trigger on input in this state
    */
