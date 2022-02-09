@@ -23,7 +23,7 @@ describe('feature flags', () => {
     test('invalid flag', () => {
       const stack = new Stack();
 
-      expect(FeatureFlags.of(stack).isEnabled('non-existent-flag')).toEqual(undefined);
+      expect(FeatureFlags.of(stack).isEnabled('non-existent-flag')).toEqual(false);
 
     });
   });
