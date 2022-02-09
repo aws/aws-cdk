@@ -264,6 +264,34 @@ describe('StepFunctionsIntegration', () => {
       });
     });
 
+    test('authorizer context is included when specified by the integration', () => {
+      //GIVEN
+      const { stack, api, stateMachine } = givenSetup();
+
+      //WHEN
+      const integ = apigw.StepFunctionsIntegration.startExecution(stateMachine, {
+        authorizer: true,
+      });
+      api.root.addMethod('GET', integ);
+
+      Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
+        Integration: {
+          RequestTemplates: {
+            'application/json': {
+              'Fn::Join': [
+                '',
+                [
+                  Match.stringLikeRegexp('#set\\(\\$includeAuthorizer = true\\)'),
+                  { Ref: 'StateMachine2E01A3A5' },
+                  Match.anyValue(),
+                ],
+              ],
+            },
+          },
+        },
+      });
+    });
+
     test('works for imported RestApi', () => {
       const stack = new cdk.Stack();
       const api = apigw.RestApi.fromRestApiAttributes(stack, 'RestApi', {
