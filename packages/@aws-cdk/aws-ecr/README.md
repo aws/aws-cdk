@@ -124,7 +124,7 @@ repository.addLifecycleRule({ maxImageAge: Duration.days(30) });
 You can import an existing repository created outside the CDK app using the `Repository.fromLookup` method.
 
 ```ts
-const repository = ecr.Repository.fromLookup(stack, 'Repository', {
+ecr.Repository.fromLookup(this, 'Repository', {
   repositoryName: 'MyRepo',
   repositoryArn: 'arn:aws:ecr:region:012345678910:repository/MyRepo'
 });
