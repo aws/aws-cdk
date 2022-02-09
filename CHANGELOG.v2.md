@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.12.0](https://github.com/aws/aws-cdk/compare/v2.11.0...v2.12.0) (2022-02-08)
+
+
+### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
+
+* **cxapi:** of behavior.
+
+Instead, this PR gets rid of the entire set of `FUTURE_FLAGS_DEFAULTS`
+set to `false` -- there's no point to having them anyway, and it
+gets rid of the associated merge conflicts.
+
+Also shore up the docs for these flags a little.
+
+### Miscellaneous Chores
+
+* **cxapi:** reduce merge conflicts in feature flags ([#18411](https://github.com/aws/aws-cdk/issues/18411)) ([dcdb58a](https://github.com/aws/aws-cdk/commit/dcdb58a0481448031ef18c171535c1c4f5872bdd))
+
 ## [2.11.0](https://github.com/aws/aws-cdk/compare/v2.10.0...v2.11.0) (2022-02-08)
 
 
