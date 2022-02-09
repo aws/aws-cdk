@@ -5,7 +5,7 @@
 # on them you can use this script for quicker feedback.
 #
 # This could maybe have been an 'npm run' script, but it's not self-contained
-# (needs the "decdk" package to compile against and runs jsii-rosetta from the
+# (needs the "aws-cdk-lib" package to compile against and runs jsii-rosetta from the
 # repo root) so that didn't feel right. For now this is what we have.
 set -eu
 scriptdir=$(cd $(dirname $0) && pwd)
@@ -23,9 +23,9 @@ for dir in $dirs; do
         # Run jsii
         npm run build
 
-        # Run rosetta against decdk dir, failing on compilation errors
+        # Run rosetta against aws-cdk-lib dir, failing on compilation errors
         node --experimental-worker $scriptdir/../node_modules/.bin/jsii-rosetta \
-            --directory $scriptdir/../packages/decdk \
+            --directory $scriptdir/../packages/aws-cdk-lib \
             --compile \
             --output /dev/null \
             --verbose \

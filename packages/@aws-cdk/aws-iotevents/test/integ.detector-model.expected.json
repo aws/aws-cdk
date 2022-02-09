@@ -63,7 +63,50 @@
                   }
                 ]
               },
+              "OnInput": {
+                "TransitionEvents": [
+                  {
+                    "Condition": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "$input.",
+                          {
+                            "Ref": "MyInput08947B23"
+                          },
+                          ".payload.temperature == 12"
+                        ]
+                      ]
+                    },
+                    "EventName": "online_to_offline",
+                    "NextState": "offline"
+                  }
+                ]
+              },
               "StateName": "online"
+            },
+            {
+              "OnInput": {
+                "TransitionEvents": [
+                  {
+                    "Condition": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "$input.",
+                          {
+                            "Ref": "MyInput08947B23"
+                          },
+                          ".payload.temperature == 21"
+                        ]
+                      ]
+                    },
+                    "EventName": "offline_to_online",
+                    "NextState": "online"
+                  }
+                ]
+              },
+              "StateName": "offline"
             }
           ]
         },
