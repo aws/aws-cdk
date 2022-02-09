@@ -68,6 +68,20 @@ export interface StepFunctionsExecutionIntegrationOptions extends IntegrationOpt
    * @default false
    */
   readonly headers?: boolean;
+
+  /**
+   * If the whole authorizer object, including custom context values should be in the execution input. The execution input will include a new key `authorizer`:
+   *
+   * {
+   *   "body": {},
+   *   "authorizer": {
+   *     "key": "value"
+   *   }
+   * }
+   *
+   * @default false
+   */
+  readonly authorizer?: boolean;
 }
 
 /**
@@ -241,6 +255,7 @@ function templateString(
   const includeHeader = options.headers?? false;
   const includeQueryString = options.querystring?? true;
   const includePath = options.path?? true;
+  const includeAuthorizer = options.authorizer ?? false;
 
   if (options.requestContext && Object.keys(options.requestContext).length > 0) {
     requestContextStr = requestContext(options.requestContext);
@@ -251,6 +266,7 @@ function templateString(
   templateStr = templateStr.replace('%INCLUDE_HEADERS%', String(includeHeader));
   templateStr = templateStr.replace('%INCLUDE_QUERYSTRING%', String(includeQueryString));
   templateStr = templateStr.replace('%INCLUDE_PATH%', String(includePath));
+  templateStr = templateStr.replace('%INCLUDE_AUTHORIZER%', String(includeAuthorizer));
   templateStr = templateStr.replace('%REQUESTCONTEXT%', requestContextStr);
 
   return templateStr;
