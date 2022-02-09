@@ -10,10 +10,11 @@ describe('validate', () => {
       externals: ['fsevents'],
       dontAttribute: '(^@aws-cdk)',
       resources: {
-        '../../node_modules/vm2/lib/contextify.js': 'bin',
+        '../../node_modules/vm2/lib/contextify.js': 'bin/contextify.js',
       },
+      test: '--version',
     });
-    bundle.pack(process.cwd());
+    bundle.pack({ target: process.cwd() });
   }, 5 * 60 * 1000);
 
 });

@@ -39,6 +39,20 @@ export interface Attribution {
 }
 
 /**
+ * Violations pertaining resources that need to be embedded in the bundle.
+ */
+export interface ResourceViolations {
+  /**
+   * Resources that were defined in the configuration but could not be located.
+   */
+  readonly missing?: string[];
+  /**
+   * Resources that are defined with an absolute path.
+   */
+  readonly absolute?: string[];
+}
+
+/**
  * Violations pertaining the NOTICE file of the package.
  */
 export interface NoticeViolations {
@@ -87,4 +101,8 @@ export interface BundleViolations {
    * The imports violations.
    */
   readonly imports?: CircularImportsViolations;
+  /**
+   * The resource violations.
+   */
+  readonly resource?: ResourceViolations;
 }
