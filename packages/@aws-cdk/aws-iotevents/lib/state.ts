@@ -66,8 +66,8 @@ export interface StateProps {
   readonly stateName: string;
 
   /**
-   * Specifies the events on enter. the conditions of the events are evaluated when entering this state.
-   * If the condition is `TRUE`, the actions of the event are performed.
+   * Specifies the events on enter. The conditions of the events will be evaluated when entering this state.
+   * If the condition of the event evaluates to `true`, the actions of the event will be executed.
    *
    * @default - events on enter will not be set
    */
