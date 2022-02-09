@@ -89,9 +89,9 @@
     "@types/sinon": "^9.0.11",
     "@types/yaml": "1.9.6",
     "aws-sdk": "^2.848.0",
-    "cdk8s": "^1.5.7",
-    "cdk8s-plus-21": "^1.0.0-beta.81",
-    "jest": "^27.4.7",
+    "cdk8s": "^1.5.10",
+    "cdk8s-plus-21": "^1.0.0-beta.82",
+    "jest": "^27.5.1",
     "sinon": "^9.2.4"
   },
   "dependencies": {
