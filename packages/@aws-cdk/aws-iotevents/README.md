@@ -122,7 +122,7 @@ const initialState = new iotevents.State({
 });
 ```
 
-You can set actions to the `onEnter` event. It is performed if `condition` is evaluated to `TRUE`.
+You can set actions on the `onEnter` event. They are performed if `condition` evaluates to `true`.
 If you omit `condition`, actions is performed on every enter events of the state.
 For more information, see [supported actions](https://docs.aws.amazon.com/iotevents/latest/developerguide/iotevents-supported-actions.html).
 
