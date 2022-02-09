@@ -20,7 +20,7 @@ export interface Event {
   /**
    * The actions to be performed.
    *
-   * @default - none
+   * @default - no actions will be performed
    */
   readonly actions?: IAction[];
 }
