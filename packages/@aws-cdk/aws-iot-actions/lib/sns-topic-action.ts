@@ -49,7 +49,7 @@ export class SnsTopicAction implements iot.IAction {
    * @param props Properties to configure the action.
    */
   constructor(topic: sns.ITopic, props: SnsTopicActionProps = {}) {
-    if (topic.topicName.endsWith('.fifo')) {
+    if (topic.fifo) {
       throw Error('IoT Rule actions cannot be used with FIFO SNS Topics, please pass a non-FIFO Topic instead');
     }
 
