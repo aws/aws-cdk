@@ -69,7 +69,7 @@ export interface StateProps {
    * Specifies the events on enter. The conditions of the events will be evaluated when entering this state.
    * If the condition of the event evaluates to `true`, the actions of the event will be executed.
    *
-   * @default - events on enter will not be set
+   * @default - no events will trigger on entering this state
    */
   readonly onEnter?: Event[];
 
