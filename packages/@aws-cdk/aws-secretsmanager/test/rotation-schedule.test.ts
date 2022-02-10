@@ -514,3 +514,51 @@ describe('hosted rotation', () => {
       .toThrow(/Cannot use connections for a hosted rotation that is not deployed in a VPC/);
   });
 });
+
+describe('manual rotations', () => {
+  test('manualRotation with automaticallyAfter throws error', () => {
+    // GIVEN
+    const secret = new secretsmanager.Secret(stack, 'secret');
+
+    expect(() => {
+      // WHEN
+      new secretsmanager.RotationSchedule(stack, 'badRotation', {
+        secret,
+        hostedRotation: secretsmanager.HostedRotation.postgreSqlSingleUser(),
+        manualRotation: true,
+        automaticallyAfter: cdk.Duration.days(15),
+      });
+    }).toThrow(/Cannot specify both `automaticallyAfter` and `manualRotation`./); // THEN
+  });
+
+  test('manualRotation leaves rotationSchedule unset', () => {
+    // GIVEN
+    const secret = new secretsmanager.Secret(stack, 'Secret');
+    const rotationLambda = new lambda.Function(stack, 'Lambda', {
+      runtime: lambda.Runtime.NODEJS_10_X,
+      code: lambda.Code.fromInline('export.handler = event => event;'),
+      handler: 'index.handler',
+    });
+
+    // WHEN
+    new secretsmanager.RotationSchedule(stack, 'RotationSchedule', {
+      secret,
+      rotationLambda,
+      manualRotation: true,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::RotationSchedule', {
+      SecretId: {
+        Ref: 'SecretA720EF05',
+      },
+      RotationLambdaARN: {
+        'Fn::GetAtt': [
+          'LambdaD247545B',
+          'Arn',
+        ],
+      },
+      RotationRules: { },
+    });
+  });
+});

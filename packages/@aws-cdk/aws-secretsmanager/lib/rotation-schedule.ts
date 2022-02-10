@@ -29,9 +29,17 @@ export interface RotationScheduleOptions {
    * Specifies the number of days after the previous rotation before
    * Secrets Manager triggers the next automatic rotation.
    *
-   * @default Duration.days(30)
+   * @default Duration.days(30) unless `manualRotation` is `true`
    */
   readonly automaticallyAfter?: Duration;
+
+  /**
+   * Disables automatic secret rotation if set `true`. Not compatible
+   * with the `automaticallyAfter` option.
+   *
+   * @default false
+   */
+  readonly manualRotation?: boolean;
 }
 
 /**
@@ -72,6 +80,10 @@ export class RotationSchedule extends Resource {
       throw new Error('One of `rotationLambda` or `hostedRotation` must be specified.');
     }
 
+    if (props.automaticallyAfter && props.manualRotation) {
+      throw new Error('Cannot specify both `automaticallyAfter` and `manualRotation`.');
+    }
+
     if (props.rotationLambda?.permissionsNode.defaultChild) {
       if (props.secret.encryptionKey) {
         props.secret.encryptionKey.grantEncryptDecrypt(
@@ -105,12 +117,17 @@ export class RotationSchedule extends Resource {
       );
     }
 
+    let automaticallyAfterDays: number | undefined = undefined;
+    if (!props.manualRotation) {
+      automaticallyAfterDays = props.automaticallyAfter && props.automaticallyAfter.toDays() || 30;
+    }
+
     new CfnRotationSchedule(this, 'Resource', {
       secretId: props.secret.secretArn,
       rotationLambdaArn: props.rotationLambda?.functionArn,
       hostedRotationLambda: props.hostedRotation?.bind(props.secret, this),
       rotationRules: {
-        automaticallyAfterDays: props.automaticallyAfter && props.automaticallyAfter.toDays() || 30,
+        automaticallyAfterDays,
       },
     });
 
