@@ -2,7 +2,8 @@ import * as os from 'os';
 import * as path from 'path';
 import * as esbuild from 'esbuild';
 import * as fs from 'fs-extra';
-import type { BundleViolations, Dependency, CircularImportsViolations, NoticeViolations, ResourceViolations } from './model';
+import { NoticeValidationReport } from '.';
+import type { Dependency } from './model';
 import { Notice } from './notice';
 import { shell } from './shell';
 
@@ -88,6 +89,7 @@ export class Bundle {
   private readonly test?: string;
 
   private readonly dependencies: Dependency[];
+  private readonly dependenciesRoot: string;
   private readonly output: esbuild.OutputFile;
   private readonly sourcemap: esbuild.OutputFile;
 
@@ -110,43 +112,62 @@ export class Bundle {
 
     // without the dependencies, this object is pretty much
     // useless, so lets generate it of the bat.
-    const { dependencies, output, sourcemap } = this.esbuild();
+    const { dependencies, output, sourcemap, dependenciesRoot } = this.esbuild();
     this.dependencies = dependencies;
     this.output = output;
     this.sourcemap = sourcemap;
+    this.dependenciesRoot = dependenciesRoot;
   }
 
   /**
-   * Validate the state of the project with respect to bundling.
+   * Validate the current notice file.
    *
-   * This method will validate both circular imports and notice file attributions.
-   * To validate only one or the other, use the `validateNotice` and `validateCircularImports`.
-   *
-   * It never throws an exception, instead it returns a report of violations. The Caller is responsible
-   * for inspecting those violations and act accordingaly.
-   *
-   * If no violations are found, the return value will be undefined.
+   * This method never throws. The Caller is responsible for inspecting the report returned and act accordinagly.
    */
-  public validate(): BundleViolations | undefined {
-    const importsViolations = this.validateCircularImports();
-    const noticeViolations = this.validateNotice();
-    const resourceViolations = this.validateResources();
+  public validate(): BundleValidationReport {
 
-    if (!importsViolations && !noticeViolations && !resourceViolations) {
-      return undefined;
+    let circularImports = undefined;
+
+    console.log('Validating circular imports');
+    const packages = [this.packageDir, ...this.dependencies.map(d => d.path)];
+    try {
+      // we don't use the programatic API since it only offers an async API.
+      // prefer to stay sync for now since its easier to integrate with other tooling.
+      // will offer an async API further down the road.
+      shell(`${require.resolve('madge/bin/cli.js')} --warning --no-color --no-spinner --circular --extensions js ${packages.join(' ')}`, { quiet: true });
+    } catch (e: any) {
+      circularImports = e.stdout.toString();
     }
 
-    return { notice: noticeViolations, imports: importsViolations, resource: resourceViolations };
+    console.log('Validating resources');
+    const missingResources = [];
+    const absoluteResources = [];
+    for (const [src, dst] of Object.entries(this.resources)) {
+      if (path.isAbsolute(src)) {
+        absoluteResources.push(src);
+      }
+      if (path.isAbsolute(dst)) {
+        absoluteResources.push(dst);
+      }
+      if (!fs.existsSync(path.join(this.packageDir, src))) {
+        missingResources.push(src);
+      }
+    }
+
+    console.log('Validating notice');
+    const noticeReport = this.notice.validate();
+
+
+    return new BundleValidationReport(noticeReport, missingResources, absoluteResources, circularImports);
   }
 
   public pack(options: BundlePackOptions = {}) {
 
     const target = options.target ?? this.packageDir;
 
-    // double check, make sure we don't package something invalid.
-    const violations = this.validate();
-    if (violations) {
-      throw new Error('Unable to pack due to validation errors. Please run validate() to inspect them and fix.');
+    const report = this.validate();
+    if (report.violations.length > 0) {
+      throw new Error(`Unable to pack due to validation errors.\n\n${report.violations.map(v => `  - ${v}`).join('\n')}`);
     }
 
     if (!fs.existsSync(target)) {
@@ -175,8 +196,36 @@ export class Bundle {
       }
 
       // external dependencies should be specified as runtime dependencies
-      for (const external of this.externals.map(e => this.findPackage(require.resolve(e))).map(p => this.createDependency(p))) {
-        bundleManifest.dependencies[external.name] = external.version;
+      for (const external of this.externals) {
+
+        const parts = external.split(':');
+        const name = parts[0];
+        const type = parts[1];
+        const paths = this.findPackages(name);
+        if (paths.length === 0) {
+          throw new Error(`Unable to locate external dependency: ${name}`);
+        }
+        if (paths.length > 1) {
+          throw new Error(`Found multiple paths for external dependency (${name}): ${paths.join(' | ')}`);
+        }
+        const dependency = this.createDependency(paths[0]);
+
+        switch (type) {
+          case 'optional':
+            bundleManifest.optionalDependencies = bundleManifest.optionalDependencies ?? {};
+            bundleManifest.optionalDependencies[dependency.name] = dependency.version;
+            break;
+          case 'peer':
+            bundleManifest.peerDependencies = bundleManifest.peerDependencies ?? {};
+            bundleManifest.peerDependencies[dependency.name] = dependency.version;
+            break;
+          case '':
+            bundleManifest.dependencies = bundleManifest.dependencies ?? {};
+            bundleManifest.dependencies[dependency.name] = dependency.version;
+            break;
+          default:
+            throw new Error(`Unsupported dependency type '${type}' for external dependency '${name}'`);
+        }
       }
 
       const bundlePath = this.output.path.replace(this.packageDir, workdir);
@@ -219,49 +268,30 @@ export class Bundle {
 
   public fix() {
     console.log('Generating notice file');
-    this.notice.create(this.copyright);
+    this.notice.flush();
   }
 
-  private validateCircularImports(): CircularImportsViolations | undefined {
-    console.log('Validating circular imports');
-    const packages = [this.packageDir, ...this.dependencies.map(d => d.path)];
-    try {
-      // we don't use the programatic API since it only offers an async API.
-      // prefer to stay sync for now since its easier to integrate with other tooling.
-      // will offer an async API further down the road.
-      shell(`${require.resolve('madge/bin/cli.js')} --warning --no-color --no-spinner --circular --extensions js ${packages.join(' ')}`, { quiet: true });
-      return undefined;
-    } catch (e: any) {
-      return { summary: e.stdout.toString() };
-    }
-  }
+  private findPackages(name: string): string[] {
 
-  private validateNotice(): NoticeViolations | undefined {
-    console.log('Validating notice');
-    return this.notice.validate();
-  }
+    const paths: string[] = [];
 
-  private validateResources(): ResourceViolations | undefined {
-    console.log('Validating resources');
-    const missing = [];
-    const absolute = [];
-    for (const [src, dst] of Object.entries(this.resources)) {
-      if (path.isAbsolute(src)) {
-        absolute.push(src);
-      }
-      if (path.isAbsolute(dst)) {
-        absolute.push(dst);
-      }
-      if (!fs.existsSync(path.join(this.packageDir, src))) {
-        missing.push(src);
-      }
-    }
+    function walkDir(dir: string) {
+      fs.readdirSync(dir).forEach(f => {
+        const fullPath = path.join(dir, f);
+        const isDirectory = fs.statSync(fullPath).isDirectory();
+        if (!isDirectory) {
+          return;
+        }
+        if (fullPath.endsWith(`node_modules/${name}`)) {
+          paths.push(fullPath);
+        }
+        walkDir(fullPath);
+      });
+    };
 
-    if (missing.length === 0 && absolute.length === 0) {
-      return undefined;
-    }
+    walkDir(this.dependenciesRoot);
 
-    return { missing, absolute };
+    return paths;
   }
 
   private get notice(): Notice {
@@ -271,15 +301,17 @@ export class Bundle {
     this._notice = new Notice({
       packageDir: this.packageDir,
       dependencies: this.dependencies,
+      dependenciesRoot: this.dependenciesRoot,
       exclude: this.excludeFromAttribution,
       validLicenses: this.validLicenses,
+      copyright: this.copyright,
     });
     return this._notice;
   }
 
-  private findPackage(inputFile: string): string {
+  private findPackagePath(inputFile: string): string {
 
-    function findPackageUp(dirname: string): string {
+    function findPackagePathUp(dirname: string): string {
       const manifestPath = path.join(dirname, 'package.json');
       if (fs.existsSync(manifestPath)) {
         return dirname;
@@ -287,10 +319,10 @@ export class Bundle {
       if (path.dirname(dirname) === dirname) {
         throw new Error('Unable to find package manifest');
       }
-      return findPackageUp(path.dirname(dirname));
+      return findPackagePathUp(path.dirname(dirname));
     }
 
-    return findPackageUp(path.resolve(this.packageDir, path.dirname(inputFile)));
+    return findPackagePathUp(path.resolve(this.packageDir, path.dirname(inputFile)));
   }
 
   private createDependency(packageDir: string): Dependency {
@@ -299,7 +331,7 @@ export class Bundle {
     return { path: packageDir, name: manifest.name, version: manifest.version };
   }
 
-  private esbuild(): { dependencies: Dependency[]; output: esbuild.OutputFile; sourcemap: esbuild.OutputFile } {
+  private esbuild(): { dependencies: Dependency[]; output: esbuild.OutputFile; sourcemap: esbuild.OutputFile; dependenciesRoot: string } {
 
     const bundle = esbuild.buildSync({
       entryPoints: [this.entrypoint],
@@ -309,7 +341,7 @@ export class Bundle {
       sourcemap: true,
       metafile: true,
       absWorkingDir: this.packageDir,
-      external: this.externals,
+      external: this.externals.map(e => e.split(':')[0]),
       write: false,
       outfile: path.join(path.dirname(this.entrypoint), `${this.script}.bundle.js`),
       allowOverwrite: true,
@@ -342,23 +374,86 @@ export class Bundle {
     }
 
     const inputs = Object.keys(bundle.metafile!.outputs[path.relative(this.packageDir, outfile.path)].inputs);
-    const packages = new Set(Array.from(inputs).map(i => this.findPackage(i)));
+    const packages = new Set(Array.from(inputs).map(i => this.findPackagePath(i)));
     const dependencies = Array.from(packages).map(p => this.createDependency(p)).filter(d => d.name !== this.manifest.name);
-    return { dependencies, output: outfile, sourcemap };
+    const dependenciesRoot = lcp(dependencies.map(d => d.path));
+    return { dependencies, output: outfile, sourcemap, dependenciesRoot };
   }
 
   private bin() {
 
     const bin: [string, string][] = Object.entries(this.manifest.bin ?? {});
     if (bin.length === 0) {
-      console.error('✖ No entry-points detected. You must configure exactly one entrypoint in the \'bin\' section of your manifest');
-      process.exit(1);
+      throw new Error('✖ No entry-points detected. You must configure exactly one entrypoint in the \'bin\' section of your manifest');
     }
     if (bin.length > 1) {
-      console.error('✖ Multiple entry-points detected. You must configure exactly one entrypoint in the \'bin\' section of your manifest');
-      process.exit(1);
+      throw new Error('✖ Multiple entry-points detected. You must configure exactly one entrypoint in the \'bin\' section of your manifest');
     }
 
     return bin[0];
   }
+}
+
+/**
+ * Validation report.
+ */
+export class BundleValidationReport {
+
+  /**
+   * All violations of the report.
+   */
+  public readonly violations: string[];
+
+  constructor(
+    /**
+     * The NOTICE file validation report.
+     */
+    public readonly notice: NoticeValidationReport,
+    /**
+     * Resources that could not be located.
+     */
+    public readonly missingResources: string[],
+
+    /**
+     * Resources that are defined with absolute paths.
+     */
+    public readonly absoluteResources: string[],
+    /**
+     * The circular imports violations.
+     */
+    public readonly circularImports?: string,
+  ) {
+
+    const violations = [];
+
+    violations.push(...notice.violations);
+
+    for (const r of missingResources) {
+      violations.push(`Unable to find resource (${r}) relative to the package directory`);
+    }
+
+    for (const r of absoluteResources) {
+      violations.push(`Resource (${r}) should be defined using relative paths to the package directory`);
+    }
+
+    if (circularImports) {
+      violations.push(circularImports);
+    }
+
+    this.violations = violations;
+
+  }
+}
+
+function lcp(strs: string[]) {
+  let prefix = '';
+  if (strs === null || strs.length === 0) return prefix;
+  for (let i = 0; i < strs[0].length; i++) {
+    const char = strs[0][i];
+    for (let j = 1; j < strs.length; j++) {
+      if (strs[j][i] !== char) return prefix;
+    }
+    prefix = prefix + char;
+  }
+  return prefix;
 }

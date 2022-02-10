@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import type { Dependency, Attribution, NoticeViolations } from './model';
+import type { Dependency, Attribution } from './model';
 import { shell } from './shell';
 
 /**
@@ -20,25 +20,6 @@ const DEFAULT_VALID_LICENSES = [
  */
 const FILE_PATH = 'NOTICE';
 
-/**
- * String signifying the attributions segement is to follow.
- */
-const ATTRIBUTIONS_START = 'This package includes the following third-party software:';
-
-/**
- * ---------------
- */
-const ATTRIBUTIONS_SEPARATOR = `\n${'-'.repeat(15)}\n`;
-
-/**
- * ** fs-extra@3.0.4 - https://www.npmjs.com/package/fs-extra/v/3.0.4 | MIT
- *
- * Copyright (c) 2011-2017 JP Richardson
- * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files
- *
- */
-const ATTRIBUTION_FORMAT_REGEX = /\*\* (\S*) - (\S*) \| (\S*)([\S\s]*)/;
-
 
 /**
  * Properties for `Notice`.
@@ -52,6 +33,14 @@ export interface NoticeProps {
    * Package dependencies.
    */
   readonly dependencies: Dependency[];
+  /**
+   * The directory underwhich all dependencies live.
+   */
+  readonly dependenciesRoot: string;
+  /**
+   * The copyright to prepend to the file.
+   */
+  readonly copyright: string;
   /**
    * List of valid licenses.
    *
@@ -74,104 +63,69 @@ export class Notice {
   private readonly packageDir: string;
   private readonly dependencies: Dependency[];
   private readonly validLicenses: string[];
+  private readonly copyright: string;
+  private readonly dependenciesRoot: string;
 
-  private readonly expectedAttributions: Map<string, Attribution>;
+  private readonly attributions: Map<string, Attribution>;
+  private readonly content: string;
 
   constructor(props: NoticeProps) {
     this.packageDir = props.packageDir;
     this.dependencies = props.dependencies.filter(d => !props.exclude || !new RegExp(props.exclude).test(d.name));
     this.validLicenses = (props.validLicenses ?? DEFAULT_VALID_LICENSES).map(l => l.toLowerCase());
+    this.copyright = props.copyright;
+    this.dependenciesRoot = props.dependenciesRoot;
 
-    // without the expected attributions, this object is pretty much
+    // without the generated notice content, this object is pretty much
     // useless, so lets generate those of the bat.
-    this.expectedAttributions = this.generateAttributions();
+    this.attributions = this.generateAttributions();
+    this.content = this.render(this.attributions);
   }
 
   /**
    * Validate the current notice file.
    *
-   * This method will parse attributions of the current NOTICE file and compare
-   * them against the expected attributions based on the provided dependencies.
-   *
-   * It throws an exception in case the NOTICE file is malformed and cannot be parsed.
-   * Otherwise it returns a report of attribution violations. The Caller is responsible
-   * for inspecting those violations and act accordingaly.
-   *
-   * If no violations are found, the return value will be undefined.
+   * This method never throws. The Caller is responsible for inspecting the report returned and act accordinagly.
    */
-  public validate(): NoticeViolations | undefined {
-
-    const currentAttributions = this.parseAttributions();
-
-    const { invalidLicense, noLicense, multiLicense } = this.validateAttributionLicense(currentAttributions);
-    const missing = Array.from(this.expectedAttributions.values()).filter(a => !currentAttributions.has(a.package));
-    const unnecessary = Array.from(currentAttributions.values()).filter(a => !this.expectedAttributions.has(a.package));
-
-    if (invalidLicense.length === 0 && noLicense.length === 0 && multiLicense.length === 0 && missing.length === 0 && unnecessary.length === 0) {
-      return undefined;
-    }
-
-    // we convert empty arrays to undefined so its eaiser for callers to check for violations.
-    const emptyToUndefined = (arr: Attribution[]) => arr.length > 0 ? arr : undefined;
-
-    return {
-      invalidLicense: emptyToUndefined(invalidLicense),
-      noLicense: emptyToUndefined(noLicense),
-      multiLicense: emptyToUndefined(multiLicense),
-      missing: emptyToUndefined(missing),
-      unnecessary: emptyToUndefined(unnecessary),
-    };
-  }
-
-  /**
-   * Render the notice file based on the expected attributions
-   * and write it to disk. The copyright is placed in the beginning of the file.
-   */
-  public create(copyright: string) {
-    const notice = [copyright, '', '-'.repeat(40), ''];
-
-    if (this.expectedAttributions.size > 0) {
-      notice.push(ATTRIBUTIONS_START);
-      notice.push('');
-    }
-
-    for (const attr of this.expectedAttributions.values()) {
-      notice.push(`** ${attr.package} - ${attr.url} | ${attr.license}`);
-      notice.push(attr.licenseText ?? '');
-      notice.push(ATTRIBUTIONS_SEPARATOR);
-    }
-
-    fs.writeFileSync(path.join(this.packageDir, FILE_PATH), notice.join('\n'));
-  }
-
-  private parseAttributions(): Map<string, Attribution> {
+  public validate(): NoticeValidationReport {
 
     const noticePath = path.join(this.packageDir, FILE_PATH);
 
-    if (!fs.existsSync(noticePath)) {
-      return new Map();
+    const missing = !fs.existsSync(noticePath);
+    const notice = missing ? undefined : fs.readFileSync(noticePath, { encoding: 'utf-8' });
+    const outdated = notice ? notice !== this.content : false;
+
+    const { invalidLicense, noLicense, multiLicense } = this.validateAttributionLicense(this.attributions);
+
+    return new NoticeValidationReport(multiLicense, noLicense, invalidLicense, missing, outdated);
+  }
+
+  /**
+   * Flush the generated notice file to disk.
+   */
+  public flush() {
+    fs.writeFileSync(path.join(this.packageDir, FILE_PATH), this.content);
+  }
+
+  private render(attributions: Map<string, Attribution>): string {
+
+    const notice = [this.copyright, '', '-'.repeat(40), ''];
+
+    if (attributions.size > 0) {
+      notice.push('This package includes the following third-party software:');
+      notice.push('');
     }
 
-    const notice = fs.readFileSync(noticePath, { encoding: 'utf-8' }).split('\n');
-    const attributionsSegment = notice.slice(notice.indexOf(ATTRIBUTIONS_START) + 1).join('\n').trim();
+    const separator = `\n${'-'.repeat(15)}\n`;
 
-    const attributions: Map<string, Attribution> = new Map();
-
-    for (const section of attributionsSegment === '' ? [] : attributionsSegment.split(ATTRIBUTIONS_SEPARATOR)) {
-      const matched = section.match(ATTRIBUTION_FORMAT_REGEX);
-      if (!matched) {
-        throw new Error(`Malformed ${FILE_PATH} file (delete it)`);
-      }
-      const pkg = matched[1];
-      attributions.set(pkg, {
-        package: pkg,
-        url: matched[2],
-        license: matched[3],
-        licenseText: matched[4],
-      });
+    for (const attr of attributions.values()) {
+      notice.push(`** ${attr.package} - ${attr.url} | ${attr.license}`);
+      notice.push(attr.licenseText ?? '');
+      notice.push(separator);
     }
 
-    return attributions;
+    return notice.join('\n');
+
   }
 
   private generateAttributions(): Map<string, Attribution> {
@@ -180,9 +134,11 @@ export class Notice {
 
     const pkg = (d: Dependency) => `${d.name}@${d.version}`;
 
-    const dependenciesRoot = lcp(this.dependencies.map(d => d.path));
     const packages = this.dependencies.map(d => pkg(d)).join(';');
-    const output = shell(`${require.resolve('license-checker/bin/license-checker')} --json --packages "${packages}"`, { cwd: dependenciesRoot, quiet: true });
+    const output = shell(`${require.resolve('license-checker/bin/license-checker')} --json --packages "${packages}"`, {
+      cwd: this.dependenciesRoot,
+      quiet: true,
+    });
     const infos = JSON.parse(output);
 
     for (const dep of this.dependencies) {
@@ -248,17 +204,63 @@ export class Notice {
 
 }
 
-function lcp(strs: string[]) {
-  let prefix = '';
-  if (strs === null || strs.length === 0) return prefix;
-  for (let i=0; i < strs[0].length; i++) {
-    const char = strs[0][i]; // loop through all characters of the very first string.
+/**
+ * Validation report.
+ */
+export class NoticeValidationReport {
 
-    for (let j = 1; j < strs.length; j++) {
-        // loop through all other strings in the array
-      if (strs[j][i] !== char) return prefix;
+  /**
+   * All violations of the report.
+   */
+  public readonly violations: string[];
+
+  constructor(
+    /**
+     * Attributions that have multiple licenses.
+     */
+    public readonly multiLicense: Attribution[],
+    /**
+     * Attributions that have no license.
+     */
+    public readonly noLicense: Attribution[],
+    /**
+     * Attributions that have an invalid license.
+     */
+    public readonly invalidLicense: Attribution[],
+    /**
+     * Notice file is missing.
+     */
+    public readonly missing?: boolean,
+    /**
+     * Notice file is outdated.
+     */
+    public readonly outdated?: boolean,
+  ) {
+
+    const violations = [];
+
+    for (const attr of invalidLicense ?? []) {
+      violations.push(`Dependency ${attr.package} has an invalid license: ${attr.license}`);
     }
-    prefix = prefix + char;
+
+    for (const attr of noLicense ?? []) {
+      violations.push(`Dependency ${attr.package} has no license`);
+    }
+
+    for (const attr of multiLicense ?? []) {
+      violations.push(`Dependency ${attr.package} has multiple licenses: ${attr.license}`);
+    }
+
+    if (missing) {
+      violations.push(`${FILE_PATH} is missing`);
+    }
+
+    if (outdated) {
+      violations.push(`${FILE_PATH} is outdated`);
+    }
+
+    this.violations = violations;
+
   }
-  return prefix;
+
 }
