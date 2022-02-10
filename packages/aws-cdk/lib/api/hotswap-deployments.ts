@@ -50,8 +50,7 @@ export async function tryHotswapDeployment(
   const currentTemplate = await cloudFormationDeployments.readCurrentTemplateWithNestedStacks(stackArtifact);
   //const currentTemplate = await cloudFormationStack.template();
   const stackChanges = cfn_diff.diffTemplate(currentTemplate, stackArtifact.template);
-  //console.log(stackChanges.resources.changes);
-  const hotswappableChanges = await findAllHotswappableChanges(stackChanges, evaluateCfnTemplate);
+  const hotswappableChanges = await findAllHotswappableChanges(stackChanges, evaluateCfnTemplate, sdk, stackArtifact);
   if (!hotswappableChanges) {
     // this means there were changes to the template that cannot be short-circuited
     return undefined;
@@ -64,7 +63,7 @@ export async function tryHotswapDeployment(
 }
 
 async function findAllHotswappableChanges(
-  stackChanges: cfn_diff.TemplateDiff, evaluateCfnTemplate: EvaluateCloudFormationTemplate, hotswappableResources?: HotswapOperation[],
+  stackChanges: cfn_diff.TemplateDiff, evaluateCfnTemplate: EvaluateCloudFormationTemplate, sdk: ISDK, rootStackArtifact: cxapi.CloudFormationStackArtifact, hotswappableResources?: HotswapOperation[],
 ): Promise<HotswapOperation[] | undefined> {
   const resourceDifferences = getStackResourceDifferences(stackChanges);
 
@@ -78,23 +77,38 @@ async function findAllHotswappableChanges(
   const resourceDifferenceEntries = Object.entries(resourceDifferences);
 
   // process any resources in nested stacks, and remove the nested stack change from the diff, so that we don't process it again below
-  let idx = 0;
-  for (const [_logicalId, change] of resourceDifferenceEntries) {
+  //let idx = 0;
+  //for (const [_logicalId, change] of resourceDifferenceEntries) {
+  for (let idx = 0; idx < resourceDifferenceEntries.length; idx++) {
     // TODO: test the True && false case here, should be a full deployment
+    const [logicalId, change] = resourceDifferenceEntries[idx];
+    //const change = resourceDifferenceEntries[idx][1];
     if (change.newValue?.Type === 'AWS::CloudFormation::Stack' && change.oldValue?.Type === 'AWS::CloudFormation::Stack') {
       const nestedDiff = cfn_diff.diffTemplate(change.oldValue.Properties?.NestedTemplate, change.newValue.Properties?.NestedTemplate);
 
-      if (await findAllHotswappableChanges(nestedDiff, evaluateCfnTemplate, hotswappableResources) === undefined) {
-        //return undefined; // TODO: test this. Also, since we're forced to return undefined here, it makes more sense to not have hotswappableResources be mutable, and instead we should just always make it 
-                            // empty and then initialize each time, doing the append here if the result is not undefined
-                            // test case is: non-hotswappable changes in nested stacks are not ignored
+      // TODO:
+      if (change.oldValue.Properties?.NestedTemplate == {}) {
+        // this means that the stack is newly created, and that we should not try to find the stack name anyway. No need to stash it in the diff, we can just return undefined here and save effort. (and an sdk call, which we're currently making below (findPhysicalNameFor))
+        // if we decide to not add the stack names to the diff, then we can do this here, and add a unit test to verify that no sdk call is made in this case
       }
-      // why doesn't think work? the indexOf returns -1, why?
+      // but here, we're wasting an sdk call. We could put the stack name information in the nested diff, but then it appears in the diff, and that looks silly
+      const nestedStackArn = await evaluateCfnTemplate.findPhysicalNameFor(logicalId);
+      const nestedStackName = nestedStackArn?.slice(nestedStackArn.indexOf('/') + 1, nestedStackArn.lastIndexOf('/')); // TODO: duplicated from cloudformation-deployments
+
+      const evaluateNestedCfnTemplate = nestedStackName
+        ? evaluateCfnTemplate.createNestedEvaluateCloudFormationTemplate(nestedStackName, sdk, rootStackArtifact)
+        : evaluateCfnTemplate;
+
+      if (await findAllHotswappableChanges(nestedDiff, evaluateNestedCfnTemplate, sdk, rootStackArtifact, hotswappableResources) === undefined) {
+        return undefined;
+      }
+      // why doesn't this work? the indexOf returns -1, why?
       //resourceDifferenceEntries.splice(resourceDifferenceEntries.indexOf([logicalId, change]), 1);
       resourceDifferenceEntries.splice(idx, 1);
+      idx--;
     }
 
-    idx++;
+    //idx++;
   }
 
   // gather the results of the detector functions

@@ -77,6 +77,21 @@ export class EvaluateCloudFormationTemplate {
     this.urlSuffix = props.urlSuffix;
   }
 
+  // clones current EvaluateCloudFormationTemplate object, but updates the stack name
+  public createNestedEvaluateCloudFormationTemplate(stackName: string, sdk: ISDK, rootStackArtifact: cxapi.CloudFormationStackArtifact) {
+    const listNestedStackResources = new LazyListStackResources(sdk, stackName);
+
+    return new EvaluateCloudFormationTemplate({
+      stackArtifact: rootStackArtifact,
+      parameters: this.context,
+      account: this.account,
+      region: this.region,
+      partition: this.partition,
+      urlSuffix: (region) => sdk.getEndpointSuffix(region),
+      listStackResources: listNestedStackResources,
+    });
+  }
+
   public async establishResourcePhysicalName(logicalId: string, physicalNameInCfnTemplate: any): Promise<string | undefined> {
     if (physicalNameInCfnTemplate != null) {
       try {
