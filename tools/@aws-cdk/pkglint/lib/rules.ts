@@ -239,68 +239,11 @@ export class BundledCLI extends ValidationRule {
    */
   private validateBundle(pkg: PackageJson, bundleProps: any) {
 
-    // now lets validate the bundle itself
     const bundle = new Bundle({ packageDir: pkg.packageRoot, ...bundleProps });
-    const violations = bundle.validate();
+    const report = bundle.validate();
 
-    if (violations.circularImports) {
-      pkg.report({
-        message: `Circular imports detected:\n\n${violations.circularImports}`,
-        ruleName: `${this.name}/circular-imports`
-      })
-    }
-
-    for (const attr of violations.notice.invalidLicense) {
-      pkg.report({
-        message: `Dependency ${attr.package} has an invalid license: ${attr.license}`,
-        ruleName: `${this.name}/invalid-dependency-license`
-      })
-    }
-
-    for (const attr of violations.notice.noLicense) {
-      pkg.report({
-        message: `Dependency ${attr.package} has no license`,
-        ruleName: `${this.name}/missing-dependency-license`
-      })
-    }
-
-    for (const attr of violations.notice.multiLicense) {
-      pkg.report({
-        message: `Dependency ${attr.package} has multiple licenses: ${attr.license}`,
-        ruleName: `${this.name}/multiple-dependency-license`
-      })
-    }
-
-    for (const resource of violations.missingResources) {
-      pkg.report({
-        message: `Resource "${resource}" cannot be located relative to the package directory`,
-        ruleName: `${this.name}/missing-resource`
-      })
-    }
-
-    for (const resource of violations.absoluteResources) {
-      pkg.report({
-        message: `Resource "${resource}" should be defined using relative paths to the package directory`,
-        ruleName: `${this.name}/absolute-resource`
-      })
-    }
-
-    const fix = () => bundle.fix();
-
-    if (violations.notice.missing) {
-      pkg.report({
-        message: `NOTICE file is missing`,
-        ruleName: `${this.name}/missing-notice`,
-        fix,
-      })
-    }
-
-    if (violations.notice.outdated) {
-      pkg.report({
-        message: `NOTICE file is outdated`,
-        ruleName: `${this.name}/outdated-notice`,
-        fix,
-      })
+    for (const violation of report.violations) {
+      pkg.report({ message: violation.message, ruleName: this.name, fix: violation.fix })
     }
 
   }

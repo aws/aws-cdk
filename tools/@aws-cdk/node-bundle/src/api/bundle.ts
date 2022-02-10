@@ -3,8 +3,7 @@ import * as path from 'path';
 import * as esbuild from 'esbuild';
 import * as fs from 'fs-extra';
 import { NoticeValidationReport } from '.';
-import type { Dependency } from './model';
-import { Notice } from './notice';
+import { Dependency, Notice } from './notice';
 import { shell } from './shell';
 
 /**
@@ -124,7 +123,7 @@ export class Bundle {
    */
   public validate(): BundleValidationReport {
 
-    let circularImports = undefined;
+    let circularImports: Violation | undefined = undefined;
 
     console.log('Validating circular imports');
     const packages = [this.packageDir, ...this.dependencies.map(d => d.path)];
@@ -134,29 +133,20 @@ export class Bundle {
       // will offer an async API further down the road.
       shell(`${require.resolve('madge/bin/cli.js')} --warning --no-color --no-spinner --circular --extensions js ${packages.join(' ')}`, { quiet: true });
     } catch (e: any) {
-      circularImports = e.stdout.toString();
+      circularImports = { message: `Circular imports detected:\n${e.stdout.toString()}` };
     }
 
     console.log('Validating resources');
-    const missingResources = [];
-    const absoluteResources = [];
-    for (const [src, dst] of Object.entries(this.resources)) {
-      if (path.isAbsolute(src)) {
-        absoluteResources.push(src);
-      }
-      if (path.isAbsolute(dst)) {
-        absoluteResources.push(dst);
-      }
+    const missingResources: Violation[] = [];
+    for (const [src, _] of Object.entries(this.resources)) {
       if (!fs.existsSync(path.join(this.packageDir, src))) {
-        missingResources.push(src);
+        missingResources.push({ message: `Unable to find resource (${src}) relative to the package directory` });
       }
     }
 
     console.log('Validating notice');
     const noticeReport = this.notice.validate();
-
-
-    return new BundleValidationReport(noticeReport, missingResources, absoluteResources, circularImports);
+    return new BundleValidationReport(noticeReport, missingResources, circularImports);
   }
 
   public pack(options: BundlePackOptions = {}) {
@@ -165,7 +155,7 @@ export class Bundle {
 
     const report = this.validate();
     if (report.violations.length > 0) {
-      throw new Error(`Unable to pack due to validation errors.\n\n${report.violations.map(v => `  - ${v}`).join('\n')}`);
+      throw new Error(`Unable to pack due to validation errors.\n\n${report.violations.map(v => `  - ${v.message}`).join('\n')}`);
     }
 
     if (!fs.existsSync(target)) {
@@ -360,6 +350,18 @@ export class Bundle {
   }
 }
 
+export interface Violation {
+  /**
+   * The violation message.
+   */
+  readonly message: string;
+  /**
+   * A fixer function.
+   * If undefined, this violation cannot be fixed automatically.
+   */
+  readonly fix?: () => void;
+}
+
 /**
  * Validation report.
  */
@@ -368,7 +370,7 @@ export class BundleValidationReport {
   /**
    * All violations of the report.
    */
-  public readonly violations: string[];
+  public readonly violations: Violation[];
 
   constructor(
     /**
@@ -378,29 +380,17 @@ export class BundleValidationReport {
     /**
      * Resources that could not be located.
      */
-    public readonly missingResources: string[],
-
-    /**
-     * Resources that are defined with absolute paths.
-     */
-    public readonly absoluteResources: string[],
+    public readonly missingResources: Violation[],
     /**
      * The circular imports violations.
      */
-    public readonly circularImports?: string,
+    public readonly circularImports?: Violation,
   ) {
 
-    const violations = [];
+    const violations: Violation[] = [];
 
     violations.push(...notice.violations);
-
-    for (const r of missingResources) {
-      violations.push(`Unable to find resource (${r}) relative to the package directory`);
-    }
-
-    for (const r of absoluteResources) {
-      violations.push(`Resource (${r}) should be defined using relative paths to the package directory`);
-    }
+    violations.push(...missingResources);
 
     if (circularImports) {
       violations.push(circularImports);

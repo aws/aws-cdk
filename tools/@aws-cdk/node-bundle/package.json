@@ -1,5 +1,8 @@
 {
   "name": "@aws-cdk/node-bundle",
+  "bin": {
+    "node-bundle": "../lib/cli.js"
+  },
   "scripts": {
     "build": "npx projen build",
     "bump": "npx projen bump",
@@ -59,7 +62,7 @@
       "<rootDir>/(test|src)/**/?(*.)+(spec|test).ts?(x)"
     ],
     "clearMocks": true,
-    "collectCoverage": false,
+    "collectCoverage": true,
     "coverageReporters": [
       "json",
       "lcov",

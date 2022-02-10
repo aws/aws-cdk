@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import type { Dependency, Attribution } from './model';
+import type { Violation } from './bundle';
 import { shell } from './shell';
 
 /**
@@ -20,6 +20,23 @@ const DEFAULT_VALID_LICENSES = [
  */
 const FILE_PATH = 'NOTICE';
 
+/**
+ * Dependency of a specific package on the local file system.
+ */
+export interface Dependency {
+  /**
+   * Path of the dependency on the local file system.
+   */
+  readonly path: string;
+  /**
+   * Dependency name.
+   */
+  readonly name: string;
+  /**
+   * Dependency version.
+   */
+  readonly version: string;
+}
 
 /**
  * Properties for `Notice`.
@@ -34,7 +51,7 @@ export interface NoticeProps {
    */
   readonly dependencies: Dependency[];
   /**
-   * The directory underwhich all dependencies live.
+   * The parent directory underwhich all dependencies live.
    */
   readonly dependenciesRoot: string;
   /**
@@ -91,11 +108,23 @@ export class Notice {
 
     const noticePath = path.join(this.packageDir, FILE_PATH);
 
-    const missing = !fs.existsSync(noticePath);
-    const notice = missing ? undefined : fs.readFileSync(noticePath, { encoding: 'utf-8' });
-    const outdated = notice ? notice !== this.content : false;
+    const fix = () => this.flush();
 
-    const { invalidLicense, noLicense, multiLicense } = this.validateAttributionLicense(this.attributions);
+    const missing = !fs.existsSync(noticePath) ? { message: `${noticePath} is missing`, fix } : undefined;
+    const notice = missing ? undefined : fs.readFileSync(noticePath, { encoding: 'utf-8' });
+    const outdated = notice && notice !== this.content ? { message: `${noticePath} is outdated`, fix } : undefined;
+
+    const invalidLicense = Array.from(this.attributions.values())
+      .filter(a => a.license && !this.validLicenses.includes(a.license.toLowerCase()))
+      .map(a => ({ message: `Dependency ${a.package} has an invalid license: ${a.license}` }));
+
+    const noLicense = Array.from(this.attributions.values())
+      .filter(a => !a.license)
+      .map(a => ({ message: `Dependency ${a.package} has no license` }));
+
+    const multiLicense = Array.from(this.attributions.values())
+      .filter(a => a.license && a.license.split(',').length > 1)
+      .map(a => ({ message: `Dependency ${a.package} has multiple licenses: ${a.license}` }));
 
     return new NoticeValidationReport(multiLicense, noLicense, invalidLicense, missing, outdated);
   }
@@ -165,44 +194,33 @@ export class Notice {
       });
     }
 
-    // make sure all attributions have a valid license
-    const { invalidLicense, noLicense, multiLicense } = this.validateAttributionLicense(attributions);
-
-    const error = [];
-
-    if (invalidLicense.length > 0) {
-      error.push('Following dependencies have invalid licenses: (either remove them or update the valid licenses list)');
-      error.push(invalidLicense.map(a => `  - ${a.package}: ${a.license}`));
-      error.push('');
-    }
-
-    if (noLicense.length > 0) {
-      error.push('Following dependencies have no licenses: (remove them)');
-      error.push(noLicense.map(a => `  - ${a.package}`));
-      error.push('');
-    }
-
-    if (multiLicense.length > 0) {
-      error.push('Following dependencies have multiple licenses: (remove them)');
-      error.push(noLicense.map(a => `  - ${a.package}: ${a.license}`));
-      error.push('');
-    }
-
-    if (error.length > 0) {
-      throw new Error(`Errors while generating attributions:\n\n${error.join('\n')}`);
-    }
-
     return attributions;
   }
 
-  private validateAttributionLicense(attributions: Map<string, Attribution>) {
-    const invalidLicense = Array.from(attributions.values()).filter(a => a.license && !this.validLicenses.includes(a.license.toLowerCase()));
-    const noLicense = Array.from(attributions.values()).filter(a => !a.license);
-    const multiLicense = Array.from(attributions.values()).filter(a => a.license && a.license.split(',').length > 1);
-    return { invalidLicense, noLicense, multiLicense };
-  }
-
 }
+
+/**
+ * Attribution of a specific dependency.
+ */
+interface Attribution {
+  /**
+   * Attributed package (name + version)
+   */
+  readonly package: string;
+  /**
+   * URL to the package.
+   */
+  readonly url: string;
+  /**
+   * Package license.
+   */
+  readonly license?: string;
+  /**
+   * Package license content.
+   */
+  readonly licenseText?: string;
+}
+
 
 /**
  * Validation report.
@@ -212,51 +230,42 @@ export class NoticeValidationReport {
   /**
    * All violations of the report.
    */
-  public readonly violations: string[];
+  public readonly violations: Violation[];
 
   constructor(
     /**
      * Attributions that have multiple licenses.
      */
-    public readonly multiLicense: Attribution[],
+    public readonly multiLicense: Violation[],
     /**
      * Attributions that have no license.
      */
-    public readonly noLicense: Attribution[],
+    public readonly noLicense: Violation[],
     /**
      * Attributions that have an invalid license.
      */
-    public readonly invalidLicense: Attribution[],
+    public readonly invalidLicense: Violation[],
     /**
      * Notice file is missing.
      */
-    public readonly missing?: boolean,
+    public readonly missing?: Violation,
     /**
      * Notice file is outdated.
      */
-    public readonly outdated?: boolean,
+    public readonly outdated?: Violation,
   ) {
 
-    const violations = [];
+    const violations: Violation[] = [];
 
-    for (const attr of invalidLicense ?? []) {
-      violations.push(`Dependency ${attr.package} has an invalid license: ${attr.license}`);
-    }
-
-    for (const attr of noLicense ?? []) {
-      violations.push(`Dependency ${attr.package} has no license`);
-    }
-
-    for (const attr of multiLicense ?? []) {
-      violations.push(`Dependency ${attr.package} has multiple licenses: ${attr.license}`);
-    }
+    violations.push(...invalidLicense);
+    violations.push(...noLicense);
+    violations.push(...invalidLicense);
 
     if (missing) {
-      violations.push(`${FILE_PATH} is missing`);
+      violations.push(missing);
     }
-
     if (outdated) {
-      violations.push(`${FILE_PATH} is outdated`);
+      violations.push(outdated);
     }
 
     this.violations = violations;
