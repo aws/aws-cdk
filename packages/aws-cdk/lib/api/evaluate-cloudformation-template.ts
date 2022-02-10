@@ -87,7 +87,7 @@ export class EvaluateCloudFormationTemplate {
       account: this.account,
       region: this.region,
       partition: this.partition,
-      urlSuffix: (region) => sdk.getEndpointSuffix(region),
+      urlSuffix: this.urlSuffix,
       listStackResources: listNestedStackResources,
     });
   }

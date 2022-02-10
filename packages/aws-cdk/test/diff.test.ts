@@ -53,9 +53,17 @@ describe('non-nested stacks', () => {
     // Default implementations
     cloudFormation.readCurrentTemplateWithNestedStacks.mockImplementation((stackArtifact: CloudFormationStackArtifact) => {
       if (stackArtifact.stackName === 'D') {
-        return Promise.resolve({ resource: 'D' });
+        return Promise.resolve({
+          deployedTemplate: {
+            resource: 'D',
+          },
+          stackNames: {},
+        });
       }
-      return Promise.resolve({});
+      return Promise.resolve({
+        deployedTemplate: {},
+        stackNames: {},
+      });
     });
     cloudFormation.deployStack.mockImplementation((options) => Promise.resolve({
       noOp: true,
@@ -187,41 +195,47 @@ describe('nested stacks', () => {
           },
         };
         return Promise.resolve({
-          Resources: {
-            AdditionChild: {
-              Type: 'AWS::CloudFormation::Stack',
-              Resources: {
-                SomeResource: {
-                  Type: 'AWS::Something',
-                },
-              },
-            },
-            DeletionChild: {
-              Type: 'AWS::CloudFormation::Stack',
-              Resources: {
-                SomeResource: {
-                  Type: 'AWS::Something',
-                  Properties: {
-                    Prop: 'value-to-be-removed',
+          deployedTemplate: {
+            Resources: {
+              AdditionChild: {
+                Type: 'AWS::CloudFormation::Stack',
+                Resources: {
+                  SomeResource: {
+                    Type: 'AWS::Something',
                   },
                 },
               },
-            },
-            ChangedChild: {
-              Type: 'AWS::CloudFormation::Stack',
-              Resources: {
-                SomeResource: {
-                  Type: 'AWS::Something',
-                  Properties: {
-                    Prop: 'old-value',
+              DeletionChild: {
+                Type: 'AWS::CloudFormation::Stack',
+                Resources: {
+                  SomeResource: {
+                    Type: 'AWS::Something',
+                    Properties: {
+                      Prop: 'value-to-be-removed',
+                    },
+                  },
+                },
+              },
+              ChangedChild: {
+                Type: 'AWS::CloudFormation::Stack',
+                Resources: {
+                  SomeResource: {
+                    Type: 'AWS::Something',
+                    Properties: {
+                      Prop: 'old-value',
+                    },
                   },
                 },
               },
             },
           },
+          stackNames: {},
         });
       }
-      return Promise.resolve({});
+      return Promise.resolve({
+        deployedTemplate: {},
+        stackNames: {},
+      });
     });
   });
 

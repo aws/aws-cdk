@@ -52,10 +52,12 @@ export async function tryHotswapDeployment(
   // because the nested stacks can share logical IDs, the mapping will have to mimic the tree structure
   // we already compute this structure in this method (readCurrentTemplateWithNestedStacks), we just don't store it;
   // this change is just to store and return it so we can use it below, and not have to make any SDK calls to get the nested stack physical names, ever.
-  const currentTemplate = await cloudFormationDeployments.readCurrentTemplateWithNestedStacks(stackArtifact);
+  const currentTemplateWithStackNames = await cloudFormationDeployments.readCurrentTemplateWithNestedStacks(stackArtifact);
+  const currentTemplate = currentTemplateWithStackNames.deployedTemplate;
+  const stackNames = currentTemplateWithStackNames.stackNames;
   //const currentTemplate = await cloudFormationStack.template();
   const stackChanges = cfn_diff.diffTemplate(currentTemplate, stackArtifact.template);
-  const hotswappableChanges = await findAllHotswappableChanges(stackChanges, evaluateCfnTemplate, sdk, stackArtifact);
+  const hotswappableChanges = await findAllHotswappableChanges(stackChanges, evaluateCfnTemplate, sdk, stackArtifact, stackNames);
   if (!hotswappableChanges) {
     // this means there were changes to the template that cannot be short-circuited
     return undefined;
@@ -68,7 +70,8 @@ export async function tryHotswapDeployment(
 }
 
 async function findAllHotswappableChanges(
-  stackChanges: cfn_diff.TemplateDiff, evaluateCfnTemplate: EvaluateCloudFormationTemplate, sdk: ISDK, rootStackArtifact: cxapi.CloudFormationStackArtifact, hotswappableResources?: HotswapOperation[],
+  stackChanges: cfn_diff.TemplateDiff, evaluateCfnTemplate: EvaluateCloudFormationTemplate,
+  sdk: ISDK, rootStackArtifact: cxapi.CloudFormationStackArtifact, nestedStackNames: {[key: string]: any}, hotswappableResources?: HotswapOperation[],
 ): Promise<HotswapOperation[] | undefined> {
   const resourceDifferences = getStackResourceDifferences(stackChanges);
 
@@ -84,6 +87,7 @@ async function findAllHotswappableChanges(
   // process any resources in nested stacks, and remove the nested stack change from the diff, so that we don't process it again below
   //let idx = 0;
   //for (const [_logicalId, change] of resourceDifferenceEntries) {
+  // TODO: change this to use filter instead
   for (let idx = 0; idx < resourceDifferenceEntries.length; idx++) {
     const [logicalId, change] = resourceDifferenceEntries[idx];
     //const change = resourceDifferenceEntries[idx][1];
@@ -96,14 +100,17 @@ async function findAllHotswappableChanges(
         // if we decide to not add the stack names to the diff, then we can do this here, and add a unit test to verify that no sdk call is made in this case
       }
       // but here, we're wasting an sdk call. We could put the stack name information in the nested diff, but then it appears in the diff, and that looks silly
-      const nestedStackArn = await evaluateCfnTemplate.findPhysicalNameFor(logicalId);
-      const nestedStackName = nestedStackArn?.slice(nestedStackArn.indexOf('/') + 1, nestedStackArn.lastIndexOf('/')); // TODO: duplicated from cloudformation-deployments
+      //const nestedStackArn = await evaluateCfnTemplate.findPhysicalNameFor(logicalId);
+      //const nestedStackName = nestedStackArn?.slice(nestedStackArn.indexOf('/') + 1, nestedStackArn.lastIndexOf('/')); // TODO: duplicated from cloudformation-deployments
+      const nestedStackName = nestedStackNames[logicalId].stackName;
 
       const evaluateNestedCfnTemplate = nestedStackName
         ? evaluateCfnTemplate.createNestedEvaluateCloudFormationTemplate(nestedStackName, sdk, rootStackArtifact)
         : evaluateCfnTemplate;
 
-      if (await findAllHotswappableChanges(nestedDiff, evaluateNestedCfnTemplate, sdk, rootStackArtifact, hotswappableResources) === undefined) {
+      if (await findAllHotswappableChanges(nestedDiff, evaluateNestedCfnTemplate, sdk,
+        rootStackArtifact, nestedStackNames[logicalId].children, hotswappableResources) === undefined
+      ) {
         return undefined;
       }
       // why doesn't this work? the indexOf returns -1, why?
