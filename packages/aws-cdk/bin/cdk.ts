@@ -197,10 +197,10 @@ async function parseCommandLineArguments() {
       .option('list', { type: 'boolean', desc: 'List the available templates' })
       .option('generate-only', { type: 'boolean', default: false, desc: 'If true, only generates project files, without executing additional operations such as setting up a git repo, installing dependencies or compiling the project' }),
     )
-    .command('context', 'Manage cached context values', (yargs: Argv) => yargs
+    .command('context', 'Manage cached context values', yargs => yargs
       .option('reset', { alias: 'e', desc: 'The context key (or its index) to reset', type: 'string', requiresArg: true })
       .option('clear', { desc: 'Clear all context', type: 'boolean' }))
-    .command(['docs', 'doc'], 'Opens the reference documentation in a browser', (yargs: Argv) => yargs
+    .command(['docs', 'doc'], 'Opens the reference documentation in a browser', yargs => yargs
       .option('browser', {
         alias: 'b',
         desc: 'the command to use to open the browser, using %u as a placeholder for the path of the file to open',
