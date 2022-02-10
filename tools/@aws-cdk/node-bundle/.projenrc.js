@@ -14,6 +14,9 @@ const project = new typescript.TypeScriptProject({
     'fs-extra',
     'shlex',
   ],
+  bin: {
+    'node-bundle': '../lib/cli.js',
+  },
 
   // required by projen even though 'github' is false.
   defaultReleaseBranch: 'main',

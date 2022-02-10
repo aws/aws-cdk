@@ -18,6 +18,11 @@ export interface BundleProps {
   readonly packageDir: string;
 
   /**
+   * List of entrypoints to bundle.
+   */
+  readonly entrypoints: string[];
+
+  /**
    * Copyright string used when generating the NOTICE file.
    */
   readonly copyright: string;
@@ -77,21 +82,19 @@ export interface BundlePackOptions {
 export class Bundle {
 
   private readonly manifest: any;
-  private readonly script: string;
-  private readonly entrypoint: string;
 
+  private readonly packageDir: string;
+  private readonly copyright: string;
+  private readonly entrypoints: Record<string, string>;
   private readonly externals: string[];
   private readonly resources: {[src: string]: string};
   private readonly validLicenses?: string[];
-  private readonly packageDir: string;
-  private readonly copyright: string;
-  private readonly excludeFromAttribution?: string;
+  private readonly dontAttribute?: string;
   private readonly test?: string;
 
-  private readonly dependencies: Dependency[];
-  private readonly dependenciesRoot: string;
-  private readonly output: esbuild.OutputFile;
-  private readonly sourcemap: esbuild.OutputFile;
+  private _bundle?: esbuild.BuildResult;
+  private _dependencies?: Dependency[];
+  private _dependenciesRoot?: string;
 
   private _notice?: Notice;
 
@@ -103,20 +106,15 @@ export class Bundle {
     this.test = props.test;
     this.validLicenses = props.licenses;
     this.copyright = props.copyright;
-    this.excludeFromAttribution = props.dontAttribute;
+    this.dontAttribute = props.dontAttribute;
+    this.entrypoints = {};
 
-    const bin = this.bin();
-
-    this.script = bin[0];
-    this.entrypoint = bin[1];
-
-    // without the dependencies, this object is pretty much
-    // useless, so lets generate it of the bat.
-    const { dependencies, output, sourcemap, dependenciesRoot } = this.esbuild();
-    this.dependencies = dependencies;
-    this.output = output;
-    this.sourcemap = sourcemap;
-    this.dependenciesRoot = dependenciesRoot;
+    for (const entrypoint of props.entrypoints) {
+      if (!fs.existsSync(path.join(this.packageDir, entrypoint))) {
+        throw new Error(`Unable to locate entrypoint: ${entrypoint}`);
+      }
+      this.entrypoints[entrypoint.replace('.js', '')] = entrypoint;
+    }
   }
 
   /**
@@ -228,25 +226,14 @@ export class Bundle {
         }
       }
 
-      const bundlePath = this.output.path.replace(this.packageDir, workdir);
-      const sourcemapPath = this.sourcemap.path.replace(this.packageDir, workdir);
-
-      // inject a new entrypoint referencing the bundle file
-      const entrypointContent = ['#!/usr/bin/env node', `require('./${path.basename(bundlePath)}');`];
-      const entrypointPath = `${bundlePath}.entrypoint`;
-      bundleManifest.bin = { [this.script]: path.relative(workdir, entrypointPath) };
-
-      // the new entrypoints should have the same permissions as the old ones.
-      const perms = fs.statSync(path.join(workdir, this.entrypoint)).mode;
-
-      fs.writeFileSync(entrypointPath, entrypointContent.join('\n'), { mode: perms });
       fs.writeFileSync(path.join(workdir, 'package.json'), JSON.stringify(bundleManifest, null, 2));
 
-      console.log('Writing bundle');
-      fs.writeFileSync(bundlePath, this.output.contents, { mode: perms });
-
-      console.log('Writing sourcemap');
-      fs.writeFileSync(sourcemapPath, this.sourcemap.contents);
+      console.log('Writing output files');
+      for (const output of this.bundle.outputFiles ?? []) {
+        const out = output.path.replace(this.packageDir, workdir);
+        console.log(`  - ${out}`);
+        fs.writeFileSync(out, output.contents);
+      }
 
       console.log('Copying resources');
       for (const [src, dst] of Object.entries(this.resources)) {
@@ -254,7 +241,7 @@ export class Bundle {
       }
 
       if (this.test) {
-        shell(`${entrypointPath} ${this.test}`, { cwd: workdir });
+        shell(`${path.join(workdir, this.test)}`, { cwd: workdir });
       }
 
       // create the tarball
@@ -271,25 +258,40 @@ export class Bundle {
     this.notice.flush();
   }
 
+  private get bundle(): esbuild.BuildResult {
+    if (this._bundle) {
+      return this._bundle;
+    }
+    this._bundle = this.esbuild();
+    return this._bundle;
+  }
+
+  private get dependencies(): Dependency[] {
+    if (this._dependencies) {
+      return this._dependencies;
+    }
+    const inputs = Object.keys(this.bundle.metafile!.inputs);
+    const packages = new Set(Array.from(inputs).map(i => this.findPackagePath(i)));
+    this._dependencies = Array.from(packages).map(p => this.createDependency(p)).filter(d => d.name !== this.manifest.name);
+    return this._dependencies;
+  }
+
+  private get dependenciesRoot(): string {
+    if (this._dependenciesRoot) {
+      return this._dependenciesRoot;
+    }
+    this._dependenciesRoot = lcp(this.dependencies.map(d => d.path));
+    return this._dependenciesRoot;
+  }
+
   private findPackages(name: string): string[] {
 
     const paths: string[] = [];
-
-    function walkDir(dir: string) {
-      fs.readdirSync(dir).forEach(f => {
-        const fullPath = path.join(dir, f);
-        const isDirectory = fs.statSync(fullPath).isDirectory();
-        if (!isDirectory) {
-          return;
-        }
-        if (fullPath.endsWith(`node_modules/${name}`)) {
-          paths.push(fullPath);
-        }
-        walkDir(fullPath);
-      });
-    };
-
-    walkDir(this.dependenciesRoot);
+    walkDir(this.dependenciesRoot, (file: string) => {
+      if (file.endsWith(`node_modules/${name}`)) {
+        paths.push(file);
+      }
+    });
 
     return paths;
   }
@@ -302,7 +304,7 @@ export class Bundle {
       packageDir: this.packageDir,
       dependencies: this.dependencies,
       dependenciesRoot: this.dependenciesRoot,
-      exclude: this.excludeFromAttribution,
+      exclude: this.dontAttribute,
       validLicenses: this.validLicenses,
       copyright: this.copyright,
     });
@@ -331,66 +333,30 @@ export class Bundle {
     return { path: packageDir, name: manifest.name, version: manifest.version };
   }
 
-  private esbuild(): { dependencies: Dependency[]; output: esbuild.OutputFile; sourcemap: esbuild.OutputFile; dependenciesRoot: string } {
+  private esbuild(): esbuild.BuildResult {
 
     const bundle = esbuild.buildSync({
-      entryPoints: [this.entrypoint],
+      entryPoints: this.entrypoints,
       bundle: true,
       target: 'node12',
       platform: 'node',
-      sourcemap: true,
+      sourcemap: 'inline',
       metafile: true,
+      treeShaking: true,
       absWorkingDir: this.packageDir,
       external: this.externals.map(e => e.split(':')[0]),
       write: false,
-      outfile: path.join(path.dirname(this.entrypoint), `${this.script}.bundle.js`),
+      outdir: this.packageDir,
       allowOverwrite: true,
     });
-
-    if (!bundle.outputFiles || bundle.outputFiles.length === 0) {
-      throw new Error('Bundling did not produce any output files');
-    }
-
-    if (bundle.outputFiles.length > 2) {
-      // we are expecting only the bundle and sourcemap
-      throw new Error('Bundling produced too many output files');
-    }
 
     if (bundle.warnings.length) {
       // esbuild warnings are usually important, lets try to be strict here.
       // the warnings themselves are printed on screen.
-      throw new Error(`✖ Found ${bundle.warnings.length} bundling warnings (See above)`);
+      throw new Error(`Found ${bundle.warnings.length} bundling warnings (See above)`);
     }
 
-    const outfile = bundle.outputFiles.find(o => !o.path.endsWith('.map'));
-    const sourcemap = bundle.outputFiles.find(o => o.path.endsWith('.map'));
-
-    if (!outfile) {
-      throw new Error('Unable to identify bundle file');
-    }
-
-    if (!sourcemap) {
-      throw new Error('Unable to identify sourcemap file');
-    }
-
-    const inputs = Object.keys(bundle.metafile!.outputs[path.relative(this.packageDir, outfile.path)].inputs);
-    const packages = new Set(Array.from(inputs).map(i => this.findPackagePath(i)));
-    const dependencies = Array.from(packages).map(p => this.createDependency(p)).filter(d => d.name !== this.manifest.name);
-    const dependenciesRoot = lcp(dependencies.map(d => d.path));
-    return { dependencies, output: outfile, sourcemap, dependenciesRoot };
-  }
-
-  private bin() {
-
-    const bin: [string, string][] = Object.entries(this.manifest.bin ?? {});
-    if (bin.length === 0) {
-      throw new Error('✖ No entry-points detected. You must configure exactly one entrypoint in the \'bin\' section of your manifest');
-    }
-    if (bin.length > 1) {
-      throw new Error('✖ Multiple entry-points detected. You must configure exactly one entrypoint in the \'bin\' section of your manifest');
-    }
-
-    return bin[0];
+    return bundle;
   }
 }
 
@@ -457,3 +423,14 @@ function lcp(strs: string[]) {
   }
   return prefix;
 }
+
+function walkDir(dir: string, handler: (file: string) => void) {
+  fs.readdirSync(dir).forEach(f => {
+    const fullPath = path.join(dir, f);
+    const isDirectory = fs.statSync(fullPath).isDirectory();
+    if (isDirectory) {
+      walkDir(fullPath, handler);
+    }
+    handler(fullPath);
+  });
+};
