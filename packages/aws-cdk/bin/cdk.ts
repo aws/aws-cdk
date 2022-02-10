@@ -475,8 +475,8 @@ async function initCommandLine() {
         }
       case 'version':
         return data(version.DISPLAY_VERSION);
-      default:
 
+      default:
         throw new Error('Unknown command: ' + command);
     }
   }
