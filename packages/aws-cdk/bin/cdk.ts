@@ -299,13 +299,13 @@ async function initCommandLine() {
 
     switch (cmd) {
       case 'context':
-        returnValue = context(commandOptions);
+        returnValue = await context(commandOptions);
         break;
       case 'docs':
-        returnValue = docs(commandOptions);
+        returnValue = await docs(commandOptions);
         break;
       case 'doctor':
-        returnValue = doctor(commandOptions);
+        returnValue = await doctor(commandOptions);
         break;
     }
 
