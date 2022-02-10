@@ -52,7 +52,7 @@ async function main() {
   } else if (options.bundle) {
     // bundled packages have their own bundler.
     const bundle = new Bundle({ packageDir: process.cwd(), ...options.bundle });
-    bundle.pack(path.join(outdir, 'js'));
+    bundle.pack({ target: path.join(outdir, 'js') });
   } else {
     // just "npm pack" and deploy to "outdir"
     const tarball = (await shell(['npm', 'pack'], { timers })).trim();

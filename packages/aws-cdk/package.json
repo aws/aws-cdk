@@ -32,8 +32,11 @@
   "cdk-package": {
     "bundle": {
       "externals": [
-        "fsevents"
+        "fsevents:optional"
       ],
+      "resources": {
+        "../../node_modules/vm2/lib/contextify.js": "bin/contextify.js"
+      },
       "copyright": "AWS Cloud Development Kit (AWS CDK)\nCopyright 2018-2022 Amazon.com, Inc. or its affiliates. All Rights Reserved.\n",
       "licenses": [
         "Apache-2.0",
@@ -43,10 +46,7 @@
         "BSD-2-Clause",
         "0BSD"
       ],
-      "dontAttribute": "(^@aws-cdk)",
-      "resources": {
-        "../../node_modules/vm2/lib/contextify.js": "bin"
-      }
+      "dontAttribute": "(^@aws-cdk/)"
     }
   },
   "author": {

@@ -179,7 +179,7 @@ export class BundledCLI extends ValidationRule {
     '0BSD',
   ];
 
-  private static readonly DONT_ATTRIBUTE = '(^@aws-cdk)';
+  private static readonly DONT_ATTRIBUTE = '(^@aws-cdk/)';
 
 
   public validate(pkg: PackageJson): void {
@@ -243,48 +243,62 @@ export class BundledCLI extends ValidationRule {
     const bundle = new Bundle({ packageDir: pkg.packageRoot, ...bundleProps });
     const violations = bundle.validate();
 
-    if (violations?.imports?.summary) {
+    if (violations.circularImports) {
       pkg.report({
-        message: `Circular imports detected:\n\n${violations.imports.summary}`,
+        message: `Circular imports detected:\n\n${violations.circularImports}`,
         ruleName: `${this.name}/circular-imports`
       })
     }
 
-    for (const attr of violations?.notice?.invalidLicense ?? []) {
+    for (const attr of violations.notice.invalidLicense) {
       pkg.report({
         message: `Dependency ${attr.package} has an invalid license: ${attr.license}`,
         ruleName: `${this.name}/invalid-dependency-license`
       })
     }
 
-    for (const attr of violations?.notice?.noLicense ?? []) {
+    for (const attr of violations.notice.noLicense) {
       pkg.report({
         message: `Dependency ${attr.package} has no license`,
         ruleName: `${this.name}/missing-dependency-license`
       })
     }
 
-    for (const attr of violations?.notice?.multiLicense ?? []) {
+    for (const attr of violations.notice.multiLicense) {
       pkg.report({
         message: `Dependency ${attr.package} has multiple licenses: ${attr.license}`,
         ruleName: `${this.name}/multiple-dependency-license`
       })
     }
 
+    for (const resource of violations.missingResources) {
+      pkg.report({
+        message: `Resource "${resource}" cannot be located relative to the package directory`,
+        ruleName: `${this.name}/missing-resource`
+      })
+    }
+
+    for (const resource of violations.absoluteResources) {
+      pkg.report({
+        message: `Resource "${resource}" should be defined using relative paths to the package directory`,
+        ruleName: `${this.name}/absolute-resource`
+      })
+    }
+
     const fix = () => bundle.fix();
 
-    for (const attr of violations?.notice?.missing ?? []) {
+    if (violations.notice.missing) {
       pkg.report({
-        message: `Dependency ${attr.package} is missing an attribution`,
-        ruleName: `${this.name}/missing-attribution`,
+        message: `NOTICE file is missing`,
+        ruleName: `${this.name}/missing-notice`,
         fix,
       })
     }
 
-    for (const attr of violations?.notice?.unnecessary ?? []) {
+    if (violations.notice.outdated) {
       pkg.report({
-        message: `Dependency ${attr.package} attribution is unnecessary`,
-        ruleName: `${this.name}/unnecessary-attribution`,
+        message: `NOTICE file is outdated`,
+        ruleName: `${this.name}/outdated-notice`,
         fix,
       })
     }
