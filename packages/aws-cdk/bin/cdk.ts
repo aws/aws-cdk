@@ -14,6 +14,9 @@ import { execProgram } from '../lib/api/cxapp/exec';
 import { ToolkitInfo } from '../lib/api/toolkit-info';
 import { StackActivityProgress } from '../lib/api/util/cloudformation/stack-activity-monitor';
 import { CdkToolkit } from '../lib/cdk-toolkit';
+import { realHandler as context } from '../lib/commands/context';
+import { realHandler as docs } from '../lib/commands/docs';
+import { realHandler as doctor } from '../lib/commands/doctor';
 import { RequireApproval } from '../lib/diff';
 import { availableInitLanguages, cliInit, printAvailableTemplates } from '../lib/init';
 import { data, debug, error, print, setLogLevel } from '../lib/logging';
@@ -38,6 +41,11 @@ async function parseCommandLineArguments() {
   // By using the config above, every --arg will only consume one argument, so you can do the following:
   //
   //   ./prog --arg one --arg two position  =>  will parse to  { arg: ['one', 'two'], _: ['positional'] }.
+
+  const defaultBrowserCommand: { [key in NodeJS.Platform]?: string } = {
+    darwin: 'open %u',
+    win32: 'start %u',
+  };
 
   const initTemplateLanguages = await availableInitLanguages();
   return yargs
@@ -189,7 +197,17 @@ async function parseCommandLineArguments() {
       .option('list', { type: 'boolean', desc: 'List the available templates' })
       .option('generate-only', { type: 'boolean', default: false, desc: 'If true, only generates project files, without executing additional operations such as setting up a git repo, installing dependencies or compiling the project' }),
     )
-    .commandDir('../lib/commands', { exclude: /^_.*/ })
+    .command('context', 'Manage cached context values', yargs => yargs
+      .option('reset', { alias: 'e', desc: 'The context key (or its index) to reset', type: 'string', requiresArg: true })
+      .option('clear', { desc: 'Clear all context', type: 'boolean' }))
+    .command(['docs', 'doc'], 'Opens the reference documentation in a browser', yargs => yargs
+      .option('browser', {
+        alias: 'b',
+        desc: 'the command to use to open the browser, using %u as a placeholder for the path of the file to open',
+        type: 'string',
+        default: process.platform in defaultBrowserCommand ? defaultBrowserCommand[process.platform] : 'xdg-open %u',
+      }))
+    .command('doctor', 'Check your set-up for potential problems')
     .version(version.DISPLAY_VERSION)
     .demandCommand(1, '') // just print help
     .recommendCommands()
@@ -276,9 +294,25 @@ async function initCommandLine() {
   const commandOptions = { args: argv, configuration, aws: sdkProvider };
 
   try {
-    const returnValue = argv.commandHandler
-      ? await (argv.commandHandler as (opts: typeof commandOptions) => any)(commandOptions)
-      : await main(cmd, argv);
+
+    let returnValue = undefined;
+
+    switch (cmd) {
+      case 'context':
+        returnValue = await context(commandOptions);
+        break;
+      case 'docs':
+        returnValue = await docs(commandOptions);
+        break;
+      case 'doctor':
+        returnValue = await doctor(commandOptions);
+        break;
+    }
+
+    if (!returnValue) {
+      returnValue = await main(cmd, argv);
+    }
+
     if (typeof returnValue === 'object') {
       return toJsonOrYaml(returnValue);
     } else if (typeof returnValue === 'string') {
