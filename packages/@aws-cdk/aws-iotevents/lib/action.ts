@@ -1,4 +1,3 @@
-import { IDetectorModel } from './detector-model';
 import { CfnDetectorModel } from './iotevents.generated';
 
 /**
@@ -7,10 +6,8 @@ import { CfnDetectorModel } from './iotevents.generated';
 export interface IAction {
   /**
    * Returns the AWS IoT Events action specification.
-   *
-   * @param detectorModel The DetectorModel that has the state this action is set in.
    */
-  bind(detectorModel: IDetectorModel): ActionConfig;
+  renderActionConfig(): ActionConfig;
 }
 
 /**

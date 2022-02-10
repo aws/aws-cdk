@@ -25,8 +25,8 @@ class TestStack extends cdk.Stack {
       iotevents.Expression.fromString(temperature),
     );
 
-    const setTemperatureAction = {
-      bind: () => ({
+    const setTemperatureAction: iotevents.IAction = {
+      renderActionConfig: () => ({
         configuration: {
           setVariable: { variableName: 'temperature', value: temperatureAttr.evaluate() },
         },
@@ -56,7 +56,7 @@ class TestStack extends cdk.Stack {
       stateName: 'offline',
     });
 
-    onlineState.transitionTo(offlineState, { when: temperatureEqual('12'), actions: [setTemperatureAction] });
+    onlineState.transitionTo(offlineState, { when: temperatureEqual('12'), executing: [setTemperatureAction] });
     offlineState.transitionTo(onlineState, { when: temperatureEqual('21') });
 
     new iotevents.DetectorModel(this, 'MyDetectorModel', {

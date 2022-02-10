@@ -1,5 +1,4 @@
 import { IAction } from './action';
-import { IDetectorModel } from './detector-model';
 import { Event } from './event';
 import { Expression } from './expression';
 import { CfnDetectorModel } from './iotevents.generated';
@@ -17,20 +16,20 @@ export interface TransitionOptions {
 
   /**
    * The condition that is used to determine to cause the state transition and the actions.
-   * When this was evaluated to TRUE, the state transition and the actions are triggered.
+   * When this was evaluated to `true`, the state transition and the actions are triggered.
    */
   readonly when: Expression;
 
   /**
-   * The actions to be performed.
+   * The actions to be performed with the transition.
    *
-   * @default - none
+   * @default - no actions will be performed
    */
-  readonly actions?: IAction[];
+  readonly executing?: IAction[];
 }
 
 /**
- * Specifies the state transition and the actions to be performed when the condition evaluates to TRUE.
+ * Specifies the state transition and the actions to be performed when the condition evaluates to `true`.
  */
 interface TransitionEvent {
   /**
@@ -39,19 +38,19 @@ interface TransitionEvent {
   readonly eventName: string;
 
   /**
-   * The Boolean expression that, when TRUE, causes the state transition and the actions to be performed.
+   * The Boolean expression that, when `true`, causes the state transition and the actions to be performed.
    */
   readonly condition: Expression;
 
   /**
    * The actions to be performed.
    *
-   * @default - none
+   * @default - no actions will be performed
    */
   readonly actions?: IAction[];
 
   /**
-   * The next state to transit to. When the resuld of condition expression is TRUE, the state is transited.
+   * The next state to transit to. When the resuld of condition expression is `true`, the state is transited.
    */
   readonly nextState: State;
 }
@@ -107,7 +106,7 @@ export class State {
 
   /**
    * Add a transition event to the state.
-   * The transition event will be triggered if condition is evaluated to TRUE.
+   * The transition event will be triggered if condition is evaluated to `true`.
    *
    * @param targetState the state that will be transit to when the event triggered
    * @param options transition options including the condition that causes the state transition
@@ -122,15 +121,29 @@ export class State {
       eventName: options.eventName ?? `${this.stateName}_to_${targetState.stateName}`,
       nextState: targetState,
       condition: options.when,
-      actions: options.actions,
+      actions: options.executing,
     });
   }
 
   /**
-   * Return the JSONs of the states in dependency gragh that constructed by state transitions
+   * Collect states in dependency gragh that constructed by state transitions,
+   * and return the JSONs of the states.
+   * This function is called recursively and collect the states.
+   *
+   * @internal
    */
-  public bind(detectorModel: IDetectorModel): CfnDetectorModel.StateProperty[] {
-    return this.collectStates(new Set()).map(state => state.toStateJson(detectorModel));
+  public _collectStateJsons(collectedStates: Set<State>): CfnDetectorModel.StateProperty[] {
+    if (collectedStates.has(this)) {
+      return [];
+    }
+    collectedStates.add(this);
+
+    return [
+      this.toStateJson(),
+      ...this.transitionEvents.flatMap(transitionEvent => {
+        return transitionEvent.nextState._collectStateJsons(collectedStates);
+      }),
+    ];
   }
 
   /**
@@ -142,37 +155,25 @@ export class State {
     return this.props.onEnter?.some(event => event.condition) ?? false;
   }
 
-  private collectStates(collectedStates: Set<State>): State[] {
-    if (collectedStates.has(this)) {
-      return [];
-    }
-    collectedStates.add(this);
-
-    return [this, ...this.transitionEvents.flatMap(transitionEvent => transitionEvent.nextState.collectStates(collectedStates))];
-  }
-
-  private toStateJson(detectorModel: IDetectorModel): CfnDetectorModel.StateProperty {
+  private toStateJson(): CfnDetectorModel.StateProperty {
     const { onEnter, onInput, onExit } = this.props;
     return {
       stateName: this.stateName,
       onEnter: {
-        events: toEventsJson(detectorModel, onEnter),
+        events: toEventsJson(onEnter),
       },
       onInput: {
-        events: toEventsJson(detectorModel, onInput),
-        transitionEvents: toTransitionEventsJson(detectorModel, this.transitionEvents),
+        events: toEventsJson(onInput),
+        transitionEvents: toTransitionEventsJson(this.transitionEvents),
       },
       onExit: {
-        events: toEventsJson(detectorModel, onExit),
+        events: toEventsJson(onExit),
       },
     };
   }
 }
 
-function toEventsJson(
-  detectorModel: IDetectorModel,
-  events?: Event[],
-): CfnDetectorModel.EventProperty[] | undefined {
+function toEventsJson(events?: Event[]): CfnDetectorModel.EventProperty[] | undefined {
   if (!events) {
     return undefined;
   }
@@ -180,14 +181,11 @@ function toEventsJson(
   return events.map(event => ({
     eventName: event.eventName,
     condition: event.condition?.evaluate(),
-    actions: event.actions?.map(action => action.bind(detectorModel).configuration),
+    actions: event.actions?.map(action => action.renderActionConfig().configuration),
   }));
 }
 
-function toTransitionEventsJson(
-  detectorModel: IDetectorModel,
-  transitionEvents: TransitionEvent[],
-): CfnDetectorModel.TransitionEventProperty[] | undefined {
+function toTransitionEventsJson(transitionEvents: TransitionEvent[]): CfnDetectorModel.TransitionEventProperty[] | undefined {
   if (transitionEvents.length === 0) {
     return undefined;
   }
@@ -195,7 +193,7 @@ function toTransitionEventsJson(
   return transitionEvents.map(transitionEvent => ({
     eventName: transitionEvent.eventName,
     condition: transitionEvent.condition.evaluate(),
-    actions: transitionEvent.actions?.map(action => action.bind(detectorModel).configuration),
+    actions: transitionEvent.actions?.map(action => action.renderActionConfig().configuration),
     nextState: transitionEvent.nextState.stateName,
   }));
 }

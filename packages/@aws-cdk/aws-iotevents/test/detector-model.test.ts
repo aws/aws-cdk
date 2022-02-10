@@ -109,7 +109,7 @@ test('can set multiple events to State', () => {
         {
           eventName: 'test-eventName1',
           condition: iotevents.Expression.fromString('test-eventCondition'),
-          actions: [{ bind: () => ({ configuration: { setTimer: { timerName: 'test-timer' } } }) }],
+          actions: [{ renderActionConfig: () => ({ configuration: { setTimer: { timerName: 'test-timer' } } }) }],
         },
         {
           eventName: 'test-eventName2',
@@ -185,7 +185,7 @@ test('can set states with transitions', () => {
       iotevents.Expression.inputAttribute(input, 'payload.temperature'),
       iotevents.Expression.fromString('12'),
     ),
-    actions: [{ bind: () => ({ configuration: { setTimer: { timerName: 'test-timer' } } }) }],
+    executing: [{ renderActionConfig: () => ({ configuration: { setTimer: { timerName: 'test-timer' } } }) }],
   });
   // transition as 2nd -> 1st, make circular reference
   secondState.transitionTo(firstState, {
