@@ -27,7 +27,8 @@ export interface RotationScheduleOptions {
 
   /**
    * Specifies the number of days after the previous rotation before
-   * Secrets Manager triggers the next automatic rotation.
+   * Secrets Manager triggers the next automatic rotation. Cannot be set
+   * when `manualRotation` is `true`.
    *
    * @default Duration.days(30) unless `manualRotation` is `true`
    */
