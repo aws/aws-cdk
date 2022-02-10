@@ -227,8 +227,6 @@ if (!process.stdout.isTTY) {
 
 async function initCommandLine() {
   const argv = await parseCommandLineArguments();
-  // eslint-disable-next-line no-console
-  console.log(argv);
   if (argv.verbose) {
     setLogLevel(argv.verbose);
   }
@@ -478,6 +476,7 @@ async function initCommandLine() {
       case 'version':
         return data(version.DISPLAY_VERSION);
       default:
+
         throw new Error('Unknown command: ' + command);
     }
   }
