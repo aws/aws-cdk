@@ -600,6 +600,14 @@ export interface ClusterOptions extends CommonClusterOptions {
   readonly secretsEncryptionKey?: kms.IKey;
 
   /**
+   * Specify which IP family is used to assign Kubernetes pod and service IP addresses.
+   *
+   * @default - ipv4
+   * @see https://docs.aws.amazon.com/eks/latest/APIReference/API_KubernetesNetworkConfigRequest.html#AmazonEKS-Type-KubernetesNetworkConfigRequest-ipFamily
+   */
+   readonly ipFamily?: string;
+
+  /**
    * The CIDR block to assign Kubernetes service IP addresses from.
    *
    * @default - Kubernetes assigns addresses from either the
@@ -1397,6 +1405,10 @@ export class Cluster extends ClusterBase {
       throw new Error('Cannot specify clusterHandlerSecurityGroup without placeClusterHandlerInVpc set to true');
     }
 
+    if (props.serviceIpv4Cidr && props.ipFamily !== 'ipv4') {
+      throw new Error('Cannot specify serviceIpv4Cidr without ipFamily equal to ipv4');
+    }
+
     const resource = this._clusterResource = new ClusterResource(this, 'Resource', {
       name: this.physicalName,
       environment: props.clusterHandlerEnvironment,
@@ -1414,9 +1426,10 @@ export class Cluster extends ClusterBase {
           resources: ['secrets'],
         }],
       } : {}),
-      kubernetesNetworkConfig: props.serviceIpv4Cidr ? {
+      kubernetesNetworkConfig: {
+        ipFamily: props.ipFamily,
         serviceIpv4Cidr: props.serviceIpv4Cidr,
-      } : undefined,
+      },
       endpointPrivateAccess: this.endpointAccess._config.privateAccess,
       endpointPublicAccess: this.endpointAccess._config.publicAccess,
       publicAccessCidrs: this.endpointAccess._config.publicCidrs,
