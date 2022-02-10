@@ -763,3 +763,5 @@ test('multi-sibling + 3-layer nested stack structure is hotswappable', async () 
     S3Key: 'new-key',
   });
 });
+
+// new test case: assert that no sdk call is made to find the stack name if the stack cannot be deployed

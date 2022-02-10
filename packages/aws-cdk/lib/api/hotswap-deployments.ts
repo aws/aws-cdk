@@ -47,6 +47,11 @@ export async function tryHotswapDeployment(
   const cloudFormationDeployments = new CloudFormationDeployments({
     sdkProvider,
   });
+  // note: (adam's suggestion): to avoid making SDK calls (see below), change this method to return an object,
+  // where one member is what we currently have assigned to currentTemplate, and the other is a mapping between nested stacks and their physical names
+  // because the nested stacks can share logical IDs, the mapping will have to mimic the tree structure
+  // we already compute this structure in this method (readCurrentTemplateWithNestedStacks), we just don't store it;
+  // this change is just to store and return it so we can use it below, and not have to make any SDK calls to get the nested stack physical names, ever.
   const currentTemplate = await cloudFormationDeployments.readCurrentTemplateWithNestedStacks(stackArtifact);
   //const currentTemplate = await cloudFormationStack.template();
   const stackChanges = cfn_diff.diffTemplate(currentTemplate, stackArtifact.template);
