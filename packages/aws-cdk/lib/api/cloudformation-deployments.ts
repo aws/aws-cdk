@@ -399,7 +399,7 @@ export class CloudFormationDeployments {
     sdk: ISDK,
     parentTemplates: StackTemplates,
     stackNames: { [key:string]: any } = {},
-  ): Promise<{[key:string]: any}> {
+  ): Promise<{ [key:string]: any }> {
     const listStackResources = parentTemplates.deployedStackName ? new LazyListStackResources(sdk, parentTemplates.deployedStackName) : undefined;
     for (const [nestedStackLogicalId, generatedNestedStackResource] of Object.entries(parentTemplates.generatedTemplate.Resources ?? {})) {
       if (!this.isCdkManagedNestedStack(generatedNestedStackResource)) {

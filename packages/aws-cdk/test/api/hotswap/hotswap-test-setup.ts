@@ -30,6 +30,11 @@ export function setupHotswapTests() {
     stackName: STACK_NAME,
     stackId: STACK_ID,
   });
+  CloudFormationStack.lookup = async (_: CloudFormation, _stackName: string) => {
+    //currentCfnStack.template = async () => stackTemplates[stackName];
+
+    return currentCfnStack;
+  };
 
   return hotswapMockSdkProvider;
 }
