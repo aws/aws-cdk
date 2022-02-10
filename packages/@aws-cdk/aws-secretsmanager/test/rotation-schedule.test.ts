@@ -528,7 +528,7 @@ describe('manual rotations', () => {
         manualRotation: true,
         automaticallyAfter: cdk.Duration.days(15),
       });
-    }).toThrow(/Cannot specify both `automaticallyAfter` and `manualRotation`./); // THEN
+    }).toThrow(/Cannot specify `automaticallyAfter` when `manualRotation` is `true`./); // THEN
   });
 
   test('manualRotation leaves rotationSchedule unset', () => {
@@ -549,9 +549,7 @@ describe('manual rotations', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::RotationSchedule', {
-      SecretId: {
-        Ref: 'SecretA720EF05',
-      },
+      SecretId: { Ref: 'SecretA720EF05' },
       RotationLambdaARN: {
         'Fn::GetAtt': [
           'LambdaD247545B',
@@ -559,6 +557,29 @@ describe('manual rotations', () => {
         ],
       },
       RotationRules: { },
+    });
+  });
+
+  test('manualRotation set false allows automaticallyAfter to be set', () => {
+    // GIVEN
+    const secret = new secretsmanager.Secret(stack, 'Secret');
+    const rotationLambda = new lambda.Function(stack, 'Lambda', {
+      runtime: lambda.Runtime.NODEJS_10_X,
+      code: lambda.Code.fromInline('export.handler = event => event;'),
+      handler: 'index.handler',
+    });
+
+    // WHEN
+    new secretsmanager.RotationSchedule(stack, 'RotationSchedule', {
+      secret,
+      rotationLambda,
+      automaticallyAfter: cdk.Duration.days(5),
+      manualRotation: false,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::RotationSchedule', {
+      RotationRules: { AutomaticallyAfterDays: 5 },
     });
   });
 });

@@ -82,7 +82,7 @@ export class RotationSchedule extends Resource {
     }
 
     if (props.automaticallyAfter && props.manualRotation) {
-      throw new Error('Cannot specify both `automaticallyAfter` and `manualRotation`.');
+      throw new Error('Cannot specify `automaticallyAfter` when `manualRotation` is `true`.');
     }
 
     if (props.rotationLambda?.permissionsNode.defaultChild) {
