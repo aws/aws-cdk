@@ -109,7 +109,6 @@ test('can set multiple events to State', () => {
         {
           eventName: 'test-eventName1',
           condition: iotevents.Expression.fromString('test-eventCondition'),
-          actions: [{ renderActionConfig: () => ({ configuration: { setTimer: { timerName: 'test-timer' } } }) }],
         },
         {
           eventName: 'test-eventName2',
@@ -128,12 +127,40 @@ test('can set multiple events to State', () => {
               {
                 EventName: 'test-eventName1',
                 Condition: 'test-eventCondition',
-                Actions: [{ SetTimer: { TimerName: 'test-timer' } }],
               },
               {
                 EventName: 'test-eventName2',
               },
             ],
+          },
+        }),
+      ],
+    },
+  });
+});
+
+test('can set actions to events', () => {
+  // WHEN
+  new iotevents.DetectorModel(stack, 'MyDetectorModel', {
+    initialState: new iotevents.State({
+      stateName: 'test-state',
+      onEnter: [{
+        eventName: 'test-eventName1',
+        condition: iotevents.Expression.currentInput(input),
+        actions: [{ renderActionConfig: () => ({ configuration: { setTimer: { timerName: 'test-timer' } } }) }],
+      }],
+    }),
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::IoTEvents::DetectorModel', {
+    DetectorModelDefinition: {
+      States: [
+        Match.objectLike({
+          OnEnter: {
+            Events: [{
+              Actions: [{ SetTimer: { TimerName: 'test-timer' } }],
+            }],
           },
         }),
       ],
@@ -185,7 +212,6 @@ test('can set states with transitions', () => {
       iotevents.Expression.inputAttribute(input, 'payload.temperature'),
       iotevents.Expression.fromString('12'),
     ),
-    executing: [{ renderActionConfig: () => ({ configuration: { setTimer: { timerName: 'test-timer' } } }) }],
   });
   // transition as 2nd -> 1st, make circular reference
   secondState.transitionTo(firstState, {
@@ -218,7 +244,6 @@ test('can set states with transitions', () => {
               EventName: 'firstState_to_secondState',
               NextState: 'secondState',
               Condition: '$input.test-input.payload.temperature == 12',
-              Actions: [{ SetTimer: { TimerName: 'test-timer' } }],
             }],
           },
         },
@@ -243,6 +268,47 @@ test('can set states with transitions', () => {
           StateName: 'thirdState',
         },
       ],
+    },
+  });
+});
+
+test('can set actions to transitions', () => {
+  // GIVEN
+  const firstState = new iotevents.State({
+    stateName: 'firstState',
+    onEnter: [{
+      eventName: 'test-eventName',
+      condition: iotevents.Expression.currentInput(input),
+    }],
+  });
+  const secondState = new iotevents.State({
+    stateName: 'secondState',
+  });
+
+  // WHEN
+  firstState.transitionTo(secondState, {
+    when: iotevents.Expression.eq(
+      iotevents.Expression.inputAttribute(input, 'payload.temperature'),
+      iotevents.Expression.fromString('12'),
+    ),
+    executing: [{ renderActionConfig: () => ({ configuration: { setTimer: { timerName: 'test-timer' } } }) }],
+  });
+
+  new iotevents.DetectorModel(stack, 'MyDetectorModel', {
+    initialState: firstState,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::IoTEvents::DetectorModel', {
+    DetectorModelDefinition: {
+      States: Match.arrayWith([Match.objectLike({
+        StateName: 'firstState',
+        OnInput: {
+          TransitionEvents: [{
+            Actions: [{ SetTimer: { TimerName: 'test-timer' } }],
+          }],
+        },
+      })]),
     },
   });
 });
