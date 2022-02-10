@@ -267,7 +267,7 @@ class ImportedAccessPoint extends AccessPointBase {
 
   public get fileSystem() {
     if (!this._fileSystem) {
-      throw new Error("fileSystem is not available when 'fromAccessPointId()' is used. Use 'fromAccessPointAttributes()' instead");
+      throw new Error("fileSystem is only available if 'fromAccessPointAttributes()' is used and a fileSystem is passed in as an attribute.");
     }
 
     return this._fileSystem;
