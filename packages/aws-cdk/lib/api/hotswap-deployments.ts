@@ -80,7 +80,6 @@ async function findAllHotswappableChanges(
   //let idx = 0;
   //for (const [_logicalId, change] of resourceDifferenceEntries) {
   for (let idx = 0; idx < resourceDifferenceEntries.length; idx++) {
-    // TODO: test the True && false case here, should be a full deployment
     const [logicalId, change] = resourceDifferenceEntries[idx];
     //const change = resourceDifferenceEntries[idx][1];
     if (change.newValue?.Type === 'AWS::CloudFormation::Stack' && change.oldValue?.Type === 'AWS::CloudFormation::Stack') {
@@ -106,6 +105,8 @@ async function findAllHotswappableChanges(
       //resourceDifferenceEntries.splice(resourceDifferenceEntries.indexOf([logicalId, change]), 1);
       resourceDifferenceEntries.splice(idx, 1);
       idx--;
+    } else if (change.newValue?.Type !== 'AWS::CloudFormation::Stack' && change.oldValue?.Type === 'AWS::CloudFormation::Stack') {
+      return undefined;
     }
 
     //idx++;

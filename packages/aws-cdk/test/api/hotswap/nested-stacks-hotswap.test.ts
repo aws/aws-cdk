@@ -474,6 +474,161 @@ test('creating a nested stack results in a full deployment, even if their parent
   expect(mockUpdateLambdaCode).not.toHaveBeenCalled();
 });
 
+test('attempting to hotswap a newly created resource with the same logical ID that a nested stack which is currently deployed to CloudFormation has results in a full deployment', async () => {
+  // GIVEN
+  hotswapMockSdkProvider = setup.setupHotswapNestedStackTests('NestedStackCreationRoot', ['NestedStack']);
+  mockUpdateLambdaCode = jest.fn().mockReturnValue({});
+  hotswapMockSdkProvider.stubLambda({
+    updateFunctionCode: mockUpdateLambdaCode,
+  });
+
+  const root = testStack({
+    stackName: 'NestedStackCreationRoot',
+    template: {
+      Resources: {
+        Func: {
+          Type: 'AWS::Lambda::Function',
+          Properties: {
+            Code: {
+              S3Bucket: 'current-bucket',
+              S3Key: 'current-key',
+            },
+            FunctionName: 'root-function',
+          },
+          Metadata: {
+            'aws:asset:path': 'old-path',
+          },
+        },
+        FormerNestedStack: {
+          Type: 'AWS::CloudFormation::Stack',
+          Properties: {
+            TemplateURL: 'https://www.magic-url.com',
+          },
+          Metadata: {
+            'aws:asset:path': 'one-lambda-stack.nested.template.json',
+          },
+        },
+      },
+    },
+  });
+
+  setup.addTemplateToCloudFormationLookupMock(root);
+  setup.addTemplateToCloudFormationLookupMock(testStack({
+    stackName: 'FormerNestedStack',
+    template: {
+      Resources: {
+        Func: {
+          Type: 'AWS::Lambda::Function',
+          Properties: {
+            Code: {
+              S3Bucket: 'current-bucket',
+              S3Key: 'current-key',
+            },
+            FunctionName: 'my-function',
+          },
+          Metadata: {
+            'aws:asset:path': 'old-path',
+          },
+        },
+      },
+    },
+  }));
+
+  setup.pushNestedStackResourceSummaries('NestedStackCreationRoot',
+    setup.stackSummaryOf('FormerNestedStack', 'AWS::CloudFormation::Stack',
+      'arn:aws:cloudformation:bermuda-triangle-1337:123456789012:stack/FormerNestedStack/abcd',
+    ),
+  );
+
+  root.template.Resources.Func.Properties.Code.S3Bucket = 'new-bucket';
+  root.template.Resources.FormerNestedStack = {
+    Type: 'AWS::Lambda::Function',
+    Properties: {
+      Code: {
+        S3Bucket: 'current-bucket',
+        S3Key: 'new-key',
+      },
+      FunctionName: 'spooky-function',
+    },
+    Metadata: {
+      'aws:asset:path': 'old-path',
+    },
+  };
+  const cdkStackArtifact = testStack({ stackName: 'NestedStackCreationRoot', template: root.template });
+
+  // WHEN
+  const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(cdkStackArtifact);
+
+  // THEN
+  expect(deployStackResult).toBeUndefined();
+  expect(mockUpdateLambdaCode).not.toHaveBeenCalled();
+});
+
+test('reverse of above results in a full deployment', async () => {
+  // GIVEN
+  hotswapMockSdkProvider = setup.setupHotswapNestedStackTests('NestedStackCreationRoot', ['NestedStack']);
+  mockUpdateLambdaCode = jest.fn().mockReturnValue({});
+  hotswapMockSdkProvider.stubLambda({
+    updateFunctionCode: mockUpdateLambdaCode,
+  });
+
+  const root = testStack({
+    stackName: 'NestedStackCreationRoot',
+    template: {
+      Resources: {
+        Func: {
+          Type: 'AWS::Lambda::Function',
+          Properties: {
+            Code: {
+              S3Bucket: 'current-bucket',
+              S3Key: 'current-key',
+            },
+            FunctionName: 'root-function',
+          },
+          Metadata: {
+            'aws:asset:path': 'old-path',
+          },
+        },
+        FutureNestedStack: {
+          Type: 'AWS::Lambda::Function',
+          Properties: {
+            Code: {
+              S3Bucket: 'current-bucket',
+              S3Key: 'new-key',
+            },
+            FunctionName: 'spooky-function',
+          },
+          Metadata: {
+            'aws:asset:path': 'old-path',
+          },
+        },
+      },
+    },
+  });
+
+  setup.addTemplateToCloudFormationLookupMock(root);
+
+  root.template.Resources.Func.Properties.Code.S3Bucket = 'new-bucket';
+  root.template.Resources.FutureNestedStack = {
+    Type: 'AWS::CloudFormation::Stack',
+    Properties: {
+      TemplateURL: 'https://www.magic-url.com',
+    },
+    Metadata: {
+      'aws:asset:path': 'one-lambda-stack.nested.template.json',
+    },
+  };
+  const cdkStackArtifact = testStack({ stackName: 'NestedStackCreationRoot', template: root.template });
+
+  // WHEN
+  const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(cdkStackArtifact);
+
+  // THEN
+  expect(deployStackResult).toBeUndefined();
+  expect(mockUpdateLambdaCode).not.toHaveBeenCalled();
+});
+
+
 test('multi-sibling + 3-layer nested stack structure is hotswappable', async () => {
   // GIVEN
   hotswapMockSdkProvider = setup.setupHotswapNestedStackTests('MultiLayerRoot', ['ChildStack', 'GrandChildStackA', 'GrandChildStackB']);
