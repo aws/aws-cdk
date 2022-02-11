@@ -53,12 +53,17 @@ describe('Messages', () => {
   describe('findError', () => {
     test('match', () => {
       const result = annotations.findError('*', Match.anyValue());
-      expect(Object.keys(result).length).toEqual(2);
+      expect(result.length).toEqual(2);
     });
 
     test('no match', () => {
       const result = annotations.findError('*', 'no message looks like this');
-      expect(Object.keys(result).length).toEqual(0);
+      expect(result.length).toEqual(0);
+    });
+
+    test('trace is redacted', () => {
+      const result = annotations.findError('/Default/Foo', Match.anyValue());
+      expect(result[0].entry.trace).toEqual('redacted');
     });
   });
 

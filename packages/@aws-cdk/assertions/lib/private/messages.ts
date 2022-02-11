@@ -36,7 +36,7 @@ export function hasMessage(messages: Messages, constructPath: string, props: any
 // We redact the stack trace by default because it is unnecessarily long and unintelligible.
 // If there is a use case for rendering the trace, we can add it later.
 function handleTrace(match: any, redact: boolean = true): void {
-  if (redact) {
+  if (redact && match.entry?.trace !== undefined) {
     match.entry.trace = 'redacted';
   };
 }
