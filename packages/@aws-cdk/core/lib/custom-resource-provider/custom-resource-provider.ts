@@ -197,7 +197,10 @@ export class CustomResourceProvider extends CoreConstruct {
     const stack = Stack.of(scope);
 
     // copy the entry point to the code directory
-    fs.copyFileSync(ENTRYPOINT_NODEJS_SOURCE, path.join(props.codeDirectory, `${ENTRYPOINT_FILENAME}.js`));
+    const entypointPath = path.join(props.codeDirectory, `${ENTRYPOINT_FILENAME}.js`);
+    if (!fs.existsSync(entypointPath)) {
+      fs.copyFileSync(ENTRYPOINT_NODEJS_SOURCE, entypointPath);
+    }
 
     // verify we have an index file there
     if (!fs.existsSync(path.join(props.codeDirectory, 'index.js'))) {
