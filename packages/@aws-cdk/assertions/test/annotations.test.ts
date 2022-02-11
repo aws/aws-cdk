@@ -123,6 +123,52 @@ describe('Messages', () => {
   });
 });
 
+describe('Multiple Messages on the Resource', () => {
+  let stack: Stack;
+  let annotations: _Annotations;
+  beforeAll(() => {
+    stack = new Stack();
+    new CfnResource(stack, 'Foo', {
+      type: 'Foo::Bar',
+      properties: {
+        Fred: 'Thud',
+      },
+    });
+
+    new CfnResource(stack, 'Bar', {
+      type: 'Foo::Bar',
+      properties: {
+        Baz: 'Qux',
+      },
+    });
+
+    Aspects.of(stack).add(new MyMultipleAspects());
+    annotations = _Annotations.fromStack(stack);
+  });
+
+  test('succeeds on hasXxx APIs', () => {
+    annotations.hasError('/Default/Foo', 'error: this is an error');
+    annotations.hasError('/Default/Foo', 'error: unsupported type Foo::Bar');
+    annotations.hasWarning('/Default/Foo', 'warning: Foo::Bar is deprecated');
+  });
+
+  test('succeeds on findXxx APIs', () => {
+    const result1 = annotations.findError('*', Match.stringLikeRegexp('error:.*'));
+    expect(result1.length).toEqual(4);
+    const result2 = annotations.findError('/Default/Bar', Match.stringLikeRegexp('error:.*'));
+    expect(result2.length).toEqual(2);
+    const result3 = annotations.findWarning('/Default/Bar', 'warning: Foo::Bar is deprecated');
+    expect(result3).toEqual([{
+      level: 'warning',
+      entry: {
+        type: 'aws:cdk:warning',
+        data: 'warning: Foo::Bar is deprecated',
+        trace: 'redacted',
+      },
+      id: '/Default/Bar',
+    }]);
+  });
+});
 class MyAspect implements IAspect {
   public visit(node: IConstruct): void {
     if (node instanceof CfnResource) {
@@ -146,5 +192,23 @@ class MyAspect implements IAspect {
 
   protected info(node: IConstruct, message: string): void {
     Annotations.of(node).addInfo(message);
+  }
+}
+
+class MyMultipleAspects implements IAspect {
+  public visit(node: IConstruct): void {
+    if (node instanceof CfnResource) {
+      this.error(node, 'error: this is an error');
+      this.error(node, `error: unsupported type ${node.cfnResourceType}`);
+      this.warn(node, `warning: ${node.cfnResourceType} is deprecated`);
+    }
+  }
+
+  protected warn(node: IConstruct, message: string): void {
+    Annotations.of(node).addWarning(message);
+  }
+
+  protected error(node: IConstruct, message: string): void {
+    Annotations.of(node).addError(message);
   }
 }
