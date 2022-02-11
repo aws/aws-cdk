@@ -730,7 +730,7 @@ cfnDistribution.addPropertyOverride('ViewerCertificate.SslSupportMethod', 'sni-o
 
 A number of default settings have changed on the new API when creating a new distribution, behavior, and origin. 
 After making the major changes needed for the migration, run `cdk diff` to see what settings have changed. 
-If no changes are desired during migration, you will at the least be able to use [escape hatches](https://docs.aws.amazon.com/cdk/v2/guide/cfn_layer.html) to override what the CDK synthesizes.
+If no changes are desired during migration, you will at the least be able to use [escape hatches](https://docs.aws.amazon.com/cdk/v2/guide/cfn_layer.html) to override what the CDK synthesizes, if you can't change the properties directly.
 
 ## CloudFrontWebDistribution API
 
