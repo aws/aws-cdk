@@ -38,14 +38,14 @@ export class StackSetPipelineStack extends Stack {
     pipeline.addStage({
       stageName: 'Cfn',
       actions: [
-        new cpactions.CloudFormationStackSetAction({
+        new cpactions.CloudFormationDeployStackSetAction({
           actionName: 'StackSet',
           stackSetName: 'TestStackSet',
           template: cpactions.StackSetTemplate.fromArtifactPath(sourceOutput.atPath('template.yaml')),
           stackInstances: cpactions.StackInstances.fromList(accounts, ['us-east-1', 'eu-west-1']),
           runOrder: 1,
         }),
-        new cpactions.CloudFormationStackInstancesAction({
+        new cpactions.CloudFormationDeployStackInstancesAction({
           actionName: 'Instances',
           stackSetName: 'TestStackSet',
           stackInstances: cpactions.StackInstances.fromList(accounts, ['us-east-1', 'eu-west-1']),

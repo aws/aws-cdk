@@ -8,7 +8,7 @@ import { StackInstances, StackSetParameters } from './stackset-types';
 import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
- * Properties for the CloudFormationStackInstancesAction
+ * Properties for the CloudFormationDeployStackInstancesAction
  */
 export interface CloudFormationStackInstancesActionProps extends codepipeline.CommonAwsActionProps {
   /**
@@ -77,7 +77,7 @@ export interface CloudFormationStackInstancesActionProps extends codepipeline.Co
  * set. Then all instance statuses are set to OUTDATED until the changes are
  * deployed to that instance.
  */
-export class CloudFormationStackInstancesAction extends Action {
+export class CloudFormationDeployStackInstancesAction extends Action {
   private readonly props: CloudFormationStackInstancesActionProps;
 
   constructor(props: CloudFormationStackInstancesActionProps) {

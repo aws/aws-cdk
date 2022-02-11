@@ -631,9 +631,9 @@ section of the CloudFormation developer guide.
 
 The actions available for updating StackSets are:
 
-* **CloudFormationStackSetAction** - Create or update a CloudFormation StackSet directly from the pipeline, optionally
+* **CloudFormationDeployStackSetAction** - Create or update a CloudFormation StackSet directly from the pipeline, optionally
   immediately create and update Stack Instances as well.
-* **CloudFormationStackInstancesAction** - Update outdated Stack Instaces using the current version of the StackSet.
+* **CloudFormationDeployStackInstancesAction** - Update outdated Stack Instaces using the current version of the StackSet.
 
 Here's an example of using both of these actions:
 
@@ -645,7 +645,7 @@ pipeline.addStage({
   stageName: 'DeployStackSets',
   actions: [
     // First, update the StackSet itself with the newest template
-    new codepipeline_actions.CloudFormationStackSetAction({
+    new codepipeline_actions.CloudFormationDeployStackSetAction({
       actionName: 'UpdateStackSet',
       runOrder: 1,
       stackSetName: 'MyStackSet',
@@ -658,7 +658,7 @@ pipeline.addStage({
     }),
 
     // Afterwards, update/create additional instances in other accounts
-    new codepipeline_actions.CloudFormationStackInstancesAction({
+    new codepipeline_actions.CloudFormationDeployStackInstancesAction({
       actionName: 'AddMoreInstances',
       runOrder: 2,
       stackSetName: 'MyStackSet',

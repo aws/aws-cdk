@@ -28,7 +28,7 @@ describe('StackSetAction', () => {
 
   describe('self-managed mode', () => {
     test('creates admin role if not specified', () => {
-      stack.deployStage.addAction(new cpactions.CloudFormationStackSetAction({
+      stack.deployStage.addAction(new cpactions.CloudFormationDeployStackSetAction({
         ...defaultOpts(),
         stackInstances: cpactions.StackInstances.fromArtifact(
           stack.sourceOutput.atPath('accounts.json'),
@@ -119,7 +119,7 @@ describe('StackSetAction', () => {
     });
 
     test('passes admin role if specified', () => {
-      stack.deployStage.addAction(new cpactions.CloudFormationStackSetAction({
+      stack.deployStage.addAction(new cpactions.CloudFormationDeployStackSetAction({
         ...defaultOpts(),
         stackInstances: cpactions.StackInstances.fromArtifact(
           stack.sourceOutput.atPath('accounts.json'),
@@ -198,7 +198,7 @@ describe('StackSetAction', () => {
   });
 
   test('creates correct resources in organizations mode', () => {
-    stack.deployStage.addAction(new cpactions.CloudFormationStackSetAction({
+    stack.deployStage.addAction(new cpactions.CloudFormationDeployStackSetAction({
       ...defaultOpts(),
       deploymentModel: cpactions.StackSetDeploymentModel.organizations(),
       stackInstances: cpactions.StackInstances.fromArtifact(
@@ -245,7 +245,7 @@ describe('StackSetAction', () => {
   });
 
   test('creates correct pipeline resource with target list', () => {
-    stack.deployStage.addAction(new cpactions.CloudFormationStackSetAction({
+    stack.deployStage.addAction(new cpactions.CloudFormationDeployStackSetAction({
       ...defaultOpts(),
       stackInstances: cpactions.StackInstances.fromList(
         ['11111111111', '22222222222'],
@@ -286,7 +286,7 @@ describe('StackSetAction', () => {
   });
 
   test('creates correct pipeline resource with parameter list', () => {
-    stack.deployStage.addAction(new cpactions.CloudFormationStackSetAction({
+    stack.deployStage.addAction(new cpactions.CloudFormationDeployStackSetAction({
       ...defaultOpts(),
       parameters: cpactions.StackSetParameters.fromLiteral({
         key0: 'val0',
@@ -342,7 +342,7 @@ describe('StackInstancesAction', () => {
   };
 
   test('simple', () => {
-    stack.deployStage.addAction(new cpactions.CloudFormationStackInstancesAction({
+    stack.deployStage.addAction(new cpactions.CloudFormationDeployStackInstancesAction({
       ...defaultOpts(),
       stackInstances: cpactions.StackInstances.fromList(
         ['1234', '5678'],

@@ -9,9 +9,9 @@ import { StackInstances, StackSetDeploymentModel, StackSetParameters, StackSetTe
 import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
- * Properties for the CloudFormationStackSetAction
+ * Properties for the CloudFormationDeployStackSetAction
  */
-export interface CloudFormationStackSetActionProps extends codepipeline.CommonAwsActionProps {
+export interface CloudFormationDeployStackSetActionProps extends codepipeline.CommonAwsActionProps {
   /**
    * The name to associate with the stack set. This name must be unique in the Region where it is created.
    *
@@ -142,11 +142,11 @@ export interface CloudFormationStackSetActionProps extends codepipeline.CommonAw
  * CloudFormationStackInstances action so that the remaining instances are
  * created and updated.
  */
-export class CloudFormationStackSetAction extends Action {
-  private readonly props: CloudFormationStackSetActionProps;
+export class CloudFormationDeployStackSetAction extends Action {
+  private readonly props: CloudFormationDeployStackSetActionProps;
   private readonly deploymentModel: StackSetDeploymentModel;
 
-  constructor(props: CloudFormationStackSetActionProps) {
+  constructor(props: CloudFormationDeployStackSetActionProps) {
     super({
       ...props,
       provider: 'CloudFormationStackSet',
