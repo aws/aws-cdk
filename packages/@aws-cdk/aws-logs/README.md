@@ -313,7 +313,7 @@ Creates a query definition for CloudWatch Logs Insights.
 Example:
 
 ```ts
-new QueryDefinition(this, 'QueryDefinition', {
+new logs.QueryDefinition(this, 'QueryDefinition', {
   queryDefinitionName: 'MyQuery',
   queryString: 'fields @timestamp, @message | sort @timestamp desc | limit 20',
 });
