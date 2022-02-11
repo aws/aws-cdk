@@ -1216,10 +1216,8 @@ check enabled.
 ## Using a different deployment engine
 
 CDK Pipelines supports multiple *deployment engines*, but this module vends a
-construct for only one such engine: AWS CodePipeline. The constructs under
-`pipelines/lib/helpers-internal` intentionally exposes the underlying graph
-representation of the module decoupled from AWS CodePipeline. It is possible to
-use this to build CDK deployment pipelines backed by other deployment engines.
+construct for only one such engine: AWS CodePipeline. It is also possible to
+use CDK Pipelines to build pipelines backed by other deployment engines.
 
 Here is a list of CDK Libraries that integrate CDK Pipelines with
 alternative deployment engines:
