@@ -107,7 +107,7 @@
     "fs-extra": "^9.1.0",
     "ignore": "^5.2.0",
     "jsonschema": "^1.4.0",
-    "minimatch": "^3.0.4",
+    "minimatch": "^3.0.5",
     "punycode": "^2.1.1",
     "semver": "^7.3.5",
     "yaml": "1.10.2"
@@ -235,6 +235,7 @@
     "@aws-cdk/aws-iotthingsgraph": "0.0.0",
     "@aws-cdk/aws-iotwireless": "0.0.0",
     "@aws-cdk/aws-ivs": "0.0.0",
+    "@aws-cdk/aws-kafkaconnect": "0.0.0",
     "@aws-cdk/aws-kendra": "0.0.0",
     "@aws-cdk/aws-kinesis": "0.0.0",
     "@aws-cdk/aws-kinesisanalytics": "0.0.0",
