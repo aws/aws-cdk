@@ -10,8 +10,8 @@ export async function displayNotices() {
   const dataSource = new CachedDataSource(path.join(cdkCacheDir(), 'notices.json'), new WebsiteNoticeDataSource());
   const filter = new NoticeFilter({
     cliVersion: versionNumber(),
-    temporarilySuppressed: false,
-    permanentlySuppressed: false,
+    temporarilySuppressed: false, // coming from a command line option
+    permanentlySuppressed: false, // coming from the cdk.json file
   });
   const formatter = new FooNoticeFormatter();
 
@@ -80,7 +80,6 @@ interface CachedNotices {
 
 const TIME_TO_LIVE = 60 * 60 * 1000; // 1 hour
 
-// TODO Caching can be implemented as a decorator around NoticeDataSource
 export class CachedDataSource implements NoticeDataSource {
   constructor(
     private readonly fileName: string,
@@ -88,7 +87,7 @@ export class CachedDataSource implements NoticeDataSource {
   }
 
   async fetch(): Promise<Notice[]> {
-    const cachedData = await this.loadCachedData();
+    const cachedData = await this.load();
     const notices = cachedData.notices;
     const expiration = cachedData.expiration ?? 0;
 
@@ -97,14 +96,14 @@ export class CachedDataSource implements NoticeDataSource {
         expiration: Date.now() + TIME_TO_LIVE,
         notices: await this.dataSource.fetch(),
       };
-      await this.storeCachedData(freshData);
+      await this.save(freshData);
       return freshData.notices;
     } else {
       return notices;
     }
   }
 
-  private async loadCachedData(): Promise<CachedNotices> {
+  private async load(): Promise<CachedNotices> {
     try {
       return await fs.readJSON(this.fileName) as CachedNotices;
     } catch (e) {
@@ -116,7 +115,7 @@ export class CachedDataSource implements NoticeDataSource {
     }
   }
 
-  private async storeCachedData(cached: CachedNotices): Promise<void> {
+  private async save(cached: CachedNotices): Promise<void> {
     try {
       await fs.writeJSON(this.fileName, cached);
     } catch (e) {
