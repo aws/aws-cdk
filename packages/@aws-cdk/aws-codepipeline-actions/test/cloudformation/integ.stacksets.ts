@@ -2,10 +2,17 @@
  * This integration test needs 2 accounts properly configured beforehand to properly test,
  * and so is tested by hand.
  *
- * To test and update the snapshot:
+ * To test:
  *
  * ```
  * env AWS_REGION=eu-west-1 STACKSET_ACCOUNTS=11111111,22222222 cdk deploy -a test/cloudformation/integ.stacksets.js
+ * ```
+ *
+ * Then make the pipeline in your account run.
+ *
+ * To update the snapshot:
+ *
+ * ```
  * yarn integ --dry-run cloudformation/integ.stacksets.js
  * ```
  */

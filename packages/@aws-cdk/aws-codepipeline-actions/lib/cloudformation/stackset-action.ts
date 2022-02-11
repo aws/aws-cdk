@@ -1,6 +1,7 @@
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as cdk from '@aws-cdk/core';
 import { Action } from '../action';
+import { validatePercentage } from '../common';
 import { parseCapabilities, SingletonPolicy } from './private/singleton-policy';
 import { CommonCloudFormationStackSetOptions, StackInstances, StackSetDeploymentModel, StackSetParameters, StackSetTemplate } from './stackset-types';
 
@@ -136,6 +137,9 @@ export class CloudFormationDeployStackSetAction extends Action {
 
     this.props = props;
     this.deploymentModel = props.deploymentModel ?? StackSetDeploymentModel.selfManaged();
+
+    validatePercentage('failureTolerancePercentage', props.failureTolerancePercentage);
+    validatePercentage('maxAccountConcurrencyPercentage', props.maxAccountConcurrencyPercentage);
   }
 
   protected bound(scope: CoreConstruct, _stage: codepipeline.IStage, options: codepipeline.ActionBindOptions): codepipeline.ActionConfig {
