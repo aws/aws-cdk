@@ -114,13 +114,23 @@ export abstract class StackInstances {
   /**
    * Create stack instances in a set of accounts or organizational units taken from the pipeline artifacts, and a set of regions
    *
+   * The file must be a JSON file containing a list of strings. For example:
+   *
+   * ```json
+   * [
+   *   "111111111111",
+   *   "222222222222",
+   *   "333333333333"
+   * ]
+   * ```
+   *
    * Stack Instances will be created in every combination of region and account, or region and
    * Organizational Units (OUs).
    *
    * If this is set of Organizational Units, you must have selected `StackSetDeploymentModel.organizations()`
    * as deployment model.
    */
-  public static fromArtifact(artifactPath: codepipeline.ArtifactPath, regions: string[]): StackInstances {
+  public static fromArtifactPath(artifactPath: codepipeline.ArtifactPath, regions: string[]): StackInstances {
     if (regions.length === 0) {
       throw new Error("'regions' may not be an empty list");
     }

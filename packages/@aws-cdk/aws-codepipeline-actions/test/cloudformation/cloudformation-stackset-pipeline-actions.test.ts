@@ -35,7 +35,7 @@ describe('StackSetAction', () => {
     test('creates admin role if not specified', () => {
       stack.deployStage.addAction(new cpactions.CloudFormationDeployStackSetAction({
         ...defaultOpts(),
-        stackInstances: cpactions.StackInstances.fromArtifact(
+        stackInstances: cpactions.StackInstances.fromArtifactPath(
           stack.sourceOutput.atPath('accounts.json'),
           ['us-east-1', 'us-west-1', 'ca-central-1'],
         ),
@@ -122,7 +122,7 @@ describe('StackSetAction', () => {
     test('passes admin role if specified', () => {
       stack.deployStage.addAction(new cpactions.CloudFormationDeployStackSetAction({
         ...defaultOpts(),
-        stackInstances: cpactions.StackInstances.fromArtifact(
+        stackInstances: cpactions.StackInstances.fromArtifactPath(
           stack.sourceOutput.atPath('accounts.json'),
           ['us-east-1', 'us-west-1', 'ca-central-1'],
         ),
@@ -198,7 +198,7 @@ describe('StackSetAction', () => {
     stack.deployStage.addAction(new cpactions.CloudFormationDeployStackSetAction({
       ...defaultOpts(),
       deploymentModel: cpactions.StackSetDeploymentModel.organizations(),
-      stackInstances: cpactions.StackInstances.fromArtifact(
+      stackInstances: cpactions.StackInstances.fromArtifactPath(
         stack.sourceOutput.atPath('accounts.json'),
         ['us-east-1', 'us-west-1', 'ca-central-1'],
       ),
@@ -285,7 +285,7 @@ describe('StackSetAction', () => {
         key0: 'val0',
         key1: 'val1',
       }, ['key2', 'key3']),
-      stackInstances: cpactions.StackInstances.fromArtifact(
+      stackInstances: cpactions.StackInstances.fromArtifactPath(
         stack.sourceOutput.atPath('accounts.json'),
         ['us-east-1', 'us-west-1', 'ca-central-1'],
       ),
