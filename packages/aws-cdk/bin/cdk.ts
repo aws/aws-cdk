@@ -17,6 +17,7 @@ import { CdkToolkit } from '../lib/cdk-toolkit';
 import { RequireApproval } from '../lib/diff';
 import { availableInitLanguages, cliInit, printAvailableTemplates } from '../lib/init';
 import { data, debug, error, print, setLogLevel } from '../lib/logging';
+import { displayNotices } from '../lib/notices';
 import { PluginHost } from '../lib/plugin';
 import { serializeStructure } from '../lib/serialize';
 import { Command, Configuration, Settings } from '../lib/settings';
@@ -288,6 +289,7 @@ async function initCommandLine() {
     }
   } finally {
     await version.displayVersionMessage();
+    await displayNotices();
   }
 
   async function main(command: string, args: any): Promise<number | string | {} | void> {
