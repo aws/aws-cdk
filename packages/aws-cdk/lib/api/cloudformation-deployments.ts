@@ -11,24 +11,7 @@ import { LazyListStackResources, ListStackResources } from './evaluate-cloudform
 import { ToolkitInfo } from './toolkit-info';
 import { CloudFormationStack, Template } from './util/cloudformation';
 import { StackActivityProgress } from './util/cloudformation/stack-activity-monitor';
-
-/**
- * Replace the {ACCOUNT} and {REGION} placeholders in all strings found in a complex object.
- */
-export async function replaceEnvPlaceholders<A extends { }>(object: A, env: cxapi.Environment, sdkProvider: SdkProvider): Promise<A> {
-  return cxapi.EnvironmentPlaceholders.replaceAsync(object, {
-    accountId: () => Promise.resolve(env.account),
-    region: () => Promise.resolve(env.region),
-    partition: async () => {
-      // There's no good way to get the partition!
-      // We should have had it already, except we don't.
-      //
-      // Best we can do is ask the "base credentials" for this environment for their partition. Cross-partition
-      // AssumeRole'ing will never work anyway, so this answer won't be wrong (it will just be slow!)
-      return (await sdkProvider.baseCredentialsPartition(env, Mode.ForReading)) ?? 'aws';
-    },
-  });
-}
+import { replaceEnvPlaceholders } from './util/placeholders';
 
 /**
  * SDK obtained by assuming the lookup role
