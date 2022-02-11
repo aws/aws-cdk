@@ -1,7 +1,6 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import { CloudFormation } from 'aws-sdk';
 import * as AWS from 'aws-sdk';
-import * as appsync from 'aws-sdk/clients/appsync';
 import * as codebuild from 'aws-sdk/clients/codebuild';
 import * as lambda from 'aws-sdk/clients/lambda';
 import * as stepfunctions from 'aws-sdk/clients/stepfunctions';
@@ -115,16 +114,8 @@ export class HotswapMockSdkProvider {
     });
   }
 
-  public stubAppSync(
-    mockUpdateResolver: (input: appsync.UpdateResolverRequest) => appsync.UpdateResolverResponse,
-    mockUpdateFunction: (input: appsync.UpdateFunctionRequest) => appsync.UpdateFunctionResponse,
-    mockListFunctions: (input: appsync.ListFunctionsRequest) => appsync.ListFunctionsResponse,
-  ) {
-    this.mockSdkProvider.stubAppSync({
-      updateResolver: mockUpdateResolver,
-      updateFunction: mockUpdateFunction,
-      listFunctions: mockListFunctions,
-    });
+  public stubAppSync(stubs: SyncHandlerSubsetOf<AWS.AppSync>) {
+    this.mockSdkProvider.stubAppSync(stubs);
   }
 
   public setInvokeLambdaMock(mockInvokeLambda: (input: lambda.InvocationRequest) => lambda.InvocationResponse) {

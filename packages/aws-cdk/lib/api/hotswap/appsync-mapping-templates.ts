@@ -19,18 +19,20 @@ export async function isHotswappableAppSyncChange(
     }
   }
 
-  const resource = change.newValue.Properties;
-  const evaluatedResource = {
-    ...await evaluateCfnTemplate.evaluateCfnExpression({
-      ...(resource ?? {}),
-    }),
-  };
-  const sdkCompatibleResource = transformObjectKeys(evaluatedResource, lowerCaseFirstCharacter);
+  const resourceProperties = change.newValue.Properties;
+  if (isResolver && resourceProperties?.Kind === 'PIPELINE') {
+    // Pipeline resolvers can't be hotswapped as they reference
+    // the FunctionId of the underlying functions, which can't be resolved.
+    return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
+  }
 
-  const resourcePhysicalName = await evaluateCfnTemplate.establishResourcePhysicalName(logicalId, isFunction ? resource?.Name : null);
+  const resourcePhysicalName = await evaluateCfnTemplate.establishResourcePhysicalName(logicalId, isFunction ? resourceProperties?.Name : undefined);
   if (!resourcePhysicalName) {
     return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
   }
+
+  const evaluatedResourceProperties = await evaluateCfnTemplate.evaluateCfnExpression(resourceProperties);
+  const sdkCompatibleResourceProperties = transformObjectKeys(evaluatedResourceProperties, lowerCaseFirstCharacter);
 
   if (isResolver) {
     // Resolver physical name is the ARN in the format:
@@ -38,44 +40,23 @@ export async function isHotswappableAppSyncChange(
     // We'll use `<type>.<field>` as the resolver name.
     const arnParts = resourcePhysicalName.split('/');
     const resolverName = `${arnParts[3]}.${arnParts[5]}`;
-
-    const updateResolverRequest = {
-      resolverName,
-      request: sdkCompatibleResource,
-    };
-    return new ResolverHotswapOperation(updateResolverRequest);
+    return new ResolverHotswapOperation(resolverName, sdkCompatibleResourceProperties);
   } else {
-    const updateFunctionRequest = {
-      functionName: resourcePhysicalName,
-      request: sdkCompatibleResource,
-    };
-    return new FunctionHotswapOperation(updateFunctionRequest);
+    return new FunctionHotswapOperation(resourcePhysicalName, sdkCompatibleResourceProperties);
   }
-}
-
-interface ResolverUpdateRequest {
-  resolverName: string
-  request: AWS.AppSync.UpdateResolverRequest
 }
 
 class ResolverHotswapOperation implements HotswapOperation {
   public readonly service = 'appsync'
   public readonly resourceNames: string[];
 
-  constructor(
-    private readonly resolverUpdateRequest: ResolverUpdateRequest,
-  ) {
-    this.resourceNames = [`AppSync resolver '${resolverUpdateRequest.resolverName}'`];
+  constructor(resolverName: string, private readonly updateResolverRequest: AWS.AppSync.UpdateResolverRequest) {
+    this.resourceNames = [`AppSync resolver '${resolverName}'`];
   }
 
   public async apply(sdk: ISDK): Promise<any> {
-    return sdk.appsync().updateResolver(this.resolverUpdateRequest.request).promise();
+    return sdk.appsync().updateResolver(this.updateResolverRequest).promise();
   }
-}
-
-interface FunctionUpdateRequest {
-  functionName: string
-  request: Omit<AWS.AppSync.UpdateFunctionRequest, 'functionId'>
 }
 
 class FunctionHotswapOperation implements HotswapOperation {
@@ -83,16 +64,17 @@ class FunctionHotswapOperation implements HotswapOperation {
   public readonly resourceNames: string[];
 
   constructor(
-    private readonly functionUpdateRequest: FunctionUpdateRequest,
+    private readonly functionName: string,
+    private readonly updateFunctionRequest: Omit<AWS.AppSync.UpdateFunctionRequest, 'functionId'>,
   ) {
-    this.resourceNames = [`AppSync function '${functionUpdateRequest.functionName}'`];
+    this.resourceNames = [`AppSync function '${functionName}'`];
   }
 
   public async apply(sdk: ISDK): Promise<any> {
-    const { functions } = await sdk.appsync().listFunctions({ apiId: this.functionUpdateRequest.request.apiId }).promise();
-    const { functionId } = functions?.find(fn => fn.name === this.functionUpdateRequest.functionName) ?? {};
+    const { functions } = await sdk.appsync().listFunctions({ apiId: this.updateFunctionRequest.apiId }).promise();
+    const { functionId } = functions?.find(fn => fn.name === this.functionName) ?? {};
     const request = {
-      ...this.functionUpdateRequest.request,
+      ...this.updateFunctionRequest,
       functionId: functionId!,
     };
     return sdk.appsync().updateFunction(request).promise();
