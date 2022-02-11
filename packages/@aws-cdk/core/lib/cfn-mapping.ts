@@ -43,7 +43,7 @@ export class CfnMapping extends CfnRefElement {
 
   constructor(scope: Construct, id: string, props: CfnMappingProps = {}) {
     super(scope, id);
-    this.mapping = props.mapping ?? { };
+    this.mapping = props.mapping ? this.validateMapping(props.mapping) : {};
     this.lazy = props.lazy;
   }
 
@@ -51,6 +51,8 @@ export class CfnMapping extends CfnRefElement {
    * Sets a value in the map based on the two keys.
    */
   public setValue(key1: string, key2: string, value: any) {
+    this.validateAlphanumeric(key2);
+
     if (!(key1 in this.mapping)) {
       this.mapping[key1] = { };
     }
@@ -107,5 +109,17 @@ export class CfnMapping extends CfnRefElement {
       Annotations.of(this).addInfo('Consider making this CfnMapping a lazy mapping by providing `lazy: true`: either no findInMap was called or every findInMap could be immediately resolved without using Fn::FindInMap');
     }
     this.lazyInformed = true;
+  }
+
+  private validateMapping(mapping: Mapping): Mapping {
+    Object.keys(mapping).forEach((m) => Object.keys(mapping[m]).forEach(this.validateAlphanumeric));
+    return mapping;
+  }
+
+  private validateAlphanumeric(value: any) {
+    // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/mappings-section-structure.html
+    if (value.match(/[^a-zA-Z0-9]/g)) {
+      throw new Error(`Attribute name '${value}' must contain only alphanumeric characters.`);
+    }
   }
 }
