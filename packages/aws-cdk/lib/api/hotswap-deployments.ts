@@ -78,39 +78,35 @@ async function findAllHotswappableChanges(
 
   const resourceDifferenceEntries = Object.entries(resourceDifferences);
 
-  // process any resources in nested stacks, and remove the nested stack change from the diff, so that we don't process it again below
-  //let idx = 0;
-  //for (const [_logicalId, change] of resourceDifferenceEntries) {
-  // TODO: change this to use filter instead
-  for (let idx = 0; idx < resourceDifferenceEntries.length; idx++) {
-    const [logicalId, change] = resourceDifferenceEntries[idx];
-    //const change = resourceDifferenceEntries[idx][1];
-    if (change.newValue?.Type === 'AWS::CloudFormation::Stack' && change.oldValue?.Type === 'AWS::CloudFormation::Stack') {
-      const nestedDiff = cfn_diff.diffTemplate(change.oldValue.Properties?.NestedTemplate, change.newValue.Properties?.NestedTemplate);
+  // process any resources in nested stacks
+  // if any of them are not hotswappable, fail now
+  for (const [logicalId, change] of resourceDifferenceEntries.filter(
+    ([_, resourceDifference]) => (resourceDifference.newValue?.Type === 'AWS::CloudFormation::Stack' && resourceDifference.oldValue?.Type === 'AWS::CloudFormation::Stack'))
+  ) {
+    const nestedDiff = cfn_diff.diffTemplate(change.oldValue?.Properties?.NestedTemplate, change.newValue?.Properties?.NestedTemplate);
 
-      const nestedStackName = nestedStackNames[logicalId].stackName;
-      const evaluateNestedCfnTemplate = nestedStackName
-        ? evaluateCfnTemplate.createNestedEvaluateCloudFormationTemplate(nestedStackName, sdk, rootStackArtifact)
-        : evaluateCfnTemplate;
+    const nestedStackName = nestedStackNames[logicalId].stackName;
+    const evaluateNestedCfnTemplate = nestedStackName
+      ? evaluateCfnTemplate.createNestedEvaluateCloudFormationTemplate(nestedStackName, sdk, rootStackArtifact)
+      : evaluateCfnTemplate;
 
-      if (await findAllHotswappableChanges(nestedDiff, evaluateNestedCfnTemplate, sdk,
-        rootStackArtifact, nestedStackNames[logicalId].children, hotswappableResources) === undefined
-      ) {
-        return undefined;
-      }
-      // why doesn't this work? the indexOf returns -1, why?
-      //resourceDifferenceEntries.splice(resourceDifferenceEntries.indexOf([logicalId, change]), 1);
-      resourceDifferenceEntries.splice(idx, 1);
-      idx--;
-    } else if (change.newValue?.Type !== 'AWS::CloudFormation::Stack' && change.oldValue?.Type === 'AWS::CloudFormation::Stack') {
+    if (await findAllHotswappableChanges(nestedDiff, evaluateNestedCfnTemplate, sdk,
+      rootStackArtifact, nestedStackNames[logicalId].children, hotswappableResources) === undefined
+    ) {
       return undefined;
     }
-
-    //idx++;
+  }
+  // if a stack has been deleted, fail now
+  for (const [_, change] of resourceDifferenceEntries) {
+    if (change.newValue?.Type !== 'AWS::CloudFormation::Stack' && change.oldValue?.Type === 'AWS::CloudFormation::Stack') {
+      return undefined;
+    }
   }
 
   // gather the results of the detector functions
-  for (const [logicalId, change] of resourceDifferenceEntries) {
+  for (const [logicalId, change] of resourceDifferenceEntries.filter(
+    ([_, resourceDifference]) => (resourceDifference.newValue?.Type !== 'AWS::CloudFormation::Stack' || resourceDifference.oldValue?.Type !== 'AWS::CloudFormation::Stack'))
+  ) {
     const resourceHotswapEvaluation = isCandidateForHotswapping(change);
     if (resourceHotswapEvaluation === ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT) {
       foundNonHotswappableChange = true;

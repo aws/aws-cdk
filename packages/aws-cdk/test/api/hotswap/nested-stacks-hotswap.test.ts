@@ -5,9 +5,6 @@ import * as setup from './hotswap-test-setup';
 let mockUpdateLambdaCode: (params: Lambda.Types.UpdateFunctionCodeRequest) => Lambda.Types.FunctionConfiguration;
 let hotswapMockSdkProvider: setup.HotswapMockSdkProvider;
 
-beforeEach(() => {
-});
-
 test('can hotswap a lambda function in a 1-level nested stack', async () => {
   // GIVEN
   hotswapMockSdkProvider = setup.setupHotswapNestedStackTests('LambdaRoot');
@@ -16,7 +13,7 @@ test('can hotswap a lambda function in a 1-level nested stack', async () => {
     updateFunctionCode: mockUpdateLambdaCode,
   });
 
-  const lambdaRoot = testStack({
+  const rootStack = testStack({
     stackName: 'LambdaRoot',
     template: {
       Resources: {
@@ -33,7 +30,7 @@ test('can hotswap a lambda function in a 1-level nested stack', async () => {
     },
   });
 
-  setup.addTemplateToCloudFormationLookupMock(lambdaRoot);
+  setup.addTemplateToCloudFormationLookupMock(rootStack);
   setup.addTemplateToCloudFormationLookupMock(testStack({
     stackName: 'NestedStack',
     template: {
@@ -61,7 +58,7 @@ test('can hotswap a lambda function in a 1-level nested stack', async () => {
     ),
   );
 
-  const cdkStackArtifact = testStack({ stackName: 'LambdaRoot', template: lambdaRoot.template });
+  const cdkStackArtifact = testStack({ stackName: 'LambdaRoot', template: rootStack.template });
 
   // WHEN
   const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(cdkStackArtifact);
@@ -83,7 +80,7 @@ test('hotswappable changes do not override hotswappable changes in their ancesto
     updateFunctionCode: mockUpdateLambdaCode,
   });
 
-  const lambdaRoot = testStack({
+  const rootStack = testStack({
     stackName: 'TwoLevelLambdaRoot',
     template: {
       Resources: {
@@ -100,7 +97,7 @@ test('hotswappable changes do not override hotswappable changes in their ancesto
     },
   });
 
-  setup.addTemplateToCloudFormationLookupMock(lambdaRoot);
+  setup.addTemplateToCloudFormationLookupMock(rootStack);
   setup.addTemplateToCloudFormationLookupMock(testStack({
     stackName: 'ChildStack',
     template: {
@@ -162,7 +159,7 @@ test('hotswappable changes do not override hotswappable changes in their ancesto
     ),
   );
 
-  const cdkStackArtifact = testStack({ stackName: 'TwoLevelLambdaRoot', template: lambdaRoot.template });
+  const cdkStackArtifact = testStack({ stackName: 'TwoLevelLambdaRoot', template: rootStack.template });
 
   // WHEN
   const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(cdkStackArtifact);
@@ -189,7 +186,7 @@ test('hotswappable changes in nested stacks do not override hotswappable changes
     updateFunctionCode: mockUpdateLambdaCode,
   });
 
-  const lambdaRoot = testStack({
+  const rootStack = testStack({
     stackName: 'SiblingLambdaRoot',
     template: {
       Resources: {
@@ -219,7 +216,7 @@ test('hotswappable changes in nested stacks do not override hotswappable changes
     },
   });
 
-  setup.addTemplateToCloudFormationLookupMock(lambdaRoot);
+  setup.addTemplateToCloudFormationLookupMock(rootStack);
   setup.addTemplateToCloudFormationLookupMock(testStack({
     stackName: 'NestedStack',
     template: {
@@ -247,8 +244,8 @@ test('hotswappable changes in nested stacks do not override hotswappable changes
     ),
   );
 
-  lambdaRoot.template.Resources.Func.Properties.Code.S3Bucket = 'new-bucket';
-  const cdkStackArtifact = testStack({ stackName: 'SiblingLambdaRoot', template: lambdaRoot.template });
+  rootStack.template.Resources.Func.Properties.Code.S3Bucket = 'new-bucket';
+  const cdkStackArtifact = testStack({ stackName: 'SiblingLambdaRoot', template: rootStack.template });
 
   // WHEN
   const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(cdkStackArtifact);
@@ -275,7 +272,7 @@ test('non-hotswappable changes in nested stacks result in a full deployment, eve
     updateFunctionCode: mockUpdateLambdaCode,
   });
 
-  const root = testStack({
+  const rootStack = testStack({
     stackName: 'NonHotswappableRoot',
     template: {
       Resources: {
@@ -305,7 +302,7 @@ test('non-hotswappable changes in nested stacks result in a full deployment, eve
     },
   });
 
-  setup.addTemplateToCloudFormationLookupMock(root);
+  setup.addTemplateToCloudFormationLookupMock(rootStack);
   setup.addTemplateToCloudFormationLookupMock(testStack({
     stackName: 'NestedStack',
     template: {
@@ -334,8 +331,8 @@ test('non-hotswappable changes in nested stacks result in a full deployment, eve
     ),
   );
 
-  root.template.Resources.Func.Properties.Code.S3Bucket = 'new-bucket';
-  const cdkStackArtifact = testStack({ stackName: 'NonHotswappableRoot', template: root.template });
+  rootStack.template.Resources.Func.Properties.Code.S3Bucket = 'new-bucket';
+  const cdkStackArtifact = testStack({ stackName: 'NonHotswappableRoot', template: rootStack.template });
 
   // WHEN
   const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(cdkStackArtifact);
@@ -353,7 +350,7 @@ test('deleting a nested stack results in a full deployment, even if their parent
     updateFunctionCode: mockUpdateLambdaCode,
   });
 
-  const root = testStack({
+  const rootStack = testStack({
     stackName: 'NestedStackDeletionRoot',
     template: {
       Resources: {
@@ -383,7 +380,7 @@ test('deleting a nested stack results in a full deployment, even if their parent
     },
   });
 
-  setup.addTemplateToCloudFormationLookupMock(root);
+  setup.addTemplateToCloudFormationLookupMock(rootStack);
   setup.addTemplateToCloudFormationLookupMock(testStack({
     stackName: 'NestedStack',
     template: {
@@ -411,9 +408,9 @@ test('deleting a nested stack results in a full deployment, even if their parent
     ),
   );
 
-  root.template.Resources.Func.Properties.Code.S3Bucket = 'new-bucket';
-  delete root.template.Resources.NestedStack;
-  const cdkStackArtifact = testStack({ stackName: 'NestedStackDeletionRoot', template: root.template });
+  rootStack.template.Resources.Func.Properties.Code.S3Bucket = 'new-bucket';
+  delete rootStack.template.Resources.NestedStack;
+  const cdkStackArtifact = testStack({ stackName: 'NestedStackDeletionRoot', template: rootStack.template });
 
   // WHEN
   const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(cdkStackArtifact);
@@ -431,7 +428,7 @@ test('creating a nested stack results in a full deployment, even if their parent
     updateFunctionCode: mockUpdateLambdaCode,
   });
 
-  const root = testStack({
+  const rootStack = testStack({
     stackName: 'NestedStackCreationRoot',
     template: {
       Resources: {
@@ -452,10 +449,10 @@ test('creating a nested stack results in a full deployment, even if their parent
     },
   });
 
-  setup.addTemplateToCloudFormationLookupMock(root);
+  setup.addTemplateToCloudFormationLookupMock(rootStack);
 
-  root.template.Resources.Func.Properties.Code.S3Bucket = 'new-bucket';
-  root.template.Resources.NestedStack = {
+  rootStack.template.Resources.Func.Properties.Code.S3Bucket = 'new-bucket';
+  rootStack.template.Resources.NestedStack = {
     Type: 'AWS::CloudFormation::Stack',
     Properties: {
       TemplateURL: 'https://www.magic-url.com',
@@ -464,7 +461,7 @@ test('creating a nested stack results in a full deployment, even if their parent
       'aws:asset:path': 'one-lambda-stack.nested.template.json',
     },
   };
-  const cdkStackArtifact = testStack({ stackName: 'NestedStackCreationRoot', template: root.template });
+  const cdkStackArtifact = testStack({ stackName: 'NestedStackCreationRoot', template: rootStack.template });
 
   // WHEN
   const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(cdkStackArtifact);
@@ -476,14 +473,14 @@ test('creating a nested stack results in a full deployment, even if their parent
 
 test('attempting to hotswap a newly created resource with the same logical ID that a nested stack which is currently deployed to CloudFormation has results in a full deployment', async () => {
   // GIVEN
-  hotswapMockSdkProvider = setup.setupHotswapNestedStackTests('NestedStackCreationRoot', ['NestedStack']);
+  hotswapMockSdkProvider = setup.setupHotswapNestedStackTests('NestedStackTypeChangeRoot', ['NestedStack']);
   mockUpdateLambdaCode = jest.fn().mockReturnValue({});
   hotswapMockSdkProvider.stubLambda({
     updateFunctionCode: mockUpdateLambdaCode,
   });
 
-  const root = testStack({
-    stackName: 'NestedStackCreationRoot',
+  const rootStack = testStack({
+    stackName: 'NestedStackTypeChangeRoot',
     template: {
       Resources: {
         Func: {
@@ -512,7 +509,7 @@ test('attempting to hotswap a newly created resource with the same logical ID th
     },
   });
 
-  setup.addTemplateToCloudFormationLookupMock(root);
+  setup.addTemplateToCloudFormationLookupMock(rootStack);
   setup.addTemplateToCloudFormationLookupMock(testStack({
     stackName: 'FormerNestedStack',
     template: {
@@ -534,14 +531,14 @@ test('attempting to hotswap a newly created resource with the same logical ID th
     },
   }));
 
-  setup.pushNestedStackResourceSummaries('NestedStackCreationRoot',
+  setup.pushNestedStackResourceSummaries('NestedStackTypeChangeRoot',
     setup.stackSummaryOf('FormerNestedStack', 'AWS::CloudFormation::Stack',
       'arn:aws:cloudformation:bermuda-triangle-1337:123456789012:stack/FormerNestedStack/abcd',
     ),
   );
 
-  root.template.Resources.Func.Properties.Code.S3Bucket = 'new-bucket';
-  root.template.Resources.FormerNestedStack = {
+  rootStack.template.Resources.Func.Properties.Code.S3Bucket = 'new-bucket';
+  rootStack.template.Resources.FormerNestedStack = {
     Type: 'AWS::Lambda::Function',
     Properties: {
       Code: {
@@ -554,7 +551,7 @@ test('attempting to hotswap a newly created resource with the same logical ID th
       'aws:asset:path': 'old-path',
     },
   };
-  const cdkStackArtifact = testStack({ stackName: 'NestedStackCreationRoot', template: root.template });
+  const cdkStackArtifact = testStack({ stackName: 'NestedStackTypeChangeRoot', template: rootStack.template });
 
   // WHEN
   const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(cdkStackArtifact);
@@ -564,16 +561,16 @@ test('attempting to hotswap a newly created resource with the same logical ID th
   expect(mockUpdateLambdaCode).not.toHaveBeenCalled();
 });
 
-test('reverse of above results in a full deployment', async () => {
+test('attempting to hotswap a newly created nested stack with the same logical ID as a resource with a different type results in a full deployment', async () => {
   // GIVEN
-  hotswapMockSdkProvider = setup.setupHotswapNestedStackTests('NestedStackCreationRoot', ['NestedStack']);
+  hotswapMockSdkProvider = setup.setupHotswapNestedStackTests('NestedStackTypeChangeRoot', ['NestedStack']);
   mockUpdateLambdaCode = jest.fn().mockReturnValue({});
   hotswapMockSdkProvider.stubLambda({
     updateFunctionCode: mockUpdateLambdaCode,
   });
 
-  const root = testStack({
-    stackName: 'NestedStackCreationRoot',
+  const rootStack = testStack({
+    stackName: 'NestedStackTypeChangeRoot',
     template: {
       Resources: {
         Func: {
@@ -606,10 +603,10 @@ test('reverse of above results in a full deployment', async () => {
     },
   });
 
-  setup.addTemplateToCloudFormationLookupMock(root);
+  setup.addTemplateToCloudFormationLookupMock(rootStack);
 
-  root.template.Resources.Func.Properties.Code.S3Bucket = 'new-bucket';
-  root.template.Resources.FutureNestedStack = {
+  rootStack.template.Resources.Func.Properties.Code.S3Bucket = 'new-bucket';
+  rootStack.template.Resources.FutureNestedStack = {
     Type: 'AWS::CloudFormation::Stack',
     Properties: {
       TemplateURL: 'https://www.magic-url.com',
@@ -618,7 +615,7 @@ test('reverse of above results in a full deployment', async () => {
       'aws:asset:path': 'one-lambda-stack.nested.template.json',
     },
   };
-  const cdkStackArtifact = testStack({ stackName: 'NestedStackCreationRoot', template: root.template });
+  const cdkStackArtifact = testStack({ stackName: 'NestedStackTypeChangeRoot', template: rootStack.template });
 
   // WHEN
   const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(cdkStackArtifact);
@@ -650,7 +647,7 @@ test('multi-sibling + 3-layer nested stack structure is hotswappable', async () 
     },
   };
 
-  const root = testStack({
+  const rootStack = testStack({
     stackName: 'MultiLayerRoot',
     template: {
       Resources: {
@@ -668,7 +665,7 @@ test('multi-sibling + 3-layer nested stack structure is hotswappable', async () 
     },
   });
 
-  setup.addTemplateToCloudFormationLookupMock(root);
+  setup.addTemplateToCloudFormationLookupMock(rootStack);
   setup.addTemplateToCloudFormationLookupMock(testStack({
     stackName: 'ChildStack',
     template: {
@@ -734,8 +731,8 @@ test('multi-sibling + 3-layer nested stack structure is hotswappable', async () 
     setup.stackSummaryOf('Func', 'AWS::Lambda::Function', 'grandchild-B-function'),
   );
 
-  root.template.Resources.Func.Properties.Code.S3Key = 'new-key';
-  const cdkStackArtifact = testStack({ stackName: 'MultiLayerRoot', template: root.template });
+  rootStack.template.Resources.Func.Properties.Code.S3Key = 'new-key';
+  const cdkStackArtifact = testStack({ stackName: 'MultiLayerRoot', template: rootStack.template });
 
   // WHEN
   const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(cdkStackArtifact);
@@ -763,5 +760,3 @@ test('multi-sibling + 3-layer nested stack structure is hotswappable', async () 
     S3Key: 'new-key',
   });
 });
-
-// new test case: assert that no sdk call is made to find the stack name if the stack cannot be deployed
