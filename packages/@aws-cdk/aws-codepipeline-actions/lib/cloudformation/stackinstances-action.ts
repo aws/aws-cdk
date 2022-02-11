@@ -1,6 +1,6 @@
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import { Action } from '../action';
-import { SingletonPolicy } from '../private/cloudformation/_singleton-policy';
+import { SingletonPolicy } from './private/singleton-policy';
 import { StackInstances, StackSetParameters } from './stackset-types';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
