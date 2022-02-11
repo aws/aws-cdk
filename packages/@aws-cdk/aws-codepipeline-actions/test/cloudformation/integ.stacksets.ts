@@ -1,3 +1,14 @@
+/**
+ * This integration test needs 2 accounts properly configured beforehand to properly test,
+ * and so is tested by hand.
+ *
+ * To test and update the snapshot:
+ *
+ * ```
+ * env AWS_REGION=eu-west-1 STACKSET_ACCOUNTS=11111111,22222222 cdk deploy -a test/cloudformation/integ.stacksets.js
+ * yarn integ --dry-run cloudformation/integ.stacksets.js
+ * ```
+ */
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as s3 from '@aws-cdk/aws-s3';
 import { Asset } from '@aws-cdk/aws-s3-assets';
