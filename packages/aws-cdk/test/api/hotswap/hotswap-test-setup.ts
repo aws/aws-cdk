@@ -1,5 +1,5 @@
 import * as cxapi from '@aws-cdk/cx-api';
-import { CloudFormation } from 'aws-sdk';
+import { CloudFormationStackArtifact } from '@aws-cdk/cx-api';
 import * as AWS from 'aws-sdk';
 import * as codebuild from 'aws-sdk/clients/codebuild';
 import * as lambda from 'aws-sdk/clients/lambda';
@@ -10,16 +10,15 @@ import { CloudFormationStack, Template } from '../../../lib/api/util/cloudformat
 import { testStack, TestStackArtifact } from '../../util';
 import { MockSdkProvider, SyncHandlerSubsetOf } from '../../util/mock-sdk';
 import { FakeCloudformationStack } from '../fake-cloudformation-stack';
-import { CloudFormationStackArtifact } from '@aws-cdk/cx-api';
 
-export const STACK_NAME = 'withouterrors'; // TODO: need to make it LambdaRoot for our first test, but we need to provide a way of configuring it (optional param to all methods that use it)
+export const STACK_NAME = 'withouterrors';
 export const STACK_ID = 'stackId';
 
 let hotswapMockSdkProvider: HotswapMockSdkProvider;
 let currentCfnStack: FakeCloudformationStack;
-const currentCfnStackResources: CloudFormation.StackResourceSummary[] = [];
+const currentCfnStackResources: AWS.CloudFormation.StackResourceSummary[] = [];
 let stackTemplates: {[key:string]: any};
-let currentNestedCfnStackResources: { [key: string]: CloudFormation.StackResourceSummary[] };
+let currentNestedCfnStackResources: { [key: string]: AWS.CloudFormation.StackResourceSummary[] };
 
 export function setupHotswapTests() {
   jest.resetAllMocks();
@@ -30,7 +29,7 @@ export function setupHotswapTests() {
     stackName: STACK_NAME,
     stackId: STACK_ID,
   });
-  CloudFormationStack.lookup = async (_: CloudFormation, _stackName: string) => {
+  CloudFormationStack.lookup = async (_: AWS.CloudFormation, _stackName: string) => {
     //currentCfnStack.template = async () => stackTemplates[stackName];
 
     return currentCfnStack;
@@ -48,7 +47,7 @@ export function setupHotswapNestedStackTests(rootStackName: string, childStacks?
     stackId: STACK_ID,
   });
   stackTemplates = {};
-  CloudFormationStack.lookup = async (_: CloudFormation, stackName: string) => {
+  CloudFormationStack.lookup = async (_: AWS.CloudFormation, stackName: string) => {
     currentCfnStack.template = async () => stackTemplates[stackName];
 
     return currentCfnStack;
@@ -64,11 +63,11 @@ export function cdkStackArtifactOf(testStackArtifact: Partial<TestStackArtifact>
   });
 }
 
-export function pushStackResourceSummaries(...items: CloudFormation.StackResourceSummary[]) {
+export function pushStackResourceSummaries(...items: AWS.CloudFormation.StackResourceSummary[]) {
   currentCfnStackResources.push(...items);
 }
 
-export function pushNestedStackResourceSummaries(stackName: string, ...items: CloudFormation.StackResourceSummary[]) {
+export function pushNestedStackResourceSummaries(stackName: string, ...items: AWS.CloudFormation.StackResourceSummary[]) {
   if (!currentNestedCfnStackResources[stackName]) {
     currentNestedCfnStackResources[stackName] = [];
   }
@@ -86,7 +85,7 @@ export function addTemplateToCloudFormationLookupMock(stackArtifact: CloudFormat
   stackTemplates[stackArtifact.stackName] = templateDeepCopy;
 }
 
-export function stackSummaryOf(logicalId: string, resourceType: string, physicalResourceId: string): CloudFormation.StackResourceSummary {
+export function stackSummaryOf(logicalId: string, resourceType: string, physicalResourceId: string): AWS.CloudFormation.StackResourceSummary {
   return {
     LogicalResourceId: logicalId,
     PhysicalResourceId: physicalResourceId,

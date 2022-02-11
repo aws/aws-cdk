@@ -47,15 +47,9 @@ export async function tryHotswapDeployment(
   const cloudFormationDeployments = new CloudFormationDeployments({
     sdkProvider,
   });
-  // note: (adam's suggestion): to avoid making SDK calls (see below), change this method to return an object,
-  // where one member is what we currently have assigned to currentTemplate, and the other is a mapping between nested stacks and their physical names
-  // because the nested stacks can share logical IDs, the mapping will have to mimic the tree structure
-  // we already compute this structure in this method (readCurrentTemplateWithNestedStacks), we just don't store it;
-  // this change is just to store and return it so we can use it below, and not have to make any SDK calls to get the nested stack physical names, ever.
   const currentTemplateWithStackNames = await cloudFormationDeployments.readCurrentTemplateWithNestedStacks(stackArtifact);
   const currentTemplate = currentTemplateWithStackNames.deployedTemplate;
   const stackNames = currentTemplateWithStackNames.stackNames;
-  //const currentTemplate = await cloudFormationStack.template();
   const stackChanges = cfn_diff.diffTemplate(currentTemplate, stackArtifact.template);
   const hotswappableChanges = await findAllHotswappableChanges(stackChanges, evaluateCfnTemplate, sdk, stackArtifact, stackNames);
   if (!hotswappableChanges) {
@@ -94,16 +88,7 @@ async function findAllHotswappableChanges(
     if (change.newValue?.Type === 'AWS::CloudFormation::Stack' && change.oldValue?.Type === 'AWS::CloudFormation::Stack') {
       const nestedDiff = cfn_diff.diffTemplate(change.oldValue.Properties?.NestedTemplate, change.newValue.Properties?.NestedTemplate);
 
-      // TODO:
-      if (change.oldValue.Properties?.NestedTemplate == {}) {
-        // this means that the stack is newly created, and that we should not try to find the stack name anyway. No need to stash it in the diff, we can just return undefined here and save effort. (and an sdk call, which we're currently making below (findPhysicalNameFor))
-        // if we decide to not add the stack names to the diff, then we can do this here, and add a unit test to verify that no sdk call is made in this case
-      }
-      // but here, we're wasting an sdk call. We could put the stack name information in the nested diff, but then it appears in the diff, and that looks silly
-      //const nestedStackArn = await evaluateCfnTemplate.findPhysicalNameFor(logicalId);
-      //const nestedStackName = nestedStackArn?.slice(nestedStackArn.indexOf('/') + 1, nestedStackArn.lastIndexOf('/')); // TODO: duplicated from cloudformation-deployments
       const nestedStackName = nestedStackNames[logicalId].stackName;
-
       const evaluateNestedCfnTemplate = nestedStackName
         ? evaluateCfnTemplate.createNestedEvaluateCloudFormationTemplate(nestedStackName, sdk, rootStackArtifact)
         : evaluateCfnTemplate;
