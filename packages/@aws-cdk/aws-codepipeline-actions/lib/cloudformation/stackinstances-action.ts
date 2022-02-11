@@ -92,8 +92,8 @@ export class CloudFormationDeployStackInstancesAction extends Action {
         maxOutputs: 0,
       },
       inputs: [
-        ...props.parameterOverrides?.artifactsReferenced ?? [],
-        ...props.stackInstances?.artifactsReferenced ?? [],
+        ...props.parameterOverrides?._artifactsReferenced ?? [],
+        ...props.stackInstances?._artifactsReferenced ?? [],
       ],
     });
 
@@ -104,7 +104,7 @@ export class CloudFormationDeployStackInstancesAction extends Action {
     const singletonPolicy = SingletonPolicy.forRole(options.role);
     singletonPolicy.grantCreateUpdateStackSet(this.props);
 
-    const instancesResult = this.props.stackInstances?.bind(scope);
+    const instancesResult = this.props.stackInstances?._bind(scope);
 
     if ((this.actionProperties.inputs || []).length > 0) {
       options.bucket.grantRead(singletonPolicy);
@@ -113,7 +113,7 @@ export class CloudFormationDeployStackInstancesAction extends Action {
     return {
       configuration: {
         StackSetName: this.props.stackSetName,
-        ParameterOverrides: this.props.parameterOverrides?.render(),
+        ParameterOverrides: this.props.parameterOverrides?._render(),
         FailureTolerancePercentage: this.props.failureTolerancePercentage,
         MaxConcurrentPercentage: this.props.maxAccountConcurrencyPercentage,
         ...instancesResult?.stackSetConfiguration,

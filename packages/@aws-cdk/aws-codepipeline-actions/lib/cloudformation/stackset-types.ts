@@ -12,9 +12,9 @@ export abstract class StackSetTemplate {
    */
   public static fromArtifactPath(artifactPath: codepipeline.ArtifactPath): StackSetTemplate {
     return new class extends StackSetTemplate {
-      public readonly artifactsReferenced?: codepipeline.Artifact[] | undefined = [artifactPath.artifact];
+      public readonly _artifactsReferenced?: codepipeline.Artifact[] | undefined = [artifactPath.artifact];
 
-      public render() {
+      public _render() {
         return artifactPath.location;
       }
     }();
@@ -24,15 +24,19 @@ export abstract class StackSetTemplate {
    * Which artifacts are referenced by this template
    *
    * Does not need to be called by app builders.
+   *
+   * @internal
    */
-  public abstract readonly artifactsReferenced?: codepipeline.Artifact[] | undefined;
+  public abstract readonly _artifactsReferenced?: codepipeline.Artifact[] | undefined;
 
   /**
    * Render the template to the pipeline
    *
    * Does not need to be called by app builders.
+   *
+   * @internal
    */
-  public abstract render(): any;
+  public abstract _render(): any;
 }
 
 /**
@@ -85,8 +89,8 @@ export abstract class StackInstances {
     }
 
     return new class extends StackInstances {
-      public readonly artifactsReferenced?: codepipeline.Artifact[] | undefined = [artifactPath.artifact];
-      public bind(_scope: Construct): StackInstancesBindResult {
+      public readonly _artifactsReferenced?: codepipeline.Artifact[] | undefined = [artifactPath.artifact];
+      public _bind(_scope: Construct): StackInstancesBindResult {
         return {
           stackSetConfiguration: {
             DeploymentTargets: artifactPath.location,
@@ -116,7 +120,7 @@ export abstract class StackInstances {
     }
 
     return new class extends StackInstances {
-      public bind(_scope: Construct): StackInstancesBindResult {
+      public _bind(_scope: Construct): StackInstancesBindResult {
         return {
           stackSetConfiguration: {
             DeploymentTargets: targets.join(','),
@@ -132,21 +136,27 @@ export abstract class StackInstances {
    * The artifacts referenced by the properties of this deployment target
    *
    * Does not need to be called by app builders.
+   *
+   * @internal
    */
-  readonly artifactsReferenced?: codepipeline.Artifact[];
+  readonly _artifactsReferenced?: codepipeline.Artifact[];
 
   /**
    * Called to attach the stack set instances to a stackset action
    *
    * Does not need to be called by app builders.
+   *
+   * @internal
    */
-  public abstract bind(scope: Construct): StackInstancesBindResult;
+  public abstract _bind(scope: Construct): StackInstancesBindResult;
 }
 
 /**
  * Returned by the StackInstances.bind() function
  *
  * Does not need to be used by app builders.
+ *
+ * @internal
  */
 export interface StackInstancesBindResult {
   /**
@@ -204,9 +214,9 @@ export abstract class StackSetParameters {
    */
   public static fromLiteral(parameters: Record<string, string>, usePreviousValues?: string[]): StackSetParameters {
     return new class extends StackSetParameters {
-      public readonly artifactsReferenced: codepipeline.Artifact[] = [];
+      public readonly _artifactsReferenced: codepipeline.Artifact[] = [];
 
-      render(): string {
+      _render(): string {
         return [
           ...Object.entries(parameters).map(([key, value]) =>
             `ParameterKey=${key},ParameterValue=${value}`),
@@ -251,9 +261,9 @@ export abstract class StackSetParameters {
    */
   public static fromArtifactPath(artifactPath: codepipeline.ArtifactPath): StackSetParameters {
     return new class extends StackSetParameters {
-      public artifactsReferenced: codepipeline.Artifact[] = [artifactPath.artifact];
+      public _artifactsReferenced: codepipeline.Artifact[] = [artifactPath.artifact];
 
-      public render(): string {
+      public _render(): string {
         return artifactPath.location;
       }
     }();
@@ -261,13 +271,17 @@ export abstract class StackSetParameters {
 
   /**
    * Artifacts referenced by this parameter set
+   *
+   * @internal
    */
-  public abstract readonly artifactsReferenced: codepipeline.Artifact[];
+  public abstract readonly _artifactsReferenced: codepipeline.Artifact[];
 
   /**
    * Converts Parameters to a string.
+   *
+   * @internal
    */
-  public abstract render(): string;
+  public abstract _render(): string;
 }
 
 /**
@@ -286,7 +300,7 @@ export abstract class StackSetDeploymentModel {
    */
   public static organizations(props: OrganizationsDeploymentProps = {}): StackSetDeploymentModel {
     return new class extends StackSetDeploymentModel {
-      bind() {
+      _bind() {
         return {
           stackSetConfiguration: {
             PermissionModel: 'SERVICE_MANAGED',
@@ -331,7 +345,7 @@ export abstract class StackSetDeploymentModel {
    */
   public static selfManaged(props: SelfManagedDeploymentProps = {}): StackSetDeploymentModel {
     return new class extends StackSetDeploymentModel {
-      bind(scope: Construct) {
+      _bind(scope: Construct) {
         let administrationRole = props.administrationRole;
         if (!administrationRole) {
           administrationRole = new iam.Role(scope, 'StackSetAdministrationRole', {
@@ -366,14 +380,18 @@ export abstract class StackSetDeploymentModel {
    * Bind to the Stack Set action and return the Action configuration
    *
    * Does not need to be called by app builders.
+   *
+   * @internal
    */
-  public abstract bind(scope: Construct): StackSetDeploymentModelBindResult;
+  public abstract _bind(scope: Construct): StackSetDeploymentModelBindResult;
 }
 
 /**
  * Returned by the StackSetDeploymentModel.bind() function
  *
  * Does not need to be used by app builders.
+ *
+ * @internal
  */
 export interface StackSetDeploymentModelBindResult {
   /**

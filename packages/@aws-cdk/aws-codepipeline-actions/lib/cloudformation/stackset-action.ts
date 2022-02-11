@@ -158,9 +158,9 @@ export class CloudFormationDeployStackSetAction extends Action {
         maxOutputs: 0,
       },
       inputs: [
-        ...props.template.artifactsReferenced ?? [],
-        ...props.parameters?.artifactsReferenced ?? [],
-        ...props.stackInstances?.artifactsReferenced ?? [],
+        ...props.template._artifactsReferenced ?? [],
+        ...props.parameters?._artifactsReferenced ?? [],
+        ...props.stackInstances?._artifactsReferenced ?? [],
       ],
     });
 
@@ -172,8 +172,8 @@ export class CloudFormationDeployStackSetAction extends Action {
     const singletonPolicy = SingletonPolicy.forRole(options.role);
     singletonPolicy.grantCreateUpdateStackSet(this.props);
 
-    const instancesResult = this.props.stackInstances?.bind(scope);
-    const permissionModelBind = this.deploymentModel?.bind(scope);
+    const instancesResult = this.props.stackInstances?._bind(scope);
+    const permissionModelBind = this.deploymentModel?._bind(scope);
 
     for (const role of permissionModelBind?.passedRoles ?? []) {
       singletonPolicy.grantPassRole(role);
@@ -187,8 +187,8 @@ export class CloudFormationDeployStackSetAction extends Action {
       configuration: {
         StackSetName: this.props.stackSetName,
         Description: this.props.description,
-        TemplatePath: this.props.template.render(),
-        Parameters: this.props.parameters?.render(),
+        TemplatePath: this.props.template._render(),
+        Parameters: this.props.parameters?._render(),
         Capabilities: parseCapabilities(this.props.cfnCapabilities),
         FailureTolerancePercentage: this.props.failureTolerancePercentage,
         MaxConcurrentPercentage: this.props.maxAccountConcurrencyPercentage,
