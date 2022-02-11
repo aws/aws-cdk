@@ -96,7 +96,7 @@ async function findAllHotswappableChanges(
       return undefined;
     }
   }
-  // if a stack has been deleted, fail now
+  // if a stack has been deleted, fail no
   for (const [_, change] of resourceDifferenceEntries) {
     if (change.newValue?.Type !== 'AWS::CloudFormation::Stack' && change.oldValue?.Type === 'AWS::CloudFormation::Stack') {
       return undefined;
