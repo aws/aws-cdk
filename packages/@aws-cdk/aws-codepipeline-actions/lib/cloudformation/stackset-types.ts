@@ -4,6 +4,43 @@ import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 
 /**
+ * Options in common between both StackSet actions
+ */
+export interface CommonCloudFormationStackSetOptions {
+
+  /**
+   * The percentage of accounts per Region for which this stack operation can fail before AWS CloudFormation stops the operation in that Region. If
+   * the operation is stopped in a Region, AWS CloudFormation doesn't attempt the operation in subsequent Regions. When calculating the number
+   * of accounts based on the specified percentage, AWS CloudFormation rounds down to the next whole number.
+   *
+   * @default 0%
+   */
+  readonly failureTolerancePercentage?: number;
+
+  /**
+   * The maximum percentage of accounts in which to perform this operation at one time. When calculating the number of accounts based on the specified
+   * percentage, AWS CloudFormation rounds down to the next whole number. If rounding down would result in zero, AWS CloudFormation sets the number as
+   * one instead. Although you use this setting to specify the maximum, for large deployments the actual number of accounts acted upon concurrently
+   * may be lower due to service throttling.
+   *
+   * @default 1%
+   */
+  readonly maxAccountConcurrencyPercentage?: number;
+
+  /**
+   * The AWS Region the StackSet is in.
+   *
+   * Note that a cross-region Pipeline requires replication buckets to function correctly.
+   * You can provide their names with the `PipelineProps.crossRegionReplicationBuckets` property.
+   * If you don't, the CodePipeline Construct will create new Stacks in your CDK app containing those buckets,
+   * that you will need to `cdk deploy` before deploying the main, Pipeline-containing Stack.
+   *
+   * @default - same region as the Pipeline
+   */
+  readonly stackSetRegion?: string;
+}
+
+/**
  * The source of a StackSet template
  */
 export abstract class StackSetTemplate {

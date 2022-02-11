@@ -2,7 +2,7 @@ import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as cdk from '@aws-cdk/core';
 import { Action } from '../action';
 import { parseCapabilities, SingletonPolicy } from './private/singleton-policy';
-import { StackInstances, StackSetDeploymentModel, StackSetParameters, StackSetTemplate } from './stackset-types';
+import { CommonCloudFormationStackSetOptions, StackInstances, StackSetDeploymentModel, StackSetParameters, StackSetTemplate } from './stackset-types';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
@@ -11,7 +11,7 @@ import { Construct as CoreConstruct } from '@aws-cdk/core';
 /**
  * Properties for the CloudFormationDeployStackSetAction
  */
-export interface CloudFormationDeployStackSetActionProps extends codepipeline.CommonAwsActionProps {
+export interface CloudFormationDeployStackSetActionProps extends codepipeline.CommonAwsActionProps, CommonCloudFormationStackSetOptions {
   /**
    * The name to associate with the stack set. This name must be unique in the Region where it is created.
    *
@@ -82,37 +82,6 @@ export interface CloudFormationDeployStackSetActionProps extends codepipeline.Co
    * @default - the StackSet will have no IAM capabilities
    */
   readonly cfnCapabilities?: cdk.CfnCapabilities[];
-
-  /**
-   * The percentage of accounts per Region for which this stack operation can fail before AWS CloudFormation stops the operation in that Region. If
-   * the operation is stopped in a Region, AWS CloudFormation doesn't attempt the operation in subsequent Regions. When calculating the number
-   * of accounts based on the specified percentage, AWS CloudFormation rounds down to the next whole number.
-   *
-   * @default 0%
-   */
-  readonly failureTolerancePercentage?: number;
-
-  /**
-   * The maximum percentage of accounts in which to perform this operation at one time. When calculating the number of accounts based on the specified
-   * percentage, AWS CloudFormation rounds down to the next whole number. If rounding down would result in zero, AWS CloudFormation sets the number as
-   * one instead. Although you use this setting to specify the maximum, for large deployments the actual number of accounts acted upon concurrently
-   * may be lower due to service throttling.
-   *
-   * @default 1%
-   */
-  readonly maxAccountConcurrencyPercentage?: number;
-
-  /**
-   * The AWS Region the StackSet will be created in.
-   *
-   * Note that a cross-region Pipeline requires replication buckets to function correctly.
-   * You can provide their names with the `PipelineProps.crossRegionReplicationBuckets` property.
-   * If you don't, the CodePipeline Construct will create new Stacks in your CDK app containing those buckets,
-   * that you will need to `cdk deploy` before deploying the main, Pipeline-containing Stack.
-   *
-   * @default - same region as the Pipeline
-   */
-  readonly stackSetRegion?: string;
 }
 
 /**
