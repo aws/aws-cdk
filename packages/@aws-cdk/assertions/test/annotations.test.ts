@@ -7,12 +7,13 @@ describe('Messages', () => {
   let annotations: _Annotations;
   beforeAll(() => {
     stack = new Stack();
-    new CfnResource(stack, 'Foo', {
+    const foo = new CfnResource(stack, 'Foo', {
       type: 'Foo::Bar',
       properties: {
         Fred: 'Thud',
       },
     });
+    foo.node.setContext('disable-stack-trace', false);
 
     new CfnResource(stack, 'Bar', {
       type: 'Foo::Bar',
@@ -80,12 +81,12 @@ describe('Messages', () => {
   describe('findWarning', () => {
     test('match', () => {
       const result = annotations.findWarning('*', Match.anyValue());
-      expect(Object.keys(result).length).toEqual(1);
+      expect(result.length).toEqual(1);
     });
 
     test('no match', () => {
       const result = annotations.findWarning('*', 'no message looks like this');
-      expect(Object.keys(result).length).toEqual(0);
+      expect(result.length).toEqual(0);
     });
   });
 
@@ -102,19 +103,19 @@ describe('Messages', () => {
   describe('findInfo', () => {
     test('match', () => {
       const result = annotations.findInfo('/Default/Qux', 'this is an info');
-      expect(Object.keys(result).length).toEqual(1);
+      expect(result.length).toEqual(1);
     });
 
     test('no match', () => {
       const result = annotations.findInfo('*', 'no message looks like this');
-      expect(Object.keys(result).length).toEqual(0);
+      expect(result.length).toEqual(0);
     });
   });
 
   describe('with matchers', () => {
     test('anyValue', () => {
       const result = annotations.findError('*', Match.anyValue());
-      expect(Object.keys(result).length).toEqual(2);
+      expect(result.length).toEqual(2);
     });
 
     test('not', () => {
@@ -140,12 +141,13 @@ describe('Multiple Messages on the Resource', () => {
       },
     });
 
-    new CfnResource(stack, 'Bar', {
+    const bar = new CfnResource(stack, 'Bar', {
       type: 'Foo::Bar',
       properties: {
         Baz: 'Qux',
       },
     });
+    bar.node.setContext('disable-stack-trace', false);
 
     Aspects.of(stack).add(new MyMultipleAspects());
     annotations = _Annotations.fromStack(stack);
