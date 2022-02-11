@@ -8,7 +8,12 @@ import { TestFixture } from './test-fixture';
 let stack: TestFixture;
 let importedAdminRole: iam.IRole;
 beforeEach(() => {
-  stack = new TestFixture();
+  stack = new TestFixture({
+    env: {
+      account: '111111111111',
+      region: 'us-east-1',
+    },
+  });
   importedAdminRole = iam.Role.fromRoleArn(stack, 'ChangeSetRole', 'arn:aws:iam::1234:role/ImportedAdminRole');
 });
 
@@ -57,11 +62,7 @@ describe('StackSetAction', () => {
                 'Fn::Join': ['', [
                   'arn:',
                   { 'Ref': 'AWS::Partition' },
-                  ':cloudformation:',
-                  { 'Ref': 'AWS::Region' },
-                  ':',
-                  { 'Ref': 'AWS::AccountId' },
-                  ':stackset/MyStack:*',
+                  ':cloudformation:us-east-1:111111111111:stackset/MyStack:*',
                 ]],
               },
             },
@@ -151,11 +152,7 @@ describe('StackSetAction', () => {
                   [
                     'arn:',
                     { 'Ref': 'AWS::Partition' },
-                    ':cloudformation:',
-                    { 'Ref': 'AWS::Region' },
-                    ':',
-                    { 'Ref': 'AWS::AccountId' },
-                    ':stackset/MyStack:*',
+                    ':cloudformation:us-east-1:111111111111:stackset/MyStack:*',
                   ],
                 ],
               },
@@ -227,11 +224,7 @@ describe('StackSetAction', () => {
                 [
                   'arn:',
                   { 'Ref': 'AWS::Partition' },
-                  ':cloudformation:',
-                  { 'Ref': 'AWS::Region' },
-                  ':',
-                  { 'Ref': 'AWS::AccountId' },
-                  ':stackset/MyStack:*',
+                  ':cloudformation:us-east-1:111111111111:stackset/MyStack:*',
                 ],
               ],
             },
@@ -329,6 +322,28 @@ describe('StackSetAction', () => {
       ],
     });
   });
+
+  test('correctly passes region', () => {
+    stack.deployStage.addAction(new cpactions.CloudFormationDeployStackSetAction({
+      ...defaultOpts(),
+      stackSetRegion: 'us-banana-2',
+    }));
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::CodePipeline::Pipeline', {
+      'Stages': [
+        { 'Name': 'Source' /* don't care about the rest */ },
+        {
+          'Name': 'Deploy',
+          'Actions': [
+            {
+              'Region': 'us-banana-2',
+            },
+          ],
+        },
+      ],
+    });
+  });
 });
 
 describe('StackInstancesAction', () => {
@@ -372,6 +387,29 @@ describe('StackInstancesAction', () => {
                 'Regions': 'us-east-1,us-west-1',
               },
               'Name': 'StackInstances',
+            },
+          ],
+        },
+      ],
+    });
+  });
+
+  test('correctly passes region', () => {
+    stack.deployStage.addAction(new cpactions.CloudFormationDeployStackInstancesAction({
+      ...defaultOpts(),
+      stackSetRegion: 'us-banana-2',
+      stackInstances: cpactions.StackInstances.inAccounts(['1'], ['us-east-1']),
+    }));
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::CodePipeline::Pipeline', {
+      'Stages': [
+        { 'Name': 'Source' /* don't care about the rest */ },
+        {
+          'Name': 'Deploy',
+          'Actions': [
+            {
+              'Region': 'us-banana-2',
             },
           ],
         },

@@ -13,8 +13,8 @@ export class TestFixture extends cdk.Stack {
   public readonly repo: codecommit.Repository;
   public readonly sourceOutput: codepipeline.Artifact;
 
-  constructor() {
-    super();
+  constructor(props: cdk.StackProps = {}) {
+    super(undefined, undefined, props);
 
     this.pipeline = new codepipeline.Pipeline(this, 'Pipeline');
     this.sourceStage = this.pipeline.addStage({ stageName: 'Source' });

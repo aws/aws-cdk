@@ -21,7 +21,7 @@ export interface CloudFormationStackInstancesActionProps extends codepipeline.Co
    *
    * @default - the same region as the Pipeline
    */
-  readonly region?: string;
+  readonly stackSetRegion?: string;
 
   /**
    * The name of the StackSet we are adding instances to
@@ -83,6 +83,7 @@ export class CloudFormationDeployStackInstancesAction extends Action {
   constructor(props: CloudFormationStackInstancesActionProps) {
     super({
       ...props,
+      region: props.stackSetRegion,
       provider: 'CloudFormationStackInstances',
       category: codepipeline.ActionCategory.DEPLOY,
       artifactBounds: {
