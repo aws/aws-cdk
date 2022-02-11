@@ -654,7 +654,7 @@ pipeline.addStage({
       // Change this to 'StackSetDeploymentModel.organizations()' if you want to deploy to OUs
       deploymentModel: codepipeline_actions.StackSetDeploymentModel.selfManaged(),
       // This deploys to a set of accounts
-      stackInstances: codepipeline_actions.StackInstances.fromList(['111111111111'], ['us-east-1', 'eu-west-1']),
+      stackInstances: codepipeline_actions.StackInstances.inAccounts(['111111111111'], ['us-east-1', 'eu-west-1']),
     }),
 
     // Afterwards, update/create additional instances in other accounts
@@ -662,7 +662,7 @@ pipeline.addStage({
       actionName: 'AddMoreInstances',
       runOrder: 2,
       stackSetName: 'MyStackSet',
-      stackInstances: codepipeline_actions.StackInstances.fromList(
+      stackInstances: codepipeline_actions.StackInstances.inAccounts(
         ['222222222222', '333333333333'],
         ['us-east-1', 'eu-west-1']
       ),

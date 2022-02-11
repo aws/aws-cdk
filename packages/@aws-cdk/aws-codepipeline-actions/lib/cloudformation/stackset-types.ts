@@ -40,33 +40,34 @@ export abstract class StackSetTemplate {
  */
 export abstract class StackInstances {
   /**
-   * Create stack instances in a literal set of accounts or organizational units, and a set of regions
+   * Create stack instances in a set of accounts and regions passed as literal lists
    *
-   * Stack Instances will be created in every combination of region and account, or region and
-   * Organizational Units (OUs).
+   * Stack Instances will be created in every combination of region and account.
    *
-   * If this is set of Organizational Units, you must have selected `StackSetDeploymentModel.organizations()`
-   * as deployment model.
+   * > NOTE: `StackInstances.inAccounts()` and `StackInstances.inOrganizationalUnits()`
+   * > have exactly the same behavior, and you can use them interchangeably if you want.
+   * > The only difference between them is that your code clearly indicates what entity
+   * > it's working with.
    */
-  public static fromList(targets: string[], regions: string[]): StackInstances {
-    if (targets.length === 0) {
-      throw new Error("'targets' may not be an empty list");
-    }
+  public static inAccounts(accounts: string[], regions: string[]): StackInstances {
+    return StackInstances.fromList(accounts, regions);
+  }
 
-    if (regions.length === 0) {
-      throw new Error("'regions' may not be an empty list");
-    }
-
-    return new class extends StackInstances {
-      public bind(_scope: Construct): StackInstancesBindResult {
-        return {
-          stackSetConfiguration: {
-            DeploymentTargets: targets.join(','),
-            Regions: regions.join(','),
-          },
-        };
-      }
-    }();
+  /**
+   * Create stack instances in all accounts in a set of Organizational Units (OUs) and regions passed as literal lists
+   *
+   * If you want to deploy to Organization Units, you must choose have created the StackSet
+   * with `deploymentModel: DeploymentModel.organizations()`.
+   *
+   * Stack Instances will be created in every combination of region and account.
+   *
+   * > NOTE: `StackInstances.inAccounts()` and `StackInstances.inOrganizationalUnits()`
+   * > have exactly the same behavior, and you can use them interchangeably if you want.
+   * > The only difference between them is that your code clearly indicates what entity
+   * > it's working with.
+   */
+  public static inOrganizationalUnits(ous: string[], regions: string[]): StackInstances {
+    return StackInstances.fromList(ous, regions);
   }
 
   /**
@@ -95,6 +96,37 @@ export abstract class StackInstances {
       }
     }();
   }
+
+  /**
+   * Create stack instances in a literal set of accounts or organizational units, and a set of regions
+   *
+   * Stack Instances will be created in every combination of region and account, or region and
+   * Organizational Units (OUs).
+   *
+   * If this is set of Organizational Units, you must have selected `StackSetDeploymentModel.organizations()`
+   * as deployment model.
+   */
+  private static fromList(targets: string[], regions: string[]): StackInstances {
+    if (targets.length === 0) {
+      throw new Error("'targets' may not be an empty list");
+    }
+
+    if (regions.length === 0) {
+      throw new Error("'regions' may not be an empty list");
+    }
+
+    return new class extends StackInstances {
+      public bind(_scope: Construct): StackInstancesBindResult {
+        return {
+          stackSetConfiguration: {
+            DeploymentTargets: targets.join(','),
+            Regions: regions.join(','),
+          },
+        };
+      }
+    }();
+  }
+
 
   /**
    * The artifacts referenced by the properties of this deployment target

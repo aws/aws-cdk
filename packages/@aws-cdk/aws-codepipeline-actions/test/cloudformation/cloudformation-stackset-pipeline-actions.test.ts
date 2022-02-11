@@ -247,7 +247,7 @@ describe('StackSetAction', () => {
   test('creates correct pipeline resource with target list', () => {
     stack.deployStage.addAction(new cpactions.CloudFormationDeployStackSetAction({
       ...defaultOpts(),
-      stackInstances: cpactions.StackInstances.fromList(
+      stackInstances: cpactions.StackInstances.inAccounts(
         ['11111111111', '22222222222'],
         ['us-east-1', 'us-west-1', 'ca-central-1'],
       ),
@@ -344,7 +344,7 @@ describe('StackInstancesAction', () => {
   test('simple', () => {
     stack.deployStage.addAction(new cpactions.CloudFormationDeployStackInstancesAction({
       ...defaultOpts(),
-      stackInstances: cpactions.StackInstances.fromList(
+      stackInstances: cpactions.StackInstances.inAccounts(
         ['1234', '5678'],
         ['us-east-1', 'us-west-1'],
       ),
