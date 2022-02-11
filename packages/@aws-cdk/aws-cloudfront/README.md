@@ -655,7 +655,9 @@ If you are using an ACM certificate, you can pass the certificate directly to th
 Any aliases used before in the `ViewerCertificate` class should be passed in to the `domainNames` prop in the modern API.
 
 ```ts
+import * as acm from '@aws-cdk/aws-certificatemanager';
 declare const certificate: acm.Certificate;
+declare const sourceBucket: s3.Bucket;
 
 const viewerCertificate = cloudfront.ViewerCertificate.fromAcmCertificate(certificate, {
   aliases: ['MYALIAS'],
@@ -677,7 +679,9 @@ new cloudfront.CloudFrontWebDistribution(this, 'MyCfWebDistribution', {
 Becomes:
 
 ```ts
+import * as acm from '@aws-cdk/aws-certificatemanager';
 declare const certificate: acm.Certificate;
+declare const sourceBucket: s3.Bucket;
 
 const distribution = new cloudfront.Distribution(this, 'MyCfWebDistribution', {
   defaultBehavior: {
@@ -720,7 +724,7 @@ const distribution = new cloudfront.Distribution(this, 'MyCfWebDistribution', {
   domainNames: ['MYALIAS'],
 });
 
-const cfnDistribution = distribution.node.defaultChild as CfnDistribution;
+const cfnDistribution = distribution.node.defaultChild as cloudfront.CfnDistribution;
 
 cfnDistribution.addPropertyOverride('ViewerCertificate.IamCertificateId', 'MYIAMROLEIDENTIFIER');
 cfnDistribution.addPropertyOverride('ViewerCertificate.SslSupportMethod', 'sni-only');
