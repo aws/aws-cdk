@@ -11,6 +11,7 @@ import { Bootstrapper, BootstrapEnvironmentOptions } from './api/bootstrap';
 import { CloudFormationDeployments } from './api/cloudformation-deployments';
 import { CloudAssembly, DefaultSelection, ExtendedStackSelection, StackCollection, StackSelector } from './api/cxapp/cloud-assembly';
 import { CloudExecutable } from './api/cxapp/cloud-executable';
+import { getExecutor } from './api/executor';
 import { findCloudWatchLogGroups } from './api/logs/find-cloudwatch-logs';
 import { CloudWatchLogEventMonitor } from './api/logs/logs-monitor';
 import { StackActivityProgress } from './api/util/cloudformation/stack-activity-monitor';
@@ -261,6 +262,20 @@ export class CdkToolkit {
       }
       print('\n✨  Total time: %ss\n', formatTime(elapsedSynthTime + elapsedDeployTime));
     }
+  }
+
+  public async exec(options: ExecOptions): Promise<number> {
+    const stackCollection = await this.selectStacksForDiff(['**']);
+
+    const executor = await getExecutor({
+      constructPath: options.constructPath,
+      stackArtifacts: stackCollection.stackArtifacts,
+      sdkProvider: this.props.sdkProvider,
+    });
+
+    const result = await executor.execute(options.input);
+
+    return result.success ? 0 : 1;
   }
 
   public async watch(options: WatchOptions) {
@@ -681,6 +696,18 @@ export interface DiffOptions {
    * @default false
    */
   securityOnly?: boolean;
+}
+
+interface ExecOptions {
+  /**
+   * Construct path of the State Machine to execute.
+   */
+  constructPath: string;
+
+  /**
+   * Input to provide when executing.
+   */
+  input?: string;
 }
 
 interface WatchOptions {

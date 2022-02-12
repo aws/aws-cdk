@@ -23,6 +23,7 @@ Command                           | Description
 [`cdk destroy`](#cdk-destroy)     | Deletes a stack from an AWS account
 [`cdk bootstrap`](#cdk-bootstrap) | Deploy a toolkit stack to support deploying large stacks & artifacts
 [`cdk doctor`](#cdk-doctor)       | Inspect the environment and produce information useful for troubleshooting
+[`cdk exec`](#cdk-exec)           | Invoke or execute a supported CDK app resource
 
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
 
@@ -500,6 +501,26 @@ $ cdk doctor
 ℹ️ AWS environment variables:
   - AWS_EC2_METADATA_DISABLED = 1
   - AWS_SDK_LOAD_CONFIG = 1
+```
+
+### `cdk exec`
+
+Looks up and executes a supported CDK App resource given a path to its resource.
+
+**Execute a Step Functions State Machine**
+
+```console
+$ cdk exec my-stack/MyStateMachine
+Executing state machine arn:aws:states:ca-central-1:0000000000:stateMachine:MyStateMachine
+✅ Final execution status: SUCCEEDED
+```
+
+**Execute a Step Functions State Machine With Input**
+
+```console
+$ cdk exec my-stack/MyStateMachine --input '{}'
+Executing state machine arn:aws:states:ca-central-1:0000000000:stateMachine:MyStateMachine
+✅ Final execution status: SUCCEEDED
 ```
 
 ### Bundling

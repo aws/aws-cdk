@@ -141,6 +141,12 @@ async function parseCommandLineArguments() {
           "Only in effect if specified alongside the '--watch' option",
       }),
     )
+    .command('exec <PATH>', 'Executes a supported resource at the given construct path', yargs => yargs
+      .options('input', {
+        type: 'string',
+        desc: 'Execute with custom JSON input',
+      }),
+    )
     .command('watch [STACKS..]', "Shortcut for 'deploy --watch'", yargs => yargs
       // I'm fairly certain none of these options, present for 'deploy', make sense for 'watch':
       // .option('all', { type: 'boolean', default: false, desc: 'Deploy all available stacks' })
@@ -424,6 +430,12 @@ async function initCommandLine() {
           hotswap: args.hotswap,
           watch: args.watch,
           traceLogs: args.logs,
+        });
+
+      case 'exec':
+        return cli.exec({
+          constructPath: args.PATH,
+          input: args.input,
         });
 
       case 'watch':
