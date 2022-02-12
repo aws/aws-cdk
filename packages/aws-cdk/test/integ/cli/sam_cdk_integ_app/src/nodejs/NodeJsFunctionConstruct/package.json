@@ -1,0 +1,8 @@
+{
+  "name": "hello_world",
+  "version": "1.0.0",
+  "main": "app.js",
+  "dependencies": {
+    "unique-names-generator": "^4.6.0"
+  }
+}

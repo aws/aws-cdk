@@ -1,0 +1,8 @@
+{
+  "name": "dependencies",
+  "version": "1.0.0",
+  "main": "layer_version_dependency.js",
+  "dependencies": {
+    "unique-names-generator": "^4.6.0"
+  }
+}
