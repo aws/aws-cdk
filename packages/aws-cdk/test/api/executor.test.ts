@@ -3,7 +3,27 @@ import { testStack } from '../util';
 import { MockSdkProvider } from '../util/mock-sdk';
 
 describe('getExecutor', () => {
-  test('state machine executor', async () => {
+  test('L1 state machine executor', async () => {
+    const setup = new Setup();
+    setup.addResource('FooBar', 'AWS::StepFunctions::StateMachine', {
+      Metadata: {
+        'aws:cdk:path': 'test-stack-name/boom',
+      },
+    });
+
+    // WHEN
+    const executor = await getExecutor({
+      sdkProvider: setup.sdkProvider,
+      constructPath: 'test-stack-name/boom',
+      stackArtifacts: [setup.createStackArtifact()],
+    });
+
+    // THEN
+    expect(executor).toBeInstanceOf(StateMachineExecutor);
+    expect(executor.physicalResourceId).toEqual('physical-FooBar');
+  });
+
+  test('L2 state machine executor', async () => {
     const setup = new Setup();
     setup.addResource('FooBar', 'AWS::StepFunctions::StateMachine', {
       Metadata: {
@@ -23,7 +43,27 @@ describe('getExecutor', () => {
     expect(executor.physicalResourceId).toEqual('physical-FooBar');
   });
 
-  test('lambda function executor', async () => {
+  test('L1 lambda function executor', async () => {
+    const setup = new Setup();
+    setup.addResource('FooBar', 'AWS::Lambda::Function', {
+      Metadata: {
+        'aws:cdk:path': 'test-stack-name/boom',
+      },
+    });
+
+    // WHEN
+    const executor = await getExecutor({
+      sdkProvider: setup.sdkProvider,
+      constructPath: 'test-stack-name/boom',
+      stackArtifacts: [setup.createStackArtifact()],
+    });
+
+    // THEN
+    expect(executor).toBeInstanceOf(LambdaFunctionExecutor);
+    expect(executor.physicalResourceId).toEqual('physical-FooBar');
+  });
+
+  test('L2 lambda function executor', async () => {
     const setup = new Setup();
     setup.addResource('FooBar', 'AWS::Lambda::Function', {
       Metadata: {

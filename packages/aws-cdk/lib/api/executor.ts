@@ -30,7 +30,7 @@ export async function getExecutor(options: GetExecutorOptions): Promise<Executor
     const resolvedEnv = await sdkProvider.resolveEnvironment(stackArtifact.environment);
     const sdk = (await sdkProvider.forEnvironment(resolvedEnv, Mode.ForWriting)).sdk;
 
-    const logicalResourceId = findLogicalResourceId(stackArtifact.template, `${constructPath}/Resource`);
+    const logicalResourceId = findLogicalResourceId(stackArtifact.template, constructPath);
     if (!logicalResourceId) {
       // Not found in this stack artifact
       continue;
@@ -44,20 +44,22 @@ export async function getExecutor(options: GetExecutorOptions): Promise<Executor
       throw new Error(`Could not find the physical resource id for ${constructPath}`);
     }
 
-    if (stackResource.ResourceType === 'AWS::StepFunctions::StateMachine') {
-      return new StateMachineExecutor({
-        physicalResourceId: stackResource.PhysicalResourceId,
-        stepFunctions: sdk.stepFunctions(),
-      });
-    }
-    if (stackResource.ResourceType === 'AWS::Lambda::Function') {
-      return new LambdaFunctionExecutor({
-        physicalResourceId: stackResource.PhysicalResourceId,
-        lambda: sdk.lambda(),
-      });
-    }
+    switch (stackResource.ResourceType) {
+      case 'AWS::StepFunctions::StateMachine':
+        return new StateMachineExecutor({
+          physicalResourceId: stackResource.PhysicalResourceId,
+          stepFunctions: sdk.stepFunctions(),
+        });
 
-    throw new Error(`Unsupported resource type ${stackResource.ResourceType}`);
+      case 'AWS::Lambda::Function':
+        return new LambdaFunctionExecutor({
+          physicalResourceId: stackResource.PhysicalResourceId,
+          lambda: sdk.lambda(),
+        });
+
+      default:
+        throw new Error(`Unsupported resource type ${stackResource.ResourceType}`);
+    }
   }
 
   throw new Error('Could not find a resource with the given construct path');
@@ -231,6 +233,8 @@ function isJsonObject(json: string) {
 }
 
 function findLogicalResourceId(template: any, constructPath: string): string | undefined {
+  const l2Path = `${constructPath}/Resource`;
+
   if (typeof template.Resources !== 'object') {
     return;
   }
@@ -245,7 +249,8 @@ function findLogicalResourceId(template: any, constructPath: string): string | u
       continue;
     }
 
-    if (resourceRecord.Metadata['aws:cdk:path'] === constructPath) {
+    const resourceConstructPath = resourceRecord.Metadata['aws:cdk:path'];
+    if (resourceConstructPath === constructPath || resourceConstructPath === l2Path) {
       return logicalResourceId;
     }
   }
