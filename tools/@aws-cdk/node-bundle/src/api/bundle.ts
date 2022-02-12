@@ -142,13 +142,11 @@ export class Bundle {
     }
 
     if (!fs.existsSync(target)) {
-      console.log(`✖ Target doesnt exist: ${target}`);
-      process.exit(1);
+      throw new Error(`Target doesnt exist: ${target}`);
     }
 
     if (!fs.lstatSync(target).isDirectory()) {
-      console.log(`✖ Target must be a directory: ${target}`);
-      process.exit(1);
+      throw new Error(`Target must be a directory: ${target}`);
     }
 
     console.log('Creating package');

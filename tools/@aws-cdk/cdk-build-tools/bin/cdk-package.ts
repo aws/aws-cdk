@@ -49,17 +49,19 @@ async function main() {
       ...args.targets ? flatMap(args.targets, (target: string) => ['-t', target]) : [],
       '-o', outdir];
     await shell(command, { timers });
-  } else if (options.bundle) {
-    // bundled packages have their own bundler.
-    const bundle = new Bundle({ packageDir: process.cwd(), ...options.bundle });
-    bundle.pack({ target: path.join(outdir, 'js') });
   } else {
-    // just "npm pack" and deploy to "outdir"
-    const tarball = (await shell(['npm', 'pack'], { timers })).trim();
     const target = path.join(outdir, 'js');
     await fs.remove(target);
     await fs.mkdirp(target);
-    await fs.move(tarball, path.join(target, path.basename(tarball)));
+    if (options.bundle) {
+      // bundled packages have their own bundler.
+      const bundle = new Bundle({ packageDir: process.cwd(), ...options.bundle });
+      bundle.pack({ target });
+    } else {
+      // just "npm pack" and deploy to "outdir"
+      const tarball = (await shell(['npm', 'pack'], { timers })).trim();
+      await fs.move(tarball, path.join(target, path.basename(tarball)));
+    }
   }
 
   if (options.post) {
