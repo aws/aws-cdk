@@ -3,6 +3,7 @@ import * as cxapi from '@aws-cdk/cx-api';
 import * as chalk from 'chalk';
 import { print } from '../logging';
 import { ISDK, Mode, SdkProvider } from './aws-auth';
+import { CloudFormationDeployments } from './cloudformation-deployments';
 import { DeployStackResult } from './deploy-stack';
 import { EvaluateCloudFormationTemplate, LazyListStackResources } from './evaluate-cloudformation-template';
 import { isHotswappableCodeBuildProjectChange } from './hotswap/code-build-projects';
@@ -12,7 +13,6 @@ import { isHotswappableLambdaFunctionChange } from './hotswap/lambda-functions';
 import { isHotswappableS3BucketDeploymentChange } from './hotswap/s3-bucket-deployments';
 import { isHotswappableStateMachineChange } from './hotswap/stepfunctions-state-machines';
 import { CloudFormationStack } from './util/cloudformation';
-import { CloudFormationDeployments } from './cloudformation-deployments';
 
 /**
  * Perform a hotswap deployment,
@@ -84,6 +84,16 @@ async function findAllHotswappableChanges(
     ([_, resourceDifference]) => (resourceDifference.newValue?.Type === 'AWS::CloudFormation::Stack' && resourceDifference.oldValue?.Type === 'AWS::CloudFormation::Stack'))
   ) {
     const nestedDiff = cfn_diff.diffTemplate(change.oldValue?.Properties?.NestedTemplate, change.newValue?.Properties?.NestedTemplate);
+
+    const parameters = change.newValue?.Properties?.Parameters;
+    if (parameters) {
+      for (const paramName in parameters) {
+        if (typeof parameters[paramName] !== 'string') {
+          parameters[paramName] = await evaluateCfnTemplate.evaluateCfnExpression(parameters[paramName]);
+
+        }
+      }
+    }
 
     const nestedStackName = nestedStackNames[logicalId].stackName;
     const evaluateNestedCfnTemplate = nestedStackName

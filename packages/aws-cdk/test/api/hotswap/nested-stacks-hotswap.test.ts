@@ -5,7 +5,6 @@ import * as setup from './hotswap-test-setup';
 let mockUpdateLambdaCode: (params: Lambda.Types.UpdateFunctionCodeRequest) => Lambda.Types.FunctionConfiguration;
 let hotswapMockSdkProvider: setup.HotswapMockSdkProvider;
 
-/*
 test('can hotswap a lambda function in a 1-level nested stack', async () => {
   // GIVEN
   hotswapMockSdkProvider = setup.setupHotswapNestedStackTests('LambdaRoot');
@@ -849,7 +848,6 @@ test('can hotswap a lambda function in a 1-level nested stack with asset paramet
     S3Key: 'key-param-value',
   });
 });
-*/
 
 test('can hotswap a lambda function in a 2-level nested stack with asset parameters', async () => {
   // GIVEN
