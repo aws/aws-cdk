@@ -71,6 +71,7 @@ export class EvaluateCloudFormationTemplate {
       'AWS::Partition': props.partition,
       ...props.parameters,
     };
+    //console.log(this.context)
     this.account = props.account;
     this.region = props.region;
     this.partition = props.partition;
@@ -78,12 +79,16 @@ export class EvaluateCloudFormationTemplate {
   }
 
   // clones current EvaluateCloudFormationTemplate object, but updates the stack name
-  public createNestedEvaluateCloudFormationTemplate(stackName: string, sdk: ISDK, rootStackArtifact: cxapi.CloudFormationStackArtifact) {
+  public createNestedEvaluateCloudFormationTemplate(stackName: string, sdk: ISDK,
+    rootStackArtifact: cxapi.CloudFormationStackArtifact, nestedStackParameters: any,
+  ) {
     const listNestedStackResources = new LazyListStackResources(sdk, stackName);
+    //console.log('------------------------------------')
+    //console.log(this.context)
 
     return new EvaluateCloudFormationTemplate({
       stackArtifact: rootStackArtifact,
-      parameters: this.context,
+      parameters: { ...nestedStackParameters, ...this.context },
       account: this.account,
       region: this.region,
       partition: this.partition,
@@ -261,7 +266,7 @@ export class EvaluateCloudFormationTemplate {
       return this.cachedUrlSuffix;
     }
 
-    const parameterTarget = this.context[logicalId];
+    const parameterTarget = this.evaluateCfnExpression(this.context[logicalId]);
     if (parameterTarget) {
       return parameterTarget;
     }
