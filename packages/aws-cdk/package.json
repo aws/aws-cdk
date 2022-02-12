@@ -8,11 +8,11 @@
     "cdk": "bin/cdk.js"
   },
   "scripts": {
-    "build": "cdk-build",
+    "build": "yarn --version && getconf ARG_MAX && cdk-build",
     "watch": "cdk-watch",
     "lint": "cdk-lint",
     "pkglint": "pkglint -f",
-    "test": "cdk-test",
+    "test": "yarn --version && getconf ARG_MAX && cdk-test",
     "integ": "jest --testMatch '**/?(*.)+(integ-test).js'",
     "bundle": "esbuild bin/cdk.ts --bundle --platform=node --external:fsevents --outfile=bin/cdk-bundle.js --allow-overwrite && cp ../../node_modules/vm2/lib/contextify.js bin",
     "bundle:test": "./bin/cdk --help",
