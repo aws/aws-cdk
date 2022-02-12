@@ -1,4 +1,3 @@
-import * as os from 'os';
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import { shell } from './shell';
@@ -123,16 +122,6 @@ export class Notice {
 
     if (outdated) {
       violations.push({ type: ViolationType.OUTDATED_NOTICE, message: `${relNoticePath} is outdated`, fix });
-      const workDir = fs.mkdtempSync(path.join(os.tmpdir(), path.sep));
-      try {
-        const tempPath = path.join(workDir, 'notice.temp');
-        fs.writeFileSync(tempPath, this.content);
-        shell(`diff ${this.filePath} ${tempPath}`);
-      } catch (e) {
-
-      } finally {
-        fs.removeSync(workDir);
-      }
     }
 
     const invalidLicense: Violation[] = Array.from(this.attributions.values())

@@ -46,7 +46,7 @@
         "BSD-2-Clause",
         "0BSD"
       ],
-      "dontAttribute": "(^@aws-cdk/)"
+      "dontAttribute": "(^@aws-cdk/|^cdk-assets$)"
     }
   },
   "author": {
