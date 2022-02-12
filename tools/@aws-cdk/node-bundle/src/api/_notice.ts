@@ -166,7 +166,11 @@ export class Notice {
       notice.push(separator);
     }
 
-    return notice.join('\n');
+    return notice
+      // since we are embedding external files, those can different line
+      // endings, so we standardize to LF.
+      .map(l => l.replace(/\r\n/g, '\n'))
+      .join('\n');
 
   }
 
