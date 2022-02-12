@@ -11,7 +11,7 @@ import { testStack, TestStackArtifact } from '../../util';
 import { MockSdkProvider, SyncHandlerSubsetOf } from '../../util/mock-sdk';
 import { FakeCloudformationStack } from '../fake-cloudformation-stack';
 
-export const STACK_NAME = 'withouterrors';
+const STACK_NAME = 'withouterrors';
 export const STACK_ID = 'stackId';
 
 let hotswapMockSdkProvider: HotswapMockSdkProvider;
@@ -30,8 +30,6 @@ export function setupHotswapTests() {
     stackId: STACK_ID,
   });
   CloudFormationStack.lookup = async (_: AWS.CloudFormation, _stackName: string) => {
-    //currentCfnStack.template = async () => stackTemplates[stackName];
-
     return currentCfnStack;
   };
 

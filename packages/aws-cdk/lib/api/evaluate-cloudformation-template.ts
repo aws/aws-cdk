@@ -263,7 +263,7 @@ export class EvaluateCloudFormationTemplate {
       return this.cachedUrlSuffix;
     }
 
-    let parameterTarget = this.context[logicalId];
+    const parameterTarget = this.context[logicalId];
     if (parameterTarget) {
       return parameterTarget;
     }
