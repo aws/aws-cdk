@@ -5,7 +5,7 @@
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "bin": {
-    "cdk": "bin/cdk.js"
+    "cdk": "bin/cdk"
   },
   "scripts": {
     "dec": "https://github.com/yarnpkg/yarn/issues/5420",
