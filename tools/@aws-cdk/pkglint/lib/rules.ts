@@ -244,7 +244,8 @@ export class BundledCLI extends ValidationRule {
     for (const violation of report.violations) {
       pkg.report({
         message: violation.message,
-        ruleName: `${this.name}/${violation.type}`, fix: violation.fix
+        ruleName: `${this.name}/${violation.type}`,
+        fix: violation.fix,
       });
     }
 
