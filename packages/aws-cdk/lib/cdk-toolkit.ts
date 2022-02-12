@@ -265,11 +265,11 @@ export class CdkToolkit {
   }
 
   public async exec(options: ExecOptions): Promise<number> {
-    const stackCollection = await this.selectStacksForDiff(['**']);
+    const assembly = await this.assembly(true);
 
     const executor = await getExecutor({
       constructPath: options.constructPath,
-      stackArtifacts: stackCollection.stackArtifacts,
+      stackArtifacts: assembly.assembly.stacks,
       sdkProvider: this.props.sdkProvider,
     });
 
