@@ -202,6 +202,21 @@ export class BundledCLI extends ValidationRule {
   private validateConfig(pkg: PackageJson, bundleProps: any): boolean {
     let valid = true;
 
+    // this is pretty crazy, but apparently there is a bug in yarn when NOTICE
+    // files are too big. see https://github.com/yarnpkg/yarn/issues/5420.
+    // as a workaround we use NOTICES for bundled packages.
+    // there is a pending PR to fix the issue, though it has been there for almost
+    // two years now (https://github.com/yarnpkg/yarn/pull/8093).
+    const noticeFilePath = 'NOTICES';
+    if (bundleProps.noticePath !== noticeFilePath) {
+      pkg.report({
+        message: `'cdk-package.bundle.noticePath' must be set to "${noticeFilePath}"`,
+        ruleName: `${this.name}/configuration`,
+        fix: () => pkg.json['cdk-package'].bundle.noticePath = noticeFilePath,
+      });
+      valid = false;
+    }
+
     if (bundleProps.copyright !== NOTICE) {
       pkg.report({
         message: `'cdk-package.bundle.copyright' must be set to "${NOTICE}"`,
@@ -237,7 +252,6 @@ export class BundledCLI extends ValidationRule {
    * Validate the package is ready for bundling.
    */
   private validateBundle(pkg: PackageJson, bundleProps: any) {
-
     const bundle = new Bundle({ packageDir: pkg.packageRoot, ...bundleProps });
     const report = bundle.validate();
 
@@ -259,6 +273,11 @@ export class NoticeFile extends ValidationRule {
   public readonly name = 'license/notice-file';
 
   public validate(pkg: PackageJson): void {
+    if (pkg.json['cdk-package']?.bundle) {
+      // notice files are validated using the bundle tool,
+      // which allows for other file names.
+      return;
+    }
     fileShouldBeginWith(this.name, pkg, 'NOTICE', ...NOTICE.split('\n'));
   }
 }

@@ -8,14 +8,13 @@
     "cdk": "bin/cdk.js"
   },
   "scripts": {
-    "build": "yarn --version && getconf ARG_MAX && cdk-build",
+    "dec": "https://github.com/yarnpkg/yarn/issues/5420",
+    "build": "cdk-build",
     "watch": "cdk-watch",
     "lint": "cdk-lint",
     "pkglint": "pkglint -f",
-    "test": "yarn --version && getconf ARG_MAX && cdk-test",
+    "test": "cdk-test",
     "integ": "jest --testMatch '**/?(*.)+(integ-test).js'",
-    "bundle": "esbuild bin/cdk.ts --bundle --platform=node --external:fsevents --outfile=bin/cdk-bundle.js --allow-overwrite && cp ../../node_modules/vm2/lib/contextify.js bin",
-    "bundle:test": "./bin/cdk --help",
     "package": "cdk-package",
     "build+test+package": "yarn build+test && yarn package",
     "build+test": "yarn build && yarn test",
@@ -35,6 +34,7 @@
         "fsevents:optional"
       ],
       "copyright": "AWS Cloud Development Kit (AWS CDK)\nCopyright 2018-2022 Amazon.com, Inc. or its affiliates. All Rights Reserved.\n",
+      "noticePath": "NOTICES",
       "entrypoints": [
         "bin/cdk.js"
       ],

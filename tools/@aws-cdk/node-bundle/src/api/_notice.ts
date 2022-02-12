@@ -16,11 +16,6 @@ const DEFAULT_VALID_LICENSES = [
 ];
 
 /**
- * NOTICE file path.
- */
-const FILE_PATH = 'NOTICE';
-
-/**
  * Dependency of a specific package on the local file system.
  */
 export interface Dependency {
@@ -59,6 +54,10 @@ export interface NoticeProps {
    */
   readonly copyright: string;
   /**
+   * Path to the notice file to created / validated.
+   */
+  readonly filePath: string;
+  /**
    * List of valid licenses.
    *
    * @default - predefined list.
@@ -82,12 +81,14 @@ export class Notice {
   private readonly validLicenses: string[];
   private readonly copyright: string;
   private readonly dependenciesRoot: string;
+  private readonly filePath: string;
 
   private readonly attributions: Map<string, Attribution>;
   private readonly content: string;
 
   constructor(props: NoticeProps) {
     this.packageDir = props.packageDir;
+    this.filePath = path.join(this.packageDir, props.filePath);
     this.dependencies = props.dependencies.filter(d => !props.exclude || !new RegExp(props.exclude).test(d.name));
     this.validLicenses = (props.validLicenses ?? DEFAULT_VALID_LICENSES).map(l => l.toLowerCase());
     this.copyright = props.copyright;
@@ -107,13 +108,13 @@ export class Notice {
   public validate(): ViolationsReport {
 
     const violations = [];
-    const noticePath = path.join(this.packageDir, FILE_PATH);
+    const relNoticePath = path.relative(this.packageDir, this.filePath);
 
     const fix = () => this.flush();
 
-    const missing: Violation | undefined = !fs.existsSync(noticePath) ? { type: ViolationType.MISSING_NOTICE, message: `${FILE_PATH} is missing`, fix } : undefined;
-    const notice = missing ? undefined : fs.readFileSync(noticePath, { encoding: 'utf-8' });
-    const outdated: Violation | undefined = notice !== undefined && notice !== this.content ? { type: ViolationType.OUTDATED_NOTICE, message: `${FILE_PATH} is outdated`, fix } : undefined;
+    const missing: Violation | undefined = !fs.existsSync(this.filePath) ? { type: ViolationType.MISSING_NOTICE, message: `${relNoticePath} file is missing`, fix } : undefined;
+    const notice = missing ? undefined : fs.readFileSync(this.filePath, { encoding: 'utf-8' });
+    const outdated: Violation | undefined = notice !== undefined && notice !== this.content ? { type: ViolationType.OUTDATED_NOTICE, message: `${relNoticePath} file is outdated`, fix } : undefined;
 
     const invalidLicense: Violation[] = Array.from(this.attributions.values())
       .filter(a => a.licenses.length === 1 && !this.validLicenses.includes(a.licenses[0].toLowerCase()))
@@ -146,7 +147,7 @@ export class Notice {
    * Flush the generated notice file to disk.
    */
   public flush() {
-    fs.writeFileSync(path.join(this.packageDir, FILE_PATH), this.content);
+    fs.writeFileSync(this.filePath, this.content);
   }
 
   private render(attributions: Map<string, Attribution>): string {

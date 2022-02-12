@@ -27,6 +27,14 @@ export interface BundleProps {
   readonly copyright: string;
 
   /**
+   * Path to the notice file that will be created / validated.
+   * This path is relative to the package directory.
+   *
+   * @default 'NOTICE'
+   */
+  readonly noticePath?: string;
+
+  /**
    * External packages that cannot be bundled.
    *
    * These will remain a runtime dependency of the package.
@@ -81,6 +89,7 @@ export interface BundlePackOptions {
 export class Bundle {
 
   private readonly manifest: any;
+  private readonly noticePath: string;
 
   private readonly packageDir: string;
   private readonly copyright: string;
@@ -99,6 +108,7 @@ export class Bundle {
 
   constructor(props: BundleProps) {
     this.packageDir = props.packageDir;
+    this.noticePath = props.noticePath ?? 'NOTICE';
     this.manifest = fs.readJsonSync(path.join(this.packageDir, 'package.json'));
     this.externals = props.externals ?? [];
     this.resources = props.resources ?? {};
@@ -224,6 +234,7 @@ export class Bundle {
     }
     this._notice = new Notice({
       packageDir: this.packageDir,
+      filePath: this.noticePath,
       dependencies: this.dependencies,
       dependenciesRoot: this.dependenciesRoot,
       exclude: this.dontAttribute,
