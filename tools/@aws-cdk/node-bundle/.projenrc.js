@@ -15,10 +15,15 @@ const project = new typescript.TypeScriptProject({
     'shlex',
   ],
   bin: {
-    'node-bundle': '../lib/cli.js',
+    'node-bundle': 'bin/node-bundle',
   },
 
   // required by projen even though 'github' is false.
   defaultReleaseBranch: 'main',
 });
+
+project.gitignore.exclude('.vscode/');
+
+// needed for CLI tests to run
+project.testTask.prependSpawn(project.compileTask);
 project.synth();

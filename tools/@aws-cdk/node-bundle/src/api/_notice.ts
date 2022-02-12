@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import type { Violation } from './bundle';
 import { shell } from './shell';
+import { Violation, ViolationType, ViolationsReport } from './violation';
 
 /**
  * Valid licenses that are ok to redistribute.
@@ -104,29 +104,42 @@ export class Notice {
    *
    * This method never throws. The Caller is responsible for inspecting the report returned and act accordinagly.
    */
-  public validate(): NoticeValidationReport {
+  public validate(): ViolationsReport {
 
+    const violations = [];
     const noticePath = path.join(this.packageDir, FILE_PATH);
 
     const fix = () => this.flush();
 
-    const missing = !fs.existsSync(noticePath) ? { message: `${noticePath} is missing`, fix } : undefined;
+    const missing: Violation | undefined = !fs.existsSync(noticePath) ? { type: ViolationType.MISSING_NOTICE, message: `${FILE_PATH} is missing`, fix } : undefined;
     const notice = missing ? undefined : fs.readFileSync(noticePath, { encoding: 'utf-8' });
-    const outdated = notice && notice !== this.content ? { message: `${noticePath} is outdated`, fix } : undefined;
+    const outdated: Violation | undefined = notice !== undefined && notice !== this.content ? { type: ViolationType.OUTDATED_NOTICE, message: `${FILE_PATH} is outdated`, fix } : undefined;
 
-    const invalidLicense = Array.from(this.attributions.values())
-      .filter(a => a.license && !this.validLicenses.includes(a.license.toLowerCase()))
-      .map(a => ({ message: `Dependency ${a.package} has an invalid license: ${a.license}` }));
+    const invalidLicense: Violation[] = Array.from(this.attributions.values())
+      .filter(a => a.licenses.length === 1 && !this.validLicenses.includes(a.licenses[0].toLowerCase()))
+      .map(a => ({ type: ViolationType.INVALID_LICENSE, message: `Dependency ${a.package} has an invalid license: ${a.licenses[0]}` }));
 
-    const noLicense = Array.from(this.attributions.values())
-      .filter(a => !a.license)
-      .map(a => ({ message: `Dependency ${a.package} has no license` }));
+    const noLicense: Violation[] = Array.from(this.attributions.values())
+      .filter(a => a.licenses.length === 0)
+      .map(a => ({ type: ViolationType.NO_LICENSE, message: `Dependency ${a.package} has no license` }));
 
-    const multiLicense = Array.from(this.attributions.values())
-      .filter(a => a.license && a.license.split(',').length > 1)
-      .map(a => ({ message: `Dependency ${a.package} has multiple licenses: ${a.license}` }));
+    const multiLicense: Violation[] = Array.from(this.attributions.values())
+      .filter(a => a.licenses.length > 1)
+      .map(a => ({ type: ViolationType.MULTIPLE_LICENSE, message: `Dependency ${a.package} has multiple licenses: ${a.licenses}` }));
 
-    return new NoticeValidationReport(multiLicense, noLicense, invalidLicense, missing, outdated);
+    if (missing) {
+      violations.push(missing);
+    }
+
+    if (outdated) {
+      violations.push(outdated);
+    }
+
+    violations.push(...invalidLicense);
+    violations.push(...noLicense);
+    violations.push(...multiLicense);
+
+    return new ViolationsReport(violations);
   }
 
   /**
@@ -148,7 +161,7 @@ export class Notice {
     const separator = `\n${'-'.repeat(15)}\n`;
 
     for (const attr of attributions.values()) {
-      notice.push(`** ${attr.package} - ${attr.url} | ${attr.license}`);
+      notice.push(`** ${attr.package} - ${attr.url} | ${attr.licenses[0]}`);
       notice.push(attr.licenseText ?? '');
       notice.push(separator);
     }
@@ -159,15 +172,21 @@ export class Notice {
 
   private generateAttributions(): Map<string, Attribution> {
 
+    if (this.dependencies.length === 0) {
+      return new Map();
+    }
+
     const attributions: Map<string, Attribution> = new Map();
 
     const pkg = (d: Dependency) => `${d.name}@${d.version}`;
 
     const packages = this.dependencies.map(d => pkg(d)).join(';');
-    const output = shell(`${require.resolve('license-checker/bin/license-checker')} --json --packages "${packages}"`, {
-      cwd: this.dependenciesRoot,
-      quiet: true,
-    });
+
+    // we don't use the programmatic API since it only offers an async API.
+    // prefer to stay sync for now since its easier to integrate with other tooling.
+    // will offer an async API further down the road.
+    const command = `${require.resolve('license-checker/bin/license-checker')} --json --packages "${packages}"`;
+    const output = shell(command, { cwd: this.dependenciesRoot, quiet: true });
     const infos = JSON.parse(output);
 
     for (const dep of this.dependencies) {
@@ -186,10 +205,14 @@ export class Notice {
       // note that a non existing license file is ok as long as the license type could be extracted.
       const licenseFile = info.licenseFile?.toLowerCase().endsWith('.md') ? undefined : info.licenseFile;
 
+      // the licenses key comes in different types but we convert it here
+      // to always be an array.
+      const licenses = !info.licenses ? undefined : (Array.isArray(info.licenses) ? info.licenses : [info.licenses]);
+
       attributions.set(key, {
         package: key,
         url: `https://www.npmjs.com/package/${dep.name}/v/${dep.version}`,
-        license: info.licenses,
+        licenses,
         licenseText: (licenseFile && fs.existsSync(licenseFile)) ? fs.readFileSync(licenseFile, { encoding: 'utf-8' }) : undefined,
       });
     }
@@ -214,62 +237,9 @@ interface Attribution {
   /**
    * Package license.
    */
-  readonly license?: string;
+  readonly licenses: string[];
   /**
    * Package license content.
    */
   readonly licenseText?: string;
-}
-
-
-/**
- * Validation report.
- */
-export class NoticeValidationReport {
-
-  /**
-   * All violations of the report.
-   */
-  public readonly violations: Violation[];
-
-  constructor(
-    /**
-     * Attributions that have multiple licenses.
-     */
-    public readonly multiLicense: Violation[],
-    /**
-     * Attributions that have no license.
-     */
-    public readonly noLicense: Violation[],
-    /**
-     * Attributions that have an invalid license.
-     */
-    public readonly invalidLicense: Violation[],
-    /**
-     * Notice file is missing.
-     */
-    public readonly missing?: Violation,
-    /**
-     * Notice file is outdated.
-     */
-    public readonly outdated?: Violation,
-  ) {
-
-    const violations: Violation[] = [];
-
-    violations.push(...invalidLicense);
-    violations.push(...noLicense);
-    violations.push(...invalidLicense);
-
-    if (missing) {
-      violations.push(missing);
-    }
-    if (outdated) {
-      violations.push(outdated);
-    }
-
-    this.violations = violations;
-
-  }
-
 }

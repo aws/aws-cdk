@@ -2,9 +2,9 @@ import * as os from 'os';
 import * as path from 'path';
 import * as esbuild from 'esbuild';
 import * as fs from 'fs-extra';
-import { NoticeValidationReport } from '.';
-import { Dependency, Notice } from './notice';
+import { Dependency, Notice } from './_notice';
 import { shell } from './shell';
+import { Violation, ViolationType, ViolationsReport } from './violation';
 
 /**
  * Bundling properties.
@@ -117,45 +117,28 @@ export class Bundle {
   }
 
   /**
-   * Validate the current notice file.
+   * Validate the bundle for violations.
    *
-   * This method never throws. The Caller is responsible for inspecting the report returned and act accordinagly.
+   * This method never throws. The Caller is responsible for inspecting the
+   * returned report and act accordinagly.
    */
-  public validate(): BundleValidationReport {
-
-    let circularImports: Violation | undefined = undefined;
-
-    console.log('Validating circular imports');
-    const packages = [this.packageDir, ...this.dependencies.map(d => d.path)];
-    try {
-      // we don't use the programatic API since it only offers an async API.
-      // prefer to stay sync for now since its easier to integrate with other tooling.
-      // will offer an async API further down the road.
-      shell(`${require.resolve('madge/bin/cli.js')} --warning --no-color --no-spinner --circular --extensions js ${packages.join(' ')}`, { quiet: true });
-    } catch (e: any) {
-      circularImports = { message: `Circular imports detected:\n${e.stdout.toString()}` };
-    }
-
-    console.log('Validating resources');
-    const missingResources: Violation[] = [];
-    for (const [src, _] of Object.entries(this.resources)) {
-      if (!fs.existsSync(path.join(this.packageDir, src))) {
-        missingResources.push({ message: `Unable to find resource (${src}) relative to the package directory` });
-      }
-    }
-
-    console.log('Validating notice');
-    const noticeReport = this.notice.validate();
-    return new BundleValidationReport(noticeReport, missingResources, circularImports);
+  public validate(): ViolationsReport {
+    const circularImports = this.validateCircularImports();
+    const resources = this.validateResources();
+    const notice = this.validateNotice();
+    return new ViolationsReport([...circularImports, ...resources, ...notice]);
   }
 
+  /**
+   * Create the final npm package.
+   */
   public pack(options: BundlePackOptions = {}) {
 
     const target = options.target ?? this.packageDir;
 
     const report = this.validate();
-    if (report.violations.length > 0) {
-      throw new Error(`Unable to pack due to validation errors.\n\n${report.violations.map(v => `  - ${v.message}`).join('\n')}`);
+    if (!report.success) {
+      throw new Error(`Unable to pack due to validation errors.\n\n${report.violations.map(v => `  - ${v.type}: ${v.message}`).join('\n')}`);
     }
 
     if (!fs.existsSync(target)) {
@@ -170,82 +153,44 @@ export class Bundle {
 
     console.log('Creating package');
 
-    const workdir = fs.mkdtempSync(path.join(os.tmpdir(), path.sep));
+    const workDir = fs.mkdtempSync(path.join(os.tmpdir(), path.sep));
     try {
-      fs.copySync(this.packageDir, workdir, { filter: n => !n.includes('node_modules') && !n.includes('.git') });
+      fs.copySync(this.packageDir, workDir, { filter: n => !n.includes('node_modules') && !n.includes('.git') });
 
-      const bundleManifest = { ...this.manifest };
+      // clone the original manifest since we are going to
+      // to mutate it.
+      const manifest = { ...this.manifest };
 
-      // move all 'dependencies' to 'devDependencies' so that npm doesn't install anything when consuming
-      // external ones should be kept as is.
-      for (const [d, v] of Object.entries(this.manifest.dependencies)) {
-        bundleManifest.devDependencies[d] = v;
-        delete bundleManifest.dependencies[d];
-      }
+      this.removeDependencies(manifest);
+      this.addExternals(manifest);
+      this.writeOutputs(workDir);
+      this.writeResources(workDir);
 
-      // external dependencies should be specified as runtime dependencies
-      for (const external of this.externals) {
-
-        const parts = external.split(':');
-        const name = parts[0];
-        const type = parts[1];
-        const paths = this.findPackages(name);
-        if (paths.length === 0) {
-          throw new Error(`Unable to locate external dependency: ${name}`);
-        }
-        if (paths.length > 1) {
-          throw new Error(`Found multiple paths for external dependency (${name}): ${paths.join(' | ')}`);
-        }
-        const dependency = this.createDependency(paths[0]);
-
-        switch (type) {
-          case 'optional':
-            bundleManifest.optionalDependencies = bundleManifest.optionalDependencies ?? {};
-            bundleManifest.optionalDependencies[dependency.name] = dependency.version;
-            break;
-          case 'peer':
-            bundleManifest.peerDependencies = bundleManifest.peerDependencies ?? {};
-            bundleManifest.peerDependencies[dependency.name] = dependency.version;
-            break;
-          case '':
-            bundleManifest.dependencies = bundleManifest.dependencies ?? {};
-            bundleManifest.dependencies[dependency.name] = dependency.version;
-            break;
-          default:
-            throw new Error(`Unsupported dependency type '${type}' for external dependency '${name}'`);
-        }
-      }
-
-      fs.writeFileSync(path.join(workdir, 'package.json'), JSON.stringify(bundleManifest, null, 2));
-
-      console.log('Writing output files');
-      for (const output of this.bundle.outputFiles ?? []) {
-        const out = output.path.replace(this.packageDir, workdir);
-        console.log(`  - ${out}`);
-        fs.writeFileSync(out, output.contents);
-      }
-
-      console.log('Copying resources');
-      for (const [src, dst] of Object.entries(this.resources)) {
-        fs.copySync(path.join(this.packageDir, src), path.join(workdir, dst), { recursive: true });
-      }
+      fs.writeFileSync(path.join(workDir, 'package.json'), JSON.stringify(manifest, null, 2));
 
       if (this.test) {
-        shell(`${path.join(workdir, this.test)}`, { cwd: workdir });
+        shell(`${path.join(workDir, this.test)}`, { cwd: workDir });
       }
 
       // create the tarball
-      const tarball = shell('npm pack', { quiet: true, cwd: workdir }).trim();
-      fs.copySync(path.join(workdir, tarball), path.join(target, tarball), { recursive: true });
+      const tarball = shell('npm pack', { quiet: true, cwd: workDir }).trim();
+      fs.copySync(path.join(workDir, tarball), path.join(target, tarball), { recursive: true });
 
     } finally {
-      // fs.removeSync(workdir);
+      fs.removeSync(workDir);
     }
   }
 
+  /**
+   * Fix any fixable violations.
+   */
   public fix() {
-    console.log('Generating notice file');
-    this.notice.flush();
+    const violations = this.validate();
+    for (const violation of violations.violations) {
+      if (violation.fix) {
+        violation.fix();
+      }
+    }
   }
 
   private get bundle(): esbuild.BuildResult {
@@ -261,7 +206,7 @@ export class Bundle {
       return this._dependencies;
     }
     const inputs = Object.keys(this.bundle.metafile!.inputs);
-    const packages = new Set(Array.from(inputs).map(i => this.findPackagePath(i)));
+    const packages = new Set(Array.from(inputs).map(i => this.closestPackage(path.join(this.packageDir, i))));
     this._dependencies = Array.from(packages).map(p => this.createDependency(p)).filter(d => d.name !== this.manifest.name);
     return this._dependencies;
   }
@@ -270,20 +215,9 @@ export class Bundle {
     if (this._dependenciesRoot) {
       return this._dependenciesRoot;
     }
-    this._dependenciesRoot = lcp(this.dependencies.map(d => d.path));
+    const lcp = longestCommonParent(this.dependencies.map(d => d.path));
+    this._dependenciesRoot = this.closestPackage(lcp);
     return this._dependenciesRoot;
-  }
-
-  private findPackages(name: string): string[] {
-
-    const paths: string[] = [];
-    walkDir(this.dependenciesRoot, (file: string) => {
-      if (file.endsWith(`node_modules/${name}`)) {
-        paths.push(file);
-      }
-    });
-
-    return paths;
   }
 
   private get notice(): Notice {
@@ -301,20 +235,29 @@ export class Bundle {
     return this._notice;
   }
 
-  private findPackagePath(inputFile: string): string {
+  private findPackages(name: string): string[] {
 
-    function findPackagePathUp(dirname: string): string {
-      const manifestPath = path.join(dirname, 'package.json');
-      if (fs.existsSync(manifestPath)) {
-        return dirname;
+    const paths: string[] = [];
+    walkDir(this.dependenciesRoot, (file: string) => {
+      if (file.endsWith(`node_modules/${name}`)) {
+        paths.push(file);
       }
-      if (path.dirname(dirname) === dirname) {
-        throw new Error('Unable to find package manifest');
-      }
-      return findPackagePathUp(path.dirname(dirname));
+    });
+
+    return paths;
+  }
+
+  private closestPackage(fdp: string): string {
+
+    if (fs.existsSync(path.join(fdp, 'package.json'))) {
+      return fdp;
     }
 
-    return findPackagePathUp(path.resolve(this.packageDir, path.dirname(inputFile)));
+    if (path.dirname(fdp) === fdp) {
+      throw new Error('Unable to find package manifest');
+    }
+
+    return this.closestPackage(path.dirname(fdp));
   }
 
   private createDependency(packageDir: string): Dependency {
@@ -348,70 +291,122 @@ export class Bundle {
 
     return bundle;
   }
-}
 
-export interface Violation {
-  /**
-   * The violation message.
-   */
-  readonly message: string;
-  /**
-   * A fixer function.
-   * If undefined, this violation cannot be fixed automatically.
-   */
-  readonly fix?: () => void;
-}
-
-/**
- * Validation report.
- */
-export class BundleValidationReport {
-
-  /**
-   * All violations of the report.
-   */
-  public readonly violations: Violation[];
-
-  constructor(
-    /**
-     * The NOTICE file validation report.
-     */
-    public readonly notice: NoticeValidationReport,
-    /**
-     * Resources that could not be located.
-     */
-    public readonly missingResources: Violation[],
-    /**
-     * The circular imports violations.
-     */
-    public readonly circularImports?: Violation,
-  ) {
-
+  private validateCircularImports(): Violation[] {
+    console.log('Validating circular imports');
     const violations: Violation[] = [];
-
-    violations.push(...notice.violations);
-    violations.push(...missingResources);
-
-    if (circularImports) {
-      violations.push(circularImports);
+    const packages = [this.packageDir, ...this.dependencies.map(d => d.path)];
+    try {
+      // we don't use the programmatic API since it only offers an async API.
+      // prefer to stay sync for now since its easier to integrate with other tooling.
+      // will offer an async API further down the road.
+      const command = `${require.resolve('madge/bin/cli.js')} --json --warning --no-color --no-spinner --circular --extensions js ${packages.join(' ')}`;
+      shell(command, { quiet: true });
+    } catch (e: any) {
+      const imports: string[][] = JSON.parse(e.stdout.toString().trim());
+      for (const imp of imports) {
+        violations.push({ type: ViolationType.CIRCULAR_IMPORT, message: `${imp.join(' -> ')}` });
+      }
     }
 
-    this.violations = violations;
+    return violations;
+  }
 
+  private validateResources(): Violation[] {
+    console.log('Validating resources');
+    const violations = [];
+    for (const [src, _] of Object.entries(this.resources)) {
+      if (!fs.existsSync(path.join(this.packageDir, src))) {
+        violations.push({
+          type: ViolationType.MISSING_RESOURCE,
+          message: `Unable to find resource (${src}) relative to the package directory`,
+        });
+      }
+    }
+    return violations;
+  }
+
+  private validateNotice(): Violation[] {
+    console.log('Validating notice');
+    return this.notice.validate().violations;
+  }
+
+  private addExternals(manifest: any) {
+
+      // external dependencies should be specified as runtime dependencies
+    for (const external of this.externals) {
+
+      const parts = external.split(':');
+      const name = parts[0];
+      const type = parts[1];
+      const paths = this.findPackages(name);
+      if (paths.length === 0) {
+        throw new Error(`Unable to locate external dependency: ${name}`);
+      }
+      if (paths.length > 1) {
+        throw new Error(`Found multiple paths for external dependency (${name}): ${paths.join(' | ')}`);
+      }
+      const dependency = this.createDependency(paths[0]);
+
+      switch (type) {
+        case 'optional':
+          manifest.optionalDependencies = manifest.optionalDependencies ?? {};
+          manifest.optionalDependencies[dependency.name] = dependency.version;
+          break;
+        case 'peer':
+          manifest.peerDependencies = manifest.peerDependencies ?? {};
+          manifest.peerDependencies[dependency.name] = dependency.version;
+          break;
+        case '':
+          manifest.dependencies = manifest.dependencies ?? {};
+          manifest.dependencies[dependency.name] = dependency.version;
+          break;
+        default:
+          throw new Error(`Unsupported dependency type '${type}' for external dependency '${name}'`);
+      }
+    }
+
+  }
+
+  private removeDependencies(manifest: any) {
+    for (const [d, v] of Object.entries(this.manifest.dependencies)) {
+      manifest.devDependencies = manifest.devDependencies ?? {};
+      manifest.devDependencies[d] = v;
+      delete manifest.dependencies[d];
+    }
+  }
+
+  private writeOutputs(workDir: string) {
+    console.log('Writing output files');
+    for (const output of this.bundle.outputFiles ?? []) {
+      const out = output.path.replace(this.packageDir, workDir);
+      console.log(`  - ${out}`);
+      fs.writeFileSync(out, output.contents);
+    }
+  }
+
+  private writeResources(workdir: string) {
+    console.log('Copying resources');
+    for (const [src, dst] of Object.entries(this.resources)) {
+      fs.copySync(path.join(this.packageDir, src), path.join(workdir, dst), { recursive: true });
+    }
   }
 }
 
-function lcp(strs: string[]) {
-  let prefix = '';
-  if (strs === null || strs.length === 0) return prefix;
-  for (let i = 0; i < strs[0].length; i++) {
-    const char = strs[0][i];
-    for (let j = 1; j < strs.length; j++) {
-      if (strs[j][i] !== char) return prefix;
+function longestCommonParent(paths: string[]) {
+
+  function _longestCommonParent(p1: string, p2: string): string {
+    const dirs1 = p1.split(path.sep);
+    const dirs2 = p2.split(path.sep);
+    const parent = [];
+    for (let i = 0; i < Math.min(dirs1.length, dirs2.length); i++) {
+      if (dirs1[i] !== dirs2[i]) break;
+      parent.push(dirs1[i]);
     }
-    prefix = prefix + char;
+    return parent.join(path.sep);
   }
-  return prefix;
+
+  return paths.reduce(_longestCommonParent);
 }
 
 function walkDir(dir: string, handler: (file: string) => void) {

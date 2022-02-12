@@ -1,7 +1,7 @@
 {
   "name": "@aws-cdk/node-bundle",
   "bin": {
-    "node-bundle": "../lib/cli.js"
+    "node-bundle": "bin/node-bundle"
   },
   "scripts": {
     "build": "npx projen build",

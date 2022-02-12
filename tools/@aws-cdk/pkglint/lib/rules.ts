@@ -1,5 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
+import { Bundle } from '@aws-cdk/node-bundle';
 import * as caseUtils from 'case';
 import * as glob from 'glob';
 import * as semver from 'semver';
@@ -14,7 +15,6 @@ import {
   findInnerPackages,
   monoRepoRoot,
 } from './util';
-import { Bundle } from '@aws-cdk/node-bundle';
 
 const PKGLINT_VERSION = require('../package.json').version; // eslint-disable-line @typescript-eslint/no-require-imports
 const AWS_SERVICE_NAMES = require('./aws-service-official-names.json'); // eslint-disable-line @typescript-eslint/no-require-imports
@@ -168,7 +168,6 @@ export class LicenseFile extends ValidationRule {
 }
 
 export class BundledCLI extends ValidationRule {
-  public readonly name = 'bundle';
 
   private static readonly VALID_LICENSES = [
     'Apache-2.0',
@@ -181,6 +180,7 @@ export class BundledCLI extends ValidationRule {
 
   private static readonly DONT_ATTRIBUTE = '(^@aws-cdk/)';
 
+  public readonly name = 'bundle';
 
   public validate(pkg: PackageJson): void {
     const bundleProps = pkg.json['cdk-package']?.bundle;
@@ -207,7 +207,7 @@ export class BundledCLI extends ValidationRule {
         message: `'cdk-package.bundle.copyright' must be set to "${NOTICE}"`,
         ruleName: `${this.name}/configuration`,
         fix: () => pkg.json['cdk-package'].bundle.copyright = NOTICE,
-      })
+      });
       valid = false;
     }
 
@@ -216,7 +216,7 @@ export class BundledCLI extends ValidationRule {
         message: `'cdk-package.bundle.licenses' must be set to "${BundledCLI.VALID_LICENSES}"`,
         ruleName: `${this.name}/configuration`,
         fix: () => pkg.json['cdk-package'].bundle.licenses = BundledCLI.VALID_LICENSES,
-      })
+      });
       valid = false;
     }
 
@@ -225,7 +225,7 @@ export class BundledCLI extends ValidationRule {
         message: `'cdk-package.bundle.dontAttribute' must be set to "${BundledCLI.DONT_ATTRIBUTE}"`,
         ruleName: `${this.name}/configuration`,
         fix: () => pkg.json['cdk-package'].bundle.dontAttribute = BundledCLI.DONT_ATTRIBUTE,
-      })
+      });
       valid = false;
     }
 
@@ -234,8 +234,7 @@ export class BundledCLI extends ValidationRule {
   }
 
   /**
-   * Validate the package is ready for bundling. We do this here instead of cdk-build/cdk-lint
-   * to leverage the automatic fixing capabilities this mechanism has.
+   * Validate the package is ready for bundling.
    */
   private validateBundle(pkg: PackageJson, bundleProps: any) {
 
@@ -243,7 +242,10 @@ export class BundledCLI extends ValidationRule {
     const report = bundle.validate();
 
     for (const violation of report.violations) {
-      pkg.report({ message: violation.message, ruleName: this.name, fix: violation.fix })
+      pkg.report({
+        message: violation.message,
+        ruleName: `${this.name}/${violation.type}`, fix: violation.fix
+      });
     }
 
   }

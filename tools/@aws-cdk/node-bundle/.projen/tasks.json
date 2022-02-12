@@ -164,6 +164,9 @@
       "description": "Run tests",
       "steps": [
         {
+          "spawn": "compile"
+        },
+        {
           "exec": "jest --passWithNoTests --all --updateSnapshot"
         },
         {
