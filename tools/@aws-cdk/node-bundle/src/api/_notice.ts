@@ -1,5 +1,6 @@
-import * as fs from 'fs';
+import * as os from 'os';
 import * as path from 'path';
+import * as fs from 'fs-extra';
 import { shell } from './shell';
 import { Violation, ViolationType, ViolationsReport } from './violation';
 
@@ -107,14 +108,32 @@ export class Notice {
    */
   public validate(): ViolationsReport {
 
-    const violations = [];
+    const violations: Violation[] = [];
     const relNoticePath = path.relative(this.packageDir, this.filePath);
 
     const fix = () => this.flush();
 
-    const missing: Violation | undefined = !fs.existsSync(this.filePath) ? { type: ViolationType.MISSING_NOTICE, message: `${relNoticePath} is missing`, fix } : undefined;
+    const missing = !fs.existsSync(this.filePath);
     const notice = missing ? undefined : fs.readFileSync(this.filePath, { encoding: 'utf-8' });
-    const outdated: Violation | undefined = notice !== undefined && notice !== this.content ? { type: ViolationType.OUTDATED_NOTICE, message: `${relNoticePath} is outdated`, fix } : undefined;
+    const outdated = notice !== undefined && notice !== this.content;
+
+    if (missing) {
+      violations.push({ type: ViolationType.MISSING_NOTICE, message: `${relNoticePath} is missing`, fix });
+    }
+
+    if (outdated) {
+      violations.push({ type: ViolationType.OUTDATED_NOTICE, message: `${relNoticePath} is outdated`, fix });
+      const workDir = fs.mkdtempSync(path.join(os.tmpdir(), path.sep));
+      try {
+        const tempPath = path.join(workDir, 'notice.temp');
+        fs.writeFileSync(tempPath, this.content);
+        shell(`diff ${this.filePath} ${tempPath}`);
+      } catch (e) {
+
+      } finally {
+        fs.removeSync(workDir);
+      }
+    }
 
     const invalidLicense: Violation[] = Array.from(this.attributions.values())
       .filter(a => a.licenses.length === 1 && !this.validLicenses.includes(a.licenses[0].toLowerCase()))
@@ -127,14 +146,6 @@ export class Notice {
     const multiLicense: Violation[] = Array.from(this.attributions.values())
       .filter(a => a.licenses.length > 1)
       .map(a => ({ type: ViolationType.MULTIPLE_LICENSE, message: `Dependency ${a.package} has multiple licenses: ${a.licenses}` }));
-
-    if (missing) {
-      violations.push(missing);
-    }
-
-    if (outdated) {
-      violations.push(outdated);
-    }
 
     violations.push(...invalidLicense);
     violations.push(...noLicense);
