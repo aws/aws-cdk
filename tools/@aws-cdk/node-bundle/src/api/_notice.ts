@@ -112,9 +112,9 @@ export class Notice {
 
     const fix = () => this.flush();
 
-    const missing: Violation | undefined = !fs.existsSync(this.filePath) ? { type: ViolationType.MISSING_NOTICE, message: `${relNoticePath} file is missing`, fix } : undefined;
+    const missing: Violation | undefined = !fs.existsSync(this.filePath) ? { type: ViolationType.MISSING_NOTICE, message: `${relNoticePath} is missing`, fix } : undefined;
     const notice = missing ? undefined : fs.readFileSync(this.filePath, { encoding: 'utf-8' });
-    const outdated: Violation | undefined = notice !== undefined && notice !== this.content ? { type: ViolationType.OUTDATED_NOTICE, message: `${relNoticePath} file is outdated`, fix } : undefined;
+    const outdated: Violation | undefined = notice !== undefined && notice !== this.content ? { type: ViolationType.OUTDATED_NOTICE, message: `${relNoticePath} is outdated`, fix } : undefined;
 
     const invalidLicense: Violation[] = Array.from(this.attributions.values())
       .filter(a => a.licenses.length === 1 && !this.validLicenses.includes(a.licenses[0].toLowerCase()))
