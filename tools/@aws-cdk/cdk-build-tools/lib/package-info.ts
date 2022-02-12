@@ -173,20 +173,6 @@ export interface CDKBuildOptions {
    * @see https://aws.github.io/jsii/user-guides/lib-author/toolchain/jsii/#-strip-deprecated
    */
   stripDeprecated?: boolean;
-
-  /**
-   * Should the package be bundled.
-   *
-   * @default false
-   */
-  bundle?: boolean;
-
-  /**
-   * Bundling configuration.
-   *
-   * @default - default configuration.
-   */
-  bundleProps?: BundleProps;
 }
 
 export interface CDKPackageOptions {

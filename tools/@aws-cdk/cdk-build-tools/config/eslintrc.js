@@ -64,9 +64,6 @@ module.exports = {
     'space-before-blocks': 'error', // require space before blocks
     'curly': ['error', 'multi-line', 'consistent'], // require curly braces for multiline control statements
 
-    // TODO this currently breaks @aws-cdk/core in a severe way
-    // 'import/no-cycle': ['error'],
-
     // Require all imported dependencies are actually declared in package.json
     'import/no-extraneous-dependencies': [
       'error',
