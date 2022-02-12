@@ -100,7 +100,7 @@ import * as iotevents from '@aws-cdk/aws-iotevents';
 declare const input: iotevents.IInput;
 
 const setTemperatureAction = {
-  bind: () => ({
+  renderActionConfig: () => ({
     configuration: {
       setVariable: { 
         variableName: 'temperature', 
@@ -158,7 +158,7 @@ stateA.transitionTo(stateB, {
     iotevents.Expression.inputAttribute(input, 'payload.temperature'),
     iotevents.Expression.fromString('10'),
   ),
-  actions: [action], // optional,
+  executing: [action], // optional,
 });
 ```
 
