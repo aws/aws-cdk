@@ -273,9 +273,20 @@ export class CdkToolkit {
       sdkProvider: this.props.sdkProvider,
     });
 
+    print('✨  Executing %s', executor.physicalResourceId);
     const result = await executor.execute(options.input);
 
-    return result.success ? 0 : 1;
+    if (result.output) {
+      print('\nOutput:\n%s', chalk.cyan(JSON.stringify(result.output, null, 2)));
+    }
+
+    if (result.error) {
+      error('\n❌  Execution failed: %s', result.error);
+      return 1;
+    }
+
+    success('\n✅  Execution succeeded');
+    return 0;
   }
 
   public async watch(options: WatchOptions) {

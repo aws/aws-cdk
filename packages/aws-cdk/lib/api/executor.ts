@@ -1,5 +1,5 @@
 import * as cxapi from '@aws-cdk/cx-api';
-import { error, print, success } from '../logging';
+import { Lambda } from 'aws-sdk';
 import { Mode, SdkProvider } from './aws-auth';
 import { LazyListStackResources } from './evaluate-cloudformation-template';
 
@@ -23,7 +23,7 @@ export interface GetExecutorOptions {
 /**
  * Gets an executor.
  */
-export async function getExecutor(options: GetExecutorOptions): Promise<StateMachineExecutor> {
+export async function getExecutor(options: GetExecutorOptions): Promise<Executor> {
   const { sdkProvider, stackArtifacts, constructPath } = options;
 
   for (const stackArtifact of stackArtifacts) {
@@ -50,6 +50,12 @@ export async function getExecutor(options: GetExecutorOptions): Promise<StateMac
         stepFunctions: sdk.stepFunctions(),
       });
     }
+    if (stackResource.ResourceType === 'AWS::Lambda::Function') {
+      return new LambdaFunctionExecutor({
+        physicalResourceId: stackResource.PhysicalResourceId,
+        lambda: sdk.lambda(),
+      });
+    }
 
     throw new Error(`Unsupported resource type ${stackResource.ResourceType}`);
   }
@@ -60,12 +66,51 @@ export async function getExecutor(options: GetExecutorOptions): Promise<StateMac
 /**
  * Options for `StateMachineExecutor`
  */
-export interface StateMachineExecutorOptions {
+export interface ExecutorOptions {
   /**
-   * The State Machine's physical resource id
+   * The physical resource of the resource to execute.
    */
   readonly physicalResourceId: string;
+}
 
+/**
+ * ABC for executors.
+ */
+export abstract class Executor {
+  readonly physicalResourceId: string;
+
+  constructor(options: ExecutorOptions) {
+    this.physicalResourceId = options.physicalResourceId;
+  }
+
+  abstract execute(input?: string): Promise<ExecuteResult>;
+
+  protected validateJsonObjectInput(input: string | undefined) {
+    if (input && !isJsonObject(input)) {
+      throw new Error('The provided input should be a JSON object');
+    }
+  }
+}
+
+/**
+ * The executor's result.
+ */
+export interface ExecuteResult {
+  /**
+   * The execution's output.
+   */
+  readonly output?: any;
+
+  /**
+   * Error message
+   */
+  readonly error?: string;
+}
+
+/**
+ * Options for `StateMachineExecutor`
+ */
+export interface StateMachineExecutorOptions extends ExecutorOptions {
   /**
    * The Step Functions SDK
    */
@@ -75,21 +120,17 @@ export interface StateMachineExecutorOptions {
 /**
  * Executes a Step Functions State Machine
  */
-export class StateMachineExecutor {
+export class StateMachineExecutor extends Executor {
   private readonly stepFunctions: AWS.StepFunctions;
-  public readonly physicalResourceId: string;
 
   constructor(options: StateMachineExecutorOptions) {
-    this.physicalResourceId = options.physicalResourceId;
+    super(options);
     this.stepFunctions = options.stepFunctions;
   }
 
   async execute(input?: string): Promise<ExecuteResult> {
-    if (input && !isJsonObject(input)) {
-      throw new Error('The execution input should be a JSON object');
-    }
+    this.validateJsonObjectInput(input);
 
-    print('Executing state machine %s', this.physicalResourceId);
     const execution = await this.stepFunctions.startExecution({
       stateMachineArn: this.physicalResourceId,
       input,
@@ -107,14 +148,78 @@ export class StateMachineExecutor {
       }
 
       if (executionStatus === 'SUCCEEDED') {
-        success('✅ Final execution status: %s', executionStatus);
-        return { success: true };
-      } else {
-        error('❌ Terminal execution status: %s', executionStatus);
-        return { success: false };
+        const output = description.output
+          ? JSON.parse(description.output)
+          : undefined;
+
+        return {
+          output,
+        };
       }
+
+      return {
+        error: `State machine execution's final status is ${executionStatus}`,
+      };
     }
   }
+}
+
+export interface LambdaFunctionExecutorOptions extends ExecutorOptions {
+  /**
+   * The Lambda SDK
+   */
+  readonly lambda: AWS.Lambda;
+}
+
+/**
+ * Executes a lambda function
+ */
+export class LambdaFunctionExecutor extends Executor {
+  private readonly lambda: Lambda;
+
+  constructor(options: LambdaFunctionExecutorOptions) {
+    super(options);
+    this.lambda = options.lambda;
+  }
+
+  async execute(input?: string): Promise<ExecuteResult> {
+    this.validateJsonObjectInput(input);
+
+    const response = await this.lambda.invoke({
+      FunctionName: this.physicalResourceId,
+      Payload: input,
+    }).promise();
+
+    const payload = response.Payload?.toString();
+    if (!payload) {
+      throw new Error('Lambda invocation did not return a payload');
+    }
+
+    const output = JSON.parse(payload);
+    const errorMessage = getLambdaErrorMessage(output);
+    if (errorMessage) {
+      return {
+        error: `Lambda returned an error message: ${errorMessage}`,
+        output,
+      };
+    }
+
+    return {
+      output,
+    };
+  }
+}
+
+function getLambdaErrorMessage(output: any) {
+  if (typeof output !== 'object' || output === null) {
+    return;
+  }
+
+  if (output.errorMessage) {
+    return output.errorMessage;
+  }
+
+  return;
 }
 
 function isJsonObject(json: string) {
@@ -123,16 +228,6 @@ function isJsonObject(json: string) {
   } catch (e) {
     return false;
   }
-}
-
-/**
- * The executor's result.
- */
-export interface ExecuteResult {
-  /**
-   * Execution was successful.
-   */
-  readonly success: boolean;
 }
 
 function findLogicalResourceId(template: any, constructPath: string): string | undefined {

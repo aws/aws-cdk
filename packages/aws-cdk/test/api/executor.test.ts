@@ -1,4 +1,4 @@
-import { getExecutor, StateMachineExecutor } from '../../lib/api/executor';
+import { getExecutor, LambdaFunctionExecutor, StateMachineExecutor } from '../../lib/api/executor';
 import { testStack } from '../util';
 import { MockSdkProvider } from '../util/mock-sdk';
 
@@ -23,6 +23,26 @@ describe('getExecutor', () => {
     expect(executor.physicalResourceId).toEqual('physical-FooBar');
   });
 
+  test('lambda function executor', async () => {
+    const setup = new Setup();
+    setup.addResource('FooBar', 'AWS::Lambda::Function', {
+      Metadata: {
+        'aws:cdk:path': 'test-stack-name/boom/Resource',
+      },
+    });
+
+    // WHEN
+    const executor = await getExecutor({
+      sdkProvider: setup.sdkProvider,
+      constructPath: 'test-stack-name/boom',
+      stackArtifacts: [setup.createStackArtifact()],
+    });
+
+    // THEN
+    expect(executor).toBeInstanceOf(LambdaFunctionExecutor);
+    expect(executor.physicalResourceId).toEqual('physical-FooBar');
+  });
+
   test('errors on unsupported type', async () => {
     const setup = new Setup();
     setup.addResource('FooBar', 'AWS::SQS::Queue', {
@@ -38,7 +58,7 @@ describe('getExecutor', () => {
         constructPath: 'test-stack-name/boom',
         stackArtifacts: [setup.createStackArtifact()],
       });
-    }).rejects.toThrow(/unsupported/i);
+    }).rejects.toThrow(/unsupported resource type/i);
   });
 
   test('errors when path not found', async () => {
@@ -70,6 +90,7 @@ describe('StateMachineExecutor', () => {
           status: describeCount >= 2 ? 'SUCCEEDED' : 'RUNNING',
           stateMachineArn: 'state-machine-arn',
           executionArn: 'execution-arn',
+          output: JSON.stringify({ something: 'here' }),
           startDate: new Date(),
         });
       },
@@ -85,7 +106,10 @@ describe('StateMachineExecutor', () => {
 
     // THEN
     const result = await executor.execute();
-    expect(result.success).toEqual(true);
+    expect(result.error).not.toBeDefined();
+    expect(result.output).toEqual({
+      something: 'here',
+    });
   });
 
   test('fail status', async () => {
@@ -112,10 +136,10 @@ describe('StateMachineExecutor', () => {
       physicalResourceId: 'state-machine-arn',
       stepFunctions,
     });
+    const result = await executor.execute();
 
     // THEN
-    const result = await executor.execute();
-    expect(result.success).toEqual(false);
+    expect(result.error).toBeDefined();
   });
 
   test('errors when input is invalid', async () => {
@@ -130,7 +154,80 @@ describe('StateMachineExecutor', () => {
     // WHEN
     await expect(async () => {
       await executor.execute('INVALID');
-    }).rejects.toThrow(/i/i);
+    }).rejects.toThrow(/json object/i);
+  });
+});
+
+describe('LambdaFunctionExecutor', () => {
+  test('success', async () => {
+    // GIVEN
+    const sdkProvider = new MockSdkProvider({ realSdk: true });
+    sdkProvider.stubLambda({
+      invoke: () => {
+        return {
+          Payload: JSON.stringify({ something: 'here' }),
+        };
+      },
+    });
+    const lambda = sdkProvider.sdk.lambda();
+
+    // WHEN
+    const executor = new LambdaFunctionExecutor({
+      lambda,
+      physicalResourceId: 'some-function-name',
+    });
+
+    // THEN
+    const result = await executor.execute();
+    expect(result.error).not.toBeDefined();
+    expect(result.output).toEqual({
+      something: 'here',
+    });
+  });
+
+  test('lambda exceptions', async () => {
+    // GIVEN
+    const sdkProvider = new MockSdkProvider({ realSdk: true });
+    sdkProvider.stubLambda({
+      invoke: () => {
+        return {
+          Payload: JSON.stringify({
+            errorMessage: 'Error!',
+            errorType: 'Exception',
+            requestId: 'a6f14415-ce13-47e5-8e5f-2abc7654a656',
+            stackTrace: [
+              "  File \"/var/task/index.py\", line 3, in handler\n    raise Exception('Error!')\n",
+            ],
+          }),
+        };
+      },
+    });
+    const lambda = sdkProvider.sdk.lambda();
+
+    // WHEN
+    const executor = new LambdaFunctionExecutor({
+      lambda,
+      physicalResourceId: 'some-function-name',
+    });
+
+    // THEN
+    const result = await executor.execute();
+    expect(result.error).toContain('Error!');
+  });
+
+  test('errors when input is invalid', async () => {
+    const sdkProvider = new MockSdkProvider({ realSdk: true });
+    const lambda = sdkProvider.sdk.lambda();
+
+    const executor = new LambdaFunctionExecutor({
+      physicalResourceId: 'state-machine-arn',
+      lambda,
+    });
+
+    // WHEN
+    await expect(async () => {
+      await executor.execute('INVALID');
+    }).rejects.toThrow(/json object/i);
   });
 });
 

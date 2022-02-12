@@ -509,18 +509,67 @@ Looks up and executes a supported CDK App resource given a path to its resource.
 
 **Execute a Step Functions State Machine**
 
+We support executing Step Functions state machines. To execute a given state
+machine located at `my-stack/MyStateMachine`, type the following:
+
 ```console
 $ cdk exec my-stack/MyStateMachine
-Executing state machine arn:aws:states:ca-central-1:0000000000:stateMachine:MyStateMachine
-✅ Final execution status: SUCCEEDED
+✨  Executing arn:aws:states:ca-central-1:00000000000:stateMachine:MyStateMachine5898BD50-Sf88ddsFyZ6Z
+
+Output:
+{}
+
+✅  Execution succeeded
 ```
 
-**Execute a Step Functions State Machine With Input**
+**Execute a Lambda Function**
+
+We support execuring Lambda Functions. To execute a Lambda Function located
+at `my-stack/Function`, type the following:
+
+```console
+$ cdk exec my-stack/Function
+✨  Executing my-stack-dev-Function76856677-Z7VEoJ0sk0ga
+
+Output:
+{
+  "success": true
+}
+
+✅  Execution succeeded
+```
+
+**Providing Input**
+
+To provide input when executing a supported resource, provide the `--input`
+option with a valid JSON string. The following example provides input for
+a Step Functions State Machine:
 
 ```console
 $ cdk exec my-stack/MyStateMachine --input '{}'
-Executing state machine arn:aws:states:ca-central-1:0000000000:stateMachine:MyStateMachine
-✅ Final execution status: SUCCEEDED
+✨  Executing arn:aws:states:ca-central-1:00000000000:stateMachine:MyStateMachine5898BD50-Sf88ddsFyZ6Z
+
+Output:
+{}
+
+✅  Execution succeeded
+```
+
+**Reusing cdk.out**
+You can speed up execution by reusing the `cdk.out` of your previously
+synthesized app. To do this, synthesize your app once and then point
+the `--app` parameter to your cloud assembly output directory.
+
+```console
+$ cdk synth
+...
+$ cdk exec --app cdk.out my-stack/MyStateMachine
+✨  Executing arn:aws:states:ca-central-1:00000000000:stateMachine:MyStateMachine5898BD50-Sf88ddsFyZ6Z
+
+Output:
+{}
+
+✅  Execution succeeded
 ```
 
 ### Bundling
