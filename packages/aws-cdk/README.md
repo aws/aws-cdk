@@ -346,7 +346,8 @@ $ cdk deploy --hotswap [StackNames]
 This will attempt to perform a faster, short-circuit deployment if possible
 (for example, if you only changed the code of a Lambda function in your CDK app,
 but nothing else in your CDK code),
-skipping CloudFormation, and updating the affected resources directly.
+skipping CloudFormation, and updating the affected resources directly;
+this includes changes to resources in nested stacks.
 If the tool detects that the change does not support hotswapping,
 it will fall back and perform a full CloudFormation deployment,
 exactly like `cdk deploy` does without the `--hotswap` flag.
