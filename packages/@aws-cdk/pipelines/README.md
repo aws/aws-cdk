@@ -49,9 +49,10 @@ them. You can deploy to the same account and Region, or to a different one,
 with the same amount of code. The *CDK Pipelines* library takes care of the
 details.
 
-CDK Pipelines supports multiple *deployment engines* (see below), and comes with
-a deployment engine that deploys CDK apps using AWS CodePipeline. To use the
-CodePipeline engine, define a `CodePipeline` construct.  The following
+CDK Pipelines supports multiple *deployment engines* (see
+[Using a different deployment engine](#using-a-different-deployment-engine)),
+and comes with a deployment engine that deploys CDK apps using AWS CodePipeline.
+To use the CodePipeline engine, define a `CodePipeline` construct.  The following
 example creates a CodePipeline that deploys an application from GitHub:
 
 ```ts
@@ -225,9 +226,10 @@ const originalPipeline = new pipelines.CdkPipeline(this, 'Pipeline', {
 
 ## Definining the pipeline
 
-This section of the documentation describes the AWS CodePipeline engine, which
-comes with this library. If you want to use a different deployment engine, read
-the section *Using a different deployment engine* below.
+This section of the documentation describes the AWS CodePipeline engine,
+which comes with this library. If you want to use a different deployment
+engine, read the section
+[Using a different deployment engine](#using-a-different-deployment-engine)below.
 
 ### Synth and sources
 
@@ -944,22 +946,30 @@ or future deployments to this environment will fail. If you want to upgrade
 the bootstrap stack to a newer version, do that by updating it in-place.
 
 > This library requires the *modern* bootstrapping stack which has
-> been updated specifically to support cross-account continuous delivery. Starting,
-> in CDK v2 this new bootstrapping stack will become the default, but for now it is still
-> opt-in.
+> been updated specifically to support cross-account continuous delivery.
 >
-> The commands below assume you are running `cdk bootstrap` in a directory
-> where `cdk.json` contains the `"@aws-cdk/core:newStyleStackSynthesis": true`
-> setting in its context, which will switch to the new bootstrapping stack
-> automatically.
+> If you are using CDKv2, you do not need to do anything else. Modern
+> bootstrapping and modern stack synthesis (also known as "default stack
+> synthesis") is the default.
 >
-> If run from another directory, be sure to run the bootstrap command with
-> the environment variable `CDK_NEW_BOOTSTRAP=1` set.
+> If you are using CDKv1, you need to opt in to modern bootstrapping and
+> modern stack synthesis using a feature flag. Make sure `cdk.json` includes:
+>
+> ```json
+> {
+>   "context": {
+>     "@aws-cdk/core:newStyleStackSynthesis": true
+>   }
+> }
+> ```
+>
+> And be sure to run `cdk bootstrap` in the same directory as the `cdk.json`
+> file.
 
 To bootstrap an environment for provisioning the pipeline:
 
 ```console
-$ env CDK_NEW_BOOTSTRAP=1 npx cdk bootstrap \
+$ npx cdk bootstrap \
     [--profile admin-profile-1] \
     --cloudformation-execution-policies arn:aws:iam::aws:policy/AdministratorAccess \
     aws://111111111111/us-east-1
@@ -969,7 +979,7 @@ To bootstrap a different environment for deploying CDK applications into using
 a pipeline in account `111111111111`:
 
 ```console
-$ env CDK_NEW_BOOTSTRAP=1 npx cdk bootstrap \
+$ npx cdk bootstrap \
     [--profile admin-profile-2] \
     --cloudformation-execution-policies arn:aws:iam::aws:policy/AdministratorAccess \
     --trust 11111111111 \
@@ -980,7 +990,7 @@ If you only want to trust an account to do lookups (e.g, when your CDK applicati
 `Vpc.fromLookup()` call), use the option `--trust-for-lookup`:
 
 ```console
-$ env CDK_NEW_BOOTSTRAP=1 npx cdk bootstrap \
+$ npx cdk bootstrap \
     [--profile admin-profile-2] \
     --cloudformation-execution-policies arn:aws:iam::aws:policy/AdministratorAccess \
     --trust-for-lookup 11111111111 \
@@ -1202,6 +1212,17 @@ pipeline.addStage(stage, {
 
 **Note**: Manual Approvals notifications only apply when an application has security
 check enabled.
+
+## Using a different deployment engine
+
+CDK Pipelines supports multiple *deployment engines*, but this module vends a
+construct for only one such engine: AWS CodePipeline. It is also possible to
+use CDK Pipelines to build pipelines backed by other deployment engines.
+
+Here is a list of CDK Libraries that integrate CDK Pipelines with
+alternative deployment engines:
+
+* GitHub Workflows: [`cdk-pipelines-github`](https://github.com/cdklabs/cdk-pipelines-github)
 
 ## Troubleshooting
 

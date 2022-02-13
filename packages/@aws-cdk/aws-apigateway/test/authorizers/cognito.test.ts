@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as cognito from '@aws-cdk/aws-cognito';
 import { Duration, Stack } from '@aws-cdk/core';
 import { AuthorizationType, CognitoUserPoolsAuthorizer, RestApi } from '../../lib';
@@ -21,7 +21,7 @@ describe('Cognito Authorizer', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ApiGateway::Authorizer', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Authorizer', {
       Type: 'COGNITO_USER_POOLS',
       RestApiId: stack.resolve(restApi.restApiId),
       IdentitySource: 'method.request.header.Authorization',
@@ -52,7 +52,7 @@ describe('Cognito Authorizer', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ApiGateway::Authorizer', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Authorizer', {
       Type: 'COGNITO_USER_POOLS',
       Name: 'myauthorizer',
       RestApiId: stack.resolve(restApi.restApiId),

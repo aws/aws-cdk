@@ -1,10 +1,14 @@
 import { Template } from '@aws-cdk/assertions';
+import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import * as iotevents from '../lib';
 
-test('Default property', () => {
-  const stack = new cdk.Stack();
+let stack: cdk.Stack;
+beforeEach(() => {
+  stack = new cdk.Stack();
+});
 
+test('Default property', () => {
   // WHEN
   new iotevents.Input(stack, 'MyInput', {
     attributeJsonPaths: ['payload.temperature'],
@@ -19,7 +23,6 @@ test('Default property', () => {
 });
 
 test('can get input name', () => {
-  const stack = new cdk.Stack();
   // GIVEN
   const input = new iotevents.Input(stack, 'MyInput', {
     attributeJsonPaths: ['payload.temperature'],
@@ -39,9 +42,38 @@ test('can get input name', () => {
   });
 });
 
-test('can set physical name', () => {
-  const stack = new cdk.Stack();
+test('can get input ARN', () => {
+  // GIVEN
+  const input = new iotevents.Input(stack, 'MyInput', {
+    attributeJsonPaths: ['payload.temperature'],
+  });
 
+  // WHEN
+  new cdk.CfnResource(stack, 'Res', {
+    type: 'Test::Resource',
+    properties: {
+      InputArn: input.inputArn,
+    },
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('Test::Resource', {
+    InputArn: {
+      'Fn::Join': ['', [
+        'arn:',
+        { Ref: 'AWS::Partition' },
+        ':iotevents:',
+        { Ref: 'AWS::Region' },
+        ':',
+        { Ref: 'AWS::AccountId' },
+        ':input/',
+        { Ref: 'MyInput08947B23' },
+      ]],
+    },
+  });
+});
+
+test('can set physical name', () => {
   // WHEN
   new iotevents.Input(stack, 'MyInput', {
     inputName: 'test_input',
@@ -55,8 +87,6 @@ test('can set physical name', () => {
 });
 
 test('can import a Input by inputName', () => {
-  const stack = new cdk.Stack();
-
   // WHEN
   const inputName = 'test-input-name';
   const topicRule = iotevents.Input.fromInputName(stack, 'InputFromInputName', inputName);
@@ -68,11 +98,45 @@ test('can import a Input by inputName', () => {
 });
 
 test('cannot be created with an empty array of attributeJsonPaths', () => {
-  const stack = new cdk.Stack();
-
   expect(() => {
     new iotevents.Input(stack, 'MyInput', {
       attributeJsonPaths: [],
     });
   }).toThrow('attributeJsonPaths property cannot be empty');
+});
+
+test('can grant the permission to put message', () => {
+  const role = iam.Role.fromRoleArn(stack, 'MyRole', 'arn:aws:iam::account-id:role/role-name');
+  const input = new iotevents.Input(stack, 'MyInput', {
+    attributeJsonPaths: ['payload.temperature'],
+  });
+
+  // WHEN
+  input.grantWrite(role);
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Action: 'iotevents:BatchPutMessage',
+          Effect: 'Allow',
+          Resource: {
+            'Fn::Join': ['', [
+              'arn:',
+              { Ref: 'AWS::Partition' },
+              ':iotevents:',
+              { Ref: 'AWS::Region' },
+              ':',
+              { Ref: 'AWS::AccountId' },
+              ':input/',
+              { Ref: 'MyInput08947B23' },
+            ]],
+          },
+        },
+      ],
+    },
+    PolicyName: 'MyRolePolicy64AB00A5',
+    Roles: ['role-name'],
+  });
 });
