@@ -2,7 +2,7 @@ import { EOL } from 'os';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
-import { ArnFormat, IResource, Lazy, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/core';
+import { ArnFormat, Lazy, Resource, Stack, Token } from '@aws-cdk/core';
 import { IConstruct, Construct } from 'constructs';
 import { BaseRepositoryProps, IBaseRepository, OnCloudTrailImagePushedOptions } from './base-repository';
 import { CfnRepository } from './ecr.generated';
