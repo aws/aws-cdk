@@ -407,8 +407,7 @@ webSocketApi.addRoute('sendmessage', {
 To import an existing WebSocketApi:
 
 ```ts
-const stack = new Stack();
-const webSocketApi = WebSocketApi.fromWebSocketApiAttributes(stack, 'mywsapi', { webSocketId: 'api-1234' });
+const webSocketApi = apigwv2.WebSocketApi.fromWebSocketApiAttributes(this, 'mywsapi', { webSocketId: 'api-1234' });
 ```
 
 ### Manage Connections Permission
