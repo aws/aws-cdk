@@ -406,7 +406,7 @@ export class ContainerDefinition extends CoreConstruct {
    * Whether this container definition references a specific JSON field of a secret
    * stored in Secrets Manager.
    */
-  public readonly referencesSecretJsonField?: boolean;
+  public referencesSecretJsonField?: boolean;
 
   /**
    * The name of the image referenced by this container.
@@ -425,7 +425,7 @@ export class ContainerDefinition extends CoreConstruct {
 
   private readonly imageConfig: ContainerImageConfig;
 
-  private readonly secrets?: CfnTaskDefinition.SecretProperty[];
+  private secrets?: CfnTaskDefinition.SecretProperty[];
 
   private readonly environment: { [key: string]: string };
 
@@ -453,16 +453,8 @@ export class ContainerDefinition extends CoreConstruct {
     }
 
     if (props.secrets) {
-      this.secrets = [];
       for (const [name, secret] of Object.entries(props.secrets)) {
-        if (secret.hasField) {
-          this.referencesSecretJsonField = true;
-        }
-        secret.grantRead(this.taskDefinition.obtainExecutionRole());
-        this.secrets.push({
-          name,
-          valueFrom: secret.arn,
-        });
+        this.addSecret(name, secret);
       }
     }
 
@@ -567,6 +559,23 @@ export class ContainerDefinition extends CoreConstruct {
    */
   public addEnvironment(name: string, value: string) {
     this.environment[name] = value;
+  }
+
+  /**
+   * This method adds a Secret to the container.
+   */
+  public addSecret(name: string, secret: Secret) {
+    if (!this.secrets) {
+      this.secrets = [];
+    }
+    if (secret.hasField) {
+      this.referencesSecretJsonField = true;
+    }
+    secret.grantRead(this.taskDefinition.obtainExecutionRole());
+    this.secrets.push({
+      name,
+      valueFrom: secret.arn,
+    });
   }
 
   /**

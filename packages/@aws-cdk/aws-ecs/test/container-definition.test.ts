@@ -712,6 +712,88 @@ describe('container definition', () => {
     });
   });
 
+  test('can add secrets to the container definition', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
+    const secret = new secretsmanager.Secret(stack, 'Secret');
+    const addSecret = new secretsmanager.Secret(stack, 'AddSecret');
+
+    // WHEN
+    const container = taskDefinition.addContainer('cont', {
+      image: ecs.ContainerImage.fromRegistry('test'),
+      memoryLimitMiB: 1024,
+      secrets: {
+        SECRET: ecs.Secret.fromSecretsManager(secret),
+      },
+    });
+    container.addSecret('ADDED_FIRST_SECRET', ecs.Secret.fromSecretsManager(addSecret));
+    container.addSecret('ADDED_SECOND_SECRET_FIELD', ecs.Secret.fromSecretsManager(addSecret, 'FIELD'));
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
+      ContainerDefinitions: [
+        Match.objectLike({
+          Secrets: [
+            {
+              Name: 'SECRET',
+              ValueFrom: {
+                Ref: 'SecretA720EF05',
+              },
+            },
+            {
+              Name: 'ADDED_FIRST_SECRET',
+              ValueFrom: {
+                Ref: 'AddSecret9D978CA1',
+              },
+            },
+            {
+              Name: 'ADDED_SECOND_SECRET_FIELD',
+              ValueFrom: {
+                'Fn::Join': [
+                  '',
+                  [
+                    {
+                      Ref: 'AddSecret9D978CA1',
+                    },
+                    ':FIELD::',
+                  ],
+                ],
+              },
+            },
+          ],
+        }),
+      ],
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: [
+              'secretsmanager:GetSecretValue',
+              'secretsmanager:DescribeSecret',
+            ],
+            Effect: 'Allow',
+            Resource: {
+              Ref: 'SecretA720EF05',
+            },
+          },
+          {
+            Action: [
+              'secretsmanager:GetSecretValue',
+              'secretsmanager:DescribeSecret',
+            ],
+            Effect: 'Allow',
+            Resource: {
+              Ref: 'AddSecret9D978CA1',
+            },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    });
+  });
+
   test('can add environment variables to container definition with no environment', () => {
     // GIVEN
     const stack = new cdk.Stack();
