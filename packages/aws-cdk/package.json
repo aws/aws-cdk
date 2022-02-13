@@ -8,7 +8,6 @@
     "cdk": "bin/cdk"
   },
   "scripts": {
-    "dec": "https://github.com/yarnpkg/yarn/issues/5420",
     "build": "cdk-build",
     "watch": "cdk-watch",
     "lint": "cdk-lint",

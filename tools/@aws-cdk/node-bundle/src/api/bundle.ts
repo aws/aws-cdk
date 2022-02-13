@@ -2,7 +2,7 @@ import * as os from 'os';
 import * as path from 'path';
 import * as esbuild from 'esbuild';
 import * as fs from 'fs-extra';
-import { Dependency, Notice } from './_notice';
+import { Package, Notice } from './_notice';
 import { shell } from './shell';
 import { Violation, ViolationType, ViolationsReport } from './violation';
 
@@ -101,7 +101,7 @@ export class Bundle {
   private readonly test?: string;
 
   private _bundle?: esbuild.BuildResult;
-  private _dependencies?: Dependency[];
+  private _dependencies?: Package[];
   private _dependenciesRoot?: string;
 
   private _notice?: Notice;
@@ -209,13 +209,13 @@ export class Bundle {
     return this._bundle;
   }
 
-  private get dependencies(): Dependency[] {
+  private get dependencies(): Package[] {
     if (this._dependencies) {
       return this._dependencies;
     }
     const inputs = Object.keys(this.bundle.metafile!.inputs);
-    const packages = new Set(Array.from(inputs).map(i => this.closestPackage(path.join(this.packageDir, i))));
-    this._dependencies = Array.from(packages).map(p => this.createDependency(p)).filter(d => d.name !== this.manifest.name);
+    const packages = new Set(Array.from(inputs).map(i => this.closestPackagePath(path.join(this.packageDir, i))));
+    this._dependencies = Array.from(packages).map(p => this.createPackage(p)).filter(d => d.name !== this.manifest.name);
     return this._dependencies;
   }
 
@@ -224,7 +224,7 @@ export class Bundle {
       return this._dependenciesRoot;
     }
     const lcp = longestCommonParent(this.dependencies.map(d => d.path));
-    this._dependenciesRoot = this.closestPackage(lcp);
+    this._dependenciesRoot = this.closestPackagePath(lcp);
     return this._dependenciesRoot;
   }
 
@@ -244,19 +244,40 @@ export class Bundle {
     return this._notice;
   }
 
-  private findPackages(name: string): string[] {
+  private findExternalDependencyVersion(name: string): string {
 
-    const paths: string[] = [];
-    walkDir(this.dependenciesRoot, (file: string) => {
-      if (file.endsWith(`node_modules/${name}`)) {
-        paths.push(file);
+    const versions = new Set<string>();
+
+    // external dependencies will not exist in the dependencies list
+    // since esbuild skips over them. but they will exist as a dependency of
+    // one of them (or of us)
+    for (const pkg of [...this.dependencies, this.createPackage(this.packageDir)]) {
+      const manifest = fs.readJSONSync(path.join(pkg.path, 'package.json'));
+      const runtime = (manifest.dependencies ?? {})[name];
+      const optional = (manifest.optionalDependencies ?? {})[name];
+
+      const pin = (version: string) => (version.startsWith('^') || version.startsWith('~')) ? version.substring(1) : version;
+
+      if (runtime) {
+        versions.add(pin(runtime));
       }
-    });
+      if (optional) {
+        versions.add(pin(optional));
+      }
+    }
 
-    return paths;
+    if (versions.size === 0) {
+      throw new Error(`Unable to detect version for external dependency: ${name}`);
+    }
+
+    if (versions.size > 1) {
+      throw new Error(`Multiple versions detected for external dependency: ${name} (${Array.from(versions).join(',')})`);
+    }
+
+    return versions.values().next().value;
   }
 
-  private closestPackage(fdp: string): string {
+  private closestPackagePath(fdp: string): string {
 
     if (fs.existsSync(path.join(fdp, 'package.json'))) {
       return fdp;
@@ -266,12 +287,12 @@ export class Bundle {
       throw new Error('Unable to find package manifest');
     }
 
-    return this.closestPackage(path.dirname(fdp));
+    return this.closestPackagePath(path.dirname(fdp));
   }
 
-  private createDependency(packageDir: string): Dependency {
+  private createPackage(packageDir: string): Package {
     const manifestPath = path.join(packageDir, 'package.json');
-    const manifest = JSON.parse(fs.readFileSync(manifestPath, { encoding: 'utf-8' }));
+    const manifest = fs.readJSONSync(manifestPath);
     return { path: packageDir, name: manifest.name, version: manifest.version };
   }
 
@@ -348,27 +369,20 @@ export class Bundle {
       const parts = external.split(':');
       const name = parts[0];
       const type = parts[1];
-      const paths = this.findPackages(name);
-      if (paths.length === 0) {
-        throw new Error(`Unable to locate external dependency: ${name}`);
-      }
-      if (paths.length > 1) {
-        throw new Error(`Found multiple paths for external dependency (${name}): ${paths.join(' | ')}`);
-      }
-      const dependency = this.createDependency(paths[0]);
+      const version = this.findExternalDependencyVersion(name);
 
       switch (type) {
         case 'optional':
           manifest.optionalDependencies = manifest.optionalDependencies ?? {};
-          manifest.optionalDependencies[dependency.name] = dependency.version;
+          manifest.optionalDependencies[name] = version;
           break;
         case 'peer':
           manifest.peerDependencies = manifest.peerDependencies ?? {};
-          manifest.peerDependencies[dependency.name] = dependency.version;
+          manifest.peerDependencies[name] = version;
           break;
         case '':
           manifest.dependencies = manifest.dependencies ?? {};
-          manifest.dependencies[dependency.name] = dependency.version;
+          manifest.dependencies[name] = version;
           break;
         default:
           throw new Error(`Unsupported dependency type '${type}' for external dependency '${name}'`);
@@ -417,14 +431,3 @@ function longestCommonParent(paths: string[]) {
 
   return paths.reduce(_longestCommonParent);
 }
-
-function walkDir(dir: string, handler: (file: string) => void) {
-  fs.readdirSync(dir).forEach(f => {
-    const fullPath = path.join(dir, f);
-    const isDirectory = fs.statSync(fullPath).isDirectory();
-    if (isDirectory) {
-      walkDir(fullPath, handler);
-    }
-    handler(fullPath);
-  });
-};

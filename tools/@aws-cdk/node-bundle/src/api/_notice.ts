@@ -16,9 +16,9 @@ const DEFAULT_VALID_LICENSES = [
 ];
 
 /**
- * Dependency of a specific package on the local file system.
+ * Package on the local file system.
  */
-export interface Dependency {
+export interface Package {
   /**
    * Path of the dependency on the local file system.
    */
@@ -44,7 +44,7 @@ export interface NoticeProps {
   /**
    * Package dependencies.
    */
-  readonly dependencies: Dependency[];
+  readonly dependencies: Package[];
   /**
    * The parent directory underwhich all dependencies live.
    */
@@ -77,7 +77,7 @@ export interface NoticeProps {
 export class Notice {
 
   private readonly packageDir: string;
-  private readonly dependencies: Dependency[];
+  private readonly dependencies: Package[];
   private readonly validLicenses: string[];
   private readonly copyright: string;
   private readonly dependenciesRoot: string;
@@ -183,7 +183,7 @@ export class Notice {
 
     const attributions: Map<string, Attribution> = new Map();
 
-    const pkg = (d: Dependency) => `${d.name}@${d.version}`;
+    const pkg = (d: Package) => `${d.name}@${d.version}`;
 
     const packages = this.dependencies.map(d => pkg(d)).join(';');
 
