@@ -47,7 +47,7 @@ export interface InstanceProps {
    * The parameters in the DBParameterGroup to create automatically
    *
    * You can only specify parameterGroup or parameters but not both.
-   * You need to use a versioned engine to auto-generate a DBParameterGroup
+   * You need to use a versioned engine to auto-generate a DBParameterGroup.
    *
    * @default - None
    */
