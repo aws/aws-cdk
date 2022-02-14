@@ -750,12 +750,12 @@ function createInstances(cluster: DatabaseClusterNew, props: DatabaseClusterBase
   }
 
   const instanceParameterGroup = instanceProps.parameterGroup ?? (
-    instanceProps.parameters ?
-      new ParameterGroup(cluster, 'InstanceParameterGroup', {
+    instanceProps.parameters
+      ? new ParameterGroup(cluster, 'InstanceParameterGroup', {
         engine: props.engine,
         parameters: instanceProps.parameters,
-      }) :
-      undefined
+      })
+      : undefined
   );
   const instanceParameterGroupConfig = instanceParameterGroup?.bindToInstance({});
 
