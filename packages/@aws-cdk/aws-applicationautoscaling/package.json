@@ -79,13 +79,13 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert-internal": "0.0.0",
+    "@aws-cdk/assertions": "0.0.0",
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/cfn2ts": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/jest": "^27.0.3",
-    "fast-check": "^2.20.0",
-    "jest": "^27.4.5"
+    "@types/jest": "^27.4.0",
+    "fast-check": "^2.21.0",
+    "jest": "^27.5.1"
   },
   "dependencies": {
     "@aws-cdk/aws-autoscaling-common": "0.0.0",
@@ -126,6 +126,7 @@
       "docs-public-apis:@aws-cdk/aws-applicationautoscaling.StepScalingPolicyProps",
       "docs-public-apis:@aws-cdk/aws-applicationautoscaling.PredefinedMetric.ECS_SERVICE_AVERAGE_CPU_UTILIZATION",
       "docs-public-apis:@aws-cdk/aws-applicationautoscaling.PredefinedMetric.DYNAMODB_READ_CAPACITY_UTILIZATION",
+      "docs-public-apis:@aws-cdk/aws-applicationautoscaling.PredefinedMetric.DYNAMODB_WRITE_CAPACITY_UTILIZATION",
       "docs-public-apis:@aws-cdk/aws-applicationautoscaling.PredefinedMetric.DYANMODB_WRITE_CAPACITY_UTILIZATION",
       "docs-public-apis:@aws-cdk/aws-applicationautoscaling.PredefinedMetric.ALB_REQUEST_COUNT_PER_TARGET",
       "docs-public-apis:@aws-cdk/aws-applicationautoscaling.PredefinedMetric.RDS_READER_AVERAGE_CPU_UTILIZATION",

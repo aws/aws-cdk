@@ -79,7 +79,7 @@ configures all other HTTP method calls to `/books` to a lambda proxy.
 ```ts
 import { HttpUrlIntegration, HttpLambdaIntegration } from '@aws-cdk/aws-apigatewayv2-integrations';
 
-const getBooksIntegration = new HttpUrlIntegration('GetBooksIntegration' 'https://get-books-proxy.myproxy.internal');
+const getBooksIntegration = new HttpUrlIntegration('GetBooksIntegration', 'https://get-books-proxy.myproxy.internal');
 
 declare const booksDefaultFn: lambda.Function;
 const booksDefaultIntegration = new HttpLambdaIntegration('BooksIntegration', booksDefaultFn);
@@ -261,19 +261,21 @@ Mutual TLS can be configured to limit access to your API based by using client c
 
 ```ts
 import * as s3 from '@aws-cdk/aws-s3';
+import * as acm from '@aws-cdk/aws-certificatemanager';
+
 const certArn = 'arn:aws:acm:us-east-1:111111111111:certificate';
 const domainName = 'example.com';
-const bucket = new s3.Bucket.fromBucketName(stack, 'TrustStoreBucket', ...);
+declare const bucket: s3.Bucket;
 
-new DomainName(stack, 'DomainName', {
+new apigwv2.DomainName(this, 'DomainName', {
   domainName,
-  certificate: Certificate.fromCertificateArn(stack, 'cert', certArn),
+  certificate: acm.Certificate.fromCertificateArn(this, 'cert', certArn),
   mtls: {
     bucket,
     key: 'someca.pem',
     version: 'version',
   },
-})
+});
 ```
 
 Instructions for configuring your trust store can be found [here](https://aws.amazon.com/blogs/compute/introducing-mutual-tls-authentication-for-amazon-api-gateway/)
@@ -408,17 +410,17 @@ Grant permission to use API Gateway Management API of a WebSocket API by calling
 You can use Management API to send a callback message to a connected client, get connection information, or disconnect the client. Learn more at [Use @connections commands in your backend service](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-how-to-call-websocket-api-connections.html).
 
 ```ts
-const lambda = new lambda.Function(this, 'lambda', { /* ... */ });
+declare const fn: lambda.Function;
 
-const webSocketApi = new WebSocketApi(stack, 'mywsapi');
-const stage = new WebSocketStage(stack, 'mystage', {
+const webSocketApi = new apigwv2.WebSocketApi(this, 'mywsapi');
+const stage = new apigwv2.WebSocketStage(this, 'mystage', {
   webSocketApi,
   stageName: 'dev',
 });
 // per stage permission
-stage.grantManageConnections(lambda);
+stage.grantManagementApiAccess(fn);
 // for all the stages permission
-webSocketApi.grantManageConnections(lambda);
+webSocketApi.grantManageConnections(fn);
 ```
 
 ### Managing access to WebSocket APIs
@@ -426,3 +428,16 @@ webSocketApi.grantManageConnections(lambda);
 API Gateway supports multiple mechanisms for [controlling and managing access to a WebSocket API](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-websocket-api-control-access.html) through authorizers.
 
 These authorizers can be found in the [APIGatewayV2-Authorizers](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-apigatewayv2-authorizers-readme.html) constructs library.
+
+### API Keys
+
+Websocket APIs also support usage of API Keys. An API Key is a key that is used to grant access to an API. These are useful for controlling and tracking access to an API, when used together with [usage plans](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-api-usage-plans.html). These together allow you to configure controls around API access such as quotas and throttling, along with per-API Key metrics on usage.
+
+To require an API Key when accessing the Websocket API:
+
+```ts
+const webSocketApi = new apigwv2.WebSocketApi(this, 'mywsapi',{
+  apiKeySelectionExpression: apigwv2.WebSocketApiKeySelectionExpression.HEADER_X_API_KEY,
+});
+```
+
