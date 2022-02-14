@@ -891,6 +891,13 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
       throw new Error('You cannot specify both parameterGroup and parameters');
     }
 
+    const dbParameterGroupName = props.parameters
+      ? new ParameterGroup(this, 'ParameterGroup', {
+        engine: props.engine,
+        parameters: props.parameters,
+      }).bindToInstance({}).parameterGroupName
+      : this.newCfnProps.dbParameterGroupName;
+
     this.sourceCfnProps = {
       ...this.newCfnProps,
       associatedRoles: instanceAssociatedRoles.length > 0 ? instanceAssociatedRoles : undefined,
@@ -902,12 +909,7 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
       engineVersion: props.engine.engineVersion?.fullVersion,
       licenseModel: props.licenseModel,
       timezone: props.timezone,
-      ...props.parameters && {
-        dbParameterGroupName: new ParameterGroup(this, 'ParameterGroup', {
-          engine: props.engine,
-          parameters: props.parameters,
-        }).bindToInstance({}).parameterGroupName,
-      },
+      dbParameterGroupName,
     };
   }
 

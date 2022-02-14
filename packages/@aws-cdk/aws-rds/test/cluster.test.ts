@@ -331,14 +331,10 @@ describe('cluster', () => {
     // WHEN
     new DatabaseCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.AURORA,
-      credentials: {
-        username: 'admin',
-      },
       parameters: {
         locks: '100',
       },
       instanceProps: {
-        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
         vpc,
         parameters: {
           locks: '200',
@@ -373,7 +369,7 @@ describe('cluster', () => {
     });
   });
 
-  test('instance with inline parameter group and parameterGroup arg fails', () => {
+  test('cluster with inline parameter group and parameterGroup arg fails', () => {
     // GIVEN
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -381,7 +377,6 @@ describe('cluster', () => {
       engine: DatabaseInstanceEngine.sqlServerEe({
         version: SqlServerEngineVersion.VER_11,
       }),
-      description: 'desc',
       parameters: {
         locks: '50',
       },
@@ -390,16 +385,42 @@ describe('cluster', () => {
     expect(() => {
       new DatabaseCluster(stack, 'Database', {
         engine: DatabaseClusterEngine.AURORA,
-        credentials: {
-          username: 'admin',
-        },
         parameters: {
           locks: '100',
         },
         parameterGroup,
         instanceProps: {
-          instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
           vpc,
+          parameters: {
+            locks: '200',
+          },
+        },
+      });
+    }).toThrow(/You cannot specify both parameterGroup and parameters/);
+  });
+
+  test('instance with inline parameter group and parameterGroup arg fails', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const parameterGroup = new ParameterGroup(stack, 'ParameterGroup', {
+      engine: DatabaseInstanceEngine.sqlServerEe({
+        version: SqlServerEngineVersion.VER_11,
+      }),
+      parameters: {
+        locks: '50',
+      },
+    });
+
+    expect(() => {
+      new DatabaseCluster(stack, 'Database', {
+        engine: DatabaseClusterEngine.AURORA,
+        parameters: {
+          locks: '100',
+        },
+        instanceProps: {
+          vpc,
+          parameterGroup,
           parameters: {
             locks: '200',
           },

@@ -249,8 +249,7 @@ describe('instance', () => {
   test('instance with inline parameter group', () => {
     // WHEN
     new rds.DatabaseInstance(stack, 'Database', {
-      engine: rds.DatabaseInstanceEngine.sqlServerEe({ version: rds.SqlServerEngineVersion.VER_12_00_5000_0_V1 }),
-      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+      engine: rds.DatabaseInstanceEngine.sqlServerEe({ version: rds.SqlServerEngineVersion.VER_11 }),
       vpc,
       parameters: {
         locks: '100',
@@ -264,7 +263,7 @@ describe('instance', () => {
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBParameterGroup', {
-      Family: 'sqlserver-ee-12.0',
+      Family: 'sqlserver-ee-11.0',
       Parameters: {
         locks: '100',
       },
@@ -276,7 +275,6 @@ describe('instance', () => {
       engine: rds.DatabaseInstanceEngine.sqlServerEe({
         version: rds.SqlServerEngineVersion.VER_11,
       }),
-      description: 'desc',
       parameters: {
         key: 'value',
       },
@@ -284,8 +282,7 @@ describe('instance', () => {
 
     expect(() => {
       new rds.DatabaseInstance(stack, 'Database', {
-        engine: rds.DatabaseInstanceEngine.sqlServerEe({ version: rds.SqlServerEngineVersion.VER_12_00_5000_0_V1 }),
-        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+        engine: rds.DatabaseInstanceEngine.sqlServerEe({ version: rds.SqlServerEngineVersion.VER_11 }),
         vpc,
         parameters: {
           locks: '100',

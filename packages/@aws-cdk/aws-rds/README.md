@@ -562,7 +562,7 @@ You can use this if you do not want to reuse the parameter group instance for di
 declare const vpc: ec2.Vpc;
 
 new rds.DatabaseInstance(this, 'Database', {
-  engine: rds.DatabaseInstanceEngine.sqlServerEe({ version: rds.SqlServerEngineVersion.VER_12_00_5000_0_V1 }),
+  engine: rds.DatabaseInstanceEngine.sqlServerEe({ version: rds.SqlServerEngineVersion.VER_11 }),
   vpc,
   parameters: {
     locks: '100',
