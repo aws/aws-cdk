@@ -353,12 +353,12 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
       throw new Error('You cannot specify both parameterGroup and parameters');
     }
     const parameterGroup = props.parameterGroup ?? (
-      props.parameters ?
-        new ParameterGroup(this, 'ParameterGroup', {
+      props.parameters
+        ? new ParameterGroup(this, 'ParameterGroup', {
           engine: props.engine,
           parameters: props.parameters,
-        }) :
-        undefined
+        })
+        : undefined
     );
     // bind the engine to the Cluster
     const clusterEngineBindConfig = props.engine.bindToCluster(this, {
