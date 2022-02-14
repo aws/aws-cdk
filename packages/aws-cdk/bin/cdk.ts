@@ -309,7 +309,7 @@ async function initCommandLine() {
         break;
     }
 
-    if (!returnValue) {
+    if (returnValue === undefined) {
       returnValue = await main(cmd, argv);
     }
 
