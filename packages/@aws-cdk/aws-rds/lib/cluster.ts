@@ -120,7 +120,7 @@ interface DatabaseClusterBaseProps {
    * The parameters in the DBClusterParameterGroup to create automatically
    *
    * You can only specify parameterGroup or parameters but not both.
-   * You need to use a versioned engine to auto-generate a DBClusterParameterGroup
+   * You need to use a versioned engine to auto-generate a DBClusterParameterGroup.
    *
    * @default - None
    */
