@@ -179,7 +179,7 @@ export class Bundle {
 
     console.log('Creating package');
 
-    const workDir = fs.mkdtempSync(path.join(os.tmpdir(), path.sep));
+    const workDir = fs.mkdtempSync(path.join(os.tmpdir(), 'bundle-pack-'));
     try {
       fs.copySync(this.packageDir, workDir, { filter: n => !n.includes('node_modules') && !n.includes('.git') });
 
@@ -250,18 +250,17 @@ export class Bundle {
   }
 
   private get notice(): Notice {
-    if (this._notice) {
-      return this._notice;
+    if (this._notice == null) {
+      this._notice = new Notice({
+        packageDir: this.packageDir,
+        filePath: this.noticePath,
+        dependencies: this.dependencies,
+        dependenciesRoot: this.dependenciesRoot,
+        exclude: this.dontAttribute,
+        validLicenses: this.validLicenses,
+        copyright: this.copyright,
+      });
     }
-    this._notice = new Notice({
-      packageDir: this.packageDir,
-      filePath: this.noticePath,
-      dependencies: this.dependencies,
-      dependenciesRoot: this.dependenciesRoot,
-      exclude: this.dontAttribute,
-      validLicenses: this.validLicenses,
-      copyright: this.copyright,
-    });
     return this._notice;
   }
 

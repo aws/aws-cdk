@@ -4,10 +4,7 @@ import { shell } from './_shell';
 import type { Package } from './bundle';
 import { Violation, ViolationType, ViolationsReport } from './violation';
 
-/**
- * Valid licenses that are ok to redistribute.
- */
-const DEFAULT_VALID_LICENSES = [
+const DEFAULT_ALLOWED_LICENSES = [
   'Apache-2.0',
   'MIT',
   'BSD-3-Clause',
@@ -15,6 +12,8 @@ const DEFAULT_VALID_LICENSES = [
   'BSD-2-Clause',
   '0BSD',
 ];
+
+const ATTRIBUTION_SEPARATOR = `'\n---------------\n'`;
 
 /**
  * Properties for `Notice`.
@@ -73,7 +72,7 @@ export class Notice {
     this.packageDir = props.packageDir;
     this.filePath = path.join(this.packageDir, props.filePath);
     this.dependencies = props.dependencies.filter(d => !props.exclude || !new RegExp(props.exclude).test(d.name));
-    this.validLicenses = (props.validLicenses ?? DEFAULT_VALID_LICENSES).map(l => l.toLowerCase());
+    this.validLicenses = (props.validLicenses ?? DEFAULT_ALLOWED_LICENSES).map(l => l.toLowerCase());
     this.copyright = props.copyright;
     this.dependenciesRoot = props.dependenciesRoot;
 
@@ -142,12 +141,10 @@ export class Notice {
       notice.push('');
     }
 
-    const separator = `\n${'-'.repeat(15)}\n`;
-
     for (const attr of attributions.values()) {
       notice.push(`** ${attr.package} - ${attr.url} | ${attr.licenses[0]}`);
       notice.push(attr.licenseText ?? '');
-      notice.push(separator);
+      notice.push(ATTRIBUTION_SEPARATOR);
     }
 
     return notice

@@ -13,7 +13,7 @@ const logger = (stream: Writable, styles?: StyleFn[]) => (fmt: string, ...args: 
   stream.write(str + '\n');
 };
 
-export const enum LogLevel {
+export enum LogLevel {
   /** Not verbose at all */
   DEFAULT = 0,
   /** Pretty verbose */
