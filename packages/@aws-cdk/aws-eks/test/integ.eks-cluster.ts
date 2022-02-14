@@ -38,6 +38,14 @@ class EksClusterStack extends TestStack {
       defaultCapacity: 2,
       version: eks.KubernetesVersion.V1_21,
       secretsEncryptionKey,
+      tags: {
+        foo: 'bar',
+      },
+      clusterLogging: [
+        eks.ClusterLoggingTypes.API,
+        eks.ClusterLoggingTypes.AUTHENTICATOR,
+        eks.ClusterLoggingTypes.SCHEDULER,
+      ],
     });
 
     this.assertFargateProfile();

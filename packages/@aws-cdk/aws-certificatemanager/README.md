@@ -40,9 +40,6 @@ If Amazon Route 53 is your DNS provider for the requested domain, the DNS record
 created automatically:
 
 ```ts
-import * as acm from '@aws-cdk/aws-certificatemanager';
-import * as route53 from '@aws-cdk/aws-route53';
-
 const myHostedZone = new route53.HostedZone(this, 'HostedZone', {
   zoneName: 'example.com',
 });
@@ -106,6 +103,7 @@ The `DnsValidatedCertificate` construct exists to facilitate creating these cert
 Route53-based DNS validation.
 
 ```ts
+declare const myHostedZone: route53.HostedZone;
 new acm.DnsValidatedCertificate(this, 'CrossRegionCertificate', {
   domainName: 'hello.example.com',
   hostedZone: myHostedZone,
@@ -120,10 +118,10 @@ AWS Certificate Manager can create [private certificates](https://docs.aws.amazo
 ```ts
 import * as acmpca from '@aws-cdk/aws-acmpca';
 
-new acm.PrivateCertificate(stack, 'PrivateCertificate', {
+new acm.PrivateCertificate(this, 'PrivateCertificate', {
   domainName: 'test.example.com',
   subjectAlternativeNames: ['cool.example.com', 'test.example.net'], // optional
-  certificateAuthority: acmpca.CertificateAuthority.fromCertificateAuthorityArn(stack, 'CA',
+  certificateAuthority: acmpca.CertificateAuthority.fromCertificateAuthorityArn(this, 'CA',
     'arn:aws:acm-pca:us-east-1:123456789012:certificate-authority/023077d8-2bfa-4eb0-8f22-05c96deade77'),
 });
 ```
@@ -134,7 +132,7 @@ If you want to import an existing certificate, you can do so from its ARN:
 
 ```ts
 const arn = 'arn:aws:...';
-const certificate = Certificate.fromCertificateArn(this, 'Certificate', arn);
+const certificate = acm.Certificate.fromCertificateArn(this, 'Certificate', arn);
 ```
 
 ## Sharing between Stacks
@@ -152,8 +150,14 @@ An alarm can be created to determine whether a certificate is soon due for
 renewal ussing the following code:
 
 ```ts
-const certificate = new Certificate(this, 'Certificate', { /* ... */ });
-certificate.metricDaysToExpiry().createAlarm({
+import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
+
+declare const myHostedZone: route53.HostedZone;
+const certificate = new acm.Certificate(this, 'Certificate', {
+  domainName: 'hello.example.com',
+  validation: acm.CertificateValidation.fromDns(myHostedZone),
+});
+certificate.metricDaysToExpiry().createAlarm(this, 'Alarm', {
   comparisonOperator: cloudwatch.ComparisonOperator.LESS_THAN_THRESHOLD,
   evaluationPeriods: 1,
   threshold: 45, // Automatic rotation happens between 60 and 45 days before expiry

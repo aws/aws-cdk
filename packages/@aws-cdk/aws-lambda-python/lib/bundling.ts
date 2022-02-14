@@ -51,6 +51,7 @@ export class Bundling implements CdkBundlingOptions {
 
   public readonly image: DockerImage;
   public readonly command: string[];
+  public readonly environment?: { [key: string]: string };
 
   constructor(props: BundlingProps) {
     const {
@@ -78,6 +79,7 @@ export class Bundling implements CdkBundlingOptions {
     });
     this.image = image ?? defaultImage;
     this.command = ['bash', '-c', chain(bundlingCommands)];
+    this.environment = props.environment;
   }
 
   private createBundlingCommand(options: BundlingCommandOptions): string[] {
@@ -86,8 +88,8 @@ export class Bundling implements CdkBundlingOptions {
     bundlingCommands.push(packaging.exportCommand ?? '');
     if (packaging.dependenciesFile) {
       bundlingCommands.push(`python -m pip install -r ${DependenciesFile.PIP} -t ${options.outputDir}`);
-    };
-    bundlingCommands.push(`cp -R ${options.inputDir} ${options.outputDir}`);
+    }
+    bundlingCommands.push(`cp -rT ${options.inputDir}/ ${options.outputDir}`);
     return bundlingCommands;
   }
 }

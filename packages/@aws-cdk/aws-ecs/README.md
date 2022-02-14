@@ -96,6 +96,15 @@ const cluster = new ecs.Cluster(this, 'Cluster', {
 });
 ```
 
+The following code imports an existing cluster using the ARN which can be used to 
+import an Amazon ECS service either EC2 or Fargate.
+
+```ts
+const clusterArn = 'arn:aws:ecs:us-east-1:012345678910:cluster/clusterName';
+
+const cluster = ecs.Cluster.fromClusterArn(this, 'Cluster', clusterArn);
+```
+
 To use tasks with Amazon EC2 launch-type, you have to add capacity to
 the cluster in order for tasks to be scheduled on your instances.  Typically,
 you add an AutoScalingGroup with instances running the latest
@@ -445,6 +454,50 @@ taskDefinition.addContainer('container', {
       value: 'ipv4.tcp_tw_recycle',
     },
   ],
+});
+```
+
+### Using Windows containers on Fargate
+
+AWS Fargate supports Amazon ECS Windows containers. For more details, please see this [blog post](https://aws.amazon.com/tw/blogs/containers/running-windows-containers-with-amazon-ecs-on-aws-fargate/)
+
+```ts
+// Create a Task Definition for the Windows container to start
+const taskDefinition = new ecs.FargateTaskDefinition(this, 'TaskDef', {
+  runtimePlatform: {
+    operatingSystemFamily: ecs.OperatingSystemFamily.WINDOWS_SERVER_2019_CORE,
+    cpuArchitecture: ecs.CpuArchitecture.X86_64,
+  },
+  cpu: 1024,
+  memoryLimitMiB: 2048,
+});
+
+taskDefinition.addContainer('windowsservercore', {
+  logging: ecs.LogDriver.awsLogs({ streamPrefix: 'win-iis-on-fargate' }),
+  portMappings: [{ containerPort: 80 }],
+  image: ecs.ContainerImage.fromRegistry('mcr.microsoft.com/windows/servercore/iis:windowsservercore-ltsc2019'),
+});
+```
+
+### Using Graviton2 with Fargate  
+
+AWS Graviton2 supports AWS Fargate. For more details, please see this [blog post](https://aws.amazon.com/blogs/aws/announcing-aws-graviton2-support-for-aws-fargate-get-up-to-40-better-price-performance-for-your-serverless-containers/)
+
+```ts
+// Create a Task Definition for running container on Graviton Runtime.
+const taskDefinition = new ecs.FargateTaskDefinition(this, 'TaskDef', {
+  runtimePlatform: {
+    operatingSystemFamily: ecs.OperatingSystemFamily.LINUX,
+    cpuArchitecture: ecs.CpuArchitecture.ARM64,
+  },
+  cpu: 1024,
+  memoryLimitMiB: 2048,
+});
+
+taskDefinition.addContainer('webarm64', {
+  logging: ecs.LogDriver.awsLogs({ streamPrefix: 'graviton2-on-fargate' }),
+  portMappings: [{ containerPort: 80 }],
+  image: ecs.ContainerImage.fromRegistry('public.ecr.aws/nginx/nginx:latest-arm64v8'),
 });
 ```
 
