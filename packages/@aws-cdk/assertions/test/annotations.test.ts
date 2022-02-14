@@ -149,7 +149,7 @@ describe('Multiple Messages on the Resource', () => {
     });
     bar.node.setContext('disable-stack-trace', false);
 
-    Aspects.of(stack).add(new MyMultipleAspects());
+    Aspects.of(stack).add(new MultipleAspectsPerNode());
     annotations = _Annotations.fromStack(stack);
   });
 
@@ -202,7 +202,7 @@ class MyAspect implements IAspect {
   }
 }
 
-class MyMultipleAspects implements IAspect {
+class MultipleAspectsPerNode implements IAspect {
   public visit(node: IConstruct): void {
     if (node instanceof CfnResource) {
       this.error(node, 'error: this is an error');
