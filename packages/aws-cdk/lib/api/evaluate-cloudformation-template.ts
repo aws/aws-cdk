@@ -342,6 +342,7 @@ const RESOURCE_TYPE_ATTRIBUTES_FORMATS: { [type: string]: { [attribute: string]:
     // the name attribute of the EventBus is the same as the Ref
     Name: parts => parts.resourceName,
   },
+  'AWS::AppSync::GraphQLApi': { ApiId: appsyncGraphQlApiApiIdFmt },
 };
 
 function iamArnFmt(parts: ArnParts): string {
@@ -362,6 +363,11 @@ function stdColonResourceArnFmt(parts: ArnParts): string {
 function stdSlashResourceArnFmt(parts: ArnParts): string {
   // this is a standard format for ARNs like: arn:aws:service:region:account:resourceType/resourceName
   return `arn:${parts.partition}:${parts.service}:${parts.region}:${parts.account}:${parts.resourceType}/${parts.resourceName}`;
+}
+
+function appsyncGraphQlApiApiIdFmt(parts: ArnParts): string {
+  // arn:aws:appsync:us-east-1:111111111111:apis/<apiId>
+  return parts.resourceName.split('/')[1];
 }
 
 interface Intrinsic {
