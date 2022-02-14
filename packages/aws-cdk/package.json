@@ -35,7 +35,8 @@
       "copyright": "AWS Cloud Development Kit (AWS CDK)\nCopyright 2018-2022 Amazon.com, Inc. or its affiliates. All Rights Reserved.\n",
       "noticePath": "NOTICES",
       "resources": {
-        "../../node_modules/vm2/lib/bridge.js": "bin/bridge.js"
+        "../../node_modules/vm2/lib/bridge.js": "bin/bridge.js",
+        "../../node_modules/vm2/lib/setup-sandbox.js": "bin/setup-sandbox.js"
       },
       "entrypoints": [
         "bin/cdk.js"

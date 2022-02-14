@@ -13,7 +13,7 @@ const DEFAULT_ALLOWED_LICENSES = [
   '0BSD',
 ];
 
-const ATTRIBUTION_SEPARATOR = `'\n---------------\n'`;
+const ATTRIBUTION_SEPARATOR = '\n---------------\n';
 
 /**
  * Properties for `Notice`.
