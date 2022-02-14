@@ -43,10 +43,9 @@ export abstract class StackSynthesizer implements IStackSynthesizer {
   /**
    * Have the stack write out its template
    */
-  protected synthesizeStackTemplate(stack: Stack, session: ISynthesisSession): void {
-    stack._synthesizeTemplate(session);
+  protected synthesizeStackTemplate(stack: Stack, session: ISynthesisSession): string {
+    return stack._synthesizeTemplate(session);
   }
-
 
   /**
    * Write the stack artifact to the session
