@@ -125,6 +125,7 @@ export class ContainerImageAssetHandler implements IAssetHandler {
       buildArgs: source.dockerBuildArgs,
       target: source.dockerBuildTarget,
       file: source.dockerFile,
+      networkMode: source.networkMode,
     });
   }
 

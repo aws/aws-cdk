@@ -2,6 +2,69 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.144.0](https://github.com/aws/aws-cdk/compare/v1.143.0...v1.144.0) (2022-02-08)
+
+
+### Features
+
+* **assets:** support networking mode for DockerImageAsset ([#18114](https://github.com/aws/aws-cdk/issues/18114)) ([a7b39f5](https://github.com/aws/aws-cdk/commit/a7b39f527976e29a7f39c1ba1813efba2e0aa209)), closes [#15516](https://github.com/aws/aws-cdk/issues/15516)
+* **cfnspec:** cloudformation spec v55.0.0 ([#18827](https://github.com/aws/aws-cdk/issues/18827)) ([a1d94b3](https://github.com/aws/aws-cdk/commit/a1d94b3624eb1b6b543d8ce209ec85af8e85beda))
+* **cli:** `cdk diff` works for Nested Stacks ([#18207](https://github.com/aws/aws-cdk/issues/18207)) ([1337b24](https://github.com/aws/aws-cdk/commit/1337b247e82d9462074416623e665cf9526d2cc0)), closes [#5722](https://github.com/aws/aws-cdk/issues/5722)
+* **iotevents:** add grant method to Input class ([#18617](https://github.com/aws/aws-cdk/issues/18617)) ([e89688e](https://github.com/aws/aws-cdk/commit/e89688ec1dd7a3b072d23287cddcb73bccc16fd4))
+* **iotevents:** support transition events ([#18768](https://github.com/aws/aws-cdk/issues/18768)) ([ccc1988](https://github.com/aws/aws-cdk/commit/ccc198864f92620857da09c68013123e9cd3f01d)), closes [#17711](https://github.com/aws/aws-cdk/issues/17711)
+* **s3-deployment:** deploy data with deploy-time values ([#18659](https://github.com/aws/aws-cdk/issues/18659)) ([d40e332](https://github.com/aws/aws-cdk/commit/d40e332578f7590a0c949fdd01622a644cf9359b)), closes [#12903](https://github.com/aws/aws-cdk/issues/12903)
+
+
+### Bug Fixes
+
+* **aws-appsync:** Strip unsupported characters from Lambda DataSource ([#18765](https://github.com/aws/aws-cdk/issues/18765)) ([bb8d6f6](https://github.com/aws/aws-cdk/commit/bb8d6f6bf5941b76ef0590c99fe8e26440e09c18))
+* **tooling:** update vscode devcontainer image ([#18455](https://github.com/aws/aws-cdk/issues/18455)) ([28647f7](https://github.com/aws/aws-cdk/commit/28647f7105da6bd02975aa7d90300d77fe85d0e6))
+
+## [1.143.0](https://github.com/aws/aws-cdk/compare/v1.142.0...v1.143.0) (2022-02-02)
+
+
+### Features
+
+* **amplify:** support performance mode in Branch ([#18598](https://github.com/aws/aws-cdk/issues/18598)) ([bdeb8eb](https://github.com/aws/aws-cdk/commit/bdeb8eb604f5012ce3180d2f6d887fed1834e4f4)), closes [#18557](https://github.com/aws/aws-cdk/issues/18557)
+* **cfnspec:** cloudformation spec v54.0.0 ([#18764](https://github.com/aws/aws-cdk/issues/18764)) ([71601c1](https://github.com/aws/aws-cdk/commit/71601c115a6460b4532a34c83100ae70a476fad2))
+* **cloudwatch-actions:** add ssm opsitem action for cloudwatch alarm  ([#16923](https://github.com/aws/aws-cdk/issues/16923)) ([9380885](https://github.com/aws/aws-cdk/commit/93808851415bff269418f28d9de3c61727e143d3)), closes [#16861](https://github.com/aws/aws-cdk/issues/16861)
+* **dynamodb:** allow setting TableClass for a Table ([#18719](https://github.com/aws/aws-cdk/issues/18719)) ([73a889e](https://github.com/aws/aws-cdk/commit/73a889eba85d0aa542ac96a1124f3ae4f1d351bc)), closes [#18718](https://github.com/aws/aws-cdk/issues/18718)
+* **ec2:** support KMS keys for block device mappings for both instances and launch templates ([#18326](https://github.com/aws/aws-cdk/issues/18326)) ([17dbe5f](https://github.com/aws/aws-cdk/commit/17dbe5f476ac1ccc0c0e6a0905b0de5ae6186704)), closes [#18309](https://github.com/aws/aws-cdk/issues/18309)
+* **ecr:** add server-side encryption configuration  ([#16966](https://github.com/aws/aws-cdk/issues/16966)) ([c46acd5](https://github.com/aws/aws-cdk/commit/c46acd5f13442c43d0c2ed339e3091dd46002741)), closes [#15400](https://github.com/aws/aws-cdk/issues/15400) [#15571](https://github.com/aws/aws-cdk/issues/15571)
+* **ecs:** expose image name in container definition ([#17793](https://github.com/aws/aws-cdk/issues/17793)) ([1947d7c](https://github.com/aws/aws-cdk/commit/1947d7cc809fda0765bee3dbb2286190ec2847f7))
+* **fsx:** add support for FSx Lustre Persistent_2 deployment type ([#18626](https://github.com/aws/aws-cdk/issues/18626)) ([6036d99](https://github.com/aws/aws-cdk/commit/6036d9927bb3607e31a57361bf304976ff1891f7))
+* **iot:** add Action to republish MQTT messages to another MQTT topic ([#18661](https://github.com/aws/aws-cdk/issues/18661)) ([7ac1215](https://github.com/aws/aws-cdk/commit/7ac121546776cae972bbfb89c2a11949762e7c47))
+
+
+### Bug Fixes
+
+* **core:** correctly reference versionless secure parameters ([#18730](https://github.com/aws/aws-cdk/issues/18730)) ([9f6e10e](https://github.com/aws/aws-cdk/commit/9f6e10ed0a751c06fe0cc1d79f38d5fb4b686087)), closes [#18729](https://github.com/aws/aws-cdk/issues/18729)
+* **ec2:** `UserData.addSignalOnExitCommand` does not work in combination with `userDataCausesReplacement` ([#18726](https://github.com/aws/aws-cdk/issues/18726)) ([afdc550](https://github.com/aws/aws-cdk/commit/afdc550ee372dd25d9d2eef81a545da1e923f796)), closes [#12749](https://github.com/aws/aws-cdk/issues/12749)
+* **vpc:** Vpc.fromLookup should throw if subnet group name tag is explicitly given and does not exist ([#18714](https://github.com/aws/aws-cdk/issues/18714)) ([13e1c7f](https://github.com/aws/aws-cdk/commit/13e1c7f10b81fc350953fe69fcccb61ff5aa9c1e)), closes [#13962](https://github.com/aws/aws-cdk/issues/13962)
+
+
+### Reverts
+
+* "chore(cloudfront): encryption and enforceSSL on distribution s3 loggingBucket ([#18264](https://github.com/aws/aws-cdk/issues/18264))" ([#18772](https://github.com/aws/aws-cdk/issues/18772)) ([121e4a1](https://github.com/aws/aws-cdk/commit/121e4a1dec13d31644f6176d0a1d703952dc1ba3)), closes [#18271](https://github.com/aws/aws-cdk/issues/18271) [/docs.aws.amazon.com/AmazonCloudWatch/latest/logs/AWS-logs-and-resource-policy.html#AWS-logs-infrastructure-S3](https://github.com/aws//docs.aws.amazon.com/AmazonCloudWatch/latest/logs/AWS-logs-and-resource-policy.html/issues/AWS-logs-infrastructure-S3) [#18676](https://github.com/aws/aws-cdk/issues/18676)
+* "chore(ec2): enforceSSL on flowLog s3 bucket ([#18271](https://github.com/aws/aws-cdk/issues/18271))" ([#18770](https://github.com/aws/aws-cdk/issues/18770)) ([a2eb092](https://github.com/aws/aws-cdk/commit/a2eb092b2b468bffa2acde9b98ca34cefa3e48f1)), closes [/docs.aws.amazon.com/AmazonCloudWatch/latest/logs/AWS-logs-and-resource-policy.html#AWS-logs-infrastructure-S3](https://github.com/aws//docs.aws.amazon.com/AmazonCloudWatch/latest/logs/AWS-logs-and-resource-policy.html/issues/AWS-logs-infrastructure-S3) [#18676](https://github.com/aws/aws-cdk/issues/18676)
+
+## [1.142.0](https://github.com/aws/aws-cdk/compare/v1.141.0...v1.142.0) (2022-01-28)
+
+
+### Features
+
+* **cfnspec:** cloudformation spec v53.1.0 ([#18680](https://github.com/aws/aws-cdk/issues/18680)) ([f385059](https://github.com/aws/aws-cdk/commit/f38505911a3e140a9cb6b269bdf22abe9803c515))
+* **cloudfront-origins:** extend `readTimeout` maximum value for `HttpOriginProps` ([#18697](https://github.com/aws/aws-cdk/issues/18697)) ([e64de67](https://github.com/aws/aws-cdk/commit/e64de677cdfc014f68e92b204f4728e60a8bb111)), closes [#18628](https://github.com/aws/aws-cdk/issues/18628)
+* **eks:** cluster logging ([#18112](https://github.com/aws/aws-cdk/issues/18112)) ([872277b](https://github.com/aws/aws-cdk/commit/872277b9e853dbf5f2cac84b5afb6d26e0ed5659)), closes [#4159](https://github.com/aws/aws-cdk/issues/4159)
+* **iotevents:** allow setting description, evaluation method and key of DetectorModel ([#18644](https://github.com/aws/aws-cdk/issues/18644)) ([2eeaebc](https://github.com/aws/aws-cdk/commit/2eeaebc3cdc9c5c7ef3fa312b3d1abca265dcbb6))
+* **lambda-python:** support setting environment vars for bundling ([#18635](https://github.com/aws/aws-cdk/issues/18635)) ([30e2233](https://github.com/aws/aws-cdk/commit/30e223333fef0b0d7f12287dab170a34e092d7fa))
+
+
+### Bug Fixes
+
+* **aws-lambda-nodejs:** pre compilation with tsc is not being run ([#18062](https://github.com/aws/aws-cdk/issues/18062)) ([7ac7221](https://github.com/aws/aws-cdk/commit/7ac7221aff3c612ab80e7812c371b11c56e5db0a)), closes [#18002](https://github.com/aws/aws-cdk/issues/18002)
+* **pipelines:** undeployable due to dependency cycle ([#18686](https://github.com/aws/aws-cdk/issues/18686)) ([009d689](https://github.com/aws/aws-cdk/commit/009d68912267de9dcf4136a7d80a652a891b7bb9)), closes [#18492](https://github.com/aws/aws-cdk/issues/18492) [#18673](https://github.com/aws/aws-cdk/issues/18673)
+
 ## [1.141.0](https://github.com/aws/aws-cdk/compare/v1.140.0...v1.141.0) (2022-01-27)
 
 
