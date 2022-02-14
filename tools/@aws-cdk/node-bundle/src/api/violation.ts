@@ -81,4 +81,17 @@ export class ViolationsReport {
     return this.violations.length === 0;
   }
 
+  /**
+   * Summary of the violation in the report.
+   */
+  public get summary(): string {
+    const summary = [
+      `${this._violations.length} violations detected`,
+    ];
+    for (const v of this._violations) {
+      summary.push(`- ${v.type}: ${v.message}${v.fix ? ' (fixable)' : ''}`);
+    }
+    return summary.join('\n');
+  }
+
 }

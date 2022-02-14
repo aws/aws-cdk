@@ -1,6 +1,7 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
-import { shell } from './shell';
+import { shell } from './_shell';
+import type { Package } from './bundle';
 import { Violation, ViolationType, ViolationsReport } from './violation';
 
 /**
@@ -14,24 +15,6 @@ const DEFAULT_VALID_LICENSES = [
   'BSD-2-Clause',
   '0BSD',
 ];
-
-/**
- * Package on the local file system.
- */
-export interface Package {
-  /**
-   * Path of the dependency on the local file system.
-   */
-  readonly path: string;
-  /**
-   * Dependency name.
-   */
-  readonly name: string;
-  /**
-   * Dependency version.
-   */
-  readonly version: string;
-}
 
 /**
  * Properties for `Notice`.

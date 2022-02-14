@@ -63,8 +63,7 @@ async function buildCommands() {
 function validate(bundle: Bundle) {
   const report = bundle.validate();
   if (!report.success) {
-    const violations = report.violations.map(v => `- ${v.type}: ${v.message}${v.fix ? ' (fixable)' : ''}`).join('\n');
-    throw new Error(`${violations.length} violations detected:\n${violations}`);
+    throw new Error(report.summary);
   }
 }
 

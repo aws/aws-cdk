@@ -2,8 +2,8 @@ import * as os from 'os';
 import * as path from 'path';
 import * as esbuild from 'esbuild';
 import * as fs from 'fs-extra';
-import { Package, Notice } from './_notice';
-import { shell } from './shell';
+import { Notice } from './_notice';
+import { shell } from './_shell';
 import { Violation, ViolationType, ViolationsReport } from './violation';
 
 /**
@@ -84,6 +84,24 @@ export interface BundlePackOptions {
 }
 
 /**
+ * Package on the local file system.
+ */
+export interface Package {
+  /**
+   * Path of the dependency on the local file system.
+   */
+  readonly path: string;
+  /**
+   * Dependency name.
+   */
+  readonly name: string;
+  /**
+   * Dependency version.
+   */
+  readonly version: string;
+}
+
+/**
  * Bundle class to validate and pack nodejs bundles.
  */
 export class Bundle {
@@ -148,7 +166,7 @@ export class Bundle {
 
     const report = this.validate();
     if (!report.success) {
-      throw new Error(`Unable to pack due to validation errors.\n\n${report.violations.map(v => `  - ${v.type}: ${v.message}`).join('\n')}`);
+      throw new Error(`Unable to pack due to validation errors.\n\n${report.summary}`);
     }
 
     if (!fs.existsSync(target)) {
@@ -169,14 +187,17 @@ export class Bundle {
       // to mutate it.
       const manifest = { ...this.manifest };
 
+      // manifest mutations
       this.removeDependencies(manifest);
       this.addExternals(manifest);
+
+      // write artifacts
       this.writeOutputs(workDir);
       this.writeResources(workDir);
-
-      fs.writeFileSync(path.join(workDir, 'package.json'), JSON.stringify(manifest, null, 2));
+      this.writeManifest(workDir, manifest);
 
       if (this.test) {
+        console.log('Running package santiy test');
         shell(`${path.join(workDir, this.test)}`, { cwd: workDir });
       }
 
@@ -413,6 +434,10 @@ export class Bundle {
     for (const [src, dst] of Object.entries(this.resources)) {
       fs.copySync(path.join(this.packageDir, src), path.join(workdir, dst), { recursive: true });
     }
+  }
+
+  private writeManifest(workDir: string, manifest: any) {
+    fs.writeFileSync(path.join(workDir, 'package.json'), JSON.stringify(manifest, null, 2));
   }
 }
 
