@@ -5,6 +5,7 @@
   },
   "scripts": {
     "build": "npx projen build",
+    "build+test": "npx projen build+test",
     "bump": "npx projen bump",
     "clobber": "npx projen clobber",
     "compile": "npx projen compile",

@@ -24,6 +24,14 @@
         }
       ]
     },
+    "build+test": {
+      "name": "build+test",
+      "steps": [
+        {
+          "spawn": "test"
+        }
+      ]
+    },
     "bump": {
       "name": "bump",
       "description": "Bumps version based on latest git tag and generates a changelog entry",

@@ -26,4 +26,10 @@ project.gitignore.exclude('.vscode/');
 
 // needed for CLI tests to run
 project.testTask.prependSpawn(project.compileTask);
+
+// needed to conform to the repo build scripts
+// note we don't need to compile because the test task does that
+const buildAndTest = project.addTask('build+test');
+buildAndTest.spawn(project.testTask);
+
 project.synth();
