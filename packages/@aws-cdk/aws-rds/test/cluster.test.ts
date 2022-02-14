@@ -10,6 +10,7 @@ import * as cxapi from '@aws-cdk/cx-api';
 import {
   AuroraEngineVersion, AuroraMysqlEngineVersion, AuroraPostgresEngineVersion, CfnDBCluster, Credentials, DatabaseCluster,
   DatabaseClusterEngine, DatabaseClusterFromSnapshot, ParameterGroup, PerformanceInsightRetention, SubnetGroup, DatabaseSecret,
+  DatabaseInstanceEngine, SqlServerEngineVersion,
 } from '../lib';
 
 describe('cluster', () => {
@@ -334,42 +335,77 @@ describe('cluster', () => {
         username: 'admin',
       },
       parameters: {
-        key: 'value',
+        locks: '100',
       },
       instanceProps: {
         instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
         vpc,
         parameters: {
-          key2: 'value2',
+          locks: '200',
         },
       },
     });
 
-    expect(stack).toHaveResource('AWS::RDS::DBCluster', {
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
       DBClusterParameterGroupName: {
         Ref: 'DatabaseParameterGroup2A921026',
       },
     });
 
-    expect(stack).toHaveResource('AWS::RDS::DBClusterParameterGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBClusterParameterGroup', {
       Family: 'aurora5.6',
       Parameters: {
-        key: 'value',
+        locks: '100',
       },
     });
 
-    expect(stack).toHaveResource('AWS::RDS::DBInstance', {
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
       DBParameterGroupName: {
         Ref: 'DatabaseInstanceParameterGroup6968C5BF',
       },
     });
 
-    expect(stack).toHaveResource('AWS::RDS::DBParameterGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBParameterGroup', {
       Family: 'aurora5.6',
       Parameters: {
-        key2: 'value2',
+        locks: '200',
       },
     });
+  });
+
+  test('instance with inline parameter group and parameterGroup arg fails', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const parameterGroup = new ParameterGroup(stack, 'ParameterGroup', {
+      engine: DatabaseInstanceEngine.sqlServerEe({
+        version: SqlServerEngineVersion.VER_11,
+      }),
+      description: 'desc',
+      parameters: {
+        locks: '50',
+      },
+    });
+
+    expect(() => {
+      new DatabaseCluster(stack, 'Database', {
+        engine: DatabaseClusterEngine.AURORA,
+        credentials: {
+          username: 'admin',
+        },
+        parameters: {
+          locks: '100',
+        },
+        parameterGroup,
+        instanceProps: {
+          instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+          vpc,
+          parameters: {
+            locks: '200',
+          },
+        },
+      });
+    }).toThrow(/You cannot specify both parameterGroup and parameters/);
   });
 
   describe('performance insights', () => {

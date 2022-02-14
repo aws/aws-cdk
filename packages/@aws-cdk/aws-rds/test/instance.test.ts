@@ -253,22 +253,46 @@ describe('instance', () => {
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
       vpc,
       parameters: {
-        key: 'value',
+        locks: '100',
       },
     });
 
-    expect(stack).toHaveResource('AWS::RDS::DBInstance', {
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
       DBParameterGroupName: {
         Ref: 'DatabaseParameterGroup2A921026',
       },
     });
 
-    expect(stack).toHaveResource('AWS::RDS::DBParameterGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBParameterGroup', {
       Family: 'sqlserver-ee-12.0',
       Parameters: {
+        locks: '100',
+      },
+    });
+  });
+
+  test('instance with inline parameter group and parameterGroup arg fails', () => {
+    const parameterGroup = new rds.ParameterGroup(stack, 'ParameterGroup', {
+      engine: rds.DatabaseInstanceEngine.sqlServerEe({
+        version: rds.SqlServerEngineVersion.VER_11,
+      }),
+      description: 'desc',
+      parameters: {
         key: 'value',
       },
     });
+
+    expect(() => {
+      new rds.DatabaseInstance(stack, 'Database', {
+        engine: rds.DatabaseInstanceEngine.sqlServerEe({ version: rds.SqlServerEngineVersion.VER_12_00_5000_0_V1 }),
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+        vpc,
+        parameters: {
+          locks: '100',
+        },
+        parameterGroup,
+      });
+    }).toThrow(/You cannot specify both parameterGroup and parameters/);
   });
 
   test('can specify subnet type', () => {

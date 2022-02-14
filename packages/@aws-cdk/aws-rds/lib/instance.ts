@@ -888,7 +888,7 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
     this.instanceType = props.instanceType ?? ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.LARGE);
 
     if (props.parameterGroup && props.parameters) {
-      throw new Error('You cannot specify parameterGroup and parameters');
+      throw new Error('You cannot specify both parameterGroup and parameters');
     }
 
     this.sourceCfnProps = {

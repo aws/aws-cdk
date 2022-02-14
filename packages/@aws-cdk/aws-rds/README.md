@@ -544,13 +544,12 @@ const parameterGroup = new rds.ParameterGroup(this, 'ParameterGroup', {
     version: rds.SqlServerEngineVersion.VER_11,
   }),
   parameters: {
-    key: 'value',
+    locks: '100',
   },
 });
 
 new rds.DatabaseInstance(this, 'Database', {
   engine: rds.DatabaseInstanceEngine.SQL_SERVER_EE,
-  instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
   vpc,
   parameterGroup,
 });
@@ -564,10 +563,9 @@ declare const vpc: ec2.Vpc;
 
 new rds.DatabaseInstance(this, 'Database', {
   engine: rds.DatabaseInstanceEngine.sqlServerEe({ version: rds.SqlServerEngineVersion.VER_12_00_5000_0_V1 }),
-  instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
   vpc,
   parameters: {
-    key: 'value',
+    locks: '100',
   },
 });
 ```
