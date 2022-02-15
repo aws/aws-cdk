@@ -34,6 +34,9 @@ test('create basic training job', () => {
     outputDataConfig: {
       s3OutputLocation: tasks.S3Location.fromBucket(s3.Bucket.fromBucketName(stack, 'OutputBucket', 'mybucket'), 'myoutputpath'),
     },
+    environment: {
+      SOMEVAR: 'myvalue',
+    },
   });
 
   // THEN
@@ -83,6 +86,9 @@ test('create basic training job', () => {
       RoleArn: { 'Fn::GetAtt': ['TrainSagemakerSagemakerRole89E8C593', 'Arn'] },
       StoppingCondition: {
         MaxRuntimeInSeconds: 3600,
+      },
+      Environment: {
+        SOMEVAR: 'myvalue',
       },
       TrainingJobName: 'MyTrainJob',
     },
