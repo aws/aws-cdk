@@ -1,11 +1,10 @@
-import { expect, haveResource } from '@aws-cdk/assert-internal';
+import { Template } from '@aws-cdk/assertions';
 import { CfnResource, Stack } from '@aws-cdk/core';
-import { nodeunitShim, Test } from 'nodeunit-shim';
 import { DatabaseSecret } from '../lib';
 import { DEFAULT_PASSWORD_EXCLUDE_CHARS } from '../lib/private/util';
 
-nodeunitShim({
-  'create a database secret'(test: Test) {
+describe('database secret', () => {
+  test('create a database secret', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -15,7 +14,7 @@ nodeunitShim({
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::SecretsManager::Secret', {
+    Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::Secret', {
       Description: {
         'Fn::Join': [
           '',
@@ -33,14 +32,12 @@ nodeunitShim({
         PasswordLength: 30,
         SecretStringTemplate: '{"username":"admin-username"}',
       },
-    }));
+    });
 
-    test.equal(getSecretLogicalId(dbSecret, stack), 'SecretA720EF05');
+    expect(getSecretLogicalId(dbSecret, stack)).toEqual('SecretA720EF05');
+  });
 
-    test.done();
-  },
-
-  'with master secret'(test: Test) {
+  test('with master secret', () => {
     // GIVEN
     const stack = new Stack();
     const masterSecret = new DatabaseSecret(stack, 'MasterSecret', {
@@ -55,7 +52,7 @@ nodeunitShim({
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::SecretsManager::Secret', {
+    Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::Secret', {
       GenerateSecretString: {
         ExcludeCharacters: '"@/\\',
         GenerateStringKey: 'password',
@@ -73,12 +70,10 @@ nodeunitShim({
           ],
         },
       },
-    }));
+    });
+  });
 
-    test.done();
-  },
-
-  'replace on password critera change'(test: Test) {
+  test('replace on password critera change', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -90,7 +85,7 @@ nodeunitShim({
 
     // THEN
     const dbSecretlogicalId = getSecretLogicalId(dbSecret, stack);
-    test.equal(dbSecretlogicalId, 'Secret3fdaad7efa858a3daf9490cf0a702aeb');
+    expect(dbSecretlogicalId).toEqual('Secret3fdaad7efa858a3daf9490cf0a702aeb');
 
     // same node path but other excluded characters
     stack.node.tryRemoveChild('Secret');
@@ -99,17 +94,15 @@ nodeunitShim({
       replaceOnPasswordCriteriaChanges: true,
       excludeCharacters: '@!()[]',
     });
-    test.notEqual(dbSecretlogicalId, getSecretLogicalId(otherSecret1, stack));
+    expect(dbSecretlogicalId).not.toEqual(getSecretLogicalId(otherSecret1, stack));
 
     // other node path but same excluded characters
     const otherSecret2 = new DatabaseSecret(stack, 'Secret2', {
       username: 'admin',
       replaceOnPasswordCriteriaChanges: true,
     });
-    test.notEqual(dbSecretlogicalId, getSecretLogicalId(otherSecret2, stack));
-
-    test.done();
-  },
+    expect(dbSecretlogicalId).not.toEqual(getSecretLogicalId(otherSecret2, stack));
+  });
 });
 
 function getSecretLogicalId(dbSecret: DatabaseSecret, stack: Stack): string {

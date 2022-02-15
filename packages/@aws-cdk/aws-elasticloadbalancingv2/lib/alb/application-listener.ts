@@ -5,7 +5,7 @@ import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import { BaseListener, BaseListenerLookupOptions } from '../shared/base-listener';
 import { HealthCheck } from '../shared/base-target-group';
-import { ApplicationProtocol, ApplicationProtocolVersion, IpAddressType, SslPolicy } from '../shared/enums';
+import { ApplicationProtocol, ApplicationProtocolVersion, TargetGroupLoadBalancingAlgorithmType, IpAddressType, SslPolicy } from '../shared/enums';
 import { IListenerCertificate, ListenerCertificate } from '../shared/listener-certificate';
 import { determineProtocolAndPort } from '../shared/util';
 import { ListenerAction } from './application-listener-action';
@@ -42,7 +42,7 @@ export interface BaseApplicationListenerProps {
   readonly certificateArns?: string[];
 
   /**
-   * Certificate list of ACM cert ARNs
+   * Certificate list of ACM cert ARNs. You must provide exactly one certificate if the listener protocol is HTTPS or TLS.
    *
    * @default - No certificates.
    */
@@ -293,12 +293,8 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
       // TargetGroup.registerListener is called inside ApplicationListenerRule.
       new ApplicationListenerRule(this, id + 'Rule', {
         listener: this,
-        conditions: props.conditions,
-        hostHeader: props.hostHeader,
-        pathPattern: props.pathPattern,
-        pathPatterns: props.pathPatterns,
         priority: props.priority,
-        action: props.action,
+        ...props,
       });
     } else {
       // New default target with these targetgroups
@@ -325,12 +321,8 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
       // TargetGroup.registerListener is called inside ApplicationListenerRule.
       new ApplicationListenerRule(this, id + 'Rule', {
         listener: this,
-        conditions: props.conditions,
-        hostHeader: props.hostHeader,
-        pathPattern: props.pathPattern,
-        pathPatterns: props.pathPatterns,
         priority: props.priority,
-        targetGroups: props.targetGroups,
+        ...props,
       });
     } else {
       // New default target with these targetgroups
@@ -359,26 +351,13 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
     }
 
     const group = new ApplicationTargetGroup(this, id + 'Group', {
-      deregistrationDelay: props.deregistrationDelay,
-      healthCheck: props.healthCheck,
-      port: props.port,
-      protocol: props.protocol,
-      protocolVersion: props.protocolVersion,
-      slowStart: props.slowStart,
-      stickinessCookieDuration: props.stickinessCookieDuration,
-      stickinessCookieName: props.stickinessCookieName,
-      targetGroupName: props.targetGroupName,
-      targets: props.targets,
       vpc: this.loadBalancer.vpc,
+      ...props,
     });
 
     this.addTargetGroups(id, {
-      conditions: props.conditions,
-      hostHeader: props.hostHeader,
-      pathPattern: props.pathPattern,
-      pathPatterns: props.pathPatterns,
-      priority: props.priority,
       targetGroups: [group],
+      ...props,
     });
 
     return group;
@@ -606,10 +585,9 @@ abstract class ExternalApplicationListener extends Resource implements IApplicat
    * Add one or more certificates to this listener.
    */
   public addCertificates(id: string, certificates: IListenerCertificate[]): void {
-    const arns = certificates.map(c => c.certificateArn);
     new ApplicationListenerCertificate(this, id, {
       listener: this,
-      certificateArns: arns,
+      certificates,
     });
   }
 
@@ -626,12 +604,8 @@ abstract class ExternalApplicationListener extends Resource implements IApplicat
       // New rule
       new ApplicationListenerRule(this, id, {
         listener: this,
-        conditions: props.conditions,
-        hostHeader: props.hostHeader,
-        pathPattern: props.pathPattern,
-        pathPatterns: props.pathPatterns,
         priority: props.priority,
-        targetGroups: props.targetGroups,
+        ...props,
       });
     } else {
       throw new Error('Cannot add default Target Groups to imported ApplicationListener');
@@ -699,7 +673,7 @@ class LookedUpApplicationListener extends ExternalApplicationListener {
     });
 
     for (const securityGroupId of props.securityGroupIds) {
-      const securityGroup = ec2.SecurityGroup.fromLookup(this, `SecurityGroup-${securityGroupId}`, securityGroupId);
+      const securityGroup = ec2.SecurityGroup.fromLookupById(this, `SecurityGroup-${securityGroupId}`, securityGroupId);
       this.connections.addSecurityGroup(securityGroup);
     }
   }
@@ -887,6 +861,14 @@ export interface AddApplicationTargetsProps extends AddRuleProps {
    * @default No health check
    */
   readonly healthCheck?: HealthCheck;
+
+  /**
+   * The load balancing algorithm to select targets for routing requests.
+   *
+   * @default round_robin.
+   */
+  readonly loadBalancingAlgorithmType?: TargetGroupLoadBalancingAlgorithmType;
+
 }
 
 /**

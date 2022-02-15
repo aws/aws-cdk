@@ -6,9 +6,9 @@ import * as kms from '@aws-cdk/aws-kms';
 import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cloudmap from '@aws-cdk/aws-servicediscovery';
-import * as ssm from '@aws-cdk/aws-ssm';
-import { Duration, Lazy, IResource, Resource, Stack, Aspects, IAspect, IConstruct } from '@aws-cdk/core';
+import { Duration, Lazy, IResource, Resource, Stack, Aspects, IAspect, IConstruct, ArnFormat } from '@aws-cdk/core';
 import { Construct } from 'constructs';
+import { BottleRocketImage, EcsOptimizedAmi } from './amis';
 import { InstanceDrainHook } from './drain-hook/instance-drain-hook';
 import { ECSMetrics } from './ecs-canned-metrics.generated';
 import { CfnCluster, CfnCapacityProvider, CfnClusterCapacityProviderAssociations } from './ecs.generated';
@@ -103,6 +103,41 @@ export class Cluster extends Resource implements ICluster {
    */
   public static fromClusterAttributes(scope: Construct, id: string, attrs: ClusterAttributes): ICluster {
     return new ImportedCluster(scope, id, attrs);
+  }
+
+  /**
+   * Import an existing cluster to the stack from the cluster ARN.
+   * This does not provide access to the vpc, hasEc2Capacity, or connections -
+   * use the `fromClusterAttributes` method to access those properties.
+   */
+  public static fromClusterArn(scope: Construct, id: string, clusterArn: string): ICluster {
+    const stack = Stack.of(scope);
+    const arn = stack.splitArn(clusterArn, ArnFormat.SLASH_RESOURCE_NAME);
+    const clusterName = arn.resourceName;
+
+    if (!clusterName) {
+      throw new Error(`Missing required Cluster Name from Cluster ARN: ${clusterArn}`);
+    }
+
+    const errorSuffix = 'is not available for a Cluster imported using fromClusterArn(), please use fromClusterAttributes() instead.';
+
+    class Import extends Resource implements ICluster {
+      public readonly clusterArn = clusterArn;
+      public readonly clusterName = clusterName!;
+      get hasEc2Capacity(): boolean {
+        throw new Error(`hasEc2Capacity ${errorSuffix}`);
+      }
+      get connections(): ec2.Connections {
+        throw new Error(`connections ${errorSuffix}`);
+      }
+      get vpc(): ec2.IVpc {
+        throw new Error(`vpc ${errorSuffix}`);
+      }
+    }
+
+    return new Import(scope, id, {
+      environmentFromArn: clusterArn,
+    });
   }
 
   /**
@@ -287,19 +322,22 @@ export class Cluster extends Resource implements ICluster {
   }
 
   /**
+   * It is highly recommended to use {@link Cluster.addAsgCapacityProvider} instead of this method.
+   *
    * This method adds compute capacity to a cluster by creating an AutoScalingGroup with the specified options.
    *
    * Returns the AutoScalingGroup so you can add autoscaling settings to it.
-   *
-   * @deprecated Use {@link Cluster.addAsgCapacityProvider} instead.
    */
   public addCapacity(id: string, options: AddCapacityOptions): autoscaling.AutoScalingGroup {
-    if (options.machineImage && options.machineImageType) {
-      throw new Error('You can only specify either machineImage or machineImageType, not both.');
-    }
+    // Do 2-way defaulting here: if the machineImageType is BOTTLEROCKET, pick the right AMI.
+    // Otherwise, determine the machineImageType from the given AMI.
+    const machineImage = options.machineImage ??
+      (options.machineImageType === MachineImageType.BOTTLEROCKET ? new BottleRocketImage({
+        architecture: options.instanceType.architecture,
+      }) : new EcsOptimizedAmi());
 
-    const machineImage = options.machineImage ?? options.machineImageType === MachineImageType.BOTTLEROCKET ?
-      new BottleRocketImage() : new EcsOptimizedAmi();
+    const machineImageType = options.machineImageType ??
+      (isBottleRocketImage(machineImage) ? MachineImageType.BOTTLEROCKET : MachineImageType.AMAZON_LINUX_2);
 
     const autoScalingGroup = new autoscaling.AutoScalingGroup(this, id, {
       vpc: this.vpc,
@@ -309,7 +347,7 @@ export class Cluster extends Resource implements ICluster {
     });
 
     this.addAutoScalingGroup(autoScalingGroup, {
-      machineImageType: options.machineImageType,
+      machineImageType: machineImageType,
       ...options,
     });
 
@@ -321,15 +359,15 @@ export class Cluster extends Resource implements ICluster {
    *
    * @param provider the capacity provider to add to this cluster.
    */
-  public addAsgCapacityProvider(provider: AsgCapacityProvider, options: AddAutoScalingGroupCapacityOptions = {}) {
+  public addAsgCapacityProvider(provider: AsgCapacityProvider, options: AddAutoScalingGroupCapacityOptions= {}) {
     // Don't add the same capacity provider more than once.
     if (this._capacityProviderNames.includes(provider.capacityProviderName)) {
       return;
     }
-
     this._hasEc2Capacity = true;
     this.configureAutoScalingGroup(provider.autoScalingGroup, {
       ...options,
+      machineImageType: provider.machineImageType,
       // Don't enable the instance-draining lifecycle hook if managed termination protection is enabled
       taskDrainTime: provider.enableManagedTerminationProtection ? Duration.seconds(0) : options.taskDrainTime,
     });
@@ -552,7 +590,7 @@ export class Cluster extends Resource implements ICluster {
     return new cloudwatch.Metric({
       namespace: 'AWS/ECS',
       metricName,
-      dimensions: { ClusterName: this.clusterName },
+      dimensionsMap: { ClusterName: this.clusterName },
       ...props,
     }).attachTo(this);
   }
@@ -564,240 +602,6 @@ export class Cluster extends Resource implements ICluster {
       ...fn({ ClusterName: this.clusterName }),
       ...props,
     }).attachTo(this);
-  }
-}
-
-/**
- * ECS-optimized Windows version list
- */
-export enum WindowsOptimizedVersion {
-  SERVER_2019 = '2019',
-  SERVER_2016 = '2016',
-}
-
-/*
- * TODO:v2.0.0
- *  * remove `export` keyword
- *  * remove @deprecated
- */
-/**
- * The properties that define which ECS-optimized AMI is used.
- *
- * @deprecated see {@link EcsOptimizedImage}
- */
-export interface EcsOptimizedAmiProps {
-  /**
-   * The Amazon Linux generation to use.
-   *
-   * @default AmazonLinuxGeneration.AmazonLinux2
-   */
-  readonly generation?: ec2.AmazonLinuxGeneration;
-
-  /**
-   * The Windows Server version to use.
-   *
-   * @default none, uses Linux generation
-   */
-  readonly windowsVersion?: WindowsOptimizedVersion;
-
-  /**
-   * The ECS-optimized AMI variant to use.
-   *
-   * @default AmiHardwareType.Standard
-   */
-  readonly hardwareType?: AmiHardwareType;
-}
-
-/*
- * TODO:v2.0.0 remove EcsOptimizedAmi
- */
-/**
- * Construct a Linux or Windows machine image from the latest ECS Optimized AMI published in SSM
- *
- * @deprecated see {@link EcsOptimizedImage#amazonLinux}, {@link EcsOptimizedImage#amazonLinux} and {@link EcsOptimizedImage#windows}
- */
-export class EcsOptimizedAmi implements ec2.IMachineImage {
-  private readonly generation?: ec2.AmazonLinuxGeneration;
-  private readonly windowsVersion?: WindowsOptimizedVersion;
-  private readonly hwType: AmiHardwareType;
-
-  private readonly amiParameterName: string;
-
-  /**
-   * Constructs a new instance of the EcsOptimizedAmi class.
-   */
-  constructor(props?: EcsOptimizedAmiProps) {
-    this.hwType = (props && props.hardwareType) || AmiHardwareType.STANDARD;
-    if (props && props.generation) { // generation defined in the props object
-      if (props.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX && this.hwType !== AmiHardwareType.STANDARD) {
-        throw new Error('Amazon Linux does not support special hardware type. Use Amazon Linux 2 instead');
-      } else if (props.windowsVersion) {
-        throw new Error('"windowsVersion" and Linux image "generation" cannot be both set');
-      } else {
-        this.generation = props.generation;
-      }
-    } else if (props && props.windowsVersion) {
-      if (this.hwType !== AmiHardwareType.STANDARD) {
-        throw new Error('Windows Server does not support special hardware type');
-      } else {
-        this.windowsVersion = props.windowsVersion;
-      }
-    } else { // generation not defined in props object
-      // always default to Amazon Linux v2 regardless of HW
-      this.generation = ec2.AmazonLinuxGeneration.AMAZON_LINUX_2;
-    }
-
-    // set the SSM parameter name
-    this.amiParameterName = '/aws/service/ecs/optimized-ami/'
-      + (this.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX ? 'amazon-linux/' : '')
-      + (this.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX_2 ? 'amazon-linux-2/' : '')
-      + (this.windowsVersion ? `windows_server/${this.windowsVersion}/english/full/` : '')
-      + (this.hwType === AmiHardwareType.GPU ? 'gpu/' : '')
-      + (this.hwType === AmiHardwareType.ARM ? 'arm64/' : '')
-      + 'recommended/image_id';
-  }
-
-  /**
-   * Return the correct image
-   */
-  public getImage(scope: CoreConstruct): ec2.MachineImageConfig {
-    const ami = ssm.StringParameter.valueForTypedStringParameter(scope, this.amiParameterName, ssm.ParameterType.AWS_EC2_IMAGE_ID);
-    const osType = this.windowsVersion ? ec2.OperatingSystemType.WINDOWS : ec2.OperatingSystemType.LINUX;
-    return {
-      imageId: ami,
-      osType,
-      userData: ec2.UserData.forOperatingSystem(osType),
-    };
-  }
-}
-
-/**
- * Construct a Linux or Windows machine image from the latest ECS Optimized AMI published in SSM
- */
-export class EcsOptimizedImage implements ec2.IMachineImage {
-  /**
-   * Construct an Amazon Linux 2 image from the latest ECS Optimized AMI published in SSM
-   *
-   * @param hardwareType ECS-optimized AMI variant to use
-   */
-  public static amazonLinux2(hardwareType = AmiHardwareType.STANDARD): EcsOptimizedImage {
-    return new EcsOptimizedImage({ generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2, hardwareType });
-  }
-
-  /**
-   * Construct an Amazon Linux AMI image from the latest ECS Optimized AMI published in SSM
-   */
-  public static amazonLinux(): EcsOptimizedImage {
-    return new EcsOptimizedImage({ generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX });
-  }
-
-  /**
-   * Construct a Windows image from the latest ECS Optimized AMI published in SSM
-   *
-   * @param windowsVersion Windows Version to use
-   */
-  public static windows(windowsVersion: WindowsOptimizedVersion): EcsOptimizedImage {
-    return new EcsOptimizedImage({ windowsVersion });
-  }
-
-  private readonly generation?: ec2.AmazonLinuxGeneration;
-  private readonly windowsVersion?: WindowsOptimizedVersion;
-  private readonly hwType?: AmiHardwareType;
-
-  private readonly amiParameterName: string;
-
-  /**
-   * Constructs a new instance of the EcsOptimizedAmi class.
-   */
-  private constructor(props: EcsOptimizedAmiProps) {
-    this.hwType = props && props.hardwareType;
-
-    if (props.windowsVersion) {
-      this.windowsVersion = props.windowsVersion;
-    } else if (props.generation) {
-      this.generation = props.generation;
-    } else {
-      throw new Error('This error should never be thrown');
-    }
-
-    // set the SSM parameter name
-    this.amiParameterName = '/aws/service/ecs/optimized-ami/'
-      + (this.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX ? 'amazon-linux/' : '')
-      + (this.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX_2 ? 'amazon-linux-2/' : '')
-      + (this.windowsVersion ? `windows_server/${this.windowsVersion}/english/full/` : '')
-      + (this.hwType === AmiHardwareType.GPU ? 'gpu/' : '')
-      + (this.hwType === AmiHardwareType.ARM ? 'arm64/' : '')
-      + 'recommended/image_id';
-  }
-
-  /**
-   * Return the correct image
-   */
-  public getImage(scope: CoreConstruct): ec2.MachineImageConfig {
-    const ami = ssm.StringParameter.valueForTypedStringParameter(scope, this.amiParameterName, ssm.ParameterType.AWS_EC2_IMAGE_ID);
-    const osType = this.windowsVersion ? ec2.OperatingSystemType.WINDOWS : ec2.OperatingSystemType.LINUX;
-    return {
-      imageId: ami,
-      osType,
-      userData: ec2.UserData.forOperatingSystem(osType),
-    };
-  }
-}
-
-/**
- * Amazon ECS variant
- */
-export enum BottlerocketEcsVariant {
-  /**
-   * aws-ecs-1 variant
-   */
-  AWS_ECS_1 = 'aws-ecs-1'
-
-}
-
-/**
- * Properties for BottleRocketImage
- */
-export interface BottleRocketImageProps {
-  /**
-   * The Amazon ECS variant to use.
-   * Only `aws-ecs-1` is currently available
-   *
-   * @default - BottlerocketEcsVariant.AWS_ECS_1
-   */
-  readonly variant?: BottlerocketEcsVariant;
-}
-
-/**
- * Construct an Bottlerocket image from the latest AMI published in SSM
- */
-export class BottleRocketImage implements ec2.IMachineImage {
-  private readonly amiParameterName: string;
-  /**
-   * Amazon ECS variant for Bottlerocket AMI
-   */
-  private readonly variant: string;
-
-  /**
-   * Constructs a new instance of the BottleRocketImage class.
-   */
-  public constructor(props: BottleRocketImageProps = {}) {
-    this.variant = props.variant ?? BottlerocketEcsVariant.AWS_ECS_1;
-
-    // set the SSM parameter name
-    this.amiParameterName = `/aws/service/bottlerocket/${this.variant}/x86_64/latest/image_id`;
-  }
-
-  /**
-   * Return the correct image
-   */
-  public getImage(scope: CoreConstruct): ec2.MachineImageConfig {
-    const ami = ssm.StringParameter.valueForStringParameter(scope, this.amiParameterName);
-    return {
-      imageId: ami,
-      osType: ec2.OperatingSystemType.LINUX,
-      userData: ec2.UserData.custom(''),
-    };
   }
 }
 
@@ -1016,11 +820,18 @@ export interface AddAutoScalingGroupCapacityOptions {
    */
   readonly topicEncryptionKey?: kms.IKey;
 
-
   /**
-   * Specify the machine image type.
+   * What type of machine image this is
    *
-   * @default MachineImageType.AMAZON_LINUX_2
+   * Depending on the setting, different UserData will automatically be added
+   * to the `AutoScalingGroup` to configure it properly for use with ECS.
+   *
+   * If you create an `AutoScalingGroup` yourself and are adding it via
+   * `addAutoScalingGroup()`, you must specify this value. If you are adding an
+   * `autoScalingGroup` via `addCapacity`, this value will be determined
+   * from the `machineImage` you pass.
+   *
+   * @default - Automatically determined from `machineImage`, if available, otherwise `MachineImageType.AMAZON_LINUX_2`.
    */
   readonly machineImageType?: MachineImageType;
 }
@@ -1035,11 +846,27 @@ export interface AddCapacityOptions extends AddAutoScalingGroupCapacityOptions, 
   readonly instanceType: ec2.InstanceType;
 
   /**
-   * The ECS-optimized AMI variant to use. For more information, see
-   * [Amazon ECS-optimized AMIs](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-optimized_AMI.html).
+   * The ECS-optimized AMI variant to use
+   *
+   * The default is to use an ECS-optimized AMI of Amazon Linux 2 which is
+   * automatically updated to the latest version on every deployment. This will
+   * replace the instances in the AutoScalingGroup. Make sure you have not disabled
+   * task draining, to avoid downtime when the AMI updates.
+   *
+   * To use an image that does not update on every deployment, pass:
+   *
+   * ```ts
+   * const machineImage = ecs.EcsOptimizedImage.amazonLinux2(ecs.AmiHardwareType.STANDARD, {
+   *   cachedInContext: true,
+   * });
+   * ```
+   *
+   * For more information, see [Amazon ECS-optimized
+   * AMIs](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-optimized_AMI.html).
+   *
    * You must define either `machineImage` or `machineImageType`, not both.
    *
-   * @default - Amazon Linux 2
+   * @default - Automatically updated, ECS-optimized Amazon Linux 2
    */
   readonly machineImage?: ec2.IMachineImage;
 }
@@ -1066,28 +893,6 @@ export interface CloudMapNamespaceOptions {
    * @default VPC of the cluster for Private DNS Namespace, otherwise none
    */
   readonly vpc?: ec2.IVpc;
-}
-
-/**
- * The ECS-optimized AMI variant to use. For more information, see
- * [Amazon ECS-optimized AMIs](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-optimized_AMI.html).
- */
-export enum AmiHardwareType {
-
-  /**
-   * Use the standard Amazon ECS-optimized AMI.
-   */
-  STANDARD = 'Standard',
-
-  /**
-   * Use the Amazon ECS GPU-optimized AMI.
-   */
-  GPU = 'GPU',
-
-  /**
-   * Use the Amazon ECS-optimized Amazon Linux 2 (arm64) AMI.
-   */
-  ARM = 'ARM64',
 }
 
 enum ContainerInsights {
@@ -1226,7 +1031,9 @@ export interface ExecuteCommandLogConfiguration {
  */
 export interface AsgCapacityProviderProps extends AddAutoScalingGroupCapacityOptions {
   /**
-   * The name for the capacity provider.
+   * The name of the capacity provider. If a name is specified,
+   * it cannot start with `aws`, `ecs`, or `fargate`. If no name is specified,
+   * a default name in the CFNStackName-CFNResourceName-RandomString format is used.
    *
    * @default CloudFormation-generated name
    */
@@ -1293,6 +1100,11 @@ export class AsgCapacityProvider extends CoreConstruct {
   readonly autoScalingGroup: autoscaling.AutoScalingGroup;
 
   /**
+   * Auto Scaling Group machineImageType.
+   */
+  readonly machineImageType: MachineImageType;
+
+  /**
    * Whether managed termination protection is enabled
    */
   readonly enableManagedTerminationProtection?: boolean;
@@ -1302,13 +1114,19 @@ export class AsgCapacityProvider extends CoreConstruct {
 
     this.autoScalingGroup = props.autoScalingGroup as autoscaling.AutoScalingGroup;
 
+    this.machineImageType = props.machineImageType ?? MachineImageType.AMAZON_LINUX_2;
+
     this.enableManagedTerminationProtection =
       props.enableManagedTerminationProtection === undefined ? true : props.enableManagedTerminationProtection;
 
     if (this.enableManagedTerminationProtection) {
       this.autoScalingGroup.protectNewInstancesFromScaleIn();
     }
-
+    if (props.capacityProviderName) {
+      if (!(/^(?!aws|ecs|fargate).+/gm.test(props.capacityProviderName))) {
+        throw new Error(`Invalid Capacity Provider Name: ${props.capacityProviderName}, If a name is specified, it cannot start with aws, ecs, or fargate.`);
+      }
+    }
     const capacityProvider = new CfnCapacityProvider(this, id, {
       name: props.capacityProviderName,
       autoScalingGroupProvider: {
@@ -1355,4 +1173,9 @@ class MaybeCreateCapacityProviderAssociations implements IAspect {
       }
     }
   }
+}
+
+
+function isBottleRocketImage(image: ec2.IMachineImage) {
+  return image instanceof BottleRocketImage;
 }

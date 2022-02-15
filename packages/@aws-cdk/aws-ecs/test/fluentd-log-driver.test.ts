@@ -1,21 +1,18 @@
-import { expect, haveResourceLike } from '@aws-cdk/assert-internal';
+import { Match, Template } from '@aws-cdk/assertions';
 import * as cdk from '@aws-cdk/core';
-import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as ecs from '../lib';
 
 let stack: cdk.Stack;
 let td: ecs.TaskDefinition;
 const image = ecs.ContainerImage.fromRegistry('test-image');
 
-nodeunitShim({
-  'setUp'(cb: () => void) {
+describe('fluentd log driver', () => {
+  beforeEach(() => {
     stack = new cdk.Stack();
     td = new ecs.Ec2TaskDefinition(stack, 'TaskDefinition');
+  });
 
-    cb();
-  },
-
-  'create a fluentd log driver with options'(test: Test) {
+  test('create a fluentd log driver with options', () => {
     // WHEN
     td.addContainer('Container', {
       image,
@@ -26,23 +23,21 @@ nodeunitShim({
     });
 
     // THEN
-    expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
-        {
+        Match.objectLike({
           LogConfiguration: {
             LogDriver: 'fluentd',
             Options: {
               tag: 'hello',
             },
           },
-        },
+        }),
       ],
-    }));
+    });
+  });
 
-    test.done();
-  },
-
-  'create a fluentd log driver without options'(test: Test) {
+  test('create a fluentd log driver without options', () => {
     // WHEN
     td.addContainer('Container', {
       image,
@@ -51,20 +46,18 @@ nodeunitShim({
     });
 
     // THEN
-    expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
-        {
+        Match.objectLike({
           LogConfiguration: {
             LogDriver: 'fluentd',
           },
-        },
+        }),
       ],
-    }));
+    });
+  });
 
-    test.done();
-  },
-
-  'create a fluentd log driver with all possible options'(test: Test) {
+  test('create a fluentd log driver with all possible options', () => {
     // WHEN
     td.addContainer('Container', {
       image,
@@ -92,9 +85,9 @@ nodeunitShim({
     });
 
     // THEN
-    expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
-        {
+        Match.objectLike({
           LogConfiguration: {
             LogDriver: 'fluentd',
             Options: {
@@ -110,14 +103,12 @@ nodeunitShim({
               'env-regex': '[0-9]{1}',
             },
           },
-        },
+        }),
       ],
-    }));
+    });
+  });
 
-    test.done();
-  },
-
-  'create a fluentd log driver using fluentd'(test: Test) {
+  test('create a fluentd log driver using fluentd', () => {
     // WHEN
     td.addContainer('Container', {
       image,
@@ -126,16 +117,14 @@ nodeunitShim({
     });
 
     // THEN
-    expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
-        {
+        Match.objectLike({
           LogConfiguration: {
             LogDriver: 'fluentd',
           },
-        },
+        }),
       ],
-    }));
-
-    test.done();
-  },
+    });
+  });
 });

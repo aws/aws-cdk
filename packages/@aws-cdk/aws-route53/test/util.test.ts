@@ -1,21 +1,18 @@
 import * as cdk from '@aws-cdk/core';
-import { nodeunitShim, Test } from 'nodeunit-shim';
 import { HostedZone } from '../lib';
 import * as util from '../lib/util';
 
-nodeunitShim({
-  'throws when zone name ending with a \'.\''(test: Test) {
-    test.throws(() => util.validateZoneName('zone.name.'), /trailing dot/);
-    test.done();
-  },
+describe('util', () => {
+  test('throws when zone name ending with a \'.\'', () => {
+    expect(() => util.validateZoneName('zone.name.')).toThrow(/trailing dot/);
+  });
 
-  'accepts a valid domain name'(test: Test) {
+  test('accepts a valid domain name', () => {
     const domainName = 'amazonaws.com';
     util.validateZoneName(domainName);
-    test.done();
-  },
+  });
 
-  'providedName ending with a dot returns the name'(test: Test) {
+  test('providedName ending with a dot returns the name', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -27,11 +24,10 @@ nodeunitShim({
     }));
 
     // THEN
-    test.equal(qualified, 'test.domain.com.');
-    test.done();
-  },
+    expect(qualified).toEqual('test.domain.com.');
+  });
 
-  'providedName that matches zoneName returns providedName with a trailing dot'(test: Test) {
+  test('providedName that matches zoneName returns providedName with a trailing dot', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -43,11 +39,10 @@ nodeunitShim({
     }));
 
     // THEN
-    test.equal(qualified, 'test.domain.com.');
-    test.done();
-  },
+    expect(qualified).toEqual('test.domain.com.');
+  });
 
-  'providedName that ends with zoneName returns providedName with a trailing dot'(test: Test) {
+  test('providedName that ends with zoneName returns providedName with a trailing dot', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -59,11 +54,10 @@ nodeunitShim({
     }));
 
     // THEN
-    test.equal(qualified, 'test.domain.com.');
-    test.done();
-  },
+    expect(qualified).toEqual('test.domain.com.');
+  });
 
-  'providedName that does not match zoneName concatenates providedName and zoneName'(test: Test) {
+  test('providedName that does not match zoneName concatenates providedName and zoneName', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -75,7 +69,6 @@ nodeunitShim({
     }));
 
     // THEN
-    test.equal(qualified, 'test.domain.com.');
-    test.done();
-  },
+    expect(qualified).toEqual('test.domain.com.');
+  });
 });

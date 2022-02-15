@@ -6,7 +6,8 @@
   "types": "lib/index.d.ts",
   "repository": {
     "type": "git",
-    "url": "https://github.com/aws/aws-cdk.git"
+    "url": "https://github.com/aws/aws-cdk.git",
+    "directory": "packages/cdk-dasm"
   },
   "bin": {
     "cdk-dasm": "bin/cdk-dasm"
@@ -28,21 +29,23 @@
   },
   "license": "Apache-2.0",
   "dependencies": {
-    "codemaker": "^1.30.0",
+    "codemaker": "^1.53.0",
     "yaml": "1.10.2"
   },
   "devDependencies": {
-    "@types/jest": "^26.0.23",
+    "@types/jest": "^27.4.0",
     "@types/yaml": "1.9.7",
-    "jest": "^26.6.3",
-    "typescript": "~3.9.9"
+    "jest": "^27.5.1",
+    "typescript": "~3.9.10"
   },
   "keywords": [
     "aws",
     "cdk"
   ],
   "nozem": {
-    "ostools": ["chmod"]
+    "ostools": [
+      "chmod"
+    ]
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "engines": {

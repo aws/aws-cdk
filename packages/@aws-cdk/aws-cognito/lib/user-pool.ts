@@ -1,6 +1,7 @@
 import { IRole, PolicyDocument, PolicyStatement, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
+import { IKey } from '@aws-cdk/aws-kms';
 import * as lambda from '@aws-cdk/aws-lambda';
-import { Duration, IResource, Lazy, Names, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/core';
+import { ArnFormat, Duration, IResource, Lazy, Names, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { toASCII as punycodeEncode } from 'punycode/';
 import { CfnUserPool } from './cognito.generated';
@@ -8,6 +9,7 @@ import { StandardAttributeNames } from './private/attr-names';
 import { ICustomAttribute, StandardAttribute, StandardAttributes } from './user-pool-attr';
 import { UserPoolClient, UserPoolClientOptions } from './user-pool-client';
 import { UserPoolDomain, UserPoolDomainOptions } from './user-pool-domain';
+import { UserPoolEmail } from './user-pool-email';
 import { IUserPoolIdentityProvider } from './user-pool-idp';
 import { UserPoolResourceServer, UserPoolResourceServerOptions } from './user-pool-resource-server';
 
@@ -138,6 +140,20 @@ export interface UserPoolTriggers {
   readonly verifyAuthChallengeResponse?: lambda.IFunction;
 
   /**
+   * Amazon Cognito invokes this trigger to send email notifications to users.
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-custom-email-sender.html
+   * @default - no trigger configured
+   */
+  readonly customEmailSender?: lambda.IFunction
+
+  /**
+   * Amazon Cognito invokes this trigger to send SMS notifications to users.
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-custom-sms-sender.html
+   * @default - no trigger configured
+   */
+  readonly customSmsSender?: lambda.IFunction
+
+  /**
    * Index signature
    */
   [trigger: string]: lambda.IFunction | undefined;
@@ -206,6 +222,18 @@ export class UserPoolOperation {
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-verify-auth-challenge-response.html
    */
   public static readonly VERIFY_AUTH_CHALLENGE_RESPONSE = new UserPoolOperation('verifyAuthChallengeResponse');
+
+  /**
+   * Amazon Cognito invokes this trigger to send email notifications to users.
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-custom-email-sender.html
+   */
+  public static readonly CUSTOM_EMAIL_SENDER = new UserPoolOperation('customEmailSender');
+
+  /**
+   * Amazon Cognito invokes this trigger to send email notifications to users.
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-custom-sms-sender.html
+   */
+  public static readonly CUSTOM_SMS_SENDER = new UserPoolOperation('customSmsSender');
 
   /** A custom user pool operation */
   public static of(name: string): UserPoolOperation {
@@ -430,6 +458,26 @@ export enum AccountRecovery {
 }
 
 /**
+ * Device tracking settings
+ * @see https://docs.aws.amazon.com/cognito/latest/developerguide/amazon-cognito-user-pools-device-tracking.html
+ */
+export interface DeviceTracking {
+  /**
+   * Indicates whether a challenge is required on a new device. Only applicable to a new device.
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/amazon-cognito-user-pools-device-tracking.html
+   * @default false
+   */
+  readonly challengeRequiredOnNewDevice: boolean;
+
+  /**
+   * If true, a device is only remembered on user prompt.
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/amazon-cognito-user-pools-device-tracking.html
+   * @default false
+   */
+  readonly deviceOnlyRememberedOnUserPrompt: boolean;
+}
+
+/**
  * Props for the UserPool construct
  */
 export interface UserPoolProps {
@@ -550,9 +598,17 @@ export interface UserPoolProps {
 
   /**
    * Email settings for a user pool.
+   *
    * @default - see defaults on each property of EmailSettings.
+   * @deprecated Use 'email' instead.
    */
   readonly emailSettings?: EmailSettings;
+
+  /**
+   * Email settings for a user pool.
+   * @default - cognito will use the default email configuration
+   */
+  readonly email?: UserPoolEmail;
 
   /**
    * Lambda functions to use for supported Cognito triggers.
@@ -581,6 +637,19 @@ export interface UserPoolProps {
    * @default RemovalPolicy.RETAIN
    */
   readonly removalPolicy?: RemovalPolicy;
+
+  /**
+   * Device tracking settings
+   * @default - see defaults on each property of DeviceTracking.
+   */
+  readonly deviceTracking?: DeviceTracking;
+
+  /**
+   * This key will be used to encrypt temporary passwords and authorization codes that Amazon Cognito generates.
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-custom-sender-triggers.html
+   * @default - no key ID configured
+   */
+  readonly customSenderKmsKey?: IKey;
 }
 
 /**
@@ -680,7 +749,7 @@ export class UserPool extends UserPoolBase {
    * Import an existing user pool based on its ARN.
    */
   public static fromUserPoolArn(scope: Construct, id: string, userPoolArn: string): IUserPool {
-    const arnParts = Stack.of(scope).parseArn(userPoolArn);
+    const arnParts = Stack.of(scope).splitArn(userPoolArn, ArnFormat.SLASH_RESOURCE_NAME);
 
     if (!arnParts.resourceName) {
       throw new Error('invalid user pool ARN');
@@ -731,12 +800,37 @@ export class UserPool extends UserPoolBase {
 
     const signIn = this.signInConfiguration(props);
 
+    if (props.customSenderKmsKey) {
+      const kmsKey = props.customSenderKmsKey;
+      (this.triggers as any).kmsKeyId = kmsKey.keyArn;
+    }
+
     if (props.lambdaTriggers) {
       for (const t of Object.keys(props.lambdaTriggers)) {
-        const trigger = props.lambdaTriggers[t];
-        if (trigger !== undefined) {
-          this.addLambdaPermission(trigger as lambda.IFunction, t);
-          (this.triggers as any)[t] = (trigger as lambda.IFunction).functionArn;
+        let trigger: lambda.IFunction | undefined;
+        switch (t) {
+          case 'customSmsSender':
+          case 'customEmailSender':
+            if (!this.triggers.kmsKeyId) {
+              throw new Error('you must specify a KMS key if you are using customSmsSender or customEmailSender.');
+            }
+            trigger = props.lambdaTriggers[t];
+            const version = 'V1_0';
+            if (trigger !== undefined) {
+              this.addLambdaPermission(trigger as lambda.IFunction, t);
+              (this.triggers as any)[t] = {
+                lambdaArn: trigger.functionArn,
+                lambdaVersion: version,
+              };
+            }
+            break;
+          default:
+            trigger = props.lambdaTriggers[t] as lambda.IFunction | undefined;
+            if (trigger !== undefined) {
+              this.addLambdaPermission(trigger as lambda.IFunction, t);
+              (this.triggers as any)[t] = (trigger as lambda.IFunction).functionArn;
+            }
+            break;
         }
       }
     }
@@ -762,6 +856,14 @@ export class UserPool extends UserPoolBase {
 
     const passwordPolicy = this.configurePasswordPolicy(props);
 
+    if (props.email && props.emailSettings) {
+      throw new Error('you must either provide "email" or "emailSettings", but not both');
+    }
+    const emailConfiguration = props.email ? props.email._bind(this) : undefinedIfNoKeys({
+      from: encodePuny(props.emailSettings?.from),
+      replyToEmailAddress: encodePuny(props.emailSettings?.replyTo),
+    });
+
     const userPool = new CfnUserPool(this, 'Resource', {
       userPoolName: props.userPoolName,
       usernameAttributes: signIn.usernameAttrs,
@@ -779,14 +881,12 @@ export class UserPool extends UserPoolBase {
       mfaConfiguration: props.mfa,
       enabledMfas: this.mfaConfiguration(props),
       policies: passwordPolicy !== undefined ? { passwordPolicy } : undefined,
-      emailConfiguration: undefinedIfNoKeys({
-        from: encodePuny(props.emailSettings?.from),
-        replyToEmailAddress: encodePuny(props.emailSettings?.replyTo),
-      }),
+      emailConfiguration,
       usernameConfiguration: undefinedIfNoKeys({
         caseSensitive: props.signInCaseSensitive,
       }),
       accountRecoverySetting: this.accountRecovery(props),
+      deviceConfiguration: props.deviceTracking,
     });
     userPool.applyRemovalPolicy(props.removalPolicy);
 
@@ -803,11 +903,25 @@ export class UserPool extends UserPoolBase {
    */
   public addTrigger(operation: UserPoolOperation, fn: lambda.IFunction): void {
     if (operation.operationName in this.triggers) {
-      throw new Error(`A trigger for the operation ${operation} already exists.`);
+      throw new Error(`A trigger for the operation ${operation.operationName} already exists.`);
     }
 
     this.addLambdaPermission(fn, operation.operationName);
-    (this.triggers as any)[operation.operationName] = fn.functionArn;
+    switch (operation.operationName) {
+      case 'customEmailSender':
+      case 'customSmsSender':
+        if (!this.triggers.kmsKeyId) {
+          throw new Error('you must specify a KMS key if you are using customSmsSender or customEmailSender.');
+        }
+        (this.triggers as any)[operation.operationName] = {
+          lambdaArn: fn.functionArn,
+          lambdaVersion: 'V1_0',
+        };
+        break;
+      default:
+        (this.triggers as any)[operation.operationName] = fn.functionArn;
+    }
+
   }
 
   private addLambdaPermission(fn: lambda.IFunction, name: string): void {

@@ -48,6 +48,16 @@ export enum ContextProvider {
    * Security group provider
    */
   SECURITY_GROUP_PROVIDER = 'security-group',
+
+  /**
+   * KMS Key Provider
+   */
+  KEY_PROVIDER = 'key-provider',
+
+  /**
+   * A plugin provider (the actual plugin name will be in the properties)
+   */
+  PLUGIN = 'plugin',
 }
 
 /**
@@ -411,8 +421,69 @@ export interface SecurityGroupContextQuery {
 
   /**
    * Security group id
+   *
+   * @default - None
    */
-  readonly securityGroupId: string;
+  readonly securityGroupId?: string;
+
+  /**
+   * Security group name
+   *
+   * @default - None
+   */
+  readonly securityGroupName?: string;
+
+  /**
+   * VPC ID
+   *
+   * @default - None
+   */
+  readonly vpcId?: string;
+}
+
+/**
+ * Query input for looking up a KMS Key
+ */
+export interface KeyContextQuery {
+  /**
+   * Query account
+   */
+  readonly account: string;
+
+  /**
+   * Query region
+   */
+  readonly region: string;
+
+  /**
+   * The ARN of the role that should be used to look up the missing values
+   *
+   * @default - None
+   */
+  readonly lookupRoleArn?: string;
+
+  /**
+   * Alias name used to search the Key
+   */
+  readonly aliasName: string;
+}
+
+/**
+ * Query input for plugins
+ *
+ * This alternate branch is necessary because it needs to be able to escape all type checking
+ * we do on on the cloud assembly -- we cannot know the properties that will be used a priori.
+ */
+export interface PluginContextQuery {
+  /**
+   * The name of the plugin
+   */
+  readonly pluginName: string;
+
+  /**
+   * Arbitrary other arguments for the plugin
+   */
+  [key: string]: any;
 }
 
 export type ContextQueryProperties = AmiContextQuery
@@ -423,4 +494,7 @@ export type ContextQueryProperties = AmiContextQuery
 | EndpointServiceAvailabilityZonesContextQuery
 | LoadBalancerContextQuery
 | LoadBalancerListenerContextQuery
-| SecurityGroupContextQuery;
+| SecurityGroupContextQuery
+| KeyContextQuery
+| PluginContextQuery;
+

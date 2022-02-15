@@ -1,11 +1,14 @@
 import * as path from 'path';
 import * as cloudfront from '@aws-cdk/aws-cloudfront';
 import * as ec2 from '@aws-cdk/aws-ec2';
+import * as efs from '@aws-cdk/aws-efs';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
+import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import { AwsCliLayer } from '@aws-cdk/lambda-layer-awscli';
+import { kebab as toKebabCase } from 'case';
 import { Construct } from 'constructs';
 import { ISource, SourceConfig } from './source';
 
@@ -13,6 +16,8 @@ import { ISource, SourceConfig } from './source';
 // eslint-disable-next-line no-duplicate-imports, import/order
 import { Construct as CoreConstruct } from '@aws-cdk/core';
 
+// tag key has a limit of 128 characters
+const CUSTOM_RESOURCE_OWNER_TAG = 'aws-cdk:cr-owned';
 /**
  * Properties for `BucketDeployment`.
  */
@@ -30,9 +35,34 @@ export interface BucketDeploymentProps {
   /**
    * Key prefix in the destination bucket.
    *
+   * Must be <=104 characters
+   *
    * @default "/" (unzip to root of the destination bucket)
    */
   readonly destinationKeyPrefix?: string;
+
+  /**
+   * If this is set, matching files or objects will be excluded from the deployment's sync
+   * command. This can be used to exclude a file from being pruned in the destination bucket.
+   *
+   * If you want to just exclude files from the deployment package (which excludes these files
+   * evaluated when invalidating the asset), you should leverage the `exclude` property of
+   * `AssetOptions` when defining your source.
+   *
+   * @default - No exclude filters are used
+   * @see https://docs.aws.amazon.com/cli/latest/reference/s3/index.html#use-of-exclude-and-include-filters
+   */
+  readonly exclude?: string[]
+
+  /**
+   * If this is set, matching files or objects will be included with the deployment's sync
+   * command. Since all files from the deployment package are included by default, this property
+   * is usually leveraged alongside an `exclude` filter.
+   *
+   * @default - No include filters are used and all files are included with the sync command
+   * @see https://docs.aws.amazon.com/cli/latest/reference/s3/index.html#use-of-exclude-and-include-filters
+   */
+  readonly include?: string[]
 
   /**
    * If this is set to false, files in the destination bucket that
@@ -72,6 +102,14 @@ export interface BucketDeploymentProps {
    */
   readonly distributionPaths?: string[];
 
+
+  /**
+   * The number of days that the lambda function's log events are kept in CloudWatch Logs.
+   *
+   * @default logs.RetentionDays.INFINITE
+   */
+  readonly logRetention?: logs.RetentionDays;
+
   /**
    * The amount of memory (in MiB) to allocate to the AWS Lambda function which
    * replicates the files from the CDK bucket to the destination bucket.
@@ -82,6 +120,14 @@ export interface BucketDeploymentProps {
    * @default 128
    */
   readonly memoryLimit?: number;
+
+  /**
+   *  Mount an EFS file system. Enable this if your assets are large and you encounter disk space errors.
+   *  Enabling this option will require a VPC to be specified.
+   *
+   * @default - No EFS. Lambda has access only to 512MB of disk space.
+   */
+  readonly useEfs?: boolean
 
   /**
    * Execution role associated with this function
@@ -164,9 +210,16 @@ export interface BucketDeploymentProps {
    * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/ServerSideEncryptionCustomerKeys.html#sse-c-how-to-programmatically-intro
    */
   readonly serverSideEncryptionCustomerAlgorithm?: string;
+  /**
+   * System-defined x-amz-acl metadata to be set on all objects in the deployment.
+   * @default - Not set.
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/acl-overview.html#canned-acl
+   */
+  readonly accessControl?: s3.BucketAccessControl;
 
   /**
    * The VPC network to place the deployment lambda handler in.
+   * This is required if `useEfs` is set.
    *
    * @default None
    */
@@ -189,15 +242,59 @@ export class BucketDeployment extends CoreConstruct {
   constructor(scope: Construct, id: string, props: BucketDeploymentProps) {
     super(scope, id);
 
-    if (props.distributionPaths && !props.distribution) {
-      throw new Error('Distribution must be specified if distribution paths are specified');
+    if (props.distributionPaths) {
+      if (!props.distribution) {
+        throw new Error('Distribution must be specified if distribution paths are specified');
+      }
+      if (!cdk.Token.isUnresolved(props.distributionPaths)) {
+        if (!props.distributionPaths.every(distributionPath => cdk.Token.isUnresolved(distributionPath) || distributionPath.startsWith('/'))) {
+          throw new Error('Distribution paths must start with "/"');
+        }
+      }
     }
 
+    if (props.useEfs && !props.vpc) {
+      throw new Error('Vpc must be specified if useEfs is set');
+    }
+
+    const accessPointPath = '/lambda';
+    let accessPoint;
+    if (props.useEfs && props.vpc) {
+      const accessMode = '0777';
+      const fileSystem = this.getOrCreateEfsFileSystem(scope, {
+        vpc: props.vpc,
+        removalPolicy: cdk.RemovalPolicy.DESTROY,
+      });
+      accessPoint = fileSystem.addAccessPoint('AccessPoint', {
+        path: accessPointPath,
+        createAcl: {
+          ownerUid: '1001',
+          ownerGid: '1001',
+          permissions: accessMode,
+        },
+        posixUser: {
+          uid: '1001',
+          gid: '1001',
+        },
+      });
+      accessPoint.node.addDependency(fileSystem.mountTargetsAvailable);
+    }
+
+    // Making VPC dependent on BucketDeployment so that CFN stack deletion is smooth.
+    // Refer comments on https://github.com/aws/aws-cdk/pull/15220 for more details.
+    if (props.vpc) {
+      this.node.addDependency(props.vpc);
+    }
+
+    const mountPath = `/mnt${accessPointPath}`;
     const handler = new lambda.SingletonFunction(this, 'CustomResourceHandler', {
-      uuid: this.renderSingletonUuid(props.memoryLimit),
+      uuid: this.renderSingletonUuid(props.memoryLimit, props.vpc),
       code: lambda.Code.fromAsset(path.join(__dirname, 'lambda')),
       layers: [new AwsCliLayer(this, 'AwsCliLayer')],
-      runtime: lambda.Runtime.PYTHON_3_6,
+      runtime: lambda.Runtime.PYTHON_3_7,
+      environment: props.useEfs ? {
+        MOUNT_PATH: mountPath,
+      } : undefined,
       handler: 'index.handler',
       lambdaPurpose: 'Custom::CDKBucketDeployment',
       timeout: cdk.Duration.minutes(15),
@@ -205,6 +302,11 @@ export class BucketDeployment extends CoreConstruct {
       memorySize: props.memoryLimit,
       vpc: props.vpc,
       vpcSubnets: props.vpcSubnets,
+      filesystem: accessPoint ? lambda.FileSystem.fromEfsAccessPoint(
+        accessPoint,
+        mountPath,
+      ) : undefined,
+      logRetention: props.logRetention,
     });
 
     const handlerRole = handler.role;
@@ -221,16 +323,24 @@ export class BucketDeployment extends CoreConstruct {
       }));
     }
 
-    new cdk.CustomResource(this, 'CustomResource', {
+    // to avoid redundant stack updates, only include "SourceMarkers" if one of
+    // the sources actually has markers.
+    const hasMarkers = sources.some(source => source.markers);
+
+    const crUniqueId = `CustomResource${this.renderUniqueId(props.memoryLimit, props.vpc)}`;
+    const cr = new cdk.CustomResource(this, crUniqueId, {
       serviceToken: handler.functionArn,
       resourceType: 'Custom::CDKBucketDeployment',
       properties: {
         SourceBucketNames: sources.map(source => source.bucket.bucketName),
         SourceObjectKeys: sources.map(source => source.zipObjectKey),
+        SourceMarkers: hasMarkers ? sources.map(source => source.markers ?? {}) : undefined,
         DestinationBucketName: props.destinationBucket.bucketName,
         DestinationBucketKeyPrefix: props.destinationKeyPrefix,
         RetainOnDelete: props.retainOnDelete,
         Prune: props.prune ?? true,
+        Exclude: props.exclude,
+        Include: props.include,
         UserMetadata: props.metadata ? mapUserMetadata(props.metadata) : undefined,
         SystemMetadata: mapSystemMetadata(props),
         DistributionId: props.distribution?.distributionId,
@@ -238,10 +348,65 @@ export class BucketDeployment extends CoreConstruct {
       },
     });
 
+    let prefix: string = props.destinationKeyPrefix ?
+      `:${props.destinationKeyPrefix}` :
+      '';
+    prefix += `:${cr.node.addr.substr(-8)}`;
+    const tagKey = CUSTOM_RESOURCE_OWNER_TAG + prefix;
+
+    // destinationKeyPrefix can be 104 characters before we hit
+    // the tag key limit of 128
+    // '/this/is/a/random/key/prefix/that/is/a/lot/of/characters/do/we/think/that/it/will/ever/be/this/long?????'
+    // better to throw an error here than wait for CloudFormation to fail
+    if (tagKey.length > 128) {
+      throw new Error('The BucketDeployment construct requires that the "destinationKeyPrefix" be <=104 characters');
+    }
+
+    /*
+     * This will add a tag to the deployment bucket in the format of
+     * `aws-cdk:cr-owned:{keyPrefix}:{uniqueHash}`
+     *
+     * For example:
+     * {
+     *   Key: 'aws-cdk:cr-owned:deploy/here/:240D17B3',
+     *   Value: 'true',
+     * }
+     *
+     * This will allow for scenarios where there is a single S3 Bucket that has multiple
+     * BucketDeployment resources deploying to it. Each bucket + keyPrefix can be "owned" by
+     * 1 or more BucketDeployment resources. Since there are some scenarios where multiple BucketDeployment
+     * resources can deploy to the same bucket and key prefix (e.g. using include/exclude) we
+     * also append part of the id to make the key unique.
+     *
+     * As long as a bucket + keyPrefix is "owned" by a BucketDeployment resource, another CR
+     * cannot delete data. There are a couple of scenarios where this comes into play.
+     *
+     * 1. If the LogicalResourceId of the CustomResource changes (e.g. the crUniqueId changes)
+     * CloudFormation will first issue a 'Create' to create the new CustomResource and will
+     * update the Tag on the bucket. CloudFormation will then issue a 'Delete' on the old CustomResource
+     * and since the new CR "owns" the Bucket+keyPrefix it will not delete the contents of the bucket
+     *
+     * 2. If the BucketDeployment resource is deleted _and_ it is the only CR for that bucket+keyPrefix
+     * then CloudFormation will first remove the tag from the bucket and then issue a "Delete" to the
+     * CR. Since there are no tags indicating that this bucket+keyPrefix is "owned" then it will delete
+     * the contents.
+     *
+     * 3. If the BucketDeployment resource is deleted _and_ it is *not* the only CR for that bucket:keyPrefix
+     * then CloudFormation will first remove the tag from the bucket and then issue a "Delete" to the CR.
+     * Since there are other CRs that also "own" that bucket+keyPrefix there will still be a tag on the bucket
+     * and the contents will not be removed.
+     *
+     * 4. If the BucketDeployment resource _and_ the S3 Bucket are both removed, then CloudFormation will first
+     * issue a "Delete" to the CR and since there is a tag on the bucket the contents will not be removed. If you
+     * want the contents of the bucket to be removed on bucket deletion, then `autoDeleteObjects` property should
+     * be set to true on the Bucket.
+     */
+    cdk.Tags.of(props.destinationBucket).add(tagKey, 'true');
+
   }
 
-  private renderSingletonUuid(memoryLimit?: number) {
-    let uuid = '8693BB64-9689-44B6-9AAF-B0CC9EB8756C';
+  private renderUniqueId(memoryLimit?: number, vpc?: ec2.IVpc) {
+    let uuid = '';
 
     // if user specify a custom memory limit, define another singleton handler
     // with this configuration. otherwise, it won't be possible to use multiple
@@ -254,7 +419,35 @@ export class BucketDeployment extends CoreConstruct {
       uuid += `-${memoryLimit.toString()}MiB`;
     }
 
+    // if user specify to use VPC, define another singleton handler
+    // with this configuration. otherwise, it won't be possible to use multiple
+    // configurations since we have a singleton.
+    // A VPC is a must if EFS storage is used and that's why we are only using VPC in uuid.
+    if (vpc) {
+      uuid += `-${vpc.node.addr}`;
+    }
+
     return uuid;
+  }
+
+  private renderSingletonUuid(memoryLimit?: number, vpc?: ec2.IVpc) {
+    let uuid = '8693BB64-9689-44B6-9AAF-B0CC9EB8756C';
+
+    uuid += this.renderUniqueId(memoryLimit, vpc);
+
+    return uuid;
+  }
+
+  /**
+   * Function to get/create a stack singleton instance of EFS FileSystem per vpc.
+   *
+   * @param scope Construct
+   * @param fileSystemProps EFS FileSystemProps
+   */
+  private getOrCreateEfsFileSystem(scope: Construct, fileSystemProps: efs.FileSystemProps): efs.FileSystem {
+    const stack = cdk.Stack.of(scope);
+    const uuid = `BucketDeploymentEFS-VPC-${fileSystemProps.vpc.node.addr}`;
+    return stack.node.tryFindChild(uuid) as efs.FileSystem ?? new efs.FileSystem(scope, uuid, fileSystemProps);
   }
 }
 
@@ -282,6 +475,7 @@ function mapSystemMetadata(metadata: BucketDeploymentProps) {
   if (metadata.websiteRedirectLocation) { res['website-redirect'] = metadata.websiteRedirectLocation; }
   if (metadata.serverSideEncryptionAwsKmsKeyId) { res['sse-kms-key-id'] = metadata.serverSideEncryptionAwsKmsKeyId; }
   if (metadata.serverSideEncryptionCustomerAlgorithm) { res['sse-c-copy-source'] = metadata.serverSideEncryptionCustomerAlgorithm; }
+  if (metadata.accessControl) { res.acl = toKebabCase(metadata.accessControl.toString()); }
 
   return Object.keys(res).length === 0 ? undefined : res;
 }
@@ -342,7 +536,7 @@ export class CacheControl {
      * The raw cache control setting.
      */
     public readonly value: any,
-  ) {}
+  ) { }
 }
 
 /**
@@ -440,7 +634,7 @@ export class Expires {
      * The raw expiration date expression.
      */
     public readonly value: any,
-  ) {}
+  ) { }
 }
 
 /**

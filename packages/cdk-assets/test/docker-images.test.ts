@@ -1,15 +1,21 @@
 jest.mock('child_process');
 
+import * as fs from 'fs';
 import { Manifest } from '@aws-cdk/cloud-assembly-schema';
 import * as mockfs from 'mock-fs';
 import { AssetManifest, AssetPublishing } from '../lib';
+import * as dockercreds from '../lib/private/docker-credentials';
 import { mockAws, mockedApiFailure, mockedApiResult } from './mock-aws';
 import { mockSpawn } from './mock-child_process';
+
 
 let aws: ReturnType<typeof mockAws>;
 const absoluteDockerPath = '/simple/cdk.out/dockerdir';
 beforeEach(() => {
   jest.resetAllMocks();
+
+  // By default, assume no externally-configured credentials.
+  jest.spyOn(dockercreds, 'cdkCredentialsConfig').mockReturnValue(undefined);
 
   mockfs({
     '/simple/cdk.out/assets.json': JSON.stringify({
@@ -67,6 +73,26 @@ beforeEach(() => {
         },
       },
     }),
+    '/default-network/cdk.out/assets.json': JSON.stringify({
+      version: Manifest.version(),
+      dockerImages: {
+        theAsset: {
+          source: {
+            directory: 'dockerdir',
+            networkMode: 'default',
+          },
+          destinations: {
+            theDestination: {
+              region: 'us-north-50',
+              assumeRoleArn: 'arn:aws:role',
+              repositoryName: 'repo',
+              imageTag: 'nopqr',
+            },
+          },
+        },
+      },
+    }),
+    '/default-network/cdk.out/dockerdir/Dockerfile': 'FROM scratch',
   });
 
   aws = mockAws();
@@ -158,6 +184,30 @@ describe('with a complete manifest', () => {
     expectAllSpawns();
     expect(true).toBeTruthy(); // Expect no exception, satisfy linter
   });
+
+  test('build with networkMode option', async () => {
+    pub = new AssetPublishing(AssetManifest.fromPath('/default-network/cdk.out'), { aws });
+    const defaultNetworkDockerpath = '/default-network/cdk.out/dockerdir';
+    aws.mockEcr.describeImages = mockedApiFailure('ImageNotFoundException', 'File does not exist');
+    aws.mockEcr.getAuthorizationToken = mockedApiResult({
+      authorizationData: [
+        { authorizationToken: 'dXNlcjpwYXNz', proxyEndpoint: 'https://proxy.com/' },
+      ],
+    });
+
+    const expectAllSpawns = mockSpawn(
+      { commandLine: ['docker', 'login', '--username', 'user', '--password-stdin', 'https://proxy.com/'] },
+      { commandLine: ['docker', 'inspect', 'cdkasset-theasset'], exitCode: 1 },
+      { commandLine: ['docker', 'build', '--tag', 'cdkasset-theasset', '--network', 'default', '.'], cwd: defaultNetworkDockerpath },
+      { commandLine: ['docker', 'tag', 'cdkasset-theasset', '12345.amazonaws.com/repo:nopqr'] },
+      { commandLine: ['docker', 'push', '12345.amazonaws.com/repo:nopqr'] },
+    );
+
+    await pub.publish();
+
+    expectAllSpawns();
+    expect(true).toBeTruthy(); // Expect no exception, satisfy linter
+  });
 });
 
 describe('external assets', () => {
@@ -177,7 +227,7 @@ describe('external assets', () => {
 
     const expectAllSpawns = mockSpawn(
       { commandLine: ['docker', 'login', '--username', 'user', '--password-stdin', 'https://proxy.com/'] },
-      { commandLine: ['sometool'], stdout: externalTag },
+      { commandLine: ['sometool'], stdout: externalTag, cwd: '/external/cdk.out' },
       { commandLine: ['docker', 'tag', externalTag, '12345.amazonaws.com/repo:ghijkl'] },
       { commandLine: ['docker', 'push', '12345.amazonaws.com/repo:ghijkl'] },
     );
@@ -214,5 +264,34 @@ test('correctly identify Docker directory if path is absolute', async () => {
   await pub.publish();
 
   expect(true).toBeTruthy(); // Expect no exception, satisfy linter
+  expectAllSpawns();
+});
+
+test('when external credentials are present, explicit Docker config directories are used', async () => {
+  // Setup -- Mock that we have CDK credentials, and mock fs operations.
+  jest.spyOn(dockercreds, 'cdkCredentialsConfig').mockReturnValue({ version: '0.1', domainCredentials: {} });
+  jest.spyOn(fs, 'mkdtempSync').mockImplementationOnce(() => '/tmp/mockedTempDir');
+  jest.spyOn(fs, 'writeFileSync').mockImplementation(jest.fn());
+
+  let pub = new AssetPublishing(AssetManifest.fromPath('/simple/cdk.out'), { aws });
+  aws.mockEcr.describeImages = mockedApiFailure('ImageNotFoundException', 'File does not exist');
+  aws.mockEcr.getAuthorizationToken = mockedApiResult({
+    authorizationData: [
+      { authorizationToken: 'dXNlcjpwYXNz', proxyEndpoint: 'https://proxy.com/' },
+    ],
+  });
+
+  const expectAllSpawns = mockSpawn(
+    // Initally use the first created directory with the CDK credentials
+    { commandLine: ['docker', '--config', '/tmp/mockedTempDir', 'inspect', 'cdkasset-theasset'], exitCode: 1 },
+    { commandLine: ['docker', '--config', '/tmp/mockedTempDir', 'build', '--tag', 'cdkasset-theasset', '.'], cwd: absoluteDockerPath },
+    { commandLine: ['docker', '--config', '/tmp/mockedTempDir', 'tag', 'cdkasset-theasset', '12345.amazonaws.com/repo:abcdef'] },
+    // Prior to push, revert to the default config directory
+    { commandLine: ['docker', 'login'], prefix: true },
+    { commandLine: ['docker', 'push', '12345.amazonaws.com/repo:abcdef'] },
+  );
+
+  await pub.publish();
+
   expectAllSpawns();
 });

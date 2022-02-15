@@ -1,7 +1,10 @@
 import { Construct } from 'constructs';
+import { Annotations } from './annotations';
 import { CfnRefElement } from './cfn-element';
 import { Fn } from './cfn-fn';
 import { Token } from './token';
+
+type Mapping = { [k1: string]: { [k2: string]: any } };
 
 export interface CfnMappingProps {
   /**
@@ -14,24 +17,42 @@ export interface CfnMappingProps {
    *
    * @default - No mapping.
    */
-  readonly mapping?: { [k1: string]: { [k2: string]: any } };
+  readonly mapping?: Mapping;
+
+  /*
+   * Synthesize this map in a lazy fashion.
+   *
+   * Lazy maps will only synthesize a mapping if a `findInMap` operation is unable to
+   * immediately return a value because one or both of the requested keys are unresolved
+   * tokens. In this case, `findInMap` will return a `Fn::FindInMap` CloudFormation
+   * intrinsic.
+   *
+   * @default false
+   */
+  readonly lazy?: boolean;
 }
 
 /**
  * Represents a CloudFormation mapping.
  */
 export class CfnMapping extends CfnRefElement {
-  private mapping: { [k1: string]: { [k2: string]: any } } = { };
+  private mapping: Mapping;
+  private readonly lazy?: boolean;
+  private lazyRender = false;
+  private lazyInformed = false;
 
   constructor(scope: Construct, id: string, props: CfnMappingProps = {}) {
     super(scope, id);
-    this.mapping = props.mapping || { };
+    this.mapping = props.mapping ? this.validateMapping(props.mapping) : {};
+    this.lazy = props.lazy;
   }
 
   /**
    * Sets a value in the map based on the two keys.
    */
   public setValue(key1: string, key2: string, value: any) {
+    this.validateAlphanumeric(key2);
+
     if (!(key1 in this.mapping)) {
       this.mapping[key1] = { };
     }
@@ -43,16 +64,25 @@ export class CfnMapping extends CfnRefElement {
    * @returns A reference to a value in the map based on the two keys.
    */
   public findInMap(key1: string, key2: string): string {
-    // opportunistically check that the key exists (if the key does not contain tokens)
-    if (!Token.isUnresolved(key1) && !(key1 in this.mapping)) {
-      throw new Error(`Mapping doesn't contain top-level key '${key1}'`);
+    let fullyResolved = false;
+    if (!Token.isUnresolved(key1)) {
+      if (!(key1 in this.mapping)) {
+        throw new Error(`Mapping doesn't contain top-level key '${key1}'`);
+      }
+      if (!Token.isUnresolved(key2)) {
+        if (!(key2 in this.mapping[key1])) {
+          throw new Error(`Mapping doesn't contain second-level key '${key2}'`);
+        }
+        fullyResolved = true;
+      }
     }
-
-    // opportunistically check that the second key exists (if the key does not contain tokens)
-    if (!Token.isUnresolved(key1) && !Token.isUnresolved(key2) && !(key2 in this.mapping[key1])) {
-      throw new Error(`Mapping doesn't contain second-level key '${key2}'`);
+    if (fullyResolved) {
+      if (this.lazy) {
+        return this.mapping[key1][key2];
+      }
+    } else {
+      this.lazyRender = true;
     }
-
     return Fn.findInMap(this.logicalId, key1, key2);
   }
 
@@ -60,10 +90,36 @@ export class CfnMapping extends CfnRefElement {
    * @internal
    */
   public _toCloudFormation(): object {
-    return {
-      Mappings: {
-        [this.logicalId]: this.mapping,
-      },
-    };
+    if (this.lazy === undefined && !this.lazyRender) {
+      this.informLazyUse();
+    }
+    if (!this.lazy || (this.lazy && this.lazyRender)) {
+      return {
+        Mappings: {
+          [this.logicalId]: this.mapping,
+        },
+      };
+    } else {
+      return {};
+    }
+  }
+
+  private informLazyUse() {
+    if (!this.lazyInformed) {
+      Annotations.of(this).addInfo('Consider making this CfnMapping a lazy mapping by providing `lazy: true`: either no findInMap was called or every findInMap could be immediately resolved without using Fn::FindInMap');
+    }
+    this.lazyInformed = true;
+  }
+
+  private validateMapping(mapping: Mapping): Mapping {
+    Object.keys(mapping).forEach((m) => Object.keys(mapping[m]).forEach(this.validateAlphanumeric));
+    return mapping;
+  }
+
+  private validateAlphanumeric(value: any) {
+    // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/mappings-section-structure.html
+    if (value.match(/[^a-zA-Z0-9]/g)) {
+      throw new Error(`Attribute name '${value}' must contain only alphanumeric characters.`);
+    }
   }
 }

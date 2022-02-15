@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import { Bucket } from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import { GitHubRepository, RepositoryVisibility } from '../lib';
@@ -22,7 +22,7 @@ describe('GitHub Repository', () => {
       contentsKey: 'import.zip',
     });
 
-    expect(stack).toHaveResource('AWS::CodeStar::GitHubRepository', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeStar::GitHubRepository', {
       RepositoryAccessToken: '{{resolve:secretsmanager:my-github-token:SecretString:token::}}',
       RepositoryName: 'bar',
       RepositoryOwner: 'foo',
@@ -48,7 +48,7 @@ describe('GitHub Repository', () => {
       visibility: RepositoryVisibility.PRIVATE,
     });
 
-    expect(stack).toHaveResourceLike('AWS::CodeStar::GitHubRepository', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeStar::GitHubRepository', {
       EnableIssues: true,
       IsPrivate: true,
     });

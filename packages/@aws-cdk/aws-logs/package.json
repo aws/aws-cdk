@@ -28,7 +28,14 @@
         ]
       }
     },
-    "projectReferences": true
+    "projectReferences": true,
+    "metadata": {
+      "jsii": {
+        "rosetta": {
+          "strict": true
+        }
+      }
+    }
   },
   "repository": {
     "type": "git",
@@ -72,19 +79,19 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@types/nodeunit": "^0.0.31",
-    "@types/aws-lambda": "^8.10.77",
+    "@aws-cdk/assertions": "0.0.0",
+    "@aws-cdk/cdk-build-tools": "0.0.0",
+    "@aws-cdk/cdk-integ-tools": "0.0.0",
+    "@aws-cdk/cfn2ts": "0.0.0",
+    "@aws-cdk/pkglint": "0.0.0",
+    "@types/aws-lambda": "^8.10.92",
+    "@types/jest": "^27.4.0",
     "@types/sinon": "^9.0.11",
     "aws-sdk": "^2.848.0",
-    "aws-sdk-mock": "^5.1.0",
-    "cdk-build-tools": "0.0.0",
-    "cdk-integ-tools": "0.0.0",
-    "cfn2ts": "0.0.0",
-    "nock": "^13.1.0",
-    "nodeunit": "^0.11.3",
-    "pkglint": "0.0.0",
-    "sinon": "^9.2.4",
-    "@aws-cdk/assert-internal": "0.0.0"
+    "aws-sdk-mock": "5.6.0",
+    "jest": "^27.5.1",
+    "nock": "^13.2.4",
+    "sinon": "^9.2.4"
   },
   "dependencies": {
     "@aws-cdk/aws-cloudwatch": "0.0.0",
@@ -92,6 +99,7 @@
     "@aws-cdk/aws-kms": "0.0.0",
     "@aws-cdk/aws-s3-assets": "0.0.0",
     "@aws-cdk/core": "0.0.0",
+    "@aws-cdk/cx-api": "0.0.0",
     "constructs": "^3.3.69"
   },
   "homepage": "https://github.com/aws/aws-cdk",
@@ -101,6 +109,7 @@
     "@aws-cdk/aws-kms": "0.0.0",
     "@aws-cdk/aws-s3-assets": "0.0.0",
     "@aws-cdk/core": "0.0.0",
+    "@aws-cdk/cx-api": "0.0.0",
     "constructs": "^3.3.69"
   },
   "engines": {

@@ -1,5 +1,4 @@
-import { arrayWith, objectLike } from '@aws-cdk/assert-internal';
-import '@aws-cdk/assert-internal/jest';
+import { Match, Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import * as stepfunctions from '../lib';
@@ -13,7 +12,7 @@ describe('Activity', () => {
     new stepfunctions.Activity(stack, 'Activity');
 
     // THEN
-    expect(stack).toHaveResource('AWS::StepFunctions::Activity', {
+    Template.fromStack(stack).hasResourceProperties('AWS::StepFunctions::Activity', {
       Name: 'Activity',
     });
   });
@@ -58,15 +57,15 @@ describe('Activity', () => {
     activity.grant(role, 'states:SendTaskSuccess');
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
-        Statement: arrayWith(objectLike({
+        Statement: Match.arrayWith([Match.objectLike({
           Action: 'states:SendTaskSuccess',
           Effect: 'Allow',
           Resource: {
             Ref: 'Activity04690B0A',
           },
-        })),
+        })]),
       },
     });
 

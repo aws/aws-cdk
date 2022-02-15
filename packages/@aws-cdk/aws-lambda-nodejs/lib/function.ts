@@ -1,10 +1,11 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as lambda from '@aws-cdk/aws-lambda';
+import { Architecture } from '@aws-cdk/aws-lambda';
 import { Bundling } from './bundling';
 import { PackageManager } from './package-manager';
 import { BundlingOptions } from './types';
-import { callsites, findUp } from './util';
+import { callsites, findUpMultiple } from './util';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
@@ -73,6 +74,13 @@ export interface NodejsFunctionProps extends lambda.FunctionOptions {
    *   modules are bundled.
    */
   readonly bundling?: BundlingOptions;
+
+  /**
+   * The path to the directory containing project config files (`package.json` or `tsconfig.json`)
+   *
+   * @default - the directory containing the `depsLockFilePath`
+   */
+  readonly projectRoot?: string;
 }
 
 /**
@@ -88,7 +96,9 @@ export class NodejsFunction extends lambda.Function {
     const entry = path.resolve(findEntry(id, props.entry));
     const handler = props.handler ?? 'handler';
     const runtime = props.runtime ?? lambda.Runtime.NODEJS_14_X;
+    const architecture = props.architecture ?? Architecture.X86_64;
     const depsLockFilePath = findLockFile(props.depsLockFilePath);
+    const projectRoot = props.projectRoot ?? path.dirname(depsLockFilePath);
 
     super(scope, id, {
       ...props,
@@ -97,7 +107,9 @@ export class NodejsFunction extends lambda.Function {
         ...props.bundling ?? {},
         entry,
         runtime,
+        architecture,
         depsLockFilePath,
+        projectRoot,
       }),
       handler: `index.${handler}`,
     });
@@ -125,15 +137,20 @@ function findLockFile(depsLockFilePath?: string): string {
     return path.resolve(depsLockFilePath);
   }
 
-  const lockFile = findUp(PackageManager.PNPM.lockFile)
-    ?? findUp(PackageManager.YARN.lockFile)
-    ?? findUp(PackageManager.NPM.lockFile);
+  const lockFiles = findUpMultiple([
+    PackageManager.PNPM.lockFile,
+    PackageManager.YARN.lockFile,
+    PackageManager.NPM.lockFile,
+  ]);
 
-  if (!lockFile) {
+  if (lockFiles.length === 0) {
     throw new Error('Cannot find a package lock file (`pnpm-lock.yaml`, `yarn.lock` or `package-lock.json`). Please specify it with `depsFileLockPath`.');
   }
+  if (lockFiles.length > 1) {
+    throw new Error(`Multiple package lock files found: ${lockFiles.join(', ')}. Please specify the desired one with \`depsFileLockPath\`.`);
+  }
 
-  return lockFile;
+  return lockFiles[0];
 }
 
 /**
@@ -141,10 +158,11 @@ function findLockFile(depsLockFilePath?: string): string {
  * 1. Given entry file
  * 2. A .ts file named as the defining file with id as suffix (defining-file.id.ts)
  * 3. A .js file name as the defining file with id as suffix (defining-file.id.js)
+ * 4. A .mjs file name as the defining file with id as suffix (defining-file.id.mjs)
  */
 function findEntry(id: string, entry?: string): string {
   if (entry) {
-    if (!/\.(jsx?|tsx?)$/.test(entry)) {
+    if (!/\.(jsx?|tsx?|mjs)$/.test(entry)) {
       throw new Error('Only JavaScript or TypeScript entry files are supported.');
     }
     if (!fs.existsSync(entry)) {
@@ -166,7 +184,12 @@ function findEntry(id: string, entry?: string): string {
     return jsHandlerFile;
   }
 
-  throw new Error(`Cannot find handler file ${tsHandlerFile} or ${jsHandlerFile}`);
+  const mjsHandlerFile = definingFile.replace(new RegExp(`${extname}$`), `.${id}.mjs`);
+  if (fs.existsSync(mjsHandlerFile)) {
+    return mjsHandlerFile;
+  }
+
+  throw new Error(`Cannot find handler file ${tsHandlerFile}, ${jsHandlerFile} or ${mjsHandlerFile}`);
 }
 
 /**

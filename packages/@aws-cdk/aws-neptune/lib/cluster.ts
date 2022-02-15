@@ -46,6 +46,14 @@ export class EngineVersion {
    * Neptune engine version 1.0.4.1
    */
   public static readonly V1_0_4_1 = new EngineVersion('1.0.4.1');
+  /**
+   * Neptune engine version 1.0.5.0
+   */
+  public static readonly V1_0_5_0 = new EngineVersion('1.0.5.0');
+  /**
+   * Neptune engine version 1.1.0.0
+   */
+  public static readonly V1_1_0_0 = new EngineVersion('1.1.0.0');
 
   /**
    * Constructor for specifying a custom engine version
@@ -218,6 +226,14 @@ export interface DatabaseClusterProps {
    * @default - Retain cluster.
    */
   readonly removalPolicy?: RemovalPolicy
+
+  /**
+   * If set to true, Neptune will automatically update the engine of the entire
+   * cluster to the latest minor version after a stabilization window of 2 to 3 weeks.
+   *
+   * @default - false
+   */
+  readonly autoMinorVersionUpgrade?: boolean;
 }
 
 /**
@@ -505,6 +521,7 @@ export class DatabaseCluster extends DatabaseClusterBase implements IDatabaseClu
         // Instance properties
         dbInstanceClass: props.instanceType._instanceType,
         dbParameterGroupName: props.parameterGroup?.parameterGroupName,
+        autoMinorVersionUpgrade: props.autoMinorVersionUpgrade === true,
       });
 
       // We must have a dependency on the NAT gateway provider here to create

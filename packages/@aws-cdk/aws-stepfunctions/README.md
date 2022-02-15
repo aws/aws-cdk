@@ -22,12 +22,10 @@ example](https://docs.aws.amazon.com/step-functions/latest/dg/job-status-poller-
 ## Example
 
 ```ts
-import * as sfn from '@aws-cdk/aws-stepfunctions';
-import * as tasks from '@aws-cdk/aws-stepfunctions-tasks';
 import * as lambda from '@aws-cdk/aws-lambda';
 
-const submitLambda = new lambda.Function(this, 'SubmitLambda', { ... });
-const getStatusLambda = new lambda.Function(this, 'CheckLambda', { ... });
+declare const submitLambda: lambda.Function;
+declare const getStatusLambda: lambda.Function;
 
 const submitJob = new tasks.LambdaInvoke(this, 'Submit Job', {
   lambdaFunction: submitLambda,
@@ -36,7 +34,7 @@ const submitJob = new tasks.LambdaInvoke(this, 'Submit Job', {
 });
 
 const waitX = new sfn.Wait(this, 'Wait X Seconds', {
-    time: sfn.WaitTime.secondsPath('$.waitSeconds'),
+  time: sfn.WaitTime.secondsPath('$.waitSeconds'),
 });
 
 const getStatus = new tasks.LambdaInvoke(this, 'Get Job Status', {
@@ -48,8 +46,8 @@ const getStatus = new tasks.LambdaInvoke(this, 'Get Job Status', {
 });
 
 const jobFailed = new sfn.Fail(this, 'Job Failed', {
-    cause: 'AWS Batch Job Failed',
-    error: 'DescribeJob returned FAILED',
+  cause: 'AWS Batch Job Failed',
+  error: 'DescribeJob returned FAILED',
 });
 
 const finalStatus = new tasks.LambdaInvoke(this, 'Get Final Job Status', {
@@ -60,17 +58,17 @@ const finalStatus = new tasks.LambdaInvoke(this, 'Get Final Job Status', {
 });
 
 const definition = submitJob
-    .next(waitX)
-    .next(getStatus)
-    .next(new sfn.Choice(this, 'Job Complete?')
-        // Look at the "status" field
-        .when(sfn.Condition.stringEquals('$.status', 'FAILED'), jobFailed)
-        .when(sfn.Condition.stringEquals('$.status', 'SUCCEEDED'), finalStatus)
-        .otherwise(waitX));
+  .next(waitX)
+  .next(getStatus)
+  .next(new sfn.Choice(this, 'Job Complete?')
+    // Look at the "status" field
+    .when(sfn.Condition.stringEquals('$.status', 'FAILED'), jobFailed)
+    .when(sfn.Condition.stringEquals('$.status', 'SUCCEEDED'), finalStatus)
+    .otherwise(waitX));
 
 new sfn.StateMachine(this, 'StateMachine', {
-    definition,
-    timeout: Duration.minutes(5)
+  definition,
+  timeout: Duration.minutes(5),
 });
 ```
 
@@ -87,7 +85,7 @@ all states reachable from the start state:
 const startState = new sfn.Pass(this, 'StartState');
 
 new sfn.StateMachine(this, 'StateMachine', {
-    definition: startState
+  definition: startState,
 });
 ```
 
@@ -96,6 +94,51 @@ permissions added that are required to make all state machine tasks execute
 properly (for example, permissions to invoke any Lambda functions you add to
 your workflow). A role will be created by default, but you can supply an
 existing one as well.
+
+## Accessing State (the JsonPath class)
+
+Every State Machine execution has [State Machine
+Data](https://docs.aws.amazon.com/step-functions/latest/dg/concepts-state-machine-data.html):
+a JSON document containing keys and values that is fed into the state machine,
+gets modified as the state machine progresses, and finally is produced as output.
+
+You can pass fragments of this State Machine Data into Tasks of the state machine.
+To do so, use the static methods on the `JsonPath` class. For example, to pass
+the value that's in the data key of `OrderId` to a Lambda function as you invoke
+it, use `JsonPath.stringAt('$.OrderId')`, like so:
+
+```ts
+import * as lambda from '@aws-cdk/aws-lambda';
+
+declare const orderFn: lambda.Function;
+
+const submitJob = new tasks.LambdaInvoke(this, 'InvokeOrderProcessor', {
+  lambdaFunction: orderFn,
+  payload: sfn.TaskInput.fromObject({
+    OrderId: sfn.JsonPath.stringAt('$.OrderId'),
+  }),
+});
+```
+
+The following methods are available:
+
+| Method | Purpose |
+|--------|---------|
+| `JsonPath.stringAt('$.Field')` | reference a field, return the type as a `string`. |
+| `JsonPath.listAt('$.Field')` | reference a field, return the type as a list of strings. |
+| `JsonPath.numberAt('$.Field')` | reference a field, return the type as a number. Use this for functions that expect a number argument. |
+| `JsonPath.objectAt('$.Field')` | reference a field, return the type as an `IResolvable`. Use this for functions that expect an object argument. |
+| `JsonPath.entirePayload` | reference the entire data object (equivalent to a path of `$`). |
+| `JsonPath.taskToken` | reference the [Task Token](https://docs.aws.amazon.com/step-functions/latest/dg/connect-to-resource.html#connect-wait-token), used for integration patterns that need to run for a long time. |
+
+You can also call [intrinsic functions](https://docs.aws.amazon.com/step-functions/latest/dg/amazon-states-language-intrinsic-functions.html) using the methods on `JsonPath`:
+
+| Method | Purpose |
+|--------|---------|
+| `JsonPath.array(JsonPath.stringAt('$.Field'), ...)` | make an array from other elements. |
+| `JsonPath.format('The value is {}.', JsonPath.stringAt('$.Value'))` | insert elements into a format string. |
+| `JsonPath.stringToJson(JsonPath.stringAt('$.ObjStr'))` | parse a JSON string to an object |
+| `JsonPath.jsonToString(JsonPath.objectAt('$.Obj'))` | stringify an object to a JSON string |
 
 ## Amazon States Language
 
@@ -144,6 +187,7 @@ const pass = new sfn.Pass(this, 'Add Hello World', {
 });
 
 // Set the next state
+const nextState = new sfn.Pass(this, 'NextState');
 pass.next(nextState);
 ```
 
@@ -157,7 +201,7 @@ and also injects a field called `otherData`.
 const pass = new sfn.Pass(this, 'Filter input and inject data', {
   parameters: { // input to the pass state
     input: sfn.JsonPath.stringAt('$.input.greeting'),
-    otherData: 'some-extra-stuff'
+    otherData: 'some-extra-stuff',
   },
 });
 ```
@@ -178,10 +222,11 @@ state.
 // Wait until it's the time mentioned in the the state object's "triggerTime"
 // field.
 const wait = new sfn.Wait(this, 'Wait For Trigger Time', {
-    time: sfn.WaitTime.timestampPath('$.triggerTime'),
+  time: sfn.WaitTime.timestampPath('$.triggerTime'),
 });
 
 // Set the next state
+const startTheWork = new sfn.Pass(this, 'StartTheWork');
 wait.next(startTheWork);
 ```
 
@@ -194,10 +239,13 @@ values in the execution's JSON state:
 const choice = new sfn.Choice(this, 'Did it work?');
 
 // Add conditions with .when()
+const successState = new sfn.Pass(this, 'SuccessState');
+const failureState = new sfn.Pass(this, 'FailureState');
 choice.when(sfn.Condition.stringEquals('$.status', 'SUCCESS'), successState);
 choice.when(sfn.Condition.numberGreaterThan('$.attempts', 5), failureState);
 
 // Use .otherwise() to indicate what should be done if none of the conditions match
+const tryAgainState = new sfn.Pass(this, 'TryAgainState');
 choice.otherwise(tryAgainState);
 ```
 
@@ -207,11 +255,15 @@ then ... else` works in a programming language), use the `.afterwards()` method:
 
 ```ts
 const choice = new sfn.Choice(this, 'What color is it?');
+const handleBlueItem = new sfn.Pass(this, 'HandleBlueItem');
+const handleRedItem = new sfn.Pass(this, 'HandleRedItem');
+const handleOtherItemColor = new sfn.Pass(this, 'HanldeOtherItemColor');
 choice.when(sfn.Condition.stringEquals('$.color', 'BLUE'), handleBlueItem);
 choice.when(sfn.Condition.stringEquals('$.color', 'RED'), handleRedItem);
 choice.otherwise(handleOtherItemColor);
 
 // Use .afterwards() to join all possible paths back together and continue
+const shipTheItem = new sfn.Pass(this, 'ShipTheItem');
 choice.afterwards().next(shipTheItem);
 ```
 
@@ -278,6 +330,9 @@ be used to catch and recover from errors in subworkflows.
 const parallel = new sfn.Parallel(this, 'Do the work in parallel');
 
 // Add branches to be executed in parallel
+const shipItem = new sfn.Pass(this, 'ShipItem');
+const sendInvoice = new sfn.Pass(this, 'SendInvoice');
+const restock = new sfn.Pass(this, 'Restock');
 parallel.branch(shipItem);
 parallel.branch(sendInvoice);
 parallel.branch(restock);
@@ -286,9 +341,11 @@ parallel.branch(restock);
 parallel.addRetry({ maxAttempts: 1 });
 
 // How to recover from errors
+const sendFailureNotification = new sfn.Pass(this, 'SendFailureNotification');
 parallel.addCatch(sendFailureNotification);
 
 // What to do in case everything succeeded
+const closeOrder = new sfn.Pass(this, 'CloseOrder');
 parallel.next(closeOrder);
 ```
 
@@ -309,8 +366,8 @@ Failures can be caught by encompassing `Parallel` states.
 
 ```ts
 const success = new sfn.Fail(this, 'Fail', {
-    error: 'WorkflowFailure',
-    cause: "Something went wrong"
+  error: 'WorkflowFailure',
+  cause: "Something went wrong",
 });
 ```
 
@@ -324,8 +381,8 @@ execute the same steps for multiple entries of an array in the state input.
 
 ```ts
 const map = new sfn.Map(this, 'Map State', {
-    maxConcurrency: 1,
-    itemsPath: sfn.JsonPath.stringAt('$.inputForMap')
+  maxConcurrency: 1,
+  itemsPath: sfn.JsonPath.stringAt('$.inputForMap'),
 });
 map.iterator(new sfn.Pass(this, 'Pass State'));
 ```
@@ -353,19 +410,17 @@ the State Machine uses.
 The following example uses the `DynamoDB` service integration to insert data into a DynamoDB table.
 
 ```ts
-import * as ddb from '@aws-cdk/aws-dynamodb';
-import * as cdk from '@aws-cdk/core';
-import * as sfn from '@aws-cdk/aws-stepfunctions';
+import * as dynamodb from '@aws-cdk/aws-dynamodb';
 
 // create a table
-const table = new ddb.Table(this, 'montable', {
+const table = new dynamodb.Table(this, 'montable', {
   partitionKey: {
     name: 'id',
-    type: ddb.AttributeType.STRING,
+    type: dynamodb.AttributeType.STRING,
   },
 });
 
-const finalStatus = new sfn.Pass(stack, 'final step');
+const finalStatus = new sfn.Pass(this, 'final step');
 
 // States language JSON to put an item into DynamoDB
 // snippet generated from https://docs.aws.amazon.com/step-functions/latest/dg/tutorial-code-snippet.html#tutorial-code-snippet-1
@@ -389,11 +444,11 @@ const custom = new sfn.CustomState(this, 'my custom task', {
 });
 
 const chain = sfn.Chain.start(custom)
-      .next(finalStatus);
+  .next(finalStatus);
 
 const sm = new sfn.StateMachine(this, 'StateMachine', {
   definition: chain,
-  timeout: cdk.Duration.seconds(30),
+  timeout: Duration.seconds(30),
 });
 
 // don't forget permissions. You need to assign them
@@ -409,19 +464,34 @@ In particular, the `.next()` method can be repeated. The result of a series of
 targets of `Choice.on` or `Parallel.branch`:
 
 ```ts
+const step1 = new sfn.Pass(this, 'Step1');
+const step2 = new sfn.Pass(this, 'Step2');
+const step3 = new sfn.Pass(this, 'Step3');
+const step4 = new sfn.Pass(this, 'Step4');
+const step5 = new sfn.Pass(this, 'Step5');
+const step6 = new sfn.Pass(this, 'Step6');
+const step7 = new sfn.Pass(this, 'Step7');
+const step8 = new sfn.Pass(this, 'Step8');
+const step9 = new sfn.Pass(this, 'Step9');
+const step10 = new sfn.Pass(this, 'Step10');
+const choice = new sfn.Choice(this, 'Choice');
+const condition1 = sfn.Condition.stringEquals('$.status', 'SUCCESS');
+const parallel = new sfn.Parallel(this, 'Parallel');
+const finish = new sfn.Pass(this, 'Finish');
+
 const definition = step1
-    .next(step2)
-    .next(choice
-        .when(condition1, step3.next(step4).next(step5))
-        .otherwise(step6)
-        .afterwards())
-    .next(parallel
-        .branch(step7.next(step8))
-        .branch(step9.next(step10)))
-    .next(finish);
+  .next(step2)
+  .next(choice
+    .when(condition1, step3.next(step4).next(step5))
+    .otherwise(step6)
+    .afterwards())
+  .next(parallel
+    .branch(step7.next(step8))
+    .branch(step9.next(step10)))
+  .next(finish);
 
 new sfn.StateMachine(this, 'StateMachine', {
-    definition,
+  definition,
 });
 ```
 
@@ -429,11 +499,15 @@ If you don't like the visual look of starting a chain directly off the first
 step, you can use `Chain.start`:
 
 ```ts
+const step1 = new sfn.Pass(this, 'Step1');
+const step2 = new sfn.Pass(this, 'Step2');
+const step3 = new sfn.Pass(this, 'Step3');
+
 const definition = sfn.Chain
-    .start(step1)
-    .next(step2)
-    .next(step3)
-    // ...
+  .start(step1)
+  .next(step2)
+  .next(step3)
+  // ...
 ```
 
 ## State Machine Fragments
@@ -455,32 +529,47 @@ The class `StateMachineFragment` contains some helper functions (like
 `prefixStates()`) to make it easier for you to do this. If you define your state
 machine as a subclass of this, it will be convenient to use:
 
-```ts
+```ts nofixture
+import { Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
+import * as sfn from '@aws-cdk/aws-stepfunctions';
+
 interface MyJobProps {
-    jobFlavor: string;
+  jobFlavor: string;
 }
 
 class MyJob extends sfn.StateMachineFragment {
-    public readonly startState: sfn.State;
-    public readonly endStates: sfn.INextable[];
+  public readonly startState: sfn.State;
+  public readonly endStates: sfn.INextable[];
 
-    constructor(parent: cdk.Construct, id: string, props: MyJobProps) {
-        super(parent, id);
+  constructor(parent: Construct, id: string, props: MyJobProps) {
+    super(parent, id);
 
-        const first = new sfn.Task(this, 'First', { ... });
-        // ...
-        const last = new sfn.Task(this, 'Last', { ... });
+    const choice = new sfn.Choice(this, 'Choice')
+      .when(sfn.Condition.stringEquals('$.branch', 'left'), new sfn.Pass(this, 'Left Branch'))
+      .when(sfn.Condition.stringEquals('$.branch', 'right'), new sfn.Pass(this, 'Right Branch'));
 
-        this.startState = first;
-        this.endStates = [last];
-    }
+    // ...
+
+    this.startState = choice;
+    this.endStates = choice.afterwards().endStates;
+  }
 }
 
-// Do 3 different variants of MyJob in parallel
-new sfn.Parallel(this, 'All jobs')
-    .branch(new MyJob(this, 'Quick', { jobFlavor: 'quick' }).prefixStates())
-    .branch(new MyJob(this, 'Medium', { jobFlavor: 'medium' }).prefixStates())
-    .branch(new MyJob(this, 'Slow', { jobFlavor: 'slow' }).prefixStates());
+class MyStack extends Stack {
+  constructor(scope: Construct, id: string) {
+    super(scope, id);
+    // Do 3 different variants of MyJob in parallel
+    const parallel = new sfn.Parallel(this, 'All jobs')
+      .branch(new MyJob(this, 'Quick', { jobFlavor: 'quick' }).prefixStates())
+      .branch(new MyJob(this, 'Medium', { jobFlavor: 'medium' }).prefixStates())
+      .branch(new MyJob(this, 'Slow', { jobFlavor: 'slow' }).prefixStates());
+
+    new sfn.StateMachine(this, 'MyStateMachine', {
+      definition: parallel,
+    });
+  }
+}
 ```
 
 A few utility functions are available to parse state machine fragments.
@@ -503,7 +592,7 @@ const activity = new sfn.Activity(this, 'Activity');
 
 // Read this CloudFormation Output from your application and use it to poll for work on
 // the activity.
-new cdk.CfnOutput(this, 'ActivityArn', { value: activity.activityArn });
+new CfnOutput(this, 'ActivityArn', { value: activity.activityArn });
 ```
 
 ### Activity-Level Permissions
@@ -513,7 +602,7 @@ Granting IAM permissions to an activity can be achieved by calling the `grant(pr
 ```ts
 const activity = new sfn.Activity(this, 'Activity');
 
-const role = new iam.Role(stack, 'Role', {
+const role = new iam.Role(this, 'Role', {
   assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
 });
 
@@ -528,20 +617,22 @@ This will grant the IAM principal the specified actions onto the activity.
 to create an alarm on a particular task failing:
 
 ```ts
+declare const task: sfn.Task;
 new cloudwatch.Alarm(this, 'TaskAlarm', {
-    metric: task.metricFailed(),
-    threshold: 1,
-    evaluationPeriods: 1,
+  metric: task.metricFailed(),
+  threshold: 1,
+  evaluationPeriods: 1,
 });
 ```
 
 There are also metrics on the complete state machine:
 
 ```ts
+declare const stateMachine: sfn.StateMachine;
 new cloudwatch.Alarm(this, 'StateMachineAlarm', {
-    metric: stateMachine.metricFailed(),
-    threshold: 1,
-    evaluationPeriods: 1,
+  metric: stateMachine.metricFailed(),
+  threshold: 1,
+  evaluationPeriods: 1,
 });
 ```
 
@@ -549,11 +640,27 @@ And there are metrics on the capacity of all state machines in your account:
 
 ```ts
 new cloudwatch.Alarm(this, 'ThrottledAlarm', {
-    metric: StateTransitionMetrics.metricThrottledEvents(),
-    threshold: 10,
-    evaluationPeriods: 2,
+  metric: sfn.StateTransitionMetric.metricThrottledEvents(),
+  threshold: 10,
+  evaluationPeriods: 2,
 });
 ```
+
+## Error names
+
+Step Functions identifies errors in the Amazon States Language using case-sensitive strings, known as error names.
+The Amazon States Language defines a set of built-in strings that name well-known errors, all beginning with the `States.` prefix.
+
+* `States.ALL` - A wildcard that matches any known error name.
+* `States.Runtime` - An execution failed due to some exception that could not be processed. Often these are caused by errors at runtime, such as attempting to apply InputPath or OutputPath on a null JSON payload. A `States.Runtime` error is not retriable, and will always cause the execution to fail. A retry or catch on `States.ALL` will NOT catch States.Runtime errors.
+* `States.DataLimitExceeded` - A States.DataLimitExceeded exception will be thrown for the following:
+  * When the output of a connector is larger than payload size quota.
+  * When the output of a state is larger than payload size quota.
+  * When, after Parameters processing, the input of a state is larger than the payload size quota.
+  * See [the AWS documentation](https://docs.aws.amazon.com/step-functions/latest/dg/limits-overview.html) to learn more about AWS Step Functions Quotas.
+* `States.HeartbeatTimeout` - A Task state failed to send a heartbeat for a period longer than the HeartbeatSeconds value.
+* `States.Timeout` - A Task state either ran longer than the TimeoutSeconds value, or failed to send a heartbeat for a period longer than the HeartbeatSeconds value.
+* `States.TaskFailed`- A Task state failed during the execution. When used in a retry or catch, `States.TaskFailed` acts as a wildcard that matches any known error name except for `States.Timeout`.
 
 ## Logging
 
@@ -561,14 +668,16 @@ Enable logging to CloudWatch by passing a logging configuration with a
 destination LogGroup:
 
 ```ts
-const logGroup = new logs.LogGroup(stack, 'MyLogGroup');
+import * as logs from '@aws-cdk/aws-logs';
 
-new sfn.StateMachine(stack, 'MyStateMachine', {
-    definition: sfn.Chain.start(new sfn.Pass(stack, 'Pass')),
-    logs: {
-      destination: logGroup,
-      level: sfn.LogLevel.ALL,
-    }
+const logGroup = new logs.LogGroup(this, 'MyLogGroup');
+
+new sfn.StateMachine(this, 'MyStateMachine', {
+  definition: sfn.Chain.start(new sfn.Pass(this, 'Pass')),
+  logs: {
+    destination: logGroup,
+    level: sfn.LogLevel.ALL,
+  },
 });
 ```
 
@@ -577,11 +686,9 @@ new sfn.StateMachine(stack, 'MyStateMachine', {
 Enable X-Ray tracing for StateMachine:
 
 ```ts
-const logGroup = new logs.LogGroup(stack, 'MyLogGroup');
-
-new sfn.StateMachine(stack, 'MyStateMachine', {
-    definition: sfn.Chain.start(new sfn.Pass(stack, 'Pass')),
-    tracingEnabled: true
+new sfn.StateMachine(this, 'MyStateMachine', {
+  definition: sfn.Chain.start(new sfn.Pass(this, 'Pass')),
+  tracingEnabled: true,
 });
 ```
 
@@ -605,11 +712,12 @@ Any object that implements the `IGrantable` interface (has an associated princip
 Grant permission to start an execution of a state machine by calling the `grantStartExecution()` API.
 
 ```ts
-const role = new iam.Role(stack, 'Role', {
+const role = new iam.Role(this, 'Role', {
   assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
 });
 
-const stateMachine = new stepfunction.StateMachine(stack, 'StateMachine', {
+declare const definition: sfn.IChainable;
+const stateMachine = new sfn.StateMachine(this, 'StateMachine', {
   definition,
 });
 
@@ -626,11 +734,12 @@ The following permission is provided to a service principal by the `grantStartEx
 Grant `read` access to a state machine by calling the `grantRead()` API.
 
 ```ts
-const role = new iam.Role(stack, 'Role', {
+const role = new iam.Role(this, 'Role', {
   assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
 });
 
-const stateMachine = new stepfunction.StateMachine(stack, 'StateMachine', {
+declare const definition: sfn.IChainable;
+const stateMachine = new sfn.StateMachine(this, 'StateMachine', {
   definition,
 });
 
@@ -654,11 +763,12 @@ The following read permissions are provided to a service principal by the `grant
 Grant permission to allow task responses to a state machine by calling the `grantTaskResponse()` API:
 
 ```ts
-const role = new iam.Role(stack, 'Role', {
+const role = new iam.Role(this, 'Role', {
   assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
 });
 
-const stateMachine = new stepfunction.StateMachine(stack, 'StateMachine', {
+declare const definition: sfn.IChainable;
+const stateMachine = new sfn.StateMachine(this, 'StateMachine', {
   definition,
 });
 
@@ -677,11 +787,12 @@ The following read permissions are provided to a service principal by the `grant
 Grant execution-level permissions to a state machine by calling the `grantExecution()` API:
 
 ```ts
-const role = new iam.Role(stack, 'Role', {
+const role = new iam.Role(this, 'Role', {
   assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
 });
 
-const stateMachine = new stepfunction.StateMachine(stack, 'StateMachine', {
+declare const definition: sfn.IChainable;
+const stateMachine = new sfn.StateMachine(this, 'StateMachine', {
   definition,
 });
 
@@ -694,9 +805,10 @@ stateMachine.grantExecution(role, 'states:GetExecutionHistory');
 You can add any set of permissions to a state machine by calling the `grant()` API.
 
 ```ts
-const user = new iam.User(stack, 'MyUser');
+const user = new iam.User(this, 'MyUser');
 
-const stateMachine = new stepfunction.StateMachine(stack, 'StateMachine', {
+declare const definition: sfn.IChainable;
+const stateMachine = new sfn.StateMachine(this, 'StateMachine', {
   definition,
 });
 
@@ -712,11 +824,11 @@ into your CDK stack.
 State machines can be imported by their ARN via the `StateMachine.fromStateMachineArn()` API
 
 ```ts
-import * as sfn from 'aws-stepfunctions';
-
+const app = new App();
 const stack = new Stack(app, 'MyStack');
 sfn.StateMachine.fromStateMachineArn(
   stack,
   'ImportedStateMachine',
-  'arn:aws:states:us-east-1:123456789012:stateMachine:StateMachine2E01A3A5-N5TJppzoevKQ');
+  'arn:aws:states:us-east-1:123456789012:stateMachine:StateMachine2E01A3A5-N5TJppzoevKQ',
+);
 ```

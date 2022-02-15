@@ -18,16 +18,16 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Set up Node
-        uses: actions/setup-node@v2.1.5
+        uses: actions/setup-node@v2.5.1
         with:
-          node-version: 10
+          node-version: 12
 
       - name: Locate Yarn cache
         id: yarn-cache
         run: echo "::set-output name=dir::$(yarn cache dir)"
 
       - name: Restore Yarn cache
-        uses: actions/cache@v2.1.6
+        uses: actions/cache@v2.1.7
         with:
           path: ${{ steps.yarn-cache.outputs.dir }}
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
@@ -49,6 +49,7 @@ jobs:
         # We special-case typescript because it's not semantically versionned
         # We special-case constructs because we want to stay in control of the minimum compatible version
         # We special-case lerna because we have a patch on it that stops applying if Lerna upgrades. Remove this once https://github.com/lerna/lerna/pull/2874 releases.
+        # We special-case aws-sdk-mock because of breaking changes in type exports https://github.com/dwyl/aws-sdk-mock/pull/260. We are not respecting `@ts-ignore`
         run: |-
           # Upgrade dependencies at repository root
           ncu --upgrade --filter=@types/node,@types/fs-extra --target=minor
@@ -57,7 +58,7 @@ jobs:
           # Upgrade all the packages
           lerna exec --parallel ncu -- --upgrade --filter=@types/node,@types/fs-extra --target=minor
           lerna exec --parallel ncu -- --upgrade --filter=typescript --target=patch
-          lerna exec --parallel ncu -- --upgrade --reject='@types/node,@types/fs-extra,constructs,typescript,aws-sdk,${{ steps.list-packages.outputs.list }}'  --target=minor
+          lerna exec --parallel ncu -- --upgrade --reject='@types/node,@types/fs-extra,constructs,typescript,aws-sdk,aws-sdk-mock,${{ steps.list-packages.outputs.list }}'  --target=minor
       # This will ensure the current lockfile is up-to-date with the dependency specifications (necessary for "yarn update" to run)
       - name: Run "yarn install"
         run: yarn install
@@ -110,7 +111,7 @@ jobs:
           title: 'chore: npm-check-updates && yarn upgrade'
           body: |-
             Ran npm-check-updates and yarn upgrade to keep the `yarn.lock` file up-to-date.
-          labels: contribution/core,dependencies,pr/auto-approve
+          labels: contribution/core,dependencies,auto-approve
           team-reviewers: aws-cdk-team
           # Github prevents further Github actions to be run if the default Github token is used.
           # Instead use a privileged token here, so further GH actions can be triggered on this PR.

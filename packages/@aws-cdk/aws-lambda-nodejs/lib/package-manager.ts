@@ -14,13 +14,13 @@ interface PackageManagerProps {
 export class PackageManager {
   public static NPM = new PackageManager({
     lockFile: 'package-lock.json',
-    installCommand: ['npm', 'install'],
+    installCommand: ['npm', 'ci'],
     runCommand: ['npx', '--no-install'],
   });
 
   public static YARN = new PackageManager({
     lockFile: 'yarn.lock',
-    installCommand: ['yarn', 'install'],
+    installCommand: ['yarn', 'install', '--no-immutable'],
     runCommand: ['yarn', 'run'],
   });
 
@@ -63,8 +63,8 @@ export class PackageManager {
     return [
       os.platform() === 'win32' ? `${runCommand}.cmd` : runCommand,
       ...runArgs,
-      bin,
       ...(this.argsSeparator ? [this.argsSeparator] : []),
+      bin,
     ].join(' ');
   }
 }

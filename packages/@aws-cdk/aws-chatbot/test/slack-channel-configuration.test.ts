@@ -1,5 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
-import { ABSENT } from '@aws-cdk/assert-internal';
+import { Match, Template } from '@aws-cdk/assertions';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as iam from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';
@@ -21,7 +20,7 @@ describe('SlackChannelConfiguration', () => {
       slackChannelConfigurationName: 'Test',
     });
 
-    expect(stack).toHaveResourceLike('AWS::Chatbot::SlackChannelConfiguration', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Chatbot::SlackChannelConfiguration', {
       ConfigurationName: 'Test',
       IamRoleArn: {
         'Fn::GetAtt': [
@@ -33,7 +32,7 @@ describe('SlackChannelConfiguration', () => {
       SlackWorkspaceId: 'ABC123',
     });
 
-    expect(stack).toHaveResourceLike('AWS::IAM::Role', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
       AssumeRolePolicyDocument: {
         Statement: [
           {
@@ -57,7 +56,7 @@ describe('SlackChannelConfiguration', () => {
       loggingLevel: chatbot.LoggingLevel.ERROR,
     });
 
-    expect(stack).toHaveResourceLike('AWS::Chatbot::SlackChannelConfiguration', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Chatbot::SlackChannelConfiguration', {
       ConfigurationName: 'Test',
       IamRoleArn: {
         'Fn::GetAtt': [
@@ -81,7 +80,7 @@ describe('SlackChannelConfiguration', () => {
       notificationTopics: [topic],
     });
 
-    expect(stack).toHaveResourceLike('AWS::Chatbot::SlackChannelConfiguration', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Chatbot::SlackChannelConfiguration', {
       ConfigurationName: 'Test',
       IamRoleArn: {
         'Fn::GetAtt': [
@@ -91,6 +90,26 @@ describe('SlackChannelConfiguration', () => {
       },
       SlackChannelId: 'DEF456',
       SlackWorkspaceId: 'ABC123',
+      SnsTopicArns: [
+        {
+          Ref: 'MyTopic86869434',
+        },
+      ],
+    });
+  });
+
+  test('allows adding a Topic after creating the SlackChannel', () => {
+    const slackChannel = new chatbot.SlackChannelConfiguration(stack, 'MySlackChannel', {
+      slackWorkspaceId: 'ABC123',
+      slackChannelId: 'DEF456',
+      slackChannelConfigurationName: 'Test',
+    });
+
+    const topic = new sns.Topic(stack, 'MyTopic');
+    slackChannel.addNotificationTopic(topic);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Chatbot::SlackChannelConfiguration', {
+      ConfigurationName: 'Test',
       SnsTopicArns: [
         {
           Ref: 'MyTopic86869434',
@@ -109,7 +128,7 @@ describe('SlackChannelConfiguration', () => {
       role: role,
     });
 
-    expect(stack).toCountResources('AWS::IAM::Role', 0);
+    Template.fromStack(stack).resourceCountIs('AWS::IAM::Role', 0);
   });
 
   test('created with new role and extra iam policies', () => {
@@ -127,7 +146,7 @@ describe('SlackChannelConfiguration', () => {
       resources: ['arn:aws:s3:::abc/xyz/123.txt'],
     }));
 
-    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -149,7 +168,7 @@ describe('SlackChannelConfiguration', () => {
       logRetention: logs.RetentionDays.ONE_MONTH,
     });
 
-    expect(stack).toHaveResourceLike('Custom::LogRetention', {
+    Template.fromStack(stack).hasResourceProperties('Custom::LogRetention', {
       LogGroupName: '/aws/chatbot/ConfigurationName',
       RetentionInDays: 30,
       LogGroupRegion: 'us-east-1',
@@ -174,12 +193,12 @@ describe('SlackChannelConfiguration', () => {
     expect(metric).toEqual(new cloudwatch.Metric({
       namespace: 'AWS/Chatbot',
       region: 'us-east-1',
-      dimensions: {
+      dimensionsMap: {
         ConfigurationName: 'ConfigurationName',
       },
       metricName: 'MetricName',
     }));
-    expect(stack).toHaveResourceLike('AWS::CloudWatch::Alarm', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
       Namespace: 'AWS/Chatbot',
       MetricName: 'MetricName',
       Dimensions: [
@@ -208,10 +227,10 @@ describe('SlackChannelConfiguration', () => {
       region: 'us-east-1',
       metricName: 'MetricName',
     }));
-    expect(stack).toHaveResourceLike('AWS::CloudWatch::Alarm', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
       Namespace: 'AWS/Chatbot',
       MetricName: 'MetricName',
-      Dimensions: ABSENT,
+      Dimensions: Match.absent(),
       ComparisonOperator: 'GreaterThanThreshold',
       EvaluationPeriods: 1,
       Threshold: 0,
@@ -229,8 +248,8 @@ describe('SlackChannelConfiguration', () => {
       resources: ['arn:aws:s3:::abc/xyz/123.txt'],
     }));
 
-    expect(stack).toCountResources('AWS::IAM::Role', 0);
-    expect(stack).toCountResources('AWS::IAM::Policy', 0);
+    Template.fromStack(stack).resourceCountIs('AWS::IAM::Role', 0);
+    Template.fromStack(stack).resourceCountIs('AWS::IAM::Policy', 0);
   });
 
   test('should throw error if ARN invalid', () => {
@@ -244,5 +263,23 @@ describe('SlackChannelConfiguration', () => {
 
     expect(imported.slackChannelConfigurationName).toEqual('my-slack');
     expect(imported.slackChannelConfigurationArn).toEqual('arn:aws:chatbot::1234567890:chat-configuration/slack-channel/my-slack');
+  });
+
+  test('skip validation for tokenized values', () => {
+    // invalid ARN because of underscores, no error because tokenized value
+    expect(() => chatbot.SlackChannelConfiguration.fromSlackChannelConfigurationArn(stack, 'MySlackChannel',
+      cdk.Lazy.string({ produce: () => 'arn:aws:chatbot::1234567890:chat-configuration/slack_channel/my_slack' }))).not.toThrow();
+  });
+
+  test('test name and ARN from slack channel configuration ARN', () => {
+    const imported = chatbot.SlackChannelConfiguration.fromSlackChannelConfigurationArn(stack, 'MySlackChannel', cdk.Token.asString({ Ref: 'ARN' }));
+
+    // THEN
+    expect(stack.resolve(imported.slackChannelConfigurationName)).toStrictEqual({
+      'Fn::Select': [1, { 'Fn::Split': ['slack-channel/', { 'Fn::Select': [1, { 'Fn::Split': [':chat-configuration/', { Ref: 'ARN' }] }] }] }],
+    });
+    expect(stack.resolve(imported.slackChannelConfigurationArn)).toStrictEqual({
+      Ref: 'ARN',
+    });
   });
 });

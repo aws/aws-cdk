@@ -1,5 +1,5 @@
-import '@aws-cdk/assert-internal/jest';
 import * as path from 'path';
+import { Template } from '@aws-cdk/assertions';
 import * as db from '@aws-cdk/aws-dynamodb';
 import * as cdk from '@aws-cdk/core';
 import * as appsync from '../lib';
@@ -36,7 +36,7 @@ describe('DynamoDb Data Source configuration', () => {
     api.addDynamoDbDataSource('ds', table);
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::DataSource', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::DataSource', {
       Type: 'AMAZON_DYNAMODB',
       Name: 'ds',
     });
@@ -49,7 +49,7 @@ describe('DynamoDb Data Source configuration', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::DataSource', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::DataSource', {
       Type: 'AMAZON_DYNAMODB',
       Name: 'custom',
     });
@@ -63,7 +63,7 @@ describe('DynamoDb Data Source configuration', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::DataSource', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::DataSource', {
       Type: 'AMAZON_DYNAMODB',
       Name: 'custom',
       Description: 'custom description',
@@ -166,7 +166,7 @@ describe('adding DynamoDb data source from imported api', () => {
     importedApi.addDynamoDbDataSource('ds', table);
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::DataSource', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::DataSource', {
       Type: 'AMAZON_DYNAMODB',
       ApiId: { 'Fn::GetAtt': ['baseApiCDA4D43A', 'ApiId'] },
     });
@@ -181,7 +181,7 @@ describe('adding DynamoDb data source from imported api', () => {
     importedApi.addDynamoDbDataSource('ds', table);
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::DataSource', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::DataSource', {
       Type: 'AMAZON_DYNAMODB',
       ApiId: { 'Fn::GetAtt': ['baseApiCDA4D43A', 'ApiId'] },
     });

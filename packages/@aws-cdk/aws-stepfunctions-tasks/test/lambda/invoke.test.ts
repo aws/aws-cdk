@@ -1,4 +1,3 @@
-import '@aws-cdk/assert-internal/jest';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import { Stack } from '@aws-cdk/core';
@@ -210,7 +209,7 @@ describe('LambdaInvoke', () => {
     // WHEN
     const task = new LambdaInvoke(stack, 'Task', {
       lambdaFunction,
-      payload: sfn.TaskInput.fromDataAt('$.foo'),
+      payload: sfn.TaskInput.fromJsonPathAt('$.foo'),
     });
 
     // THEN

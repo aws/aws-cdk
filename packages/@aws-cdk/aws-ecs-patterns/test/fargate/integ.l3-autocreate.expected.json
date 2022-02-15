@@ -95,6 +95,12 @@
       "Properties": {
         "Port": 80,
         "Protocol": "HTTP",
+        "TargetGroupAttributes": [
+          {
+            "Key": "stickiness.enabled",
+            "Value": "false"
+          }
+        ],
         "TargetType": "ip",
         "VpcId": {
           "Ref": "EcsDefaultClusterMnL3mNNYNVpc7788A521"
@@ -405,14 +411,14 @@
     "EcsDefaultClusterMnL3mNNYNVpcPublicSubnet1NATGateway5E3732C1": {
       "Type": "AWS::EC2::NatGateway",
       "Properties": {
+        "SubnetId": {
+          "Ref": "EcsDefaultClusterMnL3mNNYNVpcPublicSubnet1Subnet3C273B99"
+        },
         "AllocationId": {
           "Fn::GetAtt": [
             "EcsDefaultClusterMnL3mNNYNVpcPublicSubnet1EIP8704DB2F",
             "AllocationId"
           ]
-        },
-        "SubnetId": {
-          "Ref": "EcsDefaultClusterMnL3mNNYNVpcPublicSubnet1Subnet3C273B99"
         },
         "Tags": [
           {
@@ -502,14 +508,14 @@
     "EcsDefaultClusterMnL3mNNYNVpcPublicSubnet2NATGateway4C855E00": {
       "Type": "AWS::EC2::NatGateway",
       "Properties": {
+        "SubnetId": {
+          "Ref": "EcsDefaultClusterMnL3mNNYNVpcPublicSubnet2Subnet95FF715A"
+        },
         "AllocationId": {
           "Fn::GetAtt": [
             "EcsDefaultClusterMnL3mNNYNVpcPublicSubnet2EIPF0764873",
             "AllocationId"
           ]
-        },
-        "SubnetId": {
-          "Ref": "EcsDefaultClusterMnL3mNNYNVpcPublicSubnet2Subnet95FF715A"
         },
         "Tags": [
           {

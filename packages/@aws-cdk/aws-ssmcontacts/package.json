@@ -7,6 +7,13 @@
   "jsii": {
     "outdir": "dist",
     "projectReferences": true,
+    "metadata": {
+      "jsii": {
+        "rosetta": {
+          "strict": true
+        }
+      }
+    },
     "targets": {
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.SSMContacts",
@@ -58,7 +65,6 @@
   },
   "cdk-build": {
     "cloudformation": "AWS::SSMContacts",
-    "jest": true,
     "env": {
       "AWSLINT_BASE_CONSTRUCT": "true"
     }
@@ -77,11 +83,11 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@types/jest": "^26.0.23",
-    "@aws-cdk/assert-internal": "0.0.0",
-    "cdk-build-tools": "0.0.0",
-    "cfn2ts": "0.0.0",
-    "pkglint": "0.0.0"
+    "@aws-cdk/assertions": "0.0.0",
+    "@aws-cdk/cdk-build-tools": "0.0.0",
+    "@aws-cdk/cfn2ts": "0.0.0",
+    "@aws-cdk/pkglint": "0.0.0",
+    "@types/jest": "^27.4.0"
   },
   "dependencies": {
     "@aws-cdk/core": "0.0.0"

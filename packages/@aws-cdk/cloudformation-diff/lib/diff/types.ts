@@ -282,7 +282,7 @@ export class Difference<ValueType> implements IDifference<ValueType> {
    * @param oldValue the old value, cannot be equal (to the sense of +deepEqual+) to +newValue+.
    * @param newValue the new value, cannot be equal (to the sense of +deepEqual+) to +oldValue+.
    */
-  constructor(public readonly oldValue: ValueType | undefined, public readonly newValue: ValueType | undefined) {
+  constructor(public readonly oldValue: ValueType | undefined, public readonly newValue: ValueType | undefined) {
     if (oldValue === undefined && newValue === undefined) {
       throw new AssertionError({ message: 'oldValue and newValue are both undefined!' });
     }
@@ -309,7 +309,7 @@ export class Difference<ValueType> implements IDifference<ValueType> {
 export class PropertyDifference<ValueType> extends Difference<ValueType> {
   public readonly changeImpact?: ResourceImpact;
 
-  constructor(oldValue: ValueType | undefined, newValue: ValueType | undefined, args: { changeImpact?: ResourceImpact }) {
+  constructor(oldValue: ValueType | undefined, newValue: ValueType | undefined, args: { changeImpact?: ResourceImpact }) {
     super(oldValue, newValue);
     this.changeImpact = args.changeImpact;
   }
@@ -506,7 +506,7 @@ export class ResourceDifference implements IDifference<Resource> {
 
   constructor(
     public readonly oldValue: Resource | undefined,
-    public readonly newValue: Resource | undefined,
+    public readonly newValue: Resource | undefined,
     args: {
       resourceType: { oldType?: string, newType?: string },
       propertyDiffs: { [key: string]: PropertyDifference<any> },

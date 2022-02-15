@@ -19,7 +19,13 @@ export const BOOTSTRAP_QUALIFIER_CONTEXT = '@aws-cdk/core:bootstrapQualifier';
 /**
  * The minimum bootstrap stack version required by this app.
  */
-const MIN_BOOTSTRAP_STACK_VERSION = 4;
+const MIN_BOOTSTRAP_STACK_VERSION = 6;
+
+/**
+ * The minimum bootstrap stack version required
+ * to use the lookup role.
+ */
+const MIN_LOOKUP_ROLE_BOOTSTRAP_STACK_VERSION = 8;
 
 /**
  * Configuration properties for DefaultStackSynthesizer
@@ -92,11 +98,37 @@ export interface DefaultStackSynthesizerProps {
   readonly lookupRoleArn?: string;
 
   /**
+   * External ID to use when assuming lookup role
+   *
+   * @default - No external ID
+   */
+  readonly lookupRoleExternalId?: string;
+
+  /**
+   * Use the bootstrapped lookup role for (read-only) stack operations
+   *
+   * Use the lookup role when performing a `cdk diff`. If set to `false`, the
+   * `deploy role` credentials will be used to perform a `cdk diff`.
+   *
+   * Requires bootstrap stack version 8.
+   *
+   * @default true
+   */
+  readonly useLookupRoleForStackOperations?: boolean;
+
+  /**
    * External ID to use when assuming role for image asset publishing
    *
    * @default - No external ID
    */
   readonly imageAssetPublishingExternalId?: string;
+
+  /**
+   * External ID to use when assuming role for cloudformation deployments
+   *
+   * @default - No external ID
+   */
+  readonly deployRoleExternalId?: string;
 
   /**
    * The role to assume to initiate a deployment in this environment
@@ -161,10 +193,19 @@ export interface DefaultStackSynthesizerProps {
   /**
    * bucketPrefix to use while storing S3 Assets
    *
-   *
    * @default - DefaultStackSynthesizer.DEFAULT_FILE_ASSET_PREFIX
    */
   readonly bucketPrefix?: string;
+
+  /**
+   * A prefix to use while tagging and uploading Docker images to ECR.
+   *
+   * This does not add any separators - the source hash will be appended to
+   * this string directly.
+   *
+   * @default - DefaultStackSynthesizer.DEFAULT_DOCKER_ASSET_PREFIX
+   */
+  readonly dockerTagPrefix?: string;
 
   /**
    * Bootstrap stack version SSM parameter.
@@ -235,6 +276,10 @@ export class DefaultStackSynthesizer extends StackSynthesizer {
    * Default file asset prefix
    */
   public static readonly DEFAULT_FILE_ASSET_PREFIX = '';
+  /**
+   * Default Docker asset prefix
+   */
+  public static readonly DEFAULT_DOCKER_ASSET_PREFIX = '';
 
   /**
    * Default bootstrap stack version SSM parameter.
@@ -249,8 +294,10 @@ export class DefaultStackSynthesizer extends StackSynthesizer {
   private fileAssetPublishingRoleArn?: string;
   private imageAssetPublishingRoleArn?: string;
   private lookupRoleArn?: string;
+  private useLookupRoleForStackOperations: boolean;
   private qualifier?: string;
   private bucketPrefix?: string;
+  private dockerTagPrefix?: string;
   private bootstrapStackVersionSsmParameter?: string;
 
   private readonly files: NonNullable<cxschema.AssetManifest['files']> = {};
@@ -258,6 +305,7 @@ export class DefaultStackSynthesizer extends StackSynthesizer {
 
   constructor(private readonly props: DefaultStackSynthesizerProps = {}) {
     super();
+    this.useLookupRoleForStackOperations = props.useLookupRoleForStackOperations ?? true;
 
     for (const key in props) {
       if (props.hasOwnProperty(key)) {
@@ -312,6 +360,7 @@ export class DefaultStackSynthesizer extends StackSynthesizer {
     this.imageAssetPublishingRoleArn = specialize(this.props.imageAssetPublishingRoleArn ?? DefaultStackSynthesizer.DEFAULT_IMAGE_ASSET_PUBLISHING_ROLE_ARN);
     this.lookupRoleArn = specialize(this.props.lookupRoleArn ?? DefaultStackSynthesizer.DEFAULT_LOOKUP_ROLE_ARN);
     this.bucketPrefix = specialize(this.props.bucketPrefix ?? DefaultStackSynthesizer.DEFAULT_FILE_ASSET_PREFIX);
+    this.dockerTagPrefix = specialize(this.props.dockerTagPrefix ?? DefaultStackSynthesizer.DEFAULT_DOCKER_ASSET_PREFIX);
     this.bootstrapStackVersionSsmParameter = replaceAll(
       this.props.bootstrapStackVersionSsmParameter ?? DefaultStackSynthesizer.DEFAULT_BOOTSTRAP_STACK_VERSION_SSM_PARAMETER,
       '${Qualifier}',
@@ -365,7 +414,7 @@ export class DefaultStackSynthesizer extends StackSynthesizer {
     assertBound(this.repositoryName);
     validateDockerImageAssetSource(asset);
 
-    const imageTag = asset.sourceHash;
+    const imageTag = this.dockerTagPrefix + asset.sourceHash;
 
     // Add to manifest
     this.dockerImages[asset.sourceHash] = {
@@ -375,6 +424,7 @@ export class DefaultStackSynthesizer extends StackSynthesizer {
         dockerBuildArgs: asset.dockerBuildArgs,
         dockerBuildTarget: asset.dockerBuildTarget,
         dockerFile: asset.dockerFile,
+        networkMode: asset.networkMode,
       },
       destinations: {
         [this.manifestEnvName]: {
@@ -424,12 +474,19 @@ export class DefaultStackSynthesizer extends StackSynthesizer {
     const artifactId = this.writeAssetManifest(session);
 
     this.emitStackArtifact(this.stack, session, {
+      assumeRoleExternalId: this.props.deployRoleExternalId,
       assumeRoleArn: this._deployRoleArn,
       cloudFormationExecutionRoleArn: this._cloudFormationExecutionRoleArn,
       stackTemplateAssetObjectUrl: templateManifestUrl,
       requiresBootstrapStackVersion: MIN_BOOTSTRAP_STACK_VERSION,
       bootstrapStackVersionSsmParameter: this.bootstrapStackVersionSsmParameter,
       additionalDependencies: [artifactId],
+      lookupRole: this.useLookupRoleForStackOperations && this.lookupRoleArn ? {
+        arn: this.lookupRoleArn,
+        assumeRoleExternalId: this.props.lookupRoleExternalId,
+        requiresBootstrapStackVersion: MIN_LOOKUP_ROLE_BOOTSTRAP_STACK_VERSION,
+        bootstrapStackVersionSsmParameter: this.bootstrapStackVersionSsmParameter,
+      } : undefined,
     });
   }
 
@@ -592,7 +649,7 @@ function addBootstrapVersionRule(stack: Stack, requiredVersion: number, bootstra
 
   const param = new CfnParameter(stack, 'BootstrapVersion', {
     type: 'AWS::SSM::Parameter::Value<String>',
-    description: 'Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store.',
+    description: `Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. ${cxapi.SSMPARAM_NO_INVALIDATE}`,
     default: bootstrapStackVersionSsmParameter,
   });
 

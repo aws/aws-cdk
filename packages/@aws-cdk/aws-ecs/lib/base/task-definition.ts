@@ -1,6 +1,6 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
-import { IResource, Lazy, Names, Resource } from '@aws-cdk/core';
+import { IResource, Lazy, Names, PhysicalName, Resource } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { ContainerDefinition, ContainerDefinitionOptions, PortMapping, Protocol } from '../container-definition';
 import { CfnTaskDefinition } from '../ecs.generated';
@@ -8,6 +8,7 @@ import { FirelensLogRouter, FirelensLogRouterDefinitionOptions, FirelensLogRoute
 import { AwsLogDriver } from '../log-drivers/aws-log-driver';
 import { PlacementConstraint } from '../placement';
 import { ProxyConfiguration } from '../proxy-configuration/proxy-configuration';
+import { RuntimePlatform } from '../runtime-platform';
 import { ImportedTaskDefinition } from './_imported-task-definition';
 
 /**
@@ -70,7 +71,7 @@ export interface CommonTaskDefinitionProps {
   readonly family?: string;
 
   /**
-   * The name of the IAM task execution role that grants the ECS agent to call AWS APIs on your behalf.
+   * The name of the IAM task execution role that grants the ECS agent permission to call AWS APIs on your behalf.
    *
    * The role will be used to retrieve container images from ECR and create CloudWatch log groups.
    *
@@ -199,6 +200,24 @@ export interface TaskDefinitionProps extends CommonTaskDefinitionProps {
    * @default - No inference accelerators.
    */
   readonly inferenceAccelerators?: InferenceAccelerator[];
+
+  /**
+   * The amount (in GiB) of ephemeral storage to be allocated to the task.
+   *
+   * Only supported in Fargate platform version 1.4.0 or later.
+   *
+   * @default - Undefined, in which case, the task will receive 20GiB ephemeral storage.
+   */
+  readonly ephemeralStorageGiB?: number;
+
+  /**
+   * The operating system that your task definitions are running on.
+   * A runtimePlatform is supported only for tasks using the Fargate launch type.
+   *
+   *
+   * @default - Undefined.
+   */
+  readonly runtimePlatform?: RuntimePlatform;
 }
 
 /**
@@ -330,6 +349,13 @@ export class TaskDefinition extends TaskDefinitionBase {
   public readonly compatibility: Compatibility;
 
   /**
+   * The amount (in GiB) of ephemeral storage to be allocated to the task.
+   *
+   * Only supported in Fargate platform version 1.4.0 or later.
+   */
+  public readonly ephemeralStorageGiB?: number;
+
+  /**
    * The container definitions.
    */
   protected readonly containers = new Array<ContainerDefinition>();
@@ -352,6 +378,8 @@ export class TaskDefinition extends TaskDefinitionBase {
   private _executionRole?: iam.IRole;
 
   private _referencesSecretJsonField?: boolean;
+
+  private runtimePlatform?: RuntimePlatform;
 
   /**
    * Constructs a new instance of the TaskDefinition class.
@@ -389,6 +417,10 @@ export class TaskDefinition extends TaskDefinitionBase {
       throw new Error(`External tasks can only have Bridge network mode, got: ${this.networkMode}`);
     }
 
+    if (!this.isFargateCompatible && props.runtimePlatform) {
+      throw new Error('Cannot specify runtimePlatform in non-Fargate compatible tasks');
+    }
+
     this._executionRole = props.executionRole;
 
     this.taskRole = props.taskRole || new iam.Role(this, 'TaskRole', {
@@ -398,6 +430,17 @@ export class TaskDefinition extends TaskDefinitionBase {
     if (props.inferenceAccelerators) {
       props.inferenceAccelerators.forEach(ia => this.addInferenceAccelerator(ia));
     }
+
+    this.ephemeralStorageGiB = props.ephemeralStorageGiB;
+
+    // validate the cpu and memory size for the Windows operation system family.
+    if (props.runtimePlatform?.operatingSystemFamily?._operatingSystemFamily.includes('WINDOWS')) {
+      // We know that props.cpu and props.memoryMiB are defined because an error would have been thrown previously if they were not.
+      // But, typescript is not able to figure this out, so using the `!` operator here to let the type-checker know they are defined.
+      this.checkFargateWindowsBasedTasksSize(props.cpu!, props.memoryMiB!, props.runtimePlatform!);
+    }
+
+    this.runtimePlatform = props.runtimePlatform;
 
     const taskDef = new CfnTaskDefinition(this, 'Resource', {
       containerDefinitions: Lazy.any({ produce: () => this.renderContainers() }, { omitEmptyArray: true }),
@@ -424,6 +467,13 @@ export class TaskDefinition extends TaskDefinitionBase {
         produce: () =>
           !isFargateCompatible(this.compatibility) ? this.renderInferenceAccelerators() : undefined,
       }, { omitEmptyArray: true }),
+      ephemeralStorage: this.ephemeralStorageGiB ? {
+        sizeInGiB: this.ephemeralStorageGiB,
+      } : undefined,
+      runtimePlatform: this.isFargateCompatible && this.runtimePlatform ? {
+        cpuArchitecture: this.runtimePlatform?.cpuArchitecture?._cpuArchitecture,
+        operatingSystemFamily: this.runtimePlatform?.operatingSystemFamily?._operatingSystemFamily,
+      } : undefined,
     });
 
     if (props.placementConstraints) {
@@ -584,7 +634,7 @@ export class TaskDefinition extends TaskDefinitionBase {
   }
 
   /**
-   * Adds the specified extention to the task definition.
+   * Adds the specified extension to the task definition.
    *
    * Extension can be used to apply a packaged modification to
    * a task definition.
@@ -610,6 +660,8 @@ export class TaskDefinition extends TaskDefinitionBase {
     if (!this._executionRole) {
       this._executionRole = new iam.Role(this, 'ExecutionRole', {
         assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
+        // needed for cross-account access with TagParameterContainerImage
+        roleName: PhysicalName.GENERATE_IF_NEEDED,
       });
     }
     return this._executionRole;
@@ -645,7 +697,7 @@ export class TaskDefinition extends TaskDefinitionBase {
   /**
    * Returns the container that match the provided containerName.
    */
-  private findContainer(containerName: string): ContainerDefinition | undefined {
+  public findContainer(containerName: string): ContainerDefinition | undefined {
     return this.containers.find(c => c.containerName === containerName);
   }
 
@@ -674,6 +726,24 @@ export class TaskDefinition extends TaskDefinitionBase {
 
     return this.containers.map(x => x.renderContainerDefinition());
   }
+
+  private checkFargateWindowsBasedTasksSize(cpu: string, memory: string, runtimePlatform: RuntimePlatform) {
+    if (Number(cpu) === 1024) {
+      if (Number(memory) < 1024 || Number(memory) > 8192 || (Number(memory)% 1024 !== 0)) {
+        throw new Error(`If provided cpu is ${cpu}, then memoryMiB must have a min of 1024 and a max of 8192, in 1024 increments. Provided memoryMiB was ${Number(memory)}.`);
+      }
+    } else if (Number(cpu) === 2048) {
+      if (Number(memory) < 4096 || Number(memory) > 16384 || (Number(memory) % 1024 !== 0)) {
+        throw new Error(`If provided cpu is ${cpu}, then memoryMiB must have a min of 4096 and max of 16384, in 1024 increments. Provided memoryMiB ${Number(memory)}.`);
+      }
+    } else if (Number(cpu) === 4096) {
+      if (Number(memory) < 8192 || Number(memory) > 30720 || (Number(memory) % 1024 !== 0)) {
+        throw new Error(`If provided cpu is ${ cpu }, then memoryMiB must have a min of 8192 and a max of 30720, in 1024 increments.Provided memoryMiB was ${ Number(memory) }.`);
+      }
+    } else {
+      throw new Error(`If operatingSystemFamily is ${runtimePlatform.operatingSystemFamily!._operatingSystemFamily}, then cpu must be in 1024 (1 vCPU), 2048 (2 vCPU), or 4096 (4 vCPU). Provided value was: ${cpu}`);
+    }
+  };
 }
 
 /**
