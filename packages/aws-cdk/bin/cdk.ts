@@ -185,6 +185,8 @@ async function parseCommandLineArguments() {
       .option('security-only', { type: 'boolean', desc: 'Only diff for broadened security changes', default: false })
       .option('fail', { type: 'boolean', desc: 'Fail with exit code 1 in case of diff', default: false }))
     .command('metadata [STACK]', 'Returns all metadata associated with this stack')
+    .command('acknowledge [ID]', 'Acknowledge a notice so that it does not show up anymore')
+    .command('notices', 'Returns a list of relevant notices')
     .command('init [TEMPLATE]', 'Create a new, empty CDK project from a template.', yargs => yargs
       .option('language', { type: 'string', alias: 'l', desc: 'The language to be used for the new project (default can be configured in ~/.cdk.json)', choices: initTemplateLanguages })
       .option('list', { type: 'boolean', desc: 'List the available templates' })
@@ -289,7 +291,6 @@ async function initCommandLine() {
     }
   } finally {
     await version.displayVersionMessage();
-    await displayNotices();
   }
 
   async function main(command: string, args: any): Promise<number | string | {} | void> {
@@ -430,9 +431,15 @@ async function initCommandLine() {
           return cli.synth(args.STACKS, true, args.quiet, args.validation);
         }
 
-
       case 'metadata':
         return cli.metadata(args.STACK);
+
+      case 'acknowledge':
+        return cli.acknowledge(args.ID);
+
+      case 'notices':
+        SHOW_ALL_NOTICES = true;
+        return;
 
       case 'init':
         const language = configuration.settings.get(['language']);
@@ -523,6 +530,7 @@ function yargsNegativeAlias<T extends { [x in S | L ]: boolean | undefined }, S 
   };
 }
 
+let SHOW_ALL_NOTICES = false;
 initCommandLine()
   .then(value => {
     if (value == null) { return; }
@@ -531,6 +539,11 @@ initCommandLine()
     } else if (typeof value === 'number') {
       process.exitCode = value;
     }
+  })
+  .then(async () => {
+    await displayNotices({
+      acknowledgedIssueNumbers: SHOW_ALL_NOTICES ? new Set() : undefined,
+    });
   })
   .catch(err => {
     error(err.message);

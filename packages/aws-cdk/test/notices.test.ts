@@ -51,19 +51,19 @@ describe('cli notices', () => {
     test('correctly filter notices on cli', () => {
       const notices = [BASIC_NOTICE, MULTIPLE_AFFECTED_VERSIONS_NOTICE];
       expect(filterNotices(notices, {
-        versionNumber: '1.0.0',
+        cliVersion: '1.0.0',
       })).toEqual([BASIC_NOTICE]);
 
       expect(filterNotices(notices, {
-        versionNumber: '1.129.0',
+        cliVersion: '1.129.0',
       })).toEqual([MULTIPLE_AFFECTED_VERSIONS_NOTICE]);
 
       expect(filterNotices(notices, {
-        versionNumber: '1.126.0',
+        cliVersion: '1.126.0',
       })).toEqual(notices);
 
       expect(filterNotices(notices, {
-        versionNumber: '1.130.0',
+        cliVersion: '1.130.0',
       })).toEqual([]);
     });
 

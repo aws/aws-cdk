@@ -16,6 +16,7 @@ import { CloudWatchLogEventMonitor } from './api/logs/logs-monitor';
 import { StackActivityProgress } from './api/util/cloudformation/stack-activity-monitor';
 import { printSecurityDiff, printStackDiff, RequireApproval } from './diff';
 import { data, debug, error, highlight, print, success, warning } from './logging';
+import { suppressNotice } from './notices';
 import { deserializeStructure } from './serialize';
 import { Configuration, PROJECT_CONFIG } from './settings';
 import { numberFromBool, partition } from './util';
@@ -77,6 +78,10 @@ export class CdkToolkit {
   public async metadata(stackName: string) {
     const stacks = await this.selectSingleStackByName(stackName);
     return stacks.firstStack.manifest.metadata ?? {};
+  }
+
+  public async acknowledge(noticeId: string) {
+    return suppressNotice(Number(noticeId));
   }
 
   public async diff(options: DiffOptions): Promise<number> {

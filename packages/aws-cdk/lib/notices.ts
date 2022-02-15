@@ -6,24 +6,43 @@ import { print, debug } from './logging';
 import { cdkCacheDir } from './util/directories';
 import { versionNumber } from './version';
 
-interface DisplayNoticesOptions {
-  readonly dataSource?: NoticeDataSource;
-  readonly cacheFilePath?: string;
+const CACHE_FILE_PATH = path.join(cdkCacheDir(), 'notices.json');
+const ACKNOWLEDGEMENTS_FILE_PATH = path.join(cdkCacheDir(), 'acks.json');
+
+export async function suppressNotice(issueNumber: number) {
+  await new Acknowledgements().addIssueNumber(issueNumber);
+}
+
+export interface DisplayNoticesOptions extends FilterOptions {
+}
+
+export interface FilterOptions {
+  readonly temporarilySuppressed?: boolean;
+  readonly permanentlySuppressed?: boolean;
+  readonly cliVersion?: string;
+  readonly acknowledgedIssueNumbers?: Set<number>;
 }
 
 export async function displayNotices(options: DisplayNoticesOptions = {}) {
-  const cacheFilePath = options.cacheFilePath ?? path.join(cdkCacheDir(), 'notices.json');
-  const dataSource = new CachedDataSource(cacheFilePath, options.dataSource ?? new WebsiteNoticeDataSource());
+  const dataSource = dataSourceReference();
 
   const notices = await dataSource.fetch();
-  const individualMessages = formatNotices(filterNotices(notices));
+  const individualMessages = formatNotices(filterNotices(notices, {
+    temporarilySuppressed: options.temporarilySuppressed,
+    permanentlySuppressed: options.permanentlySuppressed,
+    acknowledgedIssueNumbers: options.acknowledgedIssueNumbers ?? await new Acknowledgements().getIssueNumbers(),
+  }));
 
   if (individualMessages.length > 0) {
     print(finalMessage(individualMessages, notices[0].issueNumber));
   }
 }
 
-export function finalMessage(individualMessages: string[], exampleNumber: number): string {
+function dataSourceReference(): CachedDataSource {
+  return new CachedDataSource(CACHE_FILE_PATH, new WebsiteNoticeDataSource());
+}
+
+function finalMessage(individualMessages: string[], exampleNumber: number): string {
   return [
     'NOTICES',
     ...individualMessages,
@@ -31,17 +50,12 @@ export function finalMessage(individualMessages: string[], exampleNumber: number
   ].join('\n\n');
 }
 
-export interface FilterOptions {
-  readonly versionNumber?: string;
-  readonly temporarilySuppressed?: boolean;
-  readonly permanentlySuppressed?: boolean;
-}
-
-export function filterNotices(notices: Notice[], options: FilterOptions = {}): Notice[] {
+export function filterNotices(notices: Notice[], options: FilterOptions): Notice[] {
   const filter = new NoticeFilter({
-    cliVersion: options.versionNumber ?? versionNumber(),
+    cliVersion: options.cliVersion ?? versionNumber(),
     temporarilySuppressed: options.temporarilySuppressed ?? false, // coming from a command line option
     permanentlySuppressed: options.permanentlySuppressed ?? false, // coming from the cdk.json file
+    acknowledgedIssueNumbers: options.acknowledgedIssueNumbers ?? new Set(),
   });
   return notices.filter(notice => filter.apply(notice));
 }
@@ -127,7 +141,7 @@ export class CachedDataSource implements NoticeDataSource {
     try {
       return await fs.readJSON(this.fileName) as CachedNotices;
     } catch (e) {
-      debug(`Failed to load notices from cached: ${e}`);
+      debug(`Failed to load notices from cache: ${e}`);
       return {
         expiration: 0,
         notices: [],
@@ -148,20 +162,20 @@ export interface NoticeFilterProps {
   permanentlySuppressed: boolean,
   temporarilySuppressed: boolean,
   cliVersion: string,
-  acknowledgedIssueNumbers?: number[],
+  acknowledgedIssueNumbers: Set<number>,
 }
 
 export class NoticeFilter {
-  private readonly acknowledgedIssueNumbers: number[];
+  private readonly acknowledgedIssueNumbers: Set<number>;
 
   constructor(private readonly props: NoticeFilterProps) {
-    this.acknowledgedIssueNumbers = props.acknowledgedIssueNumbers ?? [];
+    this.acknowledgedIssueNumbers = props.acknowledgedIssueNumbers ?? new Set();
   }
 
   apply(notice: Notice): boolean {
     if (this.props.permanentlySuppressed
       || this.props.temporarilySuppressed
-      || this.acknowledgedIssueNumbers.includes(notice.issueNumber)) {
+      || this.acknowledgedIssueNumbers.has(notice.issueNumber)) {
       return false;
     }
 
@@ -185,5 +199,45 @@ export class FooNoticeFormatter implements NoticeFormatter {
       `\tAffected versions: ${componentsValue}`,
       `\tMore information at: https://github.com/aws/aws-cdk/issues/${notice.issueNumber}`,
     ].join('\n\n');
+  }
+}
+
+interface CachedAcks {
+  issueNumbers: number[];
+}
+
+export class Acknowledgements {
+  private readonly fileName: string = ACKNOWLEDGEMENTS_FILE_PATH;
+
+  async getIssueNumbers(): Promise<Set<number>> {
+    const cachedData = await this.load();
+    const issueNumbers = new Set<number>();
+    cachedData.issueNumbers.forEach(i => issueNumbers.add(i));
+    return issueNumbers;
+  }
+
+  async addIssueNumber(issueNumber: number) {
+    const cachedData = await this.load();
+    cachedData.issueNumbers.push(issueNumber);
+    await this.save(cachedData);
+  }
+
+  private async load(): Promise<CachedAcks> {
+    try {
+      return await fs.readJSON(this.fileName) as CachedAcks;
+    } catch (e) {
+      debug(`Failed to load acknowledgements from cache: ${e}`);
+      return {
+        issueNumbers: [],
+      };
+    }
+  }
+
+  private async save(cached: CachedAcks): Promise<void> {
+    try {
+      await fs.writeJSON(this.fileName, cached);
+    } catch (e) {
+      debug(`Failed to store acknowledgements in the cache: ${e}`);
+    }
   }
 }
