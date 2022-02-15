@@ -115,21 +115,6 @@ new logs.SubscriptionFilter(this, 'Subscription', {
 });
 ```
 
-You can pass an existing IAM Role to be assumed for writing logs in a Kinesis destination. If not, a new one will be created.
-
-```ts
-const id = 'CloudWatchLogsCanPutRecords';
-const destinationRole = new iam.Role(this, id, {
-    assumedBy: new iam.ServicePrincipal('logs.amazonaws.com'),
-});
-
-new SubscriptionFilter(this, 'Subscription', {
-    logGroup,
-    destination: new LogsDestinations.KinesisDestination(kinesisStream, { role: destinationRole } ),
-    filterPattern: FilterPattern.allTerms("ERROR", "MainThread")
-});
-```
-
 ## Metric Filters
 
 CloudWatch Logs can extract and emit metrics based on a textual log stream.
