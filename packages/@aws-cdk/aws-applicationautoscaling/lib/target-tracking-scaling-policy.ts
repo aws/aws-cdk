@@ -189,6 +189,26 @@ export enum PredefinedMetric {
    */
   APPSTREAM_AVERAGE_CAPACITY_UTILIZATION = 'AppStreamAverageCapacityUtilization',
   /**
+   * CASSANDRA_READ_CAPACITY_UTILIZATION
+   * @see https://docs.aws.amazon.com/autoscaling/application/APIReference/API_PredefinedMetricSpecification.html
+   */
+  CASSANDRA_READ_CAPACITY_UTILIZATION = 'CassandraReadCapacityUtilization',
+  /**
+   * CASSANDRA_WRITE_CAPACITY_UTILIZATION
+   * @see https://docs.aws.amazon.com/autoscaling/application/APIReference/API_PredefinedMetricSpecification.html
+   */
+  CASSANDRA_WRITE_CAPACITY_UTILIZATION = 'CassandraWriteCapacityUtilization',
+  /**
+   * COMPREHEND_INFERENCE_UTILIZATION
+   * @see https://docs.aws.amazon.com/autoscaling/application/APIReference/API_PredefinedMetricSpecification.html
+   */
+  COMPREHEND_INFERENCE_UTILIZATION = 'ComprehendInferenceUtilization',
+  /**
+   * NEPTURE_READER_AVERAGE_CPU_UTILIZATION
+   * @see https://docs.aws.amazon.com/autoscaling/application/APIReference/API_PredefinedMetricSpecification.html
+   */
+  NEPTURE_READER_AVERAGE_CPU_UTILIZATION = 'NeptuneReaderAverageCPUUtilization',
+  /**
    * DYNAMODB_READ_CAPACITY_UTILIZATION
    * @see https://docs.aws.amazon.com/autoscaling/application/APIReference/API_PredefinedMetricSpecification.html
    */
