@@ -5683,7 +5683,7 @@
         "AccessPolicy": "A resource-based policy that is used to manage access permissions on the target backup vault.",
         "BackupVaultName": "The name of a logical container where backups are stored. Backup vaults are identified by names that are unique to the account used to create them and the AWS Region where they are created. They consist of lowercase letters, numbers, and hyphens.",
         "BackupVaultTags": "Metadata that you can assign to help organize the resources that you create. Each tag is a key-value pair.",
-        "EncryptionKeyArn": "The server-side encryption key that is used to protect your backups; for example, `arn:aws:kms:us-west-2:111122223333:key/1234abcd-12ab-34cd-56ef-1234567890ab` .",
+        "EncryptionKeyArn": "A server-side encryption key you can specify to encrypt your backups from services that support full AWS Backup management; for example, `arn:aws:kms:us-west-2:111122223333:key/1234abcd-12ab-34cd-56ef-1234567890ab` . If you specify a key, you must specify its ARN, not its alias. If you do not specify a key, AWS Backup creates a KMS key for you by default.\n\nTo learn which AWS Backup services support full AWS Backup management and how AWS Backup handles encryption for backups from services that do not yet support full AWS Backup , see [Encryption for backups in AWS Backup](https://docs.aws.amazon.com/aws-backup/latest/devguide/encryption.html)",
         "LockConfiguration": "Configuration for [AWS Backup Vault Lock](https://docs.aws.amazon.com/aws-backup/latest/devguide/vault-lock.html) .",
         "Notifications": "The SNS event notifications for the specified backup vault."
       }
@@ -9332,6 +9332,7 @@
         "DomainName": "The unique name of the domain.",
         "FlowDefinition": "",
         "ObjectTypeName": "The name of the profile object type mapping to use.",
+        "ObjectTypeNames": "",
         "Tags": "The tags used to organize, track, or control access for this resource.",
         "Uri": "The URI of the S3 bucket or any other type of data source."
       }
@@ -9371,6 +9372,14 @@
       "description": "",
       "properties": {
         "Object": ""
+      }
+    },
+    "AWS::CustomerProfiles::Integration.ObjectTypeMapping": {
+      "attributes": {},
+      "description": "",
+      "properties": {
+        "Key": "",
+        "Value": ""
       }
     },
     "AWS::CustomerProfiles::Integration.S3SourceProperties": {
@@ -10654,6 +10663,7 @@
       "properties": {
         "AvailabilityZones": "A list of Amazon EC2 Availability Zones that instances in the cluster can be created in.",
         "BackupRetentionPeriod": "The number of days for which automated backups are retained. You must specify a minimum value of 1.\n\nDefault: 1\n\nConstraints:\n\n- Must be a value from 1 to 35.",
+        "CopyTagsToSnapshot": "",
         "DBClusterIdentifier": "The cluster identifier. This parameter is stored as a lowercase string.\n\nConstraints:\n\n- Must contain from 1 to 63 letters, numbers, or hyphens.\n- The first character must be a letter.\n- Cannot end with a hyphen or contain two consecutive hyphens.\n\nExample: `my-cluster`",
         "DBClusterParameterGroupName": "The name of the cluster parameter group to associate with this cluster.",
         "DBSubnetGroupName": "A subnet group to associate with this cluster.\n\nConstraints: Must match the name of an existing `DBSubnetGroup` . Must not be default.\n\nExample: `mySubnetgroup`",
@@ -10837,6 +10847,7 @@
         "ReadProvisionedThroughputSettings": "Defines read capacity settings for the replica table.",
         "Region": "The region in which this replica exists.",
         "SSESpecification": "Allows you to specify a customer-managed key for the replica. When using customer-managed keys for server-side encryption, this property must have a value in all replicas.",
+        "TableClass": "",
         "Tags": "An array of key-value pairs to apply to this replica.\n\nFor more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) ."
       }
     },
@@ -11228,7 +11239,7 @@
       "description": "Specifies a set of DHCP options for your VPC.\n\nYou must specify at least one of the following properties: `DomainNameServers` , `NetbiosNameServers` , `NtpServers` . If you specify `NetbiosNameServers` , you must specify `NetbiosNodeType` .",
       "properties": {
         "DomainName": "This value is used to complete unqualified DNS hostnames. If you're using AmazonProvidedDNS in `us-east-1` , specify `ec2.internal` . If you're using AmazonProvidedDNS in another Region, specify *region* . `compute.internal` (for example, `ap-northeast-1.compute.internal` ). Otherwise, specify a domain name (for example, *MyCompany.com* ).",
-        "DomainNameServers": "The IPv4 addresses of up to four domain name servers, or AmazonProvidedDNS. The default DHCP option set specifies `AmazonProvidedDNS` . If specifying more than one domain name server, specify the IP addresses in a single parameter, separated by commas. To have your instance to receive a custom DNS hostname as specified in `DomainName` , you must set this to a custom DNS server.",
+        "DomainNameServers": "The IPv4 addresses of up to four domain name servers, or `AmazonProvidedDNS` . The default is `AmazonProvidedDNS` . To have your instance receive a custom DNS hostname as specified in `DomainName` , you must set this property to a custom DNS server.",
         "NetbiosNameServers": "The IPv4 addresses of up to four NetBIOS name servers.",
         "NetbiosNodeType": "The NetBIOS node type (1, 2, 4, or 8). We recommend that you specify 2 (broadcast and multicast are not currently supported).",
         "NtpServers": "The IPv4 addresses of up to four Network Time Protocol (NTP) servers.",
@@ -11634,7 +11645,7 @@
         "PoolCount": "The number of pools in a scope.",
         "Ref": "`Ref` returns the IPAM scope ID."
       },
-      "description": "In IPAM, a scope is the highest-level container within IPAM. An IPAM contains two default scopes. Each scope represents the IP space for a single network. The private scope is intended for all private IP address space. The public scope is intended for all public IP address space. Scopes enable you to reuse IP addresses across multiple unconnected networks without causing IP address overlap or conflict.\n\nFor more information, see [How IPAM works](https://docs.aws.amazon.com//vpc/latest/ipam/how-it-works-ipam.html) in the *Amazon VPC IPAM User Guide*",
+      "description": "In IPAM, a scope is the highest-level container within IPAM. An IPAM contains two default scopes. Each scope represents the IP space for a single network. The private scope is intended for all private IP address space. The public scope is intended for all public IP address space. Scopes enable you to reuse IP addresses across multiple unconnected networks without causing IP address overlap or conflict.\n\nFor more information, see [How IPAM works](https://docs.aws.amazon.com//vpc/latest/ipam/how-it-works-ipam.html) in the *Amazon VPC IPAM User Guide* .",
       "properties": {
         "Description": "The description of the scope.",
         "IpamId": "The ID of the IPAM for which you're creating this scope.",
@@ -12571,7 +12582,7 @@
       "properties": {
         "Description": "A description for the network interface.",
         "GroupSet": "The security group IDs associated with this network interface.",
-        "InterfaceType": "The type of network interface. The default is `interface` .",
+        "InterfaceType": "The type of network interface. The default is `interface` . The supported values are `efa` and `trunk` .",
         "Ipv6AddressCount": "The number of IPv6 addresses to assign to a network interface. Amazon EC2 automatically selects the IPv6 addresses from the subnet range. To specify specific IPv6 addresses, use the `Ipv6Addresses` property and don't specify this property.",
         "Ipv6Addresses": "One or more specific IPv6 addresses from the IPv6 CIDR block range of your subnet to associate with the network interface. If you're specifying a number of IPv6 addresses, use the `Ipv6AddressCount` property and don't specify this property.",
         "PrivateIpAddress": "Assigns a single private IP address to the network interface, which is used as the primary private IP address. If you want to specify multiple private IP address, use the `PrivateIpAddresses` property.",
@@ -13118,6 +13129,15 @@
         "VpcId": "The ID of the VPC the subnet is in.\n\nIf you update this property, you must also update the `CidrBlock` property."
       }
     },
+    "AWS::EC2::Subnet.PrivateDnsNameOptionsOnLaunch": {
+      "attributes": {},
+      "description": "Describes the options for instance hostnames.",
+      "properties": {
+        "EnableResourceNameDnsAAAARecord": "Indicates whether to respond to DNS queries for instance hostname with DNS AAAA records.",
+        "EnableResourceNameDnsARecord": "Indicates whether to respond to DNS queries for instance hostnames with DNS A records.",
+        "HostnameType": "The type of hostname for EC2 instances. For IPv4 only subnets, an instance DNS name must be based on the instance IPv4 address. For IPv6 only subnets, an instance DNS name must be based on the instance ID. For dual-stack subnets, you can specify whether DNS names use the instance IPv4 address or the instance ID."
+      }
+    },
     "AWS::EC2::SubnetCidrBlock": {
       "attributes": {
         "Ref": "`Ref` returns the association ID for the subnet\u2019s IPv6 CIDR block."
@@ -13434,6 +13454,8 @@
         "EnableDnsHostnames": "Indicates whether the instances launched in the VPC get DNS hostnames. If enabled, instances in the VPC get DNS hostnames; otherwise, they do not. Disabled by default for nondefault VPCs. For more information, see [DNS attributes in your VPC](https://docs.aws.amazon.com/vpc/latest/userguide/vpc-dns.html#vpc-dns-support) .\n\nYou can only enable DNS hostnames if you've enabled DNS support.",
         "EnableDnsSupport": "Indicates whether the DNS resolution is supported for the VPC. If enabled, queries to the Amazon provided DNS server at the 169.254.169.253 IP address, or the reserved IP address at the base of the VPC network range \"plus two\" succeed. If disabled, the Amazon provided DNS service in the VPC that resolves public DNS hostnames to IP addresses is not enabled. Enabled by default. For more information, see [DNS attributes in your VPC](https://docs.aws.amazon.com/vpc/latest/userguide/vpc-dns.html#vpc-dns-support) .",
         "InstanceTenancy": "The allowed tenancy of instances launched into the VPC.\n\n- `\"default\"` : An instance launched into the VPC runs on shared hardware by default, unless you explicitly specify a different tenancy during instance launch.\n- `\"dedicated\"` : An instance launched into the VPC is a Dedicated Instance by default, unless you explicitly specify a tenancy of host during instance launch. You cannot specify a tenancy of default during instance launch.\n\nUpdating `InstanceTenancy` requires no replacement only if you are updating its value from `\"dedicated\"` to `\"default\"` . Updating `InstanceTenancy` from `\"default\"` to `\"dedicated\"` requires replacement.",
+        "Ipv4IpamPoolId": "The ID of an IPv4 IPAM pool you want to use for allocating this VPC's CIDR. For more information, see [What is IPAM?](https://docs.aws.amazon.com//vpc/latest/ipam/what-is-it-ipam.html) in the *Amazon VPC IPAM User Guide* .",
+        "Ipv4NetmaskLength": "The netmask length of the IPv4 CIDR you want to allocate to this VPC from an Amazon VPC IP Address Manager (IPAM) pool. For more information about IPAM, see [What is IPAM?](https://docs.aws.amazon.com//vpc/latest/ipam/what-is-it-ipam.html) in the *Amazon VPC IPAM User Guide* .",
         "Tags": "The tags for the VPC."
       }
     },
@@ -13445,7 +13467,11 @@
       "properties": {
         "AmazonProvidedIpv6CidrBlock": "Requests an Amazon-provided IPv6 CIDR block with a /56 prefix length for the VPC. You cannot specify the range of IPv6 addresses, or the size of the CIDR block.",
         "CidrBlock": "An IPv4 CIDR block to associate with the VPC.",
+        "Ipv4IpamPoolId": "Associate a CIDR allocated from an IPv4 IPAM pool to a VPC. For more information about Amazon VPC IP Address Manager (IPAM), see [What is IPAM?](https://docs.aws.amazon.com//vpc/latest/ipam/what-is-it-ipam.html) in the *Amazon VPC IPAM User Guide* .",
+        "Ipv4NetmaskLength": "The netmask length of the IPv4 CIDR you would like to associate from an Amazon VPC IP Address Manager (IPAM) pool. For more information about IPAM, see [What is IPAM?](https://docs.aws.amazon.com//vpc/latest/ipam/what-is-it-ipam.html) in the *Amazon VPC IPAM User Guide* .",
         "Ipv6CidrBlock": "An IPv6 CIDR block from the IPv6 address pool. You must also specify `Ipv6Pool` in the request.\n\nTo let Amazon choose the IPv6 CIDR block for you, omit this parameter.",
+        "Ipv6IpamPoolId": "Associates a CIDR allocated from an IPv6 IPAM pool to a VPC. For more information about Amazon VPC IP Address Manager (IPAM), see [What is IPAM?](https://docs.aws.amazon.com//vpc/latest/ipam/what-is-it-ipam.html) in the *Amazon VPC IPAM User Guide* .",
+        "Ipv6NetmaskLength": "The netmask length of the IPv6 CIDR you would like to associate from an Amazon VPC IP Address Manager (IPAM) pool. For more information about IPAM, see [What is IPAM?](https://docs.aws.amazon.com//vpc/latest/ipam/what-is-it-ipam.html) in the *Amazon VPC IPAM User Guide* .",
         "Ipv6Pool": "The ID of an IPv6 address pool from which to allocate the IPv6 CIDR block.",
         "VpcId": "The ID of the VPC."
       }
@@ -13464,18 +13490,18 @@
     "AWS::EC2::VPCEndpoint": {
       "attributes": {
         "CreationTimestamp": "The date and time the VPC endpoint was created. For example: `Fri Sep 28 23:34:36 UTC 2018.`",
-        "DnsEntries": "(Interface endpoint) The DNS entries for the endpoint. Each entry is a combination of the hosted zone ID and the DNS name. The entries are ordered as follows: regional public DNS, zonal public DNS, private DNS, and wildcard DNS. This order is not enforced for AWS Marketplace services.\n\nThe following is an example. In the first entry, the hosted zone ID is Z1HUB23UULQXV and the DNS name is vpce-01abc23456de78f9g-12abccd3.ec2.us-east-1.vpce.amazonaws.com.\n\n[\"Z1HUB23UULQXV:vpce-01abc23456de78f9g-12abccd3.ec2.us-east-1.vpce.amazonaws.com\", \"Z1HUB23UULQXV:vpce-01abc23456de78f9g-12abccd3-us-east-1a.ec2.us-east-1.vpce.amazonaws.com\", \"Z1C12344VYDITB0:ec2.us-east-1.amazonaws.com\"]\n\nIf you update the `PrivateDnsEnabled` or `SubnetIds` properties, the DNS entries in the list will change.",
-        "NetworkInterfaceIds": "(Interface endpoint) One or more network interface IDs. If you update the `PrivateDnsEnabled` or `SubnetIds` properties, the items in this list might change.",
+        "DnsEntries": "(Interface endpoints) The DNS entries for the endpoint. Each entry is a combination of the hosted zone ID and the DNS name. The entries are ordered as follows: regional public DNS, zonal public DNS, private DNS, and wildcard DNS. This order is not enforced for AWS Marketplace services.\n\nThe following is an example. In the first entry, the hosted zone ID is Z1HUB23UULQXV and the DNS name is vpce-01abc23456de78f9g-12abccd3.ec2.us-east-1.vpce.amazonaws.com.\n\n[\"Z1HUB23UULQXV:vpce-01abc23456de78f9g-12abccd3.ec2.us-east-1.vpce.amazonaws.com\", \"Z1HUB23UULQXV:vpce-01abc23456de78f9g-12abccd3-us-east-1a.ec2.us-east-1.vpce.amazonaws.com\", \"Z1C12344VYDITB0:ec2.us-east-1.amazonaws.com\"]\n\nIf you update the `PrivateDnsEnabled` or `SubnetIds` properties, the DNS entries in the list will change.",
+        "NetworkInterfaceIds": "(Interface endpoints) One or more network interface IDs. If you update the `PrivateDnsEnabled` or `SubnetIds` properties, the items in this list might change.",
         "Ref": "`Ref` returns the ID of the VPC endpoint."
       },
-      "description": "Specifies a VPC endpoint for a service. An endpoint enables you to create a private connection between your VPC and the service. The service may be provided by AWS , an AWS Marketplace Partner, or another AWS account. For more information, see [VPC Endpoints](https://docs.aws.amazon.com/vpc/latest/privatelink/vpc-endpoints.html) in the *AWS PrivateLink User Guide* .\n\nA `gateway` endpoint serves as a target for a route in your route table for traffic destined for the AWS service. You can specify an endpoint policy to attach to the endpoint, which controls access to the service from your VPC. You can also specify the VPC route tables that use the endpoint.\n\nFor information about connectivity when you use a gateway endpoint to connect to an Amazon S3 bucket from an EC2 instance, see [Why can\u2019t I connect to an S3 bucket using a gateway VPC endpoint](https://docs.aws.amazon.com/premiumsupport/knowledge-center/connect-s3-vpc-endpoint) .\n\nAn `interface` endpoint is a network interface in your subnet that serves as an endpoint for communicating with the specified service. You can specify the subnets in which to create an endpoint, and the security groups to associate with the endpoint network interface.\n\nA `GatewayLoadBalancer` endpoint is a network interface in your subnet that serves an endpoint for communicating with a Gateway Load Balancer that you've configured as a VPC endpoint service.",
+      "description": "Specifies a VPC endpoint for a service. An endpoint enables you to create a private connection between your VPC and the service. The service may be provided by AWS , an AWS Marketplace Partner, or another AWS account. For more information, see the [AWS PrivateLink User Guide](https://docs.aws.amazon.com/vpc/latest/privatelink/) .\n\nAn interface endpoint establishes connections between the subnets in your VPC and an AWS service, your own service, or a service hosted by another AWS account . You can specify the subnets in which to create the endpoint and the security groups to associate with the endpoint network interface.\n\nA gateway endpoint serves as a target for a route in your route table for traffic destined for Amazon S3 or Amazon DynamoDB. You can specify an endpoint policy for the endpoint, which controls access to the service from your VPC. You can also specify the VPC route tables that use the endpoint. For information about connectivity to Amazon S3, see [Why can\u2019t I connect to an S3 bucket using a gateway VPC endpoint?](https://docs.aws.amazon.com/premiumsupport/knowledge-center/connect-s3-vpc-endpoint)\n\nA Gateway Load Balancer endpoint provides private connectivity between your VPC and virtual appliances from a service provider.",
       "properties": {
-        "PolicyDocument": "(Interface and gateway endpoints) A policy to attach to the endpoint that controls access to the service. If this parameter is not specified, we attach a default policy that allows full access to the service.\n\nFor CloudFormation templates in YAML, you can provide the policy in JSON or YAML format. AWS CloudFormation converts YAML policies to JSON format before calling the API to create or modify the VPC endpoint.",
-        "PrivateDnsEnabled": "(Interface endpoint) Indicate whether to associate a private hosted zone with the specified VPC. The private hosted zone contains a record set for the default public DNS name for the service for the Region (for example, `kinesis.us-east-1.amazonaws.com` ) which resolves to the private IP addresses of the endpoint network interfaces in the VPC. This enables you to make requests to the default public DNS name for the service instead of the public DNS names that are automatically generated by the VPC endpoint service.\n\nTo use a private hosted zone, you must set the following VPC attributes to `true` : `enableDnsHostnames` and `enableDnsSupport` .\n\nDefault: `false`",
-        "RouteTableIds": "(Gateway endpoint) One or more route table IDs.",
-        "SecurityGroupIds": "(Interface endpoint) The ID of one or more security groups to associate with the endpoint network interface.",
-        "ServiceName": "The service name. To get a list of available services, use the [DescribeVpcEndpointServices](https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_DescribeVpcEndpointServices.html) request, or get the name from the service provider.",
-        "SubnetIds": "(Interface and Gateway Load Balancer endpoints) The ID of one or more subnets in which to create an endpoint network interface. For a Gateway Load Balancer endpoint, you can specify one subnet only.",
+        "PolicyDocument": "A policy that controls access to the service from the VPC. If this parameter is not specified, the default policy allows full access to the service. Endpoint policies are supported only for gateway and interface endpoints.\n\nFor CloudFormation templates in YAML, you can provide the policy in JSON or YAML format. AWS CloudFormation converts YAML policies to JSON format before calling the API to create or modify the VPC endpoint.",
+        "PrivateDnsEnabled": "Indicate whether to associate a private hosted zone with the specified VPC. The private hosted zone contains a record set for the default public DNS name for the service for the Region (for example, `kinesis.us-east-1.amazonaws.com` ), which resolves to the private IP addresses of the endpoint network interfaces in the VPC. This enables you to make requests to the default public DNS name for the service instead of the public DNS names that are automatically generated by the VPC endpoint service.\n\nTo use a private hosted zone, you must set the following VPC attributes to `true` : `enableDnsHostnames` and `enableDnsSupport` .\n\nThis property is supported only for interface endpoints.\n\nDefault: `false`",
+        "RouteTableIds": "The route table IDs. Routing is supported only for gateway endpoints.",
+        "SecurityGroupIds": "The IDs of the security groups to associate with the endpoint network interface. Security groups are supported only for interface endpoints.",
+        "ServiceName": "The service name. To list the available services, use [DescribeVpcEndpointServices](https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_DescribeVpcEndpointServices.html) . Otherwise, get the name from the service provider.",
+        "SubnetIds": "The ID of the subnets in which to create an endpoint network interface. You must specify this property for an interface endpoints or a Gateway Load Balancer endpoint. You can't specify this property for a gateway endpoint. For a Gateway Load Balancer endpoint, you can specify only one subnet.",
         "VpcEndpointType": "The type of endpoint.\n\nDefault: Gateway",
         "VpcId": "The ID of the VPC in which the endpoint will be used."
       }
@@ -14576,6 +14602,7 @@
       "attributes": {
         "Arn": "The Amazon Resource Name (ARN) associated with the managed node group.",
         "ClusterName": "The name of the cluster that the managed node group resides in.",
+        "Id": "",
         "NodegroupName": "The name associated with an Amazon EKS managed node group.",
         "Ref": "`Ref` returns the resource name. For example:\n\n`{ \"Ref\": \"myNodegroup\" }`\n\nFor the Amazon EKS node group `myNodegroup` , Ref returns the physical resource ID of the node group. For example, `<cluster_name>/<nodegroup_name>` ."
       },
@@ -30176,7 +30203,7 @@
     },
     "AWS::OpenSearchService::Domain.LogPublishingOption": {
       "attributes": {},
-      "description": "Specifies whether the OpenSearch Service domain publishes the OpenSearch application, search slow logs, or index slow logs to Amazon CloudWatch. Each option must be an object of name `SEARCH_SLOW_LOGS` , `ES_APPLICATION_LOGS` , `INDEX_SLOW_LOGS` , or `AUDIT_LOGS` depending on the type of logs you want to publish. For the full syntax, see the [examples](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-opensearchservice-domain.html#aws-resource-opensearchservice-domain--examples) .\n\nIf you enable a slow log, you still have to enable the *collection* of slow logs using the OpenSearch REST API. To learn more, see [Enabling log publishing ( AWS CLI)](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/createdomain-configure-slow-logs.html#createdomain-configure-slow-logs-cli) .",
+      "description": "Specifies whether the OpenSearch Service domain publishes application, search slow logs, or index slow logs to Amazon CloudWatch. Each option must be an object of name `SEARCH_SLOW_LOGS` , `ES_APPLICATION_LOGS` , `INDEX_SLOW_LOGS` , or `AUDIT_LOGS` depending on the type of logs you want to publish. For the full syntax, see the [examples](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-opensearchservice-domain.html#aws-resource-opensearchservice-domain--examples) .\n\nBefore you enable log publishing, you need to create a CloudWatch log group and provide OpenSearch Service the correct permissions to write to it. To learn more, see [Enabling log publishing ( AWS CloudFormation)](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/createdomain-configure-slow-logs.html#createdomain-configure-slow-logs-cfn) .",
       "properties": {
         "CloudWatchLogsLogGroupArn": "Specifies the CloudWatch log group to publish to.",
         "Enabled": "If `true` , enables the publishing of logs to CloudWatch.\n\nDefault: `false` ."
@@ -34339,7 +34366,6 @@
       "attributes": {},
       "description": "Specifies a metrics configuration for the CloudWatch request metrics (specified by the metrics configuration ID) from an Amazon S3 bucket. If you're updating an existing metrics configuration, note that this is a full replacement of the existing metrics configuration. If you don't include the elements you want to keep, they are erased. For examples, see [AWS::S3::Bucket](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-bucket.html#aws-properties-s3-bucket--examples) . For more information, see [PUT Bucket metrics](https://docs.aws.amazon.com/AmazonS3/latest/API/RESTBucketPUTMetricConfiguration.html) in the *Amazon S3 API Reference* .",
       "properties": {
-        "AccessPointArn": "The access point that was used while performing operations on the object. The metrics configuration only includes objects that meet the filter's criteria.",
         "Id": "The ID used to identify the metrics configuration. This can be any value you choose that helps you identify your metrics configuration.",
         "Prefix": "The prefix that an object must have to be included in the metrics results.",
         "TagFilters": "Specifies a list of tag filters to use as a metrics configuration filter. The metrics configuration includes only objects that meet the filter's criteria."
@@ -34366,7 +34392,6 @@
       "attributes": {},
       "description": "Describes the notification configuration for an Amazon S3 bucket.\n\n> If you create the target resource and related permissions in the same template, you might have a circular dependency.\n> \n> For example, you might use the `AWS::Lambda::Permission` resource to grant the bucket permission to invoke an AWS Lambda function. However, AWS CloudFormation can't create the bucket until the bucket has permission to invoke the function ( AWS CloudFormation checks whether the bucket can invoke the function). If you're using Refs to pass the bucket name, this leads to a circular dependency.\n> \n> To avoid this dependency, you can create all resources without specifying the notification configuration. Then, update the stack with a notification configuration.\n> \n> For more information on permissions, see [AWS::Lambda::Permission](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lambda-permission.html) and [Granting Permissions to Publish Event Notification Messages to a Destination](https://docs.aws.amazon.com/AmazonS3/latest/dev/NotificationHowTo.html#grant-destinations-permissions-to-s3) .",
       "properties": {
-        "EventBridgeConfiguration": "Enables delivery of events to Amazon EventBridge.",
         "LambdaConfigurations": "Describes the AWS Lambda functions to invoke and the events for which to invoke them.",
         "QueueConfigurations": "The Amazon Simple Queue Service queues to publish messages to and the events for which to publish messages.",
         "TopicConfigurations": "The topic to which notifications are sent and the events for which notifications are generated."
@@ -34647,12 +34672,7 @@
     "AWS::S3::Bucket.WebsiteConfiguration": {
       "attributes": {},
       "description": "Specifies website configuration parameters for an Amazon S3 bucket.",
-      "properties": {
-        "ErrorDocument": "The name of the error document for the website.",
-        "IndexDocument": "The name of the index document for the website.",
-        "RedirectAllRequestsTo": "The redirect behavior for every request to this bucket's website endpoint.\n\n> If you specify this property, you can't specify any other property.",
-        "RoutingRules": "Rules that define when a redirect is applied and the redirect behavior."
-      }
+      "properties": {}
     },
     "AWS::S3::BucketPolicy": {
       "attributes": {},
@@ -35170,7 +35190,9 @@
       }
     },
     "AWS::SES::Template": {
-      "attributes": {},
+      "attributes": {
+        "Id": ""
+      },
       "description": "Specifies an email template. Email templates enable you to send personalized email to one or more destinations in a single API operation.",
       "properties": {
         "Template": "The content of the email, composed of a subject line and either an HTML part or a text-only part."
@@ -35237,6 +35259,7 @@
       "attributes": {
         "Arn": "Returns the Amazon Resource Name (ARN) of the queue. For example: `arn:aws:sqs:us-east-2:123456789012:mystack-myqueue-15PG5C2FC1CW8` .",
         "QueueName": "Returns the queue name. For example: `mystack-myqueue-1VF9BKQH5BJVI` .",
+        "QueueUrl": "",
         "Ref": "`Ref` returns the queue URL. For example:\n\n`{ \"Ref\": \"https://sqs.us-east-2.amazonaws.com/123456789012/ab1-MyQueue-A2BCDEF3GHI4\" }`"
       },
       "description": "The `AWS::SQS::Queue` resource creates an Amazon SQS standard or FIFO queue.\n\nKeep the following caveats in mind:\n\n- If you don't specify the `FifoQueue` property, Amazon SQS creates a standard queue.\n\n> You can't change the queue type after you create it and you can't convert an existing standard queue into a FIFO queue. You must either create a new FIFO queue for your application or delete your existing standard queue and recreate it as a FIFO queue. For more information, see [Moving from a standard queue to a FIFO queue](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/FIFO-queues-moving.html) in the *Amazon SQS Developer Guide* .\n- If you don't provide a value for a property, the queue is created with the default value for the property.\n- If you delete a queue, you must wait at least 60 seconds before creating a queue with the same name.\n- To successfully create a new queue, you must provide a queue name that adheres to the [limits related to queues](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/limits-queues.html) and is unique within the scope of your queues.\n\nFor more information about creating FIFO (first-in-first-out) queues, see [Creating an Amazon SQS queue ( AWS CloudFormation )](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/screate-queue-cloudformation.html) in the *Amazon SQS Developer Guide* .",
@@ -35324,7 +35347,7 @@
       "properties": {
         "Attachments": "A list of key-value pairs that describe attachments to a version of a document.",
         "Content": "The content for the new SSM document in JSON or YAML.\n\n> This parameter also supports `String` data types.",
-        "DocumentFormat": "Specify the document format for the request. The document format can be JSON or YAML. JSON is the default format.\n\n> `TEXT` is not supported, even though it is listed in the `Allowed values` .",
+        "DocumentFormat": "Specify the document format for the request. JSON is the default format.",
         "DocumentType": "The type of document to create.\n\n*Allowed Values* : `ApplicationConfigurationSchema` | `Automation` | `Automation.ChangeTemplate` | `Command` | `DeploymentStrategy` | `Package` | `Policy` | `Session`",
         "Name": "A name for the SSM document.\n\n> You can't use the following strings as document name prefixes. These are reserved by AWS for use as document name prefixes:\n> \n> - `aws-`\n> - `amazon`\n> - `amzn`",
         "Requires": "A list of SSM documents required by a document. This parameter is used exclusively by AWS AppConfig . When a user creates an AWS AppConfig configuration in an SSM document, the user must also specify a required document for validation purposes. In this case, an `ApplicationConfiguration` document requires an `ApplicationConfigurationSchema` document for validation purposes. For more information, see [What is AWS AppConfig ?](https://docs.aws.amazon.com/appconfig/latest/userguide/what-is-appconfig.html) in the *AWS AppConfig User Guide* .",
