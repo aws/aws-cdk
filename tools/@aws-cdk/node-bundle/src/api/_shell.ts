@@ -11,5 +11,5 @@ export function shell(command: string, options: ShellOptions = {}): string {
     cwd: options.cwd,
     stdio: stdio,
   });
-  return buffer ? buffer.toString() : '';
+  return buffer ? buffer.toString().trim() : '';
 }

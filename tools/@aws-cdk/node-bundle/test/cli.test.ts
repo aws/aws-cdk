@@ -36,6 +36,39 @@ test('validate', () => {
 
 });
 
+test('write', () => {
+
+  const pkg = Package.create({ name: 'consumer', licenses: ['Apache-2.0'] });
+  pkg.addDependency({ name: 'dep1', licenses: ['MIT'] });
+  pkg.addDependency({ name: 'dep2', licenses: ['Apache-2.0'] });
+
+  pkg.write();
+  pkg.install();
+
+  const command = [
+    whereami(),
+    '--copyright', 'copyright',
+    '--entrypoint', pkg.entrypoint,
+    '--license', 'Apache-2.0',
+    '--license', 'MIT',
+    'write',
+  ].join(' ');
+  const bundleDir = shell(command, { cwd: pkg.dir, quiet: true });
+
+  expect(fs.existsSync(path.join(bundleDir, pkg.entrypoint))).toBeTruthy();
+  expect(fs.existsSync(path.join(bundleDir, 'package.json'))).toBeTruthy();
+  expect(fs.existsSync(path.join(bundleDir, 'NOTICE'))).toBeTruthy();
+  expect(fs.existsSync(path.join(bundleDir, 'lib', 'foo.js'))).toBeTruthy();
+  expect(fs.existsSync(path.join(bundleDir, 'lib', 'bar.js'))).toBeTruthy();
+  expect(fs.existsSync(path.join(bundleDir, 'node_modules'))).toBeFalsy();
+  expect(fs.existsSync(path.join(bundleDir, '.git'))).toBeFalsy();
+
+  const manifest = fs.readJSONSync(path.join(bundleDir, 'package.json'));
+
+  expect(manifest.dependencies).toEqual({});
+
+});
+
 test('fix', () => {
 
   const pkg = Package.create({ name: 'consumer', licenses: ['Apache-2.0'] });

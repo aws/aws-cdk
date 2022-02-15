@@ -19,6 +19,7 @@ async function buildCommands() {
     .option('dont-attribute', { type: 'string', desc: 'Dependencies matching this regular expressions wont be added to the notice file' })
     .option('test', { type: 'string', desc: 'Validation command to sanity test the bundle after its created' })
     .command('validate', 'Validate the package is ready for bundling')
+    .command('write', 'Write the bundled version of the project to a temp directory')
     .command('pack', 'Create the tarball')
     .command('fix', 'Fix whatever we can for bundling')
     .help()
@@ -49,6 +50,9 @@ async function buildCommands() {
     case 'validate':
       validate(bundle);
       break;
+    case 'write':
+      write(bundle);
+      break;
     case 'pack':
       pack(bundle);
       break;
@@ -58,6 +62,11 @@ async function buildCommands() {
     default:
       throw new Error(`Unknown command: ${command}`);
   }
+}
+
+function write(bundle: Bundle) {
+  const bundleDir = bundle.write();
+  console.log(bundleDir);
 }
 
 function validate(bundle: Bundle) {

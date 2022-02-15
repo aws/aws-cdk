@@ -158,9 +158,41 @@ export class Bundle {
   }
 
   /**
-   * Create the final npm package.
+   * Write the bundle version of the project to a temp directory.
+   * This directory is what the tool will end up packing.
+   *
+   * Returns the temp directory location.
    */
-  public pack(options: BundlePackOptions = {}) {
+  public write(): string {
+
+    const target = fs.mkdtempSync(path.join(os.tmpdir(), 'bundle-write-'));
+
+    // copy the entire project since we are retaining the original files.
+    // except for `node_modules` and `.git` which definitely don't belong in the package.
+    fs.copySync(this.packageDir, target, { filter: n => !n.includes('node_modules') && !n.includes('.git') });
+
+    // clone the original manifest since we are going to
+    // to mutate it.
+    const manifest = { ...this.manifest };
+
+      // manifest mutations
+    this.removeDependencies(manifest);
+    this.addExternals(manifest);
+
+      // write artifacts
+    this.writeOutputs(target);
+    this.writeResources(target);
+    this.writeManifest(target, manifest);
+
+    return target;
+  }
+
+  /**
+   * Create the final npm package.
+   *
+   * Returns the location of the tarball.
+   */
+  public pack(options: BundlePackOptions = {}): string {
 
     const target = options.target ?? this.packageDir;
 
@@ -173,40 +205,30 @@ export class Bundle {
       throw new Error(`Target doesnt exist: ${target}`);
     }
 
-    if (!fs.lstatSync(target).isDirectory()) {
+    // resolve symlinks.
+    const realTarget = fs.realpathSync(target);
+
+    if (!fs.lstatSync(realTarget).isDirectory()) {
       throw new Error(`Target must be a directory: ${target}`);
     }
 
-    console.log('Creating package');
-
-    const workDir = fs.mkdtempSync(path.join(os.tmpdir(), 'bundle-pack-'));
+    console.log('Write bundle');
+    const bundleDir = this.write();
     try {
-      fs.copySync(this.packageDir, workDir, { filter: n => !n.includes('node_modules') && !n.includes('.git') });
-
-      // clone the original manifest since we are going to
-      // to mutate it.
-      const manifest = { ...this.manifest };
-
-      // manifest mutations
-      this.removeDependencies(manifest);
-      this.addExternals(manifest);
-
-      // write artifacts
-      this.writeOutputs(workDir);
-      this.writeResources(workDir);
-      this.writeManifest(workDir, manifest);
 
       if (this.test) {
         console.log('Running package santiy test');
-        shell(`${path.join(workDir, this.test)}`, { cwd: workDir });
+        shell(`${path.join(bundleDir, this.test)}`, { cwd: bundleDir });
       }
 
       // create the tarball
-      const tarball = shell('npm pack', { quiet: true, cwd: workDir }).trim();
-      fs.copySync(path.join(workDir, tarball), path.join(target, tarball), { recursive: true });
-
+      console.log('Packing');
+      const tarball = shell('npm pack', { quiet: true, cwd: bundleDir }).trim();
+      const dest = path.join(realTarget, tarball);
+      fs.copySync(path.join(bundleDir, tarball), dest, { recursive: true });
+      return dest;
     } finally {
-      fs.removeSync(workDir);
+      fs.removeSync(bundleDir);
     }
   }
 
@@ -420,18 +442,17 @@ export class Bundle {
   }
 
   private writeOutputs(workDir: string) {
-    console.log('Writing output files');
     for (const output of this.bundle.outputFiles ?? []) {
       const out = output.path.replace(this.packageDir, workDir);
-      console.log(`  - ${out}`);
       fs.writeFileSync(out, output.contents);
     }
   }
 
   private writeResources(workdir: string) {
-    console.log('Copying resources');
     for (const [src, dst] of Object.entries(this.resources)) {
-      fs.copySync(path.join(this.packageDir, src), path.join(workdir, dst), { recursive: true });
+      const to = path.join(workdir, dst);
+      console.log(`  - ${to}`);
+      fs.copySync(path.join(this.packageDir, src), to, { recursive: true });
     }
   }
 
