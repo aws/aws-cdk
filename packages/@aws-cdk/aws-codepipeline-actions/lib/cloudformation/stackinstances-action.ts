@@ -11,7 +11,7 @@ import { Construct as CoreConstruct } from '@aws-cdk/core';
 /**
  * Properties for the CloudFormationDeployStackInstancesAction
  */
-export interface CloudFormationStackInstancesActionProps extends codepipeline.CommonAwsActionProps, CommonCloudFormationStackSetOptions {
+export interface CloudFormationDeployStackInstancesActionProps extends codepipeline.CommonAwsActionProps, CommonCloudFormationStackSetOptions {
   /**
    * The name of the StackSet we are adding instances to
    */
@@ -48,9 +48,9 @@ export interface CloudFormationStackInstancesActionProps extends codepipeline.Co
  * deployed to that instance.
  */
 export class CloudFormationDeployStackInstancesAction extends Action {
-  private readonly props: CloudFormationStackInstancesActionProps;
+  private readonly props: CloudFormationDeployStackInstancesActionProps;
 
-  constructor(props: CloudFormationStackInstancesActionProps) {
+  constructor(props: CloudFormationDeployStackInstancesActionProps) {
     super({
       ...props,
       region: props.stackSetRegion,
