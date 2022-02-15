@@ -1,7 +1,7 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import * as yargs from 'yargs';
-import { Bundle, BundleProps } from './api';
+import { Bundle, BundleProps, BundleValidateOptions } from './api';
 
 function versionNumber(): string {
   return fs.readJSONSync(path.join(__dirname, '..', 'package.json')).version;
@@ -18,10 +18,11 @@ async function buildCommands() {
     .option('resource', { type: 'array', nargs: 1, default: [], desc: 'List of resources that need to be explicitly copied to the bundle (example: node_modules/proxy-agent/contextify.js:bin/contextify.js)' })
     .option('dont-attribute', { type: 'string', desc: 'Dependencies matching this regular expressions wont be added to the notice file' })
     .option('test', { type: 'string', desc: 'Validation command to sanity test the bundle after its created' })
-    .command('validate', 'Validate the package is ready for bundling')
+    .command('validate', 'Validate the package is ready for bundling', args => args
+      .option('fix', { type: 'boolean', default: false, alias: 'f', desc: 'Fix any fixable violations' }),
+    )
     .command('write', 'Write the bundled version of the project to a temp directory')
-    .command('pack', 'Create the tarball')
-    .command('fix', 'Fix whatever we can for bundling')
+    .command('pack', 'Write the bundle and create the tarball')
     .help()
     .version(versionNumber())
     .argv;
@@ -48,16 +49,13 @@ async function buildCommands() {
 
   switch (command) {
     case 'validate':
-      validate(bundle);
+      validate(bundle, { fix: argv.fix });
       break;
     case 'write':
       write(bundle);
       break;
     case 'pack':
       pack(bundle);
-      break;
-    case 'fix':
-      fix(bundle);
       break;
     default:
       throw new Error(`Unknown command: ${command}`);
@@ -69,8 +67,8 @@ function write(bundle: Bundle) {
   console.log(bundleDir);
 }
 
-function validate(bundle: Bundle) {
-  const report = bundle.validate();
+function validate(bundle: Bundle, options: BundleValidateOptions = {}) {
+  const report = bundle.validate(options);
   if (!report.success) {
     throw new Error(report.summary);
   }
@@ -78,10 +76,6 @@ function validate(bundle: Bundle) {
 
 function pack(bundle: Bundle) {
   bundle.pack();
-}
-
-function fix(bundle: Bundle) {
-  bundle.fix();
 }
 
 buildCommands()

@@ -107,7 +107,7 @@ test('pack', () => {
 
 });
 
-test('fix', () => {
+test('validate and fix', () => {
 
   const pkg = Package.create({ name: 'consumer', licenses: ['Apache-2.0'] });
   pkg.addDependency({ name: 'dep1', licenses: ['MIT'] });
@@ -129,7 +129,7 @@ test('fix', () => {
   } catch (e) {
     // this should fix the fact we don't generate
     // the project with the correct notice
-    bundle.fix();
+    bundle.validate({ fix: true });
   }
 
   bundle.pack();

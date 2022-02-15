@@ -72,8 +72,7 @@ Usage: node-bundle COMMAND
 Commands:
   node-bundle validate  Validate the package is ready for bundling
   node-bundle write     Write the bundled version of the project to a temp directory
-  node-bundle pack      Create the tarball
-  node-bundle fix       Fix whatever we can for bundling
+  node-bundle pack      Write the bundle and create the tarball
 
 Options:
   --entrypoint      List of entrypoints to bundle             [array] [required]

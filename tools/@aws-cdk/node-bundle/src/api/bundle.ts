@@ -83,6 +83,15 @@ export interface BundlePackOptions {
   readonly target?: string;
 }
 
+export interface BundleValidateOptions {
+  /**
+   * Automatically fix any (fixable) violations.
+   *
+   * @default false
+   */
+  readonly fix?: boolean;
+}
+
 /**
  * Package on the local file system.
  */
@@ -147,14 +156,35 @@ export class Bundle {
   /**
    * Validate the bundle for violations.
    *
+   * If `fix` is set to true, this method will return the remaining
+   * violations after the fixes were applied.
+   *
    * This method never throws. The Caller is responsible for inspecting the
    * returned report and act accordinagly.
    */
-  public validate(): ViolationsReport {
+  public validate(options: BundleValidateOptions = {}): ViolationsReport {
+
+    const fix = options.fix ?? false;
+
+    // first validate
     const circularImports = this.validateCircularImports();
     const resources = this.validateResources();
     const notice = this.validateNotice();
-    return new ViolationsReport([...circularImports, ...resources, ...notice]);
+
+    const report = new ViolationsReport([...circularImports, ...resources, ...notice]);
+
+    if (!fix) {
+      return report;
+    }
+
+    for (const violation of report.violations) {
+      if (violation.fix) {
+        violation.fix();
+      }
+    }
+
+    // return the un fixable violations
+    return new ViolationsReport(report.violations.filter(v => !v.fix));
   }
 
   /**
@@ -188,7 +218,7 @@ export class Bundle {
   }
 
   /**
-   * Create the final npm package.
+   * Write the bundle and create the tarball.
    *
    * Returns the location of the tarball.
    */
@@ -229,18 +259,6 @@ export class Bundle {
       return dest;
     } finally {
       fs.removeSync(bundleDir);
-    }
-  }
-
-  /**
-   * Fix any fixable violations.
-   */
-  public fix() {
-    const violations = this.validate();
-    for (const violation of violations.violations) {
-      if (violation.fix) {
-        violation.fix();
-      }
     }
   }
 
