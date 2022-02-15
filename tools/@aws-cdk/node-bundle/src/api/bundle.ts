@@ -333,7 +333,7 @@ export class Bundle {
       allowOverwrite: true,
     });
 
-    if (bundle.warnings.length) {
+    if (bundle.warnings.length > 0) {
       // esbuild warnings are usually important, lets try to be strict here.
       // the warnings themselves are printed on screen.
       throw new Error(`Found ${bundle.warnings.length} bundling warnings (See above)`);
