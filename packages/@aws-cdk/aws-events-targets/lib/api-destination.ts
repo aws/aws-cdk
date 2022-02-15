@@ -12,33 +12,47 @@ export interface ApiDestinationProps extends TargetBaseProps {
    * @default - the entire EventBridge event
    */
   readonly event?: events.RuleTargetInput;
+
   /**
    * The role to assume before invoking the target
    *
    * @default - a new role will be created
    */
   readonly eventRole?: iam.IRole;
+
   /**
-   * The headers that need to be sent as part of request invoking the API Gateway REST API
-   * or EventBridge Api destinations.
+   * Additional headers sent to the API Destination
    *
-   * @default none
+   * These are merged with headers specified on the Connection, with
+   * the headers on the Connection taking precedence.
+   *
+   * You can only specify secret values on the Connection.
+   *
+   * @default - none
    */
-  readonly headerParameters?: { [key: string]: string };
+  readonly headerParameters?: Record<string, string>;
+
   /**
-   * The path parameter values to be used to populate API Gateway REST API
-   * or EventBridge Api destinations path wildcards ("*")
+   * Path parameters to insert in place of path wildcards (`*`).
    *
-   * @default none
+   * If the API destination has a wilcard in the path, these path parts
+   * will be inserted in that place.
+   *
+   * @default - none
    */
   readonly pathParameterValues?: string[]
+
   /**
-   * The query string keys/values that need to be sent as part of request invoking the API Gateway REST API
-   *  or EventBridge Api destination.
+   * Additional query string parameters sent to the API Destination
    *
-   * @default none
+   * These are merged with headers specified on the Connection, with
+   * the headers on the Connection taking precedence.
+   *
+   * You can only specify secret values on the Connection.
+   *
+   * @default - none
    */
-  readonly queryStringParameters?: { [key: string]: string };
+  readonly queryStringParameters?: Record<string, string>;
 }
 
 /**
@@ -46,7 +60,7 @@ export interface ApiDestinationProps extends TargetBaseProps {
  */
 export class ApiDestination implements events.IRuleTarget {
   constructor(
-    private readonly apiDestination: events.ApiDestination,
+    private readonly apiDestination: events.IApiDestination,
     private readonly props: ApiDestinationProps = {},
   ) { }
 
@@ -55,11 +69,16 @@ export class ApiDestination implements events.IRuleTarget {
    * from an EventBridge event.
    */
   public bind(_rule: events.IRule, _id?: string): events.RuleTargetConfig {
-    const httpParameters: events.CfnRule.HttpParametersProperty = {
-      headerParameters: this.props.headerParameters,
-      pathParameterValues: this.props.pathParameterValues,
-      queryStringParameters: this.props.queryStringParameters,
-    };
+    const httpParameters: events.CfnRule.HttpParametersProperty | undefined =
+      !!this.props.headerParameters ??
+      !!this.props.pathParameterValues ??
+      !!this.props.queryStringParameters
+        ? {
+          headerParameters: this.props.headerParameters,
+          pathParameterValues: this.props.pathParameterValues,
+          queryStringParameters: this.props.queryStringParameters,
+        } : undefined;
+
     if (this.props?.deadLetterQueue) {
       addToDeadLetterQueueResourcePolicy(_rule, this.props.deadLetterQueue);
     }
@@ -67,11 +86,9 @@ export class ApiDestination implements events.IRuleTarget {
     return {
       ...(this.props ? bindBaseTargetConfig(this.props) : {}),
       arn: this.apiDestination.apiDestinationArn,
-      role: this.props?.eventRole || singletonEventRole(this.apiDestination, [new iam.PolicyStatement({
+      role: this.props?.eventRole ?? singletonEventRole(this.apiDestination, [new iam.PolicyStatement({
         resources: [this.apiDestination.apiDestinationArn],
-        actions: [
-          'events:InvokeApiDestination',
-        ],
+        actions: ['events:InvokeApiDestination'],
       })]),
       input: this.props.event,
       targetResource: this.apiDestination,

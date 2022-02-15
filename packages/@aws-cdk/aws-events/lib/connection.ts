@@ -1,198 +1,19 @@
-import * as crypto from 'crypto';
-import { IResource, Lazy, Names, Resource, Stack, SecretValue } from '@aws-cdk/core';
+import { IResource, Resource, Stack, SecretValue } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnConnection } from './events.generated';
 
 /**
- * Supported Authorization Types.
+ * An API Destination Connection
+ *
+ * A connection defines the authorization type and credentials to use for authorization with an API destination HTTP endpoint.
  */
-export enum AuthorizationType {
-  /** API_KEY */
-  API_KEY = 'API_KEY',
-  /** BASIC */
-  BASIC = 'BASIC',
-  /** OAUTH_CLIENT_CREDENTIALS */
-  OAUTH_CLIENT_CREDENTIALS = 'OAUTH_CLIENT_CREDENTIALS',
-}
-
-/**
- * Contains the API key authorization parameters to use for the connection.
- */
-export interface ApiKeyAuthParameters {
+export interface ConnectionProps {
   /**
-   * The name of the API key to use for authorization.
+   * The name of the connection.
+   *
+   * @default - A name is automatically generated
    */
-  readonly apiKeyName: string;
-
-  /**
-   * The value for the API key to use for authorization.
-   */
-  readonly apiKeyValue: SecretValue;
-}
-
-/**
- * Contains the Basic authorization parameters to use for the connection.
- */
-export interface BasicAuthParameters {
-  /**
-   * The password associated with the user name to use for Basic authorization.
-   */
-  readonly password: SecretValue;
-
-  /**
-   * The user name to use for Basic authorization.
-   */
-  readonly username: string;
-}
-
-/**
- * Contains the client parameters for OAuth authorization.
- */
-export interface ClientParameters {
-  /**
-   * The client secret associated with the client ID to use for OAuth authorization for the connection.
-   */
-  readonly clientID: string;
-
-  /**
-   * The client ID to use for OAuth authorization for the connection.
-   */
-  readonly clientSecret: SecretValue;
-}
-
-/**
- * Additional parameters to include with the connection.
- */
-export interface Parameter {
-  /**
-   * Specifies whether the value is a secret.
-   * @default - True
-   */
-  readonly isValueSecret?: string;
-
-  /**
-   * The key for the parameter.
-   */
-  readonly key: string;
-
-  /**
-   * The value associated with the key for the parameter.
-   */
-  readonly value: string;
-}
-
-/**
- * These are custom parameter to be used when the target is an API Gateway REST APIs or EventBridge ApiDestinations.
- */
-export interface HttpParameters {
-  /**
-   * Not currently supported by AWS CloudFormation.
-   */
-  // readonly bodyParameters?: Parameter[];
-
-  /**
-   * The headers that need to be sent as part of request invoking the API Gateway REST API or EventBridge ApiDestination.
-   * @default - none
-   */
-  readonly headerParameters?: Parameter[];
-
-  /**
-   * The query string keys/values that need to be sent as part of request invoking the API Gateway REST API or EventBridge ApiDestination.
-   * @default - none
-   */
-  readonly queryStringParameters?: Parameter[];
-}
-
-/**
- * Contains the OAuth authorization parameters to use for the connection.
- */
-export interface OAuthParameters {
-  /**
-   * The URL to the authorization endpoint when OAuth is specified as the authorization type.
-   */
-  readonly authorizationEndpoint: string;
-
-  /**
-   * Contains the client parameters for OAuth authorization.
-   */
-  readonly clientParameters: ClientParameters;
-
-  /**
-   * The method to use for the authorization request.
-   */
-  readonly httpMethod: string;
-
-  /**
-   * Contains the OAuth authorization parameters to use for the connection.
-   * @default - none
-   */
-  readonly oAuthHttpParameters?: HttpParameters;
-}
-
-/**
- * Contains the authorization parameters to use to authorize with the endpoint.
- */
-export interface AuthParameters {
-  /**
-   * Contains the API key authorization parameters to use for the connection.
-   * @default - None
-   */
-  readonly apiKeyAuthParameters?: ApiKeyAuthParameters;
-
-  /**
-   * Contains the Basic authorization parameters to use for the connection.
-   * @default - None
-   */
-  readonly basicAuthParameters?: BasicAuthParameters;
-
-  /**
-   * Contains the invocation parameters to use for the connection.
-   * @default - None
-   */
-  readonly invocationHttpParameters?: HttpParameters;
-
-  /**
-   * Contains the OAuth authorization parameters to use for the connection.
-   * @default - None
-   */
-  readonly oAuthParameters?: OAuthParameters;
-}
-
-export class AuthParameters {
-  public static apiAuth(apiKeyName: string, apiKeyValue: SecretValue): AuthParameters {
-    return new AuthParameters({
-      authorizationType: AuthorizationType.API_KEY,
-      apiKeyAuthParameters: { apiKeyName, apiKeyValue },
-    });
-  }
-
-  public static basicAuth(username: string, password: SecretValue): AuthParameters {
-    return new AuthParameters({
-      authorizationType: AuthorizationType.BASIC,
-      basicAuthParameters: { username, password },
-    });
-  }
-
-  constructor(public readonly authParametersJson: any) {
-  }
-}
-
-/**
- * The event connection base properties
- */
-export interface BaseConnectionProps {
-  // /**
-  //  * The authorization type for the connection.
-  //  *
-  //  */
-  // readonly authorizationType: AuthorizationType;
-
-  // /**
-  //  * The authentication parameters for the connection
-  //  *
-  //  */
-  // readonly authParameters: AuthParameters;
-  readonly authParameters: AuthParameters
+  readonly connectionName?: string;
 
   /**
    * The name of the connection.
@@ -202,19 +23,225 @@ export interface BaseConnectionProps {
   readonly description?: string;
 
   /**
-   * The name of the connection.
-   *
-   * @default - none
+   * The authorization type for the connection.
    */
-  readonly connectionName?: string;
+  readonly authorization: Authorization;
+
+  /**
+   * Additional string parameters to add to the invocation bodies
+   *
+   * @default - No additional parameters
+   */
+  readonly bodyParameters?: Record<string, HttpParameter>;
+
+  /**
+   * Additional string parameters to add to the invocation headers
+   *
+   * @default - No additional parameters
+   */
+  readonly headerParameters?: Record<string, HttpParameter>;
+
+  /**
+   * Additional string parameters to add to the invocation query strings
+   *
+   * @default - No additional parameters
+   */
+  readonly queryStringParameters?: Record<string, HttpParameter>;
 }
 
+/**
+ * Authorization type for an API Destination Connection
+ */
+export abstract class Authorization {
+  /**
+   * Use API key authorization
+   *
+   * API key authorization has two components: an API key name and an API key value.
+   * What these are depends on the target of your connection.
+   */
+  public static apiKey(apiKeyName: string, apiKeyValue: SecretValue): Authorization {
+    return new class extends Authorization {
+      public _bind() {
+        return {
+          authorizationType: AuthorizationType.API_KEY,
+          authParameters: {
+            ApiKeyAuthParameters: {
+              ApiKeyName: apiKeyName,
+              ApiKeyValue: apiKeyValue,
+            },
+          },
+        };
+      }
+    }();
+  }
+
+  /**
+   * Use username and password authorization
+   */
+  public static basic(username: string, password: SecretValue): Authorization {
+    return new class extends Authorization {
+      public _bind() {
+        return {
+          authorizationType: AuthorizationType.BASIC,
+          authParameters: {
+            BasicAuthParameters: {
+              Username: username,
+              Password: password,
+            },
+          },
+        };
+      }
+    }();
+  }
+
+  /**
+   * Use OAuth authorization
+   */
+  public static oauth(props: OAuthAuthorizationProps): Authorization {
+    if (![HttpMethod.POST, HttpMethod.GET, HttpMethod.PUT].includes(props.httpMethod)) {
+      throw new Error('httpMethod must be one of GET, POST, PUT');
+    }
+
+    return new class extends Authorization {
+      public _bind() {
+        return {
+          authorizationType: AuthorizationType.OAUTH_CLIENT_CREDENTIALS,
+          authParameters: {
+            OAuthParameters: {
+              AuthorizationEndpoint: props.authorizationEndpoint,
+              ClientParameters: {
+                ClientID: props.clientId,
+                ClientSecret: props.clientSecret,
+              },
+              HttpMethod: props.httpMethod,
+              OAuthHttpParameters: {
+                BodyParameters: renderHttpParameters(props.bodyParameters),
+                HeaderParameters: renderHttpParameters(props.headerParameters),
+                QueryStringParameters: renderHttpParameters(props.queryStringParameters),
+              },
+            },
+          },
+        };
+      }
+    }();
+
+  }
+
+  /**
+   * Bind the authorization to the construct and return the authorization properties
+   *
+   * @internal
+   */
+  public abstract _bind(): AuthorizationBindResult;
+}
 
 /**
- * The event connection properties
+ * Properties for `Authorization.oauth()`
  */
-export interface ConnectionProps extends BaseConnectionProps {
+export interface OAuthAuthorizationProps {
 
+  /**
+   * The URL to the authorization endpoint
+   */
+  readonly authorizationEndpoint: string;
+
+  /**
+   * The method to use for the authorization request.
+   *
+   * (Can only choose POST, GET or PUT).
+   */
+  readonly httpMethod: HttpMethod;
+
+  /**
+   * The client ID to use for OAuth authorization for the connection.
+   */
+  readonly clientId: string;
+
+  /**
+   * The client secret associated with the client ID to use for OAuth authorization for the connection.
+   */
+  readonly clientSecret: SecretValue;
+
+  /**
+   * Additional string parameters to add to the OAuth request body
+   *
+   * @default - No additional parameters
+   */
+  readonly bodyParameters?: Record<string, HttpParameter>;
+
+  /**
+   * Additional string parameters to add to the OAuth request header
+   *
+   * @default - No additional parameters
+   */
+  readonly headerParameters?: Record<string, HttpParameter>;
+
+  /**
+   * Additional string parameters to add to the OAuth request query string
+   *
+   * @default - No additional parameters
+   */
+  readonly queryStringParameters?: Record<string, HttpParameter>;
+}
+
+/**
+ * An additional HTTP parameter to send along with the OAuth request
+ */
+export abstract class HttpParameter {
+  /**
+   * Make an OAuthParameter from a string value
+   *
+   * The value is not treated as a secret.
+   */
+  public static fromString(value: string): HttpParameter {
+    return new class extends HttpParameter {
+      public _render(name: string) {
+        return {
+          Key: name,
+          Value: value,
+        };
+      }
+    }();
+  }
+
+  /**
+   * Make an OAuthParameter from a secret
+   */
+  public static fromSecret(value: SecretValue): HttpParameter {
+    return new class extends HttpParameter {
+      public _render(name: string) {
+        return {
+          Key: name,
+          Value: value,
+          IsSecretValue: true,
+        };
+      }
+    }();
+  }
+
+  /**
+   * Render the paramter value
+   *
+   * @internal
+   */
+  public abstract _render(name: string): any;
+}
+
+/**
+ * Result of the 'bind' operation of the 'Authorization' class
+ *
+ * @internal
+ */
+export interface AuthorizationBindResult {
+  /**
+   * The authorization type
+   */
+  readonly authorizationType: AuthorizationType;
+
+  /**
+   * The authorization parameters (depends on the type)
+   */
+  readonly authParameters: any;
 }
 
 /**
@@ -312,100 +339,30 @@ export class Connection extends Resource implements IConnection {
 
   constructor(scope: Construct, id: string, props: ConnectionProps) {
     super(scope, id, {
-      physicalName: props.connectionName || Lazy.string({
-        produce: () => this.generateUniqueName(),
-      }),
+      physicalName: props.connectionName,
     });
 
-    let authParameters: any;
+    const authBind = props.authorization._bind();
 
-    // if (props.authorizationType === AuthorizationType.API_KEY) {
-    //   if (props.authParameters?.apiKeyAuthParameters !== undefined) {
-    //     authParameters = {
-    //       ApiKeyAuthParameters: {
-    //         ApiKeyName: props.authParameters?.apiKeyAuthParameters?.apiKeyName,
-    //         ApiKeyValue: props.authParameters?.apiKeyAuthParameters?.apiKeyValue,
-    //       },
-    //     };
-    //   } else {
-    //     throw new Error(`You must supply apiKeyName and apiKeyValue for AuthorizationType: ${props.authorizationType}`);
-    //   };
-    // };
-
-    // if (props.authorizationType === AuthorizationType.BASIC) {
-    //   if (props.authParameters?.basicAuthParameters !== undefined) {
-    //     authParameters = {
-    //       BasicAuthParameters: {
-    //         Password: props.authParameters?.basicAuthParameters?.password,
-    //         Username: props.authParameters?.basicAuthParameters?.username,
-    //       },
-    //     };
-    //   } else {
-    //     throw new Error(`You must supply password and username for AuthorizationType: ${props.authorizationType}`);
-    //   };
-    // };
-
-    // if (props.authorizationType === AuthorizationType.OAUTH_CLIENT_CREDENTIALS) {
-    //   if (props.authParameters?.oAuthParameters !== undefined) {
-    //     authParameters = {
-    //       OAuthParameters: {
-    //         AuthorizationEndpoint: props.authParameters?.oAuthParameters?.authorizationEndpoint,
-    //         ClientParameters: {
-    //           ClientID: props.authParameters?.oAuthParameters?.clientParameters.clientID,
-    //           ClientSecret: props.authParameters?.oAuthParameters?.clientParameters.clientSecret,
-    //         },
-    //         HttpMethod: props.authParameters?.oAuthParameters?.httpMethod,
-    //         OAuthHttpParameters: {
-    //           //HeaderParameters: buildParamaters(props.authParameters?.oAuthParameters?.oAuthHttpParameters?.headerParameters),
-    //           //QueryStringParameters: buildParamaters(props.authParameters?.oAuthParameters?.oAuthHttpParameters?.queryStringParameters),
-    //         },
-    //       },
-    //     };
-    //   } else {
-    //     throw new Error(`You must supply authorizationEndpoint, clientID and clientSecret for AuthorizationType: ${props.authorizationType}`);
-    //   };
-    // };
-
-    if (props.authParameters?.invocationHttpParameters !== undefined) {
-      if (props.authParameters?.invocationHttpParameters?.headerParameters !== undefined) {
-        let headers: { IsValueSecret: string | undefined; Key: string; Value: string; }[] = [];
-        props.authParameters?.invocationHttpParameters?.headerParameters.forEach(header => {
-          let headerBuilder = {
-            IsValueSecret: header.isValueSecret,
-            Key: header.key,
-            Value: header.value,
-          };
-          headers.push(headerBuilder);
-        });
-        authParameters.InvocationHttpParameters = {
-          HeaderParameters: headers,
-        };
-      }
-    };
+    const invocationHttpParameters = !!props.headerParameters || !!props.queryStringParameters || !!props.bodyParameters ? {
+      BodyParameters: renderHttpParameters(props.bodyParameters),
+      HeaderParameters: renderHttpParameters(props.headerParameters),
+      QueryStringParameters: renderHttpParameters(props.queryStringParameters),
+    } : undefined;
 
     let connection = new CfnConnection(this, 'Connection', {
-      authorizationType: props.authParameters.authParametersJson.authorizationType,
-      // Need to parse this?
-      authParameters: props.authParameters.authParametersJson,
+      authorizationType: authBind.authorizationType,
+      authParameters: {
+        ...authBind.authParameters,
+        InvocationHttpParameters: invocationHttpParameters,
+      },
       description: props.description,
       name: this.physicalName,
     });
 
-    this.connectionName = connection.name || 'Connection';
+    this.connectionName = this.getResourceNameAttribute(connection.ref);
     this.connectionArn = connection.attrArn;
     this.connectionSecretArn = connection.attrSecretArn;
-  }
-
-  /**
-   * Creates a unique name for the Api Destination. The generated name is the physical ID of the Api Destination.
-   */
-  private generateUniqueName(): string {
-    const name = Names.uniqueId(this).toLowerCase().replace(' ', '-');
-    if (name.length <= 21) {
-      return name;
-    } else {
-      return name.substring(0, 15) + nameHash(name);
-    }
   }
 }
 
@@ -427,35 +384,39 @@ class ImportedConnection extends Resource {
 }
 
 /**
- * Take a hash of the given name.
- *
- * @param name the name to be hashed
+ * Supported HTTP operations.
  */
-function nameHash(name: string): string {
-  const md5 = crypto.createHash('sha256').update(name).digest('hex');
-  return md5.slice(0, 6);
+export enum HttpMethod {
+  /** POST */
+  POST = 'POST',
+  /** GET */
+  GET = 'GET',
+  /** HEAD */
+  HEAD = 'HEAD',
+  /** OPTIONS */
+  OPTIONS = 'OPTIONS',
+  /** PUT */
+  PUT = 'PUT',
+  /** PATCH */
+  PATCH = 'PATCH',
+  /** DELETE */
+  DELETE = 'DELETE',
 }
 
-// interface CommonParameters {
-//   IsValueSecret?: string | undefined;
-//   Key: string;
-//   Value: string;
-// }
+/**
+ * Supported Authorization Types.
+ */
+enum AuthorizationType {
+  /** API_KEY */
+  API_KEY = 'API_KEY',
+  /** BASIC */
+  BASIC = 'BASIC',
+  /** OAUTH_CLIENT_CREDENTIALS */
+  OAUTH_CLIENT_CREDENTIALS = 'OAUTH_CLIENT_CREDENTIALS',
+}
 
-// /**
-// * Build a parameter from parameter object
-// *
-// * @param object to build parameters from
-// */
-// function buildParamaters(parameters: Parameter[]): CommonParameters[]{
-//   let builtParamaters: CommonParameters[] = [];
-//   parameters.forEach(p => {
-//     let headerBuilder = {
-//       IsValueSecret: p.isValueSecret,
-//       Key: p.key,
-//       Value: p.value,
-//     };
-//     builtParamaters.push(headerBuilder);
-//   });
-//   return builtParamaters
-// }
+function renderHttpParameters(ps?: Record<string, HttpParameter>) {
+  if (!ps || Object.keys(ps).length === 0) { return undefined; }
+
+  return Object.entries(ps).map(([name, p]) => p._render(name));
+}

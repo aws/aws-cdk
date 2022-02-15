@@ -1,64 +1,65 @@
-import * as crypto from 'crypto';
-import { Duration, Lazy, Names, Resource } from '@aws-cdk/core';
+import { IResource, Resource } from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import { IConnection } from './connection';
+import { HttpMethod, IConnection } from './connection';
 import { CfnApiDestination } from './events.generated';
 
 /**
- * Supported HTTP operations.
- */
-export enum HttpMethod {
-
-  /** POST */
-  POST = 'POST',
-  /** GET */
-  GET = 'GET',
-  /** HEAD */
-  HEAD = 'HEAD',
-  /** OPTIONS */
-  OPTIONS = 'OPTIONS',
-  /** PUT */
-  PUT = 'PUT',
-  /** PATCH */
-  PATCH = 'PATCH',
-  /** DELETE */
-  DELETE = 'DELETE',
-
-}
-
-/**
- * The event Api Destination properties
+ * The event API Destination properties
  */
 export interface ApiDestinationProps {
   /**
-   * The ARN of the connection to use for the API destination
+   * The name for the API destination.
+   * @default - A unique name will be generated
    */
-  readonly connection: IConnection;
+  readonly apiDestinationName?: string;
+
   /**
    * A description for the API destination.
    *
    * @default - none
    */
   readonly description?: string;
+
   /**
-   * The method to use for the request to the HTTP invocation endpoint.
+   * The ARN of the connection to use for the API destination
    */
-  readonly httpMethod: HttpMethod;
+  readonly connection: IConnection;
+
   /**
    * The URL to the HTTP invocation endpoint for the API destination..
    */
-  readonly invocationEndpoint: string;
+  readonly endpoint: string;
+
+  /**
+   * The method to use for the request to the HTTP invocation endpoint.
+   *
+   * @default HttpMethod.POST
+   */
+  readonly httpMethod?: HttpMethod;
+
   /**
    * The maximum number of requests per second to send to the HTTP invocation endpoint.
-   * 
-   * @default - None
+   *
+   * @default - Not rate limited
    */
-  readonly invocationRateLimit?: number;
+  readonly rateLimitPerSecond?: number;
+}
+
+/**
+ * Interface for API Destinations
+ */
+export interface IApiDestination extends IResource {
   /**
-   * The name for the API destination.
-   * @default - A unique name will be generated from the construct ID
+   * The Name of the Api Destination created.
+   * @attribute
    */
-  readonly apiDestinationName?: string;
+  readonly apiDestinationName: string;
+
+  /**
+   * The ARN of the Api Destination created.
+   * @attribute
+   */
+  readonly apiDestinationArn: string;
 }
 
 /**
@@ -66,7 +67,7 @@ export interface ApiDestinationProps {
  *
  * @resource AWS::Events::ApiDestination
  */
-export class ApiDestination extends Resource {
+export class ApiDestination extends Resource implements IApiDestination {
   /**
    * The Connection to associate with Api Destination
    */
@@ -86,9 +87,7 @@ export class ApiDestination extends Resource {
 
   constructor(scope: Construct, id: string, props: ApiDestinationProps) {
     super(scope, id, {
-      physicalName: props.apiDestinationName || Lazy.string({
-        produce: () => this.generateUniqueName(),
-      }),
+      physicalName: props.apiDestinationName,
     });
 
     this.connection = props.connection;
@@ -96,36 +95,13 @@ export class ApiDestination extends Resource {
     let apiDestination = new CfnApiDestination(this, 'ApiDestination', {
       connectionArn: this.connection.connectionArn,
       description: props.description,
-      httpMethod: props.httpMethod,
-      invocationEndpoint: props.invocationEndpoint,
-      invocationRateLimitPerSecond: props.invocationRateLimit?.toSeconds(),
+      httpMethod: props.httpMethod ?? HttpMethod.POST,
+      invocationEndpoint: props.endpoint,
+      invocationRateLimitPerSecond: props.rateLimitPerSecond,
       name: this.physicalName,
     });
 
     this.apiDestinationName = this.getResourceNameAttribute(apiDestination.ref);
     this.apiDestinationArn = apiDestination.attrArn;
   }
-
-  /**
-   * Creates a unique name for the Api Destination. The generated name is the physical ID of the Api Destination.
-   */
-  private generateUniqueName(): string {
-    const name = Names.uniqueId(this).toLowerCase().replace(' ', '-');
-    if (name.length <= 21) {
-      return name;
-    } else {
-      return name.substring(0, 15) + nameHash(name);
-    }
-  }
 }
-
-/**
- * Take a hash of the given name.
- *
- * @param name the name to be hashed
- */
-function nameHash(name: string): string {
-  const md5 = crypto.createHash('sha256').update(name).digest('hex');
-  return md5.slice(0, 6);
-}
-

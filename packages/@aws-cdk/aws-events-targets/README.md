@@ -270,43 +270,37 @@ rule.addTarget(
 
 ## Invoke a API Destination
 
-Use the `apidestination` target to trigger an external API.
+Use the `targets.ApiDestination` target to trigger an external API. You need to
+create an `events.Connection` and `events.ApiDestination` as well.
 
 The code snippet below creates an external destination that is invoked every hour.
 
-```typescript
-import * as events from "@aws-cdk/aws-events";
-import * as targets from "@aws-cdk/aws-events-targets";
+```ts
+import * as events from '@aws-cdk/aws-events';
+import * as targets from '@aws-cdk/aws-events-targets';
 
 const rule = new events.Rule(stack, 'Rule', {
   schedule: events.Schedule.rate(cdk.Duration.hours(1)),
 });
 
 const connection = new events.Connection(this, 'Connection', {
+  authorization: events.Authorization.apiKey('x-api-key', SecretValue.ssm('ApiSecretName')),
   authorizationType: events.AuthorizationType.API_KEY,
-  authParameters: {
-    apiKeyAuthParameters: {
-      apiKeyName: 'x-api-key',
-      apiKeyValue: 'api-key-value',
-    },
-  },
-  description: 'ConnectionDescription',
-  connectionName: 'testConnection',
+  description: 'Connection with API Key x-api-key',
 });
 
 const destination = new events.ApiDestination(this, 'Destination', {
-  apiDestinationName: 'apiDestinationName',
-  connection: connection,
+  connection,
   invocationEndpoint: 'https://example.com',
-  invocationRateLimit: cdk.Duration.seconds(10),
-  httpMethod: events.HttpMethod.GET
+  description: 'Calling example.com with API key x-api-key',
 });
 
 const rule = new events.Rule(this, 'Rule', {
   schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
+  targets: [new targets.ApiDestination(destination)],
 });
+```
 
-rule.addTarget(new targets.ApiDestination(destination));
 ## Put an event on an EventBridge bus
 
 Use the `EventBus` target to route event to a different EventBus.
