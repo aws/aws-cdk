@@ -115,7 +115,7 @@ new logs.SubscriptionFilter(this, 'Subscription', {
 });
 ```
 
-You can pass an existing IAM ``roleArn`` to be assumed for writing logs in a Kinesis destination. If not, a new one will be created.
+You can pass an existing IAM Role to be assumed for writing logs in a Kinesis destination. If not, a new one will be created.
 
 ```ts
 const id = 'CloudWatchLogsCanPutRecords';
