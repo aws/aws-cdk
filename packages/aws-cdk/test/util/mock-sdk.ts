@@ -102,8 +102,8 @@ export class MockSdkProvider extends SdkProvider {
     (this.sdk as any).ssm = jest.fn().mockReturnValue(partialAwsService<AWS.SSM>(stubs));
   }
 
-  public stubLambda(stubs: SyncHandlerSubsetOf<AWS.Lambda>) {
-    (this.sdk as any).lambda = jest.fn().mockReturnValue(partialAwsService<AWS.Lambda>(stubs));
+  public stubLambda(stubs: SyncHandlerSubsetOf<AWS.Lambda>, additionalProperties: { [key: string]: any } = {}) {
+    (this.sdk as any).lambda = jest.fn().mockReturnValue(partialAwsService<AWS.Lambda>(stubs, additionalProperties));
   }
 
   public stubStepFunctions(stubs: SyncHandlerSubsetOf<AWS.StepFunctions>) {
@@ -116,6 +116,10 @@ export class MockSdkProvider extends SdkProvider {
 
   public stubCloudWatchLogs(stubs: SyncHandlerSubsetOf<AWS.CloudWatchLogs>) {
     (this.sdk as any).cloudWatchLogs = jest.fn().mockReturnValue(partialAwsService<AWS.CloudWatchLogs>(stubs));
+  }
+
+  public stubAppSync(stubs: SyncHandlerSubsetOf<AWS.AppSync>) {
+    (this.sdk as any).appsync = jest.fn().mockReturnValue(partialAwsService<AWS.AppSync>(stubs));
   }
 
   public stubGetEndpointSuffix(stub: () => string) {
@@ -139,6 +143,7 @@ export class MockSdk implements ISDK {
   public readonly stepFunctions = jest.fn();
   public readonly codeBuild = jest.fn();
   public readonly cloudWatchLogs = jest.fn();
+  public readonly appsync = jest.fn();
   public readonly getEndpointSuffix = jest.fn();
   public readonly appendCustomUserAgent = jest.fn();
   public readonly removeCustomUserAgent = jest.fn();
@@ -159,6 +164,13 @@ export class MockSdk implements ISDK {
    */
   public stubCloudWatchLogs(stubs: SyncHandlerSubsetOf<AWS.CloudWatchLogs>) {
     this.cloudWatchLogs.mockReturnValue(partialAwsService<AWS.CloudWatchLogs>(stubs));
+  }
+
+  /**
+   * Replace the AppSync client with the given object
+   */
+  public stubAppSync(stubs: SyncHandlerSubsetOf<AWS.AppSync>) {
+    this.appsync.mockReturnValue(partialAwsService<AWS.AppSync>(stubs));
   }
 
   /**

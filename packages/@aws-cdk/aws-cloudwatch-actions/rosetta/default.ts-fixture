@@ -1,0 +1,12 @@
+// Fixture with packages imported, but nothing else
+import { Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
+import * as actions from '@aws-cdk/aws-cloudwatch-actions';
+import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
+
+class Fixture extends Stack {
+  constructor(scope: Construct, id: string) {
+    super(scope, id);
+    /// here
+  }
+}

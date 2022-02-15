@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kinesis from '@aws-cdk/aws-kinesis';
 import * as logs from '@aws-cdk/aws-logs';
@@ -19,13 +19,13 @@ test('stream can be subscription destination', () => {
   });
 
   // THEN: subscription target is Stream
-  expect(stack).toHaveResource('AWS::Logs::SubscriptionFilter', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Logs::SubscriptionFilter', {
     DestinationArn: { 'Fn::GetAtt': ['MyStream5C050E93', 'Arn'] },
     RoleArn: { 'Fn::GetAtt': ['SubscriptionCloudWatchLogsCanPutRecords9C1223EC', 'Arn'] },
   });
 
   // THEN: we have a role to write to the Stream
-  expect(stack).toHaveResource('AWS::IAM::Role', {
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
     AssumeRolePolicyDocument: {
       Version: '2012-10-17',
       Statement: [{
@@ -45,7 +45,7 @@ test('stream can be subscription destination', () => {
     },
   });
 
-  expect(stack).toHaveResource('AWS::IAM::Policy', {
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
     PolicyDocument: {
       Version: '2012-10-17',
       Statement: [
@@ -89,13 +89,13 @@ test('stream can be subscription destination twice, without duplicating permissi
   });
 
   // THEN: subscription target is Stream
-  expect(stack).toHaveResource('AWS::Logs::SubscriptionFilter', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Logs::SubscriptionFilter', {
     DestinationArn: { 'Fn::GetAtt': ['MyStream5C050E93', 'Arn'] },
     RoleArn: { 'Fn::GetAtt': ['SubscriptionCloudWatchLogsCanPutRecords9C1223EC', 'Arn'] },
   });
 
   // THEN: we have a role to write to the Stream
-  expect(stack).toHaveResource('AWS::IAM::Role', {
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
     AssumeRolePolicyDocument: {
       Version: '2012-10-17',
       Statement: [{
@@ -115,7 +115,7 @@ test('stream can be subscription destination twice, without duplicating permissi
     },
   });
 
-  expect(stack).toHaveResource('AWS::IAM::Policy', {
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
     PolicyDocument: {
       Version: '2012-10-17',
       Statement: [
@@ -155,8 +155,9 @@ test('an existing IAM role can be passed to new destination instance instead of 
   });
 
   // THEN
-  expect(stack).toCountResources('AWS::IAM::Role', 0);
-  expect(stack).toHaveResourceLike('AWS::Logs::SubscriptionFilter', {
+  const template = Template.fromStack(stack);
+  template.resourceCountIs('AWS::IAM::Role', 0);
+  template.hasResourceProperties('AWS::Logs::SubscriptionFilter', {
     RoleArn: importedRole.roleArn,
   });
 });
@@ -176,8 +177,9 @@ test('creates a new IAM Role if not passed on new destination instance', ()=> {
   });
 
   // THEN
-  expect(stack).toCountResources('AWS::IAM::Role', 1);
-  expect(stack).toHaveResourceLike('AWS::Logs::SubscriptionFilter', {
+  const template = Template.fromStack(stack);
+  template.resourceCountIs('AWS::IAM::Role', 1);
+  template.hasResourceProperties('AWS::Logs::SubscriptionFilter', {
     RoleArn: {
       'Fn::GetAtt': [
         'LogGroupMySubscriptionFilterCloudWatchLogsCanPutRecords9112BD02',

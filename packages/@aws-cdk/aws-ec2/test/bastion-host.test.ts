@@ -1,5 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
-import { ResourcePart } from '@aws-cdk/assert-internal';
+import { Template } from '@aws-cdk/assertions';
 import { Duration, Stack } from '@aws-cdk/core';
 import { BastionHostLinux, BlockDeviceVolume, CloudFormationInit, InitCommand, InstanceClass, InstanceSize, InstanceType, SubnetType, Vpc } from '../lib';
 
@@ -15,7 +14,7 @@ describe('bastion host', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::EC2::Instance', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::Instance', {
       InstanceType: 't3.nano',
       SubnetId: { Ref: 'VPCPrivateSubnet1Subnet8BCA10E0' },
     });
@@ -40,7 +39,7 @@ describe('bastion host', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::EC2::Instance', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::Instance', {
       InstanceType: 't3.nano',
       SubnetId: { Ref: 'VPCIsolatedSubnet1SubnetEBD00FC6' },
     });
@@ -71,7 +70,7 @@ describe('bastion host', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::EC2::Instance', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::Instance', {
       BlockDeviceMappings: [
         {
           DeviceName: 'EBSBastionHost',
@@ -96,7 +95,7 @@ describe('bastion host', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::EC2::Instance', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::Instance', {
       ImageId: {
         Ref: 'SsmParameterValueawsserviceamiamazonlinuxlatestamzn2amihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter',
       },
@@ -116,7 +115,7 @@ describe('bastion host', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::EC2::Instance', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::Instance', {
       ImageId: {
         Ref: 'SsmParameterValueawsserviceamiamazonlinuxlatestamzn2amihvmarm64gp2C96584B6F00A464EAD1953AFF4B05118Parameter',
       },
@@ -142,7 +141,7 @@ describe('bastion host', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::EC2::Instance', {
+    Template.fromStack(stack).hasResource('AWS::EC2::Instance', {
       CreationPolicy: {
         ResourceSignal: {
           Timeout: 'PT30M',
@@ -159,6 +158,27 @@ describe('bastion host', () => {
           },
         },
       },
-    }, ResourcePart.CompleteDefinition);
+    });
+  });
+
+  test('imdsv2 is required', () => {
+    //GIVEN
+    const stack = new Stack();
+    const vpc = new Vpc(stack, 'VPC');
+
+    //WHEN
+    new BastionHostLinux(stack, 'Bastion', {
+      vpc,
+      requireImdsv2: true,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::LaunchTemplate', {
+      LaunchTemplateData: {
+        MetadataOptions: {
+          HttpTokens: 'required',
+        },
+      },
+    });
   });
 });
