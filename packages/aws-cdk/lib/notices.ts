@@ -6,29 +6,49 @@ import { print, debug } from './logging';
 import { cdkCacheDir } from './util/directories';
 import { versionNumber } from './version';
 
-export async function displayNotices() {
-  const dataSource = new CachedDataSource(path.join(cdkCacheDir(), 'notices.json'), new WebsiteNoticeDataSource());
-  const filter = new NoticeFilter({
-    cliVersion: versionNumber(),
-    temporarilySuppressed: false, // coming from a command line option
-    permanentlySuppressed: false, // coming from the cdk.json file
-  });
-  const formatter = new FooNoticeFormatter();
+interface DisplayNoticesOptions {
+  readonly dataSource?: NoticeDataSource;
+  readonly cacheFilePath?: string;
+}
+
+export async function displayNotices(options: DisplayNoticesOptions = {}) {
+  const cacheFilePath = options.cacheFilePath ?? path.join(cdkCacheDir(), 'notices.json');
+  const dataSource = new CachedDataSource(cacheFilePath, options.dataSource ?? new WebsiteNoticeDataSource());
 
   const notices = await dataSource.fetch();
-  const individualMessages = notices
-    .filter(notice => filter.apply(notice))
-    .map(notice => formatter.apply(notice));
+  const individualMessages = formatNotices(filterNotices(notices));
 
   if (individualMessages.length > 0) {
-    const finalMessage = `NOTICES
-    
-${individualMessages.join('\n\n')}
-
-If you don’t want to see an notice anymore, use "cdk acknowledge <id>". For example, "cdk acknowledge ${notices[0].issueNumber}".`;
-
-    print(finalMessage);
+    print(finalMessage(individualMessages, notices[0].issueNumber));
   }
+}
+
+export function finalMessage(individualMessages: string[], exampleNumber: number): string {
+  return [
+    'NOTICES',
+    ...individualMessages,
+    `If you don’t want to see a notice anymore, use "cdk acknowledge <id>". For example, "cdk acknowledge ${exampleNumber}".`,
+  ].join('\n\n');
+}
+
+export interface FilterOptions {
+  readonly versionNumber?: string;
+  readonly temporarilySuppressed?: boolean;
+  readonly permanentlySuppressed?: boolean;
+}
+
+export function filterNotices(notices: Notice[], options: FilterOptions = {}): Notice[] {
+  const filter = new NoticeFilter({
+    cliVersion: options.versionNumber ?? versionNumber(),
+    temporarilySuppressed: options.temporarilySuppressed ?? false, // coming from a command line option
+    permanentlySuppressed: options.permanentlySuppressed ?? false, // coming from the cdk.json file
+  });
+  return notices.filter(notice => filter.apply(notice));
+}
+
+export function formatNotices(notices: Notice[]): string[] {
+  const formatter = new FooNoticeFormatter();
+  return notices.map(notice => formatter.apply(notice));
 }
 
 export interface Component {
@@ -158,12 +178,12 @@ export interface NoticeFormatter {
 // TODO rename this
 export class FooNoticeFormatter implements NoticeFormatter {
   apply(notice: Notice): string {
-    let result = '';
-    result += `${notice.issueNumber}\t${notice.title}\n\n`;
-    result += `\tOverview: ${notice.overview}\n\n`;
     const componentsValue = notice.components.map(c => `${c.name}: ${c.version}`).join(', ');
-    result += `\tAffected versions: ${componentsValue}\n\n`;
-    result += `\tMore information at: https://github.com/aws/aws-cdk/issues/${notice.issueNumber}`;
-    return result;
+    return [
+      `${notice.issueNumber}\t${notice.title}`,
+      `\tOverview: ${notice.overview}`,
+      `\tAffected versions: ${componentsValue}`,
+      `\tMore information at: https://github.com/aws/aws-cdk/issues/${notice.issueNumber}`,
+    ].join('\n\n');
   }
 }
