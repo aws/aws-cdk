@@ -184,7 +184,12 @@ function renderCustomMetric(metric?: cloudwatch.IMetric): CfnScalingPolicy.Custo
  */
 export enum PredefinedMetric {
   /**
-   * DYNAMODB_READ_CAPACITY_UTILIZATIO
+   * APPSTREAM_AVERAGE_CAPACITY_UTILIZATION
+   * @see https://docs.aws.amazon.com/autoscaling/application/APIReference/API_PredefinedMetricSpecification.html
+   */
+  APPSTREAM_AVERAGE_CAPACITY_UTILIZATION = 'AppStreamAverageCapacityUtilization',
+  /**
+   * DYNAMODB_READ_CAPACITY_UTILIZATION
    * @see https://docs.aws.amazon.com/autoscaling/application/APIReference/API_PredefinedMetricSpecification.html
    */
   DYNAMODB_READ_CAPACITY_UTILIZATION = 'DynamoDBReadCapacityUtilization',
