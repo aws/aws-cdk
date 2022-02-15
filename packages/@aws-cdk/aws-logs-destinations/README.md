@@ -9,15 +9,7 @@
 
 <!--END STABILITY BANNER-->
 
-## Kinesis destination
+This library contains destinations for AWS CloudWatch Logs SubscriptionFilters. You
+can send log data to Kinesis Streams or Lambda Functions.
 
-You can pass an existing IAM ``roleArn`` to be assumed for writing logs in a Kinesis destination. If not, a new one will be created.
-
-```ts
-const id = 'CloudWatchLogsCanPutRecords';
-const destinationRole = new iam.Role(this, id, {
-    assumedBy: new iam.ServicePrincipal('logs.amazonaws.com'),
-});
-
-const kinesisDestination = new LogsDestinations.KinesisDestination(kinesisStream, { role: destinationRole } );
-```
+See the documentation of the `logs` module for more information.
