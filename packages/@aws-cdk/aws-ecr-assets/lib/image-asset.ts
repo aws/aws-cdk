@@ -13,6 +13,50 @@ import { FingerprintOptions, FollowMode, IAsset } from '@aws-cdk/assets';
 import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
+ * networking mode on build time supported by docker
+ */
+export class NetworkMode {
+  /**
+   * The default networking mode if omitted, create a network stack on the default Docker bridge
+   */
+  public static readonly DEFAULT = new NetworkMode('default');
+
+  /**
+   * Use the Docker host network stack
+   */
+  public static readonly HOST = new NetworkMode('host');
+
+  /**
+   * Disable the network stack, only the loopback device will be created
+   */
+  public static readonly NONE = new NetworkMode('none');
+
+  /**
+   * Reuse another container's network stack
+   *
+   * @param containerId The target container's id or name
+   */
+  public static fromContainer(containerId: string) {
+    return new NetworkMode(`container:${containerId}`);
+  }
+
+  /**
+   * Used to specify a custom networking mode
+   * Use this if the networking mode name is not yet supported by the CDK.
+   *
+   * @param mode The networking mode to use for docker build
+   */
+  public static custom(mode: string) {
+    return new NetworkMode(mode);
+  }
+
+  /**
+   * @param mode The networking mode to use for docker build
+   */
+  private constructor(public readonly mode: string) {}
+}
+
+/**
  * Options to control invalidation of `DockerImageAsset` asset hashes
  */
 export interface DockerImageAssetInvalidationOptions {
@@ -50,6 +94,13 @@ export interface DockerImageAssetInvalidationOptions {
    * @default true
    */
   readonly repositoryName?: boolean;
+
+  /**
+   * Use `networkMode` while calculating the asset hash
+   *
+   * @default true
+   */
+  readonly networkMode?: boolean;
 }
 
 /**
@@ -94,6 +145,13 @@ export interface DockerImageAssetOptions extends FingerprintOptions, FileFingerp
    * @default 'Dockerfile'
    */
   readonly file?: string;
+
+  /**
+   * Networking mode for the RUN commands during build. Support docker API 1.25+.
+   *
+   * @default - no networking mode specified (the default networking mode `NetworkMode.DEFAULT` will be used)
+   */
+  readonly networkMode?: NetworkMode;
 
   /**
    * Options to control which parameters are used to invalidate the asset hash.
@@ -227,6 +285,7 @@ export class DockerImageAsset extends CoreConstruct implements IAsset {
     if (props.invalidation?.target !== false && props.target) { extraHash.target = props.target; }
     if (props.invalidation?.file !== false && props.file) { extraHash.file = props.file; }
     if (props.invalidation?.repositoryName !== false && props.repositoryName) { extraHash.repositoryName = props.repositoryName; }
+    if (props.invalidation?.networkMode !== false && props.networkMode) { extraHash.networkMode = props.networkMode; }
 
     // add "salt" to the hash in order to invalidate the image in the upgrade to
     // 1.21.0 which removes the AdoptedRepository resource (and will cause the
@@ -258,6 +317,7 @@ export class DockerImageAsset extends CoreConstruct implements IAsset {
       dockerBuildTarget: this.dockerBuildTarget,
       dockerFile: props.file,
       sourceHash: staging.assetHash,
+      networkMode: props.networkMode?.mode,
     });
 
     this.repository = ecr.Repository.fromRepositoryName(this, 'Repository', location.repositoryName);
