@@ -92,7 +92,7 @@
     "@aws-cdk/pkglint": "0.0.0",
     "@types/jest": "^27.4.0",
     "aws-sdk": "^2.848.0",
-    "jest": "^27.4.7"
+    "jest": "^27.5.1"
   },
   "dependencies": {
     "@aws-cdk/assets": "0.0.0",
