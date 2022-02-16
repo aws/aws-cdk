@@ -1090,8 +1090,9 @@ describe('function', () => {
       const fn = lambda.Function.fromFunctionArn(stack, 'Function', 'arn:aws:lambda:us-east-1:123456789012:function:MyFn');
 
       // THEN
-      expect(() => { fn.grantInvoke(new iam.ServicePrincipal('elasticloadbalancing.amazonaws.com')); })
-        .toThrow(/Cannot modify permission to lambda function/);
+      expect(() => {
+        fn.grantInvoke(new iam.ServicePrincipal('elasticloadbalancing.amazonaws.com'));
+      }).toThrow(/Cannot modify permission to lambda function/);
     });
 
     test('on an imported function (different account & w/ skipPermissions', () => {
@@ -1105,8 +1106,9 @@ describe('function', () => {
       });
 
       // THEN
-      expect(() => { fn.grantInvoke(new iam.ServicePrincipal('elasticloadbalancing.amazonaws.com')); })
-        .not.toThrow();
+      expect(() => {
+        fn.grantInvoke(new iam.ServicePrincipal('elasticloadbalancing.amazonaws.com'));
+      }).not.toThrow();
     });
   });
 
