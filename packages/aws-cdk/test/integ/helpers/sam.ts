@@ -194,6 +194,16 @@ export async function shellWithAction(
         }).finally(() => {
           options.output?.write('terminate sam sub process');
           child.kill('SIGINT');
+          const output = (Buffer.concat(stdout).toString('utf-8') + Buffer.concat(stderr).toString('utf-8')).trim();
+          if (actionSucceeded) {
+            resolve({
+              actionSucceeded: actionSucceeded,
+              actionOutput: actionOutput,
+              shellOutput: output,
+            });
+          } else {
+            reject(new Error(`'${command.join(' ')}' failed with error ${actionOutput}. Output: \n${output}`));
+          }
         });
       }
     }
@@ -214,20 +224,22 @@ export async function shellWithAction(
 
     child.once('error', reject);
 
-    child.once('close', code => {
-      const output = (Buffer.concat(stdout).toString('utf-8') + Buffer.concat(stderr).toString('utf-8')).trim();
-      if (code === 0 || options.allowErrExit) {
-        let result = new Array<string>();
-        result.push(actionOutput);
-        result.push(output);
-        resolve({
-          actionSucceeded: actionSucceeded,
-          actionOutput: actionOutput,
-          shellOutput: output,
-        });
-      } else {
-        reject(new Error(`'${command.join(' ')}' exited with error code ${code}. Output: \n${output}`));
-      }
-    });
+    if (typeof action !== 'function') {
+      child.once('close', code => {
+        const output = (Buffer.concat(stdout).toString('utf-8') + Buffer.concat(stderr).toString('utf-8')).trim();
+        if (code === 0 || options.allowErrExit) {
+          let result = new Array<string>();
+          result.push(actionOutput);
+          result.push(output);
+          resolve({
+            actionSucceeded: actionSucceeded,
+            actionOutput: actionOutput,
+            shellOutput: output,
+          });
+        } else {
+          reject(new Error(`'${command.join(' ')}' exited with error code ${code}. Output: \n${output}`));
+        }
+      });
+    }
   });
 }
