@@ -447,7 +447,9 @@ async function initCommandLine(): Promise<{ configuration: Configuration, value:
         return cli.acknowledge(args.ID);
 
       case 'notices':
-        SHOW_ALL_NOTICES = true;
+        await displayNotices({
+          acknowledgedIssueNumbers: [],
+        });
         return;
 
       case 'init':
@@ -539,7 +541,6 @@ function yargsNegativeAlias<T extends { [x in S | L ]: boolean | undefined }, S 
   };
 }
 
-let SHOW_ALL_NOTICES = false;
 initCommandLine()
   .then(async ({ value, configuration }) => {
     if (value == null) { return; }
@@ -550,7 +551,6 @@ initCommandLine()
     }
     await displayNotices({
       acknowledgedIssueNumbers: configuration.context.get('acknowledged-issue-numbers') ?? [],
-      skipAcknowledgedIssueNumbers: SHOW_ALL_NOTICES,
       permanentlySuppressed: configuration.context.get('no-notices'),
     });
   })

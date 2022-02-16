@@ -13,7 +13,6 @@ export interface DisplayNoticesProps {
   readonly temporarilySuppressed?: boolean;
   readonly permanentlySuppressed?: boolean;
   readonly cliVersion?: string;
-  readonly skipAcknowledgedIssueNumbers?: boolean;
 }
 
 export async function displayNotices(props: DisplayNoticesProps) {
@@ -23,7 +22,7 @@ export async function displayNotices(props: DisplayNoticesProps) {
   const individualMessages = formatNotices(filterNotices(notices, {
     temporarilySuppressed: props.temporarilySuppressed,
     permanentlySuppressed: props.permanentlySuppressed,
-    acknowledgedIssueNumbers: props.skipAcknowledgedIssueNumbers ? new Set() : arrayToSet(props.acknowledgedIssueNumbers),
+    acknowledgedIssueNumbers: arrayToSet(props.acknowledgedIssueNumbers),
   }));
 
   if (individualMessages.length > 0) {
