@@ -276,22 +276,14 @@ create an `events.Connection` and `events.ApiDestination` as well.
 The code snippet below creates an external destination that is invoked every hour.
 
 ```ts
-import * as events from '@aws-cdk/aws-events';
-import * as targets from '@aws-cdk/aws-events-targets';
-
-const rule = new events.Rule(stack, 'Rule', {
-  schedule: events.Schedule.rate(cdk.Duration.hours(1)),
-});
-
 const connection = new events.Connection(this, 'Connection', {
-  authorization: events.Authorization.apiKey('x-api-key', SecretValue.ssm('ApiSecretName')),
-  authorizationType: events.AuthorizationType.API_KEY,
+  authorization: events.Authorization.apiKey('x-api-key', SecretValue.secretsManager('ApiSecretName')),
   description: 'Connection with API Key x-api-key',
 });
 
 const destination = new events.ApiDestination(this, 'Destination', {
   connection,
-  invocationEndpoint: 'https://example.com',
+  endpoint: 'https://example.com',
   description: 'Calling example.com with API key x-api-key',
 });
 
