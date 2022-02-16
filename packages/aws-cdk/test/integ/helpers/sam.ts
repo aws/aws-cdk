@@ -1,4 +1,5 @@
 import * as child_process from 'child_process';
+import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 import axios from 'axios';
@@ -193,17 +194,7 @@ export async function shellWithAction(
           actionOutput = error;
         }).finally(() => {
           options.output?.write('terminate sam sub process');
-          child.kill('SIGINT');
-          const output = (Buffer.concat(stdout).toString('utf-8') + Buffer.concat(stderr).toString('utf-8')).trim();
-          if (actionSucceeded) {
-            resolve({
-              actionSucceeded: actionSucceeded,
-              actionOutput: actionOutput,
-              shellOutput: output,
-            });
-          } else {
-            reject(new Error(`'${command.join(' ')}' failed with error ${actionOutput}. Output: \n${output}`));
-          }
+          killSubProcess(child, command.join(' '));
         });
       }
     }
@@ -224,22 +215,34 @@ export async function shellWithAction(
 
     child.once('error', reject);
 
-    if (typeof action !== 'function') {
-      child.once('close', code => {
-        const output = (Buffer.concat(stdout).toString('utf-8') + Buffer.concat(stderr).toString('utf-8')).trim();
-        if (code === 0 || options.allowErrExit) {
-          let result = new Array<string>();
-          result.push(actionOutput);
-          result.push(output);
-          resolve({
-            actionSucceeded: actionSucceeded,
-            actionOutput: actionOutput,
-            shellOutput: output,
-          });
-        } else {
-          reject(new Error(`'${command.join(' ')}' exited with error code ${code}. Output: \n${output}`));
-        }
-      });
-    }
+    child.once('close', code => {
+      const output = (Buffer.concat(stdout).toString('utf-8') + Buffer.concat(stderr).toString('utf-8')).trim();
+      if (code == null || code === 0 || options.allowErrExit) {
+        let result = new Array<string>();
+        result.push(actionOutput);
+        result.push(output);
+        resolve({
+          actionSucceeded: actionSucceeded,
+          actionOutput: actionOutput,
+          shellOutput: output,
+        });
+      } else {
+        reject(new Error(`'${command.join(' ')}' exited with error code ${code}. Output: \n${output}`));
+      }
+    });
+
   });
+}
+
+function killSubProcess(child: child_process.ChildProcess, command: string) {
+  /**
+   * Check if the sub process is running in container, so child_process.spawn will
+   * create multiple processes, and to kill all of them we need to run different logic
+   */
+  if (fs.existsSync('/.dockerenv')) {
+    child_process.exec(`for pid in $(ps -ef | grep "${command}" | awk '{print $2}'); do kill -2 $pid; done`);
+  } else {
+    child.kill('SIGINT');
+  }
+
 }
