@@ -3,34 +3,34 @@ import * as path from 'path';
 import * as fs from 'fs-extra';
 import * as semver from 'semver';
 import { print, debug } from './logging';
+import { Configuration } from './settings';
 import { cdkCacheDir } from './util/directories';
 import { versionNumber } from './version';
 
 const CACHE_FILE_PATH = path.join(cdkCacheDir(), 'notices.json');
-const ACKNOWLEDGEMENTS_FILE_PATH = path.join(cdkCacheDir(), 'acks.json');
 
-export async function suppressNotice(issueNumber: number) {
-  await new Acknowledgements().addIssueNumber(issueNumber);
-}
-
-export interface DisplayNoticesOptions extends FilterOptions {
+export interface DisplayNoticesProps extends FilterOptions {
+  /**
+   * Application configuration (settings and context)
+   */
+  readonly configuration: Configuration;
 }
 
 export interface FilterOptions {
   readonly temporarilySuppressed?: boolean;
   readonly permanentlySuppressed?: boolean;
   readonly cliVersion?: string;
-  readonly acknowledgedIssueNumbers?: Set<number>;
+  readonly skipAcknowledgedIssueNumbers?: boolean;
 }
 
-export async function displayNotices(options: DisplayNoticesOptions = {}) {
+export async function displayNotices(props: DisplayNoticesProps) {
   const dataSource = dataSourceReference();
 
   const notices = await dataSource.fetch();
   const individualMessages = formatNotices(filterNotices(notices, {
-    temporarilySuppressed: options.temporarilySuppressed,
-    permanentlySuppressed: options.permanentlySuppressed,
-    acknowledgedIssueNumbers: options.acknowledgedIssueNumbers ?? await new Acknowledgements().getIssueNumbers(),
+    temporarilySuppressed: props.temporarilySuppressed,
+    permanentlySuppressed: props.permanentlySuppressed,
+    acknowledgedIssueNumbers: props.skipAcknowledgedIssueNumbers ? new Set() : getAcknowledgedIssueNumbers(props.configuration),
   }));
 
   if (individualMessages.length > 0) {
@@ -42,6 +42,13 @@ function dataSourceReference(): CachedDataSource {
   return new CachedDataSource(CACHE_FILE_PATH, new WebsiteNoticeDataSource());
 }
 
+function getAcknowledgedIssueNumbers(configuration: Configuration): Set<number> {
+  const acks: number[] = configuration.context.get('acknowledged-ids');
+  const issueNumbers = new Set<number>();
+  acks.forEach(a => issueNumbers.add(a));
+  return issueNumbers;
+}
+
 function finalMessage(individualMessages: string[], exampleNumber: number): string {
   return [
     'NOTICES',
@@ -50,7 +57,14 @@ function finalMessage(individualMessages: string[], exampleNumber: number): stri
   ].join('\n\n');
 }
 
-export function filterNotices(notices: Notice[], options: FilterOptions): Notice[] {
+export interface FilterNoticeOptions {
+  permanentlySuppressed?: boolean,
+  temporarilySuppressed?: boolean,
+  cliVersion?: string,
+  acknowledgedIssueNumbers?: Set<number>,
+}
+
+export function filterNotices(notices: Notice[], options: FilterNoticeOptions): Notice[] {
   const filter = new NoticeFilter({
     cliVersion: options.cliVersion ?? versionNumber(),
     temporarilySuppressed: options.temporarilySuppressed ?? false, // coming from a command line option
@@ -168,20 +182,20 @@ export interface NoticeFilterProps {
 export class NoticeFilter {
   private readonly acknowledgedIssueNumbers: Set<number>;
 
-  constructor(private readonly props: NoticeFilterProps) {
-    this.acknowledgedIssueNumbers = props.acknowledgedIssueNumbers ?? new Set();
+  constructor(private readonly options: NoticeFilterProps) {
+    this.acknowledgedIssueNumbers = options.acknowledgedIssueNumbers;
   }
 
   apply(notice: Notice): boolean {
-    if (this.props.permanentlySuppressed
-      || this.props.temporarilySuppressed
+    if (this.options.permanentlySuppressed
+      || this.options.temporarilySuppressed
       || this.acknowledgedIssueNumbers.has(notice.issueNumber)) {
       return false;
     }
 
     const cliComponent = notice.components.find(component => component.name === 'cli');
     const affectedCliVersion = cliComponent?.version;
-    return affectedCliVersion != null && semver.satisfies(this.props.cliVersion, affectedCliVersion);
+    return affectedCliVersion != null && semver.satisfies(this.options.cliVersion, affectedCliVersion);
   }
 }
 
@@ -199,45 +213,5 @@ export class FooNoticeFormatter implements NoticeFormatter {
       `\tAffected versions: ${componentsValue}`,
       `\tMore information at: https://github.com/aws/aws-cdk/issues/${notice.issueNumber}`,
     ].join('\n\n');
-  }
-}
-
-interface CachedAcks {
-  issueNumbers: number[];
-}
-
-export class Acknowledgements {
-  private readonly fileName: string = ACKNOWLEDGEMENTS_FILE_PATH;
-
-  async getIssueNumbers(): Promise<Set<number>> {
-    const cachedData = await this.load();
-    const issueNumbers = new Set<number>();
-    cachedData.issueNumbers.forEach(i => issueNumbers.add(i));
-    return issueNumbers;
-  }
-
-  async addIssueNumber(issueNumber: number) {
-    const cachedData = await this.load();
-    cachedData.issueNumbers.push(issueNumber);
-    await this.save(cachedData);
-  }
-
-  private async load(): Promise<CachedAcks> {
-    try {
-      return await fs.readJSON(this.fileName) as CachedAcks;
-    } catch (e) {
-      debug(`Failed to load acknowledgements from cache: ${e}`);
-      return {
-        issueNumbers: [],
-      };
-    }
-  }
-
-  private async save(cached: CachedAcks): Promise<void> {
-    try {
-      await fs.writeJSON(this.fileName, cached);
-    } catch (e) {
-      debug(`Failed to store acknowledgements in the cache: ${e}`);
-    }
   }
 }

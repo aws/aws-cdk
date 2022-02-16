@@ -283,11 +283,20 @@ async function initCommandLine() {
       ? await (argv.commandHandler as (opts: typeof commandOptions) => any)(commandOptions)
       : await main(cmd, argv);
     if (typeof returnValue === 'object') {
-      return toJsonOrYaml(returnValue);
+      return {
+        value: toJsonOrYaml(returnValue),
+        configuration,
+      };
     } else if (typeof returnValue === 'string') {
-      return returnValue;
+      return {
+        value: returnValue,
+        configuration,
+      };
     } else {
-      return returnValue;
+      return {
+        value: returnValue,
+        configuration,
+      };
     }
   } finally {
     await version.displayVersionMessage();
@@ -532,17 +541,17 @@ function yargsNegativeAlias<T extends { [x in S | L ]: boolean | undefined }, S 
 
 let SHOW_ALL_NOTICES = false;
 initCommandLine()
-  .then(value => {
+  .then(async ({ value, configuration }) => {
     if (value == null) { return; }
     if (typeof value === 'string') {
       data(value);
     } else if (typeof value === 'number') {
       process.exitCode = value;
     }
-  })
-  .then(async () => {
     await displayNotices({
-      acknowledgedIssueNumbers: SHOW_ALL_NOTICES ? new Set() : undefined,
+      configuration,
+      skipAcknowledgedIssueNumbers: SHOW_ALL_NOTICES,
+      
     });
   })
   .catch(err => {

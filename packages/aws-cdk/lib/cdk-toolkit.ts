@@ -16,7 +16,6 @@ import { CloudWatchLogEventMonitor } from './api/logs/logs-monitor';
 import { StackActivityProgress } from './api/util/cloudformation/stack-activity-monitor';
 import { printSecurityDiff, printStackDiff, RequireApproval } from './diff';
 import { data, debug, error, highlight, print, success, warning } from './logging';
-import { suppressNotice } from './notices';
 import { deserializeStructure } from './serialize';
 import { Configuration, PROJECT_CONFIG } from './settings';
 import { numberFromBool, partition } from './util';
@@ -81,7 +80,10 @@ export class CdkToolkit {
   }
 
   public async acknowledge(noticeId: string) {
-    return suppressNotice(Number(noticeId));
+    const acks = this.props.configuration.context.get('acknowledged-ids') ?? [];
+    acks.push(Number(noticeId));
+    this.props.configuration.context.set('acknowledged-ids', acks);
+    await this.props.configuration.saveContext();
   }
 
   public async diff(options: DiffOptions): Promise<number> {
