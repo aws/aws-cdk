@@ -19,7 +19,7 @@ Currently supported are:
 * [Start a CodePipeline pipeline](#start-a-codepipeline-pipeline)
 * Run an ECS task
 * [Invoke a Lambda function](#invoke-a-lambda-function)
-* [Invoke a API Gateway REST API](#invoke-a-api-gateway-rest-api)
+* [Invoke a API Gateway REST API](#invoke-an-api-gateway-rest-api)
 * Publish a message to an SNS topic
 * Send a message to an SQS queue
 * [Start a StepFunctions state machine](#start-a-stepfunctions-state-machine)
@@ -29,6 +29,7 @@ Currently supported are:
 * [Log an event into a LogGroup](#log-an-event-into-a-loggroup)
 * Put a record to a Kinesis Data Firehose stream
 * [Put an event on an EventBridge bus](#put-an-event-on-an-eventbridge-bus)
+* [Send an event to EventBridge API Destination](#invoke-an-api-destination)
 
 See the README of the `@aws-cdk/aws-events` library for more information on
 EventBridge.
@@ -226,7 +227,7 @@ rule.addTarget(new targets.BatchJob(
 ));
 ```
 
-## Invoke a API Gateway REST API
+## Invoke an API Gateway REST API
 
 Use the `ApiGateway` target to trigger a REST API.
 
@@ -265,6 +266,31 @@ rule.addTarget(
     deadLetterQueue: dlq
   } ),
 )
+```
+
+## Invoke an API Destination
+
+Use the `targets.ApiDestination` target to trigger an external API. You need to
+create an `events.Connection` and `events.ApiDestination` as well.
+
+The code snippet below creates an external destination that is invoked every hour.
+
+```ts
+const connection = new events.Connection(this, 'Connection', {
+  authorization: events.Authorization.apiKey('x-api-key', SecretValue.secretsManager('ApiSecretName')),
+  description: 'Connection with API Key x-api-key',
+});
+
+const destination = new events.ApiDestination(this, 'Destination', {
+  connection,
+  endpoint: 'https://example.com',
+  description: 'Calling example.com with API key x-api-key',
+});
+
+const rule = new events.Rule(this, 'Rule', {
+  schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
+  targets: [new targets.ApiDestination(destination)],
+});
 ```
 
 ## Put an event on an EventBridge bus
