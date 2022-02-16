@@ -137,7 +137,8 @@
       "props-no-arn-refs:@aws-cdk/aws-eks.ClusterProps.outputMastersRoleArn",
       "props-physical-name:@aws-cdk/aws-eks.OpenIdConnectProviderProps",
       "resource-attribute:@aws-cdk/aws-eks.Cluster.clusterKubernetesNetworkConfigServiceIpv6Cidr",
-      "resource-attribute:@aws-cdk/aws-eks.FargateCluster.clusterKubernetesNetworkConfigServiceIpv6Cidr"
+      "resource-attribute:@aws-cdk/aws-eks.FargateCluster.clusterKubernetesNetworkConfigServiceIpv6Cidr",
+      "resource-attribute:@aws-cdk/aws-eks.Nodegroup.nodegroupId"
     ]
   },
   "stability": "stable",
