@@ -556,22 +556,22 @@ function yargsNegativeAlias<T extends { [x in S | L ]: boolean | undefined }, S 
   };
 }
 
-export async function cli() {
-  return initCommandLine()
-  .then(value => {
-    if (value == null) { return; }
-    if (typeof value === 'string') {
-      data(value);
-    } else if (typeof value === 'number') {
-      process.exitCode = value;
-    }
-  })
-  .catch(err => {
-    error(err.message);
-    if (err.stack) {
-      debug(err.stack);
-    }
-    process.exitCode = 1;
-  });
+export function cli() {
+  initCommandLine()
+    .then(value => {
+      if (value == null) { return; }
+      if (typeof value === 'string') {
+        data(value);
+      } else if (typeof value === 'number') {
+        process.exitCode = value;
+      }
+    })
+    .catch(err => {
+      error(err.message);
+      if (err.stack) {
+        debug(err.stack);
+      }
+      process.exitCode = 1;
+    });
 
 }
