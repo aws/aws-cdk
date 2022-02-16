@@ -110,24 +110,18 @@ const bundle = new Bundle({
 bundle.pack();
 ```
 
-## Caveats
+## Take into account
 
-Bundling a package has implications on the API exposed from the package.
-For pure CLI applications that don't export anything, this shouldn't be a problem.
+By default, the tool will use the `main` directive of the `package.json` as
+the entrypoint. This will ensure that all top level exports of the
+package are preserved.
 
-However, if you are bundling either a library, or a CLI that is being consumed
-as library as well, things can start to break.
+Deep imports such as `const plugins = require('your-package/lib/plugins')` are considered
+private and should not be used by your consumers. However, if you absolutely have to
+preserve those as well, you should pass custom multiple entry-points for each deep import.
+Note that this will balloon up the package size significantly.
 
-This tool does preserve all original code and structure, so all your imports
-will still be available for consumers, but:
+If you are bundling a CLI application that also has top level exports, we suggest to extract
+the CLI functionality into a function, and add this function as an export to `index.js`.
 
-1. The dependencies of those imports won't be available anymore. This means your
-consumers are now responsible for installing those on their own. To mitigate this,
-you can bundle up the files being imported as well (using additional entrypoints),
-but bear in mind this will significantly ballon the package size.
-2. If your bundled entrypoint can accept external types, and you perform type checks
-on them using things like `instanceof`, these will fail because these
-types are now completely foreign to your bundle.
-
-In general, this tool was designed for command line applications, if your CLI is also
-used as library, strongly consider extracting the library parts to a separate package.
+> See [aws-cdk](https://github.com/aws/aws-cdk/blob/master/packages/aws-cdk/bin/cdk.ts) as an example.

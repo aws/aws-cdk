@@ -17,14 +17,16 @@ export interface BundleProps {
   readonly packageDir: string;
 
   /**
-   * List of entrypoints to bundle.
-   */
-  readonly entrypoints: string[];
-
-  /**
    * Copyright string used when generating the NOTICE file.
    */
   readonly copyright: string;
+
+  /**
+   * List of entrypoints to bundle.
+   *
+   * @default - the 'main' file as specified in package.json.
+   */
+  readonly entrypoints?: string[];
 
   /**
    * Path to the notice file that will be created / validated.
@@ -145,7 +147,13 @@ export class Bundle {
     this.dontAttribute = props.dontAttribute;
     this.entrypoints = {};
 
-    for (const entrypoint of props.entrypoints) {
+    const entryPoints = props.entrypoints ?? (this.manifest.main ? [this.manifest.main] : []);
+
+    if (entryPoints.length === 0) {
+      throw new Error('Must configure at least 1 entrypoint');
+    }
+
+    for (const entrypoint of entryPoints) {
       if (!fs.existsSync(path.join(this.packageDir, entrypoint))) {
         throw new Error(`Unable to locate entrypoint: ${entrypoint}`);
       }
