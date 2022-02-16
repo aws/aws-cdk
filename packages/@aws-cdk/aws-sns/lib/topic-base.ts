@@ -29,6 +29,13 @@ export interface ITopic extends IResource, notifications.INotificationRuleTarget
   readonly topicName: string;
 
   /**
+   * Whether this topic is an Amazon SNS FIFO queue. If false, this is a standard topic.
+   *
+   * @attribute
+   */
+  readonly fifo: boolean;
+
+  /**
    * Subscribe some endpoint to this topic
    */
   addSubscription(subscription: ITopicSubscription): void;
@@ -55,6 +62,8 @@ export abstract class TopicBase extends Resource implements ITopic {
   public abstract readonly topicArn: string;
 
   public abstract readonly topicName: string;
+
+  public abstract readonly fifo: boolean;
 
   /**
    * Controls automatic creation of policy objects.
