@@ -1,8 +1,8 @@
-import '@aws-cdk/assert-internal/jest';
+import { Match, Template } from '@aws-cdk/assertions';
 import * as appmesh from '@aws-cdk/aws-appmesh';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as cdk from '@aws-cdk/core';
-import { AppMeshExtension, Container, Environment, ScaleOnCpuUtilization, ServiceDescription, Service } from '../lib';
+import { AppMeshExtension, Container, Environment, ServiceDescription, Service } from '../lib';
 
 describe('appmesh', () => {
   test('should be able to add AWS App Mesh to a service', () => {
@@ -33,9 +33,8 @@ describe('appmesh', () => {
     });
 
     // THEN
-
     // Ensure that task has an App Mesh sidecar
-    expect(stack).toHaveResource('AWS::ECS::TaskDefinition', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
         {
           Cpu: 256,
@@ -211,7 +210,7 @@ describe('appmesh', () => {
     });
 
     // Ensure that the service has the right settings
-    expect(stack).toHaveResource('AWS::ECS::Service', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
       Cluster: {
         Ref: 'productionenvironmentclusterC6599D2D',
       },
@@ -257,8 +256,6 @@ describe('appmesh', () => {
         Ref: 'myservicetaskdefinitionF3E2D86F',
       },
     });
-
-
   });
 
   test('should have the right maximumPercentage at desired count == 1', () => {
@@ -276,9 +273,6 @@ describe('appmesh', () => {
       trafficPort: 80,
       image: ecs.ContainerImage.fromRegistry('nathanpeck/name'),
     }));
-    serviceDescription.add(new ScaleOnCpuUtilization({
-      initialTaskCount: 1,
-    }));
 
     const mesh = new appmesh.Mesh(stack, 'my-mesh');
 
@@ -289,17 +283,16 @@ describe('appmesh', () => {
     new Service(stack, 'my-service', {
       environment,
       serviceDescription,
+      desiredCount: 1,
     });
 
-    expect(stack).toHaveResourceLike('AWS::ECS::Service', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
       DeploymentConfiguration: {
         MaximumPercent: 200,
         MinimumHealthyPercent: 100,
       },
       DesiredCount: 1,
     });
-
-
   });
 
   test('should have the right maximumPercentage at desired count == 2', () => {
@@ -317,9 +310,6 @@ describe('appmesh', () => {
       trafficPort: 80,
       image: ecs.ContainerImage.fromRegistry('nathanpeck/name'),
     }));
-    serviceDescription.add(new ScaleOnCpuUtilization({
-      initialTaskCount: 2,
-    }));
 
     const mesh = new appmesh.Mesh(stack, 'my-mesh');
 
@@ -330,17 +320,16 @@ describe('appmesh', () => {
     new Service(stack, 'my-service', {
       environment,
       serviceDescription,
+      desiredCount: 2,
     });
 
-    expect(stack).toHaveResourceLike('AWS::ECS::Service', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
       DeploymentConfiguration: {
         MaximumPercent: 150,
         MinimumHealthyPercent: 100,
       },
       DesiredCount: 2,
     });
-
-
   });
 
   test('should have the right maximumPercentage at desired count == 3', () => {
@@ -358,9 +347,6 @@ describe('appmesh', () => {
       trafficPort: 80,
       image: ecs.ContainerImage.fromRegistry('nathanpeck/name'),
     }));
-    serviceDescription.add(new ScaleOnCpuUtilization({
-      initialTaskCount: 3,
-    }));
 
     const mesh = new appmesh.Mesh(stack, 'my-mesh');
 
@@ -371,17 +357,16 @@ describe('appmesh', () => {
     new Service(stack, 'my-service', {
       environment,
       serviceDescription,
+      desiredCount: 3,
     });
 
-    expect(stack).toHaveResourceLike('AWS::ECS::Service', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
       DeploymentConfiguration: {
         MaximumPercent: 150,
         MinimumHealthyPercent: 100,
       },
       DesiredCount: 3,
     });
-
-
   });
 
   test('should have the right maximumPercentage at desired count == 4', () => {
@@ -399,9 +384,6 @@ describe('appmesh', () => {
       trafficPort: 80,
       image: ecs.ContainerImage.fromRegistry('nathanpeck/name'),
     }));
-    serviceDescription.add(new ScaleOnCpuUtilization({
-      initialTaskCount: 4,
-    }));
 
     const mesh = new appmesh.Mesh(stack, 'my-mesh');
 
@@ -412,17 +394,16 @@ describe('appmesh', () => {
     new Service(stack, 'my-service', {
       environment,
       serviceDescription,
+      desiredCount: 4,
     });
 
-    expect(stack).toHaveResourceLike('AWS::ECS::Service', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
       DeploymentConfiguration: {
         MaximumPercent: 125,
         MinimumHealthyPercent: 100,
       },
       DesiredCount: 4,
     });
-
-
   });
 
   test('should have the right maximumPercentage at desired count > 4', () => {
@@ -440,9 +421,6 @@ describe('appmesh', () => {
       trafficPort: 80,
       image: ecs.ContainerImage.fromRegistry('nathanpeck/name'),
     }));
-    serviceDescription.add(new ScaleOnCpuUtilization({
-      initialTaskCount: 8,
-    }));
 
     const mesh = new appmesh.Mesh(stack, 'my-mesh');
 
@@ -453,17 +431,16 @@ describe('appmesh', () => {
     new Service(stack, 'my-service', {
       environment,
       serviceDescription,
+      desiredCount: 8,
     });
 
-    expect(stack).toHaveResourceLike('AWS::ECS::Service', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
       DeploymentConfiguration: {
         MaximumPercent: 125,
         MinimumHealthyPercent: 100,
       },
       DesiredCount: 8,
     });
-
-
   });
 
   test('should be able to create multiple App Mesh enabled services and connect', () => {
@@ -527,9 +504,7 @@ describe('appmesh', () => {
     greeterService.connectTo(greetingService);
 
     // THEN
-    expect(stack).toHaveResource('AWS::ECS::TaskDefinition');
-
-
+    Template.fromStack(stack).hasResource('AWS::ECS::TaskDefinition', Match.anyValue());
   });
 
   test('should detect when attempting to connect services from two different envs', () => {
@@ -583,7 +558,5 @@ describe('appmesh', () => {
     expect(() => {
       developmentNameService.connectTo(productionNameService);
     }).toThrow(/Unable to connect service 'name-development' in environment 'development' to service 'name-production' in environment 'production' because services can not be connected across environment boundaries/);
-
-
   });
 });

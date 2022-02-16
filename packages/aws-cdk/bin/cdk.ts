@@ -2,7 +2,7 @@
 import 'source-map-support/register';
 import * as cxapi from '@aws-cdk/cx-api';
 import '@jsii/check-node/run';
-import * as colors from 'colors/safe';
+import * as chalk from 'chalk';
 import * as yargs from 'yargs';
 
 import { SdkProvider } from '../lib/api/aws-auth';
@@ -14,6 +14,9 @@ import { execProgram } from '../lib/api/cxapp/exec';
 import { ToolkitInfo } from '../lib/api/toolkit-info';
 import { StackActivityProgress } from '../lib/api/util/cloudformation/stack-activity-monitor';
 import { CdkToolkit } from '../lib/cdk-toolkit';
+import { realHandler as context } from '../lib/commands/context';
+import { realHandler as docs } from '../lib/commands/docs';
+import { realHandler as doctor } from '../lib/commands/doctor';
 import { RequireApproval } from '../lib/diff';
 import { availableInitLanguages, cliInit, printAvailableTemplates } from '../lib/init';
 import { data, debug, error, print, setLogLevel } from '../lib/logging';
@@ -39,6 +42,11 @@ async function parseCommandLineArguments() {
   //
   //   ./prog --arg one --arg two position  =>  will parse to  { arg: ['one', 'two'], _: ['positional'] }.
 
+  const defaultBrowserCommand: { [key in NodeJS.Platform]?: string } = {
+    darwin: 'open %u',
+    win32: 'start %u',
+  };
+
   const initTemplateLanguages = await availableInitLanguages();
   return yargs
     .env('CDK')
@@ -62,7 +70,6 @@ async function parseCommandLineArguments() {
     .option('path-metadata', { type: 'boolean', desc: 'Include "aws:cdk:path" CloudFormation metadata for each resource (enabled by default)', default: true })
     .option('asset-metadata', { type: 'boolean', desc: 'Include "aws:asset:*" CloudFormation metadata for resources that uses assets (enabled by default)', default: true })
     .option('role-arn', { type: 'string', alias: 'r', desc: 'ARN of Role to use when invoking CloudFormation', default: undefined, requiresArg: true })
-    .option('toolkit-stack-name', { type: 'string', desc: 'The name of the CDK toolkit stack', requiresArg: true })
     .option('staging', { type: 'boolean', desc: 'Copy assets to the output directory (use --no-staging to disable, needed for local debugging the source files with SAM CLI)', default: true })
     .option('output', { type: 'string', alias: 'o', desc: 'Emits the synthesized cloud assembly into a directory (default: cdk.out)', requiresArg: true })
     .option('no-color', { type: 'boolean', desc: 'Removes colors and other style from console output', default: false })
@@ -87,6 +94,7 @@ async function parseCommandLineArguments() {
       .option('force', { alias: 'f', type: 'boolean', desc: 'Always bootstrap even if it would downgrade template version', default: false })
       .option('termination-protection', { type: 'boolean', default: undefined, desc: 'Toggle CloudFormation termination protection on the bootstrap stacks' })
       .option('show-template', { type: 'boolean', desc: 'Instead of actual bootstrapping, print the current CLI\'s bootstrapping template to stdout for customization', default: false })
+      .option('toolkit-stack-name', { type: 'string', desc: 'The name of the CDK toolkit stack to create', requiresArg: true })
       .option('template', { type: 'string', requiresArg: true, desc: 'Use the template from the given file instead of the built-in one (use --show-template to obtain an example)' }),
     )
     .command('deploy [STACKS..]', 'Deploys the stack(s) named STACKS into your AWS account', yargs => yargs
@@ -104,6 +112,7 @@ async function parseCommandLineArguments() {
       .option('parameters', { type: 'array', desc: 'Additional parameters passed to CloudFormation at deploy time (STACK:KEY=VALUE)', nargs: 1, requiresArg: true, default: {} })
       .option('outputs-file', { type: 'string', alias: 'O', desc: 'Path to file where stack outputs will be written as JSON', requiresArg: true })
       .option('previous-parameters', { type: 'boolean', default: true, desc: 'Use previous values for existing parameters (you must specify all parameters on every deployment if this is disabled)' })
+      .option('toolkit-stack-name', { type: 'string', desc: 'The name of the existing CDK toolkit stack (only used for app using legacy synthesis)', requiresArg: true })
       .option('progress', { type: 'string', choices: [StackActivityProgress.BAR, StackActivityProgress.EVENTS], desc: 'Display mode for stack activity events' })
       .option('rollback', {
         type: 'boolean',
@@ -124,6 +133,13 @@ async function parseCommandLineArguments() {
         desc: 'Continuously observe the project files, ' +
           'and deploy the given stack(s) automatically when changes are detected. ' +
           'Implies --hotswap by default',
+      })
+      .options('logs', {
+        type: 'boolean',
+        default: true,
+        desc: 'Show CloudWatch log events from all resources in the selected Stacks in the terminal. ' +
+          "'true' by default, use --no-logs to turn off. " +
+          "Only in effect if specified alongside the '--watch' option",
       }),
     )
     .command('watch [STACKS..]', "Shortcut for 'deploy --watch'", yargs => yargs
@@ -143,6 +159,7 @@ async function parseCommandLineArguments() {
       .option('exclusively', { type: 'boolean', alias: 'e', desc: 'Only deploy requested stacks, don\'t include dependencies' })
       .option('change-set-name', { type: 'string', desc: 'Name of the CloudFormation change set to create' })
       .option('force', { alias: 'f', type: 'boolean', desc: 'Always deploy stack even if templates are identical', default: false })
+      .option('toolkit-stack-name', { type: 'string', desc: 'The name of the existing CDK toolkit stack (only used for app using legacy synthesis)', requiresArg: true })
       .option('progress', { type: 'string', choices: [StackActivityProgress.BAR, StackActivityProgress.EVENTS], desc: 'Display mode for stack activity events' })
       .option('rollback', {
         type: 'boolean',
@@ -157,6 +174,12 @@ async function parseCommandLineArguments() {
           'which skips CloudFormation and updates the resources directly, ' +
           'and falls back to a full deployment if that is not possible. ' +
           "'true' by default, use --no-hotswap to turn off",
+      })
+      .options('logs', {
+        type: 'boolean',
+        default: true,
+        desc: 'Show CloudWatch log events from all resources in the selected Stacks in the terminal. ' +
+          "'true' by default, use --no-logs to turn off",
       }),
     )
     .command('destroy [STACKS..]', 'Destroy the stack(s) named STACKS', yargs => yargs
@@ -176,7 +199,17 @@ async function parseCommandLineArguments() {
       .option('list', { type: 'boolean', desc: 'List the available templates' })
       .option('generate-only', { type: 'boolean', default: false, desc: 'If true, only generates project files, without executing additional operations such as setting up a git repo, installing dependencies or compiling the project' }),
     )
-    .commandDir('../lib/commands', { exclude: /^_.*/ })
+    .command('context', 'Manage cached context values', yargs => yargs
+      .option('reset', { alias: 'e', desc: 'The context key (or its index) to reset', type: 'string', requiresArg: true })
+      .option('clear', { desc: 'Clear all context', type: 'boolean' }))
+    .command(['docs', 'doc'], 'Opens the reference documentation in a browser', yargs => yargs
+      .option('browser', {
+        alias: 'b',
+        desc: 'the command to use to open the browser, using %u as a placeholder for the path of the file to open',
+        type: 'string',
+        default: process.platform in defaultBrowserCommand ? defaultBrowserCommand[process.platform] : 'xdg-open %u',
+      }))
+    .command('doctor', 'Check your set-up for potential problems')
     .version(version.DISPLAY_VERSION)
     .demandCommand(1, '') // just print help
     .recommendCommands()
@@ -190,7 +223,8 @@ async function parseCommandLineArguments() {
 }
 
 if (!process.stdout.isTTY) {
-  colors.disable();
+  // Disable chalk color highlighting
+  process.env.FORCE_COLOR = '0';
 }
 
 async function initCommandLine() {
@@ -234,7 +268,7 @@ async function initCommandLine() {
       for (const plugin of plugins) {
         const resolved = tryResolve(plugin);
         if (loaded.has(resolved)) { continue; }
-        debug(`Loading plug-in: ${colors.green(plugin)} from ${colors.blue(resolved)}`);
+        debug(`Loading plug-in: ${chalk.green(plugin)} from ${chalk.blue(resolved)}`);
         PluginHost.instance.load(plugin);
         loaded.add(resolved);
       }
@@ -244,7 +278,7 @@ async function initCommandLine() {
       try {
         return require.resolve(plugin);
       } catch (e) {
-        error(`Unable to resolve plugin ${colors.green(plugin)}: ${e.stack}`);
+        error(`Unable to resolve plugin ${chalk.green(plugin)}: ${e.stack}`);
         throw new Error(`Unable to resolve plug-in: ${plugin}`);
       }
     }
@@ -262,9 +296,25 @@ async function initCommandLine() {
   const commandOptions = { args: argv, configuration, aws: sdkProvider };
 
   try {
-    const returnValue = argv.commandHandler
-      ? await (argv.commandHandler as (opts: typeof commandOptions) => any)(commandOptions)
-      : await main(cmd, argv);
+
+    let returnValue = undefined;
+
+    switch (cmd) {
+      case 'context':
+        returnValue = await context(commandOptions);
+        break;
+      case 'docs':
+        returnValue = await docs(commandOptions);
+        break;
+      case 'doctor':
+        returnValue = await doctor(commandOptions);
+        break;
+    }
+
+    if (returnValue === undefined) {
+      returnValue = await main(cmd, argv);
+    }
+
     if (typeof returnValue === 'object') {
       return toJsonOrYaml(returnValue);
     } else if (typeof returnValue === 'string') {
@@ -278,7 +328,7 @@ async function initCommandLine() {
 
   async function main(command: string, args: any): Promise<number | string | {} | void> {
     const toolkitStackName: string = ToolkitInfo.determineName(configuration.settings.get(['toolkitStackName']));
-    debug(`Toolkit stack: ${colors.bold(toolkitStackName)}`);
+    debug(`Toolkit stack: ${chalk.bold(toolkitStackName)}`);
 
     if (args.all && args.STACKS) {
       throw new Error('You must either specify a list of Stacks or the `--all` argument');
@@ -375,6 +425,7 @@ async function initCommandLine() {
           rollback: configuration.settings.get(['rollback']),
           hotswap: args.hotswap,
           watch: args.watch,
+          traceLogs: args.logs,
         });
 
       case 'watch':
@@ -394,6 +445,7 @@ async function initCommandLine() {
           progress: configuration.settings.get(['progress']),
           rollback: configuration.settings.get(['rollback']),
           hotswap: args.hotswap,
+          traceLogs: args.logs,
         });
 
       case 'destroy':

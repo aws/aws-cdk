@@ -1,5 +1,5 @@
 {
-  "$version": "51.0.0",
+  "$version": "56.0.0",
   "PropertyTypes": {
     "AWS::SES::ConfigurationSetEventDestination.CloudWatchDestination": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ses-configurationseteventdestination-cloudwatchdestination.html",
@@ -409,7 +409,7 @@
         "SubjectPart": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ses-template-template.html#cfn-ses-template-template-subjectpart",
           "PrimitiveType": "String",
-          "Required": false,
+          "Required": true,
           "UpdateType": "Mutable"
         },
         "TemplateName": {
@@ -533,6 +533,11 @@
       }
     },
     "AWS::SES::Template": {
+      "Attributes": {
+        "Id": {
+          "PrimitiveType": "String"
+        }
+      },
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ses-template.html",
       "Properties": {
         "Template": {
