@@ -210,7 +210,7 @@ if (!process.stdout.isTTY) {
   process.env.FORCE_COLOR = '0';
 }
 
-async function initCommandLine() {
+async function initCommandLine(): Promise<{ configuration: Configuration, value: any }> {
   const argv = await parseCommandLineArguments();
   if (argv.verbose) {
     setLogLevel(argv.verbose);
@@ -549,9 +549,9 @@ initCommandLine()
       process.exitCode = value;
     }
     await displayNotices({
-      configuration,
+      acknowledgedIssueNumbers: configuration.context.get('acknowledged-issue-numbers') ?? [],
       skipAcknowledgedIssueNumbers: SHOW_ALL_NOTICES,
-      
+      permanentlySuppressed: configuration.context.get('no-notices'),
     });
   })
   .catch(err => {

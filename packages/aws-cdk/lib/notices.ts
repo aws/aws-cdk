@@ -3,20 +3,13 @@ import * as path from 'path';
 import * as fs from 'fs-extra';
 import * as semver from 'semver';
 import { print, debug } from './logging';
-import { Configuration } from './settings';
 import { cdkCacheDir } from './util/directories';
 import { versionNumber } from './version';
 
 const CACHE_FILE_PATH = path.join(cdkCacheDir(), 'notices.json');
 
-export interface DisplayNoticesProps extends FilterOptions {
-  /**
-   * Application configuration (settings and context)
-   */
-  readonly configuration: Configuration;
-}
-
-export interface FilterOptions {
+export interface DisplayNoticesProps {
+  readonly acknowledgedIssueNumbers: number[];
   readonly temporarilySuppressed?: boolean;
   readonly permanentlySuppressed?: boolean;
   readonly cliVersion?: string;
@@ -30,7 +23,7 @@ export async function displayNotices(props: DisplayNoticesProps) {
   const individualMessages = formatNotices(filterNotices(notices, {
     temporarilySuppressed: props.temporarilySuppressed,
     permanentlySuppressed: props.permanentlySuppressed,
-    acknowledgedIssueNumbers: props.skipAcknowledgedIssueNumbers ? new Set() : getAcknowledgedIssueNumbers(props.configuration),
+    acknowledgedIssueNumbers: props.skipAcknowledgedIssueNumbers ? new Set() : arrayToSet(props.acknowledgedIssueNumbers),
   }));
 
   if (individualMessages.length > 0) {
@@ -42,11 +35,10 @@ function dataSourceReference(): CachedDataSource {
   return new CachedDataSource(CACHE_FILE_PATH, new WebsiteNoticeDataSource());
 }
 
-function getAcknowledgedIssueNumbers(configuration: Configuration): Set<number> {
-  const acks: number[] = configuration.context.get('acknowledged-ids');
-  const issueNumbers = new Set<number>();
-  acks.forEach(a => issueNumbers.add(a));
-  return issueNumbers;
+function arrayToSet(array: any[]): Set<number> {
+  const set = new Set<number>();
+  array.forEach(a => set.add(a));
+  return set;
 }
 
 function finalMessage(individualMessages: string[], exampleNumber: number): string {
