@@ -15,7 +15,7 @@ import { LogDriver, LogDriverConfig } from './log-drivers/log-driver';
 import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
- * Specify the secret's version id or versions stage
+ * Specify the secret's version id or version stage
  */
 export interface SecretVersionInfo {
   /**
