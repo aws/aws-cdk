@@ -63,6 +63,7 @@ export interface ISDK {
   stepFunctions(): AWS.StepFunctions;
   codeBuild(): AWS.CodeBuild
   cloudWatchLogs(): AWS.CloudWatchLogs;
+  appsync(): AWS.AppSync;
 }
 
 /**
@@ -188,6 +189,10 @@ export class SDK implements ISDK {
 
   public cloudWatchLogs(): AWS.CloudWatchLogs {
     return this.wrapServiceErrorHandling(new AWS.CloudWatchLogs(this.config));
+  }
+
+  public appsync(): AWS.AppSync {
+    return this.wrapServiceErrorHandling(new AWS.AppSync(this.config));
   }
 
   public async currentAccount(): Promise<Account> {

@@ -185,7 +185,7 @@
     "@types/minimatch": "^3.0.5",
     "@types/node": "^10.17.60",
     "@types/sinon": "^9.0.11",
-    "fast-check": "^2.21.0",
+    "fast-check": "^2.22.0",
     "jest": "^27.5.1",
     "lodash": "^4.17.21",
     "sinon": "^9.2.4",
@@ -199,7 +199,7 @@
     "constructs": "^3.3.69",
     "fs-extra": "^9.1.0",
     "ignore": "^5.2.0",
-    "minimatch": "^3.0.5"
+    "minimatch": "^3.1.2"
   },
   "bundledDependencies": [
     "fs-extra",
