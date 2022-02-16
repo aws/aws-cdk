@@ -39,7 +39,7 @@
         "../../node_modules/vm2/lib/setup-sandbox.js": "bin/setup-sandbox.js"
       },
       "entrypoints": [
-        "bin/cdk.js"
+        "lib/index.js"
       ],
       "licenses": [
         "Apache-2.0",

@@ -242,13 +242,14 @@ export class Bundle {
       throw new Error(`Target must be a directory: ${target}`);
     }
 
-    console.log('Write bundle');
+    console.log('Writing bundle');
     const bundleDir = this.write();
     try {
 
       if (this.test) {
-        console.log('Running package santiy test');
-        shell(`${path.join(bundleDir, this.test)}`, { cwd: bundleDir });
+        const command = `${path.join(bundleDir, this.test)}`;
+        console.log(`Running santiy test: ${command}`);
+        shell(command, { cwd: bundleDir });
       }
 
       // create the tarball
@@ -469,7 +470,6 @@ export class Bundle {
   private writeResources(workdir: string) {
     for (const [src, dst] of Object.entries(this.resources)) {
       const to = path.join(workdir, dst);
-      console.log(`  - ${to}`);
       fs.copySync(path.join(this.packageDir, src), to, { recursive: true });
     }
   }
