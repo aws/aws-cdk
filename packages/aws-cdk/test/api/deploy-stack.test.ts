@@ -164,6 +164,18 @@ test('correctly passes CFN parameters, ignoring ones with empty values', async (
   }));
 });
 
+test('correctly passes IncludeNestedStacks', async () => {
+  // WHEN
+  await deployStack({
+    ...standardDeployStackArguments(),
+  });
+
+  // THEN
+  expect(cfnMocks.createChangeSet).toHaveBeenCalledWith(expect.objectContaining({
+    IncludeNestedStacks: true,
+  }));
+});
+
 test('reuse previous parameters if requested', async () => {
   // GIVEN
   givenStackExists({
