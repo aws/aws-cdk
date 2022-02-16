@@ -453,6 +453,7 @@ export class Function extends FunctionBase {
       public readonly architecture = attrs.architecture ?? Architecture.X86_64;
 
       protected readonly canCreatePermissions = attrs.sameEnvironment ?? this._isStackAccount();
+      protected readonly _skipPermissions = attrs.skipPermissions ?? false;
 
       constructor(s: Construct, i: string) {
         super(s, i, {
