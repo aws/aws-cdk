@@ -27,19 +27,15 @@ export class CognitoIdentityPoolAuthorizer implements IAppMonitorAuthorizer {
    * Unauthenticated role ARN of Amazon Cognito identity pool.
    */
   public get guestRoleArn(): string | undefined {
-    return this.unauthenticatedRole.roleArn;
+    return this.role.roleArn;
   }
-  private readonly unauthenticatedRole: iam.IRole;
+  /**
+   * Roles used to access AWS.
+   */
+  public readonly role: iam.IRole;
+
   constructor(props: CognitoIdentityPoolAuthorizerProps) {
     this.identityPoolId = props.identityPoolId;
-    this.unauthenticatedRole = props.unauthenticatedRole;
-  }
-
-  /**
-   * Add put policy to unauthenticated role.
-   * @param putPolicy policy that includes rum:PutRumEvents action.
-   */
-  addPutPolicy(putPolicy: iam.IManagedPolicy): void {
-    this.unauthenticatedRole.addManagedPolicy(putPolicy);
+    this.role = props.unauthenticatedRole;
   }
 }

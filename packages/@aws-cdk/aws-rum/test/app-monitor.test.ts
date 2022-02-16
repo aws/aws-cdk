@@ -3,7 +3,6 @@ import { Template } from '@aws-cdk/assertions';
 import { Role } from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import * as rum from '../lib';
-import { CognitoIdentityPoolAuthorizer, PageIdFormat } from '../lib';
 
 describe('App monitor', () => {
   test('Default app monitor', () => {
@@ -358,103 +357,18 @@ describe('App monitor', () => {
       ],
     });
   });
-});
-
-describe('Generate code snippet', () => {
-  test('Common script', () => {
+  test('Generate code snippet', () => {
     const stack = new cdk.Stack();
     const appMonitor = new rum.AppMonitor(stack, 'MyAppMonitor', {
       appMonitorName: 'my-app-monitor',
       domain: 'amazon.com',
     });
-    const codeSnippet = appMonitor.generateCodeSnippet();
-    expect(codeSnippet).toContain(`(function(n,i,v,r,s,c,x,z){x=window.AwsRumClient={q:[],n:n,i:i,v:v,r:r,c:c};window[n]=function(c,p){x.q.push({c:c,p:p});};z=document.createElement(\'script\');z.async=true;z.src=s;document.head.insertBefore(z,document.getElementsByTagName(\'script\')[0]);})(\'cwr\','${appMonitor.appMonitorId}','1.0.0','${stack.region}','https://client.rum.us-east-1.amazonaws.com/1.0.2/cwr.js',{`);
-  });
-
-  test('Without option', () => {
-    const stack = new cdk.Stack();
-    const appMonitor = new rum.AppMonitor(stack, 'MyAppMonitor', {
-      appMonitorName: 'my-app-monitor',
-      domain: 'amazon.com',
-      authorizer: new CognitoIdentityPoolAuthorizer({
-        identityPoolId: 'my-identity-pool-id',
-        unauthenticatedRole: Role.fromRoleArn(stack, 'Role', 'arn:aws:iam::123456789012:role/Nexus-Monitor-us-east-1-123456789012_Unauth_5889316876161'),
-      }),
+    const codeSnippet = appMonitor.generateCodeSnippet('CodeSnippet');
+    expect(stack.resolve(codeSnippet)).toEqual({
+      'Fn::GetAtt': [
+        'MyAppMonitorCodeSnippet745DC3E7',
+        'CodeSnippet',
+      ],
     });
-    const codeSnippet = appMonitor.generateCodeSnippet();
-    expect(codeSnippet).toContain('{' +
-      `endpoint:'https://dataplane.rum.${stack.region}.amazonaws.com',` +
-      'guestRoleArn:\'arn:aws:iam::123456789012:role/Nexus-Monitor-us-east-1-123456789012_Unauth_5889316876161\',' +
-      'identityPoolId:\'my-identity-pool-id\',' +
-      'sessionSampleRate:1' +
-      '}');
-  });
-
-  test('With option', () => {
-    const stack = new cdk.Stack();
-    const appMonitor = new rum.AppMonitor(stack, 'MyAppMonitor', {
-      appMonitorName: 'my-app-monitor',
-      domain: 'amazon.com',
-      authorizer: new CognitoIdentityPoolAuthorizer({
-        identityPoolId: 'my-identity-pool-id',
-        unauthenticatedRole: Role.fromRoleArn(stack, 'Role', 'arn:aws:iam::123456789012:role/Nexus-Monitor-us-east-1-123456789012_Unauth_5889316876161'),
-      }),
-    });
-    const codeSnippet = appMonitor.generateCodeSnippet({
-      allowCookies: true,
-      cookieAttibutes: {},
-      disableAutoPageView: true,
-      enableRumClient: true,
-      enableXRay: true,
-      endpoint: 'https://dataplane.rum.some-region.amazonaws.com',
-      guestRoleArn: 'arn:aws:iam::123456789012:role/my-role',
-      identityPoolId: 'some-identity-pool-id',
-      pageIdFormat: PageIdFormat.PATH_AND_HASH,
-      pagesToInclude: ['/\\/home/'],
-      pagesToExclude: ['/\\/home/'],
-      recordResourceUrl: true,
-      sessionEventLimit: 200,
-      sessionSampleRate: 1,
-      telemetries: {
-        errors: {
-          stackTraceLength: 200,
-        },
-        http: {
-          urlsToInclude: ['/\\/home/'],
-        },
-        performance: {
-          eventLimit: 10,
-        },
-        interaction: {
-          events: [
-            {
-              event: 'click', elementId: 'mybutton',
-            },
-          ],
-        },
-      },
-    });
-    expect(codeSnippet).toContain('{' +
-      'allowCookies:true,' +
-      'cookieAttibutes:{},' +
-      'disableAutoPageView:true,' +
-      'enableRumClient:true,' +
-      'enableXRay:true,' +
-      'endpoint:\'https://dataplane.rum.some-region.amazonaws.com\',' +
-      'guestRoleArn:\'arn:aws:iam::123456789012:role/my-role\',' +
-      'identityPoolId:\'some-identity-pool-id\',' +
-      'pageIdFormat:\'PATH_AND_HASH\',' +
-      'pagesToInclude:[/\\/home/],' +
-      'pagesToExclude:[/\\/home/],' +
-      'recordResourceUrl:true,' +
-      'sessionEventLimit:200,' +
-      'sessionSampleRate:1,' +
-      'telemetries:[' +
-      '[\'errors\',{stackTraceLength:200}],'+
-      '[\'http\',{urlsToInclude:[/\\/home/]}],'+
-      '[\'performance\',{eventLimit:10}],'+
-      '[\'interaction\',{events:[{event:\'click\',elementId:\'mybutton\'}]}]'+
-      ']' +
-      '}');
   });
 });

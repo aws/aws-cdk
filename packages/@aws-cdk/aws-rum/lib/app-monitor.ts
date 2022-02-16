@@ -1,7 +1,9 @@
+import * as path from 'path';
 import * as cognito from '@aws-cdk/aws-cognito';
 import * as iam from '@aws-cdk/aws-iam';
+import * as lambda from '@aws-cdk/aws-lambda';
 import {
-  Arn, Resource,
+  Arn, ArnFormat, CustomResource, Duration, IResource, Resource, ResourceProps, Stack,
 } from '@aws-cdk/core';
 import {
   AwsCustomResource,
@@ -12,8 +14,6 @@ import {
 import { Construct } from 'constructs';
 import { IAppMonitorAuthorizer } from './app-monitor-authorizer';
 import { CognitoIdentityPoolAuthorizer, CognitoIdentityPoolAuthorizerProps } from './cognito-identitypool-authorizer';
-import { JavaScript, JavaScriptRegExp } from './private/code-snippet';
-import * as webClient from './private/rum-web-client';
 import * as rum from './rum.generated';
 
 /**
@@ -265,10 +265,10 @@ export enum PageIdFormat {
 }
 
 /**
- * RUM web client configuration.
+ * RUM web client configuration option.
  * @see https://github.com/aws-observability/aws-rum-web/blob/main/docs/cdn_installation.md#configuration
  */
-export interface WebClientConfig {
+export interface WebClientConfigurationOption {
   /**
    * This property can override allowCookies value set in appMonitorConfiguration.
    *
@@ -328,10 +328,10 @@ export interface WebClientConfig {
   /**
    * The portion of the window.location that will be used as the page ID.
    *
-   * For example, consider the URL https://amazonaws.com/home?param=true#content.
-   * PATH: /home
-   * HASH: #content
-   * PATH_AND_HASH: /home#content
+   * For example, consider the URL `https://amazonaws.com/home?param=true#content`.
+   * - PATH: /home
+   * - HASH: #content
+   * - PATH_AND_HASH: /home#content
    *
    * @default PATH
    */
@@ -383,6 +383,149 @@ export interface WebClientConfig {
 }
 
 /**
+ * Define a RUM app monitor interface.
+ */
+export interface IAppMonitor extends IResource {
+  /**
+   * Returns the app monitor id of this app monitor.
+   * @attribute
+   */
+  readonly appMonitorId: string;
+  /**
+   * Returns the ARN of this app monitor.
+   * @attribute
+   */
+  readonly appMonitorArn: string;
+  /**
+   * Generate the JavaScript code snippet for use this app monitor.
+   *
+   * @param id Code snippet id.
+   * @param option A value that can only be set by the client.
+   */
+  generateCodeSnippet(id: string, option?: WebClientConfigurationOption): string;
+}
+
+/**
+ * Represents an app monitor.
+ */
+export abstract class AppMonitorBase extends Resource implements IAppMonitor {
+  private _appMonitor?: AwsCustomResource;
+  private codeSnippetProvider?: lambda.SingletonFunction;
+  private codeSnippetPolicy?: iam.Policy;
+  /**
+   * @internal
+   */
+  protected _resource?: rum.CfnAppMonitor;
+  constructor(scope: Construct, id: string, props: ResourceProps) {
+    super(scope, id, props);
+  }
+
+  /**
+   * Returns the ARN of this app monitor.
+   * @attribute
+   */
+  public get appMonitorArn(): string {
+    return Arn.format(
+      {
+        service: 'rum',
+        resource: 'appmonitor',
+        resourceName: this.physicalName,
+      },
+      this.stack,
+    );
+  }
+
+  /**
+   * Returns the app monitor id of this app monitor.
+   * @attribute
+   */
+  public get appMonitorId(): string {
+    return this.appMonitor.getResponseField('AppMonitor.Id');
+  }
+
+  /**
+   * Generate the JavaScript code snippet for use this app monitor.
+   *
+   * @param id Code snippet id.
+   * @param option A value that can only be set by the client.
+   */
+  public generateCodeSnippet(id: string, option?: WebClientConfigurationOption): string {
+    if (!this.codeSnippetProvider) {
+      this.codeSnippetProvider = new lambda.SingletonFunction(this, 'CodeSnippetProvider', {
+        code: lambda.Code.fromAsset(path.join(__dirname, 'generate-code-snippet')),
+        runtime: lambda.Runtime.NODEJS_14_X,
+        handler: 'index.handler',
+        uuid: '0d90af78-1b35-5934-2261-81dca6a78bdd',
+        lambdaPurpose: 'CodeSnippet',
+        timeout: Duration.minutes(2),
+      });
+    }
+    if (!this.codeSnippetPolicy) {
+      this.codeSnippetPolicy = new iam.Policy(this, 'CustomResourcePolicy', {
+        statements: [
+          new iam.PolicyStatement({
+            effect: iam.Effect.ALLOW,
+            actions: ['rum:GetAppMonitor'],
+            resources: [this.appMonitorArn],
+          }),
+        ],
+      });
+    }
+    if (this.codeSnippetProvider.role) {
+      this.codeSnippetPolicy.attachToRole(this.codeSnippetProvider.role);
+    }
+    const codeSnippetGenerator = new CustomResource(this, id, {
+      resourceType: 'Custom::AppMonitorCodeSnippet',
+      serviceToken: this.codeSnippetProvider.functionArn,
+      properties: {
+        appMonitorName: this.physicalName,
+        region: this.env.region,
+        // This is always necessary to get the latest app monitor
+        currentTime: new Date().toString(),
+        option,
+      },
+    });
+    if (this._resource) {
+      codeSnippetGenerator.node.addDependency(this._resource);
+    }
+    return codeSnippetGenerator.getAttString('CodeSnippet');
+  }
+
+  protected get appMonitor(): AwsCustomResource {
+    if (!this._appMonitor) {
+      this._appMonitor = this.createGetAppMonitorCustomResource();
+    }
+    return this._appMonitor;
+  }
+
+  protected createGetAppMonitorCustomResource(): AwsCustomResource {
+    const awsRumSdkCall: AwsSdkCall = {
+      service: 'RUM',
+      action: 'getAppMonitor',
+      parameters: { Name: this.physicalName },
+      physicalResourceId: PhysicalResourceId.of(this.physicalName),
+    };
+    const customResource = new AwsCustomResource(
+      this,
+      'Custom::GetAppMonitor',
+      {
+        resourceType: 'Custom::GetAppMonitor',
+        policy: AwsCustomResourcePolicy.fromSdkCalls({
+          resources: [this.appMonitorArn],
+        }),
+        installLatestAwsSdk: true,
+        onCreate: awsRumSdkCall,
+        onUpdate: awsRumSdkCall,
+      },
+    );
+    if (this._resource) {
+      customResource.node.addDependency(this._resource);
+    }
+    return customResource;
+  }
+}
+
+/**
  * App monitor props.
  */
 export interface AppMonitorProps {
@@ -397,7 +540,7 @@ export interface AppMonitorProps {
   /**
    * Authorizer to use the app monitor.
    *
-   * @default - Create a new Cognito identity pool and use for this app monitor.
+   * @default - Generate a new Cognito identity pool and use for this app monitor.
    */
   readonly authorizer?: IAppMonitorAuthorizer;
   /**
@@ -419,9 +562,38 @@ export interface AppMonitorProps {
 /**
  * Define a RUM app monitor.
  */
-export class AppMonitor extends Resource {
-  private appMonitorCustomResource?: AwsCustomResource;
-  private readonly appMonitor: rum.CfnAppMonitor;
+export class AppMonitor extends AppMonitorBase {
+  /**
+   * Import app monitor from app monitor name.
+   * @param scope scope The parent creating construct (usually `this`).
+   * @param id The construct's name.
+   * @param appMonitorName Name of the app monitor to import.
+   * @returns app monitor.
+   */
+  public static fromAppMonitorName(scope: Construct, id: string, appMonitorName: string): IAppMonitor {
+    return AppMonitor.fromAppMonitorArn(scope, id, Arn.format(
+      {
+        service: 'rum',
+        resource: 'appmonitor',
+        resourceName: appMonitorName,
+      },
+      Stack.of(scope),
+    ));
+  }
+
+  /**
+   * Import app monitor from app monitor ARN.
+   * @param scope scope The parent creating construct (usually `this`).
+   * @param id The construct's name.
+   * @param appMonitorArn ARN of the app monitor to import.
+   * @returns app monitor.
+   */
+  public static fromAppMonitorArn(scope: Construct, id: string, appMonitorArn: string): IAppMonitor {
+    const appMonitor = Arn.split(appMonitorArn, ArnFormat.SLASH_RESOURCE_NAME);
+    class Import extends AppMonitorBase { }
+    return new Import(scope, id, { physicalName: appMonitor.resourceName, region: appMonitor.region });
+  }
+
   private readonly authorizer: IAppMonitorAuthorizer;
   private readonly appMonitorConfig: AppMonitorConfiguration;
   constructor(scope: Construct, id: string, props: AppMonitorProps) {
@@ -433,7 +605,7 @@ export class AppMonitor extends Resource {
     // This like a to create RUM in management console.
     this.authorizer = props.authorizer ??
       new CognitoIdentityPoolAuthorizer(this.createIdentityPool());
-    this.authorizer.addPutPolicy(new iam.ManagedPolicy(this, 'RUMPutBatchMetrics', {
+    this.authorizer.role.addManagedPolicy(new iam.ManagedPolicy(this, 'RUMPutBatchMetrics', {
       statements: [
         new iam.PolicyStatement({
           effect: iam.Effect.ALLOW,
@@ -451,7 +623,7 @@ export class AppMonitor extends Resource {
       sessionSampleRate: props.appMonitorConfiguration?.sessionSampleRate ?? 1,
       telemetries: props.appMonitorConfiguration?.telemetries,
     };
-    this.appMonitor = new rum.CfnAppMonitor(this, 'AppMonitor', {
+    this._resource = new rum.CfnAppMonitor(this, 'AppMonitor', {
       name: props.appMonitorName,
       domain: props.domain,
       cwLogEnabled: props.persistence,
@@ -461,95 +633,6 @@ export class AppMonitor extends Resource {
         identityPoolId: this.authorizer.identityPoolId,
       },
     });
-  }
-
-  /**
-   * Returns the ARN of this app monitor.
-   * @attribute
-   */
-  public get appMonitorArn(): string {
-    return Arn.format(
-      {
-        service: 'rum',
-        resource: 'appmonitor',
-        resourceName: this.physicalName,
-      },
-      this.stack,
-    );;
-  }
-  /**
-   * Returns the app monitor id of this app monitor.
-   * @attribute
-   */
-  public get appMonitorId(): string {
-    if (!this.appMonitorCustomResource) {
-      this.appMonitorCustomResource = this.createAppMonitorCustomResource(
-        this.appMonitor,
-      );
-    }
-    return this.appMonitorCustomResource.getResponseField('AppMonitor.Id');
-  }
-  /**
-   * Generate the JavaScript code snippet for use this app monitor.
-   *
-   * @param option A value that can only be set by the client.
-   */
-  public generateCodeSnippet(option?: WebClientConfig): string {
-    const telemetries: webClient.TelemetryConfig[] | undefined = option?.telemetries ? [
-      option.telemetries.errors ? [
-        'errors', option.telemetries.errors,
-      ] as webClient.ErrorsTelemetryConfig : undefined,
-      option.telemetries.http ? [
-        'http', {
-          ...option.telemetries.http,
-          urlsToInclude: option.telemetries.http.urlsToInclude?.map(url => new JavaScriptRegExp(url)),
-          urlsToExclude: option.telemetries.http.urlsToExclude?.map(url => new JavaScriptRegExp(url)),
-        },
-      ] as webClient.HttpTelemetryConfig : undefined,
-      option.telemetries.performance ? [
-        'performance', option.telemetries.performance,
-      ] as webClient.PerformanceTelemetryConfig : undefined,
-      option.telemetries.interaction ? [
-        'interaction', option.telemetries.interaction,
-      ] as webClient.InteractionTelemetryConfig : undefined,
-    ].filter((config): config is webClient.TelemetryConfig => !!config) : undefined;
-
-    const config: webClient.Configuration = {
-      allowCookies: option?.allowCookies ?? this.appMonitorConfig.allowCookies,
-      cookieAttibutes: option?.cookieAttibutes,
-      disableAutoPageView: option?.disableAutoPageView,
-      enableRumClient: option?.enableRumClient,
-      enableXRay: option?.enableXRay ?? this.appMonitorConfig.enableXRay,
-      endpoint: option?.endpoint ?? `https://dataplane.rum.${this.stack.region}.amazonaws.com`,
-      guestRoleArn: option?.guestRoleArn ?? this.authorizer.guestRoleArn,
-      identityPoolId: option?.identityPoolId ?? this.authorizer.identityPoolId,
-      pageIdFormat: option?.pageIdFormat,
-      pagesToInclude: option?.pagesToInclude?.map((page) => new JavaScriptRegExp(page)) ??
-        this.appMonitorConfig.includedPages?.map((page) => new JavaScriptRegExp(new RegExp(page).toString())),
-      pagesToExclude: option?.pagesToExclude?.map((page) => new JavaScriptRegExp(page)) ??
-        this.appMonitorConfig.excludedPages?.map((page) => new JavaScriptRegExp(new RegExp(page).toString())),
-      recordResourceUrl: option?.recordResourceUrl,
-      sessionEventLimit: option?.sessionEventLimit,
-      sessionSampleRate: option?.sessionSampleRate ?? this.appMonitorConfig.sessionSampleRate,
-      telemetries: telemetries ?? this.appMonitorConfig.telemetries,
-    };
-    return (
-      '(function(n,i,v,r,s,c,x,z){' +
-      'x=window.AwsRumClient={q:[],n:n,i:i,v:v,r:r,c:c};' +
-      'window[n]=function(c,p){x.q.push({c:c,p:p});};' +
-      "z=document.createElement('script');" +
-      'z.async=true;' +
-      'z.src=s;' +
-      "document.head.insertBefore(z,document.getElementsByTagName('script')[0]);" +
-      '})(' +
-      "'cwr'," +
-      `'${this.appMonitorId}',` +
-      '\'1.0.0\',' +
-      `'${this.stack.region}',` +
-      '\'https://client.rum.us-east-1.amazonaws.com/1.0.2/cwr.js\',' +
-      `${JavaScript.stringify(config)}` +
-      ');'
-    );
   }
 
   private createIdentityPool(): CognitoIdentityPoolAuthorizerProps {
@@ -584,29 +667,5 @@ export class AppMonitor extends Resource {
       identityPoolId: identityPool.ref,
       unauthenticatedRole: unauthenticatedRole,
     };
-  }
-
-  private createAppMonitorCustomResource(appMonitor: rum.CfnAppMonitor): AwsCustomResource {
-    const awsRumSdkCall: AwsSdkCall = {
-      service: 'RUM',
-      action: 'getAppMonitor',
-      parameters: { Name: appMonitor.name },
-      physicalResourceId: PhysicalResourceId.of(this.physicalName),
-    };
-    const customResource = new AwsCustomResource(
-      this,
-      'Custom::GetAppMonitor',
-      {
-        resourceType: 'Custom::GetAppMonitor',
-        policy: AwsCustomResourcePolicy.fromSdkCalls({
-          resources: [this.appMonitorArn],
-        }),
-        installLatestAwsSdk: true,
-        onCreate: awsRumSdkCall,
-        onUpdate: awsRumSdkCall,
-      },
-    );
-    customResource.node.addDependency(appMonitor);
-    return customResource;
   }
 }

@@ -13,8 +13,7 @@ export interface IAppMonitorAuthorizer {
    */
   readonly identityPoolId?: string;
   /**
-   * Add put policy to this authorizer role.
-   * @param putPolicy policy that includes rum:PutRumEvents action.
+   * Roles used to access AWS.
    */
-  addPutPolicy(putPolicy: iam.IManagedPolicy): void
+  readonly role: iam.IRole;
 }
