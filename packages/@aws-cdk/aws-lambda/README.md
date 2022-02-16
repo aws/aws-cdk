@@ -499,7 +499,8 @@ const fn = lambda.Function.fromFunctionAttributes(this, 'Function', {
   functionArn: 'arn:aws:lambda:us-east-1:123456789012:function:MyFn',
   // The following are optional properties for specific use cases and should be used with caution:
 
-  // Use Case: imported function is in the same account as the stack.
+  // Use Case: imported function is in the same account as the stack. This tells the CDK that it
+  // can modify the function's permissions.
   sameEnvironment: true,
 
   // Use Case: imported function is in a different account and user commits to ensuring that the
