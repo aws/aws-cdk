@@ -82,7 +82,15 @@
                         {
                           "Ref": "AWS::Partition"
                         },
-                        ":logs:::*"
+                        ":logs:",
+                        {
+                          "Ref": "AWS::Region"
+                        },
+                        ":",
+                        {
+                          "Ref": "AWS::AccountId"
+                        },
+                        ":log-group:/aws/lambda/cwsyn-*"
                       ]
                     ]
                   }
@@ -269,7 +277,15 @@
                         {
                           "Ref": "AWS::Partition"
                         },
-                        ":logs:::*"
+                        ":logs:",
+                        {
+                          "Ref": "AWS::Region"
+                        },
+                        ":",
+                        {
+                          "Ref": "AWS::AccountId"
+                        },
+                        ":log-group:/aws/lambda/cwsyn-*"
                       ]
                     ]
                   }
@@ -490,7 +506,15 @@
                         {
                           "Ref": "AWS::Partition"
                         },
-                        ":logs:::*"
+                        ":logs:",
+                        {
+                          "Ref": "AWS::Region"
+                        },
+                        ":",
+                        {
+                          "Ref": "AWS::AccountId"
+                        },
+                        ":log-group:/aws/lambda/cwsyn-*"
                       ]
                     ]
                   }
@@ -711,7 +735,15 @@
                         {
                           "Ref": "AWS::Partition"
                         },
-                        ":logs:::*"
+                        ":logs:",
+                        {
+                          "Ref": "AWS::Region"
+                        },
+                        ":",
+                        {
+                          "Ref": "AWS::AccountId"
+                        },
+                        ":log-group:/aws/lambda/cwsyn-*"
                       ]
                     ]
                   }
@@ -932,7 +964,15 @@
                         {
                           "Ref": "AWS::Partition"
                         },
-                        ":logs:::*"
+                        ":logs:",
+                        {
+                          "Ref": "AWS::Region"
+                        },
+                        ":",
+                        {
+                          "Ref": "AWS::AccountId"
+                        },
+                        ":log-group:/aws/lambda/cwsyn-*"
                       ]
                     ]
                   }
