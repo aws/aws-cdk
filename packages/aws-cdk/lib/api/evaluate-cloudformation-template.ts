@@ -300,7 +300,12 @@ export class EvaluateCloudFormationTemplate {
   }
 
   private getResourceTypeArnPartOfResource(resource: AWS.CloudFormation.StackResourceSummary): string {
-    return resource.ResourceType.split('::')[2].toLowerCase();
+    const resourceType = resource.ResourceType;
+    const specialCaseResourceType = RESOURCE_TYPE_SPECIAL_NAMES[resourceType]?.resourceType;
+    return specialCaseResourceType
+      ? specialCaseResourceType
+      // this is the default case
+      : resourceType.split('::')[2].toLowerCase();
   }
 }
 
@@ -313,12 +318,31 @@ interface ArnParts {
   readonly resourceName: string;
 }
 
+/**
+ * Usually, we deduce the names of the service and the resource type used to format the ARN from the CloudFormation resource type.
+ * For a CFN type like AWS::Service::ResourceType, the second segment becomes the service name, and the third the resource type
+ * (after converting both of them to lowercase).
+ * However, some resource types break this simple convention, and we need to special-case them.
+ * This map is for storing those cases.
+ */
+const RESOURCE_TYPE_SPECIAL_NAMES: { [type: string]: { resourceType: string } } = {
+  'AWS::Events::EventBus': {
+    resourceType: 'event-bus',
+  },
+};
+
 const RESOURCE_TYPE_ATTRIBUTES_FORMATS: { [type: string]: { [attribute: string]: (parts: ArnParts) => string } } = {
   'AWS::IAM::Role': { Arn: iamArnFmt },
   'AWS::IAM::User': { Arn: iamArnFmt },
   'AWS::IAM::Group': { Arn: iamArnFmt },
   'AWS::S3::Bucket': { Arn: s3ArnFmt },
   'AWS::Lambda::Function': { Arn: stdColonResourceArnFmt },
+  'AWS::Events::EventBus': {
+    Arn: stdSlashResourceArnFmt,
+    // the name attribute of the EventBus is the same as the Ref
+    Name: parts => parts.resourceName,
+  },
+  'AWS::AppSync::GraphQLApi': { ApiId: appsyncGraphQlApiApiIdFmt },
 };
 
 function iamArnFmt(parts: ArnParts): string {
@@ -334,6 +358,16 @@ function s3ArnFmt(parts: ArnParts): string {
 function stdColonResourceArnFmt(parts: ArnParts): string {
   // this is a standard format for ARNs like: arn:aws:service:region:account:resourceType:resourceName
   return `arn:${parts.partition}:${parts.service}:${parts.region}:${parts.account}:${parts.resourceType}:${parts.resourceName}`;
+}
+
+function stdSlashResourceArnFmt(parts: ArnParts): string {
+  // this is a standard format for ARNs like: arn:aws:service:region:account:resourceType/resourceName
+  return `arn:${parts.partition}:${parts.service}:${parts.region}:${parts.account}:${parts.resourceType}/${parts.resourceName}`;
+}
+
+function appsyncGraphQlApiApiIdFmt(parts: ArnParts): string {
+  // arn:aws:appsync:us-east-1:111111111111:apis/<apiId>
+  return parts.resourceName.split('/')[1];
 }
 
 interface Intrinsic {
