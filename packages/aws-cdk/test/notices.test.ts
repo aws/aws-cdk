@@ -1,5 +1,8 @@
+import * as os from 'os';
+import * as path from 'path';
+import * as fs from 'fs-extra';
 import * as nock from 'nock';
-import { filterNotices, formatNotices, Notice, WebsiteNoticeDataSource } from '../lib/notices';
+import { CachedDataSource, filterNotices, formatNotices, Notice, WebsiteNoticeDataSource } from '../lib/notices';
 
 const BASIC_NOTICE = {
   title: 'Toggling off auto_delete_objects for Bucket empties the bucket',
@@ -112,6 +115,66 @@ describe('cli notices', () => {
         .reply(statusCode, body);
 
       return dataSource.fetch();
+    }
+  });
+
+  describe(CachedDataSource, () => {
+    const fileName = path.join(os.tmpdir(), 'cache.json');
+    const cachedData = [BASIC_NOTICE];
+    const freshData = [MULTIPLE_AFFECTED_VERSIONS_NOTICE];
+
+    beforeEach(() => {
+      fs.writeFileSync(fileName, '');
+    });
+
+    test('retrieves data from the delegate cache when the file is empty', async () => {
+      const dataSource = dataSourceWithDelegateReturning(freshData);
+
+      const notices = await dataSource.fetch();
+
+      expect(notices).toEqual(freshData);
+    });
+
+    test('retrieves data from the file when the data is still valid', async () => {
+      fs.writeJsonSync(fileName, {
+        notices: cachedData,
+        expiration: Date.now() + 10000,
+      });
+      const dataSource = dataSourceWithDelegateReturning(freshData);
+
+      const notices = await dataSource.fetch();
+
+      expect(notices).toEqual(cachedData);
+    });
+
+    test('retrieves data from the delegate when the data is expired', async () => {
+      fs.writeJsonSync(fileName, {
+        notices: cachedData,
+        expiration: 0,
+      });
+      const dataSource = dataSourceWithDelegateReturning(freshData);
+
+      const notices = await dataSource.fetch();
+
+      expect(notices).toEqual(freshData);
+    });
+
+    test('retrieves data from the delegate when the file cannot be read', async () => {
+      const nonExistingFile = path.join(os.tmpdir(), 'cache.json');
+      const dataSource = dataSourceWithDelegateReturning(freshData, nonExistingFile);
+
+      const notices = await dataSource.fetch();
+
+      expect(notices).toEqual(freshData);
+    });
+
+    function dataSourceWithDelegateReturning(notices: Notice[], file: string = fileName) {
+      const delegate = {
+        fetch: jest.fn(),
+      };
+
+      delegate.fetch.mockResolvedValue(notices);
+      return new CachedDataSource(file, delegate);
     }
   });
 });
