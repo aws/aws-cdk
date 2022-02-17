@@ -65,7 +65,7 @@ export class FileSystem {
    * will be generated and appended behind this prefix.
    */
   public static mkdtemp(prefix: string): string {
-    return fs.mkdtempSync(path.join(FileSystem.tmpdir, prefix));
+    return fs.mkdtempSync(path.join(FileSystem.tmpdir, 'aws-cdk', prefix));
   }
 
   private static _tmpdir?: string;
