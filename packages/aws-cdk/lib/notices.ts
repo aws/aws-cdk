@@ -65,8 +65,7 @@ export function filterNotices(notices: Notice[], options: FilterNoticeOptions): 
 }
 
 export function formatNotices(notices: Notice[]): string[] {
-  const formatter = new FooNoticeFormatter();
-  return notices.map(notice => formatter.apply(notice));
+  return notices.map(formatNotice);
 }
 
 export interface Component {
@@ -209,31 +208,22 @@ export class NoticeFilter {
   }
 }
 
-export interface NoticeFormatter {
-  apply(notice: Notice): string,
-}
-
-// TODO rename this
-export class FooNoticeFormatter implements NoticeFormatter {
-  apply(notice: Notice): string {
-    const componentsValue = notice.components.map(c => `${c.name}: ${c.version}`).join(', ');
-    return [
-      `${notice.issueNumber}\t${notice.title}`,
-      `\tOverview: ${notice.overview}`,
-      `\tAffected versions: ${componentsValue}`,
-      `\tMore information at: https://github.com/aws/aws-cdk/issues/${notice.issueNumber}`,
-    ].join('\n\n');
-  }
+function formatNotice(notice: Notice): string {
+  const componentsValue = notice.components.map(c => `${c.name}: ${c.version}`).join(', ');
+  return [
+    `${notice.issueNumber}\t${notice.title}`,
+    `\tOverview: ${notice.overview}`,
+    `\tAffected versions: ${componentsValue}`,
+    `\tMore information at: https://github.com/aws/aws-cdk/issues/${notice.issueNumber}`,
+  ].join('\n\n');
 }
 
 function frameworkVersion(outdir: string): string | undefined {
   const tree = loadTree().tree;
-  // v2
-  if (tree?.constructInfo?.fqn.startsWith('aws-cdk-lib')) {
+  if (tree?.constructInfo?.fqn.startsWith('aws-cdk-lib')
+    || tree?.constructInfo?.fqn.startsWith('@aws-cdk/core')) {
     return tree.constructInfo.version;
   }
-  // v1
-  // TODO
   return undefined;
 
   function loadTree() {
