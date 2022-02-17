@@ -91,7 +91,8 @@ export interface ShellStepProps {
 }
 
 /**
- * Run shell script commands in the pipeline
+ * Run shell script commands in the pipeline. This is a generic step designed
+ * to be deployment engine agnostic.
  */
 export class ShellStep extends Step {
   /**

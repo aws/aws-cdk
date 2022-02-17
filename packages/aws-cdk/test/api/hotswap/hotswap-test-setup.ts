@@ -114,6 +114,10 @@ export class HotswapMockSdkProvider {
     });
   }
 
+  public stubAppSync(stubs: SyncHandlerSubsetOf<AWS.AppSync>) {
+    this.mockSdkProvider.stubAppSync(stubs);
+  }
+
   public setInvokeLambdaMock(mockInvokeLambda: (input: lambda.InvocationRequest) => lambda.InvocationResponse) {
     this.mockSdkProvider.stubLambda({
       invoke: mockInvokeLambda,
