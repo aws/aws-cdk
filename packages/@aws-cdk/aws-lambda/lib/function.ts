@@ -610,6 +610,15 @@ export class Function extends FunctionBase {
       physicalName: props.functionName,
     });
 
+    if (props.functionName && !Token.isUnresolved(props.functionName)) {
+      if (props.functionName.length > 64) {
+        throw new Error(`Function name can not be longer than 64 characters but has ${props.functionName.length} characters.`);
+      }
+      if (!/^[a-zA-Z0-9-_]+$/.test(props.functionName)) {
+        throw new Error(`Function name ${props.functionName} can contain only letters, numbers, hyphens, or underscores with no spaces.`);
+      }
+    }
+
     const managedPolicies = new Array<iam.IManagedPolicy>();
 
     // the arn is in the form of - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
@@ -689,15 +698,6 @@ export class Function extends FunctionBase {
       throw new Error('Only one architecture must be specified.');
     }
     this._architecture = props.architecture ?? (props.architectures && props.architectures[0]);
-
-    if (props.functionName && !Token.isUnresolved(props.functionName)) {
-      if (props.functionName.length > 140) {
-        throw new Error('Function name can not be longer than 140 characters.');
-      }
-      if (!this.validateFunctionName(props.functionName)) {
-        throw new Error('Function name can contain only letters, numbers, hyphens, or underscores with no spaces.');
-      }
-    }
 
     const resource: CfnFunction = new CfnFunction(this, 'Resource', {
       functionName: this.physicalName,
@@ -1092,14 +1092,6 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
     if (props.environment && (props.environment.AWS_CODEGURU_PROFILER_GROUP_ARN || props.environment.AWS_CODEGURU_PROFILER_ENABLED)) {
       throw new Error('AWS_CODEGURU_PROFILER_GROUP_ARN and AWS_CODEGURU_PROFILER_ENABLED must not be set when profiling options enabled');
     }
-  }
-
-  /**
-   * Validate if the string contains only letters, numbers, hyphens, underscore but no spaces
-   */
-  private validateFunctionName(functionName: string) {
-    const regexp = /^[a-zA-Z0-9-_]+$/;
-    return functionName.search(regexp) !== -1;
   }
 }
 
