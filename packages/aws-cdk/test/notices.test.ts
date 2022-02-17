@@ -1,5 +1,5 @@
 import * as nock from 'nock';
-import { formatNotices, filterNotices, WebsiteNoticeDataSource } from '../lib/notices';
+import { filterNotices, formatNotices, Notice, WebsiteNoticeDataSource } from '../lib/notices';
 
 const BASIC_NOTICE = {
   title: 'Toggling off auto_delete_objects for Bucket empties the bucket',
@@ -77,49 +77,41 @@ describe('cli notices', () => {
     const dataSource = new WebsiteNoticeDataSource();
 
     test('returns data when download succeeds', async () => {
-      nock('https://cli.cdk.dev-tools.aws.dev')
-        .get('/notices.json')
-        .reply(200, {
-          notices: [BASIC_NOTICE, MULTIPLE_AFFECTED_VERSIONS_NOTICE],
-        });
-
-      const result = await dataSource.fetch();
+      const result = await mockCall(200, {
+        notices: [BASIC_NOTICE, MULTIPLE_AFFECTED_VERSIONS_NOTICE],
+      });
 
       expect(result).toEqual([BASIC_NOTICE, MULTIPLE_AFFECTED_VERSIONS_NOTICE]);
     });
 
     test('returns empty array when the server returns an unexpected status code', async () => {
-      nock('https://cli.cdk.dev-tools.aws.dev')
-        .get('/notices.json')
-        .reply(500, {
-          notices: [BASIC_NOTICE, MULTIPLE_AFFECTED_VERSIONS_NOTICE],
-        });
-
-      const result = await dataSource.fetch();
+      const result = await mockCall(500, {
+        notices: [BASIC_NOTICE, MULTIPLE_AFFECTED_VERSIONS_NOTICE],
+      });
 
       expect(result).toEqual([]);
     });
 
     test('returns empty array when the server returns an unexpected structure', async () => {
-      nock('https://cli.cdk.dev-tools.aws.dev')
-        .get('/notices.json')
-        .reply(200, {
-          foo: [BASIC_NOTICE, MULTIPLE_AFFECTED_VERSIONS_NOTICE],
-        });
-
-      const result = await dataSource.fetch();
+      const result = await mockCall(200, {
+        foo: [BASIC_NOTICE, MULTIPLE_AFFECTED_VERSIONS_NOTICE],
+      });
 
       expect(result).toEqual([]);
     });
 
     test('returns empty array when the server returns invalid json', async () => {
-      nock('https://cli.cdk.dev-tools.aws.dev')
-        .get('/notices.json')
-        .reply(200, '-09aiskjkj838');
-
-      const result = await dataSource.fetch();
+      const result = await mockCall(200, '-09aiskjkj838');
 
       expect(result).toEqual([]);
     });
+
+    function mockCall(statusCode: number, body: any): Promise<Notice[]> {
+      nock('https://cli.cdk.dev-tools.aws.dev')
+        .get('/notices.json')
+        .reply(statusCode, body);
+
+      return dataSource.fetch();
+    }
   });
 });
