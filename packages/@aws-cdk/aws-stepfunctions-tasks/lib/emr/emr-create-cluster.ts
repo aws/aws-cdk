@@ -206,7 +206,7 @@ export class EmrCreateCluster extends sfn.TaskStateBase {
       this.validateReleaseLabel(this.props.releaseLabel);
     }
 
-    if (this.props.stepConcurrencyLevel !== undefined) {
+    if (this.props.stepConcurrencyLevel !== undefined && !cdk.Token.isUnresolved(this.props.stepConcurrencyLevel)) {
       if (this.props.stepConcurrencyLevel < 1 || this.props.stepConcurrencyLevel > 256) {
         throw new Error(`Step concurrency level must be in range [1, 256], but got ${this.props.stepConcurrencyLevel}.`);
       }
