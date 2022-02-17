@@ -160,4 +160,25 @@ describe('bastion host', () => {
       },
     });
   });
+
+  test('imdsv2 is required', () => {
+    //GIVEN
+    const stack = new Stack();
+    const vpc = new Vpc(stack, 'VPC');
+
+    //WHEN
+    new BastionHostLinux(stack, 'Bastion', {
+      vpc,
+      requireImdsv2: true,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::LaunchTemplate', {
+      LaunchTemplateData: {
+        MetadataOptions: {
+          HttpTokens: 'required',
+        },
+      },
+    });
+  });
 });

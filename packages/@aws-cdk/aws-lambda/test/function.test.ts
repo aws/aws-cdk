@@ -8,6 +8,7 @@ import * as kms from '@aws-cdk/aws-kms';
 import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as signer from '@aws-cdk/aws-signer';
+import * as sns from '@aws-cdk/aws-sns';
 import * as sqs from '@aws-cdk/aws-sqs';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
@@ -684,6 +685,84 @@ describe('function', () => {
     })).toThrow(/deadLetterQueue defined but deadLetterQueueEnabled explicitly set to false/);
   });
 
+  test('default function with SNS DLQ when client provides Topic to be used as DLQ', () => {
+    const stack = new cdk.Stack();
+
+    const dlTopic = new sns.Topic(stack, 'DeadLetterTopic');
+
+    new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_10_X,
+      deadLetterTopic: dlTopic,
+    });
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          {
+            Action: 'sns:Publish',
+            Effect: 'Allow',
+            Resource: {
+              Ref: 'DeadLetterTopicC237650B',
+            },
+          },
+        ]),
+      },
+    });
+    template.hasResourceProperties('AWS::Lambda::Function', {
+      DeadLetterConfig: {
+        TargetArn: {
+          Ref: 'DeadLetterTopicC237650B',
+        },
+      },
+    });
+  });
+
+  test('error when default function with SNS DLQ when client provides Topic to be used as DLQ and deadLetterQueueEnabled set to false', () => {
+    const stack = new cdk.Stack();
+
+    const dlTopic = new sns.Topic(stack, 'DeadLetterTopic');
+
+    expect(() => new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_10_X,
+      deadLetterQueueEnabled: false,
+      deadLetterTopic: dlTopic,
+    })).toThrow(/deadLetterQueue and deadLetterTopic cannot be specified together at the same time/);
+  });
+
+  test('error when default function with SNS DLQ when client provides Topic to be used as DLQ and deadLetterQueueEnabled set to true', () => {
+    const stack = new cdk.Stack();
+
+    const dlTopic = new sns.Topic(stack, 'DeadLetterTopic');
+
+    expect(() => new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_10_X,
+      deadLetterQueueEnabled: true,
+      deadLetterTopic: dlTopic,
+    })).toThrow(/deadLetterQueue and deadLetterTopic cannot be specified together at the same time/);
+  });
+
+  test('error when both topic and queue are presented as DLQ', () => {
+    const stack = new cdk.Stack();
+
+    const dlQueue = new sqs.Queue(stack, 'DLQ');
+    const dlTopic = new sns.Topic(stack, 'DeadLetterTopic');
+
+    expect(() => new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_10_X,
+      deadLetterQueue: dlQueue,
+      deadLetterTopic: dlTopic,
+    })).toThrow(/deadLetterQueue and deadLetterTopic cannot be specified together at the same time/);
+  });
+
   test('default function with Active tracing', () => {
     const stack = new cdk.Stack();
 
@@ -845,7 +924,6 @@ describe('function', () => {
   });
 
   describe('grantInvoke', () => {
-
     test('adds iam:InvokeFunction', () => {
       // GIVEN
       const stack = new cdk.Stack();
@@ -1091,8 +1169,25 @@ describe('function', () => {
       const fn = lambda.Function.fromFunctionArn(stack, 'Function', 'arn:aws:lambda:us-east-1:123456789012:function:MyFn');
 
       // THEN
-      expect(() => { fn.grantInvoke(new iam.ServicePrincipal('elasticloadbalancing.amazonaws.com')); })
-        .toThrow(/Cannot modify permission to lambda function/);
+      expect(() => {
+        fn.grantInvoke(new iam.ServicePrincipal('elasticloadbalancing.amazonaws.com'));
+      }).toThrow(/Cannot modify permission to lambda function/);
+    });
+
+    test('on an imported function (different account & w/ skipPermissions', () => {
+      // GIVEN
+      const stack = new cdk.Stack(undefined, undefined, {
+        env: { account: '111111111111' }, // Different account
+      });
+      const fn = lambda.Function.fromFunctionAttributes(stack, 'Function', {
+        functionArn: 'arn:aws:lambda:us-east-1:123456789012:function:MyFn',
+        skipPermissions: true,
+      });
+
+      // THEN
+      expect(() => {
+        fn.grantInvoke(new iam.ServicePrincipal('elasticloadbalancing.amazonaws.com'));
+      }).not.toThrow();
     });
   });
 
@@ -1545,7 +1640,7 @@ describe('function', () => {
     expect(logGroup.logGroupArn).toBeDefined();
   });
 
-  test('dlq is returned when provided by user', () => {
+  test('dlq is returned when provided by user and is Queue', () => {
     const stack = new cdk.Stack();
 
     const dlQueue = new sqs.Queue(stack, 'DeadLetterQueue', {
@@ -1560,12 +1655,37 @@ describe('function', () => {
       deadLetterQueue: dlQueue,
     });
     const deadLetterQueue = fn.deadLetterQueue;
-    expect(deadLetterQueue?.queueArn).toBeDefined();
-    expect(deadLetterQueue?.queueName).toBeDefined();
-    expect(deadLetterQueue?.queueUrl).toBeDefined();
+    const deadLetterTopic = fn.deadLetterTopic;
+
+    expect(deadLetterTopic).toBeUndefined();
+
+    expect(deadLetterQueue).toBeDefined();
+    expect(deadLetterQueue).toBeInstanceOf(sqs.Queue);
   });
 
-  test('dlq is returned when setup by cdk', () => {
+  test('dlq is returned when provided by user and is Topic', () => {
+    const stack = new cdk.Stack();
+
+    const dlTopic = new sns.Topic(stack, 'DeadLetterQueue', {
+      topicName: 'MyLambda_DLQ',
+    });
+
+    const fn = new lambda.Function(stack, 'fn', {
+      handler: 'foo',
+      runtime: lambda.Runtime.NODEJS_10_X,
+      code: lambda.Code.fromInline('foo'),
+      deadLetterTopic: dlTopic,
+    });
+    const deadLetterQueue = fn.deadLetterQueue;
+    const deadLetterTopic = fn.deadLetterTopic;
+
+    expect(deadLetterQueue).toBeUndefined();
+
+    expect(deadLetterTopic).toBeDefined();
+    expect(deadLetterTopic).toBeInstanceOf(sns.Topic);
+  });
+
+  test('dlq is returned when setup by cdk and is Queue', () => {
     const stack = new cdk.Stack();
     const fn = new lambda.Function(stack, 'fn', {
       handler: 'foo',
@@ -1574,9 +1694,12 @@ describe('function', () => {
       deadLetterQueueEnabled: true,
     });
     const deadLetterQueue = fn.deadLetterQueue;
-    expect(deadLetterQueue?.queueArn).toBeDefined();
-    expect(deadLetterQueue?.queueName).toBeDefined();
-    expect(deadLetterQueue?.queueUrl).toBeDefined();
+    const deadLetterTopic = fn.deadLetterTopic;
+
+    expect(deadLetterTopic).toBeUndefined();
+
+    expect(deadLetterQueue).toBeDefined();
+    expect(deadLetterQueue).toBeInstanceOf(sqs.Queue);
   });
 
   test('dlq is undefined when not setup', () => {
@@ -1587,7 +1710,10 @@ describe('function', () => {
       code: lambda.Code.fromInline('foo'),
     });
     const deadLetterQueue = fn.deadLetterQueue;
+    const deadLetterTopic = fn.deadLetterTopic;
+
     expect(deadLetterQueue).toBeUndefined();
+    expect(deadLetterTopic).toBeUndefined();
   });
 
   test('one and only one child LogRetention construct will be created', () => {
