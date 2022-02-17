@@ -32,7 +32,7 @@ export class SingletonPolicy extends Construct implements iam.IGrantable {
   private statements: { [key: string]: iam.PolicyStatement } = {};
 
   private constructor(private readonly role: iam.IRole) {
-    super(role as unknown as cdk.Construct, SingletonPolicy.UUID);
+    super(role as unknown as Construct, SingletonPolicy.UUID);
     this.grantPrincipal = role;
   }
 
