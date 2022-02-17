@@ -1,10 +1,5 @@
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
-import * as cdk from '@aws-cdk/core';
-import { Construct } from 'constructs';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct as CoreConstruct } from '@aws-cdk/core';
+import { Construct, IConstruct } from 'constructs';
 
 /**
  * A Jenkins provider.
@@ -15,7 +10,7 @@ import { Construct as CoreConstruct } from '@aws-cdk/core';
  * If you want to reference an already registered provider,
  * use the {@link JenkinsProvider#fromJenkinsProviderAttributes} method.
  */
-export interface IJenkinsProvider extends cdk.IConstruct {
+export interface IJenkinsProvider extends IConstruct {
   readonly providerName: string;
   readonly serverUrl: string;
   readonly version: string;
@@ -106,7 +101,7 @@ export interface JenkinsProviderProps {
   readonly forTest?: boolean;
 }
 
-export abstract class BaseJenkinsProvider extends CoreConstruct implements IJenkinsProvider {
+export abstract class BaseJenkinsProvider extends Construct implements IJenkinsProvider {
   public abstract readonly providerName: string;
   public abstract readonly serverUrl: string;
   public readonly version: string;
