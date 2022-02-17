@@ -40,6 +40,7 @@ export function renderObject(obj: object | undefined): object | undefined {
     handleNumber: renderNumber,
     handleBoolean: renderBoolean,
     handleResolvable: renderResolvable,
+    handleNull: renderNull,
   });
 }
 
@@ -79,6 +80,10 @@ export function findReferencedPaths(obj: object | undefined): Set<string> {
       for (const p of findPathsInIntrinsicFunctions(jsonPathFromAny(x))) {
         found.add(p);
       }
+      return {};
+    },
+
+    handleNull(_key: string, _x: null) {
       return {};
     },
   });
@@ -124,6 +129,7 @@ interface FieldHandlers {
   handleNumber(key: string, x: number): {[key: string]: number | string};
   handleBoolean(key: string, x: boolean): {[key: string]: boolean};
   handleResolvable(key: string, x: IResolvable): {[key: string]: any};
+  handleNull(key: string, x: null): {[key: string]: null};
 }
 
 export function recurseObject(obj: object | undefined, handlers: FieldHandlers, visited: object[] = []): object | undefined {
@@ -150,7 +156,9 @@ export function recurseObject(obj: object | undefined, handlers: FieldHandlers, 
       Object.assign(ret, recurseArray(key, value, handlers, visited));
     } else if (typeof value === 'boolean') {
       Object.assign(ret, handlers.handleBoolean(key, value));
-    } else if (value === null || value === undefined) {
+    } else if (value === null) {
+      Object.assign(ret, handlers.handleNull(key, value));
+    } else if (value === undefined) {
       // Nothing
     } else if (typeof value === 'object') {
       if (Tokenization.isResolvable(value)) {
@@ -263,6 +271,13 @@ function renderNumber(key: string, value: number): {[key: string]: number | stri
  */
 function renderBoolean(key: string, value: boolean): {[key: string]: boolean} {
   return { [key]: value };
+}
+
+/**
+ * Render a parameter null value
+ */
+function renderNull(key: string, _value: null): {[key: string]: null} {
+  return { [key]: null };
 }
 
 /**
