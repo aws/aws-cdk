@@ -37,6 +37,10 @@ const ASSETS_ECR_REPOSITORY_NAME_OVERRIDE_CONTEXT_KEY = 'assets-ecr-repository-n
  *   mind that there is a maximum of 200 parameters in a CloudFormation template.
  *   To use determinstic asset locations instead, use `CliCredentialsStackSynthesizer`.
  *
+ * Be aware that your CLI credentials must be valid for the duration of the
+ * entire deployment. If you are using session credentials, make sure the
+ * session lifetime is long enough.
+ *
  * This is the only StackSynthesizer that supports customizing asset behavior
  * by overriding `Stack.addFileAsset()` and `Stack.addDockerImageAsset()`.
  */

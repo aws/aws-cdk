@@ -78,6 +78,10 @@ export interface CliCredentialsStackSynthesizerProps {
  * - This synthesizer requires an S3 bucket and ECR repository with well-known names. To
  *   not depend on those, use `LegacyStackSynthesizer`.
  *
+ * Be aware that your CLI credentials must be valid for the duration of the
+ * entire deployment. If you are using session credentials, make sure the
+ * session lifetime is long enough.
+ *
  * By default, expects the environment to have been bootstrapped with just the staging resources
  * of the Bootstrap Stack V2 (also known as "modern bootstrap stack"). You can override
  * the default names using the synthesizer's construction properties.
