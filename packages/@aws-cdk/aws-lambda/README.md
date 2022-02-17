@@ -480,6 +480,35 @@ fn.addEventSource(new eventsources.S3EventSource(bucket, {
 
 See the documentation for the __@aws-cdk/aws-lambda-event-sources__ module for more details.
 
+## Imported Lambdas
+
+When referencing an imported lambda in the CDK, use `fromFunctionArn()` for most use cases:
+
+```ts
+const fn = lambda.Function.fromFunctionArn(
+  this,
+  'Function',
+  'arn:aws:lambda:us-east-1:123456789012:function:MyFn',
+);
+```
+
+The `fromFunctionAttributes()` API is available for more specific use cases:
+
+```ts
+const fn = lambda.Function.fromFunctionAttributes(this, 'Function', {
+  functionArn: 'arn:aws:lambda:us-east-1:123456789012:function:MyFn',
+  // The following are optional properties for specific use cases and should be used with caution:
+
+  // Use Case: imported function is in the same account as the stack. This tells the CDK that it
+  // can modify the function's permissions.
+  sameEnvironment: true,
+
+  // Use Case: imported function is in a different account and user commits to ensuring that the
+  // imported function has the correct permissions outside the CDK.
+  skipPermissions: true,
+});
+```
+
 ## Lambda with DLQ
 
 A dead-letter queue can be automatically created for a Lambda function by

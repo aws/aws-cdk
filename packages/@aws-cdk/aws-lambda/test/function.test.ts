@@ -924,7 +924,6 @@ describe('function', () => {
   });
 
   describe('grantInvoke', () => {
-
     test('adds iam:InvokeFunction', () => {
       // GIVEN
       const stack = new cdk.Stack();
@@ -1170,8 +1169,25 @@ describe('function', () => {
       const fn = lambda.Function.fromFunctionArn(stack, 'Function', 'arn:aws:lambda:us-east-1:123456789012:function:MyFn');
 
       // THEN
-      expect(() => { fn.grantInvoke(new iam.ServicePrincipal('elasticloadbalancing.amazonaws.com')); })
-        .toThrow(/Cannot modify permission to lambda function/);
+      expect(() => {
+        fn.grantInvoke(new iam.ServicePrincipal('elasticloadbalancing.amazonaws.com'));
+      }).toThrow(/Cannot modify permission to lambda function/);
+    });
+
+    test('on an imported function (different account & w/ skipPermissions', () => {
+      // GIVEN
+      const stack = new cdk.Stack(undefined, undefined, {
+        env: { account: '111111111111' }, // Different account
+      });
+      const fn = lambda.Function.fromFunctionAttributes(stack, 'Function', {
+        functionArn: 'arn:aws:lambda:us-east-1:123456789012:function:MyFn',
+        skipPermissions: true,
+      });
+
+      // THEN
+      expect(() => {
+        fn.grantInvoke(new iam.ServicePrincipal('elasticloadbalancing.amazonaws.com'));
+      }).not.toThrow();
     });
   });
 
