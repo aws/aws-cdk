@@ -49,8 +49,6 @@ export function withSamIntegrationCdkApp<A extends TestContext & AwsContext>(blo
         await installNpmPackages(fixture, {
           '@aws-cdk/aws-iam': installationVersion,
           '@aws-cdk/aws-apigateway': installationVersion,
-          '@aws-cdk/aws-apigatewayv2': installationVersion,
-          '@aws-cdk/aws-apigatewayv2-integrations': installationVersion,
           '@aws-cdk/aws-lambda': installationVersion,
           '@aws-cdk/aws-lambda-go': installationVersion,
           '@aws-cdk/aws-lambda-nodejs': installationVersion,
@@ -62,8 +60,6 @@ export function withSamIntegrationCdkApp<A extends TestContext & AwsContext>(blo
       } else {
         await installNpmPackages(fixture, {
           'aws-cdk-lib': installationVersion,
-          '@aws-cdk/aws-apigatewayv2-alpha': installationVersion,
-          '@aws-cdk/aws-apigatewayv2-integrations-alpha': installationVersion,
           '@aws-cdk/aws-lambda-go-alpha': installationVersion,
           '@aws-cdk/aws-lambda-python-alpha': installationVersion,
           'constructs': '^10',

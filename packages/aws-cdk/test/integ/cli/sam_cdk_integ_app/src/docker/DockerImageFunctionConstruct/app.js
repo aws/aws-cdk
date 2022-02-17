@@ -11,7 +11,7 @@ exports.lambdaHandler = async(event, context) => {
         response = {
             'statusCode': 200,
             'body': JSON.stringify({
-                message: "Hello World from docker image function construct",
+                message: "Hello World",
             })
         };
     } catch (err) {
