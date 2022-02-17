@@ -9,11 +9,31 @@ import { versionNumber } from './version';
 const CACHE_FILE_PATH = path.join(cdkCacheDir(), 'notices.json');
 
 export interface DisplayNoticesProps {
+  /**
+   * The cloud assembly directory. Usually 'cdk.out'.
+   */
   readonly outdir: string;
+
+  /**
+   * Issue numbers of notices that have been acknowledged by a user
+   * of the current CDK repository. These notices will be skipped.
+   */
   readonly acknowledgedIssueNumbers: number[];
+
+  /**
+   * Setting that comes from the command-line option.
+   * For example, `cdk synth --no-notices`.
+   */
   readonly temporarilySuppressed?: boolean;
+
+  /**
+   * Setting that comes from cdk.json. For example,
+   *
+   * "context": {
+   *   "notices": false
+   * }
+   */
   readonly permanentlySuppressed?: boolean;
-  readonly cliVersion?: string;
 }
 
 export async function displayNotices(props: DisplayNoticesProps) {
@@ -60,8 +80,8 @@ export function filterNotices(notices: Notice[], options: FilterNoticeOptions): 
   const filter = new NoticeFilter({
     cliVersion: options.cliVersion ?? versionNumber(),
     frameworkVersion: options.frameworkVersion ?? frameworkVersion(options.outdir ?? 'cdk.out'),
-    temporarilySuppressed: options.temporarilySuppressed ?? false, // coming from a command line option
-    permanentlySuppressed: options.permanentlySuppressed ?? false, // coming from the cdk.json file
+    temporarilySuppressed: options.temporarilySuppressed ?? false,
+    permanentlySuppressed: options.permanentlySuppressed ?? false,
     acknowledgedIssueNumbers: options.acknowledgedIssueNumbers ?? new Set(),
   });
   return notices.filter(notice => filter.apply(notice));
@@ -206,8 +226,8 @@ export class NoticeFilter {
     if (compareToVersion === undefined) { return false; }
 
     const affectedComponent = notice.components.find(component => component.name === name);
-    const affectedVersion = affectedComponent?.version;
-    return affectedVersion != null && semver.satisfies(compareToVersion, affectedVersion);
+    const affectedRange = affectedComponent?.version;
+    return affectedRange != null && semver.satisfies(compareToVersion, affectedRange);
   }
 }
 

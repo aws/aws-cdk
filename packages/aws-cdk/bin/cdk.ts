@@ -67,6 +67,7 @@ async function parseCommandLineArguments() {
     .option('staging', { type: 'boolean', desc: 'Copy assets to the output directory (use --no-staging to disable, needed for local debugging the source files with SAM CLI)', default: true })
     .option('output', { type: 'string', alias: 'o', desc: 'Emits the synthesized cloud assembly into a directory (default: cdk.out)', requiresArg: true })
     .option('no-color', { type: 'boolean', desc: 'Removes colors and other style from console output', default: false })
+    .option('notices', { type: 'boolean', desc: 'Show relevant notices', default: true })
     .command(['list [STACKS..]', 'ls [STACKS..]'], 'Lists all stacks in the app', yargs => yargs
       .option('long', { type: 'boolean', default: false, alias: 'l', desc: 'Display environment information for each stack' }),
     )
@@ -551,6 +552,7 @@ initCommandLine()
       outdir: configuration.settings.get(['output']) ?? 'cdk.out',
       acknowledgedIssueNumbers: SHOW_ALL_NOTICES ? [] : configuration.context.get('acknowledged-issue-numbers') ?? [],
       permanentlySuppressed: SHOW_ALL_NOTICES ? false : !(configuration.context.get('notices') ?? true),
+      temporarilySuppressed: !configuration.settings.get(['notices']),
     });
   })
   .catch(err => {
