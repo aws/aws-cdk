@@ -24,7 +24,7 @@ export async function displayNotices(props: DisplayNoticesProps) {
     outdir: props.outdir,
     temporarilySuppressed: props.temporarilySuppressed,
     permanentlySuppressed: props.permanentlySuppressed,
-    acknowledgedIssueNumbers: arrayToSet(props.acknowledgedIssueNumbers),
+    acknowledgedIssueNumbers: new Set(props.acknowledgedIssueNumbers),
   }));
 
   if (individualMessages.length > 0) {
@@ -34,12 +34,6 @@ export async function displayNotices(props: DisplayNoticesProps) {
 
 function dataSourceReference(): CachedDataSource {
   return new CachedDataSource(CACHE_FILE_PATH, new WebsiteNoticeDataSource());
-}
-
-function arrayToSet(array: any[]): Set<number> {
-  const set = new Set<number>();
-  array.forEach(a => set.add(a));
-  return set;
 }
 
 function finalMessage(individualMessages: string[], exampleNumber: number): string {
@@ -94,7 +88,7 @@ export interface NoticeDataSource {
 
 export class WebsiteNoticeDataSource implements NoticeDataSource {
   fetch(): Promise<Notice[]> {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       https.get('https://cli.cdk.dev-tools.aws.dev/notices.json', res => {
         if (res.statusCode === 200) {
           res.setEncoding('utf8');
@@ -105,13 +99,20 @@ export class WebsiteNoticeDataSource implements NoticeDataSource {
           res.on('end', () => {
             try {
               const notices = JSON.parse(rawData).notices as Notice[];
-              resolve(notices);
+              resolve(notices ?? []);
             } catch (e) {
-              reject(e);
+              debug(`Failed to parse notices: ${e}`);
+              resolve([]);
             }
           });
+          res.on('error', e => {
+            debug(`Failed to fetch notices: ${e}`);
+            resolve([]);
+          });
+        } else {
+          debug(`Failed to fetch notices. Status code: ${res.statusCode}`);
+          resolve([]);
         }
-        // Otherwise, we just ignore the result and move on
       });
     });
   }
@@ -200,7 +201,7 @@ export class NoticeFilter {
    * Returns true if we should show the notice.
    */
   private applyVersion(notice: Notice, name: string, compareToVersion: string | undefined) {
-    if (compareToVersion === undefined) { return true; }
+    if (compareToVersion === undefined) { return false; }
 
     const affectedComponent = notice.components.find(component => component.name === name);
     const affectedVersion = affectedComponent?.version;
