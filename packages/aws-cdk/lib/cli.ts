@@ -74,7 +74,6 @@ async function parseCommandLineArguments() {
     .option('path-metadata', { type: 'boolean', desc: 'Include "aws:cdk:path" CloudFormation metadata for each resource (enabled by default)', default: true })
     .option('asset-metadata', { type: 'boolean', desc: 'Include "aws:asset:*" CloudFormation metadata for resources that uses assets (enabled by default)', default: true })
     .option('role-arn', { type: 'string', alias: 'r', desc: 'ARN of Role to use when invoking CloudFormation', default: undefined, requiresArg: true })
-    .option('toolkit-stack-name', { type: 'string', desc: 'The name of the CDK toolkit stack', requiresArg: true })
     .option('staging', { type: 'boolean', desc: 'Copy assets to the output directory (use --no-staging to disable, needed for local debugging the source files with SAM CLI)', default: true })
     .option('output', { type: 'string', alias: 'o', desc: 'Emits the synthesized cloud assembly into a directory (default: cdk.out)', requiresArg: true })
     .option('no-color', { type: 'boolean', desc: 'Removes colors and other style from console output', default: false })
@@ -99,6 +98,7 @@ async function parseCommandLineArguments() {
       .option('force', { alias: 'f', type: 'boolean', desc: 'Always bootstrap even if it would downgrade template version', default: false })
       .option('termination-protection', { type: 'boolean', default: undefined, desc: 'Toggle CloudFormation termination protection on the bootstrap stacks' })
       .option('show-template', { type: 'boolean', desc: 'Instead of actual bootstrapping, print the current CLI\'s bootstrapping template to stdout for customization', default: false })
+      .option('toolkit-stack-name', { type: 'string', desc: 'The name of the CDK toolkit stack to create', requiresArg: true })
       .option('template', { type: 'string', requiresArg: true, desc: 'Use the template from the given file instead of the built-in one (use --show-template to obtain an example)' }),
     )
     .command('deploy [STACKS..]', 'Deploys the stack(s) named STACKS into your AWS account', (yargs: Argv) => yargs
@@ -116,6 +116,7 @@ async function parseCommandLineArguments() {
       .option('parameters', { type: 'array', desc: 'Additional parameters passed to CloudFormation at deploy time (STACK:KEY=VALUE)', nargs: 1, requiresArg: true, default: {} })
       .option('outputs-file', { type: 'string', alias: 'O', desc: 'Path to file where stack outputs will be written as JSON', requiresArg: true })
       .option('previous-parameters', { type: 'boolean', default: true, desc: 'Use previous values for existing parameters (you must specify all parameters on every deployment if this is disabled)' })
+      .option('toolkit-stack-name', { type: 'string', desc: 'The name of the existing CDK toolkit stack (only used for app using legacy synthesis)', requiresArg: true })
       .option('progress', { type: 'string', choices: [StackActivityProgress.BAR, StackActivityProgress.EVENTS], desc: 'Display mode for stack activity events' })
       .option('rollback', {
         type: 'boolean',
@@ -162,6 +163,7 @@ async function parseCommandLineArguments() {
       .option('exclusively', { type: 'boolean', alias: 'e', desc: 'Only deploy requested stacks, don\'t include dependencies' })
       .option('change-set-name', { type: 'string', desc: 'Name of the CloudFormation change set to create' })
       .option('force', { alias: 'f', type: 'boolean', desc: 'Always deploy stack even if templates are identical', default: false })
+      .option('toolkit-stack-name', { type: 'string', desc: 'The name of the existing CDK toolkit stack (only used for app using legacy synthesis)', requiresArg: true })
       .option('progress', { type: 'string', choices: [StackActivityProgress.BAR, StackActivityProgress.EVENTS], desc: 'Display mode for stack activity events' })
       .option('rollback', {
         type: 'boolean',
@@ -560,7 +562,10 @@ function yargsNegativeAlias<T extends { [x in S | L ]: boolean | undefined }, S 
 }
 
 export function cli() {
+<<<<<<< HEAD
 
+=======
+>>>>>>> master
   initCommandLine()
     .then(value => {
       if (value == null) { return; }
@@ -579,4 +584,7 @@ export function cli() {
     });
 
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> master
