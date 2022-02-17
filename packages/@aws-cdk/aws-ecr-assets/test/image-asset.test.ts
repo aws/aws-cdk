@@ -6,7 +6,7 @@ import { describeDeprecated, testDeprecated, testFutureBehavior } from '@aws-cdk
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { App, DefaultStackSynthesizer, IgnoreMode, Lazy, LegacyStackSynthesizer, Stack, Stage } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
-import { DockerImageAsset } from '../lib';
+import { DockerImageAsset, NetworkMode } from '../lib';
 
 /* eslint-disable quote-props */
 
@@ -145,6 +145,20 @@ describe('image asset', () => {
     const assetMetadata = stack.node.metadataEntry.find(({ type }) => type === cxschema.ArtifactMetadataEntryType.ASSET);
     expect(assetMetadata && (assetMetadata.data as cxschema.ContainerImageAssetMetadataEntry).file).toEqual('Dockerfile.Custom');
 
+  });
+
+  testFutureBehavior('with networkMode', flags, App, (app) => {
+    // GIVEN
+    const stack = new Stack(app);
+    // WHEN
+    new DockerImageAsset(stack, 'Image', {
+      directory: path.join(__dirname, 'demo-image'),
+      networkMode: NetworkMode.DEFAULT,
+    });
+
+    // THEN
+    const assetMetadata = stack.node.metadataEntry.find(({ type }) => type === cxschema.ArtifactMetadataEntryType.ASSET);
+    expect(assetMetadata && (assetMetadata.data as cxschema.ContainerImageAssetMetadataEntry).networkMode).toEqual('default');
   });
 
   testFutureBehavior('asset.repository.grantPull can be used to grant a principal permissions to use the image', flags, App, (app) => {
