@@ -79,7 +79,7 @@ export function validateInteger(property: number | undefined, messagePrefix: str
 }
 
 export function validateDouble(property: number | undefined, messagePrefix: string) {
-  if (property && !isNaN(property) && !isNaN(parseFloat(property.toString()))) {
+  if (property && isNaN(property) && isNaN(parseFloat(property.toString()))) {
     throw new Error(`${messagePrefix} should be an double`);
   }
 }
