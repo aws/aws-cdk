@@ -1,8 +1,8 @@
 // Fixture with cluster already created
-import { Construct } from 'constructs';
 import { SecretValue, Stack } from '@aws-cdk/core';
 import { Vpc } from '@aws-cdk/aws-ec2';
 import { Cluster, Table, TableAction, TableDistStyle, TableSortStyle, User } from '@aws-cdk/aws-redshift';
+import { Construct } from 'constructs';
 
 class Fixture extends Stack {
   constructor(scope: Construct, id: string) {
