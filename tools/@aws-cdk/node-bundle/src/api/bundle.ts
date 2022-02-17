@@ -2,7 +2,7 @@ import * as os from 'os';
 import * as path from 'path';
 import * as esbuild from 'esbuild';
 import * as fs from 'fs-extra';
-import { Notice } from './_notice';
+import { Attributions } from './_attributions';
 import { shell } from './_shell';
 import { Violation, ViolationType, ViolationsReport } from './violation';
 
@@ -17,24 +17,19 @@ export interface BundleProps {
   readonly packageDir: string;
 
   /**
-   * Copyright string used when generating the NOTICE file.
-   */
-  readonly copyright: string;
-
-  /**
-   * List of entrypoints to bundle.
+   * List of entry-points to bundle.
    *
    * @default - the 'main' file as specified in package.json.
    */
-  readonly entrypoints?: string[];
+  readonly entryPoints?: string[];
 
   /**
-   * Path to the notice file that will be created / validated.
+   * Path to attributions file that will be created / validated.
    * This path is relative to the package directory.
    *
-   * @default 'NOTICE'
+   * @default 'THIRD_PARTY_LICENSES'
    */
-  readonly noticePath?: string;
+  readonly attributionsFile?: string;
 
   /**
    * External packages that cannot be bundled.
@@ -74,11 +69,11 @@ export interface BundleProps {
 }
 
 /**
- * Optiosn for `Bundle.pack`.
+ * Options for `Bundle.pack`.
  */
 export interface BundlePackOptions {
   /**
-   * The target directory to create the pacakge in.
+   * The target directory to create the package in.
    *
    * @default - the package directory.
    */
@@ -121,8 +116,7 @@ export class Bundle {
   private readonly noticePath: string;
 
   private readonly packageDir: string;
-  private readonly copyright: string;
-  private readonly entrypoints: Record<string, string>;
+  private readonly entryPoints: Record<string, string>;
   private readonly externals: string[];
   private readonly resources: {[src: string]: string};
   private readonly validLicenses?: string[];
@@ -133,21 +127,20 @@ export class Bundle {
   private _dependencies?: Package[];
   private _dependenciesRoot?: string;
 
-  private _notice?: Notice;
+  private _attributions?: Attributions;
 
   constructor(props: BundleProps) {
     this.packageDir = props.packageDir;
-    this.noticePath = props.noticePath ?? 'NOTICE';
+    this.noticePath = props.attributionsFile ?? 'THIRD_PARTY_LICENSES';
     this.manifest = fs.readJsonSync(path.join(this.packageDir, 'package.json'));
     this.externals = props.externals ?? [];
     this.resources = props.resources ?? {};
     this.test = props.test;
     this.validLicenses = props.licenses;
-    this.copyright = props.copyright;
     this.dontAttribute = props.dontAttribute;
-    this.entrypoints = {};
+    this.entryPoints = {};
 
-    const entryPoints = props.entrypoints ?? (this.manifest.main ? [this.manifest.main] : []);
+    const entryPoints = props.entryPoints ?? (this.manifest.main ? [this.manifest.main] : []);
 
     if (entryPoints.length === 0) {
       throw new Error('Must configure at least 1 entrypoint');
@@ -157,7 +150,7 @@ export class Bundle {
       if (!fs.existsSync(path.join(this.packageDir, entrypoint))) {
         throw new Error(`Unable to locate entrypoint: ${entrypoint}`);
       }
-      this.entrypoints[entrypoint.replace('.js', '')] = entrypoint;
+      this.entryPoints[entrypoint.replace('.js', '')] = entrypoint;
     }
   }
 
@@ -168,7 +161,7 @@ export class Bundle {
    * violations after the fixes were applied.
    *
    * This method never throws. The Caller is responsible for inspecting the
-   * returned report and act accordinagly.
+   * returned report and act accordingly.
    */
   public validate(options: BundleValidateOptions = {}): ViolationsReport {
 
@@ -177,9 +170,9 @@ export class Bundle {
     // first validate
     const circularImports = this.validateCircularImports();
     const resources = this.validateResources();
-    const notice = this.validateNotice();
+    const attributions = this.validateAttributions();
 
-    const report = new ViolationsReport([...circularImports, ...resources, ...notice]);
+    const report = new ViolationsReport([...circularImports, ...resources, ...attributions]);
 
     if (!fix) {
       return report;
@@ -298,19 +291,19 @@ export class Bundle {
     return this._dependenciesRoot;
   }
 
-  private get notice(): Notice {
-    if (this._notice == null) {
-      this._notice = new Notice({
+  private get attributions(): Attributions {
+    if (this._attributions == null) {
+      this._attributions = new Attributions({
         packageDir: this.packageDir,
+        packageName: this.manifest.name,
         filePath: this.noticePath,
         dependencies: this.dependencies,
         dependenciesRoot: this.dependenciesRoot,
         exclude: this.dontAttribute,
         validLicenses: this.validLicenses,
-        copyright: this.copyright,
       });
     }
-    return this._notice;
+    return this._attributions;
   }
 
   private findExternalDependencyVersion(name: string): string {
@@ -368,7 +361,7 @@ export class Bundle {
   private esbuild(): esbuild.BuildResult {
 
     const bundle = esbuild.buildSync({
-      entryPoints: this.entrypoints,
+      entryPoints: this.entryPoints,
       bundle: true,
       target: 'node12',
       platform: 'node',
@@ -425,9 +418,9 @@ export class Bundle {
     return violations;
   }
 
-  private validateNotice(): Violation[] {
-    console.log('Validating notice');
-    return this.notice.validate().violations;
+  private validateAttributions(): Violation[] {
+    console.log('Validating attributions');
+    return this.attributions.validate().violations;
   }
 
   private addExternals(manifest: any) {
