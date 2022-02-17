@@ -1,4 +1,4 @@
-import { promises as fs } from 'fs';
+import { promises as fs, existsSync } from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 import { retry, sleep } from '../helpers/aws';
@@ -778,7 +778,6 @@ integTest('CDK synth add the metadata properties expected by sam', withSamIntegr
       cdkId: 'LayerVersion',
       isBundled: false,
       property: 'Content',
-      buildMethod: 'python3.7',
     },
     {
       // Bundled layer version
@@ -837,13 +836,6 @@ integTest('CDK synth add the metadata properties expected by sam', withSamIntegr
       property: 'Code.ImageUri',
     },
     {
-      // Function with docker image asset
-      id: 'FunctionImageAsset68AA1754',
-      cdkId: 'FunctionImageAsset',
-      dockerFilePath: 'Dockerfile',
-      property: 'Code.ImageUri',
-    },
-    {
       // Spec Rest Api
       id: 'SpecRestAPI7D4B3A34',
       cdkId: 'SpecRestAPI',
@@ -852,6 +844,7 @@ integTest('CDK synth add the metadata properties expected by sam', withSamIntegr
   ];
 
   for (const resource of expectedResources) {
+    fixture.output.write(`validate assets metadata for resource ${resource}`);
     expect(resource.id in template.Resources).toBeTruthy();
     expect(template.Resources[resource.id]).toEqual(expect.objectContaining({
       Metadata: {
@@ -860,12 +853,12 @@ integTest('CDK synth add the metadata properties expected by sam', withSamIntegr
         'aws:asset:is-bundled': resource.isBundled,
         'aws:asset:dockerfile-path': resource.dockerFilePath,
         'aws:asset:property': resource.property,
-        'BuildMethod': resource.buildMethod,
       },
     }));
   }
 
   // Nested Stack
+  fixture.output.write('validate assets metadata for nested stack resource');
   expect('NestedStackNestedStackNestedStackNestedStackResourceB70834FD' in template.Resources).toBeTruthy();
   expect(template.Resources.NestedStackNestedStackNestedStackNestedStackResourceB70834FD).toEqual(expect.objectContaining({
     Metadata: {
@@ -876,54 +869,109 @@ integTest('CDK synth add the metadata properties expected by sam', withSamIntegr
   }));
 }));
 
+integTest('CDK synth bundled functions as expected', withSamIntegrationFixture(async (fixture) => {
+  // Synth first
+  await fixture.cdkSynth();
+
+  const template = fixture.template('TestStack');
+
+  const expectedBundledAssets = [
+    {
+      // Python Layer Version
+      id: 'PythonLayerVersion39495CEF',
+      files: [
+        'python/layer_version_dependency.py',
+        'python/geonamescache/__init__.py',
+        'python/geonamescache-1.3.0.dist-info',
+      ],
+    },
+    {
+      // Layer Version
+      id: 'LayerVersion3878DA3A',
+      files: [
+        'layer_version_dependency.py',
+        'requirements.txt',
+      ],
+    },
+    {
+      // Bundled layer version
+      id: 'BundledLayerVersionPythonRuntime6BADBD6E',
+      files: [
+        'python/layer_version_dependency.py',
+        'python/geonamescache/__init__.py',
+        'python/geonamescache-1.3.0.dist-info',
+      ],
+    },
+    {
+      // Python Function
+      id: 'PythonFunction0BCF77FD',
+      files: [
+        'app.py',
+        'geonamescache/__init__.py',
+        'geonamescache-1.3.0.dist-info',
+      ],
+    },
+    {
+      // Function
+      id: 'FunctionPythonRuntime28CBDA05',
+      files: [
+        'app.py',
+        'requirements.txt',
+      ],
+    },
+    {
+      // Bundled Function
+      id: 'BundledFunctionPythonRuntime4D9A0918',
+      files: [
+        'app.py',
+        'geonamescache/__init__.py',
+        'geonamescache-1.3.0.dist-info',
+      ],
+    },
+    {
+      // NodeJs Function
+      id: 'NodejsFunction09C1F20F',
+      files: [
+        'index.js',
+      ],
+    },
+    {
+      // Go Function
+      id: 'GoFunctionCA95FBAA',
+      files: [
+        'bootstrap',
+      ],
+    },
+    {
+      // Docker Image Function
+      id: 'DockerImageFunction28B773E6',
+      files: [
+        'app.js',
+        'Dockerfile',
+        'package.json',
+      ],
+    },
+  ];
+
+  for (const resource of expectedBundledAssets) {
+    const assetPath = template.Resources[resource.id].Metadata['aws:asset:path'];
+    for (const file of resource.files) {
+      fixture.output.write(`validate Path ${file} for resource ${resource}`);
+      expect(existsSync(path.join(fixture.integTestDir, 'cdk.out', assetPath, file))).toBeTruthy();
+    }
+  }
+}));
+
 integTest('sam can locally test the synthesized cdk application', withSamIntegrationFixture(async (fixture) => {
   // Synth first
   await fixture.cdkSynth();
 
-  await fixture.samBuild('TestStack');
-
-  const apisResponses = [
-    {
-      apiPath: '/httpapis/nestedPythonFunction',
-      expectedMessage: 'Hello World from Nested Python Function Construct 7',
-    },
-    {
-      apiPath: '/restapis/spec/pythonFunction',
-      expectedMessage: 'Hello World from python function construct 7',
-    },
-    {
-      apiPath: '/restapis/normal/functionPythonRuntime',
-      expectedMessage: 'Hello World from function construct with python runtime 7',
-    },
-    {
-      apiPath: '/restapis/normal/bundledFunctionPythonRuntime',
-      expectedMessage: 'Hello World from bundled function construct with python runtime 7',
-    },
-    {
-      apiPath: '/restapis/normal/nodejsFunction',
-      expectedMessage: 'Hello World from nodejs function construct 7',
-    },
-    {
-      apiPath: '/restapis/normal/goFunction',
-      expectedMessage: 'Hello World from go function construct',
-    },
-    {
-      apiPath: '/restapis/normal/dockerImageFunction',
-      expectedMessage: 'Hello World from docker image function construct',
-    },
-    {
-      apiPath: '/restapis/normal/functionImageAsset',
-      expectedMessage: 'Hello World from function construct with image asset',
-    },
-  ];
-
-  for (const api of apisResponses) {
-    const result = await fixture.samLocalStartApi('TestStack', true, randomInteger(30000, 40000), api.apiPath);
-    expect(result.actionSucceeded).toBeTruthy();
-    expect(result.actionOutput).toEqual(expect.objectContaining({
-      message: api.expectedMessage,
-    }));
-  }
+  const result = await fixture.samLocalStartApi(
+    'TestStack', false, randomInteger(30000, 40000), '/restapis/spec/pythonFunction');
+  expect(result.actionSucceeded).toBeTruthy();
+  expect(result.actionOutput).toEqual(expect.objectContaining({
+    message: 'Hello World',
+  }));
 
 }));
 
