@@ -37,7 +37,7 @@ export class SqsDestination implements s3.IBucketNotificationDestination {
       if (this.queue.encryptionMasterKey instanceof kms.Key) {
         this.queue.encryptionMasterKey.addToResourcePolicy(statement, /* allowNoOp */ false);
       } else {
-        Annotations.of(this.queue.encryptionMasterKey).addWarning(`Can not change key policy of imported kms key. Ensure hat your key policy contains the following permissions: \n${JSON.stringify(statement.toJSON(), null, 2)}`);
+        Annotations.of(this.queue.encryptionMasterKey).addWarning(`Can not change key policy of imported kms key. Ensure that your key policy contains the following permissions: \n${JSON.stringify(statement.toJSON(), null, 2)}`);
       }
     }
 
