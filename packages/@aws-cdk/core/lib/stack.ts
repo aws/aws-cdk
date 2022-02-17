@@ -768,7 +768,7 @@ export class Stack extends CoreConstruct implements ITaggable {
    * Synthesizes the cloudformation template into a cloud assembly.
    * @internal
    */
-  public _synthesizeTemplate(session: ISynthesisSession, lookupRoleArn?: string): string {
+  public _synthesizeTemplate(session: ISynthesisSession, lookupRoleArn?: string): void {
     // In principle, stack synthesis is delegated to the
     // StackSynthesis object.
     //
@@ -801,8 +801,6 @@ export class Stack extends CoreConstruct implements ITaggable {
         builder.addMissing(ctx);
       }
     }
-
-    return outPath;
   }
 
   /**

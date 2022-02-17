@@ -377,8 +377,8 @@ export class DefaultStackSynthesizer extends StackSynthesizer {
     });
   }
 
-  protected synthesizeStackTemplate(stack: Stack, session: ISynthesisSession): string {
-    return stack._synthesizeTemplate(session, this.lookupRoleArn);
+  protected synthesizeStackTemplate(stack: Stack, session: ISynthesisSession) {
+    stack._synthesizeTemplate(session, this.lookupRoleArn);
   }
 
   /**
