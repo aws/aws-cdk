@@ -61,7 +61,7 @@ function dataSourceReference(): CachedDataSource {
 
 function finalMessage(individualMessages: string[], exampleNumber: number): string {
   return [
-    'NOTICES',
+    '\nNOTICES',
     ...individualMessages,
     `If you don’t want to see a notice anymore, use "cdk acknowledge <id>". For example, "cdk acknowledge ${exampleNumber}".`,
   ].join('\n\n');
