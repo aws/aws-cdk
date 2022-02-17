@@ -19,6 +19,7 @@ import { realHandler as doctor } from '../lib/commands/doctor';
 import { RequireApproval } from '../lib/diff';
 import { availableInitLanguages, cliInit, printAvailableTemplates } from '../lib/init';
 import { data, debug, error, print, setLogLevel } from '../lib/logging';
+import { displayNotices } from '../lib/notices';
 import { PluginHost } from '../lib/plugin';
 import { serializeStructure } from '../lib/serialize';
 import { Command, Configuration, Settings } from '../lib/settings';
@@ -71,6 +72,7 @@ async function parseCommandLineArguments() {
     .option('role-arn', { type: 'string', alias: 'r', desc: 'ARN of Role to use when invoking CloudFormation', default: undefined, requiresArg: true })
     .option('staging', { type: 'boolean', desc: 'Copy assets to the output directory (use --no-staging to disable, needed for local debugging the source files with SAM CLI)', default: true })
     .option('output', { type: 'string', alias: 'o', desc: 'Emits the synthesized cloud assembly into a directory (default: cdk.out)', requiresArg: true })
+    .option('notices', { type: 'boolean', desc: 'Show relevant notices', default: true })
     .option('no-color', { type: 'boolean', desc: 'Removes colors and other style from console output', default: false })
     .command(['list [STACKS..]', 'ls [STACKS..]'], 'Lists all stacks in the app', yargs => yargs
       .option('long', { type: 'boolean', default: false, alias: 'l', desc: 'Display environment information for each stack' }),
@@ -193,6 +195,8 @@ async function parseCommandLineArguments() {
       .option('security-only', { type: 'boolean', desc: 'Only diff for broadened security changes', default: false })
       .option('fail', { type: 'boolean', desc: 'Fail with exit code 1 in case of diff', default: false }))
     .command('metadata [STACK]', 'Returns all metadata associated with this stack')
+    .command('acknowledge [ID]', 'Acknowledge a notice so that it does not show up anymore')
+    .command('notices', 'Returns a list of relevant notices')
     .command('init [TEMPLATE]', 'Create a new, empty CDK project from a template.', yargs => yargs
       .option('language', { type: 'string', alias: 'l', desc: 'The language to be used for the new project (default can be configured in ~/.cdk.json)', choices: initTemplateLanguages })
       .option('list', { type: 'boolean', desc: 'List the available templates' })
@@ -226,7 +230,7 @@ if (!process.stdout.isTTY) {
   process.env.FORCE_COLOR = '0';
 }
 
-async function initCommandLine() {
+async function initCommandLine(): Promise<{ configuration: Configuration, value: any }> {
   const argv = await parseCommandLineArguments();
   if (argv.verbose) {
     setLogLevel(argv.verbose);
@@ -315,11 +319,20 @@ async function initCommandLine() {
     }
 
     if (typeof returnValue === 'object') {
-      return toJsonOrYaml(returnValue);
+      return {
+        value: toJsonOrYaml(returnValue),
+        configuration,
+      };
     } else if (typeof returnValue === 'string') {
-      return returnValue;
+      return {
+        value: returnValue,
+        configuration,
+      };
     } else {
-      return returnValue;
+      return {
+        value: returnValue,
+        configuration,
+      };
     }
   } finally {
     await version.displayVersionMessage();
@@ -463,9 +476,15 @@ async function initCommandLine() {
           return cli.synth(args.STACKS, true, args.quiet, args.validation);
         }
 
-
       case 'metadata':
         return cli.metadata(args.STACK);
+
+      case 'acknowledge':
+        return cli.acknowledge(args.ID);
+
+      case 'notices':
+        SHOW_ALL_NOTICES = true;
+        return;
 
       case 'init':
         const language = configuration.settings.get(['language']);
@@ -556,15 +575,21 @@ function yargsNegativeAlias<T extends { [x in S | L ]: boolean | undefined }, S 
   };
 }
 
+let SHOW_ALL_NOTICES = false;
 export function cli() {
   initCommandLine()
-    .then(value => {
-      if (value == null) { return; }
+    .then(async ({ value, configuration }) => {
       if (typeof value === 'string') {
         data(value);
       } else if (typeof value === 'number') {
         process.exitCode = value;
       }
+      await displayNotices({
+        outdir: configuration.settings.get(['output']) ?? 'cdk.out',
+        acknowledgedIssueNumbers: SHOW_ALL_NOTICES ? [] : configuration.context.get('acknowledged-issue-numbers') ?? [],
+        permanentlySuppressed: SHOW_ALL_NOTICES ? false : !(configuration.context.get('notices') ?? true),
+        temporarilySuppressed: !configuration.settings.get(['notices']),
+      });
     })
     .catch(err => {
       error(err.message);
