@@ -12,7 +12,7 @@ import { DatabaseSecret } from './database-secret';
 import { Endpoint } from './endpoint';
 import { IInstanceEngine } from './instance-engine';
 import { IOptionGroup } from './option-group';
-import { IParameterGroup } from './parameter-group';
+import { IParameterGroup, ParameterGroup } from './parameter-group';
 import { DEFAULT_PASSWORD_EXCLUDE_CHARS, defaultDeletionProtection, engineDescription, renderCredentials, setupS3ImportExport, helperRemovalPolicy, renderUnless } from './private/util';
 import { Credentials, PerformanceInsightRetention, RotationMultiUserOptions, RotationSingleUserOptions, SnapshotCredentials } from './props';
 import { DatabaseProxy, DatabaseProxyOptions, ProxyTarget } from './proxy';
@@ -358,6 +358,13 @@ export interface DatabaseInstanceNewProps {
    * @default - the default port for the chosen engine.
    */
   readonly port?: number;
+
+  /**
+   * The DB parameter group to associate with the instance.
+   *
+   * @default - no parameter group
+   */
+  readonly parameterGroup?: IParameterGroup;
 
   /**
    * The option group to associate with the instance.
@@ -709,6 +716,7 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
       ? props.instanceIdentifier?.toLowerCase()
       : props.instanceIdentifier;
 
+    const instanceParameterGroupConfig = props.parameterGroup?.bindToInstance({});
     this.newCfnProps = {
       autoMinorVersionUpgrade: props.autoMinorVersionUpgrade,
       availabilityZone: props.multiAz ? undefined : props.availabilityZone,
@@ -732,12 +740,13 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
       monitoringInterval: props.monitoringInterval?.toSeconds(),
       monitoringRoleArn: monitoringRole?.roleArn,
       multiAz: props.multiAz,
+      dbParameterGroupName: instanceParameterGroupConfig?.parameterGroupName,
       optionGroupName: props.optionGroup?.optionGroupName,
       performanceInsightsKmsKeyId: props.performanceInsightEncryptionKey?.keyArn,
       performanceInsightsRetentionPeriod: enablePerformanceInsights
         ? (props.performanceInsightRetention || PerformanceInsightRetention.DEFAULT)
         : undefined,
-      port: props.port?.toString(),
+      port: props.port !== undefined ? Tokenization.stringifyNumber(props.port) : undefined,
       preferredBackupWindow: props.preferredBackupWindow,
       preferredMaintenanceWindow: props.preferredMaintenanceWindow,
       processorFeatures: props.processorFeatures && renderProcessorFeatures(props.processorFeatures),
@@ -815,11 +824,14 @@ export interface DatabaseInstanceSourceProps extends DatabaseInstanceNewProps {
   readonly databaseName?: string;
 
   /**
-   * The DB parameter group to associate with the instance.
+   * The parameters in the DBParameterGroup to create automatically
    *
-   * @default - no parameter group
+   * You can only specify parameterGroup or parameters but not both.
+   * You need to use a versioned engine to auto-generate a DBParameterGroup.
+   *
+   * @default - None
    */
-  readonly parameterGroup?: IParameterGroup;
+  readonly parameters?: { [key: string]: string };
 }
 
 /**
@@ -875,7 +887,17 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
 
     this.instanceType = props.instanceType ?? ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.LARGE);
 
-    const instanceParameterGroupConfig = props.parameterGroup?.bindToInstance({});
+    if (props.parameterGroup && props.parameters) {
+      throw new Error('You cannot specify both parameterGroup and parameters');
+    }
+
+    const dbParameterGroupName = props.parameters
+      ? new ParameterGroup(this, 'ParameterGroup', {
+        engine: props.engine,
+        parameters: props.parameters,
+      }).bindToInstance({}).parameterGroupName
+      : this.newCfnProps.dbParameterGroupName;
+
     this.sourceCfnProps = {
       ...this.newCfnProps,
       associatedRoles: instanceAssociatedRoles.length > 0 ? instanceAssociatedRoles : undefined,
@@ -883,11 +905,11 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
       allocatedStorage: props.allocatedStorage?.toString() ?? '100',
       allowMajorVersionUpgrade: props.allowMajorVersionUpgrade,
       dbName: props.databaseName,
-      dbParameterGroupName: instanceParameterGroupConfig?.parameterGroupName,
       engine: engineType,
       engineVersion: props.engine.engineVersion?.fullVersion,
       licenseModel: props.licenseModel,
       timezone: props.timezone,
+      dbParameterGroupName,
     };
   }
 

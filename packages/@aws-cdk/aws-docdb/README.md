@@ -18,17 +18,18 @@ always launch a database in a VPC. Use the `vpcSubnets` attribute to control whe
 your instances will be launched privately or publicly:
 
 ```ts
-const cluster = new DatabaseCluster(this, 'Database', {
-    masterUser: {
-        username: 'myuser' // NOTE: 'admin' is reserved by DocumentDB
-        excludeCharacters: '\"@/:', // optional, defaults to the set "\"@/" and is also used for eventually created rotations
-        secretName: '/myapp/mydocdb/masteruser', // optional, if you prefer to specify the secret name
-    },
-    instanceType: ec2.InstanceType.of(ec2.InstanceClass.R5, ec2.InstanceSize.LARGE),
-    vpcSubnets: {
-        subnetType: ec2.SubnetType.PUBLIC,
-    },
-    vpc
+declare const vpc: ec2.Vpc;
+const cluster = new docdb.DatabaseCluster(this, 'Database', {
+  masterUser: {
+    username: 'myuser', // NOTE: 'admin' is reserved by DocumentDB
+    excludeCharacters: '\"@/:', // optional, defaults to the set "\"@/" and is also used for eventually created rotations
+    secretName: '/myapp/mydocdb/masteruser', // optional, if you prefer to specify the secret name
+  },
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.R5, ec2.InstanceSize.LARGE),
+  vpcSubnets: {
+    subnetType: ec2.SubnetType.PUBLIC,
+  },
+  vpc,
 });
 ```
 
@@ -42,6 +43,7 @@ To control who can access the cluster, use the `.connections` attribute. Documen
 you don't need to specify the port:
 
 ```ts
+declare const cluster: docdb.DatabaseCluster;
 cluster.connections.allowDefaultPortFromAnyIpv4('Open to the world');
 ```
 
@@ -49,6 +51,7 @@ The endpoints to access your database cluster will be available as the `.cluster
 attributes:
 
 ```ts
+declare const cluster: docdb.DatabaseCluster;
 const writeAddress = cluster.clusterEndpoint.socketAddress;   // "HOSTNAME:PORT"
 ```
 
@@ -56,7 +59,10 @@ If you have existing security groups you would like to add to the cluster, use t
 groups added in this way will not be managed by the `Connections` object of the cluster.
 
 ```ts
-const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', {
+declare const vpc: ec2.Vpc;
+declare const cluster: docdb.DatabaseCluster;
+
+const securityGroup = new ec2.SecurityGroup(this, 'SecurityGroup', {
   vpc,
 });
 cluster.addSecurityGroups(securityGroup);
@@ -67,16 +73,17 @@ cluster.addSecurityGroups(securityGroup);
 Deletion protection can be enabled on an Amazon DocumentDB cluster to prevent accidental deletion of the cluster:
 
 ```ts
-const cluster = new DatabaseCluster(this, 'Database', {
-    masterUser: {
-        username: 'myuser'
-    },
-    instanceType: ec2.InstanceType.of(ec2.InstanceClass.R5, ec2.InstanceSize.LARGE),
-    vpcSubnets: {
-        subnetType: ec2.SubnetType.PUBLIC,
-    },
-    vpc,
-    deletionProtection: true  // Enable deletion protection.
+declare const vpc: ec2.Vpc;
+const cluster = new docdb.DatabaseCluster(this, 'Database', {
+  masterUser: {
+    username: 'myuser',
+  },
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.R5, ec2.InstanceSize.LARGE),
+  vpcSubnets: {
+    subnetType: ec2.SubnetType.PUBLIC,
+  },
+  vpc,
+  deletionProtection: true, // Enable deletion protection.
 });
 ```
 
@@ -85,6 +92,7 @@ const cluster = new DatabaseCluster(this, 'Database', {
 When the master password is generated and stored in AWS Secrets Manager, it can be rotated automatically:
 
 ```ts
+declare const cluster: docdb.DatabaseCluster;
 cluster.addRotationSingleUser(); // Will rotate automatically after 30 days
 ```
 
@@ -93,22 +101,28 @@ cluster.addRotationSingleUser(); // Will rotate automatically after 30 days
 The multi user rotation scheme is also available:
 
 ```ts
+import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
+
+declare const myImportedSecret: secretsmanager.Secret;
+declare const cluster: docdb.DatabaseCluster;
+
 cluster.addRotationMultiUser('MyUser', {
-  secret: myImportedSecret // This secret must have the `masterarn` key
+  secret: myImportedSecret, // This secret must have the `masterarn` key
 });
 ```
 
 It's also possible to create user credentials together with the cluster and add rotation:
 
 ```ts
+declare const cluster: docdb.DatabaseCluster;
 const myUserSecret = new docdb.DatabaseSecret(this, 'MyUserSecret', {
   username: 'myuser',
-  masterSecret: cluster.secret
+  masterSecret: cluster.secret,
 });
 const myUserSecretAttached = myUserSecret.attach(cluster); // Adds DB connections information in the secret
 
 cluster.addRotationMultiUser('MyUser', { // Add rotation using the multi user scheme
-  secret: myUserSecretAttached // This secret must have the `masterarn` key
+  secret: myUserSecretAttached, // This secret must have the `masterarn` key
 });
 ```
 
@@ -126,9 +140,24 @@ Sending audit or profiler needs to be configured in two places:
 2. Enable the corresponding option(s) when creating the `DatabaseCluster`:
 
 ```ts
-const cluster = new DatabaseCluster(this, 'Database', {
-  ...,
+import * as iam from '@aws-cdk/aws-iam';
+import * as logs from'@aws-cdk/aws-logs';
+
+declare const myLogsPublishingRole: iam.Role;
+declare const vpc: ec2.Vpc;
+
+const cluster = new docdb.DatabaseCluster(this, 'Database', {
+  masterUser: {
+    username: 'myuser',
+  },
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.R5, ec2.InstanceSize.LARGE),
+  vpcSubnets: {
+    subnetType: ec2.SubnetType.PUBLIC,
+  },
+  vpc,
   exportProfilerLogsToCloudWatch: true, // Enable sending profiler logs
   exportAuditLogsToCloudWatch: true, // Enable sending audit logs
+  cloudWatchLogsRetention: logs.RetentionDays.THREE_MONTHS, // Optional - default is to never expire logs
+  cloudWatchLogsRetentionRole: myLogsPublishingRole, // Optional - a role will be created if not provided
 });
 ```

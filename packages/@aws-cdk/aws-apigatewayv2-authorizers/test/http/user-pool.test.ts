@@ -11,11 +11,7 @@ describe('HttpUserPoolAuthorizer', () => {
     const stack = new Stack();
     const api = new HttpApi(stack, 'HttpApi');
     const userPool = new UserPool(stack, 'UserPool');
-    const userPoolClient = userPool.addClient('UserPoolClient');
-    const authorizer = new HttpUserPoolAuthorizer({
-      userPool,
-      userPoolClients: [userPoolClient],
-    });
+    const authorizer = new HttpUserPoolAuthorizer('BooksAuthorizer', userPool);
 
     // WHEN
     api.addRoutes({
@@ -29,7 +25,7 @@ describe('HttpUserPoolAuthorizer', () => {
       AuthorizerType: 'JWT',
       IdentitySource: ['$request.header.Authorization'],
       JwtConfiguration: {
-        Audience: [stack.resolve(userPoolClient.userPoolClientId)],
+        Audience: [{ Ref: 'UserPoolUserPoolAuthorizerClient680A88B6' }],
         Issuer: {
           'Fn::Join': [
             '',
@@ -42,6 +38,7 @@ describe('HttpUserPoolAuthorizer', () => {
           ],
         },
       },
+      Name: 'BooksAuthorizer',
     });
   });
 
@@ -50,11 +47,7 @@ describe('HttpUserPoolAuthorizer', () => {
     const stack = new Stack();
     const api = new HttpApi(stack, 'HttpApi');
     const userPool = new UserPool(stack, 'UserPool');
-    const userPoolClient = userPool.addClient('UserPoolClient');
-    const authorizer = new HttpUserPoolAuthorizer({
-      userPool,
-      userPoolClients: [userPoolClient],
-    });
+    const authorizer = new HttpUserPoolAuthorizer('UserPoolAuthorizer', userPool);
 
     // WHEN
     api.addRoutes({
@@ -79,8 +72,7 @@ describe('HttpUserPoolAuthorizer', () => {
     const userPool = new UserPool(stack, 'UserPool');
     const userPoolClient1 = userPool.addClient('UserPoolClient1');
     const userPoolClient2 = userPool.addClient('UserPoolClient2');
-    const authorizer = new HttpUserPoolAuthorizer({
-      userPool,
+    const authorizer = new HttpUserPoolAuthorizer('BooksAuthorizer', userPool, {
       userPoolClients: [userPoolClient1, userPoolClient2],
     });
 

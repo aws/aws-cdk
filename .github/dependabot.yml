@@ -9,5 +9,12 @@ updates:
     schedule:
       interval: "weekly"
     labels:
-      - "pr/auto-approve"
+      - "auto-approve"
+    open-pull-requests-limit: 5
+  - package-ecosystem: "pip"
+    directory: "/packages/@aws-cdk/lambda-layer-awscli"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "auto-approve"
     open-pull-requests-limit: 5

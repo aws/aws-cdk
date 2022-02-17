@@ -1,10 +1,4 @@
-FROM public.ecr.aws/lambda/provided:latest
-
-#
-# versions
-#
-
-ARG AWSCLI_VERSION=1.18.198
+FROM public.ecr.aws/sam/build-python3.7
 
 USER root
 RUN mkdir -p /opt
@@ -21,22 +15,24 @@ RUN yum update -y \
 # aws cli
 #
 
-RUN curl https://s3.amazonaws.com/aws-cli/awscli-bundle-${AWSCLI_VERSION}.zip -o awscli-bundle.zip
-RUN unzip awscli-bundle.zip
-RUN ./awscli-bundle/install -i /opt/awscli -b /opt/awscli/aws
+COPY requirements.txt ./
+RUN python -m pip install -r requirements.txt -t /opt/awscli
 
 # organize for self-contained usage
-RUN mv /opt/awscli                                    /opt/awscli.tmp
-RUN mv /opt/awscli.tmp/lib/python2.7/site-packages    /opt/awscli
-RUN mv /opt/awscli.tmp/bin                            /opt/awscli/bin
-RUN mv /opt/awscli/bin/aws                            /opt/awscli
+RUN mv /opt/awscli/bin/aws /opt/awscli
 
 # cleanup
-RUN rm -fr /opt/awscli.tmp
 RUN rm -rf \
     /opt/awscli/pip* \
     /opt/awscli/setuptools* \
     /opt/awscli/awscli/examples
+
+#
+# Test that the CLI works
+#
+
+RUN yum install -y groff
+RUN /opt/awscli/aws help
 
 #
 # create the bundle

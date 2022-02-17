@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
@@ -38,13 +38,14 @@ describe('tests', () => {
       },
     });
 
-    expect(stack).not.toHaveResourceLike('AWS::ElasticLoadBalancingV2::TargetGroup', {
+    const matches = Template.fromStack(stack).findResources('AWS::ElasticLoadBalancingV2::TargetGroup', {
       TargetGroupAttributes: [
         {
           Key: 'stickiness.enabled',
         },
       ],
     });
+    expect(Object.keys(matches).length).toBe(0);
   });
 
   test('Can add self-registering target to imported TargetGroup', () => {
@@ -55,7 +56,7 @@ describe('tests', () => {
 
     // WHEN
     const tg = elbv2.ApplicationTargetGroup.fromTargetGroupAttributes(stack, 'TG', {
-      targetGroupArn: 'arn',
+      targetGroupArn: 'arn:aws:elasticloadbalancing:us-west-2:123456789012:targetgroup/myAlbTargetGroup/73e2d6bc24d8a067',
     });
     tg.addTarget(new FakeSelfRegisteringTarget(stack, 'Target', vpc));
   });
@@ -65,7 +66,7 @@ describe('tests', () => {
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'Stack');
     const tg = elbv2.ApplicationTargetGroup.fromTargetGroupAttributes(stack, 'TG', {
-      targetGroupArn: 'arn',
+      targetGroupArn: 'arn:aws:elasticloadbalancing:us-west-2:123456789012:targetgroup/myAlbTargetGroup/73e2d6bc24d8a067',
     });
 
     // WHEN
@@ -103,7 +104,7 @@ describe('tests', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
       HealthCheckEnabled: true,
       HealthCheckIntervalSeconds: 255,
       HealthCheckPath: '/arbitrary',
@@ -130,7 +131,7 @@ describe('tests', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
       TargetGroupAttributes: [
         {
           Key: 'stickiness.enabled',
@@ -162,7 +163,7 @@ describe('tests', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
       TargetGroupAttributes: [
         {
           Key: 'stickiness.enabled',
@@ -197,7 +198,7 @@ describe('tests', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
       TargetGroupAttributes: [
         {
           Key: 'stickiness.enabled',
@@ -233,7 +234,7 @@ describe('tests', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
       ProtocolVersion: 'GRPC',
       HealthCheckEnabled: true,
       HealthCheckIntervalSeconds: 255,
@@ -497,4 +498,18 @@ describe('tests', () => {
         app.synth();
       }).toThrow('Healthcheck interval 1 minute must be greater than the timeout 2 minutes');
     });
+
+  test('imported targetGroup has targetGroupName', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack');
+
+    // WHEN
+    const importedTg = elbv2.ApplicationTargetGroup.fromTargetGroupAttributes(stack, 'importedTg', {
+      targetGroupArn: 'arn:aws:elasticloadbalancing:us-west-2:123456789012:targetgroup/myAlbTargetGroup/73e2d6bc24d8a067',
+    });
+
+    // THEN
+    expect(importedTg.targetGroupName).toEqual('myAlbTargetGroup');
+  });
 });

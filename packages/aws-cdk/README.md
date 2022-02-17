@@ -19,6 +19,7 @@ Command                           | Description
 [`cdk synth`](#cdk-synthesize)    | Synthesize a CDK app to CloudFormation template(s)
 [`cdk diff`](#cdk-diff)           | Diff stacks against current state
 [`cdk deploy`](#cdk-deploy)       | Deploy a stack into an AWS account
+[`cdk watch`](#cdk-watch)         | Watches a CDK app for deployable and hotswappable changes
 [`cdk destroy`](#cdk-destroy)     | Deletes a stack from an AWS account
 [`cdk bootstrap`](#cdk-bootstrap) | Deploy a toolkit stack to support deploying large stacks & artifacts
 [`cdk doctor`](#cdk-doctor)       | Inspect the environment and produce information useful for troubleshooting
@@ -361,9 +362,13 @@ and that you have the necessary IAM permissions to update the resources that are
 Hotswapping is currently supported for the following changes
 (additional changes will be supported in the future):
 
-- Code asset changes of AWS Lambda functions.
+- Code asset (including Docker image and inline code) and tag changes of AWS Lambda functions.
+- AWS Lambda Versions and Aliases changes.
 - Definition changes of AWS Step Functions State Machines.
 - Container asset changes of AWS ECS Services.
+- Website asset changes of AWS S3 Bucket Deployments.
+- Source and Environment changes of AWS CodeBuild Projects.
+- VTL mapping template changes for AppSync Resolvers and Functions
 
 **⚠ Note #1**: This command deliberately introduces drift in CloudFormation stacks in order to speed up deployments.
 For this reason, only use it for development purposes.
@@ -431,6 +436,13 @@ for example:
 
 Note that `watch` by default uses hotswap deployments (see above for details) --
 to turn them off, pass the `--no-hotswap` option when invoking it.
+
+By default `watch` will also monitor all CloudWatch Log Groups in your application and stream the log events
+locally to your terminal. To disable this feature you can pass the `--no-logs` option when invoking it:
+
+```console
+$ cdk watch --no-logs
+```
 
 **Note**: This command is considered experimental,
 and might have breaking changes in the future.
@@ -538,8 +550,8 @@ Some of the interesting keys that can be used in the JSON configuration files:
 ```
 
 If specified, the command in the `build` key will be executed immediately before synthesis.
-This can be used to build Lambda Functions, CDK Application code, or other assets. 
-`build` cannot be specified on the command line or in the User configuration, 
+This can be used to build Lambda Functions, CDK Application code, or other assets.
+`build` cannot be specified on the command line or in the User configuration,
 and must be specified in the Project configuration. The command specified
 in `build` will be executed by the "watch" process before deployment.
 

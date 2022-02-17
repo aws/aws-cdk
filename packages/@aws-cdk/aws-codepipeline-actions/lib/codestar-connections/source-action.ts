@@ -9,6 +9,24 @@ import { sourceArtifactBounds } from '../common';
 import { Construct } from '@aws-cdk/core';
 
 /**
+ * The CodePipeline variables emitted by CodeStar source Action.
+ */
+export interface CodeStarSourceVariables {
+  /** The name of the repository this action points to. */
+  readonly fullRepositoryName: string;
+  /** The name of the branch this action tracks. */
+  readonly branchName: string;
+  /** The date the currently last commit on the tracked branch was authored, in ISO-8601 format. */
+  readonly authorDate: string;
+  /** The SHA1 hash of the currently last commit on the tracked branch. */
+  readonly commitId: string;
+  /** The message of the currently last commit on the tracked branch. */
+  readonly commitMessage: string;
+  /** The connection ARN this source uses. */
+  readonly connectionArn: string;
+}
+
+/**
  * Construction properties for {@link CodeStarConnectionsSourceAction}.
  */
 export interface CodeStarConnectionsSourceActionProps extends codepipeline.CommonAwsActionProps {
@@ -99,6 +117,18 @@ export class CodeStarConnectionsSourceAction extends Action {
     });
 
     this.props = props;
+  }
+
+  /** The variables emitted by this action. */
+  public get variables(): CodeStarSourceVariables {
+    return {
+      fullRepositoryName: this.variableExpression('FullRepositoryName'),
+      branchName: this.variableExpression('BranchName'),
+      authorDate: this.variableExpression('AuthorDate'),
+      commitId: this.variableExpression('CommitId'),
+      commitMessage: this.variableExpression('CommitMessage'),
+      connectionArn: this.variableExpression('ConnectionArn'),
+    };
   }
 
   protected bound(_scope: Construct, _stage: codepipeline.IStage, options: codepipeline.ActionBindOptions): codepipeline.ActionConfig {

@@ -21,12 +21,7 @@ const httpApi = new HttpApi(stack, 'MyHttpApi');
 
 const userPool = new cognito.UserPool(stack, 'userpool');
 
-const userPoolClient = userPool.addClient('my-client');
-
-const authorizer = new HttpUserPoolAuthorizer({
-  userPool,
-  userPoolClients: [userPoolClient],
-});
+const authorizer = new HttpUserPoolAuthorizer('UserPoolAuthorizer', userPool);
 
 const handler = new lambda.Function(stack, 'lambda', {
   runtime: lambda.Runtime.NODEJS_12_X,

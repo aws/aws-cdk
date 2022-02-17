@@ -5,7 +5,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import {
   Fn, IResource, Lazy, RemovalPolicy, Resource, ResourceProps, Stack, Token,
-  CustomResource, CustomResourceProvider, CustomResourceProviderRuntime, FeatureFlags, Tags,
+  CustomResource, CustomResourceProvider, CustomResourceProviderRuntime, FeatureFlags, Tags, Duration,
 } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
@@ -356,9 +356,7 @@ export interface IBucket extends IResource {
 }
 
 /**
- * A reference to a bucket. The easiest way to instantiate is to call
- * `bucket.export()`. Then, the consumer can use `Bucket.import(this, ref)` and
- * get a `Bucket`.
+ * A reference to a bucket outside this stack
  */
 export interface BucketAttributes {
   /**
@@ -429,6 +427,13 @@ export interface BucketAttributes {
    * @default - it's assumed the bucket is in the same region as the scope it's being imported into
    */
   readonly region?: string;
+
+  /**
+   * The role to be used by the notifications handler
+   *
+   * @default - a new role will be created.
+   */
+  readonly notificationsHandlerRole?: iam.IRole;
 }
 
 /**
@@ -486,14 +491,12 @@ export abstract class BucketBase extends Resource implements IBucket {
    */
   protected abstract disallowPublicAccess?: boolean;
 
-  private readonly notifications: BucketNotifications;
+  private notifications?: BucketNotifications;
+
+  protected notificationsHandlerRole?: iam.IRole;
 
   constructor(scope: Construct, id: string, props: ResourceProps = {}) {
     super(scope, id, props);
-
-    // defines a BucketNotifications construct. Notice that an actual resource will only
-    // be added if there are notifications added, so we don't need to condition this.
-    this.notifications = new BucketNotifications(this, 'Notifications', { bucket: this });
   }
 
   /**
@@ -838,7 +841,17 @@ export abstract class BucketBase extends Resource implements IBucket {
    * https://docs.aws.amazon.com/AmazonS3/latest/dev/NotificationHowTo.html
    */
   public addEventNotification(event: EventType, dest: IBucketNotificationDestination, ...filters: NotificationKeyFilter[]) {
-    this.notifications.addNotification(event, dest, ...filters);
+    this.withNotifications(notifications => notifications.addNotification(event, dest, ...filters));
+  }
+
+  private withNotifications(cb: (notifications: BucketNotifications) => void) {
+    if (!this.notifications) {
+      this.notifications = new BucketNotifications(this, 'Notifications', {
+        bucket: this,
+        handlerRole: this.notificationsHandlerRole,
+      });
+    }
+    cb(this.notifications);
   }
 
   /**
@@ -1089,7 +1102,7 @@ export enum InventoryFormat {
    */
   PARQUET = 'Parquet',
   /**
-   * Generate the inventory list as Parquet.
+   * Generate the inventory list as ORC.
    */
   ORC = 'ORC',
 }
@@ -1207,6 +1220,13 @@ export interface Inventory {
    */
 export enum ObjectOwnership {
   /**
+   * ACLs are disabled, and the bucket owner automatically owns
+   * and has full control over every object in the bucket.
+   * ACLs no longer affect permissions to data in the S3 bucket.
+   * The bucket uses policies to define access control.
+   */
+  BUCKET_OWNER_ENFORCED = 'BucketOwnerEnforced',
+  /**
    * Objects uploaded to the bucket change ownership to the bucket owner .
    */
   BUCKET_OWNER_PREFERRED = 'BucketOwnerPreferred',
@@ -1215,6 +1235,48 @@ export enum ObjectOwnership {
    */
   OBJECT_WRITER = 'ObjectWriter',
 }
+/**
+ * The intelligent tiering configuration.
+ */
+export interface IntelligentTieringConfiguration {
+  /**
+   * Configuration name
+   */
+  readonly name: string;
+
+
+  /**
+   * Add a filter to limit the scope of this configuration to a single prefix.
+   *
+   * @default this configuration will apply to **all** objects in the bucket.
+   */
+  readonly prefix?: string;
+
+  /**
+   * You can limit the scope of this rule to the key value pairs added below.
+   *
+   * @default No filtering will be performed on tags
+   */
+  readonly tags?: Tag[];
+
+  /**
+   * When enabled, Intelligent-Tiering will automatically move objects that
+   * haven’t been accessed for a minimum of 90 days to the Archive Access tier.
+   *
+   * @default Objects will not move to Glacier
+   */
+  readonly archiveAccessTierTime?: Duration;
+
+  /**
+   * When enabled, Intelligent-Tiering will automatically move objects that
+   * haven’t been accessed for a minimum of 180 days to the Deep Archive Access
+   * tier.
+   *
+   * @default Objects will not move to Glacier Deep Access
+   */
+  readonly deepArchiveAccessTierTime?: Duration;
+}
+
 export interface BucketProps {
   /**
    * The kind of server-side encryption to apply to this bucket.
@@ -1411,6 +1473,38 @@ export interface BucketProps {
    * @default false
    */
   readonly transferAcceleration?: boolean;
+
+  /**
+   * The role to be used by the notifications handler
+   *
+   * @default - a new role will be created.
+   */
+  readonly notificationsHandlerRole?: iam.IRole;
+
+  /**
+   * Inteligent Tiering Configurations
+   *
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/intelligent-tiering.html
+   *
+   * @default No Intelligent Tiiering Configurations.
+   */
+  readonly intelligentTieringConfigurations?: IntelligentTieringConfiguration[];
+}
+
+
+/**
+ * Tag
+ */
+export interface Tag {
+
+  /**
+   * key to e tagged
+   */
+  readonly key: string;
+  /**
+   * additional value
+   */
+  readonly value: string;
 }
 
 /**
@@ -1470,6 +1564,7 @@ export class Bucket extends BucketBase {
       public policy?: BucketPolicy = undefined;
       protected autoCreatePolicy = false;
       protected disallowPublicAccess = false;
+      protected notificationsHandlerRole = attrs.notificationsHandlerRole;
 
       /**
        * Exports this bucket from the stack.
@@ -1557,6 +1652,8 @@ export class Bucket extends BucketBase {
       physicalName: props.bucketName,
     });
 
+    this.notificationsHandlerRole = props.notificationsHandlerRole;
+
     const { bucketEncryption, encryptionKey } = this.parseEncryption(props);
 
     Bucket.validateBucketName(this.physicalName);
@@ -1578,6 +1675,7 @@ export class Bucket extends BucketBase {
       inventoryConfigurations: Lazy.any({ produce: () => this.parseInventoryConfiguration() }),
       ownershipControls: this.parseOwnershipControls(props),
       accelerateConfiguration: props.transferAcceleration ? { accelerationStatus: 'Enabled' } : undefined,
+      intelligentTieringConfigurations: this.parseTieringConfig(props),
     });
     this._resource = resource;
 
@@ -1794,6 +1892,7 @@ export class Bucket extends BucketBase {
         noncurrentVersionTransitions: mapOrUndefined(rule.noncurrentVersionTransitions, t => ({
           storageClass: t.storageClass.value,
           transitionInDays: t.transitionAfter.toDays(),
+          newerNoncurrentVersions: t.noncurrentVersionsToRetain,
         })),
         prefix: rule.prefix,
         status: enabled ? 'Enabled' : 'Disabled',
@@ -1878,6 +1977,35 @@ export class Bucket extends BucketBase {
         objectOwnership,
       }],
     };
+  }
+
+  private parseTieringConfig({ intelligentTieringConfigurations }: BucketProps): CfnBucket.IntelligentTieringConfigurationProperty[] | undefined {
+    if (!intelligentTieringConfigurations) {
+      return undefined;
+    }
+
+    return intelligentTieringConfigurations.map(config => {
+      const tierings = [];
+      if (config.archiveAccessTierTime) {
+        tierings.push({
+          accessTier: 'ARCHIVE_ACCESS',
+          days: config.archiveAccessTierTime.toDays({ integral: true }),
+        });
+      }
+      if (config.deepArchiveAccessTierTime) {
+        tierings.push({
+          accessTier: 'DEEP_ARCHIVE_ACCESS',
+          days: config.deepArchiveAccessTierTime.toDays({ integral: true }),
+        });
+      }
+      return {
+        id: config.name,
+        prefix: config.prefix,
+        status: 'Enabled',
+        tagFilters: config.tags,
+        tierings: tierings,
+      };
+    });
   }
 
   private renderWebsiteConfiguration(props: BucketProps): CfnBucket.WebsiteConfigurationProperty | undefined {
@@ -2050,6 +2178,7 @@ export enum BucketEncryption {
 
 /**
  * Notification event types.
+ * @link https://docs.aws.amazon.com/AmazonS3/latest/userguide/notification-how-to-event-types-and-destinations.html#supported-notification-event-types
  */
 export enum EventType {
   /**
@@ -2201,6 +2330,67 @@ export enum EventType {
    * by replication metrics.
    */
   REPLICATION_OPERATION_NOT_TRACKED = 's3:Replication:OperationNotTracked',
+
+  /**
+   * By using the LifecycleExpiration event types, you can receive a notification
+   * when Amazon S3 deletes an object based on your S3 Lifecycle configuration.
+   */
+  LIFECYCLE_EXPIRATION = 's3:LifecycleExpiration:*',
+
+  /**
+   * The s3:LifecycleExpiration:Delete event type notifies you when an object
+   * in an unversioned bucket is deleted.
+   * It also notifies you when an object version is permanently deleted by an
+   * S3 Lifecycle configuration.
+   */
+  LIFECYCLE_EXPIRATION_DELETE = 's3:LifecycleExpiration:Delete',
+
+  /**
+   * The s3:LifecycleExpiration:DeleteMarkerCreated event type notifies you
+   * when S3 Lifecycle creates a delete marker when a current version of an
+   * object in versioned bucket is deleted.
+   */
+  LIFECYCLE_EXPIRATION_DELETE_MARKER_CREATED = 's3:LifecycleExpiration:DeleteMarkerCreated',
+
+  /**
+   * You receive this notification event when an object is transitioned to
+   * another Amazon S3 storage class by an S3 Lifecycle configuration.
+   */
+  LIFECYCLE_TRANSITION = 's3:LifecycleTransition',
+
+  /**
+   * You receive this notification event when an object within the
+   * S3 Intelligent-Tiering storage class moved to the Archive Access tier or
+   * Deep Archive Access tier.
+   */
+  INTELLIGENT_TIERING = 's3:IntelligentTiering',
+
+  /**
+   * By using the ObjectTagging event types, you can enable notification when
+   * an object tag is added or deleted from an object.
+   */
+  OBJECT_TAGGING = 's3:ObjectTagging:*',
+
+  /**
+   * The s3:ObjectTagging:Put event type notifies you when a tag is PUT on an
+   * object or an existing tag is updated.
+
+   */
+  OBJECT_TAGGING_PUT = 's3:ObjectTagging:Put',
+
+  /**
+   * The s3:ObjectTagging:Delete event type notifies you when a tag is removed
+   * from an object.
+   */
+  OBJECT_TAGGING_DELETE = 's3:ObjectTagging:Delete',
+
+  /**
+   * You receive this notification event when an ACL is PUT on an object or when
+   * an existing ACL is changed.
+   * An event is not generated when a request results in no change to an
+   * object’s ACL.
+   */
+  OBJECT_ACL_PUT = 's3:ObjectAcl:Put',
 }
 
 export interface NotificationKeyFilter {
