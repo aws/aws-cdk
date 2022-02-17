@@ -1,5 +1,6 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
+import type { ModuleInfo } from 'license-checker';
 import { shell } from './_shell';
 import type { Package } from './bundle';
 import { Violation, ViolationType, ViolationsReport } from './violation';
@@ -143,7 +144,13 @@ export class Notice {
 
     for (const attr of attributions.values()) {
       notice.push(`** ${attr.package} - ${attr.url} | ${attr.licenses[0]}`);
-      notice.push(attr.licenseText ?? '');
+
+      // prefer notice over license
+      if (attr.noticeText) {
+        notice.push(attr.noticeText);
+      } else if (attr.licenseText) {
+        notice.push(attr.licenseText);
+      }
       notice.push(ATTRIBUTION_SEPARATOR);
     }
 
@@ -165,30 +172,41 @@ export class Notice {
 
     const pkg = (d: Package) => `${d.name}@${d.version}`;
 
-    const packages = this.dependencies.map(d => pkg(d)).join(';');
+    const packages = this.dependencies.map(d => pkg(d));
 
-    // we don't use the programmatic API since it only offers an async API.
-    // prefer to stay sync for now since its easier to integrate with other tooling.
-    // will offer an async API further down the road.
-    const command = `${require.resolve('license-checker/bin/license-checker')} --json --packages "${packages}"`;
-    const output = shell(command, { cwd: this.dependenciesRoot, quiet: true });
-    const infos = JSON.parse(output);
+    function fetchInfos(_cwd: string, _packages: string[]) {
+      // we don't use the programmatic API since it only offers an async API.
+      // prefer to stay sync for now since its easier to integrate with other tooling.
+      // will offer an async API further down the road.
+      const command = `${require.resolve('license-checker/bin/license-checker')} --json --packages "${_packages.join(';')}"`;
+      const output = shell(command, { cwd: _cwd, quiet: true });
+      return JSON.parse(output);
+    }
+
+    // first run a global command to fetch as much information in one shot
+    const infos = fetchInfos(this.dependenciesRoot, packages);
 
     for (const dep of this.dependencies) {
-
       const key = pkg(dep);
-      const info = infos[key];
+
+      // sometimes the dependency might not exist from fetching information globally,
+      // so we try fetching a concrete package. this can happen for example when
+      // two different major versions exist of the same dependency.
+      const info: ModuleInfo = infos[key] ?? fetchInfos(dep.path, [pkg(dep)])[key];
 
       if (!info) {
         // make sure all dependencies are accounted for.
-        throw new Error(`Unable to locate license information for ${key}`);
+        throw new Error(`Unable to locate license information for ${key} (${dep.path})`);
       }
+
+      const noticeText = info.noticeFile ? fs.readFileSync(info.noticeFile, { encoding: 'utf-8' }) : undefined;
 
       // for some reason, the license-checker package falls back to the README.md file of the package for license
       // text. this seems strange, disabling that for now.
       // see https://github.com/davglass/license-checker/blob/master/lib/license-files.js#L9
       // note that a non existing license file is ok as long as the license type could be extracted.
       const licenseFile = info.licenseFile?.toLowerCase().endsWith('.md') ? undefined : info.licenseFile;
+      const licenseText = licenseFile ? fs.readFileSync(licenseFile, { encoding: 'utf-8' }) : undefined;
 
       // the licenses key comes in different types but we convert it here
       // to always be an array.
@@ -197,8 +215,9 @@ export class Notice {
       attributions.set(key, {
         package: key,
         url: `https://www.npmjs.com/package/${dep.name}/v/${dep.version}`,
-        licenses,
-        licenseText: (licenseFile && fs.existsSync(licenseFile)) ? fs.readFileSync(licenseFile, { encoding: 'utf-8' }) : undefined,
+        licenses: licenses ?? [],
+        licenseText,
+        noticeText,
       });
     }
 
@@ -227,4 +246,8 @@ interface Attribution {
    * Package license content.
    */
   readonly licenseText?: string;
+  /**
+   * Package notice.
+   */
+  readonly noticeText?: string;
 }
