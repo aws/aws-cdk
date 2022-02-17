@@ -9,6 +9,7 @@ import { versionNumber } from './version';
 const CACHE_FILE_PATH = path.join(cdkCacheDir(), 'notices.json');
 
 export interface DisplayNoticesProps {
+  readonly outdir: string;
   readonly acknowledgedIssueNumbers: number[];
   readonly temporarilySuppressed?: boolean;
   readonly permanentlySuppressed?: boolean;
@@ -20,6 +21,7 @@ export async function displayNotices(props: DisplayNoticesProps) {
 
   const notices = await dataSource.fetch();
   const individualMessages = formatNotices(filterNotices(notices, {
+    outdir: props.outdir,
     temporarilySuppressed: props.temporarilySuppressed,
     permanentlySuppressed: props.permanentlySuppressed,
     acknowledgedIssueNumbers: arrayToSet(props.acknowledgedIssueNumbers),
@@ -49,15 +51,18 @@ function finalMessage(individualMessages: string[], exampleNumber: number): stri
 }
 
 export interface FilterNoticeOptions {
+  outdir?: string,
   permanentlySuppressed?: boolean,
   temporarilySuppressed?: boolean,
   cliVersion?: string,
+  frameworkVersion?: string,
   acknowledgedIssueNumbers?: Set<number>,
 }
 
 export function filterNotices(notices: Notice[], options: FilterNoticeOptions): Notice[] {
   const filter = new NoticeFilter({
     cliVersion: options.cliVersion ?? versionNumber(),
+    frameworkVersion: options.frameworkVersion ?? frameworkVersion(options.outdir ?? 'cdk.out'),
     temporarilySuppressed: options.temporarilySuppressed ?? false, // coming from a command line option
     permanentlySuppressed: options.permanentlySuppressed ?? false, // coming from the cdk.json file
     acknowledgedIssueNumbers: options.acknowledgedIssueNumbers ?? new Set(),
@@ -167,26 +172,39 @@ export interface NoticeFilterProps {
   permanentlySuppressed: boolean,
   temporarilySuppressed: boolean,
   cliVersion: string,
+  frameworkVersion: string | undefined,
   acknowledgedIssueNumbers: Set<number>,
 }
 
 export class NoticeFilter {
   private readonly acknowledgedIssueNumbers: Set<number>;
 
-  constructor(private readonly options: NoticeFilterProps) {
-    this.acknowledgedIssueNumbers = options.acknowledgedIssueNumbers;
+  constructor(private readonly props: NoticeFilterProps) {
+    this.acknowledgedIssueNumbers = props.acknowledgedIssueNumbers;
   }
 
+  /**
+   * Returns true if we should show this notice.
+   */
   apply(notice: Notice): boolean {
-    if (this.options.permanentlySuppressed
-      || this.options.temporarilySuppressed
+    if (this.props.permanentlySuppressed
+      || this.props.temporarilySuppressed
       || this.acknowledgedIssueNumbers.has(notice.issueNumber)) {
       return false;
     }
+    return this.applyVersion(notice, 'cli', this.props.cliVersion) ||
+      this.applyVersion(notice, 'framework', this.props.frameworkVersion);
+  }
 
-    const cliComponent = notice.components.find(component => component.name === 'cli');
-    const affectedCliVersion = cliComponent?.version;
-    return affectedCliVersion != null && semver.satisfies(this.options.cliVersion, affectedCliVersion);
+  /**
+   * Returns true if we should show the notice.
+   */
+  private applyVersion(notice: Notice, name: string, compareToVersion: string | undefined) {
+    if (compareToVersion === undefined) { return true; }
+
+    const affectedComponent = notice.components.find(component => component.name === name);
+    const affectedVersion = affectedComponent?.version;
+    return affectedVersion != null && semver.satisfies(compareToVersion, affectedVersion);
   }
 }
 
@@ -204,5 +222,26 @@ export class FooNoticeFormatter implements NoticeFormatter {
       `\tAffected versions: ${componentsValue}`,
       `\tMore information at: https://github.com/aws/aws-cdk/issues/${notice.issueNumber}`,
     ].join('\n\n');
+  }
+}
+
+function frameworkVersion(outdir: string): string | undefined {
+  const tree = loadTree().tree;
+  // v2
+  if (tree?.constructInfo?.fqn.startsWith('aws-cdk-lib')) {
+    return tree.constructInfo.version;
+  }
+  // v1
+  // TODO
+  return undefined;
+
+  function loadTree() {
+    try {
+      return fs.readJSONSync(path.join(outdir, 'tree.json'));
+    } catch (e) {
+      print('debug');
+      debug(`Failed to get tree.json file: ${e}`);
+      return {};
+    }
   }
 }

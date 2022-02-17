@@ -548,8 +548,9 @@ initCommandLine()
       process.exitCode = value;
     }
     await displayNotices({
+      outdir: configuration.settings.get(['output']) ?? 'cdk.out',
       acknowledgedIssueNumbers: SHOW_ALL_NOTICES ? [] : configuration.context.get('acknowledged-issue-numbers') ?? [],
-      permanentlySuppressed: !configuration.context.get('notices'),
+      permanentlySuppressed: SHOW_ALL_NOTICES ? false : !(configuration.context.get('notices') ?? true),
     });
   })
   .catch(err => {
