@@ -108,7 +108,7 @@ app_min="3.6.5"
 check_which $app $app_min
 app_v=$(${app} --version)
 echo -e "Checking python3 version... \c"
-if [ $(echo $app_v | grep -c -E "3\.[6-9]+\.[0-9]+") -eq 1 ]
+if [ $(echo $app_v | grep -c -E "3\.([6-9]|1[0-9])\.[0-9]+") -eq 1 ]
 then
     echo "Ok"
 else
