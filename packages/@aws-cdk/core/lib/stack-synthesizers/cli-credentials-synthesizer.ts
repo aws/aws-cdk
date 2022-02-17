@@ -8,6 +8,9 @@ import { assertBound, StringSpecializer, stackTemplateFileAsset } from './_share
 import { BOOTSTRAP_QUALIFIER_CONTEXT, DefaultStackSynthesizer } from './default-synthesizer';
 import { StackSynthesizer } from './stack-synthesizer';
 
+/**
+ * Properties for the CliCredentialsStackSynthesizer
+ */
 export interface CliCredentialsStackSynthesizerProps {
   /**
    * Name of the S3 bucket to hold file assets
