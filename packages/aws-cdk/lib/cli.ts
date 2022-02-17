@@ -562,10 +562,6 @@ function yargsNegativeAlias<T extends { [x in S | L ]: boolean | undefined }, S 
 }
 
 export function cli() {
-<<<<<<< HEAD
-
-=======
->>>>>>> master
   initCommandLine()
     .then(value => {
       if (value == null) { return; }
@@ -584,7 +580,3 @@ export function cli() {
     });
 
 }
-<<<<<<< HEAD
-
-=======
->>>>>>> master
