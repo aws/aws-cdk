@@ -18,7 +18,10 @@ export interface DisplayNoticesProps {
 
 export async function displayNotices(props: DisplayNoticesProps) {
   const dataSource = dataSourceReference();
+  await generateMessage(dataSource, props, print);
+}
 
+export async function generateMessage(dataSource: NoticeDataSource, props: DisplayNoticesProps, cb: (msg: string) => void) {
   const notices = await dataSource.fetch();
   const individualMessages = formatNotices(filterNotices(notices, {
     outdir: props.outdir,
@@ -28,7 +31,7 @@ export async function displayNotices(props: DisplayNoticesProps) {
   }));
 
   if (individualMessages.length > 0) {
-    print(finalMessage(individualMessages, notices[0].issueNumber));
+    cb(finalMessage(individualMessages, notices[0].issueNumber));
   }
 }
 
