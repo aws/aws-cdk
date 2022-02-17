@@ -1,31 +1,17 @@
+import * as path from 'path';
 import * as cxapi from '@aws-cdk/cx-api';
 import { AssetManifest } from 'cdk-assets';
+import * as fs from 'fs-extra';
 import { Tag } from '../cdk-toolkit';
 import { debug, warning } from '../logging';
 import { publishAssets } from '../util/asset-publishing';
 import { Mode, SdkProvider, ISDK } from './aws-auth';
 import { deployStack, DeployStackResult, destroyStack } from './deploy-stack';
+import { LazyListStackResources, ListStackResources } from './evaluate-cloudformation-template';
 import { ToolkitInfo } from './toolkit-info';
 import { CloudFormationStack, Template } from './util/cloudformation';
 import { StackActivityProgress } from './util/cloudformation/stack-activity-monitor';
-
-/**
- * Replace the {ACCOUNT} and {REGION} placeholders in all strings found in a complex object.
- */
-export async function replaceEnvPlaceholders<A extends { }>(object: A, env: cxapi.Environment, sdkProvider: SdkProvider): Promise<A> {
-  return cxapi.EnvironmentPlaceholders.replaceAsync(object, {
-    accountId: () => Promise.resolve(env.account),
-    region: () => Promise.resolve(env.region),
-    partition: async () => {
-      // There's no good way to get the partition!
-      // We should have had it already, except we don't.
-      //
-      // Best we can do is ask the "base credentials" for this environment for their partition. Cross-partition
-      // AssumeRole'ing will never work anyway, so this answer won't be wrong (it will just be slow!)
-      return (await sdkProvider.baseCredentialsPartition(env, Mode.ForReading)) ?? 'aws';
-    },
-  });
-}
+import { replaceEnvPlaceholders } from './util/placeholders';
 
 /**
  * SDK obtained by assuming the lookup role
@@ -293,25 +279,23 @@ export class CloudFormationDeployments {
     this.sdkProvider = props.sdkProvider;
   }
 
-  public async readCurrentTemplate(stackArtifact: cxapi.CloudFormationStackArtifact): Promise<Template> {
+  public async readCurrentTemplateWithNestedStacks(rootStackArtifact: cxapi.CloudFormationStackArtifact): Promise<Template> {
+    const sdk = await this.prepareSdkWithLookupOrDeployRole(rootStackArtifact);
+    const deployedTemplate = await this.readCurrentTemplate(rootStackArtifact, sdk);
+    await this.addNestedTemplatesToGeneratedAndDeployedStacks(rootStackArtifact, sdk, {
+      generatedTemplate: rootStackArtifact.template,
+      deployedTemplate: deployedTemplate,
+      deployedStackName: rootStackArtifact.stackName,
+    });
+    return deployedTemplate;
+  }
+
+  public async readCurrentTemplate(stackArtifact: cxapi.CloudFormationStackArtifact, sdk?: ISDK): Promise<Template> {
     debug(`Reading existing template for stack ${stackArtifact.displayName}.`);
-    let stackSdk: ISDK | undefined = undefined;
-    // try to assume the lookup role and fallback to the deploy role
-    try {
-      const result = await prepareSdkWithLookupRoleFor(this.sdkProvider, stackArtifact);
-      if (result.didAssumeRole) {
-        stackSdk = result.sdk;
-      }
-    } catch { }
-
-    if (!stackSdk) {
-      stackSdk = (await this.prepareSdkFor(stackArtifact, undefined, Mode.ForReading)).stackSdk;
+    if (!sdk) {
+      sdk = await this.prepareSdkWithLookupOrDeployRole(stackArtifact);
     }
-
-    const cfn = stackSdk.cloudFormation();
-
-    const stack = await CloudFormationStack.lookup(cfn, stackArtifact.stackName);
-    return stack.template();
+    return this.readCurrentStackTemplate(stackArtifact.stackName, sdk);
   }
 
   public async deployStack(options: DeployStackOptions): Promise<DeployStackResult> {
@@ -370,6 +354,95 @@ export class CloudFormationDeployments {
     const { stackSdk } = await this.prepareSdkFor(options.stack, undefined, Mode.ForReading);
     const stack = await CloudFormationStack.lookup(stackSdk.cloudFormation(), options.deployName ?? options.stack.stackName);
     return stack.exists;
+  }
+
+  private async prepareSdkWithLookupOrDeployRole(stackArtifact: cxapi.CloudFormationStackArtifact): Promise<ISDK> {
+    // try to assume the lookup role
+    try {
+      const result = await prepareSdkWithLookupRoleFor(this.sdkProvider, stackArtifact);
+      if (result.didAssumeRole) {
+        return result.sdk;
+      }
+    } catch { }
+    // fall back to the deploy role
+    return (await this.prepareSdkFor(stackArtifact, undefined, Mode.ForReading)).stackSdk;
+  }
+
+  private async readCurrentStackTemplate(stackName: string, stackSdk: ISDK) : Promise<Template> {
+    const cfn = stackSdk.cloudFormation();
+    const stack = await CloudFormationStack.lookup(cfn, stackName);
+    return stack.template();
+  }
+
+  private async addNestedTemplatesToGeneratedAndDeployedStacks(
+    rootStackArtifact: cxapi.CloudFormationStackArtifact,
+    sdk: ISDK,
+    parentTemplates: StackTemplates,
+  ): Promise<void> {
+    const listStackResources = parentTemplates.deployedStackName ? new LazyListStackResources(sdk, parentTemplates.deployedStackName) : undefined;
+    for (const [nestedStackLogicalId, generatedNestedStackResource] of Object.entries(parentTemplates.generatedTemplate.Resources ?? {})) {
+      if (!this.isCdkManagedNestedStack(generatedNestedStackResource)) {
+        continue;
+      }
+
+      const assetPath = generatedNestedStackResource.Metadata['aws:asset:path'];
+      const nestedStackTemplates = await this.getNestedStackTemplates(rootStackArtifact, assetPath, nestedStackLogicalId, listStackResources, sdk);
+
+      generatedNestedStackResource.Properties.NestedTemplate = nestedStackTemplates.generatedTemplate;
+
+      const deployedParentTemplate = parentTemplates.deployedTemplate;
+      deployedParentTemplate.Resources = deployedParentTemplate.Resources ?? {};
+      const deployedNestedStackResource = deployedParentTemplate.Resources[nestedStackLogicalId] ?? {};
+      deployedParentTemplate.Resources[nestedStackLogicalId] = deployedNestedStackResource;
+      deployedNestedStackResource.Type = deployedNestedStackResource.Type ?? 'AWS::CloudFormation::Stack';
+      deployedNestedStackResource.Properties = deployedNestedStackResource.Properties ?? {};
+      deployedNestedStackResource.Properties.NestedTemplate = nestedStackTemplates.deployedTemplate;
+
+      await this.addNestedTemplatesToGeneratedAndDeployedStacks(
+        rootStackArtifact,
+        sdk,
+        nestedStackTemplates,
+      );
+    }
+  }
+
+  private async getNestedStackTemplates(
+    rootStackArtifact: cxapi.CloudFormationStackArtifact, nestedTemplateAssetPath: string, nestedStackLogicalId: string,
+    listStackResources: ListStackResources | undefined, sdk: ISDK,
+  ): Promise<StackTemplates> {
+    const nestedTemplatePath = path.join(rootStackArtifact.assembly.directory, nestedTemplateAssetPath);
+
+    // CFN generates the nested stack name in the form `ParentStackName-NestedStackLogicalID-SomeHashWeCan'tCompute,
+    // the arn is of the form: arn:aws:cloudformation:region:123456789012:stack/NestedStackName/AnotherHashWeDon'tNeed
+    // so we get the ARN and manually extract the name.
+    const nestedStackArn = await this.getNestedStackArn(nestedStackLogicalId, listStackResources);
+    const deployedStackName = nestedStackArn?.slice(nestedStackArn.indexOf('/') + 1, nestedStackArn.lastIndexOf('/'));
+
+    return {
+      generatedTemplate: JSON.parse(fs.readFileSync(nestedTemplatePath, 'utf-8')),
+      deployedTemplate: deployedStackName
+        ? await this.readCurrentStackTemplate(deployedStackName, sdk)
+        : {},
+      deployedStackName,
+    };
+  }
+
+  private async getNestedStackArn(
+    nestedStackLogicalId: string, listStackResources?: ListStackResources,
+  ): Promise<string | undefined> {
+    try {
+      const stackResources = await listStackResources?.listStackResources();
+      return stackResources?.find(sr => sr.LogicalResourceId === nestedStackLogicalId)?.PhysicalResourceId;
+    } catch (e) {
+      if (e.message.startsWith('Stack with id ') && e.message.endsWith(' does not exist')) {
+        return;
+      }
+      throw e;
+    }
+  }
+
+  private isCdkManagedNestedStack(stackResource: any): stackResource is NestedStackResource {
+    return stackResource.Type === 'AWS::CloudFormation::Stack' && stackResource.Metadata && stackResource.Metadata['aws:asset:path'];
   }
 
   /**
@@ -452,4 +525,15 @@ export class CloudFormationDeployments {
 
 function isAssetManifestArtifact(art: cxapi.CloudArtifact): art is cxapi.AssetManifestArtifact {
   return art instanceof cxapi.AssetManifestArtifact;
+}
+
+interface StackTemplates {
+  readonly generatedTemplate: any;
+  readonly deployedTemplate: any;
+  readonly deployedStackName: string | undefined;
+}
+
+interface NestedStackResource {
+  readonly Metadata: { 'aws:asset:path': string };
+  readonly Properties: any;
 }
