@@ -32,7 +32,7 @@ This tool takes care of all that:
 
   > This is currently done with [license-checker](https://www.npmjs.com/package/license-checker), but is subject to change.
 
-- Enforce no circular imports are exhibited in your package, nor in your dependency clojure.
+- Enforce no circular imports are exhibited in your package, nor in your dependency closure.
 
   > This is currently done with [madge](https://www.npmjs.com/package/madge), but is subject to change.
 
