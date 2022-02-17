@@ -1,0 +1,199 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`minimal usage 1`] = `
+Object {
+  "Parameters": Object {
+    "AssetParameters9a94767d68ec7d462ebafb65903f259f527cae0775d02a4eb2db7ac720bc61ffArtifactHash4518D68D": Object {
+      "Description": "Artifact hash for asset \\"9a94767d68ec7d462ebafb65903f259f527cae0775d02a4eb2db7ac720bc61ff\\"",
+      "Type": "String",
+    },
+    "AssetParameters9a94767d68ec7d462ebafb65903f259f527cae0775d02a4eb2db7ac720bc61ffS3Bucket8B4BAF9C": Object {
+      "Description": "S3 bucket for asset \\"9a94767d68ec7d462ebafb65903f259f527cae0775d02a4eb2db7ac720bc61ff\\"",
+      "Type": "String",
+    },
+    "AssetParameters9a94767d68ec7d462ebafb65903f259f527cae0775d02a4eb2db7ac720bc61ffS3VersionKey2B3BD417": Object {
+      "Description": "S3 key for asset version \\"9a94767d68ec7d462ebafb65903f259f527cae0775d02a4eb2db7ac720bc61ff\\"",
+      "Type": "String",
+    },
+  },
+  "Resources": Object {
+    "AWSCDKTriggerCustomResourceProviderCustomResourceProviderHandler97BECD91": Object {
+      "DependsOn": Array [
+        "AWSCDKTriggerCustomResourceProviderCustomResourceProviderRoleE18FAF0A",
+      ],
+      "Properties": Object {
+        "Code": Object {
+          "S3Bucket": Object {
+            "Ref": "AssetParameters9a94767d68ec7d462ebafb65903f259f527cae0775d02a4eb2db7ac720bc61ffS3Bucket8B4BAF9C",
+          },
+          "S3Key": Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                Object {
+                  "Fn::Select": Array [
+                    0,
+                    Object {
+                      "Fn::Split": Array [
+                        "||",
+                        Object {
+                          "Ref": "AssetParameters9a94767d68ec7d462ebafb65903f259f527cae0775d02a4eb2db7ac720bc61ffS3VersionKey2B3BD417",
+                        },
+                      ],
+                    },
+                  ],
+                },
+                Object {
+                  "Fn::Select": Array [
+                    1,
+                    Object {
+                      "Fn::Split": Array [
+                        "||",
+                        Object {
+                          "Ref": "AssetParameters9a94767d68ec7d462ebafb65903f259f527cae0775d02a4eb2db7ac720bc61ffS3VersionKey2B3BD417",
+                        },
+                      ],
+                    },
+                  ],
+                },
+              ],
+            ],
+          },
+        },
+        "Handler": "__entrypoint__.handler",
+        "MemorySize": 128,
+        "Role": Object {
+          "Fn::GetAtt": Array [
+            "AWSCDKTriggerCustomResourceProviderCustomResourceProviderRoleE18FAF0A",
+            "Arn",
+          ],
+        },
+        "Runtime": "nodejs14.x",
+        "Timeout": 900,
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "AWSCDKTriggerCustomResourceProviderCustomResourceProviderRoleE18FAF0A": Object {
+      "Properties": Object {
+        "AssumeRolePolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": Object {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": Array [
+          Object {
+            "Fn::Sub": "arn:\${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+          },
+        ],
+        "Policies": Array [
+          Object {
+            "PolicyDocument": Object {
+              "Statement": Array [
+                Object {
+                  "Action": Array [
+                    "lambda:InvokeFunction",
+                  ],
+                  "Effect": "Allow",
+                  "Resource": Array [
+                    "*",
+                  ],
+                },
+              ],
+              "Version": "2012-10-17",
+            },
+            "PolicyName": "Inline",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "MyTopic86869434": Object {
+      "Type": "AWS::SNS::Topic",
+    },
+    "MyTriggerB6CCCACE": Object {
+      "DeletionPolicy": "Delete",
+      "DependsOn": Array [
+        "MyTopic86869434",
+      ],
+      "Properties": Object {
+        "HandlerArn": Object {
+          "Ref": "MyTriggerHandlerCurrentVersionC0B6BBD40f3abd954eb77fda7e548d681c7fa667",
+        },
+        "ServiceToken": Object {
+          "Fn::GetAtt": Array [
+            "AWSCDKTriggerCustomResourceProviderCustomResourceProviderHandler97BECD91",
+            "Arn",
+          ],
+        },
+      },
+      "Type": "Custom::Trigger",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "MyTriggerHandlerCurrentVersionC0B6BBD40f3abd954eb77fda7e548d681c7fa667": Object {
+      "Properties": Object {
+        "FunctionName": Object {
+          "Ref": "MyTriggerHandlerD6B1FF23",
+        },
+      },
+      "Type": "AWS::Lambda::Version",
+    },
+    "MyTriggerHandlerD6B1FF23": Object {
+      "DependsOn": Array [
+        "MyTriggerHandlerServiceRoleFC0CFFAB",
+      ],
+      "Properties": Object {
+        "Code": Object {
+          "ZipFile": "zoo",
+        },
+        "Handler": "index.handler",
+        "Role": Object {
+          "Fn::GetAtt": Array [
+            "MyTriggerHandlerServiceRoleFC0CFFAB",
+            "Arn",
+          ],
+        },
+        "Runtime": "nodejs12.x",
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "MyTriggerHandlerServiceRoleFC0CFFAB": Object {
+      "Properties": Object {
+        "AssumeRolePolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": Object {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": Array [
+          Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+  },
+}
+`;
