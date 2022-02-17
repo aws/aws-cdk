@@ -18,10 +18,10 @@ import { toPosixPath } from '../private/fs';
 import { actionName, stackVariableNamespace } from '../private/identifiers';
 import { enumerate, flatten, maybeSuffix, noUndefined } from '../private/javascript';
 import { writeTemplateConfiguration } from '../private/template-configuration';
-import { CodeBuildFactory, mergeCodeBuildOptions } from './_codebuild-factory';
 import { ArtifactMap } from './artifact-map';
 import { CodeBuildStep } from './codebuild-step';
 import { CodePipelineActionFactoryResult, ICodePipelineActionFactory } from './codepipeline-action-factory';
+import { CodeBuildFactory, mergeCodeBuildOptions } from './private/codebuild-factory';
 
 
 /**
@@ -418,9 +418,14 @@ export class CodePipeline extends PipelineBase {
             const factory = this.actionFromNode(node);
 
             const nodeType = this.nodeTypeFromNode(node);
+            const name = actionName(node, sharedParent);
+
+            const variablesNamespace = node.data?.type === 'step'
+              ? handleStepOutputs(node.data.step, pipelineStage, name)
+              : undefined;
 
             const result = factory.produceAction(pipelineStage, {
-              actionName: actionName(node, sharedParent),
+              actionName: name,
               runOrder,
               artifacts: this.artifacts,
               scope: obtainScope(this.pipeline, stageName),
@@ -429,6 +434,7 @@ export class CodePipeline extends PipelineBase {
               // If this step happens to produce a CodeBuild job, set the default options
               codeBuildDefaults: nodeType ? this.codeBuildDefaultsFor(nodeType) : undefined,
               beforeSelfMutation,
+              variablesNamespace,
             });
 
             if (node.data?.type === 'self-update') {
@@ -894,4 +900,29 @@ function chunkTranches<A>(n: number, xss: A[][]): A[][][] {
 
 function isCodePipelineActionFactory(x: any): x is ICodePipelineActionFactory {
   return !!(x as ICodePipelineActionFactory).produceAction;
+}
+
+/**
+ * If the step is producing outputs, determine a variableNamespace for it, and configure that on the outputs
+ */
+function handleStepOutputs(step: Step, stage: cp.IStage, name: string): string | undefined {
+  let ret: string | undefined;
+  for (const output of step.producedStepOutputs ?? []) {
+    ret = namespaceName(stage, name);
+    if (typeof output.engineSpecificInformation !== 'string') {
+      throw new Error(`CodePipeline requires that 'engineSpecificInformation' is a string, got: ${JSON.stringify(output.engineSpecificInformation)}`);
+    }
+    output.defineResolution(`#{${ret}.${output.engineSpecificInformation}}`);
+  }
+  return ret;
+}
+
+/**
+ * Generate a variable namespace from stage and action names
+ *
+ * Variable namespaces cannot have '.', but they can have '@'. Other than that,
+ * action names are more limited so they translate easily.
+ */
+export function namespaceName(stage: cp.IStage, name: string) {
+  return `${stage.stageName}/${name}`.replace(/[^a-zA-Z0-9@_-]/g, '@');
 }

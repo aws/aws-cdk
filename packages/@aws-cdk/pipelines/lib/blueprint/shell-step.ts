@@ -87,7 +87,6 @@ export interface ShellStepProps {
    * @default - No primary output
    */
   readonly primaryOutputDirectory?: string;
-
 }
 
 /**
@@ -151,6 +150,11 @@ export class ShellStep extends Step {
     this.installCommands = props.installCommands ?? [];
     this.env = props.env ?? {};
     this.envFromCfnOutputs = mapValues(props.envFromCfnOutputs ?? {}, StackOutputReference.fromCfnOutput);
+
+    // 'env' is the only thing that can contain outputs
+    this.discoverReferencedOutputs({
+      env: this.env,
+    });
 
     // Inputs
     if (props.input) {

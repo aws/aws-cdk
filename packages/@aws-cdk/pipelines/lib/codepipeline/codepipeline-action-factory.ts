@@ -24,6 +24,15 @@ export interface ProduceActionOptions {
   readonly runOrder: number;
 
   /**
+   * If this step is producing outputs, the variables namespace assigned to it
+   *
+   * Pass this on to the Action you are creating.
+   *
+   * @default - Step doesn't produce any outputs
+   */
+  readonly variablesNamespace?: string;
+
+  /**
    * Helper object to translate FileSets to CodePipeline Artifacts
    */
   readonly artifacts: ArtifactMap;
@@ -87,6 +96,8 @@ export interface ICodePipelineActionFactory {
 export interface CodePipelineActionFactoryResult {
   /**
    * How many RunOrders were consumed
+   *
+   * If you add 1 action, return the value 1 here.
    */
   readonly runOrdersConsumed: number;
 

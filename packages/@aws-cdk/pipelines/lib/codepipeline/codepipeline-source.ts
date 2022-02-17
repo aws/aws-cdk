@@ -8,6 +8,7 @@ import { IBucket } from '@aws-cdk/aws-s3';
 import { SecretValue, Token } from '@aws-cdk/core';
 import { Node } from 'constructs';
 import { FileSet, Step } from '../blueprint';
+import { StepOutput } from '../blueprint/step-output';
 import { CodePipelineActionFactoryResult, ProduceActionOptions, ICodePipelineActionFactory } from './codepipeline-action-factory';
 
 /**
@@ -104,12 +105,44 @@ export abstract class CodePipelineSource extends Step implements ICodePipelineAc
 
   public produceAction(stage: cp.IStage, options: ProduceActionOptions): CodePipelineActionFactoryResult {
     const output = options.artifacts.toCodePipeline(this.primaryOutput!);
-    const action = this.getAction(output, options.actionName, options.runOrder);
+
+    const action = this.getAction(output, options.actionName, options.runOrder, options.variablesNamespace);
     stage.addAction(action);
     return { runOrdersConsumed: 1 };
   }
 
-  protected abstract getAction(output: Artifact, actionName: string, runOrder: number): Action;
+  protected abstract getAction(output: Artifact, actionName: string, runOrder: number, variablesNamespace?: string): Action;
+
+  /**
+   * Return an attribute of the current source revision
+   *
+   * These values can be passed into the environment variables of pipeline steps,
+   * so your steps can access information about the source revision.
+   *
+   * What attributes are available depends on the type of source. These attributes
+   * are supported:
+   *
+   * - GitHub, CodeCommit, and CodeStar connection
+   *   - `AuthorDate`
+   *   - `BranchName`
+   *   - `CommitId`
+   *   - `CommitMessage`
+   * - GitHub and CodeCommit
+   *   - `CommitterDate`
+   *   - `RepositoryName`
+   * - GitHub
+   *   - `CommitUrl`
+   * - CodeStar Connection
+   *   - `FullRepositoryName`
+   * - S3
+   *   - `ETag`
+   *   - `VersionId`
+   *
+   * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/reference-variables.html#reference-variables-list
+   */
+  public sourceAttribute(name: string): string {
+    return new StepOutput(this, name).toString();
+  }
 }
 
 /**
@@ -173,7 +206,7 @@ class GitHubSource extends CodePipelineSource {
     this.configurePrimaryOutput(new FileSet('Source', this));
   }
 
-  protected getAction(output: Artifact, actionName: string, runOrder: number) {
+  protected getAction(output: Artifact, actionName: string, runOrder: number, variablesNamespace?: string) {
     return new cp_actions.GitHubSourceAction({
       output,
       actionName,
@@ -183,6 +216,7 @@ class GitHubSource extends CodePipelineSource {
       repo: this.repo,
       branch: this.branch,
       trigger: this.props.trigger,
+      variablesNamespace,
     });
   }
 }
@@ -216,7 +250,7 @@ class S3Source extends CodePipelineSource {
     this.configurePrimaryOutput(new FileSet('Source', this));
   }
 
-  protected getAction(output: Artifact, _actionName: string, runOrder: number) {
+  protected getAction(output: Artifact, _actionName: string, runOrder: number, variablesNamespace?: string) {
     return new cp_actions.S3SourceAction({
       output,
       // Bucket names are guaranteed to conform to ActionName restrictions
@@ -225,6 +259,7 @@ class S3Source extends CodePipelineSource {
       bucketKey: this.objectKey,
       trigger: this.props.trigger,
       bucket: this.bucket,
+      variablesNamespace,
     });
   }
 }
@@ -284,7 +319,7 @@ class CodeStarConnectionSource extends CodePipelineSource {
     this.configurePrimaryOutput(new FileSet('Source', this));
   }
 
-  protected getAction(output: Artifact, actionName: string, runOrder: number) {
+  protected getAction(output: Artifact, actionName: string, runOrder: number, variablesNamespace?: string) {
     return new cp_actions.CodeStarConnectionsSourceAction({
       output,
       actionName,
@@ -295,6 +330,7 @@ class CodeStarConnectionSource extends CodePipelineSource {
       branch: this.branch,
       codeBuildCloneOutput: this.props.codeBuildCloneOutput,
       triggerOnPush: this.props.triggerOnPush,
+      variablesNamespace,
     });
   }
 }
@@ -341,7 +377,7 @@ class CodeCommitSource extends CodePipelineSource {
     this.configurePrimaryOutput(new FileSet('Source', this));
   }
 
-  protected getAction(output: Artifact, _actionName: string, runOrder: number) {
+  protected getAction(output: Artifact, _actionName: string, runOrder: number, variablesNamespace?: string) {
     return new cp_actions.CodeCommitSourceAction({
       output,
       // Guaranteed to be okay as action name
@@ -352,6 +388,7 @@ class CodeCommitSource extends CodePipelineSource {
       repository: this.repository,
       eventRole: this.props.eventRole,
       codeBuildCloneOutput: this.props.codeBuildCloneOutput,
+      variablesNamespace,
     });
   }
 }
