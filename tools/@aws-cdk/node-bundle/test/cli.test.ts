@@ -15,7 +15,6 @@ test('validate', () => {
   try {
     const command = [
       whereami(),
-      '--copyright', 'copyright',
       '--entrypoint', pkg.entrypoint,
       '--resource', 'missing:bin/missing',
       '--license', 'Apache-2.0',
@@ -27,7 +26,7 @@ test('validate', () => {
     const expected = new Set([
       `- invalid-license: Dependency ${dep1.name}@${dep1.version} has an invalid license: UNKNOWN`,
       `- multiple-license: Dependency ${dep2.name}@${dep2.version} has multiple licenses: Apache-2.0,MIT`,
-      '- outdated-notice: NOTICE is outdated (fixable)',
+      '- outdated-attributions: THIRD_PARTY_LICENSES is outdated (fixable)',
       '- missing-resource: Unable to find resource (missing) relative to the package directory',
       '- circular-import: lib/bar.js -> lib/foo.js',
     ]);
@@ -47,7 +46,6 @@ test('write', () => {
 
   const command = [
     whereami(),
-    '--copyright', 'copyright',
     '--entrypoint', pkg.entrypoint,
     '--license', 'Apache-2.0',
     '--license', 'MIT',
@@ -57,7 +55,7 @@ test('write', () => {
 
   expect(fs.existsSync(path.join(bundleDir, pkg.entrypoint))).toBeTruthy();
   expect(fs.existsSync(path.join(bundleDir, 'package.json'))).toBeTruthy();
-  expect(fs.existsSync(path.join(bundleDir, 'NOTICE'))).toBeTruthy();
+  expect(fs.existsSync(path.join(bundleDir, 'THIRD_PARTY_LICENSES'))).toBeTruthy();
   expect(fs.existsSync(path.join(bundleDir, 'lib', 'foo.js'))).toBeTruthy();
   expect(fs.existsSync(path.join(bundleDir, 'lib', 'bar.js'))).toBeTruthy();
   expect(fs.existsSync(path.join(bundleDir, 'node_modules'))).toBeFalsy();
@@ -81,7 +79,6 @@ test('validate and fix', () => {
   const run = (sub: string) => {
     const command = [
       whereami(),
-      '--copyright', 'copyright',
       '--entrypoint', pkg.entrypoint,
       '--license', 'Apache-2.0',
       '--license', 'MIT',
@@ -95,7 +92,7 @@ test('validate and fix', () => {
     throw new Error('Expected packing to fail before fixing');
   } catch (e) {
     // this should fix the fact we don't generate
-    // the project with the correct notice
+    // the project with the correct attributions
     run('validate --fix');
   }
 
@@ -111,31 +108,26 @@ test('pack', () => {
   const dep1 = pkg.addDependency({ name: 'dep1', licenses: ['MIT'] });
   const dep2 = pkg.addDependency({ name: 'dep2', licenses: ['Apache-2.0'] });
 
-  const notice = [
-    'copyright',
-    '',
-    '----------------------------------------',
-    '',
-    'This package includes the following third-party software:',
+  const attributions = [
+    'The consumer package includes the following third-party software/licensing:',
     '',
     `** ${dep1.name}@${dep1.version} - https://www.npmjs.com/package/${dep1.name}/v/${dep1.version} | MIT`,
     '',
-    '---------------',
+    '----------------',
     '',
     `** ${dep2.name}@${dep2.version} - https://www.npmjs.com/package/${dep2.name}/v/${dep2.version} | Apache-2.0`,
     '',
-    '---------------',
+    '----------------',
     '',
   ];
 
-  pkg.notice = notice.join('\n');
+  pkg.attributions = attributions.join('\n');
 
   pkg.write();
   pkg.install();
 
   const command = [
     whereami(),
-    '--copyright', 'copyright',
     '--entrypoint', pkg.entrypoint,
     '--license', 'Apache-2.0',
     '--license', 'MIT',

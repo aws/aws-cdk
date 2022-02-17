@@ -12,7 +12,6 @@ async function buildCommands() {
   const argv = yargs
     .usage('Usage: node-bundle COMMAND')
     .option('entrypoint', { type: 'array', nargs: 1, desc: 'List of entrypoints to bundle', demandOption: true })
-    .option('copyright', { type: 'string', desc: 'Copyright statement to be added to the notice file', demandOption: true })
     .option('external', { type: 'array', nargs: 1, default: [], desc: 'Packages in this list will be excluded from the bundle and added as dependencies (example: fsevents:optional)' })
     .option('license', { type: 'array', nargs: 1, default: [], desc: 'List of valid licenses' })
     .option('resource', { type: 'array', nargs: 1, default: [], desc: 'List of resources that need to be explicitly copied to the bundle (example: node_modules/proxy-agent/contextify.js:bin/contextify.js)' })
@@ -36,8 +35,7 @@ async function buildCommands() {
 
   const props: BundleProps = {
     packageDir: process.cwd(),
-    copyright: argv.copyright,
-    entrypoints: argv.entrypoint as string[],
+    entryPoints: argv.entrypoint as string[],
     externals: argv.external as string[],
     licenses: argv.license as string[],
     resources: resources,

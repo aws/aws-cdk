@@ -14,8 +14,7 @@ test('validate', () => {
 
   const bundle = new Bundle({
     packageDir: pkg.dir,
-    copyright: 'copyright',
-    entrypoints: [pkg.entrypoint],
+    entryPoints: [pkg.entrypoint],
     resources: { missing: 'bin/missing' },
     licenses: ['Apache-2.0'],
   });
@@ -23,7 +22,7 @@ test('validate', () => {
   const expected = new Set([
     'circular-import: lib/bar.js -> lib/foo.js',
     'missing-resource: Unable to find resource (missing) relative to the package directory',
-    'outdated-notice: NOTICE is outdated',
+    'outdated-attributions: THIRD_PARTY_LICENSES is outdated',
     `invalid-license: Dependency ${dep1.name}@${dep2.version} has an invalid license: UNKNOWN`,
     `multiple-license: Dependency ${dep2.name}@${dep2.version} has multiple licenses: Apache-2.0,MIT`,
   ]);
@@ -42,8 +41,7 @@ test('write', () => {
 
   const bundle = new Bundle({
     packageDir: pkg.dir,
-    copyright: 'copyright',
-    entrypoints: [pkg.entrypoint],
+    entryPoints: [pkg.entrypoint],
     licenses: ['Apache-2.0', 'MIT'],
   });
 
@@ -51,7 +49,7 @@ test('write', () => {
 
   expect(fs.existsSync(path.join(bundleDir, pkg.entrypoint))).toBeTruthy();
   expect(fs.existsSync(path.join(bundleDir, 'package.json'))).toBeTruthy();
-  expect(fs.existsSync(path.join(bundleDir, 'NOTICE'))).toBeTruthy();
+  expect(fs.existsSync(path.join(bundleDir, 'THIRD_PARTY_LICENSES'))).toBeTruthy();
   expect(fs.existsSync(path.join(bundleDir, 'lib', 'foo.js'))).toBeTruthy();
   expect(fs.existsSync(path.join(bundleDir, 'lib', 'bar.js'))).toBeTruthy();
   expect(fs.existsSync(path.join(bundleDir, 'node_modules'))).toBeFalsy();
@@ -69,32 +67,27 @@ test('pack', () => {
   const dep1 = pkg.addDependency({ name: 'dep1', licenses: ['MIT'] });
   const dep2 = pkg.addDependency({ name: 'dep2', licenses: ['Apache-2.0'] });
 
-  const notice = [
-    'copyright',
-    '',
-    '----------------------------------------',
-    '',
-    'This package includes the following third-party software:',
+  const attributions = [
+    'The consumer package includes the following third-party software/licensing:',
     '',
     `** ${dep1.name}@${dep1.version} - https://www.npmjs.com/package/${dep1.name}/v/${dep1.version} | MIT`,
     '',
-    '---------------',
+    '----------------',
     '',
     `** ${dep2.name}@${dep2.version} - https://www.npmjs.com/package/${dep2.name}/v/${dep2.version} | Apache-2.0`,
     '',
-    '---------------',
+    '----------------',
     '',
   ];
 
-  pkg.notice = notice.join('\n');
+  pkg.attributions = attributions.join('\n');
 
   pkg.write();
   pkg.install();
 
   const bundle = new Bundle({
     packageDir: pkg.dir,
-    copyright: 'copyright',
-    entrypoints: [pkg.entrypoint],
+    entryPoints: [pkg.entrypoint],
     licenses: ['Apache-2.0', 'MIT'],
   });
 
@@ -116,8 +109,7 @@ test('validate and fix', () => {
 
   const bundle = new Bundle({
     packageDir: pkg.dir,
-    copyright: 'copyright',
-    entrypoints: [pkg.entrypoint],
+    entryPoints: [pkg.entrypoint],
     licenses: ['Apache-2.0', 'MIT'],
   });
 

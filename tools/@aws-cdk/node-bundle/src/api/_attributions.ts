@@ -14,16 +14,20 @@ const DEFAULT_ALLOWED_LICENSES = [
   '0BSD',
 ];
 
-const ATTRIBUTION_SEPARATOR = '\n---------------\n';
+const ATTRIBUTION_SEPARATOR = '\n----------------\n';
 
 /**
- * Properties for `Notice`.
+ * Properties for `Attributions`.
  */
-export interface NoticeProps {
+export interface AttributionsProps {
   /**
    * The package root directory.
    */
   readonly packageDir: string;
+  /**
+   * The name of the package.
+   */
+  readonly packageName: string;
   /**
    * Package dependencies.
    */
@@ -32,10 +36,6 @@ export interface NoticeProps {
    * The parent directory underwhich all dependencies live.
    */
   readonly dependenciesRoot: string;
-  /**
-   * The copyright to prepend to the file.
-   */
-  readonly copyright: string;
   /**
    * Path to the notice file to created / validated.
    */
@@ -55,26 +55,26 @@ export interface NoticeProps {
 }
 
 /**
- * `Notice` represents a NOTICE file containing various attributions.
+ * `Attributions` represents an attributions file containing third-party license information.
  */
-export class Notice {
+export class Attributions {
 
   private readonly packageDir: string;
+  private readonly packageName: string;
   private readonly dependencies: Package[];
   private readonly validLicenses: string[];
-  private readonly copyright: string;
   private readonly dependenciesRoot: string;
   private readonly filePath: string;
 
   private readonly attributions: Map<string, Attribution>;
   private readonly content: string;
 
-  constructor(props: NoticeProps) {
+  constructor(props: AttributionsProps) {
     this.packageDir = props.packageDir;
+    this.packageName = props.packageName;
     this.filePath = path.join(this.packageDir, props.filePath);
     this.dependencies = props.dependencies.filter(d => !props.exclude || !new RegExp(props.exclude).test(d.name));
     this.validLicenses = (props.validLicenses ?? DEFAULT_ALLOWED_LICENSES).map(l => l.toLowerCase());
-    this.copyright = props.copyright;
     this.dependenciesRoot = props.dependenciesRoot;
 
     // without the generated notice content, this object is pretty much
@@ -96,15 +96,15 @@ export class Notice {
     const fix = () => this.flush();
 
     const missing = !fs.existsSync(this.filePath);
-    const notice = missing ? undefined : fs.readFileSync(this.filePath, { encoding: 'utf-8' });
-    const outdated = notice !== undefined && notice !== this.content;
+    const attributions = missing ? undefined : fs.readFileSync(this.filePath, { encoding: 'utf-8' });
+    const outdated = attributions !== undefined && attributions !== this.content;
 
     if (missing) {
       violations.push({ type: ViolationType.MISSING_NOTICE, message: `${relNoticePath} is missing`, fix });
     }
 
     if (outdated) {
-      violations.push({ type: ViolationType.OUTDATED_NOTICE, message: `${relNoticePath} is outdated`, fix });
+      violations.push({ type: ViolationType.OUTDATED_ATTRIBUTIONS, message: `${relNoticePath} is outdated`, fix });
     }
 
     const invalidLicense: Violation[] = Array.from(this.attributions.values())
@@ -135,26 +135,26 @@ export class Notice {
 
   private render(attributions: Map<string, Attribution>): string {
 
-    const notice = [this.copyright, '', '-'.repeat(40), ''];
+    const content = [];
 
     if (attributions.size > 0) {
-      notice.push('This package includes the following third-party software:');
-      notice.push('');
+      content.push(`The ${this.packageName} package includes the following third-party software/licensing:`);
+      content.push('');
     }
 
     for (const attr of attributions.values()) {
-      notice.push(`** ${attr.package} - ${attr.url} | ${attr.licenses[0]}`);
+      content.push(`** ${attr.package} - ${attr.url} | ${attr.licenses[0]}`);
 
       // prefer notice over license
       if (attr.noticeText) {
-        notice.push(attr.noticeText);
+        content.push(attr.noticeText);
       } else if (attr.licenseText) {
-        notice.push(attr.licenseText);
+        content.push(attr.licenseText);
       }
-      notice.push(ATTRIBUTION_SEPARATOR);
+      content.push(ATTRIBUTION_SEPARATOR);
     }
 
-    return notice
+    return content
       // since we are embedding external files, those can different line
       // endings, so we standardize to LF.
       .map(l => l.replace(/\r\n/g, '\n'))

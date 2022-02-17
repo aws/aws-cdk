@@ -9,9 +9,9 @@ export enum ViolationType {
   CIRCULAR_IMPORT = 'circular-import',
 
   /**
-   * Outdated notice file.
+   * Outdated attributions file.
    */
-  OUTDATED_NOTICE = 'outdated-notice',
+  OUTDATED_ATTRIBUTIONS = 'outdated-attributions',
 
   /**
    * Missing notice file.
