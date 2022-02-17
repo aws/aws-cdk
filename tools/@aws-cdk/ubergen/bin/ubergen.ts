@@ -546,7 +546,7 @@ async function rewriteReadmeImports(fromFile: string, libName: string): Promise<
  */
 async function rewriteLibraryImports(fromFile: string, targetDir: string, libRoot: string, libraries: readonly LibraryReference[]): Promise<string> {
   const source = await fs.readFile(fromFile, { encoding: 'utf8' });
-  return awsCdkMigration.rewriteImports(source, relativeImport);
+  return awsCdkMigration.rewriteImports(source, relativeImport, undefined, true);
 
   function relativeImport(modulePath: string): string | undefined {
     const sourceLibrary = libraries.find(
