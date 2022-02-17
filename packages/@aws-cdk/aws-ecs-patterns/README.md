@@ -24,14 +24,15 @@ To define an Amazon ECS service that is behind an application load balancer, ins
 * `ApplicationLoadBalancedEc2Service`
 
 ```ts
-const loadBalancedEcsService = new ecsPatterns.ApplicationLoadBalancedEc2Service(stack, 'Service', {
+declare const cluster: ecs.Cluster;
+const loadBalancedEcsService = new ecsPatterns.ApplicationLoadBalancedEc2Service(this, 'Service', {
   cluster,
   memoryLimitMiB: 1024,
   taskImageOptions: {
     image: ecs.ContainerImage.fromRegistry('test'),
     environment: {
       TEST_ENVIRONMENT_VARIABLE1: "test environment variable 1 value",
-      TEST_ENVIRONMENT_VARIABLE2: "test environment variable 2 value"
+      TEST_ENVIRONMENT_VARIABLE2: "test environment variable 2 value",
     },
   },
   desiredCount: 2,
@@ -41,7 +42,8 @@ const loadBalancedEcsService = new ecsPatterns.ApplicationLoadBalancedEc2Service
 * `ApplicationLoadBalancedFargateService`
 
 ```ts
-const loadBalancedFargateService = new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
+declare const cluster: ecs.Cluster;
+const loadBalancedFargateService = new ecsPatterns.ApplicationLoadBalancedFargateService(this, 'Service', {
   cluster,
   memoryLimitMiB: 1024,
   cpu: 512,
@@ -78,7 +80,8 @@ Additionally, if more than one application target group are needed, instantiate 
 
 ```ts
 // One application load balancer with one listener and two target groups.
-const loadBalancedEc2Service = new ApplicationMultipleTargetGroupsEc2Service(stack, 'Service', {
+declare const cluster: ecs.Cluster;
+const loadBalancedEc2Service = new ecsPatterns.ApplicationMultipleTargetGroupsEc2Service(this, 'Service', {
   cluster,
   memoryLimitMiB: 256,
   taskImageOptions: {
@@ -91,9 +94,9 @@ const loadBalancedEc2Service = new ApplicationMultipleTargetGroupsEc2Service(sta
     {
       containerPort: 90,
       pathPattern: 'a/b/c',
-      priority: 10
-    }
-  ]
+      priority: 10,
+    },
+  ],
 });
 ```
 
@@ -101,7 +104,8 @@ const loadBalancedEc2Service = new ApplicationMultipleTargetGroupsEc2Service(sta
 
 ```ts
 // One application load balancer with one listener and two target groups.
-const loadBalancedFargateService = new ApplicationMultipleTargetGroupsFargateService(stack, 'Service', {
+declare const cluster: ecs.Cluster;
+const loadBalancedFargateService = new ecsPatterns.ApplicationMultipleTargetGroupsFargateService(this, 'Service', {
   cluster,
   memoryLimitMiB: 1024,
   cpu: 512,
@@ -115,9 +119,9 @@ const loadBalancedFargateService = new ApplicationMultipleTargetGroupsFargateSer
     {
       containerPort: 90,
       pathPattern: 'a/b/c',
-      priority: 10
-    }
-  ]
+      priority: 10,
+    },
+  ],
 });
 ```
 
@@ -128,14 +132,15 @@ To define an Amazon ECS service that is behind a network load balancer, instanti
 * `NetworkLoadBalancedEc2Service`
 
 ```ts
-const loadBalancedEcsService = new ecsPatterns.NetworkLoadBalancedEc2Service(stack, 'Service', {
+declare const cluster: ecs.Cluster;
+const loadBalancedEcsService = new ecsPatterns.NetworkLoadBalancedEc2Service(this, 'Service', {
   cluster,
   memoryLimitMiB: 1024,
   taskImageOptions: {
     image: ecs.ContainerImage.fromRegistry('test'),
     environment: {
       TEST_ENVIRONMENT_VARIABLE1: "test environment variable 1 value",
-      TEST_ENVIRONMENT_VARIABLE2: "test environment variable 2 value"
+      TEST_ENVIRONMENT_VARIABLE2: "test environment variable 2 value",
     },
   },
   desiredCount: 2,
@@ -145,7 +150,8 @@ const loadBalancedEcsService = new ecsPatterns.NetworkLoadBalancedEc2Service(sta
 * `NetworkLoadBalancedFargateService`
 
 ```ts
-const loadBalancedFargateService = new ecsPatterns.NetworkLoadBalancedFargateService(stack, 'Service', {
+declare const cluster: ecs.Cluster;
+const loadBalancedFargateService = new ecsPatterns.NetworkLoadBalancedFargateService(this, 'Service', {
   cluster,
   memoryLimitMiB: 1024,
   cpu: 512,
@@ -167,7 +173,8 @@ Additionally, if more than one network target group is needed, instantiate one o
 
 ```ts
 // Two network load balancers, each with their own listener and target group.
-const loadBalancedEc2Service = new NetworkMultipleTargetGroupsEc2Service(stack, 'Service', {
+declare const cluster: ecs.Cluster;
+const loadBalancedEc2Service = new ecsPatterns.NetworkMultipleTargetGroupsEc2Service(this, 'Service', {
   cluster,
   memoryLimitMiB: 256,
   taskImageOptions: {
@@ -178,29 +185,29 @@ const loadBalancedEc2Service = new NetworkMultipleTargetGroupsEc2Service(stack, 
       name: 'lb1',
       listeners: [
         {
-          name: 'listener1'
-        }
-      ]
+          name: 'listener1',
+        },
+      ],
     },
     {
       name: 'lb2',
       listeners: [
         {
-          name: 'listener2'
-        }
-      ]
-    }
+          name: 'listener2',
+        },
+      ],
+    },
   ],
   targetGroups: [
     {
       containerPort: 80,
-      listener: 'listener1'
+      listener: 'listener1',
     },
     {
       containerPort: 90,
-      listener: 'listener2'
-    }
-  ]
+      listener: 'listener2',
+    },
+  ],
 });
 ```
 
@@ -208,7 +215,8 @@ const loadBalancedEc2Service = new NetworkMultipleTargetGroupsEc2Service(stack, 
 
 ```ts
 // Two network load balancers, each with their own listener and target group.
-const loadBalancedFargateService = new NetworkMultipleTargetGroupsFargateService(stack, 'Service', {
+declare const cluster: ecs.Cluster;
+const loadBalancedFargateService = new ecsPatterns.NetworkMultipleTargetGroupsFargateService(this, 'Service', {
   cluster,
   memoryLimitMiB: 512,
   taskImageOptions: {
@@ -219,29 +227,29 @@ const loadBalancedFargateService = new NetworkMultipleTargetGroupsFargateService
       name: 'lb1',
       listeners: [
         {
-          name: 'listener1'
-        }
-      ]
+          name: 'listener1',
+        },
+      ],
     },
     {
       name: 'lb2',
       listeners: [
         {
-          name: 'listener2'
-        }
-      ]
-    }
+          name: 'listener2',
+        },
+      ],
+    },
   ],
   targetGroups: [
     {
       containerPort: 80,
-      listener: 'listener1'
+      listener: 'listener1',
     },
     {
       containerPort: 90,
-      listener: 'listener2'
-    }
-  ]
+      listener: 'listener2',
+    },
+  ],
 });
 ```
 
@@ -252,7 +260,8 @@ To define a service that creates a queue and reads from that queue, instantiate 
 * `QueueProcessingEc2Service`
 
 ```ts
-const queueProcessingEc2Service = new QueueProcessingEc2Service(stack, 'Service', {
+declare const cluster: ecs.Cluster;
+const queueProcessingEc2Service = new ecsPatterns.QueueProcessingEc2Service(this, 'Service', {
   cluster,
   memoryLimitMiB: 1024,
   image: ecs.ContainerImage.fromRegistry('test'),
@@ -261,9 +270,8 @@ const queueProcessingEc2Service = new QueueProcessingEc2Service(stack, 'Service'
   desiredTaskCount: 2,
   environment: {
     TEST_ENVIRONMENT_VARIABLE1: "test environment variable 1 value",
-    TEST_ENVIRONMENT_VARIABLE2: "test environment variable 2 value"
+    TEST_ENVIRONMENT_VARIABLE2: "test environment variable 2 value",
   },
-  queue,
   maxScalingCapacity: 5,
   containerName: 'test',
 });
@@ -272,7 +280,8 @@ const queueProcessingEc2Service = new QueueProcessingEc2Service(stack, 'Service'
 * `QueueProcessingFargateService`
 
 ```ts
-const queueProcessingFargateService = new QueueProcessingFargateService(stack, 'Service', {
+declare const cluster: ecs.Cluster;
+const queueProcessingFargateService = new ecsPatterns.QueueProcessingFargateService(this, 'Service', {
   cluster,
   memoryLimitMiB: 512,
   image: ecs.ContainerImage.fromRegistry('test'),
@@ -281,9 +290,8 @@ const queueProcessingFargateService = new QueueProcessingFargateService(stack, '
   desiredTaskCount: 2,
   environment: {
     TEST_ENVIRONMENT_VARIABLE1: "test environment variable 1 value",
-    TEST_ENVIRONMENT_VARIABLE2: "test environment variable 2 value"
+    TEST_ENVIRONMENT_VARIABLE2: "test environment variable 2 value",
   },
-  queue,
   maxScalingCapacity: 5,
   containerName: 'test',
 });
@@ -299,29 +307,31 @@ To define a task that runs periodically, there are 2 options:
 
 ```ts
 // Instantiate an Amazon EC2 Task to run at a scheduled interval
-const ecsScheduledTask = new ScheduledEc2Task(stack, 'ScheduledTask', {
+declare const cluster: ecs.Cluster;
+const ecsScheduledTask = new ecsPatterns.ScheduledEc2Task(this, 'ScheduledTask', {
   cluster,
   scheduledEc2TaskImageOptions: {
     image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
     memoryLimitMiB: 256,
     environment: { name: 'TRIGGER', value: 'CloudWatch Events' },
   },
-  schedule: events.Schedule.expression('rate(1 minute)'),
+  schedule: appscaling.Schedule.expression('rate(1 minute)'),
   enabled: true,
-  ruleName: 'sample-scheduled-task-rule'
+  ruleName: 'sample-scheduled-task-rule',
 });
 ```
 
 * `ScheduledFargateTask`
 
 ```ts
-const scheduledFargateTask = new ScheduledFargateTask(stack, 'ScheduledFargateTask', {
+declare const cluster: ecs.Cluster;
+const scheduledFargateTask = new ecsPatterns.ScheduledFargateTask(this, 'ScheduledFargateTask', {
   cluster,
   scheduledFargateTaskImageOptions: {
     image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
     memoryLimitMiB: 512,
   },
-  schedule: events.Schedule.expression('rate(1 minute)'),
+  schedule: appscaling.Schedule.expression('rate(1 minute)'),
   platformVersion: ecs.FargatePlatformVersion.LATEST,
 });
 ```
@@ -330,13 +340,37 @@ const scheduledFargateTask = new ScheduledFargateTask(stack, 'ScheduledFargateTa
 
 In addition to using the constructs, users can also add logic to customize these constructs:
 
+### Configure HTTPS on an ApplicationLoadBalancedFargateService
+
+```ts
+import { HostedZone } from '@aws-cdk/aws-route53';
+import { Certificate } from '@aws-cdk/aws-certificatemanager';
+import { SslPolicy } from '@aws-cdk/aws-elasticloadbalancingv2';
+
+const domainZone = HostedZone.fromLookup(this, 'Zone', { domainName: 'example.com' });
+const certificate = Certificate.fromCertificateArn(this, 'Cert', 'arn:aws:acm:us-east-1:123456:certificate/abcdefg');
+
+declare const vpc: ec2.Vpc;
+declare const cluster: ecs.Cluster;
+const loadBalancedFargateService = new ecsPatterns.ApplicationLoadBalancedFargateService(this, 'Service', {
+  vpc,
+  cluster,
+  certificate,
+  sslPolicy: SslPolicy.RECOMMENDED,
+  domainName: 'api.example.com',
+  domainZone,
+  redirectHTTP: true,
+  taskImageOptions: {
+    image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+  },
+});
+```
+
 ### Add Schedule-Based Auto-Scaling to an ApplicationLoadBalancedFargateService
 
 ```ts
-import { Schedule } from '@aws-cdk/aws-applicationautoscaling';
-import { ApplicationLoadBalancedFargateService, ApplicationLoadBalancedFargateServiceProps } from './application-load-balanced-fargate-service';
-
-const loadBalancedFargateService = new ApplicationLoadBalancedFargateService(stack, 'Service', {
+declare const cluster: ecs.Cluster;
+const loadBalancedFargateService = new ecsPatterns.ApplicationLoadBalancedFargateService(this, 'Service', {
   cluster,
   memoryLimitMiB: 1024,
   desiredCount: 1,
@@ -352,12 +386,12 @@ const scalableTarget = loadBalancedFargateService.service.autoScaleTaskCount({
 });
 
 scalableTarget.scaleOnSchedule('DaytimeScaleDown', {
-  schedule: Schedule.cron({ hour: '8', minute: '0'}),
+  schedule: appscaling.Schedule.cron({ hour: '8', minute: '0'}),
   minCapacity: 1,
 });
 
 scalableTarget.scaleOnSchedule('EveningRushScaleUp', {
-  schedule: Schedule.cron({ hour: '20', minute: '0'}),
+  schedule: appscaling.Schedule.cron({ hour: '20', minute: '0'}),
   minCapacity: 10,
 });
 ```
@@ -365,9 +399,8 @@ scalableTarget.scaleOnSchedule('EveningRushScaleUp', {
 ### Add Metric-Based Auto-Scaling to an ApplicationLoadBalancedFargateService
 
 ```ts
-import { ApplicationLoadBalancedFargateService } from './application-load-balanced-fargate-service';
-
-const loadBalancedFargateService = new ApplicationLoadBalancedFargateService(stack, 'Service', {
+declare const cluster: ecs.Cluster;
+const loadBalancedFargateService = new ecsPatterns.ApplicationLoadBalancedFargateService(this, 'Service', {
   cluster,
   memoryLimitMiB: 1024,
   desiredCount: 1,
@@ -394,9 +427,8 @@ scalableTarget.scaleOnMemoryUtilization('MemoryScaling', {
 ### Change the default Deployment Controller
 
 ```ts
-import { ApplicationLoadBalancedFargateService } from './application-load-balanced-fargate-service';
-
-const loadBalancedFargateService = new ApplicationLoadBalancedFargateService(stack, 'Service', {
+declare const cluster: ecs.Cluster;
+const loadBalancedFargateService = new ecsPatterns.ApplicationLoadBalancedFargateService(this, 'Service', {
   cluster,
   memoryLimitMiB: 1024,
   desiredCount: 1,
@@ -418,7 +450,8 @@ deployment circuit breaker and optionally enable `rollback` for automatic rollba
 for more details.
 
 ```ts
-const service = new ApplicationLoadBalancedFargateService(stack, 'Service', {
+declare const cluster: ecs.Cluster;
+const service = new ecsPatterns.ApplicationLoadBalancedFargateService(this, 'Service', {
   cluster,
   memoryLimitMiB: 1024,
   desiredCount: 1,
@@ -433,7 +466,8 @@ const service = new ApplicationLoadBalancedFargateService(stack, 'Service', {
 ### Set deployment configuration on QueueProcessingService
 
 ```ts
-const queueProcessingFargateService = new QueueProcessingFargateService(stack, 'Service', {
+declare const cluster: ecs.Cluster;
+const queueProcessingFargateService = new ecsPatterns.QueueProcessingFargateService(this, 'Service', {
   cluster,
   memoryLimitMiB: 512,
   image: ecs.ContainerImage.fromRegistry('test'),
@@ -441,17 +475,18 @@ const queueProcessingFargateService = new QueueProcessingFargateService(stack, '
   enableLogging: false,
   desiredTaskCount: 2,
   environment: {},
-  queue,
   maxScalingCapacity: 5,
   maxHealthyPercent: 200,
-  minHealthPercent: 66,
+  minHealthyPercent: 66,
 });
 ```
 
 ### Set taskSubnets and securityGroups for QueueProcessingFargateService
 
 ```ts
-const queueProcessingFargateService = new QueueProcessingFargateService(stack, 'Service', {
+declare const vpc: ec2.Vpc;
+declare const securityGroup: ec2.SecurityGroup;
+const queueProcessingFargateService = new ecsPatterns.QueueProcessingFargateService(this, 'Service', {
   vpc,
   memoryLimitMiB: 512,
   image: ecs.ContainerImage.fromRegistry('test'),
@@ -463,7 +498,8 @@ const queueProcessingFargateService = new QueueProcessingFargateService(stack, '
 ### Define tasks with public IPs for QueueProcessingFargateService
 
 ```ts
-const queueProcessingFargateService = new QueueProcessingFargateService(stack, 'Service', {
+declare const vpc: ec2.Vpc;
+const queueProcessingFargateService = new ecsPatterns.QueueProcessingFargateService(this, 'Service', {
   vpc,
   memoryLimitMiB: 512,
   image: ecs.ContainerImage.fromRegistry('test'),
@@ -474,20 +510,94 @@ const queueProcessingFargateService = new QueueProcessingFargateService(stack, '
 ### Define tasks with custom queue parameters for QueueProcessingFargateService
 
 ```ts
-const queueProcessingFargateService = new QueueProcessingFargateService(stack, 'Service', {
+declare const vpc: ec2.Vpc;
+const queueProcessingFargateService = new ecsPatterns.QueueProcessingFargateService(this, 'Service', {
   vpc,
   memoryLimitMiB: 512,
   image: ecs.ContainerImage.fromRegistry('test'),
   maxReceiveCount: 42,
-  retentionPeriod: cdk.Duration.days(7),
-  visibilityTimeout: cdk.Duration.minutes(5),
+  retentionPeriod: Duration.days(7),
+  visibilityTimeout: Duration.minutes(5),
+});
+```
+
+### Set capacityProviderStrategies for QueueProcessingFargateService
+
+```ts
+declare const cluster: ecs.Cluster;
+cluster.enableFargateCapacityProviders();
+
+const queueProcessingFargateService = new ecsPatterns.QueueProcessingFargateService(this, 'Service', {
+  cluster,
+  memoryLimitMiB: 512,
+  image: ecs.ContainerImage.fromRegistry('test'),
+  capacityProviderStrategies: [
+    {
+      capacityProvider: 'FARGATE_SPOT',
+      weight: 2,
+    },
+    {
+      capacityProvider: 'FARGATE',
+      weight: 1,
+    },
+  ],
+});
+```
+
+### Set a custom container-level Healthcheck for QueueProcessingFargateService
+
+```ts
+declare const vpc: ec2.Vpc;
+declare const securityGroup: ec2.SecurityGroup;
+const queueProcessingFargateService = new ecsPatterns.QueueProcessingFargateService(this, 'Service', {
+  vpc,
+  memoryLimitMiB: 512,
+  image: ecs.ContainerImage.fromRegistry('test'),
+  healthCheck: {
+    command: [ "CMD-SHELL", "curl -f http://localhost/ || exit 1" ],
+    // the properties below are optional
+    interval: Duration.minutes(30),
+    retries: 123,
+    startPeriod: Duration.minutes(30),
+    timeout: Duration.minutes(30),
+  },
+});
+```
+
+### Set capacityProviderStrategies for QueueProcessingEc2Service
+
+```ts
+import * as autoscaling from '@aws-cdk/aws-autoscaling';
+
+const vpc = new ec2.Vpc(this, 'Vpc', { maxAzs: 1 });
+const cluster = new ecs.Cluster(this, 'EcsCluster', { vpc });
+const autoScalingGroup = new autoscaling.AutoScalingGroup(this, 'asg', {
+  vpc,
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.MICRO),
+  machineImage: ecs.EcsOptimizedImage.amazonLinux2(),
+});
+const capacityProvider = new ecs.AsgCapacityProvider(this, 'provider', {
+  autoScalingGroup,
+});
+cluster.addAsgCapacityProvider(capacityProvider);
+
+const queueProcessingFargateService = new ecsPatterns.QueueProcessingFargateService(this, 'Service', {
+  cluster,
+  memoryLimitMiB: 512,
+  image: ecs.ContainerImage.fromRegistry('test'),
+  capacityProviderStrategies: [
+    {
+      capacityProvider: capacityProvider.capacityProviderName,
+    },
+  ],
 });
 ```
 
 ### Select specific vpc subnets for ApplicationLoadBalancedFargateService
 
 ```ts
-const loadBalancedFargateService = new ApplicationLoadBalancedFargateService(stack, 'Service', {
+declare const cluster: ecs.Cluster;
+const loadBalancedFargateService = new ecsPatterns.ApplicationLoadBalancedFargateService(this, 'Service', {
   cluster,
   memoryLimitMiB: 1024,
   desiredCount: 1,
@@ -495,8 +605,8 @@ const loadBalancedFargateService = new ApplicationLoadBalancedFargateService(sta
   taskImageOptions: {
     image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
   },
-  vpcSubnets: {
-    subnets: [ec2.Subnet.fromSubnetId(stack, 'subnet', 'VpcISOLATEDSubnet1Subnet80F07FA0')],
+  taskSubnets: {
+    subnets: [ec2.Subnet.fromSubnetId(this, 'subnet', 'VpcISOLATEDSubnet1Subnet80F07FA0')],
   },
 });
 ```
@@ -504,13 +614,14 @@ const loadBalancedFargateService = new ApplicationLoadBalancedFargateService(sta
 ### Set PlatformVersion for ScheduledFargateTask
 
 ```ts
-const scheduledFargateTask = new ScheduledFargateTask(stack, 'ScheduledFargateTask', {
+declare const cluster: ecs.Cluster;
+const scheduledFargateTask = new ecsPatterns.ScheduledFargateTask(this, 'ScheduledFargateTask', {
   cluster,
   scheduledFargateTaskImageOptions: {
     image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
     memoryLimitMiB: 512,
   },
-  schedule: events.Schedule.expression('rate(1 minute)'),
+  schedule: appscaling.Schedule.expression('rate(1 minute)'),
   platformVersion: ecs.FargatePlatformVersion.VERSION1_4,
 });
 ```
@@ -518,18 +629,17 @@ const scheduledFargateTask = new ScheduledFargateTask(stack, 'ScheduledFargateTa
 ### Set SecurityGroups for ScheduledFargateTask
 
 ```ts
-const stack = new cdk.Stack();
-const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
-const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
-const securityGroup = new ec2.SecurityGroup(stack, 'SG', { vpc });
+const vpc = new ec2.Vpc(this, 'Vpc', { maxAzs: 1 });
+const cluster = new ecs.Cluster(this, 'EcsCluster', { vpc });
+const securityGroup = new ec2.SecurityGroup(this, 'SG', { vpc });
 
-const scheduledFargateTask = new ScheduledFargateTask(stack, 'ScheduledFargateTask', {
+const scheduledFargateTask = new ecsPatterns.ScheduledFargateTask(this, 'ScheduledFargateTask', {
   cluster,
   scheduledFargateTaskImageOptions: {
     image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
     memoryLimitMiB: 512,
   },
-  schedule: events.Schedule.expression('rate(1 minute)'),
+  schedule: appscaling.Schedule.expression('rate(1 minute)'),
   securityGroups: [securityGroup],
 });
 ```
@@ -550,12 +660,20 @@ If a desiredCount is not passed in as input to the above constructs, CloudFormat
 To enable the feature flag, ensure that the REMOVE_DEFAULT_DESIRED_COUNT flag within an application stack context is set to true, like so:
 
 ```ts
+declare const stack: Stack;
 stack.node.setContext(cxapi.ECS_REMOVE_DEFAULT_DESIRED_COUNT, true);
 ```
 
 The following is an example of an application with the REMOVE_DEFAULT_DESIRED_COUNT feature flag enabled:
 
-```ts
+```ts nofixture
+import { App, Stack } from '@aws-cdk/core';
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as ecs from '@aws-cdk/aws-ecs';
+import * as ecsPatterns from '@aws-cdk/aws-ecs-patterns';
+import * as cxapi from '@aws-cdk/cx-api';
+import * as path from 'path';
+
 const app = new App();
 
 const stack = new Stack(app, 'aws-ecs-patterns-queue');
@@ -565,7 +683,7 @@ const vpc = new ec2.Vpc(stack, 'VPC', {
   maxAzs: 2,
 });
 
-new QueueProcessingFargateService(stack, 'QueueProcessingService', {
+new ecsPatterns.QueueProcessingFargateService(stack, 'QueueProcessingService', {
   vpc,
   memoryLimitMiB: 512,
   image: new ecs.AssetImage(path.join(__dirname, '..', 'sqs-reader')),
@@ -577,28 +695,31 @@ new QueueProcessingFargateService(stack, 'QueueProcessingService', {
 The following is an example of deploying an application along with a metrics sidecar container that utilizes `dockerLabels` for discovery:
 
 ```ts
-const service = new ApplicationLoadBalancedFargateService(stack, 'Service', {
+declare const cluster: ecs.Cluster;
+declare const vpc: ec2.Vpc;
+const service = new ecsPatterns.ApplicationLoadBalancedFargateService(this, 'Service', {
   cluster,
   vpc,
   desiredCount: 1,
   taskImageOptions: {
     image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+    dockerLabels: {
+      'application.label.one': 'first_label',
+      'application.label.two': 'second_label',
+    },
   },
-  dockerLabels: {
-    'application.label.one': 'first_label'
-    'application.label.two': 'second_label'
-  }
 });
 
 service.taskDefinition.addContainer('Sidecar', {
-  image: ContainerImage.fromRegistry('example/metrics-sidecar')
-}
+  image: ecs.ContainerImage.fromRegistry('example/metrics-sidecar'),
+});
 ```
 
 ### Select specific load balancer name ApplicationLoadBalancedFargateService
 
 ```ts
-const loadBalancedFargateService = new ApplicationLoadBalancedFargateService(stack, 'Service', {
+declare const cluster: ecs.Cluster;
+const loadBalancedFargateService = new ecsPatterns.ApplicationLoadBalancedFargateService(this, 'Service', {
   cluster,
   memoryLimitMiB: 1024,
   desiredCount: 1,
@@ -606,8 +727,8 @@ const loadBalancedFargateService = new ApplicationLoadBalancedFargateService(sta
   taskImageOptions: {
     image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
   },
-  vpcSubnets: {
-    subnets: [ec2.Subnet.fromSubnetId(stack, 'subnet', 'VpcISOLATEDSubnet1Subnet80F07FA0')],
+  taskSubnets: {
+    subnets: [ec2.Subnet.fromSubnetId(this, 'subnet', 'VpcISOLATEDSubnet1Subnet80F07FA0')],
   },
   loadBalancerName: 'application-lb-name',
 });

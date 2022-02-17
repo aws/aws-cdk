@@ -203,6 +203,15 @@ export interface DockerImageAssetSource {
    * @deprecated repository name should be specified at the environment-level and not at the image level
    */
   readonly repositoryName?: string;
+
+  /**
+   * Networking mode for the RUN commands during build. _Requires Docker Engine API v1.25+_.
+   *
+   * Specify this property to build images on a specific networking mode.
+   *
+   * @default - no networking mode specified
+   */
+  readonly networkMode?: string;
 }
 
 /**
@@ -247,14 +256,14 @@ export interface FileAssetLocation {
   /**
    * The HTTP URL of this asset on Amazon S3.
    *
-   * @example https://s3-us-east-1.amazonaws.com/mybucket/myobject
+   * Example value: `https://s3-us-east-1.amazonaws.com/mybucket/myobject`
    */
   readonly httpUrl: string;
 
   /**
    * The S3 URL of this asset on Amazon S3.
    *
-   * @example s3://mybucket/myobject
+   * Example value: `s3://mybucket/myobject`
    */
   readonly s3ObjectUrl: string;
 

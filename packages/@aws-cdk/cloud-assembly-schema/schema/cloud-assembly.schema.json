@@ -226,6 +226,10 @@
                     "description": "Path to the Dockerfile (relative to the directory). (Default - no file is passed)",
                     "type": "string"
                 },
+                "networkMode": {
+                    "description": "Networking mode for the RUN commands during build. (Default - no networking mode specified)",
+                    "type": "string"
+                },
                 "id": {
                     "description": "Logical identifier for the asset",
                     "type": "string"
@@ -299,9 +303,17 @@
                     "description": "The role that needs to be assumed to deploy the stack (Default - No role is assumed (current credentials are used))",
                     "type": "string"
                 },
+                "assumeRoleExternalId": {
+                    "description": "External ID to use when assuming role for cloudformation deployments (Default - No external ID)",
+                    "type": "string"
+                },
                 "cloudFormationExecutionRoleArn": {
                     "description": "The role that is passed to CloudFormation to execute the change set (Default - No role is passed (currently assumed role/credentials are used))",
                     "type": "string"
+                },
+                "lookupRole": {
+                    "description": "The role to use to look up values from the target AWS account (Default - No role is assumed (current credentials are used))",
+                    "$ref": "#/definitions/BootstrapRole"
                 },
                 "stackTemplateAssetObjectUrl": {
                     "description": "If the stack template has already been included in the asset manifest, its asset URL (Default - Not uploaded yet, upload just before deploying)",
@@ -322,6 +334,31 @@
             },
             "required": [
                 "templateFile"
+            ]
+        },
+        "BootstrapRole": {
+            "description": "Information needed to access an IAM role created\nas part of the bootstrap process",
+            "type": "object",
+            "properties": {
+                "arn": {
+                    "description": "The ARN of the IAM role created as part of bootrapping\ne.g. lookupRoleArn",
+                    "type": "string"
+                },
+                "assumeRoleExternalId": {
+                    "description": "External ID to use when assuming the bootstrap role (Default - No external ID)",
+                    "type": "string"
+                },
+                "requiresBootstrapStackVersion": {
+                    "description": "Version of bootstrap stack required to use this role (Default - No bootstrap stack required)",
+                    "type": "number"
+                },
+                "bootstrapStackVersionSsmParameter": {
+                    "description": "Name of SSM parameter with bootstrap stack version (Default - Discover SSM parameter by reading stack)",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "arn"
             ]
         },
         "AssetManifestProperties": {
@@ -416,6 +453,12 @@
                         },
                         {
                             "$ref": "#/definitions/SecurityGroupContextQuery"
+                        },
+                        {
+                            "$ref": "#/definitions/KeyContextQuery"
+                        },
+                        {
+                            "$ref": "#/definitions/PluginContextQuery"
                         }
                     ]
                 }
@@ -433,8 +476,10 @@
                 "availability-zones",
                 "endpoint-service-availability-zones",
                 "hosted-zone",
+                "key-provider",
                 "load-balancer",
                 "load-balancer-listener",
+                "plugin",
                 "security-group",
                 "ssm",
                 "vpc-provider"
@@ -590,7 +635,7 @@
                     }
                 },
                 "returnAsymmetricSubnets": {
-                    "description": "Whether to populate the subnetGroups field of the {@link VpcContextResponse},\nwhich contains potentially asymmetric subnet groups.",
+                    "description": "Whether to populate the subnetGroups field of the{@linkVpcContextResponse},\nwhich contains potentially asymmetric subnet groups.",
                     "default": false,
                     "type": "boolean"
                 },
@@ -753,14 +798,62 @@
                     "type": "string"
                 },
                 "securityGroupId": {
-                    "description": "Security group id",
+                    "description": "Security group id (Default - None)",
+                    "type": "string"
+                },
+                "securityGroupName": {
+                    "description": "Security group name (Default - None)",
+                    "type": "string"
+                },
+                "vpcId": {
+                    "description": "VPC ID (Default - None)",
                     "type": "string"
                 }
             },
             "required": [
                 "account",
-                "region",
-                "securityGroupId"
+                "region"
+            ]
+        },
+        "KeyContextQuery": {
+            "description": "Query input for looking up a KMS Key",
+            "type": "object",
+            "properties": {
+                "account": {
+                    "description": "Query account",
+                    "type": "string"
+                },
+                "region": {
+                    "description": "Query region",
+                    "type": "string"
+                },
+                "lookupRoleArn": {
+                    "description": "The ARN of the role that should be used to look up the missing values (Default - None)",
+                    "type": "string"
+                },
+                "aliasName": {
+                    "description": "Alias name used to search the Key",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "account",
+                "aliasName",
+                "region"
+            ]
+        },
+        "PluginContextQuery": {
+            "description": "Query input for plugins\n\nThis alternate branch is necessary because it needs to be able to escape all type checking\nwe do on on the cloud assembly -- we cannot know the properties that will be used a priori.",
+            "type": "object",
+            "additionalProperties": {},
+            "properties": {
+                "pluginName": {
+                    "description": "The name of the plugin",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "pluginName"
             ]
         },
         "RuntimeInfo": {

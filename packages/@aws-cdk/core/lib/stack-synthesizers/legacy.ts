@@ -75,7 +75,8 @@ export class LegacyStackSynthesizer extends StackSynthesizer {
     }
     this.cycle = true;
     try {
-      return this.stack.addFileAsset(asset);
+      const stack = this.stack;
+      return withoutDeprecationWarnings(() => stack.addFileAsset(asset));
     } finally {
       this.cycle = false;
     }
@@ -91,7 +92,8 @@ export class LegacyStackSynthesizer extends StackSynthesizer {
     }
     this.cycle = true;
     try {
-      return this.stack.addDockerImageAsset(asset);
+      const stack = this.stack;
+      return withoutDeprecationWarnings(() => stack.addDockerImageAsset(asset));
     } finally {
       this.cycle = false;
     }
@@ -134,6 +136,7 @@ export class LegacyStackSynthesizer extends StackSynthesizer {
         buildArgs: asset.dockerBuildArgs,
         target: asset.dockerBuildTarget,
         file: asset.dockerFile,
+        networkMode: asset.networkMode,
       };
 
       this.stack.node.addMetadata(cxschema.ArtifactMetadataEntryType.ASSET, metadata);
@@ -193,5 +196,15 @@ export class LegacyStackSynthesizer extends StackSynthesizer {
       this._assetParameters = new Construct(this.stack, 'AssetParameters');
     }
     return this._assetParameters;
+  }
+}
+
+function withoutDeprecationWarnings<A>(block: () => A): A {
+  const orig = process.env.JSII_DEPRECATED;
+  process.env.JSII_DEPRECATED = 'quiet';
+  try {
+    return block();
+  } finally {
+    process.env.JSII_DEPRECATED = orig;
   }
 }

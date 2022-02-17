@@ -10,10 +10,10 @@ import { Fn } from '@aws-cdk/core';
 export abstract class DockerCredential {
   /**
    * Creates a DockerCredential for DockerHub.
-   * Convenience method for `fromCustomRegistry('index.docker.io', opts)`.
+   * Convenience method for `customRegistry('https://index.docker.io/v1/', opts)`.
    */
   public static dockerHub(secret: secretsmanager.ISecret, opts: ExternalDockerCredentialOptions = {}): DockerCredential {
-    return new ExternalDockerCredential('index.docker.io', secret, opts);
+    return new ExternalDockerCredential('https://index.docker.io/v1/', secret, opts);
   }
 
   /**
@@ -104,11 +104,11 @@ export interface EcrDockerCredentialOptions {
 /** Defines which stages of a pipeline require the specified credentials */
 export enum DockerCredentialUsage {
   /** Synth/Build */
-  SYNTH,
+  SYNTH = 'SYNTH',
   /** Self-update */
-  SELF_UPDATE,
+  SELF_UPDATE = 'SELF_UPDATE',
   /** Asset publishing */
-  ASSET_PUBLISHING,
+  ASSET_PUBLISHING = 'ASSET_PUBLISHING',
 };
 
 /** DockerCredential defined by registry domain and a secret */
@@ -202,7 +202,7 @@ interface DockerCredentialCredentialSource {
 export function dockerCredentialsInstallCommands(
   usage: DockerCredentialUsage,
   registries?: DockerCredential[],
-  osType?: ec2.OperatingSystemType): string[] {
+  osType?: ec2.OperatingSystemType | 'both'): string[] {
 
   const relevantRegistries = (registries ?? []).filter(reg => reg._applicableForUsage(usage));
   if (!relevantRegistries || relevantRegistries.length === 0) { return []; }
@@ -216,15 +216,25 @@ export function dockerCredentialsInstallCommands(
     domainCredentials,
   };
 
-  if (osType === ec2.OperatingSystemType.WINDOWS) {
+  const windowsCommands = [
+    'mkdir %USERPROFILE%\\.cdk',
+    `echo '${JSON.stringify(cdkAssetsConfigFile)}' > %USERPROFILE%\\.cdk\\cdk-docker-creds.json`,
+  ];
+
+  const linuxCommands = [
+    'mkdir $HOME/.cdk',
+    `echo '${JSON.stringify(cdkAssetsConfigFile)}' > $HOME/.cdk/cdk-docker-creds.json`,
+  ];
+
+  if (osType === 'both') {
     return [
-      'mkdir %USERPROFILE%\\.cdk',
-      `echo '${JSON.stringify(cdkAssetsConfigFile)}' > %USERPROFILE%\\.cdk\\cdk-docker-creds.json`,
+      // These tags are magic and will be stripped when rendering the project
+      ...windowsCommands.map(c => `!WINDOWS!${c}`),
+      ...linuxCommands.map(c => `!LINUX!${c}`),
     ];
+  } else if (osType === ec2.OperatingSystemType.WINDOWS) {
+    return windowsCommands;
   } else {
-    return [
-      'mkdir $HOME/.cdk',
-      `echo '${JSON.stringify(cdkAssetsConfigFile)}' > $HOME/.cdk/cdk-docker-creds.json`,
-    ];
+    return linuxCommands;
   }
 }

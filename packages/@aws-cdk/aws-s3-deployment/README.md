@@ -9,8 +9,6 @@
 
 <!--END STABILITY BANNER-->
 
-> __Status: Experimental__
-
 This library allows populating an S3 bucket with the contents of .zip files
 from other S3 buckets or from local disk.
 
@@ -20,13 +18,13 @@ enabled and populates it from a local directory on disk.
 ```ts
 const websiteBucket = new s3.Bucket(this, 'WebsiteBucket', {
   websiteIndexDocument: 'index.html',
-  publicReadAccess: true
+  publicReadAccess: true,
 });
 
 new s3deploy.BucketDeployment(this, 'DeployWebsite', {
   sources: [s3deploy.Source.asset('./website-dist')],
   destinationBucket: websiteBucket,
-  destinationKeyPrefix: 'web/static' // optional prefix in destination bucket
+  destinationKeyPrefix: 'web/static', // optional prefix in destination bucket
 });
 ```
 
@@ -68,6 +66,10 @@ The following source types are supported for bucket deployments:
 - Local .zip file: `s3deploy.Source.asset('/path/to/local/file.zip')`
 - Local directory: `s3deploy.Source.asset('/path/to/local/directory')`
 - Another bucket: `s3deploy.Source.bucket(bucket, zipObjectKey)`
+- String data: `s3deploy.Source.data('object-key.txt', 'hello, world!')`
+  (supports [deploy-time values](#data-with-deploy-time-values))
+- JSON data: `s3deploy.Source.jsonData('object-key.json', { json: 'object' })`
+  (supports [deploy-time values](#data-with-deploy-time-values))
 
 To create a source from a single file, you can pass `AssetOptions` to exclude
 all but a single file:
@@ -127,6 +129,7 @@ when the `BucketDeployment` resource is created or updated. You can use the opti
 this behavior, in which case the files will not be deleted.
 
 ```ts
+declare const destinationBucket: s3.Bucket;
 new s3deploy.BucketDeployment(this, 'DeployMeWithoutDeletingFilesOnDestination', {
   sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
   destinationBucket,
@@ -139,20 +142,46 @@ each with its own characteristics. For example, you can set different cache-cont
 based on file extensions:
 
 ```ts
-new BucketDeployment(this, 'BucketDeployment', {
-  sources: [Source.asset('./website', { exclude: ['index.html'] })],
-  destinationBucket: bucket,
-  cacheControl: [CacheControl.fromString('max-age=31536000,public,immutable')],
+declare const destinationBucket: s3.Bucket;
+new s3deploy.BucketDeployment(this, 'BucketDeployment', {
+  sources: [s3deploy.Source.asset('./website', { exclude: ['index.html'] })],
+  destinationBucket,
+  cacheControl: [s3deploy.CacheControl.fromString('max-age=31536000,public,immutable')],
   prune: false,
 });
 
-new BucketDeployment(this, 'HTMLBucketDeployment', {
-  sources: [Source.asset('./website', { exclude: ['*', '!index.html'] })],
-  destinationBucket: bucket,
-  cacheControl: [CacheControl.fromString('max-age=0,no-cache,no-store,must-revalidate')],
+new s3deploy.BucketDeployment(this, 'HTMLBucketDeployment', {
+  sources: [s3deploy.Source.asset('./website', { exclude: ['*', '!index.html'] })],
+  destinationBucket,
+  cacheControl: [s3deploy.CacheControl.fromString('max-age=0,no-cache,no-store,must-revalidate')],
   prune: false,
 });
 ```
+
+## Exclude and Include Filters
+
+There are two points at which filters are evaluated in a deployment: asset bundling and the actual deployment. If you simply want to exclude files in the asset bundling process, you should leverage the `exclude` property of `AssetOptions` when defining your source:
+
+```ts
+declare const destinationBucket: s3.Bucket;
+new s3deploy.BucketDeployment(this, 'HTMLBucketDeployment', {
+  sources: [s3deploy.Source.asset('./website', { exclude: ['*', '!index.html'] })],
+  destinationBucket,
+});
+```
+
+If you want to specify filters to be used in the deployment process, you can use the `exclude` and `include` filters on `BucketDeployment`.  If excluded, these files will not be deployed to the destination bucket. In addition, if the file already exists in the destination bucket, it will not be deleted if you are using the `prune` option:
+
+```ts
+declare const destinationBucket: s3.Bucket;
+new s3deploy.BucketDeployment(this, 'DeployButExcludeSpecificFiles', {
+  sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+  destinationBucket,
+  exclude: ['*.txt'],
+});
+```
+
+These filters follow the same format that is used for the AWS CLI.  See the CLI documentation for information on [Using Include and Exclude Filters](https://docs.aws.amazon.com/cli/latest/reference/s3/index.html#use-of-exclude-and-include-filters).
 
 ## Objects metadata
 
@@ -163,22 +192,27 @@ User-defined metadata are not used by S3 and keys always begin with `x-amz-meta-
 
 System defined metadata keys include the following:
 
-- cache-control
-- content-disposition
-- content-encoding
-- content-language
-- content-type
-- expires
-- server-side-encryption
-- storage-class
-- website-redirect-location
-- ssekms-key-id
-- sse-customer-algorithm
+- cache-control (`--cache-control` in `aws s3 sync`)
+- content-disposition (`--content-disposition` in `aws s3 sync`)
+- content-encoding (`--content-encoding` in `aws s3 sync`)
+- content-language (`--content-language` in `aws s3 sync`)
+- content-type (`--content-type` in `aws s3 sync`)
+- expires (`--expires` in `aws s3 sync`)
+- x-amz-storage-class (`--storage-class` in `aws s3 sync`)
+- x-amz-website-redirect-location (`--website-redirect` in `aws s3 sync`)
+- x-amz-server-side-encryption (`--sse` in `aws s3 sync`)
+- x-amz-server-side-encryption-aws-kms-key-id (`--sse-kms-key-id` in `aws s3 sync`)
+- x-amz-server-side-encryption-customer-algorithm (`--sse-c-copy-source` in `aws s3 sync`)
+- x-amz-acl (`--acl` in `aws s3 sync`)
+
+You can find more information about system defined metadata keys in
+[S3 PutObject documentation](https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutObject.html)
+and [`aws s3 sync` documentation](https://docs.aws.amazon.com/cli/latest/reference/s3/sync.html).
 
 ```ts
 const websiteBucket = new s3.Bucket(this, 'WebsiteBucket', {
   websiteIndexDocument: 'index.html',
-  publicReadAccess: true
+  publicReadAccess: true,
 });
 
 new s3deploy.BucketDeployment(this, 'DeployWebsite', {
@@ -190,9 +224,13 @@ new s3deploy.BucketDeployment(this, 'DeployWebsite', {
   // system-defined metadata
   contentType: "text/html",
   contentLanguage: "en",
-  storageClass: StorageClass.INTELLIGENT_TIERING,
-  serverSideEncryption: ServerSideEncryption.AES_256,
-  cacheControl: [CacheControl.setPublic(), CacheControl.maxAge(cdk.Duration.hours(1))],
+  storageClass: s3deploy.StorageClass.INTELLIGENT_TIERING,
+  serverSideEncryption: s3deploy.ServerSideEncryption.AES_256,
+  cacheControl: [
+    s3deploy.CacheControl.setPublic(),
+    s3deploy.CacheControl.maxAge(Duration.hours(1)),
+  ],
+  accessControl: s3.BucketAccessControl.BUCKET_OWNER_FULL_CONTROL,
 });
 ```
 
@@ -228,6 +266,57 @@ size of the AWS Lambda resource handler.
 > NOTE: a new AWS Lambda handler will be created in your stack for each memory
 > limit configuration.
 
+## EFS Support
+
+If your workflow needs more disk space than default (512 MB) disk space, you may attach an EFS storage to underlying
+lambda function. To Enable EFS support set `efs` and `vpc` props for BucketDeployment.
+
+Check sample usage below.
+Please note that creating VPC inline may cause stack deletion failures. It is shown as below for simplicity.
+To avoid such condition, keep your network infra (VPC) in a separate stack and pass as props.
+
+```ts
+declare const destinationBucket: s3.Bucket;
+declare const vpc: ec2.Vpc;
+
+new s3deploy.BucketDeployment(this, 'DeployMeWithEfsStorage', {
+  sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+  destinationBucket,
+  destinationKeyPrefix: 'efs/',
+  useEfs: true,
+  vpc,
+  retainOnDelete: false,
+});
+```
+
+## Data with deploy-time values
+
+The content passed to `Source.data()` or `Source.jsonData()` can include
+references that will get resolved only during deployment.
+
+For example:
+
+```ts
+import * as sns from '@aws-cdk/aws-sns';
+
+declare const destinationBucket: s3.Bucket;
+declare const topic: sns.Topic;
+
+const appConfig = {
+  topic_arn: topic.topicArn,
+  base_url: 'https://my-endpoint',
+};
+
+new s3deploy.BucketDeployment(this, 'BucketDeployment', {
+  sources: [s3deploy.Source.jsonData('config.json', appConfig)],
+  destinationBucket,
+});
+```
+
+The value in `topic.topicArn` is a deploy-time value. It only gets resolved
+during deployment by placing a marker in the generated source file and
+substituting it when its deployed to the destination with the actual value.
+
 ## Notes
 
 - This library uses an AWS CloudFormation custom resource which is about 10MiB in
@@ -236,17 +325,19 @@ size of the AWS Lambda resource handler.
   which can be deployed into the bucket by this timeout.
 - When the `BucketDeployment` is removed from the stack, the contents are retained
   in the destination bucket ([#952](https://github.com/aws/aws-cdk/issues/952)).
-- Bucket deployment _only happens_ during stack create/update. This means that
-  if you wish to update the contents of the destination, you will need to
-  change the source s3 key (or bucket), so that the resource will be updated.
-  This is inline with best practices. If you use local disk assets, this will
-  happen automatically whenever you modify the asset, since the S3 key is based
-  on a hash of the asset contents.
+- If you are using `s3deploy.Source.bucket()` to take the file source from
+  another bucket: the deployed files will only be updated if the key (file name)
+  of the file in the source  bucket changes. Mutating the file in place will not
+  be good enough: the custom resource will simply not run if the properties don't
+  change.
+  - If you use assets (`s3deploy.Source.asset()`) you don't need to worry
+    about this: the asset system will make sure that if the files have changed,
+    the file name is unique and the deployment will run.
 
 ## Development
 
 The custom resource is implemented in Python 3.6 in order to be able to leverage
-the AWS CLI for "aws sync". The code is under [`lib/lambda`](https://github.com/aws/aws-cdk/tree/master/packages/%40aws-cdk/aws-s3-deployment/lib/lambda) and
+the AWS CLI for "aws s3 sync". The code is under [`lib/lambda`](https://github.com/aws/aws-cdk/tree/master/packages/%40aws-cdk/aws-s3-deployment/lib/lambda) and
 unit tests are under [`test/lambda`](https://github.com/aws/aws-cdk/tree/master/packages/%40aws-cdk/aws-s3-deployment/test/lambda).
 
 This package requires Python 3.6 during build time in order to create the custom
@@ -255,4 +346,4 @@ might be tricky to build on Windows.
 
 ## Roadmap
 
- - [ ] Support "blue/green" deployments ([#954](https://github.com/aws/aws-cdk/issues/954))
+- [ ] Support "blue/green" deployments ([#954](https://github.com/aws/aws-cdk/issues/954))

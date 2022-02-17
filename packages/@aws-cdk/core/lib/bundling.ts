@@ -2,6 +2,7 @@ import { spawnSync, SpawnSyncOptions } from 'child_process';
 import * as crypto from 'crypto';
 import { isAbsolute, join } from 'path';
 import { FileSystem } from './fs';
+import { quiet, reset } from './private/jsii-deprecated';
 
 /**
  * Bundling options
@@ -16,7 +17,7 @@ export interface BundlingOptions {
   /**
    * The entrypoint to run in the Docker container.
    *
-   * @example ['/bin/sh', '-c']
+   * Example value: `['/bin/sh', '-c']`
    *
    * @see https://docs.docker.com/engine/reference/builder/#entrypoint
    *
@@ -27,7 +28,7 @@ export interface BundlingOptions {
   /**
    * The command to run in the Docker container.
    *
-   * @example ['npm', 'install']
+   * Example value: `['npm', 'install']`
    *
    * @see https://docs.docker.com/engine/reference/run/
    *
@@ -86,6 +87,14 @@ export interface BundlingOptions {
    *
    */
   readonly outputType?: BundlingOutput;
+
+  /**
+   * [Security configuration](https://docs.docker.com/engine/reference/run/#security-configuration)
+   * when running the docker container.
+   *
+   * @default - no security options
+   */
+  readonly securityOpt?: string;
 }
 
 /**
@@ -192,7 +201,7 @@ export class BundlingDockerImage {
       ...options.user
         ? ['-u', options.user]
         : [],
-      ...flatten(volumes.map(v => ['-v', `${v.hostPath}:${v.containerPath}:${v.consistency ?? DockerVolumeConsistency.DELEGATED}`])),
+      ...flatten(volumes.map(v => ['-v', `${v.hostPath}:${v.containerPath}:${isSeLinux() ? 'z,' : ''}${v.consistency ?? DockerVolumeConsistency.DELEGATED}`])),
       ...flatten(Object.entries(environment).map(([k, v]) => ['--env', `${k}=${v}`])),
       ...options.workingDirectory
         ? ['-w', options.workingDirectory]
@@ -287,9 +296,19 @@ export class DockerImage extends BundlingDockerImage {
     return new DockerImage(image);
   }
 
-  /** @param image The Docker image */
-  constructor(public readonly image: string, _imageHash?: string) {
+  /** The Docker image */
+  public readonly image: string;
+
+  constructor(image: string, _imageHash?: string) {
+    // It is preferrable for the deprecated class to inherit a non-deprecated class.
+    // However, in this case, the opposite has occurred which is incompatible with
+    // a deprecation feature. See https://github.com/aws/jsii/issues/3102.
+    const deprecated = quiet();
+
     super(image, _imageHash);
+
+    reset(deprecated);
+    this.image = image;
   }
 
   /**
@@ -298,14 +317,30 @@ export class DockerImage extends BundlingDockerImage {
    * @return The overridden image name if set or image hash name in that order
    */
   public toJSON() {
-    return super.toJSON();
+    // It is preferrable for the deprecated class to inherit a non-deprecated class.
+    // However, in this case, the opposite has occurred which is incompatible with
+    // a deprecation feature. See https://github.com/aws/jsii/issues/3102.
+    const deprecated = quiet();
+
+    const json = super.toJSON();
+
+    reset(deprecated);
+    return json;
   }
 
   /**
    * Runs a Docker image
    */
   public run(options: DockerRunOptions = {}) {
-    return super.run(options);
+    // It is preferrable for the deprecated class to inherit a non-deprecated class.
+    // However, in this case, the opposite has occurred which is incompatible with
+    // a deprecation feature. See https://github.com/aws/jsii/issues/3102.
+    const deprecated = quiet();
+
+    const result = super.run(options);
+
+    reset(deprecated);
+    return result;
   }
 
   /**
@@ -318,7 +353,15 @@ export class DockerImage extends BundlingDockerImage {
    * @returns the destination path
    */
   public cp(imagePath: string, outputPath?: string): string {
-    return super.cp(imagePath, outputPath);
+    // It is preferrable for the deprecated class to inherit a non-deprecated class.
+    // However, in this case, the opposite has occurred which is incompatible with
+    // a deprecation feature. See https://github.com/aws/jsii/issues/3102.
+    const deprecated = quiet();
+
+    const result = super.cp(imagePath, outputPath);
+
+    reset(deprecated);
+    return result;
   }
 }
 
@@ -413,7 +456,7 @@ export interface DockerRunOptions {
    * [Security configuration](https://docs.docker.com/engine/reference/run/#security-configuration)
    * when running the docker container.
    *
-   * @default - no secutiy options
+   * @default - no security options
    */
   readonly securityOpt?: string;
 }
@@ -439,7 +482,7 @@ export interface DockerBuildOptions {
   /**
    * Set platform if server is multi-platform capable. _Requires Docker Engine API v1.38+_.
    *
-   * @example 'linux/amd64'
+   * Example value: `linux/amd64`
    *
    * @default - no platform specified
    */
@@ -472,4 +515,29 @@ function dockerExec(args: string[], options?: SpawnSyncOptions) {
   }
 
   return proc;
+}
+
+function isSeLinux() : boolean {
+  if (process.platform != 'linux') {
+    return false;
+  }
+  const prog = 'selinuxenabled';
+  const proc = spawnSync(prog, [], {
+    stdio: [ // show selinux status output
+      'pipe', // get value of stdio
+      process.stderr, // redirect stdout to stderr
+      'inherit', // inherit stderr
+    ],
+  });
+  if (proc.error) {
+    // selinuxenabled not a valid command, therefore not enabled
+    return false;
+  }
+  if (proc.status == 0) {
+    // selinux enabled
+    return true;
+  } else {
+    // selinux not enabled
+    return false;
+  }
 }

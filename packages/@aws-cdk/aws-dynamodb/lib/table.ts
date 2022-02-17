@@ -4,6 +4,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as kinesis from '@aws-cdk/aws-kinesis';
 import * as kms from '@aws-cdk/aws-kms';
 import {
+  ArnFormat,
   Aws, CfnCondition, CfnCustomResource, CfnResource, CustomResource, Duration,
   Fn, IResource, Lazy, Names, RemovalPolicy, Resource, Stack, Token,
 } from '@aws-cdk/core';
@@ -71,6 +72,21 @@ export enum Operation {
   /** BatchWriteItem */
   BATCH_WRITE_ITEM = 'BatchWriteItem',
 
+  /** TransactWriteItems */
+  TRANSACT_WRITE_ITEMS = 'TransactWriteItems',
+
+  /** TransactGetItems */
+  TRANSACT_GET_ITEMS = 'TransactGetItems',
+
+  /** ExecuteTransaction */
+  EXECUTE_TRANSACTION = 'ExecuteTransaction',
+
+  /** BatchExecuteStatement */
+  BATCH_EXECUTE_STATEMENT = 'BatchExecuteStatement',
+
+  /** ExecuteStatement */
+  EXECUTE_STATEMENT = 'ExecuteStatement',
+
 }
 
 /**
@@ -101,6 +117,12 @@ export enum TableEncryption {
   /**
    * Server-side KMS encryption with a customer master key managed by customer.
    * If `encryptionKey` is specified, this key will be used, otherwise, one will be defined.
+   *
+   * > **NOTE**: if `encryptionKey` is not specified and the `Table` construct creates
+   * > a KMS key for you, the key will be created with default permissions. If you are using
+   * > CDKv2, these permissions will be sufficient to enable the key for use with DynamoDB tables.
+   * > If you are using CDKv1, make sure the feature flag `@aws-cdk/aws-kms:defaultKeyPolicies`
+   * > is set to `true` in your `cdk.json`.
    */
   CUSTOMER_MANAGED = 'CUSTOMER_MANAGED',
 
@@ -178,9 +200,22 @@ export interface TableOptions extends SchemaOptions {
   readonly serverSideEncryption?: boolean;
 
   /**
+   * Specify the table class.
+   * @default STANDARD
+   */
+  readonly tableClass?: TableClass;
+
+  /**
    * Whether server-side encryption with an AWS managed customer master key is enabled.
    *
    * This property cannot be set if `serverSideEncryption` is set.
+   *
+   * > **NOTE**: if you set this to `CUSTOMER_MANAGED` and `encryptionKey` is not
+   * > specified, the key that the Tablet generates for you will be created with
+   * > default permissions. If you are using CDKv2, these permissions will be
+   * > sufficient to enable the key for use with DynamoDB tables.  If you are
+   * > using CDKv1, make sure the feature flag
+   * > `@aws-cdk/aws-kms:defaultKeyPolicies` is set to `true` in your `cdk.json`.
    *
    * @default - server-side encryption is enabled with an AWS owned customer master key
    */
@@ -230,6 +265,22 @@ export interface TableOptions extends SchemaOptions {
    * @default Duration.minutes(30)
    */
   readonly replicationTimeout?: Duration;
+
+  /**
+   * Indicates whether CloudFormation stack waits for replication to finish.
+   * If set to false, the CloudFormation resource will mark the resource as
+   * created and replication will be completed asynchronously. This property is
+   * ignored if replicationRegions property is not set.
+   *
+   * DO NOT UNSET this property if adding/removing multiple replicationRegions
+   * in one deployment, as CloudFormation only supports one region replication
+   * at a time. CDK overcomes this limitation by waiting for replication to
+   * finish before starting new replicationRegion.
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dynamodb-globaltable.html#cfn-dynamodb-globaltable-replicas
+   * @default true
+   */
+  readonly waitForReplicationToFinish?: boolean;
 
   /**
    * Whether CloudWatch contributor insights is enabled.
@@ -723,7 +774,7 @@ abstract class TableBase extends Resource implements ITable {
     return new cloudwatch.Metric({
       namespace: 'AWS/DynamoDB',
       metricName,
-      dimensions: {
+      dimensionsMap: {
         TableName: this.tableName,
       },
       ...props,
@@ -756,17 +807,18 @@ abstract class TableBase extends Resource implements ITable {
    * @deprecated use `metricSystemErrorsForOperations`.
    */
   public metricSystemErrors(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    if (!props?.dimensions?.Operation) {
+    if (!props?.dimensions?.Operation && !props?.dimensionsMap?.Operation) {
       // 'Operation' must be passed because its an operational metric.
       throw new Error("'Operation' dimension must be passed for the 'SystemErrors' metric.");
     }
 
-    const dimensions = {
+    const dimensionsMap = {
       TableName: this.tableName,
       ...props?.dimensions ?? {},
+      ...props?.dimensionsMap ?? {},
     };
 
-    return this.metric('SystemErrors', { statistic: 'sum', ...props, dimensions });
+    return this.metric('SystemErrors', { statistic: 'sum', ...props, dimensionsMap });
   }
 
   /**
@@ -783,7 +835,7 @@ abstract class TableBase extends Resource implements ITable {
 
     // overriding 'dimensions' here because this metric is an account metric.
     // see 'UserErrors' in https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/metrics-dimensions.html
-    return this.metric('UserErrors', { statistic: 'sum', ...props, dimensions: {} });
+    return this.metric('UserErrors', { statistic: 'sum', ...props, dimensionsMap: {} });
   }
 
   /**
@@ -800,9 +852,23 @@ abstract class TableBase extends Resource implements ITable {
    * How many requests are throttled on this table
    *
    * Default: sum over 5 minutes
+   *
+   * @deprecated Do not use this function. It returns an invalid metric. Use `metricThrottledRequestsForOperation` instead.
    */
   public metricThrottledRequests(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.cannedMetric(DynamoDBMetrics.throttledRequestsSum, props);
+    return this.metric('ThrottledRequests', { statistic: 'sum', ...props });
+  }
+
+  /**
+   * How many requests are throttled on this table, for the given operation
+   *
+   * Default: sum over 5 minutes
+   */
+  public metricThrottledRequestsForOperation(operation: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return new cloudwatch.Metric({
+      ...DynamoDBMetrics.throttledRequestsSum({ Operation: operation, TableName: this.tableName }),
+      ...props,
+    }).attachTo(this);
   }
 
   /**
@@ -812,19 +878,19 @@ abstract class TableBase extends Resource implements ITable {
    * You can customize this by using the `statistic` and `period` properties.
    */
   public metricSuccessfulRequestLatency(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    if (!props?.dimensions?.Operation) {
+    if (!props?.dimensions?.Operation && !props?.dimensionsMap?.Operation) {
       throw new Error("'Operation' dimension must be passed for the 'SuccessfulRequestLatency' metric.");
     }
 
-    const dimensions = {
+    const dimensionsMap = {
       TableName: this.tableName,
-      Operation: props.dimensions.Operation,
+      Operation: props.dimensionsMap?.Operation ?? props.dimensions?.Operation,
     };
 
     return new cloudwatch.Metric({
-      ...DynamoDBMetrics.successfulRequestLatencyAverage(dimensions),
+      ...DynamoDBMetrics.successfulRequestLatencyAverage(dimensionsMap),
       ...props,
-      dimensions,
+      dimensionsMap,
     }).attachTo(this);
   }
 
@@ -882,7 +948,7 @@ abstract class TableBase extends Resource implements ITable {
 
       const metric = this.metric(metricName, {
         ...props,
-        dimensions: {
+        dimensionsMap: {
           TableName: this.tableName,
           Operation: operation,
           ...props?.dimensions,
@@ -1032,7 +1098,7 @@ export class Table extends TableBase {
       if (!attrs.tableArn) { throw new Error('One of tableName or tableArn is required!'); }
 
       arn = attrs.tableArn;
-      const maybeTableName = stack.parseArn(attrs.tableArn).resourceName;
+      const maybeTableName = stack.splitArn(attrs.tableArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName;
       if (!maybeTableName) { throw new Error('ARN for DynamoDB table must be in the form: ...'); }
       name = maybeTableName;
     } else {
@@ -1122,6 +1188,7 @@ export class Table extends TableBase {
       },
       sseSpecification,
       streamSpecification,
+      tableClass: props.tableClass,
       timeToLiveSpecification: props.timeToLiveAttribute ? { attributeName: props.timeToLiveAttribute, enabled: true } : undefined,
       contributorInsightsSpecification: props.contributorInsightsEnabled !== undefined ? { enabled: props.contributorInsightsEnabled } : undefined,
       kinesisStreamSpecification: props.kinesisStream ? { streamArn: props.kinesisStream.streamArn } : undefined,
@@ -1152,7 +1219,7 @@ export class Table extends TableBase {
     }
 
     if (props.replicationRegions && props.replicationRegions.length > 0) {
-      this.createReplicaTables(props.replicationRegions, props.replicationTimeout);
+      this.createReplicaTables(props.replicationRegions, props.replicationTimeout, props.waitForReplicationToFinish);
     }
   }
 
@@ -1494,7 +1561,7 @@ export class Table extends TableBase {
    *
    * @param regions regions where to create tables
    */
-  private createReplicaTables(regions: string[], timeout?: Duration) {
+  private createReplicaTables(regions: string[], timeout?: Duration, waitForReplicationToFinish?: boolean) {
     const stack = Stack.of(this);
 
     if (!Token.isUnresolved(stack.region) && regions.includes(stack.region)) {
@@ -1524,6 +1591,11 @@ export class Table extends TableBase {
         properties: {
           TableName: this.tableName,
           Region: region,
+          SkipReplicationCompletedWait: waitForReplicationToFinish == null
+            ? undefined
+            // CFN changes Custom Resource properties to strings anyways,
+            // so let's do that ourselves to make it clear in the handler this is a string, not a boolean
+            : (!waitForReplicationToFinish).toString(),
         },
       });
       currentRegion.node.addDependency(
@@ -1706,6 +1778,19 @@ export enum StreamViewType {
   NEW_AND_OLD_IMAGES = 'NEW_AND_OLD_IMAGES',
   /** Only the key attributes of the modified item are written to the stream. */
   KEYS_ONLY = 'KEYS_ONLY'
+}
+
+/**
+ * DynamoDB's table class.
+ *
+ * @see https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.TableClasses.html
+ */
+export enum TableClass {
+  /** Default table class for DynamoDB. */
+  STANDARD = 'STANDARD',
+
+  /** Table class for DynamoDB that reduces storage costs compared to existing DynamoDB Standard tables. */
+  STANDARD_INFREQUENT_ACCESS = 'STANDARD_INFREQUENT_ACCESS',
 }
 
 /**

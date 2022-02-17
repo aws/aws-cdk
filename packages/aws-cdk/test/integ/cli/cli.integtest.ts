@@ -2,7 +2,7 @@ import { promises as fs } from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 import { retry, sleep } from '../helpers/aws';
-import { cloneDirectory, shell, withDefaultFixture } from '../helpers/cdk';
+import { cloneDirectory, MAJOR_VERSION, shell, withDefaultFixture } from '../helpers/cdk';
 import { integTest } from '../helpers/test-helpers';
 
 jest.setTimeout(600 * 1000);
@@ -17,6 +17,19 @@ integTest('VPC Lookup', withDefaultFixture(async (fixture) => {
 
   fixture.log('Verifying we can now import that VPC');
   await fixture.cdkDeploy('import-vpc', { modEnv: { ENABLE_VPC_TESTING: 'IMPORT' } });
+}));
+
+// testing a construct with a builtin Nodejs Lambda Function.
+// In this case we are testing the s3.Bucket construct with the
+// autoDeleteObjects prop set to true, which creates a Lambda backed
+// CustomResource. Since the compiled Lambda code (e.g. __entrypoint__.js)
+// is bundled as part of the CDK package, we want to make sure we don't
+// introduce changes to the compiled code that could prevent the Lambda from
+// executing. If we do, this test will timeout and fail.
+integTest('Construct with builtin Lambda function', withDefaultFixture(async (fixture) => {
+  await fixture.cdkDeploy('builtin-lambda-function');
+  fixture.log('Setup complete!');
+  await fixture.cdkDestroy('builtin-lambda-function');
 }));
 
 integTest('Two ways of shoing the version', withDefaultFixture(async (fixture) => {
@@ -39,23 +52,35 @@ integTest('Termination protection', withDefaultFixture(async (fixture) => {
 }));
 
 integTest('cdk synth', withDefaultFixture(async (fixture) => {
-  await expect(fixture.cdk(['synth', fixture.fullStackName('test-1')], { verbose: false })).resolves.toEqual(
-    `Resources:
-  topic69831491:
-    Type: AWS::SNS::Topic
-    Metadata:
-      aws:cdk:path: ${fixture.stackNamePrefix}-test-1/topic/Resource`);
+  await fixture.cdk(['synth', fixture.fullStackName('test-1')]);
+  expect(fixture.template('test-1')).toEqual(expect.objectContaining({
+    Resources: {
+      topic69831491: {
+        Type: 'AWS::SNS::Topic',
+        Metadata: {
+          'aws:cdk:path': `${fixture.stackNamePrefix}-test-1/topic/Resource`,
+        },
+      },
+    },
+  }));
 
-  await expect(fixture.cdk(['synth', fixture.fullStackName('test-2')], { verbose: false })).resolves.toEqual(
-    `Resources:
-  topic152D84A37:
-    Type: AWS::SNS::Topic
-    Metadata:
-      aws:cdk:path: ${fixture.stackNamePrefix}-test-2/topic1/Resource
-  topic2A4FB547F:
-    Type: AWS::SNS::Topic
-    Metadata:
-      aws:cdk:path: ${fixture.stackNamePrefix}-test-2/topic2/Resource`);
+  await fixture.cdk(['synth', fixture.fullStackName('test-2')], { verbose: false });
+  expect(fixture.template('test-2')).toEqual(expect.objectContaining({
+    Resources: {
+      topic152D84A37: {
+        Type: 'AWS::SNS::Topic',
+        Metadata: {
+          'aws:cdk:path': `${fixture.stackNamePrefix}-test-2/topic1/Resource`,
+        },
+      },
+      topic2A4FB547F: {
+        Type: 'AWS::SNS::Topic',
+        Metadata: {
+          'aws:cdk:path': `${fixture.stackNamePrefix}-test-2/topic2/Resource`,
+        },
+      },
+    },
+  }));
 }));
 
 integTest('ssm parameter provider error', withDefaultFixture(async (fixture) => {
@@ -210,12 +235,12 @@ integTest('deploy with parameters', withDefaultFixture(async (fixture) => {
     StackName: stackArn,
   });
 
-  expect(response.Stacks?.[0].Parameters).toEqual([
+  expect(response.Stacks?.[0].Parameters).toContainEqual(
     {
       ParameterKey: 'TopicNameParam',
       ParameterValue: `${fixture.stackNamePrefix}bazinga`,
     },
-  ]);
+  );
 }));
 
 integTest('update to stack in ROLLBACK_COMPLETE state will delete stack and create a new one', withDefaultFixture(async (fixture) => {
@@ -247,14 +272,14 @@ integTest('update to stack in ROLLBACK_COMPLETE state will delete stack and crea
   });
 
   // THEN
-  expect (stackArn).not.toEqual(newStackArn); // new stack was created
+  expect(stackArn).not.toEqual(newStackArn); // new stack was created
   expect(newStackResponse.Stacks?.[0].StackStatus).toEqual('CREATE_COMPLETE');
-  expect(newStackResponse.Stacks?.[0].Parameters).toEqual([
+  expect(newStackResponse.Stacks?.[0].Parameters).toContainEqual(
     {
       ParameterKey: 'TopicNameParam',
       ParameterValue: `${fixture.stackNamePrefix}allgood`,
     },
-  ]);
+  );
 }));
 
 integTest('stack in UPDATE_ROLLBACK_COMPLETE state can be updated', withDefaultFixture(async (fixture) => {
@@ -300,12 +325,12 @@ integTest('stack in UPDATE_ROLLBACK_COMPLETE state can be updated', withDefaultF
 
   // THEN
   expect(response.Stacks?.[0].StackStatus).toEqual('UPDATE_COMPLETE');
-  expect(response.Stacks?.[0].Parameters).toEqual([
+  expect(response.Stacks?.[0].Parameters).toContainEqual(
     {
       ParameterKey: 'TopicNameParam',
       ParameterValue: `${fixture.stackNamePrefix}allgood`,
     },
-  ]);
+  );
 }));
 
 integTest('deploy with wildcard and parameters', withDefaultFixture(async (fixture) => {
@@ -335,16 +360,18 @@ integTest('deploy with parameters multi', withDefaultFixture(async (fixture) => 
     StackName: stackArn,
   });
 
-  expect(response.Stacks?.[0].Parameters).toEqual([
+  expect(response.Stacks?.[0].Parameters).toContainEqual(
     {
       ParameterKey: 'DisplayNameParam',
       ParameterValue: paramVal1,
     },
+  );
+  expect(response.Stacks?.[0].Parameters).toContainEqual(
     {
       ParameterKey: 'OtherDisplayNameParam',
       ParameterValue: paramVal2,
     },
-  ]);
+  );
 }));
 
 integTest('deploy with notification ARN', withDefaultFixture(async (fixture) => {
@@ -369,82 +396,86 @@ integTest('deploy with notification ARN', withDefaultFixture(async (fixture) => 
   }
 }));
 
-integTest('deploy with role', withDefaultFixture(async (fixture) => {
-  const roleName = `${fixture.stackNamePrefix}-test-role`;
+if (MAJOR_VERSION === '1') {
+  // NOTE: this doesn't currently work with modern-style synthesis, as the bootstrap
+  // role by default will not have permission to iam:PassRole the created role.
+  integTest('deploy with role', withDefaultFixture(async (fixture) => {
+    const roleName = `${fixture.stackNamePrefix}-test-role`;
 
-  await deleteRole();
+    await deleteRole();
 
-  const createResponse = await fixture.aws.iam('createRole', {
-    RoleName: roleName,
-    AssumeRolePolicyDocument: JSON.stringify({
-      Version: '2012-10-17',
-      Statement: [{
-        Action: 'sts:AssumeRole',
-        Principal: { Service: 'cloudformation.amazonaws.com' },
-        Effect: 'Allow',
-      }, {
-        Action: 'sts:AssumeRole',
-        Principal: { AWS: (await fixture.aws.sts('getCallerIdentity', {})).Arn },
-        Effect: 'Allow',
-      }],
-    }),
-  });
-  const roleArn = createResponse.Role.Arn;
-  try {
-    await fixture.aws.iam('putRolePolicy', {
+    const createResponse = await fixture.aws.iam('createRole', {
       RoleName: roleName,
-      PolicyName: 'DefaultPolicy',
-      PolicyDocument: JSON.stringify({
+      AssumeRolePolicyDocument: JSON.stringify({
         Version: '2012-10-17',
         Statement: [{
-          Action: '*',
-          Resource: '*',
+          Action: 'sts:AssumeRole',
+          Principal: { Service: 'cloudformation.amazonaws.com' },
+          Effect: 'Allow',
+        }, {
+          Action: 'sts:AssumeRole',
+          Principal: { AWS: (await fixture.aws.sts('getCallerIdentity', {})).Arn },
           Effect: 'Allow',
         }],
       }),
     });
-
-    await retry(fixture.output, 'Trying to assume fresh role', retry.forSeconds(300), async () => {
-      await fixture.aws.sts('assumeRole', {
-        RoleArn: roleArn,
-        RoleSessionName: 'testing',
-      });
-    });
-
-    // In principle, the role has replicated from 'us-east-1' to wherever we're testing.
-    // Give it a little more sleep to make sure CloudFormation is not hitting a box
-    // that doesn't have it yet.
-    await sleep(5000);
-
-    await fixture.cdkDeploy('test-2', {
-      options: ['--role-arn', roleArn],
-    });
-
-    // Immediately delete the stack again before we delete the role.
-    //
-    // Since roles are sticky, if we delete the role before the stack, subsequent DeleteStack
-    // operations will fail when CloudFormation tries to assume the role that's already gone.
-    await fixture.cdkDestroy('test-2');
-
-  } finally {
-    await deleteRole();
-  }
-
-  async function deleteRole() {
+    const roleArn = createResponse.Role.Arn;
     try {
-      for (const policyName of (await fixture.aws.iam('listRolePolicies', { RoleName: roleName })).PolicyNames) {
-        await fixture.aws.iam('deleteRolePolicy', {
-          RoleName: roleName,
-          PolicyName: policyName,
+      await fixture.aws.iam('putRolePolicy', {
+        RoleName: roleName,
+        PolicyName: 'DefaultPolicy',
+        PolicyDocument: JSON.stringify({
+          Version: '2012-10-17',
+          Statement: [{
+            Action: '*',
+            Resource: '*',
+            Effect: 'Allow',
+          }],
+        }),
+      });
+
+      await retry(fixture.output, 'Trying to assume fresh role', retry.forSeconds(300), async () => {
+        await fixture.aws.sts('assumeRole', {
+          RoleArn: roleArn,
+          RoleSessionName: 'testing',
         });
-      }
-      await fixture.aws.iam('deleteRole', { RoleName: roleName });
-    } catch (e) {
-      if (e.message.indexOf('cannot be found') > -1) { return; }
-      throw e;
+      });
+
+      // In principle, the role has replicated from 'us-east-1' to wherever we're testing.
+      // Give it a little more sleep to make sure CloudFormation is not hitting a box
+      // that doesn't have it yet.
+      await sleep(5000);
+
+      await fixture.cdkDeploy('test-2', {
+        options: ['--role-arn', roleArn],
+      });
+
+      // Immediately delete the stack again before we delete the role.
+      //
+      // Since roles are sticky, if we delete the role before the stack, subsequent DeleteStack
+      // operations will fail when CloudFormation tries to assume the role that's already gone.
+      await fixture.cdkDestroy('test-2');
+
+    } finally {
+      await deleteRole();
     }
-  }
-}));
+
+    async function deleteRole() {
+      try {
+        for (const policyName of (await fixture.aws.iam('listRolePolicies', { RoleName: roleName })).PolicyNames) {
+          await fixture.aws.iam('deleteRolePolicy', {
+            RoleName: roleName,
+            PolicyName: policyName,
+          });
+        }
+        await fixture.aws.iam('deleteRole', { RoleName: roleName });
+      } catch (e) {
+        if (e.message.indexOf('cannot be found') > -1) { return; }
+        throw e;
+      }
+    }
+  }));
+}
 
 integTest('cdk diff', withDefaultFixture(async (fixture) => {
   const diff1 = await fixture.cdk(['diff', fixture.fullStackName('test-1')]);
@@ -721,7 +752,7 @@ integTest('templates on disk contain metadata resource, also in nested assemblie
   expect(JSON.parse(templateContents).Resources.CDKMetadata).toBeTruthy();
 
   // Load template from nested assembly
-  const nestedTemplateContents = await fixture.shell(['cat', 'cdk.out/assembly-*-stage/*-stage-StackInStage.template.json']);
+  const nestedTemplateContents = await fixture.shell(['cat', 'cdk.out/assembly-*-stage/*StackInStage*.template.json']);
 
   expect(JSON.parse(nestedTemplateContents).Resources.CDKMetadata).toBeTruthy();
 }));

@@ -1,9 +1,11 @@
 import { ArnFormat, IResource, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CloudFormationTemplate } from './cloudformation-template';
-import { AcceptLanguage } from './common';
+import { MessageLanguage } from './common';
+import { AssociationManager } from './private/association-manager';
 import { InputValidator } from './private/validation';
 import { CfnCloudFormationProduct } from './servicecatalog.generated';
+import { TagOptions } from './tag-options';
 
 /**
  * A Service Catalog product, currently only supports type CloudFormationProduct
@@ -20,11 +22,22 @@ export interface IProduct extends IResource {
    * @attribute
    */
   readonly productId: string;
+
+  /**
+   * Associate Tag Options.
+   * A TagOption is a key-value pair managed in AWS Service Catalog.
+   * It is not an AWS tag, but serves as a template for creating an AWS tag based on the TagOption.
+   */
+  associateTagOptions(tagOptions: TagOptions): void;
 }
 
 abstract class ProductBase extends Resource implements IProduct {
   public abstract readonly productArn: string;
   public abstract readonly productId: string;
+
+  public associateTagOptions(tagOptions: TagOptions) {
+    AssociationManager.associateTagOptions(this, this.productId, tagOptions);
+  }
 }
 
 /**
@@ -77,9 +90,11 @@ export interface CloudFormationProductProps {
 
   /**
    * The language code.
-   * @default - No accept language provided
+   * Controls language for logging and errors.
+   *
+   * @default - English
    */
-  readonly acceptLanguage?: AcceptLanguage;
+  readonly messageLanguage?: MessageLanguage;
 
   /**
    * The description of the product.
@@ -116,6 +131,13 @@ export interface CloudFormationProductProps {
    * @default - No support URL provided
    */
   readonly supportUrl?: string;
+
+  /**
+   * TagOptions associated directly to a product.
+   *
+   * @default - No tagOptions provided
+   */
+  readonly tagOptions?: TagOptions;
 }
 
 /**
@@ -156,7 +178,7 @@ export class CloudFormationProduct extends Product {
     this.validateProductProps(props);
 
     const product = new CfnCloudFormationProduct(this, 'Resource', {
-      acceptLanguage: props.acceptLanguage,
+      acceptLanguage: props.messageLanguage,
       description: props.description,
       distributor: props.distributor,
       name: props.productName,
@@ -168,13 +190,16 @@ export class CloudFormationProduct extends Product {
       supportUrl: props.supportUrl,
     });
 
+    this.productId = product.ref;
     this.productArn = Stack.of(this).formatArn({
       service: 'catalog',
       resource: 'product',
       resourceName: product.ref,
     });
 
-    this.productId = product.ref;
+    if (props.tagOptions !== undefined) {
+      this.associateTagOptions(props.tagOptions);
+    }
   }
 
   private renderProvisioningArtifacts(

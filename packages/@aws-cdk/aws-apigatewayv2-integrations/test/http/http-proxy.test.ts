@@ -1,7 +1,7 @@
-import '@aws-cdk/assert-internal/jest';
-import { HttpApi, HttpIntegration, HttpIntegrationType, HttpMethod, HttpRoute, HttpRouteKey, PayloadFormatVersion } from '@aws-cdk/aws-apigatewayv2';
+import { Template } from '@aws-cdk/assertions';
+import { HttpApi, HttpIntegration, HttpIntegrationType, HttpMethod, HttpRoute, HttpRouteKey, MappingValue, ParameterMapping, PayloadFormatVersion } from '@aws-cdk/aws-apigatewayv2';
 import { Stack } from '@aws-cdk/core';
-import { HttpProxyIntegration } from '../../lib';
+import { HttpUrlIntegration } from '../../lib';
 
 describe('HttpProxyIntegration', () => {
   test('default', () => {
@@ -9,13 +9,11 @@ describe('HttpProxyIntegration', () => {
     const api = new HttpApi(stack, 'HttpApi');
     new HttpRoute(stack, 'HttpProxyRoute', {
       httpApi: api,
-      integration: new HttpProxyIntegration({
-        url: 'some-target-url',
-      }),
+      integration: new HttpUrlIntegration('Integration', 'some-target-url'),
       routeKey: HttpRouteKey.with('/pets'),
     });
 
-    expect(stack).toHaveResource('AWS::ApiGatewayV2::Integration', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Integration', {
       IntegrationType: 'HTTP_PROXY',
       IntegrationUri: 'some-target-url',
       PayloadFormatVersion: '1.0',
@@ -28,14 +26,11 @@ describe('HttpProxyIntegration', () => {
     const api = new HttpApi(stack, 'HttpApi');
     new HttpRoute(stack, 'HttpProxyRoute', {
       httpApi: api,
-      integration: new HttpProxyIntegration({
-        url: 'some-target-url',
-        method: HttpMethod.PATCH,
-      }),
+      integration: new HttpUrlIntegration('Integration', 'some-target-url', { method: HttpMethod.PATCH }),
       routeKey: HttpRouteKey.with('/pets'),
     });
 
-    expect(stack).toHaveResource('AWS::ApiGatewayV2::Integration', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Integration', {
       IntegrationMethod: 'PATCH',
     });
   });
@@ -50,7 +45,7 @@ describe('HttpProxyIntegration', () => {
       integrationUri: 'some-target-url',
     });
 
-    expect(stack).toHaveResource('AWS::ApiGatewayV2::Integration', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Integration', {
       IntegrationType: 'HTTP_PROXY',
       IntegrationUri: 'some-target-url',
       PayloadFormatVersion: '99.99',
@@ -66,9 +61,31 @@ describe('HttpProxyIntegration', () => {
       integrationUri: 'some-target-url',
     });
 
-    expect(stack).toHaveResource('AWS::ApiGatewayV2::Integration', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Integration', {
       IntegrationType: 'HTTP_PROXY',
       IntegrationUri: 'some-target-url',
+    });
+  });
+
+  test('parameterMapping is correctly recognized', () => {
+    const stack = new Stack();
+    const api = new HttpApi(stack, 'HttpApi');
+    new HttpIntegration(stack, 'HttpInteg', {
+      httpApi: api,
+      integrationType: HttpIntegrationType.HTTP_PROXY,
+      integrationUri: 'some-target-url',
+      parameterMapping: new ParameterMapping()
+        .appendHeader('header2', MappingValue.requestHeader('header1'))
+        .removeHeader('header1'),
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Integration', {
+      IntegrationType: 'HTTP_PROXY',
+      IntegrationUri: 'some-target-url',
+      RequestParameters: {
+        'append:header.header2': '$request.header.header1',
+        'remove:header.header1': '',
+      },
     });
   });
 });

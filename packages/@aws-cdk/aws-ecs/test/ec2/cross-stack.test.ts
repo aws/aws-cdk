@@ -1,9 +1,9 @@
-import { expect, haveResource } from '@aws-cdk/assert-internal';
+import { Template } from '@aws-cdk/assertions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
 import { App, Stack } from '@aws-cdk/core';
-import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as ecs from '../../lib';
+import { addDefaultCapacityProvider } from '../util';
 
 // Test various cross-stack Cluster/Service/ALB scenario's
 
@@ -13,16 +13,16 @@ let stack2: Stack;
 let cluster: ecs.Cluster;
 let service: ecs.Ec2Service;
 
-nodeunitShim({
-  'setUp'(cb: () => void) {
+describe('cross stack', () => {
+  beforeEach(() => {
     app = new App();
 
     stack1 = new Stack(app, 'Stack1');
     const vpc = new ec2.Vpc(stack1, 'Vpc');
     cluster = new ecs.Cluster(stack1, 'Cluster', {
       vpc,
-      capacity: { instanceType: new ec2.InstanceType('t2.micro') },
     });
+    addDefaultCapacityProvider(cluster, stack1, vpc);
 
     stack2 = new Stack(app, 'Stack2');
     const taskDefinition = new ecs.Ec2TaskDefinition(stack2, 'TD');
@@ -37,10 +37,10 @@ nodeunitShim({
       taskDefinition,
     });
 
-    cb();
-  },
 
-  'ALB next to Service'(test: Test) {
+  });
+
+  test('ALB next to Service', () => {
     // WHEN
     const lb = new elbv2.ApplicationLoadBalancer(stack2, 'ALB', { vpc: cluster.vpc });
     const listener = lb.addListener('listener', { port: 80 });
@@ -50,14 +50,14 @@ nodeunitShim({
     });
 
     // THEN: it shouldn't throw due to cyclic dependencies
-    expect(stack2).to(haveResource('AWS::ECS::Service'));
+    Template.fromStack(stack2).resourceCountIs('AWS::ECS::Service', 1);
 
     expectIngress(stack2);
 
-    test.done();
-  },
 
-  'ALB next to Cluster'(test: Test) {
+  });
+
+  test('ALB next to Cluster', () => {
     // WHEN
     const lb = new elbv2.ApplicationLoadBalancer(stack1, 'ALB', { vpc: cluster.vpc });
     const listener = lb.addListener('listener', { port: 80 });
@@ -67,13 +67,13 @@ nodeunitShim({
     });
 
     // THEN: it shouldn't throw due to cyclic dependencies
-    expect(stack2).to(haveResource('AWS::ECS::Service'));
+    Template.fromStack(stack2).resourceCountIs('AWS::ECS::Service', 1);
     expectIngress(stack2);
 
-    test.done();
-  },
 
-  'ALB in its own stack'(test: Test) {
+  });
+
+  test('ALB in its own stack', () => {
     // WHEN
     const stack3 = new Stack(app, 'Stack3');
     const lb = new elbv2.ApplicationLoadBalancer(stack3, 'ALB', { vpc: cluster.vpc });
@@ -84,17 +84,17 @@ nodeunitShim({
     });
 
     // THEN: it shouldn't throw due to cyclic dependencies
-    expect(stack2).to(haveResource('AWS::ECS::Service'));
+    Template.fromStack(stack2).resourceCountIs('AWS::ECS::Service', 1);
     expectIngress(stack2);
 
-    test.done();
-  },
+
+  });
 });
 
 function expectIngress(stack: Stack) {
-  expect(stack).to(haveResource('AWS::EC2::SecurityGroupIngress', {
+  Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroupIngress', {
     FromPort: 32768,
     ToPort: 65535,
-    GroupId: { 'Fn::ImportValue': 'Stack1:ExportsOutputFnGetAttClusterDefaultAutoScalingGroupInstanceSecurityGroup1D15236AGroupIdEAB9C5E1' },
-  }));
+    GroupId: { 'Fn::ImportValue': 'Stack1:ExportsOutputFnGetAttDefaultAutoScalingGroupInstanceSecurityGroupFBA881D0GroupId2F7C804A' },
+  });
 }

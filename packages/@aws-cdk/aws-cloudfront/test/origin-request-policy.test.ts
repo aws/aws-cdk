@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import { App, Aws, Stack } from '@aws-cdk/core';
 import { OriginRequestPolicy, OriginRequestCookieBehavior, OriginRequestHeaderBehavior, OriginRequestQueryStringBehavior } from '../lib';
 
@@ -22,7 +22,7 @@ describe('OriginRequestPolicy', () => {
   test('minimal example', () => {
     new OriginRequestPolicy(stack, 'OriginRequestPolicy');
 
-    expect(stack).toHaveResource('AWS::CloudFront::OriginRequestPolicy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::OriginRequestPolicy', {
       OriginRequestPolicyConfig: {
         Name: 'StackOriginRequestPolicy6B17D9ED',
         CookiesConfig: {
@@ -47,7 +47,7 @@ describe('OriginRequestPolicy', () => {
       queryStringBehavior: OriginRequestQueryStringBehavior.allowList('username'),
     });
 
-    expect(stack).toHaveResource('AWS::CloudFront::OriginRequestPolicy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::OriginRequestPolicy', {
       OriginRequestPolicyConfig: {
         Name: 'MyPolicy',
         Comment: 'A default policy',

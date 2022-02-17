@@ -1,4 +1,4 @@
-import { IResource, Resource, Stack } from '@aws-cdk/core';
+import { ArnFormat, IResource, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { IFileSystem } from './efs-file-system';
 import { CfnAccessPoint } from './efs.generated';
@@ -242,7 +242,7 @@ class ImportedAccessPoint extends AccessPointBase {
       }
 
       this.accessPointArn = attrs.accessPointArn;
-      let maybeApId = Stack.of(scope).parseArn(attrs.accessPointArn).resourceName;
+      let maybeApId = Stack.of(scope).splitArn(attrs.accessPointArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName;
 
       if (!maybeApId) {
         throw new Error('ARN for AccessPoint must provide the resource name.');
@@ -267,7 +267,7 @@ class ImportedAccessPoint extends AccessPointBase {
 
   public get fileSystem() {
     if (!this._fileSystem) {
-      throw new Error("fileSystem is not available when 'fromAccessPointId()' is used. Use 'fromAccessPointAttributes()' instead");
+      throw new Error("fileSystem is only available if 'fromAccessPointAttributes()' is used and a fileSystem is passed in as an attribute.");
     }
 
     return this._fileSystem;

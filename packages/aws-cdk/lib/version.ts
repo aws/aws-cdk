@@ -1,16 +1,17 @@
-import { exec as _exec } from 'child_process';
 import * as path from 'path';
-import { promisify } from 'util';
-import * as colors from 'colors/safe';
+import * as chalk from 'chalk';
 import * as fs from 'fs-extra';
 import * as semver from 'semver';
 import { debug, print } from '../lib/logging';
 import { formatAsBanner } from '../lib/util/console-formatters';
 import { cdkCacheDir } from './util/directories';
+import { getLatestVersionFromNpm } from './util/npm';
 
 const ONE_DAY_IN_SECONDS = 1 * 24 * 60 * 60;
 
-const exec = promisify(_exec);
+const UPGRADE_DOCUMENTATION_LINKS: Record<number, string> = {
+  1: 'https://docs.aws.amazon.com/cdk/v2/guide/migrating-v2.html',
+};
 
 export const DISPLAY_VERSION = `${versionNumber()} (build ${commit()})`;
 
@@ -79,14 +80,7 @@ export async function latestVersionIfHigher(currentVersion: string, cacheFile: V
     return null;
   }
 
-  const { stdout, stderr } = await exec('npm view aws-cdk version');
-  if (stderr && stderr.trim().length > 0) {
-    debug(`The 'npm view' command generated an error stream with content [${stderr.trim()}]`);
-  }
-  const latestVersion = stdout.trim();
-  if (!semver.valid(latestVersion)) {
-    throw new Error(`npm returned an invalid semver ${latestVersion}`);
-  }
+  const latestVersion = await getLatestVersionFromNpm();
   const isNewer = semver.gt(latestVersion, currentVersion);
   await cacheFile.update(latestVersion);
 
@@ -97,19 +91,30 @@ export async function latestVersionIfHigher(currentVersion: string, cacheFile: V
   }
 }
 
-export async function displayVersionMessage(): Promise<void> {
+function getMajorVersionUpgradeMessage(currentVersion: string): string | void {
+  const currentMajorVersion = semver.major(currentVersion);
+  if (UPGRADE_DOCUMENTATION_LINKS[currentMajorVersion]) {
+    return `Information about upgrading from version ${currentMajorVersion}.x to version ${currentMajorVersion + 1}.x is available here: ${UPGRADE_DOCUMENTATION_LINKS[currentMajorVersion]}`;
+  }
+}
+
+function getVersionMessage(currentVersion: string, laterVersion: string): string[] {
+  return [
+    `Newer version of CDK is available [${chalk.green(laterVersion as string)}]`,
+    getMajorVersionUpgradeMessage(currentVersion),
+    'Upgrade recommended (npm install -g aws-cdk)',
+  ].filter(Boolean) as string[];
+}
+
+export async function displayVersionMessage(currentVersion = versionNumber(), versionCheckCache?: VersionCheckTTL): Promise<void> {
   if (!process.stdout.isTTY || process.env.CDK_DISABLE_VERSION_CHECK) {
     return;
   }
 
   try {
-    const versionCheckCache = new VersionCheckTTL();
-    const laterVersion = await latestVersionIfHigher(versionNumber(), versionCheckCache);
+    const laterVersion = await latestVersionIfHigher(currentVersion, versionCheckCache ?? new VersionCheckTTL());
     if (laterVersion) {
-      const bannerMsg = formatAsBanner([
-        `Newer version of CDK is available [${colors.green(laterVersion as string)}]`,
-        'Upgrade recommended (npm install -g aws-cdk)',
-      ]);
+      const bannerMsg = formatAsBanner(getVersionMessage(currentVersion, laterVersion));
       bannerMsg.forEach((e) => print(e));
     }
   } catch (err) {

@@ -1,4 +1,4 @@
-import { TemplateAssertions } from '@aws-cdk/assertions';
+import { Template } from '@aws-cdk/assertions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import { Stack } from '@aws-cdk/core';
 import { AccessPoint, FileSystem } from '../lib';
@@ -19,7 +19,7 @@ test('addAccessPoint correctly', () => {
   // WHEN
   fileSystem.addAccessPoint('MyAccessPoint');
   // THEN
-  TemplateAssertions.fromStack(stack).resourceCountIs('AWS::EFS::AccessPoint', 1);
+  Template.fromStack(stack).resourceCountIs('AWS::EFS::AccessPoint', 1);
 });
 
 test('new AccessPoint correctly', () => {
@@ -28,7 +28,7 @@ test('new AccessPoint correctly', () => {
     fileSystem,
   });
   // THEN
-  TemplateAssertions.fromStack(stack).resourceCountIs('AWS::EFS::AccessPoint', 1);
+  Template.fromStack(stack).resourceCountIs('AWS::EFS::AccessPoint', 1);
 });
 
 test('import an AccessPoint using fromAccessPointId', () => {
@@ -48,7 +48,7 @@ test('import an AccessPoint using fromAccessPointId throws when accessing fileSy
   });
   const imported = AccessPoint.fromAccessPointId(stack, 'ImportedAccessPoint', ap.accessPointId);
   // THEN
-  expect(() => imported.fileSystem).toThrow(/fileSystem is not available when 'fromAccessPointId\(\)' is used. Use 'fromAccessPointAttributes\(\)' instead/);
+  expect(() => imported.fileSystem).toThrow(/fileSystem is only available if 'fromAccessPointAttributes\(\)' is used and a fileSystem is passed in as an attribute./);
 });
 
 test('import an AccessPoint using fromAccessPointAttributes and the accessPointId', () => {
@@ -143,7 +143,7 @@ test('custom access point is created correctly', () => {
 
   });
   // THEN
-  TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::EFS::AccessPoint', {
+  Template.fromStack(stack).hasResourceProperties('AWS::EFS::AccessPoint', {
     FileSystemId: {
       Ref: 'EfsFileSystem37910666',
     },

@@ -1,6 +1,5 @@
-import { expect, haveResource } from '@aws-cdk/assert-internal';
+import { Template } from '@aws-cdk/assertions';
 import { App, Stack } from '@aws-cdk/core';
-import { nodeunitShim, Test } from 'nodeunit-shim';
 
 import {
   Connections,
@@ -10,8 +9,8 @@ import {
   Vpc,
 } from '../lib';
 
-nodeunitShim({
-  'peering between two security groups does not recursive infinitely'(test: Test) {
+describe('connections', () => {
+  test('peering between two security groups does not recursive infinitely', () => {
     // GIVEN
     const stack = new Stack(undefined, 'TestStack', { env: { account: '12345678', region: 'dummy' } });
 
@@ -26,10 +25,10 @@ nodeunitShim({
     conn1.connections.allowTo(conn2, Port.tcp(80), 'Test');
 
     // THEN -- it finishes!
-    test.done();
-  },
 
-  '(imported) SecurityGroup can be used as target of .allowTo()'(test: Test) {
+  });
+
+  test('(imported) SecurityGroup can be used as target of .allowTo()', () => {
     // GIVEN
     const stack = new Stack();
     const vpc = new Vpc(stack, 'VPC');
@@ -42,29 +41,29 @@ nodeunitShim({
     somethingConnectable.connections.allowTo(securityGroup, Port.allTcp(), 'Connect there');
 
     // THEN: rule to generated security group to connect to imported
-    expect(stack).to(haveResource('AWS::EC2::SecurityGroupEgress', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroupEgress', {
       GroupId: { 'Fn::GetAtt': ['SomeSecurityGroupEF219AD6', 'GroupId'] },
       IpProtocol: 'tcp',
       Description: 'Connect there',
       DestinationSecurityGroupId: 'sg-12345',
       FromPort: 0,
       ToPort: 65535,
-    }));
+    });
 
     // THEN: rule to imported security group to allow connections from generated
-    expect(stack).to(haveResource('AWS::EC2::SecurityGroupIngress', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroupIngress', {
       IpProtocol: 'tcp',
       Description: 'Connect there',
       FromPort: 0,
       GroupId: 'sg-12345',
       SourceSecurityGroupId: { 'Fn::GetAtt': ['SomeSecurityGroupEF219AD6', 'GroupId'] },
       ToPort: 65535,
-    }));
+    });
 
-    test.done();
-  },
 
-  'security groups added to connections after rule still gets rule'(test: Test) {
+  });
+
+  test('security groups added to connections after rule still gets rule', () => {
     // GIVEN
     const stack = new Stack();
     const vpc = new Vpc(stack, 'VPC');
@@ -77,7 +76,7 @@ nodeunitShim({
     connections.addSecurityGroup(sg2);
 
     // THEN
-    expect(stack).to(haveResource('AWS::EC2::SecurityGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroup', {
       GroupDescription: 'Default/SecurityGroup1',
       SecurityGroupIngress: [
         {
@@ -88,9 +87,9 @@ nodeunitShim({
           IpProtocol: 'tcp',
         },
       ],
-    }));
+    });
 
-    expect(stack).to(haveResource('AWS::EC2::SecurityGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroup', {
       GroupDescription: 'Default/SecurityGroup2',
       SecurityGroupIngress: [
         {
@@ -101,12 +100,12 @@ nodeunitShim({
           IpProtocol: 'tcp',
         },
       ],
-    }));
+    });
 
-    test.done();
-  },
 
-  'when security groups are added to target they also get the rule'(test: Test) {
+  });
+
+  test('when security groups are added to target they also get the rule', () => {
     // GIVEN
     const stack = new Stack();
     const vpc = new Vpc(stack, 'VPC');
@@ -122,24 +121,24 @@ nodeunitShim({
     connections2.addSecurityGroup(sg3);
 
     // THEN
-    expect(stack).to(haveResource('AWS::EC2::SecurityGroupIngress', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroupIngress', {
       GroupId: { 'Fn::GetAtt': ['SecurityGroup23BE86BB7', 'GroupId'] },
       SourceSecurityGroupId: { 'Fn::GetAtt': ['SecurityGroup1F554B36F', 'GroupId'] },
       FromPort: 88,
       ToPort: 88,
-    }));
+    });
 
-    expect(stack).to(haveResource('AWS::EC2::SecurityGroupIngress', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroupIngress', {
       GroupId: { 'Fn::GetAtt': ['SecurityGroup3E5E374B9', 'GroupId'] },
       SourceSecurityGroupId: { 'Fn::GetAtt': ['SecurityGroup1F554B36F', 'GroupId'] },
       FromPort: 88,
       ToPort: 88,
-    }));
+    });
 
-    test.done();
-  },
 
-  'multiple security groups allows internally between them'(test: Test) {
+  });
+
+  test('multiple security groups allows internally between them', () => {
     // GIVEN
     const stack = new Stack();
     const vpc = new Vpc(stack, 'VPC');
@@ -152,24 +151,24 @@ nodeunitShim({
     connections.addSecurityGroup(sg2);
 
     // THEN
-    expect(stack).to(haveResource('AWS::EC2::SecurityGroupIngress', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroupIngress', {
       GroupId: { 'Fn::GetAtt': ['SecurityGroup1F554B36F', 'GroupId'] },
       SourceSecurityGroupId: { 'Fn::GetAtt': ['SecurityGroup1F554B36F', 'GroupId'] },
       FromPort: 88,
       ToPort: 88,
-    }));
+    });
 
-    expect(stack).to(haveResource('AWS::EC2::SecurityGroupEgress', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroupEgress', {
       DestinationSecurityGroupId: { 'Fn::GetAtt': ['SecurityGroup1F554B36F', 'GroupId'] },
       GroupId: { 'Fn::GetAtt': ['SecurityGroup1F554B36F', 'GroupId'] },
       FromPort: 88,
       ToPort: 88,
-    }));
+    });
 
-    test.done();
-  },
 
-  'can establish cross stack Security Group connections - allowFrom'(test: Test) {
+  });
+
+  test('can establish cross stack Security Group connections - allowFrom', () => {
     // GIVEN
     const app = new App();
 
@@ -187,20 +186,20 @@ nodeunitShim({
     // THEN -- both rules are in Stack2
     app.synth();
 
-    expect(stack2).to(haveResource('AWS::EC2::SecurityGroupIngress', {
+    Template.fromStack(stack2).hasResourceProperties('AWS::EC2::SecurityGroupIngress', {
       GroupId: { 'Fn::GetAtt': ['SecurityGroupDD263621', 'GroupId'] },
       SourceSecurityGroupId: { 'Fn::ImportValue': 'Stack1:ExportsOutputFnGetAttSecurityGroupDD263621GroupIdDF6F8B09' },
-    }));
+    });
 
-    expect(stack2).to(haveResource('AWS::EC2::SecurityGroupEgress', {
+    Template.fromStack(stack2).hasResourceProperties('AWS::EC2::SecurityGroupEgress', {
       GroupId: { 'Fn::ImportValue': 'Stack1:ExportsOutputFnGetAttSecurityGroupDD263621GroupIdDF6F8B09' },
       DestinationSecurityGroupId: { 'Fn::GetAtt': ['SecurityGroupDD263621', 'GroupId'] },
-    }));
+    });
 
-    test.done();
-  },
 
-  'can establish cross stack Security Group connections - allowTo'(test: Test) {
+  });
+
+  test('can establish cross stack Security Group connections - allowTo', () => {
     // GIVEN
     const app = new App();
 
@@ -218,20 +217,20 @@ nodeunitShim({
     // THEN -- both rules are in Stack2
     app.synth();
 
-    expect(stack2).to(haveResource('AWS::EC2::SecurityGroupIngress', {
+    Template.fromStack(stack2).hasResourceProperties('AWS::EC2::SecurityGroupIngress', {
       GroupId: { 'Fn::ImportValue': 'Stack1:ExportsOutputFnGetAttSecurityGroupDD263621GroupIdDF6F8B09' },
       SourceSecurityGroupId: { 'Fn::GetAtt': ['SecurityGroupDD263621', 'GroupId'] },
-    }));
+    });
 
-    expect(stack2).to(haveResource('AWS::EC2::SecurityGroupEgress', {
+    Template.fromStack(stack2).hasResourceProperties('AWS::EC2::SecurityGroupEgress', {
       GroupId: { 'Fn::GetAtt': ['SecurityGroupDD263621', 'GroupId'] },
       DestinationSecurityGroupId: { 'Fn::ImportValue': 'Stack1:ExportsOutputFnGetAttSecurityGroupDD263621GroupIdDF6F8B09' },
-    }));
+    });
 
-    test.done();
-  },
 
-  'can establish multiple cross-stack SGs'(test: Test) {
+  });
+
+  test('can establish multiple cross-stack SGs', () => {
     // GIVEN
     const app = new App();
 
@@ -251,19 +250,19 @@ nodeunitShim({
     // THEN -- both egress rules are in Stack2
     app.synth();
 
-    expect(stack2).to(haveResource('AWS::EC2::SecurityGroupEgress', {
+    Template.fromStack(stack2).hasResourceProperties('AWS::EC2::SecurityGroupEgress', {
       GroupId: { 'Fn::ImportValue': 'Stack1:ExportsOutputFnGetAttSecurityGroupAED40ADC5GroupId1D10C76A' },
       DestinationSecurityGroupId: { 'Fn::GetAtt': ['SecurityGroupDD263621', 'GroupId'] },
-    }));
+    });
 
-    expect(stack2).to(haveResource('AWS::EC2::SecurityGroupEgress', {
+    Template.fromStack(stack2).hasResourceProperties('AWS::EC2::SecurityGroupEgress', {
       GroupId: { 'Fn::ImportValue': 'Stack1:ExportsOutputFnGetAttSecurityGroupB04591F90GroupIdFA7208D5' },
       DestinationSecurityGroupId: { 'Fn::GetAtt': ['SecurityGroupDD263621', 'GroupId'] },
-    }));
+    });
 
-    test.done();
-  },
-  'Imported SecurityGroup does not create egress rule'(test: Test) {
+
+  });
+  test('Imported SecurityGroup does not create egress rule', () => {
     // GIVEN
     const stack = new Stack();
     const vpc = new Vpc(stack, 'VPC');
@@ -276,21 +275,21 @@ nodeunitShim({
     somethingConnectable.connections.allowFrom(securityGroup, Port.allTcp(), 'Connect there');
 
     // THEN: rule to generated security group to connect to imported
-    expect(stack).to(haveResource('AWS::EC2::SecurityGroupIngress', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroupIngress', {
       GroupId: { 'Fn::GetAtt': ['SomeSecurityGroupEF219AD6', 'GroupId'] },
       IpProtocol: 'tcp',
       Description: 'Connect there',
       SourceSecurityGroupId: 'sg-12345',
       FromPort: 0,
       ToPort: 65535,
-    }));
+    });
 
     // THEN: rule to imported security group to allow connections from generated
-    expect(stack).notTo(haveResource('AWS::EC2::SecurityGroupEgress'));
+    Template.fromStack(stack).resourceCountIs('AWS::EC2::SecurityGroupEgress', 0);
 
-    test.done();
-  },
-  'Imported SecurityGroup with allowAllOutbound: false DOES create egress rule'(test: Test) {
+
+  });
+  test('Imported SecurityGroup with allowAllOutbound: false DOES create egress rule', () => {
     // GIVEN
     const stack = new Stack();
     const vpc = new Vpc(stack, 'VPC');
@@ -305,27 +304,27 @@ nodeunitShim({
     somethingConnectable.connections.allowFrom(securityGroup, Port.allTcp(), 'Connect there');
 
     // THEN: rule to generated security group to connect to imported
-    expect(stack).to(haveResource('AWS::EC2::SecurityGroupIngress', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroupIngress', {
       GroupId: { 'Fn::GetAtt': ['SomeSecurityGroupEF219AD6', 'GroupId'] },
       IpProtocol: 'tcp',
       Description: 'Connect there',
       SourceSecurityGroupId: 'sg-12345',
       FromPort: 0,
       ToPort: 65535,
-    }));
+    });
 
     // THEN: rule to imported security group to allow connections from generated
-    expect(stack).to(haveResource('AWS::EC2::SecurityGroupEgress', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroupEgress', {
       IpProtocol: 'tcp',
       Description: 'Connect there',
       FromPort: 0,
       GroupId: 'sg-12345',
       DestinationSecurityGroupId: { 'Fn::GetAtt': ['SomeSecurityGroupEF219AD6', 'GroupId'] },
       ToPort: 65535,
-    }));
+    });
 
-    test.done();
-  },
+
+  });
 });
 
 class SomethingConnectable implements IConnectable {

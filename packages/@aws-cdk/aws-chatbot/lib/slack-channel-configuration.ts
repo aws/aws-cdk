@@ -173,7 +173,7 @@ abstract class SlackChannelConfigurationBase extends cdk.Resource implements ISl
     return new cloudwatch.Metric({
       namespace: 'AWS/Chatbot',
       region: 'us-east-1',
-      dimensions: {
+      dimensionsMap: {
         ConfigurationName: this.slackChannelConfigurationName,
       },
       metricName,
@@ -204,9 +204,9 @@ export class SlackChannelConfiguration extends SlackChannelConfigurationBase {
    */
   public static fromSlackChannelConfigurationArn(scope: Construct, id: string, slackChannelConfigurationArn: string): ISlackChannelConfiguration {
     const re = /^slack-channel\//;
-    const resourceName = cdk.Stack.of(scope).parseArn(slackChannelConfigurationArn).resourceName as string;
+    const resourceName = cdk.Arn.extractResourceName(slackChannelConfigurationArn, 'chat-configuration');
 
-    if (!re.test(resourceName)) {
+    if (!cdk.Token.isUnresolved(slackChannelConfigurationArn) && !re.test(resourceName)) {
       throw new Error('The ARN of a Slack integration must be in the form: arn:aws:chatbot:{region}:{account}:chat-configuration/slack-channel/{slackChannelName}');
     }
 
@@ -227,11 +227,18 @@ export class SlackChannelConfiguration extends SlackChannelConfigurationBase {
        * The ArnComponents API will return `slack-channel/my-slack`
        * It need to handle that to gets a correct name.`my-slack`
        */
-      readonly slackChannelConfigurationName = resourceName.substring('slack-channel/'.length);
+      readonly slackChannelConfigurationName: string;
 
       constructor(s: Construct, i: string) {
         super(s, i);
         this.grantPrincipal = new iam.UnknownPrincipal({ resource: this });
+
+        // handle slackChannelConfigurationName as specified above
+        if (cdk.Token.isUnresolved(slackChannelConfigurationArn)) {
+          this.slackChannelConfigurationName = cdk.Fn.select(1, cdk.Fn.split('slack-channel/', resourceName));
+        } else {
+          this.slackChannelConfigurationName = resourceName.substring('slack-channel/'.length);
+        }
       }
     }
 
@@ -260,6 +267,12 @@ export class SlackChannelConfiguration extends SlackChannelConfigurationBase {
 
   readonly grantPrincipal: iam.IPrincipal;
 
+  /**
+   * The SNS topic that deliver notifications to AWS Chatbot.
+   * @attribute
+   */
+  private readonly notificationTopics: sns.ITopic[];
+
   constructor(scope: Construct, id: string, props: SlackChannelConfigurationProps) {
     super(scope, id, {
       physicalName: props.slackChannelConfigurationName,
@@ -271,12 +284,14 @@ export class SlackChannelConfiguration extends SlackChannelConfigurationBase {
 
     this.grantPrincipal = this.role;
 
+    this.notificationTopics = props.notificationTopics ?? [];
+
     const configuration = new CfnSlackChannelConfiguration(this, 'Resource', {
       configurationName: props.slackChannelConfigurationName,
       iamRoleArn: this.role.roleArn,
       slackWorkspaceId: props.slackWorkspaceId,
       slackChannelId: props.slackChannelId,
-      snsTopicArns: props.notificationTopics?.map(topic => topic.topicArn),
+      snsTopicArns: cdk.Lazy.list({ produce: () => this.notificationTopics.map(topic => topic.topicArn) }, { omitEmpty: true } ),
       loggingLevel: props.loggingLevel?.toString(),
     });
 
@@ -294,6 +309,14 @@ export class SlackChannelConfiguration extends SlackChannelConfigurationBase {
 
     this.slackChannelConfigurationArn = configuration.ref;
     this.slackChannelConfigurationName = props.slackChannelConfigurationName;
+  }
+
+  /**
+   * Adds a SNS topic that deliver notifications to AWS Chatbot.
+   * @param notificationTopic
+   */
+  public addNotificationTopic(notificationTopic: sns.ITopic): void {
+    this.notificationTopics.push(notificationTopic);
   }
 }
 

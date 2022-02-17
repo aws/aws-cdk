@@ -5,6 +5,7 @@ import * as route53 from '@aws-cdk/aws-route53';
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CertificateProps, ICertificate } from './certificate';
+import { CertificateBase } from './certificate-base';
 
 /**
  * Properties to create a DNS validated certificate managed by AWS Certificate Manager
@@ -46,6 +47,17 @@ export interface DnsValidatedCertificateProps extends CertificateProps {
    */
   readonly customResourceRole?: iam.IRole;
 
+  /**
+   * When set to true, when the DnsValidatedCertificate is deleted,
+   * the associated Route53 validation records are removed.
+   *
+   * CAUTION: If multiple certificates share the same domains (and same validation records),
+   * this can cause the other certificates to fail renewal and/or not validate.
+   * Not recommended for production use.
+   *
+   * @default false
+   */
+  readonly cleanupRoute53Records?: boolean;
 }
 
 /**
@@ -54,7 +66,7 @@ export interface DnsValidatedCertificateProps extends CertificateProps {
  *
  * @resource AWS::CertificateManager::Certificate
  */
-export class DnsValidatedCertificate extends cdk.Resource implements ICertificate, cdk.ITaggable {
+export class DnsValidatedCertificate extends CertificateBase implements ICertificate, cdk.ITaggable {
   public readonly certificateArn: string;
 
   /**
@@ -63,12 +75,15 @@ export class DnsValidatedCertificate extends cdk.Resource implements ICertificat
   */
 
   public readonly tags: cdk.TagManager;
+  protected readonly region?: string;
   private normalizedZoneName: string;
   private hostedZoneId: string;
   private domainName: string;
 
   constructor(scope: Construct, id: string, props: DnsValidatedCertificateProps) {
     super(scope, id);
+
+    this.region = props.region;
 
     this.domainName = props.domainName;
     this.normalizedZoneName = props.hostedZone.zoneName;
@@ -84,7 +99,7 @@ export class DnsValidatedCertificate extends cdk.Resource implements ICertificat
     const requestorFunction = new lambda.Function(this, 'CertificateRequestorFunction', {
       code: lambda.Code.fromAsset(path.resolve(__dirname, '..', 'lambda-packages', 'dns_validated_certificate_handler', 'lib')),
       handler: 'index.certificateRequestHandler',
-      runtime: lambda.Runtime.NODEJS_14_X,
+      runtime: lambda.Runtime.NODEJS_12_X,
       timeout: cdk.Duration.minutes(15),
       role: props.customResourceRole,
     });
@@ -109,6 +124,8 @@ export class DnsValidatedCertificate extends cdk.Resource implements ICertificat
         HostedZoneId: this.hostedZoneId,
         Region: props.region,
         Route53Endpoint: props.route53Endpoint,
+        // Custom resources properties are always converted to strings; might as well be explict here.
+        CleanupRecords: props.cleanupRoute53Records ? 'true' : undefined,
         Tags: cdk.Lazy.list({ produce: () => this.tags.renderTags() }),
       },
     });

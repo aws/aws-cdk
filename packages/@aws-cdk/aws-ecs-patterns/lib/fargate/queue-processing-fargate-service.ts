@@ -1,5 +1,5 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
-import { FargatePlatformVersion, FargateService, FargateTaskDefinition } from '@aws-cdk/aws-ecs';
+import { FargatePlatformVersion, FargateService, FargateTaskDefinition, HealthCheck } from '@aws-cdk/aws-ecs';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import { QueueProcessingServiceBase, QueueProcessingServiceBaseProps } from '../base/queue-processing-service-base';
@@ -70,6 +70,13 @@ export interface QueueProcessingFargateServiceProps extends QueueProcessingServi
   readonly containerName?: string;
 
   /**
+   * The health check command and associated configuration parameters for the container.
+   *
+   * @default - Health check configuration from container.
+   */
+  readonly healthCheck?: HealthCheck;
+
+  /**
    * The subnets to associate with the service.
    *
    * @default - Public subnets if `assignPublicIp` is set, otherwise the first available one of Private, Isolated, Public, in that order.
@@ -77,7 +84,7 @@ export interface QueueProcessingFargateServiceProps extends QueueProcessingServi
   readonly taskSubnets?: ec2.SubnetSelection;
 
   /**
-   * The security groups to associate with the service. If you do not specify a security group, the default security group for the VPC is used.
+   * The security groups to associate with the service. If you do not specify a security group, a new security group is created.
    *
    * @default - A new security group is created.
    */
@@ -127,6 +134,7 @@ export class QueueProcessingFargateService extends QueueProcessingServiceBase {
       environment: this.environment,
       secrets: this.secrets,
       logging: this.logDriver,
+      healthCheck: props.healthCheck,
     });
 
     // The desiredCount should be removed from the fargate service when the feature flag is removed.
@@ -149,6 +157,7 @@ export class QueueProcessingFargateService extends QueueProcessingServiceBase {
       vpcSubnets: props.taskSubnets,
       assignPublicIp: props.assignPublicIp,
       circuitBreaker: props.circuitBreaker,
+      capacityProviderStrategies: props.capacityProviderStrategies,
     });
 
     this.configureAutoscalingForService(this.service);

@@ -4,9 +4,11 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as logs from '@aws-cdk/aws-logs';
+import * as sns from '@aws-cdk/aws-sns';
 import * as sqs from '@aws-cdk/aws-sqs';
-import { Annotations, CfnResource, Duration, Fn, Lazy, Names, Stack } from '@aws-cdk/core';
+import { Annotations, ArnFormat, CfnResource, Duration, Fn, Lazy, Names, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
+import { Architecture } from './architecture';
 import { Code, CodeConfig } from './code';
 import { ICodeSigningConfig } from './code-signing-config';
 import { EventInvokeConfigOptions } from './event-invoke-config';
@@ -15,9 +17,10 @@ import { FileSystem } from './filesystem';
 import { FunctionAttributes, FunctionBase, IFunction } from './function-base';
 import { calculateFunctionHash, trimFromStart } from './function-hash';
 import { Handler } from './handler';
+import { LambdaInsightsVersion } from './lambda-insights';
 import { Version, VersionOptions } from './lambda-version';
 import { CfnFunction } from './lambda.generated';
-import { ILayerVersion } from './layers';
+import { LayerVersion, ILayerVersion } from './layers';
 import { Runtime } from './runtime';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
@@ -186,10 +189,20 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
 
   /**
    * The SQS queue to use if DLQ is enabled.
+   * If SNS topic is desired, specify `deadLetterTopic` property instead.
    *
    * @default - SQS queue with 14 day retention period if `deadLetterQueueEnabled` is `true`
    */
   readonly deadLetterQueue?: sqs.IQueue;
+
+  /**
+   * The SNS topic to use as a DLQ.
+   * Note that if `deadLetterQueueEnabled` is set to `true`, an SQS queue will be created
+   * rather than an SNS topic. Using an SNS topic as a DLQ requires this property to be set explicitly.
+   *
+   * @default - no SNS topic
+   */
+  readonly deadLetterTopic?: sns.ITopic;
 
   /**
    * Enable AWS X-Ray Tracing for Lambda Function.
@@ -213,6 +226,18 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    * @default - A new profiling group will be created if `profiling` is set.
    */
   readonly profilingGroup?: IProfilingGroup;
+
+  /**
+   * Specify the version of CloudWatch Lambda insights to use for monitoring
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Lambda-Insights.html
+   *
+   * When used with `DockerImageFunction` or `DockerImageCode`, the Docker image should have
+   * the Lambda insights agent installed.
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Lambda-Insights-Getting-Started-docker.html
+   *
+   * @default - No Lambda Insights
+   */
+  readonly insightsVersion?: LambdaInsightsVersion;
 
   /**
    * A list of layers to add to the function's execution environment. You can configure your Lambda function to pull in
@@ -301,6 +326,19 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    * @default - Not Sign the Code
    */
   readonly codeSigningConfig?: ICodeSigningConfig;
+
+  /**
+   * DEPRECATED
+   * @default [Architecture.X86_64]
+   * @deprecated use `architecture`
+   */
+  readonly architectures?: Architecture[];
+
+  /**
+   * The system architectures compatible with this lambda function.
+   * @default Architecture.X86_64
+   */
+  readonly architecture?: Architecture;
 }
 
 export interface FunctionProps extends FunctionOptions {
@@ -423,11 +461,15 @@ export class Function extends FunctionBase {
       public readonly grantPrincipal: iam.IPrincipal;
       public readonly role = role;
       public readonly permissionsNode = this.node;
+      public readonly architecture = attrs.architecture ?? Architecture.X86_64;
 
       protected readonly canCreatePermissions = attrs.sameEnvironment ?? this._isStackAccount();
+      protected readonly _skipPermissions = attrs.skipPermissions ?? false;
 
       constructor(s: Construct, i: string) {
-        super(s, i);
+        super(s, i, {
+          environmentFromArn: functionArn,
+        });
 
         this.grantPrincipal = role || new iam.UnknownPrincipal({ resource: this });
 
@@ -542,11 +584,27 @@ export class Function extends FunctionBase {
   public readonly grantPrincipal: iam.IPrincipal;
 
   /**
-   * The DLQ associated with this Lambda Function (this is an optional attribute).
+   * The DLQ (as queue) associated with this Lambda Function (this is an optional attribute).
    */
   public readonly deadLetterQueue?: sqs.IQueue;
 
+  /**
+   * The DLQ (as topic) associated with this Lambda Function (this is an optional attribute).
+   */
+  public readonly deadLetterTopic?: sns.ITopic;
+
+  /**
+   * The architecture of this Lambda Function (this is an optional attribute and defaults to X86_64).
+   */
+  public readonly architecture: Architecture;
+
+  /**
+   * The timeout configured for this lambda.
+   */
+  public readonly timeout?: Duration;
+
   public readonly permissionsNode = this.node;
+
 
   protected readonly canCreatePermissions = true;
 
@@ -561,6 +619,8 @@ export class Function extends FunctionBase {
 
   private readonly currentVersionOptions?: VersionOptions;
   private _currentVersion?: Version;
+
+  private _architecture?: Architecture;
 
   constructor(scope: Construct, id: string, props: FunctionProps) {
     super(scope, id, {
@@ -629,7 +689,15 @@ export class Function extends FunctionBase {
       this.addEnvironment(key, value);
     }
 
-    this.deadLetterQueue = this.buildDeadLetterQueue(props);
+    // DLQ can be either sns.ITopic or sqs.IQueue
+    const dlqTopicOrQueue = this.buildDeadLetterQueue(props);
+    if (dlqTopicOrQueue !== undefined) {
+      if (this.isQueue(dlqTopicOrQueue)) {
+        this.deadLetterQueue = dlqTopicOrQueue;
+      } else {
+        this.deadLetterTopic = dlqTopicOrQueue;
+      }
+    }
 
     let fileSystemConfigs: CfnFunction.FileSystemConfigProperty[] | undefined = undefined;
     if (props.filesystem) {
@@ -638,6 +706,14 @@ export class Function extends FunctionBase {
         localMountPath: props.filesystem.config.localMountPath,
       }];
     }
+
+    if (props.architecture && props.architectures !== undefined) {
+      throw new Error('Either architecture or architectures must be specified but not both.');
+    }
+    if (props.architectures && props.architectures.length > 1) {
+      throw new Error('Only one architecture must be specified.');
+    }
+    this._architecture = props.architecture ?? (props.architectures && props.architectures[0]);
 
     const resource: CfnFunction = new CfnFunction(this, 'Resource', {
       functionName: this.physicalName,
@@ -649,7 +725,7 @@ export class Function extends FunctionBase {
         zipFile: code.inlineCode,
         imageUri: code.image?.imageUri,
       },
-      layers: Lazy.list({ produce: () => this.layers.map(layer => layer.layerVersionArn) }, { omitEmpty: true }),
+      layers: Lazy.list({ produce: () => this.layers.map(layer => layer.layerVersionArn) }, { omitEmpty: true }), // Evaluated on synthesis
       handler: props.handler === Handler.FROM_IMAGE ? undefined : props.handler,
       timeout: props.timeout && props.timeout.toSeconds(),
       packageType: props.runtime === Runtime.FROM_IMAGE ? 'Image' : undefined,
@@ -660,16 +736,18 @@ export class Function extends FunctionBase {
       environment: Lazy.uncachedAny({ produce: () => this.renderEnvironment() }),
       memorySize: props.memorySize,
       vpcConfig: this.configureVpc(props),
-      deadLetterConfig: this.buildDeadLetterConfig(this.deadLetterQueue),
+      deadLetterConfig: this.buildDeadLetterConfig(dlqTopicOrQueue),
       tracingConfig: this.buildTracingConfig(props),
       reservedConcurrentExecutions: props.reservedConcurrentExecutions,
       imageConfig: undefinedIfNoKeys({
         command: code.image?.cmd,
         entryPoint: code.image?.entrypoint,
+        workingDirectory: code.image?.workingDirectory,
       }),
       kmsKeyArn: props.environmentEncryption?.keyArn,
       fileSystemConfigs,
       codeSigningConfigArn: props.codeSigningConfig?.codeSigningConfigArn,
+      architectures: this._architecture ? [this._architecture.name] : undefined,
     });
 
     resource.node.addDependency(this.role);
@@ -679,10 +757,13 @@ export class Function extends FunctionBase {
       service: 'lambda',
       resource: 'function',
       resourceName: this.physicalName,
-      sep: ':',
+      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
     });
 
     this.runtime = props.runtime;
+    this.timeout = props.timeout;
+
+    this.architecture = props.architecture ?? Architecture.X86_64;
 
     if (props.layers) {
       if (props.runtime === Runtime.FROM_IMAGE) {
@@ -747,6 +828,9 @@ export class Function extends FunctionBase {
         });
       });
     }
+
+    // Configure Lambda insights
+    this.configureLambdaInsights(props);
   }
 
   /**
@@ -777,6 +861,11 @@ export class Function extends FunctionBase {
         const runtimes = layer.compatibleRuntimes.map(runtime => runtime.name).join(', ');
         throw new Error(`This lambda function uses a runtime that is incompatible with this layer (${this.runtime.name} is not in [${runtimes}])`);
       }
+
+      // Currently no validations for compatible architectures since Lambda service
+      // allows layers configured with one architecture to be used with a Lambda function
+      // from another architecture.
+
       this.layers.push(layer);
     }
   }
@@ -861,6 +950,24 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
     }
 
     return;
+  }
+
+  /**
+   * Configured lambda insights on the function if specified. This is acheived by adding an imported layer which is added to the
+   * list of lambda layers on synthesis.
+   *
+   * https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Lambda-Insights-extension-versions.html
+   */
+  private configureLambdaInsights(props: FunctionProps): void {
+    if (props.insightsVersion === undefined) {
+      return;
+    }
+    if (props.runtime !== Runtime.FROM_IMAGE) {
+      // Layers cannot be added to Lambda container images. The image should have the insights agent installed.
+      // See https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Lambda-Insights-Getting-Started-docker.html
+      this.addLayers(LayerVersion.fromLayerVersionArn(this, 'LambdaInsightsLayer', props.insightsVersion._bind(this, this).arn));
+    }
+    this.role?.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('CloudWatchLambdaInsightsExecutionRolePolicy'));
   }
 
   private renderEnvironment() {
@@ -948,31 +1055,45 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
     };
   }
 
-  private buildDeadLetterQueue(props: FunctionProps) {
+  private isQueue(deadLetterQueue: sqs.IQueue | sns.ITopic): deadLetterQueue is sqs.IQueue {
+    return (<sqs.IQueue>deadLetterQueue).queueArn !== undefined;
+  }
+
+  private buildDeadLetterQueue(props: FunctionProps): sqs.IQueue | sns.ITopic | undefined {
+    if (!props.deadLetterQueue && !props.deadLetterQueueEnabled && !props.deadLetterTopic) {
+      return undefined;
+    }
     if (props.deadLetterQueue && props.deadLetterQueueEnabled === false) {
       throw Error('deadLetterQueue defined but deadLetterQueueEnabled explicitly set to false');
     }
-
-    if (!props.deadLetterQueue && !props.deadLetterQueueEnabled) {
-      return undefined;
+    if (props.deadLetterTopic && (props.deadLetterQueue || props.deadLetterQueueEnabled !== undefined)) {
+      throw new Error('deadLetterQueue and deadLetterTopic cannot be specified together at the same time');
     }
 
-    const deadLetterQueue = props.deadLetterQueue || new sqs.Queue(this, 'DeadLetterQueue', {
-      retentionPeriod: Duration.days(14),
-    });
-
-    this.addToRolePolicy(new iam.PolicyStatement({
-      actions: ['sqs:SendMessage'],
-      resources: [deadLetterQueue.queueArn],
-    }));
+    let deadLetterQueue: sqs.IQueue | sns.ITopic;
+    if (props.deadLetterTopic) {
+      deadLetterQueue = props.deadLetterTopic;
+      this.addToRolePolicy(new iam.PolicyStatement({
+        actions: ['sns:Publish'],
+        resources: [deadLetterQueue.topicArn],
+      }));
+    } else {
+      deadLetterQueue = props.deadLetterQueue || new sqs.Queue(this, 'DeadLetterQueue', {
+        retentionPeriod: Duration.days(14),
+      });
+      this.addToRolePolicy(new iam.PolicyStatement({
+        actions: ['sqs:SendMessage'],
+        resources: [deadLetterQueue.queueArn],
+      }));
+    }
 
     return deadLetterQueue;
   }
 
-  private buildDeadLetterConfig(deadLetterQueue?: sqs.IQueue) {
+  private buildDeadLetterConfig(deadLetterQueue?: sqs.IQueue | sns.ITopic) {
     if (deadLetterQueue) {
       return {
-        targetArn: deadLetterQueue.queueArn,
+        targetArn: this.isQueue(deadLetterQueue) ? deadLetterQueue.queueArn : deadLetterQueue.topicArn,
       };
     } else {
       return undefined;

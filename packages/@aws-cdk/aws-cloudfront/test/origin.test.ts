@@ -1,4 +1,3 @@
-import '@aws-cdk/assert-internal/jest';
 import { App, Stack, Duration } from '@aws-cdk/core';
 import { TestOrigin } from './test-origin';
 
@@ -43,4 +42,66 @@ test.each(['api', '/api', '/api/', 'api/'])
   const originBindConfig = origin.bind(stack, { originId: '0' });
 
   expect(originBindConfig.originProperty?.originPath).toEqual('/api');
+});
+
+
+test.each(['us-east-1', 'ap-southeast-2', 'eu-west-3', 'me-south-1'])
+('ensures that originShieldRegion is a valid aws region', (originShieldRegion) => {
+  const origin = new TestOrigin('www.example.com', {
+    originShieldRegion,
+  });
+  const originBindConfig = origin.bind(stack, { originId: '0' });
+
+  expect(originBindConfig.originProperty?.originShield).toEqual({
+    enabled: true,
+    originShieldRegion,
+  });
+});
+
+test('throw an error if Custom Headers keys are not permitted', () => {
+  // case sensitive
+  expect(() => {
+    new TestOrigin('example.com', {
+      customHeaders: {
+        Host: 'bad',
+        Cookie: 'bad',
+        Connection: 'bad',
+        TS: 'bad',
+      },
+    });
+  }).toThrow(/The following headers cannot be configured as custom origin headers: (.*?)/);
+
+  // case insensitive
+  expect(() => {
+    new TestOrigin('example.com', {
+      customHeaders: {
+        hOst: 'bad',
+        cOOkIe: 'bad',
+        Connection: 'bad',
+        Ts: 'bad',
+      },
+    });
+  }).toThrow(/The following headers cannot be configured as custom origin headers: (.*?)/);
+});
+
+test('throw an error if Custom Headers are pre-fixed with non-permitted keys', () => {
+  // case sensitive
+  expect(() => {
+    new TestOrigin('example.com', {
+      customHeaders: {
+        'X-Amz-dummy': 'bad',
+        'X-Edge-dummy': 'bad',
+      },
+    });
+  }).toThrow(/The following headers cannot be used as prefixes for custom origin headers: (.*?)/);
+
+  // case insensitive
+  expect(() => {
+    new TestOrigin('example.com', {
+      customHeaders: {
+        'x-amZ-dummy': 'bad',
+        'x-eDgE-dummy': 'bad',
+      },
+    });
+  }).toThrow(/The following headers cannot be used as prefixes for custom origin headers: (.*?)/);
 });
