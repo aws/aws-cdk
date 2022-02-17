@@ -109,7 +109,7 @@ test('if the queue is encrypted with a imported kms key, printout warning', () =
 
   bucket.addObjectCreatedNotification(new notif.SqsDestination(queue));
 
-  Annotations.fromStack(stack).hasWarning('/Default/ImportedKey', `Can not change key policy of imported kms key. Ensure hat your key policy contains the following permissions: \n${JSON.stringify({
+  Annotations.fromStack(stack).hasWarning('/Default/ImportedKey', `Can not change key policy of imported kms key. Ensure that your key policy contains the following permissions: \n${JSON.stringify({
     Action: [
       'kms:GenerateDataKey*',
       'kms:Decrypt',
