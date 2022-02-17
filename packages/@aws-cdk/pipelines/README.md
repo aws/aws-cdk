@@ -49,9 +49,10 @@ them. You can deploy to the same account and Region, or to a different one,
 with the same amount of code. The *CDK Pipelines* library takes care of the
 details.
 
-CDK Pipelines supports multiple *deployment engines* (see below), and comes with
-a deployment engine that deploys CDK apps using AWS CodePipeline. To use the
-CodePipeline engine, define a `CodePipeline` construct.  The following
+CDK Pipelines supports multiple *deployment engines* (see
+[Using a different deployment engine](#using-a-different-deployment-engine)),
+and comes with a deployment engine that deploys CDK apps using AWS CodePipeline.
+To use the CodePipeline engine, define a `CodePipeline` construct.  The following
 example creates a CodePipeline that deploys an application from GitHub:
 
 ```ts
@@ -225,9 +226,10 @@ const originalPipeline = new pipelines.CdkPipeline(this, 'Pipeline', {
 
 ## Definining the pipeline
 
-This section of the documentation describes the AWS CodePipeline engine, which
-comes with this library. If you want to use a different deployment engine, read
-the section *Using a different deployment engine* below.
+This section of the documentation describes the AWS CodePipeline engine,
+which comes with this library. If you want to use a different deployment
+engine, read the section
+[Using a different deployment engine](#using-a-different-deployment-engine)below.
 
 ### Synth and sources
 
@@ -1210,6 +1212,17 @@ pipeline.addStage(stage, {
 
 **Note**: Manual Approvals notifications only apply when an application has security
 check enabled.
+
+## Using a different deployment engine
+
+CDK Pipelines supports multiple *deployment engines*, but this module vends a
+construct for only one such engine: AWS CodePipeline. It is also possible to
+use CDK Pipelines to build pipelines backed by other deployment engines.
+
+Here is a list of CDK Libraries that integrate CDK Pipelines with
+alternative deployment engines:
+
+* GitHub Workflows: [`cdk-pipelines-github`](https://github.com/cdklabs/cdk-pipelines-github)
 
 ## Troubleshooting
 

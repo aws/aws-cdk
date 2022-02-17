@@ -965,6 +965,8 @@ export interface VpcProps {
   /**
    * The VPC name.
    *
+   * Since the VPC resource doesn't support providing a physical name, the value provided here will be recorded in the `Name` tag
+   *
    * @default this.node.path
    */
   readonly vpcName?: string;
