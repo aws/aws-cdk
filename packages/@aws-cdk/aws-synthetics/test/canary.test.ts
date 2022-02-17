@@ -292,6 +292,27 @@ test('Schedule can be set to 1 minute', () => {
   });
 });
 
+test('Schedule can be set with Cron', () => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  new synthetics.Canary(stack, 'Canary', {
+    schedule: synthetics.Schedule.cron({ minute: '30' }),
+    test: synthetics.Test.custom({
+      handler: 'index.handler',
+      code: synthetics.Code.fromInline('/* Synthetics handler code */'),
+    }),
+    runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_3,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Synthetics::Canary', {
+    Schedule: Match.objectLike({ Expression: 'cron(30 * * * ? *)' }),
+  });
+});
+
+
 test('Schedule can be set with Expression', () => {
   // GIVEN
   const stack = new Stack();
@@ -417,5 +438,100 @@ test('can specify custom test', () => {
           console.log(\'hello world\');
         };`,
     },
+  });
+});
+
+test('Role policy generated as expected', () => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  new synthetics.Canary(stack, 'Canary', {
+    test: synthetics.Test.custom({
+      handler: 'index.handler',
+      code: synthetics.Code.fromInline('/* Synthetics handler code */'),
+    }),
+    runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_3,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+    Policies: [{
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 's3:ListAllMyBuckets',
+            Effect: 'Allow',
+            Resource: '*',
+          },
+          {
+            Action: 's3:GetBucketLocation',
+            Effect: 'Allow',
+            Resource: {
+              'Fn::GetAtt': [
+                'CanaryArtifactsBucket4A60D32B',
+                'Arn',
+              ],
+            },
+          },
+          {
+            Action: 's3:PutObject',
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  {
+                    'Fn::GetAtt': [
+                      'CanaryArtifactsBucket4A60D32B',
+                      'Arn',
+                    ],
+                  },
+                  '/*',
+                ],
+              ],
+            },
+          },
+          {
+            Action: 'cloudwatch:PutMetricData',
+            Condition: {
+              StringEquals: {
+                'cloudwatch:namespace': 'CloudWatchSynthetics',
+              },
+            },
+            Effect: 'Allow',
+            Resource: '*',
+          },
+          {
+            Action: [
+              'logs:CreateLogStream',
+              'logs:CreateLogGroup',
+              'logs:PutLogEvents',
+            ],
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':logs:',
+                  {
+                    Ref: 'AWS::Region',
+                  },
+                  ':',
+                  {
+                    Ref: 'AWS::AccountId',
+                  },
+                  ':log-group:/aws/lambda/cwsyn-*',
+                ],
+              ],
+            },
+          },
+        ],
+      },
+    }],
   });
 });

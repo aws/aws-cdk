@@ -195,7 +195,7 @@ describe('app', () => {
       constructor(scope: App, id: string, props?: StackProps) {
         super(scope, id, props);
 
-        this.reportMissingContext({
+        this.reportMissingContextKey({
           key: 'missing-context-key',
           provider: ContextProvider.AVAILABILITY_ZONE_PROVIDER,
           props: {
@@ -205,7 +205,7 @@ describe('app', () => {
         },
         );
 
-        this.reportMissingContext({
+        this.reportMissingContextKey({
           key: 'missing-context-key-2',
           provider: ContextProvider.AVAILABILITY_ZONE_PROVIDER,
           props: {

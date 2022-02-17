@@ -46,6 +46,11 @@ export class VpcEndpointServiceDomainName extends CoreConstruct {
   // Track all domain names created, so someone doesn't accidentally associate two domains with a single service
   private static readonly endpointServicesMap: { [endpointService: string]: string} = {};
 
+  /**
+   * The domain name associated with the private DNS configuration
+   */
+  public domainName: string;
+
   // The way this class works is by using three custom resources and a TxtRecord in conjunction
   // The first custom resource tells the VPC endpoint service to use the given DNS name
   // The VPC endpoint service will then say:
@@ -58,16 +63,16 @@ export class VpcEndpointServiceDomainName extends CoreConstruct {
 
     const serviceUniqueId = Names.nodeUniqueId(props.endpointService.node);
     const serviceId = props.endpointService.vpcEndpointServiceId;
-    const privateDnsName = props.domainName;
+    this.domainName = props.domainName;
 
     // Make sure a user doesn't accidentally add multiple domains
     this.validateProps(props);
 
-    VpcEndpointServiceDomainName.endpointServicesMap[serviceUniqueId] = privateDnsName;
+    VpcEndpointServiceDomainName.endpointServicesMap[serviceUniqueId] = this.domainName;
     VpcEndpointServiceDomainName.endpointServices.push(props.endpointService);
 
     // Enable Private DNS on the endpoint service and retrieve the AWS-generated configuration
-    const privateDnsConfiguration = this.getPrivateDnsConfiguration(serviceUniqueId, serviceId, privateDnsName);
+    const privateDnsConfiguration = this.getPrivateDnsConfiguration(serviceUniqueId, serviceId, this.domainName);
 
     // Tell AWS to verify that this account owns the domain attached to the service
     this.verifyPrivateDnsConfiguration(privateDnsConfiguration, props.publicHostedZone);

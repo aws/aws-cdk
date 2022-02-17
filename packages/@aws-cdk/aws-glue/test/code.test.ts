@@ -17,7 +17,7 @@ describe('Code', () => {
     let bucket: s3.IBucket;
 
     test('with valid bucket name and key and bound by job sets the right path and grants the job permissions to read from it', () => {
-      bucket = s3.Bucket.fromBucketName(stack, 'Bucket', 'bucketName');
+      bucket = s3.Bucket.fromBucketName(stack, 'Bucket', 'bucketname');
       script = glue.Code.fromBucket(bucket, key);
       new glue.Job(stack, 'Job1', {
         executable: glue.JobExecutable.pythonShell({
@@ -29,7 +29,7 @@ describe('Code', () => {
 
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         Command: {
-          ScriptLocation: 's3://bucketName/script',
+          ScriptLocation: 's3://bucketname/script',
         },
       });
 
@@ -53,7 +53,7 @@ describe('Code', () => {
                       {
                         Ref: 'AWS::Partition',
                       },
-                      ':s3:::bucketName',
+                      ':s3:::bucketname',
                     ],
                   ],
                 },
@@ -65,7 +65,7 @@ describe('Code', () => {
                       {
                         Ref: 'AWS::Partition',
                       },
-                      ':s3:::bucketName/script',
+                      ':s3:::bucketname/script',
                     ],
                   ],
                 },
@@ -99,7 +99,7 @@ describe('Code', () => {
         }),
       });
 
-      expect(stack.node.metadata.find(m => m.type === 'aws:cdk:asset')).toBeDefined();
+      expect(stack.node.metadataEntry.find(m => m.type === 'aws:cdk:asset')).toBeDefined();
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         Command: {
           ScriptLocation: {
@@ -256,7 +256,7 @@ describe('Code', () => {
         ],
       };
 
-      expect(stack.node.metadata.find(m => m.type === 'aws:cdk:asset')).toBeDefined();
+      expect(stack.node.metadataEntry.find(m => m.type === 'aws:cdk:asset')).toBeDefined();
       // Job1 and Job2 use reuse the asset
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         Command: {

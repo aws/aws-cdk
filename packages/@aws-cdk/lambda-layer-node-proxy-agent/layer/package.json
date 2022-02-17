@@ -1,9 +1,12 @@
 {
-  "name": "node-proxy-agent-layer",
+  "name": "proxy-agent-layer",
   "private": true,
-  "version": "0.0.1",
-  "license": "Apache-2.0",
+  "version": "0.0.0",
+  "description": "",
   "devDependencies": {
     "proxy-agent": "^5.0.0"
-  }
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
 }

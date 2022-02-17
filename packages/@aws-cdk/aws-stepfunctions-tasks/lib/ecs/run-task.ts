@@ -356,14 +356,22 @@ export class EcsRunTask extends sfn.TaskStateBase implements ec2.IConnectable {
    * After - arn:aws:ecs:us-west-2:123456789012:task-definition/hello_world
    */
   private getTaskDefinitionFamilyArn(): string {
-    const arnComponents = cdk.Stack.of(this).parseArn(this.props.taskDefinition.taskDefinitionArn);
+    const arnComponents = cdk.Stack.of(this).splitArn(this.props.taskDefinition.taskDefinitionArn, cdk.ArnFormat.SLASH_RESOURCE_NAME);
     let { resourceName } = arnComponents;
 
     if (resourceName) {
       resourceName = resourceName.split(':')[0];
     }
 
-    return cdk.Stack.of(this).formatArn({ ...arnComponents, resourceName });
+    return cdk.Stack.of(this).formatArn({
+      partition: arnComponents.partition,
+      service: arnComponents.service,
+      account: arnComponents.account,
+      region: arnComponents.region,
+      resource: arnComponents.resource,
+      arnFormat: arnComponents.arnFormat,
+      resourceName,
+    });
   }
 
   private taskExecutionRoles(): iam.IRole[] {

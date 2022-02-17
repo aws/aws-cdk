@@ -11,6 +11,18 @@
 
 A construct library for painless Continuous Delivery of CDK applications.
 
+CDK Pipelines is an *opinionated construct library*. It is purpose-built to
+deploy one or more copies of your CDK applications using CloudFormation with a
+minimal amount of effort on your part. It is *not* intended to support arbitrary
+deployment pipelines, and very specifically it is not built to use CodeDeploy to
+applications to instances, or deploy your custom-built ECR images to an ECS
+cluster directly: use CDK file assets with CloudFormation Init for instances, or
+CDK container assets for ECS clusters instead.
+
+Give the CDK Pipelines way of doing things a shot first: you might find it does
+everything you need. If you want or need more control, we recommend you drop
+down to using the `aws-codepipeline` construct library directly.
+
 > This module contains two sets of APIs: an **original** and a **modern** version of
 CDK Pipelines. The *modern* API has been updated to be easier to work with and
 customize, and will be the preferred API going forward. The *original* version
@@ -37,9 +49,10 @@ them. You can deploy to the same account and Region, or to a different one,
 with the same amount of code. The *CDK Pipelines* library takes care of the
 details.
 
-CDK Pipelines supports multiple *deployment engines* (see below), and comes with
-a deployment engine that deployes CDK apps using AWS CodePipeline. To use the
-CodePipeline engine, define a `CodePipeline` construct.  The following
+CDK Pipelines supports multiple *deployment engines* (see
+[Using a different deployment engine](#using-a-different-deployment-engine)),
+and comes with a deployment engine that deploys CDK apps using AWS CodePipeline.
+To use the CodePipeline engine, define a `CodePipeline` construct.  The following
 example creates a CodePipeline that deploys an application from GitHub:
 
 ```ts
@@ -155,8 +168,8 @@ by adding the following to `cdk.json`:
 
 ## Provisioning the pipeline
 
-To provision the pipeline you have defined, making sure the target environment
-has been bootstrapped (see below), and then executing deploying the
+To provision the pipeline you have defined, make sure the target environment
+has been bootstrapped (see below), and then execute deploying the
 `PipelineStack` *once*. Afterwards, the pipeline will keep itself up-to-date.
 
 > **Important**: be sure to `git commit` and `git push` before deploying the
@@ -175,7 +188,7 @@ $ cdk deploy PipelineStack
 ```
 
 Administrative permissions to the account are only necessary up until
-this point. We recommend you shed access to these credentials after doing this.
+this point. We recommend you remove access to these credentials after doing this.
 
 ### Working on the pipeline
 
@@ -213,9 +226,10 @@ const originalPipeline = new pipelines.CdkPipeline(this, 'Pipeline', {
 
 ## Definining the pipeline
 
-This section of the documentation describes the AWS CodePipeline engine, which
-comes with this library. If you want to use a different deployment engine, read
-the section *Using a different deployment engine* below.
+This section of the documentation describes the AWS CodePipeline engine,
+which comes with this library. If you want to use a different deployment
+engine, read the section
+[Using a different deployment engine](#using-a-different-deployment-engine)below.
 
 ### Synth and sources
 
@@ -551,12 +565,33 @@ pipeline.addStage(prod, {
     stack: prod.stack1,
     pre: [new pipelines.ManualApprovalStep('Pre-Stack Check')], // Executed before stack is prepared
     changeSet: [new pipelines.ManualApprovalStep('ChangeSet Approval')], // Executed after stack is prepared but before the stack is deployed
-    post: [new pipelines.ManualApprovalStep('Post-Deploy Check')], // Executed after staack is deployed
+    post: [new pipelines.ManualApprovalStep('Post-Deploy Check')], // Executed after stack is deployed
   }, {
     stack: prod.stack2,
-    post: [new pipelines.ManualApprovalStep('Post-Deploy Check')], // Executed after staack is deployed
+    post: [new pipelines.ManualApprovalStep('Post-Deploy Check')], // Executed after stack is deployed
   }],
 });
+```
+
+If you specify multiple steps, they will execute in parallel by default. You can add dependencies between them
+to if you wish to specify an order. To add a dependency, call `step.addStepDependency()`:
+
+```ts
+const firstStep = new pipelines.ManualApprovalStep('A');
+const secondStep = new pipelines.ManualApprovalStep('B');
+secondStep.addStepDependency(firstStep);
+```
+
+For convenience, `Step.sequence()` will take an array of steps and dependencies between adjacent steps,
+so that the whole list executes in order:
+
+```ts
+// Step A will depend on step B and step B will depend on step C
+const orderedSteps = pipelines.Step.sequence([
+  new pipelines.ManualApprovalStep('A'),
+  new pipelines.ManualApprovalStep('B'),
+  new pipelines.ManualApprovalStep('C'),
+]);
 ```
 
 #### Using CloudFormation Stack Outputs in approvals
@@ -654,6 +689,7 @@ new pipelines.CodeBuildStep('Synth', {
   buildEnvironment: {
     computeType: codebuild.ComputeType.LARGE,
   },
+  timeout: Duration.minutes(90),
 
   // Control Elastic Network Interface creation
   vpc: vpc,
@@ -728,7 +764,7 @@ Here's an example that adds a Jenkins step:
 ```ts
 class MyJenkinsStep extends pipelines.Step implements pipelines.ICodePipelineActionFactory {
   constructor(
-    private readonly provider: cpactions.JenkinsProvider, 
+    private readonly provider: cpactions.JenkinsProvider,
     private readonly input: pipelines.FileSet,
   ) {
     super('MyJenkinsStep');
@@ -910,22 +946,30 @@ or future deployments to this environment will fail. If you want to upgrade
 the bootstrap stack to a newer version, do that by updating it in-place.
 
 > This library requires the *modern* bootstrapping stack which has
-> been updated specifically to support cross-account continuous delivery. Starting,
-> in CDK v2 this new bootstrapping stack will become the default, but for now it is still
-> opt-in.
+> been updated specifically to support cross-account continuous delivery.
 >
-> The commands below assume you are running `cdk bootstrap` in a directory
-> where `cdk.json` contains the `"@aws-cdk/core:newStyleStackSynthesis": true`
-> setting in its context, which will switch to the new bootstrapping stack
-> automatically.
+> If you are using CDKv2, you do not need to do anything else. Modern
+> bootstrapping and modern stack synthesis (also known as "default stack
+> synthesis") is the default.
 >
-> If run from another directory, be sure to run the bootstrap command with
-> the environment variable `CDK_NEW_BOOTSTRAP=1` set.
+> If you are using CDKv1, you need to opt in to modern bootstrapping and
+> modern stack synthesis using a feature flag. Make sure `cdk.json` includes:
+>
+> ```json
+> {
+>   "context": {
+>     "@aws-cdk/core:newStyleStackSynthesis": true
+>   }
+> }
+> ```
+>
+> And be sure to run `cdk bootstrap` in the same directory as the `cdk.json`
+> file.
 
 To bootstrap an environment for provisioning the pipeline:
 
 ```console
-$ env CDK_NEW_BOOTSTRAP=1 npx cdk bootstrap \
+$ npx cdk bootstrap \
     [--profile admin-profile-1] \
     --cloudformation-execution-policies arn:aws:iam::aws:policy/AdministratorAccess \
     aws://111111111111/us-east-1
@@ -935,7 +979,7 @@ To bootstrap a different environment for deploying CDK applications into using
 a pipeline in account `111111111111`:
 
 ```console
-$ env CDK_NEW_BOOTSTRAP=1 npx cdk bootstrap \
+$ npx cdk bootstrap \
     [--profile admin-profile-2] \
     --cloudformation-execution-policies arn:aws:iam::aws:policy/AdministratorAccess \
     --trust 11111111111 \
@@ -946,7 +990,7 @@ If you only want to trust an account to do lookups (e.g, when your CDK applicati
 `Vpc.fromLookup()` call), use the option `--trust-for-lookup`:
 
 ```console
-$ env CDK_NEW_BOOTSTRAP=1 npx cdk bootstrap \
+$ npx cdk bootstrap \
     [--profile admin-profile-2] \
     --cloudformation-execution-policies arn:aws:iam::aws:policy/AdministratorAccess \
     --trust-for-lookup 11111111111 \
@@ -1168,6 +1212,17 @@ pipeline.addStage(stage, {
 
 **Note**: Manual Approvals notifications only apply when an application has security
 check enabled.
+
+## Using a different deployment engine
+
+CDK Pipelines supports multiple *deployment engines*, but this module vends a
+construct for only one such engine: AWS CodePipeline. It is also possible to
+use CDK Pipelines to build pipelines backed by other deployment engines.
+
+Here is a list of CDK Libraries that integrate CDK Pipelines with
+alternative deployment engines:
+
+* GitHub Workflows: [`cdk-pipelines-github`](https://github.com/cdklabs/cdk-pipelines-github)
 
 ## Troubleshooting
 
@@ -1392,7 +1447,7 @@ is not able to read the cloud assembly produced by the new framework version.
 
 Solution: change the `cliVersion` first, commit, push and deploy, and only then
 change the framework version.
- 
+
 We recommend you avoid specifying the `cliVersion` parameter at all. By default
 the pipeline will use the latest CLI version, which will support all cloud assembly
 versions.

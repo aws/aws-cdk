@@ -65,8 +65,6 @@ describe.each(['1', '2'])('v%s tests', (majorVersion) => {
   });
 
   test('verify "future flags" are added to cdk.json', async () => {
-    // This is a lot to test, and it can be slow-ish, especially when ran with other tests.
-    jest.setTimeout(30_000);
 
     for (const templ of await availableInitTemplates()) {
       for (const lang of templ.languages) {
@@ -83,9 +81,10 @@ describe.each(['1', '2'])('v%s tests', (majorVersion) => {
 
           const config = await fs.readJson(path.join(tmpDir, 'cdk.json'));
           const context = config.context || {};
-          for (const [key, expected] of Object.entries(context)) {
-            const actual = cxapi.FUTURE_FLAGS[key];
-            expect(actual).toEqual(expected);
+          for (const [key, actual] of Object.entries(context)) {
+            expect(key in cxapi.FUTURE_FLAGS || key in cxapi.NEW_PROJECT_DEFAULT_CONTEXT).toBeTruthy();
+
+            expect(cxapi.FUTURE_FLAGS[key] ?? cxapi.NEW_PROJECT_DEFAULT_CONTEXT[key]).toEqual(actual);
           }
 
           // assert that expired future flags are not part of the cdk.json
@@ -95,7 +94,9 @@ describe.each(['1', '2'])('v%s tests', (majorVersion) => {
         });
       }
     }
-  });
+  },
+  // This is a lot to test, and it can be slow-ish, especially when ran with other tests.
+  30_000);
 });
 
 test('when no version number is present (e.g., local development), the v1 templates are chosen by default', async () => {

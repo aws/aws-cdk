@@ -28,7 +28,14 @@
         ]
       }
     },
-    "projectReferences": true
+    "projectReferences": true,
+    "metadata": {
+      "jsii": {
+        "rosetta": {
+          "strict": true
+        }
+      }
+    }
   },
   "repository": {
     "type": "git",
@@ -72,13 +79,14 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert-internal": "0.0.0",
+    "@aws-cdk/assertions": "0.0.0",
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/cfn2ts": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/jest": "^26.0.24"
+    "@types/jest": "^27.4.0"
   },
   "dependencies": {
+    "@aws-cdk/aws-acmpca": "0.0.0",
     "@aws-cdk/aws-cloudwatch": "0.0.0",
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/aws-lambda": "0.0.0",
@@ -88,6 +96,7 @@
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
+    "@aws-cdk/aws-acmpca": "0.0.0",
     "@aws-cdk/aws-cloudwatch": "0.0.0",
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/aws-lambda": "0.0.0",
@@ -101,7 +110,8 @@
   "awslint": {
     "exclude": [
       "props-physical-name:@aws-cdk/aws-certificatemanager.CertificateProps",
-      "props-physical-name:@aws-cdk/aws-certificatemanager.DnsValidatedCertificateProps"
+      "props-physical-name:@aws-cdk/aws-certificatemanager.DnsValidatedCertificateProps",
+      "props-physical-name:@aws-cdk/aws-certificatemanager.PrivateCertificateProps"
     ]
   },
   "stability": "stable",

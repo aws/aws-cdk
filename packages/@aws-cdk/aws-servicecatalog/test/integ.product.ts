@@ -1,11 +1,20 @@
 import * as path from 'path';
+import * as sns from '@aws-cdk/aws-sns';
 import * as cdk from '@aws-cdk/core';
 import * as servicecatalog from '../lib';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'integ-servicecatalog-product');
 
-new servicecatalog.CloudFormationProduct(stack, 'TestProduct', {
+class TestProductStack extends servicecatalog.ProductStack {
+  constructor(scope: any, id: string) {
+    super(scope, id);
+
+    new sns.Topic(this, 'TopicProduct');
+  }
+}
+
+const product = new servicecatalog.CloudFormationProduct(stack, 'TestProduct', {
   productName: 'testProduct',
   owner: 'testOwner',
   productVersions: [
@@ -20,7 +29,22 @@ new servicecatalog.CloudFormationProduct(stack, 'TestProduct', {
     {
       cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromAsset(path.join(__dirname, 'product2.template.json')),
     },
+    {
+      cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromProductStack(new TestProductStack(stack, 'SNSTopicProduct1')),
+    },
+    {
+      cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromProductStack(new TestProductStack(stack, 'SNSTopicProduct2')),
+    },
   ],
 });
+
+const tagOptions = new servicecatalog.TagOptions(stack, 'TagOptions', {
+  allowedValuesForTags: {
+    key1: ['value1', 'value2'],
+    key2: ['value1'],
+  },
+});
+
+product.associateTagOptions(tagOptions);
 
 app.synth();

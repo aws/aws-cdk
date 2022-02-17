@@ -1,5 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
-import { ResourcePart } from '@aws-cdk/assert-internal';
+import { Template } from '@aws-cdk/assertions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import * as cdk from '@aws-cdk/core';
@@ -10,7 +9,7 @@ describe('database secret manager', () => {
     // GIVEN
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
-    const existingSecret = secretsmanager.Secret.fromSecretName(stack, 'DBSecret', 'myDBLoginInfo');
+    const existingSecret = secretsmanager.Secret.fromSecretNameV2(stack, 'DBSecret', 'myDBLoginInfo');
 
     // WHEN
     new ServerlessCluster(stack, 'ServerlessDatabase', {
@@ -21,7 +20,7 @@ describe('database secret manager', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::RDS::DBCluster', {
+    Template.fromStack(stack).hasResource('AWS::RDS::DBCluster', {
       Properties: {
         Engine: 'aurora-postgresql',
         DBClusterParameterGroupName: 'default.aurora-postgresql10',
@@ -29,8 +28,30 @@ describe('database secret manager', () => {
           Ref: 'ServerlessDatabaseSubnets5643CD76',
         },
         EngineMode: 'serverless',
-        MasterUsername: '{{resolve:secretsmanager:myDBLoginInfo:SecretString:username::}}',
-        MasterUserPassword: '{{resolve:secretsmanager:myDBLoginInfo:SecretString:password::}}',
+        MasterUsername: {
+          'Fn::Join': [
+            '',
+            [
+              '{{resolve:secretsmanager:arn:',
+              {
+                Ref: 'AWS::Partition',
+              },
+              ':secretsmanager:us-test-1:12345:secret:myDBLoginInfo:SecretString:username::}}',
+            ],
+          ],
+        },
+        MasterUserPassword: {
+          'Fn::Join': [
+            '',
+            [
+              '{{resolve:secretsmanager:arn:',
+              {
+                Ref: 'AWS::Partition',
+              },
+              ':secretsmanager:us-test-1:12345:secret:myDBLoginInfo:SecretString:password::}}',
+            ],
+          ],
+        },
         StorageEncrypted: true,
         VpcSecurityGroupIds: [
           {
@@ -43,9 +64,7 @@ describe('database secret manager', () => {
       },
       DeletionPolicy: 'Snapshot',
       UpdateReplacePolicy: 'Snapshot',
-    }, ResourcePart.CompleteDefinition);
-
-
+    });
   });
 });
 

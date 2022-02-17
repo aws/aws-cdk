@@ -44,6 +44,16 @@ export interface InstanceProps {
   readonly parameterGroup?: IParameterGroup;
 
   /**
+   * The parameters in the DBParameterGroup to create automatically
+   *
+   * You can only specify parameterGroup or parameters but not both.
+   * You need to use a versioned engine to auto-generate a DBParameterGroup.
+   *
+   * @default - None
+   */
+  readonly parameters?: { [key: string]: string };
+
+  /**
    * Whether to enable Performance Insights for the DB instance.
    *
    * @default - false, unless ``performanceInsightRentention`` or ``performanceInsightEncryptionKey`` is set.
@@ -158,7 +168,6 @@ export interface CredentialsBaseOptions {
 
 /**
  * Options for creating Credentials from a username.
- * @deprecated supporting API `fromUsername()` has been deprecated. See deprecation notice of the API.
  */
 export interface CredentialsFromUsernameOptions extends CredentialsBaseOptions {
   /**
@@ -202,10 +211,6 @@ export abstract class Credentials {
   /**
    * Creates Credentials for the given username, and optional password and key.
    * If no password is provided, one will be generated and stored in Secrets Manager.
-   *
-   * @deprecated use `fromGeneratedSecret()` or `fromPassword()` for new Clusters and Instances.
-   *   Note that switching from `fromUsername()` to `fromGeneratedSecret()` or `fromPassword()` for already deployed
-   *   Clusters or Instances will result in their replacement!
    */
   public static fromUsername(username: string, options: CredentialsFromUsernameOptions = {}): Credentials {
     return {
@@ -351,9 +356,7 @@ export abstract class SnapshotCredentials {
    *
    * Note - The username must match the existing master username of the snapshot.
    *
-   * @deprecated use `fromGeneratedSecret()` for new Clusters and Instances.
-   *   Note that switching from `fromGeneratedPassword()` to `fromGeneratedSecret()` for already deployed
-   *   Clusters or Instances will update their master password.
+   * NOTE: use `fromGeneratedSecret()` for new Clusters and Instances.
    */
   public static fromGeneratedPassword(username: string, options: SnapshotCredentialsFromGeneratedPasswordOptions = {}): SnapshotCredentials {
     return {
@@ -468,6 +471,25 @@ interface CommonRotationUserOptions {
    * @default " %+~`#$&*()|[]{}:;<>?!'/@\"\\"
    */
   readonly excludeCharacters?: string;
+
+  /**
+   * Where to place the rotation Lambda function
+   *
+   * @default - same placement as instance or cluster
+   */
+  readonly vpcSubnets?: ec2.SubnetSelection;
+
+  /**
+   * The VPC interface endpoint to use for the Secrets Manager API
+   *
+   * If you enable private DNS hostnames for your VPC private endpoint (the default), you don't
+   * need to specify an endpoint. The standard Secrets Manager DNS hostname the Secrets Manager
+   * CLI and SDKs use by default (https://secretsmanager.<region>.amazonaws.com) automatically
+   * resolves to your VPC endpoint.
+   *
+   * @default https://secretsmanager.<region>.amazonaws.com
+   */
+  readonly endpoint?: ec2.IInterfaceVpcEndpoint;
 }
 
 /**

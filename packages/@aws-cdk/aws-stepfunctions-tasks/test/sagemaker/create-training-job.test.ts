@@ -1,4 +1,3 @@
-import '@aws-cdk/assert-internal/jest';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
@@ -193,6 +192,9 @@ test('create complex training job', () => {
     vpcConfig: {
       vpc,
     },
+    environment: {
+      SOMEVAR: 'myvalue',
+    },
   });
   trainTask.addSecurityGroup(securityGroup);
 
@@ -285,6 +287,9 @@ test('create complex training job', () => {
           { Ref: 'VPCPrivateSubnet1Subnet8BCA10E0' },
           { Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A' },
         ],
+      },
+      Environment: {
+        SOMEVAR: 'myvalue',
       },
     },
   });

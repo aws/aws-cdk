@@ -30,6 +30,7 @@ export enum Command {
   METADATA = 'metadata',
   INIT = 'init',
   VERSION = 'version',
+  WATCH = 'watch',
 }
 
 const BUNDLING_COMMANDS = [
@@ -37,6 +38,7 @@ const BUNDLING_COMMANDS = [
   Command.DIFF,
   Command.SYNTH,
   Command.SYNTHESIZE,
+  Command.WATCH,
 ];
 
 export type Arguments = {
@@ -112,6 +114,10 @@ export class Configuration {
     this._projectContext = await loadAndLog(PROJECT_CONTEXT);
 
     const readUserContext = this.props.readUserContext ?? true;
+
+    if (userConfig.get(['build'])) {
+      throw new Error('The `build` key cannot be specified in the user config (~/.cdk.json), specify it in the project config (cdk.json) instead');
+    }
 
     const contextSources = [
       this.commandLineContext,
@@ -247,7 +253,7 @@ export class Settings {
     // Determine bundling stacks
     let bundlingStacks: string[];
     if (BUNDLING_COMMANDS.includes(argv._[0])) {
-    // If we deploy, diff or synth a list of stacks exclusively we skip
+    // If we deploy, diff, synth or watch a list of stacks exclusively we skip
     // bundling for all other stacks.
       bundlingStacks = argv.exclusively
         ? argv.STACKS ?? ['*']

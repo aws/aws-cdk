@@ -59,6 +59,9 @@ For example, to define an rule that triggers a CodeBuild project build when a
 commit is pushed to the "master" branch of a CodeCommit repository:
 
 ```ts
+declare const repo: codecommit.Repository;
+declare const project: codebuild.Project;
+
 const onCommitRule = repo.onCommit('OnCommit', {
   target: new targets.CodeBuildProject(project),
   branches: ['master']
@@ -73,6 +76,9 @@ topic target which formats a human-readable message for the commit.
 For example, this adds an SNS topic as a target:
 
 ```ts
+declare const onCommitRule: events.Rule;
+declare const topic: sns.Topic;
+
 onCommitRule.addTarget(new targets.SnsTopic(topic, {
   message: events.RuleTargetInput.fromText(
     `A commit was pushed to the repository ${codecommit.ReferenceEvent.repositoryName} on branch ${codecommit.ReferenceEvent.referenceName}`
@@ -83,6 +89,9 @@ onCommitRule.addTarget(new targets.SnsTopic(topic, {
 Or using an Object:
 
 ```ts
+declare const onCommitRule: events.Rule;
+declare const topic: sns.Topic;
+
 onCommitRule.addTarget(new targets.SnsTopic(topic, {
   message: events.RuleTargetInput.fromObject(
     {
@@ -99,10 +108,15 @@ Rate must be specified in minutes, hours or days.
 
 The following example runs a task every day at 4am:
 
-```ts
+```ts fixture=basic
 import { Rule, Schedule } from '@aws-cdk/aws-events';
 import { EcsTask } from '@aws-cdk/aws-events-targets';
-...
+import { Cluster, TaskDefinition } from '@aws-cdk/aws-ecs';
+import { Role } from '@aws-cdk/aws-iam';
+
+declare const cluster: Cluster;
+declare const taskDefinition: TaskDefinition;
+declare const role: Role;
 
 const ecsTaskTarget = new EcsTask({ cluster, taskDefinition, role });
 
@@ -115,8 +129,12 @@ new Rule(this, 'ScheduleRule', {
 If you want to specify Fargate platform version, set `platformVersion` in EcsTask's props like the following example:
 
 ```ts
+declare const cluster: ecs.Cluster;
+declare const taskDefinition: ecs.TaskDefinition;
+declare const role: iam.Role;
+
 const platformVersion = ecs.FargatePlatformVersion.VERSION1_4;
-const ecsTaskTarget = new EcsTask({ cluster, taskDefinition, role, platformVersion });
+const ecsTaskTarget = new targets.EcsTask({ cluster, taskDefinition, role, platformVersion });
 ```
 
 ## Event Targets
@@ -135,12 +153,14 @@ The following targets are supported:
 * `targets.SfnStateMachine`: Trigger an AWS Step Functions state machine
 * `targets.BatchJob`: Queue an AWS Batch Job
 * `targets.AwsApi`: Make an AWS API call
+* `targets.ApiGateway`: Invoke an AWS API Gateway
+* `targets.ApiDestination`: Make an call to an external destination
 
 ### Cross-account and cross-region targets
 
 It's possible to have the source of the event and a target in separate AWS accounts and regions:
 
-```ts
+```ts nofixture
 import { App, Stack } from '@aws-cdk/core';
 import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as codecommit from '@aws-cdk/aws-codecommit';
@@ -148,9 +168,12 @@ import * as targets from '@aws-cdk/aws-events-targets';
 
 const app = new App();
 
+const account1 = '11111111111';
+const account2 = '22222222222';
+
 const stack1 = new Stack(app, 'Stack1', { env: { account: account1, region: 'us-west-1' } });
 const repo = new codecommit.Repository(stack1, 'Repository', {
-  // ...
+  repositoryName: 'myrepository',
 });
 
 const stack2 = new Stack(app, 'Stack2', { env: { account: account2, region: 'us-east-1' } });
@@ -179,11 +202,7 @@ For more information, see the
 It is possible to archive all or some events sent to an event bus. It is then possible to [replay these events](https://aws.amazon.com/blogs/aws/new-archive-and-replay-events-with-amazon-eventbridge/).
 
 ```ts
-import * as cdk from '@aws-cdk/core';
-
-const stack = new stack();
-
-const bus = new EventBus(stack, 'bus', {
+const bus = new events.EventBus(this, 'bus', {
   eventBusName: 'MyCustomEventBus'
 });
 
@@ -191,9 +210,9 @@ bus.archive('MyArchive', {
   archiveName: 'MyCustomEventBusArchive',
   description: 'MyCustomerEventBus Archive',
   eventPattern: {
-    account: [stack.account],
+    account: [Stack.of(this).account],
   },
-  retention: cdk.Duration.days(365),
+  retention: Duration.days(365),
 });
 ```
 
@@ -205,7 +224,9 @@ or `EventBus.fromEventBusName` factory method.
 Then, you can use the `grantPutEventsTo` method to grant `event:PutEvents` to the eventBus.
 
 ```ts
-const eventBus = EventBus.fromEventBusArn(this, 'ImportedEventBus', 'arn:aws:events:us-east-1:111111111:event-bus/my-event-bus');
+declare const lambdaFunction: lambda.Function;
+
+const eventBus = events.EventBus.fromEventBusArn(this, 'ImportedEventBus', 'arn:aws:events:us-east-1:111111111:event-bus/my-event-bus');
 
 // now you can just call methods on the eventbus
 eventBus.grantPutEventsTo(lambdaFunction);

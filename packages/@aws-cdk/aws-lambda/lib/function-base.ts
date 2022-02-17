@@ -1,8 +1,9 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
-import { ConstructNode, IResource, Resource, Token } from '@aws-cdk/core';
+import { ArnFormat, ConstructNode, IResource, Resource, Token } from '@aws-cdk/core';
 import { AliasOptions } from './alias';
+import { Architecture } from './architecture';
 import { EventInvokeConfig, EventInvokeConfigOptions } from './event-invoke-config';
 import { IEventSource } from './event-source';
 import { EventSourceMapping, EventSourceMappingOptions } from './event-source-mapping';
@@ -55,6 +56,11 @@ export interface IFunction extends IResource, ec2.IConnectable, iam.IGrantable {
    * The construct node where permissions are attached.
    */
   readonly permissionsNode: ConstructNode;
+
+  /**
+   * The system architectures compatible with this lambda function.
+   */
+  readonly architecture: Architecture;
 
   /**
    * Adds an event source that maps to this AWS Lambda function.
@@ -173,6 +179,26 @@ export interface FunctionAttributes {
    * For environment-agnostic stacks this will default to `false`.
    */
   readonly sameEnvironment?: boolean;
+
+  /**
+   * Setting this property informs the CDK that the imported function ALREADY HAS the necessary permissions
+   * for what you are trying to do. When not configured, the CDK attempts to auto-determine whether or not
+   * additional permissions are necessary on the function when grant APIs are used. If the CDK tried to add
+   * permissions on an imported lambda, it will fail.
+   *
+   * Set this property *ONLY IF* you are committing to manage the imported function's permissions outside of
+   * CDK. You are acknowledging that your CDK code alone will have insufficient permissions to access the
+   * imported function.
+   *
+   * @default false
+   */
+  readonly skipPermissions?: boolean;
+
+  /**
+   * The architecture of this Lambda Function (this is an optional attribute and defaults to X86_64).
+   * @default - Architecture.X86_64
+   */
+  readonly architecture?: Architecture;
 }
 
 export abstract class FunctionBase extends Resource implements IFunction, ec2.IClientVpnConnectionHandler {
@@ -204,12 +230,26 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
   public abstract readonly permissionsNode: ConstructNode;
 
   /**
+   * The architecture of this Lambda Function.
+   */
+  public abstract readonly architecture: Architecture;
+
+  /**
    * Whether the addPermission() call adds any permissions
    *
    * True for new Lambdas, false for version $LATEST and imported Lambdas
    * from different accounts.
    */
   protected abstract readonly canCreatePermissions: boolean;
+
+  /**
+   * Whether the user decides to skip adding permissions.
+   * The only use case is for cross-account, imported lambdas
+   * where the user commits to modifying the permisssions
+   * on the imported lambda outside CDK.
+   * @internal
+   */
+  protected readonly _skipPermissions?: boolean;
 
   /**
    * Actual connections object for this Lambda
@@ -325,15 +365,17 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
             });
 
             const permissionNode = this._functionNode().tryFindChild(identifier);
-            if (!permissionNode) {
-              throw new Error('Cannot modify permission to lambda function. Function is either imported or $LATEST version. '
-                + 'If the function is imported from the same account use `fromFunctionAttributes()` API with the `sameEnvironment` flag.');
+            if (!permissionNode && !this._skipPermissions) {
+              throw new Error('Cannot modify permission to lambda function. Function is either imported or $LATEST version.\n'
+                + 'If the function is imported from the same account use `fromFunctionAttributes()` API with the `sameEnvironment` flag.\n'
+                + 'If the function is imported from a different account and already has the correct permissions use `fromFunctionAttributes()` API with the `skipPermissions` flag.');
             }
             return { statementAdded: true, policyDependable: permissionNode };
           },
           node: this.node,
           stack: this.stack,
           env: this.env,
+          applyRemovalPolicy: this.applyRemovalPolicy,
         },
       });
       this._invocationGrants[identifier] = grant;
@@ -383,7 +425,7 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
     if (Token.isUnresolved(this.stack.account) || Token.isUnresolved(this.functionArn)) {
       return false;
     }
-    return this.stack.parseArn(this.functionArn).account === this.stack.account;
+    return this.stack.splitArn(this.functionArn, ArnFormat.SLASH_RESOURCE_NAME).account === this.stack.account;
   }
 
   /**
@@ -400,9 +442,9 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
     // Try some specific common classes first.
     // use duck-typing, not instance of
     // @deprecated: after v2, we can change these to 'instanceof'
-    if ('conditions' in principal) {
+    if ('wrapped' in principal) {
       // eslint-disable-next-line dot-notation
-      principal = principal['principal'];
+      principal = principal['wrapped'];
     }
 
     if ('accountId' in principal) {
@@ -518,6 +560,10 @@ class LatestVersion extends FunctionBase implements IVersion {
 
   public get functionName() {
     return `${this.lambda.functionName}:${this.version}`;
+  }
+
+  public get architecture() {
+    return this.lambda.architecture;
   }
 
   public get grantPrincipal() {

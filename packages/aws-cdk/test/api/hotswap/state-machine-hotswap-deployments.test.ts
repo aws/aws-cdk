@@ -2,12 +2,12 @@ import { StepFunctions } from 'aws-sdk';
 import * as setup from './hotswap-test-setup';
 
 let mockUpdateMachineDefinition: (params: StepFunctions.Types.UpdateStateMachineInput) => StepFunctions.Types.UpdateStateMachineOutput;
-let cfnMockProvider: setup.CfnMockProvider;
+let hotswapMockSdkProvider: setup.HotswapMockSdkProvider;
 
 beforeEach(() => {
-  cfnMockProvider = setup.setupHotswapTests();
+  hotswapMockSdkProvider = setup.setupHotswapTests();
   mockUpdateMachineDefinition = jest.fn();
-  cfnMockProvider.setUpdateStateMachineMock(mockUpdateMachineDefinition);
+  hotswapMockSdkProvider.setUpdateStateMachineMock(mockUpdateMachineDefinition);
 });
 
 test('returns undefined when a new StateMachine is added to the Stack', async () => {
@@ -23,7 +23,7 @@ test('returns undefined when a new StateMachine is added to the Stack', async ()
   });
 
   // WHEN
-  const deployStackResult = await cfnMockProvider.tryHotswapDeployment(cdkStackArtifact);
+  const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(cdkStackArtifact);
 
   // THEN
   expect(deployStackResult).toBeUndefined();
@@ -57,13 +57,13 @@ test('calls the updateStateMachine() API when it receives only a definitionStrin
   });
 
   // WHEN
-  const deployStackResult = await cfnMockProvider.tryHotswapDeployment(cdkStackArtifact);
+  const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(cdkStackArtifact);
 
   // THEN
   expect(deployStackResult).not.toBeUndefined();
   expect(mockUpdateMachineDefinition).toHaveBeenCalledWith({
     definition: '{ Prop: "new-value" }',
-    stateMachineArn: 'my-machine',
+    stateMachineArn: 'arn:aws:states:here:123456789012:stateMachine:my-machine',
   });
 });
 
@@ -125,7 +125,7 @@ test('calls the updateStateMachine() API when it receives only a definitionStrin
   });
 
   // WHEN
-  const deployStackResult = await cfnMockProvider.tryHotswapDeployment(cdkStackArtifact);
+  const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(cdkStackArtifact);
 
   // THEN
   expect(deployStackResult).not.toBeUndefined();
@@ -138,7 +138,7 @@ test('calls the updateStateMachine() API when it receives only a definitionStrin
         },
       },
     }, null, 2),
-    stateMachineArn: 'my-machine',
+    stateMachineArn: 'arn:aws:states:here:123456789012:stateMachine:my-machine',
   });
 });
 
@@ -168,14 +168,14 @@ test('calls the updateStateMachine() API when it receives a change to the defini
   });
 
   // WHEN
-  setup.pushStackResourceSummaries(setup.stackSummaryOf('Machine', 'AWS::StepFunctions::StateMachine', 'mock-machine-resource-id'));
-  const deployStackResult = await cfnMockProvider.tryHotswapDeployment(cdkStackArtifact);
+  setup.pushStackResourceSummaries(setup.stackSummaryOf('Machine', 'AWS::StepFunctions::StateMachine', 'arn:aws:states:here:123456789012:stateMachine:my-machine'));
+  const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(cdkStackArtifact);
 
   // THEN
   expect(deployStackResult).not.toBeUndefined();
   expect(mockUpdateMachineDefinition).toHaveBeenCalledWith({
     definition: '{ "Prop" : "new-value" }',
-    stateMachineArn: 'mock-machine-resource-id', // the sdk will convert the ID to the arn in a production environment
+    stateMachineArn: 'arn:aws:states:here:123456789012:stateMachine:my-machine',
   });
 });
 
@@ -211,7 +211,7 @@ test('does not call the updateStateMachine() API when it receives a change to a 
   });
 
   // WHEN
-  const deployStackResult = await cfnMockProvider.tryHotswapDeployment(cdkStackArtifact);
+  const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(cdkStackArtifact);
 
   // THEN
   expect(deployStackResult).toBeUndefined();
@@ -244,7 +244,7 @@ test('does not call the updateStateMachine() API when a resource has a Definitio
   });
 
   // WHEN
-  const deployStackResult = await cfnMockProvider.tryHotswapDeployment(cdkStackArtifact);
+  const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(cdkStackArtifact);
 
   // THEN
   expect(deployStackResult).toBeUndefined();
@@ -256,7 +256,7 @@ test('can correctly hotswap old style synth changes', async () => {
   setup.setCurrentCfnStackTemplate({
     Parameters: { AssetParam1: { Type: 'String' } },
     Resources: {
-      SM: {
+      Machine: {
         Type: 'AWS::StepFunctions::StateMachine',
         Properties: {
           DefinitionString: { Ref: 'AssetParam1' },
@@ -269,7 +269,7 @@ test('can correctly hotswap old style synth changes', async () => {
     template: {
       Parameters: { AssetParam2: { Type: String } },
       Resources: {
-        SM: {
+        Machine: {
           Type: 'AWS::StepFunctions::StateMachine',
           Properties: {
             DefinitionString: { Ref: 'AssetParam2' },
@@ -281,13 +281,14 @@ test('can correctly hotswap old style synth changes', async () => {
   });
 
   // WHEN
-  const deployStackResult = await cfnMockProvider.tryHotswapDeployment(cdkStackArtifact, { AssetParam2: 'asset-param-2' });
+  setup.pushStackResourceSummaries(setup.stackSummaryOf('Machine', 'AWS::StepFunctions::StateMachine', 'arn:aws:states:here:123456789012:stateMachine:my-machine'));
+  const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(cdkStackArtifact, { AssetParam2: 'asset-param-2' });
 
   // THEN
   expect(deployStackResult).not.toBeUndefined();
   expect(mockUpdateMachineDefinition).toHaveBeenCalledWith({
     definition: 'asset-param-2',
-    stateMachineArn: 'machine-name',
+    stateMachineArn: 'arn:aws:states:here:123456789012:stateMachine:machine-name',
   });
 });
 
@@ -348,16 +349,16 @@ test('calls the updateStateMachine() API when it receives a change to the defini
 
   // WHEN
   setup.pushStackResourceSummaries(
-    setup.stackSummaryOf('Machine', 'AWS::StepFunctions::StateMachine', 'mock-machine-resource-id'),
+    setup.stackSummaryOf('Machine', 'AWS::StepFunctions::StateMachine', 'arn:aws:states:here:123456789012:stateMachine:my-machine'),
     setup.stackSummaryOf('Func', 'AWS::Lambda::Function', 'my-func'),
   );
-  const deployStackResult = await cfnMockProvider.tryHotswapDeployment(cdkStackArtifact);
+  const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(cdkStackArtifact);
 
   // THEN
   expect(deployStackResult).not.toBeUndefined();
   expect(mockUpdateMachineDefinition).toHaveBeenCalledWith({
     definition: '"Resource": arn:aws:lambda:here:123456789012:function:my-func',
-    stateMachineArn: 'my-machine',
+    stateMachineArn: 'arn:aws:states:here:123456789012:stateMachine:my-machine',
   });
 });
 
@@ -415,7 +416,7 @@ test("will not perform a hotswap deployment if it cannot find a Ref target (outs
 
   // THEN
   await expect(() =>
-    cfnMockProvider.tryHotswapDeployment(cdkStackArtifact),
+    hotswapMockSdkProvider.tryHotswapDeployment(cdkStackArtifact),
   ).rejects.toThrow(/Parameter or resource 'Param1' could not be found for evaluation/);
 });
 
@@ -446,7 +447,7 @@ test("will not perform a hotswap deployment if it doesn't know how to handle a s
     },
   });
   setup.pushStackResourceSummaries(
-    setup.stackSummaryOf('Machine', 'AWS::StepFunctions::StateMachine', 'my-machine'),
+    setup.stackSummaryOf('Machine', 'AWS::StepFunctions::StateMachine', 'arn:aws:states:here:123456789012:stateMachine:my-machine'),
     setup.stackSummaryOf('Bucket', 'AWS::S3::Bucket', 'my-bucket'),
   );
   const cdkStackArtifact = setup.cdkStackArtifactOf({
@@ -478,6 +479,82 @@ test("will not perform a hotswap deployment if it doesn't know how to handle a s
 
   // THEN
   await expect(() =>
-    cfnMockProvider.tryHotswapDeployment(cdkStackArtifact),
+    hotswapMockSdkProvider.tryHotswapDeployment(cdkStackArtifact),
   ).rejects.toThrow("We don't support the 'UnknownAttribute' attribute of the 'AWS::S3::Bucket' resource. This is a CDK limitation. Please report it at https://github.com/aws/aws-cdk/issues/new/choose");
+});
+
+test('knows how to handle attributes of the AWS::Events::EventBus resource', async () => {
+  // GIVEN
+  setup.setCurrentCfnStackTemplate({
+    Resources: {
+      EventBus: {
+        Type: 'AWS::Events::EventBus',
+        Properties: {
+          Name: 'my-event-bus',
+        },
+      },
+      Machine: {
+        Type: 'AWS::StepFunctions::StateMachine',
+        Properties: {
+          DefinitionString: {
+            'Fn::Join': ['', [
+              '{"EventBus1Arn":"',
+              { 'Fn::GetAtt': ['EventBus', 'Arn'] },
+              '","EventBus1Name":"',
+              { 'Fn::GetAtt': ['EventBus', 'Name'] },
+              '","EventBus1Ref":"',
+              { Ref: 'EventBus' },
+              '"}',
+            ]],
+          },
+          StateMachineName: 'my-machine',
+        },
+      },
+    },
+  });
+  setup.pushStackResourceSummaries(
+    setup.stackSummaryOf('EventBus', 'AWS::Events::EventBus', 'my-event-bus'),
+  );
+  const cdkStackArtifact = setup.cdkStackArtifactOf({
+    template: {
+      Resources: {
+        EventBus: {
+          Type: 'AWS::Events::EventBus',
+          Properties: {
+            Name: 'my-event-bus',
+          },
+        },
+        Machine: {
+          Type: 'AWS::StepFunctions::StateMachine',
+          Properties: {
+            DefinitionString: {
+              'Fn::Join': ['', [
+                '{"EventBus2Arn":"',
+                { 'Fn::GetAtt': ['EventBus', 'Arn'] },
+                '","EventBus2Name":"',
+                { 'Fn::GetAtt': ['EventBus', 'Name'] },
+                '","EventBus2Ref":"',
+                { Ref: 'EventBus' },
+                '"}',
+              ]],
+            },
+            StateMachineName: 'my-machine',
+          },
+        },
+      },
+    },
+  });
+
+  // THEN
+  const result = await hotswapMockSdkProvider.tryHotswapDeployment(cdkStackArtifact);
+
+  expect(result).not.toBeUndefined();
+  expect(mockUpdateMachineDefinition).toHaveBeenCalledWith({
+    stateMachineArn: 'arn:aws:states:here:123456789012:stateMachine:my-machine',
+    definition: JSON.stringify({
+      EventBus2Arn: 'arn:aws:events:here:123456789012:event-bus/my-event-bus',
+      EventBus2Name: 'my-event-bus',
+      EventBus2Ref: 'my-event-bus',
+    }),
+  });
 });

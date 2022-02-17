@@ -14,10 +14,8 @@
 Here is a minimal deployable DynamoDB table definition:
 
 ```ts
-import * as dynamodb from '@aws-cdk/aws-dynamodb';
-
 const table = new dynamodb.Table(this, 'Table', {
-  partitionKey: { name: 'id', type: dynamodb.AttributeType.STRING }
+  partitionKey: { name: 'id', type: dynamodb.AttributeType.STRING },
 });
 ```
 
@@ -28,7 +26,8 @@ factory method. This method accepts table name or table ARN which describes the 
 existing table:
 
 ```ts
-const table = Table.fromTableArn(this, 'ImportedTable', 'arn:aws:dynamodb:us-east-1:111111111:table/my-table');
+declare const user: iam.User;
+const table = dynamodb.Table.fromTableArn(this, 'ImportedTable', 'arn:aws:dynamodb:us-east-1:111111111:table/my-table');
 // now you can just call methods on the table
 table.grantReadWriteData(user);
 ```
@@ -50,16 +49,31 @@ DynamoDB supports two billing modes:
 * PAY_PER_REQUEST - on-demand pricing and scaling. You only pay for what you use and there is no read and write capacity for the table or its global secondary indexes.
 
 ```ts
-import * as dynamodb from '@aws-cdk/aws-dynamodb';
-
 const table = new dynamodb.Table(this, 'Table', {
   partitionKey: { name: 'id', type: dynamodb.AttributeType.STRING },
-  billingMode: dynamodb.BillingMode.PAY_PER_REQUEST
+  billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
 });
 ```
 
 Further reading:
 https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.ReadWriteCapacityMode.
+
+## Table Class
+
+DynamoDB supports two table classes:
+
+* STANDARD - the default mode, and is recommended for the vast majority of workloads.
+* STANDARD_INFREQUENT_ACCESS - optimized for tables where storage is the dominant cost.
+
+```ts
+const table = new dynamodb.Table(this, 'Table', {
+  partitionKey: { name: 'id', type: dynamodb.AttributeType.STRING },
+  tableClass: dynamodb.TableClass.STANDARD_INFREQUENT_ACCESS,
+});
+```
+
+Further reading:
+https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.TableClasses.html
 
 ## Configure AutoScaling for your table
 
@@ -81,8 +95,6 @@ https://aws.amazon.com/blogs/database/how-to-use-aws-cloudformation-to-configure
 You can create DynamoDB Global Tables by setting the `replicationRegions` property on a `Table`:
 
 ```ts
-import * as dynamodb from '@aws-cdk/aws-dynamodb';
-
 const globalTable = new dynamodb.Table(this, 'Table', {
   partitionKey: { name: 'id', type: dynamodb.AttributeType.STRING },
   replicationRegions: ['us-east-1', 'us-east-2', 'us-west-2'],
@@ -100,7 +112,7 @@ you have to make sure write auto-scaling is enabled for that Table:
 const globalTable = new dynamodb.Table(this, 'Table', {
   partitionKey: { name: 'id', type: dynamodb.AttributeType.STRING },
   replicationRegions: ['us-east-1', 'us-east-2', 'us-west-2'],
-  billingMode: BillingMode.PROVISIONED,
+  billingMode: dynamodb.BillingMode.PROVISIONED,
 });
 
 globalTable.autoScaleWriteCapacity({
@@ -131,11 +143,9 @@ All user data stored in Amazon DynamoDB is fully encrypted at rest. When creatin
 Creating a Table encrypted with a customer managed CMK:
 
 ```ts
-import dynamodb = require('@aws-cdk/aws-dynamodb');
-
-const table = new dynamodb.Table(stack, 'MyTable', {
+const table = new dynamodb.Table(this, 'MyTable', {
   partitionKey: { name: 'id', type: dynamodb.AttributeType.STRING },
-  encryption: TableEncryption.CUSTOMER_MANAGED,
+  encryption: dynamodb.TableEncryption.CUSTOMER_MANAGED,
 });
 
 // You can access the CMK that was added to the stack on your behalf by the Table construct via:
@@ -145,15 +155,14 @@ const tableEncryptionKey = table.encryptionKey;
 You can also supply your own key:
 
 ```ts
-import dynamodb = require('@aws-cdk/aws-dynamodb');
-import kms = require('@aws-cdk/aws-kms');
+import * as kms from '@aws-cdk/aws-kms';
 
-const encryptionKey = new kms.Key(stack, 'Key', {
-  enableKeyRotation: true
+const encryptionKey = new kms.Key(this, 'Key', {
+  enableKeyRotation: true,
 });
-const table = new dynamodb.Table(stack, 'MyTable', {
+const table = new dynamodb.Table(this, 'MyTable', {
   partitionKey: { name: 'id', type: dynamodb.AttributeType.STRING },
-  encryption: TableEncryption.CUSTOMER_MANAGED,
+  encryption: dynamodb.TableEncryption.CUSTOMER_MANAGED,
   encryptionKey, // This will be exposed as table.encryptionKey
 });
 ```
@@ -161,11 +170,9 @@ const table = new dynamodb.Table(stack, 'MyTable', {
 In order to use the AWS managed CMK instead, change the code to:
 
 ```ts
-import dynamodb = require('@aws-cdk/aws-dynamodb');
-
-const table = new dynamodb.Table(stack, 'MyTable', {
+const table = new dynamodb.Table(this, 'MyTable', {
   partitionKey: { name: 'id', type: dynamodb.AttributeType.STRING },
-  encryption: TableEncryption.AWS_MANAGED,
+  encryption: dynamodb.TableEncryption.AWS_MANAGED,
 });
 
 // In this case, the CMK _cannot_ be accessed through table.encryptionKey.
@@ -176,11 +183,13 @@ const table = new dynamodb.Table(stack, 'MyTable', {
 To get the partition key and sort key of the table or indexes you have configured:
 
 ```ts
-const { partitionKey, sortKey } = table.schema();
+declare const table: dynamodb.Table;
+const schema = table.schema();
+const partitionKey = schema.partitionKey;
+const sortKey = schema.sortKey;
 
 // In case you want to get schema details for any secondary index
-
-const { partitionKey, sortKey } = table.schema(INDEX_NAME);
+// const { partitionKey, sortKey } = table.schema(INDEX_NAME);
 ```
 
 ## Kinesis Stream
@@ -188,7 +197,6 @@ const { partitionKey, sortKey } = table.schema(INDEX_NAME);
 A Kinesis Data Stream can be configured on the DynamoDB table to capture item-level changes.
 
 ```ts
-import * as dynamodb from '@aws-cdk/aws-dynamodb';
 import * as kinesis from '@aws-cdk/aws-kinesis';
 
 const stream = new kinesis.Stream(this, 'Stream');
