@@ -465,7 +465,7 @@ export interface ResolveCfnIntrinsicMockPseudoParameters {
  */
 export interface ResolveCfnIntrinsicMocks {
   /**
-   * Mock attribute values of cloudformation resources
+   * Mock attribute values of cloudformation resources and Parameters
    * @example
    *{
    *  MyResource: {
@@ -520,6 +520,12 @@ export interface ResolveCfnIntrinsicOptions {
    */
   readonly recursive?: boolean;
   /**
+   * resolve Ref?
+   * 
+   * @default true
+   */
+  readonly resolveRef?: boolean;
+  /**
    * resolve PseudoParameters?
    *
    * @default true
@@ -559,24 +565,48 @@ export interface ResolveCfnIntrinsicOptions {
 
 class ResolveCfnIntrinsic extends Matcher {
 
+  private static resolvePseudoParameter(parameter: string, mocks: ResolveCfnIntrinsicMocks): any {
+    try {
+      return mocks.cfnPseudoParameters![parameter.replace('AWS::', 'aws')];
+    } catch {
+      throw new Error(`Could not resolve logicalId. You have to set cfnResources.${logicalId}.Ref`);
+    }
+  }
+
+  private static resolveLogicalId(logicalId: string, mocks: ResolveCfnIntrinsicMocks): any {
+    try {
+      return mocks.cfnResources![logicalId]['Ref'];
+    } catch {
+      throw new Error(`Could not resolve logicalId. You have to set cfnResources.${logicalId}.Ref`);
+    }
+  }
+
   private static resolveIntrinsic(object: any, options: ResolveCfnIntrinsicOptions, mocks: ResolveCfnIntrinsicMocks): any {
     if (typeof object === 'object') {
+
       // Handle recursive
       if (options.recursive) {
         for (var key in object) {
           object[key] = ResolveCfnIntrinsic.resolveIntrinsic(object[key], options, mocks);
         }
       }
-      // Handle PseudoParameter
-      if ( options.resolvePseudoParameters && ['AWS::AccountId', 'AWS::NotificationARNs', 'AWS::Partition', 'AWS::Region', 'AWS::StackId', 'AWS::StackName', 'AWS::URLSuffix'].includes(object.Ref) ) {
-        if ( mocks.cfnPseudoParameters == undefined ) {
-          throw new Error('PseudoParameters: No mocks found, ensure mocks.cfnPseudoParameters mock is defined');
+
+      // Handle Ref
+      if ( options.resolveRef && 'Ref' in object) {
+        const objectRef = object.Ref;
+        if ( typeof objectRef === 'string' ) {
+          if ( options.resolvePseudoParameters && objectRef.indexOf('AWS::') == 0 ) {
+            return this.resolvePseudoParameter(objectRef, mocks);
+          } else {
+            return this.resolveLogicalId(objectRef, mocks);
+          }
+        } else {
+          throw new Error(`Ref must be of type string, found ${typeof objectRef}`);
         }
-        const pseudoParameter: 'awsAccountId' | 'awsNotificationARNs' | 'awsPartition' | 'awsRegion' | 'awsStackId'| 'awsStackName'| 'awsURLSuffix' = object.Ref.replace('AWS::', 'aws');
-        return mocks.cfnPseudoParameters[pseudoParameter];
       }
+      
       // Handle { "Fn::Join" : [ "delimiter", [ comma-delimited list of values ] ] }
-      if ( options.resolveFnJoin && object['Fn::Join'] !== undefined ) {
+      if ( options.resolveFnJoin && 'Fn::Join' in object) {
         if ( !(object['Fn::Join'] instanceof Array && object['Fn::Join'].length == 2)) {
           throw new Error('Fn::Join expecting an array of with the lenght of 2');
         }
@@ -728,6 +758,7 @@ class ResolveCfnIntrinsic extends Matcher {
     };
     this.options = {
       recursive: options.recursive ?? true,
+      resolveRef: options.resolveRef ?? true,
       resolvePseudoParameters: options.resolvePseudoParameters ?? true,
       resolveFnJoin: options.resolveFnJoin ?? true,
       resolveFnGetAtt: options.resolveFnGetAtt ?? true,
