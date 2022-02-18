@@ -6,7 +6,7 @@ import * as kms from '@aws-cdk/aws-kms';
 import * as logs from '@aws-cdk/aws-logs';
 import * as sns from '@aws-cdk/aws-sns';
 import * as sqs from '@aws-cdk/aws-sqs';
-import { Annotations, ArnFormat, CfnResource, Duration, Fn, Lazy, Names, Stack } from '@aws-cdk/core';
+import { Annotations, ArnFormat, CfnResource, Duration, Fn, Lazy, Names, Stack, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { Architecture } from './architecture';
 import { Code, CodeConfig } from './code';
@@ -626,6 +626,15 @@ export class Function extends FunctionBase {
     super(scope, id, {
       physicalName: props.functionName,
     });
+
+    if (props.functionName && !Token.isUnresolved(props.functionName)) {
+      if (props.functionName.length > 64) {
+        throw new Error(`Function name can not be longer than 64 characters but has ${props.functionName.length} characters.`);
+      }
+      if (!/^[a-zA-Z0-9-_]+$/.test(props.functionName)) {
+        throw new Error(`Function name ${props.functionName} can contain only letters, numbers, hyphens, or underscores with no spaces.`);
+      }
+    }
 
     const managedPolicies = new Array<iam.IManagedPolicy>();
 
