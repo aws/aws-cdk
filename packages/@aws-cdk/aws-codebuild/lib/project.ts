@@ -1642,14 +1642,76 @@ export interface IBindableBuildImage extends IBuildImage {
   bind(scope: CoreConstruct, project: IProject, options: BuildImageBindOptions): BuildImageConfig;
 }
 
-class ArmBuildImage implements IBuildImage {
+/**
+ * Construction properties of {@link LinuxArmBuildImage}.
+ * Module-private, as the constructor of {@link LinuxArmBuildImage} is private.
+ */
+interface LinuxArmBuildImageProps {
+  readonly imageId: string;
+  readonly imagePullPrincipalType?: ImagePullPrincipalType;
+  readonly secretsManagerCredentials?: secretsmanager.ISecret;
+  readonly repository?: ecr.IRepository;
+}
+
+/**
+ * A CodeBuild image running aarch64 Linux.
+ *
+ * This class has a bunch of public constants that represent the CodeBuild ARM images.
+ *
+ * You can also specify a custom image using the static method:
+ *
+ * - LinuxBuildImage.fromEcrRepository(repo[, tag])
+ *
+ *
+ * @see https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-available.html
+ */
+export class LinuxArmBuildImage implements IBuildImage {
+  public static readonly AMAZON_LINUX_2_ARM = LinuxArmBuildImage.codeBuildImage('aws/codebuild/amazonlinux2-aarch64-standard:1.0');
+  /** Image "aws/codebuild/amazonlinux2-aarch64-standard:2.0". */
+  public static readonly AMAZON_LINUX_2_ARM_2 = LinuxArmBuildImage.codeBuildImage('aws/codebuild/amazonlinux2-aarch64-standard:2.0');
+
   public readonly type = 'ARM_CONTAINER';
   public readonly defaultComputeType = ComputeType.LARGE;
-  public readonly imagePullPrincipalType = ImagePullPrincipalType.CODEBUILD;
   public readonly imageId: string;
+  public readonly imagePullPrincipalType = ImagePullPrincipalType.CODEBUILD;
+  public readonly secretsManagerCredentials?: secretsmanager.ISecret;
+  public readonly repository?: ecr.IRepository;
 
-  constructor(imageId: string) {
-    this.imageId = imageId;
+  /**
+   * @returns An aarch64 Linux build image from an ECR repository.
+   *
+   * NOTE: if the repository is external (i.e. imported), then we won't be able to add
+   * a resource policy statement for it so CodeBuild can pull the image.
+   *
+   * @see https://docs.aws.amazon.com/codebuild/latest/userguide/sample-ecr.html
+   *
+   * @param repository The ECR repository
+   * @param tag Image tag (default "latest")
+   */
+  public static fromEcrRepository(repository: ecr.IRepository, tag: string = 'latest'): IBuildImage {
+    return new LinuxArmBuildImage({
+      imageId: repository.repositoryUriForTag(tag),
+      imagePullPrincipalType: ImagePullPrincipalType.SERVICE_ROLE,
+      repository,
+    });
+  }
+
+  public static fromCodeBuildImageId(id: string): IBuildImage {
+    return LinuxArmBuildImage.codeBuildImage(id);
+  }
+
+  private static codeBuildImage(name: string): IBuildImage {
+    return new LinuxArmBuildImage({
+      imageId: name,
+      imagePullPrincipalType: ImagePullPrincipalType.CODEBUILD,
+    });
+  }
+
+  private constructor(props: LinuxArmBuildImageProps) {
+    this.imageId = props.imageId;
+    this.imagePullPrincipalType = props.imagePullPrincipalType;
+    this.secretsManagerCredentials = props.secretsManagerCredentials;
+    this.repository = props.repository;
   }
 
   public validate(buildEnvironment: BuildEnvironment): string[] {
@@ -1696,7 +1758,7 @@ interface LinuxBuildImageProps {
 }
 
 /**
- * A CodeBuild image running Linux.
+ * A CodeBuild image running x86-64 Linux.
  *
  * This class has a bunch of public constants that represent the most popular images.
  *
@@ -1723,9 +1785,9 @@ export class LinuxBuildImage implements IBuildImage {
   /** The Amazon Linux 2 x86_64 standard image, version `3.0`. */
   public static readonly AMAZON_LINUX_2_3 = LinuxBuildImage.codeBuildImage('aws/codebuild/amazonlinux2-x86_64-standard:3.0');
 
-  public static readonly AMAZON_LINUX_2_ARM: IBuildImage = new ArmBuildImage('aws/codebuild/amazonlinux2-aarch64-standard:1.0');
+  public static readonly AMAZON_LINUX_2_ARM = LinuxArmBuildImage.fromCodeBuildImageId('aws/codebuild/amazonlinux2-aarch64-standard:1.0');
   /** Image "aws/codebuild/amazonlinux2-aarch64-standard:2.0". */
-  public static readonly AMAZON_LINUX_2_ARM_2: IBuildImage = new ArmBuildImage('aws/codebuild/amazonlinux2-aarch64-standard:2.0');
+  public static readonly AMAZON_LINUX_2_ARM_2 = LinuxArmBuildImage.fromCodeBuildImageId('aws/codebuild/amazonlinux2-aarch64-standard:2.0');
 
   /** @deprecated Use {@link STANDARD_2_0} and specify runtime in buildspec runtime-versions section */
   public static readonly UBUNTU_14_04_BASE = LinuxBuildImage.codeBuildImage('aws/codebuild/ubuntu-base:14.04');
@@ -1789,7 +1851,7 @@ export class LinuxBuildImage implements IBuildImage {
   public static readonly UBUNTU_14_04_DOTNET_CORE_2_1 = LinuxBuildImage.codeBuildImage('aws/codebuild/dot-net:core-2.1');
 
   /**
-   * @returns a Linux build image from a Docker Hub image.
+   * @returns a x86-64 Linux build image from a Docker Hub image.
    */
   public static fromDockerRegistry(name: string, options: DockerImageOptions = {}): IBuildImage {
     return new LinuxBuildImage({
@@ -1800,7 +1862,7 @@ export class LinuxBuildImage implements IBuildImage {
   }
 
   /**
-   * @returns A Linux build image from an ECR repository.
+   * @returns A x86-64 Linux build image from an ECR repository.
    *
    * NOTE: if the repository is external (i.e. imported), then we won't be able to add
    * a resource policy statement for it so CodeBuild can pull the image.
@@ -1819,7 +1881,7 @@ export class LinuxBuildImage implements IBuildImage {
   }
 
   /**
-   * Uses an Docker image asset as a Linux build image.
+   * Uses an Docker image asset as a x86-64 Linux build image.
    */
   public static fromAsset(scope: Construct, id: string, props: DockerImageAssetProps): IBuildImage {
     const asset = new DockerImageAsset(scope, id, props);
@@ -1961,7 +2023,7 @@ export class WindowsBuildImage implements IBuildImage {
   }
 
   /**
-   * @returns A Linux build image from an ECR repository.
+   * @returns A Windows build image from an ECR repository.
    *
    * NOTE: if the repository is external (i.e. imported), then we won't be able to add
    * a resource policy statement for it so CodeBuild can pull the image.
