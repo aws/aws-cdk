@@ -20,7 +20,7 @@ export interface QueryDefinitionProps {
   /**
   * Specify certain log groups for the query definition.
   *
-  * @default - Undefine log groups will query all log groups.
+  * @default - No log groups.
   */
   readonly logGroupNames?: string[];
 }
