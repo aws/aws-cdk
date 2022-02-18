@@ -207,7 +207,7 @@ export class NoticeFilter {
   }
 
   /**
-   * Returns true if we should show this notice.
+   * Returns true iff we should show this notice.
    */
   apply(notice: Notice): boolean {
     if (this.props.permanentlySuppressed
@@ -220,7 +220,7 @@ export class NoticeFilter {
   }
 
   /**
-   * Returns true if we should show the notice.
+   * Returns true iff we should show the notice.
    */
   private applyVersion(notice: Notice, name: string, compareToVersion: string | undefined) {
     if (compareToVersion === undefined) { return false; }
@@ -243,6 +243,7 @@ function formatNotice(notice: Notice): string {
 
 function frameworkVersion(outdir: string): string | undefined {
   const tree = loadTree().tree;
+
   if (tree?.constructInfo?.fqn.startsWith('aws-cdk-lib')
     || tree?.constructInfo?.fqn.startsWith('@aws-cdk/core')) {
     return tree.constructInfo.version;
@@ -253,7 +254,6 @@ function frameworkVersion(outdir: string): string | undefined {
     try {
       return fs.readJSONSync(path.join(outdir, 'tree.json'));
     } catch (e) {
-      print('debug');
       debug(`Failed to get tree.json file: ${e}`);
       return {};
     }

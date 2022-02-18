@@ -2,7 +2,14 @@ import * as os from 'os';
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import * as nock from 'nock';
-import { CachedDataSource, filterNotices, formatNotices, Notice, WebsiteNoticeDataSource } from '../lib/notices';
+import {
+  CachedDataSource,
+  filterNotices,
+  formatNotices,
+  generateMessage,
+  Notice,
+  WebsiteNoticeDataSource,
+} from '../lib/notices';
 
 const BASIC_NOTICE = {
   title: 'Toggling off auto_delete_objects for Bucket empties the bucket',
@@ -22,6 +29,17 @@ const MULTIPLE_AFFECTED_VERSIONS_NOTICE = {
   components: [{
     name: 'cli',
     version: '<1.130.0 >=1.126.0',
+  }],
+  schemaVersion: '1',
+};
+
+const FRAMEWORK_2_1_0_AFFECTED_NOTICE = {
+  title: 'Regression on module foobar',
+  issueNumber: 1234,
+  overview: 'Some bug description',
+  components: [{
+    name: 'framework',
+    version: '<= 2.1.0',
   }],
   schemaVersion: '1',
 };
@@ -72,7 +90,23 @@ describe('cli notices', () => {
     });
 
     test('correctly filter notices on framework', () => {
-      // TODO
+      const notices = [FRAMEWORK_2_1_0_AFFECTED_NOTICE];
+
+      expect(filterNotices(notices, {
+        frameworkVersion: '2.0.0',
+      })).toEqual([FRAMEWORK_2_1_0_AFFECTED_NOTICE]);
+
+      expect(filterNotices(notices, {
+        frameworkVersion: '2.2.0',
+      })).toEqual([]);
+
+      expect(filterNotices(notices, {
+        outdir: path.join(__dirname, 'cloud-assembly-trees/built-with-2_12_0'),
+      })).toEqual([]);
+
+      expect(filterNotices(notices, {
+        outdir: path.join(__dirname, 'cloud-assembly-trees/built-with-1_144_0'),
+      })).toEqual([FRAMEWORK_2_1_0_AFFECTED_NOTICE]);
     });
   });
 
@@ -175,6 +209,71 @@ describe('cli notices', () => {
 
       delegate.fetch.mockResolvedValue(notices);
       return new CachedDataSource(file, delegate);
+    }
+  });
+
+  describe(generateMessage, () => {
+    test('does not show anything when there are no notices', async () => {
+      const dataSource = createDataSource();
+      const print = jest.fn();
+      dataSource.fetch.mockResolvedValue([]);
+
+      await generateMessage(dataSource, {
+        temporarilySuppressed: false,
+        permanentlySuppressed: false,
+        acknowledgedIssueNumbers: [],
+        outdir: '/tmp',
+      }, print);
+
+      expect(print).not.toHaveBeenCalled();
+    });
+
+    test('does not show anything when no notices pass the filter', async () => {
+      const dataSource = createDataSource();
+      const print = jest.fn();
+      dataSource.fetch.mockResolvedValue([BASIC_NOTICE, MULTIPLE_AFFECTED_VERSIONS_NOTICE]);
+
+      await generateMessage(dataSource, {
+        temporarilySuppressed: true,
+        permanentlySuppressed: false,
+        acknowledgedIssueNumbers: [],
+        outdir: '/tmp',
+      }, print);
+
+      expect(print).not.toHaveBeenCalled();
+    });
+
+    test('shows notices that pass the filter', async () => {
+      const dataSource = createDataSource();
+      const print = jest.fn();
+      dataSource.fetch.mockResolvedValue([BASIC_NOTICE, MULTIPLE_AFFECTED_VERSIONS_NOTICE]);
+
+      await generateMessage(dataSource, {
+        temporarilySuppressed: false,
+        permanentlySuppressed: false,
+        acknowledgedIssueNumbers: [17061],
+        outdir: '/tmp',
+      }, print);
+
+      expect(print).toHaveBeenCalledTimes(1);
+      expect(print).toHaveBeenCalledWith(`
+NOTICES
+
+16603\tToggling off auto_delete_objects for Bucket empties the bucket
+
+\tOverview: If a stack is deployed with an S3 bucket with auto_delete_objects=True, and then re-deployed with auto_delete_objects=False, all the objects in the bucket will be deleted.
+
+\tAffected versions: cli: <=1.126.0
+
+\tMore information at: https://github.com/aws/aws-cdk/issues/16603
+
+If you don’t want to see a notice anymore, use "cdk acknowledge <id>". For example, "cdk acknowledge 16603".`);
+    });
+
+    function createDataSource() {
+      return {
+        fetch: jest.fn(),
+      };
     }
   });
 });
