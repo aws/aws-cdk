@@ -299,7 +299,6 @@ async function prepareAndExecuteChangeSet(
     StackName: deployName,
     ChangeSetName: changeSetName,
     ChangeSetType: update ? 'UPDATE' : 'CREATE',
-    IncludeNestedStacks: true,
     Description: `CDK Changeset for execution ${executionId}`,
     TemplateBody: bodyParameter.TemplateBody,
     TemplateURL: bodyParameter.TemplateURL,
