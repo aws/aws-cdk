@@ -23,10 +23,22 @@ export class StepOutput implements IResolvable {
     return findAllStepOutputs(structure);
   }
 
+  /**
+   * The step that produces this output
+   */
+  public readonly step: Step;
+
+  /**
+   * Additional data on the output, to be interpreted by the engine
+   */
+  public readonly engineSpecificInformation: any;
+
   public readonly creationStack: string[] = [];
   private resolution: any = undefined;
 
-  constructor(public readonly step: Step, public readonly engineSpecificInformation: any) {
+  constructor(step: Step, engineSpecificInformation: any) {
+    this.step = step;
+    this.engineSpecificInformation = engineSpecificInformation;
     Object.defineProperty(this, STEP_OUTPUT_SYM, { value: true });
   }
 
