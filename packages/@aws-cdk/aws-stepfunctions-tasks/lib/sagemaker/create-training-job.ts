@@ -5,7 +5,7 @@ import { Duration, Lazy, Size, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 import { AlgorithmSpecification, Channel, InputMode, OutputDataConfig, ResourceConfig, S3DataType, StoppingCondition, VpcConfig } from './base-types';
-import { renderTags } from './private/utils';
+import { renderEnvironment, renderTags } from './private/utils';
 
 /**
  * Properties for creating an Amazon SageMaker training job
@@ -85,6 +85,13 @@ export interface SageMakerCreateTrainingJobProps extends sfn.TaskStateBaseProps 
    * @default - No VPC
    */
   readonly vpcConfig?: VpcConfig;
+
+  /**
+   * Environment variables to set in the Docker container.
+   *
+   * @default - No environment variables
+   */
+  readonly environment?: { [key: string]: string };
 }
 
 /**
@@ -234,6 +241,7 @@ export class SageMakerCreateTrainingJob extends sfn.TaskStateBase implements iam
       ...this.renderHyperparameters(this.props.hyperparameters),
       ...renderTags(this.props.tags),
       ...this.renderVpcConfig(this.props.vpcConfig),
+      ...renderEnvironment(this.props.environment),
     };
   }
 
