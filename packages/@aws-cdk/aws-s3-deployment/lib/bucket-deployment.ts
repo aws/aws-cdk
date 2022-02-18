@@ -14,6 +14,10 @@ import { ISource, SourceConfig } from './source';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
+import { Token } from '@aws-cdk/core';
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
 import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 // tag key has a limit of 128 characters
@@ -239,6 +243,10 @@ export interface BucketDeploymentProps {
  * other S3 buckets or from local disk
  */
 export class BucketDeployment extends CoreConstruct {
+  private readonly cr: cdk.CustomResource;
+  private _deployedBucket?: s3.IBucket;
+  private requestDestinationArn: boolean = false;
+
   constructor(scope: Construct, id: string, props: BucketDeploymentProps) {
     super(scope, id);
 
@@ -328,7 +336,7 @@ export class BucketDeployment extends CoreConstruct {
     const hasMarkers = sources.some(source => source.markers);
 
     const crUniqueId = `CustomResource${this.renderUniqueId(props.memoryLimit, props.vpc)}`;
-    const cr = new cdk.CustomResource(this, crUniqueId, {
+    this.cr = new cdk.CustomResource(this, crUniqueId, {
       serviceToken: handler.functionArn,
       resourceType: 'Custom::CDKBucketDeployment',
       properties: {
@@ -345,13 +353,15 @@ export class BucketDeployment extends CoreConstruct {
         SystemMetadata: mapSystemMetadata(props),
         DistributionId: props.distribution?.distributionId,
         DistributionPaths: props.distributionPaths,
+        // Passing through the ARN sequences dependencees on the deployment
+        DestinationBucketArn: cdk.Lazy.string({ produce: () => this.requestDestinationArn ? props.destinationBucket.bucketArn : undefined }),
       },
     });
 
     let prefix: string = props.destinationKeyPrefix ?
       `:${props.destinationKeyPrefix}` :
       '';
-    prefix += `:${cr.node.addr.substr(-8)}`;
+    prefix += `:${this.cr.node.addr.substr(-8)}`;
     const tagKey = CUSTOM_RESOURCE_OWNER_TAG + prefix;
 
     // destinationKeyPrefix can be 104 characters before we hit
@@ -403,6 +413,21 @@ export class BucketDeployment extends CoreConstruct {
      */
     cdk.Tags.of(props.destinationBucket).add(tagKey, 'true');
 
+  }
+
+  /**
+   * The bucket after the deployment
+   *
+   * If you want to reference the destination bucket in another construct and make sure the
+   * bucket deployment has happened before the next operation is started, pass the other construct
+   * a reference to `deployment.deployedBucket`.
+   *
+   * Doing this replaces calling `otherResource.node.addDependency(deployment)`.
+   */
+  public get deployedBucket(): s3.IBucket {
+    this.requestDestinationArn = true;
+    this._deployedBucket = this._deployedBucket ?? s3.Bucket.fromBucketArn(this, 'DestinationBucket', Token.asString(this.cr.getAtt('DestinationBucketArn')));
+    return this._deployedBucket;
   }
 
   private renderUniqueId(memoryLimit?: number, vpc?: ec2.IVpc) {
