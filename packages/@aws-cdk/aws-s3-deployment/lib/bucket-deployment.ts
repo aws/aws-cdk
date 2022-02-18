@@ -354,7 +354,7 @@ export class BucketDeployment extends CoreConstruct {
         DistributionId: props.distribution?.distributionId,
         DistributionPaths: props.distributionPaths,
         // Passing through the ARN sequences dependencees on the deployment
-        DestinationBucketArn: cdk.Lazy.stringValue({ produce: () => this.requestDestinationArn ? props.destinationBucket.bucketArn : undefined }),
+        DestinationBucketArn: cdk.Lazy.string({ produce: () => this.requestDestinationArn ? props.destinationBucket.bucketArn : undefined }),
       },
     });
 

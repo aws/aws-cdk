@@ -951,14 +951,17 @@ test('s3 deployment bucket is identical to destination bucket', () => {
   const bucket = new s3.Bucket(stack, 'Dest');
 
   // WHEN
-  new s3deploy.BucketDeployment(stack, 'Deployment', {
+  const bd = new s3deploy.BucketDeployment(stack, 'Deployment', {
     destinationBucket: bucket,
     sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
   });
 
+  // Call this function
+  void(bd.deployedBucket);
+
   // THEN
   const template = Template.fromStack(stack);
-  template.hasResourceProperties('Custom::CDKBack(ucketDeployment', {
+  template.hasResourceProperties('Custom::CDKBucketDeployment', {
     // Since this utilizes GetAtt, we know CFN will deploy the bucket first
     // before deploying other resources that rely call the destination bucket.
     DestinationBucketArn: { 'Fn::GetAtt': ['DestC383B82A', 'Arn'] },
