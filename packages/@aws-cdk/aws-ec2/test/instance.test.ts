@@ -4,7 +4,8 @@ import { Key } from '@aws-cdk/aws-kms';
 import { Asset } from '@aws-cdk/aws-s3-assets';
 import { StringParameter } from '@aws-cdk/aws-ssm';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
-import { Stack } from '@aws-cdk/core';
+import { App, Stack } from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import {
   AmazonLinuxImage, BlockDeviceVolume, CloudFormationInit,
   EbsDeviceVolumeType, InitCommand, Instance, InstanceArchitecture, InstanceClass, InstanceSize, InstanceType, LaunchTemplate, UserData, Vpc,
@@ -326,8 +327,8 @@ describe('instance', () => {
       });
 
       // THEN
-      expect(instance.node.metadataEntry[0].type).toEqual(cxschema.ArtifactMetadataEntryType.WARN);
-      expect(instance.node.metadataEntry[0].data).toEqual('iops will be ignored without volumeType: EbsDeviceVolumeType.IO1');
+      expect(instance.node.metadata[0].type).toEqual(cxschema.ArtifactMetadataEntryType.WARN);
+      expect(instance.node.metadata[0].data).toEqual('iops will be ignored without volumeType: EbsDeviceVolumeType.IO1');
 
 
     });
@@ -349,8 +350,8 @@ describe('instance', () => {
       });
 
       // THEN
-      expect(instance.node.metadataEntry[0].type).toEqual(cxschema.ArtifactMetadataEntryType.WARN);
-      expect(instance.node.metadataEntry[0].data).toEqual('iops will be ignored without volumeType: EbsDeviceVolumeType.IO1');
+      expect(instance.node.metadata[0].type).toEqual(cxschema.ArtifactMetadataEntryType.WARN);
+      expect(instance.node.metadata[0].data).toEqual('iops will be ignored without volumeType: EbsDeviceVolumeType.IO1');
 
 
     });
@@ -456,6 +457,13 @@ test('add CloudFormation Init to instance', () => {
 
 test('cause replacement from s3 asset in userdata', () => {
   // GIVEN
+  const app = new App({
+    context: {
+      [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false,
+    },
+  });
+  stack = new Stack(app);
+  vpc = new Vpc(stack, 'Vpc)');
   const userData1 = UserData.forLinux();
   const asset1 = new Asset(stack, 'UserDataAssets1', {
     path: path.join(__dirname, 'asset-fixture', 'data.txt'),
