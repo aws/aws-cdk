@@ -8,21 +8,21 @@ class TestStack extends cdk.Stack {
     super(scope, id);
 
     const bucket = new s3.Bucket(this, 'MyBucket');
-    const fn1 = new lambda.Function(this, 'MyFunction1', {
-      runtime: lambda.Runtime.NODEJS_10_X,
+    const handler1 = new lambda.Function(this, 'MyFunction1', {
+      runtime: lambda.Runtime.NODEJS_14_X,
       handler: 'index.handler',
       code: lambda.Code.fromInline('foo'),
     });
 
-    const fn2 = new lambda.Function(this, 'MyFunction2', {
-      runtime: lambda.Runtime.NODEJS_10_X,
+    const handler2 = new lambda.Function(this, 'MyFunction2', {
+      runtime: lambda.Runtime.NODEJS_14_X,
       handler: 'index.handler',
       code: lambda.Code.fromInline('foo'),
     });
 
     new AccessPoint(this, 'MyObjectLambda1', {
       bucket,
-      fn: fn1,
+      handler: handler1,
       accessPointName: 'obj-lambda-1',
       cloudWatchMetricsEnabled: true,
       supportsGetObjectPartNumber: true,
@@ -30,10 +30,10 @@ class TestStack extends cdk.Stack {
 
     new AccessPoint(this, 'MyObjectLambda2', {
       bucket,
-      fn: fn2,
+      handler: handler2,
       accessPointName: 'obj-lambda-1',
       supportsGetObjectRange: true,
-      payload: '{foo: 10}',
+      payload: { foo: 10 },
     });
   }
 }

@@ -115,5 +115,10 @@
   },
   "publishConfig": {
     "tag": "latest"
+  },
+  "awslint": {
+    "exclude": [
+      "attribute-tag:@aws-cdk/aws-s3objectlambda.AccessPoint.accessPointName"
+    ]
   }
 }

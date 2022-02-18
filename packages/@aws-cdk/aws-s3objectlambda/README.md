@@ -21,19 +21,74 @@
 
 <!--END STABILITY BANNER-->
 
-This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
+This construct library allows you to define S3 object lambda access points.
 
-```ts nofixture
+```ts
+import * as lambda from '@aws-cdk/aws-lambda';
+import * as s3 from '@aws-cdk/aws-s3';
 import * as s3objectlambda from '@aws-cdk/aws-s3objectlambda';
+
+const bucket = new s3.Bucket(this, 'MyBucket');
+const handler = new lambda.Function(this, 'MyFunction', {
+	runtime: lambda.Runtime.NODEJS_14_X,
+	handler: 'index.handler',
+	code: lambda.Code.fromAsset('lambda.zip'),
+});
+new AccessPoint(this, 'MyObjectLambda', {
+	bucket,
+	handler,
+	accessPointName: 'my-access-point',
+	payload: {
+		prop: "value",
+	},
+});
 ```
 
-<!--BEGIN CFNONLY DISCLAIMER-->
+## Handling range and part number requests
 
-There are no hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet. 
-However, you can still use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, and use this service exactly as you would using CloudFormation directly.
+Lambdas are currently limited to only transforming `GetObject` requests. However, they can additionally support `GetObject-Range` and `GetObject-PartNumber` requests, which needs to be specified in the access point configuration:
 
-For more information on the resources and properties available for this service, see the [CloudFormation documentation for AWS::S3ObjectLambda](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_S3ObjectLambda.html).
+```ts
+import * as lambda from '@aws-cdk/aws-lambda';
+import * as s3 from '@aws-cdk/aws-s3';
+import * as s3objectlambda from '@aws-cdk/aws-s3objectlambda';
 
-(Read the [CDK Contributing Guide](https://github.com/aws/aws-cdk/blob/master/CONTRIBUTING.md) if you are interested in contributing to this construct library.)
+const bucket = new s3.Bucket(this, 'MyBucket');
+const handler = new lambda.Function(this, 'MyFunction', {
+	runtime: lambda.Runtime.NODEJS_14_X,
+	handler: 'index.handler',
+	code: lambda.Code.fromAsset('lambda.zip'),
+});
+new AccessPoint(this, 'MyObjectLambda', {
+	bucket,
+	handler,
+	accessPointName: 'my-access-point',
+	supportsGetObjectRange: true,
+	supportsGetObjectPartNumber: true,
+});
+```
 
-<!--END CFNONLY DISCLAIMER-->
+## Pass additional data to Lambda function
+
+You can specify an additional object that provides supplemental data to the Lambda function used to transform objects. The data is delivered as a JSON payload to the Lambda:
+
+```ts
+import * as lambda from '@aws-cdk/aws-lambda';
+import * as s3 from '@aws-cdk/aws-s3';
+import * as s3objectlambda from '@aws-cdk/aws-s3objectlambda';
+
+const bucket = new s3.Bucket(this, 'MyBucket');
+const handler = new lambda.Function(this, 'MyFunction', {
+	runtime: lambda.Runtime.NODEJS_14_X,
+	handler: 'index.handler',
+	code: lambda.Code.fromAsset('lambda.zip'),
+});
+new AccessPoint(this, 'MyObjectLambda', {
+	bucket,
+	handler,
+	accessPointName: 'my-access-point',
+	payload: {
+		prop: "value",
+	},
+});
+```

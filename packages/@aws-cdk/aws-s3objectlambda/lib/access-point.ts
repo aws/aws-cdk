@@ -13,7 +13,7 @@ export interface IAccessPoint extends core.IResource {
    * The ARN of the access point.
    * @attribute
    */
-  readonly accessPointArn: string
+  readonly accessPointArn: string;
 
   /**
    * The creation data of the access point.
@@ -43,48 +43,46 @@ export interface IAccessPoint extends core.IResource {
 }
 
 /**
-  * Creates an S3 Object Lambda Access Point, which can intercept
-  * and transform `GetObject` requests.
-  *
-  * @param fn The Lambda function
-  * @param props Configuration for this Access Point
+  * The S3 object lambda access point configuration.
   */
 export interface AccessPointProps {
   /**
    * The bucket to which this access point belongs.
    */
-  readonly bucket: s3.IBucket
+  readonly bucket: s3.IBucket;
 
   /**
    * The Lambda function used to transform objects.
    */
-  readonly fn: lambda.IFunction
+  readonly handler: lambda.IFunction;
 
   /**
-   * The name of the access point access point.
+   * The name of the S3 object lambda access point.
+   *
+   * @default a unique name will be generated
    */
-  readonly accessPointName: string
+  readonly accessPointName?: string;
 
   /**
    * Whether CloudWatch metrics are enabled for the access point.
    *
    * @default false
    */
-  readonly cloudWatchMetricsEnabled?: boolean
+  readonly cloudWatchMetricsEnabled?: boolean;
 
   /**
    * Whether the Lambda function can process `GetObject-Range` requests.
    *
    * @default false
    */
-  readonly supportsGetObjectRange?: boolean
+  readonly supportsGetObjectRange?: boolean;
 
   /**
    * Whether the Lambda function can process `GetObject-PartNumber` requests.
    *
    * @default false
    */
-  readonly supportsGetObjectPartNumber?: boolean
+  readonly supportsGetObjectPartNumber?: boolean;
 
   /**
    * Additional JSON that provides supplemental data passed to the
@@ -92,33 +90,32 @@ export interface AccessPointProps {
    *
    * @default - No data.
    */
-  readonly payload?: string
+  readonly payload?: Record<string, unknown>;
 }
 
 abstract class AccessPointBase extends core.Resource implements IAccessPoint {
-  public abstract readonly accessPointArn: string
-  public abstract readonly accessPointCreationDate: string
-
-  protected abstract readonly name: string;
+  public abstract readonly accessPointArn: string;
+  public abstract readonly accessPointCreationDate: string;
+  public abstract readonly accessPointName: string;
 
   /** Implement the {@link IAccessPoint.domainName} field. */
   get domainName(): string {
     const urlSuffix = this.stack.urlSuffix;
-    return `${this.name}-${this.stack.account}.s3-object-lambda.${urlSuffix}`;
+    return `${this.accessPointName}-${this.stack.account}.s3-object-lambda.${urlSuffix}`;
   }
 
   /** Implement the {@link IAccessPoint.regionalDomainName} field. */
   get regionalDomainName(): string {
     const urlSuffix = this.stack.urlSuffix;
     const region = this.stack.region;
-    return `${this.name}-${this.stack.account}.s3-object-lambda.${region}.${urlSuffix}`;
+    return `${this.accessPointName}-${this.stack.account}.s3-object-lambda.${region}.${urlSuffix}`;
   }
 
   /** Implement the {@link IAccessPoint.virtualHostedUrlForObject} method. */
   public virtualHostedUrlForObject(key?: string, options?: s3.VirtualHostedStyleUrlOptions): string {
     const domainName = options?.regional ?? true ? this.regionalDomainName : this.domainName;
     const prefix = `https://${domainName}`;
-    if (typeof key !== 'string') {
+    if (!key) {
       return prefix;
     }
     if (key.startsWith('/')) {
@@ -147,7 +144,26 @@ export interface AccessPointAttributes {
 }
 
 /**
-  * An S3 Object Lambda Access Point for intercepting and
+ * Checks the access point name against the rules in https://docs.aws.amazon.com/AmazonS3/latest/userguide/creating-access-points.html#access-points-names
+ * @param name The name of the access point
+ */
+function validateAccessPointName(name: string): void {
+  if (name.length < 3 || name.length > 50) {
+    throw new Error('Access point name must be between 3 and 50 characters long');
+  }
+  if (name.endsWith('-s3alias')) {
+    throw new Error('Access point name cannot end with the suffix -s3alias');
+  }
+  if (name[0] === '-' || name[name.length - 1] === '-') {
+    throw new Error('Access point name cannot begin or end with a dash');
+  }
+  if (!/^[0-9a-z](.(?![\.A-Z_]))+[0-9a-z]$/.test(name)) {
+    throw new Error('Access point name must begin with a number or lowercase letter and not contain underscores, uppercase letters, or periods');
+  }
+}
+
+/**
+  * An S3 object lambda access point for intercepting and
   * transforming `GetObject` requests.
   */
 export class AccessPoint extends AccessPointBase {
@@ -163,13 +179,17 @@ export class AccessPoint extends AccessPointBase {
     class Import extends AccessPointBase {
       public readonly accessPointArn: string = attrs.accessPointArn;
       public readonly accessPointCreationDate: string = attrs.accessPointCreationDate;
-      protected name: string = name;
+      public readonly accessPointName: string = name;
     }
     return new Import(scope, id);
   }
 
   private readonly accessPoint: CfnAccessPoint
-  protected readonly name: string
+
+  /**
+   * The ARN of the access point.
+   */
+  public readonly accessPointName: string
 
   /**
    * The ARN of the access point.
@@ -184,12 +204,19 @@ export class AccessPoint extends AccessPointBase {
   public readonly accessPointCreationDate: string
 
   constructor(scope: Construct, id: string, props: AccessPointProps) {
-    super(scope, id);
+    super(scope, id, {
+      physicalName: props.accessPointName ?? core.Lazy.string({
+        produce: () => core.Names.uniqueId(this).toLowerCase(),
+      }),
+    });
 
-    const supporting = new s3.CfnAccessPoint(this, 'AccessPoint', {
+    if (props.accessPointName) {
+      validateAccessPointName(props.accessPointName);
+    }
+
+    const supporting = new s3.CfnAccessPoint(this, 'SupportingAccessPoint', {
       bucket: props.bucket.bucketName,
     });
-    supporting.addPropertyOverride('Name', `${props.accessPointName}-access-point`);
 
     const allowedFeatures = [];
     if (props.supportsGetObjectPartNumber) {
@@ -199,65 +226,34 @@ export class AccessPoint extends AccessPointBase {
       allowedFeatures.push('GetObject-Range');
     }
 
-    this.name = props.accessPointName.toLowerCase();
     this.accessPoint = new CfnAccessPoint(this, 'LambdaAccessPoint', {
-      name: this.name,
+      name: this.physicalName,
       objectLambdaConfiguration: {
         allowedFeatures,
         cloudWatchMetricsEnabled: props.cloudWatchMetricsEnabled,
-        supportingAccessPoint: supporting.getAtt('Arn').toString(),
+        supportingAccessPoint: supporting.attrArn,
         transformationConfigurations: [
           {
             actions: ['GetObject'],
             contentTransformation: {
               AwsLambda: {
-                FunctionArn: props.fn.functionArn,
-                FunctionPayload: props.payload ?? '',
+                FunctionArn: props.handler.functionArn,
+                FunctionPayload: props.payload ? JSON.stringify(props.payload) : undefined,
               },
             },
           },
         ],
       },
     });
-    this.accessPoint.addDependsOn(supporting);
-
+    this.accessPointName = this.accessPoint.ref;
     this.accessPointArn = this.accessPoint.attrArn;
     this.accessPointCreationDate = this.accessPoint.attrCreationDate;
 
-    props.fn.addToRolePolicy(
+    props.handler.addToRolePolicy(
       new iam.PolicyStatement({
         actions: ['s3-object-lambda:WriteGetObjectResponse'],
         resources: ['*'],
       }),
     );
-  }
-
-  /** Implement the {@link IAccessPoint.domainName} field. */
-  get domainName(): string {
-    const urlSuffix = this.stack.urlSuffix;
-    return `${this.accessPoint.name}-${this.stack.account}.s3-object-lambda.${urlSuffix}`;
-  }
-
-  /** Implement the {@link IAccessPoint.regionalDomainName} field. */
-  get regionalDomainName(): string {
-    const urlSuffix = this.stack.urlSuffix;
-    const region = this.stack.region;
-    return `${this.accessPoint.name}-${this.stack.account}.s3-object-lambda.${region}.${urlSuffix}`;
-  }
-
-  /** Implement the {@link IAccessPoint.virtualHostedUrlForObject} method. */
-  public virtualHostedUrlForObject(key?: string, options?: s3.VirtualHostedStyleUrlOptions): string {
-    const domainName = options?.regional ?? true ? this.regionalDomainName : this.domainName;
-    const prefix = `https://${domainName}`;
-    if (typeof key !== 'string') {
-      return prefix;
-    }
-    if (key.startsWith('/')) {
-      key = key.slice(1);
-    }
-    if (key.endsWith('/')) {
-      key = key.slice(0, -1);
-    }
-    return `${prefix}/${key}`;
   }
 }

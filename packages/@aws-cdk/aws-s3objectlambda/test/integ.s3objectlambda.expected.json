@@ -70,7 +70,7 @@
           ]
         },
         "Handler": "index.handler",
-        "Runtime": "nodejs10.x"
+        "Runtime": "nodejs14.x"
       },
       "DependsOn": [
         "MyFunction1ServiceRoleDefaultPolicy39556460",
@@ -142,20 +142,19 @@
           ]
         },
         "Handler": "index.handler",
-        "Runtime": "nodejs10.x"
+        "Runtime": "nodejs14.x"
       },
       "DependsOn": [
         "MyFunction2ServiceRoleDefaultPolicyA79C693E",
         "MyFunction2ServiceRole07E5BE0E"
       ]
     },
-    "MyObjectLambda1AccessPointD5812646": {
+    "MyObjectLambda1SupportingAccessPoint223B719B": {
       "Type": "AWS::S3::AccessPoint",
       "Properties": {
         "Bucket": {
           "Ref": "MyBucketF68F3FF0"
-        },
-        "Name": "obj-lambda-1-access-point"
+        }
       }
     },
     "MyObjectLambda1LambdaAccessPoint73C4BD68": {
@@ -169,7 +168,7 @@
           "CloudWatchMetricsEnabled": true,
           "SupportingAccessPoint": {
             "Fn::GetAtt": [
-              "MyObjectLambda1AccessPointD5812646",
+              "MyObjectLambda1SupportingAccessPoint223B719B",
               "Arn"
             ]
           },
@@ -185,25 +184,20 @@
                       "MyFunction12A744C2E",
                       "Arn"
                     ]
-                  },
-                  "FunctionPayload": ""
+                  }
                 }
               }
             }
           ]
         }
-      },
-      "DependsOn": [
-        "MyObjectLambda1AccessPointD5812646"
-      ]
+      }
     },
-    "MyObjectLambda2AccessPoint76FB5ACF": {
+    "MyObjectLambda2SupportingAccessPoint6C54778F": {
       "Type": "AWS::S3::AccessPoint",
       "Properties": {
         "Bucket": {
           "Ref": "MyBucketF68F3FF0"
-        },
-        "Name": "obj-lambda-1-access-point"
+        }
       }
     },
     "MyObjectLambda2LambdaAccessPoint1043EB83": {
@@ -216,7 +210,7 @@
           ],
           "SupportingAccessPoint": {
             "Fn::GetAtt": [
-              "MyObjectLambda2AccessPoint76FB5ACF",
+              "MyObjectLambda2SupportingAccessPoint6C54778F",
               "Arn"
             ]
           },
@@ -233,16 +227,13 @@
                       "Arn"
                     ]
                   },
-                  "FunctionPayload": "{foo: 10}"
+                  "FunctionPayload": "{\"foo\":10}"
                 }
               }
             }
           ]
         }
-      },
-      "DependsOn": [
-        "MyObjectLambda2AccessPoint76FB5ACF"
-      ]
+      }
     }
   }
 }
