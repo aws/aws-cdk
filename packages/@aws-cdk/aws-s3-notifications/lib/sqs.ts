@@ -1,5 +1,4 @@
 import * as iam from '@aws-cdk/aws-iam';
-import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as sqs from '@aws-cdk/aws-sqs';
 import { Annotations } from '@aws-cdk/core';
@@ -34,9 +33,8 @@ export class SqsDestination implements s3.IBucketNotificationDestination {
         actions: ['kms:GenerateDataKey*', 'kms:Decrypt'],
         resources: ['*'],
       });
-      if (this.queue.encryptionMasterKey instanceof kms.Key) {
-        this.queue.encryptionMasterKey.addToResourcePolicy(statement, /* allowNoOp */ false);
-      } else {
+      const addResult = this.queue.encryptionMasterKey.addToResourcePolicy(statement, /* allowNoOp */ true);
+      if (!addResult.statementAdded) {
         Annotations.of(this.queue.encryptionMasterKey).addWarning(`Can not change key policy of imported kms key. Ensure that your key policy contains the following permissions: \n${JSON.stringify(statement.toJSON(), null, 2)}`);
       }
     }
