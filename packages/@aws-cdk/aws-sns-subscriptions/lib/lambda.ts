@@ -38,7 +38,7 @@ export class LambdaSubscription implements sns.ITopicSubscription {
 
     return {
       subscriberScope: this.fn,
-      subscriberId: topic.node.id,
+      subscriberId: Names.nodeUniqueId(topic.node),
       endpoint: this.fn.functionArn,
       protocol: sns.SubscriptionProtocol.LAMBDA,
       filterPolicy: this.props.filterPolicy,
