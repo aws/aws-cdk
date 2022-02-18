@@ -48,8 +48,10 @@ will ensure the bucket deployment has finished before the resource that uses
 the bucket is created:
 
 ```ts
+declare const websiteBucket: s3.Bucket;
+
 const deployment = new s3deploy.BucketDeployment(this, 'DeployWebsite', {
-  // ...
+  sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
   destinationBucket: websiteBucket,
 });
 
