@@ -1,5 +1,5 @@
 {
-  "$version": "55.0.0",
+  "$version": "57.0.0",
   "PropertyTypes": {
     "AWS::Lex::Bot.BotLocale": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lex-bot-botlocale.html",
