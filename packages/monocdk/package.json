@@ -231,6 +231,7 @@
     "@aws-cdk/aws-iotanalytics": "0.0.0",
     "@aws-cdk/aws-iotcoredeviceadvisor": "0.0.0",
     "@aws-cdk/aws-iotevents": "0.0.0",
+    "@aws-cdk/aws-iotevents-actions": "0.0.0",
     "@aws-cdk/aws-iotfleethub": "0.0.0",
     "@aws-cdk/aws-iotsitewise": "0.0.0",
     "@aws-cdk/aws-iotthingsgraph": "0.0.0",
