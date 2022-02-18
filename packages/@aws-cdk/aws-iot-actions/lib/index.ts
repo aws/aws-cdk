@@ -8,3 +8,4 @@ export * from './kinesis-put-record-action';
 export * from './lambda-function-action';
 export * from './s3-put-object-action';
 export * from './sqs-queue-action';
+export * from './sns-topic-action';

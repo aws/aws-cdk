@@ -480,10 +480,40 @@ fn.addEventSource(new eventsources.S3EventSource(bucket, {
 
 See the documentation for the __@aws-cdk/aws-lambda-event-sources__ module for more details.
 
+## Imported Lambdas
+
+When referencing an imported lambda in the CDK, use `fromFunctionArn()` for most use cases:
+
+```ts
+const fn = lambda.Function.fromFunctionArn(
+  this,
+  'Function',
+  'arn:aws:lambda:us-east-1:123456789012:function:MyFn',
+);
+```
+
+The `fromFunctionAttributes()` API is available for more specific use cases:
+
+```ts
+const fn = lambda.Function.fromFunctionAttributes(this, 'Function', {
+  functionArn: 'arn:aws:lambda:us-east-1:123456789012:function:MyFn',
+  // The following are optional properties for specific use cases and should be used with caution:
+
+  // Use Case: imported function is in the same account as the stack. This tells the CDK that it
+  // can modify the function's permissions.
+  sameEnvironment: true,
+
+  // Use Case: imported function is in a different account and user commits to ensuring that the
+  // imported function has the correct permissions outside the CDK.
+  skipPermissions: true,
+});
+```
+
 ## Lambda with DLQ
 
 A dead-letter queue can be automatically created for a Lambda function by
-setting the `deadLetterQueueEnabled: true` configuration.
+setting the `deadLetterQueueEnabled: true` configuration. In such case CDK creates
+a `sqs.Queue` as `deadLetterQueue`.
 
 ```ts
 const fn = new lambda.Function(this, 'MyFunction', {
@@ -505,6 +535,20 @@ const fn = new lambda.Function(this, 'MyFunction', {
   handler: 'index.handler',
   code: lambda.Code.fromInline('exports.handler = function(event, ctx, cb) { return cb(null, "hi"); }'),
   deadLetterQueue: dlq,
+});
+```
+
+You can also use a `sns.Topic` instead of an `sqs.Queue` as dead-letter queue:
+
+```ts
+import * as sns from '@aws-cdk/aws-sns';
+
+const dlt = new sns.Topic(this, 'DLQ');
+const fn = new lambda.Function(this, 'MyFunction', {
+  runtime: lambda.Runtime.NODEJS_12_X,
+  handler: 'index.handler',
+  code: lambda.Code.fromInline('// your code here'),
+  deadLetterTopic: dlt,
 });
 ```
 
