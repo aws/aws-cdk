@@ -1,3 +1,155 @@
+# CloudFormation Resource Specification v57.0.0
+
+## New Resource Types
+
+* AWS::ECR::PullThroughCacheRule
+
+## Attribute Changes
+
+* AWS::Batch::ComputeEnvironment ComputeEnvironmentArn (__added__)
+* AWS::Batch::JobQueue JobQueueArn (__added__)
+* AWS::SES::ConfigurationSetEventDestination Id (__added__)
+
+## Property Changes
+
+* AWS::Batch::ComputeEnvironment Tags.PrimitiveType (__deleted__)
+* AWS::Batch::ComputeEnvironment Tags.PrimitiveItemType (__added__)
+* AWS::Batch::ComputeEnvironment Tags.Type (__added__)
+* AWS::Batch::JobQueue ComputeEnvironmentOrder.DuplicatesAllowed (__added__)
+* AWS::Batch::JobQueue Tags.PrimitiveType (__deleted__)
+* AWS::Batch::JobQueue Tags.PrimitiveItemType (__added__)
+* AWS::Batch::JobQueue Tags.Type (__added__)
+* AWS::DocDB::DBCluster MasterUserPassword.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::DocDB::DBCluster MasterUsername.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::EC2::Instance PrivateDnsNameOptions (__added__)
+* AWS::IoT::Authorizer EnableCachingForHttp (__added__)
+* AWS::Kendra::DataSource CustomDocumentEnrichmentConfiguration (__added__)
+* AWS::Lambda::EventSourceMapping FilterCriteria.PrimitiveType (__deleted__)
+* AWS::Lambda::EventSourceMapping FilterCriteria.Type (__added__)
+* AWS::Lambda::EventSourceMapping StartingPositionTimestamp.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::StepFunctions::StateMachine StateMachineType.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+
+## Property Type Changes
+
+* AWS::EC2::Instance.PrivateDnsNameOptions (__added__)
+* AWS::Kendra::DataSource.CustomDocumentEnrichmentConfiguration (__added__)
+* AWS::Kendra::DataSource.DocumentAttributeCondition (__added__)
+* AWS::Kendra::DataSource.DocumentAttributeTarget (__added__)
+* AWS::Kendra::DataSource.DocumentAttributeValue (__added__)
+* AWS::Kendra::DataSource.HookConfiguration (__added__)
+* AWS::Kendra::DataSource.InlineCustomDocumentEnrichmentConfiguration (__added__)
+* AWS::Lambda::EventSourceMapping.Filter (__added__)
+* AWS::Lambda::EventSourceMapping.FilterCriteria (__added__)
+* AWS::WAFv2::WebACL.FieldIdentifier (__added__)
+* AWS::WAFv2::WebACL.ManagedRuleGroupConfig (__added__)
+* AWS::Batch::ComputeEnvironment.ComputeResources Ec2Configuration.DuplicatesAllowed (__added__)
+* AWS::Batch::ComputeEnvironment.ComputeResources InstanceTypes.DuplicatesAllowed (__added__)
+* AWS::Batch::ComputeEnvironment.ComputeResources SecurityGroupIds.DuplicatesAllowed (__added__)
+* AWS::Batch::ComputeEnvironment.ComputeResources Subnets.DuplicatesAllowed (__added__)
+* AWS::Batch::ComputeEnvironment.ComputeResources Tags.PrimitiveType (__deleted__)
+* AWS::Batch::ComputeEnvironment.ComputeResources Tags.PrimitiveItemType (__added__)
+* AWS::Batch::ComputeEnvironment.ComputeResources Tags.Type (__added__)
+* AWS::EC2::SpotFleet.LaunchTemplateOverrides Priority (__added__)
+* AWS::IoTAnalytics::Dataset.RetentionPeriod NumberOfDays.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::IoTAnalytics::Dataset.RetentionPeriod Unlimited.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::NetworkFirewall::FirewallPolicy.FirewallPolicy StatefulDefaultActions.DuplicatesAllowed (__changed__)
+  * Old: false
+  * New: true
+* AWS::NetworkFirewall::FirewallPolicy.FirewallPolicy StatefulRuleGroupReferences.DuplicatesAllowed (__changed__)
+  * Old: false
+  * New: true
+* AWS::NetworkFirewall::FirewallPolicy.FirewallPolicy StatelessCustomActions.DuplicatesAllowed (__changed__)
+  * Old: false
+  * New: true
+* AWS::NetworkFirewall::FirewallPolicy.FirewallPolicy StatelessDefaultActions.DuplicatesAllowed (__changed__)
+  * Old: false
+  * New: true
+* AWS::NetworkFirewall::FirewallPolicy.FirewallPolicy StatelessFragmentDefaultActions.DuplicatesAllowed (__changed__)
+  * Old: false
+  * New: true
+* AWS::NetworkFirewall::FirewallPolicy.FirewallPolicy StatelessRuleGroupReferences.DuplicatesAllowed (__changed__)
+  * Old: false
+  * New: true
+* AWS::NetworkFirewall::FirewallPolicy.PublishMetricAction Dimensions.DuplicatesAllowed (__changed__)
+  * Old: false
+  * New: true
+* AWS::NetworkFirewall::RuleGroup.IPSet Definition.DuplicatesAllowed (__changed__)
+  * Old: false
+  * New: true
+* AWS::NetworkFirewall::RuleGroup.MatchAttributes DestinationPorts.DuplicatesAllowed (__changed__)
+  * Old: false
+  * New: true
+* AWS::NetworkFirewall::RuleGroup.MatchAttributes Destinations.DuplicatesAllowed (__changed__)
+  * Old: false
+  * New: true
+* AWS::NetworkFirewall::RuleGroup.MatchAttributes Protocols.DuplicatesAllowed (__changed__)
+  * Old: false
+  * New: true
+* AWS::NetworkFirewall::RuleGroup.MatchAttributes SourcePorts.DuplicatesAllowed (__changed__)
+  * Old: false
+  * New: true
+* AWS::NetworkFirewall::RuleGroup.MatchAttributes Sources.DuplicatesAllowed (__changed__)
+  * Old: false
+  * New: true
+* AWS::NetworkFirewall::RuleGroup.MatchAttributes TCPFlags.DuplicatesAllowed (__changed__)
+  * Old: false
+  * New: true
+* AWS::NetworkFirewall::RuleGroup.PortSet Definition.DuplicatesAllowed (__changed__)
+  * Old: false
+  * New: true
+* AWS::NetworkFirewall::RuleGroup.PublishMetricAction Dimensions.DuplicatesAllowed (__changed__)
+  * Old: false
+  * New: true
+* AWS::NetworkFirewall::RuleGroup.RuleDefinition Actions.DuplicatesAllowed (__changed__)
+  * Old: false
+  * New: true
+* AWS::NetworkFirewall::RuleGroup.RuleOption Settings.DuplicatesAllowed (__changed__)
+  * Old: false
+  * New: true
+* AWS::NetworkFirewall::RuleGroup.RulesSource StatefulRules.DuplicatesAllowed (__changed__)
+  * Old: false
+  * New: true
+* AWS::NetworkFirewall::RuleGroup.RulesSourceList TargetTypes.DuplicatesAllowed (__changed__)
+  * Old: false
+  * New: true
+* AWS::NetworkFirewall::RuleGroup.RulesSourceList Targets.DuplicatesAllowed (__changed__)
+  * Old: false
+  * New: true
+* AWS::NetworkFirewall::RuleGroup.StatefulRule RuleOptions.DuplicatesAllowed (__changed__)
+  * Old: false
+  * New: true
+* AWS::NetworkFirewall::RuleGroup.StatelessRulesAndCustomActions CustomActions.DuplicatesAllowed (__changed__)
+  * Old: false
+  * New: true
+* AWS::NetworkFirewall::RuleGroup.StatelessRulesAndCustomActions StatelessRules.DuplicatesAllowed (__changed__)
+  * Old: false
+  * New: true
+* AWS::NetworkFirewall::RuleGroup.TCPFlagField Flags.DuplicatesAllowed (__changed__)
+  * Old: false
+  * New: true
+* AWS::NetworkFirewall::RuleGroup.TCPFlagField Masks.DuplicatesAllowed (__changed__)
+  * Old: false
+  * New: true
+* AWS::SES::ConfigurationSetEventDestination.CloudWatchDestination DimensionConfigurations.DuplicatesAllowed (__added__)
+* AWS::SES::ConfigurationSetEventDestination.EventDestination MatchingEventTypes.DuplicatesAllowed (__added__)
+* AWS::WAFv2::WebACL.ManagedRuleGroupStatement ManagedRuleGroupConfigs (__added__)
+
+## Unapplied changes
+
+* AWS::AppIntegrations is at 53.1.0
+
 # CloudFormation Resource Specification v56.0.0
 
 ## New Resource Types
