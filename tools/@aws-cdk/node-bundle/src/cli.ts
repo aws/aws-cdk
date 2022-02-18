@@ -11,7 +11,7 @@ async function buildCommands() {
 
   const argv = yargs
     .usage('Usage: node-bundle COMMAND')
-    .option('entrypoint', { type: 'array', nargs: 1, desc: 'List of entrypoints to bundle', demandOption: true })
+    .option('entrypoint', { type: 'array', nargs: 1, desc: 'List of entrypoints to bundle' })
     .option('external', { type: 'array', nargs: 1, default: [], desc: 'Packages in this list will be excluded from the bundle and added as dependencies (example: fsevents:optional)' })
     .option('license', { type: 'array', nargs: 1, default: [], desc: 'List of valid licenses' })
     .option('resource', { type: 'array', nargs: 1, default: [], desc: 'List of resources that need to be explicitly copied to the bundle (example: node_modules/proxy-agent/contextify.js:bin/contextify.js)' })
