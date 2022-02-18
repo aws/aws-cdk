@@ -64,6 +64,7 @@ export class Topic extends TopicBase {
     class Import extends TopicBase {
       public readonly topicArn = topicArn;
       public readonly topicName = Stack.of(scope).splitArn(topicArn, ArnFormat.NO_RESOURCE_NAME).resource;
+      public readonly fifo = this.topicName.endsWith('.fifo');
       protected autoCreatePolicy: boolean = false;
     }
 
@@ -72,6 +73,7 @@ export class Topic extends TopicBase {
 
   public readonly topicArn: string;
   public readonly topicName: string;
+  public readonly fifo: boolean;
 
   protected readonly autoCreatePolicy: boolean = true;
 
@@ -110,5 +112,6 @@ export class Topic extends TopicBase {
       resource: this.physicalName,
     });
     this.topicName = this.getResourceNameAttribute(resource.attrTopicName);
+    this.fifo = props.fifo || false;
   }
 }
