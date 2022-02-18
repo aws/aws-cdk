@@ -97,6 +97,13 @@ export interface BastionHostLinuxProps {
    * @default - default options
    */
   readonly initOptions?: ApplyCloudFormationInitOptions;
+
+  /**
+   * Whether IMDSv2 should be required on this instance
+   *
+   * @default - false
+   */
+  readonly requireImdsv2?: boolean;
 }
 
 /**
@@ -147,14 +154,17 @@ export class BastionHostLinux extends Resource implements IInstance {
    * @attribute
    */
   public readonly instancePrivateDnsName: string;
+
   /**
    * @attribute
    */
   public readonly instancePrivateIp: string;
+
   /**
    * @attribute
    */
   public readonly instancePublicDnsName: string;
+
   /**
    * @attribute
    */
@@ -178,6 +188,7 @@ export class BastionHostLinux extends Resource implements IInstance {
       blockDevices: props.blockDevices ?? undefined,
       init: props.init,
       initOptions: props.initOptions,
+      requireImdsv2: props.requireImdsv2 ?? false,
     });
     this.instance.addToRolePolicy(new PolicyStatement({
       actions: [

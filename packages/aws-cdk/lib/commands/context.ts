@@ -1,29 +1,9 @@
 import * as chalk from 'chalk';
-import * as yargs from 'yargs';
 import * as version from '../../lib/version';
 import { CommandOptions } from '../command-api';
 import { print } from '../logging';
 import { Context, PROJECT_CONFIG } from '../settings';
 import { renderTable } from '../util';
-
-export const command = 'context';
-export const describe = 'Manage cached context values';
-export const builder = {
-  reset: {
-    alias: 'e',
-    desc: 'The context key (or its index) to reset',
-    type: 'string',
-    requiresArg: true,
-  },
-  clear: {
-    desc: 'Clear all context',
-    type: 'boolean',
-  },
-};
-
-export function handler(args: yargs.Arguments) {
-  args.commandHandler = realHandler;
-}
 
 export async function realHandler(options: CommandOptions): Promise<number> {
   const { configuration, args } = options;
