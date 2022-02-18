@@ -199,10 +199,12 @@ test('exportedVariables', () => {
   });
 
   template.hasResourceProperties('AWS::CodeBuild::Project', {
-    BuildSpec: Match.serializedJson(Match.objectLike({
-      env: {
-        'exported-variables': ['MY_VAR'],
-      },
-    })),
+    Source: {
+      BuildSpec: Match.serializedJson(Match.objectLike({
+        env: {
+          'exported-variables': ['MY_VAR'],
+        },
+      })),
+    },
   });
 });
