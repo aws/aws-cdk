@@ -5,13 +5,10 @@ import * as ecs from '@aws-cdk/aws-ecs';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import * as regionInfo from '@aws-cdk/region-info';
+import { Construct } from 'constructs';
 import { Service } from '../service';
 import { Container } from './container';
 import { ServiceExtension, ServiceBuild } from './extension-interfaces';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from '@aws-cdk/core';
 
 // The version of the App Mesh envoy sidecar to add to the task.
 const APP_MESH_ENVOY_SIDECAR_VERSION = 'v1.15.1.0-prod';

@@ -148,6 +148,8 @@ export class BackupPlan extends Resource implements IBackupPlan {
     for (const rule of props.backupPlanRules || []) {
       this.addRule(rule);
     }
+
+    this.node.addValidation({ validate: () => this.validatePlan() });
   }
 
   private advancedBackupSettings(props: BackupPlanProps) {
@@ -215,7 +217,7 @@ export class BackupPlan extends Resource implements IBackupPlan {
     });
   }
 
-  protected validate() {
+  private validatePlan() {
     if (this.rules.length === 0) {
       return ['A backup plan must have at least 1 rule.'];
     }

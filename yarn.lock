@@ -1726,7 +1726,7 @@
     jest-diff "^26.0.0"
     pretty-format "^26.0.0"
 
-"@types/jest@^27.4.0":
+"@types/jest@^27.0.3", "@types/jest@^27.4.0":
   version "27.4.0"
   resolved "https://registry.npmjs.org/@types/jest/-/jest-27.4.0.tgz#037ab8b872067cae842a320841693080f9cb84ed"
   integrity sha512-gHl8XuC1RZ8H2j5sHv/JqsaxXkDDM9iDOgu0Wp8sjs4u/snb2PVehyWXJPr+ORA0RPpgw231mnutWI1+0hgjIQ==
@@ -2983,10 +2983,10 @@ console-control-strings@^1.0.0, console-control-strings@~1.1.0:
   resolved "https://registry.npmjs.org/console-control-strings/-/console-control-strings-1.1.0.tgz#3d7cf4464db6446ea644bf4b39507f9851008e8e"
   integrity sha1-PXz0Rk22RG6mRL9LOVB/mFEAjo4=
 
-constructs@^3.3.69:
-  version "3.3.218"
-  resolved "https://registry.npmjs.org/constructs/-/constructs-3.3.218.tgz#d51c76975b5b8bee1cf7267378be8da4b71bf218"
-  integrity sha512-nt9GWhxy0iZI1JKhP5y9e2EFt+fEzqy33Mhanrt4WpSqzC4in1Et5ZBZo4rc2uzSWFSaQZbl5b3rurO8SqKevw==
+constructs@^10.0.0:
+  version "10.0.9"
+  resolved "https://registry.npmjs.org/constructs/-/constructs-10.0.9.tgz#fe724185e4288001850914e95cce2b32d848355f"
+  integrity sha512-C9la/fcnCKe3XIjKPbWuD49mnOYqSWdiMI6TNJmF0ao3pJw6Hap03Q4nsmCxpWMXuMzM546Kw/WnW7ElB3g4OA==
 
 conventional-changelog-angular@^5.0.12:
   version "5.0.13"

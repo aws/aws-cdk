@@ -97,7 +97,7 @@ describe('stacks', () => {
     });
     Template.fromStack(fnStack).hasResourceProperties('AWS::SSM::Parameter', {
       Type: 'String',
-      Value: { Ref: 'MyFnCurrentVersion309B29FC29686ce94039b6e08d1645be854b3ac9' },
+      Value: { Ref: 'MyFnCurrentVersion309B29FC37a9dfc56f4df872af37f8a33a191788' },
       Name: '/cdk/EdgeFunctionArn/testregion/Stack/MyFn',
     });
   });

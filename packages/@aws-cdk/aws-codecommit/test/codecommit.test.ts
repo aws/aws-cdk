@@ -1,8 +1,8 @@
+import * as fs from 'fs';
 import { join, resolve } from 'path';
 import { Template } from '@aws-cdk/assertions';
 import { Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import { Asset } from '@aws-cdk/aws-s3-assets';
-import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { App, Stack } from '@aws-cdk/core';
 import { Code, Repository, RepositoryProps } from '../lib';
 
@@ -80,9 +80,11 @@ describe('codecommit', () => {
         code: Code.fromZipFile(join(__dirname, 'asset-test.zip')),
       });
 
-      // THEN
-      const assetMetadata = app.synth().tryGetArtifact(stack.stackName)!.findMetadataByType(cxschema.ArtifactMetadataEntryType.ASSET);
-      expect(assetMetadata).toHaveLength(1);
+      const assembly = app.synth();
+      const assets = JSON.parse(fs.readFileSync(join(assembly.directory, `${stack.stackName}.assets.json`), 'utf-8'));
+
+      // our asset + the template itself
+      expect(Object.entries(assets.files)).toHaveLength(2);
     });
 
     test('Repository can be initialized with contents from a directory', () => {
@@ -96,9 +98,11 @@ describe('codecommit', () => {
         code: Code.fromDirectory(join(__dirname, 'asset-test')),
       });
 
-      // THEN
-      const assetMetadata = app.synth().tryGetArtifact(stack.stackName)!.findMetadataByType(cxschema.ArtifactMetadataEntryType.ASSET);
-      expect(assetMetadata).toHaveLength(1);
+      const assembly = app.synth();
+      const assets = JSON.parse(fs.readFileSync(join(assembly.directory, `${stack.stackName}.assets.json`), 'utf-8'));
+
+      // our asset + the template itself
+      expect(Object.entries(assets.files)).toHaveLength(2);
     });
 
     test('Repository can be initialized with contents from an asset', () => {
@@ -117,8 +121,11 @@ describe('codecommit', () => {
       });
 
       // THEN
-      const assetMetadata = app.synth().tryGetArtifact(stack.stackName)!.findMetadataByType(cxschema.ArtifactMetadataEntryType.ASSET);
-      expect(assetMetadata).toHaveLength(1);
+      const assembly = app.synth();
+      const assets = JSON.parse(fs.readFileSync(join(assembly.directory, `${stack.stackName}.assets.json`), 'utf-8'));
+
+      // our asset + the template itself
+      expect(Object.entries(assets.files)).toHaveLength(2);
     });
 
     test('Repository throws Error when initialized with file while expecting directory', () => {
