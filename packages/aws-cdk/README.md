@@ -368,6 +368,7 @@ Hotswapping is currently supported for the following changes
 - Container asset changes of AWS ECS Services.
 - Website asset changes of AWS S3 Bucket Deployments.
 - Source and Environment changes of AWS CodeBuild Projects.
+- VTL mapping template changes for AppSync Resolvers and Functions
 
 **⚠ Note #1**: This command deliberately introduces drift in CloudFormation stacks in order to speed up deployments.
 For this reason, only use it for development purposes.
@@ -549,8 +550,8 @@ Some of the interesting keys that can be used in the JSON configuration files:
 ```
 
 If specified, the command in the `build` key will be executed immediately before synthesis.
-This can be used to build Lambda Functions, CDK Application code, or other assets. 
-`build` cannot be specified on the command line or in the User configuration, 
+This can be used to build Lambda Functions, CDK Application code, or other assets.
+`build` cannot be specified on the command line or in the User configuration,
 and must be specified in the Project configuration. The command specified
 in `build` will be executed by the "watch" process before deployment.
 

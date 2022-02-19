@@ -1,5 +1,5 @@
 import * as mockery from 'mockery';
-import { CommandHandler } from '../lib/command-api';
+import { realHandler } from '../lib/commands/doctor';
 
 describe('`cdk doctor`', () => {
   beforeEach(done => {
@@ -18,9 +18,7 @@ describe('`cdk doctor`', () => {
 
   test('exits with 0 when everything is OK', async () => {
     const argv: any = {};
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    require('../lib/commands/doctor').handler(argv);
-    const result = await (argv.commandHandler as CommandHandler)({ args: argv } as any);
+    const result = await realHandler({ args: argv } as any);
     expect(result).toBe(0);
   });
 });

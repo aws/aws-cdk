@@ -31,7 +31,7 @@ export function deployTimeLookup(stack: Stack, factName: string, lookupMap: Reco
     : [factName, 'value'] as const;
 
   const mapId = `${ucfirst(factClass)}Map`;
-  const factKey = factParam.replace(/[^a-zA-Z0-9]/g, '_');
+  const factKey = factParam.replace(/[^a-zA-Z0-9]/g, 'x');
 
   let mapping = stack.node.tryFindChild(mapId) as CfnMapping | undefined;
   if (!mapping) {

@@ -256,12 +256,18 @@ export interface FileAssetLocation {
   /**
    * The HTTP URL of this asset on Amazon S3.
    *
+   * This value suitable for inclusion in a CloudFormation template, and
+   * may be an encoded token.
+   *
    * Example value: `https://s3-us-east-1.amazonaws.com/mybucket/myobject`
    */
   readonly httpUrl: string;
 
   /**
    * The S3 URL of this asset on Amazon S3.
+   *
+   * This value suitable for inclusion in a CloudFormation template, and
+   * may be an encoded token.
    *
    * Example value: `s3://mybucket/myobject`
    */
@@ -285,6 +291,16 @@ export interface FileAssetLocation {
    * key via the bucket and no additional parameters have to be granted anymore.
    */
   readonly kmsKeyArn?: string;
+
+  /**
+   * Like `s3ObjectUrl`, but not suitable for CloudFormation consumption
+   *
+   * If there are placeholders in the S3 URL, they will be returned unreplaced
+   * and un-evaluated.
+   *
+   * @default - This feature cannot be used
+   */
+  readonly s3ObjectUrlWithPlaceholders?: string;
 }
 
 /**

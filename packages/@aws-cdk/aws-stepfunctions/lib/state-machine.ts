@@ -142,7 +142,9 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
       public readonly stateMachineArn = stateMachineArn;
       public readonly grantPrincipal = new iam.UnknownPrincipal({ resource: this });
     }
-    return new Import(scope, id);
+    return new Import(scope, id, {
+      environmentFromArn: stateMachineArn,
+    });
   }
 
   public abstract readonly stateMachineArn: string;
