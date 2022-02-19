@@ -10,7 +10,6 @@ export function findMessage(messages: Messages, constructPath: string, props: an
     return {};
   }
 
-  Object.values(result.matches).forEach((m) => handleTrace(m));
   return result.matches;
 }
 
