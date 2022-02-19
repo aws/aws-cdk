@@ -7,6 +7,7 @@ import * as lambda from '@aws-cdk/aws-lambda';
 import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
+import { Token } from '@aws-cdk/core';
 import { AwsCliLayer } from '@aws-cdk/lambda-layer-awscli';
 import { kebab as toKebabCase } from 'case';
 import { Construct } from 'constructs';
@@ -236,6 +237,10 @@ export interface BucketDeploymentProps {
  * other S3 buckets or from local disk
  */
 export class BucketDeployment extends Construct {
+  private readonly cr: cdk.CustomResource;
+  private _deployedBucket?: s3.IBucket;
+  private requestDestinationArn: boolean = false;
+
   constructor(scope: Construct, id: string, props: BucketDeploymentProps) {
     super(scope, id);
 
@@ -325,7 +330,7 @@ export class BucketDeployment extends Construct {
     const hasMarkers = sources.some(source => source.markers);
 
     const crUniqueId = `CustomResource${this.renderUniqueId(props.memoryLimit, props.vpc)}`;
-    const cr = new cdk.CustomResource(this, crUniqueId, {
+    this.cr = new cdk.CustomResource(this, crUniqueId, {
       serviceToken: handler.functionArn,
       resourceType: 'Custom::CDKBucketDeployment',
       properties: {
@@ -342,13 +347,15 @@ export class BucketDeployment extends Construct {
         SystemMetadata: mapSystemMetadata(props),
         DistributionId: props.distribution?.distributionId,
         DistributionPaths: props.distributionPaths,
+        // Passing through the ARN sequences dependencees on the deployment
+        DestinationBucketArn: cdk.Lazy.string({ produce: () => this.requestDestinationArn ? props.destinationBucket.bucketArn : undefined }),
       },
     });
 
     let prefix: string = props.destinationKeyPrefix ?
       `:${props.destinationKeyPrefix}` :
       '';
-    prefix += `:${cr.node.addr.substr(-8)}`;
+    prefix += `:${this.cr.node.addr.substr(-8)}`;
     const tagKey = CUSTOM_RESOURCE_OWNER_TAG + prefix;
 
     // destinationKeyPrefix can be 104 characters before we hit
@@ -400,6 +407,21 @@ export class BucketDeployment extends Construct {
      */
     cdk.Tags.of(props.destinationBucket).add(tagKey, 'true');
 
+  }
+
+  /**
+   * The bucket after the deployment
+   *
+   * If you want to reference the destination bucket in another construct and make sure the
+   * bucket deployment has happened before the next operation is started, pass the other construct
+   * a reference to `deployment.deployedBucket`.
+   *
+   * Doing this replaces calling `otherResource.node.addDependency(deployment)`.
+   */
+  public get deployedBucket(): s3.IBucket {
+    this.requestDestinationArn = true;
+    this._deployedBucket = this._deployedBucket ?? s3.Bucket.fromBucketArn(this, 'DestinationBucket', Token.asString(this.cr.getAtt('DestinationBucketArn')));
+    return this._deployedBucket;
   }
 
   private renderUniqueId(memoryLimit?: number, vpc?: ec2.IVpc) {
