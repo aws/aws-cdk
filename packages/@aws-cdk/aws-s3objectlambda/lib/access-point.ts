@@ -90,7 +90,7 @@ export interface AccessPointProps {
    *
    * @default - No data.
    */
-  readonly payload?: Record<string, unknown>;
+  readonly payload?: { [key: string]: any };
 }
 
 abstract class AccessPointBase extends core.Resource implements IAccessPoint {
@@ -205,9 +205,7 @@ export class AccessPoint extends AccessPointBase {
 
   constructor(scope: Construct, id: string, props: AccessPointProps) {
     super(scope, id, {
-      physicalName: props.accessPointName ?? core.Lazy.string({
-        produce: () => core.Names.uniqueId(this).toLowerCase(),
-      }),
+      physicalName: props.accessPointName,
     });
 
     if (props.accessPointName) {

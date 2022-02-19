@@ -27,14 +27,16 @@ This construct library allows you to define S3 object lambda access points.
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as s3objectlambda from '@aws-cdk/aws-s3objectlambda';
+import * as cdk from '@aws-cdk/core';
 
-const bucket = new s3.Bucket(this, 'MyBucket');
-const handler = new lambda.Function(this, 'MyFunction', {
+const stack = new cdk.Stack();
+const bucket = new s3.Bucket(stack, 'MyBucket');
+const handler = new lambda.Function(stack, 'MyFunction', {
 	runtime: lambda.Runtime.NODEJS_14_X,
 	handler: 'index.handler',
 	code: lambda.Code.fromAsset('lambda.zip'),
 });
-new AccessPoint(this, 'MyObjectLambda', {
+new s3objectlambda.AccessPoint(stack, 'MyObjectLambda', {
 	bucket,
 	handler,
 	accessPointName: 'my-access-point',
@@ -52,14 +54,16 @@ Lambdas are currently limited to only transforming `GetObject` requests. However
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as s3objectlambda from '@aws-cdk/aws-s3objectlambda';
+import * as cdk from '@aws-cdk/core';
 
-const bucket = new s3.Bucket(this, 'MyBucket');
-const handler = new lambda.Function(this, 'MyFunction', {
+const stack = new cdk.Stack();
+const bucket = new s3.Bucket(stack, 'MyBucket');
+const handler = new lambda.Function(stack, 'MyFunction', {
 	runtime: lambda.Runtime.NODEJS_14_X,
 	handler: 'index.handler',
 	code: lambda.Code.fromAsset('lambda.zip'),
 });
-new AccessPoint(this, 'MyObjectLambda', {
+new s3objectlambda.AccessPoint(stack, 'MyObjectLambda', {
 	bucket,
 	handler,
 	accessPointName: 'my-access-point',
@@ -76,14 +80,16 @@ You can specify an additional object that provides supplemental data to the Lamb
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as s3objectlambda from '@aws-cdk/aws-s3objectlambda';
+import * as cdk from '@aws-cdk/core';
 
-const bucket = new s3.Bucket(this, 'MyBucket');
-const handler = new lambda.Function(this, 'MyFunction', {
+const stack = new cdk.Stack();
+const bucket = new s3.Bucket(stack, 'MyBucket');
+const handler = new lambda.Function(stack, 'MyFunction', {
 	runtime: lambda.Runtime.NODEJS_14_X,
 	handler: 'index.handler',
 	code: lambda.Code.fromAsset('lambda.zip'),
 });
-new AccessPoint(this, 'MyObjectLambda', {
+new s3objectlambda.AccessPoint(stack, 'MyObjectLambda', {
 	bucket,
 	handler,
 	accessPointName: 'my-access-point',
