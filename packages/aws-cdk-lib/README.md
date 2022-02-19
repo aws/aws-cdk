@@ -88,6 +88,45 @@ organize their deployments with. If you want to vend a reusable construct,
 define it as a subclasses of `Construct`: the consumers of your construct
 will decide where to place it in their own stacks.
 
+## Stack Synthesizers
+
+Each Stack has a *synthesizer*, an object that determines how and where
+the Stack should be synthesized and deployed. The synthesizer controls
+aspects like:
+
+- How does the stack reference assets? (Either through CloudFormation
+  parameters the CLI supplies, or because the Stack knows a predefined
+  location where assets will be uploaded).
+- What roles are used to deploy the stack? These can be bootstrapped
+  roles, roles created in some other way, or just the CLI's current
+  credentials.
+
+The following synthesizers are available:
+
+- `DefaultStackSynthesizer`: recommended. Uses predefined asset locations and
+  roles created by the modern bootstrap template. Access control is done by
+  controlling who can assume the deploy role. This is the default stack
+  synthesizer in CDKv2.
+- `LegacyStackSynthesizer`: Uses CloudFormation parameters to communicate
+  asset locations, and the CLI's current permissions to deploy stacks. The
+  is the default stack synthesizer in CDKv1.
+- `CliCredentialsStackSynthesizer`: Uses predefined asset locations, and the
+  CLI's current permissions.
+
+Each of these synthesizers takes configuration arguments. To configure
+a stack with a synthesizer, pass it as one of its properties:
+
+```ts
+new MyStack(app, 'MyStack', {
+  synthesizer: new DefaultStackSynthesizer({
+    fileAssetsBucketName: 'my-orgs-asset-bucket',
+  }),
+});
+```
+
+For more information on bootstrapping accounts and customizing synthesis,
+see [Bootstrapping in the CDK Developer Guide](https://docs.aws.amazon.com/cdk/latest/guide/bootstrapping.html).
+
 ## Nested Stacks
 
 [Nested stacks](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-nested-stacks.html) are stacks created as part of other stacks. You create a nested stack within another stack by using the `NestedStack` construct.

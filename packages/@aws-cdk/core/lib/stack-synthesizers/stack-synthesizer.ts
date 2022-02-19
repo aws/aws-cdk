@@ -46,7 +46,6 @@ export abstract class StackSynthesizer implements IStackSynthesizer {
     stack._synthesizeTemplate(session);
   }
 
-
   /**
    * Write the stack artifact to the session
    *
