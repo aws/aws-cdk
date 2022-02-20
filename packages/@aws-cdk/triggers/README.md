@@ -19,8 +19,8 @@ variety of use cases such as:
 
 ## Usage
 
-The `Trigger` construct will trigger the execution of an AWS Lambda function
-*during* deployment.
+The `TriggerFunction` construct will define an AWS Lambda function which is
+triggered *during* deployment:
 
 ```ts
 import * as lambda from '@aws-cdk/aws-lambda';
