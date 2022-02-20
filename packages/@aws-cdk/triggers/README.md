@@ -9,89 +9,87 @@
 
 <!--END STABILITY BANNER-->
 
+Triggers allows you to execute code during deployments. This can be used for a
+variety of use cases such as:
 
-Execute code as part of a CDK app deployment.
+* Self tests: validate something after a resource/construct been provisioned
+* Data priming: add initial data to resources after they are created
+* Preconditions: check things such as account limits or external dependencies
+  before deployment.
 
 ## Usage
 
-You can trigger the execution of an AWS Lambda function during deployment after
-a resource or groups of resources are provisioned.
-
-The library includes constructs that represent different triggers. The `BeforeCreate` and `AfterCreate` constructs can be used to trigger a handler before/after a set of resources have been created.
+The `Trigger` construct will trigger the execution of an AWS Lambda function
+*during* deployment.
 
 ```ts
-import { Trigger } from '@aws-cdk/triggers';
+import * as lambda from '@aws-cdk/aws-lambda';
+import * as triggers from '@aws-cdk/triggers';
 
-new Trigger(this, 'MyTrigger', {
-  dependencies: [resource1, resource2, stack, ...],
-  handler: myLambdaFunction,
+new triggers.TriggerFunction(this, 'MyTrigger', {
+  runtime: lambda.Runtime.NODEJS_12_X,
+  handler: 'index.handler',
+  code: lambda.Code.fromAsset(__dirname + '/my-trigger'),
 });
 ```
 
-Where `dependencies` is a list of __construct scopes__ which determine when
-`handler` is invoked. Scopes can be either specific resources or composite
-constructs (in which case all the resources in the construct will be used as a
-group). The scope can also be a `Stack`, in which case the trigger will apply to
-all the resources within the stack (same as any composite construct). All scopes
-must roll up to the same stack.
+In the above example, the AWS Lambda function defined in `myLambdaFunction` will
+be invoked when the stack is deployed.
 
-Let's look at an example. Say we want to publish a notification to an SNS topic
-that says "hello, topic!" after the topic is created.
+> `TriggerFunction` uses `Trigger` under the hood. The above example is
+> equivalent to:
+>
+> ```ts
+> new trigger.Trigger({ 
+>   handlerVersion: lambdaFunction.currentVersion 
+> });
+> ```
+
+## Trigger Failures
+
+If the trigger handler fails (e.g. an exception is raised), the CloudFormation
+deployment will fail, as if a resource failed to provision. This makes it easy
+to implement "self tests" via triggers by simply making a set of assertions on
+some provisioned infrastructure.
+
+## Order of Execution
+
+By default, a trigger will be executed by CloudFormation after the associated
+handler is provisioned. This means that if the handler takes an implicit
+dependency on other resources (e.g. via environment variables), those resources
+will be provisioned *before* the trigger is executed.
+
+In most cases, implicit ordering should be sufficient, but you can also use
+`executeAfter` and `executeBefore` to control the order of execution.
+
+The following example defines the following order: `(hello, world) => myTrigger => goodbye`.
+The resources under `hello` and `world` will be provisioned in
+parallel, and then the trigger `myTrigger` will be executed. Only then the
+resources under `goodbye` will be provisioned:
 
 ```ts
-// define a topic
-const topic = new sns.Topic(this, 'MyTopic');
+import { Construct, Node } from 'constructs';
+import * as triggers from '@aws-cdk/triggers';
 
-// define a lambda function which publishes a message to the topic
-const publisher = new NodeJsFunction(this, 'PublishToTopic');
-publisher.addEnvironment('TOPIC_ARN', topic.topicArn);
-publisher.addEnvironment('MESSAGE', 'Hello, topic!');
-topic.grantPublish(publisher);
+declare const myTrigger: triggers.Trigger;
+declare const hello: Construct;
+declare const world: Construct;
+declare const goodbye: Construct;
 
-// trigger the lambda function after the topic is created
-new triggers.Trigger(this, 'SayHello', {
-  handler: publisher
-});
+myTrigger.executeAfter(hello, world);
+myTrigger.executeBefore(goodbye);
 ```
 
-NOTE: since `publisher` already takes an implicit dependency on `topic.topicArn`
-(through its environment), we don't have to explicitly specify `dependencies`.
+Note that `hello` and `world` are construct *scopes*. This means that they can
+be specific resources (such as an `s3.Bucket` object) or groups of resources
+composed together into constructs.
 
-## Additional Notes
+## Re-execution of Triggers
 
-* If the trigger fails, deployment fails. This is a useful property that can be
-  leveraged to create triggers that "self-test" a stack.
-* If the handler changes (configuration or code), the trigger gets re-executed
-  (trigger is bound to `lambda.currentVersion` which gets recreated when the
-  function changes).
+The trigger handler gets executed only once upon first deployment. Subsequent
+deployments ***will not*** execute the trigger as long as the handler did not
+change. The trigger ***will*** get re-executed if the code of the AWS Lambda
+function, environment variables or other configuration changes.
 
-## Roadmap
-
-* Additional periodic execution after deployment (`repeatOnSchedule`).
-* Async checks (`retryWithTimeout`)
-* Execute shell command inside a Docker image
-
-## Use Cases
-
-Here are some examples of use cases for triggers:
-
-* __Intrinsic validations__: execute a check to verify that a resource or set of resources have been deployed correctly
-  * Test connections to external systems (e.g. security tokens are valid)
-  * Verify integration between resources is working as expected
-  * Execute as one-off and also periodically after deployment
-  * Wait for data to start flowing (e.g. wait for a metric) before deployment is successful
-* __Data priming__: add data to resources after they are created
-  * CodeCommit repo + initial commit
-  * Database + test data for development
-* Check prerequisites before deployment
-  * Account limits
-  * Availability of external services
-* Connect to other accounts
-
-## Security
-
-See [CONTRIBUTING](CONTRIBUTING.md#security-issue-notifications) for more information.
-
-## License
-
-This project is licensed under the Apache-2.0 License.
+> Under the hood, the trigger resource is bound to the `lambda.currentVersion`
+  resource which is recreated automatically when the function changes.

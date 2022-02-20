@@ -3,7 +3,18 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import * as AWS from 'aws-sdk';
 
-exports.handler = async function(event: AWSLambda.CloudFormationCustomResourceEvent) {
+export type InvokeFunction = (functionName: string) => Promise<AWS.Lambda.InvocationResponse>;
+
+export const invoke: InvokeFunction = async functionName => {
+  const lambda = new AWS.Lambda();
+  const invokeRequest = { FunctionName: functionName };
+  console.log({ invokeRequest });
+  const invokeResponse = await lambda.invoke(invokeRequest).promise();
+  console.log({ invokeResponse });
+  return invokeResponse;
+};
+
+export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent) {
   console.log({ event });
 
   if (event.RequestType === 'Delete') {
@@ -16,14 +27,10 @@ exports.handler = async function(event: AWSLambda.CloudFormationCustomResourceEv
     throw new Error('The "HandlerArn" property is required');
   }
 
-  const lambda = new AWS.Lambda();
-  const invokeRequest = { FunctionName: handlerArn };
-  console.log({ invokeRequest });
-  const invokeResponse = await lambda.invoke(invokeRequest).promise();
-  console.log({ invokeResponse });
+  const invokeResponse = await invoke(handlerArn);
 
   if (invokeResponse.StatusCode !== 200) {
-    throw new Error(`Invoke failed with status code ${invokeResponse.StatusCode}`);
+    throw new Error(`Trigger handler failed with status code ${invokeResponse.StatusCode}`);
   }
 
   // if the lambda function throws an error, parse the error message and fail
@@ -36,6 +43,7 @@ exports.handler = async function(event: AWSLambda.CloudFormationCustomResourceEv
  * Parse the error message from the lambda function.
  */
 function parseError(payload: string | undefined): string {
+  console.log(`Error payload: ${payload}`);
   if (!payload) { return 'unknown handler error'; }
   try {
     const error = JSON.parse(payload);

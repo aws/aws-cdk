@@ -1,5 +1,14 @@
 {
   "Resources": {
+    "Topic198E71B3E": {
+      "Type": "AWS::SNS::Topic",
+      "DependsOn": [
+        "MyFunctionTriggerDB129D7B"
+      ]
+    },
+    "Topic269377B75": {
+      "Type": "AWS::SNS::Topic"
+    },
     "MyFunctionServiceRole3C357FF2": {
       "Type": "AWS::IAM::Role",
       "Properties": {
@@ -35,7 +44,7 @@
       "Type": "AWS::Lambda::Function",
       "Properties": {
         "Code": {
-          "ZipFile": "exports.handler = async function() { console.log(\"hi\"); };"
+          "ZipFile": "exports.handler = function() { console.log(\"hi\"); };"
         },
         "Role": {
           "Fn::GetAtt": [
@@ -50,7 +59,7 @@
         "MyFunctionServiceRole3C357FF2"
       ]
     },
-    "MyFunctionCurrentVersion197490AF463fe24fa0d2cb07a7b26515dfecc497": {
+    "MyFunctionCurrentVersion197490AF776ea8de2edf446759649703b18110a4": {
       "Type": "AWS::Lambda::Version",
       "Properties": {
         "FunctionName": {
@@ -58,7 +67,7 @@
         }
       }
     },
-    "MyTriggerB6CCCACE": {
+    "MyFunctionTriggerDB129D7B": {
       "Type": "Custom::Trigger",
       "Properties": {
         "ServiceToken": {
@@ -68,9 +77,12 @@
           ]
         },
         "HandlerArn": {
-          "Ref": "MyFunctionCurrentVersion197490AF463fe24fa0d2cb07a7b26515dfecc497"
+          "Ref": "MyFunctionCurrentVersion197490AF776ea8de2edf446759649703b18110a4"
         }
       },
+      "DependsOn": [
+        "Topic269377B75"
+      ],
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete"
     },
@@ -107,7 +119,7 @@
                   ],
                   "Resource": [
                     {
-                      "Ref": "MyFunctionCurrentVersion197490AF463fe24fa0d2cb07a7b26515dfecc497"
+                      "Ref": "MyFunctionCurrentVersion197490AF776ea8de2edf446759649703b18110a4"
                     }
                   ]
                 }
