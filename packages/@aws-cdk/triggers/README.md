@@ -25,8 +25,11 @@ triggered *during* deployment:
 ```ts
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as triggers from '@aws-cdk/triggers';
+import { Stack } from '@aws-cdk/core';
 
-new triggers.TriggerFunction(this, 'MyTrigger', {
+declare const stack: Stack;
+
+new triggers.TriggerFunction(stack, 'MyTrigger', {
   runtime: lambda.Runtime.NODEJS_12_X,
   handler: 'index.handler',
   code: lambda.Code.fromAsset(__dirname + '/my-trigger'),
@@ -40,8 +43,15 @@ be invoked when the stack is deployed.
 > equivalent to:
 >
 > ```ts
-> new trigger.Trigger({ 
->   handlerVersion: lambdaFunction.currentVersion 
+> import * as triggers from '@aws-cdk/triggers';
+> import * as lambda from '@aws-cdk/aws-lambda';
+> import { Stack } from '@aws-cdk/core';
+> 
+> declare const stack: Stack;
+> declare const lambdaFunction: lambda.Function; 
+>
+> new triggers.Trigger(stack, 'MyTrigger', { 
+>   handlerVersion: lambdaFunction.currentVersion
 > });
 > ```
 

@@ -16,7 +16,11 @@ test('minimal', () => {
   });
 
   // THEN
-  expect(Template.fromStack(stack)).toMatchSnapshot();
+  const template = Template.fromStack(stack);
+  template.hasResourceProperties('AWS::Lambda::Function', {});
+  template.hasResourceProperties('Custom::Trigger', {
+    HandlerArn: { Ref: 'MyTriggerCurrentVersion8802742B707afb4f5c680fa04113c095ec4e8b5d' },
+  });
 });
 
 test('before/after', () => {
