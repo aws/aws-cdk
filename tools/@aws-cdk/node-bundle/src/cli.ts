@@ -27,17 +27,28 @@ async function buildCommands() {
     .argv;
 
   const command = argv._[0];
+
+  function undefinedIfEmpty(arr?: any[]): string[] | undefined {
+    if (!arr || arr.length === 0) return undefined;
+    return arr as string[];
+  }
+
+  const entryPointsArg = undefinedIfEmpty(argv.entrypoint);
+  const externalsArg = undefinedIfEmpty(argv.external);
+  const licensesArg = undefinedIfEmpty(argv.license);
+  const resourcesArg = undefinedIfEmpty(argv.resource) ?? [];
+
   const resources: any = {};
-  for (const resource of argv.resource as string[]) {
+  for (const resource of resourcesArg) {
     const parts = resource.split(':');
     resources[parts[0]] = parts[1];
   }
 
   const props: BundleProps = {
     packageDir: process.cwd(),
-    entryPoints: argv.entrypoint as string[],
-    externals: argv.external as string[],
-    licenses: argv.license as string[],
+    entryPoints: entryPointsArg,
+    externals: externalsArg,
+    licenses: licensesArg,
     resources: resources,
     dontAttribute: argv['dont-attribute'],
     test: argv.test,
