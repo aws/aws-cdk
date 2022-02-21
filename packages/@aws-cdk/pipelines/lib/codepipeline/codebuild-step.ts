@@ -105,7 +105,7 @@ export interface CodeBuildStepProps extends ShellStepProps {
  * (say, `build.sh`) and invoke that script as part of the build:
  *
  * ```ts
- * new pipelines.CodeBuildStep({
+ * new pipelines.CodeBuildStep('Synth', {
  *   commands: ['./build.sh'],
  * });
  * ```
