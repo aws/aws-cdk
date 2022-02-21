@@ -2057,11 +2057,6 @@ describe('cluster', () => {
               },
             },
             {
-              Action: 'ecr:GetAuthorizationToken',
-              Effect: 'Allow',
-              Resource: '*',
-            },
-            {
               Action: 'sts:AssumeRole',
               Effect: 'Allow',
               Resource: {
@@ -2078,8 +2073,6 @@ describe('cluster', () => {
           },
         ],
       });
-
-
     });
 
     test('coreDnsComputeType will patch the coreDNS configuration to use a "fargate" compute type and restore to "ec2" upon removal', () => {
@@ -2233,11 +2226,6 @@ describe('cluster', () => {
               Resource: {
                 Ref: 'referencetoStackCluster18DFEAC17Arn',
               },
-            },
-            {
-              Action: 'ecr:GetAuthorizationToken',
-              Effect: 'Allow',
-              Resource: '*',
             },
             {
               Action: 'sts:AssumeRole',
