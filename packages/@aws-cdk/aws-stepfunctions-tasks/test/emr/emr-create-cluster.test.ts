@@ -34,6 +34,14 @@ beforeEach(() => {
   );
 });
 
+test('Create Cluster with an unresolved release label', () => {
+  new EmrCreateCluster(stack, 'Task', {
+    instances: {},
+    name: 'Cluster',
+    releaseLabel: cdk.Token.asString({}),
+  });
+});
+
 test('Create Cluster with FIRE_AND_FORGET integrationPattern', () => {
   // WHEN
   const task = new EmrCreateCluster(stack, 'Task', {
@@ -190,6 +198,27 @@ describe('Cluster with StepConcurrencyLevel', () => {
       Parameters: {
         Name: 'Cluster',
         StepConcurrencyLevel: 2,
+      },
+    });
+  });
+
+  test('can be set dynamically through JsonPath', async () => {
+    // WHEN
+    const task = new EmrCreateCluster(stack, 'Task', {
+      instances: {},
+      clusterRole,
+      name: 'Cluster',
+      serviceRole,
+      autoScalingRole,
+      stepConcurrencyLevel: sfn.JsonPath.numberAt('$.foo.bar'),
+      integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
+    });
+
+    // THEN
+    expect(stack.resolve(task.toStateJson())).toMatchObject({
+      Parameters: {
+        'Name': 'Cluster',
+        'StepConcurrencyLevel.$': '$.foo.bar',
       },
     });
   });

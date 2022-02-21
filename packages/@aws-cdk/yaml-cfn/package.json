@@ -48,7 +48,14 @@
         ]
       }
     },
-    "projectReferences": true
+    "projectReferences": true,
+    "metadata": {
+      "jsii": {
+        "rosetta": {
+          "strict": true
+        }
+      }
+    }
   },
   "scripts": {
     "build": "cdk-build",
@@ -74,7 +81,7 @@
     "@aws-cdk/pkglint": "0.0.0",
     "@types/jest": "^27.4.0",
     "@types/yaml": "^1.9.7",
-    "jest": "^27.4.7"
+    "jest": "^27.5.1"
   },
   "bundledDependencies": [
     "yaml"

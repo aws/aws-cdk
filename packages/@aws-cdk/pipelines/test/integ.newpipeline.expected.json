@@ -2044,18 +2044,7 @@
         "Cache": {
           "Type": "NO_CACHE"
         },
-        "Description": {
-          "Fn::Join": [
-            "",
-            [
-              "Pipeline step ",
-              {
-                "Ref": "Pipeline9850B417"
-              },
-              "/Build/Synth"
-            ]
-          ]
-        },
+        "Description": "Pipeline step PipelineStack/Pipeline/Build/Synth",
         "EncryptionKey": "alias/aws/s3"
       }
     },
@@ -2355,18 +2344,7 @@
         "Cache": {
           "Type": "NO_CACHE"
         },
-        "Description": {
-          "Fn::Join": [
-            "",
-            [
-              "Pipeline step ",
-              {
-                "Ref": "Pipeline9850B417"
-              },
-              "/UpdatePipeline/SelfMutate"
-            ]
-          ]
-        },
+        "Description": "Pipeline step PipelineStack/Pipeline/UpdatePipeline/SelfMutate",
         "EncryptionKey": "alias/aws/s3"
       }
     }
