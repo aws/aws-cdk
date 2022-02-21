@@ -596,9 +596,6 @@ NOTICES
 If you don’t want to see a notice anymore, use "cdk acknowledge <id>". For example, "cdk acknowledge 16603".
 ```
 
-This command returns zero if there is no notice and non-zero otherwise. Users can then plug this into a
-pipeline approval workflow and expect manual review if there are any notices.
-
 ### Bundling
 
 By default asset bundling is skipped for `cdk list` and `cdk destroy`. For `cdk deploy`, `cdk diff`
