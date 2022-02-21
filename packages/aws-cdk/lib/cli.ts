@@ -589,6 +589,7 @@ export function cli() {
         acknowledgedIssueNumbers: SHOW_ALL_NOTICES ? [] : configuration.context.get('acknowledged-issue-numbers') ?? [],
         permanentlySuppressed: SHOW_ALL_NOTICES ? false : !(configuration.context.get('notices') ?? true),
         temporarilySuppressed: !configuration.settings.get(['notices']),
+        ignoreCache: SHOW_ALL_NOTICES,
       });
     })
     .catch(err => {

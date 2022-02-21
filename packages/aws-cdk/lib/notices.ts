@@ -34,10 +34,18 @@ export interface DisplayNoticesProps {
    * }
    */
   readonly permanentlySuppressed?: boolean;
+
+  /**
+   * Whether cached notices should be ignored. Setting this property
+   * to true will force the CLI to download fresh data
+   *
+   * @default false
+   */
+  readonly ignoreCache?: boolean;
 }
 
 export async function displayNotices(props: DisplayNoticesProps) {
-  const dataSource = dataSourceReference();
+  const dataSource = dataSourceReference(props.ignoreCache ?? false);
   await generateMessage(dataSource, props, print);
 }
 
@@ -55,8 +63,8 @@ export async function generateMessage(dataSource: NoticeDataSource, props: Displ
   }
 }
 
-function dataSourceReference(): CachedDataSource {
-  return new CachedDataSource(CACHE_FILE_PATH, new WebsiteNoticeDataSource());
+function dataSourceReference(ignoreCache: boolean): NoticeDataSource {
+  return new CachedDataSource(CACHE_FILE_PATH, new WebsiteNoticeDataSource(), ignoreCache);
 }
 
 function finalMessage(individualMessages: string[], exampleNumber: number): string {
@@ -150,7 +158,8 @@ const TIME_TO_LIVE = 60 * 60 * 1000; // 1 hour
 export class CachedDataSource implements NoticeDataSource {
   constructor(
     private readonly fileName: string,
-    private readonly dataSource: NoticeDataSource) {
+    private readonly dataSource: NoticeDataSource,
+    private readonly skipCache?: boolean) {
   }
 
   async fetch(): Promise<Notice[]> {
@@ -158,7 +167,7 @@ export class CachedDataSource implements NoticeDataSource {
     const notices = cachedData.notices;
     const expiration = cachedData.expiration ?? 0;
 
-    if (Date.now() > expiration) {
+    if (Date.now() > expiration || this.skipCache) {
       const freshData = {
         expiration: Date.now() + TIME_TO_LIVE,
         notices: await this.dataSource.fetch(),

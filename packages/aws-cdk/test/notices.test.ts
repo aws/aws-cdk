@@ -202,13 +202,25 @@ describe('cli notices', () => {
       expect(notices).toEqual(freshData);
     });
 
-    function dataSourceWithDelegateReturning(notices: Notice[], file: string = fileName) {
+    test('retrieved data from the delegate when it is configured to ignore the cache', async () => {
+      fs.writeJsonSync(fileName, {
+        notices: cachedData,
+        expiration: Date.now() + 10000,
+      });
+      const dataSource = dataSourceWithDelegateReturning(freshData, fileName, true);
+
+      const notices = await dataSource.fetch();
+
+      expect(notices).toEqual(freshData);
+    });
+
+    function dataSourceWithDelegateReturning(notices: Notice[], file: string = fileName, ignoreCache: boolean = false) {
       const delegate = {
         fetch: jest.fn(),
       };
 
       delegate.fetch.mockResolvedValue(notices);
-      return new CachedDataSource(file, delegate);
+      return new CachedDataSource(file, delegate, ignoreCache);
     }
   });
 
