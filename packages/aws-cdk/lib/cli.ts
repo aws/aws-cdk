@@ -19,7 +19,7 @@ import { realHandler as doctor } from '../lib/commands/doctor';
 import { RequireApproval } from '../lib/diff';
 import { availableInitLanguages, cliInit, printAvailableTemplates } from '../lib/init';
 import { data, debug, error, print, setLogLevel } from '../lib/logging';
-import { displayNotices } from '../lib/notices';
+import { displayNotices, refreshNotices } from '../lib/notices';
 import { PluginHost } from '../lib/plugin';
 import { Command, Configuration, Settings } from '../lib/settings';
 import * as version from '../lib/version';
@@ -230,6 +230,8 @@ if (!process.stdout.isTTY) {
 }
 
 async function initCommandLine() {
+  void refreshNotices().then(_ => debug('Notices refreshed'));
+
   const argv = await parseCommandLineArguments();
   if (argv.verbose) {
     setLogLevel(argv.verbose);

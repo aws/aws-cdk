@@ -47,25 +47,32 @@ const FRAMEWORK_2_1_0_AFFECTED_NOTICE = {
 describe('cli notices', () => {
   describe(formatNotices, () => {
     test('correct format', () => {
-      expect(formatNotices([BASIC_NOTICE])).toEqual([
-        [
-          `${BASIC_NOTICE.issueNumber}\t${BASIC_NOTICE.title}`,
-          `\tOverview: ${BASIC_NOTICE.overview}`,
-          '\tAffected versions: cli: <=1.126.0',
-          `\tMore information at: https://github.com/aws/aws-cdk/issues/${BASIC_NOTICE.issueNumber}`,
-        ].join('\n\n'),
-      ]);
+      const result = formatNotices([BASIC_NOTICE])[0];
+      expect(result).toEqual(`16603	Toggling off auto_delete_objects for Bucket empties the bucket
+
+	Overview: If a stack is deployed with an S3 bucket with
+	          auto_delete_objects=True, and then re-deployed with
+	          auto_delete_objects=False, all the objects in the bucket
+	          will be deleted.
+
+	Affected versions: cli: <=1.126.0
+
+	More information at: https://github.com/aws/aws-cdk/issues/16603
+`);
     });
 
     test('multiple affect versions', () => {
-      expect(formatNotices([MULTIPLE_AFFECTED_VERSIONS_NOTICE])).toEqual([
-        [
-          `${MULTIPLE_AFFECTED_VERSIONS_NOTICE.issueNumber}\t${MULTIPLE_AFFECTED_VERSIONS_NOTICE.title}`,
-          `\tOverview: ${MULTIPLE_AFFECTED_VERSIONS_NOTICE.overview}`,
-          '\tAffected versions: cli: <1.130.0 >=1.126.0',
-          `\tMore information at: https://github.com/aws/aws-cdk/issues/${MULTIPLE_AFFECTED_VERSIONS_NOTICE.issueNumber}`,
-        ].join('\n\n'),
-      ]);
+      const result = formatNotices([MULTIPLE_AFFECTED_VERSIONS_NOTICE])[0];
+      expect(result).toEqual(`17061	Error when building EKS cluster with monocdk import
+
+	Overview: When using monocdk/aws-eks to build a stack containing an
+	          EKS cluster, error is thrown about missing
+	          lambda-layer-node-proxy-agent/layer/package.json.
+
+	Affected versions: cli: <1.130.0 >=1.126.0
+
+	More information at: https://github.com/aws/aws-cdk/issues/17061
+`);
     });
   });
 
@@ -249,13 +256,17 @@ describe('cli notices', () => {
       expect(result).toEqual(`
 NOTICES
 
-16603\tToggling off auto_delete_objects for Bucket empties the bucket
+16603	Toggling off auto_delete_objects for Bucket empties the bucket
 
-\tOverview: If a stack is deployed with an S3 bucket with auto_delete_objects=True, and then re-deployed with auto_delete_objects=False, all the objects in the bucket will be deleted.
+	Overview: If a stack is deployed with an S3 bucket with
+	          auto_delete_objects=True, and then re-deployed with
+	          auto_delete_objects=False, all the objects in the bucket
+	          will be deleted.
 
-\tAffected versions: cli: <=1.126.0
+	Affected versions: cli: <=1.126.0
 
-\tMore information at: https://github.com/aws/aws-cdk/issues/16603
+	More information at: https://github.com/aws/aws-cdk/issues/16603
+
 
 If you don’t want to see a notice anymore, use "cdk acknowledge <id>". For example, "cdk acknowledge 16603".`);
     });

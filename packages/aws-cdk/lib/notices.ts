@@ -29,6 +29,11 @@ export interface DisplayNoticesProps {
   readonly ignoreCache?: boolean;
 }
 
+export async function refreshNotices() {
+  const dataSource = dataSourceReference(true);
+  return dataSource.fetch();
+}
+
 export async function displayNotices(props: DisplayNoticesProps) {
   const dataSource = dataSourceReference(props.ignoreCache ?? false);
   print(await generateMessage(dataSource, props));
@@ -100,7 +105,7 @@ export interface NoticeDataSource {
 export class WebsiteNoticeDataSource implements NoticeDataSource {
   fetch(): Promise<Notice[]> {
     return new Promise((resolve) => {
-      https.get('https://dev-otaviom.cdk.dev-tools.aws.dev/notices.json', res => {
+      https.get('https://cli.cdk.dev-tools.aws.dev/notices.json', res => {
         if (res.statusCode === 200) {
           res.setEncoding('utf8');
           let rawData = '';
@@ -221,10 +226,22 @@ function formatNotice(notice: Notice): string {
   const componentsValue = notice.components.map(c => `${c.name}: ${c.version}`).join(', ');
   return [
     `${notice.issueNumber}\t${notice.title}`,
-    `\tOverview: ${notice.overview}`,
+    formatOverview(notice.overview),
     `\tAffected versions: ${componentsValue}`,
     `\tMore information at: https://github.com/aws/aws-cdk/issues/${notice.issueNumber}`,
-  ].join('\n\n');
+  ].join('\n\n') + '\n';
+}
+
+function formatOverview(text: string) {
+  const wrap = (s: string) => s.replace(/(?![^\n]{1,60}$)([^\n]{1,60})\s/g, '$1\n');
+
+  const heading = 'Overview: ';
+  const separator = `\n\t${' '.repeat(heading.length)}`;
+  const content = wrap(text)
+    .split('\n')
+    .join(separator);
+
+  return '\t' + heading + content;
 }
 
 function frameworkVersion(outdir: string): string | undefined {
