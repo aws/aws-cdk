@@ -2057,6 +2057,11 @@ describe('cluster', () => {
               },
             },
             {
+              Action: 'ecr:GetAuthorizationToken',
+              Effect: 'Allow',
+              Resource: '*',
+            },
+            {
               Action: 'sts:AssumeRole',
               Effect: 'Allow',
               Resource: {
@@ -2228,6 +2233,11 @@ describe('cluster', () => {
               Resource: {
                 Ref: 'referencetoStackCluster18DFEAC17Arn',
               },
+            },
+            {
+              Action: 'ecr:GetAuthorizationToken',
+              Effect: 'Allow',
+              Resource: '*',
             },
             {
               Action: 'sts:AssumeRole',
