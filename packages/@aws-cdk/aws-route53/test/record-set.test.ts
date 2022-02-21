@@ -737,33 +737,38 @@ describe('record set', () => {
 
     // THEN
     const childHostedZones = [
-      { name: 'sub.myzone.com', id: 'ChildHostedZone4B14AC71' },
-      { name: 'anothersub.myzone.com', id: 'ChildHostedZone2A37198F0' },
+      { name: 'sub.myzone.com', id: 'ChildHostedZone4B14AC71', dependsOn: 'DelegationcrossaccountzonedelegationhandlerrolePolicy1E157602' },
+      { name: 'anothersub.myzone.com', id: 'ChildHostedZone2A37198F0', dependsOn: 'Delegation2crossaccountzonedelegationhandlerrolePolicy713BEAC3' },
     ];
 
     for (var childHostedZone of childHostedZones) {
-      Template.fromStack(stack).hasResourceProperties('Custom::CrossAccountZoneDelegation', {
-        ServiceToken: {
-          'Fn::GetAtt': [
-            'CustomCrossAccountZoneDelegationCustomResourceProviderHandler44A84265',
-            'Arn',
-          ],
+      Template.fromStack(stack).hasResource('Custom::CrossAccountZoneDelegation', {
+        Properties: {
+          ServiceToken: {
+            'Fn::GetAtt': [
+              'CustomCrossAccountZoneDelegationCustomResourceProviderHandler44A84265',
+              'Arn',
+            ],
+          },
+          AssumeRoleArn: {
+            'Fn::GetAtt': [
+              'ParentHostedZoneCrossAccountZoneDelegationRole95B1C36E',
+              'Arn',
+            ],
+          },
+          ParentZoneName: 'myzone.com',
+          DelegatedZoneName: childHostedZone.name,
+          DelegatedZoneNameServers: {
+            'Fn::GetAtt': [
+              childHostedZone.id,
+              'NameServers',
+            ],
+          },
+          TTL: 60,
         },
-        AssumeRoleArn: {
-          'Fn::GetAtt': [
-            'ParentHostedZoneCrossAccountZoneDelegationRole95B1C36E',
-            'Arn',
-          ],
-        },
-        ParentZoneName: 'myzone.com',
-        DelegatedZoneName: childHostedZone.name,
-        DelegatedZoneNameServers: {
-          'Fn::GetAtt': [
-            childHostedZone.id,
-            'NameServers',
-          ],
-        },
-        TTL: 60,
+        DependsOn: [
+          childHostedZone.dependsOn,
+        ],
       });
     }
   });
