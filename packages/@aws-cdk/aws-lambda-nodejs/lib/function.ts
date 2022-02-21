@@ -215,11 +215,12 @@ function findDefiningFile(): string {
 }
 
 function getEnvironment(props: NodejsFunctionProps): { [key: string]: string } | undefined {
-  if (!props.bundling?.sourceMap || props.environment?.NODE_OPTIONS.includes('--enable-source-maps')) {
-    return props.environment;
+  const { bundling, environment } = props;
+  if (!bundling?.sourceMap || environment?.NODE_OPTIONS.includes('--enable-source-maps')) {
+    return environment;
   }
   return {
-    ...props.environment,
-    NODE_OPTIONS: `${props.environment?.NODE_OPTIONS ?? ''} --enable-source-maps`.trim(),
+    ...environment,
+    NODE_OPTIONS: `${environment?.NODE_OPTIONS ?? ''} --enable-source-maps`.trim(),
   };
 }
