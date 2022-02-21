@@ -83,6 +83,7 @@ export class Trigger extends CoreConstruct implements ITrigger {
   constructor(scope: Construct, id: string, props: TriggerProps) {
     super(scope, id);
 
+    const handlerArn = this.determineHandlerArn(props);
     const provider = CustomResourceProvider.getOrCreateProvider(this, 'AWSCDK.TriggerCustomResourceProvider', {
       runtime: CustomResourceProviderRuntime.NODEJS_14_X,
       codeDirectory: join(__dirname, 'lambda'),
@@ -90,13 +91,10 @@ export class Trigger extends CoreConstruct implements ITrigger {
         {
           Effect: 'Allow',
           Action: ['lambda:InvokeFunction'],
-          Resource: [props.handler.functionArn],
+          Resource: [handlerArn],
         },
       ],
     });
-
-
-    const handlerArn = this.determineHandlerArn(props);
 
     new CustomResource(this, 'Default', {
       resourceType: 'Custom::Trigger',
@@ -121,12 +119,12 @@ export class Trigger extends CoreConstruct implements ITrigger {
   }
 
   private determineHandlerArn(props: TriggerProps) {
-    const executeOnHandlerChange = props.executeOnHandlerChange ?? true;
-    if (executeOnHandlerChange) {
-      return props.handler.currentVersion.functionArn;
-    }
+    return props.handler.currentVersion.functionArn;
+    // const executeOnHandlerChange = props.executeOnHandlerChange ?? true;
+    // if (executeOnHandlerChange) {
+    // }
 
-    return props.handler.functionArn;
+    // return props.handler.functionArn;
   }
 }
 
