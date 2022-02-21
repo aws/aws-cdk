@@ -1,5 +1,5 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
-/// !cdk-integ PipelineStack pragma:set-context:@aws-cdk/core:newStyleStackSynthesis=true
+/// !cdk-integ VariablePipelineStack pragma:set-context:@aws-cdk/core:newStyleStackSynthesis=true
 import { GitHubTrigger } from '@aws-cdk/aws-codepipeline-actions';
 import { App, Stack, StackProps } from '@aws-cdk/core';
 import { Construct } from 'constructs';
