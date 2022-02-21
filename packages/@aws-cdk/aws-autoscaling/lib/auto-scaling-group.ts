@@ -1134,7 +1134,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
 
   private readonly autoScalingGroup: CfnAutoScalingGroup;
   private readonly securityGroup?: ec2.ISecurityGroup;
-  private readonly securityGroups?: ec2.ISecurityGroup[] = [];
+  private readonly securityGroups?: ec2.ISecurityGroup[];
   private readonly loadBalancerNames: string[] = [];
   private readonly targetGroupArns: string[] = [];
   private readonly groupMetrics: GroupMetrics[] = [];
@@ -1479,6 +1479,10 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
   public get userData(): ec2.UserData {
     if (this._userData) {
       return this._userData;
+    }
+
+    if (this.launchTemplate?.userData) {
+      return this.launchTemplate.userData;
     }
 
     throw new Error('The provided launch template does not expose its user data.');

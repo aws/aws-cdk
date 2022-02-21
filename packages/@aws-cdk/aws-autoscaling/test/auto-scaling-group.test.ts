@@ -7,7 +7,6 @@ import * as sns from '@aws-cdk/aws-sns';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cdk from '@aws-cdk/core';
-import { Names } from '@aws-cdk/core';
 import * as autoscaling from '../lib';
 import { OnDemandAllocationStrategy, SpotAllocationStrategy } from '../lib';
 
@@ -1384,12 +1383,12 @@ describe('auto scaling group', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::AutoScalingGroup', {
       LaunchTemplate: {
-        LaunchTemplateName: {
-          'Ref': Names.uniqueId(lt),
+        LaunchTemplateId: {
+          'Ref': 'ltB6511CF5',
         },
         Version: {
           'Fn::GetAtt': [
-            Names.uniqueId(lt),
+            'ltB6511CF5',
             'LatestVersionNumber',
           ],
         },
@@ -1542,15 +1541,55 @@ describe('auto scaling group', () => {
     }).toThrow();
   });
 
-  test('Should not throw when accessing inferred fields with in-stack Launch Template', () => {
+  test('Should throw when accessing inferred fields with in-stack Launch Template not having corresponding properties', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
     // WHEN
     const asg = new autoscaling.AutoScalingGroup(stack, 'imported-lt-asg', {
-      launchTemplate: LaunchTemplate.fromLaunchTemplateAttributes(stack, 'imported-lt', {
-        launchTemplateId: 'test-lt-id',
-        versionNumber: '0',
+      launchTemplate: new LaunchTemplate(stack, 'in-stack-lt', {
+        instanceType: new ec2.InstanceType('t3.micro'),
+        machineImage: new ec2.AmazonLinuxImage({
+          generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2,
+          cpuType: ec2.AmazonLinuxCpuType.X86_64,
+        }),
+      }),
+      vpc: mockVpc(stack),
+    });
+
+    // THEN
+    expect(() => {
+      asg.userData;
+    }).toThrow();
+
+    expect(() => {
+      asg.connections;
+    }).toThrow();
+
+    expect(() => {
+      asg.role;
+    }).toThrow();
+
+    expect(() => {
+      asg.addSecurityGroup(mockSecurityGroup(stack));
+    }).toThrow();
+  });
+
+  test('Should not throw when accessing inferred fields with in-stack Launch Template having corresponding properties', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const asg = new autoscaling.AutoScalingGroup(stack, 'imported-lt-asg', {
+      launchTemplate: new LaunchTemplate(stack, 'in-stack-lt', {
+        instanceType: new ec2.InstanceType('t3.micro'),
+        machineImage: new ec2.AmazonLinuxImage({
+          generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2,
+          cpuType: ec2.AmazonLinuxCpuType.X86_64,
+        }),
+        userData: ec2.UserData.forLinux(),
+        securityGroup: ec2.SecurityGroup.fromSecurityGroupId(stack, 'MySG2', 'most-secure'),
+        role: iam.Role.fromRoleArn(stack, 'ImportedRole', 'arn:aws:iam::123456789012:role/HelloDude'),
       }),
       vpc: mockVpc(stack),
     });
@@ -1570,7 +1609,7 @@ describe('auto scaling group', () => {
 
     expect(() => {
       asg.addSecurityGroup(mockSecurityGroup(stack));
-    }).not.toThrow();
+    }).toThrow();
   });
 });
 
