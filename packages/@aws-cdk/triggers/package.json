@@ -111,5 +111,10 @@
   },
   "publishConfig": {
     "tag": "latest"
+  },
+  "awslint": {
+    "exclude": [
+      "ref-via-interface:@aws-cdk/triggers.TriggerProps.handler"
+    ]
   }
 }

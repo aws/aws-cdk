@@ -48,11 +48,22 @@ export interface TriggerOptions {
    * Adds this trigger as a dependency on other constructs. This means that this
    * trigger will get executed *before* the given construct(s).
    *
-   * You can also use `trigger.executeBefore()` to add additional dependencies.
+   * You can also use `trigger.executeBefore()` to add additional dependants.
    *
    * @default []
    */
   readonly executeBefore?: Construct[];
+
+  /**
+   * Re-executes the trigger every time the handler changes.
+   *
+   * This implies that the trigger is associated with the `currentVersion` of
+   * the handler, which gets recreated every time the handler or its
+   * configuration is updated.
+   *
+   * @default true
+   */
+  readonly executeOnHandlerChange?: boolean;
 }
 
 /**
@@ -60,12 +71,9 @@ export interface TriggerOptions {
  */
 export interface TriggerProps extends TriggerOptions {
   /**
-   * The AWS Lambda version of the handler to execute.
-   *
-   * The trigger will be executed every time the version changes (code or
-   * configuration).
+   * The AWS Lambda function of the handler to execute.
    */
-  readonly handlerVersion: lambda.IVersion;
+  readonly handler: lambda.Function;
 }
 
 /**
@@ -82,15 +90,13 @@ export class Trigger extends CoreConstruct implements ITrigger {
         {
           Effect: 'Allow',
           Action: ['lambda:InvokeFunction'],
-          Resource: [props.handlerVersion.functionArn],
+          Resource: [props.handler.functionArn],
         },
       ],
     });
 
-    // we use 'currentVersion' because a new version is created every time the
-    // handler changes (either code or configuration). this will have the effect
-    // that the trigger will be executed every time the handler is changed.
-    const handlerArn = props.handlerVersion.functionArn;
+
+    const handlerArn = this.determineHandlerArn(props);
 
     new CustomResource(this, 'Default', {
       resourceType: 'Custom::Trigger',
@@ -113,4 +119,25 @@ export class Trigger extends CoreConstruct implements ITrigger {
       Node.of(s).addDependency(this);
     }
   }
+
+  private determineHandlerArn(props: TriggerProps) {
+    const executeOnHandlerChange = props.executeOnHandlerChange ?? true;
+    if (executeOnHandlerChange) {
+      return props.handler.currentVersion.functionArn;
+    }
+
+    return props.handler.functionArn;
+  }
+}
+
+/**
+ * Determines
+ */
+export enum TriggerInvalidation {
+  /**
+   * The trigger will be executed every time the handler (or its configuration)
+   * changes. This is implemented by associated the trigger with the `currentVersion`
+   * of the AWS Lambda function, which gets recreated every time the handler changes.
+   */
+  HANDLER_CHANGE = 'WHEN_FUNCTION_CHANGES',
 }

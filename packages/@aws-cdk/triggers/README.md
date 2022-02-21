@@ -96,10 +96,15 @@ composed together into constructs.
 
 ## Re-execution of Triggers
 
-The trigger handler gets executed only once upon first deployment. Subsequent
-deployments ***will not*** execute the trigger as long as the handler did not
-change. The trigger ***will*** get re-executed if the code of the AWS Lambda
-function, environment variables or other configuration changes.
+By default, `executeOnHandlerChange` is enabled. This implies that the trigger
+is re-executed every time the handler function code or configuration changes. If
+this option is disabled, the trigger will be executed only once upon first
+deployment.
 
-> Under the hood, the trigger resource is bound to the `lambda.currentVersion`
-  resource which is recreated automatically when the function changes.
+In the future we will consider adding support for additional re-execution modes:
+
+* `executeOnEveryDeployment: boolean` - re-executes every time the stack is
+  deployed (add random "salt" during synthesis).
+* `executeOnResourceChange: Construct[]` - re-executes when one of the resources
+  under the specified scopes has changed (add the hash the CloudFormation
+  resource specs).

@@ -22,9 +22,8 @@ export class TriggerFunction extends lambda.Function implements ITrigger {
     super(scope, id, props);
 
     this.trigger = new Trigger(this, 'Trigger', {
-      handlerVersion: this.currentVersion,
-      executeAfter: props.executeAfter,
-      executeBefore: props.executeBefore,
+      ...props,
+      handler: this,
     });
   }
 
