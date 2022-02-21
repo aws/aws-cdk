@@ -1,2 +1,1 @@
-// this is placeholder for monocdk
-export const dummy = true;
+export * from './sns-topic-publish-action';

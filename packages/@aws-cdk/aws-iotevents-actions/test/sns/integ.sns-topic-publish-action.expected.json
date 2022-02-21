@@ -1,0 +1,116 @@
+{
+  "Resources": {
+    "MyInput08947B23": {
+      "Type": "AWS::IoTEvents::Input",
+      "Properties": {
+        "InputDefinition": {
+          "Attributes": [
+            {
+              "JsonPath": "payload.deviceId"
+            }
+          ]
+        },
+        "InputName": "test_input"
+      }
+    },
+    "MyTopic86869434": {
+      "Type": "AWS::SNS::Topic"
+    },
+    "MyDetectorModelDetectorModelRoleF2FB4D88": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "iotevents.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      }
+    },
+    "MyDetectorModelDetectorModelRoleDefaultPolicy82887422": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sns:Publish",
+              "Effect": "Allow",
+              "Resource": {
+                "Ref": "MyTopic86869434"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "MyDetectorModelDetectorModelRoleDefaultPolicy82887422",
+        "Roles": [
+          {
+            "Ref": "MyDetectorModelDetectorModelRoleF2FB4D88"
+          }
+        ]
+      }
+    },
+    "MyDetectorModel559C0B0E": {
+      "Type": "AWS::IoTEvents::DetectorModel",
+      "Properties": {
+        "DetectorModelDefinition": {
+          "InitialStateName": "MyState",
+          "States": [
+            {
+              "OnEnter": {
+                "Events": [
+                  {
+                    "Condition": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "currentInput(\"",
+                          {
+                            "Ref": "MyInput08947B23"
+                          },
+                          "\")"
+                        ]
+                      ]
+                    },
+                    "EventName": "test-event"
+                  }
+                ]
+              },
+              "OnExit": {},
+              "OnInput": {
+                "Events": [
+                  {
+                    "Actions": [
+                      {
+                        "Sns": {
+                          "TargetArn": {
+                            "Ref": "MyTopic86869434"
+                          }
+                        }
+                      }
+                    ],
+                    "EventName": "test-input-event"
+                  }
+                ]
+              },
+              "StateName": "MyState"
+            }
+          ]
+        },
+        "RoleArn": {
+          "Fn::GetAtt": [
+            "MyDetectorModelDetectorModelRoleF2FB4D88",
+            "Arn"
+          ]
+        },
+        "Key": "payload.deviceId"
+      }
+    }
+  }
+}

@@ -1,3 +1,4 @@
+import * as iam from '@aws-cdk/aws-iam';
 import { IAction } from './action';
 import { Event } from './event';
 import { Expression } from './expression';
@@ -128,22 +129,28 @@ export class State {
   /**
    * Collect states in dependency gragh that constructed by state transitions,
    * and return the JSONs of the states.
-   * This function is called recursively and collect the states.
    *
    * @internal
    */
-  public _collectStateJsons(collectedStates: Set<State>): CfnDetectorModel.StateProperty[] {
-    if (collectedStates.has(this)) {
-      return [];
-    }
-    collectedStates.add(this);
+  public _collectStateJsons(): CfnDetectorModel.StateProperty[] {
+    return this.collectStates(new Set()).map(state => state.toStateJson());
+  }
 
-    return [
-      this.toStateJson(),
-      ...this.transitionEvents.flatMap(transitionEvent => {
-        return transitionEvent.nextState._collectStateJsons(collectedStates);
-      }),
-    ];
+  /**
+   * Collect policies to perform the actions in dependency gragh that constructed by state transitions.
+   *
+   * @internal
+   */
+  public _collectPolicies(): iam.PolicyStatement[] {
+    return this.collectStates(new Set())
+      .flatMap(state => ([
+        ...state.props.onEnter ?? [],
+        ...state.props.onInput ?? [],
+        ...state.props.onExit ?? [],
+        ...state.transitionEvents,
+      ]))
+      .flatMap(event => event.actions ?? [])
+      .flatMap(action => action.actionPolicies ?? []);
   }
 
   /**
@@ -153,6 +160,20 @@ export class State {
    */
   public _onEnterEventsHaveAtLeastOneCondition(): boolean {
     return this.props.onEnter?.some(event => event.condition) ?? false;
+  }
+
+  private collectStates(collectedStates: Set<State>): State[] {
+    if (collectedStates.has(this)) {
+      return [];
+    }
+    collectedStates.add(this);
+
+    return [
+      this,
+      ...this.transitionEvents.flatMap(transitionEvent => {
+        return transitionEvent.nextState.collectStates(collectedStates);
+      }),
+    ];
   }
 
   private toStateJson(): CfnDetectorModel.StateProperty {
