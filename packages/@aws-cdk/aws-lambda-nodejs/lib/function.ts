@@ -102,6 +102,7 @@ export class NodejsFunction extends lambda.Function {
 
     super(scope, id, {
       ...props,
+      environment: getEnvironment(props),
       runtime,
       code: Bundling.bundle({
         ...props.bundling ?? {},
@@ -211,4 +212,14 @@ function findDefiningFile(): string {
   }
 
   return sites[definingIndex].getFileName();
+}
+
+function getEnvironment(props: NodejsFunctionProps): { [key: string]: string } | undefined {
+  if (!props.bundling?.sourceMap || props.environment?.NODE_OPTIONS.includes('--enable-source-maps')) {
+    return props.environment;
+  }
+  return {
+    ...props.environment,
+    NODE_OPTIONS: `${props.environment?.NODE_OPTIONS ?? ''} --enable-source-maps`.trim(),
+  };
 }

@@ -203,3 +203,34 @@ test('NodejsFunction in a VPC', () => {
     },
   });
 });
+
+test('NodejsFunction with sourceMap', () => {
+  // WHEN
+  new NodejsFunction(stack, 'handler1', {
+    bundling: { sourceMap: true },
+    environment: { NODE_OPTIONS: '--experimental-fetch' },
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+    Environment: {
+      Variables: {
+        NODE_OPTIONS: '--experimental-fetch --enable-source-maps',
+      },
+    },
+  });
+});
+
+test('NodejsFunction with sourceMap', () => {
+  // WHEN
+  new NodejsFunction(stack, 'handler1', { bundling: { sourceMap: true } });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+    Environment: {
+      Variables: {
+        NODE_OPTIONS: '--enable-source-maps',
+      },
+    },
+  });
+});
