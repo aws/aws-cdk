@@ -79,7 +79,7 @@ export class EvaluateCloudFormationTemplate {
 
   // clones current EvaluateCloudFormationTemplate object, but updates the stack name
   public createNestedEvaluateCloudFormationTemplate(stackName: string, sdk: ISDK,
-    rootStackArtifact: cxapi.CloudFormationStackArtifact, nestedStackParameters: any,
+    rootStackArtifact: cxapi.CloudFormationStackArtifact, nestedStackParameters: {[key:string]: any},
   ) {
     const listNestedStackResources = new LazyListStackResources(sdk, stackName);
 

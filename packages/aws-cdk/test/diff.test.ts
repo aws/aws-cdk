@@ -57,12 +57,12 @@ describe('non-nested stacks', () => {
           deployedTemplate: {
             resource: 'D',
           },
-          stackNames: {},
+          nestedStackNames: {},
         });
       }
       return Promise.resolve({
         deployedTemplate: {},
-        stackNames: {},
+        nestedStackNames: {},
       });
     });
     cloudFormation.deployStack.mockImplementation((options) => Promise.resolve({
@@ -229,12 +229,12 @@ describe('nested stacks', () => {
               },
             },
           },
-          stackNames: {},
+          nestedStackNames: {},
         });
       }
       return Promise.resolve({
         deployedTemplate: {},
-        stackNames: {},
+        nestedStackNames: {},
       });
     });
   });

@@ -299,14 +299,15 @@ export class CloudFormationDeployments {
   public async readCurrentTemplateWithNestedStacks(rootStackArtifact: cxapi.CloudFormationStackArtifact): Promise<TemplateWithStackNames> {
     const sdk = await this.prepareSdkWithLookupOrDeployRole(rootStackArtifact);
     const deployedTemplate = await this.readCurrentTemplate(rootStackArtifact, sdk);
-    const stackNames = await this.addNestedTemplatesToGeneratedAndDeployedStacks(rootStackArtifact, sdk, {
+    const nestedStackNames = {};
+    await this.addNestedTemplatesToGeneratedAndDeployedStacks(rootStackArtifact, sdk, {
       generatedTemplate: rootStackArtifact.template,
       deployedTemplate: deployedTemplate,
       deployedStackName: rootStackArtifact.stackName,
-    });
+    }, nestedStackNames);
     return {
       deployedTemplate,
-      stackNames,
+      nestedStackNames,
     };
   }
 
@@ -398,8 +399,8 @@ export class CloudFormationDeployments {
     rootStackArtifact: cxapi.CloudFormationStackArtifact,
     sdk: ISDK,
     parentTemplates: StackTemplates,
-    stackNames: { [key:string]: any } = {},
-  ): Promise<{ [key:string]: any }> {
+    nestedStackNames: { [key:string]: NestedStackNames },
+  ): Promise<void> {
     const listStackResources = parentTemplates.deployedStackName ? new LazyListStackResources(sdk, parentTemplates.deployedStackName) : undefined;
     for (const [nestedStackLogicalId, generatedNestedStackResource] of Object.entries(parentTemplates.generatedTemplate.Resources ?? {})) {
       if (!this.isCdkManagedNestedStack(generatedNestedStackResource)) {
@@ -419,7 +420,7 @@ export class CloudFormationDeployments {
       deployedNestedStackResource.Properties = deployedNestedStackResource.Properties ?? {};
       deployedNestedStackResource.Properties.NestedTemplate = nestedStackTemplates.deployedTemplate;
 
-      stackNames[nestedStackLogicalId] = {
+      nestedStackNames[nestedStackLogicalId] = {
         stackName: nestedStackTemplates.deployedStackName,
         children: {},
       };
@@ -428,11 +429,9 @@ export class CloudFormationDeployments {
         rootStackArtifact,
         sdk,
         nestedStackTemplates,
-        stackNames[nestedStackLogicalId].children,
+        nestedStackNames[nestedStackLogicalId].children,
       );
     }
-
-    return stackNames;
   }
 
   private async getNestedStackTemplates(
@@ -567,7 +566,12 @@ interface NestedStackResource {
   readonly Properties: any;
 }
 
-interface TemplateWithStackNames {
-  readonly deployedTemplate: Template,
-  stackNames: { [key: string]: any }
+export interface NestedStackNames {
+  readonly stackName: string | undefined;
+  readonly children: { [key:string]: NestedStackNames };
+}
+
+export interface TemplateWithStackNames {
+  readonly deployedTemplate: Template;
+  readonly nestedStackNames: { [key: string]: NestedStackNames };
 }
