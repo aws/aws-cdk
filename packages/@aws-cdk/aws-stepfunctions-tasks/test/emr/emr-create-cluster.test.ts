@@ -202,6 +202,27 @@ describe('Cluster with StepConcurrencyLevel', () => {
     });
   });
 
+  test('can be set dynamically through JsonPath', async () => {
+    // WHEN
+    const task = new EmrCreateCluster(stack, 'Task', {
+      instances: {},
+      clusterRole,
+      name: 'Cluster',
+      serviceRole,
+      autoScalingRole,
+      stepConcurrencyLevel: sfn.JsonPath.numberAt('$.foo.bar'),
+      integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
+    });
+
+    // THEN
+    expect(stack.resolve(task.toStateJson())).toMatchObject({
+      Parameters: {
+        'Name': 'Cluster',
+        'StepConcurrencyLevel.$': '$.foo.bar',
+      },
+    });
+  });
+
   test('throws if < 1 or > 256', async () => {
     expect(() => new EmrCreateCluster(stack, 'Task1', {
       instances: {},
