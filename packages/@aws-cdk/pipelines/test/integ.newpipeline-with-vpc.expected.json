@@ -870,7 +870,6 @@
                   }
                 ],
                 "Name": "SelfMutate",
-                "Namespace": "SelfMutate",
                 "RoleArn": {
                   "Fn::GetAtt": [
                     "PipelineUpdatePipelineSelfMutateCodePipelineActionRoleD6D4E5CF",
@@ -902,7 +901,6 @@
                   }
                 ],
                 "Name": "FileAsset1",
-                "Namespace": "FileAsset1",
                 "RoleArn": {
                   "Fn::GetAtt": [
                     "PipelineAssetsFileAsset1CodePipelineActionRoleC0EC649A",
@@ -929,7 +927,6 @@
                   }
                 ],
                 "Name": "FileAsset2",
-                "Namespace": "FileAsset2",
                 "RoleArn": {
                   "Fn::GetAtt": [
                     "PipelineAssetsFileAsset2CodePipelineActionRole06965A59",
