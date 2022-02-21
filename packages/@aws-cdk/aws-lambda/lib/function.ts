@@ -436,6 +436,20 @@ export class Function extends FunctionBase {
   }
 
   /**
+   * Import a lambda function into the CDK using its name
+   */
+  public static fromFunctionName(scope: Construct, id: string, functionName: string): IFunction {
+    return Function.fromFunctionAttributes(scope, id, {
+      functionArn: Stack.of(scope).formatArn({
+        service: 'lambda',
+        resource: 'function',
+        resourceName: functionName,
+        arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+      }),
+    });
+  }
+
+  /**
    * Import a lambda function into the CDK using its ARN
    */
   public static fromFunctionArn(scope: Construct, id: string, functionArn: string): IFunction {
