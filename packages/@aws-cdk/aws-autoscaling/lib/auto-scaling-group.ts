@@ -1478,7 +1478,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
    */
   public get userData(): ec2.UserData {
     if (this._userData) {
-      return this.userData;
+      return this._userData;
     }
 
     throw new Error('The provided launch template does not expose its user data.');
