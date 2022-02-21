@@ -227,48 +227,26 @@ describe('cli notices', () => {
   describe(generateMessage, () => {
     test('does not show anything when there are no notices', async () => {
       const dataSource = createDataSource();
-      const print = jest.fn();
       dataSource.fetch.mockResolvedValue([]);
 
-      await generateMessage(dataSource, {
-        temporarilySuppressed: false,
-        permanentlySuppressed: false,
+      const result = await generateMessage(dataSource, {
         acknowledgedIssueNumbers: [],
         outdir: '/tmp',
-      }, print);
+      });
 
-      expect(print).not.toHaveBeenCalled();
-    });
-
-    test('does not show anything when no notices pass the filter', async () => {
-      const dataSource = createDataSource();
-      const print = jest.fn();
-      dataSource.fetch.mockResolvedValue([BASIC_NOTICE, MULTIPLE_AFFECTED_VERSIONS_NOTICE]);
-
-      await generateMessage(dataSource, {
-        temporarilySuppressed: true,
-        permanentlySuppressed: false,
-        acknowledgedIssueNumbers: [],
-        outdir: '/tmp',
-      }, print);
-
-      expect(print).not.toHaveBeenCalled();
+      expect(result).toEqual('');
     });
 
     test('shows notices that pass the filter', async () => {
       const dataSource = createDataSource();
-      const print = jest.fn();
       dataSource.fetch.mockResolvedValue([BASIC_NOTICE, MULTIPLE_AFFECTED_VERSIONS_NOTICE]);
 
-      await generateMessage(dataSource, {
-        temporarilySuppressed: false,
-        permanentlySuppressed: false,
+      const result = await generateMessage(dataSource, {
         acknowledgedIssueNumbers: [17061],
         outdir: '/tmp',
-      }, print);
+      });
 
-      expect(print).toHaveBeenCalledTimes(1);
-      expect(print).toHaveBeenCalledWith(`
+      expect(result).toEqual(`
 NOTICES
 
 16603\tToggling off auto_delete_objects for Bucket empties the bucket

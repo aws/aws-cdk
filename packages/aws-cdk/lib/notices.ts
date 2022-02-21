@@ -2,7 +2,7 @@ import * as https from 'https';
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import * as semver from 'semver';
-import { print, debug } from './logging';
+import { debug, print } from './logging';
 import { cdkCacheDir } from './util/directories';
 import { versionNumber } from './version';
 
@@ -21,21 +21,6 @@ export interface DisplayNoticesProps {
   readonly acknowledgedIssueNumbers: number[];
 
   /**
-   * Setting that comes from the command-line option.
-   * For example, `cdk synth --no-notices`.
-   */
-  readonly temporarilySuppressed?: boolean;
-
-  /**
-   * Setting that comes from cdk.json. For example,
-   *
-   * "context": {
-   *   "notices": false
-   * }
-   */
-  readonly permanentlySuppressed?: boolean;
-
-  /**
    * Whether cached notices should be ignored. Setting this property
    * to true will force the CLI to download fresh data
    *
@@ -46,21 +31,21 @@ export interface DisplayNoticesProps {
 
 export async function displayNotices(props: DisplayNoticesProps) {
   const dataSource = dataSourceReference(props.ignoreCache ?? false);
-  await generateMessage(dataSource, props, print);
+  print(await generateMessage(dataSource, props));
+  return 0;
 }
 
-export async function generateMessage(dataSource: NoticeDataSource, props: DisplayNoticesProps, cb: (msg: string) => void) {
-  const notices = await dataSource.fetch();
-  const individualMessages = formatNotices(filterNotices(notices, {
+export async function generateMessage(dataSource: NoticeDataSource, props: DisplayNoticesProps) {
+  const data = await dataSource.fetch();
+  const individualMessages = formatNotices(filterNotices(data, {
     outdir: props.outdir,
-    temporarilySuppressed: props.temporarilySuppressed,
-    permanentlySuppressed: props.permanentlySuppressed,
     acknowledgedIssueNumbers: new Set(props.acknowledgedIssueNumbers),
   }));
 
   if (individualMessages.length > 0) {
-    cb(finalMessage(individualMessages, notices[0].issueNumber));
+    return finalMessage(individualMessages, data[0].issueNumber);
   }
+  return '';
 }
 
 function dataSourceReference(ignoreCache: boolean): NoticeDataSource {
@@ -77,26 +62,22 @@ function finalMessage(individualMessages: string[], exampleNumber: number): stri
 
 export interface FilterNoticeOptions {
   outdir?: string,
-  permanentlySuppressed?: boolean,
-  temporarilySuppressed?: boolean,
   cliVersion?: string,
   frameworkVersion?: string,
   acknowledgedIssueNumbers?: Set<number>,
 }
 
-export function filterNotices(notices: Notice[], options: FilterNoticeOptions): Notice[] {
+export function filterNotices(data: Notice[], options: FilterNoticeOptions): Notice[] {
   const filter = new NoticeFilter({
     cliVersion: options.cliVersion ?? versionNumber(),
     frameworkVersion: options.frameworkVersion ?? frameworkVersion(options.outdir ?? 'cdk.out'),
-    temporarilySuppressed: options.temporarilySuppressed ?? false,
-    permanentlySuppressed: options.permanentlySuppressed ?? false,
     acknowledgedIssueNumbers: options.acknowledgedIssueNumbers ?? new Set(),
   });
-  return notices.filter(notice => filter.apply(notice));
+  return data.filter(notice => filter.apply(notice));
 }
 
-export function formatNotices(notices: Notice[]): string[] {
-  return notices.map(formatNotice);
+export function formatNotices(data: Notice[]): string[] {
+  return data.map(formatNotice);
 }
 
 export interface Component {
@@ -119,7 +100,7 @@ export interface NoticeDataSource {
 export class WebsiteNoticeDataSource implements NoticeDataSource {
   fetch(): Promise<Notice[]> {
     return new Promise((resolve) => {
-      https.get('https://cli.cdk.dev-tools.aws.dev/notices.json', res => {
+      https.get('https://dev-otaviom.cdk.dev-tools.aws.dev/notices.json', res => {
         if (res.statusCode === 200) {
           res.setEncoding('utf8');
           let rawData = '';
@@ -128,8 +109,8 @@ export class WebsiteNoticeDataSource implements NoticeDataSource {
           });
           res.on('end', () => {
             try {
-              const notices = JSON.parse(rawData).notices as Notice[];
-              resolve(notices ?? []);
+              const data = JSON.parse(rawData).notices as Notice[];
+              resolve(data ?? []);
             } catch (e) {
               debug(`Failed to parse notices: ${e}`);
               resolve([]);
@@ -164,7 +145,7 @@ export class CachedDataSource implements NoticeDataSource {
 
   async fetch(): Promise<Notice[]> {
     const cachedData = await this.load();
-    const notices = cachedData.notices;
+    const data = cachedData.notices;
     const expiration = cachedData.expiration ?? 0;
 
     if (Date.now() > expiration || this.skipCache) {
@@ -175,7 +156,7 @@ export class CachedDataSource implements NoticeDataSource {
       await this.save(freshData);
       return freshData.notices;
     } else {
-      return notices;
+      return data;
     }
   }
 
@@ -201,8 +182,6 @@ export class CachedDataSource implements NoticeDataSource {
 }
 
 export interface NoticeFilterProps {
-  permanentlySuppressed: boolean,
-  temporarilySuppressed: boolean,
   cliVersion: string,
   frameworkVersion: string | undefined,
   acknowledgedIssueNumbers: Set<number>,
@@ -219,9 +198,7 @@ export class NoticeFilter {
    * Returns true iff we should show this notice.
    */
   apply(notice: Notice): boolean {
-    if (this.props.permanentlySuppressed
-      || this.props.temporarilySuppressed
-      || this.acknowledgedIssueNumbers.has(notice.issueNumber)) {
+    if (this.acknowledgedIssueNumbers.has(notice.issueNumber)) {
       return false;
     }
     return this.applyVersion(notice, 'cli', this.props.cliVersion) ||
