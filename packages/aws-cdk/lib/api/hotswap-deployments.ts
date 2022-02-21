@@ -92,8 +92,8 @@ async function findAllHotswappableChanges(
 
     const nestedStackName = nestedStackNames[logicalId].stackName;
     const evaluateNestedCfnTemplate = nestedStackName
-      ? evaluateCfnTemplate.createNestedEvaluateCloudFormationTemplate(nestedStackName,
-        sdk, rootStackArtifact, nestedStackParameters)
+      ? evaluateCfnTemplate.createNestedEvaluateCloudFormationTemplate(new LazyListStackResources(sdk, nestedStackName),
+        rootStackArtifact, nestedStackParameters)
       : evaluateCfnTemplate;
 
     const nestedDiff = cfn_diff.diffTemplate(change.oldValue?.Properties?.NestedTemplate, change.newValue?.Properties?.NestedTemplate);

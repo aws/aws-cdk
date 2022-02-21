@@ -23,10 +23,10 @@
         "TemplateURL": "https://www.magic-url.com",
         "Parameters": {
           "referencetoS3BucketParam": {
-            "Ref": "S3BucketParam"
+            "Ref": "referencetoGrandChildS3BucketParam"
           },
           "referencetoS3KeyParam": {
-            "Ref": "S3KeyParam"
+            "Ref": "referencetoGrandChildS3KeyParam"
           }
         }
       },
@@ -36,16 +36,16 @@
     }
   },
   "Parameters": {
+    "referencetoGrandChildS3BucketParam": {
+      "Type": "String"
+    },
+    "referencetoGrandChildS3KeyParam": {
+      "Type": "String"
+    },
     "referencetoChildS3BucketParam": {
       "Type": "String"
     },
     "referencetoChildS3KeyParam": {
-      "Type": "String"
-    },
-    "referencetoS3BucketParam": {
-      "Type": "String"
-    },
-    "referencetoS3KeyParam": {
       "Type": "String"
     }
   }

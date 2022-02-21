@@ -861,22 +861,22 @@ test('can hotswap a lambda function in a 2-level nested stack with asset paramet
     stackName: 'LambdaRoot',
     template: {
       Resources: {
-        NestedStack: {
+        ChildStack: {
           Type: 'AWS::CloudFormation::Stack',
           Properties: {
             TemplateURL: 'https://www.magic-url.com',
             Parameters: {
+              referencetoGrandChildS3BucketParam: {
+                Ref: 'GrandChildS3BucketParam',
+              },
+              referencetoGrandChildS3KeyParam: {
+                Ref: 'GrandChildS3KeyParam',
+              },
               referencetoChildS3BucketParam: {
                 Ref: 'ChildS3BucketParam',
               },
               referencetoChildS3KeyParam: {
                 Ref: 'ChildS3KeyParam',
-              },
-              referencetoS3BucketParam: {
-                Ref: 'S3BucketParam',
-              },
-              referencetoS3KeyParam: {
-                Ref: 'S3KeyParam',
               },
             },
           },
@@ -886,19 +886,19 @@ test('can hotswap a lambda function in a 2-level nested stack with asset paramet
         },
       },
       Parameters: {
+        GrandChildS3BucketParam: {
+          Type: 'String',
+          Description: 'S3 bucket for asset',
+        },
+        GrandChildS3KeyParam: {
+          Type: 'String',
+          Description: 'S3 bucket for asset',
+        },
         ChildS3BucketParam: {
           Type: 'String',
           Description: 'S3 bucket for asset',
         },
         ChildS3KeyParam: {
-          Type: 'String',
-          Description: 'S3 bucket for asset',
-        },
-        S3BucketParam: {
-          Type: 'String',
-          Description: 'S3 bucket for asset',
-        },
-        S3KeyParam: {
           Type: 'String',
           Description: 'S3 bucket for asset',
         },
@@ -908,7 +908,7 @@ test('can hotswap a lambda function in a 2-level nested stack with asset paramet
 
   setup.addTemplateToCloudFormationLookupMock(rootStack);
   setup.addTemplateToCloudFormationLookupMock(testStack({
-    stackName: 'NestedStack',
+    stackName: 'ChildStack',
     template: {
       Resources: {
         Func: {
@@ -959,12 +959,12 @@ test('can hotswap a lambda function in a 2-level nested stack with asset paramet
 
 
   setup.pushNestedStackResourceSummaries('LambdaRoot',
-    setup.stackSummaryOf('NestedStack', 'AWS::CloudFormation::Stack',
-      'arn:aws:cloudformation:bermuda-triangle-1337:123456789012:stack/NestedStack/abcd',
+    setup.stackSummaryOf('ChildStack', 'AWS::CloudFormation::Stack',
+      'arn:aws:cloudformation:bermuda-triangle-1337:123456789012:stack/ChildStack/abcd',
     ),
   );
 
-  setup.pushNestedStackResourceSummaries('NestedStack',
+  setup.pushNestedStackResourceSummaries('ChildStack',
     setup.stackSummaryOf('GrandChildStack', 'AWS::CloudFormation::Stack',
       'arn:aws:cloudformation:bermuda-triangle-1337:123456789012:stack/GrandChildStack/abcd',
     ),
@@ -973,10 +973,10 @@ test('can hotswap a lambda function in a 2-level nested stack with asset paramet
 
   // WHEN
   const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(cdkStackArtifact, {
-    ChildS3BucketParam: 'child-bucket-param-value',
-    ChildS3KeyParam: 'child-key-param-value',
-    S3BucketParam: 'bucket-param-value',
-    S3KeyParam: 'key-param-value',
+    GrandChildS3BucketParam: 'child-bucket-param-value',
+    GrandChildS3KeyParam: 'child-key-param-value',
+    ChildS3BucketParam: 'bucket-param-value',
+    ChildS3KeyParam: 'key-param-value',
   });
 
   // THEN
