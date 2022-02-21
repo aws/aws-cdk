@@ -31,11 +31,11 @@ function synthesizeBlockDeviceMappings<RT, NDT>(construct: Construct, blockDevic
       const { iops, volumeType, kmsKey, ...rest } = ebs;
 
       if (!iops) {
-        if (volumeType === EbsDeviceVolumeType.IO1) {
-          throw new Error('iops property is required with volumeType: EbsDeviceVolumeType.IO1');
+        if (volumeType === EbsDeviceVolumeType.IO1 || volumeType === EbsDeviceVolumeType.IO2) {
+          throw new Error('iops property is required with volumeType: EbsDeviceVolumeType.IO1 and EbsDeviceVolumeType.IO2');
         }
-      } else if (volumeType !== EbsDeviceVolumeType.IO1) {
-        Annotations.of(construct).addWarning('iops will be ignored without volumeType: EbsDeviceVolumeType.IO1');
+      } else if (volumeType !== EbsDeviceVolumeType.IO1 && volumeType !== EbsDeviceVolumeType.IO2 && volumeType !== EbsDeviceVolumeType.GP3) {
+        Annotations.of(construct).addWarning('iops will be ignored without volumeType: IO1, IO2, or GP3');
       }
 
       /**

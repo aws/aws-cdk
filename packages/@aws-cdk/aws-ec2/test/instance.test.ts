@@ -200,6 +200,15 @@ describe('instance', () => {
             iops: 5000,
           }),
         }, {
+          deviceName: 'ebs-gp3',
+          mappingEnabled: true,
+          volume: BlockDeviceVolume.ebs(15, {
+            deleteOnTermination: true,
+            encrypted: true,
+            volumeType: EbsDeviceVolumeType.GP3,
+            iops: 5000,
+          }),
+        }, {
           deviceName: 'ebs-cmk',
           mappingEnabled: true,
           volume: BlockDeviceVolume.ebs(15, {
@@ -234,6 +243,16 @@ describe('instance', () => {
               Iops: 5000,
               VolumeSize: 15,
               VolumeType: 'io1',
+            },
+          },
+          {
+            DeviceName: 'ebs-gp3',
+            Ebs: {
+              DeleteOnTermination: true,
+              Encrypted: true,
+              Iops: 5000,
+              VolumeSize: 15,
+              VolumeType: 'gp3',
             },
           },
           {
@@ -306,8 +325,25 @@ describe('instance', () => {
           }],
         });
       }).toThrow(/ops property is required with volumeType: EbsDeviceVolumeType.IO1/);
+    });
 
-
+    test('throws if volumeType === IO2 without iops', () => {
+      // THEN
+      expect(() => {
+        new Instance(stack, 'Instance', {
+          vpc,
+          machineImage: new AmazonLinuxImage(),
+          instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.LARGE),
+          blockDevices: [{
+            deviceName: 'ebs',
+            volume: BlockDeviceVolume.ebs(15, {
+              deleteOnTermination: true,
+              encrypted: true,
+              volumeType: EbsDeviceVolumeType.IO2,
+            }),
+          }],
+        });
+      }).toThrow(/ops property is required with volumeType: EbsDeviceVolumeType.IO1 and EbsDeviceVolumeType.IO2/);
     });
 
     test('warning if iops without volumeType', () => {
@@ -328,11 +364,9 @@ describe('instance', () => {
       // THEN
       expect(instance.node.metadataEntry[0].type).toEqual(cxschema.ArtifactMetadataEntryType.WARN);
       expect(instance.node.metadataEntry[0].data).toEqual('iops will be ignored without volumeType: EbsDeviceVolumeType.IO1');
-
-
     });
 
-    test('warning if iops and volumeType !== IO1', () => {
+    test('warning if iops and invalid volumeType', () => {
       const instance = new Instance(stack, 'Instance', {
         vpc,
         machineImage: new AmazonLinuxImage(),
@@ -350,9 +384,7 @@ describe('instance', () => {
 
       // THEN
       expect(instance.node.metadataEntry[0].type).toEqual(cxschema.ArtifactMetadataEntryType.WARN);
-      expect(instance.node.metadataEntry[0].data).toEqual('iops will be ignored without volumeType: EbsDeviceVolumeType.IO1');
-
-
+      expect(instance.node.metadataEntry[0].data).toEqual('iops will be ignored without volumeType: IO1, IO2, or GP3');
     });
   });
 
