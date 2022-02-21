@@ -39,22 +39,6 @@ new triggers.TriggerFunction(stack, 'MyTrigger', {
 In the above example, the AWS Lambda function defined in `myLambdaFunction` will
 be invoked when the stack is deployed.
 
-> `TriggerFunction` uses `Trigger` under the hood. The above example is
-> equivalent to:
->
-> ```ts
-> import * as triggers from '@aws-cdk/triggers';
-> import * as lambda from '@aws-cdk/aws-lambda';
-> import { Stack } from '@aws-cdk/core';
-> 
-> declare const stack: Stack;
-> declare const lambdaFunction: lambda.Function; 
->
-> new triggers.Trigger(stack, 'MyTrigger', { 
->   handlerVersion: lambdaFunction.currentVersion
-> });
-> ```
-
 ## Trigger Failures
 
 If the trigger handler fails (e.g. an exception is raised), the CloudFormation
