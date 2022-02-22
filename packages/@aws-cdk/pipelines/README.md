@@ -354,7 +354,7 @@ You can adapt these examples to your own situation.
 
 You may currently have the build instructions for your CodeBuild Projects in a
 `buildspec.yml` file in your source repository. In addition to your build
-commands, the CodeBuild Project's buildspec als controls some information that
+commands, the CodeBuild Project's buildspec also controls some information that
 CDK Pipelines manages for you, like artifact identifiers, input artifact
 locations, Docker authorization, and exported variables.
 
