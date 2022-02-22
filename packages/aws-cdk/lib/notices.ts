@@ -190,7 +190,7 @@ export class CachedDataSource implements NoticeDataSource {
 export interface NoticeFilterProps {
   cliVersion: string,
   acknowledgedIssueNumbers: Set<number>,
-  tree: Node,
+  tree: ConstructTreeNode,
 }
 
 export class NoticeFilter {
@@ -208,22 +208,8 @@ export class NoticeFilter {
       return false;
     }
 
-    const components = flatMap(notice.components, component => {
-      if (component.name === 'framework') {
-        return [{
-          name: '@aws-cdk/core',
-          version: component.version,
-        }, {
-          name: 'aws-cdk-lib',
-          version: component.version,
-        }];
-      } else {
-        return [component];
-      }
-    });
-
     return this.applyVersion(notice, 'cli', this.props.cliVersion) ||
-      match(components, this.props.tree);
+      match(resolveAliases(notice.components), this.props.tree);
   }
 
   /**
@@ -236,6 +222,32 @@ export class NoticeFilter {
     const affectedRange = affectedComponent?.version;
     return affectedRange != null && semver.satisfies(compareToVersion, affectedRange);
   }
+}
+
+/**
+ * Some component names are aliases to actual component names. For example "framework"
+ * is an alias for either the core library (v1) or the whole CDK library (v2).
+ *
+ * This function converts all aliases to their actual counterpart names, to be used to
+ * match against the construct tree.
+ *
+ * @param components a list of components. Components whose name is an alias will be
+ * transformed and all others will be left intact.
+ */
+function resolveAliases(components: Component[]): Component[] {
+  return flatMap(components, component => {
+    if (component.name === 'framework') {
+      return [{
+        name: '@aws-cdk/core.',
+        version: component.version,
+      }, {
+        name: 'aws-cdk-lib.',
+        version: component.version,
+      }];
+    } else {
+      return [component];
+    }
+  });
 }
 
 function formatNotice(notice: Notice): string {
@@ -263,12 +275,21 @@ function formatOverview(text: string) {
 /**
  * Whether any component in the tree matches any component in the query.
  */
-function match(query: Component[], tree: Node): boolean {
+function match(query: Component[], tree: ConstructTreeNode): boolean {
   return some(tree, node => {
     return query.some(component =>
-      node.constructInfo?.fqn.startsWith(component.name) &&
-      semver.satisfies(node.constructInfo?.version ?? '', component.version));
+      compareNames(component.name, node.constructInfo?.fqn) &&
+      compareVersions(component.version, node.constructInfo?.version));
   });
+
+  function compareNames(pattern: string, target: string | undefined): boolean {
+    if (target == null) { return false; }
+    return pattern.endsWith('.') ? target.startsWith(pattern) : pattern === target;
+  }
+
+  function compareVersions(pattern: string, target: string | undefined): boolean {
+    return semver.satisfies(target ?? '', pattern);
+  }
 }
 
 function loadTree(outdir: string) {
@@ -292,10 +313,10 @@ interface ConstructInfo {
  * A node in the construct tree.
  * @internal
  */
-interface Node {
+interface ConstructTreeNode {
   readonly id: string;
   readonly path: string;
-  readonly children?: { [key: string]: Node };
+  readonly children?: { [key: string]: ConstructTreeNode };
   readonly attributes?: { [key: string]: any };
 
   /**
@@ -304,7 +325,7 @@ interface Node {
   readonly constructInfo?: ConstructInfo;
 }
 
-function some(node: Node, predicate: (n: Node) => boolean): boolean {
+function some(node: ConstructTreeNode, predicate: (n: ConstructTreeNode) => boolean): boolean {
   return node != null && (predicate(node) || findInChildren());
 
   function findInChildren(): boolean {
