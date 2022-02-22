@@ -106,13 +106,6 @@ async function findAllHotswappableChanges(
     hotswappableResources.push(...nestedHotswappableResources);
   }
 
-  // if a stack has been deleted, fail now
-  for (const [_, change] of resourceDifferenceEntries) {
-    if (change.newValue?.Type !== 'AWS::CloudFormation::Stack' && change.oldValue?.Type === 'AWS::CloudFormation::Stack') {
-      return undefined;
-    }
-  }
-
   // gather the results of the detector functions
   nestedStackResourceChanges = resourceDifferenceEntries.filter(
     ([_, resourceDifference]) => (resourceDifference.newValue?.Type !== 'AWS::CloudFormation::Stack' || resourceDifference.oldValue?.Type !== 'AWS::CloudFormation::Stack'));
@@ -246,6 +239,11 @@ function makeRenameDifference(
 function isCandidateForHotswapping(change: cfn_diff.ResourceDifference): HotswappableChangeCandidate | ChangeHotswapImpact {
   // a resource has been removed OR a resource has been added; we can't short-circuit that change
   if (!change.newValue || !change.oldValue) {
+    return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
+  }
+
+  // a resource has had its type changed; fail here because this can trip up our detector functions
+  if (change.newValue.Type !== change.oldValue.Type) {
     return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
   }
 
