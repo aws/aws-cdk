@@ -391,7 +391,7 @@ export class CdkToolkit {
     }
   }
 
-  public async list(selectors: string[], options: { long?: boolean } = { }) {
+  public async list(selectors: string[], options: { long?: boolean, json?: boolean } = { }): Promise<number> {
     const stacks = await this.selectStacksForList(selectors);
 
     // if we are in "long" mode, emit the array as-is (JSON/YAML)
@@ -404,7 +404,8 @@ export class CdkToolkit {
           environment: stack.environment,
         });
       }
-      return long; // will be YAML formatted output
+      data(serializeStructure(long, options.json ?? false));
+      return 0;
     }
 
     // just print stack IDs

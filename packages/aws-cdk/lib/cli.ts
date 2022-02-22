@@ -230,7 +230,9 @@ if (!process.stdout.isTTY) {
 }
 
 async function initCommandLine() {
-  void refreshNotices().then(_ => debug('Notices refreshed'));
+  void refreshNotices()
+    .then(_ => debug('Notices refreshed'))
+    .catch(e => debug(`Notices refresh failed: ${e}`));
 
   const argv = await parseCommandLineArguments();
   if (argv.verbose) {
@@ -325,7 +327,7 @@ async function initCommandLine() {
     }
   }
 
-  async function main(command: string, args: any): Promise<number | string | {} | void> {
+  async function main(command: string, args: any): Promise<number | void> {
     const toolkitStackName: string = ToolkitInfo.determineName(configuration.settings.get(['toolkitStackName']));
     debug(`Toolkit stack: ${chalk.bold(toolkitStackName)}`);
 
@@ -363,7 +365,7 @@ async function initCommandLine() {
 
       case 'ls':
       case 'list':
-        return cli.list(args.STACKS, { long: args.long });
+        return cli.list(args.STACKS, { long: args.long, json: argv.json });
 
       case 'diff':
         const enableDiffNoFail = isFeatureEnabled(configuration, cxapi.ENABLE_DIFF_NO_FAIL);
