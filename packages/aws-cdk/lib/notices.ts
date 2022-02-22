@@ -274,6 +274,13 @@ function formatOverview(text: string) {
 
 /**
  * Whether any component in the tree matches any component in the query.
+ * A match happens when:
+ *
+ * 1. The version of the node matches the version in the query, interpreted
+ * as a semver range.
+ *
+ * 2. The name in the query is a prefix of the node name when the query ends in '.',
+ * or the two names are exactly the same, otherwise.
  */
 function match(query: Component[], tree: ConstructTreeNode): boolean {
   return some(tree, node => {
