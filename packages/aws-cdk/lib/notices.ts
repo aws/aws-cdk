@@ -1,9 +1,9 @@
 import * as https from 'https';
 import * as path from 'path';
 import * as fs from 'fs-extra';
-import * as minimatch from 'minimatch';
 import * as semver from 'semver';
 import { debug, print } from './logging';
+import { flatMap } from './util';
 import { cdkCacheDir } from './util/directories';
 import { versionNumber } from './version';
 
@@ -76,7 +76,6 @@ export interface FilterNoticeOptions {
 export function filterNotices(data: Notice[], options: FilterNoticeOptions): Notice[] {
   const filter = new NoticeFilter({
     cliVersion: options.cliVersion ?? versionNumber(),
-    frameworkVersion: options.frameworkVersion ?? frameworkVersion(options.outdir ?? 'cdk.out'),
     acknowledgedIssueNumbers: options.acknowledgedIssueNumbers ?? new Set(),
     tree: loadTree(options.outdir ?? 'cdk.out').tree,
   });
@@ -190,7 +189,6 @@ export class CachedDataSource implements NoticeDataSource {
 
 export interface NoticeFilterProps {
   cliVersion: string,
-  frameworkVersion: string | undefined,
   acknowledgedIssueNumbers: Set<number>,
   tree: Node,
 }
@@ -209,10 +207,23 @@ export class NoticeFilter {
     if (this.acknowledgedIssueNumbers.has(notice.issueNumber)) {
       return false;
     }
-    // TODO Unify these three calls in a single call to match
+
+    const components = flatMap(notice.components, component => {
+      if (component.name === 'framework') {
+        return [{
+          name: '@aws-cdk/core',
+          version: component.version,
+        }, {
+          name: 'aws-cdk-lib',
+          version: component.version,
+        }];
+      } else {
+        return [component];
+      }
+    });
+
     return this.applyVersion(notice, 'cli', this.props.cliVersion) ||
-      this.applyVersion(notice, 'framework', this.props.frameworkVersion) ||
-      match(notice.components, this.props.tree);
+      match(components, this.props.tree);
   }
 
   /**
@@ -255,20 +266,9 @@ function formatOverview(text: string) {
 function match(query: Component[], tree: Node): boolean {
   return some(tree, node => {
     return query.some(component =>
-      node.constructInfo?.fqn != null &&
-      minimatch(node.constructInfo.fqn, component.name) &&
+      node.constructInfo?.fqn.startsWith(component.name) &&
       semver.satisfies(node.constructInfo?.version ?? '', component.version));
   });
-}
-
-function frameworkVersion(outdir: string): string | undefined {
-  const tree = loadTree(outdir).tree;
-
-  if (tree?.constructInfo?.fqn.startsWith('aws-cdk-lib')
-    || tree?.constructInfo?.fqn.startsWith('@aws-cdk/core')) {
-    return tree.constructInfo.version;
-  }
-  return undefined;
 }
 
 function loadTree(outdir: string) {
@@ -280,7 +280,6 @@ function loadTree(outdir: string) {
   }
 }
 
-// TODO The classes below are a duplication of the classes found in core. Should we merge them?
 /**
  * Source information on a construct (class fqn and version)
  */

@@ -49,7 +49,7 @@ const EXPERIMENTAL_MODULE_AFFECTED_NOTICE = {
   issueNumber: 1234,
   overview: 'Some bug description',
   components: [{
-    name: '@aws-cdk/aws-apigatewayv2-alpha.*',
+    name: '@aws-cdk/aws-apigatewayv2-alpha',
     version: '<= 2.13.0-alpha.0',
   }],
   schemaVersion: '1',
@@ -109,14 +109,6 @@ describe('cli notices', () => {
 
     test('correctly filter notices on framework', () => {
       const notices = [FRAMEWORK_2_1_0_AFFECTED_NOTICE];
-
-      expect(filterNotices(notices, {
-        frameworkVersion: '2.0.0',
-      })).toEqual([FRAMEWORK_2_1_0_AFFECTED_NOTICE]);
-
-      expect(filterNotices(notices, {
-        frameworkVersion: '2.2.0',
-      })).toEqual([]);
 
       expect(filterNotices(notices, {
         outdir: path.join(__dirname, 'cloud-assembly-trees/built-with-2_12_0'),
