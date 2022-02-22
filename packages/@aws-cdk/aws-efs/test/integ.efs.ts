@@ -1,6 +1,6 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
-import { FileSystem, LifecyclePolicy, OutOfInfrequentAccessPolicy } from '../lib';
+import { FileSystem } from '../lib';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'test-efs-integ');
@@ -9,8 +9,6 @@ const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 3, natGateways: 1 });
 
 const fileSystem = new FileSystem(stack, 'FileSystem', {
   vpc,
-  lifecyclePolicy: LifecyclePolicy.AFTER_7_DAYS,
-  outOfInfrequentAccessPolicy: OutOfInfrequentAccessPolicy.AFTER_1_ACCESS,
 });
 
 fileSystem.addAccessPoint('AccessPoint', {
