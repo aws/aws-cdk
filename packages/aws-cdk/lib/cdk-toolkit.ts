@@ -16,7 +16,7 @@ import { CloudWatchLogEventMonitor } from './api/logs/logs-monitor';
 import { StackActivityProgress } from './api/util/cloudformation/stack-activity-monitor';
 import { printSecurityDiff, printStackDiff, RequireApproval } from './diff';
 import { data, debug, error, highlight, print, success, warning } from './logging';
-import { deserializeStructure } from './serialize';
+import { deserializeStructure, serializeStructure } from './serialize';
 import { Configuration, PROJECT_CONFIG } from './settings';
 import { numberFromBool, partition } from './util';
 
@@ -74,9 +74,16 @@ export class CdkToolkit {
   constructor(private readonly props: CdkToolkitProps) {
   }
 
-  public async metadata(stackName: string) {
+  public async metadata(stackName: string, json: boolean) {
     const stacks = await this.selectSingleStackByName(stackName);
-    return stacks.firstStack.manifest.metadata ?? {};
+    data(serializeStructure(stacks.firstStack.manifest.metadata ?? {}, json));
+  }
+
+  public async acknowledge(noticeId: string) {
+    const acks = this.props.configuration.context.get('acknowledged-issue-numbers') ?? [];
+    acks.push(Number(noticeId));
+    this.props.configuration.context.set('acknowledged-issue-numbers', acks);
+    await this.props.configuration.saveContext();
   }
 
   public async diff(options: DiffOptions): Promise<number> {
@@ -384,7 +391,7 @@ export class CdkToolkit {
     }
   }
 
-  public async list(selectors: string[], options: { long?: boolean } = { }) {
+  public async list(selectors: string[], options: { long?: boolean, json?: boolean } = { }): Promise<number> {
     const stacks = await this.selectStacksForList(selectors);
 
     // if we are in "long" mode, emit the array as-is (JSON/YAML)
@@ -397,7 +404,8 @@ export class CdkToolkit {
           environment: stack.environment,
         });
       }
-      return long; // will be YAML formatted output
+      data(serializeStructure(long, options.json ?? false));
+      return 0;
     }
 
     // just print stack IDs
@@ -417,13 +425,13 @@ export class CdkToolkit {
    * OUTPUT: If more than one stack ends up being selected, an output directory
    * should be supplied, where the templates will be written.
    */
-  public async synth(stackNames: string[], exclusively: boolean, quiet: boolean, autoValidate?: boolean): Promise<any> {
+  public async synth(stackNames: string[], exclusively: boolean, quiet: boolean, autoValidate?: boolean, json?: boolean): Promise<any> {
     const stacks = await this.selectStacksForDiff(stackNames, exclusively, autoValidate);
 
     // if we have a single stack, print it to STDOUT
     if (stacks.stackCount === 1) {
       if (!quiet) {
-        return stacks.firstStack.template;
+        data(serializeStructure(stacks.firstStack.template, json ?? false));
       }
       return undefined;
     }
@@ -437,7 +445,7 @@ export class CdkToolkit {
     // behind an environment variable.
     const isIntegMode = process.env.CDK_INTEG_MODE === '1';
     if (isIntegMode) {
-      return stacks.stackArtifacts.map(s => s.template);
+      data(serializeStructure(stacks.stackArtifacts.map(s => s.template), json ?? false));
     }
 
     // not outputting template to stdout, let's explain things to the user a little bit...
