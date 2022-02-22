@@ -42,6 +42,25 @@ This is what happens under the hood:
    `websiteBucket`). If there is more than one source, the sources will be
    downloaded and merged pre-deployment at this step.
 
+If you are referencing the filled bucket in another construct that depends on
+the files already be there, be sure to use `deployment.deployedBucket`. This
+will ensure the bucket deployment has finished before the resource that uses
+the bucket is created:
+
+```ts
+declare const websiteBucket: s3.Bucket;
+
+const deployment = new s3deploy.BucketDeployment(this, 'DeployWebsite', {
+  sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+  destinationBucket: websiteBucket,
+});
+
+new ConstructThatReadsFromTheBucket(this, 'Consumer', {
+  // Use 'deployment.deployedBucket' instead of 'websiteBucket' here
+  bucket: deployment.deployedBucket,
+});
+```
+
 ## Supported sources
 
 The following source types are supported for bucket deployments:
@@ -302,7 +321,7 @@ substituting it when its deployed to the destination with the actual value.
 
 ## Notes
 
-- This library uses an AWS CloudFormation custom resource which about 10MiB in
+- This library uses an AWS CloudFormation custom resource which is about 10MiB in
   size. The code of this resource is bundled with this library.
 - AWS Lambda execution time is limited to 15min. This limits the amount of data
   which can be deployed into the bucket by this timeout.
