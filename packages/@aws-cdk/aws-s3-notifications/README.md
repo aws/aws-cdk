@@ -26,6 +26,18 @@ const topic = new sns.Topic(this, 'Topic');
 bucket.addEventNotification(s3.EventType.OBJECT_CREATED_PUT, new s3n.SnsDestination(topic));
 ```
 
+The following example shows how to send a notification to an SQS queue
+when an object is created in an S3 bucket:
+
+```ts
+import * as sqs from '@aws-cdk/aws-sqs';
+
+const bucket = new s3.Bucket(this, 'Bucket');
+const queue = new sqs.Queue(this, 'Queue');
+
+bucket.addEventNotification(s3.EventType.OBJECT_CREATED_PUT, new s3n.SqsDestination(queue));
+```
+
 The following example shows how to send a notification to a Lambda function when an object is created in an S3 bucket:
 
 ```ts
