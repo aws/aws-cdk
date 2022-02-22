@@ -71,13 +71,12 @@ Usage: node-bundle COMMAND
 
 Commands:
   node-bundle validate  Validate the package is ready for bundling
-  node-bundle write     Write the bundled version of the project to a temp directory
+  node-bundle write     Write the bundled version of the project to a temp
+                        directory
   node-bundle pack      Write the bundle and create the tarball
 
 Options:
-  --entrypoint      List of entrypoints to bundle             [array] [required]
-  --copyright       Copyright statement to be added to the notice file
-                                                             [string] [required]
+  --entrypoint      List of entrypoints to bundle                        [array]
   --external        Packages in this list will be excluded from the bundle and
                     added as dependencies (example: fsevents:optional)
                                                            [array] [default: []]
@@ -92,7 +91,6 @@ Options:
                     created                                             [string]
   --help            Show help                                          [boolean]
   --version         Show version number                                [boolean]
-
 ```
 
 You can also use the programmatic access:
@@ -102,13 +100,25 @@ import { Bundle } from '@aws-cdk/node-bundle';
 
 const bundle = new Bundle({
   packageDir: process.cwd(),
-  copyright: 'Copyright 2018-2022 Amazon.com, Inc. or its affiliates. All Rights Reserved.',
-  entrypoints: ['lib/cli.js'],
   licenses: ['Apache-2.0', 'MIT'],
 });
 
 bundle.pack();
 ```
+
+### Integrate with your build process
+
+We recommend to integrate this tool in the following way:
+
+1. Add a `node-bundle validate` command as a post compile step.
+2. Set your packaging command to `node-bundle pack`.
+
+This way, local dev builds will be validated not to break any functionality needed for bundling.
+In addition, developers can run `node-bundle validate --fix` to automatically fix any (fixable) violations
+and commit that to source code.
+
+For example, if a dependency is added but the attribution file has not been re-generated,
+`validate` will catch this, and `validate --fix` will regenerate it.
 
 ## Take into account
 
