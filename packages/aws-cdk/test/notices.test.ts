@@ -44,6 +44,17 @@ const FRAMEWORK_2_1_0_AFFECTED_NOTICE = {
   schemaVersion: '1',
 };
 
+const EXPERIMENTAL_MODULE_AFFECTED_NOTICE = {
+  title: 'Regression on module foobar',
+  issueNumber: 1234,
+  overview: 'Some bug description',
+  components: [{
+    name: '@aws-cdk/aws-apigatewayv2-alpha.*',
+    version: '<= 2.13.0-alpha.0',
+  }],
+  schemaVersion: '1',
+};
+
 describe('cli notices', () => {
   describe(formatNotices, () => {
     test('correct format', () => {
@@ -115,6 +126,19 @@ describe('cli notices', () => {
         outdir: path.join(__dirname, 'cloud-assembly-trees/built-with-1_144_0'),
       })).toEqual([FRAMEWORK_2_1_0_AFFECTED_NOTICE]);
     });
+
+    test('correctly filter notices on arbitrary modules', () => {
+      const notices = [EXPERIMENTAL_MODULE_AFFECTED_NOTICE];
+
+      expect(filterNotices(notices, {
+        outdir: path.join(__dirname, 'cloud-assembly-trees/experimental-module'),
+      })).toEqual([EXPERIMENTAL_MODULE_AFFECTED_NOTICE]);
+
+      expect(filterNotices(notices, {
+        outdir: path.join(__dirname, 'cloud-assembly-trees/built-with-2_12_0'),
+      })).toEqual([]);
+    });
+
   });
 
   describe(WebsiteNoticeDataSource, () => {

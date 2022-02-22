@@ -1,6 +1,7 @@
 import * as https from 'https';
 import * as path from 'path';
 import * as fs from 'fs-extra';
+import * as minimatch from 'minimatch';
 import * as semver from 'semver';
 import { debug, print } from './logging';
 import { cdkCacheDir } from './util/directories';
@@ -77,6 +78,7 @@ export function filterNotices(data: Notice[], options: FilterNoticeOptions): Not
     cliVersion: options.cliVersion ?? versionNumber(),
     frameworkVersion: options.frameworkVersion ?? frameworkVersion(options.outdir ?? 'cdk.out'),
     acknowledgedIssueNumbers: options.acknowledgedIssueNumbers ?? new Set(),
+    tree: loadTree(options.outdir ?? 'cdk.out').tree,
   });
   return data.filter(notice => filter.apply(notice));
 }
@@ -190,6 +192,7 @@ export interface NoticeFilterProps {
   cliVersion: string,
   frameworkVersion: string | undefined,
   acknowledgedIssueNumbers: Set<number>,
+  tree: Node,
 }
 
 export class NoticeFilter {
@@ -206,8 +209,10 @@ export class NoticeFilter {
     if (this.acknowledgedIssueNumbers.has(notice.issueNumber)) {
       return false;
     }
+    // TODO Unify these three calls in a single call to match
     return this.applyVersion(notice, 'cli', this.props.cliVersion) ||
-      this.applyVersion(notice, 'framework', this.props.frameworkVersion);
+      this.applyVersion(notice, 'framework', this.props.frameworkVersion) ||
+      match(notice.components, this.props.tree);
   }
 
   /**
@@ -244,21 +249,73 @@ function formatOverview(text: string) {
   return '\t' + heading + content;
 }
 
+/**
+ * Whether any component in the tree matches any component in the query.
+ */
+function match(query: Component[], tree: Node): boolean {
+  return some(tree, node => {
+    return query.some(component =>
+      node.constructInfo?.fqn != null &&
+      minimatch(node.constructInfo.fqn, component.name) &&
+      semver.satisfies(node.constructInfo?.version ?? '', component.version));
+  });
+}
+
 function frameworkVersion(outdir: string): string | undefined {
-  const tree = loadTree().tree;
+  const tree = loadTree(outdir).tree;
 
   if (tree?.constructInfo?.fqn.startsWith('aws-cdk-lib')
     || tree?.constructInfo?.fqn.startsWith('@aws-cdk/core')) {
     return tree.constructInfo.version;
   }
   return undefined;
+}
 
-  function loadTree() {
-    try {
-      return fs.readJSONSync(path.join(outdir, 'tree.json'));
-    } catch (e) {
-      debug(`Failed to get tree.json file: ${e}`);
-      return {};
+function loadTree(outdir: string) {
+  try {
+    return fs.readJSONSync(path.join(outdir, 'tree.json'));
+  } catch (e) {
+    debug(`Failed to get tree.json file: ${e}`);
+    return {};
+  }
+}
+
+// TODO The classes below are a duplication of the classes found in core. Should we merge them?
+/**
+ * Source information on a construct (class fqn and version)
+ */
+interface ConstructInfo {
+  readonly fqn: string;
+  readonly version: string;
+}
+
+/**
+ * A node in the construct tree.
+ * @internal
+ */
+interface Node {
+  readonly id: string;
+  readonly path: string;
+  readonly children?: { [key: string]: Node };
+  readonly attributes?: { [key: string]: any };
+
+  /**
+   * Information on the construct class that led to this node, if available
+   */
+  readonly constructInfo?: ConstructInfo;
+}
+
+function some(node: Node, predicate: (n: Node) => boolean): boolean {
+  return node != null && (predicate(node) || findInChildren());
+
+  function findInChildren(): boolean {
+    if (node.children == null) { return false; }
+
+    for (const name in node.children) {
+      if (some(node.children[name], predicate)) {
+        return true;
+      }
     }
+    return false;
   }
 }
