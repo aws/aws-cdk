@@ -10,6 +10,7 @@ import {
   Notice,
   WebsiteNoticeDataSource,
 } from '../lib/notices';
+import * as version from '../lib/version';
 
 const BASIC_NOTICE = {
   title: 'Toggling off auto_delete_objects for Bucket empties the bucket',
@@ -45,6 +46,16 @@ const FRAMEWORK_2_1_0_AFFECTED_NOTICE = {
 };
 
 describe('cli notices', () => {
+  beforeAll(() => {
+    jest
+      .spyOn(version, 'versionNumber')
+      .mockImplementation(() => '1.0.0');
+  });
+
+  afterAll(() => {
+    jest.restoreAllMocks();
+  });
+
   describe(formatNotices, () => {
     test('correct format', () => {
       const result = formatNotices([BASIC_NOTICE])[0];
