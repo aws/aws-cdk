@@ -45,6 +45,39 @@ const FRAMEWORK_2_1_0_AFFECTED_NOTICE = {
   schemaVersion: '1',
 };
 
+const NOTICE_FOR_APIGATEWAYV2 = {
+  title: 'Regression on module foobar',
+  issueNumber: 1234,
+  overview: 'Some bug description',
+  components: [{
+    name: '@aws-cdk/aws-apigatewayv2-alpha.',
+    version: '<= 2.13.0-alpha.0',
+  }],
+  schemaVersion: '1',
+};
+
+const NOTICE_FOR_APIGATEWAY = {
+  title: 'Regression on module foobar',
+  issueNumber: 1234,
+  overview: 'Some bug description',
+  components: [{
+    name: '@aws-cdk/aws-apigateway',
+    version: '<= 2.13.0-alpha.0',
+  }],
+  schemaVersion: '1',
+};
+
+const NOTICE_FOR_APIGATEWAYV2_CFN_STAGE = {
+  title: 'Regression on module foobar',
+  issueNumber: 1234,
+  overview: 'Some bug description',
+  components: [{
+    name: 'aws-cdk-lib.aws_apigatewayv2.CfnStage',
+    version: '<= 2.13.0-alpha.0',
+  }],
+  schemaVersion: '1',
+};
+
 describe('cli notices', () => {
   beforeAll(() => {
     jest
@@ -111,14 +144,6 @@ describe('cli notices', () => {
       const notices = [FRAMEWORK_2_1_0_AFFECTED_NOTICE];
 
       expect(filterNotices(notices, {
-        frameworkVersion: '2.0.0',
-      })).toEqual([FRAMEWORK_2_1_0_AFFECTED_NOTICE]);
-
-      expect(filterNotices(notices, {
-        frameworkVersion: '2.2.0',
-      })).toEqual([]);
-
-      expect(filterNotices(notices, {
         outdir: path.join(__dirname, 'cloud-assembly-trees/built-with-2_12_0'),
       })).toEqual([]);
 
@@ -126,6 +151,31 @@ describe('cli notices', () => {
         outdir: path.join(__dirname, 'cloud-assembly-trees/built-with-1_144_0'),
       })).toEqual([FRAMEWORK_2_1_0_AFFECTED_NOTICE]);
     });
+
+    test('correctly filter notices on arbitrary modules', () => {
+      const notices = [NOTICE_FOR_APIGATEWAYV2];
+
+      // module-level match
+      expect(filterNotices(notices, {
+        outdir: path.join(__dirname, 'cloud-assembly-trees/experimental-module'),
+      })).toEqual([NOTICE_FOR_APIGATEWAYV2]);
+
+      // no apigatewayv2 in the tree
+      expect(filterNotices(notices, {
+        outdir: path.join(__dirname, 'cloud-assembly-trees/built-with-2_12_0'),
+      })).toEqual([]);
+
+      // module name mismatch: apigateway != apigatewayv2
+      expect(filterNotices([NOTICE_FOR_APIGATEWAY], {
+        outdir: path.join(__dirname, 'cloud-assembly-trees/experimental-module'),
+      })).toEqual([]);
+
+      // construct-level match
+      expect(filterNotices([NOTICE_FOR_APIGATEWAYV2_CFN_STAGE], {
+        outdir: path.join(__dirname, 'cloud-assembly-trees/experimental-module'),
+      })).toEqual([NOTICE_FOR_APIGATEWAYV2_CFN_STAGE]);
+    });
+
   });
 
   describe(WebsiteNoticeDataSource, () => {

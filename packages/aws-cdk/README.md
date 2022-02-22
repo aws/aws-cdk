@@ -507,8 +507,6 @@ $ cdk doctor
 
 ## Notices
 
-> This feature exists on CDK CLI version 2.14.0 and up.
-
 CDK Notices are important messages regarding security vulnerabilities, regressions, and usage of unsupported
 versions. Relevant notices appear on every command by default. For example,
 
@@ -530,6 +528,7 @@ NOTICES
 
         More information at: https://github.com/aws/aws-cdk/issues/16603
 
+
 17061   Error when building EKS cluster with monocdk import
 
         Overview: When using monocdk/aws-eks to build a stack containing
@@ -539,6 +538,7 @@ NOTICES
         Affected versions: >=1.126.0 <=1.130.0.
 
         More information at: https://github.com/aws/aws-cdk/issues/17061 
+
 
 If you don’t want to see an notice anymore, use "cdk acknowledge ID". For example, "cdk acknowledge 16603".
 ```
@@ -553,8 +553,9 @@ You can suppress warnings in a variety of ways:
 
   ```json
   {
+    "notices": false,
     "context": {
-      "notices": false
+      ...
     }
   }
   ```
@@ -587,11 +588,15 @@ NOTICES
 
 16603   Toggling off auto_delete_objects for Bucket empties the bucket
 
-        Overview: if a stack is deployed with an S3 bucket with auto_delete_objects=True, and then re-deployed with auto_delete_objects=False, all the objects in the bucket will be deleted.
+        Overview: if a stack is deployed with an S3 bucket with 
+                  auto_delete_objects=True, and then re-deployed with 
+                  auto_delete_objects=False, all the objects in the bucket 
+                  will be deleted.
 
         Affected versions: framework: <=2.15.0 >=2.10.0
 
         More information at: https://github.com/aws/aws-cdk/issues/16603
+
 
 If you don’t want to see a notice anymore, use "cdk acknowledge <id>". For example, "cdk acknowledge 16603".
 ```

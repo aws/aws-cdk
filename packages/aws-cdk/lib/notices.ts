@@ -3,6 +3,7 @@ import * as path from 'path';
 import * as fs from 'fs-extra';
 import * as semver from 'semver';
 import { debug, print } from './logging';
+import { flatMap } from './util';
 import { cdkCacheDir } from './util/directories';
 import { versionNumber } from './version';
 
@@ -75,8 +76,8 @@ export interface FilterNoticeOptions {
 export function filterNotices(data: Notice[], options: FilterNoticeOptions): Notice[] {
   const filter = new NoticeFilter({
     cliVersion: options.cliVersion ?? versionNumber(),
-    frameworkVersion: options.frameworkVersion ?? frameworkVersion(options.outdir ?? 'cdk.out'),
     acknowledgedIssueNumbers: options.acknowledgedIssueNumbers ?? new Set(),
+    tree: loadTree(options.outdir ?? 'cdk.out').tree,
   });
   return data.filter(notice => filter.apply(notice));
 }
@@ -188,8 +189,8 @@ export class CachedDataSource implements NoticeDataSource {
 
 export interface NoticeFilterProps {
   cliVersion: string,
-  frameworkVersion: string | undefined,
   acknowledgedIssueNumbers: Set<number>,
+  tree: ConstructTreeNode,
 }
 
 export class NoticeFilter {
@@ -206,8 +207,9 @@ export class NoticeFilter {
     if (this.acknowledgedIssueNumbers.has(notice.issueNumber)) {
       return false;
     }
+
     return this.applyVersion(notice, 'cli', this.props.cliVersion) ||
-      this.applyVersion(notice, 'framework', this.props.frameworkVersion);
+      match(resolveAliases(notice.components), this.props.tree);
   }
 
   /**
@@ -220,6 +222,32 @@ export class NoticeFilter {
     const affectedRange = affectedComponent?.version;
     return affectedRange != null && semver.satisfies(compareToVersion, affectedRange);
   }
+}
+
+/**
+ * Some component names are aliases to actual component names. For example "framework"
+ * is an alias for either the core library (v1) or the whole CDK library (v2).
+ *
+ * This function converts all aliases to their actual counterpart names, to be used to
+ * match against the construct tree.
+ *
+ * @param components a list of components. Components whose name is an alias will be
+ * transformed and all others will be left intact.
+ */
+function resolveAliases(components: Component[]): Component[] {
+  return flatMap(components, component => {
+    if (component.name === 'framework') {
+      return [{
+        name: '@aws-cdk/core.',
+        version: component.version,
+      }, {
+        name: 'aws-cdk-lib.',
+        version: component.version,
+      }];
+    } else {
+      return [component];
+    }
+  });
 }
 
 function formatNotice(notice: Notice): string {
@@ -244,21 +272,77 @@ function formatOverview(text: string) {
   return '\t' + heading + content;
 }
 
-function frameworkVersion(outdir: string): string | undefined {
-  const tree = loadTree().tree;
+/**
+ * Whether any component in the tree matches any component in the query.
+ * A match happens when:
+ *
+ * 1. The version of the node matches the version in the query, interpreted
+ * as a semver range.
+ *
+ * 2. The name in the query is a prefix of the node name when the query ends in '.',
+ * or the two names are exactly the same, otherwise.
+ */
+function match(query: Component[], tree: ConstructTreeNode): boolean {
+  return some(tree, node => {
+    return query.some(component =>
+      compareNames(component.name, node.constructInfo?.fqn) &&
+      compareVersions(component.version, node.constructInfo?.version));
+  });
 
-  if (tree?.constructInfo?.fqn.startsWith('aws-cdk-lib')
-    || tree?.constructInfo?.fqn.startsWith('@aws-cdk/core')) {
-    return tree.constructInfo.version;
+  function compareNames(pattern: string, target: string | undefined): boolean {
+    if (target == null) { return false; }
+    return pattern.endsWith('.') ? target.startsWith(pattern) : pattern === target;
   }
-  return undefined;
 
-  function loadTree() {
-    try {
-      return fs.readJSONSync(path.join(outdir, 'tree.json'));
-    } catch (e) {
-      debug(`Failed to get tree.json file: ${e}`);
-      return {};
+  function compareVersions(pattern: string, target: string | undefined): boolean {
+    return semver.satisfies(target ?? '', pattern);
+  }
+}
+
+function loadTree(outdir: string) {
+  try {
+    return fs.readJSONSync(path.join(outdir, 'tree.json'));
+  } catch (e) {
+    debug(`Failed to get tree.json file: ${e}`);
+    return {};
+  }
+}
+
+/**
+ * Source information on a construct (class fqn and version)
+ */
+interface ConstructInfo {
+  readonly fqn: string;
+  readonly version: string;
+}
+
+/**
+ * A node in the construct tree.
+ * @internal
+ */
+interface ConstructTreeNode {
+  readonly id: string;
+  readonly path: string;
+  readonly children?: { [key: string]: ConstructTreeNode };
+  readonly attributes?: { [key: string]: any };
+
+  /**
+   * Information on the construct class that led to this node, if available
+   */
+  readonly constructInfo?: ConstructInfo;
+}
+
+function some(node: ConstructTreeNode, predicate: (n: ConstructTreeNode) => boolean): boolean {
+  return node != null && (predicate(node) || findInChildren());
+
+  function findInChildren(): boolean {
+    if (node.children == null) { return false; }
+
+    for (const name in node.children) {
+      if (some(node.children[name], predicate)) {
+        return true;
+      }
     }
+    return false;
   }
 }
