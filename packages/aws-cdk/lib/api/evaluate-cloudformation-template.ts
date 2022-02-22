@@ -43,7 +43,8 @@ export interface ResourceDefinition {
 }
 
 export interface EvaluateCloudFormationTemplateProps {
-  readonly stackArtifact: cxapi.CloudFormationStackArtifact;
+  readonly stackArtifact?: cxapi.CloudFormationStackArtifact;
+  readonly stackTemplate?: { [section: string]: { [headings: string]: any } };
   readonly parameters: { [parameterName: string]: string };
   readonly account: string;
   readonly region: string;
@@ -64,7 +65,11 @@ export class EvaluateCloudFormationTemplate {
 
   constructor(props: EvaluateCloudFormationTemplateProps) {
     this.stackResources = props.listStackResources;
-    this.template = props.stackArtifact.template;
+
+    if (!props.stackArtifact && !props.stackTemplate) {
+      throw new Error('one of `stackTemplate` or `stackArtifact` must be defined');
+    }
+    this.template = props.stackArtifact?.template ?? props.stackTemplate;
     this.context = {
       'AWS::AccountId': props.account,
       'AWS::Region': props.region,
@@ -78,11 +83,13 @@ export class EvaluateCloudFormationTemplate {
   }
 
   // clones current EvaluateCloudFormationTemplate object, but updates the stack name
-  public createNestedEvaluateCloudFormationTemplate(listNestedStackResources: LazyListStackResources,
-    rootStackArtifact: cxapi.CloudFormationStackArtifact, nestedStackParameters: {[key:string]: any},
+  public createNestedEvaluateCloudFormationTemplate(
+    listNestedStackResources: LazyListStackResources,
+    nestedTemplate: { [section: string]: { [headings: string]: any } },
+    nestedStackParameters: { [key:string]: any },
   ) {
     return new EvaluateCloudFormationTemplate({
-      stackArtifact: rootStackArtifact,
+      stackTemplate: nestedTemplate,
       parameters: nestedStackParameters,
       account: this.account,
       region: this.region,

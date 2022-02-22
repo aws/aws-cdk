@@ -3,7 +3,9 @@ import { testStack } from '../../util';
 import * as setup from './hotswap-test-setup';
 
 let mockUpdateLambdaCode: (params: Lambda.Types.UpdateFunctionCodeRequest) => Lambda.Types.FunctionConfiguration;
+let mockPublishVersion: jest.Mock<Lambda.FunctionConfiguration, Lambda.PublishVersionRequest[]>;
 let hotswapMockSdkProvider: setup.HotswapMockSdkProvider;
+/*
 
 test('can hotswap a lambda function in a 1-level nested stack', async () => {
   // GIVEN
@@ -900,5 +902,74 @@ test('can hotswap a lambda function in a 2-level nested stack with asset paramet
     FunctionName: 'my-function',
     S3Bucket: 'child-bucket-param-value',
     S3Key: 'child-key-param-value',
+  });
+});
+*/
+test('looking up objects in nested stacks works', async () => {
+  hotswapMockSdkProvider = setup.setupHotswapNestedStackTests('LambdaRoot');
+  mockUpdateLambdaCode = jest.fn().mockReturnValue({});
+  mockPublishVersion = jest.fn();
+  hotswapMockSdkProvider.stubLambda({
+    updateFunctionCode: mockUpdateLambdaCode,
+    publishVersion: mockPublishVersion,
+  });
+
+  const rootStack = testStack({
+    stackName: 'LambdaRoot',
+    template: {
+      Resources: {
+        NestedStack: {
+          Type: 'AWS::CloudFormation::Stack',
+          Properties: {
+            TemplateURL: 'https://www.magic-url.com',
+          },
+          Metadata: {
+            'aws:asset:path': 'one-lambda-version-stack.nested.template.json',
+          },
+        },
+      },
+    },
+  });
+
+  setup.addTemplateToCloudFormationLookupMock(rootStack);
+  setup.addTemplateToCloudFormationLookupMock(testStack({
+    stackName: 'NestedStack',
+    template: {
+      Resources: {
+        Func: {
+          Type: 'AWS::Lambda::Function',
+          Properties: {
+            Code: {
+              S3Bucket: 'current-bucket',
+              S3Key: 'current-key',
+            },
+            FunctionName: 'my-function',
+          },
+        },
+        Version: {
+          Type: 'AWS::Lambda::Version',
+          Properties: {
+            FunctionName: { Ref: 'Func' },
+          },
+        },
+      },
+    },
+  }));
+
+  setup.pushNestedStackResourceSummaries('LambdaRoot',
+    setup.stackSummaryOf('NestedStack', 'AWS::CloudFormation::Stack',
+      'arn:aws:cloudformation:bermuda-triangle-1337:123456789012:stack/NestedStack/abcd',
+    ),
+  );
+
+  const cdkStackArtifact = testStack({ stackName: 'LambdaRoot', template: rootStack.template });
+
+  // WHEN
+  const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(cdkStackArtifact);
+
+  // THEN
+  expect(deployStackResult).not.toBeUndefined();
+  expect(mockPublishVersion).toHaveBeenCalledWith({
+    FunctionName: 'my-function',
   });
 });

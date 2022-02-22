@@ -91,10 +91,14 @@ async function findAllHotswappableChanges(
     }
 
     const nestedStackName = nestedStackNames[logicalId].stackName;
-    const evaluateNestedCfnTemplate = nestedStackName
-      ? evaluateCfnTemplate.createNestedEvaluateCloudFormationTemplate(new LazyListStackResources(sdk, nestedStackName),
-        rootStackArtifact, nestedStackParameters)
-      : evaluateCfnTemplate;
+    // the stack name could not be found in CFN, so this is a newly created nested stack
+    if (!nestedStackName) {
+      return undefined;
+    }
+
+    const evaluateNestedCfnTemplate = evaluateCfnTemplate.createNestedEvaluateCloudFormationTemplate(
+      new LazyListStackResources(sdk, nestedStackName), change.newValue?.Properties?.NestedTemplate, nestedStackParameters,
+    );
 
     const nestedDiff = cfn_diff.diffTemplate(change.oldValue?.Properties?.NestedTemplate, change.newValue?.Properties?.NestedTemplate);
     const nestedHotswappableResources = await findAllHotswappableChanges(nestedDiff, evaluateNestedCfnTemplate, sdk,
