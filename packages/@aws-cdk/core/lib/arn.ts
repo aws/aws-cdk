@@ -417,8 +417,6 @@ function parseArnShape(arn: string): 'token' | string[] {
   // Tokens won't contain ":", so this won't break them.
   const components = arn.split(':');
 
-  // const [/* arn */, partition, service, /* region */ , /* account */ , resource] = components;
-
   const partition = components.length > 1 ? components[1] : undefined;
   if (!partition) {
     throw new Error('The `partition` component (2nd component) of an ARN is required: ' + arn);
