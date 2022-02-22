@@ -635,8 +635,11 @@ You can access your Aurora Serverless DB cluster using the built-in Data API. Th
 The following example shows granting Data API access to a Lamba function.
 
 ```ts
+declare const vpc: ec2.Vpc;
+
 const cluster = new rds.ServerlessCluster(this, 'AnotherCluster', {
   engine: rds.DatabaseClusterEngine.AURORA_MYSQL,
+  vpc, // this parameter is optional for serverless Clusters
   enableDataApi: true, // Optional - will be automatically set if you call grantDataApiAccess()
 });
 
