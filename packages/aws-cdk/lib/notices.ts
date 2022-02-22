@@ -31,7 +31,7 @@ export interface DisplayNoticesProps {
 }
 
 export async function refreshNotices() {
-  const dataSource = dataSourceReference(true);
+  const dataSource = dataSourceReference(false);
   return dataSource.fetch();
 }
 
