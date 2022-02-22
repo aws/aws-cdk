@@ -10,6 +10,7 @@ import {
   Notice,
   WebsiteNoticeDataSource,
 } from '../lib/notices';
+import * as version from '../lib/version';
 
 const BASIC_NOTICE = {
   title: 'Toggling off auto_delete_objects for Bucket empties the bucket',
@@ -78,6 +79,16 @@ const NOTICE_FOR_APIGATEWAYV2_CFN_STAGE = {
 };
 
 describe('cli notices', () => {
+  beforeAll(() => {
+    jest
+      .spyOn(version, 'versionNumber')
+      .mockImplementation(() => '1.0.0');
+  });
+
+  afterAll(() => {
+    jest.restoreAllMocks();
+  });
+
   describe(formatNotices, () => {
     test('correct format', () => {
       const result = formatNotices([BASIC_NOTICE])[0];
