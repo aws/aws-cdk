@@ -499,9 +499,9 @@ export interface LaunchTemplateOverrides {
    * capacity units count toward the desired capacity. Amazon EC2 Auto Scaling provisions instances until the desired
    * capacity is totally fulfilled, even if this results in an overage. Value must be in the range of 1 to 999.
    *
-   * @example If there are 2 units remaining to fulfill capacity, and Amazon EC2 Auto Scaling can only provision an
-   *          instance with a WeightedCapacity of 5 units, the instance is provisioned, and the desired capacity is
-   *          exceeded by 3 units.
+   * For example, If there are 2 units remaining to fulfill capacity, and Amazon EC2 Auto Scaling can only provision
+   * an instance with a WeightedCapacity of 5 units, the instance is provisioned, and the desired capacity is exceeded
+   * by 3 units.
    *
    * @see https://docs.aws.amazon.com/autoscaling/ec2/userguide/asg-instance-weighting.html
    *
