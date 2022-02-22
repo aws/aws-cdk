@@ -153,6 +153,7 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
         partialBuildSpec: step.partialBuildSpec,
         vpc: step.vpc,
         subnetSelection: step.subnetSelection,
+        cache: step.cache,
         timeout: step.timeout,
       }),
     });
@@ -290,6 +291,7 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
       vpc: projectOptions.vpc,
       subnetSelection: projectOptions.subnetSelection,
       securityGroups: projectOptions.securityGroups,
+      cache: projectOptions.cache,
       buildSpec: projectBuildSpec,
       role: this.props.role,
       timeout: projectOptions.timeout,
@@ -409,6 +411,7 @@ export function mergeCodeBuildOptions(...opts: Array<CodeBuildOptions | undefine
       vpc: b.vpc ?? a.vpc,
       subnetSelection: b.subnetSelection ?? a.subnetSelection,
       timeout: b.timeout ?? a.timeout,
+      cache: b.cache ?? a.cache,
     };
   }
 }
