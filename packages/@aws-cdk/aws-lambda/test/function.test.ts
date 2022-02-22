@@ -12,6 +12,7 @@ import * as sns from '@aws-cdk/aws-sns';
 import * as sqs from '@aws-cdk/aws-sqs';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
+import { Intrinsic, Token } from '@aws-cdk/core';
 import * as constructs from 'constructs';
 import * as _ from 'lodash';
 import * as lambda from '../lib';
@@ -295,6 +296,42 @@ describe('function', () => {
     // THEN
     expect(imported.functionArn).toEqual('arn:aws:lambda:us-east-1:123456789012:function:ProcessKinesisRecords');
     expect(imported.functionName).toEqual('ProcessKinesisRecords');
+  });
+
+  test('Function.fromFunctionName', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const imported = lambda.Function.fromFunctionName(stack, 'Imported', 'my-function');
+
+    // THEN
+    expect(stack.resolve(imported.functionArn)).toStrictEqual({
+      'Fn::Join': ['', [
+        'arn:',
+        { Ref: 'AWS::Partition' },
+        ':lambda:',
+        { Ref: 'AWS::Region' },
+        ':',
+        { Ref: 'AWS::AccountId' },
+        ':function:my-function',
+      ]],
+    });
+    expect(stack.resolve(imported.functionName)).toStrictEqual({
+      'Fn::Select': [6, {
+        'Fn::Split': [':', {
+          'Fn::Join': ['', [
+            'arn:',
+            { Ref: 'AWS::Partition' },
+            ':lambda:',
+            { Ref: 'AWS::Region' },
+            ':',
+            { Ref: 'AWS::AccountId' },
+            ':function:my-function',
+          ]],
+        }],
+      }],
+    });
   });
 
   describe('Function.fromFunctionAttributes()', () => {
@@ -2403,6 +2440,45 @@ describe('function', () => {
       architecture: lambda.Architecture.ARM_64,
     });
     expect(fn.architecture?.name).toEqual('arm64');
+  });
+
+  test('Error when function name is longer than 64 chars', () => {
+    const stack = new cdk.Stack();
+    expect(() => new lambda.Function(stack, 'MyFunction', {
+      code: lambda.Code.fromInline('foo'),
+      runtime: lambda.Runtime.NODEJS_14_X,
+      handler: 'index.handler',
+      functionName: 'a'.repeat(65),
+    })).toThrow(/Function name can not be longer than 64 characters/);
+  });
+
+  test('Error when function name contains invalid characters', () => {
+    const stack = new cdk.Stack();
+    [' ', '\n', '\r', '[', ']', '<', '>', '$'].forEach(invalidChar => {
+      expect(() => {
+        new lambda.Function(stack, `foo${invalidChar}`, {
+          code: new lambda.InlineCode('foo'),
+          handler: 'index.handler',
+          runtime: lambda.Runtime.NODEJS_14_X,
+          functionName: `foo${invalidChar}`,
+        });
+      }).toThrow(/can contain only letters, numbers, hyphens, or underscores with no spaces./);
+    });
+  });
+
+  test('No error when function name is Tokenized and Unresolved', () => {
+    const stack = new cdk.Stack();
+    expect(() => {
+      const realFunctionName = 'a'.repeat(141);
+      const tokenizedFunctionName = Token.asString(new Intrinsic(realFunctionName));
+
+      new lambda.Function(stack, 'foo', {
+        code: new lambda.InlineCode('foo'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_14_X,
+        functionName: tokenizedFunctionName,
+      });
+    }).not.toThrow();
   });
 });
 

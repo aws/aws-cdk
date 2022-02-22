@@ -24,10 +24,22 @@ const ASSETS_ECR_REPOSITORY_NAME = 'aws-cdk/assets';
 const ASSETS_ECR_REPOSITORY_NAME_OVERRIDE_CONTEXT_KEY = 'assets-ecr-repository-name';
 
 /**
- * Use the original deployment environment
+ * Use the CDK classic way of referencing assets
  *
- * This deployment environment is restricted in cross-environment deployments,
- * CI/CD deployments, and will use up CloudFormation parameters in your template.
+ * This synthesizer will generate CloudFormation parameters for every referenced
+ * asset, and use the CLI's current credentials to deploy the stack.
+ *
+ * - It does not support cross-account deployment (the CLI must have credentials
+ *   to the account you are trying to deploy to).
+ * - It cannot be used with **CDK Pipelines**. To deploy using CDK Pipelines,
+ *   you must use the `DefaultStackSynthesizer`.
+ * - Each asset will take up a CloudFormation Parameter in your template. Keep in
+ *   mind that there is a maximum of 200 parameters in a CloudFormation template.
+ *   To use determinstic asset locations instead, use `CliCredentialsStackSynthesizer`.
+ *
+ * Be aware that your CLI credentials must be valid for the duration of the
+ * entire deployment. If you are using session credentials, make sure the
+ * session lifetime is long enough.
  *
  * This is the only StackSynthesizer that supports customizing asset behavior
  * by overriding `Stack.addFileAsset()` and `Stack.addDockerImageAsset()`.

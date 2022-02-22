@@ -118,7 +118,10 @@ def handler(event, context):
         if distribution_id:
             cloudfront_invalidate(distribution_id, distribution_paths)
 
-        cfn_send(event, context, CFN_SUCCESS, physicalResourceId=physical_id)
+        cfn_send(event, context, CFN_SUCCESS, physicalResourceId=physical_id, responseData={
+            # Passing through the ARN sequences dependencees on the deployment
+            'DestinationBucketArn': props.get('DestinationBucketArn')
+        })
     except KeyError as e:
         cfn_error("invalid request. Missing key %s" % str(e))
     except Exception as e:
