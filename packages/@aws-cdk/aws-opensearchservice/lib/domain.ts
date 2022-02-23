@@ -1686,7 +1686,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
     if (accessPolicyStatements.length > 0) {
       if (!this.accessPolicy) {
         // Only create the custom resource after there are statements to set.
-        this.accessPolicy = new OpenSearchAccessPolicy(this, 'OpenSearchAccessPolicy', {
+        this.accessPolicy = new OpenSearchAccessPolicy(this, 'AccessPolicy', {
           domainName: this.domainName,
           domainArn: this.domainArn,
           accessPolicies: accessPolicyStatements,
