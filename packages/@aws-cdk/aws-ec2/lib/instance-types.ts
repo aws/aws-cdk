@@ -309,6 +309,16 @@ export enum InstanceClass {
   C6I = 'c6i',
 
   /**
+   * Compute optimized instances based on AMD EPYC (codename Milan), 6th generation
+   */
+  COMPUTE6_AMD = 'c6a',
+
+  /**
+   * Compute optimized instances based on AMD EPYC (codename Milan), 6th generation
+   */
+  C6A = 'c6a',
+
+  /**
    * Compute optimized instances with local NVME drive, 5th generation
    */
   COMPUTE5_NVME_DRIVE = 'c5d',
@@ -319,7 +329,7 @@ export enum InstanceClass {
   C5D = 'c5d',
 
   /**
-   * Compute optimized instances based on AMD EPYC, 5th generation.
+   * Compute optimized instances based on AMD EPYC, 5th generation
    */
   COMPUTE5_AMD = 'c5a',
 
@@ -329,12 +339,12 @@ export enum InstanceClass {
   C5A = 'c5a',
 
   /**
-   * Compute optimized instances with local NVME drive based on AMD EPYC, 5th generation.
+   * Compute optimized instances with local NVME drive based on AMD EPYC, 5th generation
    */
   COMPUTE5_AMD_NVME_DRIVE = 'c5ad',
 
   /**
-   * Compute optimized instances with local NVME drive based on AMD EPYC, 5th generation.
+   * Compute optimized instances with local NVME drive based on AMD EPYC, 5th generation
    */
   C5AD = 'c5ad',
 
