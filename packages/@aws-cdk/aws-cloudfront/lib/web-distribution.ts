@@ -10,6 +10,7 @@ import { FunctionAssociation } from './function';
 import { GeoRestriction } from './geo-restriction';
 import { IKeyGroup } from './key-group';
 import { IOriginAccessIdentity } from './origin-access-identity';
+import { IResponseHeadersPolicy } from './response-headers-policy';
 
 /**
  * HTTP status code to failover to second origin
@@ -460,6 +461,13 @@ export interface Behavior {
    * @default - the distribution wide viewer protocol policy will be used
    */
   readonly viewerProtocolPolicy?: ViewerProtocolPolicy;
+
+  /**
+   * The response headers policy for this behavior. The response headers policy determines which headers are included in responses
+   *
+   * @default - none
+   */
+  readonly responseHeadersPolicy?: IResponseHeadersPolicy;
 }
 
 export interface LambdaFunctionAssociation {
@@ -993,6 +1001,7 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
       forwardedValues: input.forwardedValues || { queryString: false, cookies: { forward: 'none' } },
       maxTtl: input.maxTtl && input.maxTtl.toSeconds(),
       minTtl: input.minTtl && input.minTtl.toSeconds(),
+      responseHeadersPolicyId: input.responseHeadersPolicy?.responseHeadersPolicyId,
       trustedKeyGroups: input.trustedKeyGroups?.map(key => key.keyGroupId),
       trustedSigners: input.trustedSigners,
       targetOriginId: input.targetOriginId,

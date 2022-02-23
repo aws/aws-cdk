@@ -15,6 +15,7 @@ import {
   LambdaEdgeEventType,
   OriginAccessIdentity,
   PublicKey,
+  ResponseHeadersPolicy,
   SecurityPolicyProtocol,
   SSLMethod,
   ViewerCertificate,
@@ -409,6 +410,36 @@ added the ellipsis so a user would know there was more to r...`,
 
   });
 
+
+  test('distribution with responce header policy on default distribution', () => {
+    const stack = new cdk.Stack();
+    const sourceBucket = new s3.Bucket(stack, 'Bucket');
+
+
+    new CloudFrontWebDistribution(stack, 'AnAmazingWebsiteProbably', {
+      originConfigs: [
+        {
+          s3OriginSource: {
+            s3BucketSource: sourceBucket,
+          },
+          behaviors: [
+            {
+              isDefaultBehavior: true,
+              responseHeadersPolicy: ResponseHeadersPolicy.SECURITY_HEADERS,
+            },
+          ],
+        },
+      ],
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
+      DistributionConfig: {
+        DefaultCacheBehavior: {
+          ResponseHeadersPolicyId: ResponseHeadersPolicy.SECURITY_HEADERS.responseHeadersPolicyId,
+        },
+      },
+    });
+  })
 
   test('distribution with trusted signers on default distribution', () => {
     const stack = new cdk.Stack();
