@@ -13,7 +13,7 @@ async function buildCommands() {
     .usage('Usage: node-bundle COMMAND')
     .option('entrypoint', { type: 'array', nargs: 1, desc: 'List of entrypoints to bundle' })
     .option('external', { type: 'array', nargs: 1, default: [], desc: 'Packages in this list will be excluded from the bundle and added as dependencies (example: fsevents:optional)' })
-    .option('license', { type: 'array', nargs: 1, default: [], desc: 'List of valid licenses' })
+    .option('allowed-license', { type: 'array', nargs: 1, default: [], desc: 'List of valid licenses' })
     .option('resource', { type: 'array', nargs: 1, default: [], desc: 'List of resources that need to be explicitly copied to the bundle (example: node_modules/proxy-agent/contextify.js:bin/contextify.js)' })
     .option('dont-attribute', { type: 'string', desc: 'Dependencies matching this regular expressions wont be added to the notice file' })
     .option('test', { type: 'string', desc: 'Validation command to sanity test the bundle after its created' })
@@ -33,22 +33,36 @@ async function buildCommands() {
     return arr as string[];
   }
 
-  const entryPointsArg = undefinedIfEmpty(argv.entrypoint);
-  const externalsArg = undefinedIfEmpty(argv.external);
-  const licensesArg = undefinedIfEmpty(argv.license);
-  const resourcesArg = undefinedIfEmpty(argv.resource) ?? [];
-
   const resources: any = {};
-  for (const resource of resourcesArg) {
+  for (const resource of (argv.resource as string[])) {
     const parts = resource.split(':');
     resources[parts[0]] = parts[1];
   }
 
+  const optionalExternals = [];
+  const runtimeExternals = [];
+
+  for (const external of (argv.external as string[])) {
+    const parts = external.split(':');
+    const name = parts[0];
+    const type = parts[1];
+    switch (type) {
+      case 'optional':
+        optionalExternals.push(name);
+        break;
+      case 'runtime':
+        runtimeExternals.push(name);
+        break;
+      default:
+        throw new Error(`Unsupported dependency type '${type}' for external package '${name}'. Supported types are: ['optional', 'runtime']`);
+    }
+  }
+
   const props: BundleProps = {
     packageDir: process.cwd(),
-    entryPoints: entryPointsArg,
-    externals: externalsArg,
-    licenses: licensesArg,
+    entryPoints: undefinedIfEmpty(argv.entrypoint),
+    externals: { dependencies: runtimeExternals, optionalDependencies: optionalExternals },
+    allowedLicenses: undefinedIfEmpty(argv['allowed-license']),
     resources: resources,
     dontAttribute: argv['dont-attribute'],
     test: argv.test,

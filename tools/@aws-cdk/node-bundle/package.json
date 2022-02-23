@@ -1,6 +1,5 @@
 {
   "name": "@aws-cdk/node-bundle",
-  "private": true,
   "bin": {
     "node-bundle": "bin/node-bundle"
   },

@@ -16,7 +16,7 @@ test('validate', () => {
     packageDir: pkg.dir,
     entryPoints: [pkg.entrypoint],
     resources: { missing: 'bin/missing' },
-    licenses: ['Apache-2.0'],
+    allowedLicenses: ['Apache-2.0'],
   });
   const actual = new Set(bundle.validate().violations.map(v => `${v.type}: ${v.message}`));
   const expected = new Set([
@@ -42,7 +42,7 @@ test('write', () => {
   const bundle = new Bundle({
     packageDir: pkg.dir,
     entryPoints: [pkg.entrypoint],
-    licenses: ['Apache-2.0', 'MIT'],
+    allowedLicenses: ['Apache-2.0', 'MIT'],
   });
 
   const bundleDir = bundle.write();
@@ -88,7 +88,7 @@ test('pack', () => {
   const bundle = new Bundle({
     packageDir: pkg.dir,
     entryPoints: [pkg.entrypoint],
-    licenses: ['Apache-2.0', 'MIT'],
+    allowedLicenses: ['Apache-2.0', 'MIT'],
   });
 
   bundle.pack();
@@ -110,7 +110,7 @@ test('validate and fix', () => {
   const bundle = new Bundle({
     packageDir: pkg.dir,
     entryPoints: [pkg.entrypoint],
-    licenses: ['Apache-2.0', 'MIT'],
+    allowedLicenses: ['Apache-2.0', 'MIT'],
   });
 
   try {

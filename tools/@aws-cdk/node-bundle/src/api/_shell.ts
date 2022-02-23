@@ -6,10 +6,10 @@ export interface ShellOptions {
 }
 
 export function shell(command: string, options: ShellOptions = {}): string {
-  const stdio: child_process.StdioOptions = options.quiet ? ['ignore', 'pipe', 'pipe'] : ['ignore', process.stdout, process.stdout];
+  const stdio: child_process.StdioOptions = options.quiet ? ['ignore', 'pipe', 'pipe'] : ['ignore', 'inherit', 'inherit'];
   const buffer = child_process.execSync(command, {
     cwd: options.cwd,
     stdio: stdio,
   });
-  return buffer ? buffer.toString().trim() : '';
+  return buffer ? buffer.toString('utf-8').trim() : '';
 }

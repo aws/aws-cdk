@@ -36,7 +36,7 @@
         "../../node_modules/vm2/lib/bridge.js": "lib/bridge.js",
         "../../node_modules/vm2/lib/setup-sandbox.js": "lib/setup-sandbox.js"
       },
-      "licenses": [
+      "allowedLicenses": [
         "Apache-2.0",
         "MIT",
         "BSD-3-Clause",

@@ -5,14 +5,6 @@ import { shell } from './_shell';
 import type { Package } from './bundle';
 import { Violation, ViolationType, ViolationsReport } from './violation';
 
-const DEFAULT_ALLOWED_LICENSES = [
-  'Apache-2.0',
-  'MIT',
-  'BSD-3-Clause',
-  'ISC',
-  'BSD-2-Clause',
-  '0BSD',
-];
 
 const ATTRIBUTION_SEPARATOR = '\n----------------\n';
 
@@ -41,11 +33,10 @@ export interface AttributionsProps {
    */
   readonly filePath: string;
   /**
-   * List of valid licenses.
+   * List of allowed licenses.
    *
-   * @default - predefined list.
    */
-  readonly validLicenses?: string[];
+  readonly allowedLicenses: string[];
    /**
    * Dependencies matching this pattern will be excluded from attribution.
    *
@@ -62,7 +53,7 @@ export class Attributions {
   private readonly packageDir: string;
   private readonly packageName: string;
   private readonly dependencies: Package[];
-  private readonly validLicenses: string[];
+  private readonly allowedLicenses: string[];
   private readonly dependenciesRoot: string;
   private readonly filePath: string;
 
@@ -74,7 +65,7 @@ export class Attributions {
     this.packageName = props.packageName;
     this.filePath = path.join(this.packageDir, props.filePath);
     this.dependencies = props.dependencies.filter(d => !props.exclude || !new RegExp(props.exclude).test(d.name));
-    this.validLicenses = (props.validLicenses ?? DEFAULT_ALLOWED_LICENSES).map(l => l.toLowerCase());
+    this.allowedLicenses = props.allowedLicenses.map(l => l.toLowerCase());
     this.dependenciesRoot = props.dependenciesRoot;
 
     // without the generated notice content, this object is pretty much
@@ -108,7 +99,7 @@ export class Attributions {
     }
 
     const invalidLicense: Violation[] = Array.from(this.attributions.values())
-      .filter(a => a.licenses.length === 1 && !this.validLicenses.includes(a.licenses[0].toLowerCase()))
+      .filter(a => a.licenses.length === 1 && !this.allowedLicenses.includes(a.licenses[0].toLowerCase()))
       .map(a => ({ type: ViolationType.INVALID_LICENSE, message: `Dependency ${a.package} has an invalid license: ${a.licenses[0]}` }));
 
     const noLicense: Violation[] = Array.from(this.attributions.values())
@@ -239,11 +230,19 @@ interface Attribution {
    */
   readonly url: string;
   /**
-   * Package license.
+   * Package licenses.
+   *
+   * Note that some packages will may have multiple licenses,
+   * which is why this is an array. In such cases, the license
+   * validation will fail since we currentl disallow this.
    */
   readonly licenses: string[];
   /**
    * Package license content.
+   *
+   * In case a package has multiple licenses, this will
+   * contain...one of them. It currently doesn't matter which
+   * one since it will not pass validation anyway.
    */
   readonly licenseText?: string;
   /**

@@ -6,6 +6,15 @@ import { Attributions } from './_attributions';
 import { shell } from './_shell';
 import { Violation, ViolationType, ViolationsReport } from './violation';
 
+const DEFAULT_ALLOWED_LICENSES = [
+  'Apache-2.0',
+  'MIT',
+  'BSD-3-Clause',
+  'ISC',
+  'BSD-2-Clause',
+  '0BSD',
+];
+
 /**
  * Bundling properties.
  */
@@ -34,11 +43,9 @@ export interface BundleProps {
   /**
    * External packages that cannot be bundled.
    *
-   * These will remain a runtime dependency of the package.
-   *
    * @default - no external references.
    */
-  readonly externals?: string[];
+  readonly externals?: Externals;
 
   /**
    * External resources that need to be embedded in the bundle.
@@ -48,15 +55,15 @@ export interface BundleProps {
   readonly resources?: {[src: string]: string};
 
   /**
-   * A list of licenses that are valid for bundling.
+   * A list of licenses that are allowed for bundling.
    * If any dependency contains a license not in this list, bundling will fail.
    *
    * @default - Default list
    */
-  readonly licenses?: string[];
+  readonly allowedLicenses?: string[];
 
   /**
-   * Packages matching this pattern will be excluded from attribution.
+   * Packages matching this regular expression will be excluded from attribution.
    */
   readonly dontAttribute?: string;
 
@@ -108,6 +115,25 @@ export interface Package {
 }
 
 /**
+ * External packages that cannot be bundled.
+ */
+export interface Externals {
+
+  /**
+   * External packages that should be listed in the `dependencies` section
+   * of the manifest.
+   */
+  readonly dependencies?: readonly string[];
+
+  /**
+   * External packages that should be listed in the `optionalDependencies` section
+   * of the manifest.
+   */
+  readonly optionalDependencies?: readonly string[];
+
+}
+
+/**
  * Bundle class to validate and pack nodejs bundles.
  */
 export class Bundle {
@@ -117,9 +143,9 @@ export class Bundle {
 
   private readonly packageDir: string;
   private readonly entryPoints: Record<string, string>;
-  private readonly externals: string[];
+  private readonly externals: Externals;
   private readonly resources: {[src: string]: string};
-  private readonly validLicenses?: string[];
+  private readonly allowedLicenses: string[];
   private readonly dontAttribute?: string;
   private readonly test?: string;
 
@@ -133,10 +159,10 @@ export class Bundle {
     this.packageDir = props.packageDir;
     this.noticePath = props.attributionsFile ?? 'THIRD_PARTY_LICENSES';
     this.manifest = fs.readJsonSync(path.join(this.packageDir, 'package.json'));
-    this.externals = props.externals ?? [];
+    this.externals = props.externals ?? {};
     this.resources = props.resources ?? {};
     this.test = props.test;
-    this.validLicenses = props.licenses;
+    this.allowedLicenses = props.allowedLicenses ?? DEFAULT_ALLOWED_LICENSES;
     this.dontAttribute = props.dontAttribute;
     this.entryPoints = {};
 
@@ -300,7 +326,7 @@ export class Bundle {
         dependencies: this.dependencies,
         dependenciesRoot: this.dependenciesRoot,
         exclude: this.dontAttribute,
-        validLicenses: this.validLicenses,
+        allowedLicenses: this.allowedLicenses,
       });
     }
     return this._attributions;
@@ -369,7 +395,7 @@ export class Bundle {
       metafile: true,
       treeShaking: true,
       absWorkingDir: this.packageDir,
-      external: this.externals.map(e => e.split(':')[0]),
+      external: [...(this.externals.dependencies ?? []), ...(this.externals.optionalDependencies ?? [])],
       write: false,
       outdir: this.packageDir,
       allowOverwrite: true,
@@ -418,37 +444,23 @@ export class Bundle {
     return violations;
   }
 
-  private validateAttributions(): Violation[] {
+  private validateAttributions(): readonly Violation[] {
     console.log('Validating attributions');
     return this.attributions.validate().violations;
   }
 
   private addExternals(manifest: any) {
 
-      // external dependencies should be specified as runtime dependencies
-    for (const external of this.externals) {
+    // external dependencies should be specified as runtime dependencies
+    for (const external of this.externals.dependencies ?? []) {
+      const version = this.findExternalDependencyVersion(external);
+      manifest.dependencies[external] = version;
+    }
 
-      const parts = external.split(':');
-      const name = parts[0];
-      const type = parts[1];
-      const version = this.findExternalDependencyVersion(name);
-
-      switch (type) {
-        case 'optional':
-          manifest.optionalDependencies = manifest.optionalDependencies ?? {};
-          manifest.optionalDependencies[name] = version;
-          break;
-        case 'peer':
-          manifest.peerDependencies = manifest.peerDependencies ?? {};
-          manifest.peerDependencies[name] = version;
-          break;
-        case '':
-          manifest.dependencies = manifest.dependencies ?? {};
-          manifest.dependencies[name] = version;
-          break;
-        default:
-          throw new Error(`Unsupported dependency type '${type}' for external dependency '${name}'`);
-      }
+    // external dependencies should be specified as optional dependencies
+    for (const external of this.externals.optionalDependencies ?? []) {
+      const version = this.findExternalDependencyVersion(external);
+      manifest.optionalDependencies[external] = version;
     }
 
   }

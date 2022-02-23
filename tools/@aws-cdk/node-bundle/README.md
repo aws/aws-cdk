@@ -1,6 +1,6 @@
 # node-bundle
 
-Create bundled packages with zero dependencies and appropriate license attributions.
+Create bundled packages with minimal dependencies and appropriate license attributions.
 
 ## Why
 
@@ -19,22 +19,34 @@ creating self-contained nodejs packages.
 The resulting packages are still npm installable packages, but the entrypoints you specify are
 replaced with a bundled version of them, embedding all their dependencies inline.
 Note that embedding dependencies means you are effectively redistributing third-party software.
-This has legal implications, since it requires proper attribution
-of those dependencies, validating their licenses allow such redistribution.
+This could have legal/licensing implications, and typically requires proper
+attribution of the bundled dependencies, while validating their licenses allow
+such redistribution.
 
-This tool takes care of all that:
+This tool does the following:
 
 - Bundle dependencies inside the package.
 
-  > This is currently done with [esbuild](), but is subject to change.
+  > Currently done with [esbuild](https://esbuild.github.io), but is subject to change.
 
-- Validate and create NOTICE files with complete third-party attributions.
+- Validate and create THIRD_PARTY_LICENCES files with complete third-party attributions.
 
-  > This is currently done with [license-checker](https://www.npmjs.com/package/license-checker), but is subject to change.
+  > Currently done with [license-checker](https://www.npmjs.com/package/license-checker), but is subject to change.
 
 - Enforce no circular imports are exhibited in your package, nor in your dependency closure.
 
-  > This is currently done with [madge](https://www.npmjs.com/package/madge), but is subject to change.
+  > Currently done with [madge](https://www.npmjs.com/package/madge), but is subject to change.
+  > This is necessary because circular imports mess up the declaration order of types in the bundled file.
+
+### Disclaimer
+
+- Features of this package rely on the dependencies' declared licensing information, etc... and if that is incorrect, the tool may not notice/warn about that.
+
+- The user of this package remains responsible for complying to their dependencies' licensing requirements.
+
+- While this package makes reasonable efforts to ensure the produced THIRD_PARTY_LICENSES file is correct,
+the user is responsible for ensuring the output is correct (this is why it is recommended to check it into source control)
+If unsure, users should seek legal counsel before releasing bundled artifacts.
 
 ## Alternative Approaches
 
@@ -100,7 +112,7 @@ import { Bundle } from '@aws-cdk/node-bundle';
 
 const bundle = new Bundle({
   packageDir: process.cwd(),
-  licenses: ['Apache-2.0', 'MIT'],
+  allowedLicenses: ['Apache-2.0', 'MIT'],
 });
 
 bundle.pack();

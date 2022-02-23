@@ -169,7 +169,7 @@ export class LicenseFile extends ValidationRule {
 
 export class BundledCLI extends ValidationRule {
 
-  private static readonly VALID_LICENSES = [
+  private static readonly ALLOWED_LICENSES = [
     'Apache-2.0',
     'MIT',
     'BSD-3-Clause',
@@ -202,11 +202,11 @@ export class BundledCLI extends ValidationRule {
   private validateConfig(pkg: PackageJson, bundleProps: any): boolean {
     let valid = true;
 
-    if (bundleProps.licenses.join(',') !== BundledCLI.VALID_LICENSES.join(',')) {
+    if (bundleProps.allowedLicenses.join(',') !== BundledCLI.ALLOWED_LICENSES.join(',')) {
       pkg.report({
-        message: `'cdk-package.bundle.licenses' must be set to "${BundledCLI.VALID_LICENSES}"`,
+        message: `'cdk-package.bundle.licenses' must be set to "${BundledCLI.ALLOWED_LICENSES}"`,
         ruleName: `${this.name}/configuration`,
-        fix: () => pkg.json['cdk-package'].bundle.licenses = BundledCLI.VALID_LICENSES,
+        fix: () => pkg.json['cdk-package'].bundle.licenses = BundledCLI.ALLOWED_LICENSES,
       });
       valid = false;
     }

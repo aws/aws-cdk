@@ -69,9 +69,8 @@ export class ViolationsReport {
   /**
    * The list of violations.
    */
-  public get violations(): Violation[] {
-    // return a copy so the report cannot be mutated.
-    return [...this._violations];
+  public get violations(): readonly Violation[] {
+    return this._violations;
   }
 
   /**
