@@ -20,6 +20,7 @@ s3 = boto3.client('s3')
 CFN_SUCCESS = "SUCCESS"
 CFN_FAILED = "FAILED"
 ENV_KEY_MOUNT_PATH = "MOUNT_PATH"
+ENV_KEY_SKIP_CLEANUP = "SKIP_CLEANUP"
 
 CUSTOM_RESOURCE_OWNER_TAG = "aws-cdk:cr-owned"
 
@@ -45,6 +46,7 @@ def handler(event, context):
         try:
             source_bucket_names = props['SourceBucketNames']
             source_object_keys  = props['SourceObjectKeys']
+            source_markers      = props.get('SourceMarkers', None)
             dest_bucket_name    = props['DestinationBucketName']
             dest_bucket_prefix  = props.get('DestinationBucketKeyPrefix', '')
             retain_on_delete    = props.get('RetainOnDelete', "true") == "true"
@@ -54,6 +56,11 @@ def handler(event, context):
             prune               = props.get('Prune', 'true').lower() == 'true'
             exclude             = props.get('Exclude', [])
             include             = props.get('Include', [])
+
+            # backwards compatibility - if "SourceMarkers" is not specified,
+            # assume all sources have an empty market map
+            if source_markers is None:
+                source_markers = [{} for i in range(len(source_bucket_names))]
 
             default_distribution_path = dest_bucket_prefix
             if not default_distribution_path.endswith("/"):
@@ -71,7 +78,7 @@ def handler(event, context):
         if dest_bucket_prefix == "/":
             dest_bucket_prefix = ""
 
-        s3_source_zips = map(lambda name, key: "s3://%s/%s" % (name, key), source_bucket_names, source_object_keys)
+        s3_source_zips = list(map(lambda name, key: "s3://%s/%s" % (name, key), source_bucket_names, source_object_keys))
         s3_dest = "s3://%s/%s" % (dest_bucket_name, dest_bucket_prefix)
         old_s3_dest = "s3://%s/%s" % (old_props.get("DestinationBucketName", ""), old_props.get("DestinationBucketKeyPrefix", ""))
 
@@ -106,12 +113,15 @@ def handler(event, context):
             aws_command("s3", "rm", old_s3_dest, "--recursive")
 
         if request_type == "Update" or request_type == "Create":
-            s3_deploy(s3_source_zips, s3_dest, user_metadata, system_metadata, prune, exclude, include)
+            s3_deploy(s3_source_zips, s3_dest, user_metadata, system_metadata, prune, exclude, include, source_markers)
 
         if distribution_id:
             cloudfront_invalidate(distribution_id, distribution_paths)
 
-        cfn_send(event, context, CFN_SUCCESS, physicalResourceId=physical_id)
+        cfn_send(event, context, CFN_SUCCESS, physicalResourceId=physical_id, responseData={
+            # Passing through the ARN sequences dependencees on the deployment
+            'DestinationBucketArn': props.get('DestinationBucketArn')
+        })
     except KeyError as e:
         cfn_error("invalid request. Missing key %s" % str(e))
     except Exception as e:
@@ -120,7 +130,11 @@ def handler(event, context):
 
 #---------------------------------------------------------------------------------------------------
 # populate all files from s3_source_zips to a destination bucket
-def s3_deploy(s3_source_zips, s3_dest, user_metadata, system_metadata, prune, exclude, include):
+def s3_deploy(s3_source_zips, s3_dest, user_metadata, system_metadata, prune, exclude, include, source_markers):
+    # list lengths are equal
+    if len(s3_source_zips) != len(source_markers):
+        raise Exception("'source_markers' and 's3_source_zips' must be the same length")
+
     # create a temporary working directory in /tmp or if enabled an attached efs volume
     if ENV_KEY_MOUNT_PATH in os.environ:
         workdir = os.getenv(ENV_KEY_MOUNT_PATH) + "/" + str(uuid4())
@@ -136,13 +150,16 @@ def s3_deploy(s3_source_zips, s3_dest, user_metadata, system_metadata, prune, ex
 
     try:
         # download the archive from the source and extract to "contents"
-        for s3_source_zip in s3_source_zips:
+        for i in range(len(s3_source_zips)):
+            s3_source_zip = s3_source_zips[i]
+            markers       = source_markers[i]
+
             archive=os.path.join(workdir, str(uuid4()))
             logger.info("archive: %s" % archive)
             aws_command("s3", "cp", s3_source_zip, archive)
             logger.info("| extracting archive to: %s\n" % contents_dir)
-            with ZipFile(archive, "r") as zip:
-              zip.extractall(contents_dir)
+            logger.info("| markers: %s" % markers)
+            extract_and_replace_markers(archive, contents_dir, markers)
 
         # sync from "contents" to destination
 
@@ -163,7 +180,8 @@ def s3_deploy(s3_source_zips, s3_dest, user_metadata, system_metadata, prune, ex
         s3_command.extend(create_metadata_args(user_metadata, system_metadata))
         aws_command(*s3_command)
     finally:
-        shutil.rmtree(workdir)
+        if not os.getenv(ENV_KEY_SKIP_CLEANUP):
+            shutil.rmtree(workdir)
 
 #---------------------------------------------------------------------------------------------------
 # invalidate files in the CloudFront distribution edge caches
@@ -257,3 +275,29 @@ def bucket_owned(bucketName, keyPrefix):
         logger.info("| error getting tags from bucket")
         logger.exception(e)
         return False
+
+# extract archive and replace markers in output files
+def extract_and_replace_markers(archive, contents_dir, markers):
+    with ZipFile(archive, "r") as zip:
+        zip.extractall(contents_dir)
+
+        # replace markers for this source
+        for file in zip.namelist():
+            file_path = os.path.join(contents_dir, file)
+            if os.path.isdir(file_path): continue
+            replace_markers(file_path, markers)    
+
+def replace_markers(filename, markers):
+    # convert the dict of string markers to binary markers
+    replace_tokens = dict([(k.encode('utf-8'), v.encode('utf-8')) for k, v in markers.items()])
+
+    outfile = filename + '.new'
+    with open(filename, 'rb') as fi, open(outfile, 'wb') as fo:
+        for line in fi:
+            for token in replace_tokens:
+                line = line.replace(token, replace_tokens[token])
+            fo.write(line)
+
+    # # delete the original file and rename the new one to the original
+    os.remove(filename)
+    os.rename(outfile, filename)

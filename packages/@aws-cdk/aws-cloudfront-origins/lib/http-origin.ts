@@ -35,7 +35,10 @@ export interface HttpOriginProps extends cloudfront.OriginProps {
 
   /**
    * Specifies how long, in seconds, CloudFront waits for a response from the origin, also known as the origin response timeout.
-   * The valid range is from 1 to 60 seconds, inclusive.
+   * The valid range is from 1 to 180 seconds, inclusive.
+   *
+   * Note that values over 60 seconds are possible only after a limit increase request for the origin response timeout quota
+   * has been approved in the target account; otherwise, values over 60 seconds will produce an error at deploy time.
    *
    * @default Duration.seconds(30)
    */
@@ -43,7 +46,10 @@ export interface HttpOriginProps extends cloudfront.OriginProps {
 
   /**
    * Specifies how long, in seconds, CloudFront persists its connection to the origin.
-   * The valid range is from 1 to 60 seconds, inclusive.
+   * The valid range is from 1 to 180 seconds, inclusive.
+   *
+   * Note that values over 60 seconds are possible only after a limit increase request for the origin response timeout quota
+   * has been approved in the target account; otherwise, values over 60 seconds will produce an error at deploy time.
    *
    * @default Duration.seconds(5)
    */
@@ -58,8 +64,8 @@ export class HttpOrigin extends cloudfront.OriginBase {
   constructor(domainName: string, private readonly props: HttpOriginProps = {}) {
     super(domainName, props);
 
-    validateSecondsInRangeOrUndefined('readTimeout', 1, 60, props.readTimeout);
-    validateSecondsInRangeOrUndefined('keepaliveTimeout', 1, 60, props.keepaliveTimeout);
+    validateSecondsInRangeOrUndefined('readTimeout', 1, 180, props.readTimeout);
+    validateSecondsInRangeOrUndefined('keepaliveTimeout', 1, 180, props.keepaliveTimeout);
   }
 
   protected renderCustomOriginConfig(): cloudfront.CfnDistribution.CustomOriginConfigProperty | undefined {

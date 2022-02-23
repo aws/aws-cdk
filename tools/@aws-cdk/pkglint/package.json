@@ -40,7 +40,7 @@
     "@aws-cdk/eslint-plugin": "0.0.0",
     "@types/fs-extra": "^8.1.2",
     "@types/glob": "^7.2.0",
-    "@types/jest": "^27.4.0",
+    "@types/jest": "^27.4.1",
     "@types/semver": "^7.3.9",
     "@types/yargs": "^15.0.14",
     "@typescript-eslint/eslint-plugin": "^4.33.0",
@@ -50,7 +50,7 @@
     "eslint-import-resolver-typescript": "^2.5.0",
     "eslint-plugin-import": "^2.25.4",
     "eslint-plugin-jest": "^24.7.0",
-    "jest": "^27.4.7",
+    "jest": "^27.5.1",
     "typescript": "~3.9.10"
   },
   "nozem": {

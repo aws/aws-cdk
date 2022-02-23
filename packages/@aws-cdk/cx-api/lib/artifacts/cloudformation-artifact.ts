@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { CloudArtifact } from '../cloud-artifact';
-import { CloudAssembly } from '../cloud-assembly';
+import type { CloudAssembly } from '../cloud-assembly';
 import { Environment, EnvironmentUtils } from '../environment';
 
 export class CloudFormationStackArtifact extends CloudArtifact {

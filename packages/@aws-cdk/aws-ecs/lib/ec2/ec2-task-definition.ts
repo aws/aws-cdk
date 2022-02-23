@@ -20,9 +20,9 @@ export interface Ec2TaskDefinitionProps extends CommonTaskDefinitionProps {
   /**
    * The Docker networking mode to use for the containers in the task.
    *
-   * The valid values are none, bridge, awsvpc, and host.
+   * The valid values are NONE, BRIDGE, AWS_VPC, and HOST.
    *
-   * @default - NetworkMode.Bridge for EC2 tasks, AwsVpc for Fargate tasks.
+   * @default - NetworkMode.BRIDGE for EC2 tasks, AWS_VPC for Fargate tasks.
    */
   readonly networkMode?: NetworkMode;
 

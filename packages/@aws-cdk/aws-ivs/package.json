@@ -28,6 +28,13 @@
         "distName": "aws-cdk.aws-ivs",
         "module": "aws_cdk.aws_ivs"
       }
+    },
+    "metadata": {
+      "jsii": {
+        "rosetta": {
+          "strict": true
+        }
+      }
     }
   },
   "awslint": {
@@ -89,7 +96,7 @@
     "@aws-cdk/cdk-integ-tools": "0.0.0",
     "@aws-cdk/cfn2ts": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/jest": "^27.4.0"
+    "@types/jest": "^27.4.1"
   },
   "dependencies": {
     "@aws-cdk/core": "0.0.0",

@@ -28,7 +28,14 @@
         ]
       }
     },
-    "projectReferences": true
+    "projectReferences": true,
+    "metadata": {
+      "jsii": {
+        "rosetta": {
+          "strict": true
+        }
+      }
+    }
   },
   "repository": {
     "type": "git",
@@ -77,7 +84,7 @@
     "@aws-cdk/cdk-integ-tools": "0.0.0",
     "@aws-cdk/cfn2ts": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/jest": "^27.4.0"
+    "@types/jest": "^27.4.1"
   },
   "dependencies": {
     "@aws-cdk/aws-iam": "0.0.0",
@@ -105,7 +112,13 @@
       "props-physical-name:@aws-cdk/aws-servicecatalog.CloudFormationProductProps",
       "resource-attribute:@aws-cdk/aws-servicecatalog.Portfolio.portfolioName",
       "props-physical-name:@aws-cdk/aws-servicecatalog.PortfolioProps",
-      "props-physical-name:@aws-cdk/aws-servicecatalog.ProductStack"
+      "props-physical-name:@aws-cdk/aws-servicecatalog.ProductStack",
+      "props-struct-name:@aws-cdk/aws-servicecatalog.ITagOptions",
+      "props-physical-name:@aws-cdk/aws-servicecatalog.TagOptionsProps",
+      "ref-via-interface:@aws-cdk/aws-servicecatalog.CloudFormationProductProps.tagOptions",
+      "ref-via-interface:@aws-cdk/aws-servicecatalog.IProduct.associateTagOptions.tagOptions",
+      "ref-via-interface:@aws-cdk/aws-servicecatalog.IPortfolio.associateTagOptions.tagOptions",
+      "ref-via-interface:@aws-cdk/aws-servicecatalog.PortfolioProps.tagOptions"
     ]
   },
   "maturity": "experimental",
