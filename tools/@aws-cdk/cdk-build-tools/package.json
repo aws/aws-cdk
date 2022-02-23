@@ -37,7 +37,7 @@
   "devDependencies": {
     "@aws-cdk/pkglint": "0.0.0",
     "@types/fs-extra": "^8.1.2",
-    "@types/jest": "^27.4.0",
+    "@types/jest": "^27.4.1",
     "@types/semver": "^7.3.9",
     "@types/yargs": "^15.0.14"
   },
@@ -56,9 +56,9 @@
     "fs-extra": "^9.1.0",
     "jest": "^27.5.1",
     "jest-junit": "^13.0.0",
-    "jsii": "^1.53.0",
-    "jsii-pacmak": "^1.53.0",
-    "jsii-reflect": "^1.53.0",
+    "jsii": "^1.54.0",
+    "jsii-pacmak": "^1.54.0",
+    "jsii-reflect": "^1.54.0",
     "markdownlint-cli": "^0.31.1",
     "nyc": "^15.1.0",
     "semver": "^7.3.5",
