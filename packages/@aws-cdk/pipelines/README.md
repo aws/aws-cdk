@@ -150,21 +150,9 @@ pipeline will automatically reconfigure itself to deploy those new stages and
 stacks.
 
 (Note that have to *bootstrap* all environments before the above code
-will work, see the section **CDK Environment Bootstrapping** below).
-
-## CDK Versioning
-
-This library uses prerelease features of the CDK framework, which can be enabled
-by adding the following to `cdk.json`:
-
-```js
-{
-  // ...
-  "context": {
-    "@aws-cdk/core:newStyleStackSynthesis": true
-  }
-}
-```
+will work, and switch on "Modern synthesis" if you are using
+CDKv1. See the section **CDK Environment Bootstrapping** below for
+more information).
 
 ## Provisioning the pipeline
 

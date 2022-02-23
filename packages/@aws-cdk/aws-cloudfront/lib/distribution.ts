@@ -281,7 +281,7 @@ export class Distribution extends Resource implements IDistribution {
     // Comments have an undocumented limit of 128 characters
     const trimmedComment =
       props.comment && props.comment.length > 128
-        ? `${props.comment.substr(0, 128 - 3)}...`
+        ? `${props.comment.slice(0, 128 - 3)}...`
         : props.comment;
 
     const distribution = new CfnDistribution(this, 'Resource', {
