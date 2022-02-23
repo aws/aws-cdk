@@ -56,7 +56,7 @@ export class OpenSearchAccessPolicy extends cr.AwsCustomResource {
     this.addAccessPolicies(...props.accessPolicies);
   }
 
-    /**
+  /**
    * Add policy statements to the domain access policy
    */
   public addAccessPolicies(...accessPolicyStatements: iam.PolicyStatement[]) {
