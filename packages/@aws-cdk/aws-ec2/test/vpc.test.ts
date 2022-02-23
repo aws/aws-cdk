@@ -1557,7 +1557,7 @@ describe('vpc', () => {
         subnetIds: { 'Fn::Split': [',', { 'Fn::ImportValue': 'myPublicSubnetIds' }] },
       });
 
-      expect(vpc.node.metadataEntry).toContainEqual({
+      expect(vpc.node.metadata).toContainEqual({
         data: expect.stringContaining("fromVpcAttributes: 'availabilityZones' is a list token: the imported VPC will not work with constructs that require a list of subnets at synthesis time. Use 'Vpc.fromLookup()' or 'Fn.importListValue' instead."),
         type: 'aws:cdk:warning',
         trace: undefined,
