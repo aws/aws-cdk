@@ -234,7 +234,7 @@ interface Attribution {
    *
    * Note that some packages will may have multiple licenses,
    * which is why this is an array. In such cases, the license
-   * validation will fail since we currentl disallow this.
+   * validation will fail since we currently disallow this.
    */
   readonly licenses: string[];
   /**
