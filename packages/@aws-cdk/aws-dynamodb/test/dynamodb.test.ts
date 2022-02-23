@@ -720,6 +720,38 @@ test('if an encryption key is included, encrypt/decrypt permissions are added to
   });
 });
 
+test('if an encryption key is included, encrypt/decrypt permissions are added to the principal for grantWriteData', () => {
+  const stack = new Stack();
+  const table = new Table(stack, 'Table A', {
+    tableName: TABLE_NAME,
+    partitionKey: TABLE_PARTITION_KEY,
+    encryption: TableEncryption.CUSTOMER_MANAGED,
+  });
+  const user = new iam.User(stack, 'MyUser');
+  table.grantWriteData(user);
+
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: Match.arrayWith([{
+        Action: [
+          'kms:Decrypt',
+          'kms:DescribeKey',
+          'kms:Encrypt',
+          'kms:ReEncrypt*',
+          'kms:GenerateDataKey*',
+        ],
+        Effect: 'Allow',
+        Resource: {
+          'Fn::GetAtt': [
+            'TableAKey07CC09EC',
+            'Arn',
+          ],
+        },
+      }]),
+    },
+  });
+});
+
 test('when specifying STANDARD_INFREQUENT_ACCESS table class', () => {
   const stack = new Stack();
   new Table(stack, CONSTRUCT_NAME, {
