@@ -33,7 +33,7 @@
     "yaml": "1.10.2"
   },
   "devDependencies": {
-    "@types/jest": "^27.4.0",
+    "@types/jest": "^27.4.1",
     "@types/yaml": "1.9.7",
     "jest": "^27.5.1",
     "typescript": "~3.9.10"
