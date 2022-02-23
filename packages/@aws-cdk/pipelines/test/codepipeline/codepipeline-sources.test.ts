@@ -179,3 +179,44 @@ test('artifact names are never longer than 128 characters', () => {
 
   expect(artifactId.asString().length).toBeLessThanOrEqual(128);
 });
+
+test('can use source attributes in pipeline', () => {
+  const gitHub = cdkp.CodePipelineSource.gitHub('owner/my-repo', 'main');
+
+  // WHEN
+  new ModernTestGitHubNpmPipeline(pipelineStack, 'Pipeline', {
+    input: gitHub,
+    synth: new cdkp.ShellStep('Synth', {
+      env: {
+        GITHUB_URL: gitHub.sourceAttribute('CommitUrl'),
+      },
+      commands: [
+        'echo "Click here: $GITHUB_URL"',
+      ],
+    }),
+    selfMutation: false,
+  });
+
+  Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+    Stages: [
+      { Name: 'Source' },
+      {
+        Name: 'Build',
+        Actions: [
+          {
+            Name: 'Synth',
+            Configuration: Match.objectLike({
+              EnvironmentVariables: Match.serializedJson([
+                {
+                  name: 'GITHUB_URL',
+                  type: 'PLAINTEXT',
+                  value: '#{Source@owner_my-repo.CommitUrl}',
+                },
+              ]),
+            }),
+          },
+        ],
+      },
+    ],
+  });
+});
