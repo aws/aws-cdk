@@ -5,7 +5,6 @@ import * as setup from './hotswap-test-setup';
 let mockUpdateLambdaCode: (params: Lambda.Types.UpdateFunctionCodeRequest) => Lambda.Types.FunctionConfiguration;
 let mockPublishVersion: jest.Mock<Lambda.FunctionConfiguration, Lambda.PublishVersionRequest[]>;
 let hotswapMockSdkProvider: setup.HotswapMockSdkProvider;
-/*
 
 test('can hotswap a lambda function in a 1-level nested stack', async () => {
   // GIVEN
@@ -904,7 +903,7 @@ test('can hotswap a lambda function in a 2-level nested stack with asset paramet
     S3Key: 'child-key-param-value',
   });
 });
-*/
+
 test('looking up objects in nested stacks works', async () => {
   hotswapMockSdkProvider = setup.setupHotswapNestedStackTests('LambdaRoot');
   mockUpdateLambdaCode = jest.fn().mockReturnValue({});

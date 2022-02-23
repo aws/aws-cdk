@@ -82,27 +82,29 @@ async function findAllHotswappableChanges(
   const resourceDifferenceEntries = Object.entries(resourceDifferences);
   let nestedStackResourceChanges = resourceDifferenceEntries.filter(
     ([_, resourceDifference]) => (resourceDifference.newValue?.Type === 'AWS::CloudFormation::Stack' && resourceDifference.oldValue?.Type === 'AWS::CloudFormation::Stack'));
-  for (const [logicalId, change] of nestedStackResourceChanges) {
-    const nestedStackParameters = change.newValue?.Properties?.Parameters as {[key:string]: any};
+  for (const [nestedStackLogicalId, nestedStackChange] of nestedStackResourceChanges) {
+    const nestedStackParameters = nestedStackChange.newValue?.Properties?.Parameters as {[key:string]: any};
     if (nestedStackParameters) {
       for (const paramName in nestedStackParameters) {
         nestedStackParameters[paramName] = await evaluateCfnTemplate.evaluateCfnExpression(nestedStackParameters[paramName]);
       }
     }
 
-    const nestedStackName = nestedStackNames[logicalId].stackName;
+    const nestedStackName = nestedStackNames[nestedStackLogicalId].stackName;
     // the stack name could not be found in CFN, so this is a newly created nested stack
     if (!nestedStackName) {
       return undefined;
     }
 
     const evaluateNestedCfnTemplate = evaluateCfnTemplate.createNestedEvaluateCloudFormationTemplate(
-      new LazyListStackResources(sdk, nestedStackName), change.newValue?.Properties?.NestedTemplate, nestedStackParameters,
+      new LazyListStackResources(sdk, nestedStackName), nestedStackChange.newValue?.Properties?.NestedTemplate, nestedStackParameters,
     );
 
-    const nestedDiff = cfn_diff.diffTemplate(change.oldValue?.Properties?.NestedTemplate, change.newValue?.Properties?.NestedTemplate);
+    const nestedDiff = cfn_diff.diffTemplate(
+      nestedStackChange.oldValue?.Properties?.NestedTemplate, nestedStackChange.newValue?.Properties?.NestedTemplate,
+    );
     const nestedHotswappableResources = await findAllHotswappableChanges(nestedDiff, evaluateNestedCfnTemplate, sdk,
-      rootStackArtifact, nestedStackNames[logicalId].children);
+      rootStackArtifact, nestedStackNames[nestedStackLogicalId].children);
     if (!nestedHotswappableResources) {
       return undefined;
     }
