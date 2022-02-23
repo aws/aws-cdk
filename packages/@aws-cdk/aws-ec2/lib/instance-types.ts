@@ -341,22 +341,22 @@ export enum InstanceClass {
   /**
    * Compute optimized instances, 6th generation
    */
-   COMPUTE6_INTEL = 'c6i',
+  COMPUTE6_INTEL = 'c6i',
 
-   /**
-    * Compute optimized instances, 6th generation
-    */
-   C6I = 'c6i',
+  /**
+  * Compute optimized instances, 6th generation
+  */
+  C6I = 'c6i',
 
-   /**
-    * Compute optimized instances based on AMD EPYC (codename Milan), 6th generation
-    */
-   COMPUTE6_AMD = 'c6a',
+  /**
+  * Compute optimized instances based on AMD EPYC (codename Milan), 6th generation
+  */
+  COMPUTE6_AMD = 'c6a',
 
-   /**
-    * Compute optimized instances based on AMD EPYC (codename Milan), 6th generation
-    */
-   C6A = 'c6a',
+  /**
+  * Compute optimized instances based on AMD EPYC (codename Milan), 6th generation
+  */
+  C6A = 'c6a',
 
   /**
    * Compute optimized instances for high performance computing, 6th generation with Graviton2 processors
