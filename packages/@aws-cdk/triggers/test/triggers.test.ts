@@ -19,7 +19,7 @@ test('minimal', () => {
   const template = Template.fromStack(stack);
   template.hasResourceProperties('AWS::Lambda::Function', {});
   template.hasResourceProperties('Custom::Trigger', {
-    HandlerArn: { Ref: 'MyTriggerCurrentVersion8802742B707afb4f5c680fa04113c095ec4e8b5d' },
+    HandlerArn: { Ref: 'MyTriggerCurrentVersion8802742B3563e98f84a1f8050c5006ebef4a4163' },
   });
 });
 
