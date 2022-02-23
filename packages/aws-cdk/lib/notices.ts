@@ -106,31 +106,40 @@ export interface NoticeDataSource {
 export class WebsiteNoticeDataSource implements NoticeDataSource {
   fetch(): Promise<Notice[]> {
     return new Promise((resolve) => {
-      https.get('https://cli.cdk.dev-tools.aws.dev/notices.json', res => {
-        if (res.statusCode === 200) {
-          res.setEncoding('utf8');
-          let rawData = '';
-          res.on('data', (chunk) => {
-            rawData += chunk;
-          });
-          res.on('end', () => {
-            try {
-              const data = JSON.parse(rawData).notices as Notice[];
-              resolve(data ?? []);
-            } catch (e) {
-              debug(`Failed to parse notices: ${e}`);
+      try {
+        const req = https.get('https://cli.cdk.dev-tools.aws.dev/notices.json', res => {
+          if (res.statusCode === 200) {
+            res.setEncoding('utf8');
+            let rawData = '';
+            res.on('data', (chunk) => {
+              rawData += chunk;
+            });
+            res.on('end', () => {
+              try {
+                const data = JSON.parse(rawData).notices as Notice[];
+                resolve(data ?? []);
+              } catch (e) {
+                debug(`Failed to parse notices: ${e}`);
+                resolve([]);
+              }
+            });
+            res.on('error', e => {
+              debug(`Failed to fetch notices: ${e}`);
               resolve([]);
-            }
-          });
-          res.on('error', e => {
-            debug(`Failed to fetch notices: ${e}`);
+            });
+          } else {
+            debug(`Failed to fetch notices. Status code: ${res.statusCode}`);
             resolve([]);
-          });
-        } else {
-          debug(`Failed to fetch notices. Status code: ${res.statusCode}`);
+          }
+        });
+        req.on('error', e => {
+          debug(`Error on request: ${e}`);
           resolve([]);
-        }
-      });
+        });
+      } catch (e) {
+        debug(`HTTPS 'get' call threw an error: ${e}`);
+        resolve([]);
+      }
     });
   }
 }
