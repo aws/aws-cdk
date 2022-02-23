@@ -130,6 +130,17 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
     this.protocol = protocol;
     this.port = port;
 
+    // this.targetType is lazy
+    this.node.addValidation({
+      validate: () => {
+        if (this.targetType === TargetType.LAMBDA && (this.port || this.protocol)) {
+          return ['port/protocol should not be specified for Lambda targets'];
+        } else {
+          return [];
+        }
+      },
+    });
+
     this.connectableMembers = [];
     this.listeners = [];
 

@@ -299,6 +299,42 @@ describe('function', () => {
     expect(imported.functionName).toEqual('ProcessKinesisRecords');
   });
 
+  test('Function.fromFunctionName', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const imported = lambda.Function.fromFunctionName(stack, 'Imported', 'my-function');
+
+    // THEN
+    expect(stack.resolve(imported.functionArn)).toStrictEqual({
+      'Fn::Join': ['', [
+        'arn:',
+        { Ref: 'AWS::Partition' },
+        ':lambda:',
+        { Ref: 'AWS::Region' },
+        ':',
+        { Ref: 'AWS::AccountId' },
+        ':function:my-function',
+      ]],
+    });
+    expect(stack.resolve(imported.functionName)).toStrictEqual({
+      'Fn::Select': [6, {
+        'Fn::Split': [':', {
+          'Fn::Join': ['', [
+            'arn:',
+            { Ref: 'AWS::Partition' },
+            ':lambda:',
+            { Ref: 'AWS::Region' },
+            ':',
+            { Ref: 'AWS::AccountId' },
+            ':function:my-function',
+          ]],
+        }],
+      }],
+    });
+  });
+
   describe('Function.fromFunctionAttributes()', () => {
     let stack: cdk.Stack;
 
