@@ -85,11 +85,11 @@
     "@aws-cdk/cfn2ts": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
     "@types/aws-lambda": "^8.10.92",
-    "@types/jest": "^27.4.0",
+    "@types/jest": "^27.4.1",
     "@types/sinon": "^9.0.11",
     "aws-sdk": "^2.848.0",
     "aws-sdk-mock": "5.6.0",
-    "jest": "^27.4.7",
+    "jest": "^27.5.1",
     "sinon": "^9.2.4",
     "ts-jest": "^27.1.3"
   },

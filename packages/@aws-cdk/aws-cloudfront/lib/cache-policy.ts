@@ -129,9 +129,14 @@ export class CachePolicy extends Resource implements ICachePolicy {
       physicalName: props.cachePolicyName,
     });
 
-    const cachePolicyName = props.cachePolicyName ?? `${Names.uniqueId(this)}-${Stack.of(this).region}`;
+    const cachePolicyName = props.cachePolicyName ?? `${Names.uniqueId(this).slice(0, 110)}-${Stack.of(this).region}`;
+
     if (!Token.isUnresolved(cachePolicyName) && !cachePolicyName.match(/^[\w-]+$/i)) {
-      throw new Error(`'cachePolicyName' can only include '-', '_', and alphanumeric characters, got: '${props.cachePolicyName}'`);
+      throw new Error(`'cachePolicyName' can only include '-', '_', and alphanumeric characters, got: '${cachePolicyName}'`);
+    }
+
+    if (cachePolicyName.length > 128) {
+      throw new Error(`'cachePolicyName' cannot be longer than 128 characters, got: '${cachePolicyName.length}'`);
     }
 
     const minTtl = (props.minTtl ?? Duration.seconds(0)).toSeconds();

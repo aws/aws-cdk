@@ -527,6 +527,51 @@ new rds.OptionGroup(this, 'Options', {
 });
 ```
 
+## Parameter Groups
+
+Database parameters specify how the database is configured.
+For example, database parameters can specify the amount of resources, such as memory, to allocate to a database.
+You manage your database configuration by associating your DB instances with parameter groups.
+Amazon RDS defines parameter groups with default settings.
+
+You can create your own parameter group for your cluster or instance and associate it with your database:
+
+```ts
+declare const vpc: ec2.Vpc;
+
+const parameterGroup = new rds.ParameterGroup(this, 'ParameterGroup', {
+  engine: rds.DatabaseInstanceEngine.sqlServerEe({
+    version: rds.SqlServerEngineVersion.VER_11,
+  }),
+  parameters: {
+    locks: '100',
+  },
+});
+
+new rds.DatabaseInstance(this, 'Database', {
+  engine: rds.DatabaseInstanceEngine.SQL_SERVER_EE,
+  vpc,
+  parameterGroup,
+});
+```
+
+Another way to specify parameters is to use the inline field `parameters` that creates an RDS parameter group for you.
+You can use this if you do not want to reuse the parameter group instance for different instances:
+
+```ts
+declare const vpc: ec2.Vpc;
+
+new rds.DatabaseInstance(this, 'Database', {
+  engine: rds.DatabaseInstanceEngine.sqlServerEe({ version: rds.SqlServerEngineVersion.VER_11 }),
+  vpc,
+  parameters: {
+    locks: '100',
+  },
+});
+```
+
+You cannot specify a parameter map and a parameter group at the same time.
+
 ## Serverless
 
 [Amazon Aurora Serverless](https://aws.amazon.com/rds/aurora/serverless/) is an on-demand, auto-scaling configuration for Amazon
@@ -594,7 +639,7 @@ declare const vpc: ec2.Vpc;
 
 const cluster = new rds.ServerlessCluster(this, 'AnotherCluster', {
   engine: rds.DatabaseClusterEngine.AURORA_MYSQL,
-  vpc,
+  vpc, // this parameter is optional for serverless Clusters
   enableDataApi: true, // Optional - will be automatically set if you call grantDataApiAccess()
 });
 
@@ -614,3 +659,11 @@ cluster.grantDataApiAccess(fn);
 **Note**: To invoke the Data API, the resource will need to read the secret associated with the cluster.
 
 To learn more about using the Data API, see the [documentation](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/data-api.html).
+
+### Default VPC
+
+The `vpc` parameter is optional. 
+
+If not provided, the cluster will be created in the default VPC of the account and region.
+As this VPC is not deployed with AWS CDK, you can't configure the `vpcSubnets`, `subnetGroup` or `securityGroups` of the Aurora Serverless Cluster. 
+If you want to provide one of `vpcSubnets`, `subnetGroup` or `securityGroups` parameter, please provide a `vpc`.

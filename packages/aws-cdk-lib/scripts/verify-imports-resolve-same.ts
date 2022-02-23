@@ -84,7 +84,7 @@ async function compileAndResolve(fileName: string, contents: string, symbolName:
   }
 
   // Return the filename
-  const srcFile = sym.declarations?.[0].getSourceFile().fileName.replace(/.ts|.js|.d.ts/, '');
+  const srcFile = sym.declarations?.[0].getSourceFile().fileName.replace(/[.](ts|js|d\.ts)$/, '');
   if (!srcFile) {
     console.log(sym);
     throw new Error(`Symbol ${symbolName} in '${contents}' does not resolve to a source location`);
