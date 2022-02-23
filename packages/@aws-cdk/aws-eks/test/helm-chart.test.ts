@@ -94,42 +94,8 @@ describe('helm chart', () => {
       // THEN
       Template.fromStack(stack).hasResourceProperties(eks.HelmChart.RESOURCE_TYPE, {
         ChartAssetURL: {
-          'Fn::Join': [
-            '',
-            [
-              's3://',
-              {
-                Ref: 'AssetParametersd65fbdc11b108e0386ed8577c454d4544f6d4e7960f84a0d2e211478d6324dbfS3BucketBFD29DFB',
-              },
-              '/',
-              {
-                'Fn::Select': [
-                  0,
-                  {
-                    'Fn::Split': [
-                      '||',
-                      {
-                        Ref: 'AssetParametersd65fbdc11b108e0386ed8577c454d4544f6d4e7960f84a0d2e211478d6324dbfS3VersionKeyD1F874DF',
-                      },
-                    ],
-                  },
-                ],
-              },
-              {
-                'Fn::Select': [
-                  1,
-                  {
-                    'Fn::Split': [
-                      '||',
-                      {
-                        Ref: 'AssetParametersd65fbdc11b108e0386ed8577c454d4544f6d4e7960f84a0d2e211478d6324dbfS3VersionKeyD1F874DF',
-                      },
-                    ],
-                  },
-                ],
-              },
-            ],
-          ],
+          'Fn::Sub':
+            's3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/d65fbdc11b108e0386ed8577c454d4544f6d4e7960f84a0d2e211478d6324dbf.zip',
         },
       });
     });
