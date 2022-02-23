@@ -37,7 +37,7 @@
   "devDependencies": {
     "@aws-cdk/pkglint": "0.0.0",
     "@types/fs-extra": "^8.1.2",
-    "@types/jest": "^27.4.0",
+    "@types/jest": "^27.4.1",
     "@types/semver": "^7.3.9",
     "@types/yargs": "^15.0.14"
   },
