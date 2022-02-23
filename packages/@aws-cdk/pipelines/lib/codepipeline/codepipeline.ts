@@ -18,10 +18,11 @@ import { toPosixPath } from '../private/fs';
 import { actionName, stackVariableNamespace } from '../private/identifiers';
 import { enumerate, flatten, maybeSuffix, noUndefined } from '../private/javascript';
 import { writeTemplateConfiguration } from '../private/template-configuration';
-import { CodeBuildFactory, mergeCodeBuildOptions } from './_codebuild-factory';
 import { ArtifactMap } from './artifact-map';
 import { CodeBuildStep } from './codebuild-step';
 import { CodePipelineActionFactoryResult, ICodePipelineActionFactory } from './codepipeline-action-factory';
+import { CodeBuildFactory, mergeCodeBuildOptions } from './private/codebuild-factory';
+import { namespaceStepOutputs } from './private/outputs';
 
 
 /**
@@ -418,9 +419,14 @@ export class CodePipeline extends PipelineBase {
             const factory = this.actionFromNode(node);
 
             const nodeType = this.nodeTypeFromNode(node);
+            const name = actionName(node, sharedParent);
+
+            const variablesNamespace = node.data?.type === 'step'
+              ? namespaceStepOutputs(node.data.step, pipelineStage, name)
+              : undefined;
 
             const result = factory.produceAction(pipelineStage, {
-              actionName: actionName(node, sharedParent),
+              actionName: name,
               runOrder,
               artifacts: this.artifacts,
               scope: obtainScope(this.pipeline, stageName),
@@ -429,6 +435,7 @@ export class CodePipeline extends PipelineBase {
               // If this step happens to produce a CodeBuild job, set the default options
               codeBuildDefaults: nodeType ? this.codeBuildDefaultsFor(nodeType) : undefined,
               beforeSelfMutation,
+              variablesNamespace,
             });
 
             if (node.data?.type === 'self-update') {
