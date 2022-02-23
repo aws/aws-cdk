@@ -252,7 +252,7 @@ test('can set a self-referencing custom policy', () => {
       ],
     ],
   };
-  Template.fromStack(stack).hasResourceProperties('Custom::ElasticsearchAccessPolicy', {
+  Template.fromStack(stack).hasResourceProperties('Custom::OpenSearchAccessPolicy', {
     ServiceToken: {
       'Fn::GetAtt': [
         'AWS679f53fac002430cb0da5b7982bd22872D164C4C',
