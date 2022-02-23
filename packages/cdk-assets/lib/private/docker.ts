@@ -42,7 +42,7 @@ export class Docker {
       await this.execute(['inspect', tag], { quiet: true });
       return true;
     } catch (e) {
-      if (e.code !== 'PROCESS_FAILED' || e.exitCode !== 1) { throw e; }
+      if (e.code !== 'PROCESS_FAILED' || ![1, 125].includes(e.exitCode)) { throw e; }
       return false;
     }
   }
@@ -70,7 +70,7 @@ export class Docker {
     await this.execute(['login',
       '--username', credentials.username,
       '--password-stdin',
-      credentials.endpoint], {
+      credentials.endpoint.replace(/^https?:\/\//, '')], {
       input: credentials.password,
 
       // Need to quiet otherwise Docker will complain
