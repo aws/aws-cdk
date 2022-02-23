@@ -601,6 +601,11 @@ NOTICES
 If you don’t want to see a notice anymore, use "cdk acknowledge <id>". For example, "cdk acknowledge 16603".
 ```
 
+By default, when there are notices that affect the current version of the CLI or the framework, the relevant notices 
+will be displayed, but it won't affect the exit code of the application. This may be undesirable in certain 
+circumstances. For example, in a CI/CD environment, users may want their workflow to fail, so that new notices are 
+found and can be handled as soon as possible. To enable this behavior, use the option `--fail-on-notices`.
+
 ### Bundling
 
 By default asset bundling is skipped for `cdk list` and `cdk destroy`. For `cdk deploy`, `cdk diff`

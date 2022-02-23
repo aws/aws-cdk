@@ -4,9 +4,8 @@ import * as fs from 'fs-extra';
 import * as nock from 'nock';
 import {
   CachedDataSource,
-  filterNotices,
   formatNotices,
-  generateMessage,
+  generateMessage, getApplicableNotices,
   Notice,
   WebsiteNoticeDataSource,
 } from '../lib/notices';
@@ -79,14 +78,16 @@ const NOTICE_FOR_APIGATEWAYV2_CFN_STAGE = {
 };
 
 describe('cli notices', () => {
-  beforeAll(() => {
-    jest
+  let versionNumberSpy: jest.SpyInstance<any>;
+
+  beforeEach(() => {
+    versionNumberSpy = jest
       .spyOn(version, 'versionNumber')
       .mockImplementation(() => '1.0.0');
   });
 
   afterAll(() => {
-    jest.restoreAllMocks();
+    versionNumberSpy.mockRestore();
   });
 
   describe(formatNotices, () => {
@@ -118,64 +119,6 @@ describe('cli notices', () => {
 	More information at: https://github.com/aws/aws-cdk/issues/17061
 `);
     });
-  });
-
-  describe(filterNotices, () => {
-    test('correctly filter notices on cli', () => {
-      const notices = [BASIC_NOTICE, MULTIPLE_AFFECTED_VERSIONS_NOTICE];
-      expect(filterNotices(notices, {
-        cliVersion: '1.0.0',
-      })).toEqual([BASIC_NOTICE]);
-
-      expect(filterNotices(notices, {
-        cliVersion: '1.129.0',
-      })).toEqual([MULTIPLE_AFFECTED_VERSIONS_NOTICE]);
-
-      expect(filterNotices(notices, {
-        cliVersion: '1.126.0',
-      })).toEqual(notices);
-
-      expect(filterNotices(notices, {
-        cliVersion: '1.130.0',
-      })).toEqual([]);
-    });
-
-    test('correctly filter notices on framework', () => {
-      const notices = [FRAMEWORK_2_1_0_AFFECTED_NOTICE];
-
-      expect(filterNotices(notices, {
-        outdir: path.join(__dirname, 'cloud-assembly-trees/built-with-2_12_0'),
-      })).toEqual([]);
-
-      expect(filterNotices(notices, {
-        outdir: path.join(__dirname, 'cloud-assembly-trees/built-with-1_144_0'),
-      })).toEqual([FRAMEWORK_2_1_0_AFFECTED_NOTICE]);
-    });
-
-    test('correctly filter notices on arbitrary modules', () => {
-      const notices = [NOTICE_FOR_APIGATEWAYV2];
-
-      // module-level match
-      expect(filterNotices(notices, {
-        outdir: path.join(__dirname, 'cloud-assembly-trees/experimental-module'),
-      })).toEqual([NOTICE_FOR_APIGATEWAYV2]);
-
-      // no apigatewayv2 in the tree
-      expect(filterNotices(notices, {
-        outdir: path.join(__dirname, 'cloud-assembly-trees/built-with-2_12_0'),
-      })).toEqual([]);
-
-      // module name mismatch: apigateway != apigatewayv2
-      expect(filterNotices([NOTICE_FOR_APIGATEWAY], {
-        outdir: path.join(__dirname, 'cloud-assembly-trees/experimental-module'),
-      })).toEqual([]);
-
-      // construct-level match
-      expect(filterNotices([NOTICE_FOR_APIGATEWAYV2_CFN_STAGE], {
-        outdir: path.join(__dirname, 'cloud-assembly-trees/experimental-module'),
-      })).toEqual([NOTICE_FOR_APIGATEWAYV2_CFN_STAGE]);
-    });
-
   });
 
   describe(WebsiteNoticeDataSource, () => {
@@ -337,5 +280,115 @@ If you don’t want to see a notice anymore, use "cdk acknowledge <id>". For exa
         fetch: jest.fn(),
       };
     }
+  });
+
+  describe(getApplicableNotices, () => {
+    const mockDataSource = {
+      fetch: jest.fn(),
+    };
+
+    afterEach(() => {
+      mockDataSource.fetch.mockReset();
+    });
+
+    describe('correctly get applicable notices for cli', () => {
+      beforeEach(() => {
+        mockDataSource.fetch.mockResolvedValue([BASIC_NOTICE, MULTIPLE_AFFECTED_VERSIONS_NOTICE]);
+      });
+
+      test('below upper bound of basic notice', async () => {
+        versionNumberSpy.mockImplementation(() => '1.0.0');
+
+        expect(await getApplicableNotices({
+          acknowledgedIssueNumbers: [],
+          outdir: '/tmp',
+        }, mockDataSource)).toEqual([BASIC_NOTICE]);
+      });
+
+      test('within range of multiple versions notice', async () => {
+        versionNumberSpy.mockImplementation(() => '1.129.0');
+
+        expect(await getApplicableNotices({
+          acknowledgedIssueNumbers: [],
+          outdir: '/tmp',
+        }, mockDataSource)).toEqual([MULTIPLE_AFFECTED_VERSIONS_NOTICE]);
+      });
+
+      test('at intersection of both notices', async () => {
+        versionNumberSpy.mockImplementation(() => '1.126.0');
+
+        expect(await getApplicableNotices({
+          acknowledgedIssueNumbers: [],
+          outdir: '/tmp',
+        }, mockDataSource)).toEqual([BASIC_NOTICE, MULTIPLE_AFFECTED_VERSIONS_NOTICE]);
+      });
+
+      test('at exclusive upper bound of multiple versions notice', async () => {
+        versionNumberSpy.mockImplementation(() => '1.130.0');
+
+        expect(await getApplicableNotices({
+          acknowledgedIssueNumbers: [],
+          outdir: '/tmp',
+        }, mockDataSource)).toEqual([]);
+      });
+    });
+
+    describe('correctly get applicable notices for framework', () => {
+      beforeEach(() => {
+        mockDataSource.fetch.mockResolvedValue([FRAMEWORK_2_1_0_AFFECTED_NOTICE]);
+      });
+
+      test('cloud assembly built with with a later version', async () => {
+        expect(await getApplicableNotices({
+          acknowledgedIssueNumbers: [],
+          outdir: path.join(__dirname, 'cloud-assembly-trees/built-with-2_12_0'),
+        }, mockDataSource)).toEqual([]);
+      });
+
+      test('cloud assembly built with with an earlier version', async () => {
+        expect(await getApplicableNotices({
+          acknowledgedIssueNumbers: [],
+          outdir: path.join(__dirname, 'cloud-assembly-trees/built-with-1_144_0'),
+        }, mockDataSource)).toEqual([FRAMEWORK_2_1_0_AFFECTED_NOTICE]);
+      });
+    });
+
+    describe('correctly get applicable notices for arbitrary modules', function () {
+      beforeEach(() => {
+        mockDataSource.fetch.mockResolvedValue([NOTICE_FOR_APIGATEWAYV2]);
+      });
+
+      test('module level match', async () => {
+        expect(await getApplicableNotices({
+          acknowledgedIssueNumbers: [],
+          outdir: path.join(__dirname, 'cloud-assembly-trees/experimental-module'),
+        }, mockDataSource)).toEqual([NOTICE_FOR_APIGATEWAYV2]);
+      });
+
+      test('no apigatewayv2 in the tree', async () => {
+        expect(await getApplicableNotices({
+          acknowledgedIssueNumbers: [],
+          outdir: path.join(__dirname, 'cloud-assembly-trees/built-with-2_12_0'),
+        }, mockDataSource)).toEqual([]);
+      });
+
+      test('module name mismatch: apigateway != apigatewayv2', async () => {
+        mockDataSource.fetch.mockResolvedValue([NOTICE_FOR_APIGATEWAY]);
+
+        expect(await getApplicableNotices({
+          acknowledgedIssueNumbers: [],
+          outdir: path.join(__dirname, 'cloud-assembly-trees/experimental-module'),
+        }, mockDataSource)).toEqual([]);
+      });
+
+      test('construct-level match', async () => {
+        mockDataSource.fetch.mockResolvedValue([NOTICE_FOR_APIGATEWAYV2_CFN_STAGE]);
+
+        expect(await getApplicableNotices({
+          acknowledgedIssueNumbers: [],
+          outdir: path.join(__dirname, 'cloud-assembly-trees/experimental-module'),
+        }, mockDataSource)).toEqual([NOTICE_FOR_APIGATEWAYV2_CFN_STAGE]);
+      });
+    });
   });
 });

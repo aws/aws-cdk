@@ -30,7 +30,7 @@ export interface DisplayNoticesProps {
   readonly ignoreCache?: boolean;
 }
 
-export async function refreshNotices() {
+export async function refreshNotices(): Promise<Notice[]> {
   const dataSource = dataSourceReference(false);
   return dataSource.fetch();
 }
@@ -42,19 +42,24 @@ export async function displayNotices(props: DisplayNoticesProps) {
 }
 
 export async function generateMessage(dataSource: NoticeDataSource, props: DisplayNoticesProps) {
-  const data = await dataSource.fetch();
-  const individualMessages = formatNotices(filterNotices(data, {
-    outdir: props.outdir,
-    acknowledgedIssueNumbers: new Set(props.acknowledgedIssueNumbers),
-  }));
+  const notices = await getApplicableNotices(props, dataSource);
+  const individualMessages = formatNotices(notices);
 
   if (individualMessages.length > 0) {
-    return finalMessage(individualMessages, data[0].issueNumber);
+    return finalMessage(individualMessages, notices[0].issueNumber);
   }
   return '';
 }
 
-function dataSourceReference(ignoreCache: boolean): NoticeDataSource {
+export async function getApplicableNotices(props: DisplayNoticesProps, dataSource: NoticeDataSource = dataSourceReference()): Promise<Notice[]> {
+  const data = await dataSource.fetch();
+  return filterNotices(data, {
+    outdir: props.outdir,
+    acknowledgedIssueNumbers: new Set(props.acknowledgedIssueNumbers),
+  });
+}
+
+export function dataSourceReference(ignoreCache?: boolean): NoticeDataSource {
   return new CachedDataSource(CACHE_FILE_PATH, new WebsiteNoticeDataSource(), ignoreCache);
 }
 
@@ -73,7 +78,7 @@ export interface FilterNoticeOptions {
   acknowledgedIssueNumbers?: Set<number>,
 }
 
-export function filterNotices(data: Notice[], options: FilterNoticeOptions): Notice[] {
+function filterNotices(data: Notice[], options: FilterNoticeOptions): Notice[] {
   const filter = new NoticeFilter({
     cliVersion: options.cliVersion ?? versionNumber(),
     acknowledgedIssueNumbers: options.acknowledgedIssueNumbers ?? new Set(),

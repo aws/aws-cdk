@@ -19,7 +19,7 @@ import { realHandler as doctor } from '../lib/commands/doctor';
 import { RequireApproval } from '../lib/diff';
 import { availableInitLanguages, cliInit, printAvailableTemplates } from '../lib/init';
 import { data, debug, error, print, setLogLevel } from '../lib/logging';
-import { displayNotices, refreshNotices } from '../lib/notices';
+import { displayNotices, refreshNotices, getApplicableNotices } from '../lib/notices';
 import { PluginHost } from '../lib/plugin';
 import { Command, Configuration, Settings } from '../lib/settings';
 import * as version from '../lib/version';
@@ -73,6 +73,7 @@ async function parseCommandLineArguments() {
     .option('output', { type: 'string', alias: 'o', desc: 'Emits the synthesized cloud assembly into a directory (default: cdk.out)', requiresArg: true })
     .option('notices', { type: 'boolean', desc: 'Show relevant notices' })
     .option('no-color', { type: 'boolean', desc: 'Removes colors and other style from console output', default: false })
+    .option('fail-on-notices', { type: 'boolean', desc: 'Fail with exit code 1 in case there are any applicable notices', default: false })
     .command(['list [STACKS..]', 'ls [STACKS..]'], 'Lists all stacks in the app', yargs => yargs
       .option('long', { type: 'boolean', default: false, alias: 'l', desc: 'Display environment information for each stack' }),
     )
@@ -248,6 +249,20 @@ async function initCommandLine() {
     },
   });
   await configuration.load();
+
+  if (argv.failOnNotices) {
+    const noticeProps = {
+      outdir: configuration.settings.get(['output']) ?? 'cdk.out',
+      acknowledgedIssueNumbers: configuration.context.get('acknowledged-issue-numbers') ?? [],
+    };
+
+    const notices = await getApplicableNotices(noticeProps);
+    if (notices.length > 0) {
+      error('❌ CDK cannot proceed, as there are notices relevant to this execution:');
+      await displayNotices(noticeProps);
+      return 1;
+    }
+  }
 
   const sdkProvider = await SdkProvider.withAwsCliCompatibleDefaults({
     profile: configuration.settings.get(['profile']),
