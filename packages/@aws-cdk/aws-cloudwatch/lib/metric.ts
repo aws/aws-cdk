@@ -19,7 +19,7 @@ export interface CommonMetricOptions {
    *
    * @default Duration.minutes(5)
    */
-  readonly period?: cdk.Duration;
+  readonly period?: cdk.Duration; 
 
   /**
    * What function to use for aggregating.
