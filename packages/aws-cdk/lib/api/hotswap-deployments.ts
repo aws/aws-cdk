@@ -3,7 +3,6 @@ import * as cxapi from '@aws-cdk/cx-api';
 import * as chalk from 'chalk';
 import { print } from '../logging';
 import { ISDK, Mode, SdkProvider } from './aws-auth';
-import { CloudFormationDeployments, NestedStackNames } from './cloudformation-deployments';
 import { DeployStackResult } from './deploy-stack';
 import { EvaluateCloudFormationTemplate, LazyListStackResources } from './evaluate-cloudformation-template';
 import { isHotswappableCodeBuildProjectChange } from './hotswap/code-build-projects';
@@ -12,6 +11,7 @@ import { isHotswappableEcsServiceChange } from './hotswap/ecs-services';
 import { isHotswappableLambdaFunctionChange } from './hotswap/lambda-functions';
 import { isHotswappableS3BucketDeploymentChange } from './hotswap/s3-bucket-deployments';
 import { isHotswappableStateMachineChange } from './hotswap/stepfunctions-state-machines';
+import { readCurrentTemplateWithNestedStacks, NestedStackNames } from './nested-stack-helpers';
 import { CloudFormationStack } from './util/cloudformation';
 
 /**
@@ -44,10 +44,7 @@ export async function tryHotswapDeployment(
     listStackResources,
   });
 
-  const cloudFormationDeployments = new CloudFormationDeployments({
-    sdkProvider,
-  });
-  const currentTemplateWithStackNames = await cloudFormationDeployments.readCurrentTemplateWithNestedStacks(stackArtifact);
+  const currentTemplateWithStackNames = await readCurrentTemplateWithNestedStacks(stackArtifact, sdk);
   const stackChanges = cfn_diff.diffTemplate(currentTemplateWithStackNames.deployedTemplate, stackArtifact.template);
   const hotswappableChanges = await findAllHotswappableChanges(
     stackChanges, evaluateCfnTemplate, sdk, stackArtifact, currentTemplateWithStackNames.nestedStackNames,
