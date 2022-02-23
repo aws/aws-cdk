@@ -1,12 +1,11 @@
 import { IResolvable, IResolveContext, Token, Tokenization } from '@aws-cdk/core';
 import { Step } from '../blueprint/step';
 
+
 const STEP_OUTPUT_SYM = Symbol.for('@aws-cdk/pipelines.StepOutput');
 
-/**
- * Side-state for steps
- */
-const PRODUCED_OUTPUTS = new WeakMap<Step, StepOutput[]>();
+const PRODUCED_OUTPUTS_SYM = Symbol.for('@aws-cdk/pipelines.outputs');
+
 
 /**
  * A symbolic reference to a value produced by another step
@@ -51,19 +50,22 @@ export class StepOutput implements IResolvable {
    * Return the produced outputs for the given step
    */
   public static producedStepOutputs(step: Step): StepOutput[] {
-    return PRODUCED_OUTPUTS.get(step) ?? [];
+    return (step as any)[PRODUCED_OUTPUTS_SYM] ?? [];
   }
 
   /**
    * Add produced outputs for the given step
    */
-  public static addProducedStepOutputs(step: Step, ...outputs: StepOutput[]) {
-    let list = PRODUCED_OUTPUTS.get(step);
-    if (!list) {
-      list = [];
-      PRODUCED_OUTPUTS.set(step, list);
+  public static recordProducer(...outputs: StepOutput[]) {
+    for (const output of outputs) {
+      const step = output.step;
+      let list = (step as any)[PRODUCED_OUTPUTS_SYM];
+      if (!list) {
+        list = [];
+        (step as any)[PRODUCED_OUTPUTS_SYM] = list;
+      }
+      list.push(...outputs);
     }
-    list.push(...outputs);
   }
 
   /**

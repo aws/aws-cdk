@@ -113,7 +113,7 @@ export abstract class Step implements IFileSetProducer {
   protected discoverReferencedOutputs(structure: any) {
     for (const output of StepOutput.findAll(structure)) {
       this._dependencies.add(output.step);
-      StepOutput.addProducedStepOutputs(this, output);
+      StepOutput.recordProducer(output);
     }
   }
 }
