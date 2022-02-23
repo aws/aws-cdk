@@ -40,7 +40,7 @@
     "@types/archiver": "^5.3.1",
     "@types/fs-extra": "^8.1.2",
     "@types/glob": "^7.2.0",
-    "@types/jest": "^27.4.0",
+    "@types/jest": "^27.4.1",
     "@types/minimatch": "^3.0.5",
     "@types/mockery": "^1.4.30",
     "@types/node": "^10.17.60",

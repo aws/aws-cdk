@@ -27,7 +27,7 @@
   },
   "devDependencies": {
     "@types/fs-extra": "^8.1.2",
-    "@types/jest": "^27.4.0",
+    "@types/jest": "^27.4.1",
     "@types/yargs": "^15.0.14",
     "@aws-cdk/pkglint": "0.0.0",
     "typescript": "~3.9.10",
