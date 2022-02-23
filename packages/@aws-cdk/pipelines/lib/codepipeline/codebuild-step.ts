@@ -3,8 +3,8 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import { Duration } from '@aws-cdk/core';
 import { ShellStep, ShellStepProps } from '../blueprint';
-import { StepOutput } from '../blueprint/step-output';
 import { mergeBuildSpecs } from './private/buildspecs';
+import { makeCodePipelineOutput } from './private/outputs';
 
 /**
  * Construction props for a CodeBuildStep
@@ -242,8 +242,7 @@ export class CodeBuildStep extends ShellStep {
 
     this.exportedVariables.add(variableName);
 
-    // return `#{${this.variablesNamespace}.${variableName}}`;
-    return new StepOutput(this, variableName).toString();
+    return makeCodePipelineOutput(this, variableName);
   }
 
   /**

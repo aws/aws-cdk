@@ -8,8 +8,8 @@ import { IBucket } from '@aws-cdk/aws-s3';
 import { SecretValue, Token } from '@aws-cdk/core';
 import { Node } from 'constructs';
 import { FileSet, Step } from '../blueprint';
-import { StepOutput } from '../blueprint/step-output';
 import { CodePipelineActionFactoryResult, ProduceActionOptions, ICodePipelineActionFactory } from './codepipeline-action-factory';
+import { makeCodePipelineOutput } from './private/outputs';
 
 /**
  * Factory for CodePipeline source steps
@@ -141,7 +141,7 @@ export abstract class CodePipelineSource extends Step implements ICodePipelineAc
    * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/reference-variables.html#reference-variables-list
    */
   public sourceAttribute(name: string): string {
-    return new StepOutput(this, name).toString();
+    return makeCodePipelineOutput(this, name);
   }
 }
 

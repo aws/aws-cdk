@@ -8,8 +8,8 @@ import * as iam from '@aws-cdk/aws-iam';
 import { IDependable, Stack, Token } from '@aws-cdk/core';
 import { Construct, Node } from 'constructs';
 import { FileSetLocation, ShellStep, StackOutputReference } from '../../blueprint';
-import { StepOutput } from '../../blueprint/step-output';
 import { PipelineQueries } from '../../helpers-internal/pipeline-queries';
+import { StepOutput } from '../../helpers-internal/step-output';
 import { cloudAssemblyBuildSpecDir, obtainScope } from '../../private/construct-internals';
 import { hash, stackVariableNamespace } from '../../private/identifiers';
 import { mapValues, mkdict, noEmptyObject, noUndefined, partition } from '../../private/javascript';
@@ -136,7 +136,7 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
       outputs: shellStep.outputs,
       stepId: shellStep.id,
       installCommands: shellStep.installCommands,
-      producedStepOutputs: shellStep.producedStepOutputs,
+      producedStepOutputs: StepOutput.producedStepOutputs(shellStep),
       ...additional,
     });
   }
@@ -314,7 +314,6 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
     const configHashEnv = options.beforeSelfMutation
       ? { _PROJECT_CONFIG_HASH: projectConfigHash }
       : {};
-
 
     stage.addAction(new codepipeline_actions.CodeBuildAction({
       actionName: actionName,

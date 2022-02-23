@@ -44,7 +44,9 @@ const app = new App({
     '@aws-cdk/core:newStyleStackSynthesis': '1',
   },
 });
+
 new PipelineStack(app, 'VariablePipelineStack', {
   env: { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION },
 });
+
 app.synth();

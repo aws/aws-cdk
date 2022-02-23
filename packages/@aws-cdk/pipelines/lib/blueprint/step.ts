@@ -1,5 +1,5 @@
 import { Stack, Token } from '@aws-cdk/core';
-import { StepOutput } from '../blueprint/step-output';
+import { StepOutput } from '../helpers-internal/step-output';
 import { FileSet, IFileSetProducer } from './file-set';
 
 /**
@@ -30,20 +30,6 @@ export abstract class Step implements IFileSetProducer {
    * The list of FileSets consumed by this Step
    */
   public readonly dependencyFileSets: FileSet[] = [];
-
-  /**
-   * The list of StepOutputs consumed by this Step
-   *
-   * Should be inspected by the pipeline engine.
-   */
-  public readonly consumedStepOutputs: StepOutput[] = [];
-
-  /**
-   * The list of StepOutputs produced by this Step
-   *
-   * Should be inspected by the pipeline engine.
-   */
-  public readonly producedStepOutputs: StepOutput[] = [];
 
   /**
    * Whether or not this is a Source step
@@ -127,8 +113,7 @@ export abstract class Step implements IFileSetProducer {
   protected discoverReferencedOutputs(structure: any) {
     for (const output of StepOutput.findAll(structure)) {
       this._dependencies.add(output.step);
-      this.consumedStepOutputs.push(output);
-      output.step.producedStepOutputs.push(output);
+      StepOutput.addProducedStepOutputs(this, output);
     }
   }
 }
