@@ -204,6 +204,66 @@ test('can enable version upgrade update policy', () => {
   });
 });
 
+test('can set a self-referencing custom policy', () => {
+  const domain = new Domain(stack, 'Domain', {
+    version: defaultVersion,
+  });
+
+  domain.addAccessPolicies(
+    new iam.PolicyStatement({
+      actions: ['es:ESHttpPost', 'es:ESHttpPut'],
+      effect: iam.Effect.ALLOW,
+      principals: [new iam.AccountPrincipal('5678')],
+      resources: [domain.domainArn, `${domain.domainArn}/*`],
+    }),
+  );
+
+  const expectedPolicy = {
+    'Fn::Join': [
+      '',
+      [
+        '{"action":"updateDomainConfig","service":"OpenSearch","parameters":{"DomainName":"',
+        {
+          Ref: 'Domain66AC69E0',
+        },
+        '","AccessPolicies":"{\\"Statement\\":[{\\"Action\\":[\\"es:ESHttpPost\\",\\"es:ESHttpPut\\"],\\"Effect\\":\\"Allow\\",\\"Principal\\":{\\"AWS\\":\\"arn:',
+        {
+          Ref: 'AWS::Partition',
+        },
+        ':iam::5678:root\\"},\\"Resource\\":[\\"',
+        {
+          'Fn::GetAtt': [
+            'Domain66AC69E0',
+            'Arn',
+          ],
+        },
+        '\\",\\"',
+        {
+          'Fn::GetAtt': [
+            'Domain66AC69E0',
+            'Arn',
+          ],
+        },
+        '/*\\"]}],\\"Version\\":\\"2012-10-17\\"}"},"outputPath":"DomainConfig.ClusterConfig.AccessPolicies","physicalResourceId":{"id":"',
+        {
+          Ref: 'Domain66AC69E0',
+        },
+        'AccessPolicy"}}',
+      ],
+    ],
+  };
+  Template.fromStack(stack).hasResource('Custom::ElasticsearchAccessPolicy', {
+    ServiceToken: {
+      'Fn::GetAtt': [
+        'AWS679f53fac002430cb0da5b7982bd22872D164C4C',
+        'Arn',
+      ],
+    },
+    Create: expectedPolicy,
+    Update: expectedPolicy,
+  });
+});
+
 describe('UltraWarm instances', () => {
 
   test('can enable UltraWarm instances', () => {

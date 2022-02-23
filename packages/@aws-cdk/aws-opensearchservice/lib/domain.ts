@@ -1195,6 +1195,10 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
 
   private readonly domain: CfnDomain;
 
+  private accessPolicy?: OpenSearchAccessPolicy
+
+  private encryptionAtRestOptions?: EncryptionAtRestOptions
+
   private readonly _connections: ec2.Connections | undefined;
 
   constructor(scope: Construct, id: string, props: DomainProps) {
@@ -1654,33 +1658,12 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       });
     }
 
-    const accessPolicyStatements: iam.PolicyStatement[] | undefined = unsignedBasicAuthEnabled
-      ? (props.accessPolicies ?? []).concat(unsignedAccessPolicy)
-      : props.accessPolicies;
-
-    if (accessPolicyStatements != null) {
-      const accessPolicy = new OpenSearchAccessPolicy(this, 'Access Policy', {
-        domainName: this.domainName,
-        domainArn: this.domainArn,
-        accessPolicies: accessPolicyStatements,
-      });
-
-      if (props.encryptionAtRest?.kmsKey) {
-
-        // https://docs.aws.amazon.com/opensearch-service/latest/developerguide/encryption-at-rest.html
-
-        // these permissions are documented as required during domain creation.
-        // while not strictly documented for updates as well, it stands to reason that an update
-        // operation might require these in case the cluster uses a kms key.
-        // empircal evidence shows this is indeed required: https://github.com/aws/aws-cdk/issues/11412
-        accessPolicy.grantPrincipal.addToPrincipalPolicy(new iam.PolicyStatement({
-          actions: ['kms:List*', 'kms:Describe*', 'kms:CreateGrant'],
-          resources: [props.encryptionAtRest.kmsKey.keyArn],
-          effect: iam.Effect.ALLOW,
-        }));
-      }
-
-      accessPolicy.node.addDependency(this.domain);
+    this.encryptionAtRestOptions = props.encryptionAtRest;
+    if (props.accessPolicies) {
+      this.addAccessPolicies(...props.accessPolicies);
+    }
+    if (unsignedBasicAuthEnabled) {
+      this.addAccessPolicies(unsignedAccessPolicy);
     }
   }
 
@@ -1693,6 +1676,39 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       throw new Error("Connections are only available on VPC enabled domains. Use the 'vpc' property to place a domain inside a VPC");
     }
     return this._connections;
+  }
+
+
+  /**
+   * Add policy statements to the domain access policy
+   */
+  public addAccessPolicies(...accessPolicyStatements: iam.PolicyStatement[]) {
+    if (accessPolicyStatements.length > 0) {
+      if (!this.accessPolicy) {
+        // Only create the custom resource after there are statements to set.
+        this.accessPolicy = new OpenSearchAccessPolicy(this, 'OpenSearchAccessPolicy', {
+          domainName: this.domainName,
+          domainArn: this.domainArn,
+          accessPolicies: accessPolicyStatements,
+        });
+
+        if (this.encryptionAtRestOptions?.kmsKey) {
+          // https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/encryption-at-rest.html
+
+          // these permissions are documented as required during domain creation.
+          // while not strictly documented for updates as well, it stands to reason that an update
+          // operation might require these in case the cluster uses a kms key.
+          // empircal evidence shows this is indeed required: https://github.com/aws/aws-cdk/issues/11412
+          this.accessPolicy.grantPrincipal.addToPrincipalPolicy(new iam.PolicyStatement({
+            actions: ['kms:List*', 'kms:Describe*', 'kms:CreateGrant'],
+            resources: [this.encryptionAtRestOptions.kmsKey.keyArn],
+            effect: iam.Effect.ALLOW,
+          }));
+        }
+      } else {
+        this.accessPolicy.addAccessPolicies(...accessPolicyStatements);
+      }
+    }
   }
 }
 
