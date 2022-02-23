@@ -357,7 +357,7 @@ IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 ----------------
 
-** aws-sdk@2.1074.0 - https://www.npmjs.com/package/aws-sdk/v/2.1074.0 | Apache-2.0
+** aws-sdk@2.1079.0 - https://www.npmjs.com/package/aws-sdk/v/2.1079.0 | Apache-2.0
 AWS SDK for JavaScript
 Copyright 2012-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 
@@ -1182,10 +1182,10 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ----------------
 
-** depd@1.1.2 - https://www.npmjs.com/package/depd/v/1.1.2 | MIT
+** depd@2.0.0 - https://www.npmjs.com/package/depd/v/2.0.0 | MIT
 (The MIT License)
 
-Copyright (c) 2014-2017 Douglas Christopher Wilson
+Copyright (c) 2014-2018 Douglas Christopher Wilson
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
@@ -1227,7 +1227,7 @@ CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 ----------------
 
-** statuses@1.5.0 - https://www.npmjs.com/package/statuses/v/1.5.0 | MIT
+** statuses@2.0.1 - https://www.npmjs.com/package/statuses/v/2.0.1 | MIT
 
 The MIT License (MIT)
 
@@ -1281,7 +1281,7 @@ SOFTWARE.
 
 ----------------
 
-** http-errors@1.8.1 - https://www.npmjs.com/package/http-errors/v/1.8.1 | MIT
+** http-errors@2.0.0 - https://www.npmjs.com/package/http-errors/v/2.0.0 | MIT
 
 The MIT License (MIT)
 
@@ -1388,7 +1388,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ----------------
 
-** raw-body@2.4.3 - https://www.npmjs.com/package/raw-body/v/2.4.3 | MIT
+** raw-body@2.5.0 - https://www.npmjs.com/package/raw-body/v/2.5.0 | MIT
 The MIT License (MIT)
 
 Copyright (c) 2013-2014 Jonathan Ong <me@jongleberry.com>
@@ -1678,7 +1678,7 @@ THE SOFTWARE.
 
 ----------------
 
-** degenerator@3.0.1 - https://www.npmjs.com/package/degenerator/v/3.0.1 | MIT
+** degenerator@3.0.2 - https://www.npmjs.com/package/degenerator/v/3.0.2 | MIT
 
 ----------------
 
