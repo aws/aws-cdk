@@ -1,5 +1,8 @@
 # node-bundle
 
+> **NOTE:** This tool should only be used on packages in this repository,
+> and is not intended for external usage.
+
 Create bundled packages with minimal dependencies and appropriate license attributions.
 
 ## Why
