@@ -79,6 +79,7 @@ only CLI applications.
 Run the tool from the root directory of your package.
 
 ```console
+$ node-bundle --help
 Usage: node-bundle COMMAND
 
 Commands:
@@ -88,21 +89,21 @@ Commands:
   node-bundle pack      Write the bundle and create the tarball
 
 Options:
-  --entrypoint      List of entrypoints to bundle                        [array]
-  --external        Packages in this list will be excluded from the bundle and
-                    added as dependencies (example: fsevents:optional)
+  --entrypoint       List of entrypoints to bundle                       [array]
+  --external         Packages in this list will be excluded from the bundle and
+                     added as dependencies (example: fsevents:optional)
                                                            [array] [default: []]
-  --license         List of valid licenses                 [array] [default: []]
-  --resource        List of resources that need to be explicitly copied to the
-                    bundle (example:
-                    node_modules/proxy-agent/contextify.js:bin/contextify.js)
+  --allowed-license  List of valid licenses                [array] [default: []]
+  --resource         List of resources that need to be explicitly copied to the
+                     bundle (example:
+                     node_modules/proxy-agent/contextify.js:bin/contextify.js)
                                                            [array] [default: []]
-  --dont-attribute  Dependencies matching this regular expressions wont be added
-                    to the notice file                                  [string]
-  --test            Validation command to sanity test the bundle after its
-                    created                                             [string]
-  --help            Show help                                          [boolean]
-  --version         Show version number                                [boolean]
+  --dont-attribute   Dependencies matching this regular expressions wont be
+                     added to the notice file                           [string]
+  --test             Validation command to sanity test the bundle after its
+                     created                                            [string]
+  --help             Show help                                         [boolean]
+  --version          Show version number                               [boolean]
 ```
 
 You can also use the programmatic access:
