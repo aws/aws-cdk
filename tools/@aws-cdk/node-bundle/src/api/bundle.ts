@@ -454,12 +454,14 @@ export class Bundle {
     // external dependencies should be specified as runtime dependencies
     for (const external of this.externals.dependencies ?? []) {
       const version = this.findExternalDependencyVersion(external);
+      manifest.dependencies = manifest.dependencies ?? {};
       manifest.dependencies[external] = version;
     }
 
     // external dependencies should be specified as optional dependencies
     for (const external of this.externals.optionalDependencies ?? []) {
       const version = this.findExternalDependencyVersion(external);
+      manifest.optionalDependencies = manifest.optionalDependencies ?? {};
       manifest.optionalDependencies[external] = version;
     }
 
