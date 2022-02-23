@@ -299,26 +299,6 @@ export enum InstanceClass {
   C5 = 'c5',
 
   /**
-   * Compute optimized instances, 6th generation
-   */
-  COMPUTE6_INTEL = 'c6i',
-
-  /**
-   * Compute optimized instances, 6th generation
-   */
-  C6I = 'c6i',
-
-  /**
-   * Compute optimized instances based on AMD EPYC (codename Milan), 6th generation
-   */
-  COMPUTE6_AMD = 'c6a',
-
-  /**
-   * Compute optimized instances based on AMD EPYC (codename Milan), 6th generation
-   */
-  C6A = 'c6a',
-
-  /**
    * Compute optimized instances with local NVME drive, 5th generation
    */
   COMPUTE5_NVME_DRIVE = 'c5d',
@@ -357,6 +337,26 @@ export enum InstanceClass {
    * Compute optimized instances for high performance computing, 5th generation
    */
   C5N = 'c5n',
+
+  /**
+   * Compute optimized instances, 6th generation
+   */
+   COMPUTE6_INTEL = 'c6i',
+
+   /**
+    * Compute optimized instances, 6th generation
+    */
+   C6I = 'c6i',
+
+   /**
+    * Compute optimized instances based on AMD EPYC (codename Milan), 6th generation
+    */
+   COMPUTE6_AMD = 'c6a',
+
+   /**
+    * Compute optimized instances based on AMD EPYC (codename Milan), 6th generation
+    */
+   C6A = 'c6a',
 
   /**
    * Compute optimized instances for high performance computing, 6th generation with Graviton2 processors
