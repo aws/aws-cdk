@@ -78,7 +78,7 @@ test('support access policy added inline and later', () => {
     }),
   );
 
-  Template.fromStack(stack).hasResource('Custom::ElasticsearchAccessPolicy', {
+  Template.fromStack(stack).hasResourceProperties('Custom::ElasticsearchAccessPolicy', {
     ServiceToken: {
       'Fn::GetAtt': [
         'AWS679f53fac002430cb0da5b7982bd22872D164C4C',
@@ -92,7 +92,7 @@ test('support access policy added inline and later', () => {
         DomainName: 'TestDomain',
         AccessPolicies: '{"Statement":[{"Action":"es:ESHttp*","Effect":"Allow","Principal":{"AWS":"*"},"Resource":"test:arn"},{"Action":"*","Effect":"Allow","Principal":{"AWS":"*"},"Resource":"test:arn"}],"Version":"2012-10-17"}',
       },
-      outputPath: 'DomainConfig.ElasticsearchClusterConfig.AccessPolicies',
+      outputPaths: ['DomainConfig.ElasticsearchClusterConfig.AccessPolicies'],
       physicalResourceId: { id: 'TestDomainAccessPolicy' },
     }),
     Update: JSON.stringify({
@@ -102,7 +102,7 @@ test('support access policy added inline and later', () => {
         DomainName: 'TestDomain',
         AccessPolicies: '{"Statement":[{"Action":"es:ESHttp*","Effect":"Allow","Principal":{"AWS":"*"},"Resource":"test:arn"},{"Action":"*","Effect":"Allow","Principal":{"AWS":"*"},"Resource":"test:arn"}],"Version":"2012-10-17"}',
       },
-      outputPath: 'DomainConfig.ElasticsearchClusterConfig.AccessPolicies',
+      outputPaths: ['DomainConfig.ElasticsearchClusterConfig.AccessPolicies'],
       physicalResourceId: { id: 'TestDomainAccessPolicy' },
     }),
   });

@@ -240,7 +240,7 @@ test('can set a self-referencing custom policy', () => {
             'Arn',
           ],
         },
-        '/*\\"]}],\\"Version\\":\\"2012-10-17\\"}"},"outputPath":"DomainConfig.ElasticsearchClusterConfig.AccessPolicies","physicalResourceId":{"id":"',
+        '/*\\"]}],\\"Version\\":\\"2012-10-17\\"}"},"outputPaths":["DomainConfig.ElasticsearchClusterConfig.AccessPolicies"],"physicalResourceId":{"id":"',
         {
           Ref: 'Domain66AC69E0',
         },
@@ -248,7 +248,7 @@ test('can set a self-referencing custom policy', () => {
       ],
     ],
   };
-  Template.fromStack(stack).hasResource('Custom::ElasticsearchAccessPolicy', {
+  Template.fromStack(stack).hasResourceProperties('Custom::ElasticsearchAccessPolicy', {
     ServiceToken: {
       'Fn::GetAtt': [
         'AWS679f53fac002430cb0da5b7982bd22872D164C4C',
