@@ -443,7 +443,7 @@ export class ContainerDefinition extends CoreConstruct {
    * Whether this container definition references a specific JSON field of a secret
    * stored in Secrets Manager.
    */
-  public referencesSecretJsonField?: boolean;
+  private _referencesSecretJsonField?: boolean;
 
   /**
    * The name of the image referenced by this container.
@@ -606,13 +606,24 @@ export class ContainerDefinition extends CoreConstruct {
       this.secrets = [];
     }
     if (secret.hasField) {
-      this.referencesSecretJsonField = true;
+      this._referencesSecretJsonField = true;
     }
     secret.grantRead(this.taskDefinition.obtainExecutionRole());
     this.secrets.push({
       name,
       valueFrom: secret.arn,
     });
+  }
+
+  /**
+   * This method returns true if any Secret in this definition references a JSON field.
+   */
+  public referencesSecretJsonField(): boolean {
+    if (this._referencesSecretJsonField) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   /**

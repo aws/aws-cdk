@@ -611,7 +611,7 @@ export class TaskDefinition extends TaskDefinitionBase {
     if (this.defaultContainer === undefined && container.essential) {
       this.defaultContainer = container;
     }
-    if (container.referencesSecretJsonField) {
+    if (container.referencesSecretJsonField()) {
       this._referencesSecretJsonField = true;
     }
   }

@@ -794,6 +794,25 @@ describe('container definition', () => {
     });
   });
 
+  test('referencesSecretJsonField() should return an expected boolean', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
+    const addSecret = new secretsmanager.Secret(stack, 'AddSecret');
+
+    // WHEN
+    const container = taskDefinition.addContainer('cont', {
+      image: ecs.ContainerImage.fromRegistry('test'),
+      memoryLimitMiB: 1024,
+    });
+
+    // THEN
+    container.addSecret('ADDED_FIRST_SECRET', ecs.Secret.fromSecretsManager(addSecret));
+    expect(container.referencesSecretJsonField()).toBeFalsy();
+    container.addSecret('ADDED_SECOND_SECRET_FIELD', ecs.Secret.fromSecretsManager(addSecret, 'FIELD'));
+    expect(container.referencesSecretJsonField()).toBeTruthy();
+  });
+
   test('can add environment variables to container definition with no environment', () => {
     // GIVEN
     const stack = new cdk.Stack();
