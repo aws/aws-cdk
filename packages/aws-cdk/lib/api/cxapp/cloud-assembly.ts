@@ -1,10 +1,14 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import * as chalk from 'chalk';
-import * as minimatch from 'minimatch';
 import * as semver from 'semver';
 import { error, print, warning } from '../../logging';
 import { flatten } from '../../util';
 import { versionNumber } from '../../version';
+
+// namespace object imports won't work in the bundle for function exports
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const minimatch = require('minimatch');
+
 
 export enum DefaultSelection {
   /**
