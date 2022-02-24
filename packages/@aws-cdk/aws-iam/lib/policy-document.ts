@@ -191,15 +191,13 @@ class ReducePolicyDocument implements cdk.IPostProcessor {
     }
 
     if (this.minimize) {
-      // New behavior: merge statements, this will naturally
-      // get rid of duplicates.
-      return {
-        ...input,
-        Statement: mergeStatements(input.Statement),
-      };
+      input.Statement = mergeStatements(input.Statement);
     }
 
-    // Old behavior: just remove full-on duplicates
+    // Also remove full-on duplicates (this will not be necessary if
+    // we minimized, but it might still dedupe statements we didn't
+    // minimize like 'Deny' statements, and definitely is still necessary
+    // if we didn't minimize)
     const jsonStatements = new Set<string>();
     const uniqueStatements: any[] = [];
 
