@@ -1,7 +1,7 @@
 import { InstanceType, ISecurityGroup, SubnetSelection, InstanceArchitecture } from '@aws-cdk/aws-ec2';
 import { IRole, ManagedPolicy, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import { IResource, Resource, Annotations, withResolved } from '@aws-cdk/core';
-import { Construct } from 'constructs';
+import { Construct, Node } from 'constructs';
 import { Cluster, ICluster } from './cluster';
 import { CfnNodegroup } from './eks.generated';
 
@@ -442,8 +442,9 @@ export class Nodegroup extends Resource implements INodegroup {
 
       // the controller runs on the worker nodes so they cannot
       // be deleted before the controller.
-      this.cluster.albController?.node.addDependency(this);
-
+      if (this.cluster.albController) {
+        Node.of(this.cluster.albController).addDependency(this);
+      }
     }
 
     this.nodegroupArn = this.getResourceArnAttribute(resource.attrArn, {
