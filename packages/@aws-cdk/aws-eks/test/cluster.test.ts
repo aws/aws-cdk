@@ -2107,7 +2107,7 @@ describe('cluster', () => {
         ],
       });
 
-      expect(providerStack).toHaveResource('AWS::IAM::Role', {
+      Template.fromStack(providerStack).hasResourceProperties('AWS::IAM::Role', {
         AssumeRolePolicyDocument: {
           Statement: [
             {
@@ -2308,7 +2308,7 @@ describe('cluster', () => {
         },
       });
 
-      expect(providerStack).toHaveResource('AWS::IAM::Role', {
+      Template.fromStack(providerStack).hasResourceProperties('AWS::IAM::Role', {
         AssumeRolePolicyDocument: {
           Statement: [
             {
