@@ -234,7 +234,7 @@ function isCandidateForHotswapping(change: cfn_diff.ResourceDifference): Hotswap
     return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
   }
 
-  // a resource has had its type changed; fail here because this can trip up our detector functions
+  // a resource has had its type changed
   if (change.newValue.Type !== change.oldValue.Type) {
     return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
   }

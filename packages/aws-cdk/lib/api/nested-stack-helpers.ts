@@ -29,6 +29,9 @@ export async function readCurrentTemplateWithNestedStacks(
   };
 }
 
+/**
+ * Returns the currently deployed template from CloudFormation that corresponds to `stackArtifact`.
+ */
 export async function readCurrentTemplate(stackArtifact: cxapi.CloudFormationStackArtifact, sdk: ISDK): Promise<Template> {
   debug(`Reading existing template for stack ${stackArtifact.displayName}.`);
   return readCurrentStackTemplate(stackArtifact.stackName, sdk);
