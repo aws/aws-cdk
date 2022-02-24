@@ -150,21 +150,9 @@ pipeline will automatically reconfigure itself to deploy those new stages and
 stacks.
 
 (Note that have to *bootstrap* all environments before the above code
-will work, see the section **CDK Environment Bootstrapping** below).
-
-## CDK Versioning
-
-This library uses prerelease features of the CDK framework, which can be enabled
-by adding the following to `cdk.json`:
-
-```js
-{
-  // ...
-  "context": {
-    "@aws-cdk/core:newStyleStackSynthesis": true
-  }
-}
-```
+will work, and switch on "Modern synthesis" if you are using
+CDKv1. See the section **CDK Environment Bootstrapping** below for
+more information).
 
 ## Provisioning the pipeline
 
@@ -349,6 +337,40 @@ const pipeline = new pipelines.CodePipeline(this, 'Pipeline', {
 ```
 
 You can adapt these examples to your own situation.
+
+#### Migrating from buildspec.yml files
+
+You may currently have the build instructions for your CodeBuild Projects in a
+`buildspec.yml` file in your source repository. In addition to your build
+commands, the CodeBuild Project's buildspec also controls some information that
+CDK Pipelines manages for you, like artifact identifiers, input artifact
+locations, Docker authorization, and exported variables.
+
+Since there is no way in general for CDK Pipelines to modify the file in your
+resource repository, CDK Pipelines configures the BuildSpec directly on the
+CodeBuild Project, instead of loading it from the `buildspec.yml` file.
+This requires a pipeline self-mutation to update.
+
+To avoid this, put your build instructions in a separate script, for example
+`build.sh`, and call that script from the build `commands` array:
+
+```ts
+declare const source: pipelines.IFileSetProducer;
+
+const pipeline = new pipelines.CodePipeline(this, 'Pipeline', {
+  synth: new pipelines.ShellStep('Synth', {
+    input: source,
+    commands: [
+      // Abstract over doing the build
+      './build.sh',
+    ],
+  })
+});
+```
+
+Doing so keeps your exact build instructions in sync with your source code in
+the source repository where it belongs, and provides a convenient build script
+for developers at the same time.
 
 #### CodePipeline Sources
 
@@ -768,6 +790,13 @@ class MyJenkinsStep extends pipelines.Step implements pipelines.ICodePipelineAct
     private readonly input: pipelines.FileSet,
   ) {
     super('MyJenkinsStep');
+
+    // This is necessary if your step accepts things like environment variables
+    // that may contain outputs from other steps. It doesn't matter what the
+    // structure is, as long as it contains the values that may contain outputs.
+    this.discoverReferencedOutputs({
+      env: { /* ... */ }
+    });
   }
 
   public produceAction(stage: codepipeline.IStage, options: pipelines.ProduceActionOptions): pipelines.CodePipelineActionFactoryResult {
