@@ -1,13 +1,10 @@
-//import * as path from 'path';
 import * as cxapi from '@aws-cdk/cx-api';
 import { AssetManifest } from 'cdk-assets';
-//import * as fs from 'fs-extra';
 import { Tag } from '../cdk-toolkit';
 import { debug, warning } from '../logging';
 import { publishAssets } from '../util/asset-publishing';
 import { Mode, SdkProvider, ISDK } from './aws-auth';
 import { deployStack, DeployStackResult, destroyStack } from './deploy-stack';
-//import { LazyListStackResources, ListStackResources } from './evaluate-cloudformation-template';
 import { readCurrentTemplateWithNestedStacks, readCurrentTemplate } from './nested-stack-helpers';
 import { ToolkitInfo } from './toolkit-info';
 import { CloudFormationStack, Template } from './util/cloudformation';

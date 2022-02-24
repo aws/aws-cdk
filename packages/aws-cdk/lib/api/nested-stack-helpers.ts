@@ -6,10 +6,16 @@ import { ISDK } from './aws-auth';
 import { LazyListStackResources, ListStackResources } from './evaluate-cloudformation-template';
 import { CloudFormationStack, Template } from './util/cloudformation';
 
+/**
+ * Reads the currently deployed template from CloudFormation and adds a
+ * property, `NestedTemplate`, to any nested stacks that appear in either
+ * the deployed template or the just synthesized template. `NestedTemplate`
+ * is populated with contents of the nested template. This is done for all
+ * nested stack resources to arbitrary depths.
+ */
 export async function readCurrentTemplateWithNestedStacks(
   rootStackArtifact: cxapi.CloudFormationStackArtifact, sdk: ISDK,
 ): Promise<TemplateWithStackNames> {
-  //const sdk = await this.prepareSdkWithLookupOrDeployRole(rootStackArtifact);
   const deployedTemplate = await readCurrentTemplate(rootStackArtifact, sdk);
   const nestedStackNames = {};
   await addNestedTemplatesToGeneratedAndDeployedStacks(rootStackArtifact, sdk, {
@@ -132,4 +138,3 @@ interface NestedStackResource {
   readonly Metadata: { 'aws:asset:path': string };
   readonly Properties: any;
 }
-
