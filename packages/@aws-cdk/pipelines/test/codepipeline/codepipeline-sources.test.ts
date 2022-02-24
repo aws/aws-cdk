@@ -1,6 +1,7 @@
 import { Capture, Match, Template } from '@aws-cdk/assertions';
 import * as ccommit from '@aws-cdk/aws-codecommit';
 import { CodeCommitTrigger, GitHubTrigger } from '@aws-cdk/aws-codepipeline-actions';
+import * as ecr from '@aws-cdk/aws-ecr';
 import { AnyPrincipal, Role } from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
 import { SecretValue, Stack, Token } from '@aws-cdk/core';
@@ -75,9 +76,9 @@ test('CodeCommit source honors all valid properties', () => {
 });
 
 test('S3 source handles tokenized names correctly', () => {
-  const buckit = new s3.Bucket(pipelineStack, 'Buckit');
+  const bucket = new s3.Bucket(pipelineStack, 'Bucket');
   new ModernTestGitHubNpmPipeline(pipelineStack, 'Pipeline', {
-    input: cdkp.CodePipelineSource.s3(buckit, 'thefile.zip'),
+    input: cdkp.CodePipelineSource.s3(bucket, 'thefile.zip'),
   });
 
   Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
@@ -90,6 +91,40 @@ test('S3 source handles tokenized names correctly', () => {
             S3ObjectKey: 'thefile.zip',
           }),
           Name: { Ref: Match.anyValue() },
+        }),
+      ],
+    }]),
+  });
+});
+
+test('ECR source handles tokenized and namespaced names correctly', () => {
+  const repository = new ecr.Repository(pipelineStack, 'Repository', { repositoryName: 'namespace/repo' });
+  new ModernTestGitHubNpmPipeline(pipelineStack, 'Pipeline', {
+    input: cdkp.CodePipelineSource.ecr(repository),
+  });
+
+  const template = Template.fromStack(pipelineStack);
+  template.hasResourceProperties('AWS::CodePipeline::Pipeline', {
+    Stages: Match.arrayWith([{
+      Name: 'Source',
+      Actions: [
+        Match.objectLike({
+          Configuration: Match.objectLike({
+            RepositoryName: { Ref: Match.anyValue() },
+          }),
+          Name: Match.objectLike({
+            'Fn::Join': [
+              '_',
+              {
+                'Fn::Split': [
+                  '/',
+                  {
+                    Ref: Match.anyValue(),
+                  },
+                ],
+              },
+            ],
+          }),
         }),
       ],
     }]),

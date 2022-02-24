@@ -3,9 +3,10 @@ import * as cp from '@aws-cdk/aws-codepipeline';
 import { Artifact } from '@aws-cdk/aws-codepipeline';
 import * as cp_actions from '@aws-cdk/aws-codepipeline-actions';
 import { Action, CodeCommitTrigger, GitHubTrigger, S3Trigger } from '@aws-cdk/aws-codepipeline-actions';
+import { IRepository } from '@aws-cdk/aws-ecr';
 import * as iam from '@aws-cdk/aws-iam';
 import { IBucket } from '@aws-cdk/aws-s3';
-import { SecretValue, Token } from '@aws-cdk/core';
+import { Fn, SecretValue, Token } from '@aws-cdk/core';
 import { Node } from 'constructs';
 import { FileSet, Step } from '../blueprint';
 import { CodePipelineActionFactoryResult, ProduceActionOptions, ICodePipelineActionFactory } from './codepipeline-action-factory';
@@ -55,6 +56,22 @@ export abstract class CodePipelineSource extends Step implements ICodePipelineAc
    */
   public static s3(bucket: IBucket, objectKey: string, props: S3SourceOptions = {}): CodePipelineSource {
     return new S3Source(bucket, objectKey, props);
+  }
+
+  /**
+   * Returns an ECR source.
+   *
+   * @param repository The repository that will be watched for changes.
+   * @param props The options, which include the image tag to be checked for changes.
+   *
+   * @example
+   * declare const repository: ecr.IRepository;
+   * pipelines.CodePipelineSource.ecr(repository, {
+   *   imageTag: 'latest',
+   * });
+   */
+  public static ecr(repository: IRepository, props: ECRSourceOptions = {}): CodePipelineSource {
+    return new ECRSource(repository, props);
   }
 
   /**
@@ -259,6 +276,46 @@ class S3Source extends CodePipelineSource {
       bucketKey: this.objectKey,
       trigger: this.props.trigger,
       bucket: this.bucket,
+      variablesNamespace,
+    });
+  }
+}
+
+/**
+ * Options for ECR sources
+ */
+export interface ECRSourceOptions {
+  /**
+   * The image tag that will be checked for changes.
+   *
+   * @default latest
+   */
+  readonly imageTag?: string;
+
+  /**
+   * The action name used for this source in the CodePipeline
+   *
+   * @default - The repository name
+   */
+  readonly actionName?: string;
+}
+
+class ECRSource extends CodePipelineSource {
+  constructor(readonly repository: IRepository, readonly props: ECRSourceOptions) {
+    super(Node.of(repository).addr);
+
+    this.configurePrimaryOutput(new FileSet('Source', this));
+  }
+
+  protected getAction(output: Artifact, _actionName: string, runOrder: number, variablesNamespace: string) {
+    // RepositoryName can contain '/' that is not a valid ActionName character, use '_' instead
+    const formattedRepositoryName = Fn.join('_', Fn.split('/', this.repository.repositoryName));
+    return new cp_actions.EcrSourceAction({
+      output,
+      actionName: this.props.actionName ?? formattedRepositoryName,
+      runOrder,
+      repository: this.repository,
+      imageTag: this.props.imageTag,
       variablesNamespace,
     });
   }
