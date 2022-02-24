@@ -307,7 +307,7 @@ class ECRSource extends CodePipelineSource {
     this.configurePrimaryOutput(new FileSet('Source', this));
   }
 
-  protected getAction(output: Artifact, _actionName: string, runOrder: number) {
+  protected getAction(output: Artifact, _actionName: string, runOrder: number, variablesNamespace: string) {
     // RepositoryName can contain '/' that is not a valid ActionName character, use '_' instead
     const formattedRepositoryName = Fn.join('_', Fn.split('/', this.repository.repositoryName));
     return new cp_actions.EcrSourceAction({
@@ -316,6 +316,7 @@ class ECRSource extends CodePipelineSource {
       runOrder,
       repository: this.repository,
       imageTag: this.props.imageTag,
+      variablesNamespace,
     });
   }
 }

@@ -432,7 +432,7 @@ You can use a Docker image in ECR as the source of the pipeline. The pipeline wi
 triggered every time an image is pushed to ECR:
 
 ```ts
-const repository = ecr.Repository(this, 'Repository');
+const repository = new ecr.Repository(this, 'Repository');
 CodePipelineSource.ecr(repository);
 ```
 
