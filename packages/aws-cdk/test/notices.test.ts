@@ -1,3 +1,4 @@
+import * as https from 'https';
 import * as os from 'os';
 import * as path from 'path';
 import * as fs from 'fs-extra';
@@ -207,6 +208,27 @@ describe('cli notices', () => {
 
     test('returns empty array when the server returns invalid json', async () => {
       const result = await mockCall(200, '-09aiskjkj838');
+
+      expect(result).toEqual([]);
+    });
+
+    test('returns empty array when HTTPS call throws', async () => {
+      const mockGet = jest.spyOn(https, 'get')
+        .mockImplementation(() => { throw new Error('No connection'); });
+
+      const result = await dataSource.fetch();
+
+      expect(result).toEqual([]);
+
+      mockGet.mockRestore();
+    });
+
+    test('returns empty array when the request has an error', async () => {
+      nock('https://cli.cdk.dev-tools.aws.dev')
+        .get('/notices.json')
+        .replyWithError('DNS resolution failed');
+
+      const result = await dataSource.fetch();
 
       expect(result).toEqual([]);
     });
