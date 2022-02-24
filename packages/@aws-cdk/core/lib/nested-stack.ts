@@ -205,6 +205,10 @@ export class NestedStack extends Stack {
       return false;
     }
 
+    Object.entries(this.tags.tagValues()).forEach(([key, value]) => {
+      this.resource.tags.setTag(key, value);
+    });
+
     const cfn = JSON.stringify(this._toCloudFormation());
     const templateHash = crypto.createHash('sha256').update(cfn).digest('hex');
 
