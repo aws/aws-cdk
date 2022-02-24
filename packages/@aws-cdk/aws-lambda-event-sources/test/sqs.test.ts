@@ -265,4 +265,23 @@ describe('SQSEventSource', () => {
 
 
   });
+
+  test('reportBatchItemFailures', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const q = new sqs.Queue(stack, 'Q');
+
+    // WHEN
+    fn.addEventSource(new sources.SqsEventSource(q, {
+      reportBatchItemFailures: true,
+    }));
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+      'FunctionResponseTypes': ['ReportBatchItemFailures'],
+    });
+
+
+  });
 });

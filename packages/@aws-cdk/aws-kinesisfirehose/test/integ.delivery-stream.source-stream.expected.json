@@ -34,6 +34,10 @@
                 "s3:List*",
                 "s3:DeleteObject*",
                 "s3:PutObject",
+                "s3:PutObjectLegalHold",
+                "s3:PutObjectRetention",
+                "s3:PutObjectTagging",
+                "s3:PutObjectVersionTagging",
                 "s3:Abort*"
               ],
               "Effect": "Allow",
@@ -74,8 +78,8 @@
     "SourceStream95FF52BE": {
       "Type": "AWS::Kinesis::Stream",
       "Properties": {
-        "ShardCount": 1,
         "RetentionPeriodHours": 24,
+        "ShardCount": 1,
         "StreamEncryption": {
           "Fn::If": [
             "AwsCdkKinesisEncryptedStreamsUnsupportedRegions",
@@ -87,6 +91,9 @@
               "KeyId": "alias/aws/kinesis"
             }
           ]
+        },
+        "StreamModeDetails": {
+          "StreamMode": "PROVISIONED"
         }
       }
     },
@@ -119,7 +126,8 @@
                 "kinesis:GetShardIterator",
                 "kinesis:ListShards",
                 "kinesis:SubscribeToShard",
-                "kinesis:DescribeStream"
+                "kinesis:DescribeStream",
+                "kinesis:ListStreams"
               ],
               "Effect": "Allow",
               "Resource": {

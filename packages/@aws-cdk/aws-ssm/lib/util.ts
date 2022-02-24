@@ -1,4 +1,4 @@
-import { Stack, Token } from '@aws-cdk/core';
+import { ArnFormat, Stack, Token } from '@aws-cdk/core';
 import { IConstruct } from 'constructs';
 
 export const AUTOGEN_MARKER = '$$autogen$$';
@@ -22,12 +22,19 @@ export function arnForParameterName(scope: IConstruct, parameterName: string, op
     throw new Error(`Parameter names must be fully qualified (if they include "/" they must also begin with a "/"): ${nameToValidate}`);
   }
 
-  return Stack.of(scope).formatArn({
-    service: 'ssm',
-    resource: 'parameter',
-    sep: isSimpleName() ? '/' : '',
-    resourceName: parameterName,
-  });
+  if (isSimpleName()) {
+    return Stack.of(scope).formatArn({
+      service: 'ssm',
+      resource: 'parameter',
+      arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
+      resourceName: parameterName,
+    });
+  } else {
+    return Stack.of(scope).formatArn({
+      service: 'ssm',
+      resource: `parameter${parameterName}`,
+    });
+  }
 
   /**
    * Determines the ARN separator for this parameter: if we have a concrete

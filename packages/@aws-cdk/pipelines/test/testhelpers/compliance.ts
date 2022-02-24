@@ -1,3 +1,5 @@
+import { describeDeprecated } from '@aws-cdk/cdk-build-tools';
+
 interface SkippedSuite {
   legacy(reason?: string): void;
 
@@ -16,8 +18,9 @@ interface Suite {
 
 // eslint-disable-next-line jest/no-export
 export function behavior(name: string, cb: (suite: Suite) => void) {
-  // 'describe()' adds a nice grouping in Jest
-  describe(name, () => {
+  // Since the goal of the compliance test suites is to compare modern and legacy (i.e. deprecated) APIs,
+  // use `describeDeprecated()` block here since usage of the legacy API is inevitable.
+  describeDeprecated(name, () => {
     const unwritten = new Set(['modern', 'legacy']);
 
     function scratchOff(flavor: string) {

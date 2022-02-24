@@ -13,18 +13,19 @@
 
 <!--END STABILITY BANNER-->
 
-This module includes low-level constructs that synthesize into `AWS::Serverless` resources.
+This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
 
-```ts
-import * as sam from '@aws-cdk/aws-sam';
+```ts nofixture
+import * as serverless from '@aws-cdk/aws-sam';
 ```
 
-## Related
+<!--BEGIN CFNONLY DISCLAIMER-->
 
-The following AWS CDK modules include constructs that can be used to work with Amazon API Gateway and AWS Lambda:
+There are no hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet. 
+However, you can still use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, and use this service exactly as you would using CloudFormation directly.
 
-* [aws-lambda](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-lambda-readme.html): define AWS Lambda functions
-* [aws-lambda-event-sources](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-lambda-event-sources-readme.html): classes that allow using various AWS services as event sources for AWS Lambda functions
-* [aws-apigateway](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-apigateway-readme.html): define APIs through Amazon API Gateway
-* [aws-codedeploy](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-codedeploy-readme.html#lambda-applications): define AWS Lambda deployment with traffic shifting support
+For more information on the resources and properties available for this service, see the [CloudFormation documentation for AWS::Serverless](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_Serverless.html).
 
+(Read the [CDK Contributing Guide](https://github.com/aws/aws-cdk/blob/master/CONTRIBUTING.md) if you are interested in contributing to this construct library.)
+
+<!--END CFNONLY DISCLAIMER-->

@@ -1,5 +1,4 @@
-import { anything, arrayWith, Capture, deepObjectLike, objectLike } from '@aws-cdk/assert-internal';
-import '@aws-cdk/assert-internal/jest';
+import { Capture, Match, Template } from '@aws-cdk/assertions';
 import * as ccommit from '@aws-cdk/aws-codecommit';
 import { CodeCommitTrigger, GitHubTrigger } from '@aws-cdk/aws-codepipeline-actions';
 import * as ecr from '@aws-cdk/aws-ecr';
@@ -29,18 +28,18 @@ test('CodeCommit source handles tokenized names correctly', () => {
     input: cdkp.CodePipelineSource.codeCommit(repo, 'main'),
   });
 
-  expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
-    Stages: arrayWith({
+  Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+    Stages: Match.arrayWith([{
       Name: 'Source',
       Actions: [
-        objectLike({
-          Configuration: objectLike({
-            RepositoryName: { 'Fn::GetAtt': [anything(), 'Name'] },
+        Match.objectLike({
+          Configuration: Match.objectLike({
+            RepositoryName: { 'Fn::GetAtt': [Match.anyValue(), 'Name'] },
           }),
-          Name: { 'Fn::GetAtt': [anything(), 'Name'] },
+          Name: { 'Fn::GetAtt': [Match.anyValue(), 'Name'] },
         }),
       ],
-    }),
+    }]),
   });
 });
 
@@ -59,20 +58,20 @@ test('CodeCommit source honors all valid properties', () => {
     }),
   });
 
-  expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
-    Stages: arrayWith({
+  Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+    Stages: Match.arrayWith([{
       Name: 'Source',
       Actions: [
-        objectLike({
-          Configuration: objectLike({
+        Match.objectLike({
+          Configuration: Match.objectLike({
             BranchName: 'main',
             PollForSourceChanges: true,
             OutputArtifactFormat: 'CODEBUILD_CLONE_REF',
           }),
-          RoleArn: { 'Fn::GetAtt': [anything(), 'Arn'] },
+          RoleArn: { 'Fn::GetAtt': [Match.anyValue(), 'Arn'] },
         }),
       ],
-    }),
+    }]),
   });
 });
 
@@ -82,19 +81,19 @@ test('S3 source handles tokenized names correctly', () => {
     input: cdkp.CodePipelineSource.s3(bucket, 'thefile.zip'),
   });
 
-  expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
-    Stages: arrayWith({
+  Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+    Stages: Match.arrayWith([{
       Name: 'Source',
       Actions: [
-        objectLike({
-          Configuration: objectLike({
-            S3Bucket: { Ref: anything() },
+        Match.objectLike({
+          Configuration: Match.objectLike({
+            S3Bucket: { Ref: Match.anyValue() },
             S3ObjectKey: 'thefile.zip',
           }),
-          Name: { Ref: anything() },
+          Name: { Ref: Match.anyValue() },
         }),
       ],
-    }),
+    }]),
   });
 });
 
@@ -104,22 +103,23 @@ test('ECR source handles tokenized and namespaced names correctly', () => {
     input: cdkp.CodePipelineSource.ecr(repository),
   });
 
-  expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
-    Stages: arrayWith({
+  const template = Template.fromStack(pipelineStack);
+  template.hasResourceProperties('AWS::CodePipeline::Pipeline', {
+    Stages: Match.arrayWith([{
       Name: 'Source',
       Actions: [
-        objectLike({
-          Configuration: objectLike({
-            RepositoryName: { Ref: anything() },
+        Match.objectLike({
+          Configuration: Match.objectLike({
+            RepositoryName: { Ref: Match.anyValue() },
           }),
-          Name: deepObjectLike({
+          Name: Match.objectLike({
             'Fn::Join': [
               '_',
               {
                 'Fn::Split': [
                   '/',
                   {
-                    Ref: anything(),
+                    Ref: Match.anyValue(),
                   },
                 ],
               },
@@ -127,7 +127,7 @@ test('ECR source handles tokenized and namespaced names correctly', () => {
           }),
         }),
       ],
-    }),
+    }]),
   });
 });
 
@@ -139,12 +139,12 @@ test('GitHub source honors all valid properties', () => {
     }),
   });
 
-  expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
-    Stages: arrayWith({
+  Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+    Stages: Match.arrayWith([{
       Name: 'Source',
       Actions: [
-        objectLike({
-          Configuration: objectLike({
+        Match.objectLike({
+          Configuration: Match.objectLike({
             Owner: 'owner',
             Repo: 'repo',
             Branch: 'main',
@@ -154,7 +154,7 @@ test('GitHub source honors all valid properties', () => {
           Name: 'owner_repo',
         }),
       ],
-    }),
+    }]),
   });
 });
 
@@ -179,17 +179,17 @@ test('Dashes in repo names are removed from artifact names', () => {
     input: cdkp.CodePipelineSource.gitHub('owner/my-repo', 'main'),
   });
 
-  expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
-    Stages: arrayWith({
+  Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+    Stages: Match.arrayWith([{
       Name: 'Source',
       Actions: [
-        objectLike({
+        Match.objectLike({
           OutputArtifacts: [
             { Name: 'owner_my_repo_Source' },
           ],
         }),
       ],
-    }),
+    }]),
   });
 });
 
@@ -198,19 +198,60 @@ test('artifact names are never longer than 128 characters', () => {
     input: cdkp.CodePipelineSource.gitHub('owner/' + 'my-repo'.repeat(100), 'main'),
   });
 
-  const artifactId = Capture.aString();
-  expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
-    Stages: arrayWith({
+  const artifactId = new Capture();
+  Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+    Stages: Match.arrayWith([{
       Name: 'Source',
       Actions: [
-        objectLike({
+        Match.objectLike({
           OutputArtifacts: [
-            { Name: artifactId.capture() },
+            { Name: artifactId },
           ],
         }),
       ],
-    }),
+    }]),
   });
 
-  expect(artifactId.capturedValue.length).toBeLessThanOrEqual(128);
+  expect(artifactId.asString().length).toBeLessThanOrEqual(128);
+});
+
+test('can use source attributes in pipeline', () => {
+  const gitHub = cdkp.CodePipelineSource.gitHub('owner/my-repo', 'main');
+
+  // WHEN
+  new ModernTestGitHubNpmPipeline(pipelineStack, 'Pipeline', {
+    input: gitHub,
+    synth: new cdkp.ShellStep('Synth', {
+      env: {
+        GITHUB_URL: gitHub.sourceAttribute('CommitUrl'),
+      },
+      commands: [
+        'echo "Click here: $GITHUB_URL"',
+      ],
+    }),
+    selfMutation: false,
+  });
+
+  Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+    Stages: [
+      { Name: 'Source' },
+      {
+        Name: 'Build',
+        Actions: [
+          {
+            Name: 'Synth',
+            Configuration: Match.objectLike({
+              EnvironmentVariables: Match.serializedJson([
+                {
+                  name: 'GITHUB_URL',
+                  type: 'PLAINTEXT',
+                  value: '#{Source@owner_my-repo.CommitUrl}',
+                },
+              ]),
+            }),
+          },
+        ],
+      },
+    ],
+  });
 });

@@ -355,6 +355,7 @@ export class CustomRule extends RuleNew {
 
     props.lambdaFunction.addPermission('Permission', {
       principal: new iam.ServicePrincipal('config.amazonaws.com'),
+      sourceAccount: this.env.account,
     });
 
     if (props.lambdaFunction.role) {
@@ -1136,6 +1137,13 @@ export class ManagedRuleIdentifiers {
    */
   public static readonly S3_ACCOUNT_LEVEL_PUBLIC_ACCESS_BLOCKS = 'S3_ACCOUNT_LEVEL_PUBLIC_ACCESS_BLOCKS';
   /**
+   * Checks if Amazon Simple Storage Service (Amazon S3) buckets are publicly accessible. This rule is
+   * NON_COMPLIANT if an Amazon S3 bucket is not listed in the excludedPublicBuckets parameter and bucket level
+   * settings are public.
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/s3-bucket-level-public-access-prohibited.html
+   */
+  public static readonly S3_BUCKET_LEVEL_PUBLIC_ACCESS_PROHIBITED = 'S3_BUCKET_LEVEL_PUBLIC_ACCESS_PROHIBITED';
+  /**
    * Checks that the Amazon Simple Storage Service bucket policy does not allow
    * blocked bucket-level and object-level actions on resources in the bucket
    * for principals from other AWS accounts.
@@ -1355,7 +1363,7 @@ export class ResourceType {
   /** Amazon EC2 customer gateway */
   public static readonly EC2_CUSTOMER_GATEWAY = new ResourceType('AWS::EC2::CustomerGateway');
   /** Amazon EC2 internet gateway */
-  public static readonly EC2_INTERNET_GATEWAY = new ResourceType('AWS::EC2::CustomerGateway');
+  public static readonly EC2_INTERNET_GATEWAY = new ResourceType('AWS::EC2::InternetGateway');
   /** Amazon EC2 network ACL */
   public static readonly EC2_NETWORK_ACL = new ResourceType('AWS::EC2::NetworkAcl');
   /** Amazon EC2 route table */

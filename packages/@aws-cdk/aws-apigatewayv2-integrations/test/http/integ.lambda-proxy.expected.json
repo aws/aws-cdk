@@ -57,7 +57,7 @@
         "ProtocolType": "HTTP"
       }
     },
-    "LambdaProxyApiDefaultRouteinteglambdaproxyLambdaProxyApiDefaultRoute59CA2390Permission07F93503": {
+    "LambdaProxyApiDefaultRouteDefaultIntegrationPermission39F587FC": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
@@ -94,7 +94,7 @@
         }
       }
     },
-    "LambdaProxyApiDefaultRouteHttpIntegration70df0ec52c3e3b6bbc96e64ce3a05f24EE575CBA": {
+    "LambdaProxyApiDefaultRouteDefaultIntegrationAE9908C8": {
       "Type": "AWS::ApiGatewayV2::Integration",
       "Properties": {
         "ApiId": {
@@ -124,7 +124,7 @@
             [
               "integrations/",
               {
-                "Ref": "LambdaProxyApiDefaultRouteHttpIntegration70df0ec52c3e3b6bbc96e64ce3a05f24EE575CBA"
+                "Ref": "LambdaProxyApiDefaultRouteDefaultIntegrationAE9908C8"
               }
             ]
           ]

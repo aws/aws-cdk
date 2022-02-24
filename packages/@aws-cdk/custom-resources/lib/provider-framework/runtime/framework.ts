@@ -39,7 +39,7 @@ async function onEvent(cfnRequest: AWSLambda.CloudFormationCustomResourceEvent) 
   // determine if this is an async provider based on whether we have an isComplete handler defined.
   // if it is not defined, then we are basically ready to return a positive response.
   if (!process.env[consts.USER_IS_COMPLETE_FUNCTION_ARN_ENV]) {
-    return cfnResponse.submitResponse('SUCCESS', resourceEvent);
+    return cfnResponse.submitResponse('SUCCESS', resourceEvent, { noEcho: resourceEvent.NoEcho });
   }
 
   // ok, we are not complete, so kick off the waiter workflow
@@ -62,7 +62,7 @@ async function isComplete(event: AWSCDKAsyncCustomResource.IsCompleteRequest) {
   const isCompleteResult = await invokeUserFunction(consts.USER_IS_COMPLETE_FUNCTION_ARN_ENV, event) as IsCompleteResponse;
   log('user isComplete returned:', isCompleteResult);
 
-  // if we are not complete, reeturn false, and don't send a response back.
+  // if we are not complete, return false, and don't send a response back.
   if (!isCompleteResult.IsComplete) {
     if (isCompleteResult.Data && Object.keys(isCompleteResult.Data).length > 0) {
       throw new Error('"Data" is not allowed if "IsComplete" is "False"');
@@ -79,7 +79,7 @@ async function isComplete(event: AWSCDKAsyncCustomResource.IsCompleteRequest) {
     },
   };
 
-  await cfnResponse.submitResponse('SUCCESS', response);
+  await cfnResponse.submitResponse('SUCCESS', response, { noEcho: event.NoEcho });
 }
 
 // invoked when completion retries are exhaused.

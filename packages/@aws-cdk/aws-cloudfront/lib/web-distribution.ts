@@ -454,6 +454,12 @@ export interface Behavior {
    */
   readonly functionAssociations?: FunctionAssociation[];
 
+  /**
+   * The viewer policy for this behavior.
+   *
+   * @default - the distribution wide viewer protocol policy will be used
+   */
+  readonly viewerProtocolPolicy?: ViewerProtocolPolicy;
 }
 
 export interface LambdaFunctionAssociation {
@@ -715,19 +721,17 @@ export interface CloudFrontWebDistributionAttributes {
  * Here's how you can use this construct:
  *
  * ```ts
- * import { CloudFrontWebDistribution } from '@aws-cdk/aws-cloudfront'
+ * const sourceBucket = new s3.Bucket(this, 'Bucket');
  *
- * const sourceBucket = new Bucket(this, 'Bucket');
- *
- * const distribution = new CloudFrontWebDistribution(this, 'MyDistribution', {
- *  originConfigs: [
- *    {
- *      s3OriginSource: {
- *      s3BucketSource: sourceBucket
- *      },
- *      behaviors : [ {isDefaultBehavior: true}]
- *    }
- *  ]
+ * const distribution = new cloudfront.CloudFrontWebDistribution(this, 'MyDistribution', {
+ *   originConfigs: [
+ *     {
+ *       s3OriginSource: {
+ *       s3BucketSource: sourceBucket,
+ *       },
+ *       behaviors : [ {isDefaultBehavior: true}],
+ *     },
+ *   ],
  * });
  * ```
  *
@@ -992,7 +996,7 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
       trustedKeyGroups: input.trustedKeyGroups?.map(key => key.keyGroupId),
       trustedSigners: input.trustedSigners,
       targetOriginId: input.targetOriginId,
-      viewerProtocolPolicy: protoPolicy || ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+      viewerProtocolPolicy: input.viewerProtocolPolicy || protoPolicy || ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
     };
     if (!input.isDefaultBehavior) {
       toReturn = Object.assign(toReturn, { pathPattern: input.pathPattern });

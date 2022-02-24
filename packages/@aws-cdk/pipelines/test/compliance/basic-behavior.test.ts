@@ -1,11 +1,11 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import * as fs from 'fs';
 import * as path from 'path';
-import { arrayWith, Capture, objectLike, stringLike } from '@aws-cdk/assert-internal';
+import { Capture, Match, Template } from '@aws-cdk/assertions';
 import '@aws-cdk/assert-internal/jest';
 import { Stack, Stage, StageProps, Tags } from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import { behavior, LegacyTestGitHubNpmPipeline, OneStackApp, BucketStack, PIPELINE_ENV, TestApp, ModernTestGitHubNpmPipeline } from '../testhelpers';
+import { behavior, LegacyTestGitHubNpmPipeline, OneStackApp, BucketStack, PIPELINE_ENV, TestApp, ModernTestGitHubNpmPipeline, stringLike } from '../testhelpers';
 
 let app: TestApp;
 let pipelineStack: Stack;
@@ -37,20 +37,20 @@ behavior('stack templates in nested assemblies are correctly addressed', (suite)
   });
 
   function THEN_codePipelineExpectation() {
-    expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
-      Stages: arrayWith({
+    Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+      Stages: Match.arrayWith([{
         Name: 'App',
-        Actions: arrayWith(
-          objectLike({
+        Actions: Match.arrayWith([
+          Match.objectLike({
             Name: stringLike('*Prepare'),
-            InputArtifacts: [objectLike({})],
-            Configuration: objectLike({
+            InputArtifacts: [Match.objectLike({})],
+            Configuration: Match.objectLike({
               StackName: 'App-Stack',
               TemplatePath: stringLike('*::assembly-App/*.template.json'),
             }),
           }),
-        ),
-      }),
+        ]),
+      }]),
     });
   }
 });
@@ -94,27 +94,27 @@ behavior('overridden stack names are respected', (suite) => {
   });
 
   function THEN_codePipelineExpectation() {
-    expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
-      Stages: arrayWith(
+    Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+      Stages: Match.arrayWith([
         {
           Name: 'App1',
-          Actions: arrayWith(objectLike({
+          Actions: Match.arrayWith([Match.objectLike({
             Name: stringLike('*Prepare'),
-            Configuration: objectLike({
+            Configuration: Match.objectLike({
               StackName: 'MyFancyStack',
             }),
-          })),
+          })]),
         },
         {
           Name: 'App2',
-          Actions: arrayWith(objectLike({
+          Actions: Match.arrayWith([Match.objectLike({
             Name: stringLike('*Prepare'),
-            Configuration: objectLike({
+            Configuration: Match.objectLike({
               StackName: 'MyFancyStack',
             }),
-          })),
+          })]),
         },
-      ),
+      ]),
     });
   }
 });
@@ -154,17 +154,17 @@ behavior('changing CLI version leads to a different pipeline structure (restarti
 
   function THEN_codePipelineExpectation(stack2: Stack, stack3: Stack) {
     // THEN
-    const structure2 = Capture.anyType();
-    const structure3 = Capture.anyType();
+    const structure2 = new Capture();
+    const structure3 = new Capture();
 
-    expect(stack2).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
-      Stages: structure2.capture(),
+    Template.fromStack(stack2).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+      Stages: structure2,
     });
-    expect(stack3).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
-      Stages: structure3.capture(),
+    Template.fromStack(stack3).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+      Stages: structure3,
     });
 
-    expect(JSON.stringify(structure2.capturedValue)).not.toEqual(JSON.stringify(structure3.capturedValue));
+    expect(JSON.stringify(structure2.asArray())).not.toEqual(JSON.stringify(structure3.asArray()));
   }
 });
 
@@ -190,24 +190,25 @@ behavior('tags get reflected in pipeline', (suite) => {
 
   function THEN_codePipelineExpectation() {
     // THEN
-    const templateConfig = Capture.aString();
-    expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
-      Stages: arrayWith({
+    const templateConfig = new Capture();
+    Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+      Stages: Match.arrayWith([{
         Name: 'App',
-        Actions: arrayWith(
-          objectLike({
+        Actions: Match.arrayWith([
+          Match.objectLike({
             Name: stringLike('*Prepare'),
-            InputArtifacts: [objectLike({})],
-            Configuration: objectLike({
+            InputArtifacts: [Match.objectLike({})],
+            Configuration: Match.objectLike({
               StackName: 'App-Stack',
-              TemplateConfiguration: templateConfig.capture(stringLike('*::assembly-App/*.template.*json')),
+              TemplateConfiguration: templateConfig,
             }),
           }),
-        ),
-      }),
+        ]),
+      }]),
     });
 
-    const [, relConfigFile] = templateConfig.capturedValue.split('::');
+    expect(templateConfig.asString()).toMatch(/::assembly-App\/.*\.template\..*json/);
+    const [, relConfigFile] = templateConfig.asString().split('::');
     const absConfigFile = path.join(app.outdir, relConfigFile);
     const configFile = JSON.parse(fs.readFileSync(absConfigFile, { encoding: 'utf-8' }));
     expect(configFile).toEqual(expect.objectContaining({

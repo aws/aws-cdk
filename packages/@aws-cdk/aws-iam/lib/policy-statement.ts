@@ -1,10 +1,10 @@
 import * as cdk from '@aws-cdk/core';
 import { Group } from './group';
 import {
-  AccountPrincipal, AccountRootPrincipal, Anyone, ArnPrincipal, CanonicalUserPrincipal,
+  AccountPrincipal, AccountRootPrincipal, AnyPrincipal, ArnPrincipal, CanonicalUserPrincipal,
   FederatedPrincipal, IPrincipal, PrincipalBase, PrincipalPolicyFragment, ServicePrincipal, ServicePrincipalOpts,
 } from './principals';
-import { mergePrincipal } from './util';
+import { LITERAL_STRING_KEY, mergePrincipal } from './util';
 
 const ensureArrayOrUndefined = (field: any) => {
   if (field === undefined) {
@@ -239,7 +239,7 @@ export class PolicyStatement {
    * Adds all identities in all accounts ("*") to this policy statement
    */
   public addAnyPrincipal() {
-    this.addPrincipals(new Anyone());
+    this.addPrincipals(new AnyPrincipal());
   }
 
   //
@@ -370,6 +370,11 @@ export class PolicyStatement {
     function _normPrincipal(principal: { [key: string]: any[] }) {
       const keys = Object.keys(principal);
       if (keys.length === 0) { return undefined; }
+
+      if (LITERAL_STRING_KEY in principal) {
+        return principal[LITERAL_STRING_KEY][0];
+      }
+
       const result: any = {};
       for (const key of keys) {
         const normVal = _norm(principal[key]);
@@ -600,9 +605,13 @@ class JsonPrincipal extends PrincipalBase {
   constructor(json: any = { }) {
     super();
 
-    // special case: if principal is a string, turn it into an "AWS" principal
+    // special case: if principal is a string, turn it into a "LiteralString" principal,
+    // so we render the exact same string back out.
     if (typeof(json) === 'string') {
-      json = { AWS: json };
+      json = { [LITERAL_STRING_KEY]: [json] };
+    }
+    if (typeof(json) !== 'object') {
+      throw new Error(`JSON IAM principal should be an object, got ${JSON.stringify(json)}`);
     }
 
     this.policyFragment = {

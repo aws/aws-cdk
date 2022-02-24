@@ -22,7 +22,7 @@ export abstract class CertificateBase extends Resource implements ICertificate {
     return new cloudwatch.Metric({
       period: Duration.days(1),
       ...props,
-      dimensions: { CertificateArn: this.certificateArn },
+      dimensionsMap: { CertificateArn: this.certificateArn },
       metricName: 'DaysToExpiry',
       namespace: 'AWS/CertificateManager',
       region: this.region,

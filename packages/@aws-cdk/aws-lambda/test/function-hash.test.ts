@@ -1,9 +1,9 @@
-import '@aws-cdk/assert-internal/jest';
 import * as path from 'path';
+import { resourceSpecification } from '@aws-cdk/cfnspec';
 import { App, CfnOutput, CfnResource, Stack } from '@aws-cdk/core';
 import { LAMBDA_RECOGNIZE_VERSION_PROPS } from '@aws-cdk/cx-api';
 import * as lambda from '../lib';
-import { calculateFunctionHash, trimFromStart } from '../lib/function-hash';
+import { calculateFunctionHash, trimFromStart, VERSION_LOCKED } from '../lib/function-hash';
 
 describe('function hash', () => {
   describe('trimFromStart', () => {
@@ -273,6 +273,14 @@ describe('function hash', () => {
       lambda.Function.classifyVersionProperty('UnclassifiedProp', false);
       (fn1.node.defaultChild as CfnResource).addPropertyOverride('UnclassifiedProp', 'Value');
       expect(calculateFunctionHash(fn1)).toEqual(original);
+    });
+
+    test('all CFN properties are classified', () => {
+      const spec = resourceSpecification('AWS::Lambda::Function');
+      expect(spec.Properties).toBeDefined();
+      const expected = Object.keys(spec.Properties!).sort();
+      const actual = Object.keys(VERSION_LOCKED).sort();
+      expect(actual).toEqual(expected);
     });
   });
 });

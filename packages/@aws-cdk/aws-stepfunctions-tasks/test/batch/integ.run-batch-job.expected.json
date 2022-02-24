@@ -873,11 +873,16 @@
               ]
             ]
           },
-          "Memory": 4,
           "Privileged": false,
           "ReadonlyRootFilesystem": false,
-          "Vcpus": 1
+          "ResourceRequirements": [
+            { "Type": "VCPU", "Value": "1" },
+            { "Type": "MEMORY", "Value": "4" }
+          ]
         },
+        "PlatformCapabilities": [
+          "EC2"
+        ],
         "RetryStrategy": {
           "Attempts": 1
         },

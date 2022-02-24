@@ -73,7 +73,8 @@
           "Ref": "MyRestApiDeploymentB555B582d61dc696e12272a0706c826196fa8d62"
         },
         "StageName": "prod"
-      }
+      },
+      "DependsOn": ["MyRestApiAccount2FB6DB7A"]
     },
     "MyRestApiANYApiPermissionCallRestApiIntegMyRestApiB570839CANY0C27C1E3": {
       "Type": "AWS::Lambda::Permission",

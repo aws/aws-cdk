@@ -48,7 +48,14 @@
         ]
       }
     },
-    "projectReferences": true
+    "projectReferences": true,
+    "metadata": {
+      "jsii": {
+        "rosetta": {
+          "strict": true
+        }
+      }
+    }
   },
   "scripts": {
     "build": "cdk-build",
@@ -69,19 +76,16 @@
     "yaml": "1.10.2"
   },
   "devDependencies": {
-    "@types/jest": "^26.0.24",
+    "@aws-cdk/assertions": "0.0.0",
+    "@aws-cdk/cdk-build-tools": "0.0.0",
+    "@aws-cdk/pkglint": "0.0.0",
+    "@types/jest": "^27.4.1",
     "@types/yaml": "^1.9.7",
-    "cdk-build-tools": "0.0.0",
-    "jest": "^26.6.3",
-    "pkglint": "0.0.0",
-    "@aws-cdk/assert-internal": "0.0.0"
+    "jest": "^27.5.1"
   },
   "bundledDependencies": [
     "yaml"
   ],
-  "cdk-build": {
-    "jest": true
-  },
   "engines": {
     "node": ">= 10.13.0 <13 || >=13.7.0"
   },

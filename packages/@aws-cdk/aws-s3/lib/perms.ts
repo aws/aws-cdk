@@ -16,11 +16,16 @@ export const LEGACY_BUCKET_PUT_ACTIONS = [
 
 export const BUCKET_PUT_ACTIONS = [
   's3:PutObject',
+  's3:PutObjectLegalHold',
+  's3:PutObjectRetention',
+  's3:PutObjectTagging',
+  's3:PutObjectVersionTagging',
   's3:Abort*',
 ];
 
 export const BUCKET_PUT_ACL_ACTIONS = [
   's3:PutObjectAcl',
+  's3:PutObjectVersionAcl',
 ];
 
 export const BUCKET_DELETE_ACTIONS = [

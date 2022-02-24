@@ -1,10 +1,11 @@
 import * as os from 'os';
 import * as path from 'path';
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { FileAssetPackaging } from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as fs from 'fs-extra';
 import * as sinon from 'sinon';
-import { App, AssetHashType, AssetStaging, BundlingDockerImage, BundlingOptions, BundlingOutput, FileSystem, Stack, Stage } from '../lib';
+import { App, AssetHashType, AssetStaging, DockerImage, BundlingOptions, BundlingOutput, FileSystem, Stack, Stage } from '../lib';
 
 const STUB_INPUT_FILE = '/tmp/docker-stub.input';
 const STUB_INPUT_CONCAT_FILE = '/tmp/docker-stub.input.concat';
@@ -18,6 +19,7 @@ enum DockerStubCommand {
 }
 
 const FIXTURE_TEST1_DIR = path.join(__dirname, 'fs', 'fixtures', 'test1');
+const FIXTURE_TEST1_HASH = '2f37f937c51e2c191af66acf9b09f548926008ec68c575bd2ee54b6e997c0e00';
 const FIXTURE_TARBALL = path.join(__dirname, 'fs', 'fixtures.tar.gz');
 
 const userInfo = os.userInfo();
@@ -42,18 +44,36 @@ describe('staging', () => {
   test('base case', () => {
     // GIVEN
     const stack = new Stack();
-    const sourcePath = path.join(__dirname, 'fs', 'fixtures', 'test1');
+    const sourcePath = FIXTURE_TEST1_DIR;
 
     // WHEN
     const staging = new AssetStaging(stack, 's1', { sourcePath });
 
-    expect(staging.sourceHash).toEqual('2f37f937c51e2c191af66acf9b09f548926008ec68c575bd2ee54b6e997c0e00');
+    expect(staging.assetHash).toEqual(FIXTURE_TEST1_HASH);
     expect(staging.sourcePath).toEqual(sourcePath);
-    expect(path.basename(staging.stagedPath)).toEqual('asset.2f37f937c51e2c191af66acf9b09f548926008ec68c575bd2ee54b6e997c0e00');
-    expect(path.basename(staging.relativeStagedPath(stack))).toEqual('asset.2f37f937c51e2c191af66acf9b09f548926008ec68c575bd2ee54b6e997c0e00');
+    expect(path.basename(staging.absoluteStagedPath)).toEqual(`asset.${FIXTURE_TEST1_HASH}`);
+    expect(path.basename(staging.relativeStagedPath(stack))).toEqual(`asset.${FIXTURE_TEST1_HASH}`);
     expect(staging.packaging).toEqual(FileAssetPackaging.ZIP_DIRECTORY);
     expect(staging.isArchive).toEqual(true);
+  });
 
+  test('base case if source directory is a symlink', () => {
+    // GIVEN
+    const stack = new Stack();
+    const sourcePath = path.join(os.tmpdir(), 'asset-symlink');
+    if (fs.existsSync(sourcePath)) { fs.unlinkSync(sourcePath); }
+    fs.symlinkSync(FIXTURE_TEST1_DIR, sourcePath);
+
+    try {
+      const staging = new AssetStaging(stack, 's1', { sourcePath });
+
+      // Should be the same asset hash as in the previous test
+      expect(staging.assetHash).toEqual(FIXTURE_TEST1_HASH);
+    } finally {
+      if (fs.existsSync(sourcePath)) {
+        fs.unlinkSync(sourcePath);
+      }
+    }
   });
 
   test('staging of an archive file correctly sets packaging and isArchive', () => {
@@ -141,9 +161,9 @@ describe('staging', () => {
     // WHEN
     const staging = new AssetStaging(stack, 's1', { sourcePath });
 
-    expect(staging.sourceHash).toEqual('2f37f937c51e2c191af66acf9b09f548926008ec68c575bd2ee54b6e997c0e00');
+    expect(staging.assetHash).toEqual(FIXTURE_TEST1_HASH);
     expect(staging.sourcePath).toEqual(sourcePath);
-    expect(staging.stagedPath).toEqual(sourcePath);
+    expect(staging.absoluteStagedPath).toEqual(sourcePath);
     expect(staging.relativeStagedPath(stack)).toEqual(sourcePath);
 
   });
@@ -160,7 +180,7 @@ describe('staging', () => {
     // THEN
     const assembly = app.synth();
     expect(fs.readdirSync(assembly.directory)).toEqual([
-      'asset.2f37f937c51e2c191af66acf9b09f548926008ec68c575bd2ee54b6e997c0e00',
+      `asset.${FIXTURE_TEST1_HASH}`,
       'asset.af10ac04b3b607b0f8659c8f0cee8c343025ee75baf0b146f10f0e5311d2c46b.gz',
       'cdk.out',
       'manifest.json',
@@ -187,7 +207,7 @@ describe('staging', () => {
     expect(fs.readdirSync(assembly.directory)).toEqual([
       'assembly-Stage1',
       'assembly-Stage2',
-      'asset.2f37f937c51e2c191af66acf9b09f548926008ec68c575bd2ee54b6e997c0e00',
+      `asset.${FIXTURE_TEST1_HASH}`,
       'cdk.out',
       'manifest.json',
       'tree.json',
@@ -206,9 +226,9 @@ describe('staging', () => {
     const withExtra = new AssetStaging(stack, 'withExtra', { sourcePath: directory, extraHash: 'boom' });
 
     // THEN
-    expect(withoutExtra.sourceHash).not.toEqual(withExtra.sourceHash);
-    expect(withoutExtra.sourceHash).toEqual('2f37f937c51e2c191af66acf9b09f548926008ec68c575bd2ee54b6e997c0e00');
-    expect(withExtra.sourceHash).toEqual('c95c915a5722bb9019e2c725d11868e5a619b55f36172f76bcbcaa8bb2d10c5f');
+    expect(withoutExtra.assetHash).not.toEqual(withExtra.assetHash);
+    expect(withoutExtra.assetHash).toEqual(FIXTURE_TEST1_HASH);
+    expect(withExtra.assetHash).toEqual('c95c915a5722bb9019e2c725d11868e5a619b55f36172f76bcbcaa8bb2d10c5f');
 
   });
 
@@ -223,7 +243,7 @@ describe('staging', () => {
     new AssetStaging(stack, 'Asset', {
       sourcePath: directory,
       bundling: {
-        image: BundlingDockerImage.fromRegistry('alpine'),
+        image: DockerImage.fromRegistry('alpine'),
         command: [DockerStubCommand.SUCCESS],
       },
     });
@@ -259,7 +279,7 @@ describe('staging', () => {
     const asset = new AssetStaging(stack, 'Asset', {
       sourcePath: directory,
       bundling: {
-        image: BundlingDockerImage.fromRegistry('alpine'),
+        image: DockerImage.fromRegistry('alpine'),
         command: [DockerStubCommand.SUCCESS],
       },
     });
@@ -275,7 +295,7 @@ describe('staging', () => {
       'tree.json',
     ]);
 
-    expect(asset.sourceHash).toEqual('b1e32e86b3523f2fa512eb99180ee2975a50a4439e63e8badd153f2a68d61aa4');
+    expect(asset.assetHash).toEqual('b1e32e86b3523f2fa512eb99180ee2975a50a4439e63e8badd153f2a68d61aa4');
     expect(asset.sourcePath).toEqual(directory);
 
     const resolvedStagePath = asset.relativeStagedPath(stack);
@@ -296,7 +316,7 @@ describe('staging', () => {
     new AssetStaging(stack, 'Asset', {
       sourcePath: directory,
       bundling: {
-        image: BundlingDockerImage.fromRegistry('alpine'),
+        image: DockerImage.fromRegistry('alpine'),
         command: [DockerStubCommand.SUCCESS],
       },
     });
@@ -304,7 +324,7 @@ describe('staging', () => {
     new AssetStaging(stack, 'AssetDuplicate', {
       sourcePath: directory,
       bundling: {
-        image: BundlingDockerImage.fromRegistry('alpine'),
+        image: DockerImage.fromRegistry('alpine'),
         command: [DockerStubCommand.SUCCESS],
       },
     });
@@ -341,7 +361,7 @@ describe('staging', () => {
       sourcePath: directory,
       assetHashType: AssetHashType.OUTPUT,
       bundling: {
-        image: BundlingDockerImage.fromRegistry('alpine'),
+        image: DockerImage.fromRegistry('alpine'),
         command: [DockerStubCommand.SUCCESS],
       },
     });
@@ -351,7 +371,7 @@ describe('staging', () => {
       assetHashType: AssetHashType.OUTPUT,
       bundling: { // Same bundling but with keys ordered differently
         command: [DockerStubCommand.SUCCESS],
-        image: BundlingDockerImage.fromRegistry('alpine'),
+        image: DockerImage.fromRegistry('alpine'),
       },
     });
 
@@ -389,7 +409,7 @@ describe('staging', () => {
     new AssetStaging(stack, 'Asset', {
       sourcePath: directory,
       bundling: {
-        image: BundlingDockerImage.fromRegistry('alpine'),
+        image: DockerImage.fromRegistry('alpine'),
         command: [DockerStubCommand.SUCCESS],
       },
     });
@@ -397,7 +417,7 @@ describe('staging', () => {
     new AssetStaging(stack, 'AssetWithDifferentBundlingOptions', {
       sourcePath: directory,
       bundling: {
-        image: BundlingDockerImage.fromRegistry('alpine'),
+        image: DockerImage.fromRegistry('alpine'),
         command: [DockerStubCommand.SUCCESS],
         environment: {
           UNIQUE_ENV_VAR: 'SOMEVALUE',
@@ -440,9 +460,9 @@ describe('staging', () => {
     // WHEN
     new AssetStaging(stack, 'Asset', {
       sourcePath: directory,
-      assetHashType: AssetHashType.BUNDLE,
+      assetHashType: AssetHashType.OUTPUT,
       bundling: {
-        image: BundlingDockerImage.fromRegistry('alpine'),
+        image: DockerImage.fromRegistry('alpine'),
         command: [DockerStubCommand.SUCCESS],
       },
     });
@@ -475,7 +495,7 @@ describe('staging', () => {
     expect(() => new AssetStaging(stack, 'Asset', {
       sourcePath: directory,
       bundling: {
-        image: BundlingDockerImage.fromRegistry('alpine'),
+        image: DockerImage.fromRegistry('alpine'),
         command: [DockerStubCommand.FAIL],
       },
     })).toThrow(/Failed.*bundl.*asset.*-error/);
@@ -504,7 +524,7 @@ describe('staging', () => {
     new AssetStaging(stack, 'Asset', {
       sourcePath: directory,
       bundling: {
-        image: BundlingDockerImage.fromRegistry('alpine'),
+        image: DockerImage.fromRegistry('alpine'),
         command: [DockerStubCommand.SUCCESS],
       },
     });
@@ -521,7 +541,7 @@ describe('staging', () => {
     new AssetStaging(stack2, 'Asset', {
       sourcePath: directory,
       bundling: {
-        image: BundlingDockerImage.fromRegistry('alpine'),
+        image: DockerImage.fromRegistry('alpine'),
         command: [DockerStubCommand.SUCCESS],
       },
     });
@@ -557,7 +577,7 @@ describe('staging', () => {
     expect(() => new AssetStaging(stack, 'Asset', {
       sourcePath: directory,
       bundling: {
-        image: BundlingDockerImage.fromRegistry('alpine'),
+        image: DockerImage.fromRegistry('alpine'),
         command: [DockerStubCommand.SUCCESS_NO_OUTPUT],
       },
     })).toThrow(/Bundling did not produce any output/);
@@ -569,7 +589,7 @@ describe('staging', () => {
 
   });
 
-  test('bundling with BUNDLE asset hash type', () => {
+  testDeprecated('bundling with BUNDLE asset hash type', () => {
     // GIVEN
     const app = new App();
     const stack = new Stack(app, 'stack');
@@ -579,7 +599,7 @@ describe('staging', () => {
     const asset = new AssetStaging(stack, 'Asset', {
       sourcePath: directory,
       bundling: {
-        image: BundlingDockerImage.fromRegistry('alpine'),
+        image: DockerImage.fromRegistry('alpine'),
         command: [DockerStubCommand.SUCCESS],
       },
       assetHashType: AssetHashType.BUNDLE,
@@ -606,7 +626,7 @@ describe('staging', () => {
     const asset = new AssetStaging(stack, 'Asset', {
       sourcePath: directory,
       bundling: {
-        image: BundlingDockerImage.fromRegistry('alpine'),
+        image: DockerImage.fromRegistry('alpine'),
         command: [DockerStubCommand.SUCCESS],
         securityOpt: 'no-new-privileges',
       },
@@ -633,7 +653,7 @@ describe('staging', () => {
     const asset = new AssetStaging(stack, 'Asset', {
       sourcePath: directory,
       bundling: {
-        image: BundlingDockerImage.fromRegistry('alpine'),
+        image: DockerImage.fromRegistry('alpine'),
         command: [DockerStubCommand.SUCCESS],
       },
       assetHashType: AssetHashType.OUTPUT,
@@ -674,17 +694,17 @@ describe('staging', () => {
     expect(() => new AssetStaging(stack, 'Asset', {
       sourcePath: directory,
       bundling: {
-        image: BundlingDockerImage.fromRegistry('alpine'),
+        image: DockerImage.fromRegistry('alpine'),
         command: [DockerStubCommand.SUCCESS],
       },
       assetHash: 'my-custom-hash',
-      assetHashType: AssetHashType.BUNDLE,
-    })).toThrow(/Cannot specify `bundle` for `assetHashType`/);
+      assetHashType: AssetHashType.OUTPUT,
+    })).toThrow(/Cannot specify `output` for `assetHashType`/);
 
 
   });
 
-  test('throws with BUNDLE hash type and no bundling', () => {
+  testDeprecated('throws with BUNDLE hash type and no bundling', () => {
     // GIVEN
     const app = new App();
     const stack = new Stack(app, 'stack');
@@ -742,7 +762,7 @@ describe('staging', () => {
     expect(() => new AssetStaging(stack, 'Asset', {
       sourcePath: directory,
       bundling: {
-        image: BundlingDockerImage.fromRegistry('this-is-an-invalid-docker-image'),
+        image: DockerImage.fromRegistry('this-is-an-invalid-docker-image'),
         command: [DockerStubCommand.FAIL],
       },
     })).toThrow(/Failed to bundle asset stack\/Asset/);
@@ -766,7 +786,7 @@ describe('staging', () => {
     new AssetStaging(stack, 'Asset', {
       sourcePath: directory,
       bundling: {
-        image: BundlingDockerImage.fromRegistry('alpine'),
+        image: DockerImage.fromRegistry('alpine'),
         command: [DockerStubCommand.SUCCESS],
         local: {
           tryBundle(outputDir: string, options: BundlingOptions): boolean {
@@ -801,7 +821,7 @@ describe('staging', () => {
     new AssetStaging(stack, 'Asset', {
       sourcePath: directory,
       bundling: {
-        image: BundlingDockerImage.fromRegistry('alpine'),
+        image: DockerImage.fromRegistry('alpine'),
         command: [DockerStubCommand.SUCCESS],
         local: {
           tryBundle(_bundleDir: string): boolean {
@@ -827,9 +847,9 @@ describe('staging', () => {
     // WHEN
     const asset = new AssetStaging(stack, 'Asset', {
       sourcePath: directory,
-      assetHashType: AssetHashType.BUNDLE,
+      assetHashType: AssetHashType.OUTPUT,
       bundling: {
-        image: BundlingDockerImage.fromRegistry('alpine'),
+        image: DockerImage.fromRegistry('alpine'),
         command: [DockerStubCommand.SUCCESS],
       },
     });
@@ -839,8 +859,42 @@ describe('staging', () => {
     expect(asset.stagedPath).toEqual(directory);
     expect(asset.relativeStagedPath(stack)).toEqual(directory);
     expect(asset.assetHash).toEqual('f66d7421aa2d044a6c1f60ddfc76dc78571fcd8bd228eb48eb394e2dbad94a5c');
+  });
 
+  test('correctly skips bundling with stack under stage', () => {
+    // GIVEN
+    const app = new App();
 
+    const stage = new Stage(app, 'Stage');
+    stage.node.setContext(cxapi.BUNDLING_STACKS, ['Stage/Stack1']);
+
+    const stack1 = new Stack(stage, 'Stack1');
+    const stack2 = new Stack(stage, 'Stack2');
+    const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
+
+    new AssetStaging(stack1, 'Asset', {
+      sourcePath: directory,
+      assetHashType: AssetHashType.OUTPUT,
+      bundling: {
+        image: DockerImage.fromRegistry('alpine'),
+        command: [DockerStubCommand.SUCCESS],
+      },
+    });
+
+    new AssetStaging(stack2, 'Asset', {
+      sourcePath: directory,
+      assetHashType: AssetHashType.OUTPUT,
+      bundling: {
+        image: DockerImage.fromRegistry('alpine'),
+        command: [DockerStubCommand.MULTIPLE_FILES],
+      },
+    });
+
+    const dockerStubInput = readDockerStubInputConcat();
+    // Docker ran for the asset in Stack1
+    expect(dockerStubInput).toMatch(DockerStubCommand.SUCCESS);
+    // DOcker did not run for the asset in Stack2
+    expect(dockerStubInput).not.toMatch(DockerStubCommand.MULTIPLE_FILES);
   });
 
   test('bundling still occurs with partial wildcard', () => {
@@ -853,9 +907,9 @@ describe('staging', () => {
     // WHEN
     const asset = new AssetStaging(stack, 'Asset', {
       sourcePath: directory,
-      assetHashType: AssetHashType.BUNDLE,
+      assetHashType: AssetHashType.OUTPUT,
       bundling: {
-        image: BundlingDockerImage.fromRegistry('alpine'),
+        image: DockerImage.fromRegistry('alpine'),
         command: [DockerStubCommand.SUCCESS],
       },
     });
@@ -879,9 +933,9 @@ describe('staging', () => {
     // WHEN
     const asset = new AssetStaging(stack, 'Asset', {
       sourcePath: directory,
-      assetHashType: AssetHashType.BUNDLE,
+      assetHashType: AssetHashType.OUTPUT,
       bundling: {
-        image: BundlingDockerImage.fromRegistry('alpine'),
+        image: DockerImage.fromRegistry('alpine'),
         command: [DockerStubCommand.SUCCESS],
       },
     });
@@ -905,7 +959,7 @@ describe('staging', () => {
     const staging = new AssetStaging(stack, 'Asset', {
       sourcePath: directory,
       bundling: {
-        image: BundlingDockerImage.fromRegistry('alpine'),
+        image: DockerImage.fromRegistry('alpine'),
         command: [DockerStubCommand.SINGLE_ARCHIVE],
       },
     });
@@ -948,7 +1002,7 @@ describe('staging', () => {
     const staging1 = new AssetStaging(stack1, 'Asset', {
       sourcePath: directory,
       bundling: {
-        image: BundlingDockerImage.fromRegistry('alpine'),
+        image: DockerImage.fromRegistry('alpine'),
         command: [DockerStubCommand.SINGLE_ARCHIVE],
         outputType: BundlingOutput.ARCHIVED,
       },
@@ -962,7 +1016,7 @@ describe('staging', () => {
     const staging2 = new AssetStaging(stack2, 'Asset', {
       sourcePath: directory,
       bundling: {
-        image: BundlingDockerImage.fromRegistry('alpine'),
+        image: DockerImage.fromRegistry('alpine'),
         command: [DockerStubCommand.SINGLE_ARCHIVE],
         outputType: BundlingOutput.ARCHIVED,
       },
@@ -987,7 +1041,7 @@ describe('staging', () => {
     const staging = new AssetStaging(stack, 'Asset', {
       sourcePath: directory,
       bundling: {
-        image: BundlingDockerImage.fromRegistry('alpine'),
+        image: DockerImage.fromRegistry('alpine'),
         command: [DockerStubCommand.SINGLE_ARCHIVE],
         outputType: BundlingOutput.NOT_ARCHIVED,
       },
@@ -1018,7 +1072,7 @@ describe('staging', () => {
     expect(() => new AssetStaging(stack, 'Asset', {
       sourcePath: directory,
       bundling: {
-        image: BundlingDockerImage.fromRegistry('alpine'),
+        image: DockerImage.fromRegistry('alpine'),
         command: [DockerStubCommand.MULTIPLE_FILES],
         outputType: BundlingOutput.ARCHIVED,
       },
