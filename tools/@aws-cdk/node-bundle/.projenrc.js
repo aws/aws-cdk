@@ -32,4 +32,6 @@ project.testTask.prependSpawn(project.compileTask);
 const buildAndTest = project.addTask('build+test');
 buildAndTest.spawn(project.testTask);
 
+project.addFields({ private: true });
+
 project.synth();
