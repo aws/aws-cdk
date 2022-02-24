@@ -433,7 +433,7 @@ triggered every time an image is pushed to ECR:
 
 ```ts
 const repository = new ecr.Repository(this, 'Repository');
-CodePipelineSource.ecr(repository);
+pipelines.CodePipelineSource.ecr(repository);
 ```
 
 #### Additional inputs
