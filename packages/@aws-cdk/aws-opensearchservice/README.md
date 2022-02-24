@@ -243,7 +243,7 @@ constructor property, or later by means of a helper method.
 For simple permissions the `accessPolicies` constructor may be sufficient:
 
 ```ts
-const domain = new opensearch.Domain(stack, 'Domain', {
+const domain = new opensearch.Domain(this, 'Domain', {
   version: opensearch.EngineVersion.OPENSEARCH_1_0,
   accessPolicies: [
     new iam.PolicyStatement({
@@ -261,10 +261,10 @@ For more complex use-cases, for example, to set the domain up to receive data fr
 allows for policies that include the explicit domain ARN.
 
 ```ts
-const domain = new opensearch.Domain(stack, 'Domain', {
+const domain = new opensearch.Domain(this, 'Domain', {
   version: opensearch.EngineVersion.OPENSEARCH_1_0,
 });
-domain.addAccessPolicies([
+domain.addAccessPolicies(
   new iam.PolicyStatement({
     actions: ['es:ESHttpPost', 'es:ESHttpPut'],
     effect: iam.Effect.ALLOW,
@@ -288,7 +288,7 @@ domain.addAccessPolicies([
       `${domain.domainArn}/roletest*/_stat`,
     ],
   }),
-]);
+);
 ```
 
 

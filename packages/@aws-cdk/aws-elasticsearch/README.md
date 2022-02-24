@@ -241,8 +241,8 @@ constructor property, or later by means of a helper method.
 For simple permissions the `accessPolicies` constructor may be sufficient:
 
 ```ts
-const domain = new Domain(stack, 'Domain', {
-  version: ElasticsearchVersion.V7_1,
+const domain = new es.Domain(this, 'Domain', {
+  version: es.ElasticsearchVersion.V7_1,
   accessPolicies: [
     new iam.PolicyStatement({
       actions: ['es:*ESHttpPost', 'es:ESHttpPut*'],
@@ -259,11 +259,11 @@ For more complex use-cases, for example, to set the domain up to receive data fr
 allows for policies that include the explicit domain ARN.
 
 ```ts
-const domain = new Domain(stack, 'Domain', {
-  version: ElasticsearchVersion.V7_1,
+const domain = new es.Domain(this, 'Domain', {
+  version: es.ElasticsearchVersion.V7_1,
 });
 
-domain.addAccessPolicies([
+domain.addAccessPolicies(
   new iam.PolicyStatement({
     actions: ['es:ESHttpPost', 'es:ESHttpPut'],
     effect: iam.Effect.ALLOW,
@@ -287,7 +287,7 @@ domain.addAccessPolicies([
       `${domain.domainArn}/roletest*/_stat`,
     ],
   }),
-]);
+);
 ```
 
 ## Audit logs
@@ -455,7 +455,7 @@ Make the following modifications to your CDK application to migrate to the `@aws
 Follow these steps to migrate your application without data loss:
 
 - Ensure that the [removal policy](https://docs.aws.amazon.com/cdk/api/latest/docs/@aws-cdk_core.RemovalPolicy.html) on your domains are set to `RemovalPolicy.RETAIN`. This is the default for the domain construct, so nothing is required unless you have specifically set the removal policy to some other value.
-- Remove the domain resource from your CloudFormation stacks by manually modifying the synthesized templates used to create the CloudFormation stacks. This may also involve modifying or deleting dependent resources, such as the custom resources that CDK creates to manage the domain's access policy or any other resource you have connected to the domain. You will need to search for references to each domain's logical ID to determine which other resources refer to it and replace or delete those references. Do not remove resources that are dependencies of the domain or you will have to recreate or import them before importing the domain. After modification, deploy the stacks through the AWS Management Console or using the AWS CLI. 
+- Remove the domain resource from your CloudFormation stacks by manually modifying the synthesized templates used to create the CloudFormation stacks. This may also involve modifying or deleting dependent resources, such as the custom resources that CDK creates to manage the domain's access policy or any other resource you have connected to the domain. You will need to search for references to each domain's logical ID to determine which other resources refer to it and replace or delete those references. Do not remove resources that are dependencies of the domain or you will have to recreate or import them before importing the domain. After modification, deploy the stacks through the AWS Management Console or using the AWS CLI.
 - Migrate your CDK application to use the new `@aws-cdk/aws-opensearchservice` module by applying the necessary modifications listed above. Synthesize your application and obtain the resulting stack templates.
 - Copy just the definition of the domain from the "migrated" templates to the corresponding "stripped" templates that you deployed above. [Import](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/resource-import-existing-stack.html) the orphaned domains into your CloudFormation stacks using these templates.
 - Synthesize and deploy your CDK application to reconfigure/recreate the modified dependent resources. The CloudFormation stacks should now contain the same resources as existed prior to migration.
