@@ -1,6 +1,5 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { Bundle } from '@aws-cdk/node-bundle';
 import * as caseUtils from 'case';
 import * as glob from 'glob';
 import * as semver from 'semver';
