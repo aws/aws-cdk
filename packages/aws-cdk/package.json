@@ -46,7 +46,9 @@
       ],
       "dontAttribute": "^@aws-cdk/|^cdk-assets$",
       "test": "bin/cdk --version",
-      "entryPoints": ["lib/index.js"]
+      "entryPoints": [
+        "lib/index.js"
+      ]
     }
   },
   "author": {
