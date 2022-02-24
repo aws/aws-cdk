@@ -732,7 +732,8 @@ abstract class TableBase extends Resource implements ITable {
    * @param grantee The principal to grant access to
    */
   public grantWriteData(grantee: iam.IGrantable): iam.Grant {
-    return this.combinedGrant(grantee, { keyActions: perms.KEY_WRITE_ACTIONS, tableActions: perms.WRITE_DATA_ACTIONS });
+    const keyActions = perms.KEY_READ_ACTIONS.concat(perms.KEY_WRITE_ACTIONS);
+    return this.combinedGrant(grantee, { keyActions, tableActions: perms.WRITE_DATA_ACTIONS });
   }
 
   /**
