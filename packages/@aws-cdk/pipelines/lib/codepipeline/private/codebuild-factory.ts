@@ -7,17 +7,17 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import { Stack, Token } from '@aws-cdk/core';
 import { Construct, IDependable, Node } from 'constructs';
+import { FileSetLocation, ShellStep, StackOutputReference } from '../../blueprint';
+import { PipelineQueries } from '../../helpers-internal/pipeline-queries';
 import { StepOutput } from '../../helpers-internal/step-output';
-import { FileSetLocation, ShellStep, StackOutputReference } from '../blueprint';
-import { PipelineQueries } from '../helpers-internal/pipeline-queries';
-import { cloudAssemblyBuildSpecDir, obtainScope } from '../private/construct-internals';
-import { hash, stackVariableNamespace } from '../private/identifiers';
-import { mapValues, mkdict, noEmptyObject, noUndefined, partition } from '../private/javascript';
-import { ArtifactMap } from './artifact-map';
+import { cloudAssemblyBuildSpecDir, obtainScope } from '../../private/construct-internals';
+import { hash, stackVariableNamespace } from '../../private/identifiers';
+import { mapValues, mkdict, noEmptyObject, noUndefined, partition } from '../../private/javascript';
+import { ArtifactMap } from '../artifact-map';
+import { CodeBuildStep } from '../codebuild-step';
+import { CodeBuildOptions } from '../codepipeline';
+import { ICodePipelineActionFactory, ProduceActionOptions, CodePipelineActionFactoryResult } from '../codepipeline-action-factory';
 import { mergeBuildSpecs } from './buildspecs';
-import { CodeBuildStep } from './codebuild-step';
-import { CodeBuildOptions } from './codepipeline';
-import { ICodePipelineActionFactory, ProduceActionOptions, CodePipelineActionFactoryResult } from './codepipeline-action-factory';
 
 export interface CodeBuildFactoryProps {
   /**
