@@ -173,8 +173,7 @@ export class Bundle {
     }
 
     for (const entrypoint of entryPoints) {
-      if (!fs.existsSync(path.join(this.packageDir, entrypoint)) &&
-          !fs.existsSync(path.join(this.packageDir, entrypoint.replace('.js', '.ts')))) {
+      if (!fs.existsSync(path.join(this.packageDir, entrypoint))) {
         throw new Error(`Unable to locate entrypoint: ${entrypoint}`);
       }
       this.entryPoints[entrypoint.replace('.js', '')] = entrypoint;
