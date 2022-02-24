@@ -75,17 +75,11 @@ async function findAllHotswappableChanges(
   const hotswappableResources = new Array<HotswapOperation>();
 
   // process any resources in nested stacks
-  // if any of them are not hotswappable, fail now
   const resourceDifferenceEntries = Object.entries(resourceDifferences);
   let nestedStackResourceChanges = resourceDifferenceEntries.filter(
     ([_, resourceDifference]) => (resourceDifference.newValue?.Type === 'AWS::CloudFormation::Stack' && resourceDifference.oldValue?.Type === 'AWS::CloudFormation::Stack'));
   for (const [nestedStackLogicalId, nestedStackChange] of nestedStackResourceChanges) {
-    const nestedStackParameters = nestedStackChange.newValue?.Properties?.Parameters as {[key:string]: any};
-    if (nestedStackParameters) {
-      for (const paramName in nestedStackParameters) {
-        nestedStackParameters[paramName] = await evaluateCfnTemplate.evaluateCfnExpression(nestedStackParameters[paramName]);
-      }
-    }
+    const nestedStackParameters = await evaluateCfnTemplate.evaluateCfnExpression(nestedStackChange.newValue?.Properties?.Parameters);
 
     const nestedStackName = nestedStackNames[nestedStackLogicalId].stackName;
     // the stack name could not be found in CFN, so this is a newly created nested stack
