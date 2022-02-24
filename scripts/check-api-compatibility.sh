@@ -14,7 +14,7 @@ package_name() {
 # Doesn't use 'npm view' as that is slow. Direct curl'ing npmjs is better
 package_exists_on_npm() {
     pkg=$1
-    ver=$2 # optional
+    ver=${2:-} # optional
     curl -I 2>/dev/null https://registry.npmjs.org/$pkg/$ver | head -n 1 | grep 200 >/dev/null
 }
 
@@ -32,10 +32,13 @@ jsii_package_dirs=$(list_jsii_packages)
 
 #----------------------------------------------------------------------
 
-# Input a directory, output the directory IF it exists on NPM
+# dirs_for_existing_pkgs DIRECTORY VERSION
+#
+# Input a directory and a version, output the directory IF it exists on NPM at that version
 dirs_for_existing_pkgs() {
     local dir="$1"
-    if package_exists_on_npm $(package_name $dir); then
+    local ver="$2"
+    if package_exists_on_npm $(package_name $dir) $ver; then
         echo "$dir"
         echo -n "." >&2
     else
@@ -49,30 +52,34 @@ export -f dirs_for_existing_pkgs
 
 if ! ${SKIP_DOWNLOAD:-false}; then
     echo "Filtering on existing packages on NPM..." >&2
-    # In parallel
-    existing_pkg_dirs=$(echo "$jsii_package_dirs" | xargs -n1 -P4 -I {} bash -c 'dirs_for_existing_pkgs "$@"' _ {})
+
+    echo "Determining baseline version... " >&2
+    build_version=$(node -p 'require("./scripts/resolve-version.js").version')
+    echo "Build version:    ${build_version}." >&2
+
+    # Either called as:
+    # - find-latest-release "<=2.14.0" (PR build); or
+    # - find-latest-release "<=2.15.0-rc.0" (CI build); or
+    # - find-latest-release "<=2.15.0" (release build)
+    # all of which will find 2.14.0 as the version to compare against.
+    version=$(node ./scripts/find-latest-release.js "<=${build_version}")
+    echo "Released version: $version." >&2
+
+    echo "Using version '$version' as the baseline..." >&2
+
+    # Filter packages by existing at the target version
+    existing_pkg_dirs=$(echo "$jsii_package_dirs" | xargs -n1 -P4 -I {} bash -c 'dirs_for_existing_pkgs "$@" "'$version'"' _ {})
     existing_names=$(echo "$existing_pkg_dirs" | xargs -n1 -P4 -I {} bash -c 'package_name "$@"' _ {})
+    install_versions=$(for name in $existing_names; do echo "${name}@${version}"; done)
     echo " Done." >&2
-
-    echo "Determining baseline version..." >&2
-    version=$(node -p 'require("./scripts/resolve-version.js").version')
-    echo "  Current version is $version." >&2
-
-    if ! package_exists_on_npm aws-cdk $version; then
-        major_version=$(echo "$version" | sed -e 's/\..*//g')
-        echo "  Version $version does not exist in npm. Falling back to package major version ${major_version}" >&2
-        existing_names=$(echo "$existing_names" | sed -e "s/$/@$major_version/")
-    else
-        echo "Using version '$version' as the baseline..."
-        existing_names=$(echo "$existing_names" | sed -e "s/$/@$version/")
-    fi
 
     rm -rf $tmpdir
     mkdir -p $tmpdir
 
     echo "Installing from NPM..." >&2
-    # use npm7 to automatically install peer dependencies
-    (cd $tmpdir && npx npm@^7.0.0 install --prefix $tmpdir $existing_names)
+    # Use npm7 instead of whatever the current NPM version is to make sure we
+    # automatically install peer dependencies
+    (cd $tmpdir && npx npm@^7.0.0 install --prefix $tmpdir $install_versions)
 fi
 
 #----------------------------------------------------------------------

@@ -2712,7 +2712,7 @@
         },
         "Release": "ksclustertestclusterchartspotinterrupthandlerf41ba997",
         "Chart": "aws-node-termination-handler",
-        "Version": "0.13.2",
+        "Version": "1.14.1",
         "Values": "{\"nodeSelector\":{\"lifecycle\":\"Ec2Spot\"}}",
         "Namespace": "kube-system",
         "Repository": "https://aws.github.io/eks-charts",

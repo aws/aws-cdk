@@ -690,13 +690,13 @@ export class CrossAccountZoneDelegationRecord extends CoreConstruct {
 
     const role = iam.Role.fromRoleArn(this, 'cross-account-zone-delegation-handler-role', provider.roleArn);
 
-    role.addToPrincipalPolicy(new iam.PolicyStatement({
+    const addToPrinciplePolicyResult = role.addToPrincipalPolicy(new iam.PolicyStatement({
       effect: iam.Effect.ALLOW,
       actions: ['sts:AssumeRole'],
       resources: [props.delegationRole.roleArn],
     }));
 
-    new CustomResource(this, 'CrossAccountZoneDelegationCustomResource', {
+    const customResource = new CustomResource(this, 'CrossAccountZoneDelegationCustomResource', {
       resourceType: CROSS_ACCOUNT_ZONE_DELEGATION_RESOURCE_TYPE,
       serviceToken: provider.serviceToken,
       removalPolicy: props.removalPolicy,
@@ -709,5 +709,9 @@ export class CrossAccountZoneDelegationRecord extends CoreConstruct {
         TTL: (props.ttl || Duration.days(2)).toSeconds(),
       },
     });
+
+    if (addToPrinciplePolicyResult.policyDependable) {
+      customResource.node.addDependency(addToPrinciplePolicyResult.policyDependable);
+    }
   }
 }

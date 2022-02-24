@@ -287,6 +287,7 @@ export class Settings {
       bundlingStacks,
       lookups: argv.lookups,
       rollback: argv.rollback,
+      notices: argv.notices,
     });
   }
 
