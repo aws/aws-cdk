@@ -62,7 +62,7 @@ export class PolicyStatement {
 
   private readonly action = new Array<any>();
   private readonly notAction = new Array<any>();
-  private readonly principal: { [key: string]: any[] } = {};
+  private principal: { [key: string]: any[] } = {};
   private readonly notPrincipal: { [key: string]: any[] } = {};
   private readonly resource = new Array<any>();
   private readonly notResource = new Array<any>();
@@ -466,7 +466,12 @@ export class PolicyStatement {
     }
     return errors;
   }
+
+  public clearPrincipals(): void {
+    this.principal = {};
+  }
 }
+
 
 /**
  * The Effect element of an IAM policy

@@ -1,7 +1,7 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
-import { ArnFormat, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/core';
+import { ArnFormat, Fn, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { LogStream } from './log-stream';
 import { CfnLogGroup } from './logs.generated';
@@ -199,6 +199,23 @@ abstract class LogGroupBase extends Resource implements ILogGroup {
   public addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
     if (!this.policy) {
       this.policy = new ResourcePolicy(this, 'Policy');
+    }
+    console.log(statement.hasPrincipal);
+    if (statement.hasPrincipal) {
+      console.log(statement.toJSON());
+      for (const principal in statement.toJSON().Principal) {
+        const token = statement.toJSON().Principal[principal];
+        console.log(token)
+        console.log(Token.isUnresolved(token));
+        if (Token.isUnresolved(token)) {
+          console.log(Fn.split(':', token))
+          statement.clearPrincipals();
+          // 4, to get the 5th element, because the 4th is a `:` because the arn has `::` immediately preceeding the account id
+          statement.addArnPrincipal(Fn.select(4, Fn.split(':', token)));
+          console.log(statement.toJSON())
+          
+        }
+      }
     }
     this.policy.document.addStatements(statement);
     return { statementAdded: true, policyDependable: this.policy };
