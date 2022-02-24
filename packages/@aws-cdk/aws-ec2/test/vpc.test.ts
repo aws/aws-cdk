@@ -1062,6 +1062,28 @@ describe('vpc', () => {
 
 
     });
+
+    test('Can add a route to a transit gateway', () => {
+      // GIVEN
+      const stack = getTestStack();
+
+      // WHEN
+      const vpc = new Vpc(stack, 'VPC');
+      (vpc.publicSubnets[0] as PublicSubnet).addRoute('SomeRoute', {
+        destinationCidrBlock: '0.0.0.0/0',
+        routerId: 'tgw-1',
+        routerType: RouterType.TRANSIT_GATEWAY,
+      });
+
+      // THEN
+
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::Route', {
+        DestinationCidrBlock: '0.0.0.0/0',
+        TransitGatewayId: 'tgw-1',
+      });
+
+
+    });
   });
 
   describe('NAT instances', () => {
