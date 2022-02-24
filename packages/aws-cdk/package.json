@@ -2,8 +2,6 @@
   "name": "aws-cdk",
   "description": "CDK Toolkit, the command line tool for CDK apps",
   "version": "0.0.0",
-  "main": "lib/index.js",
-  "types": "lib/index.d.ts",
   "bin": {
     "cdk": "bin/cdk"
   },
@@ -47,7 +45,8 @@
         "0BSD"
       ],
       "dontAttribute": "^@aws-cdk/|^cdk-assets$",
-      "test": "bin/cdk --version"
+      "test": "bin/cdk --version",
+      "entryPoints": ["lib/index.js"]
     }
   },
   "author": {
