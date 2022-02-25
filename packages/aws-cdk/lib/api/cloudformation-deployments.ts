@@ -299,11 +299,9 @@ export class CloudFormationDeployments {
     return (await loadCurrentTemplateWithNestedStacks(rootStackArtifact, sdk)).deployedTemplate;
   }
 
-  public async readCurrentTemplate(stackArtifact: cxapi.CloudFormationStackArtifact, sdk?: ISDK): Promise<Template> {
+  public async readCurrentTemplate(stackArtifact: cxapi.CloudFormationStackArtifact/*, sdk?: ISDK*/): Promise<Template> {
     debug(`Reading existing template for stack ${stackArtifact.displayName}.`);
-    if (!sdk) {
-      sdk = await this.prepareSdkWithLookupOrDeployRole(stackArtifact);
-    }
+    const sdk = await this.prepareSdkWithLookupOrDeployRole(stackArtifact);
     return loadCurrentTemplate(stackArtifact, sdk);
   }
 
