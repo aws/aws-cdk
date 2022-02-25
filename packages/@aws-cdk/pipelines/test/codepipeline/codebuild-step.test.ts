@@ -1,5 +1,5 @@
 import { Template, Match } from '@aws-cdk/assertions';
-import { Duration, Stack } from '@aws-cdk/core';
+import { CfnOutput, Duration, Stack } from '@aws-cdk/core';
 import * as cdkp from '../../lib';
 import { PIPELINE_ENV, TestApp, ModernTestGitHubNpmPipeline, AppWithOutput } from '../testhelpers';
 
@@ -158,6 +158,11 @@ test('exportedVariables', () => {
     commands: [
       'echo "The variable was: $THE_VAR"',
     ],
+  });
+
+  new CfnOutput(pipelineStack, 'VariableOutput', {
+    exportName: 'MyVariableOutput',
+    value: producer.exportedVariable('MY_VAR'),
   });
 
   // WHEN
