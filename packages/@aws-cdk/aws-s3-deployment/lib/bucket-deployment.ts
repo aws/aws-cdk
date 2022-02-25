@@ -7,7 +7,6 @@ import * as lambda from '@aws-cdk/aws-lambda';
 import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
-import { Token } from '@aws-cdk/core';
 import { AwsCliLayer } from '@aws-cdk/lambda-layer-awscli';
 import { kebab as toKebabCase } from 'case';
 import { Construct } from 'constructs';
@@ -420,7 +419,7 @@ export class BucketDeployment extends Construct {
    */
   public get deployedBucket(): s3.IBucket {
     this.requestDestinationArn = true;
-    this._deployedBucket = this._deployedBucket ?? s3.Bucket.fromBucketArn(this, 'DestinationBucket', Token.asString(this.cr.getAtt('DestinationBucketArn')));
+    this._deployedBucket = this._deployedBucket ?? s3.Bucket.fromBucketArn(this, 'DestinationBucket', cdk.Token.asString(this.cr.getAtt('DestinationBucketArn')));
     return this._deployedBucket;
   }
 
