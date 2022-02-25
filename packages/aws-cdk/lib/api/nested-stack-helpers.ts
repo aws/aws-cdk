@@ -17,12 +17,12 @@ export async function loadCurrentTemplateWithNestedStacks(
   rootStackArtifact: cxapi.CloudFormationStackArtifact, sdk: ISDK,
 ): Promise<TemplateWithNestedStackNames> {
   const deployedTemplate = await loadCurrentTemplate(rootStackArtifact, sdk);
-  const nestedStackNames = {};
-  await addNestedTemplatesToGeneratedAndDeployedStacks(rootStackArtifact, sdk, {
+  const nestedStackNames = await addNestedTemplatesToGeneratedAndDeployedStacks(rootStackArtifact, sdk, {
     generatedTemplate: rootStackArtifact.template,
     deployedTemplate: deployedTemplate,
     deployedStackName: rootStackArtifact.stackName,
-  }, nestedStackNames);
+  });
+
   return {
     deployedTemplate,
     nestedStackNames,
@@ -47,9 +47,9 @@ async function addNestedTemplatesToGeneratedAndDeployedStacks(
   rootStackArtifact: cxapi.CloudFormationStackArtifact,
   sdk: ISDK,
   parentTemplates: StackTemplates,
-  nestedStackNames: { [nestedStackLogicalId: string]: NestedStackNames },
-): Promise<void> {
+): Promise<{ [nestedstacklogicalid: string]: NestedStackNames }> {
   const listStackResources = parentTemplates.deployedStackName ? new LazyListStackResources(sdk, parentTemplates.deployedStackName) : undefined;
+  const nestedStackNames: { [nestedstacklogicalid: string]: NestedStackNames } = {};
   for (const [nestedStackLogicalId, generatedNestedStackResource] of Object.entries(parentTemplates.generatedTemplate.Resources ?? {})) {
     if (!isCdkManagedNestedStack(generatedNestedStackResource)) {
       continue;
@@ -70,16 +70,15 @@ async function addNestedTemplatesToGeneratedAndDeployedStacks(
 
     nestedStackNames[nestedStackLogicalId] = {
       stackName: nestedStackTemplates.deployedStackName,
-      children: {},
+      children: await addNestedTemplatesToGeneratedAndDeployedStacks(
+        rootStackArtifact,
+        sdk,
+        nestedStackTemplates,
+      ),
     };
-
-    await addNestedTemplatesToGeneratedAndDeployedStacks(
-      rootStackArtifact,
-      sdk,
-      nestedStackTemplates,
-      nestedStackNames[nestedStackLogicalId].children,
-    );
   }
+
+  return nestedStackNames;
 }
 
 async function getNestedStackTemplates(
