@@ -7,15 +7,17 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import { Stack, Token } from '@aws-cdk/core';
 import { Construct, IDependable, Node } from 'constructs';
-import { FileSetLocation, ShellStep, StackOutputReference } from '../blueprint';
-import { PipelineQueries } from '../helpers-internal/pipeline-queries';
-import { cloudAssemblyBuildSpecDir, obtainScope } from '../private/construct-internals';
-import { hash, stackVariableNamespace } from '../private/identifiers';
-import { mapValues, mkdict, noEmptyObject, noUndefined, partition } from '../private/javascript';
-import { ArtifactMap } from './artifact-map';
-import { CodeBuildStep } from './codebuild-step';
-import { CodeBuildOptions } from './codepipeline';
-import { ICodePipelineActionFactory, ProduceActionOptions, CodePipelineActionFactoryResult } from './codepipeline-action-factory';
+import { FileSetLocation, ShellStep, StackOutputReference } from '../../blueprint';
+import { PipelineQueries } from '../../helpers-internal/pipeline-queries';
+import { StepOutput } from '../../helpers-internal/step-output';
+import { cloudAssemblyBuildSpecDir, obtainScope } from '../../private/construct-internals';
+import { hash, stackVariableNamespace } from '../../private/identifiers';
+import { mapValues, mkdict, noEmptyObject, noUndefined, partition } from '../../private/javascript';
+import { ArtifactMap } from '../artifact-map';
+import { CodeBuildStep } from '../codebuild-step';
+import { CodeBuildOptions } from '../codepipeline';
+import { ICodePipelineActionFactory, ProduceActionOptions, CodePipelineActionFactoryResult } from '../codepipeline-action-factory';
+import { mergeBuildSpecs } from './buildspecs';
 
 export interface CodeBuildFactoryProps {
   /**
@@ -110,6 +112,11 @@ export interface CodeBuildFactoryProps {
    * @default false
    */
   readonly isSynth?: boolean;
+
+  /**
+   * StepOutputs produced by this CodeBuild step
+   */
+  readonly producedStepOutputs?: StepOutput[];
 }
 
 /**
@@ -129,6 +136,7 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
       outputs: shellStep.outputs,
       stepId: shellStep.id,
       installCommands: shellStep.installCommands,
+      producedStepOutputs: StepOutput.producedStepOutputs(shellStep),
       ...additional,
     });
   }
@@ -314,6 +322,7 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
       outputs: outputArtifacts,
       project,
       runOrder: options.runOrder,
+      variablesNamespace: options.variablesNamespace,
 
       // Inclusion of the hash here will lead to the pipeline structure for any changes
       // made the config of the underlying CodeBuild Project.
@@ -421,14 +430,6 @@ function mergeBuildEnvironments(a?: codebuild.BuildEnvironment, b?: codebuild.Bu
   };
 }
 
-export function mergeBuildSpecs(a: codebuild.BuildSpec, b?: codebuild.BuildSpec): codebuild.BuildSpec;
-export function mergeBuildSpecs(a: codebuild.BuildSpec | undefined, b: codebuild.BuildSpec): codebuild.BuildSpec;
-export function mergeBuildSpecs(a?: codebuild.BuildSpec, b?: codebuild.BuildSpec): codebuild.BuildSpec | undefined;
-export function mergeBuildSpecs(a?: codebuild.BuildSpec, b?: codebuild.BuildSpec) {
-  if (!a || !b) { return a ?? b; }
-  return codebuild.mergeBuildSpecs(a, b);
-}
-
 function isDefined<A>(x: A | undefined): x is NonNullable<A> {
   return x !== undefined;
 }
@@ -452,7 +453,7 @@ function serializeBuildEnvironment(env: codebuild.BuildEnvironment) {
  * Whether the given string contains a reference to a CodePipeline variable
  */
 function containsPipelineVariable(s: string) {
-  return !!s.match(/#\{[^}]+\}/);
+  return !!s.match(/#\{[^}]+\}/) || StepOutput.findAll(s).length > 0;
 }
 
 /**

@@ -1,4 +1,4 @@
-import * as yargs from 'yargs';
+import type { Arguments } from 'yargs';
 import { SdkProvider } from './api/aws-auth';
 import { Configuration } from './settings';
 
@@ -15,7 +15,7 @@ import { Configuration } from './settings';
  * The parts of the world that our command functions have access to
  */
 export interface CommandOptions {
-  args: yargs.Arguments;
+  args: Arguments;
   configuration: Configuration;
   aws: SdkProvider;
 }

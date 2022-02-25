@@ -12,7 +12,6 @@ import * as sns from '@aws-cdk/aws-sns';
 import * as sqs from '@aws-cdk/aws-sqs';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
-import { Intrinsic, Token } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as constructs from 'constructs';
 import * as _ from 'lodash';
@@ -2476,7 +2475,7 @@ describe('function', () => {
     const stack = new cdk.Stack();
     expect(() => {
       const realFunctionName = 'a'.repeat(141);
-      const tokenizedFunctionName = Token.asString(new Intrinsic(realFunctionName));
+      const tokenizedFunctionName = cdk.Token.asString(new cdk.Intrinsic(realFunctionName));
 
       new lambda.Function(stack, 'foo', {
         code: new lambda.InlineCode('foo'),

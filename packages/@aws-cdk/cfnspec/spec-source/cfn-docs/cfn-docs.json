@@ -11527,7 +11527,7 @@
       "description": "Specifies a VPC flow log that captures IP traffic for a specified network interface, subnet, or VPC. To view the log data, use Amazon CloudWatch Logs (CloudWatch Logs) to help troubleshoot connection issues. For example, you can use a flow log to investigate why certain traffic isn't reaching an instance, which can help you diagnose overly restrictive security group rules. For more information, see [VPC Flow Logs](https://docs.aws.amazon.com/vpc/latest/userguide/flow-logs.html) in the *Amazon VPC User Guide* .",
       "properties": {
         "DeliverLogsPermissionArn": "The ARN for the IAM role that permits Amazon EC2 to publish flow logs to a CloudWatch Logs log group in your account.\n\nIf you specify `LogDestinationType` as `s3` , do not specify `DeliverLogsPermissionArn` or `LogGroupName` .",
-        "DestinationOptions": "The destination options.",
+        "DestinationOptions": "The destination options. The following options are supported:\n\n- `FileFormat` - The format for the flow log ( `plain-text` | `parquet` ). The default is `plain-text` .\n- `HiveCompatiblePartitions` - Indicates whether to use Hive-compatible prefixes for flow logs stored in Amazon S3 ( `true` | `false` ). The default is `false` .\n- `PerHourPartition` - Indicates whether to partition the flow log per hour ( `true` | `false` ). The default is `false` .",
         "LogDestination": "The destination to which the flow log data is to be published. Flow log data can be published to a CloudWatch Logs log group or an Amazon S3 bucket. The value specified for this parameter depends on the value specified for `LogDestinationType` .\n\nIf `LogDestinationType` is not specified or `cloud-watch-logs` , specify the Amazon Resource Name (ARN) of the CloudWatch Logs log group. For example, to publish to a log group called `my-logs` , specify `arn:aws:logs:us-east-1:123456789012:log-group:my-logs` . Alternatively, use `LogGroupName` instead.\n\nIf LogDestinationType is `s3` , specify the ARN of the Amazon S3 bucket. You can also specify a subfolder in the bucket. To specify a subfolder in the bucket, use the following ARN format: `bucket_ARN/subfolder_name/` . For example, to specify a subfolder named `my-logs` in a bucket named `my-bucket` , use the following ARN: `arn:aws:s3:::my-bucket/my-logs/` . You cannot use `AWSLogs` as a subfolder name. This is a reserved term.",
         "LogDestinationType": "The type of destination to which the flow log data is to be published. Flow log data can be published to CloudWatch Logs or Amazon S3. To publish flow log data to CloudWatch Logs, specify `cloud-watch-logs` . To publish flow log data to Amazon S3, specify `s3` .\n\nIf you specify `LogDestinationType` as `s3` , do not specify `DeliverLogsPermissionArn` or `LogGroupName` .\n\nDefault: `cloud-watch-logs`",
         "LogFormat": "The fields to include in the flow log record, in the order in which they should appear. For a list of available fields, see [Flow Log Records](https://docs.aws.amazon.com/vpc/latest/userguide/flow-logs.html#flow-log-records) . If you omit this parameter, the flow log is created using the default format. If you specify this parameter, you must specify at least one field.\n\nSpecify the fields using the `${field-id}` format, separated by spaces.",
@@ -12312,7 +12312,7 @@
         "Ref": "`Ref` returns the ID of the network insights scope.",
         "UpdatedDate": "The last updated date."
       },
-      "description": "Describes a Network Access Scope.",
+      "description": "Describes a Network Access Scope. A Network Access Scope defines outbound (egress) and inbound (ingress) traffic patterns, including sources, destinations, paths, and traffic types.\n\nNetwork Access Analyzer identifies unintended network access to your resources on AWS . When you start an analysis on a Network Access Scope, Network Access Analyzer produces findings. For more information, see the [Network Access Analyzer User Guide](https://docs.aws.amazon.com/vpc/latest/network-access-analyzer/) .",
       "properties": {
         "ExcludePaths": "The paths to exclude.",
         "MatchPaths": "The paths to match.",
@@ -22316,8 +22316,9 @@
     },
     "AWS::IoTSiteWise::Asset": {
       "attributes": {
-        "AssetId": "",
-        "Ref": "`Ref` returns the `AssetId` ."
+        "AssetArn": "The ARN of the asset.",
+        "AssetId": "The ID of the asset.",
+        "Ref": "`Ref` returns `AssetId` and `AssetArn` ."
       },
       "description": "Creates an asset from an existing asset model. For more information, see [Creating assets](https://docs.aws.amazon.com/iot-sitewise/latest/userguide/create-assets.html) in the *AWS IoT SiteWise User Guide* .",
       "properties": {
@@ -22445,7 +22446,7 @@
       "description": "Contains a tumbling window, which is a repeating fixed-sized, non-overlapping, and contiguous time window. You can use this window in metrics to aggregate data from properties and other assets.\n\nYou can use `m` , `h` , `d` , and `w` when you specify an interval or offset. Note that `m` represents minutes, `h` represents hours, `d` represents days, and `w` represents weeks. You can also use `s` to represent seconds in `offset` .\n\nThe `interval` and `offset` parameters support the [ISO 8601 format](https://docs.aws.amazon.com/https://en.wikipedia.org/wiki/ISO_8601) . For example, `PT5S` represents 5 seconds, `PT5M` represents 5 minutes, and `PT5H` represents 5 hours.",
       "properties": {
         "Interval": "The time interval for the tumbling window. The interval time must be between 1 minute and 1 week.\n\nAWS IoT SiteWise computes the `1w` interval the end of Sunday at midnight each week (UTC), the `1d` interval at the end of each day at midnight (UTC), the `1h` interval at the end of each hour, and so on.\n\nWhen AWS IoT SiteWise aggregates data points for metric computations, the start of each interval is exclusive and the end of each interval is inclusive. AWS IoT SiteWise places the computed data point at the end of the interval.",
-        "Offset": ""
+        "Offset": "The offset for the tumbling window. The `offset` parameter accepts the following:\n\n- The offset time.\n\nFor example, if you specify `18h` for `offset` and `1d` for `interval` , AWS IoT SiteWise aggregates data in one of the following ways:\n\n- If you create the metric before or at 6 PM (UTC), you get the first aggregation result at 6 PM (UTC) on the day when you create the metric.\n- If you create the metric after 6 PM (UTC), you get the first aggregation result at 6 PM (UTC) the next day.\n- The ISO 8601 format.\n\nFor example, if you specify `PT18H` for `offset` and `1d` for `interval` , AWS IoT SiteWise aggregates data in one of the following ways:\n\n- If you create the metric before or at 6 PM (UTC), you get the first aggregation result at 6 PM (UTC) on the day when you create the metric.\n- If you create the metric after 6 PM (UTC), you get the first aggregation result at 6 PM (UTC) the next day.\n- The 24-hour clock.\n\nFor example, if you specify `00:03:00` for `offset` , `5m` for `interval` , and you create the metric at 2 PM (UTC), you get the first aggregation result at 2:03 PM (UTC). You get the second aggregation result at 2:08 PM (UTC).\n- The offset time zone.\n\nFor example, if you specify `2021-07-23T18:00-08` for `offset` and `1d` for `interval` , AWS IoT SiteWise aggregates data in one of the following ways:\n\n- If you create the metric before or at 6 PM (PST), you get the first aggregation result at 6 PM (PST) on the day when you create the metric.\n- If you create the metric after 6 PM (PST), you get the first aggregation result at 6 PM (PST) the next day."
       }
     },
     "AWS::IoTSiteWise::AssetModel.VariableValue": {
@@ -22497,7 +22498,7 @@
       "description": "Contains a gateway's platform information.",
       "properties": {
         "Greengrass": "A gateway that runs on AWS IoT Greengrass .",
-        "GreengrassV2": ""
+        "GreengrassV2": "A gateway that runs on AWS IoT Greengrass V2."
       }
     },
     "AWS::IoTSiteWise::Gateway.Greengrass": {
@@ -22509,9 +22510,9 @@
     },
     "AWS::IoTSiteWise::Gateway.GreengrassV2": {
       "attributes": {},
-      "description": "",
+      "description": "Contains details for a gateway that runs on AWS IoT Greengrass V2. To create a gateway that runs on AWS IoT Greengrass V2, you must deploy the IoT SiteWise Edge component to your gateway device. Your [Greengrass device role](https://docs.aws.amazon.com/greengrass/v2/developerguide/device-service-role.html) must use the `AWSIoTSiteWiseEdgeAccess` policy. For more information, see [Using AWS IoT SiteWise at the edge](https://docs.aws.amazon.com/iot-sitewise/latest/userguide/sw-gateways.html) in the *AWS IoT SiteWise User Guide* .",
       "properties": {
-        "CoreDeviceThingName": ""
+        "CoreDeviceThingName": "The name of the AWS IoT thing for your AWS IoT Greengrass V2 core device."
       }
     },
     "AWS::IoTSiteWise::Portal": {
@@ -22542,7 +22543,7 @@
       },
       "description": "Creates a project in the specified portal.\n\n> Make sure that the project name and description don't contain confidential information.",
       "properties": {
-        "AssetIds": "",
+        "AssetIds": "A list that contains the IDs of each asset associated with the project.",
         "PortalId": "The ID of the portal in which to create the project.",
         "ProjectDescription": "A description for the project.",
         "ProjectName": "A friendly name for the project.",
@@ -32195,7 +32196,7 @@
         "Permissions": "A list of resource permissions on the data source.",
         "SslProperties": "Secure Socket Layer (SSL) properties that apply when Amazon QuickSight connects to your underlying source.",
         "Tags": "Contains a map of the key-value pairs for the resource tag or tags assigned to the data source.",
-        "Type": "The type of the data source. To return a list of all data sources, use `ListDataSources` .\n\nUse `AMAZON_ELASTICSEARCH` for Amazon OpenSearch Service.",
+        "Type": "The type of the data source. To return a list of all data sources, use `ListDataSources` .\n\nUse `AMAZON_ELASTICSEARCH` for Amazon OpenSearch Service .",
         "VpcConnectionProperties": "Use this parameter only when you want Amazon QuickSight to use a VPC connection when connecting to your underlying source."
       }
     },
