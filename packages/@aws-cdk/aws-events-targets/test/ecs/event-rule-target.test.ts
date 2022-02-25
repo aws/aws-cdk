@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as autoscaling from '@aws-cdk/aws-autoscaling';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
@@ -48,7 +48,7 @@ test('Can use EC2 taskdef as EventRule target', () => {
   }));
 
   // THEN
-  expect(stack).toHaveResourceLike('AWS::Events::Rule', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
     Targets: [
       {
         Arn: { 'Fn::GetAtt': ['EcsCluster97242B84', 'Arn'] },
@@ -119,7 +119,7 @@ test('Can import an EC2 task definition from task definition attributes as Event
   }));
 
   // THEN
-  expect(stack).toHaveResourceLike('AWS::Events::Rule', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
     Targets: [
       {
         Arn: { 'Fn::GetAtt': ['EcsCluster97242B84', 'Arn'] },
@@ -190,7 +190,7 @@ test('Can import a Fargate task definition from task definition attributes as Ev
   }));
 
   // THEN
-  expect(stack).toHaveResourceLike('AWS::Events::Rule', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
     Targets: [
       {
         Arn: { 'Fn::GetAtt': ['EcsCluster97242B84', 'Arn'] },
@@ -261,7 +261,7 @@ test('Can import a Task definition from task definition attributes as EventRule 
   }));
 
   // THEN
-  expect(stack).toHaveResourceLike('AWS::Events::Rule', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
     Targets: [
       {
         Arn: { 'Fn::GetAtt': ['EcsCluster97242B84', 'Arn'] },
@@ -307,7 +307,7 @@ test('Can use Fargate taskdef as EventRule target', () => {
 
   // THEN
   expect(target.securityGroups?.length).toBeGreaterThan(0); // Generated security groups should be accessible.
-  expect(stack).toHaveResourceLike('AWS::Events::Rule', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
     Targets: [
       {
         Arn: { 'Fn::GetAtt': ['EcsCluster97242B84', 'Arn'] },
@@ -438,7 +438,7 @@ test('Isolated subnet does not have AssignPublicIp=true', () => {
   }));
 
   // THEN
-  expect(stack).toHaveResourceLike('AWS::Events::Rule', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
     Targets: [
       {
         Arn: { 'Fn::GetAtt': ['EcsCluster2F191ADEC', 'Arn'] },
@@ -529,7 +529,7 @@ test('uses multiple security groups', () => {
   }));
 
   // THEN
-  expect(stack).toHaveResourceLike('AWS::Events::Rule', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
     Targets: [
       {
         Arn: { 'Fn::GetAtt': ['EcsCluster97242B84', 'Arn'] },
@@ -586,7 +586,7 @@ test('uses existing IAM role', () => {
   }));
 
   // THEN
-  expect(stack).toHaveResourceLike('AWS::Events::Rule', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
     Targets: [
       {
         Arn: { 'Fn::GetAtt': ['EcsCluster97242B84', 'Arn'] },
@@ -630,7 +630,7 @@ test('uses the specific fargate platform version', () => {
   }));
 
   // THEN
-  expect(stack).toHaveResourceLike('AWS::Events::Rule', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
     Targets: [
       {
         Arn: { 'Fn::GetAtt': ['EcsCluster97242B84', 'Arn'] },

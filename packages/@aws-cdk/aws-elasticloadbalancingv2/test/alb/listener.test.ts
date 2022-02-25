@@ -1,5 +1,4 @@
-import { MatchStyle } from '@aws-cdk/assert-internal';
-import '@aws-cdk/assert-internal/jest';
+import { Match, Template } from '@aws-cdk/assertions';
 import * as acm from '@aws-cdk/aws-certificatemanager';
 import { Metric } from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
@@ -24,7 +23,7 @@ describe('tests', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::Listener', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::Listener', {
       Protocol: 'HTTPS',
     });
   });
@@ -42,7 +41,7 @@ describe('tests', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::Listener', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::Listener', {
       Port: 80,
     });
   });
@@ -60,7 +59,7 @@ describe('tests', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::EC2::SecurityGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroup', {
       SecurityGroupIngress: [
         {
           Description: 'Allow from anyone on port 80',
@@ -86,7 +85,7 @@ describe('tests', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::EC2::SecurityGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroup', {
       SecurityGroupIngress: [
         {
           Description: 'Allow from anyone on port 80',
@@ -138,7 +137,7 @@ describe('tests', () => {
     listener.addCertificates('Certs', [importedCertificate(stack, 'cert')]);
 
     // THEN
-    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::Listener', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::Listener', {
       Certificates: [
         { CertificateArn: 'cert' },
       ],
@@ -169,15 +168,15 @@ describe('tests', () => {
     expect(listener.node.tryFindChild('DefaultCertificates3')).not.toBeDefined();
 
     // THEN
-    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::Listener', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::Listener', {
       Certificates: [{ CertificateArn: 'cert1' }],
     });
 
-    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::ListenerCertificate', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::ListenerCertificate', {
       Certificates: [{ CertificateArn: 'cert2' }],
     });
 
-    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::ListenerCertificate', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::ListenerCertificate', {
       Certificates: [{ CertificateArn: 'cert3' }],
     });
   });
@@ -195,7 +194,7 @@ describe('tests', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
       TargetType: 'ip',
     });
   });
@@ -213,7 +212,7 @@ describe('tests', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
       Name: 'foo',
     });
   });
@@ -237,7 +236,7 @@ describe('tests', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::Listener', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::Listener', {
       DefaultActions: [
         {
           TargetGroupArn: { Ref: 'TargetGroup3D7CD9B8' },
@@ -245,7 +244,7 @@ describe('tests', () => {
         },
       ],
     });
-    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::ListenerRule', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::ListenerRule', {
       Priority: 10,
       Conditions: [
         {
@@ -282,7 +281,7 @@ describe('tests', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::Listener', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::Listener', {
       DefaultActions: [
         {
           TargetGroupArn: { Ref: 'LBListenerTargetsGroup76EF81E8' },
@@ -290,7 +289,7 @@ describe('tests', () => {
         },
       ],
     });
-    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
       VpcId: { Ref: 'Stack8A423254' },
       Port: 80,
       Protocol: 'HTTP',
@@ -298,7 +297,7 @@ describe('tests', () => {
         { Id: 'i-12345' },
       ],
     });
-    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::ListenerRule', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::ListenerRule', {
       Actions: [
         {
           TargetGroupArn: { Ref: 'LBListenerWithPathGroupE889F9E5' },
@@ -306,7 +305,7 @@ describe('tests', () => {
         },
       ],
     });
-    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
       VpcId: { Ref: 'Stack8A423254' },
       Port: 80,
       Protocol: 'HTTP',
@@ -328,7 +327,7 @@ describe('tests', () => {
     listener.addTargets('Targets', { port: 8080, targets: [new elbv2.IpTarget('1.2.3.4')] });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::Listener', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::Listener', {
       Certificates: [
         { CertificateArn: 'cert' },
       ],
@@ -348,7 +347,7 @@ describe('tests', () => {
     listener2.addCertificates('Certs', [importedCertificate(stack2, 'cert')]);
 
     // THEN
-    expect(stack2).toHaveResource('AWS::ElasticLoadBalancingV2::ListenerCertificate', {
+    Template.fromStack(stack2).hasResourceProperties('AWS::ElasticLoadBalancingV2::ListenerCertificate', {
       Certificates: [
         { CertificateArn: 'cert' },
       ],
@@ -370,7 +369,7 @@ describe('tests', () => {
     group.enableCookieStickiness(cdk.Duration.hours(1));
 
     // THEN
-    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
       TargetGroupAttributes: [
         {
           Key: 'stickiness.enabled',
@@ -403,7 +402,7 @@ describe('tests', () => {
     group.enableCookieStickiness(cdk.Duration.hours(1), 'MyDeliciousCookie');
 
     // THEN
-    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
       TargetGroupAttributes: [
         {
           Key: 'stickiness.enabled',
@@ -445,7 +444,7 @@ describe('tests', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
       UnhealthyThresholdCount: 3,
       HealthCheckIntervalSeconds: 60,
       HealthCheckPath: '/test',
@@ -494,7 +493,7 @@ describe('tests', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
       ProtocolVersion: 'GRPC',
     });
   });
@@ -517,7 +516,7 @@ describe('tests', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::ListenerRule', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::ListenerRule', {
       ListenerArn: 'ieks',
       Priority: 30,
       Actions: [
@@ -547,7 +546,7 @@ describe('tests', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::ListenerRule', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::ListenerRule', {
       ListenerArn: 'ieks',
       Priority: 30,
       Actions: [
@@ -575,14 +574,14 @@ describe('tests', () => {
     });
 
     // THEN
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches(Match.objectLike({
       Resources: {
         SomeResource: {
           Type: 'Test::Resource',
           DependsOn: ['LoadBalancerListenerE1A099B9'],
         },
       },
-    }, MatchStyle.SUPERSET);
+    }));
   });
 
   test('Exercise metrics', () => {
@@ -648,14 +647,14 @@ describe('tests', () => {
     });
 
     // THEN
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches(Match.objectLike({
       Resources: {
         SomeResource: {
           Type: 'Test::Resource',
           DependsOn: ['LoadBalancerListenerSecondGroupRuleF5FDC196'],
         },
       },
-    }, MatchStyle.SUPERSET);
+    }));
   });
 
   test('Can add fixed responses', () => {
@@ -683,7 +682,7 @@ describe('tests', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::Listener', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::Listener', {
       DefaultActions: [
         {
           FixedResponseConfig: {
@@ -696,7 +695,7 @@ describe('tests', () => {
       ],
     });
 
-    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::ListenerRule', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::ListenerRule', {
       Actions: [
         {
           FixedResponseConfig: {
@@ -733,7 +732,7 @@ describe('tests', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::Listener', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::Listener', {
       DefaultActions: [
         {
           RedirectConfig: {
@@ -746,7 +745,7 @@ describe('tests', () => {
       ],
     });
 
-    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::ListenerRule', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::ListenerRule', {
       Actions: [
         {
           RedirectConfig: {
@@ -771,7 +770,7 @@ describe('tests', () => {
     lb.addRedirect();
 
     // THEN
-    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::Listener', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::Listener', {
       Port: 80,
       Protocol: 'HTTP',
       DefaultActions: [
@@ -800,7 +799,7 @@ describe('tests', () => {
     loadBalancer.addRedirect({ open: false });
 
     // THEN
-    expect(stack).not.toHaveResourceLike('AWS::EC2::SecurityGroup', {
+    const matchingGroups = Template.fromStack(stack).findResources('AWS::EC2::SecurityGroup', {
       SecurityGroupIngress: [
         {
           CidrIp: '0.0.0.0/0',
@@ -809,7 +808,7 @@ describe('tests', () => {
         },
       ],
     });
-
+    expect(Object.keys(matchingGroups).length).toBe(0);
   });
 
   test('Can add simple redirect responses with custom values', () => {
@@ -830,7 +829,7 @@ describe('tests', () => {
     listener.addCertificates('ListenerCertificateX', [importedCertificate(stack, 'cert3')]);
 
     // THEN
-    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::Listener', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::Listener', {
       Port: 8443,
       Protocol: 'HTTPS',
       DefaultActions: [
@@ -859,7 +858,7 @@ describe('tests', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
       TargetGroupAttributes: [
         {
           Key: 'deregistration_delay.timeout_seconds',
@@ -888,7 +887,7 @@ describe('tests', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
       TargetGroupAttributes: [
         {
           Key: 'stickiness.enabled',
@@ -1092,7 +1091,7 @@ describe('tests', () => {
     listener.connections.allowToAnyIpv4(ec2.Port.tcp(443));
 
     // THEN
-    expect(stack).toHaveResource('AWS::EC2::SecurityGroupEgress', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroupEgress', {
       GroupId: 'security-group-id',
     });
   });
@@ -1114,11 +1113,11 @@ describe('tests', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::Listener', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::Listener', {
       Protocol: 'HTTPS',
     });
 
-    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::ListenerCertificate', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::ListenerCertificate', {
       Certificates: [{ CertificateArn: 'cert2' }],
     });
   });
@@ -1137,11 +1136,11 @@ describe('tests', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::Listener', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::Listener', {
       Protocol: 'HTTPS',
     });
 
-    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::ListenerCertificate', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::ListenerCertificate', {
       Certificates: [{ CertificateArn: 'cert2' }],
     });
   });
@@ -1162,15 +1161,15 @@ describe('tests', () => {
     listener.addCertificateArns('ListenerCertificateX', ['cert3']);
 
     // THEN
-    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::Listener', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::Listener', {
       Protocol: 'HTTPS',
     });
 
-    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::ListenerCertificate', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::ListenerCertificate', {
       Certificates: [{ CertificateArn: 'cert2' }],
     });
 
-    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::ListenerCertificate', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::ListenerCertificate', {
       Certificates: [{ CertificateArn: 'cert3' }],
     });
   });
@@ -1194,7 +1193,7 @@ describe('tests', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::ListenerRule', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::ListenerRule', {
       Priority: 10,
       Conditions: [
         {
@@ -1257,7 +1256,7 @@ describe('tests', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::ListenerRule', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::ListenerRule', {
       Priority: 10,
       Conditions: [
         {
@@ -1276,7 +1275,7 @@ describe('tests', () => {
       ],
     });
 
-    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::ListenerRule', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::ListenerRule', {
       Priority: 20,
       Conditions: [
         {
@@ -1338,7 +1337,7 @@ describe('tests', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::ListenerRule', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::ListenerRule', {
       Priority: 10,
       Conditions: [
         {
@@ -1370,7 +1369,7 @@ describe('tests', () => {
       ],
     });
 
-    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::ListenerRule', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::ListenerRule', {
       Priority: 20,
       Conditions: [
         {
@@ -1389,7 +1388,7 @@ describe('tests', () => {
       ],
     });
 
-    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::ListenerRule', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::ListenerRule', {
       Priority: 30,
       Conditions: [
         {
@@ -1407,7 +1406,7 @@ describe('tests', () => {
       ],
     });
 
-    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::ListenerRule', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::ListenerRule', {
       Priority: 40,
       Conditions: [
         {
@@ -1445,7 +1444,7 @@ describe('tests', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::ListenerRule', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::ListenerRule', {
       Priority: 10,
       Conditions: [
         {
@@ -1485,7 +1484,7 @@ describe('tests', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::ListenerRule', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::ListenerRule', {
       Priority: 1,
       Conditions: [
         {
@@ -1560,7 +1559,7 @@ describe('tests', () => {
       });
 
       // THEN
-      expect(stack).not.toHaveResource('AWS::ElasticLoadBalancingV2::Listener');
+      Template.fromStack(stack).resourceCountIs('AWS::ElasticLoadBalancingV2::Listener', 0);
       expect(listener.listenerArn).toEqual('arn:aws:elasticloadbalancing:us-west-2:123456789012:listener/application/my-load-balancer/50dc6c495c0c9188/f2f7dc8efc522ab2');
       expect(listener.connections.securityGroups[0].securityGroupId).toEqual('sg-12345');
     });
@@ -1592,7 +1591,7 @@ describe('tests', () => {
       });
 
       // THEN
-      expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::ListenerRule', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::ListenerRule', {
         Priority: 5,
       });
     });
@@ -1619,7 +1618,7 @@ describe('tests', () => {
       ]);
 
       // THEN
-      expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::ListenerCertificate', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::ListenerCertificate', {
         Certificates: [
           { CertificateArn: 'arn:something' },
         ],

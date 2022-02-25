@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import { SamlMetadataDocument, SamlProvider } from '@aws-cdk/aws-iam';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { App, Stack } from '@aws-cdk/core';
@@ -42,9 +42,9 @@ describe('ClientVpnRoute constructor', () => {
       cidr: '0.0.0.0/0',
       target: ClientVpnRouteTarget.local(),
     });
-    expect(stack).toCountResources('AWS::EC2::VPC', 1);
-    expect(stack).toCountResources('AWS::EC2::ClientVpnEndpoint', 1);
-    expect(stack).toCountResources('AWS::EC2::ClientVpnRoute', 1);
+    Template.fromStack(stack).resourceCountIs('AWS::EC2::VPC', 1);
+    Template.fromStack(stack).resourceCountIs('AWS::EC2::ClientVpnEndpoint', 1);
+    Template.fromStack(stack).resourceCountIs('AWS::EC2::ClientVpnRoute', 1);
     expect(stack.node.children.length).toBe(3);
   });
   testDeprecated('either clientVpnEndoint (deprecated, typo) or clientVpnEndpoint is required', () => {
@@ -96,7 +96,7 @@ describe('ClientVpnRoute constructor', () => {
         target: ClientVpnRouteTarget.local(),
       });
     }).toThrow();
-    expect(stack).toCountResources('AWS::EC2::VPC', 1);
+    Template.fromStack(stack).resourceCountIs('AWS::EC2::VPC', 1);
     expect(stack.node.children.length).toBe(1);
   });
   testDeprecated('supplying clientVpnEndoint (deprecated due to typo) should still work', () => {
@@ -119,9 +119,9 @@ describe('ClientVpnRoute constructor', () => {
       cidr: '0.0.0.0/0',
       target: ClientVpnRouteTarget.local(),
     });
-    expect(stack).toCountResources('AWS::EC2::VPC', 1);
-    expect(stack).toCountResources('AWS::EC2::ClientVpnEndpoint', 1);
-    expect(stack).toCountResources('AWS::EC2::ClientVpnRoute', 1);
+    Template.fromStack(stack).resourceCountIs('AWS::EC2::VPC', 1);
+    Template.fromStack(stack).resourceCountIs('AWS::EC2::ClientVpnEndpoint', 1);
+    Template.fromStack(stack).resourceCountIs('AWS::EC2::ClientVpnRoute', 1);
     expect(stack.node.children.length).toBe(3);
   });
 });

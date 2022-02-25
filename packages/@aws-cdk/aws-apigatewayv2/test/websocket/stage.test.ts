@@ -99,7 +99,7 @@ describe('WebSocketStage', () => {
                 {
                   Ref: 'ApiF70053CD',
                 },
-                `/${defaultStage.stageName}/POST/@connections/*`,
+                `/${defaultStage.stageName}/*/@connections/*`,
               ]],
             },
           }]),

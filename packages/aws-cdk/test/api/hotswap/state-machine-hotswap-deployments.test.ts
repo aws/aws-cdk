@@ -482,3 +482,79 @@ test("will not perform a hotswap deployment if it doesn't know how to handle a s
     hotswapMockSdkProvider.tryHotswapDeployment(cdkStackArtifact),
   ).rejects.toThrow("We don't support the 'UnknownAttribute' attribute of the 'AWS::S3::Bucket' resource. This is a CDK limitation. Please report it at https://github.com/aws/aws-cdk/issues/new/choose");
 });
+
+test('knows how to handle attributes of the AWS::Events::EventBus resource', async () => {
+  // GIVEN
+  setup.setCurrentCfnStackTemplate({
+    Resources: {
+      EventBus: {
+        Type: 'AWS::Events::EventBus',
+        Properties: {
+          Name: 'my-event-bus',
+        },
+      },
+      Machine: {
+        Type: 'AWS::StepFunctions::StateMachine',
+        Properties: {
+          DefinitionString: {
+            'Fn::Join': ['', [
+              '{"EventBus1Arn":"',
+              { 'Fn::GetAtt': ['EventBus', 'Arn'] },
+              '","EventBus1Name":"',
+              { 'Fn::GetAtt': ['EventBus', 'Name'] },
+              '","EventBus1Ref":"',
+              { Ref: 'EventBus' },
+              '"}',
+            ]],
+          },
+          StateMachineName: 'my-machine',
+        },
+      },
+    },
+  });
+  setup.pushStackResourceSummaries(
+    setup.stackSummaryOf('EventBus', 'AWS::Events::EventBus', 'my-event-bus'),
+  );
+  const cdkStackArtifact = setup.cdkStackArtifactOf({
+    template: {
+      Resources: {
+        EventBus: {
+          Type: 'AWS::Events::EventBus',
+          Properties: {
+            Name: 'my-event-bus',
+          },
+        },
+        Machine: {
+          Type: 'AWS::StepFunctions::StateMachine',
+          Properties: {
+            DefinitionString: {
+              'Fn::Join': ['', [
+                '{"EventBus2Arn":"',
+                { 'Fn::GetAtt': ['EventBus', 'Arn'] },
+                '","EventBus2Name":"',
+                { 'Fn::GetAtt': ['EventBus', 'Name'] },
+                '","EventBus2Ref":"',
+                { Ref: 'EventBus' },
+                '"}',
+              ]],
+            },
+            StateMachineName: 'my-machine',
+          },
+        },
+      },
+    },
+  });
+
+  // THEN
+  const result = await hotswapMockSdkProvider.tryHotswapDeployment(cdkStackArtifact);
+
+  expect(result).not.toBeUndefined();
+  expect(mockUpdateMachineDefinition).toHaveBeenCalledWith({
+    stateMachineArn: 'arn:aws:states:here:123456789012:stateMachine:my-machine',
+    definition: JSON.stringify({
+      EventBus2Arn: 'arn:aws:events:here:123456789012:event-bus/my-event-bus',
+      EventBus2Name: 'my-event-bus',
+      EventBus2Ref: 'my-event-bus',
+    }),
+  });
+});

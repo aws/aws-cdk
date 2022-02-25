@@ -270,6 +270,14 @@ export interface BundlingOptions {
    * @default OutputFormat.CJS
    */
   readonly format?: OutputFormat;
+
+  /**
+   * How to determine the entry point for modules.
+   * Try ['module', 'main'] to default to ES module versions.
+   *
+   * @default ['main', 'module']
+   */
+  readonly mainFields?: string[];
 }
 
 /**

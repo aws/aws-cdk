@@ -96,6 +96,15 @@ const cluster = new ecs.Cluster(this, 'Cluster', {
 });
 ```
 
+The following code imports an existing cluster using the ARN which can be used to 
+import an Amazon ECS service either EC2 or Fargate.
+
+```ts
+const clusterArn = 'arn:aws:ecs:us-east-1:012345678910:cluster/clusterName';
+
+const cluster = ecs.Cluster.fromClusterArn(this, 'Cluster', clusterArn);
+```
+
 To use tasks with Amazon EC2 launch-type, you have to add capacity to
 the cluster in order for tasks to be scheduled on your instances.  Typically,
 you add an AutoScalingGroup with instances running the latest
@@ -418,6 +427,7 @@ const newContainer = taskDefinition.addContainer('container', {
   secrets: { // Retrieved from AWS Secrets Manager or AWS Systems Manager Parameter Store at container start-up.
     SECRET: ecs.Secret.fromSecretsManager(secret),
     DB_PASSWORD: ecs.Secret.fromSecretsManager(dbSecret, 'password'), // Reference a specific JSON field, (requires platform version 1.4.0 or later for Fargate tasks)
+    API_KEY: ecs.Secret.fromSecretsManagerVersion(secret, { versionId: '12345' }, 'apiKey'), // Reference a specific version of the secret by its version id or version stage (requires platform version 1.4.0 or later for Fargate tasks)
     PARAMETER: ecs.Secret.fromSsmParameter(parameter),
   },
 });

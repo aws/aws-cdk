@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Match, Template } from '@aws-cdk/assertions';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
@@ -20,7 +20,7 @@ describe('scalable target', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ApplicationAutoScaling::ScalableTarget', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApplicationAutoScaling::ScalableTarget', {
       ServiceNamespace: 'dynamodb',
       ScalableDimension: 'test:TestCount',
       ResourceId: 'test:this/test',
@@ -43,7 +43,7 @@ describe('scalable target', () => {
     });
 
     // THEN: no exception
-    expect(stack).toHaveResource('AWS::ApplicationAutoScaling::ScalableTarget', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApplicationAutoScaling::ScalableTarget', {
       ServiceNamespace: 'dynamodb',
       ScalableDimension: 'test:TestCount',
       ResourceId: 'test:this/test',
@@ -65,7 +65,7 @@ describe('scalable target', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ApplicationAutoScaling::ScalableTarget', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApplicationAutoScaling::ScalableTarget', {
       ScheduledActions: [
         {
           ScalableTargetAction: {
@@ -104,11 +104,11 @@ describe('scalable target', () => {
     });
 
     // THEN
-    expect(stack).not.toHaveResource('AWS::CloudWatch::Alarm', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', Match.not({
       Period: 60,
-    });
+    }));
 
-    expect(stack).toHaveResource('AWS::CloudWatch::Alarm', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
       ComparisonOperator: 'LessThanOrEqualToThreshold',
       EvaluationPeriods: 1,
       Metrics: [
@@ -203,7 +203,7 @@ describe('scalable target', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ApplicationAutoScaling::ScalableTarget', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApplicationAutoScaling::ScalableTarget', {
       ServiceNamespace: 'dynamodb',
       ScalableDimension: 'test:TestCount',
       ResourceId: 'test:this/test',

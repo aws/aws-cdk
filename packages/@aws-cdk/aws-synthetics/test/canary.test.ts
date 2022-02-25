@@ -612,7 +612,7 @@ test('can specify vpc', () => {
   // GIVEN
   const stack = new Stack();
   const vpc = new ec2.Vpc(stack, 'VPC', { maxAzs: 2 });
-
+  
   // WHEN
   new synthetics.Canary(stack, 'Canary', {
     test: synthetics.Test.custom({
@@ -642,5 +642,101 @@ test('can specify vpc', () => {
         Ref: Match.anyValue(),
       },
     },
+  });
+});
+  
+  
+test('Role policy generated as expected', () => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  new synthetics.Canary(stack, 'Canary', {
+    test: synthetics.Test.custom({
+      handler: 'index.handler',
+      code: synthetics.Code.fromInline('/* Synthetics handler code */'),
+    }),
+    runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_3,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+    Policies: [{
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 's3:ListAllMyBuckets',
+            Effect: 'Allow',
+            Resource: '*',
+          },
+          {
+            Action: 's3:GetBucketLocation',
+            Effect: 'Allow',
+            Resource: {
+              'Fn::GetAtt': [
+                'CanaryArtifactsBucket4A60D32B',
+                'Arn',
+              ],
+            },
+          },
+          {
+            Action: 's3:PutObject',
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  {
+                    'Fn::GetAtt': [
+                      'CanaryArtifactsBucket4A60D32B',
+                      'Arn',
+                    ],
+                  },
+                  '/*',
+                ],
+              ],
+            },
+          },
+          {
+            Action: 'cloudwatch:PutMetricData',
+            Condition: {
+              StringEquals: {
+                'cloudwatch:namespace': 'CloudWatchSynthetics',
+              },
+            },
+            Effect: 'Allow',
+            Resource: '*',
+          },
+          {
+            Action: [
+              'logs:CreateLogStream',
+              'logs:CreateLogGroup',
+              'logs:PutLogEvents',
+            ],
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':logs:',
+                  {
+                    Ref: 'AWS::Region',
+                  },
+                  ':',
+                  {
+                    Ref: 'AWS::AccountId',
+                  },
+                  ':log-group:/aws/lambda/cwsyn-*',
+                ],
+              ],
+            },
+          },
+        ],
+      },
+    }],
   });
 });

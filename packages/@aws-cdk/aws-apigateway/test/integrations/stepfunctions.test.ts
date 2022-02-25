@@ -1,5 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
-import { stringLike, anything } from '@aws-cdk/assert-internal';
+import { Match, Template } from '@aws-cdk/assertions';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import { StateMachine, StateMachineType } from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
@@ -16,7 +15,7 @@ describe('StepFunctionsIntegration', () => {
       api.root.addMethod('GET', integ);
 
       //THEN
-      expect(stack).toHaveResource('AWS::ApiGateway::Method', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
         ResourceId: {
           'Fn::GetAtt': [
             'myrestapiBAC2BF45',
@@ -74,16 +73,16 @@ describe('StepFunctionsIntegration', () => {
       const integ = apigw.StepFunctionsIntegration.startExecution(stateMachine);
       api.root.addMethod('GET', integ);
 
-      expect(stack).toHaveResourceLike('AWS::ApiGateway::Method', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
         Integration: {
           RequestTemplates: {
             'application/json': {
               'Fn::Join': [
                 '',
                 [
-                  stringLike('*includeHeaders = false*'),
+                  Match.stringLikeRegexp('includeHeaders = false'),
                   { Ref: 'StateMachine2E01A3A5' },
-                  anything(),
+                  Match.anyValue(),
                 ],
               ],
             },
@@ -102,16 +101,16 @@ describe('StepFunctionsIntegration', () => {
       });
       api.root.addMethod('GET', integ);
 
-      expect(stack).toHaveResourceLike('AWS::ApiGateway::Method', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
         Integration: {
           RequestTemplates: {
             'application/json': {
               'Fn::Join': [
                 '',
                 [
-                  stringLike('*#set($includeHeaders = true)*'),
+                  Match.stringLikeRegexp('#set\\(\\$includeHeaders = true\\)'),
                   { Ref: 'StateMachine2E01A3A5' },
-                  anything(),
+                  Match.anyValue(),
                 ],
               ],
             },
@@ -128,16 +127,16 @@ describe('StepFunctionsIntegration', () => {
       const integ = apigw.StepFunctionsIntegration.startExecution(stateMachine);
       api.root.addMethod('GET', integ);
 
-      expect(stack).toHaveResourceLike('AWS::ApiGateway::Method', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
         Integration: {
           RequestTemplates: {
             'application/json': {
               'Fn::Join': [
                 '',
                 [
-                  stringLike('*#set($includeQueryString = true)*'),
+                  Match.stringLikeRegexp('#set\\(\\$includeQueryString = true\\)'),
                   { Ref: 'StateMachine2E01A3A5' },
-                  anything(),
+                  Match.anyValue(),
                 ],
               ],
             },
@@ -145,16 +144,16 @@ describe('StepFunctionsIntegration', () => {
         },
       });
 
-      expect(stack).toHaveResourceLike('AWS::ApiGateway::Method', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
         Integration: {
           RequestTemplates: {
             'application/json': {
               'Fn::Join': [
                 '',
                 [
-                  stringLike('*#set($includePath = true)*'),
+                  Match.stringLikeRegexp('#set\\(\\$includePath = true\\)'),
                   { Ref: 'StateMachine2E01A3A5' },
-                  anything(),
+                  Match.anyValue(),
                 ],
               ],
             },
@@ -174,16 +173,16 @@ describe('StepFunctionsIntegration', () => {
       });
       api.root.addMethod('GET', integ);
 
-      expect(stack).toHaveResourceLike('AWS::ApiGateway::Method', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
         Integration: {
           RequestTemplates: {
             'application/json': {
               'Fn::Join': [
                 '',
                 [
-                  stringLike('*#set($includeQueryString = false)*'),
+                  Match.stringLikeRegexp('#set\\(\\$includeQueryString = false\\)'),
                   { Ref: 'StateMachine2E01A3A5' },
-                  anything(),
+                  Match.anyValue(),
                 ],
               ],
             },
@@ -191,16 +190,16 @@ describe('StepFunctionsIntegration', () => {
         },
       });
 
-      expect(stack).toHaveResourceLike('AWS::ApiGateway::Method', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
         Integration: {
           RequestTemplates: {
             'application/json': {
               'Fn::Join': [
                 '',
                 [
-                  stringLike('*#set($includePath = false)*'),
+                  Match.stringLikeRegexp('#set\\(\\$includePath = false\\)'),
                   { Ref: 'StateMachine2E01A3A5' },
-                  anything(),
+                  Match.anyValue(),
                 ],
               ],
             },
@@ -217,16 +216,16 @@ describe('StepFunctionsIntegration', () => {
       const integ = apigw.StepFunctionsIntegration.startExecution(stateMachine, {});
       api.root.addMethod('GET', integ);
 
-      expect(stack).toHaveResourceLike('AWS::ApiGateway::Method', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
         Integration: {
           RequestTemplates: {
             'application/json': {
               'Fn::Join': [
                 '',
                 [
-                  anything(),
+                  Match.anyValue(),
                   { Ref: 'StateMachine2E01A3A5' },
-                  stringLike('*#set($requestContext = \"\")*'),
+                  Match.stringLikeRegexp('#set\\(\\$requestContext = \"\"\\)'),
                 ],
               ],
             },
@@ -247,16 +246,16 @@ describe('StepFunctionsIntegration', () => {
       });
       api.root.addMethod('GET', integ);
 
-      expect(stack).toHaveResourceLike('AWS::ApiGateway::Method', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
         Integration: {
           RequestTemplates: {
             'application/json': {
               'Fn::Join': [
                 '',
                 [
-                  anything(),
+                  Match.anyValue(),
                   { Ref: 'StateMachine2E01A3A5' },
-                  stringLike('*#set($requestContext = \"{@@accountId@@:@@$context.identity.accountId@@}\"*'),
+                  Match.stringLikeRegexp('#set\\(\\$requestContext = \"{@@accountId@@:@@\\$context.identity.accountId@@}\"'),
                 ],
               ],
             },
@@ -283,7 +282,7 @@ describe('StepFunctionsIntegration', () => {
 
       api.root.addMethod('ANY', apigw.StepFunctionsIntegration.startExecution(stateMachine));
 
-      expect(stack).toHaveResource('AWS::ApiGateway::Method', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
         ResourceId: 'imported-root-resource-id',
         RestApiId: 'imported-rest-api-id',
       });

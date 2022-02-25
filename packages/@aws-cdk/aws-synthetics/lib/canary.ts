@@ -372,8 +372,12 @@ export class Canary extends cdk.Resource {
           actions: ['s3:ListAllMyBuckets'],
         }),
         new iam.PolicyStatement({
+          resources: [this.artifactsBucket.bucketArn],
+          actions: ['s3:GetBucketLocation'],
+        }),
+        new iam.PolicyStatement({
           resources: [this.artifactsBucket.arnForObjects(`${prefix ? prefix+'/*' : '*'}`)],
-          actions: ['s3:PutObject', 's3:GetBucketLocation'],
+          actions: ['s3:PutObject'],
         }),
         new iam.PolicyStatement({
           resources: ['*'],
@@ -381,7 +385,7 @@ export class Canary extends cdk.Resource {
           conditions: { StringEquals: { 'cloudwatch:namespace': 'CloudWatchSynthetics' } },
         }),
         new iam.PolicyStatement({
-          resources: [`arn:${partition}:logs:::*`],
+          resources: [this.logGroupArn()],
           actions: ['logs:CreateLogStream', 'logs:CreateLogGroup', 'logs:PutLogEvents'],
         }),
       ],
@@ -409,6 +413,15 @@ export class Canary extends cdk.Resource {
         canaryPolicy: policy,
       },
       managedPolicies,
+    });
+  }
+
+  private logGroupArn() {
+    return cdk.Stack.of(this).formatArn({
+      service: 'logs',
+      resource: 'log-group',
+      arnFormat: cdk.ArnFormat.COLON_RESOURCE_NAME,
+      resourceName: '/aws/lambda/cwsyn-*',
     });
   }
 

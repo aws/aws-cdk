@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import { Code, Function as lambdaFn, Runtime } from '@aws-cdk/aws-lambda';
 import { Duration, Stack } from '@aws-cdk/core';
 import { Node } from 'constructs';
@@ -35,7 +35,7 @@ describe('state machine', () => {
 
     // THEN
     const roleId = 'statemachineRole52044F93';
-    expect(stack).toHaveResourceLike('AWS::StepFunctions::StateMachine', {
+    Template.fromStack(stack).hasResourceProperties('AWS::StepFunctions::StateMachine', {
       DefinitionString: {
         'Fn::Join': [
           '',
@@ -54,7 +54,7 @@ describe('state machine', () => {
         'Fn::GetAtt': [roleId, 'Arn'],
       },
     });
-    expect(stack).toHaveResourceLike('AWS::IAM::Role', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
       AssumeRolePolicyDocument: {
         Statement: [
           {
@@ -77,7 +77,7 @@ describe('state machine', () => {
         Version: '2012-10-17',
       },
     });
-    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
