@@ -1670,13 +1670,6 @@ export class LinuxArmBuildImage implements IBuildImage {
   /** Image "aws/codebuild/amazonlinux2-aarch64-standard:2.0". */
   public static readonly AMAZON_LINUX_2_ARM_2 = LinuxArmBuildImage.codeBuildImage('aws/codebuild/amazonlinux2-aarch64-standard:2.0');
 
-  public readonly type = 'ARM_CONTAINER';
-  public readonly defaultComputeType = ComputeType.LARGE;
-  public readonly imageId: string;
-  public readonly imagePullPrincipalType?: ImagePullPrincipalType;
-  public readonly secretsManagerCredentials?: secretsmanager.ISecret;
-  public readonly repository?: ecr.IRepository;
-
   /**
    * @returns An aarch64 Linux build image from an ECR repository.
    *
@@ -1706,6 +1699,13 @@ export class LinuxArmBuildImage implements IBuildImage {
       imagePullPrincipalType: ImagePullPrincipalType.CODEBUILD,
     });
   }
+
+  public readonly type = 'ARM_CONTAINER';
+  public readonly defaultComputeType = ComputeType.LARGE;
+  public readonly imageId: string;
+  public readonly imagePullPrincipalType?: ImagePullPrincipalType;
+  public readonly secretsManagerCredentials?: secretsmanager.ISecret;
+  public readonly repository?: ecr.IRepository;
 
   private constructor(props: LinuxArmBuildImageProps) {
     this.imageId = props.imageId;

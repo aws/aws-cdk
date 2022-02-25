@@ -14,9 +14,9 @@ describe('Linux ARM build image', () => {
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
-        'Environment': {
-          'Type': 'ARM_CONTAINER',
-          'ComputeType': 'BUILD_GENERAL1_LARGE',
+        Environment: {
+          Type: 'ARM_CONTAINER',
+          ComputeType: 'BUILD_GENERAL1_LARGE',
         },
       });
     });
@@ -31,9 +31,9 @@ describe('Linux ARM build image', () => {
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
-        'Environment': {
-          'Type': 'ARM_CONTAINER',
-          'ComputeType': 'BUILD_GENERAL1_SMALL',
+        Environment: {
+          Type: 'ARM_CONTAINER',
+          ComputeType: 'BUILD_GENERAL1_SMALL',
         },
       });
     });
@@ -61,9 +61,9 @@ describe('Linux ARM build image', () => {
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
-        'Environment': {
-          'Type': 'ARM_CONTAINER',
-          'ComputeType': 'BUILD_GENERAL1_LARGE',
+        Environment: {
+          Type: 'ARM_CONTAINER',
+          ComputeType: 'BUILD_GENERAL1_LARGE',
         },
       });
     });
@@ -92,9 +92,9 @@ describe('Linux ARM build image', () => {
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
-        'Environment': {
-          'Type': 'ARM_CONTAINER',
-          'ComputeType': 'BUILD_GENERAL1_LARGE',
+        Environment: {
+          Type: 'ARM_CONTAINER',
+          ComputeType: 'BUILD_GENERAL1_LARGE',
         },
       });
     });
@@ -109,9 +109,9 @@ describe('Linux ARM build image', () => {
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
-        'Environment': {
-          'Type': 'ARM_CONTAINER',
-          'ComputeType': 'BUILD_GENERAL1_SMALL',
+        Environment: {
+          Type: 'ARM_CONTAINER',
+          ComputeType: 'BUILD_GENERAL1_SMALL',
         },
       });
     });
@@ -139,9 +139,9 @@ describe('Linux ARM build image', () => {
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
-        'Environment': {
-          'Type': 'ARM_CONTAINER',
-          'ComputeType': 'BUILD_GENERAL1_LARGE',
+        Environment: {
+          Type: 'ARM_CONTAINER',
+          ComputeType: 'BUILD_GENERAL1_LARGE',
         },
       });
     });
