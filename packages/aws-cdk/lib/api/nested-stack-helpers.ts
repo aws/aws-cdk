@@ -34,10 +34,10 @@ export async function loadCurrentTemplateWithNestedStacks(
  */
 export async function loadCurrentTemplate(stackArtifact: cxapi.CloudFormationStackArtifact, sdk: ISDK): Promise<Template> {
   debug(`Reading existing template for stack ${stackArtifact.displayName}.`);
-  return readCurrentStackTemplate(stackArtifact.stackName, sdk);
+  return loadCurrentStackTemplate(stackArtifact.stackName, sdk);
 }
 
-async function readCurrentStackTemplate(stackName: string, sdk: ISDK) : Promise<Template> {
+async function loadCurrentStackTemplate(stackName: string, sdk: ISDK) : Promise<Template> {
   const cfn = sdk.cloudFormation();
   const stack = await CloudFormationStack.lookup(cfn, stackName);
   return stack.template();
@@ -96,7 +96,7 @@ async function getNestedStackTemplates(
   return {
     generatedTemplate: JSON.parse(fs.readFileSync(nestedTemplatePath, 'utf-8')),
     deployedTemplate: deployedStackName
-      ? await readCurrentStackTemplate(deployedStackName, sdk)
+      ? await loadCurrentStackTemplate(deployedStackName, sdk)
       : {},
     deployedStackName,
   };

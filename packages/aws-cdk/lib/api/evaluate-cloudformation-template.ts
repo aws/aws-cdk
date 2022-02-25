@@ -1,4 +1,3 @@
-import * as cxapi from '@aws-cdk/cx-api';
 import * as AWS from 'aws-sdk';
 import { ISDK } from './aws-auth';
 
@@ -43,7 +42,7 @@ export interface ResourceDefinition {
 }
 
 export interface EvaluateCloudFormationTemplateProps {
-  readonly stackArtifactOrTemplate: cxapi.CloudFormationStackArtifact | { [section: string]: { [headings: string]: any } };
+  readonly template: Template;
   readonly parameters: { [parameterName: string]: string };
   readonly account: string;
   readonly region: string;
@@ -54,7 +53,7 @@ export interface EvaluateCloudFormationTemplateProps {
 
 export class EvaluateCloudFormationTemplate {
   private readonly stackResources: ListStackResources;
-  private readonly template: { [section: string]: { [headings: string]: any } };
+  private readonly template: Template;
   private readonly context: { [k: string]: any };
   private readonly account: string;
   private readonly region: string;
@@ -65,9 +64,7 @@ export class EvaluateCloudFormationTemplate {
   constructor(props: EvaluateCloudFormationTemplateProps) {
     this.stackResources = props.listStackResources;
 
-    this.template = props.stackArtifactOrTemplate instanceof cxapi.CloudFormationStackArtifact
-      ? props.stackArtifactOrTemplate.template
-      : props.stackArtifactOrTemplate;
+    this.template = props.template;
     this.context = {
       'AWS::AccountId': props.account,
       'AWS::Region': props.region,
@@ -83,11 +80,11 @@ export class EvaluateCloudFormationTemplate {
   // clones current EvaluateCloudFormationTemplate object, but updates the stack name
   public createNestedEvaluateCloudFormationTemplate(
     listNestedStackResources: ListStackResources,
-    nestedTemplate: { [section: string]: { [headings: string]: any } },
+    nestedTemplate: Template,
     nestedStackParameters: { [parameterName: string]: any },
   ) {
     return new EvaluateCloudFormationTemplate({
-      stackArtifactOrTemplate: nestedTemplate,
+      template: nestedTemplate,
       parameters: nestedStackParameters,
       account: this.account,
       region: this.region,
@@ -323,6 +320,8 @@ export class EvaluateCloudFormationTemplate {
     return resource.ResourceType.split('::')[2].toLowerCase();
   }
 }
+
+type Template = { [section: string]: { [headings: string]: any } };
 
 interface ArnParts {
   readonly partition: string;

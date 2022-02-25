@@ -35,7 +35,7 @@ export async function tryHotswapDeployment(
   // We fetch it lazily, to save a service call, in case all hotswapped resources have their physical names set.
   const listStackResources = new LazyListStackResources(sdk, stackArtifact.stackName);
   const evaluateCfnTemplate = new EvaluateCloudFormationTemplate({
-    stackArtifactOrTemplate: stackArtifact,
+    template: stackArtifact.template,
     parameters: assetParams,
     account: resolvedEnv.account,
     region: resolvedEnv.region,
