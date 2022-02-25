@@ -188,14 +188,13 @@ async function findNestedHotswappableChanges(
   evaluateCfnTemplate: EvaluateCloudFormationTemplate,
   sdk: ISDK,
 ): Promise<HotswapOperation[] | undefined> {
-  const nestedStackParameters = await evaluateCfnTemplate.evaluateCfnExpression(change.newValue?.Properties?.Parameters);
-
-  const nestedStackName = nestedStackNames[logicalId].stackName;
+  const nestedStackName = nestedStackNames[logicalId].nestedStackPhysicalName;
   // the stack name could not be found in CFN, so this is a newly created nested stack
   if (!nestedStackName) {
     return undefined;
   }
 
+  const nestedStackParameters = await evaluateCfnTemplate.evaluateCfnExpression(change.newValue?.Properties?.Parameters);
   const evaluateNestedCfnTemplate = evaluateCfnTemplate.createNestedEvaluateCloudFormationTemplate(
     new LazyListStackResources(sdk, nestedStackName), change.newValue?.Properties?.NestedTemplate, nestedStackParameters,
   );
@@ -204,7 +203,7 @@ async function findNestedHotswappableChanges(
     change.oldValue?.Properties?.NestedTemplate, change.newValue?.Properties?.NestedTemplate,
   );
 
-  return findAllHotswappableChanges(nestedDiff, evaluateNestedCfnTemplate, sdk, nestedStackNames[logicalId].children);
+  return findAllHotswappableChanges(nestedDiff, evaluateNestedCfnTemplate, sdk, nestedStackNames[logicalId].nestedChildStackNames);
 }
 
 /** Returns 'true' if a pair of changes is for the same resource. */

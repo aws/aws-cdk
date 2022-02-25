@@ -1,5 +1,4 @@
 import * as cxapi from '@aws-cdk/cx-api';
-import { CloudFormationStackArtifact } from '@aws-cdk/cx-api';
 import * as AWS from 'aws-sdk';
 import * as codebuild from 'aws-sdk/clients/codebuild';
 import * as lambda from 'aws-sdk/clients/lambda';
@@ -17,10 +16,10 @@ export const STACK_ID = 'stackId';
 let hotswapMockSdkProvider: HotswapMockSdkProvider;
 let currentCfnStack: FakeCloudformationStack;
 const currentCfnStackResources: AWS.CloudFormation.StackResourceSummary[] = [];
-let stackTemplates: {[key:string]: any};
-let currentNestedCfnStackResources: { [key: string]: AWS.CloudFormation.StackResourceSummary[] };
+let stackTemplates: { [stackName: string]: any };
+let currentNestedCfnStackResources: { [stackName: string]: AWS.CloudFormation.StackResourceSummary[] };
 
-export function setupHotswapTests() {
+export function setupHotswapTests(): HotswapMockSdkProvider {
   jest.resetAllMocks();
   // clear the array
   currentCfnStackResources.splice(0);
@@ -47,7 +46,6 @@ export function setupHotswapNestedStackTests(rootStackName: string, childStacks?
   stackTemplates = {};
   CloudFormationStack.lookup = async (_: AWS.CloudFormation, stackName: string) => {
     currentCfnStack.template = async () => stackTemplates[stackName];
-
     return currentCfnStack;
   };
 
@@ -69,7 +67,6 @@ export function pushNestedStackResourceSummaries(stackName: string, ...items: AW
   if (!currentNestedCfnStackResources[stackName]) {
     currentNestedCfnStackResources[stackName] = [];
   }
-
   currentNestedCfnStackResources[stackName].push(...items);
 }
 
@@ -78,8 +75,8 @@ export function setCurrentCfnStackTemplate(template: Template) {
   currentCfnStack.setTemplate(templateDeepCopy);
 }
 
-export function addTemplateToCloudFormationLookupMock(stackArtifact: CloudFormationStackArtifact) {
-  const templateDeepCopy = JSON.parse(JSON.stringify(stackArtifact.template));
+export function addTemplateToCloudFormationLookupMock(stackArtifact: cxapi.CloudFormationStackArtifact) {
+  const templateDeepCopy = JSON.parse(JSON.stringify(stackArtifact.template)); // deep copy the template, so our tests can mutate one template instead of creating two
   stackTemplates[stackArtifact.stackName] = templateDeepCopy;
 }
 

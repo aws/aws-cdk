@@ -318,7 +318,7 @@ test('can correctly reference AWS::URLSuffix in hotswappable changes', async () 
     .toHaveBeenCalledWith('cdk-hotswap/success-lambda-function');
 });
 
-test('attempting to hotswap a newly created resource with the same logical ID that a resource which is currently deployed to CloudFormation has results in a full deployment', async () => {
+test('changing the type of a deployed resource always results in a full deployment', async () => {
   // GIVEN
   setup.setCurrentCfnStackTemplate({
     Resources: {

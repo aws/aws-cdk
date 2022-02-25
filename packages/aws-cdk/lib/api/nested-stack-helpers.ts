@@ -1,7 +1,6 @@
 import * as path from 'path';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as fs from 'fs-extra';
-import { debug } from '../logging';
 import { ISDK } from './aws-auth';
 import { LazyListStackResources, ListStackResources } from './evaluate-cloudformation-template';
 import { CloudFormationStack, Template } from './util/cloudformation';
@@ -9,8 +8,9 @@ import { CloudFormationStack, Template } from './util/cloudformation';
 /**
  * Reads the currently deployed template from CloudFormation and adds a
  * property, `NestedTemplate`, to any nested stacks that appear in either
- * the deployed template or the just synthesized template. `NestedTemplate`
- * is populated with contents of the nested template. This is done for all
+ * the deployed template or the newly synthesized template. `NestedTemplate`
+ * is populated with contents of the nested template by mutating the
+ * `template` property of `rootStackArtifact`. This is done for all
  * nested stack resources to arbitrary depths.
  */
 export async function loadCurrentTemplateWithNestedStacks(
@@ -68,8 +68,8 @@ async function addNestedTemplatesToGeneratedAndDeployedStacks(
     deployedNestedStackResource.Properties.NestedTemplate = nestedStackTemplates.deployedTemplate;
 
     nestedStackNames[nestedStackLogicalId] = {
-      stackName: nestedStackTemplates.deployedStackName,
-      children: await addNestedTemplatesToGeneratedAndDeployedStacks(
+      nestedStackPhysicalName: nestedStackTemplates.deployedStackName,
+      nestedChildStackNames: await addNestedTemplatesToGeneratedAndDeployedStacks(
         rootStackArtifact,
         sdk,
         nestedStackTemplates,
@@ -125,8 +125,8 @@ export interface TemplateWithNestedStackNames {
 }
 
 export interface NestedStackNames {
-  readonly stackName: string | undefined;
-  readonly children: { [logicalId: string]: NestedStackNames };
+  readonly nestedStackPhysicalName: string | undefined;
+  readonly nestedChildStackNames: { [logicalId: string]: NestedStackNames };
 }
 
 interface StackTemplates {
