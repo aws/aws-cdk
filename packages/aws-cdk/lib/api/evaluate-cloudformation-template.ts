@@ -7,30 +7,30 @@ export interface ListStackResources {
 }
 
 export class LazyListStackResources implements ListStackResources {
-  private stackResources: AWS.CloudFormation.StackResourceSummary[] | undefined;
+  private stackResources: Promise<AWS.CloudFormation.StackResourceSummary[]> | undefined;
 
   constructor(private readonly sdk: ISDK, private readonly stackName: string) {
   }
 
   public async listStackResources(): Promise<AWS.CloudFormation.StackResourceSummary[]> {
     if (this.stackResources === undefined) {
-      this.stackResources = await this.getStackResources();
+      this.stackResources = this.getStackResources(undefined);
     }
     return this.stackResources;
   }
 
-  private async getStackResources(): Promise<AWS.CloudFormation.StackResourceSummary[]> {
+  private async getStackResources(nextToken: string | undefined): Promise<AWS.CloudFormation.StackResourceSummary[]> {
     const ret = new Array<AWS.CloudFormation.StackResourceSummary>();
-    let nextToken: string | undefined;
-    do {
-      const stackResourcesResponse = await this.sdk.cloudFormation().listStackResources({
-        StackName: this.stackName,
-        NextToken: nextToken,
-      }).promise();
+    return this.sdk.cloudFormation().listStackResources({
+      StackName: this.stackName,
+      NextToken: nextToken,
+    }).promise().then(async stackResourcesResponse => {
       ret.push(...(stackResourcesResponse.StackResourceSummaries ?? []));
-      nextToken = stackResourcesResponse.NextToken;
-    } while (nextToken);
-    return ret;
+      if (stackResourcesResponse.NextToken) {
+        ret.push(...await this.getStackResources(stackResourcesResponse.NextToken));
+      }
+      return ret;
+    });
   }
 }
 
