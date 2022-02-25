@@ -454,7 +454,7 @@ test("will not perform a hotswap deployment if it doesn't know how to handle a s
     template: {
       Resources: {
         Bucket: {
-          Type: 'AWS::Lambda::Function',
+          Type: 'AWS::S3::Bucket',
         },
         Machine: {
           Type: 'AWS::StepFunctions::StateMachine',
