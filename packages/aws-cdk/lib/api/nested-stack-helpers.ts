@@ -33,7 +33,6 @@ export async function loadCurrentTemplateWithNestedStacks(
  * Returns the currently deployed template from CloudFormation that corresponds to `stackArtifact`.
  */
 export async function loadCurrentTemplate(stackArtifact: cxapi.CloudFormationStackArtifact, sdk: ISDK): Promise<Template> {
-  debug(`Reading existing template for stack ${stackArtifact.displayName}.`);
   return loadCurrentStackTemplate(stackArtifact.stackName, sdk);
 }
 
@@ -47,9 +46,9 @@ async function addNestedTemplatesToGeneratedAndDeployedStacks(
   rootStackArtifact: cxapi.CloudFormationStackArtifact,
   sdk: ISDK,
   parentTemplates: StackTemplates,
-): Promise<{ [nestedstacklogicalid: string]: NestedStackNames }> {
+): Promise<{ [nestedStackLogicalId: string]: NestedStackNames }> {
   const listStackResources = parentTemplates.deployedStackName ? new LazyListStackResources(sdk, parentTemplates.deployedStackName) : undefined;
-  const nestedStackNames: { [nestedstacklogicalid: string]: NestedStackNames } = {};
+  const nestedStackNames: { [nestedStackLogicalId: string]: NestedStackNames } = {};
   for (const [nestedStackLogicalId, generatedNestedStackResource] of Object.entries(parentTemplates.generatedTemplate.Resources ?? {})) {
     if (!isCdkManagedNestedStack(generatedNestedStackResource)) {
       continue;

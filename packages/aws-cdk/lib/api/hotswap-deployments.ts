@@ -80,7 +80,6 @@ async function findAllHotswappableChanges(
       if (!nestedHotswappableResources) {
         return undefined;
       }
-
       hotswappableResources.push(...nestedHotswappableResources);
       continue;
     }

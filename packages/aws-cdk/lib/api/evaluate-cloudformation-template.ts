@@ -63,7 +63,6 @@ export class EvaluateCloudFormationTemplate {
 
   constructor(props: EvaluateCloudFormationTemplateProps) {
     this.stackResources = props.listStackResources;
-
     this.template = props.template;
     this.context = {
       'AWS::AccountId': props.account,
@@ -321,7 +320,7 @@ export class EvaluateCloudFormationTemplate {
   }
 }
 
-type Template = { [section: string]: { [headings: string]: any } };
+export type Template = { [section: string]: { [headings: string]: any } };
 
 interface ArnParts {
   readonly partition: string;
