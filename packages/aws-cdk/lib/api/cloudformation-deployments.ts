@@ -5,7 +5,7 @@ import { debug, warning } from '../logging';
 import { publishAssets } from '../util/asset-publishing';
 import { Mode, SdkProvider, ISDK } from './aws-auth';
 import { deployStack, DeployStackResult, destroyStack } from './deploy-stack';
-import { readCurrentTemplateWithNestedStacks, readCurrentTemplate } from './nested-stack-helpers';
+import { loadCurrentTemplateWithNestedStacks, loadCurrentTemplate } from './nested-stack-helpers';
 import { ToolkitInfo } from './toolkit-info';
 import { CloudFormationStack, Template } from './util/cloudformation';
 import { StackActivityProgress } from './util/cloudformation/stack-activity-monitor';
@@ -296,7 +296,7 @@ export class CloudFormationDeployments {
 
   public async readCurrentTemplateWithNestedStacks(rootStackArtifact: cxapi.CloudFormationStackArtifact): Promise<Template> {
     const sdk = await this.prepareSdkWithLookupOrDeployRole(rootStackArtifact);
-    return (await readCurrentTemplateWithNestedStacks(rootStackArtifact, sdk)).deployedTemplate;
+    return (await loadCurrentTemplateWithNestedStacks(rootStackArtifact, sdk)).deployedTemplate;
   }
 
   public async readCurrentTemplate(stackArtifact: cxapi.CloudFormationStackArtifact, sdk?: ISDK): Promise<Template> {
@@ -304,7 +304,7 @@ export class CloudFormationDeployments {
     if (!sdk) {
       sdk = await this.prepareSdkWithLookupOrDeployRole(stackArtifact);
     }
-    return readCurrentTemplate(stackArtifact, sdk);
+    return loadCurrentTemplate(stackArtifact, sdk);
   }
 
   public async deployStack(options: DeployStackOptions): Promise<DeployStackResult> {

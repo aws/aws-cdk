@@ -43,8 +43,7 @@ export interface ResourceDefinition {
 }
 
 export interface EvaluateCloudFormationTemplateProps {
-  readonly stackArtifact?: cxapi.CloudFormationStackArtifact;
-  readonly stackTemplate?: { [section: string]: { [headings: string]: any } };
+  readonly stackArtifactOrTemplate: cxapi.CloudFormationStackArtifact | { [section: string]: { [headings: string]: any } };
   readonly parameters: { [parameterName: string]: string };
   readonly account: string;
   readonly region: string;
@@ -56,7 +55,7 @@ export interface EvaluateCloudFormationTemplateProps {
 export class EvaluateCloudFormationTemplate {
   private readonly stackResources: ListStackResources;
   private readonly template: { [section: string]: { [headings: string]: any } };
-  private readonly context: { [k: string]: string };
+  private readonly context: { [k: string]: any };
   private readonly account: string;
   private readonly region: string;
   private readonly partition: string;
@@ -66,10 +65,9 @@ export class EvaluateCloudFormationTemplate {
   constructor(props: EvaluateCloudFormationTemplateProps) {
     this.stackResources = props.listStackResources;
 
-    if (!props.stackArtifact && !props.stackTemplate) {
-      throw new Error('one of `stackTemplate` or `stackArtifact` must be defined');
-    }
-    this.template = props.stackArtifact?.template ?? props.stackTemplate;
+    this.template = props.stackArtifactOrTemplate instanceof cxapi.CloudFormationStackArtifact
+      ? props.stackArtifactOrTemplate.template
+      : props.stackArtifactOrTemplate;
     this.context = {
       'AWS::AccountId': props.account,
       'AWS::Region': props.region,
@@ -84,12 +82,12 @@ export class EvaluateCloudFormationTemplate {
 
   // clones current EvaluateCloudFormationTemplate object, but updates the stack name
   public createNestedEvaluateCloudFormationTemplate(
-    listNestedStackResources: LazyListStackResources,
+    listNestedStackResources: ListStackResources,
     nestedTemplate: { [section: string]: { [headings: string]: any } },
-    nestedStackParameters: { [key:string]: any },
+    nestedStackParameters: { [parameterName: string]: any },
   ) {
     return new EvaluateCloudFormationTemplate({
-      stackTemplate: nestedTemplate,
+      stackArtifactOrTemplate: nestedTemplate,
       parameters: nestedStackParameters,
       account: this.account,
       region: this.region,

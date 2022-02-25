@@ -11,7 +11,7 @@ import { isHotswappableEcsServiceChange } from './hotswap/ecs-services';
 import { isHotswappableLambdaFunctionChange } from './hotswap/lambda-functions';
 import { isHotswappableS3BucketDeploymentChange } from './hotswap/s3-bucket-deployments';
 import { isHotswappableStateMachineChange } from './hotswap/stepfunctions-state-machines';
-import { readCurrentTemplateWithNestedStacks, NestedStackNames } from './nested-stack-helpers';
+import { loadCurrentTemplateWithNestedStacks, NestedStackNames } from './nested-stack-helpers';
 import { CloudFormationStack } from './util/cloudformation';
 
 /**
@@ -35,7 +35,7 @@ export async function tryHotswapDeployment(
   // We fetch it lazily, to save a service call, in case all hotswapped resources have their physical names set.
   const listStackResources = new LazyListStackResources(sdk, stackArtifact.stackName);
   const evaluateCfnTemplate = new EvaluateCloudFormationTemplate({
-    stackArtifact,
+    stackArtifactOrTemplate: stackArtifact,
     parameters: assetParams,
     account: resolvedEnv.account,
     region: resolvedEnv.region,
@@ -44,10 +44,10 @@ export async function tryHotswapDeployment(
     listStackResources,
   });
 
-  const currentTemplateWithStackNames = await readCurrentTemplateWithNestedStacks(stackArtifact, sdk);
-  const stackChanges = cfn_diff.diffTemplate(currentTemplateWithStackNames.deployedTemplate, stackArtifact.template);
+  const currentTemplate = await loadCurrentTemplateWithNestedStacks(stackArtifact, sdk);
+  const stackChanges = cfn_diff.diffTemplate(currentTemplate.deployedTemplate, stackArtifact.template);
   const hotswappableChanges = await findAllHotswappableChanges(
-    stackChanges, evaluateCfnTemplate, sdk, stackArtifact, currentTemplateWithStackNames.nestedStackNames,
+    stackChanges, evaluateCfnTemplate, sdk, currentTemplate.nestedStackNames,
   );
 
   if (!hotswappableChanges) {
@@ -65,8 +65,7 @@ async function findAllHotswappableChanges(
   stackChanges: cfn_diff.TemplateDiff,
   evaluateCfnTemplate: EvaluateCloudFormationTemplate,
   sdk: ISDK,
-  rootStackArtifact: cxapi.CloudFormationStackArtifact,
-  nestedStackNames: {[key: string]: NestedStackNames},
+  nestedStackNames: { [nestedStackName: string]: NestedStackNames },
 ): Promise<HotswapOperation[] | undefined> {
   const resourceDifferences = getStackResourceDifferences(stackChanges);
 
@@ -77,28 +76,12 @@ async function findAllHotswappableChanges(
   // gather the results of the detector functions
   for (const [logicalId, change] of Object.entries(resourceDifferences)) {
     if (change.newValue?.Type === 'AWS::CloudFormation::Stack' && change.oldValue?.Type === 'AWS::CloudFormation::Stack') {
-      const nestedStackParameters = await evaluateCfnTemplate.evaluateCfnExpression(change.newValue?.Properties?.Parameters);
-
-      const nestedStackName = nestedStackNames[logicalId].stackName;
-      // the stack name could not be found in CFN, so this is a newly created nested stack
-      if (!nestedStackName) {
-        return undefined;
-      }
-
-      const evaluateNestedCfnTemplate = evaluateCfnTemplate.createNestedEvaluateCloudFormationTemplate(
-        new LazyListStackResources(sdk, nestedStackName), change.newValue?.Properties?.NestedTemplate, nestedStackParameters,
-      );
-
-      const nestedDiff = cfn_diff.diffTemplate(
-        change.oldValue?.Properties?.NestedTemplate, change.newValue?.Properties?.NestedTemplate,
-      );
-      const nestedHotswappableResources = await findAllHotswappableChanges(nestedDiff, evaluateNestedCfnTemplate, sdk,
-        rootStackArtifact, nestedStackNames[logicalId].children);
+      const nestedHotswappableResources = await findNestedHotswappableChanges(logicalId, change, nestedStackNames, evaluateCfnTemplate, sdk);
       if (!nestedHotswappableResources) {
         return undefined;
       }
-      hotswappableResources.push(...nestedHotswappableResources);
 
+      hotswappableResources.push(...nestedHotswappableResources);
       continue;
     }
 
@@ -196,6 +179,33 @@ function filterDict<T>(dict: { [key: string]: T }, func: (t: T) => boolean): { [
     }
     return acc;
   }, {} as { [key: string]: T });
+}
+
+/** Finds any hotswappable changes in all nested stacks. */
+async function findNestedHotswappableChanges(
+  logicalId: string,
+  change: cfn_diff.ResourceDifference,
+  nestedStackNames: { [nestedStackName: string]: NestedStackNames },
+  evaluateCfnTemplate: EvaluateCloudFormationTemplate,
+  sdk: ISDK,
+): Promise<HotswapOperation[] | undefined> {
+  const nestedStackParameters = await evaluateCfnTemplate.evaluateCfnExpression(change.newValue?.Properties?.Parameters);
+
+  const nestedStackName = nestedStackNames[logicalId].stackName;
+  // the stack name could not be found in CFN, so this is a newly created nested stack
+  if (!nestedStackName) {
+    return undefined;
+  }
+
+  const evaluateNestedCfnTemplate = evaluateCfnTemplate.createNestedEvaluateCloudFormationTemplate(
+    new LazyListStackResources(sdk, nestedStackName), change.newValue?.Properties?.NestedTemplate, nestedStackParameters,
+  );
+
+  const nestedDiff = cfn_diff.diffTemplate(
+    change.oldValue?.Properties?.NestedTemplate, change.newValue?.Properties?.NestedTemplate,
+  );
+
+  return findAllHotswappableChanges(nestedDiff, evaluateNestedCfnTemplate, sdk, nestedStackNames[logicalId].children);
 }
 
 /** Returns 'true' if a pair of changes is for the same resource. */
