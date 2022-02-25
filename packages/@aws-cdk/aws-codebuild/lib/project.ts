@@ -1673,7 +1673,7 @@ export class LinuxArmBuildImage implements IBuildImage {
   public readonly type = 'ARM_CONTAINER';
   public readonly defaultComputeType = ComputeType.LARGE;
   public readonly imageId: string;
-  public readonly imagePullPrincipalType = ImagePullPrincipalType.CODEBUILD;
+  public readonly imagePullPrincipalType?: ImagePullPrincipalType;
   public readonly secretsManagerCredentials?: secretsmanager.ISecret;
   public readonly repository?: ecr.IRepository;
 
