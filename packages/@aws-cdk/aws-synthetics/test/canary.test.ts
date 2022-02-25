@@ -2,7 +2,7 @@ import { Match, Template, Capture } from '@aws-cdk/assertions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
-import { Duration, Lazy, Stack, Size } from '@aws-cdk/core';
+import { Duration, Lazy, Stack } from '@aws-cdk/core';
 import * as synthetics from '../lib';
 
 test('Basic canary properties work', () => {
@@ -148,130 +148,6 @@ test('An existing bucket and prefix can be specified instead of auto-created', (
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::Synthetics::Canary', {
     ArtifactS3Location: stack.resolve(bucket.s3UrlForObject(prefix)),
-  });
-});
-
-test('RunConfig attributes can be specified', () => {
-  // GIVEN
-  const stack = new Stack();
-  const environmentVariables = {
-    test_key_1: 'TEST_VALUE_1',
-    test_key_2: 'TEST_VALUE_2',
-  };
-  const timeout = 10;
-  const memorySize = Size.mebibytes(256);
-  const activateTracing = true;
-
-  // WHEN
-  new synthetics.Canary(stack, 'Canary', {
-    runtime: synthetics.Runtime.SYNTHETICS_1_0,
-    test: synthetics.Test.custom({
-      handler: 'index.handler',
-      code: synthetics.Code.fromInline('/* Synthetics handler code */'),
-    }),
-    environmentVariables,
-    timeout: Duration.seconds(timeout),
-    memorySize,
-    tracing: activateTracing,
-  });
-
-  // THEN
-  Template.fromStack(stack).hasResourceProperties('AWS::Synthetics::Canary', {
-    RunConfig: {
-      EnvironmentVariables: environmentVariables,
-      TimeoutInSeconds: timeout,
-      MemoryInMB: memorySize.toMebibytes(),
-      ActiveTracing: activateTracing,
-    },
-  });
-});
-
-test('If timeout not provided it default to schedule set with rate', () => {
-  // GIVEN
-  const stack = new Stack();
-  const scheduledRate = Duration.minutes(3);
-  // WHEN
-  new synthetics.Canary(stack, 'Canary', {
-    runtime: synthetics.Runtime.SYNTHETICS_1_0,
-    test: synthetics.Test.custom({
-      handler: 'index.handler',
-      code: synthetics.Code.fromInline('/* Synthetics handler code */'),
-    }),
-    schedule: synthetics.Schedule.rate(scheduledRate),
-  });
-
-  // THEN
-  Template.fromStack(stack).hasResourceProperties('AWS::Synthetics::Canary', {
-    RunConfig: {
-      TimeoutInSeconds: scheduledRate.toSeconds(),
-    },
-  });
-});
-
-test('If timeout not provided it default to schedule set with expressionString', () => {
-  // GIVEN
-  const stack = new Stack();
-  // WHEN
-  new synthetics.Canary(stack, 'Canary', {
-    runtime: synthetics.Runtime.SYNTHETICS_1_0,
-    test: synthetics.Test.custom({
-      handler: 'index.handler',
-      code: synthetics.Code.fromInline('/* Synthetics handler code */'),
-    }),
-    schedule: {
-      expressionString: 'rate(2 minutes)',
-    },
-  });
-
-  // THEN
-  Template.fromStack(stack).hasResourceProperties('AWS::Synthetics::Canary', {
-    RunConfig: {
-      TimeoutInSeconds: 120,
-    },
-  });
-});
-
-
-test('If timeout not provided it default to default schedule if schedule is not set', () => {
-  // GIVEN
-  const stack = new Stack();
-  // WHEN
-  new synthetics.Canary(stack, 'Canary', {
-    runtime: synthetics.Runtime.SYNTHETICS_1_0,
-    test: synthetics.Test.custom({
-      handler: 'index.handler',
-      code: synthetics.Code.fromInline('/* Synthetics handler code */'),
-    }),
-  });
-
-  // THEN
-  Template.fromStack(stack).hasResourceProperties('AWS::Synthetics::Canary', {
-    RunConfig: {
-      TimeoutInSeconds: 300,
-    },
-  });
-});
-
-test('If timeout not provided it default to MAX timeout if schedule is higher than max', () => {
-  // GIVEN
-  const stack = new Stack();
-  const scheduledRate = Duration.hours(1);
-
-  // WHEN
-  new synthetics.Canary(stack, 'Canary', {
-    runtime: synthetics.Runtime.SYNTHETICS_1_0,
-    test: synthetics.Test.custom({
-      handler: 'index.handler',
-      code: synthetics.Code.fromInline('/* Synthetics handler code */'),
-    }),
-    schedule: synthetics.Schedule.rate(scheduledRate),
-  });
-
-  // THEN
-  Template.fromStack(stack).hasResourceProperties('AWS::Synthetics::Canary', {
-    RunConfig: {
-      TimeoutInSeconds: 840,
-    },
   });
 });
 
@@ -478,46 +354,6 @@ test('Schedule can be set to run once', () => {
   Template.fromStack(stack).hasResourceProperties('AWS::Synthetics::Canary', {
     Schedule: Match.objectLike({ Expression: 'rate(0 minutes)' }),
   });
-});
-
-test('On tracing enabled, the generated role will have xray PutTraceSegments permission', () => {
-  // GIVEN
-  const stack = new Stack();
-
-  // WHEN
-  new synthetics.Canary(stack, 'Canary', {
-    test: synthetics.Test.custom({
-      handler: 'index.handler',
-      code: synthetics.Code.fromInline('/* Synthetics handler code */'),
-    }),
-    runtime: synthetics.Runtime.SYNTHETICS_NODEJS_2_0,
-    tracing: true,
-  });
-
-  // THEN
-  const policyStatements = new Capture();
-  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
-    Policies: [
-      {
-        PolicyName: Match.anyValue(),
-        PolicyDocument: {
-          Version: Match.anyValue(),
-          Statement: policyStatements,
-        },
-      },
-    ],
-  });
-
-  expect(policyStatements.asArray()).toEqual(
-    expect.arrayContaining([
-      expect.objectContaining({
-        Action: 'xray:PutTraceSegments',
-        Effect: 'Allow',
-        Resource: '*',
-      }),
-    ]),
-  );
-
 });
 
 test('Throws when rate above 60 minutes', () => {
