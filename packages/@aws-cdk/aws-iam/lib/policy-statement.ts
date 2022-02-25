@@ -62,7 +62,7 @@ export class PolicyStatement {
 
   private readonly action = new Array<any>();
   private readonly notAction = new Array<any>();
-  private principal: { [key: string]: any[] } = {};
+  private readonly principal: { [key: string]: any[] } = {};
   private readonly notPrincipal: { [key: string]: any[] } = {};
   private readonly resource = new Array<any>();
   private readonly notResource = new Array<any>();
@@ -318,6 +318,48 @@ export class PolicyStatement {
     this.addCondition('StringEquals', { 'sts:ExternalId': accountId });
   }
 
+  public copy(overrides: PolicyStatementProps = {}) {
+    /*
+    for (const action of [...props.actions || [], ...props.notActions || []]) {
+
+      if (!/^(\*|[a-zA-Z0-9-]+:[a-zA-Z0-9*]+)$/.test(action) && !cdk.Token.isUnresolved(action)) {
+        throw new Error(`Action '${action}' is invalid. An action string consists of a service namespace, a colon, and the name of an action. Action names can include wildcards.`);
+      }
+    }
+
+    this.sid = props.sid;
+    this.effect = props.effect || Effect.ALLOW;
+
+    this.addActions(...props.actions || []);
+    this.addNotActions(...props.notActions || []);
+    this.addPrincipals(...props.principals || []);
+    this.addNotPrincipals(...props.notPrincipals || []);
+    this.addResources(...props.resources || []);
+    this.addNotResources(...props.notResources || []);
+    if (props.conditions !== undefined) {
+      this.addConditions(props.conditions);
+    }
+    */
+
+
+
+
+    const props:PolicyStatementProps = {
+      sid: overrides.sid ?? this.sid,
+      effect: overrides.effect ?? this.effect,
+      actions: overrides.actions ?? this.action,
+      notActions: overrides.notActions ?? this.notAction,
+
+      principals: overrides.principals,
+      notPrincipals: overrides.notPrincipals,
+
+      resources: overrides.resources ?? this.resource,
+      notResources: overrides.notResources ?? this.notResource,
+
+    };
+    return new PolicyStatement();
+  }
+
   /**
    * JSON-ify the policy statement
    *
@@ -465,10 +507,6 @@ export class PolicyStatement {
       errors.push('A PolicyStatement used in an identity-based policy must specify at least one resource.');
     }
     return errors;
-  }
-
-  public clearPrincipals(): void {
-    this.principal = {};
   }
 }
 

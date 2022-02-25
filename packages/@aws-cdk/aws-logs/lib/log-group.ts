@@ -200,24 +200,21 @@ abstract class LogGroupBase extends Resource implements ILogGroup {
     if (!this.policy) {
       this.policy = new ResourcePolicy(this, 'Policy');
     }
-    console.log(statement.hasPrincipal);
+    statement.copy({
+
+    });
     if (statement.hasPrincipal) {
-      console.log(statement.toJSON());
       for (const principal in statement.toJSON().Principal) {
         const token = statement.toJSON().Principal[principal];
-        console.log(token)
-        console.log(Token.isUnresolved(token));
         if (Token.isUnresolved(token)) {
-          console.log(Fn.split(':', token))
-          statement.clearPrincipals();
           // 4, to get the 5th element, because the 4th is a `:` because the arn has `::` immediately preceeding the account id
-          statement.addArnPrincipal(Fn.select(4, Fn.split(':', token)));
-          console.log(statement.toJSON())
-          
+          fixedStatement.addArnPrincipal(Fn.select(4, Fn.split(':', token)));
+        } else {
+          fixedStatement.addPrincipals(token);
         }
       }
     }
-    this.policy.document.addStatements(statement);
+    this.policy.document.addStatements(fixedStatement);
     return { statementAdded: true, policyDependable: this.policy };
   }
 }
