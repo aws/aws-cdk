@@ -35,10 +35,10 @@ export function setupHotswapTests(): HotswapMockSdkProvider {
   return hotswapMockSdkProvider;
 }
 
-export function setupHotswapNestedStackTests(rootStackName: string, childStacks?: string[]) {
+export function setupHotswapNestedStackTests(rootStackName: string) {
   jest.resetAllMocks();
   currentNestedCfnStackResources = {};
-  hotswapMockSdkProvider = new HotswapMockSdkProvider(rootStackName, childStacks);
+  hotswapMockSdkProvider = new HotswapMockSdkProvider(rootStackName);
   currentCfnStack = new FakeCloudformationStack({
     stackName: rootStackName,
     stackId: STACK_ID,
@@ -93,16 +93,15 @@ export function stackSummaryOf(logicalId: string, resourceType: string, physical
 export class HotswapMockSdkProvider {
   public readonly mockSdkProvider: MockSdkProvider;
 
-  constructor(rootStackName?: string, childStacks?: string[]) {
+  constructor(rootStackName?: string) {
     this.mockSdkProvider = new MockSdkProvider({ realSdk: false });
 
     this.mockSdkProvider.stubCloudFormation({
       listStackResources: ({ StackName: stackName }) => {
         if (rootStackName) {
-          if (stackName !== rootStackName) {
-            if (childStacks && !(childStacks.includes(stackName))) {
-              throw new Error(`Expected Stack name in listStackResources() call to be a member of ['${rootStackName}, ${childStacks}'], but received: '${stackName}'`);
-            }
+          const knownStackNames = Object.keys(currentNestedCfnStackResources);
+          if (stackName !== rootStackName && !knownStackNames.includes(stackName)) {
+            throw new Error(`Expected Stack name in listStackResources() call to be a member of ['${rootStackName}, ${knownStackNames}'], but received: '${stackName}'`);
           }
         } else if (stackName !== STACK_NAME) {
           throw new Error(`Expected Stack name in listStackResources() call to be: '${STACK_NAME}', but received: '${stackName}'`);

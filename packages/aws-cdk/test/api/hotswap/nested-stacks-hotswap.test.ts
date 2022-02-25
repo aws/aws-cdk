@@ -75,7 +75,7 @@ test('can hotswap a lambda function in a 1-level nested stack', async () => {
 
 test('hotswappable changes do not override hotswappable changes in their ancestors', async () => {
   // GIVEN
-  hotswapMockSdkProvider = setup.setupHotswapNestedStackTests('TwoLevelLambdaRoot', ['ChildStack']);
+  hotswapMockSdkProvider = setup.setupHotswapNestedStackTests('TwoLevelLambdaRoot');
   mockUpdateLambdaCode = jest.fn().mockReturnValue({});
   hotswapMockSdkProvider.stubLambda({
     updateFunctionCode: mockUpdateLambdaCode,
@@ -181,7 +181,7 @@ test('hotswappable changes do not override hotswappable changes in their ancesto
 
 test('hotswappable changes in nested stacks do not override hotswappable changes in their parent stack', async () => {
   // GIVEN
-  hotswapMockSdkProvider = setup.setupHotswapNestedStackTests('SiblingLambdaRoot', ['NestedStack']);
+  hotswapMockSdkProvider = setup.setupHotswapNestedStackTests('SiblingLambdaRoot');
   mockUpdateLambdaCode = jest.fn().mockReturnValue({});
   hotswapMockSdkProvider.stubLambda({
     updateFunctionCode: mockUpdateLambdaCode,
@@ -267,7 +267,7 @@ test('hotswappable changes in nested stacks do not override hotswappable changes
 
 test('non-hotswappable changes in nested stacks result in a full deployment, even if their parent contains a hotswappable change', async () => {
   // GIVEN
-  hotswapMockSdkProvider = setup.setupHotswapNestedStackTests('NonHotswappableRoot', ['NestedStack']);
+  hotswapMockSdkProvider = setup.setupHotswapNestedStackTests('NonHotswappableRoot');
   mockUpdateLambdaCode = jest.fn().mockReturnValue({});
   hotswapMockSdkProvider.stubLambda({
     updateFunctionCode: mockUpdateLambdaCode,
@@ -345,7 +345,7 @@ test('non-hotswappable changes in nested stacks result in a full deployment, eve
 
 test('deleting a nested stack results in a full deployment, even if their parent contains a hotswappable change', async () => {
   // GIVEN
-  hotswapMockSdkProvider = setup.setupHotswapNestedStackTests('NestedStackDeletionRoot', ['NestedStack']);
+  hotswapMockSdkProvider = setup.setupHotswapNestedStackTests('NestedStackDeletionRoot');
   mockUpdateLambdaCode = jest.fn().mockReturnValue({});
   hotswapMockSdkProvider.stubLambda({
     updateFunctionCode: mockUpdateLambdaCode,
@@ -423,7 +423,7 @@ test('deleting a nested stack results in a full deployment, even if their parent
 
 test('creating a nested stack results in a full deployment, even if their parent contains a hotswappable change', async () => {
   // GIVEN
-  hotswapMockSdkProvider = setup.setupHotswapNestedStackTests('NestedStackCreationRoot', ['NestedStack']);
+  hotswapMockSdkProvider = setup.setupHotswapNestedStackTests('NestedStackCreationRoot');
   mockUpdateLambdaCode = jest.fn().mockReturnValue({});
   hotswapMockSdkProvider.stubLambda({
     updateFunctionCode: mockUpdateLambdaCode,
@@ -474,7 +474,7 @@ test('creating a nested stack results in a full deployment, even if their parent
 
 test('attempting to hotswap a newly created nested stack with the same logical ID as a resource with a different type results in a full deployment', async () => {
   // GIVEN
-  hotswapMockSdkProvider = setup.setupHotswapNestedStackTests('NestedStackTypeChangeRoot', ['NestedStack']);
+  hotswapMockSdkProvider = setup.setupHotswapNestedStackTests('NestedStackTypeChangeRoot');
   mockUpdateLambdaCode = jest.fn().mockReturnValue({});
   hotswapMockSdkProvider.stubLambda({
     updateFunctionCode: mockUpdateLambdaCode,
@@ -539,7 +539,7 @@ test('attempting to hotswap a newly created nested stack with the same logical I
 
 test('multi-sibling + 3-layer nested stack structure is hotswappable', async () => {
   // GIVEN
-  hotswapMockSdkProvider = setup.setupHotswapNestedStackTests('MultiLayerRoot', ['ChildStack', 'GrandChildStackA', 'GrandChildStackB']);
+  hotswapMockSdkProvider = setup.setupHotswapNestedStackTests('MultiLayerRoot');
   mockUpdateLambdaCode = jest.fn().mockReturnValue({});
   hotswapMockSdkProvider.stubLambda({
     updateFunctionCode: mockUpdateLambdaCode,
