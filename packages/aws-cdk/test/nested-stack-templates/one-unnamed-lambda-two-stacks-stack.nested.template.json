@@ -1,0 +1,34 @@
+{
+  "Resources": {
+    "Func": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": "current-bucket",
+          "S3Key": "new-key"
+        }
+      },
+      "Metadata": {
+        "aws:asset:path": "old-path"
+      }
+    },
+    "GrandChildStackA": {
+      "Type": "AWS::CloudFormation::Stack",
+      "Properties": {
+        "TemplateURL": "https://www.magic-url.com"
+      },
+      "Metadata": {
+        "aws:asset:path": "one-unnamed-lambda-stack.nested.template.json"
+      }
+    },
+    "GrandChildStackB": {
+      "Type": "AWS::CloudFormation::Stack",
+      "Properties": {
+        "TemplateURL": "https://www.magic-url.com"
+      },
+      "Metadata": {
+        "aws:asset:path": "one-unnamed-lambda-stack.nested.template.json"
+      }
+    }
+  }
+}
