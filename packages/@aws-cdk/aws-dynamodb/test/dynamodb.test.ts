@@ -643,6 +643,7 @@ testLegacyBehavior('if an encryption key is included, encrypt/decrypt permission
                   'dynamodb:PutItem',
                   'dynamodb:UpdateItem',
                   'dynamodb:DeleteItem',
+                  'dynamodb:DescribeTable',
                 ],
                 Effect: 'Allow',
                 Resource: [
@@ -1919,18 +1920,18 @@ describe('grants', () => {
 
   test('"grantReadData" allows the principal to read data from the table', () => {
     testGrant(
-      ['BatchGetItem', 'GetRecords', 'GetShardIterator', 'Query', 'GetItem', 'Scan', 'ConditionCheckItem'], (p, t) => t.grantReadData(p));
+      ['BatchGetItem', 'GetRecords', 'GetShardIterator', 'Query', 'GetItem', 'Scan', 'ConditionCheckItem', 'DescribeTable'], (p, t) => t.grantReadData(p));
   });
 
   test('"grantWriteData" allows the principal to write data to the table', () => {
     testGrant(
-      ['BatchWriteItem', 'PutItem', 'UpdateItem', 'DeleteItem'], (p, t) => t.grantWriteData(p));
+      ['BatchWriteItem', 'PutItem', 'UpdateItem', 'DeleteItem', 'DescribeTable'], (p, t) => t.grantWriteData(p));
   });
 
   test('"grantReadWriteData" allows the principal to read/write data', () => {
     testGrant([
       'BatchGetItem', 'GetRecords', 'GetShardIterator', 'Query', 'GetItem', 'Scan',
-      'ConditionCheckItem', 'BatchWriteItem', 'PutItem', 'UpdateItem', 'DeleteItem',
+      'ConditionCheckItem', 'BatchWriteItem', 'PutItem', 'UpdateItem', 'DeleteItem', 'DescribeTable',
     ], (p, t) => t.grantReadWriteData(p));
   });
 
@@ -2092,6 +2093,7 @@ describe('grants', () => {
               'dynamodb:GetItem',
               'dynamodb:Scan',
               'dynamodb:ConditionCheckItem',
+              'dynamodb:DescribeTable',
             ],
             'Effect': 'Allow',
             'Resource': [
@@ -2244,6 +2246,7 @@ describe('import', () => {
               'dynamodb:GetItem',
               'dynamodb:Scan',
               'dynamodb:ConditionCheckItem',
+              'dynamodb:DescribeTable',
             ],
             'Effect': 'Allow',
             'Resource': [
@@ -2290,6 +2293,7 @@ describe('import', () => {
               'dynamodb:PutItem',
               'dynamodb:UpdateItem',
               'dynamodb:DeleteItem',
+              'dynamodb:DescribeTable',
             ],
             'Effect': 'Allow',
             'Resource': [
@@ -2432,6 +2436,7 @@ describe('import', () => {
                 'dynamodb:GetItem',
                 'dynamodb:Scan',
                 'dynamodb:ConditionCheckItem',
+                'dynamodb:DescribeTable',
               ],
               Resource: [
                 {
@@ -2606,6 +2611,7 @@ describe('global', () => {
               'dynamodb:GetItem',
               'dynamodb:Scan',
               'dynamodb:ConditionCheckItem',
+              'dynamodb:DescribeTable',
             ],
             Effect: 'Allow',
             Resource: [
@@ -2760,6 +2766,7 @@ describe('global', () => {
               'dynamodb:GetItem',
               'dynamodb:Scan',
               'dynamodb:ConditionCheckItem',
+              'dynamodb:DescribeTable',
             ],
             Effect: 'Allow',
             Resource: [
