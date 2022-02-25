@@ -1,4 +1,4 @@
-import { Match, Template, Capture } from '@aws-cdk/assertions';
+import { Match, Template } from '@aws-cdk/assertions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
@@ -230,9 +230,7 @@ test('environment variables are skipped if not provided', () => {
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::Synthetics::Canary', {
-    RunConfig: {
-      EnvironmentVariables: Match.absent(),
-    },
+    RunConfig: Match.absent(),
   });
 });
 
@@ -448,7 +446,7 @@ test('can specify vpc', () => {
   // GIVEN
   const stack = new Stack();
   const vpc = new ec2.Vpc(stack, 'VPC', { maxAzs: 2 });
-  
+
   // WHEN
   new synthetics.Canary(stack, 'Canary', {
     test: synthetics.Test.custom({
@@ -459,9 +457,7 @@ test('can specify vpc', () => {
         };`),
     }),
     runtime: synthetics.Runtime.SYNTHETICS_NODEJS_2_0,
-    vpcConfig: {
-      vpc,
-    },
+    vpc,
   });
 
   // THEN
@@ -480,8 +476,7 @@ test('can specify vpc', () => {
     },
   });
 });
-  
-  
+
 test('Role policy generated as expected', () => {
   // GIVEN
   const stack = new Stack();

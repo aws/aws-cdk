@@ -71,6 +71,14 @@ new synthetics.Canary(stack, 'MyPythonCanary', {
 });
 
 const vpc = new ec2.Vpc(stack, 'MyVpc', { maxAzs: 2 });
+// Work around for security groups taking forever to delete
+// due to Lambda ENI attachments.
+const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', {
+  vpc,
+  description: 'Test security group for VPC Canary',
+});
+securityGroup.applyRemovalPolicy(cdk.RemovalPolicy.RETAIN);
+
 new synthetics.Canary(stack, 'MyVpcCanary', {
   canaryName: 'canary-vpc',
   test: synthetics.Test.custom({
@@ -78,9 +86,8 @@ new synthetics.Canary(stack, 'MyVpcCanary', {
     code: synthetics.Code.fromAsset(path.join(__dirname, 'canary.zip')),
   }),
   runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_3,
-  vpcConfig: {
-    vpc,
-  },
+  vpc,
+  securityGroups: [securityGroup],
 });
 
 app.synth();

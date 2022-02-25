@@ -185,8 +185,10 @@ export interface CanaryProps {
    * The VPC where this canary is run.
    *
    * Specify this if the canary needs to access resources in a VPC.
+   *
+   * @default - Not in VPC
    */
-  readonly vpc: ec2.IVpc;
+  readonly vpc?: ec2.IVpc;
 
   /**
    * Where to place the network interfaces within the VPC.
@@ -260,6 +262,7 @@ export class Canary extends cdk.Resource {
       startCanaryAfterCreation: props.startAfterCreation ?? true,
       runtimeVersion: props.runtime.name,
       name: this.physicalName,
+      schedule: this.createSchedule(props),
       failureRetentionPeriod: props.failureRetentionPeriod?.toDays(),
       successRetentionPeriod: props.successRetentionPeriod?.toDays(),
       code: this.createCode(props),
@@ -313,7 +316,6 @@ export class Canary extends cdk.Resource {
    * Returns a default role for the canary
    */
   private createDefaultRole(props: CanaryProps): iam.IRole {
-    const { partition } = cdk.Stack.of(this);
     const prefix = props.artifactsBucketLocation?.prefix;
 
     // Created role will need these policies to run the Canary.
@@ -385,13 +387,23 @@ export class Canary extends cdk.Resource {
       s3ObjectVersion: codeConfig.s3Location?.objectVersion,
     };
   }
-  
+
   private createRunConfig(props: CanaryProps): CfnCanary.RunConfigProperty | undefined {
     if (!props.environmentVariables) {
       return undefined;
     }
     return {
       environmentVariables: props.environmentVariables,
+    };
+  }
+
+  /**
+  * Returns a canary schedule object
+  */
+  private createSchedule(props: CanaryProps): CfnCanary.ScheduleProperty {
+    return {
+      durationInSeconds: String(`${props.timeToLive?.toSeconds() ?? 0}`),
+      expression: props.schedule?.expressionString ?? 'rate(5 minutes)',
     };
   }
 

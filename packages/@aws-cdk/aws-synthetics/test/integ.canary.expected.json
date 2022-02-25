@@ -363,10 +363,7 @@
           "DurationInSeconds": "0",
           "Expression": "rate(5 minutes)"
         },
-        "StartCanaryAfterCreation": true,
-        "RunConfig": {
-          "TimeoutInSeconds": 300
-        }
+        "StartCanaryAfterCreation": true
       }
     },
     "MyCanaryTwoArtifactsBucket79B179B6": {
@@ -1513,10 +1510,17 @@
                   "Resource": "*"
                 },
                 {
-                  "Action": [
-                    "s3:PutObject",
-                    "s3:GetBucketLocation"
-                  ],
+                  "Action": "s3:GetBucketLocation",
+                  "Effect": "Allow",
+                  "Resource": {
+                    "Fn::GetAtt": [
+                      "MyVpcCanaryArtifactsBucketDC69853C",
+                      "Arn"
+                    ]
+                  }
+                },
+                {
+                  "Action": "s3:PutObject",
                   "Effect": "Allow",
                   "Resource": {
                     "Fn::Join": [
@@ -1558,7 +1562,15 @@
                         {
                           "Ref": "AWS::Partition"
                         },
-                        ":logs:::*"
+                        ":logs:",
+                        {
+                          "Ref": "AWS::Region"
+                        },
+                        ":",
+                        {
+                          "Ref": "AWS::AccountId"
+                        },
+                        ":log-group:/aws/lambda/cwsyn-*"
                       ]
                     ]
                   }
