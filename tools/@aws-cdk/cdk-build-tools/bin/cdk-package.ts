@@ -1,7 +1,8 @@
 import * as path from 'path';
+import { Bundle } from '@aws-cdk/node-bundle';
+import * as yarnCling from '@aws-cdk/yarn-cling';
 import * as fs from 'fs-extra';
 import * as yargs from 'yargs';
-import * as yarnCling from '@aws-cdk/yarn-cling';
 import { shell } from '../lib/os';
 import { cdkPackageOptions, isJsii, isPrivate } from '../lib/package-info';
 import { Timers } from '../lib/timer';
@@ -49,12 +50,18 @@ async function main() {
       '-o', outdir];
     await shell(command, { timers });
   } else {
-    // just "npm pack" and deploy to "outdir"
-    const tarball = (await shell(['npm', 'pack'], { timers })).trim();
     const target = path.join(outdir, 'js');
     await fs.remove(target);
     await fs.mkdirp(target);
-    await fs.move(tarball, path.join(target, path.basename(tarball)));
+    if (options.bundle) {
+      // bundled packages have their own bundler.
+      const bundle = new Bundle({ packageDir: process.cwd(), ...options.bundle });
+      bundle.pack({ target });
+    } else {
+      // just "npm pack" and deploy to "outdir"
+      const tarball = (await shell(['npm', 'pack'], { timers })).trim();
+      await fs.move(tarball, path.join(target, path.basename(tarball)));
+    }
   }
 
   if (options.post) {

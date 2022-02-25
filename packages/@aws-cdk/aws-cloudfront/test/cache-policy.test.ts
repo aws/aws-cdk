@@ -85,7 +85,12 @@ describe('CachePolicy', () => {
     });
   });
 
-  test('throws if given a cachePolicyName with invalid characters', () => {
+  test('throws on long policy names over 128 characters', () => {
+    const errorMessage = /'cachePolicyName' cannot be longer than 128 characters/;
+    expect(() => new CachePolicy(stack, 'CachePolicy1', { cachePolicyName: 'FooBarBaz'.repeat(15) })).toThrow(errorMessage);
+  });
+
+  test('throws if cachePolicyName contains invalid characters', () => {
     const errorMessage = /'cachePolicyName' can only include '-', '_', and alphanumeric characters/;
     expect(() => new CachePolicy(stack, 'CachePolicy1', { cachePolicyName: 'My Policy' })).toThrow(errorMessage);
     expect(() => new CachePolicy(stack, 'CachePolicy2', { cachePolicyName: 'MyPolicy!' })).toThrow(errorMessage);

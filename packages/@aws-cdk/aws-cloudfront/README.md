@@ -859,7 +859,7 @@ new cloudfront.CloudFrontWebDistribution(this, 'MyDistribution', {
       behaviors : [ {isDefaultBehavior: true}],
     },
   ],
-  geoRestriction: cloudfront.GeoRestriction.whitelist('US', 'UK'),
+  geoRestriction: cloudfront.GeoRestriction.allowlist('US', 'GB'),
 });
 ```
 

@@ -5,7 +5,7 @@ import * as chalk from 'chalk';
 import * as fs from 'fs-extra';
 import * as semver from 'semver';
 import { error, print, warning } from './logging';
-import { cdkHomeDir } from './util/directories';
+import { cdkHomeDir, rootDir } from './util/directories';
 import { rangeFromSemver } from './util/version-range';
 import { versionNumber } from './version';
 
@@ -157,11 +157,11 @@ export class InitTemplate {
   }
 
   private expand(template: string, language: string, project: ProjectInfo) {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const manifest = require(path.join(rootDir(), 'package.json'));
     const MATCH_VER_BUILD = /\+[a-f0-9]+$/; // Matches "+BUILD" in "x.y.z-beta+BUILD"
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const cdkVersion = require('../package.json').version.replace(MATCH_VER_BUILD, '');
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    let constructsVersion = require('../package.json').devDependencies.constructs.replace(MATCH_VER_BUILD, '');
+    const cdkVersion = manifest.version.replace(MATCH_VER_BUILD, '');
+    let constructsVersion = manifest.devDependencies.constructs.replace(MATCH_VER_BUILD, '');
     switch (language) {
       case 'java':
       case 'csharp':
@@ -223,7 +223,7 @@ function versionedTemplatesDir(): Promise<string> {
       currentVersion = '1.0.0';
     }
     const majorVersion = semver.major(currentVersion);
-    resolve(path.join(__dirname, 'init-templates', `v${majorVersion}`));
+    resolve(path.join(rootDir(), 'lib', 'init-templates', `v${majorVersion}`));
   });
 }
 
