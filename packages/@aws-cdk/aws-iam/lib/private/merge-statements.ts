@@ -65,16 +65,16 @@ function tryMerge(statements: StatementSchema[], i0: number, i1: number, into: S
 
   const beforeLen = jsonLength(a) + jsonLength(b);
 
-  tryMerging('Resource');
-  tryMerging('Action');
-  tryMerging('Principal');
+  tryMerging('Resource', false);
+  tryMerging('Action', false);
+  tryMerging('Principal', true);
 
-  function tryMerging<A extends keyof StatementSchema>(key: A) {
+  function tryMerging<A extends keyof StatementSchema>(key: A, usesObjects: boolean) {
     if (!deepEqual(a, b, [key])) { return; }
 
     const combined = {
       ...a,
-      [key]: mergeValues(a[key], b[key]),
+      [key]: (usesObjects ? mergeObjects : mergeValues)(a[key], b[key]),
     };
 
     into.push({
@@ -138,15 +138,27 @@ function mergeValues(a: IamValue, b: IamValue): any {
   if (Array.isArray(a) && typeof b === 'string') { return normalizedArray(...a, b); }
   if (Array.isArray(b) && typeof a === 'string') { return normalizedArray(a, ...b); }
   if (typeof a === 'string' && typeof b === 'string') { return normalizedArray(a, b); }
+
+  // Otherwise combine both into an array
+  return [a, b];
+}
+
+/**
+ * Merge objects (if both arguments are objects)
+ *
+ * Used for merging principal types.
+ */
+function mergeObjects(a: IamValue, b: IamValue): any {
   if (typeof a === 'object' && typeof b === 'object' && b != null) {
     const ret: any = { ...a };
     for (const [k, v] of Object.entries(b)) {
+      // Not recursive -- we only ever do one level of object merging
       ret[k] = ret[k] ? mergeValues(ret[k], v) : v;
     }
     return ret;
   }
 
-  throw new Error(`Don't know how to merge ${JSON.stringify(a)} and ${JSON.stringify(b)}`);
+  return mergeValues(a, b);
 }
 
 function normalizedArray(...xs: unknown[]) {

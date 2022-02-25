@@ -190,6 +190,37 @@ test('merges 3 statements in multiple steps', () => {
   ]);
 });
 
+test('do not deep-merge info Refs and GetAtts', () => {
+  const stack = new Stack();
+  const user1 = new iam.User(stack, 'User1');
+  const user2 = new iam.User(stack, 'User2');
+
+  assertMerged([
+    new iam.PolicyStatement({
+      resources: ['a'],
+      actions: ['service:Action'],
+      principals: [user1],
+    }),
+    new iam.PolicyStatement({
+      resources: ['a'],
+      actions: ['service:Action'],
+      principals: [user2],
+    }),
+  ], [
+    {
+      Effect: 'Allow',
+      Resource: 'a',
+      Action: 'service:Action',
+      Principal: {
+        AWS: [
+          { 'Fn::GetAtt': ['User1E278A736', 'Arn'] },
+          { 'Fn::GetAtt': ['User21F1486D1', 'Arn'] },
+        ],
+      },
+    },
+  ]);
+});
+
 function assertNoMerge(statements: iam.PolicyStatement[]) {
   const app = new App();
   const stack = new Stack(app, 'Stack');
