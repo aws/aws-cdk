@@ -173,6 +173,20 @@ new synthetics.Canary(this, 'Bucket Canary', {
 >
 > See Synthetics [docs](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_WritingCanary.html).
 
+### VPC
+
+You can specify what VPC a canary executes in. This can allow for monitoring services that may be internal to a specific VPC. To place a canary within a VPC, you can specify the `vpc` property with the desired `VPC` to place then canary in. This will automatically attach the appropriate IAM permissions to attach to the VPC. This will also create a Security Group and attach to the default subnets for the VPC unless specified via `vpcSubnets` and `securityGroups`.
+
+```ts
+import * as ec2 from '@aws-cdk/aws-ec2';
+
+const vpc: ec2.IVpc;
+new synthetics.Canary(this, 'Vpc Canary', {
+  /* ... */,
+  vpc,
+});
+```
+
 ### Alarms
 
 You can configure a CloudWatch Alarm on a canary metric. Metrics are emitted by CloudWatch automatically and can be accessed by the following APIs:
