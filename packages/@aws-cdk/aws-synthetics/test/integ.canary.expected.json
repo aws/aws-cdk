@@ -134,10 +134,7 @@
           "DurationInSeconds": "0",
           "Expression": "rate(1 minute)"
         },
-        "StartCanaryAfterCreation": true,
-        "RunConfig": {
-          "TimeoutInSeconds": 60
-        }
+        "StartCanaryAfterCreation": true
       }
     },
     "MyCanaryOneArtifactsBucketDF4A487D": {
@@ -598,10 +595,7 @@
           "DurationInSeconds": "0",
           "Expression": "rate(5 minutes)"
         },
-        "StartCanaryAfterCreation": true,
-        "RunConfig": {
-          "TimeoutInSeconds": 300
-        }
+        "StartCanaryAfterCreation": true
       }
     },
     "MyCanaryThreeArtifactsBucket894E857E": {
@@ -830,10 +824,7 @@
           "DurationInSeconds": "0",
           "Expression": "rate(5 minutes)"
         },
-        "StartCanaryAfterCreation": true,
-        "RunConfig": {
-          "TimeoutInSeconds": 300
-        }
+        "StartCanaryAfterCreation": true
       }
     },
     "MyPythonCanaryArtifactsBucket7AE88133": {
@@ -1062,10 +1053,7 @@
           "DurationInSeconds": "0",
           "Expression": "rate(5 minutes)"
         },
-        "StartCanaryAfterCreation": true,
-        "RunConfig": {
-          "TimeoutInSeconds": 300
-        }
+        "StartCanaryAfterCreation": true
       }
     },
     "MyVpcF9F0CA6F": {
@@ -1665,9 +1653,6 @@
           "Expression": "rate(5 minutes)"
         },
         "StartCanaryAfterCreation": true,
-        "RunConfig": {
-          "TimeoutInSeconds": 300
-        },
         "VPCConfig": {
           "SecurityGroupIds": [
             {
