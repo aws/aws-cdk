@@ -1,7 +1,12 @@
 import { Template, Match } from '@aws-cdk/assertions';
+import * as codebuild from '@aws-cdk/aws-codebuild';
+import * as codePipeline from '@aws-cdk/aws-codepipeline';
+import * as actions from '@aws-cdk/aws-codepipeline-actions';
+import * as lambda from '@aws-cdk/aws-lambda';
 import { Duration, Stack } from '@aws-cdk/core';
-import * as cdkp from '../../lib';
 import { PIPELINE_ENV, TestApp, ModernTestGitHubNpmPipeline, AppWithOutput } from '../testhelpers';
+import { Construct } from 'constructs';
+import * as cdkp from '../../lib';
 
 let app: TestApp;
 let pipelineStack: Stack;
@@ -151,7 +156,7 @@ test('exportedVariables', () => {
     commands: ['export MY_VAR=hello'],
   });
 
-  const consumer = new cdkp.CodeBuildStep('Consume', {
+  const consumer1 = new cdkp.CodeBuildStep('Consume1', {
     env: {
       THE_VAR: producer.exportedVariable('MY_VAR'),
     },
@@ -160,9 +165,23 @@ test('exportedVariables', () => {
     ],
   });
 
+  const consumer2 = new cdkp.CodeBuildStep('Consume2', {
+    buildEnvironment: {
+      environmentVariables: {
+        THE_VAR: {
+          type: codebuild.BuildEnvironmentVariableType.PLAINTEXT,
+          value: producer.exportedVariable('MY_VAR'),
+        },
+      },
+    },
+    commands: [
+      'echo "The variable was: $THE_VAR"',
+    ],
+  });
+
   // WHEN
   pipeline.addWave('MyWave', {
-    post: [consumer, producer],
+    post: [consumer1, consumer2, producer],
   });
 
   // THEN
@@ -207,4 +226,46 @@ test('exportedVariables', () => {
       })),
     },
   });
+});
+
+class TestLambdaAction extends cdkp.Step implements cdkp.ICodePipelineActionFactory {
+  constructor (
+    private readonly scope: Construct,
+    id: string,
+    private readonly userParameters?: { [key: string]: any }) {
+    super(id);
+    this.discoverReferencedOutputs(this.userParameters);
+  }
+
+  public produceAction (stage: codePipeline.IStage, _options: cdkp.ProduceActionOptions): cdkp.CodePipelineActionFactoryResult {
+    const lambdaPrefix = `arn:aws:lambda:${Stack.of(this.scope).region}:${Stack.of(this.scope).account}`;
+    const lambdaf = lambda.Function.fromFunctionArn(this.scope, 'Lambda', `${lambdaPrefix}:function:TestLambda`);
+    stage.addAction(new actions.LambdaInvokeAction({
+      actionName: 'TestAction',
+      lambda: lambdaf,
+      userParameters: this.userParameters,
+    }));
+    return { runOrdersConsumed: 1 };
+  }
+}
+
+test('exportedVariables with Lambda action', () => {
+  const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk');
+
+  // GIVEN
+  const producer = new cdkp.CodeBuildStep('Produce', {
+    commands: ['export MY_VAR=hello'],
+  });
+
+  const consumer = new TestLambdaAction(pipelineStack, 'TestLambda', {
+    THE_VAR: producer.exportedVariable('MY_VAR'),
+  });
+
+  // WHEN
+  pipeline.addWave('MyWave', {
+    post: [consumer, producer],
+  });
+
+  // THEN
+  Template.fromStack(pipelineStack).resourceCountIs('AWS::Lambda::Function', 1);
 });
