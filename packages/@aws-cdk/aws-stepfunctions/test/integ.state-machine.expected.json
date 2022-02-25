@@ -25,7 +25,8 @@
             {
               "Action": [
                 "states:ListExecutions",
-                "states:ListStateMachines"
+                "states:ListStateMachines",
+                "states:SendTaskSuccess"
               ],
               "Effect": "Allow",
               "Resource": {
@@ -82,13 +83,6 @@
               ],
               "Effect": "Allow",
               "Resource": "*"
-            },
-            {
-              "Action": "states:SendTaskSuccess",
-              "Effect": "Allow",
-              "Resource": {
-                "Ref": "StateMachine2E01A3A5"
-              }
             }
           ],
           "Version": "2012-10-17"

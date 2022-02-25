@@ -139,8 +139,8 @@
             },
             {
               "Action": [
-                "s3:GetObject*",
                 "s3:GetBucket*",
+                "s3:GetObject*",
                 "s3:List*"
               ],
               "Effect": "Allow",
@@ -264,92 +264,64 @@
             {
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "TestPipelineBuildSynthCodePipelineActionRoleF7BF5926",
-                  "Arn"
-                ]
-              }
-            },
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "TestPipelineUnattachedStageSingleStageSecurityCheckCodePipelineActionRoleFF6E43E2",
-                  "Arn"
-                ]
-              }
-            },
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "TestPipelineUnattachedStageSingleStageManualApprovalCodePipelineActionRoleF7A614C8",
-                  "Arn"
-                ]
-              }
-            },
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "TestPipelinePreProductionPreProductionSecurityCheckCodePipelineActionRole4E54C194",
-                  "Arn"
-                ]
-              }
-            },
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "TestPipelinePreProductionPreProductionManualApprovalCodePipelineActionRole81B9C4F9",
-                  "Arn"
-                ]
-              }
-            },
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "TestPipelinePreProductionSafeProductionSecurityCheckCodePipelineActionRole399C68A6",
-                  "Arn"
-                ]
-              }
-            },
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "TestPipelinePreProductionSafeProductionManualApprovalCodePipelineActionRole4F30C0D9",
-                  "Arn"
-                ]
-              }
-            },
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "TestPipelineNoSecurityCheckEnableSecurityCheckSecurityCheckCodePipelineActionRole8D10AA6D",
-                  "Arn"
-                ]
-              }
-            },
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "TestPipelineNoSecurityCheckEnableSecurityCheckManualApprovalCodePipelineActionRole27FC4015",
-                  "Arn"
-                ]
-              }
+              "Resource": [
+                [
+                  {
+                    "Fn::GetAtt": [
+                      "TestPipelineBuildSynthCodePipelineActionRoleF7BF5926",
+                      "Arn"
+                    ]
+                  },
+                  {
+                    "Fn::GetAtt": [
+                      "TestPipelineUnattachedStageSingleStageSecurityCheckCodePipelineActionRoleFF6E43E2",
+                      "Arn"
+                    ]
+                  },
+                  {
+                    "Fn::GetAtt": [
+                      "TestPipelineUnattachedStageSingleStageManualApprovalCodePipelineActionRoleF7A614C8",
+                      "Arn"
+                    ]
+                  },
+                  {
+                    "Fn::GetAtt": [
+                      "TestPipelinePreProductionPreProductionSecurityCheckCodePipelineActionRole4E54C194",
+                      "Arn"
+                    ]
+                  },
+                  {
+                    "Fn::GetAtt": [
+                      "TestPipelinePreProductionPreProductionManualApprovalCodePipelineActionRole81B9C4F9",
+                      "Arn"
+                    ]
+                  },
+                  {
+                    "Fn::GetAtt": [
+                      "TestPipelinePreProductionSafeProductionSecurityCheckCodePipelineActionRole399C68A6",
+                      "Arn"
+                    ]
+                  },
+                  {
+                    "Fn::GetAtt": [
+                      "TestPipelinePreProductionSafeProductionManualApprovalCodePipelineActionRole4F30C0D9",
+                      "Arn"
+                    ]
+                  },
+                  {
+                    "Fn::GetAtt": [
+                      "TestPipelineNoSecurityCheckEnableSecurityCheckSecurityCheckCodePipelineActionRole8D10AA6D",
+                      "Arn"
+                    ]
+                  }
+                ],
+                {
+                  "Fn::GetAtt": [
+                    "TestPipelineNoSecurityCheckEnableSecurityCheckManualApprovalCodePipelineActionRole27FC4015",
+                    "Arn"
+                  ]
+                }
+              ]
             },
             {
               "Action": "sts:AssumeRole",
@@ -1349,23 +1321,8 @@
                 "kms:Decrypt",
                 "kms:DescribeKey",
                 "kms:Encrypt",
-                "kms:ReEncrypt*",
-                "kms:GenerateDataKey*"
-              ],
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "TestPipelineArtifactsBucketEncryptionKey13258842",
-                  "Arn"
-                ]
-              }
-            },
-            {
-              "Action": [
-                "kms:Decrypt",
-                "kms:Encrypt",
-                "kms:ReEncrypt*",
-                "kms:GenerateDataKey*"
+                "kms:GenerateDataKey*",
+                "kms:ReEncrypt*"
               ],
               "Effect": "Allow",
               "Resource": {
@@ -1973,8 +1930,8 @@
             },
             {
               "Action": [
-                "s3:GetObject*",
                 "s3:GetBucket*",
+                "s3:GetObject*",
                 "s3:List*"
               ],
               "Effect": "Allow",
@@ -2004,22 +1961,10 @@
             {
               "Action": [
                 "kms:Decrypt",
-                "kms:DescribeKey"
-              ],
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "TestPipelineArtifactsBucketEncryptionKey13258842",
-                  "Arn"
-                ]
-              }
-            },
-            {
-              "Action": [
-                "kms:Decrypt",
+                "kms:DescribeKey",
                 "kms:Encrypt",
-                "kms:ReEncrypt*",
-                "kms:GenerateDataKey*"
+                "kms:GenerateDataKey*",
+                "kms:ReEncrypt*"
               ],
               "Effect": "Allow",
               "Resource": {
@@ -2318,22 +2263,10 @@
             {
               "Action": [
                 "kms:Decrypt",
-                "kms:DescribeKey"
-              ],
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "TestPipelineArtifactsBucketEncryptionKey13258842",
-                  "Arn"
-                ]
-              }
-            },
-            {
-              "Action": [
-                "kms:Decrypt",
+                "kms:DescribeKey",
                 "kms:Encrypt",
-                "kms:ReEncrypt*",
-                "kms:GenerateDataKey*"
+                "kms:GenerateDataKey*",
+                "kms:ReEncrypt*"
               ],
               "Effect": "Allow",
               "Resource": {

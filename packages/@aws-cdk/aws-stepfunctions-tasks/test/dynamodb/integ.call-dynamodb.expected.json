@@ -58,7 +58,11 @@
         "PolicyDocument": {
           "Statement": [
             {
-              "Action": "dynamodb:PutItem",
+              "Action": [
+                "dynamodb:DeleteItem",
+                "dynamodb:PutItem",
+                "dynamodb:UpdateItem"
+              ],
               "Effect": "Allow",
               "Resource": {
                 "Fn::Join": [
@@ -86,60 +90,6 @@
             },
             {
               "Action": "dynamodb:GetItem",
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::Join": [
-                  "",
-                  [
-                    "arn:",
-                    {
-                      "Ref": "AWS::Partition"
-                    },
-                    ":dynamodb:",
-                    {
-                      "Ref": "AWS::Region"
-                    },
-                    ":",
-                    {
-                      "Ref": "AWS::AccountId"
-                    },
-                    ":table/",
-                    {
-                      "Ref": "Messages804FA4EB"
-                    }
-                  ]
-                ]
-              }
-            },
-            {
-              "Action": "dynamodb:UpdateItem",
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::Join": [
-                  "",
-                  [
-                    "arn:",
-                    {
-                      "Ref": "AWS::Partition"
-                    },
-                    ":dynamodb:",
-                    {
-                      "Ref": "AWS::Region"
-                    },
-                    ":",
-                    {
-                      "Ref": "AWS::AccountId"
-                    },
-                    ":table/",
-                    {
-                      "Ref": "Messages804FA4EB"
-                    }
-                  ]
-                ]
-              }
-            },
-            {
-              "Action": "dynamodb:DeleteItem",
               "Effect": "Allow",
               "Resource": {
                 "Fn::Join": [

@@ -463,8 +463,6 @@
     "DatabaseB269D8BB": {
       "Type": "AWS::DocDB::DBCluster",
       "Properties": {
-        "MasterUsername": "docdb",
-        "MasterUserPassword": "7959866cacc02c2d243ecfe177464fe6",
         "DBClusterParameterGroupName": {
           "Ref": "ParamsA8366201"
         },
@@ -477,6 +475,8 @@
             "Arn"
           ]
         },
+        "MasterUsername": "docdb",
+        "MasterUserPassword": "7959866cacc02c2d243ecfe177464fe6",
         "StorageEncrypted": true,
         "VpcSecurityGroupIds": [
           {

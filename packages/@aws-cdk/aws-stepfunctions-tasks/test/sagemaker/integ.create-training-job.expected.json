@@ -134,7 +134,10 @@
             {
               "Action": [
                 "kms:Decrypt",
-                "kms:DescribeKey"
+                "kms:DescribeKey",
+                "kms:Encrypt",
+                "kms:GenerateDataKey*",
+                "kms:ReEncrypt*"
               ],
               "Effect": "Allow",
               "Resource": {
@@ -177,21 +180,6 @@
                   ]
                 }
               ]
-            },
-            {
-              "Action": [
-                "kms:Encrypt",
-                "kms:ReEncrypt*",
-                "kms:GenerateDataKey*",
-                "kms:Decrypt"
-              ],
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "EncryptionKey1B843E66",
-                  "Arn"
-                ]
-              }
             }
           ],
           "Version": "2012-10-17"

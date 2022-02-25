@@ -200,7 +200,7 @@
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "AssetParametersdaeb79e3cee39c9b902dc0d5c780223e227ed573ea60976252947adab5fb2be1S3BucketDC4B98B1"
+            "Ref": "AssetParameters733a1180c316ce99003dfcfd7bd70d8039134b3fbac69643f144aceea90d6b8cS3BucketBA45D90E"
           },
           "S3Key": {
             "Fn::Join": [
@@ -213,7 +213,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParametersdaeb79e3cee39c9b902dc0d5c780223e227ed573ea60976252947adab5fb2be1S3VersionKeyA495226F"
+                          "Ref": "AssetParameters733a1180c316ce99003dfcfd7bd70d8039134b3fbac69643f144aceea90d6b8cS3VersionKey1021C50F"
                         }
                       ]
                     }
@@ -226,7 +226,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParametersdaeb79e3cee39c9b902dc0d5c780223e227ed573ea60976252947adab5fb2be1S3VersionKeyA495226F"
+                          "Ref": "AssetParameters733a1180c316ce99003dfcfd7bd70d8039134b3fbac69643f144aceea90d6b8cS3VersionKey1021C50F"
                         }
                       ]
                     }
@@ -540,22 +540,20 @@
             {
               "Action": "lambda:InvokeFunction",
               "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "comamazonawscdkcustomresourcess3assertproviders3assertoneventF1EEF783",
-                  "Arn"
-                ]
-              }
-            },
-            {
-              "Action": "lambda:InvokeFunction",
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "comamazonawscdkcustomresourcess3assertproviders3assertiscomplete6AC08EF9",
-                  "Arn"
-                ]
-              }
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "comamazonawscdkcustomresourcess3assertproviders3assertoneventF1EEF783",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::GetAtt": [
+                    "comamazonawscdkcustomresourcess3assertproviders3assertiscomplete6AC08EF9",
+                    "Arn"
+                  ]
+                }
+              ]
             },
             {
               "Action": "states:StartExecution",
@@ -580,7 +578,7 @@
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "AssetParametersdaeb79e3cee39c9b902dc0d5c780223e227ed573ea60976252947adab5fb2be1S3BucketDC4B98B1"
+            "Ref": "AssetParameters733a1180c316ce99003dfcfd7bd70d8039134b3fbac69643f144aceea90d6b8cS3BucketBA45D90E"
           },
           "S3Key": {
             "Fn::Join": [
@@ -593,7 +591,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParametersdaeb79e3cee39c9b902dc0d5c780223e227ed573ea60976252947adab5fb2be1S3VersionKeyA495226F"
+                          "Ref": "AssetParameters733a1180c316ce99003dfcfd7bd70d8039134b3fbac69643f144aceea90d6b8cS3VersionKey1021C50F"
                         }
                       ]
                     }
@@ -606,7 +604,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParametersdaeb79e3cee39c9b902dc0d5c780223e227ed573ea60976252947adab5fb2be1S3VersionKeyA495226F"
+                          "Ref": "AssetParameters733a1180c316ce99003dfcfd7bd70d8039134b3fbac69643f144aceea90d6b8cS3VersionKey1021C50F"
                         }
                       ]
                     }
@@ -690,22 +688,20 @@
             {
               "Action": "lambda:InvokeFunction",
               "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "comamazonawscdkcustomresourcess3assertproviders3assertoneventF1EEF783",
-                  "Arn"
-                ]
-              }
-            },
-            {
-              "Action": "lambda:InvokeFunction",
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "comamazonawscdkcustomresourcess3assertproviders3assertiscomplete6AC08EF9",
-                  "Arn"
-                ]
-              }
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "comamazonawscdkcustomresourcess3assertproviders3assertoneventF1EEF783",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::GetAtt": [
+                    "comamazonawscdkcustomresourcess3assertproviders3assertiscomplete6AC08EF9",
+                    "Arn"
+                  ]
+                }
+              ]
             }
           ],
           "Version": "2012-10-17"
@@ -723,7 +719,7 @@
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "AssetParametersdaeb79e3cee39c9b902dc0d5c780223e227ed573ea60976252947adab5fb2be1S3BucketDC4B98B1"
+            "Ref": "AssetParameters733a1180c316ce99003dfcfd7bd70d8039134b3fbac69643f144aceea90d6b8cS3BucketBA45D90E"
           },
           "S3Key": {
             "Fn::Join": [
@@ -736,7 +732,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParametersdaeb79e3cee39c9b902dc0d5c780223e227ed573ea60976252947adab5fb2be1S3VersionKeyA495226F"
+                          "Ref": "AssetParameters733a1180c316ce99003dfcfd7bd70d8039134b3fbac69643f144aceea90d6b8cS3VersionKey1021C50F"
                         }
                       ]
                     }
@@ -749,7 +745,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParametersdaeb79e3cee39c9b902dc0d5c780223e227ed573ea60976252947adab5fb2be1S3VersionKeyA495226F"
+                          "Ref": "AssetParameters733a1180c316ce99003dfcfd7bd70d8039134b3fbac69643f144aceea90d6b8cS3VersionKey1021C50F"
                         }
                       ]
                     }
@@ -830,22 +826,20 @@
             {
               "Action": "lambda:InvokeFunction",
               "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "comamazonawscdkcustomresourcess3assertproviders3assertoneventF1EEF783",
-                  "Arn"
-                ]
-              }
-            },
-            {
-              "Action": "lambda:InvokeFunction",
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "comamazonawscdkcustomresourcess3assertproviders3assertiscomplete6AC08EF9",
-                  "Arn"
-                ]
-              }
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "comamazonawscdkcustomresourcess3assertproviders3assertoneventF1EEF783",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::GetAtt": [
+                    "comamazonawscdkcustomresourcess3assertproviders3assertiscomplete6AC08EF9",
+                    "Arn"
+                  ]
+                }
+              ]
             }
           ],
           "Version": "2012-10-17"
@@ -863,7 +857,7 @@
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "AssetParametersdaeb79e3cee39c9b902dc0d5c780223e227ed573ea60976252947adab5fb2be1S3BucketDC4B98B1"
+            "Ref": "AssetParameters733a1180c316ce99003dfcfd7bd70d8039134b3fbac69643f144aceea90d6b8cS3BucketBA45D90E"
           },
           "S3Key": {
             "Fn::Join": [
@@ -876,7 +870,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParametersdaeb79e3cee39c9b902dc0d5c780223e227ed573ea60976252947adab5fb2be1S3VersionKeyA495226F"
+                          "Ref": "AssetParameters733a1180c316ce99003dfcfd7bd70d8039134b3fbac69643f144aceea90d6b8cS3VersionKey1021C50F"
                         }
                       ]
                     }
@@ -889,7 +883,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParametersdaeb79e3cee39c9b902dc0d5c780223e227ed573ea60976252947adab5fb2be1S3VersionKeyA495226F"
+                          "Ref": "AssetParameters733a1180c316ce99003dfcfd7bd70d8039134b3fbac69643f144aceea90d6b8cS3VersionKey1021C50F"
                         }
                       ]
                     }
@@ -967,22 +961,20 @@
             {
               "Action": "lambda:InvokeFunction",
               "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "comamazonawscdkcustomresourcess3assertproviderframeworkisComplete63829575",
-                  "Arn"
-                ]
-              }
-            },
-            {
-              "Action": "lambda:InvokeFunction",
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "comamazonawscdkcustomresourcess3assertproviderframeworkonTimeoutA1E1E5DC",
-                  "Arn"
-                ]
-              }
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "comamazonawscdkcustomresourcess3assertproviderframeworkisComplete63829575",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::GetAtt": [
+                    "comamazonawscdkcustomresourcess3assertproviderframeworkonTimeoutA1E1E5DC",
+                    "Arn"
+                  ]
+                }
+              ]
             }
           ],
           "Version": "2012-10-17"
@@ -1046,17 +1038,17 @@
       "Type": "String",
       "Description": "Artifact hash for asset \"192597c3e09c72bcb5fca6899fca0b42745cb003a702e275a7f96123a9baf590\""
     },
-    "AssetParametersdaeb79e3cee39c9b902dc0d5c780223e227ed573ea60976252947adab5fb2be1S3BucketDC4B98B1": {
+    "AssetParameters733a1180c316ce99003dfcfd7bd70d8039134b3fbac69643f144aceea90d6b8cS3BucketBA45D90E": {
       "Type": "String",
-      "Description": "S3 bucket for asset \"daeb79e3cee39c9b902dc0d5c780223e227ed573ea60976252947adab5fb2be1\""
+      "Description": "S3 bucket for asset \"733a1180c316ce99003dfcfd7bd70d8039134b3fbac69643f144aceea90d6b8c\""
     },
-    "AssetParametersdaeb79e3cee39c9b902dc0d5c780223e227ed573ea60976252947adab5fb2be1S3VersionKeyA495226F": {
+    "AssetParameters733a1180c316ce99003dfcfd7bd70d8039134b3fbac69643f144aceea90d6b8cS3VersionKey1021C50F": {
       "Type": "String",
-      "Description": "S3 key for asset version \"daeb79e3cee39c9b902dc0d5c780223e227ed573ea60976252947adab5fb2be1\""
+      "Description": "S3 key for asset version \"733a1180c316ce99003dfcfd7bd70d8039134b3fbac69643f144aceea90d6b8c\""
     },
-    "AssetParametersdaeb79e3cee39c9b902dc0d5c780223e227ed573ea60976252947adab5fb2be1ArtifactHashA521A16F": {
+    "AssetParameters733a1180c316ce99003dfcfd7bd70d8039134b3fbac69643f144aceea90d6b8cArtifactHash371618FE": {
       "Type": "String",
-      "Description": "Artifact hash for asset \"daeb79e3cee39c9b902dc0d5c780223e227ed573ea60976252947adab5fb2be1\""
+      "Description": "Artifact hash for asset \"733a1180c316ce99003dfcfd7bd70d8039134b3fbac69643f144aceea90d6b8c\""
     },
     "AssetParameters4bafad8d010ba693e235b77d2c6decfc2ac79a8208d4477cbb36d31caf7189e8S3Bucket0DB889DF": {
       "Type": "String",

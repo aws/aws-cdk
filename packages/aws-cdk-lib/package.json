@@ -499,6 +499,7 @@
     "./aws-iotthingsgraph": "./aws-iotthingsgraph/index.js",
     "./aws-iotwireless": "./aws-iotwireless/index.js",
     "./aws-ivs": "./aws-ivs/index.js",
+    "./aws-kafkaconnect": "./aws-kafkaconnect/index.js",
     "./aws-kendra": "./aws-kendra/index.js",
     "./aws-kinesis": "./aws-kinesis/index.js",
     "./aws-kinesisanalytics": "./aws-kinesisanalytics/index.js",

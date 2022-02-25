@@ -4,15 +4,15 @@
       "Type": "AWS::OpenSearchService::Domain",
       "Properties": {
         "ClusterConfig": {
-          "InstanceCount": 1,
-          "WarmEnabled": true,
-          "WarmCount": 2,
-          "DedicatedMasterEnabled": true,
           "DedicatedMasterCount": 2,
+          "DedicatedMasterEnabled": true,
+          "DedicatedMasterType": "r5.large.search",
+          "InstanceCount": 1,
           "InstanceType": "r5.large.search",
+          "WarmCount": 2,
+          "WarmEnabled": true,
           "WarmType": "ultrawarm1.medium.search",
-          "ZoneAwarenessEnabled": false,
-          "DedicatedMasterType": "r5.large.search"
+          "ZoneAwarenessEnabled": false
         },
         "CognitoOptions": {
           "Enabled": false
@@ -23,8 +23,8 @@
         },
         "EBSOptions": {
           "EBSEnabled": true,
-          "VolumeType": "gp2",
-          "VolumeSize": 10
+          "VolumeSize": 10,
+          "VolumeType": "gp2"
         },
         "EncryptionAtRestOptions": {
           "Enabled": false

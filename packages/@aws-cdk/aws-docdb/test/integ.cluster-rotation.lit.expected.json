@@ -673,6 +673,9 @@
     "DatabaseB269D8BB": {
       "Type": "AWS::DocDB::DBCluster",
       "Properties": {
+        "DBSubnetGroupName": {
+          "Ref": "DatabaseSubnets56F17B9A"
+        },
         "MasterUsername": {
           "Fn::Join": [
             "",
@@ -696,9 +699,6 @@
               ":SecretString:password::}}"
             ]
           ]
-        },
-        "DBSubnetGroupName": {
-          "Ref": "DatabaseSubnets56F17B9A"
         },
         "StorageEncrypted": true,
         "VpcSecurityGroupIds": [
@@ -785,7 +785,6 @@
             ]
           },
           "functionName": "awscdkdocdbclusterrotationDatabaseRotationSingleUser7DAE65BE",
-          "excludeCharacters": "\"@/",
           "vpcSubnetIds": {
             "Fn::Join": [
               "",
@@ -809,7 +808,8 @@
               "DatabaseRotationSingleUserSecurityGroupAC6E0E73",
               "GroupId"
             ]
-          }
+          },
+          "excludeCharacters": "\"@/"
         }
       }
     }

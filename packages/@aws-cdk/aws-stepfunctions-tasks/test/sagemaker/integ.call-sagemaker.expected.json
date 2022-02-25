@@ -134,7 +134,10 @@
             {
               "Action": [
                 "kms:Decrypt",
-                "kms:DescribeKey"
+                "kms:DescribeKey",
+                "kms:Encrypt",
+                "kms:GenerateDataKey*",
+                "kms:ReEncrypt*"
               ],
               "Effect": "Allow",
               "Resource": {
@@ -177,21 +180,6 @@
                   ]
                 }
               ]
-            },
-            {
-              "Action": [
-                "kms:Encrypt",
-                "kms:ReEncrypt*",
-                "kms:GenerateDataKey*",
-                "kms:Decrypt"
-              ],
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "EncryptionKey1B843E66",
-                  "Arn"
-                ]
-              }
             }
           ],
           "Version": "2012-10-17"
@@ -251,14 +239,8 @@
             {
               "Action": [
                 "ecr:BatchCheckLayerAvailability",
+                "ecr:BatchGetImage",
                 "ecr:GetDownloadUrlForLayer",
-                "ecr:BatchGetImage"
-              ],
-              "Effect": "Allow",
-              "Resource": "*"
-            },
-            {
-              "Action": [
                 "s3:GetObject",
                 "s3:ListBucket"
               ],
@@ -350,12 +332,20 @@
                 }
               },
               "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "TrainTaskSagemakerRoleD5A6F967",
-                  "Arn"
-                ]
-              }
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "TrainTaskSagemakerRoleD5A6F967",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::GetAtt": [
+                    "CreateModelSagemakerRoleC2E07FC0",
+                    "Arn"
+                  ]
+                }
+              ]
             },
             {
               "Action": "sagemaker:CreateModel",
@@ -378,21 +368,6 @@
                     },
                     ":model/*"
                   ]
-                ]
-              }
-            },
-            {
-              "Action": "iam:PassRole",
-              "Condition": {
-                "StringEquals": {
-                  "iam:PassedToService": "sagemaker.amazonaws.com"
-                }
-              },
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "CreateModelSagemakerRoleC2E07FC0",
-                  "Arn"
                 ]
               }
             },
@@ -421,53 +396,10 @@
               }
             },
             {
-              "Action": "sagemaker:createEndpoint",
-              "Effect": "Allow",
-              "Resource": [
-                {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "arn:",
-                      {
-                        "Ref": "AWS::Partition"
-                      },
-                      ":sagemaker:",
-                      {
-                        "Ref": "AWS::Region"
-                      },
-                      ":",
-                      {
-                        "Ref": "AWS::AccountId"
-                      },
-                      ":endpoint/*"
-                    ]
-                  ]
-                },
-                {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "arn:",
-                      {
-                        "Ref": "AWS::Partition"
-                      },
-                      ":sagemaker:",
-                      {
-                        "Ref": "AWS::Region"
-                      },
-                      ":",
-                      {
-                        "Ref": "AWS::AccountId"
-                      },
-                      ":endpoint-config/*"
-                    ]
-                  ]
-                }
-              ]
-            },
-            {
-              "Action": "sagemaker:updateEndpoint",
+              "Action": [
+                "sagemaker:createEndpoint",
+                "sagemaker:updateEndpoint"
+              ],
               "Effect": "Allow",
               "Resource": [
                 {
