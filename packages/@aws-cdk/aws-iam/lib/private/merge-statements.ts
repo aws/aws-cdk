@@ -29,6 +29,7 @@ export function mergeStatements(statements: StatementSchema[]): StatementSchema[
       statements.splice(merge.i1, 1);
 
       // This invalidates all merges involving i0 or i1, and adjusts all indices > i1
+      // Assumes i0 < i1.
       const invalidIndices = [merge.i0, merge.i1];
       let j = 0;
       while (j < merges.length) {
@@ -60,6 +61,7 @@ function findMerges(statements: StatementSchema[]): StatementMerge[] {
 function tryMerge(statements: StatementSchema[], i0: number, i1: number, into: StatementMerge[]) {
   const a = statements[i0];
   const b = statements[i1];
+
   if (a.Effect !== 'Allow' || b.Effect !== 'Allow') { return; }
   if (a.Sid || b.Sid) { return; }
 
@@ -161,6 +163,14 @@ function mergeObjects(a: IamValue, b: IamValue): any {
   return mergeValues(a, b);
 }
 
+/**
+ * Deduplicate and sort.
+ *
+ * Elements should be strings, but may not be.
+ *
+ * - Deduplication is a necessary part of minimization.
+ * - Sorting is just nice for snapshots.
+ */
 function normalizedArray(...xs: unknown[]) {
   return Array.from(new Set(xs)).sort();
 }
@@ -168,11 +178,15 @@ function normalizedArray(...xs: unknown[]) {
 interface StatementMerge {
   /**
    * Index of statement 0
+   *
+   * Contract: i0 < i1
    */
   i0: number;
 
   /**
    * Index of statement 1
+   *
+   * Contract: i0 < i1
    */
   i1: number;
 
@@ -182,7 +196,9 @@ interface StatementMerge {
   readonly combined: StatementSchema;
 
   /**
-   * How many bytes the new schema is bigger than the old one
+   * How many bytes the new schema is bigger than the old ones combined
+   *
+   * (Expected to be negative in order for the merge to be useful)
    */
   readonly sizeDelta: number;
 }

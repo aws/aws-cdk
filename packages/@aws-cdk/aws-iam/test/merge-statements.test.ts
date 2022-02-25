@@ -142,7 +142,7 @@ test('multiple mergeable keys are not merged', () => {
   ]);
 });
 
-test('if conditions are different statements are not merged', () => {
+test('if conditions are different, statements are not merged', () => {
   assertNoMerge([
     new iam.PolicyStatement({
       resources: ['a'],
@@ -159,6 +159,43 @@ test('if conditions are different statements are not merged', () => {
       actions: ['service:Action'],
       principals: [principal],
     }),
+  ]);
+});
+
+test('if conditions are the smae, statements are merged', () => {
+  assertMerged([
+    new iam.PolicyStatement({
+      resources: ['a'],
+      actions: ['service:Action'],
+      principals: [principal],
+      conditions: {
+        StringLike: {
+          something: 'value',
+        },
+      },
+    }),
+    new iam.PolicyStatement({
+      resources: ['b'],
+      actions: ['service:Action'],
+      principals: [principal],
+      conditions: {
+        StringLike: {
+          something: 'value',
+        },
+      },
+    }),
+  ], [
+    {
+      Effect: 'Allow',
+      Resource: ['a', 'b'],
+      Action: 'service:Action',
+      Principal: { AWS: PRINCIPAL_ARN },
+      Condition: {
+        StringLike: {
+          something: 'value',
+        },
+      },
+    },
   ]);
 });
 
