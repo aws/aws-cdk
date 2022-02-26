@@ -1,3 +1,8 @@
+// IAM Statement merging
+//
+// See docs/policy-merging.als for a formal model of the logic
+// implemented here.
+
 const LENGTH_CACHE_SYM = Symbol();
 
 /**
