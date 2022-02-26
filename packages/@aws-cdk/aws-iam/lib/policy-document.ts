@@ -34,7 +34,7 @@ export interface PolicyDocumentProps {
    * - Combine Actions if the rest of the statement is exactly the same.
    * - We will never combine NotPrincipals, NotResources or NotActions.
    *
-   * @default false, unless the feature flag `@aws-cdk/aws-iam:minimizePolicies` is set
+   * @default - false, unless the feature flag `@aws-cdk/aws-iam:minimizePolicies` is set
    */
   readonly minimize?: boolean;
 }
