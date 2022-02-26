@@ -27,8 +27,8 @@ export interface PolicyDocumentProps {
    * To avoid overrunning the maximum policy size, combine statements if they produce
    * the same result. Merging happens according to the following rules:
    *
-   * - The Effect of both statements is 'Allow' ('Deny' statements cannot be merged)
-   * - Neither of the statements have a 'SId'
+   * - The Effect of both statements is the same
+   * - Neither of the statements have a 'Sid'
    * - Combine Principals if the rest of the statement is exactly the same.
    * - Combine Resources if the rest of the statement is exactly the same.
    * - Combine Actions if the rest of the statement is exactly the same.
