@@ -349,6 +349,7 @@
     "@aws-cdk/pipelines": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
     "@aws-cdk/region-info": "0.0.0",
+    "@aws-cdk/triggers": "0.0.0",
     "@aws-cdk/ubergen": "0.0.0",
     "@types/fs-extra": "^8.1.2",
     "@types/node": "^10.17.60",
