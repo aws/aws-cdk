@@ -16,8 +16,6 @@ All notable changes to this project will be documented in this file. See [standa
 * **pipelines:** ECR source action  ([#16385](https://github.com/aws/aws-cdk/issues/16385)) ([fc11ae2](https://github.com/aws/aws-cdk/commit/fc11ae2c4ec3bd9dfe3ff813aa831c744d8ac444)), closes [#16378](https://github.com/aws/aws-cdk/issues/16378)
 * **pipelines:** step outputs ([#19024](https://github.com/aws/aws-cdk/issues/19024)) ([0dec2ee](https://github.com/aws/aws-cdk/commit/0dec2ee78a70832c3a697be26c67498460a587dd)), closes [#17189](https://github.com/aws/aws-cdk/issues/17189) [#18893](https://github.com/aws/aws-cdk/issues/18893) [#15943](https://github.com/aws/aws-cdk/issues/15943) [#16407](https://github.com/aws/aws-cdk/issues/16407)
 * **rds:** make VPC optional for serverless Clusters ([#17413](https://github.com/aws/aws-cdk/issues/17413)) ([4f7818d](https://github.com/aws/aws-cdk/commit/4f7818dd76bd48ed652407f4852cc97ba57d7395)), closes [#17401](https://github.com/aws/aws-cdk/issues/17401)
-* triggers ([#19011](https://github.com/aws/aws-cdk/issues/19011)) ([11d6c69](https://github.com/aws/aws-cdk/commit/11d6c69a8b1ee70cbea025d134be7702dd804444))
-
 
 ### Bug Fixes
 
