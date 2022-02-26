@@ -1666,6 +1666,7 @@ interface LinuxArmBuildImageProps {
  * @see https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-available.html
  */
 export class LinuxArmBuildImage implements IBuildImage {
+  /** Image "aws/codebuild/amazonlinux2-aarch64-standard:1.0". */
   public static readonly AMAZON_LINUX_2_ARM = LinuxArmBuildImage.codeBuildImage('aws/codebuild/amazonlinux2-aarch64-standard:1.0');
   /** Image "aws/codebuild/amazonlinux2-aarch64-standard:2.0". */
   public static readonly AMAZON_LINUX_2_ARM_2 = LinuxArmBuildImage.codeBuildImage('aws/codebuild/amazonlinux2-aarch64-standard:2.0');
@@ -1689,6 +1690,16 @@ export class LinuxArmBuildImage implements IBuildImage {
     });
   }
 
+  /**
+   * Uses a Docker image provided by CodeBuild.
+   *
+   * @returns A Docker image provided by CodeBuild.
+   *
+   * @see https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-available.html
+   *
+   * @param id The image identifier
+   * @example 'aws/codebuild/amazonlinux2-aarch64-standard:1.0'
+   */
   public static fromCodeBuildImageId(id: string): IBuildImage {
     return LinuxArmBuildImage.codeBuildImage(id);
   }
@@ -1714,6 +1725,11 @@ export class LinuxArmBuildImage implements IBuildImage {
     this.repository = props.repository;
   }
 
+  /**
+   * Validates by checking the BuildEnvironment computeType as aarch64 images only support ComputeType.SMALL and
+   * ComputeType.LARGE
+   * @param buildEnvironment BuildEnvironment
+   */
   public validate(buildEnvironment: BuildEnvironment): string[] {
     const ret = [];
     if (buildEnvironment.computeType &&
