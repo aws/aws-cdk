@@ -1,25 +1,12 @@
 const LENGTH_CACHE_SYM = Symbol();
 
-type IamValue = unknown | unknown[];
-
-/**
- * Only the parts of the policy schema we're interested in
- */
-interface StatementSchema {
-  readonly Sid?: string;
-  readonly Effect?: string;
-  readonly Principal?: IamValue | Record<string, IamValue>;
-  readonly Resource?: IamValue;
-  readonly Action?: IamValue;
-}
-
 /**
  * Merge as many statements as possible to shrink the total policy doc, modifying the input array in place
  */
 export function mergeStatements(statements: StatementSchema[]): StatementSchema[] {
   let merges = findMerges(statements);
   while (merges.length > 0) {
-    merges.sort((a, b) => a.sizeDelta - b.sizeDelta); // Most negative number first
+    merges.sort((a, b) => a.sizeDelta - b.sizeDelta); // Biggest reduction first
     if (merges[0].sizeDelta >= 0) { break; } // Nothing more to be gained
 
     // Apply all merges, order biggest to smallest gain
@@ -28,7 +15,12 @@ export function mergeStatements(statements: StatementSchema[]): StatementSchema[
       statements[merge.i0] = merge.combined;
       statements.splice(merge.i1, 1);
 
-      // This invalidates all merges involving i0 or i1, and adjusts all indices > i1
+      // Optimization: we can still merges that are for other pairs in this same
+      // go-around (which saves us recalculating all merge pairs again). We will
+      // need to adjust indices because we just changed the input array.
+      //
+      // The following removes all merges involving i0 or i1 (no longer valid,
+      // these have been used up), and shifts all indices > i1 left by 1.
       // Assumes i0 < i1.
       const invalidIndices = [merge.i0, merge.i1];
       let j = 0;
@@ -48,6 +40,9 @@ export function mergeStatements(statements: StatementSchema[]): StatementSchema[
   return statements;
 }
 
+/**
+ * Return all possible merges between all pairs of statements in the input array
+ */
 function findMerges(statements: StatementSchema[]): StatementMerge[] {
   const ret = new Array<StatementMerge>();
   for (let i0 = 0; i0 < statements.length; i0++) {
@@ -62,7 +57,9 @@ function tryMerge(statements: StatementSchema[], i0: number, i1: number, into: S
   const a = statements[i0];
   const b = statements[i1];
 
-  if (a.Effect !== 'Allow' || b.Effect !== 'Allow') { return; }
+  // Effects must be the same
+  if (a.Effect !== b.Effect) { return; }
+  // We don't merge Sids (for now)
   if (a.Sid || b.Sid) { return; }
 
   const beforeLen = jsonLength(a) + jsonLength(b);
@@ -173,6 +170,19 @@ function mergeObjects(a: IamValue, b: IamValue): any {
  */
 function normalizedArray(...xs: unknown[]) {
   return Array.from(new Set(xs)).sort();
+}
+
+type IamValue = unknown | unknown[];
+
+/**
+ * Only the parts of the policy schema we're interested in
+ */
+interface StatementSchema {
+  readonly Sid?: string;
+  readonly Effect?: string;
+  readonly Principal?: IamValue | Record<string, IamValue>;
+  readonly Resource?: IamValue;
+  readonly Action?: IamValue;
 }
 
 interface StatementMerge {

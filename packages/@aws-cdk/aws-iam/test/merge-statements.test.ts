@@ -7,23 +7,6 @@ const principal = new iam.ArnPrincipal(PRINCIPAL_ARN);
 const PRINCIPAL_ARN2 = 'arn:aws:iam::111111111:role/role-name';
 const principal2 = new iam.ArnPrincipal(PRINCIPAL_ARN2);
 
-test("don't merge Deny statements", () => {
-  assertNoMerge([
-    new iam.PolicyStatement({
-      effect: iam.Effect.DENY,
-      resources: ['a'],
-      actions: ['service:Action'],
-      principals: [principal],
-    }),
-    new iam.PolicyStatement({
-      effect: iam.Effect.DENY,
-      resources: ['b'],
-      actions: ['service:Action'],
-      principals: [principal],
-    }),
-  ]);
-});
-
 test.each([
   ['resources', true],
   ['notResources', false],
@@ -199,6 +182,30 @@ test('if conditions are the smae, statements are merged', () => {
   ]);
 });
 
+test('also merge Deny statements', () => {
+  assertMerged([
+    new iam.PolicyStatement({
+      effect: iam.Effect.DENY,
+      resources: ['a'],
+      actions: ['service:Action'],
+      principals: [principal],
+    }),
+    new iam.PolicyStatement({
+      effect: iam.Effect.DENY,
+      resources: ['b'],
+      actions: ['service:Action'],
+      principals: [principal],
+    }),
+  ], [
+    {
+      Effect: 'Deny',
+      Resource: ['a', 'b'],
+      Action: 'service:Action',
+      Principal: { AWS: PRINCIPAL_ARN },
+    },
+  ]);
+});
+
 test('merges 3 statements in multiple steps', () => {
   assertMerged([
     new iam.PolicyStatement({
@@ -222,6 +229,45 @@ test('merges 3 statements in multiple steps', () => {
       Effect: 'Allow',
       Resource: ['a', 'b'],
       Action: ['service:Action', 'service:Action2'],
+      Principal: { AWS: PRINCIPAL_ARN },
+    },
+  ]);
+});
+
+test('merges 2 pairs separately', () => {
+  // Merges pairs (0,2) and (1,3)
+  assertMerged([
+    new iam.PolicyStatement({
+      resources: ['a'],
+      actions: ['service:Action'],
+      principals: [principal],
+    }),
+    new iam.PolicyStatement({
+      resources: ['c'],
+      actions: ['service:Action1'],
+      principals: [principal],
+    }),
+    new iam.PolicyStatement({
+      resources: ['b'],
+      actions: ['service:Action'],
+      principals: [principal],
+    }),
+    new iam.PolicyStatement({
+      resources: ['c'],
+      actions: ['service:Action2'],
+      principals: [principal],
+    }),
+  ], [
+    {
+      Effect: 'Allow',
+      Resource: ['a', 'b'],
+      Action: 'service:Action',
+      Principal: { AWS: PRINCIPAL_ARN },
+    },
+    {
+      Effect: 'Allow',
+      Resource: 'c',
+      Action: ['service:Action1', 'service:Action2'],
       Principal: { AWS: PRINCIPAL_ARN },
     },
   ]);
