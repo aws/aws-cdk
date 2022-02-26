@@ -4,8 +4,10 @@ import * as cdk from '@aws-cdk/core';
 import * as iotevents from '../lib';
 
 let stack: cdk.Stack;
+let input: iotevents.IInput;
 beforeEach(() => {
   stack = new cdk.Stack();
+  input = iotevents.Input.fromInputName(stack, 'MyInput', 'test-input');
 });
 
 test('Default property', () => {
@@ -137,6 +139,89 @@ test('can set multiple events to State', () => {
   });
 });
 
+test('can set states with transitions', () => {
+  // GIVEN
+  const firstState = new iotevents.State({
+    stateName: 'firstState',
+    onEnter: [{
+      eventName: 'test-eventName',
+      condition: iotevents.Expression.currentInput(input),
+    }],
+  });
+  const secondState = new iotevents.State({
+    stateName: 'secondState',
+  });
+  const thirdState = new iotevents.State({
+    stateName: 'thirdState',
+  });
+
+  // WHEN
+  // transition as 1st -> 2nd
+  firstState.transitionTo(secondState, {
+    when: iotevents.Expression.eq(
+      iotevents.Expression.inputAttribute(input, 'payload.temperature'),
+      iotevents.Expression.fromString('12'),
+    ),
+  });
+  // transition as 2nd -> 1st, make circular reference
+  secondState.transitionTo(firstState, {
+    eventName: 'secondToFirst',
+    when: iotevents.Expression.eq(
+      iotevents.Expression.inputAttribute(input, 'payload.temperature'),
+      iotevents.Expression.fromString('21'),
+    ),
+  });
+  // transition as 2nd -> 3rd, to test recursive calling
+  secondState.transitionTo(thirdState, {
+    when: iotevents.Expression.eq(
+      iotevents.Expression.inputAttribute(input, 'payload.temperature'),
+      iotevents.Expression.fromString('23'),
+    ),
+  });
+
+  new iotevents.DetectorModel(stack, 'MyDetectorModel', {
+    initialState: firstState,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::IoTEvents::DetectorModel', {
+    DetectorModelDefinition: {
+      States: [
+        {
+          StateName: 'firstState',
+          OnInput: {
+            TransitionEvents: [{
+              EventName: 'firstState_to_secondState',
+              NextState: 'secondState',
+              Condition: '$input.test-input.payload.temperature == 12',
+            }],
+          },
+        },
+        {
+          StateName: 'secondState',
+          OnInput: {
+            TransitionEvents: [
+              {
+                EventName: 'secondToFirst',
+                NextState: 'firstState',
+                Condition: '$input.test-input.payload.temperature == 21',
+              },
+              {
+                EventName: 'secondState_to_thirdState',
+                NextState: 'thirdState',
+                Condition: '$input.test-input.payload.temperature == 23',
+              },
+            ],
+          },
+        },
+        {
+          StateName: 'thirdState',
+        },
+      ],
+    },
+  });
+});
+
 test('can set role', () => {
   // WHEN
   const role = iam.Role.fromRoleArn(stack, 'test-role', 'arn:aws:iam::123456789012:role/ForTest');
@@ -191,10 +276,37 @@ test('cannot create without event', () => {
   }).toThrow('Detector Model must have at least one Input with a condition');
 });
 
+test('cannot create transitions that transit to duprecated target state', () => {
+  const firstState = new iotevents.State({
+    stateName: 'firstState',
+    onEnter: [{
+      eventName: 'test-eventName',
+    }],
+  });
+  const secondState = new iotevents.State({
+    stateName: 'secondState',
+  });
+
+  firstState.transitionTo(secondState, {
+    when: iotevents.Expression.eq(
+      iotevents.Expression.inputAttribute(input, 'payload.temperature'),
+      iotevents.Expression.fromString('12.1'),
+    ),
+  });
+
+  expect(() => {
+    firstState.transitionTo(secondState, {
+      when: iotevents.Expression.eq(
+        iotevents.Expression.inputAttribute(input, 'payload.temperature'),
+        iotevents.Expression.fromString('12.2'),
+      ),
+    });
+  }).toThrow("State 'firstState' already has a transition defined to 'secondState'");
+});
+
 describe('Expression', () => {
   test('currentInput', () => {
     // WHEN
-    const input = iotevents.Input.fromInputName(stack, 'MyInput', 'test-input');
     new iotevents.DetectorModel(stack, 'MyDetectorModel', {
       initialState: new iotevents.State({
         stateName: 'test-state',
@@ -223,7 +335,6 @@ describe('Expression', () => {
 
   test('inputAttribute', () => {
     // WHEN
-    const input = iotevents.Input.fromInputName(stack, 'MyInput', 'test-input');
     new iotevents.DetectorModel(stack, 'MyDetectorModel', {
       initialState: new iotevents.State({
         stateName: 'test-state',

@@ -246,6 +246,52 @@ describe('instance', () => {
     });
   });
 
+  test('instance with inline parameter group', () => {
+    // WHEN
+    new rds.DatabaseInstance(stack, 'Database', {
+      engine: rds.DatabaseInstanceEngine.sqlServerEe({ version: rds.SqlServerEngineVersion.VER_11 }),
+      vpc,
+      parameters: {
+        locks: '100',
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+      DBParameterGroupName: {
+        Ref: 'DatabaseParameterGroup2A921026',
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBParameterGroup', {
+      Family: 'sqlserver-ee-11.0',
+      Parameters: {
+        locks: '100',
+      },
+    });
+  });
+
+  test('instance with inline parameter group and parameterGroup arg fails', () => {
+    const parameterGroup = new rds.ParameterGroup(stack, 'ParameterGroup', {
+      engine: rds.DatabaseInstanceEngine.sqlServerEe({
+        version: rds.SqlServerEngineVersion.VER_11,
+      }),
+      parameters: {
+        key: 'value',
+      },
+    });
+
+    expect(() => {
+      new rds.DatabaseInstance(stack, 'Database', {
+        engine: rds.DatabaseInstanceEngine.sqlServerEe({ version: rds.SqlServerEngineVersion.VER_11 }),
+        vpc,
+        parameters: {
+          locks: '100',
+        },
+        parameterGroup,
+      });
+    }).toThrow(/You cannot specify both parameterGroup and parameters/);
+  });
+
   test('can specify subnet type', () => {
     new rds.DatabaseInstance(stack, 'Instance', {
       engine: rds.DatabaseInstanceEngine.mysql({

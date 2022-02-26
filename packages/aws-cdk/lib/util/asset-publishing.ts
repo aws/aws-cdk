@@ -1,7 +1,9 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import * as AWS from 'aws-sdk';
 import * as cdk_assets from 'cdk-assets';
-import { ISDK, Mode, SdkProvider } from '../api';
+import { Mode } from '../api/aws-auth/credentials';
+import { ISDK } from '../api/aws-auth/sdk';
+import { SdkProvider } from '../api/aws-auth/sdk-provider';
 import { debug, error, print } from '../logging';
 
 /**

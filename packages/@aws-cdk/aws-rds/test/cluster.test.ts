@@ -1,6 +1,7 @@
 import { Match, Template } from '@aws-cdk/assertions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import { ManagedPolicy, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
+import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
@@ -10,6 +11,7 @@ import * as cxapi from '@aws-cdk/cx-api';
 import {
   AuroraEngineVersion, AuroraMysqlEngineVersion, AuroraPostgresEngineVersion, CfnDBCluster, Credentials, DatabaseCluster,
   DatabaseClusterEngine, DatabaseClusterFromSnapshot, ParameterGroup, PerformanceInsightRetention, SubnetGroup, DatabaseSecret,
+  DatabaseInstanceEngine, SqlServerEngineVersion,
 } from '../lib';
 
 describe('cluster', () => {
@@ -320,6 +322,112 @@ describe('cluster', () => {
         Ref: 'ParameterGroup5E32DECB',
       },
     });
+  });
+
+  test('cluster with inline parameter group', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA,
+      parameters: {
+        locks: '100',
+      },
+      instanceProps: {
+        vpc,
+        parameters: {
+          locks: '200',
+        },
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
+      DBClusterParameterGroupName: {
+        Ref: 'DatabaseParameterGroup2A921026',
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBClusterParameterGroup', {
+      Family: 'aurora5.6',
+      Parameters: {
+        locks: '100',
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+      DBParameterGroupName: {
+        Ref: 'DatabaseInstanceParameterGroup6968C5BF',
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBParameterGroup', {
+      Family: 'aurora5.6',
+      Parameters: {
+        locks: '200',
+      },
+    });
+  });
+
+  test('cluster with inline parameter group and parameterGroup arg fails', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const parameterGroup = new ParameterGroup(stack, 'ParameterGroup', {
+      engine: DatabaseInstanceEngine.sqlServerEe({
+        version: SqlServerEngineVersion.VER_11,
+      }),
+      parameters: {
+        locks: '50',
+      },
+    });
+
+    expect(() => {
+      new DatabaseCluster(stack, 'Database', {
+        engine: DatabaseClusterEngine.AURORA,
+        parameters: {
+          locks: '100',
+        },
+        parameterGroup,
+        instanceProps: {
+          vpc,
+          parameters: {
+            locks: '200',
+          },
+        },
+      });
+    }).toThrow(/You cannot specify both parameterGroup and parameters/);
+  });
+
+  test('instance with inline parameter group and parameterGroup arg fails', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const parameterGroup = new ParameterGroup(stack, 'ParameterGroup', {
+      engine: DatabaseInstanceEngine.sqlServerEe({
+        version: SqlServerEngineVersion.VER_11,
+      }),
+      parameters: {
+        locks: '50',
+      },
+    });
+
+    expect(() => {
+      new DatabaseCluster(stack, 'Database', {
+        engine: DatabaseClusterEngine.AURORA,
+        parameters: {
+          locks: '100',
+        },
+        instanceProps: {
+          vpc,
+          parameterGroup,
+          parameters: {
+            locks: '200',
+          },
+        },
+      });
+    }).toThrow(/You cannot specify both parameterGroup and parameters/);
   });
 
   describe('performance insights', () => {
@@ -845,7 +953,6 @@ describe('cluster', () => {
       },
     });
   });
-
 
   test('addRotationSingleUser() with VPC interface endpoint', () => {
     // GIVEN
@@ -1598,6 +1705,26 @@ describe('cluster', () => {
     });
 
     Template.fromStack(stack).resourceCountIs('AWS::RDS::DBClusterParameterGroup', 0);
+  });
+
+  test('MySQL cluster in version 8.0 uses aws_default_s3_role as a Parameter for S3 import, instead of aurora_load_from_s3_role', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      instanceProps: { vpc },
+      engine: DatabaseClusterEngine.auroraMysql({ version: AuroraMysqlEngineVersion.VER_3_01_0 }),
+      s3ImportRole: iam.Role.fromRoleArn(stack, 'S3ImportRole', 'arn:aws:iam::123456789012:role/my-role'),
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBClusterParameterGroup', {
+      Family: 'aurora-mysql8.0',
+      Parameters: {
+        aws_default_s3_role: 'arn:aws:iam::123456789012:role/my-role',
+      },
+    });
   });
 
   test('throws when s3ExportRole and s3ExportBuckets properties are both specified', () => {
