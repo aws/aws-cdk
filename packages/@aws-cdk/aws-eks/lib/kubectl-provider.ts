@@ -168,6 +168,11 @@ export class KubectlProvider extends NestedStack implements IKubectlProvider {
       resources: [cluster.clusterArn],
     }));
 
+    // For OCI helm chart authorization.
+    this.handlerRole.addManagedPolicy(
+      iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEC2ContainerRegistryReadOnly'),
+    );
+
     // allow this handler to assume the kubectl role
     cluster.kubectlRole.grant(this.handlerRole, 'sts:AssumeRole');
 
