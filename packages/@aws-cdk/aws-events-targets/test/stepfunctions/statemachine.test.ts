@@ -67,13 +67,13 @@ test('Existing role can be used for State machine Rule target', () => {
     assumedBy: new iam.ServicePrincipal('events.amazonaws.com'),
   });
   const stateMachine = new sfn.StateMachine(stack, 'SM', {
-    definition: new sfn.Wait(stack, 'Hello', { time: sfn.WaitTime.duration(cdk.Duration.seconds(10)) }),
-    role,
+    definition: new sfn.Wait(stack, 'Hello', { time: sfn.WaitTime.duration(cdk.Duration.seconds(10)) })
   });
 
   // WHEN
   rule.addTarget(new targets.SfnStateMachine(stateMachine, {
     input: events.RuleTargetInput.fromObject({ SomeParam: 'SomeValue' }),
+    role: role,
   }));
 
   // THEN
@@ -124,14 +124,14 @@ test('specifying retry policy', () => {
     assumedBy: new iam.ServicePrincipal('events.amazonaws.com'),
   });
   const stateMachine = new sfn.StateMachine(stack, 'SM', {
-    definition: new sfn.Wait(stack, 'Hello', { time: sfn.WaitTime.duration(cdk.Duration.seconds(10)) }),
-    role,
+    definition: new sfn.Wait(stack, 'Hello', { time: sfn.WaitTime.duration(cdk.Duration.seconds(10)) })
   });
 
   rule.addTarget(new targets.SfnStateMachine(stateMachine, {
     input: events.RuleTargetInput.fromObject({ SomeParam: 'SomeValue' }),
     maxEventAge: cdk.Duration.hours(2),
     retryAttempts: 2,
+    role: role,
   }));
 
   // THEN
@@ -175,14 +175,14 @@ test('use a Dead Letter Queue for the rule target', () => {
     assumedBy: new iam.ServicePrincipal('events.amazonaws.com'),
   });
   const stateMachine = new sfn.StateMachine(stack, 'SM', {
-    definition: new sfn.Wait(stack, 'Hello', { time: sfn.WaitTime.duration(cdk.Duration.seconds(10)) }),
-    role,
+    definition: new sfn.Wait(stack, 'Hello', { time: sfn.WaitTime.duration(cdk.Duration.seconds(10)) })
   });
 
   // WHEN
   rule.addTarget(new targets.SfnStateMachine(stateMachine, {
     input: events.RuleTargetInput.fromObject({ SomeParam: 'SomeValue' }),
     deadLetterQueue: dlq,
+    role: role,
   }));
 
   // the Permission resource should be in the event stack
