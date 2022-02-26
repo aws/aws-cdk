@@ -1954,6 +1954,31 @@ describe('cluster', () => {
     });
   });
 
+  test('create a cluster from a snapshot with encrypted storage', () => {
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseClusterFromSnapshot(stack, 'Database', {
+      engine: DatabaseClusterEngine.aurora({ version: AuroraEngineVersion.VER_1_22_2 }),
+      instanceProps: {
+        vpc,
+      },
+      snapshotIdentifier: 'mySnapshot',
+      storageEncryptionKey: new kms.Key(stack, 'Key'),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
+      KmsKeyId: {
+        'Fn::GetAtt': [
+          'Key961B73FD',
+          'Arn',
+        ],
+      },
+    });
+  });
+
   test('reuse an existing subnet group', () => {
     // GIVEN
     const stack = testStack();
