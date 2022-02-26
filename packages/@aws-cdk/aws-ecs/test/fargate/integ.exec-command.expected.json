@@ -381,9 +381,7 @@
                   ]
                 }
               },
-              "Resource": [
-                "*"
-              ]
+              "Resource": "*"
             },
             {
               "Action": [
@@ -528,8 +526,6 @@
           "Statement": [
             {
               "Action": [
-                "logs:DescribeLogGroups",
-                "s3:GetBucketLocation",
                 "ssmmessages:CreateControlChannel",
                 "ssmmessages:CreateDataChannel",
                 "ssmmessages:OpenControlChannel",
@@ -550,6 +546,11 @@
                   "Arn"
                 ]
               }
+            },
+            {
+              "Action": "logs:DescribeLogGroups",
+              "Effect": "Allow",
+              "Resource": "*"
             },
             {
               "Action": [
@@ -582,6 +583,11 @@
                   ]
                 ]
               }
+            },
+            {
+              "Action": "s3:GetBucketLocation",
+              "Effect": "Allow",
+              "Resource": "*"
             },
             {
               "Action": "s3:PutObject",

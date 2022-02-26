@@ -1,10 +1,5 @@
 {
   "Resources": {
-    "Bucket83908E77": {
-      "Type": "AWS::S3::Bucket",
-      "UpdateReplacePolicy": "Delete",
-      "DeletionPolicy": "Delete"
-    },
     "BucketNotifications8F2E257D": {
       "Type": "Custom::S3BucketNotifications",
       "Properties": {
@@ -55,6 +50,11 @@
         "Topic3Policy49BDDFBD",
         "Topic3DEAE47A7"
       ]
+    },
+    "Bucket83908E77": {
+      "Type": "AWS::S3::Bucket",
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
     "TopicBFC7AF6E": {
       "Type": "AWS::SNS::Topic"
@@ -222,10 +222,12 @@
         "PolicyDocument": {
           "Statement": [
             {
-              "Action": [
-                "s3:GetBucketNotification",
-                "s3:PutBucketNotification"
-              ],
+              "Action": "s3:PutBucketNotification",
+              "Effect": "Allow",
+              "Resource": "*"
+            },
+            {
+              "Action": "s3:GetBucketNotification",
               "Effect": "Allow",
               "Resource": "*"
             }
@@ -261,11 +263,6 @@
         "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleDefaultPolicy2CF63D36",
         "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC"
       ]
-    },
-    "Bucket25524B414": {
-      "Type": "AWS::S3::Bucket",
-      "UpdateReplacePolicy": "Delete",
-      "DeletionPolicy": "Delete"
     },
     "Bucket2NotificationsD9BA2A77": {
       "Type": "Custom::S3BucketNotifications",
@@ -311,6 +308,11 @@
         "Topic3Policy49BDDFBD",
         "Topic3DEAE47A7"
       ]
+    },
+    "Bucket25524B414": {
+      "Type": "AWS::S3::Bucket",
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
     "Bucket3NotificationsAFEFF359": {
       "Type": "Custom::S3BucketNotifications",

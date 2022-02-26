@@ -42,13 +42,13 @@
         "Code": {
           "ZipFile": "exports.handler = {}"
         },
+        "Handler": "hello.handler",
         "Role": {
           "Fn::GetAtt": [
             "LambdaFunctionServiceRoleC555A460",
             "Arn"
           ]
         },
-        "Handler": "hello.handler",
         "Runtime": "nodejs10.x"
       },
       "DependsOn": [
@@ -69,9 +69,7 @@
         "PolicyDocument": {
           "Statement": [
             {
-              "Action": [
-                "s3:GetBucketAcl"
-              ],
+              "Action": "s3:GetBucketAcl",
               "Effect": "Allow",
               "Principal": {
                 "Service": "cloudtrail.amazonaws.com"
@@ -84,9 +82,7 @@
               }
             },
             {
-              "Action": [
-                "s3:PutObject"
-              ],
+              "Action": "s3:PutObject",
               "Condition": {
                 "StringEquals": {
                   "s3:x-amz-acl": "bucket-owner-full-control"

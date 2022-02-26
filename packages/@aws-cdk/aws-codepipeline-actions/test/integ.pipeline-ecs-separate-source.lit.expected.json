@@ -122,12 +122,8 @@
               {
                 "Action": [
                   "ecr:BatchCheckLayerAvailability",
-                  "ecr:BatchGetImage",
-                  "ecr:CompleteLayerUpload",
                   "ecr:GetDownloadUrlForLayer",
-                  "ecr:InitiateLayerUpload",
-                  "ecr:PutImage",
-                  "ecr:UploadLayerPart"
+                  "ecr:BatchGetImage"
                 ],
                 "Effect": "Allow",
                 "Resource": {
@@ -141,6 +137,21 @@
                 "Action": "ecr:GetAuthorizationToken",
                 "Effect": "Allow",
                 "Resource": "*"
+              },
+              {
+                "Action": [
+                  "ecr:PutImage",
+                  "ecr:InitiateLayerUpload",
+                  "ecr:UploadLayerPart",
+                  "ecr:CompleteLayerUpload"
+                ],
+                "Effect": "Allow",
+                "Resource": {
+                  "Fn::GetAtt": [
+                    "EcsDeployRepositoryE7A569C0",
+                    "Arn"
+                  ]
+                }
               },
               {
                 "Action": [
@@ -665,40 +676,52 @@
               {
                 "Action": "sts:AssumeRole",
                 "Effect": "Allow",
-                "Resource": [
-                  [
-                    {
-                      "Fn::GetAtt": [
-                        "CodePipelineDeployingEcsApplicationSourceAppCodeSourceCodePipelineActionRole6D88B36F",
-                        "Arn"
-                      ]
-                    },
-                    {
-                      "Fn::GetAtt": [
-                        "CodePipelineDeployingEcsApplicationSourceCdkCodeSourceCodePipelineActionRoleA1E3A5E9",
-                        "Arn"
-                      ]
-                    },
-                    {
-                      "Fn::GetAtt": [
-                        "CodePipelineDeployingEcsApplicationBuildAppCodeDockerImageBuildAndPushCodePipelineActionRole9B025737",
-                        "Arn"
-                      ]
-                    },
-                    {
-                      "Fn::GetAtt": [
-                        "CodePipelineDeployingEcsApplicationBuildCdkCodeBuildAndSynthCodePipelineActionRole54094521",
-                        "Arn"
-                      ]
-                    }
-                  ],
-                  {
-                    "Fn::GetAtt": [
-                      "CodePipelineDeployingEcsApplicationDeployCFNDeployCodePipelineActionRoleC97FFCE2",
-                      "Arn"
-                    ]
-                  }
-                ]
+                "Resource": {
+                  "Fn::GetAtt": [
+                    "CodePipelineDeployingEcsApplicationSourceAppCodeSourceCodePipelineActionRole6D88B36F",
+                    "Arn"
+                  ]
+                }
+              },
+              {
+                "Action": "sts:AssumeRole",
+                "Effect": "Allow",
+                "Resource": {
+                  "Fn::GetAtt": [
+                    "CodePipelineDeployingEcsApplicationSourceCdkCodeSourceCodePipelineActionRoleA1E3A5E9",
+                    "Arn"
+                  ]
+                }
+              },
+              {
+                "Action": "sts:AssumeRole",
+                "Effect": "Allow",
+                "Resource": {
+                  "Fn::GetAtt": [
+                    "CodePipelineDeployingEcsApplicationBuildAppCodeDockerImageBuildAndPushCodePipelineActionRole9B025737",
+                    "Arn"
+                  ]
+                }
+              },
+              {
+                "Action": "sts:AssumeRole",
+                "Effect": "Allow",
+                "Resource": {
+                  "Fn::GetAtt": [
+                    "CodePipelineDeployingEcsApplicationBuildCdkCodeBuildAndSynthCodePipelineActionRole54094521",
+                    "Arn"
+                  ]
+                }
+              },
+              {
+                "Action": "sts:AssumeRole",
+                "Effect": "Allow",
+                "Resource": {
+                  "Fn::GetAtt": [
+                    "CodePipelineDeployingEcsApplicationDeployCFNDeployCodePipelineActionRoleC97FFCE2",
+                    "Arn"
+                  ]
+                }
               }
             ],
             "Version": "2012-10-17"
@@ -1739,14 +1762,14 @@
       "VpcPublicSubnet1NATGateway4D7517AA": {
         "Type": "AWS::EC2::NatGateway",
         "Properties": {
-          "SubnetId": {
-            "Ref": "VpcPublicSubnet1Subnet5C2D37C4"
-          },
           "AllocationId": {
             "Fn::GetAtt": [
               "VpcPublicSubnet1EIPD7E02669",
               "AllocationId"
             ]
+          },
+          "SubnetId": {
+            "Ref": "VpcPublicSubnet1Subnet5C2D37C4"
           },
           "Tags": [
             {

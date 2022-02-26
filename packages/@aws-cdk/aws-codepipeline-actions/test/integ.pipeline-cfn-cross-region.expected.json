@@ -72,20 +72,22 @@
             {
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
-              "Resource": [
-                {
-                  "Fn::GetAtt": [
-                    "MyPipelineSourceS3CodePipelineActionRole9F003087",
-                    "Arn"
-                  ]
-                },
-                {
-                  "Fn::GetAtt": [
-                    "MyPipelineCFNCFNDeployCodePipelineActionRole31B1904C",
-                    "Arn"
-                  ]
-                }
-              ]
+              "Resource": {
+                "Fn::GetAtt": [
+                  "MyPipelineSourceS3CodePipelineActionRole9F003087",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "MyPipelineCFNCFNDeployCodePipelineActionRole31B1904C",
+                  "Arn"
+                ]
+              }
             }
           ],
           "Version": "2012-10-17"

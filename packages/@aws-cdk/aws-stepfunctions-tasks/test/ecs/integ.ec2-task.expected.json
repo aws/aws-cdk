@@ -266,9 +266,7 @@
             {
               "Action": [
                 "ecs:DescribeContainerInstances",
-                "ecs:DescribeTasks",
-                "ecs:ListTasks",
-                "ecs:UpdateContainerInstancesState"
+                "ecs:DescribeTasks"
               ],
               "Condition": {
                 "ArnEquals": {
@@ -296,6 +294,24 @@
                   "Arn"
                 ]
               }
+            },
+            {
+              "Action": [
+                "ecs:UpdateContainerInstancesState",
+                "ecs:ListTasks"
+              ],
+              "Condition": {
+                "ArnEquals": {
+                  "ecs:cluster": {
+                    "Fn::GetAtt": [
+                      "FargateCluster7CCD5F93",
+                      "Arn"
+                    ]
+                  }
+                }
+              },
+              "Effect": "Allow",
+              "Resource": "*"
             }
           ],
           "Version": "2012-10-17"
@@ -373,17 +389,6 @@
         }
       }
     },
-    "FargateClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopic49146C10": {
-      "Type": "AWS::SNS::Topic",
-      "Properties": {
-        "Tags": [
-          {
-            "Key": "Name",
-            "Value": "aws-ecs-integ2/FargateCluster/DefaultAutoScalingGroup"
-          }
-        ]
-      }
-    },
     "FargateClusterDefaultAutoScalingGroupLifecycleHookDrainHookRole410D556D": {
       "Type": "AWS::IAM::Role",
       "Properties": {
@@ -426,6 +431,17 @@
         "Roles": [
           {
             "Ref": "FargateClusterDefaultAutoScalingGroupLifecycleHookDrainHookRole410D556D"
+          }
+        ]
+      }
+    },
+    "FargateClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopic49146C10": {
+      "Type": "AWS::SNS::Topic",
+      "Properties": {
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ2/FargateCluster/DefaultAutoScalingGroup"
           }
         ]
       }

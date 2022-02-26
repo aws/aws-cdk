@@ -202,40 +202,52 @@
             {
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
-              "Resource": [
-                [
-                  {
-                    "Fn::GetAtt": [
-                      "PipelineSourceCdkCodeSourceCodePipelineActionRole237947B8",
-                      "Arn"
-                    ]
-                  },
-                  {
-                    "Fn::GetAtt": [
-                      "PipelineSourceLambdaCodeSourceCodePipelineActionRole4E89EF60",
-                      "Arn"
-                    ]
-                  },
-                  {
-                    "Fn::GetAtt": [
-                      "PipelineBuildCDKBuildCodePipelineActionRole15F4B424",
-                      "Arn"
-                    ]
-                  },
-                  {
-                    "Fn::GetAtt": [
-                      "PipelineBuildLambdaBuildCodePipelineActionRole2DAE39E9",
-                      "Arn"
-                    ]
-                  }
-                ],
-                {
-                  "Fn::GetAtt": [
-                    "PipelineDeployLambdaCFNDeployCodePipelineActionRoleF8A74488",
-                    "Arn"
-                  ]
-                }
-              ]
+              "Resource": {
+                "Fn::GetAtt": [
+                  "PipelineSourceCdkCodeSourceCodePipelineActionRole237947B8",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "PipelineSourceLambdaCodeSourceCodePipelineActionRole4E89EF60",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "PipelineBuildCDKBuildCodePipelineActionRole15F4B424",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "PipelineBuildLambdaBuildCodePipelineActionRole2DAE39E9",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "PipelineDeployLambdaCFNDeployCodePipelineActionRoleF8A74488",
+                  "Arn"
+                ]
+              }
             }
           ],
           "Version": "2012-10-17"
@@ -1385,8 +1397,23 @@
                 "kms:Decrypt",
                 "kms:DescribeKey",
                 "kms:Encrypt",
-                "kms:GenerateDataKey*",
-                "kms:ReEncrypt*"
+                "kms:ReEncrypt*",
+                "kms:GenerateDataKey*"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "PipelineArtifactsBucketEncryptionKey01D58D69",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              "Action": [
+                "kms:Decrypt",
+                "kms:Encrypt",
+                "kms:ReEncrypt*",
+                "kms:GenerateDataKey*"
               ],
               "Effect": "Allow",
               "Resource": {
@@ -1596,8 +1623,23 @@
                 "kms:Decrypt",
                 "kms:DescribeKey",
                 "kms:Encrypt",
-                "kms:GenerateDataKey*",
-                "kms:ReEncrypt*"
+                "kms:ReEncrypt*",
+                "kms:GenerateDataKey*"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "PipelineArtifactsBucketEncryptionKey01D58D69",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              "Action": [
+                "kms:Decrypt",
+                "kms:Encrypt",
+                "kms:ReEncrypt*",
+                "kms:GenerateDataKey*"
               ],
               "Effect": "Allow",
               "Resource": {

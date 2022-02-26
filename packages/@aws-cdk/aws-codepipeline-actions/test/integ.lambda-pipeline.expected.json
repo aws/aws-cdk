@@ -202,20 +202,22 @@
             {
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
-              "Resource": [
-                {
-                  "Fn::GetAtt": [
-                    "PipelineSourceCodePipelineActionRoleC6F9E7F5",
-                    "Arn"
-                  ]
-                },
-                {
-                  "Fn::GetAtt": [
-                    "PipelineLambdaCodePipelineActionRoleC6032822",
-                    "Arn"
-                  ]
-                }
-              ]
+              "Resource": {
+                "Fn::GetAtt": [
+                  "PipelineSourceCodePipelineActionRoleC6F9E7F5",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "PipelineLambdaCodePipelineActionRoleC6032822",
+                  "Arn"
+                ]
+              }
             }
           ],
           "Version": "2012-10-17"
@@ -860,13 +862,13 @@
         "Code": {
           "ZipFile": "\n    exports.handler = function () {\n      console.log(\"Hello, world!\");\n    };\n  "
         },
+        "Handler": "index.handler",
         "Role": {
           "Fn::GetAtt": [
             "LambdaFunServiceRoleF0979767",
             "Arn"
           ]
         },
-        "Handler": "index.handler",
         "Runtime": "nodejs10.x"
       },
       "DependsOn": [

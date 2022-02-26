@@ -1,10 +1,5 @@
 {
   "Resources": {
-    "MyBucketF68F3FF0": {
-      "Type": "AWS::S3::Bucket",
-      "UpdateReplacePolicy": "Delete",
-      "DeletionPolicy": "Delete"
-    },
     "MyBucketNotifications46AC0CD2": {
       "Type": "Custom::S3BucketNotifications",
       "Properties": {
@@ -47,6 +42,11 @@
       "DependsOn": [
         "MyBucketAllowBucketNotificationsTolambdabucketnotificationsMyFunction4086861C1BF13476"
       ]
+    },
+    "MyBucketF68F3FF0": {
+      "Type": "AWS::S3::Bucket",
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
     "MyBucketAllowBucketNotificationsTolambdabucketnotificationsMyFunction4086861C1BF13476": {
       "Type": "AWS::Lambda::Permission",
@@ -120,11 +120,6 @@
         "MyFunctionServiceRole3C357FF2"
       ]
     },
-    "YourBucketC6A57364": {
-      "Type": "AWS::S3::Bucket",
-      "UpdateReplacePolicy": "Delete",
-      "DeletionPolicy": "Delete"
-    },
     "YourBucketNotifications8D39901A": {
       "Type": "Custom::S3BucketNotifications",
       "Properties": {
@@ -157,6 +152,11 @@
       "DependsOn": [
         "YourBucketAllowBucketNotificationsTolambdabucketnotificationsMyFunction4086861C8FE2B89D"
       ]
+    },
+    "YourBucketC6A57364": {
+      "Type": "AWS::S3::Bucket",
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
     "YourBucketAllowBucketNotificationsTolambdabucketnotificationsMyFunction4086861C8FE2B89D": {
       "Type": "AWS::Lambda::Permission",

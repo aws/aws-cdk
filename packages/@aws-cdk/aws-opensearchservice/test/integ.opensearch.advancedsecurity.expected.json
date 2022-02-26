@@ -8,7 +8,6 @@
       "Properties": {
         "AdvancedSecurityOptions": {
           "Enabled": true,
-          "InternalUserDatabaseEnabled": false,
           "MasterUserOptions": {
             "MasterUserARN": {
               "Fn::GetAtt": [
@@ -16,11 +15,12 @@
                 "Arn"
               ]
             }
-          }
+          },
+          "InternalUserDatabaseEnabled": false
         },
         "ClusterConfig": {
-          "DedicatedMasterEnabled": false,
           "InstanceCount": 1,
+          "DedicatedMasterEnabled": false,
           "InstanceType": "r5.large.search",
           "ZoneAwarenessEnabled": false
         },
@@ -33,8 +33,8 @@
         },
         "EBSOptions": {
           "EBSEnabled": true,
-          "VolumeSize": 10,
-          "VolumeType": "gp2"
+          "VolumeType": "gp2",
+          "VolumeSize": 10
         },
         "EncryptionAtRestOptions": {
           "Enabled": true

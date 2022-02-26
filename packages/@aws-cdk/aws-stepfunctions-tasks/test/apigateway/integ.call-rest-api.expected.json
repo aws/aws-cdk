@@ -74,9 +74,7 @@
         },
         "StageName": "prod"
       },
-      "DependsOn": [
-        "MyRestApiAccount2FB6DB7A"
-      ]
+      "DependsOn": ["MyRestApiAccount2FB6DB7A"]
     },
     "MyRestApiANYApiPermissionCallRestApiIntegMyRestApiB570839CANY0C27C1E3": {
       "Type": "AWS::Lambda::Permission",

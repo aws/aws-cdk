@@ -104,11 +104,17 @@
         "PolicyDocument": {
           "Statement": [
             {
-              "Action": [
-                "ecs:UpdateService",
-                "rds:CreateDBSnapshot",
-                "rds:StopDBInstance"
-              ],
+              "Action": "ecs:UpdateService",
+              "Effect": "Allow",
+              "Resource": "*"
+            },
+            {
+              "Action": "rds:StopDBInstance",
+              "Effect": "Allow",
+              "Resource": "*"
+            },
+            {
+              "Action": "rds:CreateDBSnapshot",
               "Effect": "Allow",
               "Resource": "*"
             }

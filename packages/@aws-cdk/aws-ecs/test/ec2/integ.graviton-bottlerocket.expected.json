@@ -660,9 +660,7 @@
             {
               "Action": [
                 "ecs:DescribeContainerInstances",
-                "ecs:DescribeTasks",
-                "ecs:ListTasks",
-                "ecs:UpdateContainerInstancesState"
+                "ecs:DescribeTasks"
               ],
               "Condition": {
                 "ArnEquals": {
@@ -690,6 +688,24 @@
                   "Arn"
                 ]
               }
+            },
+            {
+              "Action": [
+                "ecs:UpdateContainerInstancesState",
+                "ecs:ListTasks"
+              ],
+              "Condition": {
+                "ArnEquals": {
+                  "ecs:cluster": {
+                    "Fn::GetAtt": [
+                      "EcsCluster97242B84",
+                      "Arn"
+                    ]
+                  }
+                }
+              },
+              "Effect": "Allow",
+              "Resource": "*"
             }
           ],
           "Version": "2012-10-17"
@@ -767,17 +783,6 @@
         }
       }
     },
-    "EcsClustergravitonclusterLifecycleHookDrainHookTopic0A778AAC": {
-      "Type": "AWS::SNS::Topic",
-      "Properties": {
-        "Tags": [
-          {
-            "Key": "Name",
-            "Value": "aws-ecs-integ/EcsCluster/graviton-cluster"
-          }
-        ]
-      }
-    },
     "EcsClustergravitonclusterLifecycleHookDrainHookRoleA16C85AD": {
       "Type": "AWS::IAM::Role",
       "Properties": {
@@ -820,6 +825,17 @@
         "Roles": [
           {
             "Ref": "EcsClustergravitonclusterLifecycleHookDrainHookRoleA16C85AD"
+          }
+        ]
+      }
+    },
+    "EcsClustergravitonclusterLifecycleHookDrainHookTopic0A778AAC": {
+      "Type": "AWS::SNS::Topic",
+      "Properties": {
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ/EcsCluster/graviton-cluster"
           }
         ]
       }

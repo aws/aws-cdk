@@ -628,9 +628,7 @@
             {
               "Action": [
                 "ecs:DescribeContainerInstances",
-                "ecs:DescribeTasks",
-                "ecs:ListTasks",
-                "ecs:UpdateContainerInstancesState"
+                "ecs:DescribeTasks"
               ],
               "Condition": {
                 "ArnEquals": {
@@ -658,6 +656,24 @@
                   "Arn"
                 ]
               }
+            },
+            {
+              "Action": [
+                "ecs:UpdateContainerInstancesState",
+                "ecs:ListTasks"
+              ],
+              "Condition": {
+                "ArnEquals": {
+                  "ecs:cluster": {
+                    "Fn::GetAtt": [
+                      "EcsCluster97242B84",
+                      "Arn"
+                    ]
+                  }
+                }
+              },
+              "Effect": "Allow",
+              "Resource": "*"
             }
           ],
           "Version": "2012-10-17"
@@ -735,17 +751,6 @@
         }
       }
     },
-    "EcsClusterbottlerocketasgLifecycleHookDrainHookTopic64509A74": {
-      "Type": "AWS::SNS::Topic",
-      "Properties": {
-        "Tags": [
-          {
-            "Key": "Name",
-            "Value": "aws-ecs-integ-bottlerocket/EcsCluster/bottlerocket-asg"
-          }
-        ]
-      }
-    },
     "EcsClusterbottlerocketasgLifecycleHookDrainHookRoleDE4D94EB": {
       "Type": "AWS::IAM::Role",
       "Properties": {
@@ -788,6 +793,17 @@
         "Roles": [
           {
             "Ref": "EcsClusterbottlerocketasgLifecycleHookDrainHookRoleDE4D94EB"
+          }
+        ]
+      }
+    },
+    "EcsClusterbottlerocketasgLifecycleHookDrainHookTopic64509A74": {
+      "Type": "AWS::SNS::Topic",
+      "Properties": {
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ-bottlerocket/EcsCluster/bottlerocket-asg"
           }
         ]
       }

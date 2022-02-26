@@ -266,9 +266,7 @@
             {
               "Action": [
                 "ecs:DescribeContainerInstances",
-                "ecs:DescribeTasks",
-                "ecs:ListTasks",
-                "ecs:UpdateContainerInstancesState"
+                "ecs:DescribeTasks"
               ],
               "Condition": {
                 "ArnEquals": {
@@ -296,6 +294,24 @@
                   "Arn"
                 ]
               }
+            },
+            {
+              "Action": [
+                "ecs:UpdateContainerInstancesState",
+                "ecs:ListTasks"
+              ],
+              "Condition": {
+                "ArnEquals": {
+                  "ecs:cluster": {
+                    "Fn::GetAtt": [
+                      "Ec2ClusterEE43E89D",
+                      "Arn"
+                    ]
+                  }
+                }
+              },
+              "Effect": "Allow",
+              "Resource": "*"
             }
           ],
           "Version": "2012-10-17"
@@ -373,17 +389,6 @@
         }
       }
     },
-    "Ec2ClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicF7263B30": {
-      "Type": "AWS::SNS::Topic",
-      "Properties": {
-        "Tags": [
-          {
-            "Key": "Name",
-            "Value": "aws-sfn-tasks-ecs-ec2-integ/Ec2Cluster/DefaultAutoScalingGroup"
-          }
-        ]
-      }
-    },
     "Ec2ClusterDefaultAutoScalingGroupLifecycleHookDrainHookRole71045ED7": {
       "Type": "AWS::IAM::Role",
       "Properties": {
@@ -426,6 +431,17 @@
         "Roles": [
           {
             "Ref": "Ec2ClusterDefaultAutoScalingGroupLifecycleHookDrainHookRole71045ED7"
+          }
+        ]
+      }
+    },
+    "Ec2ClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicF7263B30": {
+      "Type": "AWS::SNS::Topic",
+      "Properties": {
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-sfn-tasks-ecs-ec2-integ/Ec2Cluster/DefaultAutoScalingGroup"
           }
         ]
       }

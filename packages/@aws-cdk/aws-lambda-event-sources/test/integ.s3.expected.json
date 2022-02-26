@@ -50,11 +50,6 @@
         "FServiceRole3AC82EE1"
       ]
     },
-    "B08E7C7AF": {
-      "Type": "AWS::S3::Bucket",
-      "UpdateReplacePolicy": "Delete",
-      "DeletionPolicy": "Delete"
-    },
     "BNotificationsEB8DA980": {
       "Type": "Custom::S3BucketNotifications",
       "Properties": {
@@ -97,6 +92,11 @@
       "DependsOn": [
         "BAllowBucketNotificationsTolambdaeventsources3F741608059EF9F709"
       ]
+    },
+    "B08E7C7AF": {
+      "Type": "AWS::S3::Bucket",
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
     "BAllowBucketNotificationsTolambdaeventsources3F741608059EF9F709": {
       "Type": "AWS::Lambda::Permission",

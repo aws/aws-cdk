@@ -1,9 +1,9 @@
 {
   "Resources": {
     "Bucket83908E77": {
-      "Type": "AWS::S3::Bucket",
+      "DeletionPolicy": "Delete",
       "UpdateReplacePolicy": "Delete",
-      "DeletionPolicy": "Delete"
+      "Type": "AWS::S3::Bucket"
     },
     "MyDistributionCFDistributionDE147309": {
       "Type": "AWS::CloudFront::Distribution",
@@ -18,7 +18,6 @@
               "GET",
               "HEAD"
             ],
-            "Compress": true,
             "ForwardedValues": {
               "Cookies": {
                 "Forward": "none"
@@ -26,7 +25,8 @@
               "QueryString": false
             },
             "TargetOriginId": "origin1",
-            "ViewerProtocolPolicy": "redirect-to-https"
+            "ViewerProtocolPolicy": "redirect-to-https",
+            "Compress": true
           },
           "DefaultRootObject": "index.html",
           "Enabled": true,
@@ -47,17 +47,14 @@
             }
           ],
           "PriceClass": "PriceClass_100",
-          "Restrictions": {
-            "GeoRestriction": {
-              "Locations": [
-                "US",
-                "UK"
-              ],
-              "RestrictionType": "whitelist"
-            }
-          },
           "ViewerCertificate": {
             "CloudFrontDefaultCertificate": true
+          },
+          "Restrictions": {
+            "GeoRestriction": {
+              "Locations": ["US", "UK"],
+              "RestrictionType": "whitelist"
+            }
           }
         }
       }

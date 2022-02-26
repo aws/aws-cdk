@@ -655,9 +655,7 @@
             {
               "Action": [
                 "ecs:DescribeContainerInstances",
-                "ecs:DescribeTasks",
-                "ecs:ListTasks",
-                "ecs:UpdateContainerInstancesState"
+                "ecs:DescribeTasks"
               ],
               "Condition": {
                 "ArnEquals": {
@@ -685,6 +683,24 @@
                   "Arn"
                 ]
               }
+            },
+            {
+              "Action": [
+                "ecs:UpdateContainerInstancesState",
+                "ecs:ListTasks"
+              ],
+              "Condition": {
+                "ArnEquals": {
+                  "ecs:cluster": {
+                    "Fn::GetAtt": [
+                      "ClusterEB0386A7",
+                      "Arn"
+                    ]
+                  }
+                }
+              },
+              "Effect": "Allow",
+              "Resource": "*"
             }
           ],
           "Version": "2012-10-17"
@@ -762,17 +778,6 @@
         }
       }
     },
-    "ClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicFE5437FB": {
-      "Type": "AWS::SNS::Topic",
-      "Properties": {
-        "Tags": [
-          {
-            "Key": "Name",
-            "Value": "aws-ecs-integ/Cluster/DefaultAutoScalingGroup"
-          }
-        ]
-      }
-    },
     "ClusterDefaultAutoScalingGroupLifecycleHookDrainHookRole70201663": {
       "Type": "AWS::IAM::Role",
       "Properties": {
@@ -815,6 +820,17 @@
         "Roles": [
           {
             "Ref": "ClusterDefaultAutoScalingGroupLifecycleHookDrainHookRole70201663"
+          }
+        ]
+      }
+    },
+    "ClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicFE5437FB": {
+      "Type": "AWS::SNS::Topic",
+      "Properties": {
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ/Cluster/DefaultAutoScalingGroup"
           }
         ]
       }

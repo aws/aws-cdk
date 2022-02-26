@@ -973,11 +973,29 @@
               }
             },
             {
+              "Action": "ecr:GetAuthorizationToken",
+              "Effect": "Allow",
+              "Resource": "*"
+            },
+            {
               "Action": [
-                "ecr:BatchCheckLayerAvailability",
-                "ecr:BatchGetImage",
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "nametaskdefinitionenvoyLogGroup258B673B",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              "Action": [
                 "ecr:GetAuthorizationToken",
-                "ecr:GetDownloadUrlForLayer"
+                "ecr:BatchCheckLayerAvailability",
+                "ecr:GetDownloadUrlForLayer",
+                "ecr:BatchGetImage"
               ],
               "Effect": "Allow",
               "Resource": "*"
@@ -988,32 +1006,38 @@
                 "logs:PutLogEvents"
               ],
               "Effect": "Allow",
-              "Resource": [
-                {
-                  "Fn::GetAtt": [
-                    "nametaskdefinitionenvoyLogGroup258B673B",
-                    "Arn"
-                  ]
-                },
-                {
-                  "Fn::GetAtt": [
-                    "nametaskdefinitionfirelensLogGroup80DDA60F",
-                    "Arn"
-                  ]
-                },
-                {
-                  "Fn::GetAtt": [
-                    "nametaskdefinitionxrayLogGroup4AF4CA37",
-                    "Arn"
-                  ]
-                },
-                {
-                  "Fn::GetAtt": [
-                    "nametaskdefinitioncloudwatchagentLogGroup78DDC685",
-                    "Arn"
-                  ]
-                }
-              ]
+              "Resource": {
+                "Fn::GetAtt": [
+                  "nametaskdefinitionfirelensLogGroup80DDA60F",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              "Action": [
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "nametaskdefinitionxrayLogGroup4AF4CA37",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              "Action": [
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "nametaskdefinitioncloudwatchagentLogGroup78DDC685",
+                  "Arn"
+                ]
+              }
             }
           ],
           "Version": "2012-10-17"
@@ -1822,11 +1846,29 @@
               }
             },
             {
+              "Action": "ecr:GetAuthorizationToken",
+              "Effect": "Allow",
+              "Resource": "*"
+            },
+            {
               "Action": [
-                "ecr:BatchCheckLayerAvailability",
-                "ecr:BatchGetImage",
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "greetingtaskdefinitionenvoyLogGroup6556AC35",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              "Action": [
                 "ecr:GetAuthorizationToken",
-                "ecr:GetDownloadUrlForLayer"
+                "ecr:BatchCheckLayerAvailability",
+                "ecr:GetDownloadUrlForLayer",
+                "ecr:BatchGetImage"
               ],
               "Effect": "Allow",
               "Resource": "*"
@@ -1837,32 +1879,38 @@
                 "logs:PutLogEvents"
               ],
               "Effect": "Allow",
-              "Resource": [
-                {
-                  "Fn::GetAtt": [
-                    "greetingtaskdefinitionenvoyLogGroup6556AC35",
-                    "Arn"
-                  ]
-                },
-                {
-                  "Fn::GetAtt": [
-                    "greetingtaskdefinitionfirelensLogGroupD7A398A7",
-                    "Arn"
-                  ]
-                },
-                {
-                  "Fn::GetAtt": [
-                    "greetingtaskdefinitionxrayLogGroupD25C072D",
-                    "Arn"
-                  ]
-                },
-                {
-                  "Fn::GetAtt": [
-                    "greetingtaskdefinitioncloudwatchagentLogGroupCEF72742",
-                    "Arn"
-                  ]
-                }
-              ]
+              "Resource": {
+                "Fn::GetAtt": [
+                  "greetingtaskdefinitionfirelensLogGroupD7A398A7",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              "Action": [
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "greetingtaskdefinitionxrayLogGroupD25C072D",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              "Action": [
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "greetingtaskdefinitioncloudwatchagentLogGroupCEF72742",
+                  "Arn"
+                ]
+              }
             }
           ],
           "Version": "2012-10-17"
@@ -2794,11 +2842,29 @@
               }
             },
             {
+              "Action": "ecr:GetAuthorizationToken",
+              "Effect": "Allow",
+              "Resource": "*"
+            },
+            {
               "Action": [
-                "ecr:BatchCheckLayerAvailability",
-                "ecr:BatchGetImage",
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "greetertaskdefinitionenvoyLogGroup6E10B93E",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              "Action": [
                 "ecr:GetAuthorizationToken",
-                "ecr:GetDownloadUrlForLayer"
+                "ecr:BatchCheckLayerAvailability",
+                "ecr:GetDownloadUrlForLayer",
+                "ecr:BatchGetImage"
               ],
               "Effect": "Allow",
               "Resource": "*"
@@ -2809,32 +2875,38 @@
                 "logs:PutLogEvents"
               ],
               "Effect": "Allow",
-              "Resource": [
-                {
-                  "Fn::GetAtt": [
-                    "greetertaskdefinitionenvoyLogGroup6E10B93E",
-                    "Arn"
-                  ]
-                },
-                {
-                  "Fn::GetAtt": [
-                    "greetertaskdefinitionfirelensLogGroupD5BAAC35",
-                    "Arn"
-                  ]
-                },
-                {
-                  "Fn::GetAtt": [
-                    "greetertaskdefinitionxrayLogGroupBC1558B6",
-                    "Arn"
-                  ]
-                },
-                {
-                  "Fn::GetAtt": [
-                    "greetertaskdefinitioncloudwatchagentLogGroupE7EAF327",
-                    "Arn"
-                  ]
-                }
-              ]
+              "Resource": {
+                "Fn::GetAtt": [
+                  "greetertaskdefinitionfirelensLogGroupD5BAAC35",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              "Action": [
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "greetertaskdefinitionxrayLogGroupBC1558B6",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              "Action": [
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "greetertaskdefinitioncloudwatchagentLogGroupE7EAF327",
+                  "Arn"
+                ]
+              }
             }
           ],
           "Version": "2012-10-17"

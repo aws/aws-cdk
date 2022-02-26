@@ -72,20 +72,22 @@
             {
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
-              "Resource": [
-                {
-                  "Fn::GetAtt": [
-                    "PipelineSourceS3SourceCodePipelineActionRole8DE11A40",
-                    "Arn"
-                  ]
-                },
-                {
-                  "Fn::GetAtt": [
-                    "PipelineDeployCodeDeployCodePipelineActionRoleFA7F8EEF",
-                    "Arn"
-                  ]
-                }
-              ]
+              "Resource": {
+                "Fn::GetAtt": [
+                  "PipelineSourceS3SourceCodePipelineActionRole8DE11A40",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "PipelineDeployCodeDeployCodePipelineActionRoleFA7F8EEF",
+                  "Arn"
+                ]
+              }
             }
           ],
           "Version": "2012-10-17"

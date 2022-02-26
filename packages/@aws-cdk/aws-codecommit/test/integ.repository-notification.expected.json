@@ -63,9 +63,7 @@
         "PolicyDocument": {
           "Statement": [
             {
-              "Action": [
-                "sns:Publish"
-              ],
+              "Action": "sns:Publish",
               "Effect": "Allow",
               "Principal": {
                 "Service": "codestar-notifications.amazonaws.com"

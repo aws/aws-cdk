@@ -38,14 +38,24 @@
           "Statement": [
             {
               "Action": [
-                "kinesis:DescribeStream",
                 "kinesis:DescribeStreamSummary",
                 "kinesis:GetRecords",
                 "kinesis:GetShardIterator",
                 "kinesis:ListShards",
-                "kinesis:ListStreams",
-                "kinesis:SubscribeToShard"
+                "kinesis:SubscribeToShard",
+                "kinesis:DescribeStream",
+                "kinesis:ListStreams"
               ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "Q63C6E3AB",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              "Action": "kinesis:DescribeStream",
               "Effect": "Allow",
               "Resource": {
                 "Fn::GetAtt": [
@@ -98,15 +108,18 @@
             "Arn"
           ]
         },
-        "StartingPosition": "TRIM_HORIZON",
-        "TumblingWindowInSeconds": 60
+        "TumblingWindowInSeconds": 60,
+        "StartingPosition": "TRIM_HORIZON"
       }
     },
     "Q63C6E3AB": {
       "Type": "AWS::Kinesis::Stream",
       "Properties": {
-        "RetentionPeriodHours": 24,
         "ShardCount": 1,
+        "StreamModeDetails": {
+          "StreamMode": "PROVISIONED"
+        },
+        "RetentionPeriodHours": 24,
         "StreamEncryption": {
           "Fn::If": [
             "AwsCdkKinesisEncryptedStreamsUnsupportedRegions",
@@ -118,9 +131,6 @@
               "KeyId": "alias/aws/kinesis"
             }
           ]
-        },
-        "StreamModeDetails": {
-          "StreamMode": "PROVISIONED"
         }
       }
     }
