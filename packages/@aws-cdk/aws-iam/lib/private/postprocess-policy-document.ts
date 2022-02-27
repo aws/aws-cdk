@@ -1,4 +1,5 @@
 import * as cdk from '@aws-cdk/core';
+import { LITERAL_STRING_KEY } from '../util';
 import { mergeStatements } from './merge-statements';
 
 /**
@@ -52,4 +53,97 @@ export class PostProcessPolicyDocument implements cdk.IPostProcessor {
       Statement: statements,
     };
   }
+}
+
+// An IAM value is a string or a CloudFormatin intrinsic
+export type IamValue = string | {} | Array<string | {}>;
+
+export interface StatementSchema {
+  readonly Sid?: string;
+  readonly Effect?: string;
+  readonly Principal?: Record<string, IamValue>;
+  readonly NotPrincipal?: Record<string, IamValue>;
+  readonly Resource?: IamValue;
+  readonly NotResource?: IamValue;
+  readonly Action?: IamValue;
+  readonly NotAction?: IamValue;
+  readonly Condition?: any;
+}
+
+
+export function normalizeStatement(s: StatementSchema) {
+  return noUndef({
+    Action: _norm(s.Action, { unique: true }),
+    NotAction: _norm(s.NotAction, { unique: true }),
+    Condition: _norm(s.Condition),
+    Effect: _norm(s.Effect),
+    Principal: _normPrincipal(s.Principal),
+    NotPrincipal: _normPrincipal(s.NotPrincipal),
+    Resource: _norm(s.Resource, { unique: true }),
+    NotResource: _norm(s.NotResource, { unique: true }),
+    Sid: _norm(s.Sid),
+  });
+
+  function _norm(values: any, { unique }: { unique: boolean } = { unique: false }) {
+
+    if (typeof(values) === 'undefined') {
+      return undefined;
+    }
+
+    if (cdk.Token.isUnresolved(values)) {
+      return values;
+    }
+
+    if (Array.isArray(values)) {
+      if (!values || values.length === 0) {
+        return undefined;
+      }
+
+      if (values.length === 1) {
+        return values[0];
+      }
+
+      return unique ? [...new Set(values)] : values;
+    }
+
+    if (typeof(values) === 'object') {
+      if (Object.keys(values).length === 0) {
+        return undefined;
+      }
+    }
+
+    return values;
+  }
+
+  function _normPrincipal(principal?: { [key: string]: any }) {
+    if (!principal) { return undefined; }
+
+    const keys = Object.keys(principal);
+    if (keys.length === 0) { return undefined; }
+
+    // This is handling a special case for round-tripping a literal
+    // string principal loaded from JSON.
+    if (LITERAL_STRING_KEY in principal) {
+      return principal[LITERAL_STRING_KEY][0];
+    }
+
+    const result: any = {};
+    for (const key of keys) {
+      const normVal = _norm(principal[key]);
+      if (normVal) {
+        result[key] = normVal;
+      }
+    }
+    return result;
+  }
+}
+
+function noUndef(x: any): any {
+  const ret: any = {};
+  for (const [key, value] of Object.entries(x)) {
+    if (value !== undefined) {
+      ret[key] = value;
+    }
+  }
+  return ret;
 }

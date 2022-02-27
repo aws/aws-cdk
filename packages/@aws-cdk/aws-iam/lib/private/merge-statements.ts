@@ -3,7 +3,10 @@
 // See docs/policy-merging.als for a formal model of the logic
 // implemented here.
 
-const LENGTH_CACHE_SYM = Symbol('jsonLength');
+
+import { StatementSchema, normalizeStatement } from './postprocess-policy-document';
+
+const STATEMENT_ANALYSIS_SYM = Symbol('statement-analysis');
 
 /**
  * Merge as many statements as possible to shrink the total policy doc, modifying the input array in place
@@ -15,147 +18,72 @@ const LENGTH_CACHE_SYM = Symbol('jsonLength');
  * it will probably do something sensible in most cases.
  */
 export function mergeStatements(statements: StatementSchema[]): StatementSchema[] {
-  let merges = findMerges(statements);
-  while (merges.length > 0 && merges[0].sizeDelta < 0) {
-    // Optimization: we could only merge the first pair here and then
-    // recalculate new possible merges for the next iteration. To save
-    // recalculating merge pairs however, we will try to apply as many merges as
-    // possible in one go. We will need to adjust indices because we just
-    // changed the input array.
-    while (merges.length > 0 && merges[0].sizeDelta < 0) {
-      const merge = merges.shift()!;
-      statements[merge.index1] = merge.combined;
-      statements.splice(merge.index2, 1);
+  let i = 0;
+  while (i < statements.length) {
+    let didMerge = false;
 
-      // The following removes all merges involving index1 or index2 (no longer valid,
-      // these have been used up), and shifts all indices > index2 left by 1.
-      // Assumes index1 < index2.
-      const invalidIndices = [merge.index1, merge.index2];
-      let j = 0;
-      while (j < merges.length) {
-        if (invalidIndices.includes(merges[j].index1) || invalidIndices.includes(merges[j].index2)) {
-          merges.splice(j, 1);
-        } else {
-          if (merges[j].index1 > merge.index2) { merges[j].index1 -= 1; }
-          if (merges[j].index2 > merge.index2) { merges[j].index2 -= 1; }
-          j++;
-        }
+    for (let j = i + 1; j < statements.length; j++) {
+      const merged = tryMerge(statements[i], statements[j]);
+      if (merged) {
+        statements[i] = merged;
+        statements.splice(j, 1);
+        didMerge = true;
+        break;
       }
     }
 
-    merges = findMerges(statements);
+    if (!didMerge) {
+      i++;
+    }
   }
+
   return statements;
 }
 
 /**
- * Return all possible merges between all pairs of statements in the input array
+ * Given two statements, return their merging (if possible)
  *
- * Returns the results sorted with the biggest reduction first (i.e. lowest
- * sizeDelta)
+ * We can merge two statements if:
+ *
+ * - Their effects are the same
+ * - They don't have Sids (not really a hard requirement, but just a simplification)
+ * - Their Conditions are the same
+ * - Their NotAction, NotResource and NotPrincipal sets are the same (empty sets is fine).
+ * - From their Action, Resource and Principal sets, 2 are subsets of each other
+ *   (empty sets are fine).
  */
-function findMerges(statements: StatementSchema[]): StatementMerge[] {
-  const ret = new Array<StatementMerge>();
-  for (let i0 = 0; i0 < statements.length; i0++) {
-    for (let i1 = i0 + 1; i1 < statements.length; i1++) {
-      tryMerge(statements, i0, i1, ret);
-    }
-  }
-  ret.sort((a, b) => a.sizeDelta - b.sizeDelta);
-  return ret;
-}
-
-/**
- * Given two statements, return a list of all possible merge results for these 2 statements
- *
- * This may return an empty array if the two given statements cannot be merged,
- * otherwise will contain one or more records showing what the merged statement
- * would look like, and how many bytes we would save if we were to merge these two
- * statements in this fashion.
- *
- * We will in turn try to merge the Resource, Action and Principal entries. We
- * only merge if (taking the element we are merging out of the picture), the
- * statements are otherwise completely identical. (Example: if we are considering
- * merging 'Resource', then 'Action', 'NotAction', 'Principal', 'NotPrincipal',
- * and 'Condition' all need to be exactly the same). We determine that by taking
- * a 'deepEqual' on the JSON structures excepting the key we are considering.
- */
-function tryMerge(statements: StatementSchema[], index1: number, index2: number, into: StatementMerge[]) {
-  const a = statements[index1];
-  const b = statements[index2];
-
+function tryMerge(a: StatementSchema, b: StatementSchema): StatementSchema | undefined {
   // Effects must be the same
   if (a.Effect !== b.Effect) { return; }
   // We don't merge Sids (for now)
   if (a.Sid || b.Sid) { return; }
 
-  const beforeLen = jsonLength(a) + jsonLength(b);
+  const aa = statementAnalysis(a);
+  const bb = statementAnalysis(b);
 
-  tryMerging('Resource', false);
-  tryMerging('Action', false);
-  tryMerging('Principal', true);
+  if (aa.condition !== bb.condition) { return; }
+  if (!setEqual(aa.notAction, bb.notAction) || !setEqual(aa.notResource, bb.notResource) || !setEqual(aa.notPrincipal, bb.notPrincipal)) { return; }
 
-  function tryMerging<A extends keyof StatementSchema>(key: A, usesObjects: boolean) {
-    if (!deepEqual(a, b, [key])) { return; }
+  // Are the sets subsets of each other? Both directions are okay. We need 2 out of 3 to be subsets,
+  // turn them into integers and do some math.
+  const subsetCount = (isSubset(aa.action, bb.action) ? 1 : 0) +
+    (isSubset(aa.resource, bb.resource) ? 1 : 0) +
+    (isSubset(aa.principal, bb.principal) ? 1 : 0);
 
-    const combined: StatementSchema = {
-      ...a,
-      [key]: (usesObjects ? mergeObjects : mergeValues)(a[key], b[key]),
-    };
+  if (subsetCount < 2) { return; }
 
-    into.push({
-      index1,
-      index2,
-      combined,
-      sizeDelta: jsonLength(combined) - beforeLen,
-    });
-  }
-}
+  return normalizeStatement({
+    Effect: a.Effect,
+    Condition: a.Condition,
 
-/**
- * Return the length of a JSON representation of the given object, cached on the object
- */
-function jsonLength<A extends StatementSchema>(x: A): number {
-  if ((x as any)[LENGTH_CACHE_SYM]) {
-    return (x as any)[LENGTH_CACHE_SYM];
-  }
+    Action: aa.action.size + bb.action.size > 0 ? mergeValues(a.Action, b.Action) : undefined,
+    Resource: aa.resource.size + bb.resource.size > 0 ? mergeValues(a.Resource, b.Resource) : undefined,
+    Principal: aa.principal.size + bb.principal.size > 0 ? mergePrincipals(a.Principal, b.Principal) : undefined,
 
-  const length = JSON.stringify(x).length;
-  Object.defineProperty(x, LENGTH_CACHE_SYM, {
-    value: length,
-    enumerable: false,
+    NotAction: a.NotAction,
+    NotPrincipal: a.NotPrincipal,
+    NotResource: a.NotResource,
   });
-  return length;
-}
-
-function deepEqual(a: any, b: any, ignoreKeys: string[]): boolean {
-  // Short-circuit same object identity as well
-  if (a === b) { return true; }
-
-  if (Array.isArray(a) || Array.isArray(b)) {
-    if (!Array.isArray(a) || !Array.isArray(b) || a.length !== b.length) { return false; }
-    return a.every((x, i) => deepEqual(x, b[i], []));
-  }
-
-  if (typeof a === 'object' || typeof b === 'object') {
-    if (typeof a !== 'object' || typeof b !== 'object') { return false; }
-
-    const keysA = new Set(Object.keys(a));
-    const keysB = new Set(Object.keys(b));
-    for (const k of ignoreKeys) {
-      keysA.delete(k);
-      keysB.delete(k);
-    }
-
-    for (const k of keysA) {
-      if (!deepEqual(a[k], b[k], [])) { return false; }
-      keysB.delete(k);
-    }
-
-    return keysB.size === 0;
-  }
-
-  return false;
 }
 
 function mergeValues(a: IamValue, b: IamValue): any {
@@ -174,7 +102,7 @@ function mergeValues(a: IamValue, b: IamValue): any {
  *
  * Used for merging principal types.
  */
-function mergeObjects(a: IamValue, b: IamValue): any {
+function mergePrincipals(a: IamValue, b: IamValue): any {
   if (typeof a === 'object' && typeof b === 'object' && b != null) {
     const ret: any = { ...a };
     for (const [k, v] of Object.entries(b)) {
@@ -202,40 +130,71 @@ function normalizedArray(...xs: unknown[]): unknown[] {
 type IamValue = unknown | unknown[];
 
 /**
- * Only the parts of the policy schema we're interested in
+ * Calculate and return cached string set representation of the statement elements
+ *
+ * This is to be able to do comparisons on these sets quickly.
  */
-interface StatementSchema {
-  readonly Sid?: string;
-  readonly Effect?: string;
-  readonly Principal?: IamValue | Record<string, IamValue>;
-  readonly Resource?: IamValue;
-  readonly Action?: IamValue;
+function statementAnalysis(s: StatementSchema): StatementAnalysis {
+  if (!(s as any)[STATEMENT_ANALYSIS_SYM]) {
+    const analysis: StatementAnalysis = {
+      action: asSet(s.Action),
+      notAction: asSet(s.NotAction),
+      resource: asSet(s.Resource),
+      notResource: asSet(s.NotResource),
+      principal: principalAsSet(s.Principal),
+      notPrincipal: principalAsSet(s.NotPrincipal),
+      condition: JSON.stringify(s.Condition),
+    };
+    Object.defineProperty(s, STATEMENT_ANALYSIS_SYM, {
+      value: analysis,
+      enumerable: false,
+    });
+  }
+  return (s as any)[STATEMENT_ANALYSIS_SYM];
+
+  function asSet(x: IamValue | undefined): Set<string> {
+    if (x == undefined) { return new Set(); }
+    return Array.isArray(x) ? new Set(x.map(e => JSON.stringify(e))) : new Set([JSON.stringify(x)]);
+  }
+
+  function principalAsSet(x: IamValue | Record<string, IamValue>): Set<string> {
+    if (Array.isArray(x) || typeof x === 'string') { return asSet(x); }
+    if (typeof x === 'object' && x !== null) {
+      return new Set(Object.entries(x).flatMap(([key, value]) => Array.from(asSet(value)).map(e => `${key}:${e}`)));
+    }
+    return new Set();
+  }
 }
 
-interface StatementMerge {
-  /**
-   * Index of statement 1
-   *
-   * Contract: index1 < index2
-   */
-  index1: number;
+/**
+ * Cached information on a Statement
+ *
+ * Stringified representations of the most important aspects of the statement.
+ * These are only used to compare two statements.
+ */
+interface StatementAnalysis {
+  readonly principal: Set<string>;
+  readonly notPrincipal: Set<string>;
+  readonly action: Set<string>;
+  readonly notAction: Set<string>;
+  readonly resource: Set<string>;
+  readonly notResource: Set<string>;
+  readonly condition: string;
+}
 
-  /**
-   * Index of statement 1
-   *
-   * Contract: index1 < index2
-   */
-  index2: number;
+/**
+ * True iff a is a subset of b
+ */
+function isSubset(a: Set<string>, b: Set<string>) {
+  for (const e of a) {
+    if (!b.has(e)) { return false; }
+  }
+  return true;
+}
 
-  /**
-   * The result of combining them
-   */
-  readonly combined: StatementSchema;
-
-  /**
-   * How many bytes the new schema is bigger than the old ones combined
-   *
-   * (Expected to be negative in order for the merge to be useful)
-   */
-  readonly sizeDelta: number;
+/**
+ * Whether the given sets are equal
+ */
+function setEqual(a: Set<string>, b: Set<string>) {
+  return a.size == b.size && isSubset(a, b);
 }
