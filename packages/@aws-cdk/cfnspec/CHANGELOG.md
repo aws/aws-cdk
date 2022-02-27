@@ -1,3 +1,64 @@
+# CloudFormation Resource Specification v58.0.0
+
+## New Resource Types
+
+* AWS::AppIntegrations::DataIntegration
+* AWS::DataSync::LocationFSxLustre
+
+## Attribute Changes
+
+* AWS::AmplifyUIBuilder::Component CreatedAt (__deleted__)
+* AWS::AmplifyUIBuilder::Component ModifiedAt (__deleted__)
+
+## Property Changes
+
+* AWS::AmplifyUIBuilder::Component Events (__added__)
+* AWS::AmplifyUIBuilder::Component BindingProperties.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::AmplifyUIBuilder::Component ComponentType.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::AmplifyUIBuilder::Component Name.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::AmplifyUIBuilder::Component Overrides.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::AmplifyUIBuilder::Component Properties.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::AmplifyUIBuilder::Component Variants.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::Events::Connection AuthParameters.PrimitiveType (__deleted__)
+* AWS::Events::Connection AuthParameters.Type (__added__)
+* AWS::Transfer::Server PostAuthenticationLoginBanner (__added__)
+* AWS::Transfer::Server PreAuthenticationLoginBanner (__added__)
+
+## Property Type Changes
+
+* AWS::AmplifyUIBuilder::Component.ActionParameters (__added__)
+* AWS::AmplifyUIBuilder::Component.ComponentEvent (__added__)
+* AWS::AmplifyUIBuilder::Component.ComponentEvents (__added__)
+* AWS::AmplifyUIBuilder::Component.MutationActionSetStateParameter (__added__)
+* AWS::AppFlow::Flow.SAPODataDestinationProperties (__added__)
+* AWS::AppFlow::Flow.SuccessResponseHandlingConfig (__added__)
+* AWS::AppMesh::Mesh.MeshServiceDiscovery (__added__)
+* AWS::Events::Connection.ApiKeyAuthParameters (__added__)
+* AWS::Events::Connection.AuthParameters (__added__)
+* AWS::Events::Connection.BasicAuthParameters (__added__)
+* AWS::Events::Connection.ClientParameters (__added__)
+* AWS::Events::Connection.ConnectionHttpParameters (__added__)
+* AWS::Events::Connection.OAuthParameters (__added__)
+* AWS::Events::Connection.Parameter (__added__)
+* AWS::AmplifyUIBuilder::Component.ComponentChild Events (__added__)
+* AWS::AmplifyUIBuilder::Component.ComponentConditionProperty OperandType (__added__)
+* AWS::AmplifyUIBuilder::Component.ComponentProperty ComponentName (__added__)
+* AWS::AmplifyUIBuilder::Component.ComponentProperty Property (__added__)
+* AWS::AppFlow::Flow.DestinationConnectorProperties SAPOData (__added__)
+
+
 # CloudFormation Resource Specification v57.0.0
 
 ## New Resource Types
