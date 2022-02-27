@@ -3,15 +3,16 @@ Alloy model to confirm the logic behind merging IAM Statements.
 
 This proves that merging two statements based on the following conditions:
 
-- Effects are the same, and one of:
-  - Both have some Actions and the rest of the statements is the same
-  - Both have some Resources and the rest of the statements is the same
-  - Both have some Principals and the rest of the statements is the same
+- Effects are the same
+- NotAction, NotResource, NotPrincipal are the same(*)
+- Of Action, Resource, Principal sets, 2 out of 3 are subsets of each other(*)
 
 Is sound, as the model doesn't find any examples of where the meaning
 of statements is changed by merging.
 
 Find Alloy at https://alloytools.org/.
+
+(*) Some of these sets may be empty--that is fine, the logic still works out.
 */
 
 ---------------------------------------------------------
