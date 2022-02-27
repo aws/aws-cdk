@@ -151,7 +151,7 @@ test('specifying retry policy', () => {
         },
         RoleArn: {
           'Fn::GetAtt': [
-            'SMEventsRoleB320A902',
+            'Role1ABCC5F0',
             'Arn',
           ],
         },
@@ -206,7 +206,7 @@ test('use a Dead Letter Queue for the rule target', () => {
         Input: '{"SomeParam":"SomeValue"}',
         RoleArn: {
           'Fn::GetAtt': [
-            'SMEventsRoleB320A902',
+            'Role1ABCC5F0',
             'Arn',
           ],
         },
