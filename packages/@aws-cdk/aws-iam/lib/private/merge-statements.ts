@@ -64,13 +64,13 @@ function tryMerge(a: StatementSchema, b: StatementSchema): StatementSchema | und
   if (aa.condition !== bb.condition) { return; }
   if (!setEqual(aa.notAction, bb.notAction) || !setEqual(aa.notResource, bb.notResource) || !setEqual(aa.notPrincipal, bb.notPrincipal)) { return; }
 
-  // Are the sets subsets of each other? Both directions are okay. We need 2 out of 3 to be subsets,
-  // turn them into integers and do some math.
-  const subsetCount = (isSubset(aa.action, bb.action) ? 1 : 0) +
-    (isSubset(aa.resource, bb.resource) ? 1 : 0) +
-    (isSubset(aa.principal, bb.principal) ? 1 : 0);
+  // We can merge these statements if 2 out of the 3 sets of Action, Resource, Principal
+  // are the same.
+  const setsEqual = (setEqual(aa.action, bb.action) ? 1 : 0) +
+    (setEqual(aa.resource, bb.resource) ? 1 : 0) +
+    (setEqual(aa.principal, bb.principal) ? 1 : 0);
 
-  if (subsetCount < 2) { return; }
+  if (setsEqual < 2) { return; }
 
   return normalizeStatement({
     Effect: a.Effect,
@@ -183,18 +183,8 @@ interface StatementAnalysis {
 }
 
 /**
- * True iff a is a subset of b
- */
-function isSubset(a: Set<string>, b: Set<string>) {
-  for (const e of a) {
-    if (!b.has(e)) { return false; }
-  }
-  return true;
-}
-
-/**
  * Whether the given sets are equal
  */
 function setEqual(a: Set<string>, b: Set<string>) {
-  return a.size == b.size && isSubset(a, b);
+  return a.size == b.size && Array.from(a).every(e => b.has(e));
 }

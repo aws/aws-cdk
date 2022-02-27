@@ -5,7 +5,7 @@ This proves that merging two statements based on the following conditions:
 
 - Effects are the same
 - NotAction, NotResource, NotPrincipal are the same(*)
-- Of Action, Resource, Principal sets, 2 out of 3 are subsets of each other(*)
+- Of Action, Resource, Principal sets, 2 out of 3 are the same(*)
 
 Is sound, as the model doesn't find any examples of where the meaning
 of statements is changed by merging.
@@ -18,9 +18,9 @@ Find Alloy at https://alloytools.org/.
 ---------------------------------------------------------
 -- Base Statement definitions
 enum Effect { Allow, Deny }
-enum Resource { ResourceA, ResourceB, ResourceC }
-enum Action { ActionA, ActionB, ActionC }
-enum Principal { PrincipalA, PrincipalB, PrincipalC }
+enum Resource { ResourceA, ResourceB }
+enum Action { ActionA, ActionB }
+enum Principal { PrincipalA, PrincipalB }
 
 sig Statement {
   effect: Effect,
@@ -56,15 +56,18 @@ fact {
 -- Requests and evaluations
 sig Request {
   principal: Principal,
-  resource: Resource,
   action: Action,
+  resource: Resource,
 }
 
 // Whether the statement applies to the given request
 pred applies[s: Statement, req: Request] {
-  req.principal in s.principal or req.principal not in s.notPrincipal
-  req.action in s.action or req.action not in s.notAction
-  req.resource in s.resource or req.resource not in s.notResource
+  some s.principal implies req.principal in s.principal
+  some s.notPrincipal implies req.principal not in s.notPrincipal
+  some s.action implies req.action in s.action
+  some s.notAction implies req.action not in s.notAction
+  some s.resource implies req.resource in s.resource
+  some s.notResource implies req.resource not in s.notResource
 }
 
 // Whether or not to allow the given request according to the given statements
@@ -75,6 +78,10 @@ pred allow[req: Request, ss: some Statement] {
   some s: ss | applies[s, req] and s.effect = Allow
   no s: ss | applies[s, req] and s.effect = Deny
 }
+
+run show_some_allowed_requests {
+  some ss: set Statement, r: Request | allow[r, ss] and /* no useless Statements floating around */ (no s" : Statement | s" not in ss)
+} for 3 but 1 Request
 
 ---------------------------------------------------------
 -- Statement merging
@@ -87,54 +94,11 @@ let samePrincipal[a, b] = { a.principal = b.principal and a.notPrincipal = b.not
 // Assert that m is the merged version of a and b
 //
 // This encodes the important logic: the rules of merging.
-pred merged0[a: Statement, b: Statement, m: Statement] {
-  m.effect = a.effect and m.effect = b.effect 
-  {
-    // Writing 'some a.action', 'some b.action' here is critical
-    // This asserts we are dealing with a POSITIVE action and not
-    // a notAction (that's excluded by the fact on Statement that only
-    // one of the two can be set.
-    //
-    // We can show that we have a bug if you uncomment the next line.
-    some a.action and some b.action // Excludes notAction
-
-    // The constraint on notAction here is not necessary, because
-    // in practice it must always the empty set, but it is necessary to
-    // correctly show the bug in action if the previous line is commented out.
-    m.action = a.action + b.action and m.notAction = a.notAction + b.notAction
-    sameResource[a, b] and sameResource[b, m]
-    samePrincipal[a, b] and samePrincipal[b, m]
-/*
-    // Potential better merge result: for positive declarations we can also merge
-    // if either is a subset of the other.
-    a.resource in b.resource or b.resource in a.resource 
-    m.resource = a.resource + b.resource
-    m.notResource = a.notResource and m.notResource = b.notResource
-    a.principal in b.principal or b.principal in a.principal
-    m.principal = a.principal + b.principal
-    m.notPrincipal = a.notPrincipal and m.notPrincipal = b.notPrincipal
-*/
-  } or {
-    some a.resource and some b.resource // Excludes notResource
-    m.resource = a.resource + b.resource and m.notResource = a.notResource + b.notResource
-    sameAction[a, b] and sameAction[b, m]
-    samePrincipal[a, b] and samePrincipal[b, m]
-  } or {
-    some a.principal and some b.principal // Excludes notPrincipal
-    m.principal = a.principal + b.principal and m.notPrincipal = a.notPrincipal + b.notPrincipal
-    sameAction[a, b] and sameAction[b, m]
-    sameResource[a, b] and sameResource[b, m]
-  }
-}
-
--- Either a is a subset of b, or vice versa
-let bisubset[a, b] = a in b or b in a
-
 pred merged[a: Statement, b: Statement, m: Statement] {
   a.effect = b.effect and m.effect = a.effect
 
   -- If 2 of the pairs { Resource, Action, Principal } are subsets of each other, then the 3rd may be merged
-  let R = bisubset[a.resource, b.resource], A = bisubset[a.action, b.action], P = bisubset[a.principal, b.principal] {
+  let R = a.resource = b.resource, A = a.action = b.action, P = a.principal = b.principal {
     (R and A) or (R and P) or (A and P)
   }
 
@@ -161,7 +125,7 @@ check merging_does_not_change_evaluation {
   all a: Statement, b: Statement, m: Statement, r: Request {
     merged[a, b, m] implies (allow[r, a + b] iff allow[r, m])
   }
-} for 10
+} for 3
 
 // There are no 3 statements such that merged(merged(s0, s1), s2) != merged(s0, merged(s1, s2))
 check merging_is_associative {
