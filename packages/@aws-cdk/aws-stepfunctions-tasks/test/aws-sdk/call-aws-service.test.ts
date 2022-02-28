@@ -146,3 +146,16 @@ test('with unresolved tokens', () => {
     Parameters: {},
   });
 });
+
+test('throws with invalid integration pattern', () => {
+  expect(() => new tasks.CallAwsService(stack, 'GetObject', {
+    integrationPattern: sfn.IntegrationPattern.RUN_JOB,
+    service: 's3',
+    action: 'getObject',
+    parameters: {
+      Bucket: 'my-bucket',
+      Key: sfn.JsonPath.stringAt('$.key'),
+    },
+    iamResources: ['*'],
+  })).toThrow(/The RUN_JOB integration pattern is not supported for CallAwsService/);
+});
