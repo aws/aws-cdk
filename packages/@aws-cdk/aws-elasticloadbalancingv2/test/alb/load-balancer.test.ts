@@ -2,7 +2,7 @@ import { Match, Template } from '@aws-cdk/assertions';
 import { Metric } from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as s3 from '@aws-cdk/aws-s3';
-import { testFutureBehavior } from '@aws-cdk/cdk-build-tools/lib/feature-flag';
+import { testFutureBehavior, testLegacyBehavior } from '@aws-cdk/cdk-build-tools/lib/feature-flag';
 import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as elbv2 from '../../lib';
@@ -146,105 +146,222 @@ describe('tests', () => {
     expect(loadBalancer.listeners).toContain(listener);
   });
 
-  testFutureBehavior('Access logging', s3GrantWriteCtx, cdk.App, (app) => {
-    // GIVEN
-    const stack = new cdk.Stack(app, undefined, { env: { region: 'us-east-1' } });
-    const vpc = new ec2.Vpc(stack, 'Stack');
-    const bucket = new s3.Bucket(stack, 'AccessLoggingBucket');
-    const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
+  describe('logAccessLogs', () => {
 
-    // WHEN
-    lb.logAccessLogs(bucket);
+    function loggingSetup(app: cdk.App): { stack: cdk.Stack, bucket: s3.Bucket, lb: elbv2.ApplicationLoadBalancer } {
+      const stack = new cdk.Stack(app, undefined, { env: { region: 'us-east-1' } });
+      const vpc = new ec2.Vpc(stack, 'Stack');
+      const bucket = new s3.Bucket(stack, 'AccessLoggingBucket');
+      const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
+      return { stack, bucket, lb };
+    }
 
-    // THEN
+    test('sets load balancer attributes', () => {
+      // GIVEN
+      const app = new cdk.App();
+      const { stack, bucket, lb } = loggingSetup(app);
 
-    // verify that the LB attributes reference the bucket
-    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
-      LoadBalancerAttributes: Match.arrayWith([
-        {
-          Key: 'access_logs.s3.enabled',
-          Value: 'true',
-        },
-        {
-          Key: 'access_logs.s3.bucket',
-          Value: { Ref: 'AccessLoggingBucketA6D88F29' },
-        },
-        {
-          Key: 'access_logs.s3.prefix',
-          Value: '',
-        },
-      ]),
-    });
+      // WHEN
+      lb.logAccessLogs(bucket);
 
-    // verify the bucket policy allows the ALB to put objects in the bucket
-    Template.fromStack(stack).hasResourceProperties('AWS::S3::BucketPolicy', {
-      PolicyDocument: {
-        Version: '2012-10-17',
-        Statement: [
+      //THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+        LoadBalancerAttributes: Match.arrayWith([
           {
-            Action: ['s3:PutObject', 's3:Abort*'],
-            Effect: 'Allow',
-            Principal: { AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::127311923021:root']] } },
-            Resource: {
-              'Fn::Join': ['', [{ 'Fn::GetAtt': ['AccessLoggingBucketA6D88F29', 'Arn'] }, '/AWSLogs/',
-                { Ref: 'AWS::AccountId' }, '/*']],
-            },
+            Key: 'access_logs.s3.enabled',
+            Value: 'true',
           },
-        ],
-      },
-    });
-
-    // verify the ALB depends on the bucket *and* the bucket policy
-    Template.fromStack(stack).hasResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
-      DependsOn: ['AccessLoggingBucketPolicy700D7CC6', 'AccessLoggingBucketA6D88F29'],
-    });
-  });
-
-  testFutureBehavior('access logging with prefix', s3GrantWriteCtx, cdk.App, (app) => {
-    // GIVEN
-    const stack = new cdk.Stack(app, undefined, { env: { region: 'us-east-1' } });
-    const vpc = new ec2.Vpc(stack, 'Stack');
-    const bucket = new s3.Bucket(stack, 'AccessLoggingBucket');
-    const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
-
-    // WHEN
-    lb.logAccessLogs(bucket, 'prefix-of-access-logs');
-
-    // THEN
-    // verify that the LB attributes reference the bucket
-    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
-      LoadBalancerAttributes: Match.arrayWith([
-        {
-          Key: 'access_logs.s3.enabled',
-          Value: 'true',
-        },
-        {
-          Key: 'access_logs.s3.bucket',
-          Value: { Ref: 'AccessLoggingBucketA6D88F29' },
-        },
-        {
-          Key: 'access_logs.s3.prefix',
-          Value: 'prefix-of-access-logs',
-        },
-      ]),
-    });
-
-    // verify the bucket policy allows the ALB to put objects in the bucket
-    Template.fromStack(stack).hasResourceProperties('AWS::S3::BucketPolicy', {
-      PolicyDocument: {
-        Version: '2012-10-17',
-        Statement: [
           {
-            Action: ['s3:PutObject', 's3:Abort*'],
-            Effect: 'Allow',
-            Principal: { AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::127311923021:root']] } },
-            Resource: {
-              'Fn::Join': ['', [{ 'Fn::GetAtt': ['AccessLoggingBucketA6D88F29', 'Arn'] }, '/prefix-of-access-logs/AWSLogs/',
-                { Ref: 'AWS::AccountId' }, '/*']],
-            },
+            Key: 'access_logs.s3.bucket',
+            Value: { Ref: 'AccessLoggingBucketA6D88F29' },
           },
-        ],
-      },
+          {
+            Key: 'access_logs.s3.prefix',
+            Value: '',
+          },
+        ]),
+      });
+    });
+
+    test('adds a dependency on the bucket', () => {
+      // GIVEN
+      const app = new cdk.App();
+      const { stack, bucket, lb } = loggingSetup(app);
+
+      // WHEN
+      lb.logAccessLogs(bucket);
+
+      // THEN
+      // verify the ALB depends on the bucket *and* the bucket policy
+      Template.fromStack(stack).hasResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+        DependsOn: ['AccessLoggingBucketPolicy700D7CC6', 'AccessLoggingBucketA6D88F29'],
+      });
+    });
+
+    testLegacyBehavior('legacy bucket permissions', cdk.App, (app) => {
+      const { stack, bucket, lb } = loggingSetup(app);
+
+      // WHEN
+      lb.logAccessLogs(bucket);
+
+      // THEN
+      // verify the bucket policy allows the ALB to put objects in the bucket
+      Template.fromStack(stack).hasResourceProperties('AWS::S3::BucketPolicy', {
+        PolicyDocument: {
+          Version: '2012-10-17',
+          Statement: [
+            {
+              Action: ['s3:PutObject*', 's3:Abort*'],
+              Effect: 'Allow',
+              Principal: { AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::127311923021:root']] } },
+              Resource: {
+                'Fn::Join': ['', [{ 'Fn::GetAtt': ['AccessLoggingBucketA6D88F29', 'Arn'] }, '/AWSLogs/',
+                  { Ref: 'AWS::AccountId' }, '/*']],
+              },
+            },
+            {
+              Action: 's3:PutObject',
+              Effect: 'Allow',
+              Principal: { Service: 'delivery.logs.amazonaws.com' },
+              Resource: {
+                'Fn::Join': ['', [{ 'Fn::GetAtt': ['AccessLoggingBucketA6D88F29', 'Arn'] }, '/AWSLogs/',
+                  { Ref: 'AWS::AccountId' }, '/*']],
+              },
+              Condition: { StringEquals: { 's3:x-amz-acl': 'bucket-owner-full-control' } },
+            },
+            {
+              Action: 's3:GetBucketAcl',
+              Effect: 'Allow',
+              Principal: { Service: 'delivery.logs.amazonaws.com' },
+              Resource: {
+                'Fn::GetAtt': ['AccessLoggingBucketA6D88F29', 'Arn'],
+              },
+            },
+          ],
+        },
+      });
+    });
+
+    testFutureBehavior('logging bucket permissions', s3GrantWriteCtx, cdk.App, (app) => {
+      // GIVEN
+      const { stack, bucket, lb } = loggingSetup(app);
+
+      // WHEN
+      lb.logAccessLogs(bucket);
+
+      // THEN
+      // verify the bucket policy allows the ALB to put objects in the bucket
+      Template.fromStack(stack).hasResourceProperties('AWS::S3::BucketPolicy', {
+        PolicyDocument: {
+          Version: '2012-10-17',
+          Statement: [
+            {
+              Action: [
+                's3:PutObject',
+                's3:PutObjectLegalHold',
+                's3:PutObjectRetention',
+                's3:PutObjectTagging',
+                's3:PutObjectVersionTagging',
+                's3:Abort*',
+              ],
+              Effect: 'Allow',
+              Principal: { AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::127311923021:root']] } },
+              Resource: {
+                'Fn::Join': ['', [{ 'Fn::GetAtt': ['AccessLoggingBucketA6D88F29', 'Arn'] }, '/AWSLogs/',
+                  { Ref: 'AWS::AccountId' }, '/*']],
+              },
+            },
+            {
+              Action: 's3:PutObject',
+              Effect: 'Allow',
+              Principal: { Service: 'delivery.logs.amazonaws.com' },
+              Resource: {
+                'Fn::Join': ['', [{ 'Fn::GetAtt': ['AccessLoggingBucketA6D88F29', 'Arn'] }, '/AWSLogs/',
+                  { Ref: 'AWS::AccountId' }, '/*']],
+              },
+              Condition: { StringEquals: { 's3:x-amz-acl': 'bucket-owner-full-control' } },
+            },
+            {
+              Action: 's3:GetBucketAcl',
+              Effect: 'Allow',
+              Principal: { Service: 'delivery.logs.amazonaws.com' },
+              Resource: {
+                'Fn::GetAtt': ['AccessLoggingBucketA6D88F29', 'Arn'],
+              },
+            },
+          ],
+        },
+      });
+    });
+
+    testFutureBehavior('access logging with prefix', s3GrantWriteCtx, cdk.App, (app) => {
+      // GIVEN
+      const { stack, bucket, lb } = loggingSetup(app);
+
+      // WHEN
+      lb.logAccessLogs(bucket, 'prefix-of-access-logs');
+
+      // THEN
+      // verify that the LB attributes reference the bucket
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+        LoadBalancerAttributes: Match.arrayWith([
+          {
+            Key: 'access_logs.s3.enabled',
+            Value: 'true',
+          },
+          {
+            Key: 'access_logs.s3.bucket',
+            Value: { Ref: 'AccessLoggingBucketA6D88F29' },
+          },
+          {
+            Key: 'access_logs.s3.prefix',
+            Value: 'prefix-of-access-logs',
+          },
+        ]),
+      });
+
+      // verify the bucket policy allows the ALB to put objects in the bucket
+      Template.fromStack(stack).hasResourceProperties('AWS::S3::BucketPolicy', {
+        PolicyDocument: {
+          Version: '2012-10-17',
+          Statement: [
+            {
+              Action: [
+                's3:PutObject',
+                's3:PutObjectLegalHold',
+                's3:PutObjectRetention',
+                's3:PutObjectTagging',
+                's3:PutObjectVersionTagging',
+                's3:Abort*',
+              ],
+              Effect: 'Allow',
+              Principal: { AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::127311923021:root']] } },
+              Resource: {
+                'Fn::Join': ['', [{ 'Fn::GetAtt': ['AccessLoggingBucketA6D88F29', 'Arn'] }, '/prefix-of-access-logs/AWSLogs/',
+                  { Ref: 'AWS::AccountId' }, '/*']],
+              },
+            },
+            {
+              Action: 's3:PutObject',
+              Effect: 'Allow',
+              Principal: { Service: 'delivery.logs.amazonaws.com' },
+              Resource: {
+                'Fn::Join': ['', [{ 'Fn::GetAtt': ['AccessLoggingBucketA6D88F29', 'Arn'] }, '/prefix-of-access-logs/AWSLogs/',
+                  { Ref: 'AWS::AccountId' }, '/*']],
+              },
+              Condition: { StringEquals: { 's3:x-amz-acl': 'bucket-owner-full-control' } },
+            },
+            {
+              Action: 's3:GetBucketAcl',
+              Effect: 'Allow',
+              Principal: { Service: 'delivery.logs.amazonaws.com' },
+              Resource: {
+                'Fn::GetAtt': ['AccessLoggingBucketA6D88F29', 'Arn'],
+              },
+            },
+          ],
+        },
+      });
     });
   });
 

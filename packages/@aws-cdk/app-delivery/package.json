@@ -29,7 +29,14 @@
       }
     },
     "outdir": "dist",
-    "projectReferences": true
+    "projectReferences": true,
+    "metadata": {
+      "jsii": {
+        "rosetta": {
+          "strict": true
+        }
+      }
+    }
   },
   "scripts": {
     "build": "cdk-build",
@@ -65,9 +72,9 @@
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/cdk-integ-tools": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/jest": "^27.4.0",
-    "fast-check": "^2.21.0",
-    "jest": "^27.4.7"
+    "@types/jest": "^27.4.1",
+    "fast-check": "^2.22.0",
+    "jest": "^27.5.1"
   },
   "repository": {
     "type": "git",

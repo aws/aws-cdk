@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as cdk from '@aws-cdk/core';
 import { Group, ManagedPolicy, PolicyDocument, PolicyStatement, Role, ServicePrincipal, User } from '../lib';
 
@@ -49,7 +49,7 @@ describe('managed policy', () => {
     const group = new Group(stack, 'MyGroup');
     group.addManagedPolicy(policy);
 
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       Resources: {
         MyManagedPolicy9F3720AE: {
           Type: 'AWS::IAM::ManagedPolicy',
@@ -89,7 +89,7 @@ describe('managed policy', () => {
       }),
     });
 
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       Resources: {
         MyManagedPolicy9F3720AE: {
           Type: 'AWS::IAM::ManagedPolicy',
@@ -120,7 +120,7 @@ describe('managed policy', () => {
       statements: [new PolicyStatement({ resources: ['arn'], actions: ['sns:Subscribe'] })],
     });
 
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       Resources: {
         MyManagedPolicy9F3720AE: {
           Type: 'AWS::IAM::ManagedPolicy',
@@ -148,7 +148,7 @@ describe('managed policy', () => {
     const group = new Group(stack, 'MyGroup');
     group.addManagedPolicy(policy);
 
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       Resources: {
         MyManagedPolicy9F3720AE: {
           Type: 'AWS::IAM::ManagedPolicy',
@@ -192,7 +192,7 @@ describe('managed policy', () => {
       statements: [new PolicyStatement({ resources: ['*'], actions: ['dynamodb:PutItem'] })],
     });
 
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       Resources: {
         User1E278A736: { Type: 'AWS::IAM::User' },
         Group1BEBD4686: { Type: 'AWS::IAM::Group' },
@@ -248,7 +248,7 @@ describe('managed policy', () => {
     p.attachToRole(role);
     p.attachToRole(role);
 
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       Resources: {
         MyManagedPolicy9F3720AE: {
           Type: 'AWS::IAM::ManagedPolicy',
@@ -295,7 +295,7 @@ describe('managed policy', () => {
     p.attachToRole(new Role(stack, 'Role1', { assumedBy: new ServicePrincipal('test.service') }));
     p.addStatements(new PolicyStatement({ resources: ['*'], actions: ['dynamodb:GetItem'] }));
 
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       Resources: {
         MyManagedPolicy9F3720AE: {
           Type: 'AWS::IAM::ManagedPolicy',
@@ -346,7 +346,7 @@ describe('managed policy', () => {
 
     policy.addStatements(new PolicyStatement({ resources: ['*'], actions: ['*'] }));
 
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       Resources: {
         MyManagedPolicy9F3720AE: {
           Type: 'AWS::IAM::ManagedPolicy',
@@ -390,7 +390,7 @@ describe('managed policy', () => {
     group.addManagedPolicy(policy);
     role.addManagedPolicy(policy);
 
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       Resources: {
         MyUserDC45028B: {
           Type: 'AWS::IAM::User',
@@ -466,7 +466,7 @@ describe('managed policy', () => {
     group.addManagedPolicy(policy);
     role.addManagedPolicy(policy);
 
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       Resources: {
         MyUserDC45028B: {
           Type: 'AWS::IAM::User',
@@ -594,7 +594,7 @@ describe('managed policy', () => {
       value: mp.managedPolicyArn,
     });
 
-    expect(stack2).toMatchTemplate({
+    Template.fromStack(stack2).templateMatches({
       Outputs: {
         Output: {
           Value: {

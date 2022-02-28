@@ -667,6 +667,10 @@
                 "s3:List*",
                 "s3:DeleteObject*",
                 "s3:PutObject",
+                "s3:PutObjectLegalHold",
+                "s3:PutObjectRetention",
+                "s3:PutObjectTagging",
+                "s3:PutObjectVersionTagging",
                 "s3:Abort*"
               ],
               "Effect": "Allow",
@@ -1276,6 +1280,10 @@
                 "s3:List*",
                 "s3:DeleteObject*",
                 "s3:PutObject",
+                "s3:PutObjectLegalHold",
+                "s3:PutObjectRetention",
+                "s3:PutObjectTagging",
+                "s3:PutObjectVersionTagging",
                 "s3:Abort*"
               ],
               "Effect": "Allow",
@@ -1355,18 +1363,7 @@
         "Cache": {
           "Type": "NO_CACHE"
         },
-        "Description": {
-          "Fn::Join": [
-            "",
-            [
-              "Pipeline step ",
-              {
-                "Ref": "Pipeline9850B417"
-              },
-              "/Build/Synth"
-            ]
-          ]
-        },
+        "Description": "Pipeline step PipelineStack/Pipeline/Build/Synth",
         "EncryptionKey": "alias/aws/s3",
         "VpcConfig": {
           "SecurityGroupIds": [
@@ -1954,18 +1951,7 @@
         "Cache": {
           "Type": "NO_CACHE"
         },
-        "Description": {
-          "Fn::Join": [
-            "",
-            [
-              "Pipeline step ",
-              {
-                "Ref": "Pipeline9850B417"
-              },
-              "/UpdatePipeline/SelfMutate"
-            ]
-          ]
-        },
+        "Description": "Pipeline step PipelineStack/Pipeline/UpdatePipeline/SelfMutate",
         "EncryptionKey": "alias/aws/s3",
         "VpcConfig": {
           "SecurityGroupIds": [
@@ -2308,18 +2294,7 @@
         "Cache": {
           "Type": "NO_CACHE"
         },
-        "Description": {
-          "Fn::Join": [
-            "",
-            [
-              "Pipeline step ",
-              {
-                "Ref": "Pipeline9850B417"
-              },
-              "/Assets/FileAsset1"
-            ]
-          ]
-        },
+        "Description": "Pipeline step PipelineStack/Pipeline/Assets/FileAsset1",
         "EncryptionKey": "alias/aws/s3",
         "VpcConfig": {
           "SecurityGroupIds": [
@@ -2421,18 +2396,7 @@
         "Cache": {
           "Type": "NO_CACHE"
         },
-        "Description": {
-          "Fn::Join": [
-            "",
-            [
-              "Pipeline step ",
-              {
-                "Ref": "Pipeline9850B417"
-              },
-              "/Assets/FileAsset2"
-            ]
-          ]
-        },
+        "Description": "Pipeline step PipelineStack/Pipeline/Assets/FileAsset2",
         "EncryptionKey": "alias/aws/s3",
         "VpcConfig": {
           "SecurityGroupIds": [

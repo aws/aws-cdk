@@ -1,4 +1,5 @@
 import { captureStackTrace, IResolvable, IResolveContext, Token, Tokenization } from '@aws-cdk/core';
+import { IntrinsicParser, IntrinsicExpression } from './intrinstics';
 
 const JSON_PATH_TOKEN_SYMBOL = Symbol.for('@aws-cdk/aws-stepfunctions.JsonPathToken');
 
@@ -38,6 +39,7 @@ export function renderObject(obj: object | undefined): object | undefined {
     handleList: renderStringList,
     handleNumber: renderNumber,
     handleBoolean: renderBoolean,
+    handleResolvable: renderResolvable,
   });
 }
 
@@ -49,24 +51,34 @@ export function findReferencedPaths(obj: object | undefined): Set<string> {
 
   recurseObject(obj, {
     handleString(_key: string, x: string) {
-      const path = jsonPathString(x);
-      if (path !== undefined) { found.add(path); }
+      for (const p of findPathsInIntrinsicFunctions(jsonPathString(x))) {
+        found.add(p);
+      }
       return {};
     },
 
     handleList(_key: string, x: string[]) {
-      const path = jsonPathStringList(x);
-      if (path !== undefined) { found.add(path); }
+      for (const p of findPathsInIntrinsicFunctions(jsonPathStringList(x))) {
+        found.add(p);
+      }
       return {};
     },
 
     handleNumber(_key: string, x: number) {
-      const path = jsonPathNumber(x);
-      if (path !== undefined) { found.add(path); }
+      for (const p of findPathsInIntrinsicFunctions(jsonPathNumber(x))) {
+        found.add(p);
+      }
       return {};
     },
 
     handleBoolean(_key: string, _x: boolean) {
+      return {};
+    },
+
+    handleResolvable(_key: string, x: IResolvable) {
+      for (const p of findPathsInIntrinsicFunctions(jsonPathFromAny(x))) {
+        found.add(p);
+      }
       return {};
     },
   });
@@ -74,11 +86,44 @@ export function findReferencedPaths(obj: object | undefined): Set<string> {
   return found;
 }
 
+/**
+ * From an expression, return the list of JSON paths referenced in it
+ */
+function findPathsInIntrinsicFunctions(expression?: string): string[] {
+  if (!expression) { return []; }
+
+  const ret = new Array<string>();
+
+  try {
+    const parsed = new IntrinsicParser(expression).parseTopLevelIntrinsic();
+    recurse(parsed);
+    return ret;
+  } catch (e) {
+    // Not sure that our parsing is 100% correct. We don't want to break anyone, so
+    // fall back to legacy behavior if we can't parse this string.
+    return [expression];
+  }
+
+  function recurse(p: IntrinsicExpression) {
+    switch (p.type) {
+      case 'path':
+        ret.push(p.path);
+        break;
+
+      case 'fncall':
+        for (const arg of p.arguments) {
+          recurse(arg);
+        }
+    }
+  }
+}
+
 interface FieldHandlers {
   handleString(key: string, x: string): {[key: string]: string};
   handleList(key: string, x: string[]): {[key: string]: string[] | string };
   handleNumber(key: string, x: number): {[key: string]: number | string};
   handleBoolean(key: string, x: boolean): {[key: string]: boolean};
+  handleResolvable(key: string, x: IResolvable): {[key: string]: any};
 }
 
 export function recurseObject(obj: object | undefined, handlers: FieldHandlers, visited: object[] = []): object | undefined {
@@ -108,7 +153,11 @@ export function recurseObject(obj: object | undefined, handlers: FieldHandlers, 
     } else if (value === null || value === undefined) {
       // Nothing
     } else if (typeof value === 'object') {
-      ret[key] = recurseObject(value, handlers, visited);
+      if (Tokenization.isResolvable(value)) {
+        Object.assign(ret, handlers.handleResolvable(key, value));
+      } else {
+        ret[key] = recurseObject(value, handlers, visited);
+      }
     }
   }
 
@@ -159,6 +208,21 @@ function isStringArray(x: any): x is string[] {
  */
 function renderString(key: string, value: string): {[key: string]: string} {
   const path = jsonPathString(value);
+  if (path !== undefined) {
+    return { [key + '.$']: path };
+  } else {
+    return { [key]: value };
+  }
+}
+
+/**
+ * Render a resolvable
+ *
+ * If we can extract a Path from it, render as a path string, otherwise as itself (will
+ * be resolved later
+ */
+function renderResolvable(key: string, value: IResolvable): {[key: string]: any} {
+  const path = jsonPathFromAny(value);
   if (path !== undefined) {
     return { [key + '.$']: path };
   } else {
@@ -219,6 +283,12 @@ export function jsonPathString(x: string): string | undefined {
   return undefined;
 }
 
+export function jsonPathFromAny(x: any) {
+  if (!x) { return undefined; }
+  if (typeof x === 'string') { return jsonPathString(x); }
+  return pathFromToken(Tokenization.reverse(x));
+}
+
 /**
  * If the indicated string list is an encoded JSON path, return the path
  *
@@ -239,4 +309,36 @@ function jsonPathNumber(x: number): string | undefined {
 
 function pathFromToken(token: IResolvable | undefined) {
   return token && (JsonPathToken.isJsonPathToken(token) ? token.path : undefined);
+}
+
+/**
+ * Render the string in a valid JSON Path expression.
+ *
+ * If the string is a Tokenized JSON path reference -- return the JSON path reference inside it.
+ * Otherwise, single-quote it.
+ *
+ * Call this function whenever you're building compound JSONPath expressions, in
+ * order to avoid having tokens-in-tokens-in-tokens which become very hard to parse.
+ */
+export function renderInExpression(x: string) {
+  const path = jsonPathString(x);
+  return path ?? singleQuotestring(x);
+}
+
+function singleQuotestring(x: string) {
+  const ret = new Array<string>();
+  ret.push("'");
+  for (const c of x) {
+    if (c === "'") {
+      ret.push("\\'");
+    } else if (c === '\\') {
+      ret.push('\\\\');
+    } else if (c === '\n') {
+      ret.push('\\n');
+    } else {
+      ret.push(c);
+    }
+  }
+  ret.push("'");
+  return ret.join('');
 }

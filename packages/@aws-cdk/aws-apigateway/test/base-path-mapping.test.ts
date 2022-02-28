@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as acm from '@aws-cdk/aws-certificatemanager';
 import * as cdk from '@aws-cdk/core';
 import * as apigw from '../lib';
@@ -22,7 +22,7 @@ describe('BasePathMapping', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ApiGateway::BasePathMapping', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::BasePathMapping', {
       DomainName: { Ref: 'MyDomainE4943FBC' },
       RestApiId: { Ref: 'MyApi49610EDF' },
     });
@@ -47,7 +47,7 @@ describe('BasePathMapping', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::ApiGateway::BasePathMapping', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::BasePathMapping', {
       BasePath: 'My_B45E-P4th',
     });
   });
@@ -100,7 +100,7 @@ describe('BasePathMapping', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::ApiGateway::BasePathMapping', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::BasePathMapping', {
       Stage: { Ref: 'MyStage572B0482' },
     });
   });
