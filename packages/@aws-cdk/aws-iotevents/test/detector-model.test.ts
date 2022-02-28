@@ -147,7 +147,19 @@ test('can set actions to events', () => {
       onEnter: [{
         eventName: 'test-eventName1',
         condition: iotevents.Expression.currentInput(input),
-        actions: [{ renderActionConfig: () => ({ configuration: { setTimer: { timerName: 'test-timer' } } }) }],
+        actions: [{
+          actionPolicies: [new iam.PolicyStatement({
+            actions: ['lambda:InvokeFunction'],
+            resources: ['arn:aws:lambda:us-east-1:123456789012:function:MyFn'],
+          })],
+          renderActionConfig: () => ({
+            configuration: {
+              lambda: {
+                functionArn: 'arn:aws:lambda:us-east-1:123456789012:function:MyFn',
+              },
+            },
+          }),
+        }],
       }],
     }),
   });
@@ -159,12 +171,25 @@ test('can set actions to events', () => {
         Match.objectLike({
           OnEnter: {
             Events: [{
-              Actions: [{ SetTimer: { TimerName: 'test-timer' } }],
+              Actions: [{ Lambda: { FunctionArn: 'arn:aws:lambda:us-east-1:123456789012:function:MyFn' } }],
             }],
           },
         }),
       ],
     },
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [{
+        Action: 'lambda:InvokeFunction',
+        Effect: 'Allow',
+        Resource: 'arn:aws:lambda:us-east-1:123456789012:function:MyFn',
+      }],
+    },
+    Roles: [{
+      Ref: 'MyDetectorModelDetectorModelRoleF2FB4D88',
+    }],
   });
 });
 
