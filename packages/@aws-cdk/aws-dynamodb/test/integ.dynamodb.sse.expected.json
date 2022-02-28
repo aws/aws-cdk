@@ -497,7 +497,8 @@
                 "dynamodb:Query",
                 "dynamodb:GetItem",
                 "dynamodb:Scan",
-                "dynamodb:ConditionCheckItem"
+                "dynamodb:ConditionCheckItem",
+                "dynamodb:DescribeTable"
               ],
               "Effect": "Allow",
               "Resource": [
@@ -533,7 +534,8 @@
                 "dynamodb:Query",
                 "dynamodb:GetItem",
                 "dynamodb:Scan",
-                "dynamodb:ConditionCheckItem"
+                "dynamodb:ConditionCheckItem",
+                "dynamodb:DescribeTable"
               ],
               "Effect": "Allow",
               "Resource": [

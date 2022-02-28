@@ -1,0 +1,20 @@
+{
+  "Resources": {
+    "Func": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": "current-bucket",
+          "S3Key": "new-key"
+        },
+        "FunctionName": "my-function"
+      }
+    },
+    "Version": {
+      "Type": "AWS::Lambda::Version",
+      "Properties": {
+        "FunctionName": { "Ref": "Func" }
+      }
+    }
+  }
+}

@@ -643,6 +643,7 @@ testLegacyBehavior('if an encryption key is included, encrypt/decrypt permission
                   'dynamodb:PutItem',
                   'dynamodb:UpdateItem',
                   'dynamodb:DeleteItem',
+                  'dynamodb:DescribeTable',
                 ],
                 Effect: 'Allow',
                 Resource: [
@@ -697,6 +698,38 @@ test('if an encryption key is included, encrypt/decrypt permissions are added to
   });
   const user = new iam.User(stack, 'MyUser');
   table.grantReadWriteData(user);
+
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: Match.arrayWith([{
+        Action: [
+          'kms:Decrypt',
+          'kms:DescribeKey',
+          'kms:Encrypt',
+          'kms:ReEncrypt*',
+          'kms:GenerateDataKey*',
+        ],
+        Effect: 'Allow',
+        Resource: {
+          'Fn::GetAtt': [
+            'TableAKey07CC09EC',
+            'Arn',
+          ],
+        },
+      }]),
+    },
+  });
+});
+
+test('if an encryption key is included, encrypt/decrypt permissions are added to the principal for grantWriteData', () => {
+  const stack = new Stack();
+  const table = new Table(stack, 'Table A', {
+    tableName: TABLE_NAME,
+    partitionKey: TABLE_PARTITION_KEY,
+    encryption: TableEncryption.CUSTOMER_MANAGED,
+  });
+  const user = new iam.User(stack, 'MyUser');
+  table.grantWriteData(user);
 
   Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
     PolicyDocument: {
@@ -1887,18 +1920,18 @@ describe('grants', () => {
 
   test('"grantReadData" allows the principal to read data from the table', () => {
     testGrant(
-      ['BatchGetItem', 'GetRecords', 'GetShardIterator', 'Query', 'GetItem', 'Scan', 'ConditionCheckItem'], (p, t) => t.grantReadData(p));
+      ['BatchGetItem', 'GetRecords', 'GetShardIterator', 'Query', 'GetItem', 'Scan', 'ConditionCheckItem', 'DescribeTable'], (p, t) => t.grantReadData(p));
   });
 
   test('"grantWriteData" allows the principal to write data to the table', () => {
     testGrant(
-      ['BatchWriteItem', 'PutItem', 'UpdateItem', 'DeleteItem'], (p, t) => t.grantWriteData(p));
+      ['BatchWriteItem', 'PutItem', 'UpdateItem', 'DeleteItem', 'DescribeTable'], (p, t) => t.grantWriteData(p));
   });
 
   test('"grantReadWriteData" allows the principal to read/write data', () => {
     testGrant([
       'BatchGetItem', 'GetRecords', 'GetShardIterator', 'Query', 'GetItem', 'Scan',
-      'ConditionCheckItem', 'BatchWriteItem', 'PutItem', 'UpdateItem', 'DeleteItem',
+      'ConditionCheckItem', 'BatchWriteItem', 'PutItem', 'UpdateItem', 'DeleteItem', 'DescribeTable',
     ], (p, t) => t.grantReadWriteData(p));
   });
 
@@ -2060,6 +2093,7 @@ describe('grants', () => {
               'dynamodb:GetItem',
               'dynamodb:Scan',
               'dynamodb:ConditionCheckItem',
+              'dynamodb:DescribeTable',
             ],
             'Effect': 'Allow',
             'Resource': [
@@ -2212,6 +2246,7 @@ describe('import', () => {
               'dynamodb:GetItem',
               'dynamodb:Scan',
               'dynamodb:ConditionCheckItem',
+              'dynamodb:DescribeTable',
             ],
             'Effect': 'Allow',
             'Resource': [
@@ -2258,6 +2293,7 @@ describe('import', () => {
               'dynamodb:PutItem',
               'dynamodb:UpdateItem',
               'dynamodb:DeleteItem',
+              'dynamodb:DescribeTable',
             ],
             'Effect': 'Allow',
             'Resource': [
@@ -2400,6 +2436,7 @@ describe('import', () => {
                 'dynamodb:GetItem',
                 'dynamodb:Scan',
                 'dynamodb:ConditionCheckItem',
+                'dynamodb:DescribeTable',
               ],
               Resource: [
                 {
@@ -2574,6 +2611,7 @@ describe('global', () => {
               'dynamodb:GetItem',
               'dynamodb:Scan',
               'dynamodb:ConditionCheckItem',
+              'dynamodb:DescribeTable',
             ],
             Effect: 'Allow',
             Resource: [
@@ -2728,6 +2766,7 @@ describe('global', () => {
               'dynamodb:GetItem',
               'dynamodb:Scan',
               'dynamodb:ConditionCheckItem',
+              'dynamodb:DescribeTable',
             ],
             Effect: 'Allow',
             Resource: [
