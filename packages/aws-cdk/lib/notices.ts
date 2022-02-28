@@ -105,37 +105,46 @@ export interface NoticeDataSource {
 
 export class WebsiteNoticeDataSource implements NoticeDataSource {
   fetch(): Promise<Notice[]> {
+    const timeout = 1000;
+
     return new Promise((resolve) => {
       try {
-        const req = https.get('https://cli.cdk.dev-tools.aws.dev/notices.json', res => {
-          if (res.statusCode === 200) {
-            res.setEncoding('utf8');
-            let rawData = '';
-            res.on('data', (chunk) => {
-              rawData += chunk;
-            });
-            res.on('end', () => {
-              try {
-                const data = JSON.parse(rawData).notices as Notice[];
-                resolve(data ?? []);
-              } catch (e) {
-                debug(`Failed to parse notices: ${e}`);
+        const req = https.get('https://cli.cdk.dev-tools.aws.dev/notices.json',
+          { timeout },
+          res => {
+            const startTime = Date.now();
+            if (res.statusCode === 200) {
+              res.setEncoding('utf8');
+              let rawData = '';
+              res.on('data', (chunk) => {
+                if (Date.now() - startTime > timeout) {
+                  resolve([]);
+                }
+                rawData += chunk;
+              });
+              res.on('end', () => {
+                try {
+                  const data = JSON.parse(rawData).notices as Notice[];
+                  resolve(data ?? []);
+                } catch (e) {
+                  debug(`Failed to parse notices: ${e}`);
+                  resolve([]);
+                }
+              });
+              res.on('error', e => {
+                debug(`Failed to fetch notices: ${e}`);
                 resolve([]);
-              }
-            });
-            res.on('error', e => {
-              debug(`Failed to fetch notices: ${e}`);
+              });
+            } else {
+              debug(`Failed to fetch notices. Status code: ${res.statusCode}`);
               resolve([]);
-            });
-          } else {
-            debug(`Failed to fetch notices. Status code: ${res.statusCode}`);
-            resolve([]);
-          }
-        });
+            }
+          });
         req.on('error', e => {
           debug(`Error on request: ${e}`);
           resolve([]);
         });
+        req.on('timeout', _ => resolve([]));
       } catch (e) {
         debug(`HTTPS 'get' call threw an error: ${e}`);
         resolve([]);
@@ -176,14 +185,18 @@ export class CachedDataSource implements NoticeDataSource {
   }
 
   private async load(): Promise<CachedNotices> {
+    const defaultValue = {
+      expiration: 0,
+      notices: [],
+    };
+
     try {
-      return await fs.readJSON(this.fileName) as CachedNotices;
+      return fs.existsSync(this.fileName)
+        ? await fs.readJSON(this.fileName) as CachedNotices
+        : defaultValue;
     } catch (e) {
       debug(`Failed to load notices from cache: ${e}`);
-      return {
-        expiration: 0,
-        notices: [],
-      };
+      return defaultValue;
     }
   }
 

@@ -12,6 +12,7 @@ import {
   WebsiteNoticeDataSource,
 } from '../lib/notices';
 import * as version from '../lib/version';
+import * as logging from '../lib/logging';
 
 const BASIC_NOTICE = {
   title: 'Toggling off auto_delete_objects for Bucket empties the bucket',
@@ -233,6 +234,32 @@ describe('cli notices', () => {
       expect(result).toEqual([]);
     });
 
+    test('returns empty array when the connection stays idle for  too long', async () => {
+      nock('https://cli.cdk.dev-tools.aws.dev')
+        .get('/notices.json')
+        .delayConnection(2000)
+        .reply(200, {
+          notices: [BASIC_NOTICE],
+        });
+
+      const result = await dataSource.fetch();
+
+      expect(result).toEqual([]);
+    });
+
+    test('returns empty array when the request takes too long to finish', async () => {
+      nock('https://cli.cdk.dev-tools.aws.dev')
+        .get('/notices.json')
+        .delayBody(2000)
+        .reply(200, {
+          notices: [BASIC_NOTICE],
+        });
+
+      const result = await dataSource.fetch();
+
+      expect(result).toEqual([]);
+    });
+
     function mockCall(statusCode: number, body: any): Promise<Notice[]> {
       nock('https://cli.cdk.dev-tools.aws.dev')
         .get('/notices.json')
@@ -284,12 +311,16 @@ describe('cli notices', () => {
     });
 
     test('retrieves data from the delegate when the file cannot be read', async () => {
-      const nonExistingFile = path.join(os.tmpdir(), 'cache.json');
-      const dataSource = dataSourceWithDelegateReturning(freshData, nonExistingFile);
+      const debugSpy = jest.spyOn(logging, 'debug');
+
+      const dataSource = dataSourceWithDelegateReturning(freshData, 'does-not-exist.json');
 
       const notices = await dataSource.fetch();
 
       expect(notices).toEqual(freshData);
+      expect(debugSpy).not.toHaveBeenCalled();
+
+      debugSpy.mockRestore();
     });
 
     test('retrieved data from the delegate when it is configured to ignore the cache', async () => {
