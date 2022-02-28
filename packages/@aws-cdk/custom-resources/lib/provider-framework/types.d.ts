@@ -4,7 +4,7 @@
 /**
  * these types can be accessed without needing to `import` the module.
  * e.g. `AWSCDKAsyncCustomResource.OnEventRequest`
- */ 
+ */
 export as namespace AWSCDKAsyncCustomResource;
 
 /**
@@ -104,6 +104,11 @@ export interface IsCompleteResponse {
    * Indicates if the resource operation is complete or should we retry.
    */
   readonly IsComplete: boolean;
+
+  /**
+   * If present, overrides the PhysicalResourceId of OnEventResponse with the PhysicalResourceId of IsCompleteResponse.
+   */
+  readonly PhysicalResourceId?: string;
 
   /**
    * Additional/changes to resource attributes. This hash will be merged with the one returned from `OnEventResponse`.
