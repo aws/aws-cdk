@@ -4,7 +4,7 @@ import { Template } from '@aws-cdk/assertions';
 import * as s3_assets from '@aws-cdk/aws-s3-assets';
 import * as sns from '@aws-cdk/aws-sns';
 import { describeDeprecated } from '@aws-cdk/cdk-build-tools';
-import { App, CfnParameter, CfnResource, ContextProvider, LegacyStackSynthesizer, Names, Stack, Tags } from '@aws-cdk/core';
+import { App, CfnParameter, CfnResource, ContextProvider, LegacyStackSynthesizer, Names, Stack } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { NestedStack } from '../lib/nested-stack';
 
