@@ -112,7 +112,7 @@ function patchSdk(awsSdk: any): any {
 }
 
 /* eslint-disable @typescript-eslint/no-require-imports, import/no-extraneous-dependencies */
-export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent, context: AWSLambda.Context) {
+export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent, _context: AWSLambda.Context) {
   let physicalResourceId: string;
   // Default physical resource id
   switch (event.RequestType) {
