@@ -79,7 +79,7 @@
     "@aws-cdk/aws-sns": "0.0.0",
     "aws-sdk": "^2.848.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/jest": "^27.4.0",
+    "@types/jest": "^27.4.1",
     "jest": "^27.5.1"
   },
   "dependencies": {
@@ -105,9 +105,6 @@
     "env": {
       "AWSLINT_BASE_CONSTRUCT": true
     }
-  },
-  "ubergen": {
-    "exclude": true
   },
   "publishConfig": {
     "tag": "latest"
