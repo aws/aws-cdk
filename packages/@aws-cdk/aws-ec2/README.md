@@ -617,13 +617,13 @@ we would make the connection like:
 
 ```ts fixture=with-vpc
 // Stack 1
-const sg1 = new ec2.SecurityGroup(this, 'SG1', {
+const sg1 = new ec2.SecurityGroup(stack1, 'SG1', {
   allowAllOutbound: false, // if this is `true` then no egress rule will be created
   vpc,
 });
 
 // Stack 2
-const sg2 = new ec2.SecurityGroup(this, 'SG2', {
+const sg2 = new ec2.SecurityGroup(stack2, 'SG2', {
   allowAllOutbound: false, // if this is `true` then no egress rule will be created
   vpc,
 });
@@ -642,13 +642,13 @@ in `Stack 1` which avoids the cyclic reference.
 
 ```ts fixture=with-vpc
 // Stack 1
-const sg1 = new ec2.SecurityGroup(this, 'SG1', {
+const sg1 = new ec2.SecurityGroup(stack1, 'SG1', {
   allowAllOutbound: false, // if this is `true` then no egress rule will be created
   vpc,
 });
 
 // Stack 2
-const sg2 = new ec2.SecurityGroup(this, 'SG2', {
+const sg2 = new ec2.SecurityGroup(stack2, 'SG2', {
   allowAllOutbound: false, // if this is `true` then no egress rule will be created
   vpc,
 });
