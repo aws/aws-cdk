@@ -1,14 +1,11 @@
 /**
  * Stack verification steps:
- * * subscribe the topic
- *   * aws sns subscribe --topic-arn "arn:aws:sns:<region>:<account>:<topic-name>" --protocol email --notification-endpoint <email-addr>
- *   * confirm subscription from email
  * * put a message
  *   * aws iotevents-data batch-put-message --messages=messageId=(date | md5),inputName=test_input,payload=(echo '{"payload":{"temperature":31.9,"deviceId":"000"}}' | base64)
- * * verify that an email was sent from the SNS
+ * * verify that the lambda logs be put
  */
 import * as iotevents from '@aws-cdk/aws-iotevents';
-import * as sns from '@aws-cdk/aws-sns';
+import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
 import * as actions from '../../lib';
 
@@ -20,7 +17,15 @@ class TestStack extends cdk.Stack {
       inputName: 'test_input',
       attributeJsonPaths: ['payload.deviceId'],
     });
-    const topic = new sns.Topic(this, 'MyTopic');
+    const func = new lambda.Function(this, 'MyFunction', {
+      runtime: lambda.Runtime.NODEJS_14_X,
+      handler: 'index.handler',
+      code: lambda.Code.fromInline(`
+        exports.handler = (event) => {
+          console.log("It is test for lambda action of AWS IoT Rule.", event);
+        };`,
+      ),
+    });
 
     const state = new iotevents.State({
       stateName: 'MyState',
@@ -30,7 +35,7 @@ class TestStack extends cdk.Stack {
       }],
       onInput: [{
         eventName: 'test-input-event',
-        actions: [new actions.SNSTopicPublishAction(topic)],
+        actions: [new actions.LambdaInvokeAction(func)],
       }],
     });
 
@@ -42,5 +47,5 @@ class TestStack extends cdk.Stack {
 }
 
 const app = new cdk.App();
-new TestStack(app, 'sns-topic-publish-action-test-stack');
+new TestStack(app, 'lambda-invoke-action-test-stack');
 app.synth();

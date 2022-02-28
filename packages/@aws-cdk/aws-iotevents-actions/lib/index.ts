@@ -1,1 +1,1 @@
-export * from './sns-topic-publish-action';
+export * from './lambda-invoke-action';

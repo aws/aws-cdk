@@ -1,16 +1,16 @@
 import { Template } from '@aws-cdk/assertions';
 import * as iotevents from '@aws-cdk/aws-iotevents';
-import * as sns from '@aws-cdk/aws-sns';
+import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
 import * as actions from '../../lib';
 
 let stack: cdk.Stack;
 let input: iotevents.IInput;
-let topic: sns.ITopic;
+let func: lambda.IFunction;
 beforeEach(() => {
   stack = new cdk.Stack();
   input = iotevents.Input.fromInputName(stack, 'MyInput', 'test-input');
-  topic = sns.Topic.fromTopicArn(stack, 'MyTopic', 'arn:aws:sns:us-east-1:1234567890:MyTopic');
+  func = lambda.Function.fromFunctionArn(stack, 'MyFunction', 'arn:aws:lambda:us-east-1:123456789012:function:MyFn');
 });
 
 test('Default property', () => {
@@ -21,7 +21,7 @@ test('Default property', () => {
       onEnter: [{
         eventName: 'test-eventName',
         condition: iotevents.Expression.currentInput(input),
-        actions: [new actions.SNSTopicPublishAction(topic)],
+        actions: [new actions.LambdaInvokeAction(func)],
       }],
     }),
   });
@@ -33,8 +33,8 @@ test('Default property', () => {
         OnEnter: {
           Events: [{
             Actions: [{
-              Sns: {
-                TargetArn: 'arn:aws:sns:us-east-1:1234567890:MyTopic',
+              Lambda: {
+                FunctionArn: 'arn:aws:lambda:us-east-1:123456789012:function:MyFn',
               },
             }],
           }],
@@ -49,9 +49,9 @@ test('Default property', () => {
   Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
     PolicyDocument: {
       Statement: [{
-        Action: 'sns:Publish',
+        Action: 'lambda:InvokeFunction',
         Effect: 'Allow',
-        Resource: 'arn:aws:sns:us-east-1:1234567890:MyTopic',
+        Resource: 'arn:aws:lambda:us-east-1:123456789012:function:MyFn',
       }],
     },
     Roles: [{
