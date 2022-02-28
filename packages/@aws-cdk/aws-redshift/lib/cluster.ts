@@ -485,6 +485,7 @@ export class Cluster extends ClusterBase {
       // Encryption
       kmsKeyId: props.encryptionKey?.keyId,
       encrypted: props.encrypted ?? true,
+      elasticIp: props.elasticIp,
     });
 
     cluster.applyRemovalPolicy(removalPolicy, {
