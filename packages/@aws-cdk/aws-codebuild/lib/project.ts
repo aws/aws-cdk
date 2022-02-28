@@ -1672,8 +1672,6 @@ export class LinuxArmBuildImage implements IBuildImage {
   public static readonly AMAZON_LINUX_2_ARM_2 = LinuxArmBuildImage.codeBuildImage('aws/codebuild/amazonlinux2-aarch64-standard:2.0');
 
   /**
-   * @returns An aarch64 Linux build image from an ECR repository.
-   *
    * NOTE: if the repository is external (i.e. imported), then we won't be able to add
    * a resource policy statement for it so CodeBuild can pull the image.
    *
@@ -1681,6 +1679,7 @@ export class LinuxArmBuildImage implements IBuildImage {
    *
    * @param repository The ECR repository
    * @param tag Image tag (default "latest")
+   * @returns An aarch64 Linux build image from an ECR repository.
    */
   public static fromEcrRepository(repository: ecr.IRepository, tag: string = 'latest'): IBuildImage {
     return new LinuxArmBuildImage({
@@ -1693,12 +1692,11 @@ export class LinuxArmBuildImage implements IBuildImage {
   /**
    * Uses a Docker image provided by CodeBuild.
    *
-   * @returns A Docker image provided by CodeBuild.
-   *
    * @see https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-available.html
    *
    * @param id The image identifier
    * @example 'aws/codebuild/amazonlinux2-aarch64-standard:1.0'
+   * @returns A Docker image provided by CodeBuild.
    */
   public static fromCodeBuildImageId(id: string): IBuildImage {
     return LinuxArmBuildImage.codeBuildImage(id);
