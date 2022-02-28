@@ -4,14 +4,21 @@ import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import { AccessPoint } from '../lib';
 
-test('Can create a valid access point', () => {
-  const stack = new cdk.Stack();
-  const bucket = new s3.Bucket(stack, 'MyBucket');
-  const handler = new lambda.Function(stack, 'MyFunction', {
+let stack: cdk.Stack;
+let bucket: s3.Bucket;
+let handler: lambda.Function;
+
+beforeEach(() => {
+  stack = new cdk.Stack();
+  bucket = new s3.Bucket(stack, 'MyBucket');
+  handler = new lambda.Function(stack, 'MyFunction', {
     runtime: lambda.Runtime.NODEJS_14_X,
     handler: 'index.hello',
     code: new lambda.InlineCode('def hello(): pass'),
   });
+});
+
+test('Can create a valid access point', () => {
   const accessPoint = new AccessPoint(stack, 'MyObjectLambda', {
     bucket,
     handler,
@@ -39,11 +46,12 @@ test('Can create a valid access point', () => {
       regional: false,
     }),
   });
-  expect(Template.fromStack(stack).toJSON()).toEqual({
-    Outputs: {
+
+  expect(Template.fromStack(stack).findOutputs('*')).toEqual(
+    {
       AccessPointName: {
         Value: {
-          Ref: 'MyObjectLambdaLambdaAccessPointB177C27B',
+          Ref: 'MyObjectLambda3F9602DC',
         },
       },
       DomainName: {
@@ -52,7 +60,7 @@ test('Can create a valid access point', () => {
             '',
             [
               {
-                Ref: 'MyObjectLambdaLambdaAccessPointB177C27B',
+                Ref: 'MyObjectLambda3F9602DC',
               },
               '-',
               {
@@ -72,7 +80,7 @@ test('Can create a valid access point', () => {
             '',
             [
               {
-                Ref: 'MyObjectLambdaLambdaAccessPointB177C27B',
+                Ref: 'MyObjectLambda3F9602DC',
               },
               '-',
               {
@@ -97,7 +105,7 @@ test('Can create a valid access point', () => {
             [
               'https://',
               {
-                Ref: 'MyObjectLambdaLambdaAccessPointB177C27B',
+                Ref: 'MyObjectLambda3F9602DC',
               },
               '-',
               {
@@ -119,7 +127,7 @@ test('Can create a valid access point', () => {
             [
               'https://',
               {
-                Ref: 'MyObjectLambdaLambdaAccessPointB177C27B',
+                Ref: 'MyObjectLambda3F9602DC',
               },
               '-',
               {
@@ -139,258 +147,49 @@ test('Can create a valid access point', () => {
         },
       },
     },
-    Resources: {
-      MyBucketF68F3FF0: {
-        DeletionPolicy: 'Retain',
-        Type: 'AWS::S3::Bucket',
-        UpdateReplacePolicy: 'Retain',
-      },
-      MyFunction3BAA72D1: {
-        DependsOn: [
-          'MyFunctionServiceRoleDefaultPolicyB705ABD4',
-          'MyFunctionServiceRole3C357FF2',
-        ],
-        Properties: {
-          Code: {
-            ZipFile: 'def hello(): pass',
-          },
-          Handler: 'index.hello',
-          Role: {
-            'Fn::GetAtt': [
-              'MyFunctionServiceRole3C357FF2',
-              'Arn',
-            ],
-          },
-          Runtime: 'nodejs14.x',
-        },
-        Type: 'AWS::Lambda::Function',
-      },
-      MyFunctionServiceRole3C357FF2: {
-        Properties: {
-          AssumeRolePolicyDocument: {
-            Statement: [
-              {
-                Action: 'sts:AssumeRole',
-                Effect: 'Allow',
-                Principal: {
-                  Service: 'lambda.amazonaws.com',
-                },
-              },
-            ],
-            Version: '2012-10-17',
-          },
-          ManagedPolicyArns: [
-            {
-              'Fn::Join': [
-                '',
-                [
-                  'arn:',
-                  {
-                    Ref: 'AWS::Partition',
-                  },
-                  ':iam::aws:policy/service-role/AWSLambdaBasicExecutionRole',
-                ],
-              ],
-            },
-          ],
-        },
-        Type: 'AWS::IAM::Role',
-      },
-      MyFunctionServiceRoleDefaultPolicyB705ABD4: {
-        Properties: {
-          PolicyDocument: {
-            Statement: [
-              {
-                Action: 's3-object-lambda:WriteGetObjectResponse',
-                Effect: 'Allow',
-                Resource: '*',
-              },
-            ],
-            Version: '2012-10-17',
-          },
-          PolicyName: 'MyFunctionServiceRoleDefaultPolicyB705ABD4',
-          Roles: [
-            {
-              Ref: 'MyFunctionServiceRole3C357FF2',
-            },
-          ],
-        },
-        Type: 'AWS::IAM::Policy',
-      },
-      MyObjectLambdaLambdaAccessPointB177C27B: {
-        Properties: {
-          Name: 'obj-lambda',
-          ObjectLambdaConfiguration: {
-            AllowedFeatures: [
-              'GetObject-PartNumber',
-              'GetObject-Range',
-            ],
-            SupportingAccessPoint: {
-              'Fn::GetAtt': [
-                'MyObjectLambdaSupportingAccessPointA2D2026E',
-                'Arn',
-              ],
-            },
-            TransformationConfigurations: [
-              {
-                Actions: [
-                  'GetObject',
-                ],
-                ContentTransformation: {
-                  AwsLambda: {
-                    FunctionArn: {
-                      'Fn::GetAtt': [
-                        'MyFunction3BAA72D1',
-                        'Arn',
-                      ],
-                    },
-                    FunctionPayload: '{"foo":10}',
-                  },
-                },
-              },
-            ],
-          },
-        },
-        Type: 'AWS::S3ObjectLambda::AccessPoint',
-      },
-      MyObjectLambdaSupportingAccessPointA2D2026E: {
-        Properties: {
-          Bucket: {
-            Ref: 'MyBucketF68F3FF0',
-          },
-        },
-        Type: 'AWS::S3::AccessPoint',
-      },
-    },
-  },
   );
+
+  Template.fromStack(stack).hasResourceProperties('AWS::S3ObjectLambda::AccessPoint', {
+    ObjectLambdaConfiguration: {
+      AllowedFeatures: [
+        'GetObject-PartNumber',
+        'GetObject-Range',
+      ],
+      TransformationConfigurations: [
+        {
+          Actions: [
+            'GetObject',
+          ],
+          ContentTransformation: {
+            AwsLambda: {
+              FunctionArn: {
+                'Fn::GetAtt': [
+                  'MyFunction3BAA72D1',
+                  'Arn',
+                ],
+              },
+              FunctionPayload: '{"foo":10}',
+            },
+          },
+        },
+      ],
+    },
+  });
 });
 
 test('Can create an access point without specifying the name', () => {
-  const stack = new cdk.Stack();
-  const bucket = new s3.Bucket(stack, 'MyBucket');
-  const handler = new lambda.Function(stack, 'MyFunction', {
-    runtime: lambda.Runtime.NODEJS_14_X,
-    handler: 'index.hello',
-    code: new lambda.InlineCode('def hello(): pass'),
-  });
   new AccessPoint(stack, 'MyObjectLambda', {
     bucket,
     handler,
   });
-  expect(Template.fromStack(stack).toJSON()).toEqual({
-    Resources: {
-      MyBucketF68F3FF0: {
-        Type: 'AWS::S3::Bucket',
-        UpdateReplacePolicy: 'Retain',
-        DeletionPolicy: 'Retain',
-      },
-      MyFunctionServiceRole3C357FF2: {
-        Type: 'AWS::IAM::Role',
-        Properties: {
-          AssumeRolePolicyDocument: {
-            Statement: [{
-              Action: 'sts:AssumeRole',
-              Effect: 'Allow',
-              Principal: {
-                Service: 'lambda.amazonaws.com',
-              },
-            }],
-            Version: '2012-10-17',
-          },
-          ManagedPolicyArns: [{
-            'Fn::Join': [
-              '',
-              ['arn:', {
-                Ref: 'AWS::Partition',
-              },
-              ':iam::aws:policy/service-role/AWSLambdaBasicExecutionRole'],
-            ],
-          }],
-        },
-      },
-      MyFunctionServiceRoleDefaultPolicyB705ABD4: {
-        Type: 'AWS::IAM::Policy',
-        Properties: {
-          PolicyDocument: {
-            Statement: [{
-              Action: 's3-object-lambda:WriteGetObjectResponse',
-              Effect: 'Allow',
-              Resource: '*',
-            }],
-            Version: '2012-10-17',
-          },
-          PolicyName: 'MyFunctionServiceRoleDefaultPolicyB705ABD4',
-          Roles: [{
-            Ref: 'MyFunctionServiceRole3C357FF2',
-          }],
-        },
-      },
-      MyFunction3BAA72D1: {
-        Type: 'AWS::Lambda::Function',
-        Properties: {
-          Code: { ZipFile: 'def hello(): pass' },
-          Role: {
-            'Fn::GetAtt': [
-              'MyFunctionServiceRole3C357FF2',
-              'Arn',
-            ],
-          },
-          Handler: 'index.hello',
-          Runtime: 'nodejs14.x',
-        },
-        DependsOn: [
-          'MyFunctionServiceRoleDefaultPolicyB705ABD4',
-          'MyFunctionServiceRole3C357FF2',
-        ],
-      },
-      MyObjectLambdaSupportingAccessPointA2D2026E: {
-        Type: 'AWS::S3::AccessPoint',
-        Properties: {
-          Bucket: {
-            Ref: 'MyBucketF68F3FF0',
-          },
-        },
-      },
-      MyObjectLambdaLambdaAccessPointB177C27B: {
-        Type: 'AWS::S3ObjectLambda::AccessPoint',
-        Properties: {
-          ObjectLambdaConfiguration: {
-            AllowedFeatures: [],
-            SupportingAccessPoint: {
-              'Fn::GetAtt': [
-                'MyObjectLambdaSupportingAccessPointA2D2026E',
-                'Arn',
-              ],
-            },
-            TransformationConfigurations: [{
-              Actions: ['GetObject'],
-              ContentTransformation: {
-                AwsLambda: {
-                  FunctionArn: {
-                    'Fn::GetAtt': [
-                      'MyFunction3BAA72D1',
-                      'Arn',
-                    ],
-                  },
-                },
-              },
-            }],
-          },
-        },
-      },
+  Template.fromStack(stack).hasResourceProperties('AWS::S3ObjectLambda::AccessPoint', {
+    ObjectLambdaConfiguration: {
+      AllowedFeatures: [],
     },
   });
 });
 
 test('Slashes are removed from the virtual hosted url', () => {
-  const stack = new cdk.Stack();
-  const bucket = new s3.Bucket(stack, 'MyBucket');
-  const handler = new lambda.Function(stack, 'MyFunction', {
-    runtime: lambda.Runtime.NODEJS_14_X,
-    handler: 'index.hello',
-    code: new lambda.InlineCode('def hello(): pass'),
-  });
   const accessPoint = new AccessPoint(stack, 'MyObjectLambda', {
     bucket,
     handler,
@@ -404,215 +203,88 @@ test('Slashes are removed from the virtual hosted url', () => {
   new cdk.CfnOutput(stack, 'VirtualHostedUrlKeyEndsSlash', {
     value: accessPoint.virtualHostedUrlForObject('key1/key2/'),
   });
-  expect(Template.fromStack(stack).toJSON()).toEqual({
-    Outputs: {
-      VirtualHostedUrlKeyBeginsSlash: {
-        Value: {
-          'Fn::Join': [
-            '',
-            [
-              'https://',
-              {
-                Ref: 'MyObjectLambdaLambdaAccessPointB177C27B',
-              },
-              '-',
-              {
-                Ref: 'AWS::AccountId',
-              },
-              '.s3-object-lambda.',
-              {
-                Ref: 'AWS::Region',
-              },
-              '.',
-              {
-                Ref: 'AWS::URLSuffix',
-              },
-              '/key1/key2',
-            ],
+  expect(Template.fromStack(stack).findOutputs('*')).toEqual( {
+    VirtualHostedUrlKeyBeginsSlash: {
+      Value: {
+        'Fn::Join': [
+          '',
+          [
+            'https://',
+            {
+              Ref: 'MyObjectLambda3F9602DC',
+            },
+            '-',
+            {
+              Ref: 'AWS::AccountId',
+            },
+            '.s3-object-lambda.',
+            {
+              Ref: 'AWS::Region',
+            },
+            '.',
+            {
+              Ref: 'AWS::URLSuffix',
+            },
+            '/key1/key2',
           ],
-        },
-      },
-      VirtualHostedUrlKeyEndsSlash: {
-        Value: {
-          'Fn::Join': [
-            '',
-            [
-              'https://',
-              {
-                Ref: 'MyObjectLambdaLambdaAccessPointB177C27B',
-              },
-              '-',
-              {
-                Ref: 'AWS::AccountId',
-              },
-              '.s3-object-lambda.',
-              {
-                Ref: 'AWS::Region',
-              },
-              '.',
-              {
-                Ref: 'AWS::URLSuffix',
-              },
-              '/key1/key2',
-            ],
-          ],
-        },
-      },
-      VirtualHostedUrlNoKey: {
-        Value: {
-          'Fn::Join': [
-            '',
-            [
-              'https://',
-              {
-                Ref: 'MyObjectLambdaLambdaAccessPointB177C27B',
-              },
-              '-',
-              {
-                Ref: 'AWS::AccountId',
-              },
-              '.s3-object-lambda.',
-              {
-                Ref: 'AWS::Region',
-              },
-              '.',
-              {
-                Ref: 'AWS::URLSuffix',
-              },
-            ],
-          ],
-        },
+        ],
       },
     },
-    Resources: {
-      MyBucketF68F3FF0: {
-        DeletionPolicy: 'Retain',
-        Type: 'AWS::S3::Bucket',
-        UpdateReplacePolicy: 'Retain',
-      },
-      MyFunction3BAA72D1: {
-        DependsOn: [
-          'MyFunctionServiceRoleDefaultPolicyB705ABD4',
-          'MyFunctionServiceRole3C357FF2',
+    VirtualHostedUrlKeyEndsSlash: {
+      Value: {
+        'Fn::Join': [
+          '',
+          [
+            'https://',
+            {
+              Ref: 'MyObjectLambda3F9602DC',
+            },
+            '-',
+            {
+              Ref: 'AWS::AccountId',
+            },
+            '.s3-object-lambda.',
+            {
+              Ref: 'AWS::Region',
+            },
+            '.',
+            {
+              Ref: 'AWS::URLSuffix',
+            },
+            '/key1/key2',
+          ],
         ],
-        Properties: {
-          Code: {
-            ZipFile: 'def hello(): pass',
-          },
-          Handler: 'index.hello',
-          Role: {
-            'Fn::GetAtt': [
-              'MyFunctionServiceRole3C357FF2',
-              'Arn',
-            ],
-          },
-          Runtime: 'nodejs14.x',
-        },
-        Type: 'AWS::Lambda::Function',
       },
-      MyFunctionServiceRole3C357FF2: {
-        Properties: {
-          AssumeRolePolicyDocument: {
-            Statement: [
-              {
-                Action: 'sts:AssumeRole',
-                Effect: 'Allow',
-                Principal: {
-                  Service: 'lambda.amazonaws.com',
-                },
-              },
-            ],
-            Version: '2012-10-17',
-          },
-          ManagedPolicyArns: [
+    },
+    VirtualHostedUrlNoKey: {
+      Value: {
+        'Fn::Join': [
+          '',
+          [
+            'https://',
             {
-              'Fn::Join': [
-                '',
-                [
-                  'arn:',
-                  {
-                    Ref: 'AWS::Partition',
-                  },
-                  ':iam::aws:policy/service-role/AWSLambdaBasicExecutionRole',
-                ],
-              ],
+              Ref: 'MyObjectLambda3F9602DC',
+            },
+            '-',
+            {
+              Ref: 'AWS::AccountId',
+            },
+            '.s3-object-lambda.',
+            {
+              Ref: 'AWS::Region',
+            },
+            '.',
+            {
+              Ref: 'AWS::URLSuffix',
             },
           ],
-        },
-        Type: 'AWS::IAM::Role',
-      },
-      MyFunctionServiceRoleDefaultPolicyB705ABD4: {
-        Properties: {
-          PolicyDocument: {
-            Statement: [
-              {
-                Action: 's3-object-lambda:WriteGetObjectResponse',
-                Effect: 'Allow',
-                Resource: '*',
-              },
-            ],
-            Version: '2012-10-17',
-          },
-          PolicyName: 'MyFunctionServiceRoleDefaultPolicyB705ABD4',
-          Roles: [
-            {
-              Ref: 'MyFunctionServiceRole3C357FF2',
-            },
-          ],
-        },
-        Type: 'AWS::IAM::Policy',
-      },
-      MyObjectLambdaLambdaAccessPointB177C27B: {
-        Properties: {
-          ObjectLambdaConfiguration: {
-            AllowedFeatures: [],
-            SupportingAccessPoint: {
-              'Fn::GetAtt': [
-                'MyObjectLambdaSupportingAccessPointA2D2026E',
-                'Arn',
-              ],
-            },
-            TransformationConfigurations: [
-              {
-                Actions: [
-                  'GetObject',
-                ],
-                ContentTransformation: {
-                  AwsLambda: {
-                    FunctionArn: {
-                      'Fn::GetAtt': [
-                        'MyFunction3BAA72D1',
-                        'Arn',
-                      ],
-                    },
-                  },
-                },
-              },
-            ],
-          },
-        },
-        Type: 'AWS::S3ObjectLambda::AccessPoint',
-      },
-      MyObjectLambdaSupportingAccessPointA2D2026E: {
-        Properties: {
-          Bucket: {
-            Ref: 'MyBucketF68F3FF0',
-          },
-        },
-        Type: 'AWS::S3::AccessPoint',
+        ],
       },
     },
   });
 });
 
 test('Validates the access point name', () => {
-  const stack = new cdk.Stack();
-  const bucket = new s3.Bucket(stack, 'MyBucket');
-  const handler = new lambda.Function(stack, 'MyFunction', {
-    runtime: lambda.Runtime.NODEJS_14_X,
-    handler: 'index.hello',
-    code: new lambda.InlineCode('def hello(): pass'),
-  });
   expect(() => new AccessPoint(stack, 'MyObjectLambda1', {
     bucket,
     handler,

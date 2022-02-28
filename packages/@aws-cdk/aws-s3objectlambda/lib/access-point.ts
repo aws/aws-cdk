@@ -184,8 +184,6 @@ export class AccessPoint extends AccessPointBase {
     return new Import(scope, id);
   }
 
-  private readonly accessPoint: CfnAccessPoint
-
   /**
    * The ARN of the access point.
    */
@@ -224,7 +222,7 @@ export class AccessPoint extends AccessPointBase {
       allowedFeatures.push('GetObject-Range');
     }
 
-    this.accessPoint = new CfnAccessPoint(this, 'LambdaAccessPoint', {
+    const accessPoint = new CfnAccessPoint(this, id, {
       name: this.physicalName,
       objectLambdaConfiguration: {
         allowedFeatures,
@@ -243,9 +241,9 @@ export class AccessPoint extends AccessPointBase {
         ],
       },
     });
-    this.accessPointName = this.accessPoint.ref;
-    this.accessPointArn = this.accessPoint.attrArn;
-    this.accessPointCreationDate = this.accessPoint.attrCreationDate;
+    this.accessPointName = accessPoint.ref;
+    this.accessPointArn = accessPoint.attrArn;
+    this.accessPointCreationDate = accessPoint.attrCreationDate;
 
     props.handler.addToRolePolicy(
       new iam.PolicyStatement({
