@@ -113,6 +113,20 @@ function patchSdk(awsSdk: any): any {
 
 /* eslint-disable @typescript-eslint/no-require-imports, import/no-extraneous-dependencies */
 export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent, context: AWSLambda.Context) {
+  let physicalResourceId: string;
+  // Default physical resource id
+  switch (event.RequestType) {
+    case 'Create':
+      physicalResourceId = event.ResourceProperties.Create?.physicalResourceId?.id ??
+                             event.ResourceProperties.Update?.physicalResourceId?.id ??
+                             event.ResourceProperties.Delete?.physicalResourceId?.id ??
+                             event.LogicalResourceId;
+      break;
+    case 'Update':
+    case 'Delete':
+      physicalResourceId = event.ResourceProperties[event.RequestType]?.physicalResourceId?.id ?? event.PhysicalResourceId;
+      break;
+  }
   try {
     let AWS: any;
     if (!latestSdkInstalled && event.ResourceProperties.InstallLatestAwsSdk === 'true') {
@@ -140,20 +154,6 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
     event.ResourceProperties.Create = decodeCall(event.ResourceProperties.Create);
     event.ResourceProperties.Update = decodeCall(event.ResourceProperties.Update);
     event.ResourceProperties.Delete = decodeCall(event.ResourceProperties.Delete);
-    // Default physical resource id
-    let physicalResourceId: string;
-    switch (event.RequestType) {
-      case 'Create':
-        physicalResourceId = event.ResourceProperties.Create?.physicalResourceId?.id ??
-                             event.ResourceProperties.Update?.physicalResourceId?.id ??
-                             event.ResourceProperties.Delete?.physicalResourceId?.id ??
-                             event.LogicalResourceId;
-        break;
-      case 'Update':
-      case 'Delete':
-        physicalResourceId = event.ResourceProperties[event.RequestType]?.physicalResourceId?.id ?? event.PhysicalResourceId;
-        break;
-    }
 
     let flatData: { [key: string]: string } = {};
     let data: { [key: string]: string } = {};
@@ -219,9 +219,10 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
     await respond('SUCCESS', 'OK', physicalResourceId, data);
   } catch (e) {
     console.log(e);
-    await respond('FAILED', e.message || 'Internal Error', context.logStreamName, {});
+    await respond('FAILED', e.message || 'Internal Error', physicalResourceId, {});
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-shadow
   function respond(responseStatus: string, reason: string, physicalResourceId: string, data: any) {
     const responseBody = JSON.stringify({
       Status: responseStatus,
