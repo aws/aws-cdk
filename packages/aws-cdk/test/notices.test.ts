@@ -3,6 +3,7 @@ import * as os from 'os';
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import * as nock from 'nock';
+import * as logging from '../lib/logging';
 import {
   CachedDataSource,
   filterNotices,
@@ -12,7 +13,6 @@ import {
   WebsiteNoticeDataSource,
 } from '../lib/notices';
 import * as version from '../lib/version';
-import * as logging from '../lib/logging';
 
 const BASIC_NOTICE = {
   title: 'Toggling off auto_delete_objects for Bucket empties the bucket',
@@ -237,7 +237,7 @@ describe('cli notices', () => {
     test('returns empty array when the connection stays idle for  too long', async () => {
       nock('https://cli.cdk.dev-tools.aws.dev')
         .get('/notices.json')
-        .delayConnection(2000)
+        .delayConnection(3500)
         .reply(200, {
           notices: [BASIC_NOTICE],
         });
@@ -250,7 +250,7 @@ describe('cli notices', () => {
     test('returns empty array when the request takes too long to finish', async () => {
       nock('https://cli.cdk.dev-tools.aws.dev')
         .get('/notices.json')
-        .delayBody(2000)
+        .delayBody(3500)
         .reply(200, {
           notices: [BASIC_NOTICE],
         });

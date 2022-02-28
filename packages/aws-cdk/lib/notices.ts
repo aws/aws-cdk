@@ -105,7 +105,7 @@ export interface NoticeDataSource {
 
 export class WebsiteNoticeDataSource implements NoticeDataSource {
   fetch(): Promise<Notice[]> {
-    const timeout = 1000;
+    const timeout = 3000;
 
     return new Promise((resolve) => {
       try {
