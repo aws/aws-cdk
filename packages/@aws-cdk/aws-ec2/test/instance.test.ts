@@ -364,7 +364,7 @@ describe('instance', () => {
 
       // THEN
       expect(instance.node.metadata[0].type).toEqual(cxschema.ArtifactMetadataEntryType.WARN);
-      expect(instance.node.metadata[0].data).toEqual('iops will be ignored without volumeType: EbsDeviceVolumeType.IO1');
+      expect(instance.node.metadata[0].data).toEqual('iops will be ignored without volumeType: IO1, IO2, or GP3');
 
 
     });
