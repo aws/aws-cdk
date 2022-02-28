@@ -318,7 +318,7 @@ async function initCommandLine() {
           acknowledgedIssueNumbers: [],
           ignoreCache: true,
         });
-      } else {
+      } else if (cmd !== 'version') {
         await displayNotices({
           outdir: configuration.settings.get(['output']) ?? 'cdk.out',
           acknowledgedIssueNumbers: configuration.context.get('acknowledged-issue-numbers') ?? [],
