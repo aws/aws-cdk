@@ -230,6 +230,13 @@ export interface ClusterProps {
   readonly encrypted?: boolean
 
   /**
+   * The Elastic IP (EIP) address for the cluster.
+   *
+   * @default - No Elastic IP
+   */
+  readonly elasticIp?: string
+
+  /**
    * The KMS key to use for encryption of data at rest.
    *
    * @default - AWS-managed key, if encryption at rest is enabled
