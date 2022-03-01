@@ -1174,9 +1174,7 @@ export class DatabaseInstanceReadReplica extends DatabaseInstanceNew implements 
     // The read replica instance always uses the same engine as the source instance
     // but some CF validations require the engine to be explicitely passed when some
     // properties are specified.
-    const shouldPassEngine = anyDefined(
-      props.domain,
-    );
+    const shouldPassEngine = props.domain != null;
 
     const instance = new CfnDBInstance(this, 'Resource', {
       ...this.newCfnProps,
@@ -1211,16 +1209,4 @@ function renderProcessorFeatures(features: ProcessorFeatures): CfnDBInstance.Pro
   const featuresList = Object.entries(features).map(([name, value]) => ({ name, value: value.toString() }));
 
   return featuresList.length === 0 ? undefined : featuresList;
-}
-
-/**
- * Returns true if at least one argument is not undefined
- */
-function anyDefined(...xs: any[]): boolean {
-  for (const x of xs) {
-    if (x !== undefined) {
-      return true;
-    }
-  }
-  return false;
 }
