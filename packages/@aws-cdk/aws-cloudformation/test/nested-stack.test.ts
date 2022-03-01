@@ -4,7 +4,7 @@ import { Template } from '@aws-cdk/assertions';
 import * as s3_assets from '@aws-cdk/aws-s3-assets';
 import * as sns from '@aws-cdk/aws-sns';
 import { describeDeprecated } from '@aws-cdk/cdk-build-tools';
-import { App, CfnParameter, CfnResource, ContextProvider, LegacyStackSynthesizer, Names, Stack } from '@aws-cdk/core';
+import { App, CfnParameter, CfnResource, ContextProvider, LegacyStackSynthesizer, Names, Stack, Tags } from '@aws-cdk/core';
 import { NestedStack } from '../lib/nested-stack';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
@@ -1083,6 +1083,51 @@ describeDeprecated('NestedStack', () => {
         },
       },
     });
+  });
+
+  test('nested stack should get the tags added in root stack', () =>{
+    const app = new App();
+    const parentStack = new Stack(app, 'parent-stack');
+    const nestedStack = new NestedStack(parentStack, 'MyNestedStack');
+
+    // add tags
+    Tags.of(nestedStack).add('tag-1', '22');
+    Tags.of(nestedStack).add('tag-2', '33');
+
+    new sns.Topic(nestedStack, 'MyTopic');
+
+    // THEN
+    Template.fromStack(parentStack).hasResourceProperties(
+      'AWS::CloudFormation::Stack',
+      {
+        Tags: [
+          {
+            Key: 'tag-1',
+            Value: '22',
+          },
+          {
+            Key: 'tag-2',
+            Value: '33',
+          },
+        ],
+      },
+    );
+
+    Template.fromStack(nestedStack).hasResourceProperties(
+      'AWS::SNS::Topic',
+      {
+        Tags: [
+          {
+            Key: 'tag-1',
+            Value: '22',
+          },
+          {
+            Key: 'tag-2',
+            Value: '33',
+          },
+        ],
+      },
+    );
   });
 
 });

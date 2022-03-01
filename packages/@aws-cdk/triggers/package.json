@@ -106,9 +106,6 @@
       "AWSLINT_BASE_CONSTRUCT": true
     }
   },
-  "ubergen": {
-    "exclude": true
-  },
   "publishConfig": {
     "tag": "latest"
   },
