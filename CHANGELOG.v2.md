@@ -2,6 +2,34 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.15.0](https://github.com/aws/aws-cdk/compare/v2.14.0...v2.15.0) (2022-03-01)
+
+
+### Features
+
+* **cfnspec:** cloudformation spec v58.0.0 ([#19153](https://github.com/aws/aws-cdk/issues/19153)) ([a6b0a10](https://github.com/aws/aws-cdk/commit/a6b0a1018694a0696ed27635d4def5d1630b8f9a))
+* **cli:** hotswap support for resources in nested stacks ([#18950](https://github.com/aws/aws-cdk/issues/18950)) ([2ea9da1](https://github.com/aws/aws-cdk/commit/2ea9da118794809265d215e3d2f554bbcb91b271))
+* **ec2:** add c6a instances ([#19113](https://github.com/aws/aws-cdk/issues/19113)) ([427cdfd](https://github.com/aws/aws-cdk/commit/427cdfde5e8c48ed7c1f86b275ccb2516a901239))
+
+
+### Bug Fixes
+
+* **apigateway:** fix strange vtl template for cors preflight request ([#19104](https://github.com/aws/aws-cdk/issues/19104)) ([59ef06a](https://github.com/aws/aws-cdk/commit/59ef06ae2a70fcb1800fcc1f40eec671c77440f0)), closes [/datatracker.ietf.org/doc/html/rfc6454#section-7](https://github.com/aws//datatracker.ietf.org/doc/html/rfc6454/issues/section-7)
+* **aws-apigateway:** api gateway usage plan ([#19023](https://github.com/aws/aws-cdk/issues/19023)) ([5b764cc](https://github.com/aws/aws-cdk/commit/5b764cc397de4f4b203f5c69fa0128c6dced49f9)), closes [#18994](https://github.com/aws/aws-cdk/issues/18994)
+* **cli:** cdk version displays notices ([#19181](https://github.com/aws/aws-cdk/issues/19181)) ([fa16f7a](https://github.com/aws/aws-cdk/commit/fa16f7a9c11981da75e44ffc83adcdc6edad94fc))
+* **cli:** long connection timeout slows the CLI down ([#19187](https://github.com/aws/aws-cdk/issues/19187)) ([6595d04](https://github.com/aws/aws-cdk/commit/6595d044e29fb262fb62430783ad08359e16bc30))
+* **custom-resources:** physical resource id must be determined before isComplete ([#18630](https://github.com/aws/aws-cdk/issues/18630)) ([c190367](https://github.com/aws/aws-cdk/commit/c1903678aba31ca5b23a3bebb84249921e15dd5c))
+* **dynamodb:** `grant*Data()` methods are missing the `dynamodb:DescribeTable` permission ([#19129](https://github.com/aws/aws-cdk/issues/19129)) ([4a44a65](https://github.com/aws/aws-cdk/commit/4a44a65bb4634081e04811966d5f4e2fd49bc7c6)), closes [#18773](https://github.com/aws/aws-cdk/issues/18773)
+* **dynamodb:** `Table.grantWriteData()` doesn't include enough KMS permissions ([#19102](https://github.com/aws/aws-cdk/issues/19102)) ([77f1e0b](https://github.com/aws/aws-cdk/commit/77f1e0b57bd4508ade86be7733e71e94a47d7f4c)), closes [#10010](https://github.com/aws/aws-cdk/issues/10010)
+* **ec2:** invalid volume type check for iops ([#19073](https://github.com/aws/aws-cdk/issues/19073)) ([3f49f02](https://github.com/aws/aws-cdk/commit/3f49f020090142c77feb892894c54e62dc4de7ae))
+* **eks:** Helm charts fail to install when provided as an asset ([#19180](https://github.com/aws/aws-cdk/issues/19180)) ([9961257](https://github.com/aws/aws-cdk/commit/99612574bbaf97379482e9e424e1d1115809d74b))
+* **lambda-nodejs:** `logLevel` property of `BundlingOptions` is ignored when `nodeModules` are defined ([#18456](https://github.com/aws/aws-cdk/issues/18456)) ([5c40b90](https://github.com/aws/aws-cdk/commit/5c40b90707b869f62e59613d50d5deaafbaa52f1)), closes [#18383](https://github.com/aws/aws-cdk/issues/18383)
+* **stepfunctions-tasks:** RUN_JOB integration pattern not supported for CallAwsService ([#19186](https://github.com/aws/aws-cdk/issues/19186)) ([4b134b7](https://github.com/aws/aws-cdk/commit/4b134b785115f026a0eaa37b699cd32c85ff8e73)), closes [#19174](https://github.com/aws/aws-cdk/issues/19174)
+* apply tags to nested stack ([#19128](https://github.com/aws/aws-cdk/issues/19128)) ([3af329b](https://github.com/aws/aws-cdk/commit/3af329bcb66b9dffce0c03f0816b33e91e901808)), closes [#17463](https://github.com/aws/aws-cdk/issues/17463)
+* **rds:** MySQL Cluster version 8.0 uses wrong Parameter for S3 import ([#19145](https://github.com/aws/aws-cdk/issues/19145)) ([96b2034](https://github.com/aws/aws-cdk/commit/96b2034c44b441a96cfe19855d343b0f983c8772)), closes [#19126](https://github.com/aws/aws-cdk/issues/19126)
+* **triggers:** not published as part of v2 ([#19168](https://github.com/aws/aws-cdk/issues/19168)) ([8f727d1](https://github.com/aws/aws-cdk/commit/8f727d15f8f87d4ca323fee449826908db7971a4)), closes [#19164](https://github.com/aws/aws-cdk/issues/19164)
+* construct paths are not printed for nested stacks in CLI output ([#18725](https://github.com/aws/aws-cdk/issues/18725)) ([b0e0155](https://github.com/aws/aws-cdk/commit/b0e0155f87a65c34a75e11776f98d55b83d2b220))
+
 ## [2.14.0](https://github.com/aws/aws-cdk/compare/v2.13.0...v2.14.0) (2022-02-25)
 
 
