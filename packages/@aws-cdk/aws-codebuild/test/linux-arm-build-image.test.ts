@@ -333,13 +333,11 @@ describe('Linux ARM build image', () => {
             'Fn::Join': [
               '',
               [
-                [
-                  '585695036304.dkr.ecr.us-east-1.',
-                  {
-                    Ref: 'AWS::URLSuffix',
-                  },
-                  '/foo/bar/foo/fooo:latest',
-                ],
+                '585695036304.dkr.ecr.us-east-1.',
+                {
+                  Ref: 'AWS::URLSuffix',
+                },
+                '/foo/bar/foo/fooo:latest',
               ],
             ],
           },
