@@ -1965,7 +1965,7 @@ describe('cluster', () => {
         vpc,
       },
       snapshotIdentifier: 'mySnapshot',
-      storageEncryptionKey: new kms.Key(stack, 'Key'),
+      storageEncryptionKey: kms.Key.fromKeyArn(stack, 'Key', 'KeyArn'),
     });
 
     // THEN
@@ -1976,6 +1976,7 @@ describe('cluster', () => {
           'Arn',
         ],
       },
+      StorageEncrypted: true,
     });
   });
 
