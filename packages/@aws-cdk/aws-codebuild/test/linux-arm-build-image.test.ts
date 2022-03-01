@@ -182,16 +182,53 @@ describe('Linux ARM build image', () => {
         Environment: {
           ComputeType: 'BUILD_GENERAL1_LARGE',
           Image: {
-            'Fn::Join': ['', [
-              { Ref: 'AWS::AccountId' },
-              '.dkr.ecr.',
-              { Ref: 'AWS::Region' },
-              '.',
-              { Ref: 'AWS::URLSuffix' },
-              '/',
-              { Ref: 'myrepo5DFA62E5' },
-              ':v1',
-            ]],
+            'Fn::Join': [
+              '',
+              [
+                {
+                  'Fn::Select': [
+                    4,
+                    {
+                      'Fn::Split': [
+                        ':',
+                        {
+                          'Fn::GetAtt': [
+                            'myrepo5DFA62E5',
+                            'Arn'
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                '.dkr.ecr.',
+                {
+                  'Fn::Select': [
+                    3,
+                    {
+                      'Fn::Split': [
+                        ':',
+                        {
+                          'Fn::GetAtt': [
+                            'myrepo5DFA62E5',
+                            'Arn'
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                '.',
+                {
+                  Ref: 'AWS::URLSuffix'
+                },
+                '/',
+                {
+                  Ref: 'myrepo5DFA62E5'
+                },
+                ':v1'
+              ]
+            ],
           },
         },
       });
@@ -300,11 +337,13 @@ describe('Linux ARM build image', () => {
           ComputeType: 'BUILD_GENERAL1_LARGE',
           Image: {
             'Fn::Join': ['', [
-              '585695036304.dkr.ecr.',
-              { Ref: 'AWS::Region' },
-              '.',
-              { Ref: 'AWS::URLSuffix' },
-              '/foo/bar/foo/fooo:latest',
+              [
+                '585695036304.dkr.ecr.us-east-1.',
+                {
+                  Ref: 'AWS::URLSuffix'
+                },
+                '/foo/bar/foo/fooo:latest'
+               ]
             ]],
           },
         },
