@@ -649,7 +649,7 @@
         "Children": "A list of the component's `ComponentChild` instances.",
         "CollectionProperties": "The data binding configuration for the component's properties. Use this for a collection component. You can't specify `tags` as a valid property for `collectionProperties` .",
         "ComponentType": "The type of the component. This can be an Amplify custom UI component or another custom component.",
-        "Events": "",
+        "Events": "Describes the events that can be raised on the component. Use for the workflow feature in Amplify Studio that allows you to bind events and actions to components.",
         "Name": "The name of the component.",
         "Overrides": "Describes the component's properties that can be overriden in a customized instance of the component. You can't specify `tags` as a valid property for `overrides` .",
         "Properties": "Describes the component's properties. You can't specify `tags` as a valid property for `properties` .",
@@ -660,17 +660,17 @@
     },
     "AWS::AmplifyUIBuilder::Component.ActionParameters": {
       "attributes": {},
-      "description": "",
+      "description": "The `ActionParameters` property specifies the event action configuration for an element of a `Component` or `ComponentChild` . Use for the workflow feature in Amplify Studio that allows you to bind events and actions to components. `ActionParameters` defines the action that is performed when an event occurs on the component.",
       "properties": {
-        "Anchor": "",
-        "Fields": "",
-        "Global": "",
-        "Id": "",
-        "Model": "",
-        "State": "",
-        "Target": "",
-        "Type": "",
-        "Url": ""
+        "Anchor": "The HTML anchor link to the location to open. Specify this value for a navigation action.",
+        "Fields": "A dictionary of key-value pairs mapping Amplify Studio properties to fields in a data model. Use when the action performs an operation on an Amplify DataStore model.",
+        "Global": "Specifies whether the user should be signed out globally. Specify this value for an auth sign out action.",
+        "Id": "The unique ID of the component that the `ActionParameters` apply to.",
+        "Model": "The name of the data model. Use when the action performs an operation on an Amplify DataStore model.",
+        "State": "A key-value pair that specifies the state property name and its initial value.",
+        "Target": "The element within the same component to modify when the action occurs.",
+        "Type": "The type of navigation action. Valid values are `url` and `anchor` . This value is required for a navigation action.",
+        "Url": "The URL to the location to open. Specify this value for a navigation action."
       }
     },
     "AWS::AmplifyUIBuilder::Component.ComponentBindingPropertiesValue": {
@@ -701,7 +701,7 @@
       "properties": {
         "Children": "The list of `ComponentChild` instances for this component.",
         "ComponentType": "The type of the child component.",
-        "Events": "",
+        "Events": "Describes the events that can be raised on the child component. Use for the workflow feature in Amplify Studio that allows you to bind events and actions to components.",
         "Name": "The name of the child component.",
         "Properties": "Describes the properties of the child component. You can't specify `tags` as a valid property for `properties` ."
       }
@@ -713,7 +713,7 @@
         "Else": "The value to assign to the property if the condition is not met.",
         "Field": "The name of a field. Specify this when the property is a data model.",
         "Operand": "The value of the property to evaluate.",
-        "OperandType": "",
+        "OperandType": "The type of the property to evaluate.",
         "Operator": "The operator to use to perform the evaluation, such as `eq` to represent equals.",
         "Property": "The name of the conditional property.",
         "Then": "The value to assign to the property if the condition is met."
@@ -731,15 +731,15 @@
     },
     "AWS::AmplifyUIBuilder::Component.ComponentEvent": {
       "attributes": {},
-      "description": "",
+      "description": "The `ComponentEvent` property specifies the configuration of an event. You can bind an event and a corresponding action to a `Component` or a `ComponentChild` . A button click is an example of an event.",
       "properties": {
-        "Action": "",
-        "Parameters": ""
+        "Action": "The action to perform when a specific event is raised.",
+        "Parameters": "Describes information about the action."
       }
     },
     "AWS::AmplifyUIBuilder::Component.ComponentEvents": {
       "attributes": {},
-      "description": "",
+      "description": "The `ComponentEvents` property specifies the events that can be raised on the component. Use for the workflow feature in Amplify Studio that allows you to bind events and actions to components.",
       "properties": {}
     },
     "AWS::AmplifyUIBuilder::Component.ComponentOverrides": {
@@ -764,7 +764,7 @@
         "BindingProperties": "The information to bind the component property to data at runtime.",
         "Bindings": "The information to bind the component property to form data.",
         "CollectionBindingProperties": "The information to bind the component property to data at runtime. Use this for collection components.",
-        "ComponentName": "",
+        "ComponentName": "The name of the component that is affected by an event.",
         "Concat": "A list of component properties to concatenate to create the value to assign to this component property.",
         "Condition": "The conditional expression to use to assign a value to the component property.",
         "Configured": "Specifies whether the user configured the property in Amplify Studio after importing it.",
@@ -772,7 +772,7 @@
         "Event": "An event that occurs in your app. Use this for workflow data binding.",
         "ImportedValue": "The default value assigned to the property when the component is imported into an app.",
         "Model": "The data model to use to assign a value to the component property.",
-        "Property": "",
+        "Property": "The name of the component's property that is affected by an event.",
         "Type": "The component type.",
         "UserAttribute": "An authenticated user attribute to use to assign a value to the component property.",
         "Value": "The value to assign to the component property."
@@ -806,11 +806,11 @@
     },
     "AWS::AmplifyUIBuilder::Component.MutationActionSetStateParameter": {
       "attributes": {},
-      "description": "",
+      "description": "The `MutationActionSetStateParameter` property specifies the state configuration when an action modifies a property of another element within the same component.",
       "properties": {
-        "ComponentName": "",
-        "Property": "",
-        "Set": ""
+        "ComponentName": "The name of the component that is being modified.",
+        "Property": "The name of the component property to apply the state configuration to.",
+        "Set": "The state configuration to assign to the property."
       }
     },
     "AWS::AmplifyUIBuilder::Component.Predicate": {
@@ -8677,7 +8677,7 @@
         "AllowedOAuthFlows": "The allowed OAuth flows.\n\nSet to `code` to initiate a code grant flow, which provides an authorization code as the response. This code can be exchanged for access tokens with the token endpoint.\n\nSet to `implicit` to specify that the client should get the access token (and, optionally, ID token, based on scopes) directly.\n\nSet to `client_credentials` to specify that the client should get the access token (and, optionally, ID token, based on scopes) from the token endpoint using a combination of client and client_secret.",
         "AllowedOAuthFlowsUserPoolClient": "Set to true if the client is allowed to follow the OAuth protocol when interacting with Amazon Cognito user pools.",
         "AllowedOAuthScopes": "The allowed OAuth scopes. Possible values provided by OAuth are: `phone` , `email` , `openid` , and `profile` . Possible values provided by AWS are: `aws.cognito.signin.user.admin` . Custom scopes created in Resource Servers are also supported.",
-        "AnalyticsConfiguration": "The Amazon Pinpoint analytics configuration for collecting metrics for this user pool.\n\n> In AWS Regions where isn't available, User Pools only supports sending events to Amazon Pinpoint projects in AWS Region us-east-1. In Regions where is available, User Pools will support sending events to Amazon Pinpoint projects within that same Region.",
+        "AnalyticsConfiguration": "The Amazon Pinpoint analytics configuration for collecting metrics for this user pool.\n\n> In AWS Regions where Amazon Pinpoint isn't available, User Pools only supports sending events to Amazon Pinpoint projects in AWS Region us-east-1. In Regions where is available, User Pools will support sending events to Amazon Pinpoint projects within that same Region.",
         "CallbackURLs": "A list of allowed redirect (callback) URLs for the identity providers.\n\nA redirect URI must:\n\n- Be an absolute URI.\n- Be registered with the authorization server.\n- Not include a fragment component.\n\nSee [OAuth 2.0 - Redirection Endpoint](https://docs.aws.amazon.com/https://tools.ietf.org/html/rfc6749#section-3.1.2) .\n\nAmazon Cognito requires HTTPS over HTTP except for http://localhost for testing purposes only.\n\nApp callback URLs such as myapp://example are also supported.",
         "ClientName": "The client name for the user pool client you would like to create.",
         "DefaultRedirectURI": "The default redirect URI. Must be in the `CallbackURLs` list.\n\nA redirect URI must:\n\n- Be an absolute URI.\n- Be registered with the authorization server.\n- Not include a fragment component.\n\nSee [OAuth 2.0 - Redirection Endpoint](https://docs.aws.amazon.com/https://tools.ietf.org/html/rfc6749#section-3.1.2) .\n\nAmazon Cognito requires HTTPS over HTTP except for http://localhost for testing purposes only.\n\nApp callback URLs such as myapp://example are also supported.",
@@ -17859,10 +17859,10 @@
       "attributes": {},
       "description": "A range of IP addresses and port settings that allow inbound traffic to connect to server processes on an instance in a fleet. New game sessions are assigned an IP address/port number combination, which must fall into the fleet's allowed ranges. Fleets with custom game builds must have permissions explicitly set. For Realtime Servers fleets, GameLift automatically opens two port ranges, one for TCP messaging and one for UDP.",
       "properties": {
-        "FromPort": "A starting value for a range of allowed port numbers.\n\nFor fleets using Linux builds, only port 22, 443, 1026-60000 are valid. For fleets using Windows builds, only port 443, 1026-60000 are valid.",
+        "FromPort": "A starting value for a range of allowed port numbers.\n\nFor fleets using Windows and Linux builds, only ports 1026-60000 are valid.",
         "IpRange": "A range of allowed IP addresses. This value must be expressed in CIDR notation. Example: \" `000.000.000.000/[subnet mask]` \" or optionally the shortened version \" `0.0.0.0/[subnet mask]` \".",
         "Protocol": "The network communication protocol used by the fleet.",
-        "ToPort": "An ending value for a range of allowed port numbers. Port numbers are end-inclusive. This value must be higher than `FromPort` .\n\nFor fleets using Linux builds, only port 22, 443, 1026-60000 are valid. For fleets using Windows builds, only port 443, 1026-60000 are valid."
+        "ToPort": "An ending value for a range of allowed port numbers. Port numbers are end-inclusive. This value must be higher than `FromPort` .\n\nFor fleets using Windows and Linux builds, only ports 1026-60000 are valid."
       }
     },
     "AWS::GameLift::Fleet.LocationCapacity": {
@@ -17918,7 +17918,7 @@
       "properties": {
         "AutoScalingPolicy": "Configuration settings to define a scaling policy for the Auto Scaling group that is optimized for game hosting. The scaling policy uses the metric `\"PercentUtilizedGameServers\"` to maintain a buffer of idle game servers that can immediately accommodate new games and players. After the Auto Scaling group is created, update this value directly in the Auto Scaling group using the AWS console or APIs.",
         "BalancingStrategy": "Indicates how GameLift FleetIQ balances the use of Spot Instances and On-Demand Instances in the game server group. Method options include the following:\n\n- `SPOT_ONLY` - Only Spot Instances are used in the game server group. If Spot Instances are unavailable or not viable for game hosting, the game server group provides no hosting capacity until Spot Instances can again be used. Until then, no new instances are started, and the existing nonviable Spot Instances are terminated (after current gameplay ends) and are not replaced.\n- `SPOT_PREFERRED` - (default value) Spot Instances are used whenever available in the game server group. If Spot Instances are unavailable, the game server group continues to provide hosting capacity by falling back to On-Demand Instances. Existing nonviable Spot Instances are terminated (after current gameplay ends) and are replaced with new On-Demand Instances.\n- `ON_DEMAND_ONLY` - Only On-Demand Instances are used in the game server group. No Spot Instances are used, even when available, while this balancing strategy is in force.",
-        "DeleteOption": "The type of delete to perform. Options include the following:\n\n- `SAFE_DELETE` \u2013 (default) Terminates the game server group and Amazon EC2 Auto Scaling group only when it has no game servers that are in `UTILIZED` status.\n- `FORCE_DELETE` \u2013 Terminates the game server group, including all active game servers regardless of their utilization status, and the Amazon EC2 Auto Scaling group.\n- `RETAIN` \u2013 Does a safe delete of the game server group but retains the Amazon EC2 Auto Scaling group as is.",
+        "DeleteOption": "The type of delete to perform. To delete a game server group, specify the `DeleteOption` . Options include the following:\n\n- `SAFE_DELETE` \u2013 (default) Terminates the game server group and Amazon EC2 Auto Scaling group only when it has no game servers that are in `UTILIZED` status.\n- `FORCE_DELETE` \u2013 Terminates the game server group, including all active game servers regardless of their utilization status, and the Amazon EC2 Auto Scaling group.\n- `RETAIN` \u2013 Does a safe delete of the game server group but retains the Amazon EC2 Auto Scaling group as is.",
         "GameServerGroupName": "A developer-defined identifier for the game server group. The name is unique for each Region in each AWS account.",
         "GameServerProtectionPolicy": "A flag that indicates whether instances in the game server group are protected from early termination. Unprotected instances that have active game servers running might be terminated during a scale-down event, causing players to be dropped from the game. Protected instances cannot be terminated while there are active game servers running except in the event of a forced game server group deletion (see ). An exception to this is with Spot Instances, which can be terminated by AWS regardless of protection status.",
         "InstanceDefinitions": "The set of Amazon EC2 instance types that GameLift FleetIQ can use when balancing and automatically scaling instances in the corresponding Auto Scaling group.",
@@ -17952,7 +17952,7 @@
       "properties": {
         "LaunchTemplateId": "A unique identifier for an existing Amazon EC2 launch template.",
         "LaunchTemplateName": "A readable identifier for an existing Amazon EC2 launch template.",
-        "Version": "The version of the Amazon EC2 launch template to use. If no version is specified, the default version will be used. With Amazon Elastic Compute Cloud, you can specify a default version for a launch template. If none is set, the default is the first version created."
+        "Version": "The version of the Amazon EC2 launch template to use. If no version is specified, the default version will be used. With Amazon EC2, you can specify a default version for a launch template. If none is set, the default is the first version created."
       }
     },
     "AWS::GameLift::GameServerGroup.TargetTrackingConfiguration": {
