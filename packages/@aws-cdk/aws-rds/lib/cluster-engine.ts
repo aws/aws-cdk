@@ -174,7 +174,11 @@ abstract class MySqlClusterEngineBase extends ClusterEngineBase {
       })
       : config.parameterGroup);
     if (options.s3ImportRole) {
-      parameterGroup?.addParameter('aurora_load_from_s3_role', options.s3ImportRole.roleArn);
+      // major version 8.0 uses a different name for the S3 import parameter
+      const s3ImportParam = this.engineVersion?.majorVersion === '8.0'
+        ? 'aws_default_s3_role'
+        : 'aurora_load_from_s3_role';
+      parameterGroup?.addParameter(s3ImportParam, options.s3ImportRole.roleArn);
     }
     if (options.s3ExportRole) {
       parameterGroup?.addParameter('aurora_select_into_s3_role', options.s3ExportRole.roleArn);

@@ -311,8 +311,8 @@ export abstract class ResourceBase extends ResourceConstruct implements IResourc
 
       const template = new Array<string>();
 
-      template.push('#set($origin = $input.params("Origin"))');
-      template.push('#if($origin == "") #set($origin = $input.params("origin")) #end');
+      template.push('#set($origin = $input.params().header.get("Origin"))');
+      template.push('#if($origin == "") #set($origin = $input.params().header.get("origin")) #end');
 
       const condition = origins.map(o => `$origin.matches("${o}")`).join(' || ');
 

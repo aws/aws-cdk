@@ -211,6 +211,7 @@ test('Bundling a function with custom bundling image', () => {
     }),
   }));
 
+  expect(DockerImage.fromBuild).toHaveBeenCalledTimes(1);
   expect(DockerImage.fromBuild).toHaveBeenCalledWith(expect.stringMatching(entry));
 });
 

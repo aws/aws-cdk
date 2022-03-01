@@ -32,7 +32,7 @@ integTest('Construct with builtin Lambda function', withDefaultFixture(async (fi
   await fixture.cdkDestroy('builtin-lambda-function');
 }));
 
-integTest('Two ways of shoing the version', withDefaultFixture(async (fixture) => {
+integTest('Two ways of showing the version', withDefaultFixture(async (fixture) => {
   const version1 = await fixture.cdk(['version'], { verbose: false });
   const version2 = await fixture.cdk(['--version'], { verbose: false });
 

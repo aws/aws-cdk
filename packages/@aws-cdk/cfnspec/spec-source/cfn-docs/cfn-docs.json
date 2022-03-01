@@ -639,10 +639,8 @@
     "AWS::AmplifyUIBuilder::Component": {
       "attributes": {
         "AppId": "The unique ID for the Amplify app.",
-        "CreatedAt": "The time that the component was created.",
         "EnvironmentName": "The name of the backend environment that is a part of the Amplify app.",
         "Id": "The unique ID of the component.",
-        "ModifiedAt": "The time that the component was modified.",
         "Ref": ""
       },
       "description": "The AWS::AmplifyUIBuilder::Component resource specifies a component within an Amplify app. A component is a user interface (UI) element that you can customize. Use `ComponentChild` to configure an instance of a `Component` . A `ComponentChild` instance inherits the configuration of the main `Component` .",
@@ -651,12 +649,28 @@
         "Children": "A list of the component's `ComponentChild` instances.",
         "CollectionProperties": "The data binding configuration for the component's properties. Use this for a collection component. You can't specify `tags` as a valid property for `collectionProperties` .",
         "ComponentType": "The type of the component. This can be an Amplify custom UI component or another custom component.",
+        "Events": "",
         "Name": "The name of the component.",
         "Overrides": "Describes the component's properties that can be overriden in a customized instance of the component. You can't specify `tags` as a valid property for `overrides` .",
         "Properties": "Describes the component's properties. You can't specify `tags` as a valid property for `properties` .",
         "SourceId": "The unique ID of the component in its original source system, such as Figma.",
         "Tags": "One or more key-value pairs to use when tagging the component.",
         "Variants": "A list of the component's variants. A variant is a unique style configuration of a main component."
+      }
+    },
+    "AWS::AmplifyUIBuilder::Component.ActionParameters": {
+      "attributes": {},
+      "description": "",
+      "properties": {
+        "Anchor": "",
+        "Fields": "",
+        "Global": "",
+        "Id": "",
+        "Model": "",
+        "State": "",
+        "Target": "",
+        "Type": "",
+        "Url": ""
       }
     },
     "AWS::AmplifyUIBuilder::Component.ComponentBindingPropertiesValue": {
@@ -687,6 +701,7 @@
       "properties": {
         "Children": "The list of `ComponentChild` instances for this component.",
         "ComponentType": "The type of the child component.",
+        "Events": "",
         "Name": "The name of the child component.",
         "Properties": "Describes the properties of the child component. You can't specify `tags` as a valid property for `properties` ."
       }
@@ -698,6 +713,7 @@
         "Else": "The value to assign to the property if the condition is not met.",
         "Field": "The name of a field. Specify this when the property is a data model.",
         "Operand": "The value of the property to evaluate.",
+        "OperandType": "",
         "Operator": "The operator to use to perform the evaluation, such as `eq` to represent equals.",
         "Property": "The name of the conditional property.",
         "Then": "The value to assign to the property if the condition is met."
@@ -712,6 +728,19 @@
         "Predicate": "Represents the conditional logic to use when binding data to a component. Use this property to retrieve only a subset of the data in a collection.",
         "Sort": "Describes how to sort the component's properties."
       }
+    },
+    "AWS::AmplifyUIBuilder::Component.ComponentEvent": {
+      "attributes": {},
+      "description": "",
+      "properties": {
+        "Action": "",
+        "Parameters": ""
+      }
+    },
+    "AWS::AmplifyUIBuilder::Component.ComponentEvents": {
+      "attributes": {},
+      "description": "",
+      "properties": {}
     },
     "AWS::AmplifyUIBuilder::Component.ComponentOverrides": {
       "attributes": {},
@@ -735,6 +764,7 @@
         "BindingProperties": "The information to bind the component property to data at runtime.",
         "Bindings": "The information to bind the component property to form data.",
         "CollectionBindingProperties": "The information to bind the component property to data at runtime. Use this for collection components.",
+        "ComponentName": "",
         "Concat": "A list of component properties to concatenate to create the value to assign to this component property.",
         "Condition": "The conditional expression to use to assign a value to the component property.",
         "Configured": "Specifies whether the user configured the property in Amplify Studio after importing it.",
@@ -742,6 +772,7 @@
         "Event": "An event that occurs in your app. Use this for workflow data binding.",
         "ImportedValue": "The default value assigned to the property when the component is imported into an app.",
         "Model": "The data model to use to assign a value to the component property.",
+        "Property": "",
         "Type": "The component type.",
         "UserAttribute": "An authenticated user attribute to use to assign a value to the component property.",
         "Value": "The value to assign to the component property."
@@ -772,6 +803,15 @@
       "attributes": {},
       "description": "The `FormBindings` property specifies how to bind a component's properties to form data.",
       "properties": {}
+    },
+    "AWS::AmplifyUIBuilder::Component.MutationActionSetStateParameter": {
+      "attributes": {},
+      "description": "",
+      "properties": {
+        "ComponentName": "",
+        "Property": "",
+        "Set": ""
+      }
     },
     "AWS::AmplifyUIBuilder::Component.Predicate": {
       "attributes": {},
@@ -2216,6 +2256,7 @@
         "LookoutMetrics": "The properties required to query Amazon Lookout for Metrics.",
         "Redshift": "The properties required to query Amazon Redshift.",
         "S3": "The properties required to query Amazon S3.",
+        "SAPOData": "The properties required to query SAPOData.",
         "Salesforce": "The properties required to query Salesforce.",
         "Snowflake": "The properties required to query Snowflake.",
         "Upsolver": "The properties required to query Upsolver.",
@@ -2342,6 +2383,17 @@
         "S3InputFormatConfig": ""
       }
     },
+    "AWS::AppFlow::Flow.SAPODataDestinationProperties": {
+      "attributes": {},
+      "description": "The properties that are applied when using SAPOData as a flow destination",
+      "properties": {
+        "ErrorHandlingConfig": "",
+        "IdFieldNames": "",
+        "ObjectPath": "The object path specified in the SAPOData flow destination.",
+        "SuccessResponseHandlingConfig": "Determines how Amazon AppFlow handles the success response that it gets from the connector after placing data.\n\nFor example, this setting would determine where to write the response from a destination connector upon a successful insert operation.",
+        "WriteOperationType": ""
+      }
+    },
     "AWS::AppFlow::Flow.SAPODataSourceProperties": {
       "attributes": {},
       "description": "",
@@ -2440,6 +2492,14 @@
         "ConnectorType": "The type of source connector, such as Salesforce, Amplitude, and so on.\n\n*Allowed Values* : S3 | Amplitude | Datadog | Dynatrace | Googleanalytics | Infornexus | Salesforce | Servicenow | Singular | Slack | Trendmicro | Veeva | Zendesk",
         "IncrementalPullConfig": "Defines the configuration for a scheduled incremental data pull. If a valid configuration is provided, the fields specified in the configuration are used when querying for the incremental data pull.",
         "SourceConnectorProperties": "Specifies the information that is required to query a particular source connector."
+      }
+    },
+    "AWS::AppFlow::Flow.SuccessResponseHandlingConfig": {
+      "attributes": {},
+      "description": "Determines how Amazon AppFlow handles the success response that it gets from the connector after placing data.\n\nFor example, this setting would determine where to write the response from the destination connector upon a successful insert operation.",
+      "properties": {
+        "BucketName": "The name of the Amazon S3 bucket.",
+        "BucketPrefix": "The Amazon S3 bucket prefix."
       }
     },
     "AWS::AppFlow::Flow.Task": {
@@ -2825,6 +2885,11 @@
       "properties": {
         "Type": "The egress filter type. By default, the type is `DROP_ALL` , which allows egress only from virtual nodes to other defined resources in the service mesh (and any traffic to `*.amazonaws.com` for AWS API calls). You can set the egress filter type to `ALLOW_ALL` to allow egress to any endpoint inside or outside of the service mesh."
       }
+    },
+    "AWS::AppMesh::Mesh.MeshServiceDiscovery": {
+      "attributes": {},
+      "description": "",
+      "properties": {}
     },
     "AWS::AppMesh::Mesh.MeshSpec": {
       "attributes": {},
@@ -5154,7 +5219,7 @@
       "properties": {
         "InstanceRequirements": "The instance requirements. When you specify instance requirements, Amazon EC2 Auto Scaling finds instance types that satisfy your requirements, and then uses your On-Demand and Spot allocation strategies to launch instances from these instance types, in the same way as when you specify a list of specific instance types.\n\n> `InstanceRequirements` are incompatible with the `InstanceType` property. If you specify both of these properties, Amazon EC2 Auto Scaling will return a `ValidationException` exception.",
         "InstanceType": "The instance type, such as `m3.xlarge` . You must use an instance type that is supported in your requested Region and Availability Zones. For more information, see [Available instance types](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/instance-types.html#AvailableInstanceTypes) in the *Amazon EC2 User Guide for Linux Instances.*",
-        "LaunchTemplateSpecification": "Provides the launch template to be used when launching the instance type specified in `InstanceType` . For example, some instance types might require a launch template with a different AMI. If not provided, Amazon EC2 Auto Scaling uses the launch template that's defined for your mixed instances policy. For more information, see [Specifying a different launch template for an instance type](https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-mixed-instances-groups-launch-template-overrides.html) in the *Amazon EC2 Auto Scaling User Guide* .",
+        "LaunchTemplateSpecification": "Provides a launch template for the specified instance type or instance requirements. For example, some instance types might require a launch template with a different AMI. If not provided, Amazon EC2 Auto Scaling uses the launch template that's defined for your mixed instances policy. For more information, see [Specifying a different launch template for an instance type](https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-mixed-instances-groups-launch-template-overrides.html) in the *Amazon EC2 Auto Scaling User Guide* .",
         "WeightedCapacity": "The number of capacity units provided by the instance type specified in `InstanceType` in terms of virtual CPUs, memory, storage, throughput, or other relative performance characteristic. When a Spot or On-Demand Instance is provisioned, the capacity units count toward the desired capacity. Amazon EC2 Auto Scaling provisions instances until the desired capacity is totally fulfilled, even if this results in an overage. For example, if there are 2 units remaining to fulfill capacity, and Amazon EC2 Auto Scaling can only provision an instance with a `WeightedCapacity` of 5 units, the instance is provisioned, and the desired capacity is exceeded by 3 units. For more information, see [Instance weighting for Amazon EC2 Auto Scaling](https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-mixed-instances-groups-instance-weighting.html) in the *Amazon EC2 Auto Scaling User Guide* . Value must be in the range of 1-999.\n\n> Every Auto Scaling group has three size parameters ( `DesiredCapacity` , `MaxSize` , and `MinSize` ). Usually, you set these sizes based on a specific number of instances. However, if you configure a mixed instances policy that defines weights for the instance types, you must specify these sizes with the same units that you use for weighting instances."
       }
     },
@@ -5459,7 +5524,7 @@
       "description": "The `AWS::AutoScaling::WarmPool` resource creates a pool of pre-initialized EC2 instances that sits alongside the Auto Scaling group. Whenever your application needs to scale out, the Auto Scaling group can draw on the warm pool to meet its new desired capacity.\n\nWhen you create a warm pool, you can define a minimum size. When your Auto Scaling group scales out and the size of the warm pool shrinks, Amazon EC2 Auto Scaling launches new instances into the warm pool to maintain its minimum size.\n\nFor more information, see [Warm pools for Amazon EC2 Auto Scaling](https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-warm-pools.html) in the *Amazon EC2 Auto Scaling User Guide* .\n\n> CloudFormation supports the `UpdatePolicy` attribute for Auto Scaling groups. During an update, if `UpdatePolicy` is set to `AutoScalingRollingUpdate` , CloudFormation replaces `InService` instances only. Instances in the warm pool are not replaced. The difference in which instances are replaced can potentially result in different instance configurations after the stack update completes. If `UpdatePolicy` is set to `AutoScalingReplacingUpdate` , you do not encounter this issue because CloudFormation replaces both the Auto Scaling group and the warm pool.",
       "properties": {
         "AutoScalingGroupName": "The name of the Auto Scaling group.",
-        "InstanceReusePolicy": "",
+        "InstanceReusePolicy": "Indicates whether instances in the Auto Scaling group can be returned to the warm pool on scale in. The default is to terminate instances in the Auto Scaling group when the group scales in.",
         "MaxGroupPreparedCapacity": "Specifies the maximum number of instances that are allowed to be in the warm pool or in any state except `Terminated` for the Auto Scaling group. This is an optional property. Specify it only if you do not want the warm pool size to be determined by the difference between the group's maximum capacity and its desired capacity.\n\n> If a value for `MaxGroupPreparedCapacity` is not specified, Amazon EC2 Auto Scaling launches and maintains the difference between the group's maximum capacity and its desired capacity. If you specify a value for `MaxGroupPreparedCapacity` , Amazon EC2 Auto Scaling uses the difference between the `MaxGroupPreparedCapacity` and the desired capacity instead.\n> \n> The size of the warm pool is dynamic. Only when `MaxGroupPreparedCapacity` and `MinSize` are set to the same value does the warm pool have an absolute size. \n\nIf the desired capacity of the Auto Scaling group is higher than the `MaxGroupPreparedCapacity` , the capacity of the warm pool is 0, unless you specify a value for `MinSize` . To remove a value that you previously set, include the property but specify -1 for the value.",
         "MinSize": "Specifies the minimum number of instances to maintain in the warm pool. This helps you to ensure that there is always a certain number of warmed instances available to handle traffic spikes. Defaults to 0 if not specified.",
         "PoolState": "Sets the instance state to transition to after the lifecycle actions are complete. Default is `Stopped` ."
@@ -5467,9 +5532,9 @@
     },
     "AWS::AutoScaling::WarmPool.InstanceReusePolicy": {
       "attributes": {},
-      "description": "",
+      "description": "A structure that specifies an instance reuse policy for the `InstanceReusePolicy` property of the [AWS::AutoScaling::WarmPool](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-autoscaling-warmpool.html) resource type.\n\nFor more information, see [Warm pools for Amazon EC2 Auto Scaling](https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-warm-pools.html) in the *Amazon EC2 Auto Scaling User Guide* .",
       "properties": {
-        "ReuseOnScaleIn": ""
+        "ReuseOnScaleIn": "Specifies whether instances in the Auto Scaling group can be returned to the warm pool on scale in."
       }
     },
     "AWS::AutoScalingPlans::ScalingPlan": {
@@ -10213,10 +10278,24 @@
         "SubnetArn": "The Amazon Resource Name (ARN) of the subnet that DataSync uses to access the target EFS file system."
       }
     },
+    "AWS::DataSync::LocationFSxLustre": {
+      "attributes": {
+        "LocationArn": "The ARN of the specified FSx for Lustre file system location.",
+        "LocationUri": "The URI of the specified FSx for Lustre file system location.",
+        "Ref": "`Ref` returns the location resource ARN. For example:\n\n`arn:aws:datasync:us-east-2:111222333444:location/loc-07db7abfc326c50s3`"
+      },
+      "description": "The `AWS::DataSync::LocationFSxLustre` resource specifies an endpoint for an Amazon FSx for Lustre file system.",
+      "properties": {
+        "FsxFilesystemArn": "The Amazon Resource Name (ARN) for the FSx for Lustre file system.",
+        "SecurityGroupArns": "The ARNs of the security groups that are used to configure the FSx for Lustre file system.\n\n*Pattern* : `^arn:(aws|aws-cn|aws-us-gov|aws-iso|aws-iso-b):ec2:[a-z\\-0-9]*:[0-9]{12}:security-group/.*$`\n\n*Length constraints* : Maximum length of 128.",
+        "Subdirectory": "A subdirectory in the location's path. This subdirectory in the FSx for Lustre file system is used to read data from the FSx for Lustre source location or write data to the FSx for Lustre destination.",
+        "Tags": "The key-value pair that represents a tag that you want to add to the resource. The value can be an empty string. This value helps you manage, filter, and search for your resources. We recommend that you create a name tag for your location."
+      }
+    },
     "AWS::DataSync::LocationFSxWindows": {
       "attributes": {
-        "LocationArn": "The Amazon Resource Name (ARN) of the specified Amazon FSx for Windows Server file system location.",
-        "LocationUri": "The URI of the specified Amazon FSx for Windows Server file system.",
+        "LocationArn": "The ARN of the specified FSx for Windows Server file system location.",
+        "LocationUri": "The URI of the specified FSx for Windows Server file system location.",
         "Ref": "When you pass the logical ID of this resource to the intrinsic `Ref` function, `Ref` returns the location resource ARN. For example:\n\n`arn:aws:datasync:us-east-2:111222333444:location/loc-07db7abfc326c50s3`\n\nFor more information about using the `Ref` function, see [Ref](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-ref.html) ."
       },
       "description": "The `AWS::DataSync::LocationFSxWindows` resource specifies an endpoint for an Amazon FSx for Windows Server file system.",
@@ -10224,7 +10303,7 @@
         "Domain": "The name of the Windows domain that the FSx for Windows File Server belongs to.",
         "FsxFilesystemArn": "The Amazon Resource Name (ARN) for the FSx for Windows File Server file system.",
         "Password": "The password of the user who has the permissions to access files and folders in the FSx for Windows File Server file system.",
-        "SecurityGroupArns": "The Amazon Resource Names (ARNs) of the security groups that are used to configure the FSx for Windows File Server file system.\n\n*Pattern* : `^arn:(aws|aws-cn|aws-us-gov|aws-iso|aws-iso-b):ec2:[a-z\\-0-9]*:[0-9]{12}:security-group/.*$`\n\n*Length Constraints* : Maximum length of 128.",
+        "SecurityGroupArns": "The Amazon Resource Names (ARNs) of the security groups that are used to configure the FSx for Windows File Server file system.\n\n*Pattern* : `^arn:(aws|aws-cn|aws-us-gov|aws-iso|aws-iso-b):ec2:[a-z\\-0-9]*:[0-9]{12}:security-group/.*$`\n\n*Length constraints* : Maximum length of 128.",
         "Subdirectory": "A subdirectory in the location's path. This subdirectory in the Amazon FSx for Windows File Server file system is used to read data from the Amazon FSx for Windows File Server source location or write data to the FSx for Windows File Server destination.",
         "Tags": "The key-value pair that represents a tag that you want to add to the resource. The value can be an empty string. This value helps you manage, filter, and search for your resources. We recommend that you create a name tag for your location.",
         "User": "The user who has the permissions to access files and folders in the FSx for Windows File Server file system.\n\nFor information about choosing a user name that ensures sufficient permissions to files, folders, and metadata, see [user](https://docs.aws.amazon.com/datasync/latest/userguide/create-fsx-location.html#FSxWuser) ."
@@ -10236,10 +10315,10 @@
         "LocationUri": "The URI of the HDFS cluster location.",
         "Ref": "When you pass the logical ID of this resource to the intrinsic `Ref` function, `Ref` returns the location resource ARN. For example:\n\n`arn:aws:datasync:us-east-2:111222333444:location/loc-07db7abfc326c50s3`\n\nFor more information about using the `Ref` function, see [Ref](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-ref.html) ."
       },
-      "description": "Creates an endpoint for a Hadoop Distributed File System (HDFS).",
+      "description": "The `AWS::DataSync::LocationHDFS` resource specifies an endpoint for a Hadoop Distributed File System (HDFS).",
       "properties": {
         "AgentArns": "The Amazon Resource Names (ARNs) of the agents that are used to connect to the HDFS cluster.",
-        "AuthenticationType": "The type of authentication used to determine the identity of the user.",
+        "AuthenticationType": "",
         "BlockSize": "The size of data blocks to write into the HDFS cluster. The block size must be a multiple of 512 bytes. The default block size is 128 mebibytes (MiB).",
         "KerberosKeytab": "The Kerberos key table (keytab) that contains mappings between the defined Kerberos principal and the encrypted keys. Provide the base64-encoded file text. If `KERBEROS` is specified for `AuthType` , this value is required.",
         "KerberosKrb5Conf": "The `krb5.conf` file that contains the Kerberos configuration information. You can load the `krb5.conf` by providing a string of the file's contents or an Amazon S3 presigned URL of the file. If `KERBEROS` is specified for `AuthType` , this value is required.",
@@ -10366,12 +10445,13 @@
     },
     "AWS::DataSync::Task": {
       "attributes": {
-        "DestinationNetworkInterfaceArns": "",
-        "ErrorCode": "Errors that AWS DataSync encountered during execution of the task. You can use this error code to help troubleshoot issues.",
+        "DestinationNetworkInterfaceArns": "The ARNs of the destination elastic network interfaces (ENIs) that were created for your subnet.",
+        "ErrorCode": "Errors encountered during task execution. Troubleshoot issues with this error code.",
         "ErrorDetail": "Detailed description of an error that was encountered during the task execution. You can use this information to help troubleshoot issues.",
-        "Ref": "When you pass the logical ID of this resource to the intrinsic `Ref` function, `Ref` returns the location resource ARN. For example:\n\n`arn:aws:datasync:us-east-2:111222333444:location/loc-07db7abfc326c50s3`\n\nFor more information about using the `Ref` function, see [Ref](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-ref.html) .",
+        "Ref": "When you pass the logical ID of this resource to the intrinsic `Ref` function, `Ref` returns the location resource ARN. For example:\n\n`arn:aws:datasync:us-east-2:111222333444:task/task-07db7abfc326c50s3`\n\nFor more information about using the `Ref` function, see [Ref](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-ref.html) .",
+        "SourceNetworkInterfaceArns": "The ARNs of the source ENIs that were created for your subnet.",
         "Status": "The status of the task that was described.",
-        "TaskArn": "The Amazon Resource Name (ARN) of the task."
+        "TaskArn": "The ARN of the task."
       },
       "description": "The `AWS::DataSync::Task` resource specifies a task. A task is a set of two locations (source and destination) and a set of `Options` that you use to control the behavior of a task. If you don't specify `Options` when you create a task, AWS DataSync populates them with service defaults.",
       "properties": {
@@ -12948,6 +13028,7 @@
         "AvailabilityZone": "The Availability Zone in which to launch the instances.",
         "InstanceRequirements": "The instance requirements. When you specify instance requirements, Amazon EC2 will identify instance types with the provided requirements, and then use your On-Demand and Spot allocation strategies to launch instances from these instance types, in the same way as when you specify a list of instance types.\n\n> If you specify `InstanceRequirements` , you can't specify `InstanceTypes` .",
         "InstanceType": "The instance type.",
+        "Priority": "The priority for the launch template override. The highest priority is launched first.\n\nIf `OnDemandAllocationStrategy` is set to `prioritized` , Spot Fleet uses priority to determine which launch template override to use first in fulfilling On-Demand capacity.\n\nIf the Spot `AllocationStrategy` is set to `capacityOptimizedPrioritized` , Spot Fleet uses priority on a best-effort basis to determine which launch template override to use in fulfilling Spot capacity, but optimizes for capacity first.\n\nValid values are whole numbers starting at `0` . The lower the number, the higher the priority. If no number is set, the launch template override has the lowest priority. You can set the same priority for different launch template overrides.",
         "SpotPrice": "The maximum price per unit hour that you are willing to pay for a Spot Instance.",
         "SubnetId": "The ID of the subnet in which to launch the instances.",
         "WeightedCapacity": "The number of units provided by the specified instance type."
@@ -13533,7 +13614,7 @@
       "attributes": {
         "Ref": "`Ref` returns the ID of the VPC endpoint service configuration."
       },
-      "description": "Creates a VPC endpoint service configuration to which service consumers ( AWS accounts, IAM users, and IAM roles) can connect.\n\nTo create an endpoint service configuration, you must first create one of the following for your service:\n\n- A [Network Load Balancer](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/introduction.html) . Service consumers connect to your service using an interface endpoint.\n- A [Gateway Load Balancer](https://docs.aws.amazon.com/elasticloadbalancing/latest/gateway/introduction.html) . Service consumers connect to your service using a Gateway Load Balancer endpoint.\n\nFor more information, see [VPC Endpoint Services](https://docs.aws.amazon.com/vpc/latest/userguide/endpoint-service.html) in the *Amazon Virtual Private Cloud User Guide* .",
+      "description": "Creates a VPC endpoint service configuration to which service consumers ( AWS accounts, IAM users, and IAM roles) can connect.\n\nTo create an endpoint service configuration, you must first create one of the following for your service:\n\n- A [Network Load Balancer](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/introduction.html) . Service consumers connect to your service using an interface endpoint.\n- A [Gateway Load Balancer](https://docs.aws.amazon.com/elasticloadbalancing/latest/gateway/introduction.html) . Service consumers connect to your service using a Gateway Load Balancer endpoint.\n\nFor more information, see the [AWS PrivateLink User Guide](https://docs.aws.amazon.com/vpc/latest/privatelink/) .",
       "properties": {
         "AcceptanceRequired": "Indicates whether requests from service consumers to create an endpoint to your service must be accepted.",
         "GatewayLoadBalancerArns": "The Amazon Resource Names (ARNs) of one or more Gateway Load Balancers.",
@@ -16514,6 +16595,68 @@
         "Name": "The name for the connection to create."
       }
     },
+    "AWS::Events::Connection.ApiKeyAuthParameters": {
+      "attributes": {},
+      "description": "",
+      "properties": {
+        "ApiKeyName": "",
+        "ApiKeyValue": ""
+      }
+    },
+    "AWS::Events::Connection.AuthParameters": {
+      "attributes": {},
+      "description": "",
+      "properties": {
+        "ApiKeyAuthParameters": "",
+        "BasicAuthParameters": "",
+        "InvocationHttpParameters": "",
+        "OAuthParameters": ""
+      }
+    },
+    "AWS::Events::Connection.BasicAuthParameters": {
+      "attributes": {},
+      "description": "",
+      "properties": {
+        "Password": "",
+        "Username": ""
+      }
+    },
+    "AWS::Events::Connection.ClientParameters": {
+      "attributes": {},
+      "description": "",
+      "properties": {
+        "ClientID": "",
+        "ClientSecret": ""
+      }
+    },
+    "AWS::Events::Connection.ConnectionHttpParameters": {
+      "attributes": {},
+      "description": "Contains additional parameters for the connection.",
+      "properties": {
+        "BodyParameters": "Contains additional body string parameters for the connection.",
+        "HeaderParameters": "Contains additional header parameters for the connection.",
+        "QueryStringParameters": "Contains additional query string parameters for the connection."
+      }
+    },
+    "AWS::Events::Connection.OAuthParameters": {
+      "attributes": {},
+      "description": "",
+      "properties": {
+        "AuthorizationEndpoint": "",
+        "ClientParameters": "",
+        "HttpMethod": "",
+        "OAuthHttpParameters": ""
+      }
+    },
+    "AWS::Events::Connection.Parameter": {
+      "attributes": {},
+      "description": "",
+      "properties": {
+        "IsValueSecret": "",
+        "Key": "",
+        "Value": ""
+      }
+    },
     "AWS::Events::EventBus": {
       "attributes": {
         "Arn": "The ARN of the event bus, such as `arn:aws:events:us-east-2:123456789012:event-bus/aws.partner/PartnerName/acct1/repo1` .",
@@ -17636,14 +17779,14 @@
     },
     "AWS::GameLift::Alias": {
       "attributes": {
-        "AliasId": "",
+        "AliasId": "A unique identifier for the alias. For example, `arn:aws:gamelift:us-west-1::alias/alias-a1234567-b8c9-0d1e-2fa3-b45c6d7e8912`\n\nAlias IDs are unique within a Region.",
         "Ref": "`Ref` returns the alias ID, such as `alias-1111aaaa-22bb-33cc-44dd-5555eeee66ff` ."
       },
       "description": "The `AWS::GameLift::Alias` resource creates an alias for an Amazon GameLift (GameLift) fleet destination. There are two types of routing strategies for aliases: simple and terminal. A simple alias points to an active fleet. A terminal alias displays a message instead of routing players to an active fleet. For example, a terminal alias might display a URL link that directs players to an upgrade site. You can use aliases to define destinations in a game session queue or when requesting new game sessions.",
       "properties": {
         "Description": "A human-readable description of the alias.",
         "Name": "A descriptive label that is associated with an alias. Alias names do not need to be unique.",
-        "RoutingStrategy": "A routing configuration that specifies where traffic is directed for this alias, such as to a fleet or to a message."
+        "RoutingStrategy": "The routing configuration, including routing type and fleet target, for the alias."
       }
     },
     "AWS::GameLift::Alias.RoutingStrategy": {
@@ -17679,42 +17822,42 @@
     },
     "AWS::GameLift::Fleet": {
       "attributes": {
-        "FleetId": "",
+        "FleetId": "A unique identifier for the fleet.",
         "Ref": "`Ref` returns the fleet ID, such as `fleet-1111aaaa-22bb-33cc-44dd-5555eeee66ff` ."
       },
       "description": "The `AWS::GameLift::Fleet` resource creates an Amazon GameLift (GameLift) fleet to host game servers. A fleet is a set of EC2 instances, each of which can host multiple game sessions.",
       "properties": {
         "BuildId": "A unique identifier for a build to be deployed on the new fleet. If you are deploying the fleet with a custom game build, you must specify this property. The build must have been successfully uploaded to Amazon GameLift and be in a `READY` status. This fleet setting cannot be changed once the fleet is created.",
-        "CertificateConfiguration": "Indicates whether to generate a TLS/SSL certificate for the new fleet. TLS certificates are used for encrypting traffic between game clients and game servers running on GameLift. If this parameter is not set, certificate generation is disabled. This fleet setting cannot be changed once the fleet is created. Learn more at [Securing Client/Server Communication](https://docs.aws.amazon.com/gamelift/latest/developerguide/gamelift-howitworks.html#gamelift-howitworks-security) .\n\nNote: This feature requires the AWS Certificate Manager service, which is available in the AWS global partition but not in all other partitions. When working in a partition that does not support this feature, a request for a new fleet with certificate generation results fails with a 4xx unsupported region error.",
+        "CertificateConfiguration": "Prompts GameLift to generate a TLS/SSL certificate for the fleet. TLS certificates are used for encrypting traffic between game clients and the game servers that are running on GameLift. By default, the `CertificateConfiguration` is set to `DISABLED` . This property cannot be changed after the fleet is created.\n\nNote: This feature requires the AWS Certificate Manager (ACM) service, which is not available in all AWS regions. When working in a region that does not support this feature, a fleet creation request with certificate generation fails with a 4xx error.",
         "Description": "A human-readable description of the fleet.",
         "DesiredEC2Instances": "The number of EC2 instances that you want this fleet to host. When creating a new fleet, GameLift automatically sets this value to \"1\" and initiates a single instance. Once the fleet is active, update this value to trigger GameLift to add or remove instances from the fleet.",
-        "EC2InboundPermissions": "A range of IP addresses and port settings that allow inbound traffic to connect to server processes on an Amazon GameLift server.",
+        "EC2InboundPermissions": "The allowed IP address ranges and port settings that allow inbound traffic to access game sessions on this fleet. If the fleet is hosting a custom game build, this property must be set before players can connect to game sessions. For Realtime Servers fleets, GameLift automatically sets TCP and UDP ranges.",
         "EC2InstanceType": "The GameLift-supported Amazon EC2 instance type to use for all fleet instances. Instance type determines the computing resources that will be used to host your game servers, including CPU, memory, storage, and networking capacity. See [Amazon Elastic Compute Cloud Instance Types](https://docs.aws.amazon.com/ec2/instance-types/) for detailed descriptions of Amazon EC2 instance types.",
         "FleetType": "Indicates whether to use On-Demand or Spot instances for this fleet. By default, this property is set to `ON_DEMAND` . Learn more about when to use [On-Demand versus Spot Instances](https://docs.aws.amazon.com/gamelift/latest/developerguide/gamelift-ec2-instances.html#gamelift-ec2-instances-spot) . This property cannot be changed after the fleet is created.",
         "InstanceRoleARN": "A unique identifier for an IAM role that manages access to your AWS services. With an instance role ARN set, any application that runs on an instance in this fleet can assume the role, including install scripts, server processes, and daemons (background processes). Create a role or look up a role's ARN by using the [IAM dashboard](https://docs.aws.amazon.com/iam/) in the AWS Management Console . Learn more about using on-box credentials for your game servers at [Access external resources from a game server](https://docs.aws.amazon.com/gamelift/latest/developerguide/gamelift-sdk-server-resources.html) . This property cannot be changed after the fleet is created.",
         "Locations": "A set of remote locations to deploy additional instances to and manage as part of the fleet. This parameter can only be used when creating fleets in AWS Regions that support multiple locations. You can add any GameLift-supported AWS Region as a remote location, in the form of an AWS Region code such as `us-west-2` . To create a fleet with instances in the home Region only, omit this parameter.",
-        "MaxSize": "The maximum value that is allowed for the fleet's instance count. When creating a new fleet, GameLift automatically sets this value to \"1\". Once the fleet is active, you can change this value.",
-        "MetricGroups": "The name of an Amazon CloudWatch metric group. A metric group aggregates the metrics for all fleets in the group. Specify a string containing the metric group name. You can use an existing name or use a new name to create a new metric group. Currently, this parameter can have only one string.",
-        "MinSize": "The minimum value allowed for the fleet's instance count. When creating a new fleet, GameLift automatically sets this value to \"0\". After the fleet is active, you can change this value.",
+        "MaxSize": "The maximum number of instances that are allowed in the specified fleet location. If this parameter is not set, the default is 1.",
+        "MetricGroups": "The name of an AWS CloudWatch metric group to add this fleet to. A metric group is used to aggregate the metrics for multiple fleets. You can specify an existing metric group name or set a new name to create a new metric group. A fleet can be included in only one metric group at a time.",
+        "MinSize": "The minimum number of instances that are allowed in the specified fleet location. If this parameter is not set, the default is 0.",
         "Name": "A descriptive label that is associated with a fleet. Fleet names do not need to be unique.",
-        "NewGameSessionProtectionPolicy": "A game session protection policy to apply to all game sessions hosted on instances in this fleet. When protected, active game sessions cannot be terminated during a scale-down event. If this parameter is not set, instances in this fleet default to no protection. You can change a fleet's protection policy to affect future game sessions on the fleet. You can also set protection for individual game sessions.",
+        "NewGameSessionProtectionPolicy": "The status of termination protection for active game sessions on the fleet. By default, this property is set to `NoProtection` .\n\n- *NoProtection* - Game sessions can be terminated during active gameplay as a result of a scale-down event.\n- *FullProtection* - Game sessions in `ACTIVE` status cannot be terminated during a scale-down event.",
         "PeerVpcAwsAccountId": "Used when peering your GameLift fleet with a VPC, the unique identifier for the AWS account that owns the VPC. You can find your account ID in the AWS Management Console under account settings.",
         "PeerVpcId": "A unique identifier for a VPC with resources to be accessed by your GameLift fleet. The VPC must be in the same Region as your fleet. To look up a VPC ID, use the [VPC Dashboard](https://docs.aws.amazon.com/vpc/) in the AWS Management Console . Learn more about VPC peering in [VPC Peering with GameLift Fleets](https://docs.aws.amazon.com/gamelift/latest/developerguide/vpc-peering.html) .",
         "ResourceCreationLimitPolicy": "A policy that limits the number of game sessions that an individual player can create on instances in this fleet within a specified span of time.",
-        "RuntimeConfiguration": "Instructions for launching server processes on each instance in the fleet. Server processes run either a custom game build executable or a Realtime script. The runtime configuration defines the server executables or launch script file, launch parameters, and the number of processes to run concurrently on each instance. When creating a fleet, the runtime configuration must have at least one server process configuration; otherwise the request fails with an invalid request exception.\n\nThis parameter is required unless the parameters `ServerLaunchPath` and `ServerLaunchParameters` are defined. Runtime configuration has replaced these parameters, but fleets that use them will continue to work.",
-        "ScriptId": "A unique identifier for a Realtime script to be deployed on a new Realtime Servers fleet. The script must have been successfully uploaded to Amazon GameLift. This fleet setting cannot be changed once the fleet is created.\n\nNote: It is not currently possible to use the `!Ref` command to reference a script created with a CloudFormation template for the fleet property `ScriptId` . Instead, use `Fn::GetAtt Script.Arn` or `Fn::GetAtt Script.Id` to retrieve either of these properties as input for `ScriptId` . Alternatively, enter a `ScriptId` string manually."
+        "RuntimeConfiguration": "Instructions for how to launch and maintain server processes on instances in the fleet. The runtime configuration defines one or more server process configurations, each identifying a build executable or Realtime script file and the number of processes of that type to run concurrently.\n\n> The `RuntimeConfiguration` parameter is required unless the fleet is being configured using the older parameters `ServerLaunchPath` and `ServerLaunchParameters` , which are still supported for backward compatibility.",
+        "ScriptId": "The unique identifier for a Realtime configuration script to be deployed on fleet instances. You can use either the script ID or ARN. Scripts must be uploaded to GameLift prior to creating the fleet. This fleet property cannot be changed later.\n\n> You can't use the `!Ref` command to reference a script created with a CloudFormation template for the fleet property `ScriptId` . Instead, use `Fn::GetAtt Script.Arn` or `Fn::GetAtt Script.Id` to retrieve either of these properties as input for `ScriptId` . Alternatively, enter a `ScriptId` string manually."
       }
     },
     "AWS::GameLift::Fleet.CertificateConfiguration": {
       "attributes": {},
-      "description": "Information about the use of a TLS/SSL certificate for a fleet. TLS certificate generation is enabled at the fleet level, with one certificate generated for the fleet. When this feature is enabled, the certificate can be retrieved using the GameLift Server SDK call `GetInstanceCertificate` . All instances in a fleet share the same certificate.",
+      "description": "Determines whether a TLS/SSL certificate is generated for a fleet. This feature must be enabled when creating the fleet. All instances in a fleet share the same certificate. The certificate can be retrieved by calling the [GameLift Server SDK](https://docs.aws.amazon.com/gamelift/latest/developerguide/reference-serversdk.html) operation `GetInstanceCertificate` .",
       "properties": {
-        "CertificateType": "Indicates whether a TLS/SSL certificate is generated for the fleet."
+        "CertificateType": "Indicates whether a TLS/SSL certificate is generated for a fleet.\n\nValid values include:\n\n- *GENERATED* - Generate a TLS/SSL certificate for this fleet.\n- *DISABLED* - (default) Do not generate a TLS/SSL certificate for this fleet."
       }
     },
     "AWS::GameLift::Fleet.IpPermission": {
       "attributes": {},
-      "description": "A range of IP addresses and port settings that allow inbound traffic to connect to server processes on an Amazon GameLift hosting resource. New game sessions that are started on the fleet are assigned an IP address/port number combination, which must fall into the fleet's allowed ranges. For fleets created with a custom game server, the ranges reflect the server's game session assignments. For Realtime Servers fleets, Amazon GameLift automatically opens two port ranges, one for TCP messaging and one for UDP, for use by the Realtime servers.",
+      "description": "A range of IP addresses and port settings that allow inbound traffic to connect to server processes on an instance in a fleet. New game sessions are assigned an IP address/port number combination, which must fall into the fleet's allowed ranges. Fleets with custom game builds must have permissions explicitly set. For Realtime Servers fleets, GameLift automatically opens two port ranges, one for TCP messaging and one for UDP.",
       "properties": {
         "FromPort": "A starting value for a range of allowed port numbers.\n\nFor fleets using Linux builds, only port 22, 443, 1026-60000 are valid. For fleets using Windows builds, only port 443, 1026-60000 are valid.",
         "IpRange": "A range of allowed IP addresses. This value must be expressed in CIDR notation. Example: \" `000.000.000.000/[subnet mask]` \" or optionally the shortened version \" `0.0.0.0/[subnet mask]` \".",
@@ -17749,7 +17892,7 @@
     },
     "AWS::GameLift::Fleet.RuntimeConfiguration": {
       "attributes": {},
-      "description": "A collection of server process configurations that describe the processes to run on each instance in a fleet. All fleets must have a runtime configuration. Each instance in the fleet maintains server processes as specified in the runtime configuration, launching new ones as existing processes end. Each instance regularly checks for an updated runtime configuration makes adjustments as called for.\n\nThe runtime configuration enables the instances in a fleet to run multiple processes simultaneously. Potential scenarios are as follows: (1) Run multiple processes of a single game server executable to maximize usage of your hosting resources. (2) Run one or more processes of different executables, such as your game server and a metrics tracking program. (3) Run multiple processes of a single game server but with different launch parameters, for example to run one process on each instance in debug mode.\n\nAn Amazon GameLift instance is limited to 50 processes running simultaneously. A runtime configuration must specify fewer than this limit. To calculate the total number of processes specified in a runtime configuration, add the values of the `ConcurrentExecutions` parameter for each `ServerProcess` object in the runtime configuration.",
+      "description": "A collection of server process configurations that describe the set of processes to run on each instance in a fleet. Server processes run either an executable in a custom game build or a Realtime Servers script. GameLift launches the configured processes, manages their life cycle, and replaces them as needed. Each instance checks regularly for an updated runtime configuration.\n\nA GameLift instance is limited to 50 processes running concurrently. To calculate the total number of processes in a runtime configuration, add the values of the `ConcurrentExecutions` parameter for each ServerProcess. Learn more about [Running Multiple Processes on a Fleet](https://docs.aws.amazon.com/gamelift/latest/developerguide/fleets-multiprocess.html) .",
       "properties": {
         "GameSessionActivationTimeoutSeconds": "The maximum amount of time (in seconds) allowed to launch a new game session and have it report ready to host players. During this time, the game session is in status `ACTIVATING` . If the game session does not become active before the timeout, it is ended and the game session status is changed to `TERMINATED` .",
         "MaxConcurrentGameSessionActivations": "The number of game sessions in status `ACTIVATING` to allow on an instance. This setting limits the instance resources that can be used for new game activations at any one time.",
@@ -17758,7 +17901,7 @@
     },
     "AWS::GameLift::Fleet.ServerProcess": {
       "attributes": {},
-      "description": "A set of instructions for launching server processes on each instance in a fleet. Each instruction set identifies the location of the server executable, optional launch parameters, and the number of server processes with this configuration to maintain concurrently on the instance. Server process configurations make up a fleet's `RuntimeConfiguration` .",
+      "description": "A set of instructions for launching server processes on each instance in a fleet. Server processes run either an executable in a custom game build or a Realtime Servers script.",
       "properties": {
         "ConcurrentExecutions": "The number of server processes using this configuration that run concurrently on each instance.",
         "LaunchPath": "The location of a game build executable or the Realtime script file that contains the `Init()` function. Game builds and Realtime scripts are installed on instances at the root:\n\n- Windows (custom game builds only): `C:\\game` . Example: \" `C:\\game\\MyGame\\server.exe` \"\n- Linux: `/local/game` . Examples: \" `/local/game/MyGame/server.exe` \" or \" `/local/game/MyRealtimeScript.js` \"",
@@ -17767,32 +17910,32 @@
     },
     "AWS::GameLift::GameServerGroup": {
       "attributes": {
-        "AutoScalingGroupArn": "",
-        "GameServerGroupArn": "",
+        "AutoScalingGroupArn": "A unique identifier for the auto scaling group.",
+        "GameServerGroupArn": "A unique identifier for the game server group.",
         "Ref": ""
       },
       "description": "*This operation is used with the Amazon GameLift FleetIQ solution and game server groups.*\n\nCreates a GameLift FleetIQ game server group for managing game hosting on a collection of Amazon EC2 instances for game hosting. This operation creates the game server group, creates an Auto Scaling group in your AWS account , and establishes a link between the two groups. You can view the status of your game server groups in the GameLift console. Game server group metrics and events are emitted to Amazon CloudWatch.\n\nBefore creating a new game server group, you must have the following:\n\n- An Amazon EC2 launch template that specifies how to launch Amazon EC2 instances with your game server build. For more information, see [Launching an Instance from a Launch Template](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-launch-templates.html) in the *Amazon EC2 User Guide* .\n- An IAM role that extends limited access to your AWS account to allow GameLift FleetIQ to create and interact with the Auto Scaling group. For more information, see [Create IAM roles for cross-service interaction](https://docs.aws.amazon.com/gamelift/latest/fleetiqguide/gsg-iam-permissions-roles.html) in the *GameLift FleetIQ Developer Guide* .\n\nTo create a new game server group, specify a unique group name, IAM role and Amazon EC2 launch template, and provide a list of instance types that can be used in the group. You must also set initial maximum and minimum limits on the group's instance count. You can optionally set an Auto Scaling policy with target tracking based on a GameLift FleetIQ metric.\n\nOnce the game server group and corresponding Auto Scaling group are created, you have full access to change the Auto Scaling group's configuration as needed. Several properties that are set when creating a game server group, including maximum/minimum size and auto-scaling policy settings, must be updated directly in the Auto Scaling group. Keep in mind that some Auto Scaling group properties are periodically updated by GameLift FleetIQ as part of its balancing activities to optimize for availability and cost.\n\n*Learn more*\n\n[GameLift FleetIQ Guide](https://docs.aws.amazon.com/gamelift/latest/fleetiqguide/gsg-intro.html)",
       "properties": {
-        "AutoScalingPolicy": "",
+        "AutoScalingPolicy": "Configuration settings to define a scaling policy for the Auto Scaling group that is optimized for game hosting. The scaling policy uses the metric `\"PercentUtilizedGameServers\"` to maintain a buffer of idle game servers that can immediately accommodate new games and players. After the Auto Scaling group is created, update this value directly in the Auto Scaling group using the AWS console or APIs.",
         "BalancingStrategy": "Indicates how GameLift FleetIQ balances the use of Spot Instances and On-Demand Instances in the game server group. Method options include the following:\n\n- `SPOT_ONLY` - Only Spot Instances are used in the game server group. If Spot Instances are unavailable or not viable for game hosting, the game server group provides no hosting capacity until Spot Instances can again be used. Until then, no new instances are started, and the existing nonviable Spot Instances are terminated (after current gameplay ends) and are not replaced.\n- `SPOT_PREFERRED` - (default value) Spot Instances are used whenever available in the game server group. If Spot Instances are unavailable, the game server group continues to provide hosting capacity by falling back to On-Demand Instances. Existing nonviable Spot Instances are terminated (after current gameplay ends) and are replaced with new On-Demand Instances.\n- `ON_DEMAND_ONLY` - Only On-Demand Instances are used in the game server group. No Spot Instances are used, even when available, while this balancing strategy is in force.",
-        "DeleteOption": "",
+        "DeleteOption": "The type of delete to perform. Options include the following:\n\n- `SAFE_DELETE` \u2013 (default) Terminates the game server group and Amazon EC2 Auto Scaling group only when it has no game servers that are in `UTILIZED` status.\n- `FORCE_DELETE` \u2013 Terminates the game server group, including all active game servers regardless of their utilization status, and the Amazon EC2 Auto Scaling group.\n- `RETAIN` \u2013 Does a safe delete of the game server group but retains the Amazon EC2 Auto Scaling group as is.",
         "GameServerGroupName": "A developer-defined identifier for the game server group. The name is unique for each Region in each AWS account.",
         "GameServerProtectionPolicy": "A flag that indicates whether instances in the game server group are protected from early termination. Unprotected instances that have active game servers running might be terminated during a scale-down event, causing players to be dropped from the game. Protected instances cannot be terminated while there are active game servers running except in the event of a forced game server group deletion (see ). An exception to this is with Spot Instances, which can be terminated by AWS regardless of protection status.",
         "InstanceDefinitions": "The set of Amazon EC2 instance types that GameLift FleetIQ can use when balancing and automatically scaling instances in the corresponding Auto Scaling group.",
-        "LaunchTemplate": "",
-        "MaxSize": "",
-        "MinSize": "",
+        "LaunchTemplate": "The Amazon EC2 launch template that contains configuration settings and game server code to be deployed to all instances in the game server group. You can specify the template using either the template name or ID. For help with creating a launch template, see [Creating a Launch Template for an Auto Scaling Group](https://docs.aws.amazon.com/autoscaling/ec2/userguide/create-launch-template.html) in the *Amazon Elastic Compute Cloud Auto Scaling User Guide* . After the Auto Scaling group is created, update this value directly in the Auto Scaling group using the AWS console or APIs.\n\n> If you specify network interfaces in your launch template, you must explicitly set the property `AssociatePublicIpAddress` to \"true\". If no network interface is specified in the launch template, GameLift FleetIQ uses your account's default VPC.",
+        "MaxSize": "The maximum number of instances allowed in the Amazon EC2 Auto Scaling group. During automatic scaling events, GameLift FleetIQ and EC2 do not scale up the group above this maximum. After the Auto Scaling group is created, update this value directly in the Auto Scaling group using the AWS console or APIs.",
+        "MinSize": "The minimum number of instances allowed in the Amazon EC2 Auto Scaling group. During automatic scaling events, GameLift FleetIQ and Amazon EC2 do not scale down the group below this minimum. In production, this value should be set to at least 1. After the Auto Scaling group is created, update this value directly in the Auto Scaling group using the AWS console or APIs.",
         "RoleArn": "The Amazon Resource Name ( [ARN](https://docs.aws.amazon.com/AmazonS3/latest/dev/s3-arn-format.html) ) for an IAM role that allows Amazon Web Services to access your Amazon EC2 Auto Scaling groups.",
-        "Tags": "",
-        "VpcSubnets": ""
+        "Tags": "A list of labels to assign to the new game server group resource. Tags are developer-defined key-value pairs. Tagging AWS resources is useful for resource management, access management, and cost allocation. For more information, see [Tagging AWS Resources](https://docs.aws.amazon.com/general/latest/gr/aws_tagging.html) in the *AWS General Reference* . Once the resource is created, you can use TagResource, UntagResource, and ListTagsForResource to add, remove, and view tags, respectively. The maximum tag limit may be lower than stated. See the AWS General Reference for actual tagging limits.",
+        "VpcSubnets": "A list of virtual private cloud (VPC) subnets to use with instances in the game server group. By default, all GameLift FleetIQ-supported Availability Zones are used. You can use this parameter to specify VPCs that you've set up. This property cannot be updated after the game server group is created, and the corresponding Auto Scaling group will always use the property value that is set with this request, even if the Auto Scaling group is updated directly."
       }
     },
     "AWS::GameLift::GameServerGroup.AutoScalingPolicy": {
       "attributes": {},
-      "description": "",
+      "description": "*This data type is used with the GameLift FleetIQ and game server groups.*\n\nConfiguration settings for intelligent automatic scaling that uses target tracking. After the Auto Scaling group is created, all updates to Auto Scaling policies, including changing this policy and adding or removing other policies, is done directly on the Auto Scaling group.",
       "properties": {
-        "EstimatedInstanceWarmup": "",
-        "TargetTrackingConfiguration": ""
+        "EstimatedInstanceWarmup": "Length of time, in seconds, it takes for a new instance to start new game server processes and register with GameLift FleetIQ. Specifying a warm-up time can be useful, particularly with game servers that take a long time to start up, because it avoids prematurely starting new instances.",
+        "TargetTrackingConfiguration": "Settings for a target-based scaling policy applied to Auto Scaling group. These settings are used to create a target-based policy that tracks the GameLift FleetIQ metric `PercentUtilizedGameServers` and specifies a target value for the metric. As player usage changes, the policy triggers to adjust the game server group capacity so that the metric returns to the target value."
       }
     },
     "AWS::GameLift::GameServerGroup.InstanceDefinition": {
@@ -17805,11 +17948,11 @@
     },
     "AWS::GameLift::GameServerGroup.LaunchTemplate": {
       "attributes": {},
-      "description": "",
+      "description": "*This data type is used with the GameLift FleetIQ and game server groups.*\n\nAn Amazon EC2 launch template that contains configuration settings and game server code to be deployed to all instances in a game server group. The launch template is specified when creating a new game server group with `GameServerGroup` .",
       "properties": {
-        "LaunchTemplateId": "",
-        "LaunchTemplateName": "",
-        "Version": ""
+        "LaunchTemplateId": "A unique identifier for an existing Amazon EC2 launch template.",
+        "LaunchTemplateName": "A readable identifier for an existing Amazon EC2 launch template.",
+        "Version": "The version of the Amazon EC2 launch template to use. If no version is specified, the default version will be used. With Amazon Elastic Compute Cloud, you can specify a default version for a launch template. If none is set, the default is the first version created."
       }
     },
     "AWS::GameLift::GameServerGroup.TargetTrackingConfiguration": {
@@ -17834,20 +17977,20 @@
         "NotificationTarget": "An SNS topic ARN that is set up to receive game session placement notifications. See [Setting up notifications for game session placement](https://docs.aws.amazon.com/gamelift/latest/developerguide/queue-notification.html) .",
         "PlayerLatencyPolicies": "A set of policies that act as a sliding cap on player latency. FleetIQ works to deliver low latency for most players in a game session. These policies ensure that no individual player can be placed into a game with unreasonably high latency. Use multiple policies to gradually relax latency requirements a step at a time. Multiple policies are applied based on their maximum allowed latency, starting with the lowest value.",
         "PriorityConfiguration": "Custom settings to use when prioritizing destinations and locations for game session placements. This configuration replaces the FleetIQ default prioritization process. Priority types that are not explicitly named will be automatically applied at the end of the prioritization process.",
-        "Tags": "A list of labels to assign to the new game session queue resource. Tags are developer-defined key-value pairs. Tagging AWS resources are useful for resource management, access management and cost allocation. For more information, see [Tagging AWS Resources](https://docs.aws.amazon.com/general/latest/gr/aws_tagging.html) in the *AWS General Reference* . Once the resource is created, you can use `TagResource` , `UntagResource` , and `ListTagsForResource` to add, remove, and view tags. The maximum tag limit may be lower than stated. See the AWS General Reference for actual tagging limits.",
+        "Tags": "A list of labels to assign to the new game session queue resource. Tags are developer-defined key-value pairs. Tagging AWS resources are useful for resource management, access management and cost allocation. For more information, see [Tagging AWS Resources](https://docs.aws.amazon.com/general/latest/gr/aws_tagging.html) in the *AWS General Reference* . Once the resource is created, you can use TagResource, UntagResource, and ListTagsForResource to add, remove, and view tags. The maximum tag limit may be lower than stated. See the AWS General Reference for actual tagging limits.",
         "TimeoutInSeconds": "The maximum time, in seconds, that a new game session placement request remains in the queue. When a request exceeds this time, the game session placement changes to a `TIMED_OUT` status."
       }
     },
     "AWS::GameLift::GameSessionQueue.Destination": {
       "attributes": {},
-      "description": "The fleet designated in a game session queue. Requests for new game sessions in the queue are fulfilled by starting a new game session on any destination that is configured for a queue.",
+      "description": "A fleet or alias designated in a game session queue. Queues fulfill requests for new game sessions by placing a new game session on any of the queue's destinations.",
       "properties": {
         "DestinationArn": "The Amazon Resource Name (ARN) that is assigned to fleet or fleet alias. ARNs, which include a fleet ID or alias ID and a Region name, provide a unique identifier across all Regions."
       }
     },
     "AWS::GameLift::GameSessionQueue.FilterConfiguration": {
       "attributes": {},
-      "description": "A list of fleet locations where a game session queue can place new game sessions. You can use a filter to temporarily turn off placements for specific locations. For queues that have multi-location fleets, you can use a filter configuration allow placement with some, but not all of these locations.\n\nFilter configurations are part of a `GameSessionQueue` .",
+      "description": "A list of fleet locations where a game session queue can place new game sessions. You can use a filter to temporarily turn off placements for specific locations. For queues that have multi-location fleets, you can use a filter configuration allow placement with some, but not all of these locations.",
       "properties": {
         "AllowedLocations": "A list of locations to allow game session placement in, in the form of AWS Region codes such as `us-west-2` ."
       }
@@ -17862,7 +18005,7 @@
     },
     "AWS::GameLift::GameSessionQueue.PriorityConfiguration": {
       "attributes": {},
-      "description": "Custom prioritization settings for use by a game session queue when placing new game sessions with available game servers. When defined, this configuration replaces the default FleetIQ prioritization process, which is as follows:\n\n- If player latency data is included in a game session request, destinations and locations are prioritized first based on lowest average latency (1), then on lowest hosting cost (2), then on destination list order (3), and finally on location (alphabetical) (4). This approach ensures that the queue's top priority is to place game sessions where average player latency is lowest, and--if latency is the same--where the hosting cost is less, etc.\n- If player latency data is not included, destinations and locations are prioritized first on destination list order (1), and then on location (alphabetical) (2). This approach ensures that the queue's top priority is to place game sessions on the first destination fleet listed. If that fleet has multiple locations, the game session is placed on the first location (when listed alphabetically).\n\nChanging the priority order will affect how game sessions are placed.\n\nPriority configurations are part of a `GameSessionQueue` .",
+      "description": "Custom prioritization settings for use by a game session queue when placing new game sessions with available game servers. When defined, this configuration replaces the default FleetIQ prioritization process, which is as follows:\n\n- If player latency data is included in a game session request, destinations and locations are prioritized first based on lowest average latency (1), then on lowest hosting cost (2), then on destination list order (3), and finally on location (alphabetical) (4). This approach ensures that the queue's top priority is to place game sessions where average player latency is lowest, and--if latency is the same--where the hosting cost is less, etc.\n- If player latency data is not included, destinations and locations are prioritized first on destination list order (1), and then on location (alphabetical) (2). This approach ensures that the queue's top priority is to place game sessions on the first destination fleet listed. If that fleet has multiple locations, the game session is placed on the first location (when listed alphabetically).\n\nChanging the priority order will affect how game sessions are placed.",
       "properties": {
         "LocationOrder": "The prioritization order to use for fleet locations, when the `PriorityOrder` property includes `LOCATION` . Locations are identified by AWS Region codes such as `us-west-2` . Each location can only be listed once.",
         "PriorityOrder": "The recommended sequence to use when prioritizing where to place new game sessions. Each type can only be listed once.\n\n- `LATENCY` -- FleetIQ prioritizes locations where the average player latency (provided in each game session request) is lowest.\n- `COST` -- FleetIQ prioritizes destinations with the lowest current hosting costs. Cost is evaluated based on the location, instance type, and fleet type (Spot or On-Demand) for each destination in the queue.\n- `DESTINATION` -- FleetIQ prioritizes based on the order that destinations are listed in the queue configuration.\n- `LOCATION` -- FleetIQ prioritizes based on the provided order of locations, as defined in `LocationOrder` ."
@@ -17880,22 +18023,22 @@
         "AcceptanceTimeoutSeconds": "The length of time (in seconds) to wait for players to accept a proposed match, if acceptance is required.",
         "AdditionalPlayerCount": "The number of player slots in a match to keep open for future players. For example, if the configuration's rule set specifies a match for a single 12-person team, and the additional player count is set to 2, only 10 players are selected for the match. This parameter is not used if `FlexMatchMode` is set to `STANDALONE` .",
         "BackfillMode": "The method used to backfill game sessions that are created with this matchmaking configuration. Specify `MANUAL` when your game manages backfill requests manually or does not use the match backfill feature. Specify `AUTOMATIC` to have GameLift create a `StartMatchBackfill` request whenever a game session has one or more open slots. Learn more about manual and automatic backfill in [Backfill Existing Games with FlexMatch](https://docs.aws.amazon.com/gamelift/latest/flexmatchguide/match-backfill.html) . Automatic backfill is not available when `FlexMatchMode` is set to `STANDALONE` .",
-        "CustomEventData": "Information that is attached to all events related to the matchmaking configuration.",
+        "CustomEventData": "Information to add to all events related to the matchmaking configuration.",
         "Description": "A descriptive label that is associated with matchmaking configuration.",
-        "FlexMatchMode": "Indicates whether this matchmaking configuration is being used with GameLift managed hosting or as a standalone matchmaking solution.\n\n- *STANDALONE* - FlexMatch forms matches and returns match information, including players and team assignments, in a [MatchmakingSucceeded](https://docs.aws.amazon.com/gamelift/latest/flexmatchguide/match-events.html#match-events-matchmakingsucceeded) event.\n- *WITH_QUEUE* - FlexMatch forms matches and uses the specified GameLift queue to start a game session for the match.",
+        "FlexMatchMode": "Indicates whether this matchmaking configuration is being used with GameLift hosting or as a standalone matchmaking solution.\n\n- *STANDALONE* - FlexMatch forms matches and returns match information, including players and team assignments, in a [MatchmakingSucceeded](https://docs.aws.amazon.com/gamelift/latest/flexmatchguide/match-events.html#match-events-matchmakingsucceeded) event.\n- *WITH_QUEUE* - FlexMatch forms matches and uses the specified GameLift queue to start a game session for the match.",
         "GameProperties": "A set of custom properties for a game session, formatted as key-value pairs. These properties are passed to a game server process with a request to start a new game session. See [Start a Game Session](https://docs.aws.amazon.com/gamelift/latest/developerguide/gamelift-sdk-server-api.html#gamelift-sdk-server-startsession) . This parameter is not used if `FlexMatchMode` is set to `STANDALONE` .",
         "GameSessionData": "A set of custom game session properties, formatted as a single string value. This data is passed to a game server process with a request to start a new game session. See [Start a Game Session](https://docs.aws.amazon.com/gamelift/latest/developerguide/gamelift-sdk-server-api.html#gamelift-sdk-server-startsession) . This parameter is not used if `FlexMatchMode` is set to `STANDALONE` .",
         "GameSessionQueueArns": "The Amazon Resource Name ( [ARN](https://docs.aws.amazon.com/AmazonS3/latest/dev/s3-arn-format.html) ) that is assigned to a GameLift game session queue resource and uniquely identifies it. ARNs are unique across all Regions. Format is `arn:aws:gamelift:<region>::gamesessionqueue/<queue name>` . Queues can be located in any Region. Queues are used to start new GameLift-hosted game sessions for matches that are created with this matchmaking configuration. If `FlexMatchMode` is set to `STANDALONE` , do not set this parameter.",
-        "Name": "A unique identifier for a matchmaking configuration. Matchmaking requests use this name to identify which matchmaking configuration to use.",
+        "Name": "A unique identifier for the matchmaking configuration. This name is used to identify the configuration associated with a matchmaking request or ticket.",
         "NotificationTarget": "An SNS topic ARN that is set up to receive matchmaking notifications. See [Setting up notifications for matchmaking](https://docs.aws.amazon.com/gamelift/latest/flexmatchguide/match-notification.html) for more information.",
         "RequestTimeoutSeconds": "The maximum duration, in seconds, that a matchmaking ticket can remain in process before timing out. Requests that fail due to timing out can be resubmitted as needed.",
         "RuleSetName": "A unique identifier for the matchmaking rule set to use with this configuration. You can use either the rule set name or ARN value. A matchmaking configuration can only use rule sets that are defined in the same Region.",
-        "Tags": "A list of labels to assign to the new matchmaking configuration resource. Tags are developer-defined key-value pairs. Tagging AWS resources are useful for resource management, access management and cost allocation. For more information, see [Tagging AWS Resources](https://docs.aws.amazon.com/general/latest/gr/aws_tagging.html) in the *AWS General Reference* . Once the resource is created, you can use `TagResource` , `UntagResource` , and `ListTagsForResource` to add, remove, and view tags. The maximum tag limit may be lower than stated. See the AWS General Reference for actual tagging limits."
+        "Tags": "A list of labels to assign to the new matchmaking configuration resource. Tags are developer-defined key-value pairs. Tagging AWS resources are useful for resource management, access management and cost allocation. For more information, see [Tagging AWS Resources](https://docs.aws.amazon.com/general/latest/gr/aws_tagging.html) in the *AWS General Reference* . Once the resource is created, you can use TagResource, UntagResource, and ListTagsForResource to add, remove, and view tags. The maximum tag limit may be lower than stated. See the AWS General Reference for actual tagging limits."
       }
     },
     "AWS::GameLift::MatchmakingConfiguration.GameProperty": {
       "attributes": {},
-      "description": "A set of key-value pairs that contain information about a game session. When included in a game session request, these properties communicate details to be used when setting up the new game session. For example, a property might specify a game mode, level, or map. Game properties are passed to the game server process when initiating a new game session.",
+      "description": "Set of key-value pairs that contain information about a game session. When included in a game session request, these properties communicate details to be used when setting up the new game session. For example, a game property might specify a game mode, level, or map. Game properties are passed to the game server process when initiating a new game session. For more information, see the [GameLift Developer Guide](https://docs.aws.amazon.com/gamelift/latest/developerguide/gamelift-sdk-client-api.html#gamelift-sdk-client-api-create) .",
       "properties": {
         "Key": "The game property identifier.",
         "Value": "The game property value."
@@ -17907,11 +18050,11 @@
         "Name": "The unique name of the rule set.",
         "Ref": "`Ref` returns the rule set name, which is unique within each Region."
       },
-      "description": "The `AWS::GameLift::MatchmakingRuleSet` resource creates a new rule set for FlexMatch matchmaking. A rule set describes the type of match to create, such as the number and size of teams. It also sets the parameters for acceptable player matches, such as minimum skill level or character type. A rule set is used by a matchmaking configuration.",
+      "description": "Creates a new rule set for FlexMatch matchmaking. A rule set describes the type of match to create, such as the number and size of teams. It also sets the parameters for acceptable player matches, such as minimum skill level or character type.\n\nTo create a matchmaking rule set, provide unique rule set name and the rule set body in JSON format. Rule sets must be defined in the same Region as the matchmaking configuration they are used with.\n\nSince matchmaking rule sets cannot be edited, it is a good idea to check the rule set syntax.\n\n*Learn more*\n\n- [Build a rule set](https://docs.aws.amazon.com/gamelift/latest/flexmatchguide/match-rulesets.html)\n- [Design a matchmaker](https://docs.aws.amazon.com/gamelift/latest/flexmatchguide/match-configuration.html)\n- [Matchmaking with FlexMatch](https://docs.aws.amazon.com/gamelift/latest/flexmatchguide/match-intro.html)",
       "properties": {
         "Name": "A unique identifier for the matchmaking rule set. A matchmaking configuration identifies the rule set it uses by this name value. Note that the rule set name is different from the optional `name` field in the rule set body.",
         "RuleSetBody": "A collection of matchmaking rules, formatted as a JSON string. Comments are not allowed in JSON, but most elements support a description field.",
-        "Tags": "A list of labels to assign to the new matchmaking rule set resource. Tags are developer-defined key-value pairs. Tagging AWS resources are useful for resource management, access management and cost allocation. For more information, see [Tagging AWS Resources](https://docs.aws.amazon.com/general/latest/gr/aws_tagging.html) in the *AWS General Reference* . Once the resource is created, you can use `TagResource` , `UntagResource` , and `ListTagsForResource` to add, remove, and view tags. The maximum tag limit may be lower than stated. See the AWS General Reference for actual tagging limits."
+        "Tags": "A list of labels to assign to the new matchmaking rule set resource. Tags are developer-defined key-value pairs. Tagging AWS resources are useful for resource management, access management and cost allocation. For more information, see [Tagging AWS Resources](https://docs.aws.amazon.com/general/latest/gr/aws_tagging.html) in the *AWS General Reference* . Once the resource is created, you can use TagResource, UntagResource, and ListTagsForResource to add, remove, and view tags. The maximum tag limit may be lower than stated. See the AWS General Reference for actual tagging limits."
       }
     },
     "AWS::GameLift::Script": {
@@ -17923,8 +18066,8 @@
       "description": "The `AWS::GameLift::Script` resource creates a new script record for your Realtime Servers script. Realtime scripts are JavaScript that provide configuration settings and optional custom game logic for your game. The script is deployed when you create a Realtime Servers fleet to host your game sessions. Script logic is executed during an active game session.",
       "properties": {
         "Name": "A descriptive label that is associated with a script. Script names do not need to be unique.",
-        "StorageLocation": "The location in Amazon S3 where build or script files are stored for access by Amazon GameLift.",
-        "Tags": "",
+        "StorageLocation": "The location of the Amazon S3 bucket where a zipped file containing your Realtime scripts is stored. The storage location must specify the Amazon S3 bucket name, the zip file name (the \"key\"), and a role ARN that allows Amazon Web Services to access the Amazon S3 storage location. The S3 bucket must be in the same Region where you want to create a new script. By default, Amazon Web Services uploads the latest version of the zip file; if you have S3 object versioning turned on, you can use the `ObjectVersion` parameter to specify an earlier version.",
+        "Tags": "A list of labels to assign to the new script resource. Tags are developer-defined key-value pairs. Tagging AWS resources are useful for resource management, access management and cost allocation. For more information, see [Tagging AWS Resources](https://docs.aws.amazon.com/general/latest/gr/aws_tagging.html) in the *AWS General Reference* . Once the resource is created, you can use TagResource, UntagResource, and ListTagsForResource to add, remove, and view tags. The maximum tag limit may be lower than stated. See the AWS General Reference for actual tagging limits.",
         "Version": "The version that is associated with a build or script. Version strings do not need to be unique."
       }
     },
@@ -20699,6 +20842,7 @@
       "properties": {
         "AuthorizerFunctionArn": "The authorizer's Lambda function ARN.",
         "AuthorizerName": "The authorizer name.",
+        "EnableCachingForHttp": "",
         "SigningDisabled": "Specifies whether AWS IoT validates the token signature in an authorization request.",
         "Status": "The status of the authorizer.\n\nValid values: `ACTIVE` | `INACTIVE`",
         "Tags": "Metadata which can be used to manage the custom authorizer.\n\n> For URI Request parameters use format: ...key1=value1&key2=value2...\n> \n> For the CLI command-line parameter use format: &&tags \"key1=value1&key2=value2...\"\n> \n> For the cli-input-json file use format: \"tags\": \"key1=value1&key2=value2...\"",
@@ -22969,6 +23113,7 @@
       },
       "description": "Specifies a data source that you use to with an Amazon Kendra index.\n\nYou specify a name, connector type and description for your data source.",
       "properties": {
+        "CustomDocumentEnrichmentConfiguration": "",
         "DataSourceConfiguration": "Configuration information for an Amazon Kendra data source. The contents of the configuration depend on the type of data source. You can only specify one type of data source in the configuration. Choose from one of the following data sources.\n\n- Amazon S3\n- Confluence\n- Custom\n- Database\n- Microsoft OneDrive\n- Microsoft SharePoint\n- Salesforce\n- ServiceNow\n\nYou can't specify the `Configuration` parameter when the `Type` parameter is set to `CUSTOM` .\n\nThe `Configuration` parameter is required for all other data sources.",
         "Description": "A description of the data source.",
         "IndexId": "The identifier of the index that should be associated with this data source.",
@@ -23100,6 +23245,16 @@
         "TableName": "The name of the table that contains the document data."
       }
     },
+    "AWS::Kendra::DataSource.CustomDocumentEnrichmentConfiguration": {
+      "attributes": {},
+      "description": "Provides the configuration information for altering document metadata and content during the document ingestion process.\n\nFor more information, see [Customizing document metadata during the ingestion process](https://docs.aws.amazon.com/kendra/latest/dg/custom-document-enrichment.html) .",
+      "properties": {
+        "InlineConfigurations": "Configuration information to alter document attributes or metadata fields and content when ingesting documents into Amazon Kendra.",
+        "PostExtractionHookConfiguration": "Configuration information for invoking a Lambda function in AWS Lambda on the structured documents with their metadata and text extracted. You can use a Lambda function to apply advanced logic for creating, modifying, or deleting document metadata and content. For more information, see [Advanced data manipulation](https://docs.aws.amazon.com/kendra/latest/dg/custom-document-enrichment.html#advanced-data-manipulation) .",
+        "PreExtractionHookConfiguration": "Configuration information for invoking a Lambda function in AWS Lambda on the original or raw documents before extracting their metadata and text. You can use a Lambda function to apply advanced logic for creating, modifying, or deleting document metadata and content. For more information, see [Advanced data manipulation](https://docs.aws.amazon.com/kendra/latest/dg/custom-document-enrichment.html#advanced-data-manipulation) .",
+        "RoleArn": "The Amazon Resource Name (ARN) of a role with permission to run `PreExtractionHookConfiguration` and `PostExtractionHookConfiguration` for altering document metadata and content during the document ingestion process. For more information, see [IAM roles for Amazon Kendra](https://docs.aws.amazon.com/kendra/latest/dg/iam-roles.html) ."
+      }
+    },
     "AWS::Kendra::DataSource.DataSourceConfiguration": {
       "attributes": {},
       "description": "Provides the configuration information for an Amazon Kendra data source.",
@@ -23145,6 +23300,34 @@
         "VpcConfiguration": "Provides information for connecting to an Amazon VPC."
       }
     },
+    "AWS::Kendra::DataSource.DocumentAttributeCondition": {
+      "attributes": {},
+      "description": "The condition used for the target document attribute or metadata field when ingesting documents into Amazon Kendra. You use this with [DocumentAttributeTarget to apply the condition](https://docs.aws.amazon.com/kendra/latest/dg/API_DocumentAttributeTarget.html) .\n\nFor example, you can create the 'Department' target field and have it prefill department names associated with the documents based on information in the 'Source_URI' field. Set the condition that if the 'Source_URI' field contains 'financial' in its URI value, then prefill the target field 'Department' with the target value 'Finance' for the document.\n\nAmazon Kendra cannot create a target field if it has not already been created as an index field. After you create your index field, you can create a document metadata field using `DocumentAttributeTarget` . Amazon Kendra then will map your newly created metadata field to your index field.",
+      "properties": {
+        "ConditionDocumentAttributeKey": "The identifier of the document attribute used for the condition.\n\nFor example, 'Source_URI' could be an identifier for the attribute or metadata field that contains source URIs associated with the documents.\n\nAmazon Kendra currently does not support `_document_body` as an attribute key used for the condition.",
+        "ConditionOnValue": "The value used by the operator.\n\nFor example, you can specify the value 'financial' for strings in the 'Source_URI' field that partially match or contain this value.",
+        "Operator": "The condition operator.\n\nFor example, you can use 'Contains' to partially match a string."
+      }
+    },
+    "AWS::Kendra::DataSource.DocumentAttributeTarget": {
+      "attributes": {},
+      "description": "The target document attribute or metadata field you want to alter when ingesting documents into Amazon Kendra.\n\nFor example, you can delete customer identification numbers associated with the documents, stored in the document metadata field called 'Customer_ID'. You set the target key as 'Customer_ID' and the deletion flag to `TRUE` . This removes all customer ID values in the field 'Customer_ID'. This would scrub personally identifiable information from each document's metadata.\n\nAmazon Kendra cannot create a target field if it has not already been created as an index field. After you create your index field, you can create a document metadata field using `DocumentAttributeTarget` . Amazon Kendra then will map your newly created metadata field to your index field.\n\nYou can also use this with [DocumentAttributeCondition](https://docs.aws.amazon.com/kendra/latest/dg/API_DocumentAttributeCondition.html) .",
+      "properties": {
+        "TargetDocumentAttributeKey": "The identifier of the target document attribute or metadata field.\n\nFor example, 'Department' could be an identifier for the target attribute or metadata field that includes the department names associated with the documents.",
+        "TargetDocumentAttributeValue": "The target value you want to create for the target attribute.\n\nFor example, 'Finance' could be the target value for the target attribute key 'Department'.",
+        "TargetDocumentAttributeValueDeletion": "`TRUE` to delete the existing target value for your specified target attribute key. You cannot create a target value and set this to `TRUE` . To create a target value ( `TargetDocumentAttributeValue` ), set this to `FALSE` ."
+      }
+    },
+    "AWS::Kendra::DataSource.DocumentAttributeValue": {
+      "attributes": {},
+      "description": "The value of a custom document attribute. You can only provide one value for a custom attribute.",
+      "properties": {
+        "DateValue": "A date expressed as an ISO 8601 string.\n\nIt is important for the time zone to be included in the ISO 8601 date-time format. For example, 2012-03-25T12:30:10+01:00 is the ISO 8601 date-time format for March 25th 2012 at 12:30PM (plus 10 seconds) in Central European Time.",
+        "LongValue": "A long integer value.",
+        "StringListValue": "A list of strings.",
+        "StringValue": "A string, such as \"department\"."
+      }
+    },
     "AWS::Kendra::DataSource.DocumentsMetadataConfiguration": {
       "attributes": {},
       "description": "Document metadata files that contain information such as the document access control information, source URI, document author, and custom attributes. Each metadata file contains metadata about a single document.",
@@ -23163,6 +23346,24 @@
         "FieldMappings": "Defines mapping between a field in the Google Drive and a Amazon Kendra index field.\n\nIf you are using the console, you can define index fields when creating the mapping. If you are using the API, you must first create the field using the `UpdateIndex` API.",
         "InclusionPatterns": "A list of regular expression patterns that apply to path on Google Drive. Items that match the pattern are included in the index from both shared drives and users' My Drives. Items that don't match the pattern are excluded from the index. If an item matches both an inclusion pattern and an exclusion pattern, it is excluded from the index.",
         "SecretArn": "The Amazon Resource Name (ARN) of a AWS Secrets Manager secret that contains the credentials required to connect to Google Drive. For more information, see [Using a Google Workspace Drive data source](https://docs.aws.amazon.com/kendra/latest/dg/data-source-google-drive.html) ."
+      }
+    },
+    "AWS::Kendra::DataSource.HookConfiguration": {
+      "attributes": {},
+      "description": "Provides the configuration information for invoking a Lambda function in AWS Lambda to alter document metadata and content when ingesting documents into Amazon Kendra. You can configure your Lambda function using [PreExtractionHookConfiguration](https://docs.aws.amazon.com/kendra/latest/dg/API_CustomDocumentEnrichmentConfiguration.html) if you want to apply advanced alterations on the original or raw documents. If you want to apply advanced alterations on the Amazon Kendra structured documents, you must configure your Lambda function using [PostExtractionHookConfiguration](https://docs.aws.amazon.com/kendra/latest/dg/API_CustomDocumentEnrichmentConfiguration.html) . You can only invoke one Lambda function. However, this function can invoke other functions it requires.\n\nFor more information, see [Customizing document metadata during the ingestion process](https://docs.aws.amazon.com/kendra/latest/dg/custom-document-enrichment.html) .",
+      "properties": {
+        "InvocationCondition": "The condition used for when a Lambda function should be invoked.\n\nFor example, you can specify a condition that if there are empty date-time values, then Amazon Kendra should invoke a function that inserts the current date-time.",
+        "LambdaArn": "The Amazon Resource Name (ARN) of a role with permission to run a Lambda function during ingestion. For more information, see [IAM roles for Amazon Kendra](https://docs.aws.amazon.com/kendra/latest/dg/iam-roles.html) .",
+        "S3Bucket": "Stores the original, raw documents or the structured, parsed documents before and after altering them. For more information, see [Data contracts for Lambda functions](https://docs.aws.amazon.com/kendra/latest/dg/custom-document-enrichment.html#cde-data-contracts-lambda) ."
+      }
+    },
+    "AWS::Kendra::DataSource.InlineCustomDocumentEnrichmentConfiguration": {
+      "attributes": {},
+      "description": "Provides the configuration information for applying basic logic to alter document metadata and content when ingesting documents into Amazon Kendra. To apply advanced logic, to go beyond what you can do with basic logic, see [HookConfiguration](https://docs.aws.amazon.com/kendra/latest/dg/API_HookConfiguration.html) .\n\nFor more information, see [Customizing document metadata during the ingestion process](https://docs.aws.amazon.com/kendra/latest/dg/custom-document-enrichment.html) .",
+      "properties": {
+        "Condition": "Configuration of the condition used for the target document attribute or metadata field when ingesting documents into Amazon Kendra.",
+        "DocumentContentDeletion": "`TRUE` to delete content if the condition used for the target attribute is met.",
+        "Target": "Configuration of the target document attribute or metadata field when ingesting documents into Amazon Kendra. You can also include a value."
       }
     },
     "AWS::Kendra::DataSource.OneDriveConfiguration": {
@@ -24889,6 +25090,20 @@
         "KafkaBootstrapServers": "The list of bootstrap servers for your Kafka brokers in the following format: `\"KafkaBootstrapServers\": [\"abc.xyz.com:xxxx\",\"abc2.xyz.com:xxxx\"]` ."
       }
     },
+    "AWS::Lambda::EventSourceMapping.Filter": {
+      "attributes": {},
+      "description": "A structure within a `FilterCriteria` object that defines an event filtering pattern.",
+      "properties": {
+        "Pattern": "A filter pattern. For more information on the syntax of a filter pattern, see [Filter rule syntax](https://docs.aws.amazon.com/lambda/latest/dg/invocation-eventfiltering.html#filtering-syntax) ."
+      }
+    },
+    "AWS::Lambda::EventSourceMapping.FilterCriteria": {
+      "attributes": {},
+      "description": "An object that contains the filters for an event source.",
+      "properties": {
+        "Filters": "A list of filters."
+      }
+    },
     "AWS::Lambda::EventSourceMapping.OnFailure": {
       "attributes": {},
       "description": "A destination for events that failed processing.",
@@ -26573,26 +26788,17 @@
     },
     "AWS::MSK::BatchScramSecret": {
       "attributes": {
-        "Ref": ""
+        "Ref": "The ARN of the cluster."
       },
-      "description": "",
+      "description": "Represents a secret stored in the Amazon Secrets Manager that can be used to authenticate with a cluster using a user name and a password.",
       "properties": {
-        "ClusterArn": "",
-        "SecretArnList": "",
-        "UnprocessedScramSecrets": ""
-      }
-    },
-    "AWS::MSK::BatchScramSecret.UnprocessedScramSecret": {
-      "attributes": {},
-      "description": "Error info for scram secret associate/disassociate failure.",
-      "properties": {
-        "ErrorCode": "Error code for associate/disassociate failure.",
-        "ErrorMessage": "Error message for associate/disassociate failure.",
-        "SecretArn": "Amazon Secrets Manager secret ARN."
+        "ClusterArn": "The Amazon Resource Name (ARN) of the MSK cluster.",
+        "SecretArnList": "A list of Amazon Secrets Manager secret ARNs."
       }
     },
     "AWS::MSK::Cluster": {
       "attributes": {
+        "Arn": "",
         "Ref": "`Ref` returns the Amazon MSK cluster ARN. For example:\n\n`REF MyTestCluster`\n\nFor the Amazon MSK cluster `MyTestCluster` , Ref returns the ARN of the cluster."
       },
       "description": "The `AWS::MSK::Cluster` resource creates an Amazon MSK cluster . For more information, see [What Is Amazon MSK?](https://docs.aws.amazon.com/msk/latest/developerguide/what-is-msk.html) in the *Amazon MSK Developer Guide* .",
@@ -26601,6 +26807,7 @@
         "ClientAuthentication": "Includes information related to client authentication.",
         "ClusterName": "The name of the cluster.",
         "ConfigurationInfo": "The Amazon MSK configuration to use for the cluster.",
+        "CurrentVersion": "The version of the cluster that you want to update.",
         "EncryptionInfo": "Includes all encryption-related information.",
         "EnhancedMonitoring": "Specifies the level of monitoring for the MSK cluster. The possible values are `DEFAULT` , `PER_BROKER` , and `PER_TOPIC_PER_BROKER` .",
         "KafkaVersion": "The version of Apache Kafka. For more information, see [Supported Apache Kafka versions](https://docs.aws.amazon.com/msk/latest/developerguide/supported-kafka-versions.html) in the Amazon MSK Developer Guide.",
@@ -26667,7 +26874,7 @@
       "attributes": {},
       "description": "Contains information about the EBS storage volumes attached to brokers.",
       "properties": {
-        "ProvisionedThroughput": "",
+        "ProvisionedThroughput": "Specifies whether provisioned throughput is turned on and the volume throughput target.",
         "VolumeSize": "The size in GiB of the EBS volume for the data drive on each broker node."
       }
     },
@@ -26747,10 +26954,10 @@
     },
     "AWS::MSK::Cluster.ProvisionedThroughput": {
       "attributes": {},
-      "description": "",
+      "description": "Specifies whether provisioned throughput is turned on and the volume throughput target.",
       "properties": {
-        "Enabled": "",
-        "VolumeThroughput": ""
+        "Enabled": "Specifies whether provisioned throughput is turned on for the cluster.",
+        "VolumeThroughput": "The provisioned throughput rate in MiB per second."
       }
     },
     "AWS::MSK::Cluster.PublicAccess": {
@@ -26808,18 +27015,18 @@
     },
     "AWS::MSK::Configuration": {
       "attributes": {
-        "Arn": "",
-        "Ref": ""
+        "CreationTime": "The time the configuration was created.",
+        "LatestRevision": "The latest revision of the configuration.",
+        "Ref": "The ARN of the configuration.",
+        "State": "The state of the configuration."
       },
-      "description": "Creates a new MSK configuration. To see an example of how to use this operation, first save the following text to a file and name the file config-file.txt .\n\n`auto.create.topics.enable = true zookeeper.connection.timeout.ms = 1000 log.roll.ms = 604800000` \n\nNow run the following Python 3.6 script in the folder where you saved config-file.txt . This script uses the properties specified in config-file.txt to create a configuration named `SalesClusterConfiguration` . This configuration can work with Apache Kafka versions 1.1.1 and 2.1.0.\n\n```PYTHON\nimport boto3 client = boto3.client('kafka') config_file = open('config-file.txt', 'r') server_properties = config_file.read() response = client.create_configuration( Name='SalesClusterConfiguration', Description='The configuration to use on all sales clusters.', KafkaVersions=['1.1.1', '2.1.0'], ServerProperties=server_properties\n) print(response)\n```",
+      "description": "Creates a new MSK configuration.",
       "properties": {
-        "CreationTime": "",
+        "Arn": "The Amazon Resource Name (ARN) that uniquely identifies an MSK configuration and all of its revisions.",
         "Description": "The description of the configuration.",
-        "KafkaVersionsList": "",
-        "LatestRevision": "",
+        "KafkaVersionsList": "A list of the versions of Apache Kafka with which you can use this MSK configuration. You can use this configuration for an MSK cluster only if the Apache Kafka version specified for the cluster appears in this list.",
         "Name": "The name of the configuration. Configuration names are strings that match the regex \"^[0-9A-Za-z][0-9A-Za-z-]{0,}$\".",
-        "ServerProperties": "Contents of the server.properties file. When using the API, you must ensure that the contents of the file are base64 encoded. When using the console, the SDK, or the CLI, the contents of server.properties can be in plaintext.",
-        "State": ""
+        "ServerProperties": "Contents of the server.properties file. When using the API, you must ensure that the contents of the file are base64 encoded. When using the console, the SDK, or the CLI, the contents of server.properties can be in plaintext."
       }
     },
     "AWS::MSK::Configuration.ConfigurationRevision": {
@@ -32705,7 +32912,7 @@
         "AllowMajorVersionUpgrade": "A value that indicates whether major version upgrades are allowed. Changing this parameter doesn't result in an outage and the change is asynchronously applied as soon as possible.\n\nConstraints: Major version upgrades must be allowed when specifying a value for the `EngineVersion` parameter that is a different major version than the DB instance's current version.",
         "AssociatedRoles": "The AWS Identity and Access Management (IAM) roles associated with the DB instance.",
         "AutoMinorVersionUpgrade": "A value that indicates whether minor engine upgrades are applied automatically to the DB instance during the maintenance window. By default, minor engine upgrades are applied automatically.",
-        "AvailabilityZone": "The Availability Zone that the database instance will be created in.\n\nDefault: A random, system-chosen Availability Zone in the endpoint's region.\n\nExample: `us-east-1d`\n\nConstraint: The AvailabilityZone parameter cannot be specified if the MultiAZ parameter is set to `true` . The specified Availability Zone must be in the same region as the current endpoint.",
+        "AvailabilityZone": "The Availability Zone (AZ) where the database will be created. For information on AWS Regions and Availability Zones, see [Regions and Availability Zones](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.RegionsAndAvailabilityZones.html) .\n\n*Amazon Aurora*\n\nNot applicable. Availability Zones are managed by the DB cluster.\n\nDefault: A random, system-chosen Availability Zone in the endpoint's AWS Region.\n\nExample: `us-east-1d`\n\nConstraint: The `AvailabilityZone` parameter can't be specified if the DB instance is a Multi-AZ deployment. The specified Availability Zone must be in the same AWS Region as the current endpoint.\n\n> If you're creating a DB instance in an RDS on VMware environment, specify the identifier of the custom Availability Zone to create the DB instance in.\n> \n> For more information about RDS on VMware, see the [RDS on VMware User Guide.](https://docs.aws.amazon.com/AmazonRDS/latest/RDSonVMwareUserGuide/rds-on-vmware.html)",
         "BackupRetentionPeriod": "The number of days for which automated backups are retained. Setting this parameter to a positive number enables backups. Setting this parameter to 0 disables automated backups.\n\n*Amazon Aurora*\n\nNot applicable. The retention period for automated backups is managed by the DB cluster.\n\nDefault: 1\n\nConstraints:\n\n- Must be a value from 0 to 35\n- Can't be set to 0 if the DB instance is a source to read replicas",
         "CACertificateIdentifier": "The identifier of the CA certificate for this DB instance.\n\n> Specifying or updating this property triggers a reboot. \n\nFor more information about CA certificate identifiers for RDS DB engines, see [Rotating Your SSL/TLS Certificate](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.SSL-certificate-rotation.html) in the *Amazon RDS User Guide* .\n\nFor more information about CA certificate identifiers for Aurora DB engines, see [Rotating Your SSL/TLS Certificate](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/UsingWithRDS.SSL-certificate-rotation.html) in the *Amazon Aurora User Guide* .",
         "CharacterSetName": "For supported engines, indicates that the DB instance should be associated with the specified character set.\n\n*Amazon Aurora*\n\nNot applicable. The character set is managed by the DB cluster. For more information, see [AWS::RDS::DBCluster](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbcluster.html) .",
@@ -32777,7 +32984,7 @@
       },
       "description": "The `AWS::RDS::DBParameterGroup` resource creates a custom parameter group for an RDS database family.\n\nThis type can be declared in a template and referenced in the `DBParameterGroupName` property of an `[AWS::RDS::DBInstance](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-database-instance.html)` resource.\n\nFor information about configuring parameters for Amazon RDS DB instances, see [Working with DB parameter groups](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_WorkingWithParamGroups.html) in the *Amazon RDS User Guide* .\n\nFor information about configuring parameters for Amazon Aurora DB instances, see [Working with DB parameter groups and DB cluster parameter groups](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/USER_WorkingWithParamGroups.html) in the *Amazon Aurora User Guide* .\n\n> Applying a parameter group to a DB instance may require the DB instance to reboot, resulting in a database outage for the duration of the reboot.",
       "properties": {
-        "Description": "Provides the customer-specified description for this DB Parameter Group.",
+        "Description": "Provides the customer-specified description for this DB parameter group.",
         "Family": "The DB parameter group family name. A DB parameter group can be associated with one and only one DB parameter group family, and can be applied only to a DB instance running a DB engine and engine version compatible with that DB parameter group family.\n\n> The DB parameter group family can't be changed when updating a DB parameter group. \n\nTo list all of the available parameter group families, use the following command:\n\n`aws rds describe-db-engine-versions --query \"DBEngineVersions[].DBParameterGroupFamily\"`\n\nThe output contains duplicates.\n\nFor more information, see `[CreateDBParameterGroup](https://docs.aws.amazon.com//AmazonRDS/latest/APIReference/API_CreateDBParameterGroup.html)` .",
         "Parameters": "An array of parameter names and values for the parameter update. At least one parameter name and value must be supplied. Subsequent arguments are optional.\n\nFor more information about DB parameters and DB parameter groups for Amazon RDS DB engines, see [Working with DB Parameter Groups](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_WorkingWithParamGroups.html) in the *Amazon RDS User Guide* .\n\nFor more information about DB cluster and DB instance parameters and parameter groups for Amazon Aurora DB engines, see [Working with DB Parameter Groups and DB Cluster Parameter Groups](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/USER_WorkingWithParamGroups.html) in the *Amazon Aurora User Guide* .\n\n> AWS CloudFormation doesn't support specifying an apply method for each individual parameter. The default apply method for each parameter is used.",
         "Tags": "Tags to assign to the DB parameter group."
@@ -32881,7 +33088,7 @@
       "properties": {
         "DBSecurityGroupIngress": "Ingress rules to be applied to the DB security group.",
         "EC2VpcId": "The identifier of an Amazon VPC. This property indicates the VPC that this DB security group belongs to.\n\n> The `EC2VpcId` property is for backward compatibility with older regions, and is no longer recommended for providing security information to an RDS DB instance.",
-        "GroupDescription": "Provides the description of the DB Security Group.",
+        "GroupDescription": "Provides the description of the DB security group.",
         "Tags": "Tags to assign to the DB security group."
       }
     },
@@ -32890,9 +33097,9 @@
       "description": "The `Ingress` property type specifies an individual ingress rule within an `AWS::RDS::DBSecurityGroup` resource.",
       "properties": {
         "CIDRIP": "The IP range to authorize.",
-        "EC2SecurityGroupId": "Id of the EC2 Security Group to authorize. For VPC DB Security Groups, `EC2SecurityGroupId` must be provided. Otherwise, EC2SecurityGroupOwnerId and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided.",
-        "EC2SecurityGroupName": "Name of the EC2 Security Group to authorize. For VPC DB Security Groups, `EC2SecurityGroupId` must be provided. Otherwise, EC2SecurityGroupOwnerId and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided.",
-        "EC2SecurityGroupOwnerId": "AWS Account Number of the owner of the EC2 Security Group specified in the EC2SecurityGroupName parameter. The AWS Access Key ID is not an acceptable value. For VPC DB Security Groups, `EC2SecurityGroupId` must be provided. Otherwise, EC2SecurityGroupOwnerId and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided."
+        "EC2SecurityGroupId": "Id of the EC2 security group to authorize. For VPC DB security groups, `EC2SecurityGroupId` must be provided. Otherwise, `EC2SecurityGroupOwnerId` and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided.",
+        "EC2SecurityGroupName": "Name of the EC2 security group to authorize. For VPC DB security groups, `EC2SecurityGroupId` must be provided. Otherwise, `EC2SecurityGroupOwnerId` and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided.",
+        "EC2SecurityGroupOwnerId": "AWS account number of the owner of the EC2 security group specified in the `EC2SecurityGroupName` parameter. The AWS access key ID isn't an acceptable value. For VPC DB security groups, `EC2SecurityGroupId` must be provided. Otherwise, `EC2SecurityGroupOwnerId` and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided."
       }
     },
     "AWS::RDS::DBSecurityGroupIngress": {
@@ -32902,10 +33109,10 @@
       "description": "The `AWS::RDS::DBSecurityGroupIngress` resource enables ingress to a DB security group using one of two forms of authorization. First, you can add EC2 or VPC security groups to the DB security group if the application using the database is running on EC2 or VPC instances. Second, IP ranges are available if the application accessing your database is running on the Internet.\n\nThis type supports updates. For more information about updating stacks, see [AWS CloudFormation Stacks Updates](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks.html) .\n\nFor details about the settings for DB security group ingress, see [AuthorizeDBSecurityGroupIngress](https://docs.aws.amazon.com/AmazonRDS/latest/APIReference/API_AuthorizeDBSecurityGroupIngress.html) .",
       "properties": {
         "CIDRIP": "The IP range to authorize.",
-        "DBSecurityGroupName": "The name of the DB Security Group to add authorization to.",
-        "EC2SecurityGroupId": "Id of the EC2 Security Group to authorize. For VPC DB Security Groups, `EC2SecurityGroupId` must be provided. Otherwise, EC2SecurityGroupOwnerId and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided.",
-        "EC2SecurityGroupName": "Name of the EC2 Security Group to authorize. For VPC DB Security Groups, `EC2SecurityGroupId` must be provided. Otherwise, EC2SecurityGroupOwnerId and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided.",
-        "EC2SecurityGroupOwnerId": "AWS Account Number of the owner of the EC2 Security Group specified in the EC2SecurityGroupName parameter. The AWS Access Key ID is not an acceptable value. For VPC DB Security Groups, `EC2SecurityGroupId` must be provided. Otherwise, EC2SecurityGroupOwnerId and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided."
+        "DBSecurityGroupName": "The name of the DB security group to add authorization to.",
+        "EC2SecurityGroupId": "Id of the EC2 security group to authorize. For VPC DB security groups, `EC2SecurityGroupId` must be provided. Otherwise, `EC2SecurityGroupOwnerId` and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided.",
+        "EC2SecurityGroupName": "Name of the EC2 security group to authorize. For VPC DB security groups, `EC2SecurityGroupId` must be provided. Otherwise, `EC2SecurityGroupOwnerId` and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided.",
+        "EC2SecurityGroupOwnerId": "AWS account number of the owner of the EC2 security group specified in the `EC2SecurityGroupName` parameter. The AWS access key ID isn't an acceptable value. For VPC DB security groups, `EC2SecurityGroupId` must be provided. Otherwise, `EC2SecurityGroupOwnerId` and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided."
       }
     },
     "AWS::RDS::DBSubnetGroup": {
@@ -32914,9 +33121,9 @@
       },
       "description": "The `AWS::RDS::DBSubnetGroup` resource creates a database subnet group. Subnet groups must contain at least two subnets in two different Availability Zones in the same region.\n\nFor more information, see [Working with DB subnet groups](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_VPC.WorkingWithRDSInstanceinaVPC.html#USER_VPC.Subnets) in the *Amazon RDS User Guide* .",
       "properties": {
-        "DBSubnetGroupDescription": "The description for the DB Subnet Group.",
+        "DBSubnetGroupDescription": "The description for the DB subnet group.",
         "DBSubnetGroupName": "The name for the DB subnet group. This value is stored as a lowercase string.\n\nConstraints: Must contain no more than 255 lowercase alphanumeric characters or hyphens. Must not be \"Default\".\n\nExample: `mysubnetgroup`",
-        "SubnetIds": "The EC2 Subnet IDs for the DB Subnet Group.",
+        "SubnetIds": "The EC2 Subnet IDs for the DB subnet group.",
         "Tags": "Tags to assign to the DB subnet group."
       }
     },
@@ -32926,8 +33133,8 @@
       },
       "description": "The `AWS::RDS::EventSubscription` resource allows you to receive notifications for Amazon Relational Database Service events through the Amazon Simple Notification Service (Amazon SNS). For more information, see [Using Amazon RDS Event Notification](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_Events.html) in the *Amazon RDS User Guide* .",
       "properties": {
-        "Enabled": "A Boolean value; set to *true* to activate the subscription, set to *false* to create the subscription but not active it.",
-        "EventCategories": "A list of event categories for a SourceType that you want to subscribe to. You can see a list of the categories for a given SourceType in the [Events](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_Events.html) topic in the Amazon RDS User Guide or by using the *DescribeEventCategories* action.",
+        "Enabled": "A value that indicates whether to activate the subscription. If the event notification subscription isn't activated, the subscription is created but not active.",
+        "EventCategories": "A list of event categories for a particular source type ( `SourceType` ) that you want to subscribe to. You can see a list of the categories for a given source type in the \"Amazon RDS event categories and event messages\" section of the [*Amazon RDS User Guide*](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_Events.Messages.html) or the [*Amazon Aurora User Guide*](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/USER_Events.Messages.html) . You can also see this list by using the `DescribeEventCategories` operation.",
         "SnsTopicArn": "The Amazon Resource Name (ARN) of the SNS topic created for event notification. The ARN is created by Amazon SNS when you create a topic and subscribe to it.",
         "SourceIds": "The list of identifiers of the event sources for which events are returned. If not specified, then all sources are included in the response. An identifier must begin with a letter and must contain only ASCII letters, digits, and hyphens. It can't end with a hyphen or contain two consecutive hyphens.\n\nConstraints:\n\n- If a `SourceIds` value is supplied, `SourceType` must also be provided.\n- If the source type is a DB instance, a `DBInstanceIdentifier` value must be supplied.\n- If the source type is a DB cluster, a `DBClusterIdentifier` value must be supplied.\n- If the source type is a DB parameter group, a `DBParameterGroupName` value must be supplied.\n- If the source type is a DB security group, a `DBSecurityGroupName` value must be supplied.\n- If the source type is a DB snapshot, a `DBSnapshotIdentifier` value must be supplied.\n- If the source type is a DB cluster snapshot, a `DBClusterSnapshotIdentifier` value must be supplied.",
         "SourceType": "The type of source that is generating the events. For example, if you want to be notified of events generated by a DB instance, set this parameter to `db-instance` . If this value isn't specified, all events are returned.\n\nValid values: `db-instance` | `db-cluster` | `db-parameter-group` | `db-security-group` | `db-snapshot` | `db-cluster-snapshot`"
@@ -34214,7 +34421,7 @@
       "attributes": {},
       "description": "The PublicAccessBlock configuration that you want to apply to this Amazon S3 bucket. You can enable the configuration options in any combination. For more information about when Amazon S3 considers a bucket or object public, see [The Meaning of \"Public\"](https://docs.aws.amazon.com/AmazonS3/latest/dev/access-control-block-public-access.html#access-control-block-public-access-policy-status) in the *Amazon S3 User Guide* .",
       "properties": {
-        "BlockPublicAcls": "Specifies whether Amazon S3 should block public access control lists (ACLs) for this bucket and objects in this bucket. Setting this element to `TRUE` causes the following behavior:\n\n- PUT Bucket acl and PUT Object acl calls fail if the specified ACL is public.\n- PUT Object calls fail if the request includes a public ACL.\n- PUT Bucket calls fail if the request includes a public ACL.\n\nEnabling this setting doesn't affect existing policies or ACLs.",
+        "BlockPublicAcls": "Specifies whether Amazon S3 should block public access control lists (ACLs) for this bucket and objects in this bucket. Setting this element to `TRUE` causes the following behavior:\n\n- PUT Bucket ACL and PUT Object ACL calls fail if the specified ACL is public.\n- PUT Object calls fail if the request includes a public ACL.\n- PUT Bucket calls fail if the request includes a public ACL.\n\nEnabling this setting doesn't affect existing policies or ACLs.",
         "BlockPublicPolicy": "Specifies whether Amazon S3 should block public bucket policies for this bucket. Setting this element to `TRUE` causes Amazon S3 to reject calls to PUT Bucket policy if the specified bucket policy allows public access.\n\nEnabling this setting doesn't affect existing bucket policies.",
         "IgnorePublicAcls": "Specifies whether Amazon S3 should ignore public ACLs for this bucket and objects in this bucket. Setting this element to `TRUE` causes Amazon S3 to ignore all public ACLs on this bucket and objects in this bucket.\n\nEnabling this setting doesn't affect the persistence of any existing ACLs and doesn't prevent new public ACLs from being set.",
         "RestrictPublicBuckets": "Specifies whether Amazon S3 should restrict public bucket policies for this bucket. Setting this element to `TRUE` restricts access to this bucket to only AWS service principals and authorized users within this account if the bucket has a public policy.\n\nEnabling this setting doesn't affect previously stored bucket policies, except that public and cross-account access within any public bucket policy, including non-public delegation to specific accounts, is blocked."
@@ -34506,7 +34713,7 @@
       "attributes": {},
       "description": "The PublicAccessBlock configuration that you want to apply to this Amazon S3 bucket. You can enable the configuration options in any combination. For more information about when Amazon S3 considers a bucket or object public, see [The Meaning of \"Public\"](https://docs.aws.amazon.com/AmazonS3/latest/dev/access-control-block-public-access.html#access-control-block-public-access-policy-status) in the *Amazon S3 User Guide* .",
       "properties": {
-        "BlockPublicAcls": "Specifies whether Amazon S3 should block public access control lists (ACLs) for this bucket and objects in this bucket. Setting this element to `TRUE` causes the following behavior:\n\n- PUT Bucket acl and PUT Object acl calls fail if the specified ACL is public.\n- PUT Object calls fail if the request includes a public ACL.\n- PUT Bucket calls fail if the request includes a public ACL.\n\nEnabling this setting doesn't affect existing policies or ACLs.",
+        "BlockPublicAcls": "Specifies whether Amazon S3 should block public access control lists (ACLs) for this bucket and objects in this bucket. Setting this element to `TRUE` causes the following behavior:\n\n- PUT Bucket ACL and PUT Object ACL calls fail if the specified ACL is public.\n- PUT Object calls fail if the request includes a public ACL.\n- PUT Bucket calls fail if the request includes a public ACL.\n\nEnabling this setting doesn't affect existing policies or ACLs.",
         "BlockPublicPolicy": "Specifies whether Amazon S3 should block public bucket policies for this bucket. Setting this element to `TRUE` causes Amazon S3 to reject calls to PUT Bucket policy if the specified bucket policy allows public access.\n\nEnabling this setting doesn't affect existing bucket policies.",
         "IgnorePublicAcls": "Specifies whether Amazon S3 should ignore public ACLs for this bucket and objects in this bucket. Setting this element to `TRUE` causes Amazon S3 to ignore all public ACLs on this bucket and objects in this bucket.\n\nEnabling this setting doesn't affect the persistence of any existing ACLs and doesn't prevent new public ACLs from being set.",
         "RestrictPublicBuckets": "Specifies whether Amazon S3 should restrict public bucket policies for this bucket. Setting this element to `TRUE` restricts access to this bucket to only AWS service principals and authorized users within this account if the bucket has a public policy.\n\nEnabling this setting doesn't affect previously stored bucket policies, except that public and cross-account access within any public bucket policy, including non-public delegation to specific accounts, is blocked."
@@ -34773,7 +34980,7 @@
       "attributes": {},
       "description": "The PublicAccessBlock configuration that you want to apply to this Amazon S3 Multi-Region Access Point. You can enable the configuration options in any combination. For more information about when Amazon S3 considers an object public, see [The Meaning of \"Public\"](https://docs.aws.amazon.com/AmazonS3/latest/dev/access-control-block-public-access.html#access-control-block-public-access-policy-status) in the *Amazon S3 User Guide* .",
       "properties": {
-        "BlockPublicAcls": "Specifies whether Amazon S3 should block public access control lists (ACLs) for this bucket and objects in this bucket. Setting this element to `TRUE` causes the following behavior:\n\n- PUT Bucket acl and PUT Object acl calls fail if the specified ACL is public.\n- PUT Object calls fail if the request includes a public ACL.\n- PUT Bucket calls fail if the request includes a public ACL.\n\nEnabling this setting doesn't affect existing policies or ACLs.",
+        "BlockPublicAcls": "Specifies whether Amazon S3 should block public access control lists (ACLs) for this bucket and objects in this bucket. Setting this element to `TRUE` causes the following behavior:\n\n- PUT Bucket ACL and PUT Object ACL calls fail if the specified ACL is public.\n- PUT Object calls fail if the request includes a public ACL.\n- PUT Bucket calls fail if the request includes a public ACL.\n\nEnabling this setting doesn't affect existing policies or ACLs.",
         "BlockPublicPolicy": "Specifies whether Amazon S3 should block public bucket policies for this bucket. Setting this element to `TRUE` causes Amazon S3 to reject calls to PUT Bucket policy if the specified bucket policy allows public access.\n\nEnabling this setting doesn't affect existing bucket policies.",
         "IgnorePublicAcls": "Specifies whether Amazon S3 should ignore public ACLs for this bucket and objects in this bucket. Setting this element to `TRUE` causes Amazon S3 to ignore all public ACLs on this bucket and objects in this bucket.\n\nEnabling this setting doesn't affect the persistence of any existing ACLs and doesn't prevent new public ACLs from being set.",
         "RestrictPublicBuckets": "Specifies whether Amazon S3 should restrict public bucket policies for this bucket. Setting this element to `TRUE` restricts access to this bucket to only AWS service principals and authorized users within this account if the bucket has a public policy.\n\nEnabling this setting doesn't affect previously stored bucket policies, except that public and cross-account access within any public bucket policy, including non-public delegation to specific accounts, is blocked."
@@ -35065,11 +35272,13 @@
       },
       "description": "The name of the configuration set.\n\nConfiguration sets let you create groups of rules that you can apply to the emails you send using Amazon SES. For more information about using configuration sets, see [Using Amazon SES Configuration Sets](https://docs.aws.amazon.com/ses/latest/dg/using-configuration-sets.html) in the [Amazon SES Developer Guide](https://docs.aws.amazon.com/ses/latest/dg/) .",
       "properties": {
-        "Name": ""
+        "Name": "The name of the configuration set. The name must meet the following requirements:\n\n- Contain only letters (a-z, A-Z), numbers (0-9), underscores (_), or dashes (-).\n- Contain 64 characters or fewer."
       }
     },
     "AWS::SES::ConfigurationSetEventDestination": {
-      "attributes": {},
+      "attributes": {
+        "Id": ""
+      },
       "description": "Specifies a configuration set event destination. An event destination is an AWS service that Amazon SES publishes email sending events to. When you specify an event destination, you provide one, and only one, destination. You can send event data to Amazon CloudWatch or Amazon Kinesis Data Firehose.\n\n> You can't specify Amazon SNS event destinations in CloudFormation templates.",
       "properties": {
         "ConfigurationSetName": "The name of the configuration set that contains the event destination.",
@@ -37355,10 +37564,10 @@
       "attributes": {
         "Ref": "When you pass the logical ID of an `AWS::SecretsManager::RotationSchedule` resource to the intrinsic `Ref` function, the function returns the ARN of the secret being configured, such as:\n\n*arn:aws:secretsmanager: us-west-2* : *123456789012* :secret: *my-path/my-secret-name* - *1a2b3c*\n\nYou can use the ARN to reference a secret you create in one part of the stack template from within the definition of another resource later, in the same template. You typically do this when you define the [AWS::SecretsManager::SecretTargetAttachment](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-secretsmanager-secrettargetattachment.html) resource type.\n\nFor more information about using the `Ref` function, see [Ref](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-ref.html) ."
       },
-      "description": "Configures rotation for a secret. You must already configure the secret with the details of the database or service. If you define both the secret and the database or service in an AWS CloudFormation template, then define the [AWS::SecretsManager::SecretTargetAttachment](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-secretsmanager-secrettargetattachment.html) resource to populate the secret with the connection details of the database or service before you attempt to configure rotation.\n\n> When you configure rotation for a secret, AWS CloudFormation automatically rotates the secret one time.",
+      "description": "Configures rotation for a secret. You must already configure the secret with the details of the database or service. If you define both the secret and the database or service in an AWS CloudFormation template, then define the [AWS::SecretsManager::SecretTargetAttachment](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-secretsmanager-secrettargetattachment.html) resource to populate the secret with the connection details of the database or service before you attempt to configure rotation.",
       "properties": {
         "HostedRotationLambda": "To use these values, you must specify `Transform: AWS::SecretsManager-2020-07-23` at the beginning of the CloudFormation template.\n\nWhen you enter valid values for `RotationSchedule.HostedRotationLambda` , Secrets Manager launches a Lambda that performs rotation on the secret specified in the `secret-id` property. The template creates a Lambda as part of a nested stack within the current stack.",
-        "RotateImmediatelyOnUpdate": "",
+        "RotateImmediatelyOnUpdate": "Specifies whether to rotate the secret immediately or wait until the next scheduled rotation window. The rotation schedule is defined in `RotationRules` .\n\nIf you don't immediately rotate the secret, Secrets Manager tests the rotation configuration by running the [`testSecret` step](https://docs.aws.amazon.com/secretsmanager/latest/userguide/rotate-secrets_how.html) of the Lambda rotation function. The test creates an `AWSPENDING` version of the secret and then removes it.\n\nIf you don't specify this value, then by default, Secrets Manager rotates the secret immediately.",
         "RotationLambdaARN": "The ARN of the Lambda function that can rotate the secret. If you don't specify this parameter, then the secret must already have the ARN of a Lambda function configured.\n\nTo reference a Lambda function also created in this template, use the [Ref](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-ref.html) function with the function's logical ID.",
         "RotationRules": "A structure that defines the rotation configuration for this secret.",
         "SecretId": "The ARN or name of the secret to rotate.\n\nTo reference a secret also created in this template, use the [Ref](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-ref.html) function with the secret's logical ID."
@@ -37384,8 +37593,8 @@
       "description": "A structure that defines the rotation configuration for the secret.",
       "properties": {
         "AutomaticallyAfterDays": "The number of days between automatic scheduled rotations of the secret. You can use this value to check that your secret meets your compliance guidelines for how often secrets must be rotated.\n\nIn `DescribeSecret` and `ListSecrets` , this value is calculated from the rotation schedule after every successful rotation. In `RotateSecret` , you can set the rotation schedule in `RotationRules` with `AutomaticallyAfterDays` or `ScheduleExpression` , but not both.",
-        "Duration": "",
-        "ScheduleExpression": ""
+        "Duration": "The length of the rotation window in hours, for example `3h` for a three hour window. Secrets Manager rotates your secret at any time during this window. The window must not go into the next UTC day. If you don't specify this value, the window automatically ends at the end of the UTC day. The window begins according to the `ScheduleExpression` . For more information, including examples, see [Schedule expressions in Secrets Manager rotation](https://docs.aws.amazon.com/secretsmanager/latest/userguide/rotate-secrets_schedule.html) .",
+        "ScheduleExpression": "A `cron()` or `rate()` expression that defines the schedule for rotating your secret. Secrets Manager rotation schedules use UTC time zone.\n\nSecrets Manager `rate()` expressions represent the interval in days that you want to rotate your secret, for example `rate(10 days)` . If you use a `rate()` expression, the rotation window opens at midnight, and Secrets Manager rotates your secret any time that day after midnight. You can set a `Duration` to shorten the rotation window.\n\nYou can use a `cron()` expression to create rotation schedules that are more detailed than a rotation interval. For more information, including examples, see [Schedule expressions in Secrets Manager rotation](https://docs.aws.amazon.com/secretsmanager/latest/userguide/rotate-secrets_schedule.html) . If you use a `cron()` expression, Secrets Manager rotates your secret any time during that day after the window opens. For example, `cron(0 8 1 * ? *)` represents a rotation window that occurs on the first day of every month beginning at 8:00 AM UTC. Secrets Manager rotates the secret any time that day after 8:00 AM. You can set a `Duration` to shorten the rotation window."
       }
     },
     "AWS::SecretsManager::Secret": {
@@ -37788,7 +37997,7 @@
     "AWS::ServiceDiscovery::PrivateDnsNamespace": {
       "attributes": {
         "Arn": "The Amazon Resource Name (ARN) of the private namespace.",
-        "HostedZoneId": "",
+        "HostedZoneId": "The ID for the Route 53 hosted zone that AWS Cloud Map creates when you create a namespace.",
         "Id": "The ID of the private namespace.",
         "Ref": "`Ref` returns the value of `Id` for the namespace, such as `ns-e4anhexample0004` ."
       },
@@ -37825,7 +38034,7 @@
     "AWS::ServiceDiscovery::PublicDnsNamespace": {
       "attributes": {
         "Arn": "The Amazon Resource Name (ARN) of the public namespace.",
-        "HostedZoneId": "",
+        "HostedZoneId": "The ID for the Route 53 hosted zone that AWS Cloud Map creates when you create a namespace.",
         "Id": "The ID of the public namespace.",
         "Ref": "`Ref` returns the value of `Id` for the namespace, such as `ns-e4anhexample0004` ."
       },
@@ -38280,13 +38489,15 @@
       "properties": {
         "Certificate": "The Amazon Resource Name (ARN) of the AWS Certificate Manager (ACM) certificate. Required when `Protocols` is set to `FTPS` .\n\nTo request a new public certificate, see [Request a public certificate](https://docs.aws.amazon.com/acm/latest/userguide/gs-acm-request-public.html) in the *AWS Certificate Manager User Guide* .\n\nTo import an existing certificate into ACM, see [Importing certificates into ACM](https://docs.aws.amazon.com/acm/latest/userguide/import-certificate.html) in the *AWS Certificate Manager User Guide* .\n\nTo request a private certificate to use FTPS through private IP addresses, see [Request a private certificate](https://docs.aws.amazon.com/acm/latest/userguide/gs-acm-request-private.html) in the *AWS Certificate Manager User Guide* .\n\nCertificates with the following cryptographic algorithms and key sizes are supported:\n\n- 2048-bit RSA (RSA_2048)\n- 4096-bit RSA (RSA_4096)\n- Elliptic Prime Curve 256 bit (EC_prime256v1)\n- Elliptic Prime Curve 384 bit (EC_secp384r1)\n- Elliptic Prime Curve 521 bit (EC_secp521r1)\n\n> The certificate must be a valid SSL/TLS X.509 version 3 certificate with FQDN or IP address specified and information about the issuer.",
         "Domain": "Specifies the domain of the storage system that is used for file transfers.",
-        "EndpointDetails": "The virtual private cloud (VPC) endpoint settings that are configured for your server. When you host your endpoint within your VPC, you can make it accessible only to resources within your VPC, or you can attach Elastic IPs and make it accessible to clients over the internet. You VPC's default security groups are automatically assigned to your endpoint.",
-        "EndpointType": "The type of VPC endpoint that you want your server to connect to. You can choose to connect to the public internet or a virtual private cloud (VPC) endpoint. With a VPC endpoint, you can restrict access to your server and resources only within your VPC.\n\n> It is recommended that you use `VPC` as the `EndpointType` . With this endpoint type, you have the option to directly associate up to three Elastic IPv4 addresses (BYO IP included) with your server's endpoint and use VPC security groups to restrict traffic by the client's public IP address. This is not possible with `EndpointType` set to `VPC_ENDPOINT` .",
+        "EndpointDetails": "The virtual private cloud (VPC) endpoint settings that are configured for your server. When you host your endpoint within your VPC, you can make it accessible only to resources within your VPC, or you can attach Elastic IP addresses and make it accessible to clients over the internet. Your VPC's default security groups are automatically assigned to your endpoint.",
+        "EndpointType": "The type of endpoint that you want your server to use. You can choose to make your server's endpoint publicly accessible (PUBLIC) or host it inside your VPC. With an endpoint that is hosted in a VPC, you can restrict access to your server and resources only within your VPC or choose to make it internet facing by attaching Elastic IP addresses directly to it.",
         "IdentityProviderDetails": "Required when `IdentityProviderType` is set to `AWS_DIRECTORY_SERVICE` or `API_GATEWAY` . Accepts an array containing all of the information required to use a directory in `AWS_DIRECTORY_SERVICE` or invoke a customer-supplied authentication API, including the API Gateway URL. Not required when `IdentityProviderType` is set to `SERVICE_MANAGED` .",
         "IdentityProviderType": "Specifies the mode of authentication for a server. The default value is `SERVICE_MANAGED` , which allows you to store and access user credentials within the AWS Transfer Family service.\n\nUse `AWS_DIRECTORY_SERVICE` to provide access to Active Directory groups in AWS Managed Active Directory or Microsoft Active Directory in your on-premises environment or in AWS using AD Connectors. This option also requires you to provide a Directory ID using the `IdentityProviderDetails` parameter.\n\nUse the `API_GATEWAY` value to integrate with an identity provider of your choosing. The `API_GATEWAY` setting requires you to provide an API Gateway endpoint URL to call for authentication using the `IdentityProviderDetails` parameter.\n\nUse the `AWS_LAMBDA` value to directly use a Lambda function as your identity provider. If you choose this value, you must specify the ARN for the lambda function in the `Function` parameter for the `IdentityProviderDetails` data type.",
         "LoggingRole": "Specifies the Amazon Resource Name (ARN) of the AWS Identity and Access Management (IAM) role that allows a server to turn on Amazon CloudWatch logging for Amazon S3 or Amazon EFS events. When set, user activity can be viewed in your CloudWatch logs.",
-        "ProtocolDetails": "Protocol settings that are configured for your server.\n\n> Only valid in the `UpdateServer` API.",
-        "Protocols": "Specifies the file transfer protocol or protocols over which your file transfer protocol client can connect to your server's endpoint.",
+        "PostAuthenticationLoginBanner": "Specify a string to display when users connect to a server. This string is displayed after the user authenticates.\n\n> The SFTP protocol does not support post-authentication display banners.",
+        "PreAuthenticationLoginBanner": "Specify a string to display when users connect to a server. This string is displayed before the user authenticates. For example, the following banner displays details about using the system.\n\n`This system is for the use of authorized users only. Individuals using this computer system without authority, or in excess of their authority, are subject to having all of their activities on this system monitored and recorded by system personnel.`",
+        "ProtocolDetails": "The protocol settings that are configured for your server.\n\nUse the `PassiveIp` parameter to indicate passive mode (for FTP and FTPS protocols). Enter a single dotted-quad IPv4 address, such as the external IP address of a firewall, router, or load balancer.\n\nUse the `TlsSessionResumptionMode` parameter to determine whether or not your Transfer server resumes recent, negotiated sessions through a unique session ID.",
+        "Protocols": "Specifies the file transfer protocol or protocols over which your file transfer protocol client can connect to your server's endpoint. The available protocols are:\n\n- `SFTP` (Secure Shell (SSH) File Transfer Protocol): File transfer over SSH\n- `FTPS` (File Transfer Protocol Secure): File transfer with TLS encryption\n- `FTP` (File Transfer Protocol): Unencrypted file transfer\n\n> If you select `FTPS` , you must choose a certificate stored in AWS Certificate Manager (ACM) which is used to identify your server when clients connect to it over FTPS.\n> \n> If `Protocol` includes either `FTP` or `FTPS` , then the `EndpointType` must be `VPC` and the `IdentityProviderType` must be `AWS_DIRECTORY_SERVICE` or `API_GATEWAY` .\n> \n> If `Protocol` includes `FTP` , then `AddressAllocationIds` cannot be associated.\n> \n> If `Protocol` is set only to `SFTP` , the `EndpointType` can be set to `PUBLIC` and the `IdentityProviderType` can be set to `SERVICE_MANAGED` .",
         "SecurityPolicyName": "Specifies the name of the security policy that is attached to the server.",
         "Tags": "Key-value pairs that can be used to group and search for servers.",
         "WorkflowDetails": "Specifies the workflow ID for the workflow to assign and the execution role used for executing the workflow."
@@ -38294,10 +38505,10 @@
     },
     "AWS::Transfer::Server.EndpointDetails": {
       "attributes": {},
-      "description": "The virtual private cloud (VPC) endpoint settings that are configured for your server. When you host your endpoint within your VPC, you can make it accessible only to resources within your VPC, or you can attach Elastic IPs and make it accessible to clients over the internet. You VPC's default security groups are automatically assigned to your endpoint.\n\n> It is recommended that you use `VPC` as the `EndpointType` . With this endpoint type, you have the option to directly associate up to three Elastic IPv4 addresses (BYO IP included) with your server's endpoint and use VPC security groups to restrict traffic by the client's public IP address. This is not possible with `EndpointType` set to `VPC_ENDPOINT` .",
+      "description": "The virtual private cloud (VPC) endpoint settings that are configured for your server. When you host your endpoint within your VPC, you can make it accessible only to resources within your VPC, or you can attach Elastic IP addresses and make it accessible to clients over the internet. Your VPC's default security groups are automatically assigned to your endpoint.",
       "properties": {
-        "AddressAllocationIds": "A list of address allocation IDs that are required to attach an Elastic IP address to your server's endpoint. This is only valid in the `UpdateServer` API.\n\n> This property can only be set when `EndpointType` is set to `VPC` .",
-        "SecurityGroupIds": "A list of security groups IDs that are available to attach to your server's endpoint.\n\n> This property can only be set when `EndpointType` is set to `VPC` . \n\n*Maximum number of security groups* : 5",
+        "AddressAllocationIds": "A list of address allocation IDs that are required to attach an Elastic IP address to your server's endpoint.\n\n> This property can only be set when `EndpointType` is set to `VPC` and it is only valid in the `UpdateServer` API.",
+        "SecurityGroupIds": "A list of security groups IDs that are available to attach to your server's endpoint.\n\n> This property can only be set when `EndpointType` is set to `VPC` .\n> \n> You can edit the `SecurityGroupIds` property in the [UpdateServer](https://docs.aws.amazon.com/transfer/latest/userguide/API_UpdateServer.html) API only if you are changing the `EndpointType` from `PUBLIC` or `VPC_ENDPOINT` to `VPC` . To change security groups associated with your server's VPC endpoint after creation, use the Amazon EC2 [ModifyVpcEndpoint](https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_ModifyVpcEndpoint.html) API.",
         "SubnetIds": "A list of subnet IDs that are required to host your server endpoint in your VPC.\n\n> This property can only be set when `EndpointType` is set to `VPC` .",
         "VpcEndpointId": "The ID of the VPC endpoint.\n\n> This property can only be set when `EndpointType` is set to `VPC_ENDPOINT` .",
         "VpcId": "The VPC ID of the virtual private cloud in which the server's endpoint will be hosted.\n\n> This property can only be set when `EndpointType` is set to `VPC` ."
@@ -38315,7 +38526,7 @@
     },
     "AWS::Transfer::Server.Protocol": {
       "attributes": {},
-      "description": "Specifies the file transfer protocol or protocols over which your file transfer protocol client can connect to your server's endpoint. The available protocols are:\n\n- `SFTP` (Secure Shell (SSH) File Transfer Protocol): File transfer over SSH\n- `FTPS` (File Transfer Protocol Secure): File transfer with TLS encryption\n- `FTP` (File Transfer Protocol): Unencrypted file transfer\n\n> If you select `FTPS` , you must choose a certificate stored in AWS Certificate Manager (ACM) which will be used to identify your server when clients connect to it over FTPS.\n> \n> If `Protocol` includes either `FTP` or `FTPS` , then the `EndpointType` must be `VPC` and the `IdentityProviderType` must be `API_GATEWAY` .\n> \n> If `Protocol` includes `FTP` , then `AddressAllocationIds` cannot be associated.\n> \n> If `Protocol` is set only to `SFTP` , the `EndpointType` can be set to `PUBLIC` and the `IdentityProviderType` can be set to `SERVICE_MANAGED` .",
+      "description": "Specifies the file transfer protocol or protocols over which your file transfer protocol client can connect to your server's endpoint. The available protocols are:\n\n- `SFTP` (Secure Shell (SSH) File Transfer Protocol): File transfer over SSH\n- `FTPS` (File Transfer Protocol Secure): File transfer with TLS encryption\n- `FTP` (File Transfer Protocol): Unencrypted file transfer\n\n> If you select `FTPS` , you must choose a certificate stored in AWS Certificate Manager (ACM) which is used to identify your server when clients connect to it over FTPS.\n> \n> If `Protocol` includes either `FTP` or `FTPS` , then the `EndpointType` must be `VPC` and the `IdentityProviderType` must be `AWS_DIRECTORY_SERVICE` or `API_GATEWAY` .\n> \n> If `Protocol` includes `FTP` , then `AddressAllocationIds` cannot be associated.\n> \n> If `Protocol` is set only to `SFTP` , the `EndpointType` can be set to `PUBLIC` and the `IdentityProviderType` can be set to `SERVICE_MANAGED` .",
       "properties": {}
     },
     "AWS::Transfer::Server.ProtocolDetails": {
@@ -38401,10 +38612,10 @@
       "attributes": {},
       "description": "The basic building block of a workflow.",
       "properties": {
-        "CopyStepDetails": "Details for a step that performs a file copy. Consists of the following values:\n\n- A description\n- An S3 location for the destination of the file copy\n- A flag that indicates whether or not to overwrite an existing file of the same name. The default is `FALSE` .",
-        "CustomStepDetails": "Details for a step that invokes a lambda function. Consists of the lambda function name, target, and timeout (in seconds).",
+        "CopyStepDetails": "Details for a step that performs a file copy.\n\nConsists of the following values:\n\n- A description\n- An S3 location for the destination of the file copy.\n- A flag that indicates whether or not to overwrite an existing file of the same name. The default is `FALSE` .",
+        "CustomStepDetails": "Details for a step that invokes a lambda function.\n\nConsists of the lambda function name, target, and timeout (in seconds).",
         "DeleteStepDetails": "Details for a step that deletes the file.",
-        "TagStepDetails": "Details for a step that creates one or more tags. You specify one or more tags: each tag contains a key/value pair.",
+        "TagStepDetails": "Details for a step that creates one or more tags.\n\nYou specify one or more tags: each tag contains a key/value pair.",
         "Type": "Currently, the following step types are supported.\n\n- *Copy* : copy the file to another location\n- *Custom* : custom step with a lambda target\n- *Delete* : delete the file\n- *Tag* : add a tag to the file"
       }
     },

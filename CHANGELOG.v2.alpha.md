@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.15.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.14.0-alpha.0...v2.15.0-alpha.0) (2022-03-01)
+
+
+### Bug Fixes
+
+* **aws-lambda-python:** skip default docker build when image passed ([#19143](https://github.com/aws/aws-cdk/issues/19143)) ([7300f2e](https://github.com/aws/aws-cdk/commit/7300f2eee9e1593eef271d7a953edf80a8962e08)), closes [#18082](https://github.com/aws/aws-cdk/issues/18082)
+
 ## [2.14.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.13.0-alpha.0...v2.14.0-alpha.0) (2022-02-25)
 
 

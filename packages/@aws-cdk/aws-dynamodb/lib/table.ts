@@ -675,7 +675,7 @@ abstract class TableBase extends Resource implements ITable {
 
   /**
    * Permits an IAM principal all data read operations from this table:
-   * BatchGetItem, GetRecords, GetShardIterator, Query, GetItem, Scan.
+   * BatchGetItem, GetRecords, GetShardIterator, Query, GetItem, Scan, DescribeTable.
    *
    * Appropriate grants will also be added to the customer-managed KMS key
    * if one was configured.
@@ -683,7 +683,8 @@ abstract class TableBase extends Resource implements ITable {
    * @param grantee The principal to grant access to
    */
   public grantReadData(grantee: iam.IGrantable): iam.Grant {
-    return this.combinedGrant(grantee, { keyActions: perms.KEY_READ_ACTIONS, tableActions: perms.READ_DATA_ACTIONS });
+    const tableActions = perms.READ_DATA_ACTIONS.concat(perms.DESCRIBE_TABLE);
+    return this.combinedGrant(grantee, { keyActions: perms.KEY_READ_ACTIONS, tableActions });
   }
 
   /**
@@ -720,7 +721,7 @@ abstract class TableBase extends Resource implements ITable {
 
   /**
    * Permits an IAM principal all data write operations to this table:
-   * BatchWriteItem, PutItem, UpdateItem, DeleteItem.
+   * BatchWriteItem, PutItem, UpdateItem, DeleteItem, DescribeTable.
    *
    * Appropriate grants will also be added to the customer-managed KMS key
    * if one was configured.
@@ -728,13 +729,15 @@ abstract class TableBase extends Resource implements ITable {
    * @param grantee The principal to grant access to
    */
   public grantWriteData(grantee: iam.IGrantable): iam.Grant {
-    return this.combinedGrant(grantee, { keyActions: perms.KEY_WRITE_ACTIONS, tableActions: perms.WRITE_DATA_ACTIONS });
+    const tableActions = perms.WRITE_DATA_ACTIONS.concat(perms.DESCRIBE_TABLE);
+    const keyActions = perms.KEY_READ_ACTIONS.concat(perms.KEY_WRITE_ACTIONS);
+    return this.combinedGrant(grantee, { keyActions, tableActions });
   }
 
   /**
    * Permits an IAM principal to all data read/write operations to this table.
    * BatchGetItem, GetRecords, GetShardIterator, Query, GetItem, Scan,
-   * BatchWriteItem, PutItem, UpdateItem, DeleteItem
+   * BatchWriteItem, PutItem, UpdateItem, DeleteItem, DescribeTable
    *
    * Appropriate grants will also be added to the customer-managed KMS key
    * if one was configured.
@@ -742,7 +745,7 @@ abstract class TableBase extends Resource implements ITable {
    * @param grantee The principal to grant access to
    */
   public grantReadWriteData(grantee: iam.IGrantable): iam.Grant {
-    const tableActions = perms.READ_DATA_ACTIONS.concat(perms.WRITE_DATA_ACTIONS);
+    const tableActions = perms.READ_DATA_ACTIONS.concat(perms.WRITE_DATA_ACTIONS).concat(perms.DESCRIBE_TABLE);
     const keyActions = perms.KEY_READ_ACTIONS.concat(perms.KEY_WRITE_ACTIONS);
     return this.combinedGrant(grantee, { keyActions, tableActions });
   }
