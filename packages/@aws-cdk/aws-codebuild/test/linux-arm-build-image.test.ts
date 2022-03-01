@@ -352,15 +352,7 @@ describe('Linux ARM build image', () => {
               'ecr:GetDownloadUrlForLayer',
               'ecr:BatchGetImage',
             ],
-            Resource: {
-              'Fn::Join': ['', [
-                'arn:',
-                { Ref: 'AWS::Partition' },
-                ':ecr:',
-                { Ref: 'AWS::Region' },
-                ':585695036304:repository/foo/bar/foo/fooo',
-              ]],
-            },
+            Resource: 'arn:aws:ecr:us-east-1:585695036304:repository/foo/bar/foo/fooo',
           })]),
         },
       });
