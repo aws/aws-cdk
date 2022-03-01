@@ -114,7 +114,7 @@ portfolio.shareWithAccount('012345678901');
 Products are version friendly infrastructure-as-code templates that admins create and add to portfolios for end users to provision and create AWS resources.
 The CDK currently only supports adding products of type Cloudformation product. 
 Using the CDK, a new Product can be created with the `CloudFormationProduct` construct.
-You can use `CloudFormationTemplate.fromUrl` to create a Product from a Cloudformation template directly from a URL that points to a CloudFormation template in S3, GitHub, or CodeCommit:
+You can use `CloudFormationTemplate.fromUrl` to create a Product from a CloudFormation template directly from a URL that points to the template in S3, GitHub, or CodeCommit:
 
 ```ts
 const product = new servicecatalog.CloudFormationProduct(this, 'MyFirstProduct', {
