@@ -344,20 +344,12 @@ export class FileSystem extends FileSystemBase {
     // LifecyclePolicies is an array of lists containing a single policy
     let lifecyclePolicies = [];
 
-    const lifecyclePolicy = props.lifecyclePolicy ? {
-      transitionToIa: props.lifecyclePolicy,
-    } : undefined;
-
-    if (lifecyclePolicy) {
-      lifecyclePolicies.push(lifecyclePolicy);
+    if (props.lifecyclePolicy) {
+      lifecyclePolicies.push({ transitionToIa: props.lifecyclePolicy });
     }
 
-    const outOfInfrequentAccessPolicy = props.outOfInfrequentAccessPolicy ? {
-      transitionToPrimaryStorageClass: props.outOfInfrequentAccessPolicy,
-    } : undefined;
-
-    if (outOfInfrequentAccessPolicy) {
-      lifecyclePolicies.push(outOfInfrequentAccessPolicy);
+    if (props.outOfInfrequentAccessPolicy) {
+      lifecyclePolicies.push({ transitionToPrimaryStorageClass: props.outOfInfrequentAccessPolicy });
     }
 
     const filesystem = new CfnFileSystem(this, 'Resource', {
