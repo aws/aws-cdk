@@ -189,7 +189,7 @@ const product = new servicecatalog.CloudFormationProduct(this, 'Product', {
 
 ### Adding a product to a portfolio
 
-You add products to a portfolio to organize and distrbute your catalog at scale.  Addinga product to a portfolio creates an association, 
+You add products to a portfolio to organize and distribute your catalog at scale.  Adding a product to a portfolio creates an association,
 and the product will become visible within the portfolio side in both the Service Catalog console and AWS CLI.
 You can add a product to multiple portfolios depending on your organizational structure and how you would like to group access to products.
 
