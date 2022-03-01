@@ -161,7 +161,7 @@ const product = new servicecatalog.CloudFormationProduct(this, 'Product', {
 You can create a Service Catalog `CloudFormationProduct` entirely defined with CDK code using a service catalog `ProductStack`.
 A separate child stack for your product is created and you can add resources like you would for any other CDK stack,
 such as an S3 Bucket, IAM roles, and EC2 instances. This stack is passed in as a product version to your
-product.  This will not create a separate Cloudformation stack during deployment. 
+product.  This will not create a separate CloudFormation stack during deployment. 
 
 ```ts
 import * as s3 from '@aws-cdk/aws-s3';
