@@ -256,7 +256,7 @@ portfolio.constrainTagUpdates(product, {
 
 ### Notify on stack events
 
-Allows users to subscribe an AWS `SNS` topic to a provisiooned product's Cloudformation stack events.
+Allows users to subscribe an AWS `SNS` topic to a provisioned product's CloudFormation stack events.
 When an end user provisions a product it creates a Cloudformation stack that notifies the subscribed topic on creation, edit, and delete events.
 An individual `SNS` topic may only have a single subscription to any given portfolio-product association.
 
