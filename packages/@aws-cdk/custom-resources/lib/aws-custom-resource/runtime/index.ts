@@ -113,6 +113,10 @@ function patchSdk(awsSdk: any): any {
 
 /* eslint-disable @typescript-eslint/no-require-imports, import/no-extraneous-dependencies */
 export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent, _context: AWSLambda.Context) {
+  console.log(JSON.stringify(event));
+  event.ResourceProperties.Create = decodeCall(event.ResourceProperties.Create);
+  event.ResourceProperties.Update = decodeCall(event.ResourceProperties.Update);
+  event.ResourceProperties.Delete = decodeCall(event.ResourceProperties.Delete);
   let physicalResourceId: string;
   // Default physical resource id
   switch (event.RequestType) {
@@ -148,12 +152,7 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
       console.log(`Failed to patch AWS SDK: ${e}. Proceeding with the installed copy.`);
     }
 
-    console.log(JSON.stringify(event));
     console.log('AWS SDK VERSION: ' + AWS.VERSION);
-
-    event.ResourceProperties.Create = decodeCall(event.ResourceProperties.Create);
-    event.ResourceProperties.Update = decodeCall(event.ResourceProperties.Update);
-    event.ResourceProperties.Delete = decodeCall(event.ResourceProperties.Delete);
 
     let flatData: { [key: string]: string } = {};
     let data: { [key: string]: string } = {};
