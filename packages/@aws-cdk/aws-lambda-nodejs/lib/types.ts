@@ -59,7 +59,8 @@ export interface BundlingOptions {
   readonly loader?: { [ext: string]: string };
 
   /**
-   * Log level for esbuild
+   * Log level for esbuild. This is also propagated to the package manager and
+   * applies to its specific install command.
    *
    * @default LogLevel.WARNING
    */
@@ -340,7 +341,7 @@ export interface ICommandHooks {
 }
 
 /**
- * Log level for esbuild
+ * Log levels for esbuild and package managers' install commands.
  */
 export enum LogLevel {
   /** Show everything */
