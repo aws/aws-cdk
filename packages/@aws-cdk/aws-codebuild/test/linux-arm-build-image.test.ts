@@ -194,12 +194,12 @@ describe('Linux ARM build image', () => {
                         {
                           'Fn::GetAtt': [
                             'myrepo5DFA62E5',
-                            'Arn'
-                          ]
-                        }
-                      ]
-                    }
-                  ]
+                            'Arn',
+                          ],
+                        },
+                      ],
+                    },
+                  ],
                 },
                 '.dkr.ecr.',
                 {
@@ -211,23 +211,23 @@ describe('Linux ARM build image', () => {
                         {
                           'Fn::GetAtt': [
                             'myrepo5DFA62E5',
-                            'Arn'
-                          ]
-                        }
-                      ]
-                    }
-                  ]
+                            'Arn',
+                          ],
+                        },
+                      ],
+                    },
+                  ],
                 },
                 '.',
                 {
-                  Ref: 'AWS::URLSuffix'
+                  Ref: 'AWS::URLSuffix',
                 },
                 '/',
                 {
-                  Ref: 'myrepo5DFA62E5'
+                  Ref: 'myrepo5DFA62E5',
                 },
-                ':v1'
-              ]
+                ':v1',
+              ],
             ],
           },
         },
@@ -340,10 +340,10 @@ describe('Linux ARM build image', () => {
               [
                 '585695036304.dkr.ecr.us-east-1.',
                 {
-                  Ref: 'AWS::URLSuffix'
+                  Ref: 'AWS::URLSuffix',
                 },
-                '/foo/bar/foo/fooo:latest'
-               ]
+                '/foo/bar/foo/fooo:latest',
+              ],
             ]],
           },
         },
