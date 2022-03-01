@@ -242,16 +242,10 @@ describe('Linux ARM build image', () => {
               'ecr:BatchGetImage',
             ],
             Resource: {
-              'Fn::Join': ['', [
-                'arn:',
-                { Ref: 'AWS::Partition' },
-                ':ecr:',
-                { Ref: 'AWS::Region' },
-                ':',
-                { Ref: 'AWS::AccountId' },
-                ':repository/',
-                { Ref: 'myrepo5DFA62E5' },
-              ]],
+              'Fn::GetAtt': [
+                'myrepo5DFA62E5',
+                'Arn',
+              ],
             },
           })]),
         },
@@ -336,15 +330,18 @@ describe('Linux ARM build image', () => {
         Environment: {
           ComputeType: 'BUILD_GENERAL1_LARGE',
           Image: {
-            'Fn::Join': ['', [
+            'Fn::Join': [
+              '',
               [
-                '585695036304.dkr.ecr.us-east-1.',
-                {
-                  Ref: 'AWS::URLSuffix',
-                },
-                '/foo/bar/foo/fooo:latest',
+                [
+                  '585695036304.dkr.ecr.us-east-1.',
+                  {
+                    Ref: 'AWS::URLSuffix',
+                  },
+                  '/foo/bar/foo/fooo:latest',
+                ],
               ],
-            ]],
+            ],
           },
         },
       });
