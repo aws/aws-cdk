@@ -1174,7 +1174,7 @@ export class DatabaseInstanceReadReplica extends DatabaseInstanceNew implements 
     // The read replica instance always uses the same engine as the source instance
     // but some CF validations require the engine to be explicitely passed when some
     // properties are specified.
-    let shouldPassEngine = anyDefined(
+    const shouldPassEngine = anyDefined(
       props.domain,
     );
 
