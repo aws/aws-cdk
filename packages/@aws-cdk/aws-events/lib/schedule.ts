@@ -42,6 +42,8 @@ export abstract class Schedule {
       throw new Error('Cannot supply both \'day\' and \'weekDay\', use at most one');
     }
 
+    const minuteUndefinedWarning = options.minute ?? "When 'minute' is undefined in CronOptions, '*' is used as the default value, scheduling the event for every minute within the supplied parameters.";
+
     const minute = fallback(options.minute, '*');
     const hour = fallback(options.hour, '*');
     const month = fallback(options.month, '*');
@@ -51,13 +53,18 @@ export abstract class Schedule {
     const day = fallback(options.day, options.weekDay !== undefined ? '?' : '*');
     const weekDay = fallback(options.weekDay, '?');
 
-    return new LiteralSchedule(`cron(${minute} ${hour} ${day} ${month} ${weekDay} ${year})`);
+    return new LiteralSchedule(`cron(${minute} ${hour} ${day} ${month} ${weekDay} ${year})`, minuteUndefinedWarning);
   }
 
   /**
    * Retrieve the expression for this schedule
    */
   public abstract readonly expressionString: string;
+
+  /**
+   * The warning displayed when the user has not defined the minute field in CronOptions.
+   */
+  public abstract readonly minuteUndefinedWarning?: string;
 
   protected constructor() {
   }
@@ -116,7 +123,7 @@ export interface CronOptions {
 }
 
 class LiteralSchedule extends Schedule {
-  constructor(public readonly expressionString: string) {
+  constructor(public readonly expressionString: string, public readonly minuteUndefinedWarning?: string) {
     super();
   }
 }

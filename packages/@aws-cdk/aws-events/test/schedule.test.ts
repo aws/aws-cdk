@@ -27,6 +27,13 @@ describe('schedule', () => {
     }).expressionString);
   });
 
+  test('warning message is included in Schedule when cron does not include minute', () => {
+    expect(events.Schedule.cron({
+      hour: '8',
+      day: '1',
+    }).minuteUndefinedWarning).toEqual("When 'minute' is undefined in CronOptions, '*' is used as the default value, scheduling the event for every minute within the supplied parameters.");
+  });
+
   test('rate must be whole number of minutes', () => {
     expect(() => {
       events.Schedule.rate(Duration.minutes(0.13456));

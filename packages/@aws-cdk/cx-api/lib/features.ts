@@ -216,6 +216,11 @@ export const ECS_SERVICE_EXTENSIONS_ENABLE_DEFAULT_LOG_DRIVER = '@aws-cdk-contai
 export const EC2_UNIQUE_IMDSV2_LAUNCH_TEMPLATE_NAME = '@aws-cdk/aws-ec2:uniqueImdsv2TemplateName';
 
 /**
+ * Enable this feature flag to have Events emit a warning upon synthesis or deployment when `minute` is not defined in CronOptions.
+ */
+export const EVENTS_WARNING_CRON_MINUTES_NOT_SET = '@aws-cdk/aws-events:cron';
+
+/**
  * Flag values that should apply for new projects
  *
  * Add a flag in here (typically with the value `true`), to enable
@@ -240,6 +245,7 @@ export const FUTURE_FLAGS: { [key: string]: boolean } = {
   [CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021]: true,
   [ECS_SERVICE_EXTENSIONS_ENABLE_DEFAULT_LOG_DRIVER]: true,
   [EC2_UNIQUE_IMDSV2_LAUNCH_TEMPLATE_NAME]: true,
+  [EVENTS_WARNING_CRON_MINUTES_NOT_SET]: true,
 };
 
 /**

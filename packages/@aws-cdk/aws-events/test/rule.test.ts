@@ -1,13 +1,17 @@
 /* eslint-disable object-curly-newline */
 import { Match, Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
+import { testFutureBehavior, testLegacyBehavior } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import { EventBus, EventField, IRule, IRuleTarget, RuleTargetConfig, RuleTargetInput, Schedule } from '../lib';
 import { Rule } from '../lib/rule';
 
 /* eslint-disable quote-props */
 
 describe('rule', () => {
+  const flags = { [cxapi.EVENTS_WARNING_CRON_MINUTES_NOT_SET]: true };
+
   test('default rule', () => {
     const stack = new cdk.Stack();
 
@@ -26,6 +30,32 @@ describe('rule', () => {
         },
       },
     });
+  });
+
+  testFutureBehavior('rule displays warning when minutes are not included in schedule and flag is enabled', flags, cdk.App, (app) => {
+    const stack = new cdk.Stack(app);
+    const rule = new Rule(stack, 'MyRule', {
+      schedule: Schedule.cron({
+        hour: '8',
+        day: '1',
+      }),
+    });
+    expect(rule.node.metadataEntry).toEqual([{
+      type: 'aws:cdk:warning',
+      data: "When 'minute' is undefined in CronOptions, '*' is used as the default value, scheduling the event for every minute within the supplied parameters.",
+      trace: undefined,
+    }]);
+  });
+
+  testLegacyBehavior('rule does not display warning when minutes are not included in schedule and flag is disabled', cdk.App, (app) => {
+    const stack = new cdk.Stack(app);
+    const rule = new Rule(stack, 'MyRule', {
+      schedule: Schedule.cron({
+        hour: '8',
+        day: '1',
+      }),
+    });
+    expect(rule.node.metadataEntry).toEqual([]);
   });
 
   test('can get rule name', () => {
@@ -133,7 +163,7 @@ describe('rule', () => {
     });
   });
 
-  test('fails synthesis if neither eventPattern nor scheudleExpression are specified', () => {
+  test('fails synthesis if neither eventPattern nor scheduleExpression are specified', () => {
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'MyStack');
     new Rule(stack, 'Rule');

@@ -1,5 +1,6 @@
 import { IRole, PolicyStatement, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
-import { App, IResource, Lazy, Names, Resource, Stack, Token, PhysicalName, ArnFormat } from '@aws-cdk/core';
+import { App, IResource, Lazy, Names, Resource, Stack, Token, PhysicalName, ArnFormat, Annotations, FeatureFlags } from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import { Node, Construct } from 'constructs';
 import { IEventBus } from './event-bus';
 import { EventPattern } from './event-pattern';
@@ -127,8 +128,14 @@ export class Rule extends Resource implements IRule {
       throw new Error('Cannot associate rule with \'eventBus\' when using \'schedule\'');
     }
 
+    if (FeatureFlags.of(this).isEnabled(cxapi.EVENTS_WARNING_CRON_MINUTES_NOT_SET)) {
+      if (props.schedule?.minuteUndefinedWarning) {
+        Annotations.of(this).addWarning(props.schedule.minuteUndefinedWarning);
+      }
+    }
+
     this.description = props.description;
-    this.scheduleExpression = props.schedule && props.schedule.expressionString;
+    this.scheduleExpression = props.schedule?.expressionString;
 
     const resource = new CfnRule(this, 'Resource', {
       name: this.physicalName,
