@@ -1,4 +1,4 @@
-import { IConstruct } from '../construct-compat';
+import { IConstruct } from 'constructs';
 import { Stack } from '../stack';
 import { Stage } from '../stage';
 
