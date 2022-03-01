@@ -132,7 +132,7 @@ const product = new servicecatalog.CloudFormationProduct(this, 'MyFirstProduct',
 
 ### Creating a product from a local asset
 
-A `CloudFormationProduct` can also be created by using a Cloudformation template held locally on disk using Assets.
+A `CloudFormationProduct` can also be created by using a CloudFormation template held locally on disk using Assets.
 Assets are files that are uploaded to an S3 Bucket before deployment.
 `CloudFormationTemplate.fromAsset` can be utilized to create a Product by passing the path to a local template file on your disk:
 
