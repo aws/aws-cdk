@@ -51,19 +51,54 @@ import * as iotevents from '@aws-cdk/aws-iotevents';
 
 const input = new iotevents.Input(this, 'MyInput', {
   inputName: 'my_input', // optional
-  attributeJsonPaths: ['payload.temperature'],
+  attributeJsonPaths: ['payload.deviceId', 'payload.temperature'],
 });
 
-const onlineState = new iotevents.State({
-  stateName: 'online',
+const warmState = new iotevents.State({
+  stateName: 'warm',
   onEnter: [{
     eventName: 'test-event',
     condition: iotevents.Expression.currentInput(input),
   }],
 });
+const coldState = new iotevents.State({
+  stateName: 'cold',
+});
+
+// transit to coldState when temperature is 10
+warmState.transitionTo(coldState, {
+  eventName: 'to_coldState', // optional property, default by combining the names of the States
+  when: iotevents.Expression.eq(
+    iotevents.Expression.inputAttribute(input, 'payload.temperature'),
+    iotevents.Expression.fromString('10'),
+  ),
+});
+// transit to warmState when temperature is 20
+coldState.transitionTo(warmState, {
+  when: iotevents.Expression.eq(
+    iotevents.Expression.inputAttribute(input, 'payload.temperature'),
+    iotevents.Expression.fromString('20'),
+  ),
+});
 
 new iotevents.DetectorModel(this, 'MyDetectorModel', {
   detectorModelName: 'test-detector-model', // optional
-  initialState: onlineState,
+  description: 'test-detector-model-description', // optional property, default is none
+  evaluationMethod: iotevents.EventEvaluation.SERIAL, // optional property, default is iotevents.EventEvaluation.BATCH
+  detectorKey: 'payload.deviceId', // optional property, default is none and single detector instance will be created and all inputs will be routed to it
+  initialState: warmState,
 });
+```
+
+To grant permissions to put messages in the input,
+you can use the `grantWrite()` method:
+
+```ts
+import * as iam from '@aws-cdk/aws-iam';
+import * as iotevents from '@aws-cdk/aws-iotevents';
+
+declare const grantable: iam.IGrantable;
+const input = iotevents.Input.fromInputName(this, 'MyInput', 'my_input');
+
+input.grantWrite(grantable);
 ```

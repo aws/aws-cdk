@@ -9,6 +9,9 @@
 
 <!--END STABILITY BANNER-->
 
+If you're migrating from the old `assert` library, the migration guide can be found in
+[our GitHub repository](https://github.com/aws/aws-cdk/blob/master/packages/@aws-cdk/assertions/MIGRATING.md).
+
 Functions for writing test asserting against CDK applications, with focus on CloudFormation templates.
 
 The `Template` class includes a set of methods for writing assertions against CloudFormation templates. Use one of the `Template.fromXxx()` static methods to create an instance of this class.

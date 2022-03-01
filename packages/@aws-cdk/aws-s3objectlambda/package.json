@@ -30,6 +30,13 @@
         "distName": "aws-cdk.aws-s3objectlambda",
         "module": "aws_cdk.aws_s3objectlambda"
       }
+    },
+    "metadata": {
+      "jsii": {
+        "rosetta": {
+          "strict": true
+        }
+      }
     }
   },
   "repository": {
@@ -80,7 +87,7 @@
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/cfn2ts": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/jest": "^27.4.0"
+    "@types/jest": "^27.4.1"
   },
   "dependencies": {
     "@aws-cdk/core": "0.0.0"

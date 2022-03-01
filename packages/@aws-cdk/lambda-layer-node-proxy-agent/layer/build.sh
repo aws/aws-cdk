@@ -3,7 +3,7 @@ set -euo pipefail
 
 cd $(dirname $0)
 
-echo ">> Building AWS Lambda layer inside a docker image..."
+echo ">> Building AWS Lambda layer inside a docker image for Proxy Agent..."
 
 TAG='aws-lambda-node-proxy-agent'
 

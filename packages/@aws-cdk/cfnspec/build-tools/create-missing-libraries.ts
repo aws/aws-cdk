@@ -295,12 +295,11 @@ async function main() {
     await addDependencyToMegaPackage(path.join('@aws-cdk', 'cloudformation-include'), module.packageName, version, ['dependencies', 'peerDependencies']);
     await addDependencyToMegaPackage('aws-cdk-lib', module.packageName, version, ['devDependencies']);
     await addDependencyToMegaPackage('monocdk', module.packageName, version, ['devDependencies']);
-    await addDependencyToMegaPackage('decdk', module.packageName, version, ['dependencies']);
   }
 }
 
 /**
- * A few of our packages (e.g., decdk, aws-cdk-lib) require a dependency on every service package.
+ * A few of our packages (e.g., aws-cdk-lib) require a dependency on every service package.
  * This automates adding the dependency (and peer dependency) to the package.json.
  */
 async function addDependencyToMegaPackage(megaPackageName: string, packageName: string, version: string, dependencyTypes: string[]) {

@@ -44,6 +44,16 @@ export interface InstanceProps {
   readonly parameterGroup?: IParameterGroup;
 
   /**
+   * The parameters in the DBParameterGroup to create automatically
+   *
+   * You can only specify parameterGroup or parameters but not both.
+   * You need to use a versioned engine to auto-generate a DBParameterGroup.
+   *
+   * @default - None
+   */
+  readonly parameters?: { [key: string]: string };
+
+  /**
    * Whether to enable Performance Insights for the DB instance.
    *
    * @default - false, unless ``performanceInsightRentention`` or ``performanceInsightEncryptionKey`` is set.

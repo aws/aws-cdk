@@ -40,7 +40,7 @@
   "scripts": {
     "build": "cdk-build",
     "watch": "cdk-watch",
-    "lint": "cdk-lint",
+    "lint": "cdk-lint && madge --circular --extensions js lib",
     "test": "cdk-test",
     "pkglint": "pkglint -f",
     "package": "cdk-package",
@@ -68,10 +68,11 @@
   "devDependencies": {
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/jest": "^27.4.0",
+    "@types/jest": "^27.4.1",
     "@types/mock-fs": "^4.13.1",
     "@types/semver": "^7.3.9",
-    "jest": "^27.4.7",
+    "jest": "^27.5.1",
+    "madge": "^5.0.1",
     "mock-fs": "^4.14.0"
   },
   "repository": {
