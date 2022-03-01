@@ -1171,12 +1171,18 @@ export class DatabaseInstanceReadReplica extends DatabaseInstanceNew implements 
       throw new Error(`Cannot set 'backupRetention', as engine '${engineDescription(props.sourceDatabaseInstance.engine)}' does not support automatic backups for read replicas`);
     }
 
+    // The read replica instance always uses the same engine as the source instance
+    // but some CF validations require the engine to be explicitely passed when some
+    // properties are specified.
+    const shouldPassEngine = props.domain != null;
+
     const instance = new CfnDBInstance(this, 'Resource', {
       ...this.newCfnProps,
       // this must be ARN, not ID, because of https://github.com/terraform-providers/terraform-provider-aws/issues/528#issuecomment-391169012
       sourceDbInstanceIdentifier: props.sourceDatabaseInstance.instanceArn,
       kmsKeyId: props.storageEncryptionKey?.keyArn,
       storageEncrypted: props.storageEncryptionKey ? true : props.storageEncrypted,
+      engine: shouldPassEngine ? props.sourceDatabaseInstance.engine?.engineType : undefined,
     });
 
     this.instanceType = props.instanceType;
