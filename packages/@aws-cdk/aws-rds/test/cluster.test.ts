@@ -1965,17 +1965,12 @@ describe('cluster', () => {
         vpc,
       },
       snapshotIdentifier: 'mySnapshot',
-      storageEncryptionKey: kms.Key.fromKeyArn(stack, 'Key', 'KeyArn'),
+      storageEncryptionKey: kms.Key.fromKeyArn(stack, 'Key', 'arn:aws:kms:us-east-1:456:key/my-key'),
     });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
-      KmsKeyId: {
-        'Fn::GetAtt': [
-          'Key961B73FD',
-          'Arn',
-        ],
-      },
+      KmsKeyId: 'arn:aws:kms:us-east-1:456:key/my-key',
       StorageEncrypted: true,
     });
   });
