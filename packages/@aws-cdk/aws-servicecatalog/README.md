@@ -277,7 +277,14 @@ portfolio.notifyOnStackEvents(product, topic2, {
 
 ### CloudFormation template parameters constraint
 
-CloudFormation template parameter constraints allow you to configure the provisioning parameters that are available to end users when they launch a product. Template constraint rules consist of one or more assertions that define the default and/or allowable values for a product’s provisioning parameters. You can configure multiple parameter constraints to govern the different provisioning parameters within your products. For example, a rule might define the `EC2` instance types that users can choose from when launching a product that includes one or more `EC2` instances. Parameter rules have an optional `condition` field that allow for rule application to consider conditional evaluations. If a `condition` is specified, all  assertions will be applied if the condition evaluates to true. For information on rule-specific intrinsic functions to define rule conditions and assertions, see [AWS Rule Functions](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-rules.html).
+CloudFormation template parameter constraints allow you to configure the provisioning parameters that are available to end users when they launch a product.
+Template constraint rules consist of one or more assertions that define the default and/or allowable values for a product’s provisioning parameters.
+You can configure multiple parameter constraints to govern the different provisioning parameters within your products.
+For example, a rule might define the `EC2` instance types that users can choose from when launching a product that includes one or more `EC2` instances.
+Parameter rules have an optional `condition` field that allow for rule application to consider conditional evaluations.
+If a `condition` is specified, all  assertions will be applied if the condition evaluates to true.
+For information on rule-specific intrinsic functions to define rule conditions and assertions,
+see [AWS Rule Functions](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-rules.html).
 
 ```ts fixture=portfolio-product
 import * as cdk from '@aws-cdk/core';
