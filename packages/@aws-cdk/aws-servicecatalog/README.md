@@ -350,7 +350,8 @@ to understand the permissions that launch roles need.
 
 A StackSets deployment constraint allows you to configure product deployment options using 
 [AWS CloudFormation StackSets](https://docs.aws.amazon.com/servicecatalog/latest/adminguide/using-stacksets.html). 
-You can specify one or more accounts and regions into which stack instances will launch when the product is provisioned. There is an additional field `allowStackSetInstanceOperations` that sets ability for end users to create, edit, or delete the stacks created by the StackSet.
+You can specify one or more accounts and regions into which stack instances will launch when the product is provisioned.
+There is an additional field `allowStackSetInstanceOperations` that sets ability for end users to create, edit, or delete the stacks created by the StackSet.
 By default, this field is set to `false`.
 When launching a StackSets product, end users can select from the list of accounts and regions configured in the constraint to determine where the Stack Instances will deploy and the order of deployment.
 You can only define one StackSets deployment configuration per portfolio-product association,
