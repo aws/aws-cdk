@@ -104,7 +104,9 @@ portfolio.giveAccessToGroup(group);
 
 ### Sharing a portfolio with another AWS account
 
-You can use account-to-account sharing to distribute a reference to your portfolio to other AWS accounts by passing the recipient account number. After the share is initiated, the recipient account can accept the share via CLI or console by importing the portfolio ID. Changes made to the shared portfolio will automatically propagate to recipients.
+You can use account-to-account sharing to distribute a reference to your portfolio to other AWS accounts by passing the recipient account number.
+After the share is initiated, the recipient account can accept the share via CLI or console by importing the portfolio ID.
+Changes made to the shared portfolio will automatically propagate to recipients.
 
 ```ts fixture=basic-portfolio
 portfolio.shareWithAccount('012345678901');
