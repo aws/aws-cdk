@@ -60,7 +60,7 @@ new servicecatalog.Portfolio(this, 'Portfolio', {
 });
 ```
 
-You can also specify optional metadata properties such as `description` and `acceptLanguage`
+You can also specify optional metadata properties such as `description` and `messageLanguage`
 to help better catalog and manage your portfolios.
 
 ```ts
