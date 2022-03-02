@@ -123,6 +123,7 @@ export class ContainerImageAssetHandler implements IAssetHandler {
       directory: fullPath,
       tag: localTagName,
       buildArgs: source.dockerBuildArgs,
+      buildShell: source.dockerBuildShell,
       target: source.dockerBuildTarget,
       file: source.dockerFile,
       networkMode: source.networkMode,

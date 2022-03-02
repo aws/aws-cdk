@@ -14,6 +14,7 @@ interface BuildOptions {
   readonly target?: string;
   readonly file?: string;
   readonly buildArgs?: Record<string, string>;
+  readonly buildShell?: string;
   readonly networkMode?: string;
 }
 
@@ -57,7 +58,10 @@ export class Docker {
       ...options.networkMode ? ['--network', options.networkMode] : [],
       '.',
     ];
-    await this.execute(buildCommand, { cwd: options.directory });
+    await this.execute(buildCommand, {
+      cwd: options.directory,
+      shell: options.buildShell || false
+    });
   }
 
   /**

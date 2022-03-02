@@ -55,6 +55,31 @@ describe('image asset', () => {
 
   });
 
+  testFutureBehavior('without build shell', flags, App, (app) => {
+    // WHEN
+    const stack = new Stack(app);
+    new DockerImageAsset(stack, 'Image', {
+      directory: path.join(__dirname, 'demo-image'),
+    });
+
+    // THEN
+    const assetMetadata = stack.node.metadataEntry.find(({ type }) => type === cxschema.ArtifactMetadataEntryType.ASSET);
+    expect(assetMetadata && (assetMetadata.data as cxschema.ContainerImageAssetMetadataEntry).buildShell).toBeUndefined();
+  });
+
+  testFutureBehavior('with build shell', flags, App, (app) => {
+    // WHEN
+    const stack = new Stack(app);
+    new DockerImageAsset(stack, 'Image', {
+      directory: path.join(__dirname, 'demo-image'),
+      buildShell: '/bin/sh',
+    });
+
+    // THEN
+    const assetMetadata = stack.node.metadataEntry.find(({ type }) => type === cxschema.ArtifactMetadataEntryType.ASSET);
+    expect(assetMetadata && (assetMetadata.data as cxschema.ContainerImageAssetMetadataEntry).buildArgs).toEqual('/bin/sh');
+  });
+
   testFutureBehavior('with hash options', flags, App, (app) => {
     // WHEN
     const stack = new Stack(app);

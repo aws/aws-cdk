@@ -155,6 +155,10 @@
                         "type": "string"
                     }
                 },
+                "dockerBuildShell": {
+                    "description": "Shell used to execute the docker build command, e.g. /bin/sh\n\nSee NodeJS child_process documentation for reference (Default - No shell is used)",
+                    "type": "string"
+                },
                 "networkMode": {
                     "description": "Networking mode for the RUN commands during build. _Requires Docker Engine API v1.25+_.\n\nSpecify this property to build images on a specific networking mode. (Default - no networking mode specified)",
                     "type": "string"

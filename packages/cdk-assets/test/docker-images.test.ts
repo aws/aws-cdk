@@ -93,6 +93,26 @@ beforeEach(() => {
       },
     }),
     '/default-network/cdk.out/dockerdir/Dockerfile': 'FROM scratch',
+    '/build-with-shell/cdk.out/assets.json': JSON.stringify({
+      version: Manifest.version(),
+      dockerImages: {
+        theAsset: {
+          source: {
+            directory: 'dockerdir',
+            dockerBuildShell: '/bin/sh',
+          },
+          destinations: {
+            theDestination: {
+              region: 'us-north-50',
+              assumeRoleArn: 'arn:aws:role',
+              repositoryName: 'repo',
+              imageTag: 'nopqr',
+            },
+          },
+        },
+      },
+    }),
+    '/build-with-shell/cdk.out/dockerdir/Dockerfile': 'FROM scratch',
   });
 
   aws = mockAws();
@@ -177,6 +197,34 @@ describe('with a complete manifest', () => {
       { commandLine: ['docker', 'build', '--tag', 'cdkasset-theasset', '.'], cwd: absoluteDockerPath },
       { commandLine: ['docker', 'tag', 'cdkasset-theasset', '12345.amazonaws.com/repo:abcdef'] },
       { commandLine: ['docker', 'push', '12345.amazonaws.com/repo:abcdef'] },
+    );
+
+    await pub.publish();
+
+    expectAllSpawns();
+    expect(true).toBeTruthy(); // Expect no exception, satisfy linter
+  });
+
+  test('build with shell', async () => {
+    pub = new AssetPublishing(AssetManifest.fromPath('/build-with-shell/cdk.out'), { aws });
+    const defaultNetworkDockerpath = '/build-with-shell/cdk.out/dockerdir';
+    aws.mockEcr.describeImages = mockedApiFailure('ImageNotFoundException', 'File does not exist');
+    aws.mockEcr.getAuthorizationToken = mockedApiResult({
+      authorizationData: [
+        { authorizationToken: 'dXNlcjpwYXNz', proxyEndpoint: 'https://proxy.com/' },
+      ],
+    });
+
+    const expectAllSpawns = mockSpawn(
+      { commandLine: ['docker', 'login', '--username', 'user', '--password-stdin', 'https://proxy.com/'] },
+      { commandLine: ['docker', 'inspect', 'cdkasset-theasset'], exitCode: 1 },
+      {
+        commandLine: ['docker', 'build', '--tag', 'cdkasset-theasset', '--network', 'default', '.'],
+        cwd: defaultNetworkDockerpath,
+        shell: '/bin/sh'
+      },
+      { commandLine: ['docker', 'tag', 'cdkasset-theasset', '12345.amazonaws.com/repo:nopqr'] },
+      { commandLine: ['docker', 'push', '12345.amazonaws.com/repo:nopqr'] },
     );
 
     await pub.publish();

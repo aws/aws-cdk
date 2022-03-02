@@ -64,6 +64,15 @@ export interface DockerImageSource {
   readonly dockerBuildArgs?: { [name: string]: string };
 
   /**
+   * Shell used to execute the docker build command, e.g. /bin/sh
+   *
+   * See NodeJS child_process documentation for reference
+   *
+   * @default - No shell is used
+   */
+  readonly dockerBuildShell?: string;
+
+  /**
    * Networking mode for the RUN commands during build. _Requires Docker Engine API v1.25+_.
    *
    * Specify this property to build images on a specific networking mode.

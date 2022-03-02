@@ -218,6 +218,10 @@
                         "type": "string"
                     }
                 },
+                "buildShell": {
+                    "description": "Shell used to execute the docker build command, e.g. /bin/sh (Default - No shell is used)",
+                    "type": "string"
+                },
                 "target": {
                     "description": "Docker target to build to (Default no build target)",
                     "type": "string"

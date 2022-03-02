@@ -68,6 +68,21 @@ const asset = new DockerImageAsset(this, 'MyBuildImage', {
 });
 ```
 
+To instruct cdk-assets to [spawn](https://nodejs.org/api/child_process.html#child_processspawncommand-args-options)
+the docker build command inside of a shell (default is no shell), provide `buildShell`:
+
+```ts
+import { DockerImageAsset } from '@aws-cdk/aws-ecr-assets';
+
+const asset = new DockerImageAsset(this, 'MyBuildImage', {
+  directory: path.join(__dirname, 'my-image'),
+  buildArgs: {
+    HTTP_PROXY: '$HTTP_PROXY',
+  },
+  buildShell: '/bin/sh' // will enable shell expansion of $HTTP_PROXY
+});
+```
+
 You can optionally pass a target to the `docker build` command by specifying
 the `target` property:
 

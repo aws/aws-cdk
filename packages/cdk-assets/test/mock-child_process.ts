@@ -8,6 +8,7 @@ if (!(child_process as any).spawn.mockImplementationOnce) {
 export interface Invocation {
   commandLine: string[];
   cwd?: string;
+  shell?: string;
   exitCode?: number;
   stdout?: string;
 
@@ -32,6 +33,10 @@ export function mockSpawn(...invocations: Invocation[]): () => void {
 
       if (invocation.cwd != null) {
         expect(options.cwd).toBe(invocation.cwd);
+      }
+
+      if (invocation.shell != null) {
+        expect(options.shell).toBe(invocation.shell);
       }
 
       const child: any = new events.EventEmitter();

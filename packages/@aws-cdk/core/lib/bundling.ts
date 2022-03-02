@@ -226,7 +226,7 @@ export class BundlingDockerImage {
    * @returns the destination path
    */
   public cp(imagePath: string, outputPath?: string): string {
-    const { stdout } = dockerExec(['create', this.image], {}); // Empty options to avoid stdout redirect here
+    const { stdout } = dockerExec(['create', this.image], { stdio: 'pipe' });
     const match = stdout.toString().match(/([0-9a-f]{16,})/);
     if (!match) {
       throw new Error('Failed to extract container ID from Docker create output');
@@ -276,7 +276,8 @@ export class DockerImage extends BundlingDockerImage {
       path,
     ];
 
-    dockerExec(dockerArgs);
+    const spawnOptions = options.buildShell ? { shell: options.buildShell } : {};
+    dockerExec(dockerArgs, spawnOptions);
 
     // Fingerprints the directory containing the Dockerfile we're building and
     // differentiates the fingerprint based on build arguments. We do this so
@@ -473,6 +474,15 @@ export interface DockerBuildOptions {
   readonly buildArgs?: { [key: string]: string };
 
   /**
+   * Shell used to execute the docker build command, e.g. /bin/sh
+   *
+   * See NodeJS child_process documentation for reference
+   *
+   * @default - No shell is used
+   */
+  readonly buildShell?: string;
+
+  /**
    * Name of the Dockerfile, must relative to the docker build path.
    *
    * @default `Dockerfile`
@@ -495,12 +505,13 @@ function flatten(x: string[][]) {
 
 function dockerExec(args: string[], options?: SpawnSyncOptions) {
   const prog = process.env.CDK_DOCKER ?? 'docker';
-  const proc = spawnSync(prog, args, options ?? {
+  const proc = spawnSync(prog, args, {
     stdio: [ // show Docker output
       'ignore', // ignore stdio
       process.stderr, // redirect stdout to stderr
       'inherit', // inherit stderr
     ],
+    ...options,
   });
 
   if (proc.error) {

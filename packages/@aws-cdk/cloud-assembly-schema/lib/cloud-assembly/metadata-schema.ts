@@ -119,6 +119,13 @@ export interface ContainerImageAssetMetadataEntry extends BaseAssetMetadataEntry
   readonly buildArgs?: { [key: string]: string };
 
   /**
+   * Shell used to execute the docker build command, e.g. /bin/sh
+   *
+   * @default - No shell is used
+   */
+  readonly buildShell?: string;
+
+  /**
    * Docker target to build to
    *
    * @default no build target

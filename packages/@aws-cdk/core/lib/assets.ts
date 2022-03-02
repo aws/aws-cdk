@@ -175,6 +175,15 @@ export interface DockerImageAssetSource {
   readonly dockerBuildArgs?: { [key: string]: string };
 
   /**
+   * Shell used to execute the docker build command, e.g. /bin/sh
+   *
+   * See NodeJS child_process documentation for reference
+   *
+   * @default - No shell is used
+   */
+  readonly dockerBuildShell?: string;
+
+  /**
    * Docker target to build to
    *
    * Only allowed when `directoryName` is specified.

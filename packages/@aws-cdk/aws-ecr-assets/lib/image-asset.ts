@@ -75,6 +75,13 @@ export interface DockerImageAssetInvalidationOptions {
   readonly buildArgs?: boolean;
 
   /**
+   * Use `buildShell` while calculating the asset hash
+   *
+   * @default true
+   */
+  readonly buildShell?: boolean;
+
+  /**
    * Use `target` while calculating the asset hash
    *
    * @default true
@@ -131,6 +138,15 @@ export interface DockerImageAssetOptions extends FingerprintOptions, FileFingerp
    * @default - no build args are passed
    */
   readonly buildArgs?: { [key: string]: string };
+
+  /**
+   * Shell used to execute the docker build command, e.g. /bin/sh
+   *
+   * See NodeJS child_process documentation for reference
+   *
+   * @default - No shell is used
+   */
+  readonly buildShell?: string;
 
   /**
    * Docker target to build to
@@ -225,6 +241,11 @@ export class DockerImageAsset extends CoreConstruct implements IAsset {
   private readonly dockerBuildArgs?: { [key: string]: string };
 
   /**
+   * Shell used to execute the docker build command, e.g. /bin/sh
+   */
+  readonly dockerBuildShell?: string;
+
+  /**
    * Docker target to build to
    */
   private readonly dockerBuildTarget?: string;
@@ -282,6 +303,7 @@ export class DockerImageAsset extends CoreConstruct implements IAsset {
     const extraHash: { [field: string]: any } = {};
     if (props.invalidation?.extraHash !== false && props.extraHash) { extraHash.user = props.extraHash; }
     if (props.invalidation?.buildArgs !== false && props.buildArgs) { extraHash.buildArgs = props.buildArgs; }
+    if (props.invalidation?.buildShell !== false && props.buildShell) { extraHash.buildShell = props.buildShell; }
     if (props.invalidation?.target !== false && props.target) { extraHash.target = props.target; }
     if (props.invalidation?.file !== false && props.file) { extraHash.file = props.file; }
     if (props.invalidation?.repositoryName !== false && props.repositoryName) { extraHash.repositoryName = props.repositoryName; }
@@ -314,6 +336,7 @@ export class DockerImageAsset extends CoreConstruct implements IAsset {
     const location = stack.synthesizer.addDockerImageAsset({
       directoryName: this.assetPath,
       dockerBuildArgs: this.dockerBuildArgs,
+      dockerBuildShell: this.dockerBuildShell,
       dockerBuildTarget: this.dockerBuildTarget,
       dockerFile: props.file,
       sourceHash: staging.assetHash,

@@ -90,6 +90,7 @@ export class AssetManifestBuilder {
         executable: asset.executable,
         directory: asset.directoryName,
         dockerBuildArgs: asset.dockerBuildArgs,
+        dockerBuildShell: asset.dockerBuildShell,
         dockerBuildTarget: asset.dockerBuildTarget,
         dockerFile: asset.dockerFile,
         networkMode: asset.networkMode,
