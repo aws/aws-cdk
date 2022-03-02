@@ -83,7 +83,8 @@ const portfolio = servicecatalog.Portfolio.fromPortfolioArn(this, 'ImportedPortf
 
 ### Granting access to a portfolio
 
-You can grant access to and manage the `IAM` users, groups, or roles that have access to the products within a portfolio.  Entities with granted access will be able to utilize the portfolios resources and products via the console or AWS CLI.
+You can grant access to and manage the `IAM` users, groups, or roles that have access to the products within a portfolio. 
+Entities with granted access will be able to utilize the portfolios resources and products via the console or AWS CLI.
 Once resources are deployed end users will be able to access them via the console or service catalog CLI.
 
 ```ts fixture=basic-portfolio
