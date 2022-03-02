@@ -47,6 +47,12 @@ const fakeChokidarWatch = {
   },
 };
 
+const mockData = jest.fn();
+jest.mock('../lib/logging', () => ({
+  ...jest.requireActual('../lib/logging'),
+  data: mockData,
+}));
+
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Bootstrapper } from '../lib/api/bootstrap';
@@ -676,7 +682,8 @@ describe('synth', () => {
     const toolkit = defaultToolkitSetup();
 
     // THEN
-    await expect(toolkit.synth(['Test-Stack-A'], false, true)).resolves.toBeUndefined();
+    await toolkit.synth(['Test-Stack-A'], false, true);
+    expect(mockData.mock.calls.length).toEqual(0);
   });
 
   afterEach(() => {
@@ -707,7 +714,8 @@ describe('synth', () => {
     test('causes synth to succeed if autoValidate=false', async() => {
       const toolkit = defaultToolkitSetup();
       const autoValidate = false;
-      await expect(toolkit.synth([], false, true, autoValidate)).resolves.toBeUndefined();
+      await toolkit.synth([], false, true, autoValidate);
+      expect(mockData.mock.calls.length).toEqual(0);
     });
   });
 
@@ -757,7 +765,10 @@ describe('synth', () => {
 
     const toolkit = defaultToolkitSetup();
 
-    await expect(toolkit.synth([MockStack.MOCK_STACK_D.stackName], true, false)).resolves.toBeDefined();
+    await toolkit.synth([MockStack.MOCK_STACK_D.stackName], true, false);
+
+    expect(mockData.mock.calls.length).toEqual(1);
+    expect(mockData.mock.calls[0][0]).toBeDefined();
   });
 });
 

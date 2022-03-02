@@ -192,6 +192,9 @@ test('create complex training job', () => {
     vpcConfig: {
       vpc,
     },
+    environment: {
+      SOMEVAR: 'myvalue',
+    },
   });
   trainTask.addSecurityGroup(securityGroup);
 
@@ -284,6 +287,9 @@ test('create complex training job', () => {
           { Ref: 'VPCPrivateSubnet1Subnet8BCA10E0' },
           { Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A' },
         ],
+      },
+      Environment: {
+        SOMEVAR: 'myvalue',
       },
     },
   });

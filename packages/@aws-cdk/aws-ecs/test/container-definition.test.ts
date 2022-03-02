@@ -1261,6 +1261,8 @@ describe('container definition', () => {
       secrets: {
         SECRET: ecs.Secret.fromSecretsManager(secret),
         PARAMETER: ecs.Secret.fromSsmParameter(parameter),
+        SECRET_ID: ecs.Secret.fromSecretsManagerVersion(secret, { versionId: 'version-id' }),
+        SECRET_STAGE: ecs.Secret.fromSecretsManagerVersion(secret, { versionStage: 'version-stage' }),
       },
     });
 
@@ -1294,6 +1296,34 @@ describe('container definition', () => {
                       Ref: 'AWS::AccountId',
                     },
                     ':parameter/name',
+                  ],
+                ],
+              },
+            },
+            {
+              Name: 'SECRET_ID',
+              ValueFrom: {
+                'Fn::Join': [
+                  '',
+                  [
+                    {
+                      Ref: 'SecretA720EF05',
+                    },
+                    ':::version-id',
+                  ],
+                ],
+              },
+            },
+            {
+              Name: 'SECRET_STAGE',
+              ValueFrom: {
+                'Fn::Join': [
+                  '',
+                  [
+                    {
+                      Ref: 'SecretA720EF05',
+                    },
+                    '::version-stage:',
                   ],
                 ],
               },
@@ -1405,6 +1435,8 @@ describe('container definition', () => {
       memoryLimitMiB: 1024,
       secrets: {
         SECRET_KEY: ecs.Secret.fromSecretsManager(secret, 'specificKey'),
+        SECRET_KEY_ID: ecs.Secret.fromSecretsManagerVersion(secret, { versionId: 'version-id' }, 'specificKey'),
+        SECRET_KEY_STAGE: ecs.Secret.fromSecretsManagerVersion(secret, { versionStage: 'version-stage' }, 'specificKey'),
       },
     });
 
@@ -1423,6 +1455,34 @@ describe('container definition', () => {
                       Ref: 'SecretA720EF05',
                     },
                     ':specificKey::',
+                  ],
+                ],
+              },
+            },
+            {
+              Name: 'SECRET_KEY_ID',
+              ValueFrom: {
+                'Fn::Join': [
+                  '',
+                  [
+                    {
+                      Ref: 'SecretA720EF05',
+                    },
+                    ':specificKey::version-id',
+                  ],
+                ],
+              },
+            },
+            {
+              Name: 'SECRET_KEY_STAGE',
+              ValueFrom: {
+                'Fn::Join': [
+                  '',
+                  [
+                    {
+                      Ref: 'SecretA720EF05',
+                    },
+                    ':specificKey:version-stage:',
                   ],
                 ],
               },
@@ -2006,9 +2066,9 @@ describe('container definition', () => {
 
   });
 
-  test('exposes image name', () => {
+  testFutureBehavior('exposes image name', { '@aws-cdk/core:newStyleStackSynthesis': true }, cdk.App, (app) => {
     // GIVEN
-    const stack = new cdk.Stack();
+    const stack = new cdk.Stack(app, 'MyStack');
     const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef');
 
     // WHEN
@@ -2018,17 +2078,7 @@ describe('container definition', () => {
 
     // THEN
     expect(stack.resolve(container.imageName)).toEqual({
-      'Fn::Join': [
-        '',
-        [
-          { Ref: 'AWS::AccountId' },
-          '.dkr.ecr.',
-          { Ref: 'AWS::Region' },
-          '.',
-          { Ref: 'AWS::URLSuffix' },
-          '/aws-cdk/assets:baa2d6eb2a17c75424df631c8c70ff39f2d5f3bee8b9e1a109ee24ca17300540',
-        ],
-      ],
+      'Fn::Sub': '${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:baa2d6eb2a17c75424df631c8c70ff39f2d5f3bee8b9e1a109ee24ca17300540',
     });
   });
 });
