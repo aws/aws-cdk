@@ -700,69 +700,86 @@
             {
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "PipelineBuildSynthCodePipelineActionRole4E7A6C97",
-                  "Arn"
-                ]
-              }
-            },
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "PipelineUpdatePipelineSelfMutateCodePipelineActionRoleD6D4E5CF",
-                  "Arn"
-                ]
-              }
-            },
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "PipelineAssetsFileAsset1CodePipelineActionRoleC0EC649A",
-                  "Arn"
-                ]
-              }
-            },
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "PipelineAssetsFileAsset2CodePipelineActionRole06965A59",
-                  "Arn"
-                ]
-              }
-            },
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::Join": [
-                  "",
+              "Resource": [
+                [
                   [
-                    "arn:",
+                    [
+                      [
+                        {
+                          "Fn::GetAtt": [
+                            "PipelineBuildSynthCodePipelineActionRole4E7A6C97",
+                            "Arn"
+                          ]
+                        },
+                        {
+                          "Fn::GetAtt": [
+                            "PipelineUpdatePipelineSelfMutateCodePipelineActionRoleD6D4E5CF",
+                            "Arn"
+                          ]
+                        }
+                      ],
+                      {
+                        "Fn::GetAtt": [
+                          "PipelineAssetsFileAsset1CodePipelineActionRoleC0EC649A",
+                          "Arn"
+                        ]
+                      }
+                    ],
                     {
-                      "Ref": "AWS::Partition"
-                    },
-                    ":iam::",
-                    {
-                      "Ref": "AWS::AccountId"
-                    },
-                    ":role/cdk-hnb659fds-deploy-role-",
-                    {
-                      "Ref": "AWS::AccountId"
-                    },
-                    "-",
-                    {
-                      "Ref": "AWS::Region"
+                      "Fn::GetAtt": [
+                        "PipelineAssetsFileAsset2CodePipelineActionRole06965A59",
+                        "Arn"
+                      ]
                     }
+                  ],
+                  {
+                    "Fn::Join": [
+                      "",
+                      [
+                        "arn:",
+                        {
+                          "Ref": "AWS::Partition"
+                        },
+                        ":iam::",
+                        {
+                          "Ref": "AWS::AccountId"
+                        },
+                        ":role/cdk-hnb659fds-deploy-role-",
+                        {
+                          "Ref": "AWS::AccountId"
+                        },
+                        "-",
+                        {
+                          "Ref": "AWS::Region"
+                        }
+                      ]
+                    ]
+                  }
+                ],
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":iam::",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":role/cdk-hnb659fds-deploy-role-",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      "-",
+                      {
+                        "Ref": "AWS::Region"
+                      }
+                    ]
                   ]
-                ]
-              }
+                }
+              ]
             }
           ],
           "Version": "2012-10-17"
@@ -1859,12 +1876,10 @@
               "Resource": "arn:*:iam::12345678:role/*"
             },
             {
-              "Action": "cloudformation:DescribeStacks",
-              "Effect": "Allow",
-              "Resource": "*"
-            },
-            {
-              "Action": "s3:ListBucket",
+              "Action": [
+                "cloudformation:DescribeStacks",
+                "s3:ListBucket"
+              ],
               "Effect": "Allow",
               "Resource": "*"
             },
@@ -2020,13 +2035,7 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": "codebuild.amazonaws.com"
-              }
-            },
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Principal": {
+                "Service": "codebuild.amazonaws.com",
                 "AWS": {
                   "Fn::Join": [
                     "",
@@ -2190,35 +2199,77 @@
                 }
               },
               "Effect": "Allow",
-              "Resource": {
-                "Fn::Join": [
-                  "",
-                  [
-                    "arn:",
-                    {
-                      "Ref": "AWS::Partition"
-                    },
-                    ":ec2:",
-                    {
-                      "Ref": "AWS::Region"
-                    },
-                    ":",
-                    {
-                      "Ref": "AWS::AccountId"
-                    },
-                    ":network-interface/*"
+              "Resource": [
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":ec2:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":network-interface/*"
+                    ]
                   ]
-                ]
-              }
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":ec2:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":network-interface/*"
+                    ]
+                  ]
+                }
+              ]
             },
             {
               "Action": [
-                "s3:GetObject*",
                 "s3:GetBucket*",
+                "s3:GetObject*",
                 "s3:List*"
               ],
               "Effect": "Allow",
               "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "PipelineArtifactsBucketAEA9A052",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "PipelineArtifactsBucketAEA9A052",
+                          "Arn"
+                        ]
+                      },
+                      "/*"
+                    ]
+                  ]
+                },
                 {
                   "Fn::GetAtt": [
                     "PipelineArtifactsBucketAEA9A052",

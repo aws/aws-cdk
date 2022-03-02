@@ -364,22 +364,40 @@
               "Action": "kms:*",
               "Effect": "Allow",
               "Principal": {
-                "AWS": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "arn:",
-                      {
-                        "Ref": "AWS::Partition"
-                      },
-                      ":iam::",
-                      {
-                        "Ref": "AWS::AccountId"
-                      },
-                      ":root"
+                "AWS": [
+                  {
+                    "Fn::Join": [
+                      "",
+                      [
+                        "arn:",
+                        {
+                          "Ref": "AWS::Partition"
+                        },
+                        ":iam::",
+                        {
+                          "Ref": "AWS::AccountId"
+                        },
+                        ":root"
+                      ]
                     ]
-                  ]
-                }
+                  },
+                  {
+                    "Fn::Join": [
+                      "",
+                      [
+                        "arn:",
+                        {
+                          "Ref": "AWS::Partition"
+                        },
+                        ":iam::",
+                        {
+                          "Ref": "AWS::AccountId"
+                        },
+                        ":root"
+                      ]
+                    ]
+                  }
+                ]
               },
               "Resource": "*"
             },
@@ -526,6 +544,8 @@
           "Statement": [
             {
               "Action": [
+                "logs:DescribeLogGroups",
+                "s3:GetBucketLocation",
                 "ssmmessages:CreateControlChannel",
                 "ssmmessages:CreateDataChannel",
                 "ssmmessages:OpenControlChannel",
@@ -546,11 +566,6 @@
                   "Arn"
                 ]
               }
-            },
-            {
-              "Action": "logs:DescribeLogGroups",
-              "Effect": "Allow",
-              "Resource": "*"
             },
             {
               "Action": [
@@ -583,11 +598,6 @@
                   ]
                 ]
               }
-            },
-            {
-              "Action": "s3:GetBucketLocation",
-              "Effect": "Allow",
-              "Resource": "*"
             },
             {
               "Action": "s3:PutObject",

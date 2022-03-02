@@ -51,11 +51,11 @@
                 ]
               }
             },
+            "Id": "Target0",
             "RetryPolicy": {
               "MaximumEventAgeInSeconds": 7200,
               "MaximumRetryAttempts": 2
             },
-            "Id": "Target0",
             "RoleArn": {
               "Fn::GetAtt": [
                 "MyProjectEventsRole5B7D93F5",
@@ -467,9 +467,19 @@
               "Principal": {
                 "Service": "events.amazonaws.com"
               },
-              "Resource": {
-                "Ref": "MyTopic86869434"
-              },
+              "Resource": [
+                [
+                  {
+                    "Ref": "MyTopic86869434"
+                  },
+                  {
+                    "Ref": "MyTopic86869434"
+                  }
+                ],
+                {
+                  "Ref": "MyTopic86869434"
+                }
+              ],
               "Sid": "0"
             }
           ],

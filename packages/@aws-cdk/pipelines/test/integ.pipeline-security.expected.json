@@ -31,18 +31,88 @@
               ],
               "Effect": "Allow",
               "Principal": {
-                "AWS": {
-                  "Fn::Join": [
-                    "",
+                "AWS": [
+                  [
                     [
-                      "arn:",
+                      [
+                        [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::12345678:role/cdk-hnb659fds-deploy-role-12345678-test-region"
+                              ]
+                            ]
+                          },
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::12345678:role/cdk-hnb659fds-deploy-role-12345678-test-region"
+                              ]
+                            ]
+                          }
+                        ],
+                        {
+                          "Fn::Join": [
+                            "",
+                            [
+                              "arn:",
+                              {
+                                "Ref": "AWS::Partition"
+                              },
+                              ":iam::12345678:role/cdk-hnb659fds-deploy-role-12345678-test-region"
+                            ]
+                          ]
+                        }
+                      ],
                       {
-                        "Ref": "AWS::Partition"
-                      },
-                      ":iam::12345678:role/cdk-hnb659fds-deploy-role-12345678-test-region"
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:",
+                            {
+                              "Ref": "AWS::Partition"
+                            },
+                            ":iam::12345678:role/cdk-hnb659fds-deploy-role-12345678-test-region"
+                          ]
+                        ]
+                      }
+                    ],
+                    {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "arn:",
+                          {
+                            "Ref": "AWS::Partition"
+                          },
+                          ":iam::12345678:role/cdk-hnb659fds-deploy-role-12345678-test-region"
+                        ]
+                      ]
+                    }
+                  ],
+                  {
+                    "Fn::Join": [
+                      "",
+                      [
+                        "arn:",
+                        {
+                          "Ref": "AWS::Partition"
+                        },
+                        ":iam::12345678:role/cdk-hnb659fds-deploy-role-12345678-test-region"
+                      ]
                     ]
-                  ]
-                }
+                  }
+                ]
               },
               "Resource": "*"
             }
@@ -139,26 +209,196 @@
             },
             {
               "Action": [
-                "s3:GetObject*",
                 "s3:GetBucket*",
+                "s3:GetObject*",
                 "s3:List*"
               ],
               "Effect": "Allow",
               "Principal": {
-                "AWS": {
+                "AWS": [
+                  [
+                    [
+                      [
+                        [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::12345678:role/cdk-hnb659fds-deploy-role-12345678-test-region"
+                              ]
+                            ]
+                          },
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::12345678:role/cdk-hnb659fds-deploy-role-12345678-test-region"
+                              ]
+                            ]
+                          }
+                        ],
+                        {
+                          "Fn::Join": [
+                            "",
+                            [
+                              "arn:",
+                              {
+                                "Ref": "AWS::Partition"
+                              },
+                              ":iam::12345678:role/cdk-hnb659fds-deploy-role-12345678-test-region"
+                            ]
+                          ]
+                        }
+                      ],
+                      {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:",
+                            {
+                              "Ref": "AWS::Partition"
+                            },
+                            ":iam::12345678:role/cdk-hnb659fds-deploy-role-12345678-test-region"
+                          ]
+                        ]
+                      }
+                    ],
+                    {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "arn:",
+                          {
+                            "Ref": "AWS::Partition"
+                          },
+                          ":iam::12345678:role/cdk-hnb659fds-deploy-role-12345678-test-region"
+                        ]
+                      ]
+                    }
+                  ],
+                  {
+                    "Fn::Join": [
+                      "",
+                      [
+                        "arn:",
+                        {
+                          "Ref": "AWS::Partition"
+                        },
+                        ":iam::12345678:role/cdk-hnb659fds-deploy-role-12345678-test-region"
+                      ]
+                    ]
+                  }
+                ]
+              },
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "TestPipelineArtifactsBucket026AF2F9",
+                    "Arn"
+                  ]
+                },
+                {
                   "Fn::Join": [
                     "",
                     [
-                      "arn:",
                       {
-                        "Ref": "AWS::Partition"
+                        "Fn::GetAtt": [
+                          "TestPipelineArtifactsBucket026AF2F9",
+                          "Arn"
+                        ]
                       },
-                      ":iam::12345678:role/cdk-hnb659fds-deploy-role-12345678-test-region"
+                      "/*"
                     ]
                   ]
-                }
-              },
-              "Resource": [
+                },
+                {
+                  "Fn::GetAtt": [
+                    "TestPipelineArtifactsBucket026AF2F9",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "TestPipelineArtifactsBucket026AF2F9",
+                          "Arn"
+                        ]
+                      },
+                      "/*"
+                    ]
+                  ]
+                },
+                {
+                  "Fn::GetAtt": [
+                    "TestPipelineArtifactsBucket026AF2F9",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "TestPipelineArtifactsBucket026AF2F9",
+                          "Arn"
+                        ]
+                      },
+                      "/*"
+                    ]
+                  ]
+                },
+                {
+                  "Fn::GetAtt": [
+                    "TestPipelineArtifactsBucket026AF2F9",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "TestPipelineArtifactsBucket026AF2F9",
+                          "Arn"
+                        ]
+                      },
+                      "/*"
+                    ]
+                  ]
+                },
+                {
+                  "Fn::GetAtt": [
+                    "TestPipelineArtifactsBucket026AF2F9",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "TestPipelineArtifactsBucket026AF2F9",
+                          "Arn"
+                        ]
+                      },
+                      "/*"
+                    ]
+                  ]
+                },
                 {
                   "Fn::GetAtt": [
                     "TestPipelineArtifactsBucket026AF2F9",
@@ -264,108 +504,244 @@
             {
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "TestPipelineBuildSynthCodePipelineActionRoleF7BF5926",
-                  "Arn"
-                ]
-              }
-            },
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "TestPipelineUnattachedStageSingleStageSecurityCheckCodePipelineActionRoleFF6E43E2",
-                  "Arn"
-                ]
-              }
-            },
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "TestPipelineUnattachedStageSingleStageManualApprovalCodePipelineActionRoleF7A614C8",
-                  "Arn"
-                ]
-              }
-            },
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "TestPipelinePreProductionPreProductionSecurityCheckCodePipelineActionRole4E54C194",
-                  "Arn"
-                ]
-              }
-            },
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "TestPipelinePreProductionPreProductionManualApprovalCodePipelineActionRole81B9C4F9",
-                  "Arn"
-                ]
-              }
-            },
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "TestPipelinePreProductionSafeProductionSecurityCheckCodePipelineActionRole399C68A6",
-                  "Arn"
-                ]
-              }
-            },
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "TestPipelinePreProductionSafeProductionManualApprovalCodePipelineActionRole4F30C0D9",
-                  "Arn"
-                ]
-              }
-            },
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "TestPipelineNoSecurityCheckEnableSecurityCheckSecurityCheckCodePipelineActionRole8D10AA6D",
-                  "Arn"
-                ]
-              }
-            },
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "TestPipelineNoSecurityCheckEnableSecurityCheckManualApprovalCodePipelineActionRole27FC4015",
-                  "Arn"
-                ]
-              }
-            },
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::Join": [
-                  "",
+              "Resource": [
+                [
                   [
-                    "arn:",
+                    [
+                      [
+                        [
+                          [
+                            [
+                              [
+                                [
+                                  [
+                                    [
+                                      [
+                                        [
+                                          [
+                                            [
+                                              [
+                                                [
+                                                  [
+                                                    [
+                                                      {
+                                                        "Fn::GetAtt": [
+                                                          "TestPipelineBuildSynthCodePipelineActionRoleF7BF5926",
+                                                          "Arn"
+                                                        ]
+                                                      },
+                                                      {
+                                                        "Fn::GetAtt": [
+                                                          "TestPipelineUnattachedStageSingleStageSecurityCheckCodePipelineActionRoleFF6E43E2",
+                                                          "Arn"
+                                                        ]
+                                                      }
+                                                    ],
+                                                    {
+                                                      "Fn::GetAtt": [
+                                                        "TestPipelineUnattachedStageSingleStageManualApprovalCodePipelineActionRoleF7A614C8",
+                                                        "Arn"
+                                                      ]
+                                                    }
+                                                  ],
+                                                  {
+                                                    "Fn::GetAtt": [
+                                                      "TestPipelinePreProductionPreProductionSecurityCheckCodePipelineActionRole4E54C194",
+                                                      "Arn"
+                                                    ]
+                                                  }
+                                                ],
+                                                {
+                                                  "Fn::GetAtt": [
+                                                    "TestPipelinePreProductionPreProductionManualApprovalCodePipelineActionRole81B9C4F9",
+                                                    "Arn"
+                                                  ]
+                                                }
+                                              ],
+                                              {
+                                                "Fn::GetAtt": [
+                                                  "TestPipelinePreProductionSafeProductionSecurityCheckCodePipelineActionRole399C68A6",
+                                                  "Arn"
+                                                ]
+                                              }
+                                            ],
+                                            {
+                                              "Fn::GetAtt": [
+                                                "TestPipelinePreProductionSafeProductionManualApprovalCodePipelineActionRole4F30C0D9",
+                                                "Arn"
+                                              ]
+                                            }
+                                          ],
+                                          {
+                                            "Fn::GetAtt": [
+                                              "TestPipelineNoSecurityCheckEnableSecurityCheckSecurityCheckCodePipelineActionRole8D10AA6D",
+                                              "Arn"
+                                            ]
+                                          }
+                                        ],
+                                        {
+                                          "Fn::GetAtt": [
+                                            "TestPipelineNoSecurityCheckEnableSecurityCheckManualApprovalCodePipelineActionRole27FC4015",
+                                            "Arn"
+                                          ]
+                                        }
+                                      ],
+                                      {
+                                        "Fn::Join": [
+                                          "",
+                                          [
+                                            "arn:",
+                                            {
+                                              "Ref": "AWS::Partition"
+                                            },
+                                            ":iam::12345678:role/cdk-hnb659fds-deploy-role-12345678-test-region"
+                                          ]
+                                        ]
+                                      }
+                                    ],
+                                    {
+                                      "Fn::Join": [
+                                        "",
+                                        [
+                                          "arn:",
+                                          {
+                                            "Ref": "AWS::Partition"
+                                          },
+                                          ":iam::12345678:role/cdk-hnb659fds-deploy-role-12345678-test-region"
+                                        ]
+                                      ]
+                                    }
+                                  ],
+                                  {
+                                    "Fn::Join": [
+                                      "",
+                                      [
+                                        "arn:",
+                                        {
+                                          "Ref": "AWS::Partition"
+                                        },
+                                        ":iam::12345678:role/cdk-hnb659fds-deploy-role-12345678-test-region"
+                                      ]
+                                    ]
+                                  }
+                                ],
+                                {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      "arn:",
+                                      {
+                                        "Ref": "AWS::Partition"
+                                      },
+                                      ":iam::12345678:role/cdk-hnb659fds-deploy-role-12345678-test-region"
+                                    ]
+                                  ]
+                                }
+                              ],
+                              {
+                                "Fn::Join": [
+                                  "",
+                                  [
+                                    "arn:",
+                                    {
+                                      "Ref": "AWS::Partition"
+                                    },
+                                    ":iam::12345678:role/cdk-hnb659fds-deploy-role-12345678-test-region"
+                                  ]
+                                ]
+                              }
+                            ],
+                            {
+                              "Fn::Join": [
+                                "",
+                                [
+                                  "arn:",
+                                  {
+                                    "Ref": "AWS::Partition"
+                                  },
+                                  ":iam::12345678:role/cdk-hnb659fds-deploy-role-12345678-test-region"
+                                ]
+                              ]
+                            }
+                          ],
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::12345678:role/cdk-hnb659fds-deploy-role-12345678-test-region"
+                              ]
+                            ]
+                          }
+                        ],
+                        {
+                          "Fn::Join": [
+                            "",
+                            [
+                              "arn:",
+                              {
+                                "Ref": "AWS::Partition"
+                              },
+                              ":iam::12345678:role/cdk-hnb659fds-deploy-role-12345678-test-region"
+                            ]
+                          ]
+                        }
+                      ],
+                      {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:",
+                            {
+                              "Ref": "AWS::Partition"
+                            },
+                            ":iam::12345678:role/cdk-hnb659fds-deploy-role-12345678-test-region"
+                          ]
+                        ]
+                      }
+                    ],
                     {
-                      "Ref": "AWS::Partition"
-                    },
-                    ":iam::12345678:role/cdk-hnb659fds-deploy-role-12345678-test-region"
+                      "Fn::Join": [
+                        "",
+                        [
+                          "arn:",
+                          {
+                            "Ref": "AWS::Partition"
+                          },
+                          ":iam::12345678:role/cdk-hnb659fds-deploy-role-12345678-test-region"
+                        ]
+                      ]
+                    }
+                  ],
+                  {
+                    "Fn::Join": [
+                      "",
+                      [
+                        "arn:",
+                        {
+                          "Ref": "AWS::Partition"
+                        },
+                        ":iam::12345678:role/cdk-hnb659fds-deploy-role-12345678-test-region"
+                      ]
+                    ]
+                  }
+                ],
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":iam::12345678:role/cdk-hnb659fds-deploy-role-12345678-test-region"
+                    ]
                   ]
-                ]
-              }
+                }
+              ]
             }
           ],
           "Version": "2012-10-17"
@@ -1349,31 +1725,24 @@
                 "kms:Decrypt",
                 "kms:DescribeKey",
                 "kms:Encrypt",
-                "kms:ReEncrypt*",
-                "kms:GenerateDataKey*"
+                "kms:GenerateDataKey*",
+                "kms:ReEncrypt*"
               ],
               "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "TestPipelineArtifactsBucketEncryptionKey13258842",
-                  "Arn"
-                ]
-              }
-            },
-            {
-              "Action": [
-                "kms:Decrypt",
-                "kms:Encrypt",
-                "kms:ReEncrypt*",
-                "kms:GenerateDataKey*"
-              ],
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "TestPipelineArtifactsBucketEncryptionKey13258842",
-                  "Arn"
-                ]
-              }
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "TestPipelineArtifactsBucketEncryptionKey13258842",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::GetAtt": [
+                    "TestPipelineArtifactsBucketEncryptionKey13258842",
+                    "Arn"
+                  ]
+                }
+              ]
             }
           ],
           "Version": "2012-10-17"
@@ -1967,18 +2336,63 @@
             {
               "Action": "sns:Publish",
               "Effect": "Allow",
-              "Resource": {
-                "Ref": "SecurityChangesTopic9762A9B3"
-              }
+              "Resource": [
+                {
+                  "Ref": "SecurityChangesTopic9762A9B3"
+                },
+                {
+                  "Ref": "SecurityChangesTopic9762A9B3"
+                }
+              ]
             },
             {
               "Action": [
-                "s3:GetObject*",
                 "s3:GetBucket*",
+                "s3:GetObject*",
                 "s3:List*"
               ],
               "Effect": "Allow",
               "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "TestPipelineArtifactsBucket026AF2F9",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "TestPipelineArtifactsBucket026AF2F9",
+                          "Arn"
+                        ]
+                      },
+                      "/*"
+                    ]
+                  ]
+                },
+                {
+                  "Fn::GetAtt": [
+                    "TestPipelineArtifactsBucket026AF2F9",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "TestPipelineArtifactsBucket026AF2F9",
+                          "Arn"
+                        ]
+                      },
+                      "/*"
+                    ]
+                  ]
+                },
                 {
                   "Fn::GetAtt": [
                     "TestPipelineArtifactsBucket026AF2F9",
@@ -2004,22 +2418,39 @@
             {
               "Action": [
                 "kms:Decrypt",
-                "kms:DescribeKey"
+                "kms:DescribeKey",
+                "kms:Encrypt",
+                "kms:GenerateDataKey*",
+                "kms:ReEncrypt*"
               ],
               "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "TestPipelineArtifactsBucketEncryptionKey13258842",
-                  "Arn"
-                ]
-              }
+              "Resource": [
+                [
+                  {
+                    "Fn::GetAtt": [
+                      "TestPipelineArtifactsBucketEncryptionKey13258842",
+                      "Arn"
+                    ]
+                  },
+                  {
+                    "Fn::GetAtt": [
+                      "TestPipelineArtifactsBucketEncryptionKey13258842",
+                      "Arn"
+                    ]
+                  }
+                ],
+                {
+                  "Fn::GetAtt": [
+                    "TestPipelineArtifactsBucketEncryptionKey13258842",
+                    "Arn"
+                  ]
+                }
+              ]
             },
             {
               "Action": [
                 "kms:Decrypt",
-                "kms:Encrypt",
-                "kms:ReEncrypt*",
-                "kms:GenerateDataKey*"
+                "kms:DescribeKey"
               ],
               "Effect": "Allow",
               "Resource": {
@@ -2318,30 +2749,26 @@
             {
               "Action": [
                 "kms:Decrypt",
-                "kms:DescribeKey"
-              ],
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "TestPipelineArtifactsBucketEncryptionKey13258842",
-                  "Arn"
-                ]
-              }
-            },
-            {
-              "Action": [
-                "kms:Decrypt",
+                "kms:DescribeKey",
                 "kms:Encrypt",
-                "kms:ReEncrypt*",
-                "kms:GenerateDataKey*"
+                "kms:GenerateDataKey*",
+                "kms:ReEncrypt*"
               ],
               "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "TestPipelineArtifactsBucketEncryptionKey13258842",
-                  "Arn"
-                ]
-              }
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "TestPipelineArtifactsBucketEncryptionKey13258842",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::GetAtt": [
+                    "TestPipelineArtifactsBucketEncryptionKey13258842",
+                    "Arn"
+                  ]
+                }
+              ]
             }
           ],
           "Version": "2012-10-17"

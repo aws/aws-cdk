@@ -202,22 +202,20 @@
             {
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "MyPipelineSourceCodeCommitSourceCodePipelineActionRole0B6D0F4F",
-                  "Arn"
-                ]
-              }
-            },
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "MyPipelineBuildCodeBuildActionCodePipelineActionRole3185ADC7",
-                  "Arn"
-                ]
-              }
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "MyPipelineSourceCodeCommitSourceCodePipelineActionRole0B6D0F4F",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::GetAtt": [
+                    "MyPipelineBuildCodeBuildActionCodePipelineActionRole3185ADC7",
+                    "Arn"
+                  ]
+                }
+              ]
             }
           ],
           "Version": "2012-10-17"
@@ -804,31 +802,24 @@
                 "kms:Decrypt",
                 "kms:DescribeKey",
                 "kms:Encrypt",
-                "kms:ReEncrypt*",
-                "kms:GenerateDataKey*"
+                "kms:GenerateDataKey*",
+                "kms:ReEncrypt*"
               ],
               "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "MyPipelineArtifactsBucketEncryptionKey8BF0A7F3",
-                  "Arn"
-                ]
-              }
-            },
-            {
-              "Action": [
-                "kms:Decrypt",
-                "kms:Encrypt",
-                "kms:ReEncrypt*",
-                "kms:GenerateDataKey*"
-              ],
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "MyPipelineArtifactsBucketEncryptionKey8BF0A7F3",
-                  "Arn"
-                ]
-              }
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "MyPipelineArtifactsBucketEncryptionKey8BF0A7F3",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::GetAtt": [
+                    "MyPipelineArtifactsBucketEncryptionKey8BF0A7F3",
+                    "Arn"
+                  ]
+                }
+              ]
             }
           ],
           "Version": "2012-10-17"
@@ -888,9 +879,19 @@
               "Principal": {
                 "Service": "events.amazonaws.com"
               },
-              "Resource": {
-                "Ref": "MyTopic86869434"
-              },
+              "Resource": [
+                [
+                  {
+                    "Ref": "MyTopic86869434"
+                  },
+                  {
+                    "Ref": "MyTopic86869434"
+                  }
+                ],
+                {
+                  "Ref": "MyTopic86869434"
+                }
+              ],
               "Sid": "0"
             }
           ],

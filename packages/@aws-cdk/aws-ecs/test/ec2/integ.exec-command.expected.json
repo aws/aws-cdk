@@ -364,22 +364,40 @@
               "Action": "kms:*",
               "Effect": "Allow",
               "Principal": {
-                "AWS": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "arn:",
-                      {
-                        "Ref": "AWS::Partition"
-                      },
-                      ":iam::",
-                      {
-                        "Ref": "AWS::AccountId"
-                      },
-                      ":root"
+                "AWS": [
+                  {
+                    "Fn::Join": [
+                      "",
+                      [
+                        "arn:",
+                        {
+                          "Ref": "AWS::Partition"
+                        },
+                        ":iam::",
+                        {
+                          "Ref": "AWS::AccountId"
+                        },
+                        ":root"
+                      ]
                     ]
-                  ]
-                }
+                  },
+                  {
+                    "Fn::Join": [
+                      "",
+                      [
+                        "arn:",
+                        {
+                          "Ref": "AWS::Partition"
+                        },
+                        ":iam::",
+                        {
+                          "Ref": "AWS::AccountId"
+                        },
+                        ":root"
+                      ]
+                    ]
+                  }
+                ]
               },
               "Resource": "*"
             },
@@ -778,7 +796,9 @@
             {
               "Action": [
                 "ecs:DescribeContainerInstances",
-                "ecs:DescribeTasks"
+                "ecs:DescribeTasks",
+                "ecs:ListTasks",
+                "ecs:UpdateContainerInstancesState"
               ],
               "Condition": {
                 "ArnEquals": {
@@ -806,24 +826,6 @@
                   "Arn"
                 ]
               }
-            },
-            {
-              "Action": [
-                "ecs:UpdateContainerInstancesState",
-                "ecs:ListTasks"
-              ],
-              "Condition": {
-                "ArnEquals": {
-                  "ecs:cluster": {
-                    "Fn::GetAtt": [
-                      "Ec2ClusterEE43E89D",
-                      "Arn"
-                    ]
-                  }
-                }
-              },
-              "Effect": "Allow",
-              "Resource": "*"
             }
           ],
           "Version": "2012-10-17"
@@ -1006,6 +1008,8 @@
           "Statement": [
             {
               "Action": [
+                "logs:DescribeLogGroups",
+                "s3:GetBucketLocation",
                 "ssmmessages:CreateControlChannel",
                 "ssmmessages:CreateDataChannel",
                 "ssmmessages:OpenControlChannel",
@@ -1026,11 +1030,6 @@
                   "Arn"
                 ]
               }
-            },
-            {
-              "Action": "logs:DescribeLogGroups",
-              "Effect": "Allow",
-              "Resource": "*"
             },
             {
               "Action": [
@@ -1063,11 +1062,6 @@
                   ]
                 ]
               }
-            },
-            {
-              "Action": "s3:GetBucketLocation",
-              "Effect": "Allow",
-              "Resource": "*"
             },
             {
               "Action": "s3:PutObject",

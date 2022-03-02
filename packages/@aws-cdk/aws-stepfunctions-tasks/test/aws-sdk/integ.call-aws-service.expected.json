@@ -39,58 +39,58 @@
         "PolicyDocument": {
           "Statement": [
             {
-              "Action": "s3:putObject",
+              "Action": [
+                "s3:deleteObject",
+                "s3:getObject",
+                "s3:putObject"
+              ],
               "Effect": "Allow",
-              "Resource": {
-                "Fn::Join": [
-                  "",
-                  [
-                    {
-                      "Fn::GetAtt": [
-                        "Bucket83908E77",
-                        "Arn"
+              "Resource": [
+                [
+                  {
+                    "Fn::Join": [
+                      "",
+                      [
+                        {
+                          "Fn::GetAtt": [
+                            "Bucket83908E77",
+                            "Arn"
+                          ]
+                        },
+                        "/*"
                       ]
-                    },
-                    "/*"
-                  ]
-                ]
-              }
-            },
-            {
-              "Action": "s3:getObject",
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::Join": [
-                  "",
-                  [
-                    {
-                      "Fn::GetAtt": [
-                        "Bucket83908E77",
-                        "Arn"
+                    ]
+                  },
+                  {
+                    "Fn::Join": [
+                      "",
+                      [
+                        {
+                          "Fn::GetAtt": [
+                            "Bucket83908E77",
+                            "Arn"
+                          ]
+                        },
+                        "/*"
                       ]
-                    },
-                    "/*"
+                    ]
+                  }
+                ],
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "Bucket83908E77",
+                          "Arn"
+                        ]
+                      },
+                      "/*"
+                    ]
                   ]
-                ]
-              }
-            },
-            {
-              "Action": "s3:deleteObject",
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::Join": [
-                  "",
-                  [
-                    {
-                      "Fn::GetAtt": [
-                        "Bucket83908E77",
-                        "Arn"
-                      ]
-                    },
-                    "/*"
-                  ]
-                ]
-              }
+                }
+              ]
             }
           ],
           "Version": "2012-10-17"

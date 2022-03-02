@@ -42,13 +42,13 @@
         "Code": {
           "ZipFile": "exports.handler = {}"
         },
-        "Handler": "hello.handler",
         "Role": {
           "Fn::GetAtt": [
             "LambdaFunctionServiceRoleC555A460",
             "Arn"
           ]
         },
+        "Handler": "hello.handler",
         "Runtime": "nodejs10.x"
       },
       "DependsOn": [
@@ -74,12 +74,20 @@
               "Principal": {
                 "Service": "cloudtrail.amazonaws.com"
               },
-              "Resource": {
-                "Fn::GetAtt": [
-                  "S3486F821D",
-                  "Arn"
-                ]
-              }
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "S3486F821D",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::GetAtt": [
+                    "S3486F821D",
+                    "Arn"
+                  ]
+                }
+              ]
             },
             {
               "Action": "s3:PutObject",
@@ -92,24 +100,44 @@
               "Principal": {
                 "Service": "cloudtrail.amazonaws.com"
               },
-              "Resource": {
-                "Fn::Join": [
-                  "",
-                  [
-                    {
-                      "Fn::GetAtt": [
-                        "S3486F821D",
-                        "Arn"
-                      ]
-                    },
-                    "/AWSLogs/",
-                    {
-                      "Ref": "AWS::AccountId"
-                    },
-                    "/*"
+              "Resource": [
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "S3486F821D",
+                          "Arn"
+                        ]
+                      },
+                      "/AWSLogs/",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      "/*"
+                    ]
                   ]
-                ]
-              }
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "S3486F821D",
+                          "Arn"
+                        ]
+                      },
+                      "/AWSLogs/",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      "/*"
+                    ]
+                  ]
+                }
+              ]
             }
           ],
           "Version": "2012-10-17"
