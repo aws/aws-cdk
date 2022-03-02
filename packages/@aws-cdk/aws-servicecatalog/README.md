@@ -303,7 +303,12 @@ portfolio.constrainCloudFormationParameters(product, {
 
 ### Set launch role
 
-Allows you to configure a specific `IAM` role that Service Catalog assumes on behalf of the end user when launching a product. By setting a launch role constraint, you can maintain least permissions for an end user when launching a product. For example, a launch role can grant permissions for specific resource creation like an `S3` bucket that the user. The launch role must be assumed by the Service Catalog principal. You can only have one launch role set for a portfolio-product association, and you cannot set a launch role on a product that already has a StackSets deployment configured.
+Allows you to configure a specific `IAM` role that Service Catalog assumes on behalf of the end user when launching a product.
+By setting a launch role constraint, you can maintain least permissions for an end user when launching a product.
+For example, a launch role can grant permissions for specific resource creation like an `S3` bucket that the user.
+The launch role must be assumed by the Service Catalog principal.
+You can only have one launch role set for a portfolio-product association,
+and you cannot set a launch role on a product that already has a StackSets deployment configured.
 
 ```ts fixture=portfolio-product
 import * as iam from '@aws-cdk/aws-iam';
