@@ -70,14 +70,13 @@ export class Bundling implements CdkBundlingOptions {
       outputDir: outputPath,
     });
 
-    const defaultImage = DockerImage.fromBuild(path.join(__dirname, '../lib'), {
+    this.image = image ?? DockerImage.fromBuild(path.join(__dirname, '../lib'), {
       buildArgs: {
         ...props.buildArgs ?? {},
         IMAGE: runtime.bundlingImage.image,
       },
       platform: architecture.dockerPlatform,
     });
-    this.image = image ?? defaultImage;
     this.command = ['bash', '-c', chain(bundlingCommands)];
     this.environment = props.environment;
   }
