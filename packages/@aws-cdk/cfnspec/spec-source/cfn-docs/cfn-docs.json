@@ -17221,7 +17221,7 @@
         "KmsKeyId": "The ID of the AWS Key Management Service ( AWS KMS ) key used to encrypt the file system's data for Amazon FSx for Windows File Server file systems, Amazon FSx for NetApp ONTAP file systems, and `PERSISTENT` Amazon FSx for Lustre file systems at rest. If this ID isn't specified, the Amazon FSx-managed key for your account is used. The scratch Amazon FSx for Lustre file systems are always encrypted at rest using the Amazon FSx-managed key for your account. For more information, see [Encrypt](https://docs.aws.amazon.com//kms/latest/APIReference/API_Encrypt.html) in the *AWS Key Management Service API Reference* .",
         "LustreConfiguration": "The Lustre configuration for the file system being created.\n\n> The following parameters are not supported for file systems with the `Persistent_2` deployment type. Instead, use `CreateDataRepositoryAssociation` to create a data repository association to link your Lustre file system to a data repository.\n> \n> - `AutoImportPolicy`\n> - `ExportPath`\n> - `ImportedChunkSize`\n> - `ImportPath`",
         "OntapConfiguration": "The ONTAP configuration properties of the FSx for ONTAP file system that you are creating.",
-        "OpenZFSConfiguration": "The OpenZFS configuration properties for the file system that you are creating.",
+        "OpenZFSConfiguration": "The Amazon FSx for OpenZFS configuration properties for the file system that you are creating.",
         "SecurityGroupIds": "A list of IDs specifying the security groups to apply to all network interfaces created for file system access. This list isn't returned in later requests to describe the file system.",
         "StorageCapacity": "Sets the storage capacity of the file system that you're creating. `StorageCapacity` is required if you are creating a new file system. Do not include `StorageCapacity` if you are creating a file system from a backup.\n\nFor Lustre file systems:",
         "StorageType": "Sets the storage type for the file system that you're creating. Valid values are `SSD` and `HDD` .\n\n- Set to `SSD` to use solid state drive storage. SSD is supported on all Windows, Lustre, ONTAP, and OpenZFS deployment types.\n- Set to `HDD` to use hard disk drive storage. HDD is supported on `SINGLE_AZ_2` and `MULTI_AZ_1` Windows file system deployment types, and on `PERSISTENT` Lustre file system deployment types.\n\nDefault value is `SSD` . For more information, see [Storage type options](https://docs.aws.amazon.com/fsx/latest/WindowsGuide/optimize-fsx-costs.html#storage-type-options) in the *FSx for Windows File Server User Guide* and [Multiple storage options](https://docs.aws.amazon.com/fsx/latest/LustreGuide/what-is.html#storage-options) in the *FSx for Lustre User Guide* .",
@@ -17243,8 +17243,8 @@
       "attributes": {},
       "description": "Specifies who can mount the file system and the options that can be used while mounting the file system.",
       "properties": {
-        "Clients": "A value that specifies who can mount the file system. You can provide a wildcard character ( `*` ), an IP address ( `0.0.0.0` ), or a CIDR address ( `192.0.2.0/24` . By default, Amazon FSx uses the wildcard character when specifying the client.",
-        "Options": "The options to use when mounting the file system. For a list of options that you can use with Network File System (NFS), see the [exports(5) - Linux man page](https://docs.aws.amazon.com/https://linux.die.net/man/5/exports) . When choosing your options, consider the following:\n\n- `crossmount` is used by default. If you don't specify `crossmount` when changing the client configuration, you won't be able to see or access snapshots in your file system's snapshot directory.\n- `sync` is used by default. If you instead specify `async` , the system acknowledges writes before writing to disk. If the system crashes before the writes are finished, you lose the unwritten data."
+        "Clients": "A value that specifies who can mount the file system. You can provide a wildcard character ( `*` ), an IP address ( `0.0.0.0` ), or a CIDR address ( `192.0.2.0/24` ). By default, Amazon FSx uses the wildcard character when specifying the client.",
+        "Options": "The options to use when mounting the file system. For a list of options that you can use with Network File System (NFS), see the [exports(5) - Linux man page](https://docs.aws.amazon.com/https://linux.die.net/man/5/exports) . When choosing your options, consider the following:\n\n- `crossmnt` is used by default. If you don't specify `crossmnt` when changing the client configuration, you won't be able to see or access snapshots in your file system's snapshot directory.\n- `sync` is used by default. If you instead specify `async` , the system acknowledges writes before writing to disk. If the system crashes before the writes are finished, you lose the unwritten data."
       }
     },
     "AWS::FSx::FileSystem.DiskIopsConfiguration": {
@@ -17288,7 +17288,7 @@
         "DailyAutomaticBackupStartTime": "A recurring daily time, in the format `HH:MM` . `HH` is the zero-padded hour of the day (0-23), and `MM` is the zero-padded minute of the hour. For example, `05:00` specifies 5 AM daily.",
         "DeploymentType": "Specifies the FSx for ONTAP file system deployment type to use in creating the file system. `MULTI_AZ_1` is the supported ONTAP deployment type.",
         "DiskIopsConfiguration": "The SSD IOPS configuration for the FSx for ONTAP file system.",
-        "EndpointIpAddressRange": "Specifies the IP address range in which the endpoints to access your file system will be created. By default, Amazon FSx selects an unused IP address range for you from the 198.19.* range.",
+        "EndpointIpAddressRange": "Specifies the IP address range in which the endpoints to access your file system will be created. By default, Amazon FSx selects an unused IP address range for you from the 198.19.* range.\n\n> The Endpoint IP address range you select for your file system must exist outside the VPC's CIDR range and must be at least /30 or larger.",
         "FsxAdminPassword": "The ONTAP administrative password for the `fsxadmin` user with which you administer your file system using the NetApp ONTAP CLI and REST API.",
         "PreferredSubnetId": "Required when `DeploymentType` is set to `MULTI_AZ_1` . This specifies the subnet in which you want the preferred file server to be located.",
         "RouteTableIds": "Specifies the virtual private cloud (VPC) route tables in which your file system's endpoints will be created. You should specify all VPC route tables associated with the subnets in which your clients are located. By default, Amazon FSx selects your VPC's default route table.",
@@ -17304,7 +17304,7 @@
         "CopyTagsToBackups": "A Boolean value indicating whether tags for the file system should be copied to backups. This value defaults to `false` . If it's set to `true` , all tags for the file system are copied to all automatic and user-initiated backups where the user doesn't specify tags. If this value is `true` , and you specify one or more tags, only the specified tags are copied to backups. If you specify one or more tags when creating a user-initiated backup, no tags are copied from the file system, regardless of this value.",
         "CopyTagsToVolumes": "A Boolean value indicating whether tags for the volume should be copied to snapshots. This value defaults to `false` . If it's set to `true` , all tags for the volume are copied to snapshots where the user doesn't specify tags. If this value is `true` , and you specify one or more tags, only the specified tags are copied to snapshots. If you specify one or more tags when creating the snapshot, no tags are copied from the volume, regardless of this value.",
         "DailyAutomaticBackupStartTime": "A recurring daily time, in the format `HH:MM` . `HH` is the zero-padded hour of the day (0-23), and `MM` is the zero-padded minute of the hour. For example, `05:00` specifies 5 AM daily.",
-        "DeploymentType": "Specifies the file system deployment type. Amazon FSx for OpenZFS supports `SINGLE_AZ_1` . `SINGLE_AZ_1` is a file system configured for a single Availability Zone (AZ) of redundancy.",
+        "DeploymentType": "Specifies the file system deployment type. Amazon FSx for OpenZFS supports `SINGLE_AZ_1` . `SINGLE_AZ_1` deployment type is configured for redundancy within a single Availability Zone.",
         "DiskIopsConfiguration": "The SSD IOPS (input/output operations per second) configuration for an Amazon FSx for NetApp ONTAP or Amazon FSx for OpenZFS file system. The default is 3 IOPS per GB of storage capacity, but you can provision additional IOPS per GB of storage. The configuration consists of the total number of provisioned SSD IOPS and how the amount was provisioned (by the customer or by the system).",
         "RootVolumeConfiguration": "The configuration Amazon FSx uses when creating the root value of the Amazon FSx for OpenZFS file system. All volumes are children of the root volume.",
         "ThroughputCapacity": "Specifies the throughput of an Amazon FSx for OpenZFS file system, measured in megabytes per second (MB/s). Valid values are 64, 128, 256, 512, 1024, 2048, 3072, or 4096 MB/s. You pay for additional throughput capacity that you provision.",
@@ -17315,8 +17315,8 @@
       "attributes": {},
       "description": "The configuration of an Amazon FSx for OpenZFS root volume.",
       "properties": {
-        "CopyTagsToSnapshots": "A Boolean value indicating whether tags for the volume should be copied to snapshots. This value defaults to `false` . If it's set to `true` , all tags for the volume are copied to snapshots where the user doesn't specify tags. If this value is `true` and you specify one or more tags, only the specified tags are copied to snapshots. If you specify one or more tags when creating the snapshot, no tags are copied from the volume, regardless of this value.",
-        "DataCompressionType": "Specifies the method used to compress the data on the volume. Unless the compression type is specified, volumes inherit the `DataCompressionType` value of their parent volume.\n\n- `NONE` - Doesn't compress the data on the volume.\n- `ZSTD` - Compresses the data in the volume using the ZStandard (ZSTD) compression algorithm. This algorithm reduces the amount of space used on your volume and has very little impact on compute resources.",
+        "CopyTagsToSnapshots": "A Boolean value indicating whether tags for the volume should be copied to snapshots of the volume. This value defaults to `false` . If it's set to `true` , all tags for the volume are copied to snapshots where the user doesn't specify tags. If this value is `true` and you specify one or more tags, only the specified tags are copied to snapshots. If you specify one or more tags when creating the snapshot, no tags are copied from the volume, regardless of this value.",
+        "DataCompressionType": "Specifies the method used to compress the data on the volume. The compression type is `NONE` by default.\n\n- `NONE` - Doesn't compress the data on the volume. `NONE` is the default.\n- `ZSTD` - Compresses the data in the volume using the Zstandard (ZSTD) compression algorithm. Compared to LZ4, Z-Standard provides a better compression ratio to minimize on-disk storage utilization.\n- `LZ4` - Compresses the data in the volume using the LZ4 compression algorithm. Compared to Z-Standard, LZ4 is less compute-intensive and delivers higher write throughput speeds.",
         "NfsExports": "The configuration object for mounting a file system.",
         "ReadOnly": "A Boolean value indicating whether the volume is read-only. Setting this value to `true` can be useful after you have completed changes to a volume and no longer want changes to occur.",
         "UserAndGroupQuotas": "An object specifying how much storage users or groups can use on the volume."
@@ -17416,12 +17416,12 @@
         "UUID": "Returns the volume's universally unique identifier (UUID).\n\nExample: `abcd0123-cd45-ef67-11aa-1111aaaa23bc`",
         "VolumeId": "Returns the volume's ID.\n\nExample: `fsvol-0123456789abcdefa`"
       },
-      "description": "Creates an Amazon FSx for NetApp ONTAP or Amazon FSx for OpenZFS storage volume.",
+      "description": "Creates an FSx for ONTAP or Amazon FSx for OpenZFS storage volume.",
       "properties": {
         "BackupId": "The ID of the source backup. Specifies the backup that you are copying.",
         "Name": "The name of the volume.",
         "OntapConfiguration": "The configuration of an Amazon FSx for NetApp ONTAP volume.",
-        "OpenZFSConfiguration": "Specifies the configuration of the OpenZFS volume that you are creating.",
+        "OpenZFSConfiguration": "Specifies the configuration of the Amazon FSx for OpenZFS volume that you are creating.",
         "Options": "To delete the volume's child volumes, snapshots, and clones, use the string `DELETE_CHILD_VOLUMES_AND_SNAPSHOTS` .",
         "SnapshotId": "A unique ID that represents the snapshot.",
         "Tags": "An array of key-value pairs to apply to this resource.\n\nFor more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) .",
@@ -17432,8 +17432,8 @@
       "attributes": {},
       "description": "Specifies who can mount the file system and the options that can be used while mounting the file system.",
       "properties": {
-        "Clients": "A value that specifies who can mount the file system. You can provide a wildcard character ( `*` ), an IP address ( `0.0.0.0` ), or a CIDR address ( `192.0.2.0/24` . By default, Amazon FSx uses the wildcard character when specifying the client.",
-        "Options": "The options to use when mounting the file system. For a list of options that you can use with Network File System (NFS), see the [exports(5) - Linux man page](https://docs.aws.amazon.com/https://linux.die.net/man/5/exports) . When choosing your options, consider the following:\n\n- `crossmount` is used by default. If you don't specify `crossmount` when changing the client configuration, you won't be able to see or access snapshots in your file system's snapshot directory.\n- `sync` is used by default. If you instead specify `async` , the system acknowledges writes before writing to disk. If the system crashes before the writes are finished, you lose the unwritten data."
+        "Clients": "A value that specifies who can mount the file system. You can provide a wildcard character ( `*` ), an IP address ( `0.0.0.0` ), or a CIDR address ( `192.0.2.0/24` ). By default, Amazon FSx uses the wildcard character when specifying the client.",
+        "Options": "The options to use when mounting the file system. For a list of options that you can use with Network File System (NFS), see the [exports(5) - Linux man page](https://docs.aws.amazon.com/https://linux.die.net/man/5/exports) . When choosing your options, consider the following:\n\n- `crossmnt` is used by default. If you don't specify `crossmnt` when changing the client configuration, you won't be able to see or access snapshots in your file system's snapshot directory.\n- `sync` is used by default. If you instead specify `async` , the system acknowledges writes before writing to disk. If the system crashes before the writes are finished, you lose the unwritten data."
       }
     },
     "AWS::FSx::Volume.NfsExports": {
@@ -17457,16 +17457,16 @@
     },
     "AWS::FSx::Volume.OpenZFSConfiguration": {
       "attributes": {},
-      "description": "Specifies the configuration of the OpenZFS volume that you are creating.",
+      "description": "Specifies the configuration of the Amazon FSx for OpenZFS volume that you are creating.",
       "properties": {
         "CopyTagsToSnapshots": "A Boolean value indicating whether tags for the volume should be copied to snapshots. This value defaults to `false` . If it's set to `true` , all tags for the volume are copied to snapshots where the user doesn't specify tags. If this value is `true` , and you specify one or more tags, only the specified tags are copied to snapshots. If you specify one or more tags when creating the snapshot, no tags are copied from the volume, regardless of this value.",
-        "DataCompressionType": "The method used to compress the data on the volume. Unless a compression type is specified, volumes inherit the `DataCompressionType` value of their parent volume.\n\n- `NONE` - Doesn't compress the data on the volume.\n- `ZSTD` - Compresses the data in the volume using the Zstandard (ZSTD) compression algorithm. This algorithm reduces the amount of space used on your volume and has very little impact on compute resources.",
+        "DataCompressionType": "Specifies the method used to compress the data on the volume. The compression type is `NONE` by default.\n\n- `NONE` - Doesn't compress the data on the volume. `NONE` is the default.\n- `ZSTD` - Compresses the data in the volume using the Zstandard (ZSTD) compression algorithm. Compared to LZ4, Z-Standard provides a better compression ratio to minimize on-disk storage utilization.\n- `LZ4` - Compresses the data in the volume using the LZ4 compression algorithm. Compared to Z-Standard, LZ4 is less compute-intensive and delivers higher write throughput speeds.",
         "NfsExports": "The configuration object for mounting a Network File System (NFS) file system.",
         "OriginSnapshot": "The configuration object that specifies the snapshot to use as the origin of the data for the volume.",
-        "ParentVolumeId": "The ID of the volume to use as the parent volume.",
+        "ParentVolumeId": "The ID of the volume to use as the parent volume of the volume that you are creating.",
         "ReadOnly": "A Boolean value indicating whether the volume is read-only.",
-        "StorageCapacityQuotaGiB": "The maximum amount of storage in gibibytes (GiB) that the volume can use from its parent. You can specify a quota larger than the storage on the parent volume.",
-        "StorageCapacityReservationGiB": "The amount of storage in gibibytes (GiB) to reserve from the parent volume. You can't reserve more storage than the parent volume has reserved.",
+        "StorageCapacityQuotaGiB": "Sets the maximum storage size in gibibytes (GiB) for the volume. You can specify a quota that is larger than the storage on the parent volume. A volume quota limits the amount of storage that the volume can consume to the configured amount, but does not guarantee the space will be available on the parent volume. To guarantee quota space, you must also set `StorageCapacityReservationGiB` . To *not* specify a storage capacity quota, set this to `-1` .\n\nFor more information, see [Volume properties](https://docs.aws.amazon.com/fsx/latest/OpenZFSGuide/managing-volumes.html#volume-properties) in the *Amazon FSx for OpenZFS User Guide* .",
+        "StorageCapacityReservationGiB": "Specifies the amount of storage in gibibytes (GiB) to reserve from the parent volume. Setting `StorageCapacityReservationGiB` guarantees that the specified amount of storage space on the parent volume will always be available for the volume. You can't reserve more storage than the parent volume has. To *not* specify a storage capacity reservation, set this to `0` or `-1` . For more information, see [Volume properties](https://docs.aws.amazon.com/fsx/latest/OpenZFSGuide/managing-volumes.html#volume-properties) in the *Amazon FSx for OpenZFS User Guide* .",
         "UserAndGroupQuotas": "An object specifying how much storage users or groups can use on the volume."
       }
     },
@@ -30400,7 +30400,7 @@
         "ClusterConfig": "`ClusterConfig` is a property of the AWS::OpenSearchService::Domain resource that configures an Amazon OpenSearch Service cluster.",
         "CognitoOptions": "Configures OpenSearch Service to use Amazon Cognito authentication for OpenSearch Dashboards.",
         "DomainEndpointOptions": "Specifies additional options for the domain endpoint, such as whether to require HTTPS for all traffic or whether to use a custom endpoint rather than the default endpoint.",
-        "DomainName": "A name for the OpenSearch Service domain. For valid values, see the [DomainName](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/configuration-api.html#configuration-api-datatypes-domainname) data type in the *Amazon OpenSearch Service Developer Guide* . If you don't specify a name, AWS CloudFormation generates a unique physical ID and uses that ID for the domain name. For more information, see [Name Type](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-name.html) .\n\n> If you specify a name, you can't perform updates that require replacement of this resource. You can perform updates that require no or some interruption. If you must replace the resource, specify a new name.",
+        "DomainName": "A name for the OpenSearch Service domain. For valid values, see the [DomainName](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/configuration-api.html#configuration-api-datatypes-domainname) data type in the *Amazon OpenSearch Service Developer Guide* . If you don't specify a name, AWS CloudFormation generates a unique physical ID and uses that ID for the domain name. For more information, see [Name Type](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-name.html) .\n\nRequired when creating a new domain.\n\n> If you specify a name, you can't perform updates that require replacement of this resource. You can perform updates that require no or some interruption. If you must replace the resource, specify a new name.",
         "EBSOptions": "The configurations of Amazon Elastic Block Store (Amazon EBS) volumes that are attached to data nodes in the OpenSearch Service domain. For more information, see [EBS volume size limits](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/limits.html#ebsresource) in the *Amazon OpenSearch Service Developer Guide* .",
         "EncryptionAtRestOptions": "Whether the domain should encrypt data at rest, and if so, the AWS KMS key to use. See [Encryption of data at rest for Amazon OpenSearch Service](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/encryption-at-rest.html) .",
         "EngineVersion": "The version of OpenSearch to use. The value must be in the format `OpenSearch_X.Y` or `Elasticsearch_X.Y` . If not specified, the latest version of OpenSearch is used. For information about the versions that OpenSearch Service supports, see [Supported versions of OpenSearch and Elasticsearch](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/what-is.html#choosing-version) in the *Amazon OpenSearch Service Developer Guide* .\n\nIf you set the [EnableVersionUpgrade](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-attribute-updatepolicy.html#cfn-attributes-updatepolicy-upgradeopensearchdomain) update policy to `true` , you can update `EngineVersion` without interruption. When `EnableVersionUpgrade` is set to `false` , or is not specified, updating `EngineVersion` results in [replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement) .",
@@ -30441,17 +30441,17 @@
       "description": "Configures OpenSearch Service to use Amazon Cognito authentication for OpenSearch Dashboards.",
       "properties": {
         "Enabled": "Whether to enable or disable Amazon Cognito authentication for OpenSearch Dashboards. See [Amazon Cognito authentication for OpenSearch Dashboards](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/cognito-auth.html) .",
-        "IdentityPoolId": "The Amazon Cognito identity pool ID that you want OpenSearch Service to use for OpenSearch Dashboards authentication.",
-        "RoleArn": "The `AmazonESCognitoAccess` role that allows OpenSearch Service to configure your user pool and identity pool.",
-        "UserPoolId": "The Amazon Cognito user pool ID that you want OpenSearch Service to use for OpenSearch Dashboards authentication."
+        "IdentityPoolId": "The Amazon Cognito identity pool ID that you want OpenSearch Service to use for OpenSearch Dashboards authentication.\n\nRequired if you enabled Cognito Authentication for OpenSearch Dashboards.",
+        "RoleArn": "The `AmazonOpenSearchServiceCognitoAccess` role that allows OpenSearch Service to configure your user pool and identity pool.\n\nRequired if you enabled Cognito Authentication for OpenSearch Dashboards.",
+        "UserPoolId": "The Amazon Cognito user pool ID that you want OpenSearch Service to use for OpenSearch Dashboards authentication.\n\nRequired if you enabled Cognito Authentication for OpenSearch Dashboards."
       }
     },
     "AWS::OpenSearchService::Domain.DomainEndpointOptions": {
       "attributes": {},
       "description": "Specifies additional options for the domain endpoint, such as whether to require HTTPS for all traffic or whether to use a custom endpoint rather than the default endpoint.",
       "properties": {
-        "CustomEndpoint": "The fully qualified URL for your custom endpoint.",
-        "CustomEndpointCertificateArn": "The AWS Certificate Manager ARN for your domain's SSL/TLS certificate.",
+        "CustomEndpoint": "The fully qualified URL for your custom endpoint. Required if you enabled a custom endpoint for the domain.",
+        "CustomEndpointCertificateArn": "The AWS Certificate Manager ARN for your domain's SSL/TLS certificate. Required if you enabled a custom endpoint for the domain.",
         "CustomEndpointEnabled": "True to enable a custom endpoint for the domain. If enabled, you must also provide values for `CustomEndpoint` and `CustomEndpointCertificateArn` .",
         "EnforceHTTPS": "True to require that all traffic to the domain arrive over HTTPS.",
         "TLSSecurityPolicy": "The minimum TLS version required for traffic to the domain. Valid values are TLS 1.0 (default) or 1.2:\n\n- `Policy-Min-TLS-1-0-2019-07`\n- `Policy-Min-TLS-1-2-2019-07`"
@@ -30472,20 +30472,20 @@
       "description": "Whether the domain should encrypt data at rest, and if so, the AWS Key Management Service key to use.",
       "properties": {
         "Enabled": "Specify `true` to enable encryption at rest.",
-        "KmsKeyId": "The KMS key ID. Takes the form `1a2a3a4-1a2a-3a4a-5a6a-1a2a3a4a5a6a` ."
+        "KmsKeyId": "The KMS key ID. Takes the form `1a2a3a4-1a2a-3a4a-5a6a-1a2a3a4a5a6a` . Required if you enable encryption at rest."
       }
     },
     "AWS::OpenSearchService::Domain.LogPublishingOption": {
       "attributes": {},
       "description": "Specifies whether the OpenSearch Service domain publishes application, search slow logs, or index slow logs to Amazon CloudWatch. Each option must be an object of name `SEARCH_SLOW_LOGS` , `ES_APPLICATION_LOGS` , `INDEX_SLOW_LOGS` , or `AUDIT_LOGS` depending on the type of logs you want to publish. For the full syntax, see the [examples](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-opensearchservice-domain.html#aws-resource-opensearchservice-domain--examples) .\n\nBefore you enable log publishing, you need to create a CloudWatch log group and provide OpenSearch Service the correct permissions to write to it. To learn more, see [Enabling log publishing ( AWS CloudFormation)](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/createdomain-configure-slow-logs.html#createdomain-configure-slow-logs-cfn) .",
       "properties": {
-        "CloudWatchLogsLogGroupArn": "Specifies the CloudWatch log group to publish to.",
+        "CloudWatchLogsLogGroupArn": "Specifies the CloudWatch log group to publish to. Required if you enable log publishing.",
         "Enabled": "If `true` , enables the publishing of logs to CloudWatch.\n\nDefault: `false` ."
       }
     },
     "AWS::OpenSearchService::Domain.MasterUserOptions": {
       "attributes": {},
-      "description": "Specifies information about the master user.",
+      "description": "Specifies information about the master user.\n\nRequired if if `InternalUserDatabaseEnabled` is true in `AdvancedSecurityOptions` .",
       "properties": {
         "MasterUserARN": "ARN for the master user. Only specify if `InternalUserDatabaseEnabled` is false in `AdvancedSecurityOptions` .",
         "MasterUserName": "Username for the master user. Only specify if `InternalUserDatabaseEnabled` is true in `AdvancedSecurityOptions` . If you don't want to specify this value directly within the template, you can use a [dynamic reference](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/dynamic-references.html) instead.",
