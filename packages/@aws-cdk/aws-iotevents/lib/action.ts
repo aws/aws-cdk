@@ -3,11 +3,11 @@ import { Construct } from 'constructs';
 import { CfnDetectorModel } from './iotevents.generated';
 
 /**
- * TODO:
+ * Options when binding a Action to a detector model.
  */
 export interface ActionBindOptions {
   /**
-   * TODO:
+   * The IAM role assumed by IoT Events to perform the action.
    */
   readonly role: iam.IRole;
 }
