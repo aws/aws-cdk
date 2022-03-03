@@ -1,5 +1,5 @@
-import * as iam from '@aws-cdk/aws-iam';
-import { IAction } from './action';
+import { Construct } from 'constructs';
+import { IAction, ActionBindOptions } from './action';
 import { Event } from './event';
 import { Expression } from './expression';
 import { CfnDetectorModel } from './iotevents.generated';
@@ -66,28 +66,12 @@ export interface StateProps {
   readonly stateName: string;
 
   /**
-   * Specifies the events on enter. The conditions of the events will be evaluated when entering this state.
-   * If the condition of the event evaluates to `true`, the actions of the event will be executed.
+   * Specifies the events on enter. the conditions of the events are evaluated when the state is entered.
+   * If the condition is `TRUE`, the actions of the event are performed.
    *
-   * @default - no events will trigger on entering this state
+   * @default - events on enter will not be set
    */
   readonly onEnter?: Event[];
-
-  /**
-   * Specifies the events on input. The conditions of the events will be evaluated when any input is received.
-   * If the condition of the event evaluates to `true`, the actions of the event will be executed.
-   *
-   * @default - no events will trigger on input in this state
-   */
-  readonly onInput?: Event[];
-
-  /**
-   * Specifies the events on exit. The conditions of the events are evaluated when an exiting this state.
-   * If the condition evaluates to `true`, the actions of the event will be executed.
-   *
-   * @default - no events will trigger on exiting this state
-   */
-  readonly onExit?: Event[];
 }
 
 /**
@@ -129,28 +113,22 @@ export class State {
   /**
    * Collect states in dependency gragh that constructed by state transitions,
    * and return the JSONs of the states.
+   * This function is called recursively and collect the states.
    *
    * @internal
    */
-  public _collectStateJsons(): CfnDetectorModel.StateProperty[] {
-    return this.collectStates(new Set()).map(state => state.toStateJson());
-  }
+  public _collectStateJsons(scope: Construct, actionBindOptions: ActionBindOptions, collectedStates: Set<State>): CfnDetectorModel.StateProperty[] {
+    if (collectedStates.has(this)) {
+      return [];
+    }
+    collectedStates.add(this);
 
-  /**
-   * Collect policies to perform the actions in dependency gragh that constructed by state transitions.
-   *
-   * @internal
-   */
-  public _collectPolicies(): iam.PolicyStatement[] {
-    return this.collectStates(new Set())
-      .flatMap(state => ([
-        ...state.props.onEnter ?? [],
-        ...state.props.onInput ?? [],
-        ...state.props.onExit ?? [],
-        ...state.transitionEvents,
-      ]))
-      .flatMap(event => event.actions ?? [])
-      .flatMap(action => action.actionPolicies ?? []);
+    return [
+      this.toStateJson(scope, actionBindOptions),
+      ...this.transitionEvents.flatMap(transitionEvent => {
+        return transitionEvent.nextState._collectStateJsons(scope, actionBindOptions, collectedStates);
+      }),
+    ];
   }
 
   /**
@@ -162,51 +140,35 @@ export class State {
     return this.props.onEnter?.some(event => event.condition) ?? false;
   }
 
-  private collectStates(collectedStates: Set<State>): State[] {
-    if (collectedStates.has(this)) {
-      return [];
-    }
-    collectedStates.add(this);
-
-    return [
-      this,
-      ...this.transitionEvents.flatMap(transitionEvent => {
-        return transitionEvent.nextState.collectStates(collectedStates);
-      }),
-    ];
-  }
-
-  private toStateJson(): CfnDetectorModel.StateProperty {
-    const { onEnter, onInput, onExit } = this.props;
+  private toStateJson(scope: Construct, actionBindOptions: ActionBindOptions): CfnDetectorModel.StateProperty {
+    const { onEnter } = this.props;
     return {
       stateName: this.stateName,
-      onEnter: {
-        events: toEventsJson(onEnter),
-      },
+      onEnter: onEnter && { events: toEventsJson(scope, actionBindOptions, onEnter) },
       onInput: {
-        events: toEventsJson(onInput),
-        transitionEvents: toTransitionEventsJson(this.transitionEvents),
-      },
-      onExit: {
-        events: toEventsJson(onExit),
+        transitionEvents: toTransitionEventsJson(scope, actionBindOptions, this.transitionEvents),
       },
     };
   }
 }
 
-function toEventsJson(events?: Event[]): CfnDetectorModel.EventProperty[] | undefined {
-  if (!events) {
-    return undefined;
-  }
-
+function toEventsJson(
+  scope: Construct,
+  actionBindOptions: ActionBindOptions,
+  events: Event[],
+): CfnDetectorModel.EventProperty[] | undefined {
   return events.map(event => ({
     eventName: event.eventName,
     condition: event.condition?.evaluate(),
-    actions: event.actions?.map(action => action.renderActionConfig().configuration),
+    actions: event.actions?.map(action => action.bind(scope, actionBindOptions).configuration),
   }));
 }
 
-function toTransitionEventsJson(transitionEvents: TransitionEvent[]): CfnDetectorModel.TransitionEventProperty[] | undefined {
+function toTransitionEventsJson(
+  scope: Construct,
+  actionBindOptions: ActionBindOptions,
+  transitionEvents: TransitionEvent[],
+): CfnDetectorModel.TransitionEventProperty[] | undefined {
   if (transitionEvents.length === 0) {
     return undefined;
   }
@@ -214,7 +176,7 @@ function toTransitionEventsJson(transitionEvents: TransitionEvent[]): CfnDetecto
   return transitionEvents.map(transitionEvent => ({
     eventName: transitionEvent.eventName,
     condition: transitionEvent.condition.evaluate(),
-    actions: transitionEvent.actions?.map(action => action.renderActionConfig().configuration),
+    actions: transitionEvent.actions?.map(action => action.bind(scope, actionBindOptions).configuration),
     nextState: transitionEvent.nextState.stateName,
   }));
 }

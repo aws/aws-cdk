@@ -32,9 +32,6 @@ class TestStack extends cdk.Stack {
       onEnter: [{
         eventName: 'test-event',
         condition: iotevents.Expression.currentInput(input),
-      }],
-      onInput: [{
-        eventName: 'test-input-event',
         actions: [new actions.LambdaInvokeAction(func)],
       }],
     });

@@ -148,11 +148,7 @@ test('can set actions to events', () => {
         eventName: 'test-eventName1',
         condition: iotevents.Expression.currentInput(input),
         actions: [{
-          actionPolicies: [new iam.PolicyStatement({
-            actions: ['lambda:InvokeFunction'],
-            resources: ['arn:aws:lambda:us-east-1:123456789012:function:MyFn'],
-          })],
-          renderActionConfig: () => ({
+          bind: () => ({
             configuration: {
               lambda: {
                 functionArn: 'arn:aws:lambda:us-east-1:123456789012:function:MyFn',
@@ -176,40 +172,6 @@ test('can set actions to events', () => {
           },
         }),
       ],
-    },
-  });
-
-  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-    PolicyDocument: {
-      Statement: [{
-        Action: 'lambda:InvokeFunction',
-        Effect: 'Allow',
-        Resource: 'arn:aws:lambda:us-east-1:123456789012:function:MyFn',
-      }],
-    },
-    Roles: [{
-      Ref: 'MyDetectorModelDetectorModelRoleF2FB4D88',
-    }],
-  });
-});
-
-test.each([
-  ['onInput', { onInput: [{ eventName: 'test-eventName1' }] }, { OnInput: { Events: [{ EventName: 'test-eventName1' }] } }],
-  ['onExit', { onExit: [{ eventName: 'test-eventName1' }] }, { OnExit: { Events: [{ EventName: 'test-eventName1' }] } }],
-])('can set %s to State', (_, events, expected) => {
-  // WHEN
-  new iotevents.DetectorModel(stack, 'MyDetectorModel', {
-    initialState: new iotevents.State({
-      stateName: 'test-state',
-      onEnter: [{ eventName: 'test-eventName1', condition: iotevents.Expression.currentInput(input) }],
-      ...events,
-    }),
-  });
-
-  // THEN
-  Template.fromStack(stack).hasResourceProperties('AWS::IoTEvents::DetectorModel', {
-    DetectorModelDefinition: {
-      States: [Match.objectLike(expected)],
     },
   });
 });
@@ -316,7 +278,7 @@ test('can set actions to transitions', () => {
       iotevents.Expression.inputAttribute(input, 'payload.temperature'),
       iotevents.Expression.fromString('12'),
     ),
-    executing: [{ renderActionConfig: () => ({ configuration: { setTimer: { timerName: 'test-timer' } } }) }],
+    executing: [{ bind: () => ({ configuration: { setTimer: { timerName: 'test-timer' } } }) }],
   });
 
   new iotevents.DetectorModel(stack, 'MyDetectorModel', {

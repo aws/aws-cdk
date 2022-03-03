@@ -116,6 +116,18 @@
               "OnEnter": {
                 "Events": [
                   {
+                    "Actions": [
+                      {
+                        "Lambda": {
+                          "FunctionArn": {
+                            "Fn::GetAtt": [
+                              "MyFunction3BAA72D1",
+                              "Arn"
+                            ]
+                          }
+                        }
+                      }
+                    ],
                     "Condition": {
                       "Fn::Join": [
                         "",
@@ -132,26 +144,7 @@
                   }
                 ]
               },
-              "OnExit": {},
-              "OnInput": {
-                "Events": [
-                  {
-                    "Actions": [
-                      {
-                        "Lambda": {
-                          "FunctionArn": {
-                            "Fn::GetAtt": [
-                              "MyFunction3BAA72D1",
-                              "Arn"
-                            ]
-                          }
-                        }
-                      }
-                    ],
-                    "EventName": "test-input-event"
-                  }
-                ]
-              },
+              "OnInput": {},
               "StateName": "MyState"
             }
           ]

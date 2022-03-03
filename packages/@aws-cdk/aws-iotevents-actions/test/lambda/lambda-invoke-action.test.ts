@@ -10,7 +10,10 @@ let func: lambda.IFunction;
 beforeEach(() => {
   stack = new cdk.Stack();
   input = iotevents.Input.fromInputName(stack, 'MyInput', 'test-input');
-  func = lambda.Function.fromFunctionArn(stack, 'MyFunction', 'arn:aws:lambda:us-east-1:123456789012:function:MyFn');
+  func = lambda.Function.fromFunctionAttributes(stack, 'MyFunction', {
+    functionArn: 'arn:aws:lambda:us-east-1:123456789012:function:MyFn',
+    sameEnvironment: true,
+  });
 });
 
 test('Default property', () => {

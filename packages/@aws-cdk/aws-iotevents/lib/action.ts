@@ -1,19 +1,25 @@
 import * as iam from '@aws-cdk/aws-iam';
+import { Construct } from 'constructs';
 import { CfnDetectorModel } from './iotevents.generated';
+
+/**
+ * TODO:
+ */
+export interface ActionBindOptions {
+  /**
+   * TODO:
+   */
+  readonly role: iam.IRole;
+}
 
 /**
  * An abstract action for DetectorModel.
  */
 export interface IAction {
   /**
-   * The policies to perform the AWS IoT Events action.
-   */
-  readonly actionPolicies?: iam.PolicyStatement[];
-
-  /**
    * Returns the AWS IoT Events action specification.
    */
-  renderActionConfig(): ActionConfig;
+  bind(scope: Construct, options: ActionBindOptions): ActionConfig;
 }
 
 /**

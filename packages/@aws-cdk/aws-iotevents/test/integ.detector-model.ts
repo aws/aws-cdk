@@ -19,7 +19,7 @@ class TestStack extends cdk.Stack {
     });
 
     const setTemperatureAction: iotevents.IAction = {
-      renderActionConfig: () => ({
+      bind: () => ({
         configuration: {
           setVariable: {
             variableName: 'temperature',
@@ -40,22 +40,6 @@ class TestStack extends cdk.Stack {
             iotevents.Expression.inputAttribute(input, 'payload.temperature'),
             iotevents.Expression.fromString('31.5'),
           ),
-        ),
-        actions: [setTemperatureAction],
-      }],
-      onInput: [{
-        eventName: 'test-input-event',
-        condition: iotevents.Expression.eq(
-          iotevents.Expression.inputAttribute(input, 'payload.temperature'),
-          iotevents.Expression.fromString('31.6'),
-        ),
-        actions: [setTemperatureAction],
-      }],
-      onExit: [{
-        eventName: 'test-exit-event',
-        condition: iotevents.Expression.eq(
-          iotevents.Expression.inputAttribute(input, 'payload.temperature'),
-          iotevents.Expression.fromString('31.7'),
         ),
         actions: [setTemperatureAction],
       }],
