@@ -4,12 +4,12 @@ import * as cdk from '@aws-cdk/core';
 import * as codebuild from '../lib';
 
 describe('Linux ARM build image', () => {
-  describe('AMAZON_LINUX_2_ARM', () => {
+  describe('AMAZON_LINUX_2_STANDARD_1_0', () => {
     test('has type ARM_CONTAINER and default ComputeType LARGE', () => {
       const stack = new cdk.Stack();
       new codebuild.PipelineProject(stack, 'Project', {
         environment: {
-          buildImage: codebuild.LinuxArmBuildImage.AMAZON_LINUX_2_ARM,
+          buildImage: codebuild.LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_1_0,
         },
       });
 
@@ -26,7 +26,7 @@ describe('Linux ARM build image', () => {
       new codebuild.PipelineProject(stack, 'Project', {
         environment: {
           computeType: codebuild.ComputeType.SMALL,
-          buildImage: codebuild.LinuxBuildImage.AMAZON_LINUX_2_ARM,
+          buildImage: codebuild.LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_1_0,
         },
       });
 
@@ -44,7 +44,7 @@ describe('Linux ARM build image', () => {
       expect(() => {
         new codebuild.PipelineProject(stack, 'Project', {
           environment: {
-            buildImage: codebuild.LinuxBuildImage.AMAZON_LINUX_2_ARM,
+            buildImage: codebuild.LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_1_0,
             computeType: codebuild.ComputeType.MEDIUM,
           },
         });
@@ -56,7 +56,7 @@ describe('Linux ARM build image', () => {
       new codebuild.PipelineProject(stack, 'Project', {
         environment: {
           computeType: codebuild.ComputeType.LARGE,
-          buildImage: codebuild.LinuxBuildImage.AMAZON_LINUX_2_ARM,
+          buildImage: codebuild.LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_1_0,
         },
       });
 
@@ -74,7 +74,7 @@ describe('Linux ARM build image', () => {
       expect(() => {
         new codebuild.PipelineProject(stack, 'Project', {
           environment: {
-            buildImage: codebuild.LinuxBuildImage.AMAZON_LINUX_2_ARM,
+            buildImage: codebuild.LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_1_0,
             computeType: codebuild.ComputeType.X2_LARGE,
           },
         });
@@ -82,12 +82,12 @@ describe('Linux ARM build image', () => {
     });
   });
 
-  describe('AMAZON_LINUX_2_ARM_2', () => {
+  describe('AMAZON_LINUX_2_STANDARD_2_0', () => {
     test('has type ARM_CONTAINER and default ComputeType LARGE', () => {
       const stack = new cdk.Stack();
       new codebuild.PipelineProject(stack, 'Project', {
         environment: {
-          buildImage: codebuild.LinuxArmBuildImage.AMAZON_LINUX_2_ARM_2,
+          buildImage: codebuild.LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_2_0,
         },
       });
 
@@ -104,7 +104,7 @@ describe('Linux ARM build image', () => {
       new codebuild.PipelineProject(stack, 'Project', {
         environment: {
           computeType: codebuild.ComputeType.SMALL,
-          buildImage: codebuild.LinuxArmBuildImage.AMAZON_LINUX_2_ARM_2,
+          buildImage: codebuild.LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_2_0,
         },
       });
 
@@ -122,7 +122,7 @@ describe('Linux ARM build image', () => {
       expect(() => {
         new codebuild.PipelineProject(stack, 'Project', {
           environment: {
-            buildImage: codebuild.LinuxArmBuildImage.AMAZON_LINUX_2_ARM_2,
+            buildImage: codebuild.LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_2_0,
             computeType: codebuild.ComputeType.MEDIUM,
           },
         });
@@ -134,7 +134,7 @@ describe('Linux ARM build image', () => {
       new codebuild.PipelineProject(stack, 'Project', {
         environment: {
           computeType: codebuild.ComputeType.LARGE,
-          buildImage: codebuild.LinuxArmBuildImage.AMAZON_LINUX_2_ARM_2,
+          buildImage: codebuild.LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_2_0,
         },
       });
 
@@ -152,7 +152,7 @@ describe('Linux ARM build image', () => {
       expect(() => {
         new codebuild.PipelineProject(stack, 'Project', {
           environment: {
-            buildImage: codebuild.LinuxArmBuildImage.AMAZON_LINUX_2_ARM_2,
+            buildImage: codebuild.LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_2_0,
             computeType: codebuild.ComputeType.X2_LARGE,
           },
         });
@@ -194,7 +194,7 @@ describe('Linux ARM build image', () => {
               {
                 'Fn::Select': [3, {
                   'Fn::Split': [':', {
-                    'Fn::GetAtt': [ 'myrepo5DFA62E5', 'Arn'],
+                    'Fn::GetAtt': ['myrepo5DFA62E5', 'Arn'],
                   }],
                 }],
               },
@@ -302,16 +302,11 @@ describe('Linux ARM build image', () => {
         Environment: {
           ComputeType: 'BUILD_GENERAL1_LARGE',
           Image: {
-            'Fn::Join': [
-              '',
-              [
+            'Fn::Join': ['', [
                 '585695036304.dkr.ecr.us-east-1.',
-                {
-                  Ref: 'AWS::URLSuffix',
-                },
+                { Ref: 'AWS::URLSuffix', },
                 '/foo/bar/foo/fooo:latest',
-              ],
-            ],
+            ]],
           },
         },
       });
