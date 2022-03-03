@@ -217,10 +217,7 @@ describe('Linux ARM build image', () => {
               'ecr:BatchGetImage',
             ],
             Resource: {
-              'Fn::GetAtt': [
-                'myrepo5DFA62E5',
-                'Arn',
-              ],
+              'Fn::GetAtt': ['myrepo5DFA62E5', 'Arn'],
             },
           })]),
         },
