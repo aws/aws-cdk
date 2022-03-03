@@ -182,53 +182,28 @@ describe('Linux ARM build image', () => {
         Environment: {
           ComputeType: 'BUILD_GENERAL1_LARGE',
           Image: {
-            'Fn::Join': [
-              '',
-              [
-                {
-                  'Fn::Select': [
-                    4,
-                    {
-                      'Fn::Split': [
-                        ':',
-                        {
-                          'Fn::GetAtt': [
-                            'myrepo5DFA62E5',
-                            'Arn',
-                          ],
-                        },
-                      ],
-                    },
-                  ],
-                },
-                '.dkr.ecr.',
-                {
-                  'Fn::Select': [
-                    3,
-                    {
-                      'Fn::Split': [
-                        ':',
-                        {
-                          'Fn::GetAtt': [
-                            'myrepo5DFA62E5',
-                            'Arn',
-                          ],
-                        },
-                      ],
-                    },
-                  ],
-                },
-                '.',
-                {
-                  Ref: 'AWS::URLSuffix',
-                },
-                '/',
-                {
-                  Ref: 'myrepo5DFA62E5',
-                },
-                ':v1',
-              ],
-            ],
+            'Fn::Join': ['', [
+              {
+                'Fn::Select': [4, {
+                  'Fn::Split': [':', {
+                    'Fn::GetAtt': ['myrepo5DFA62E5', 'Arn'],
+                  }],
+                }],
+              },
+              '.dkr.ecr.',
+              {
+                'Fn::Select': [3, {
+                  'Fn::Split': [':', {
+                    'Fn::GetAtt': [ 'myrepo5DFA62E5', 'Arn'],
+                  }],
+                }],
+              },
+              '.',
+              { Ref: 'AWS::URLSuffix' },
+              '/',
+              { Ref: 'myrepo5DFA62E5' },
+              ':v1',
+            ]],
           },
         },
       });
