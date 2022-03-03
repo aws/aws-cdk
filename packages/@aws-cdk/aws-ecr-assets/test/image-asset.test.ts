@@ -77,7 +77,7 @@ describe('image asset', () => {
 
     // THEN
     const assetMetadata = stack.node.metadataEntry.find(({ type }) => type === cxschema.ArtifactMetadataEntryType.ASSET);
-    expect(assetMetadata && (assetMetadata.data as cxschema.ContainerImageAssetMetadataEntry).buildArgs).toEqual('/bin/sh');
+    expect(assetMetadata && (assetMetadata.data as cxschema.ContainerImageAssetMetadataEntry).buildShell).toEqual('/bin/sh');
   });
 
   testFutureBehavior('with hash options', flags, App, (app) => {

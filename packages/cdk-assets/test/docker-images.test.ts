@@ -221,7 +221,7 @@ describe('with a complete manifest', () => {
       {
         commandLine: ['docker', 'build', '--tag', 'cdkasset-theasset', '--network', 'default', '.'],
         cwd: defaultNetworkDockerpath,
-        shell: '/bin/sh'
+        shell: '/bin/sh',
       },
       { commandLine: ['docker', 'tag', 'cdkasset-theasset', '12345.amazonaws.com/repo:nopqr'] },
       { commandLine: ['docker', 'push', '12345.amazonaws.com/repo:nopqr'] },

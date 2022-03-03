@@ -369,6 +369,7 @@ describe('code', () => {
       const dockerfilePath = 'Dockerfile';
       const dockerBuildTarget = 'stage';
       const dockerBuildArgs = { arg1: 'val1', arg2: 'val2' };
+      const dockerBuildShell = '/bin/sh';
 
       // when
       new lambda.Function(stack, 'Fn', {
@@ -376,6 +377,7 @@ describe('code', () => {
           file: dockerfilePath,
           target: dockerBuildTarget,
           buildArgs: dockerBuildArgs,
+          buildShell: dockerBuildShell,
         }),
         handler: lambda.Handler.FROM_IMAGE,
         runtime: lambda.Runtime.FROM_IMAGE,
@@ -387,6 +389,7 @@ describe('code', () => {
           [cxapi.ASSET_RESOURCE_METADATA_PATH_KEY]: 'asset.650a009a909c30e767a843a84ff7812616447251d245e0ab65d9bfb37f413e32',
           [cxapi.ASSET_RESOURCE_METADATA_DOCKERFILE_PATH_KEY]: dockerfilePath,
           [cxapi.ASSET_RESOURCE_METADATA_DOCKER_BUILD_ARGS_KEY]: dockerBuildArgs,
+          [cxapi.ASSET_RESOURCE_METADATA_DOCKER_BUILD_SHELL_KEY]: dockerBuildShell,
           [cxapi.ASSET_RESOURCE_METADATA_DOCKER_BUILD_TARGET_KEY]: dockerBuildTarget,
           [cxapi.ASSET_RESOURCE_METADATA_PROPERTY_KEY]: 'Code.ImageUri',
         },

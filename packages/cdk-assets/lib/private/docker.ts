@@ -60,7 +60,7 @@ export class Docker {
     ];
     await this.execute(buildCommand, {
       cwd: options.directory,
-      shell: options.buildShell || false
+      shell: options.buildShell || false,
     });
   }
 

@@ -331,6 +331,7 @@ export class DockerImageAsset extends CoreConstruct implements IAsset {
     const stack = Stack.of(this);
     this.assetPath = staging.relativeStagedPath(stack);
     this.dockerBuildArgs = props.buildArgs;
+    this.dockerBuildShell = props.buildShell;
     this.dockerBuildTarget = props.target;
 
     const location = stack.synthesizer.addDockerImageAsset({
@@ -374,6 +375,7 @@ export class DockerImageAsset extends CoreConstruct implements IAsset {
     resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_PATH_KEY] = this.assetPath;
     resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_DOCKERFILE_PATH_KEY] = this.dockerfilePath;
     resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_DOCKER_BUILD_ARGS_KEY] = this.dockerBuildArgs;
+    resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_DOCKER_BUILD_SHELL_KEY] = this.dockerBuildShell;
     resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_DOCKER_BUILD_TARGET_KEY] = this.dockerBuildTarget;
     resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_PROPERTY_KEY] = resourceProperty;
   }
