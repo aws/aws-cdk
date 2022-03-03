@@ -207,7 +207,7 @@ describe('with a complete manifest', () => {
 
   test('build with shell', async () => {
     pub = new AssetPublishing(AssetManifest.fromPath('/build-with-shell/cdk.out'), { aws });
-    const defaultNetworkDockerpath = '/build-with-shell/cdk.out/dockerdir';
+    const buildShellDockerDir = '/build-with-shell/cdk.out/dockerdir';
     aws.mockEcr.describeImages = mockedApiFailure('ImageNotFoundException', 'File does not exist');
     aws.mockEcr.getAuthorizationToken = mockedApiResult({
       authorizationData: [
@@ -218,11 +218,7 @@ describe('with a complete manifest', () => {
     const expectAllSpawns = mockSpawn(
       { commandLine: ['docker', 'login', '--username', 'user', '--password-stdin', 'https://proxy.com/'] },
       { commandLine: ['docker', 'inspect', 'cdkasset-theasset'], exitCode: 1 },
-      {
-        commandLine: ['docker', 'build', '--tag', 'cdkasset-theasset', '.'],
-        cwd: defaultNetworkDockerpath,
-        shell: '/bin/sh',
-      },
+      { commandLine: ['docker', 'build', '--tag', 'cdkasset-theasset', '.'], cwd: buildShellDockerDir, shell: '/bin/sh' },
       { commandLine: ['docker', 'tag', 'cdkasset-theasset', '12345.amazonaws.com/repo:nopqr'] },
       { commandLine: ['docker', 'push', '12345.amazonaws.com/repo:nopqr'] },
     );
