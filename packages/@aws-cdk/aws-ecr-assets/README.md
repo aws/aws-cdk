@@ -81,7 +81,7 @@ const asset = new DockerImageAsset(this, 'MyBuildImage', {
   buildArgs: {
     HTTP_PROXY: '$HTTP_PROXY',
   },
-  buildShell: '/bin/sh' // will enable shell expansion of $HTTP_PROXY
+  buildShell: '/bin/sh' // will enable shell expansion of --build-arg HTTP_PROXY=$HTTP_PROXY
 });
 ```
 
