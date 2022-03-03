@@ -219,7 +219,7 @@ describe('with a complete manifest', () => {
       { commandLine: ['docker', 'login', '--username', 'user', '--password-stdin', 'https://proxy.com/'] },
       { commandLine: ['docker', 'inspect', 'cdkasset-theasset'], exitCode: 1 },
       {
-        commandLine: ['docker', 'build', '--tag', 'cdkasset-theasset', '--network', 'default', '.'],
+        commandLine: ['docker', 'build', '--tag', 'cdkasset-theasset', '.'],
         cwd: defaultNetworkDockerpath,
         shell: '/bin/sh',
       },

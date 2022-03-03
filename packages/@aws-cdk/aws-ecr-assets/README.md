@@ -71,6 +71,8 @@ const asset = new DockerImageAsset(this, 'MyBuildImage', {
 To instruct cdk-assets to [spawn](https://nodejs.org/api/child_process.html#child_processspawncommand-args-options)
 the docker build command inside of a shell (default is no shell), provide `buildShell`:
 
+**CAUTION**: ARG values from the build environment will be visible in docker history and thus may not be appropriate for secrets.
+
 ```ts
 import { DockerImageAsset } from '@aws-cdk/aws-ecr-assets';
 
