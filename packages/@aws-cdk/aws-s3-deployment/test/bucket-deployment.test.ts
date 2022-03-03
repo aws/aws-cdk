@@ -945,6 +945,68 @@ test('deployment allows vpc and subnets to be implicitly supplied to lambda', ()
   });
 });
 
+test('s3 deployment bucket is identical to destination bucket', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const bucket = new s3.Bucket(stack, 'Dest');
+
+  // WHEN
+  const bd = new s3deploy.BucketDeployment(stack, 'Deployment', {
+    destinationBucket: bucket,
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+  });
+
+  // Call this function
+  void(bd.deployedBucket);
+
+  // THEN
+  const template = Template.fromStack(stack);
+  template.hasResourceProperties('Custom::CDKBucketDeployment', {
+    // Since this utilizes GetAtt, we know CFN will deploy the bucket first
+    // before deploying other resources that rely call the destination bucket.
+    DestinationBucketArn: { 'Fn::GetAtt': ['DestC383B82A', 'Arn'] },
+  });
+});
+
+test('using deployment bucket references the destination bucket by means of the CustomResource', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const bucket = new s3.Bucket(stack, 'Dest');
+  const deployment = new s3deploy.BucketDeployment(stack, 'Deployment', {
+    destinationBucket: bucket,
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+  });
+
+  // WHEN
+  new cdk.CfnOutput(stack, 'DestinationArn', {
+    value: deployment.deployedBucket.bucketArn,
+  });
+  new cdk.CfnOutput(stack, 'DestinationName', {
+    value: deployment.deployedBucket.bucketName,
+  });
+
+  // THEN
+
+  const template = Template.fromStack(stack);
+  expect(template.findOutputs('*')).toEqual({
+    DestinationArn: {
+      Value: { 'Fn::GetAtt': ['DeploymentCustomResource47E8B2E6', 'DestinationBucketArn'] },
+    },
+    DestinationName: {
+      Value: {
+        'Fn::Select': [0, {
+          'Fn::Split': ['/', {
+            'Fn::Select': [5, {
+              'Fn::Split': [':',
+                { 'Fn::GetAtt': ['DeploymentCustomResource47E8B2E6', 'DestinationBucketArn'] }],
+            }],
+          }],
+        }],
+      },
+    },
+  });
+});
+
 test('resource id includes memory and vpc', () => {
 
   // GIVEN
