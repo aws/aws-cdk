@@ -280,7 +280,7 @@ can use the `environment` property to customize the build environment:
 ## Images
 
 The CodeBuild library supports both Linux and Windows images via the
-`LinuxBuildImage`, `LinuxArmBuildImage`, and `WindowsBuildImage` classes, respectively.
+`LinuxBuildImage` (or `LinuxArmBuildImage`), and `WindowsBuildImage` classes, respectively.
 
 You can specify one of the predefined Windows/Linux images by using one
 of the constants such as `WindowsBuildImage.WIN_SERVER_CORE_2019_BASE`,
