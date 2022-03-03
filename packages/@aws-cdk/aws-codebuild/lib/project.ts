@@ -1672,6 +1672,8 @@ export class LinuxArmBuildImage implements IBuildImage {
   public static readonly AMAZON_LINUX_2_ARM_2 = LinuxArmBuildImage.codeBuildImage('aws/codebuild/amazonlinux2-aarch64-standard:2.0');
 
   /**
+   * Returns an ARM image running Linux from an ECR repository.
+   *
    * NOTE: if the repository is external (i.e. imported), then we won't be able to add
    * a resource policy statement for it so CodeBuild can pull the image.
    *
