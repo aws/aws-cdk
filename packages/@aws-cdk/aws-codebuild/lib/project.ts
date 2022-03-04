@@ -1669,6 +1669,10 @@ interface LinuxBuildImageProps {
   readonly repository?: ecr.IRepository;
 }
 
+// Keep around to resolve a circular dependency until removing deprecated ARM image constants from LinuxBuildImage
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { LinuxArmBuildImage } from './linux-arm-build-image';
+
 /**
  * A CodeBuild image running x86-64 Linux.
  *
@@ -2104,5 +2108,3 @@ export enum ProjectNotificationEvents {
 function isBindableBuildImage(x: unknown): x is IBindableBuildImage {
   return typeof x === 'object' && !!x && !!(x as any).bind;
 }
-
-import { LinuxArmBuildImage } from './linux-arm-build-image';
