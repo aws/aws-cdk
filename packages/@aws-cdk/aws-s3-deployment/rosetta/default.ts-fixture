@@ -13,3 +13,8 @@ class Fixture extends Stack {
     /// here
   }
 }
+
+class ConstructThatReadsFromTheBucket {
+  constructor(...args: any[]) {
+  }
+}

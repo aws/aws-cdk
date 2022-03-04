@@ -1,4 +1,6 @@
-import * as wrapAnsi from 'wrap-ansi';
+// namespace object imports won't work in the bundle for function exports
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const wrapAnsi = require('wrap-ansi');
 
 /**
  * A class representing rewritable display lines
