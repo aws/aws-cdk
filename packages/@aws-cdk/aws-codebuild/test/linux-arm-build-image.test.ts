@@ -2,9 +2,9 @@ import { Match, Template } from '@aws-cdk/assertions';
 import * as ecr from '@aws-cdk/aws-ecr';
 import * as cdk from '@aws-cdk/core';
 import { BuildSpec } from '../lib/build-spec';
-import { LinuxArmBuildImage } from '../lib/linux-arm-build-image'
-import { PipelineProject } from '../lib/pipeline-project'
-import { ComputeType, Project, } from '../lib/project';
+import { LinuxArmBuildImage } from '../lib/linux-arm-build-image';
+import { PipelineProject } from '../lib/pipeline-project';
+import { ComputeType, Project } from '../lib/project';
 
 describe('Linux ARM build image', () => {
   describe('AMAZON_LINUX_2_STANDARD_1_0', () => {
