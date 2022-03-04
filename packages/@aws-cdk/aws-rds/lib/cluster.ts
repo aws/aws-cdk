@@ -250,6 +250,21 @@ interface DatabaseClusterBaseProps {
    * @default false
    */
   readonly iamAuthentication?: boolean;
+
+  /**
+   * Whether to enable storage encryption.
+   *
+   * @default - true if storageEncryptionKey is provided, false otherwise
+   */
+  readonly storageEncrypted?: boolean
+
+  /**
+  * The KMS key for storage encryption.
+  * If specified, {@link storageEncrypted} will be set to `true`.
+  *
+  * @default - if storageEncrypted is true then the default master key, no key otherwise
+  */
+  readonly storageEncryptionKey?: kms.IKey;
 }
 
 /**
@@ -402,6 +417,9 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
       preferredMaintenanceWindow: props.preferredMaintenanceWindow,
       databaseName: props.defaultDatabaseName,
       enableCloudwatchLogsExports: props.cloudwatchLogsExports,
+      // Encryption
+      kmsKeyId: props.storageEncryptionKey?.keyArn,
+      storageEncrypted: props.storageEncryptionKey ? true : props.storageEncrypted,
     };
   }
 }
@@ -480,21 +498,6 @@ export interface DatabaseClusterProps extends DatabaseClusterBaseProps {
   readonly credentials?: Credentials;
 
   /**
-   * Whether to enable storage encryption.
-   *
-   * @default - true if storageEncryptionKey is provided, false otherwise
-   */
-  readonly storageEncrypted?: boolean
-
-  /**
-   * The KMS key for storage encryption.
-   * If specified, {@link storageEncrypted} will be set to `true`.
-   *
-   * @default - if storageEncrypted is true then the default master key, no key otherwise
-   */
-  readonly storageEncryptionKey?: kms.IKey;
-
-  /**
    * Whether to copy tags to the snapshot when a snapshot is created.
    *
    * @default: true
@@ -550,9 +553,7 @@ export class DatabaseCluster extends DatabaseClusterNew {
       // Admin
       masterUsername: credentials.username,
       masterUserPassword: credentials.password?.toString(),
-      // Encryption
-      kmsKeyId: props.storageEncryptionKey?.keyArn,
-      storageEncrypted: props.storageEncryptionKey ? true : props.storageEncrypted,
+      // Tags
       copyTagsToSnapshot: props.copyTagsToSnapshot ?? true,
     });
 
