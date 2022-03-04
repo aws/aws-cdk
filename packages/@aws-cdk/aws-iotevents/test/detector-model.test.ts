@@ -176,6 +176,101 @@ test('can set actions to events', () => {
   });
 });
 
+
+test('can set an action to multiple detector models', () => {
+  // GIVEN an action
+  const action: iotevents.IAction = {
+    bind: (_, { role }) => {
+      role.addToPrincipalPolicy(new iam.PolicyStatement({
+        actions: ['lambda:InvokeFunction'],
+        resources: ['arn:aws:lambda:us-east-1:123456789012:function:MyFn'],
+      }));
+      return {
+        configuration: {
+          lambda: { functionArn: 'arn:aws:lambda:us-east-1:123456789012:function:MyFn' },
+        },
+      };
+    },
+  };
+
+  // WHEN the action is set to two detector models
+  new iotevents.DetectorModel(stack, 'MyDetectorModel1', {
+    detectorModelName: 'MyDetectorModel1',
+    initialState: new iotevents.State({
+      stateName: 'test-state',
+      onEnter: [{
+        eventName: 'test-eventName1',
+        condition: iotevents.Expression.currentInput(input),
+        actions: [action],
+      }],
+    }),
+  });
+  new iotevents.DetectorModel(stack, 'MyDetectorModel2', {
+    detectorModelName: 'MyDetectorModel2',
+    initialState: new iotevents.State({
+      stateName: 'test-state',
+      onEnter: [{
+        eventName: 'test-eventName1',
+        condition: iotevents.Expression.currentInput(input),
+        actions: [action],
+      }],
+    }),
+  });
+
+  // THEN creates two detector model resouces and two iam policy resources
+  Template.fromStack(stack).resourceCountIs('AWS::IoTEvents::DetectorModel', 2);
+  Template.fromStack(stack).resourceCountIs('AWS::IAM::Policy', 2);
+
+  Template.fromStack(stack).hasResourceProperties('AWS::IoTEvents::DetectorModel', {
+    DetectorModelName: 'MyDetectorModel1',
+    DetectorModelDefinition: {
+      States: [
+        Match.objectLike({
+          OnEnter: {
+            Events: [{
+              Actions: [{ Lambda: { FunctionArn: 'arn:aws:lambda:us-east-1:123456789012:function:MyFn' } }],
+            }],
+          },
+        }),
+      ],
+    },
+  });
+  Template.fromStack(stack).hasResourceProperties('AWS::IoTEvents::DetectorModel', {
+    DetectorModelName: 'MyDetectorModel2',
+    DetectorModelDefinition: {
+      States: [
+        Match.objectLike({
+          OnEnter: {
+            Events: [{
+              Actions: [{ Lambda: { FunctionArn: 'arn:aws:lambda:us-east-1:123456789012:function:MyFn' } }],
+            }],
+          },
+        }),
+      ],
+    },
+  });
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    Roles: [{ Ref: 'MyDetectorModel1DetectorModelRoleB36845CD' }],
+    PolicyDocument: {
+      Statement: [{
+        Action: 'lambda:InvokeFunction',
+        Effect: 'Allow',
+        Resource: 'arn:aws:lambda:us-east-1:123456789012:function:MyFn',
+      }],
+    },
+  });
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    Roles: [{ Ref: 'MyDetectorModel2DetectorModelRole3C437E90' }],
+    PolicyDocument: {
+      Statement: [{
+        Action: 'lambda:InvokeFunction',
+        Effect: 'Allow',
+        Resource: 'arn:aws:lambda:us-east-1:123456789012:function:MyFn',
+      }],
+    },
+  });
+});
+
 test('can set states with transitions', () => {
   // GIVEN
   const firstState = new iotevents.State({
