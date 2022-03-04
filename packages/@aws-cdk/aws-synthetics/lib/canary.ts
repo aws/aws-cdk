@@ -200,7 +200,7 @@ export interface CanaryProps {
   /**
    * The list of security groups to associate with the canary's network interfaces.
    *
-   * @default - If the function is placed within a VPC and a security group is
+   * @default - If the canary is placed within a VPC and a security group is
    * not specified a dedicated security group will be created for this canary.
    */
   readonly securityGroups?: ec2.ISecurityGroup[];
