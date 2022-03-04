@@ -954,6 +954,76 @@ describe('cluster', () => {
     });
   });
 
+  test('addRotationMultiUser() with options', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpcWithIsolated = new ec2.Vpc(stack, 'Vpc', {
+      subnetConfiguration: [
+        { name: 'public', subnetType: ec2.SubnetType.PUBLIC },
+        { name: 'private', subnetType: ec2.SubnetType.PRIVATE_WITH_NAT },
+        { name: 'isolated', subnetType: ec2.SubnetType.PRIVATE_ISOLATED },
+      ],
+    });
+    const userSecret = new DatabaseSecret(stack, 'UserSecret', { username: 'user' });
+
+    // WHEN
+    // DB in isolated subnet (no internet connectivity)
+    const cluster = new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
+      instanceProps: {
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+        vpc: vpcWithIsolated,
+        vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_ISOLATED },
+      },
+    });
+
+    // Rotation in private subnet (internet via NAT)
+    cluster.addRotationMultiUser('user', {
+      secret: userSecret.attach(cluster),
+      automaticallyAfter: cdk.Duration.days(15),
+      excludeCharacters: '°_@',
+      vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_NAT },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::RotationSchedule', {
+      RotationRules: {
+        AutomaticallyAfterDays: 15,
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Serverless::Application', {
+      Parameters: {
+        endpoint: {
+          'Fn::Join': ['', [
+            'https://secretsmanager.',
+            { Ref: 'AWS::Region' },
+            '.',
+            { Ref: 'AWS::URLSuffix' },
+          ]],
+        },
+        functionName: 'DatabaseuserAE6D9789',
+        vpcSubnetIds: {
+          'Fn::Join': ['', [
+            { Ref: 'VpcprivateSubnet1SubnetCEAD3716' },
+            ',',
+            { Ref: 'VpcprivateSubnet2Subnet2DE7549C' },
+          ]],
+        },
+        vpcSecurityGroupIds: {
+          'Fn::GetAtt': [
+            'DatabaseuserSecurityGroupFB2AA194',
+            'GroupId',
+          ],
+        },
+        excludeCharacters: '°_@',
+        masterSecretArn: {
+          Ref: 'DatabaseSecretAttachmentE5D1B020',
+        },
+      },
+    });
+  });
+
   test('addRotationSingleUser() with VPC interface endpoint', () => {
     // GIVEN
     const stack = new cdk.Stack();

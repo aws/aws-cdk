@@ -858,6 +858,71 @@ describe('instance', () => {
     });
   });
 
+  test('addRotationMultiUser() with options', () => {
+    // GIVEN
+    const vpcWithIsolated = new ec2.Vpc(stack, 'Vpc', {
+      subnetConfiguration: [
+        { name: 'public', subnetType: ec2.SubnetType.PUBLIC },
+        { name: 'private', subnetType: ec2.SubnetType.PRIVATE_WITH_NAT },
+        { name: 'isolated', subnetType: ec2.SubnetType.PRIVATE_ISOLATED },
+      ],
+    });
+    const userSecret = new rds.DatabaseSecret(stack, 'UserSecret', { username: 'user' });
+
+    // WHEN
+    // DB in isolated subnet (no internet connectivity)
+    const instance = new rds.DatabaseInstance(stack, 'Database', {
+      engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_10 }),
+      vpc: vpcWithIsolated,
+      vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_ISOLATED },
+    });
+
+    // Rotation in private subnet (internet via NAT)
+    instance.addRotationMultiUser('user', {
+      secret: userSecret.attach(instance),
+      automaticallyAfter: cdk.Duration.days(15),
+      excludeCharacters: '°_@',
+      vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_NAT },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::RotationSchedule', {
+      RotationRules: {
+        AutomaticallyAfterDays: 15,
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Serverless::Application', {
+      Parameters: {
+        endpoint: {
+          'Fn::Join': ['', [
+            'https://secretsmanager.',
+            { Ref: 'AWS::Region' },
+            '.',
+            { Ref: 'AWS::URLSuffix' },
+          ]],
+        },
+        functionName: 'DatabaseuserAE6D9789',
+        vpcSubnetIds: {
+          'Fn::Join': ['', [
+            { Ref: 'VpcprivateSubnet1SubnetCEAD3716' },
+            ',',
+            { Ref: 'VpcprivateSubnet2Subnet2DE7549C' },
+          ]],
+        },
+        vpcSecurityGroupIds: {
+          'Fn::GetAtt': [
+            'DatabaseuserSecurityGroupFB2AA194',
+            'GroupId',
+          ],
+        },
+        excludeCharacters: '°_@',
+        masterSecretArn: {
+          Ref: 'DatabaseSecretAttachmentE5D1B020',
+        },
+      },
+    });
+  });
 
   test('addRotationSingleUser() with VPC interface endpoint', () => {
     // GIVEN

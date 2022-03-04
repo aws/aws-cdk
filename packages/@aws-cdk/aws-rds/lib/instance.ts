@@ -13,7 +13,7 @@ import { Endpoint } from './endpoint';
 import { IInstanceEngine } from './instance-engine';
 import { IOptionGroup } from './option-group';
 import { IParameterGroup, ParameterGroup } from './parameter-group';
-import { DEFAULT_PASSWORD_EXCLUDE_CHARS, defaultDeletionProtection, engineDescription, renderCredentials, setupS3ImportExport, helperRemovalPolicy, renderUnless } from './private/util';
+import { Complete, DEFAULT_PASSWORD_EXCLUDE_CHARS, defaultDeletionProtection, engineDescription, renderCredentials, setupS3ImportExport, helperRemovalPolicy, renderUnless } from './private/util';
 import { Credentials, PerformanceInsightRetention, RotationMultiUserOptions, RotationSingleUserOptions, SnapshotCredentials } from './props';
 import { DatabaseProxy, DatabaseProxyOptions, ProxyTarget } from './proxy';
 import { CfnDBInstance, CfnDBInstanceProps } from './rds.generated';
@@ -930,14 +930,20 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
       throw new Error('A single user rotation was already added to this instance.');
     }
 
+    // Rotation options with defaults
+    const rotationOptions: Complete<RotationSingleUserOptions> = {
+      automaticallyAfter: options.automaticallyAfter,
+      endpoint: options.endpoint,
+      excludeCharacters: options.excludeCharacters ?? DEFAULT_PASSWORD_EXCLUDE_CHARS,
+      vpcSubnets: options.vpcSubnets ?? this.vpcPlacement,
+    };
+
     return new secretsmanager.SecretRotation(this, id, {
       secret: this.secret,
       application: this.singleUserRotationApplication,
       vpc: this.vpc,
-      vpcSubnets: this.vpcPlacement,
       target: this,
-      ...options,
-      excludeCharacters: options.excludeCharacters ?? DEFAULT_PASSWORD_EXCLUDE_CHARS,
+      ...rotationOptions,
     });
   }
 
@@ -948,14 +954,22 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
     if (!this.secret) {
       throw new Error('Cannot add multi user rotation for an instance without secret.');
     }
-    return new secretsmanager.SecretRotation(this, id, {
-      ...options,
+
+    // Rotation options with defaults
+    const rotationOptions: Complete<RotationMultiUserOptions> = {
+      automaticallyAfter: options.automaticallyAfter,
+      endpoint: options.endpoint,
       excludeCharacters: options.excludeCharacters ?? DEFAULT_PASSWORD_EXCLUDE_CHARS,
+      secret: options.secret,
+      vpcSubnets: options.vpcSubnets ?? this.vpcPlacement,
+    };
+
+    return new secretsmanager.SecretRotation(this, id, {
       masterSecret: this.secret,
       application: this.multiUserRotationApplication,
       vpc: this.vpc,
-      vpcSubnets: this.vpcPlacement,
       target: this,
+      ...rotationOptions,
     });
   }
 }

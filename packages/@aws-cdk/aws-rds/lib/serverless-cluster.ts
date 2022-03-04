@@ -10,7 +10,7 @@ import { DatabaseSecret } from './database-secret';
 import { Endpoint } from './endpoint';
 import { IParameterGroup } from './parameter-group';
 import { DATA_API_ACTIONS } from './perms';
-import { defaultDeletionProtection, DEFAULT_PASSWORD_EXCLUDE_CHARS, renderCredentials } from './private/util';
+import { Complete, defaultDeletionProtection, DEFAULT_PASSWORD_EXCLUDE_CHARS, renderCredentials } from './private/util';
 import { Credentials, RotationMultiUserOptions, RotationSingleUserOptions, SnapshotCredentials } from './props';
 import { CfnDBCluster, CfnDBClusterProps } from './rds.generated';
 import { ISubnetGroup, SubnetGroup } from './subnet-group';
@@ -557,14 +557,20 @@ export class ServerlessCluster extends ServerlessClusterNew {
       throw new Error('A single user rotation was already added to this cluster.');
     }
 
+    // Rotation options with defaults
+    const rotationOptions: Complete<RotationSingleUserOptions> = {
+      automaticallyAfter: options.automaticallyAfter,
+      endpoint: options.endpoint,
+      excludeCharacters: options.excludeCharacters ?? DEFAULT_PASSWORD_EXCLUDE_CHARS,
+      vpcSubnets: options.vpcSubnets ?? this.vpcSubnets,
+    };
+
     return new secretsmanager.SecretRotation(this, id, {
       secret: this.secret,
       application: this.singleUserRotationApplication,
       vpc: this.vpc,
-      vpcSubnets: this.vpcSubnets,
       target: this,
-      ...options,
-      excludeCharacters: options.excludeCharacters ?? DEFAULT_PASSWORD_EXCLUDE_CHARS,
+      ...rotationOptions,
     });
   }
 
@@ -580,14 +586,21 @@ export class ServerlessCluster extends ServerlessClusterNew {
       throw new Error('Cannot add multi user rotation for a cluster without VPC.');
     }
 
-    return new secretsmanager.SecretRotation(this, id, {
-      ...options,
+    // Rotation options with defaults
+    const rotationOptions: Complete<RotationMultiUserOptions> = {
+      automaticallyAfter: options.automaticallyAfter,
+      endpoint: options.endpoint,
       excludeCharacters: options.excludeCharacters ?? DEFAULT_PASSWORD_EXCLUDE_CHARS,
+      secret: options.secret,
+      vpcSubnets: options.vpcSubnets ?? this.vpcSubnets,
+    };
+
+    return new secretsmanager.SecretRotation(this, id, {
       masterSecret: this.secret,
       application: this.multiUserRotationApplication,
       vpc: this.vpc,
-      vpcSubnets: this.vpcSubnets,
       target: this,
+      ...rotationOptions,
     });
   }
 }

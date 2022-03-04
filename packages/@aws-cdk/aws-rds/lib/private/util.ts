@@ -134,3 +134,10 @@ export function helperRemovalPolicy(basePolicy?: RemovalPolicy): RemovalPolicy {
 export function renderUnless<A>(value: A, suppressValue: A): A | undefined {
   return value === suppressValue ? undefined : value;
 }
+
+/**
+ * Transforms optional properties to required properties that may be undefined
+ */
+export type Complete<T> = {
+  [P in keyof Required<T>]: Pick<T, P> extends Required<Pick<T, P>> ? T[P] : (T[P] | undefined);
+}
