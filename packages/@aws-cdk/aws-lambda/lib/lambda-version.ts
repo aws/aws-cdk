@@ -2,6 +2,7 @@ import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import { Fn, Lazy, RemovalPolicy } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { Alias, AliasOptions } from './alias';
+import { Architecture } from './architecture';
 import { EventInvokeConfigOptions } from './event-invoke-config';
 import { Function } from './function';
 import { IFunction, QualifiedFunctionBase } from './function-base';
@@ -127,11 +128,12 @@ export class Version extends QualifiedFunctionBase implements IVersion {
       public readonly functionArn = versionArn;
       public readonly grantPrincipal = lambda.grantPrincipal;
       public readonly role = lambda.role;
+      public readonly architecture = lambda.architecture;
 
       protected readonly qualifier = version;
       protected readonly canCreatePermissions = this._isStackAccount();
 
-      public addAlias(name: string, opts: AliasOptions = { }): Alias {
+      public addAlias(name: string, opts: AliasOptions = {}): Alias {
         return addAlias(this, this, name, opts);
       }
 
@@ -153,11 +155,12 @@ export class Version extends QualifiedFunctionBase implements IVersion {
       public readonly functionArn = `${attrs.lambda.functionArn}:${attrs.version}`;
       public readonly grantPrincipal = attrs.lambda.grantPrincipal;
       public readonly role = attrs.lambda.role;
+      public readonly architecture = attrs.lambda.architecture;
 
       protected readonly qualifier = attrs.version;
       protected readonly canCreatePermissions = this._isStackAccount();
 
-      public addAlias(name: string, opts: AliasOptions = { }): Alias {
+      public addAlias(name: string, opts: AliasOptions = {}): Alias {
         return addAlias(this, this, name, opts);
       }
 
@@ -175,6 +178,7 @@ export class Version extends QualifiedFunctionBase implements IVersion {
   public readonly lambda: IFunction;
   public readonly functionArn: string;
   public readonly functionName: string;
+  public readonly architecture: Architecture;
 
   protected readonly qualifier: string;
   protected readonly canCreatePermissions = true;
@@ -183,6 +187,7 @@ export class Version extends QualifiedFunctionBase implements IVersion {
     super(scope, id);
 
     this.lambda = props.lambda;
+    this.architecture = props.lambda.architecture;
 
     const version = new CfnVersion(this, 'Resource', {
       codeSha256: props.codeSha256,
@@ -239,7 +244,7 @@ export class Version extends QualifiedFunctionBase implements IVersion {
    * @param aliasName The name of the alias (e.g. "live")
    * @param options Alias options
    */
-  public addAlias(aliasName: string, options: AliasOptions = { }): Alias {
+  public addAlias(aliasName: string, options: AliasOptions = {}): Alias {
     return addAlias(this, this, aliasName, options);
   }
 

@@ -45,8 +45,8 @@ export abstract class FirewallDomains {
    */
   public static fromList(list: string[]): FirewallDomains {
     for (const domain of list) {
-      if (!/^[\w-.]+$/.test(domain)) {
-        throw new Error(`Invalid domain: ${domain}. Valid characters: A-Z, a-z, 0-9, _, -, .`);
+      if (!/^([\w-.]{1,255}|\*[\w-.]{1,254})$/.test(domain)) {
+        throw new Error(`Invalid domain: ${domain}. Domain can optionally start with *. Max length of 255. Valid characters: A-Z, a-z, 0-9, _, -, .`);
       }
     }
 

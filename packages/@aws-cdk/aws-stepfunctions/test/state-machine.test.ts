@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
@@ -16,7 +16,7 @@ describe('State Machine', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::StepFunctions::StateMachine', {
+    Template.fromStack(stack).hasResourceProperties('AWS::StepFunctions::StateMachine', {
       StateMachineName: 'MyStateMachine',
       DefinitionString: '{"StartAt":"Pass","States":{"Pass":{"Type":"Pass","End":true}}}',
     });
@@ -34,7 +34,7 @@ describe('State Machine', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::StepFunctions::StateMachine', {
+    Template.fromStack(stack).hasResourceProperties('AWS::StepFunctions::StateMachine', {
       StateMachineName: 'MyStateMachine',
       StateMachineType: 'STANDARD',
       DefinitionString: '{"StartAt":"Pass","States":{"Pass":{"Type":"Pass","End":true}}}',
@@ -54,7 +54,7 @@ describe('State Machine', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::StepFunctions::StateMachine', {
+    Template.fromStack(stack).hasResourceProperties('AWS::StepFunctions::StateMachine', {
       StateMachineName: 'MyStateMachine',
       StateMachineType: 'EXPRESS',
       DefinitionString: '{"StartAt":"Pass","States":{"Pass":{"Type":"Pass","End":true}}}',
@@ -138,7 +138,7 @@ describe('State Machine', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::StepFunctions::StateMachine', {
+    Template.fromStack(stack).hasResourceProperties('AWS::StepFunctions::StateMachine', {
       DefinitionString: '{"StartAt":"Pass","States":{"Pass":{"Type":"Pass","End":true}}}',
       LoggingConfiguration: {
         Destinations: [{
@@ -153,7 +153,7 @@ describe('State Machine', () => {
       },
     });
 
-    expect(stack).toHaveResource('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [{
           Action: [
@@ -191,14 +191,14 @@ describe('State Machine', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::StepFunctions::StateMachine', {
+    Template.fromStack(stack).hasResourceProperties('AWS::StepFunctions::StateMachine', {
       DefinitionString: '{"StartAt":"Pass","States":{"Pass":{"Type":"Pass","End":true}}}',
       TracingConfiguration: {
         Enabled: true,
       },
     });
 
-    expect(stack).toHaveResource('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [{
           Action: [
@@ -233,7 +233,7 @@ describe('State Machine', () => {
     bucket.grantRead(sm);
 
     // THEN
-    expect(stack).toHaveResource('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -275,6 +275,37 @@ describe('State Machine', () => {
           Ref: 'MyStateMachineRoleD59FFEBC',
         },
       ],
+    });
+  });
+
+  describe('StateMachine.fromStateMachineArn()', () => {
+    let stack: cdk.Stack;
+
+    beforeEach(() => {
+      const app = new cdk.App();
+      stack = new cdk.Stack(app, 'Base', {
+        env: { account: '111111111111', region: 'stack-region' },
+      });
+    });
+
+    describe('for a state machine in a different account and region', () => {
+      let mach: stepfunctions.IStateMachine;
+
+      beforeEach(() => {
+        mach = stepfunctions.StateMachine.fromStateMachineArn(
+          stack,
+          'iMach',
+          'arn:aws:states:machine-region:222222222222:stateMachine:machine-name',
+        );
+      });
+
+      test("the state machine's region is taken from the ARN", () => {
+        expect(mach.env.region).toBe('machine-region');
+      });
+
+      test("the state machine's account is taken from the ARN", () => {
+        expect(mach.env.account).toBe('222222222222');
+      });
     });
   });
 });

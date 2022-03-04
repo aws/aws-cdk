@@ -1,4 +1,3 @@
-import { nodeunitShim, Test } from 'nodeunit-shim';
 import {
   CidrBlock,
   InvalidCidrRangeError,
@@ -6,65 +5,65 @@ import {
   NetworkUtils,
 } from '../lib/network-util';
 
-nodeunitShim({
-  IP: {
-    'should convert a valid IP Address to an integer'(test: Test) {
-      test.strictEqual(NetworkUtils.ipToNum('174.66.173.168'), 2923605416);
-      test.done();
-    },
-    'should throw on invalid IP Address'(test: Test) {
-      test.throws(() => {
+describe('network utils', () => {
+  describe('IP', () => {
+    test('should convert a valid IP Address to an integer', () => {
+      expect(NetworkUtils.ipToNum('174.66.173.168')).toEqual(2923605416);
+
+    });
+    test('should throw on invalid IP Address', () => {
+      expect(() => {
         NetworkUtils.ipToNum('174.266.173.168');
-      }, 'is not valid');
-      test.done();
-    },
-    'should convert a valid IP integer to a staring'(test: Test) {
-      test.strictEqual(NetworkUtils.numToIp(2923605416), '174.66.173.168');
-      test.done();
-    },
-    'should throw an error for invalid IP'(test: Test) {
-      test.throws(() => {
+      }).toThrow('is not valid');
+
+    });
+    test('should convert a valid IP integer to a staring', () => {
+      expect(NetworkUtils.numToIp(2923605416)).toEqual('174.66.173.168');
+
+    });
+    test('should throw an error for invalid IP', () => {
+      expect(() => {
         NetworkUtils.numToIp(2923605416 * 5);
-      }, /is not a valid/);
-      test.throws(() => {
+      }).toThrow(/is not a valid/);
+      expect(() => {
         NetworkUtils.numToIp(-1);
-      }, /is not a valid/);
-      test.done();
-    },
-    'validIp returns true if octect is in 0-255'(test: Test) {
+      }).toThrow(/is not a valid/);
+
+    });
+    test('validIp returns true if octect is in 0-255', () => {
       const invalidIps = ['255.255.0.0', '0.0.0.0', '1.2.3.4', '10.0.0.0', '255.01.01.255'];
       for (const ip of invalidIps) {
-        test.strictEqual(true, NetworkUtils.validIp(ip));
+        expect(true).toEqual(NetworkUtils.validIp(ip));
       }
-      test.done();
-    },
-    'validIp returns false if octect is not in 0-255'(test: Test) {
+
+    });
+    test('validIp returns false if octect is not in 0-255', () => {
       const invalidIps = ['1.2.3.4.689', '-1.55.22.22', '', ' ', '255.264.1.01'];
       for (const ip of invalidIps) {
-        test.strictEqual(false, NetworkUtils.validIp(ip));
+        expect(false).toEqual(NetworkUtils.validIp(ip));
       }
-      test.done();
-    },
-  },
-  CidrBlock: {
-    'should return the next valid subnet from offset IP'(test: Test) {
+
+    });
+  });
+  describe('CidrBlock', () => {
+    test('should return the next valid subnet from offset IP', () => {
       const num = NetworkUtils.ipToNum('10.0.1.255');
       const newBlock = new CidrBlock(num, 24);
-      test.strictEqual(newBlock.cidr, '10.0.2.0/24');
-      test.done();
-    },
-    'nextBlock() returns the next higher CIDR space'(test: Test) {
+      expect(newBlock.cidr).toEqual('10.0.2.0/24');
+
+    });
+    test('nextBlock() returns the next higher CIDR space', () => {
       const testValues = [
         ['192.168.0.0/24', '192.168.1.0/24'],
         ['10.85.7.0/28', '10.85.7.16/28'],
       ];
       for (const value of testValues) {
         const block = new CidrBlock(value[0]);
-        test.strictEqual(block.nextBlock().cidr, value[1]);
+        expect(block.nextBlock().cidr).toEqual(value[1]);
       }
-      test.done();
-    },
-    'maxIp() should return the last usable IP from the CidrBlock'(test: Test) {
+
+    });
+    test('maxIp() should return the last usable IP from the CidrBlock', () => {
       const testValues = [
         ['10.0.3.0/28', '10.0.3.15'],
         ['10.0.3.1/28', '10.0.3.31'],
@@ -72,42 +71,42 @@ nodeunitShim({
       ];
       for (const value of testValues) {
         const block = new CidrBlock(value[0]);
-        test.strictEqual(block.maxIp(), value[1]);
+        expect(block.maxIp()).toEqual(value[1]);
       }
-      test.done();
-    },
-    'minIp() should return the first usable IP from the CidrBlock'(test: Test) {
+
+    });
+    test('minIp() should return the first usable IP from the CidrBlock', () => {
       const testValues = [
         ['192.168.0.0/18', '192.168.0.0'],
         ['10.0.3.0/24', '10.0.3.0'],
       ];
       for (const answer of testValues) {
         const block = new CidrBlock(answer[0]);
-        test.strictEqual(block.minIp(), answer[1]);
+        expect(block.minIp()).toEqual(answer[1]);
       }
-      test.done();
-    },
-    'containsCidr returns true if fully contained'(test: Test) {
+
+    });
+    test('containsCidr returns true if fully contained', () => {
       const block = new CidrBlock('10.0.3.0/24');
       const contained = new CidrBlock('10.0.3.0/26');
-      test.strictEqual(block.containsCidr(contained), true);
-      test.done();
-    },
-    'containsCidr returns false if not fully contained'(test: Test) {
+      expect(block.containsCidr(contained)).toEqual(true);
+
+    });
+    test('containsCidr returns false if not fully contained', () => {
       const block = new CidrBlock('10.0.3.0/26');
       const notContained = new CidrBlock('10.0.3.0/25');
-      test.strictEqual(block.containsCidr(notContained), false);
-      test.done();
-    },
-    'calculateNetmask returns the ip string mask'(test: Test) {
-      const netmask = CidrBlock.calculateNetmask(27);
-      test.strictEqual(netmask, '255.255.255.224');
-      test.done();
-    },
+      expect(block.containsCidr(notContained)).toEqual(false);
 
-  },
-  NetworkBuilder: {
-    'allows you to carve subnets our of CIDR network'(test: Test) {
+    });
+    test('calculateNetmask returns the ip string mask', () => {
+      const netmask = CidrBlock.calculateNetmask(27);
+      expect(netmask).toEqual('255.255.255.224');
+
+    });
+
+  });
+  describe('NetworkBuilder', () => {
+    test('allows you to carve subnets our of CIDR network', () => {
       const answers = [
         [
           '192.168.0.0/28',
@@ -142,49 +141,49 @@ nodeunitShim({
         efficient.cidrStrings.sort(),
       ];
       for (let i = 0; i < answers.length; i++) {
-        test.deepEqual(answers[i].sort(), expected[i]);
+        expect(answers[i].sort()).toEqual(expected[i]);
       }
-      test.done();
-    },
-    'throws on subnets < 16 or > 28'(test: Test) {
+
+    });
+    test('throws on subnets < 16 or > 28', () => {
       const builder = new NetworkBuilder('192.168.0.0/18');
-      test.throws(() => {
+      expect(() => {
         builder.addSubnet(15);
-      }, InvalidCidrRangeError);
-      test.throws(() => {
+      }).toThrow(InvalidCidrRangeError);
+      expect(() => {
         builder.addSubnet(29);
-      }, InvalidCidrRangeError);
-      test.done();
-    },
-    'throws if you add a subnet outside of the cidr'(test: Test) {
+      }).toThrow(InvalidCidrRangeError);
+
+    });
+    test('throws if you add a subnet outside of the cidr', () => {
       const builder = new NetworkBuilder('192.168.0.0/18');
       const builder2 = new NetworkBuilder('10.0.0.0/21');
       builder.addSubnets(19, 1);
       builder2.addSubnets(24, 8);
-      test.throws(() => {
+      expect(() => {
         builder.addSubnet(19);
         builder.addSubnet(28);
-      }, /exceeds remaining space/);
-      test.throws(() => {
+      }).toThrow(/exceeds remaining space/);
+      expect(() => {
         builder2.addSubnet(28);
-      }, /exceeds remaining space/);
-      test.done();
-    },
-    'maskForRemainingSubnets calcs mask for even split of remaining'(test: Test) {
+      }).toThrow(/exceeds remaining space/);
+
+    });
+    test('maskForRemainingSubnets calcs mask for even split of remaining', () => {
       const builder = new NetworkBuilder('10.0.0.0/24');
       builder.addSubnet(25);
-      test.strictEqual(27, builder.maskForRemainingSubnets(3));
+      expect(27).toEqual(builder.maskForRemainingSubnets(3));
       const builder2 = new NetworkBuilder('192.168.176.0/20');
       builder2.addSubnets(22, 2);
-      test.strictEqual(22, builder2.maskForRemainingSubnets(2));
+      expect(22).toEqual(builder2.maskForRemainingSubnets(2));
       const builder3 = new NetworkBuilder('192.168.0.0/16');
-      test.strictEqual(17, builder3.maskForRemainingSubnets(2));
+      expect(17).toEqual(builder3.maskForRemainingSubnets(2));
       const builder4 = new NetworkBuilder('10.0.0.0/16');
-      test.strictEqual(18, builder4.maskForRemainingSubnets(4));
+      expect(18).toEqual(builder4.maskForRemainingSubnets(4));
       const builder5 = new NetworkBuilder('10.0.0.0/16');
       builder5.addSubnets(26, 3);
       builder5.addSubnets(27, 3);
-      test.strictEqual(18, builder5.maskForRemainingSubnets(3)); test.done();
-    },
-  },
+      expect(18).toEqual(builder5.maskForRemainingSubnets(3));
+    });
+  });
 });

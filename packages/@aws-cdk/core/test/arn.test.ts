@@ -1,11 +1,11 @@
-import { nodeunitShim, Test } from 'nodeunit-shim';
+import { describeDeprecated, testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Arn, ArnComponents, ArnFormat, Aws, CfnOutput, ScopedAws, Stack, Token } from '../lib';
 import { Intrinsic } from '../lib/private/intrinsic';
 import { evaluateCFN } from './evaluate-cfn';
 import { toCloudFormation } from './util';
 
-nodeunitShim({
-  'create from components with defaults'(test: Test) {
+describe('arn', () => {
+  test('create from components with defaults', () => {
     const stack = new Stack();
 
     const arn = stack.formatArn({
@@ -15,12 +15,20 @@ nodeunitShim({
 
     const pseudo = new ScopedAws(stack);
 
-    test.deepEqual(stack.resolve(arn),
+    expect(stack.resolve(arn)).toEqual(
       stack.resolve(`arn:${pseudo.partition}:sqs:${pseudo.region}:${pseudo.accountId}:myqueuename`));
-    test.done();
-  },
 
-  'create from components with specific values for the various components'(test: Test) {
+  });
+
+  test('cannot rely on defaults when stack not known', () => {
+    expect(() =>
+      Arn.format({
+        service: 'sqs',
+        resource: 'myqueuename',
+      })).toThrow(/must all be passed if stack is not/);
+  });
+
+  test('create from components with specific values for the various components', () => {
     const stack = new Stack();
 
     const arn = stack.formatArn({
@@ -32,12 +40,12 @@ nodeunitShim({
       resourceName: 'mytable/stream/label',
     });
 
-    test.deepEqual(stack.resolve(arn),
+    expect(stack.resolve(arn)).toEqual(
       'arn:aws-cn:dynamodb:us-east-1:123456789012:table/mytable/stream/label');
-    test.done();
-  },
 
-  'allow empty string in components'(test: Test) {
+  });
+
+  test('allow empty string in components', () => {
     const stack = new Stack();
 
     const arn = stack.formatArn({
@@ -48,13 +56,13 @@ nodeunitShim({
       partition: 'aws-cn',
     });
 
-    test.deepEqual(stack.resolve(arn),
+    expect(stack.resolve(arn)).toEqual(
       'arn:aws-cn:s3:::my-bucket');
 
-    test.done();
-  },
 
-  'resourcePathSep can be set to ":" instead of the default "/"'(test: Test) {
+  });
+
+  testDeprecated('resourcePathSep can be set to ":" instead of the default "/"', () => {
     const stack = new Stack();
 
     const arn = stack.formatArn({
@@ -66,12 +74,12 @@ nodeunitShim({
 
     const pseudo = new ScopedAws(stack);
 
-    test.deepEqual(stack.resolve(arn),
+    expect(stack.resolve(arn)).toEqual(
       stack.resolve(`arn:${pseudo.partition}:codedeploy:${pseudo.region}:${pseudo.accountId}:application:WordPress_App`));
-    test.done();
-  },
 
-  'resourcePathSep can be set to "" instead of the default "/"'(test: Test) {
+  });
+
+  testDeprecated('resourcePathSep can be set to "" instead of the default "/"', () => {
     const stack = new Stack();
 
     const arn = stack.formatArn({
@@ -83,51 +91,51 @@ nodeunitShim({
 
     const pseudo = new ScopedAws(stack);
 
-    test.deepEqual(stack.resolve(arn),
+    expect(stack.resolve(arn)).toEqual(
       stack.resolve(`arn:${pseudo.partition}:ssm:${pseudo.region}:${pseudo.accountId}:parameter/parameter-name`));
-    test.done();
-  },
 
-  'fails if resourcePathSep is neither ":" nor "/"'(test: Test) {
+  });
+
+  test('fails if resourcePathSep is neither ":" nor "/"', () => {
     const stack = new Stack();
 
-    test.throws(() => stack.formatArn({
+    expect(() => stack.formatArn({
       service: 'foo',
       resource: 'bar',
       sep: 'x',
-    }));
-    test.done();
-  },
+    })).toThrow();
 
-  'Arn.parse(s)': {
+  });
 
-    fails: {
-      'if doesn\'t start with "arn:"'(test: Test) {
+  describeDeprecated('Arn.parse(s)', () => {
+
+    describe('fails', () => {
+      test('if doesn\'t start with "arn:"', () => {
         const stack = new Stack();
-        test.throws(() => stack.parseArn('barn:foo:x:a:1:2'), /ARNs must start with "arn:".*barn:foo/);
-        test.done();
-      },
+        expect(() => stack.parseArn('barn:foo:x:a:1:2')).toThrow(/ARNs must start with "arn:".*barn:foo/);
 
-      'if the ARN doesnt have enough components'(test: Test) {
+      });
+
+      test('if the ARN doesnt have enough components', () => {
         const stack = new Stack();
-        test.throws(() => stack.parseArn('arn:is:too:short'), /The `resource` component \(6th component\) of an ARN is required/);
-        test.done();
-      },
+        expect(() => stack.parseArn('arn:is:too:short')).toThrow(/The `resource` component \(6th component\) of an ARN is required/);
 
-      'if "service" is not specified'(test: Test) {
+      });
+
+      test('if "service" is not specified', () => {
         const stack = new Stack();
-        test.throws(() => stack.parseArn('arn:aws::4:5:6'), /The `service` component \(3rd component\) of an ARN is required/);
-        test.done();
-      },
+        expect(() => stack.parseArn('arn:aws::4:5:6')).toThrow(/The `service` component \(3rd component\) of an ARN is required/);
 
-      'if "resource" is not specified'(test: Test) {
+      });
+
+      test('if "resource" is not specified', () => {
         const stack = new Stack();
-        test.throws(() => stack.parseArn('arn:aws:service:::'), /The `resource` component \(6th component\) of an ARN is required/);
-        test.done();
-      },
-    },
+        expect(() => stack.parseArn('arn:aws:service:::')).toThrow(/The `resource` component \(6th component\) of an ARN is required/);
 
-    'various successful parses'(test: Test) {
+      });
+    });
+
+    test('various successful parses', () => {
       interface TestArnComponents extends ArnComponents {
         /** @default true */
         checkCfnEncoding?: boolean;
@@ -212,10 +220,10 @@ nodeunitShim({
 
         // test the basic case
         const parsedComponents = stack.splitArn(arn, expectedComponents.arnFormat!);
-        test.deepEqual(parsedComponents, expectedComponents, arn);
+        expect(parsedComponents).toEqual(expectedComponents);
 
         // test the round-trip
-        test.equal(stack.formatArn(parsedComponents), arn);
+        expect(stack.formatArn(parsedComponents)).toEqual(arn);
 
         // test that the CloudFormation functions we generate evaluate to the correct value
         if (skipCheckingCfnEncoding) {
@@ -226,44 +234,44 @@ nodeunitShim({
           parsedComponents.arnFormat!);
         const cfnArnComponents = stack.resolve(tokenArnComponents);
         const evaluatedArnComponents = evaluateCFN(cfnArnComponents, { TheArn: arn });
-        test.deepEqual(evaluatedArnComponents, parsedComponents);
+        expect(evaluatedArnComponents).toEqual(parsedComponents);
       }
 
-      test.done();
-    },
 
-    'a Token with : separator'(test: Test) {
+    });
+
+    test('a Token with : separator', () => {
       const stack = new Stack();
       const theToken = { Ref: 'SomeParameter' };
       const parsed = stack.parseArn(new Intrinsic(theToken).toString(), ':');
 
-      test.deepEqual(stack.resolve(parsed.partition), { 'Fn::Select': [1, { 'Fn::Split': [':', theToken] }] });
-      test.deepEqual(stack.resolve(parsed.service), { 'Fn::Select': [2, { 'Fn::Split': [':', theToken] }] });
-      test.deepEqual(stack.resolve(parsed.region), { 'Fn::Select': [3, { 'Fn::Split': [':', theToken] }] });
-      test.deepEqual(stack.resolve(parsed.account), { 'Fn::Select': [4, { 'Fn::Split': [':', theToken] }] });
-      test.deepEqual(stack.resolve(parsed.resource), { 'Fn::Select': [5, { 'Fn::Split': [':', theToken] }] });
-      test.deepEqual(stack.resolve(parsed.resourceName), { 'Fn::Select': [6, { 'Fn::Split': [':', theToken] }] });
-      test.equal(parsed.sep, ':');
+      expect(stack.resolve(parsed.partition)).toEqual({ 'Fn::Select': [1, { 'Fn::Split': [':', theToken] }] });
+      expect(stack.resolve(parsed.service)).toEqual({ 'Fn::Select': [2, { 'Fn::Split': [':', theToken] }] });
+      expect(stack.resolve(parsed.region)).toEqual({ 'Fn::Select': [3, { 'Fn::Split': [':', theToken] }] });
+      expect(stack.resolve(parsed.account)).toEqual({ 'Fn::Select': [4, { 'Fn::Split': [':', theToken] }] });
+      expect(stack.resolve(parsed.resource)).toEqual({ 'Fn::Select': [5, { 'Fn::Split': [':', theToken] }] });
+      expect(stack.resolve(parsed.resourceName)).toEqual({ 'Fn::Select': [6, { 'Fn::Split': [':', theToken] }] });
+      expect(parsed.sep).toEqual(':');
 
-      test.done();
-    },
 
-    'a Token with / separator'(test: Test) {
+    });
+
+    test('a Token with / separator', () => {
       const stack = new Stack();
       const theToken = { Ref: 'SomeParameter' };
       const parsed = stack.parseArn(new Intrinsic(theToken).toString());
 
-      test.equal(parsed.sep, '/');
+      expect(parsed.sep).toEqual('/');
 
       // eslint-disable-next-line max-len
-      test.deepEqual(stack.resolve(parsed.resource), { 'Fn::Select': [0, { 'Fn::Split': ['/', { 'Fn::Select': [5, { 'Fn::Split': [':', theToken] }] }] }] });
+      expect(stack.resolve(parsed.resource)).toEqual({ 'Fn::Select': [0, { 'Fn::Split': ['/', { 'Fn::Select': [5, { 'Fn::Split': [':', theToken] }] }] }] });
       // eslint-disable-next-line max-len
-      test.deepEqual(stack.resolve(parsed.resourceName), { 'Fn::Select': [1, { 'Fn::Split': ['/', { 'Fn::Select': [5, { 'Fn::Split': [':', theToken] }] }] }] });
+      expect(stack.resolve(parsed.resourceName)).toEqual({ 'Fn::Select': [1, { 'Fn::Split': ['/', { 'Fn::Select': [5, { 'Fn::Split': [':', theToken] }] }] }] });
 
-      test.done();
-    },
 
-    'extracting resource name from a complex ARN'(test: Test) {
+    });
+
+    test('extracting resource name from a complex ARN', () => {
       // GIVEN
       const stack = new Stack();
       const theToken = Token.asString({ Ref: 'SomeParameter' });
@@ -272,23 +280,23 @@ nodeunitShim({
       const parsed = Arn.extractResourceName(theToken, 'role');
 
       // THEN
-      test.deepEqual(evaluateCFN(stack.resolve(parsed), {
+      expect(evaluateCFN(stack.resolve(parsed), {
         SomeParameter: 'arn:aws:iam::111111111111:role/path/to/role/name',
-      }), 'path/to/role/name');
+      })).toEqual('path/to/role/name');
 
-      test.done();
-    },
 
-    'extractResourceName validates resource type if possible'(test: Test) {
+    });
+
+    test('extractResourceName validates resource type if possible', () => {
       // WHEN
-      test.throws(() => {
+      expect(() => {
         Arn.extractResourceName('arn:aws:iam::111111111111:banana/rama', 'role');
-      }, /Expected resource type/);
+      }).toThrow(/Expected resource type/);
 
-      test.done();
-    },
 
-    'returns empty string ARN components'(test: Test) {
+    });
+
+    test('returns empty string ARN components', () => {
       const stack = new Stack();
       const arn = 'arn:aws:iam::123456789012:role/abc123';
       const expected: ArnComponents = {
@@ -302,12 +310,12 @@ nodeunitShim({
         arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
       };
 
-      test.deepEqual(stack.parseArn(arn), expected, arn);
-      test.done();
-    },
-  },
+      expect(stack.parseArn(arn)).toEqual(expected);
 
-  'can use a fully specified ARN from a different stack without incurring an import'(test: Test) {
+    });
+  });
+
+  test('can use a fully specified ARN from a different stack without incurring an import', () => {
     // GIVEN
     const stack1 = new Stack(undefined, 'Stack1', { env: { account: '12345678', region: 'us-turbo-5' } });
     const stack2 = new Stack(undefined, 'Stack2', { env: { account: '87654321', region: 'us-turbo-1' } });
@@ -322,7 +330,7 @@ nodeunitShim({
     new CfnOutput(stack2, 'SomeValue', { value: arn });
 
     // THEN
-    test.deepEqual(toCloudFormation(stack2), {
+    expect(toCloudFormation(stack2)).toEqual({
       Outputs: {
         SomeValue: {
           Value: {
@@ -333,10 +341,10 @@ nodeunitShim({
       },
     });
 
-    test.done();
-  },
 
-  'parse other fields if only some are tokens'(test: Test) {
+  });
+
+  testDeprecated('parse other fields if only some are tokens', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -344,14 +352,14 @@ nodeunitShim({
     const parsed = stack.parseArn(`arn:${Aws.PARTITION}:iam::123456789012:role/S3Access`);
 
     // THEN
-    test.deepEqual(stack.resolve(parsed.partition), { Ref: 'AWS::Partition' });
-    test.deepEqual(stack.resolve(parsed.service), 'iam');
-    test.equal(stack.resolve(parsed.region), '');
-    test.deepEqual(stack.resolve(parsed.account), '123456789012');
-    test.deepEqual(stack.resolve(parsed.resource), 'role');
-    test.deepEqual(stack.resolve(parsed.resourceName), 'S3Access');
-    test.equal(parsed.sep, '/');
+    expect(stack.resolve(parsed.partition)).toEqual({ Ref: 'AWS::Partition' });
+    expect(stack.resolve(parsed.service)).toEqual('iam');
+    expect(stack.resolve(parsed.region)).toEqual('');
+    expect(stack.resolve(parsed.account)).toEqual('123456789012');
+    expect(stack.resolve(parsed.resource)).toEqual('role');
+    expect(stack.resolve(parsed.resourceName)).toEqual('S3Access');
+    expect(parsed.sep).toEqual('/');
 
-    test.done();
-  },
+
+  });
 });

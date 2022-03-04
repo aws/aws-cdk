@@ -1,7 +1,8 @@
 import { Template } from '@aws-cdk/assertions';
-import { HttpApi, HttpIntegrationType, HttpRouteIntegrationBindOptions, IHttpRouteIntegration, PayloadFormatVersion } from '@aws-cdk/aws-apigatewayv2';
+import { HttpApi } from '@aws-cdk/aws-apigatewayv2';
 import { Stack } from '@aws-cdk/core';
 import { HttpJwtAuthorizer } from '../../lib';
+import { DummyRouteIntegration } from './integration';
 
 describe('HttpJwtAuthorizer', () => {
   test('default', () => {
@@ -9,9 +10,8 @@ describe('HttpJwtAuthorizer', () => {
     const stack = new Stack();
     const api = new HttpApi(stack, 'HttpApi');
 
-    const authorizer = new HttpJwtAuthorizer({
+    const authorizer = new HttpJwtAuthorizer('BooksAuthorizer', 'https://test.us.auth0.com', {
       jwtAudience: ['3131231'],
-      jwtIssuer: 'https://test.us.auth0.com',
     });
 
     // WHEN
@@ -29,6 +29,7 @@ describe('HttpJwtAuthorizer', () => {
         Audience: ['3131231'],
         Issuer: 'https://test.us.auth0.com',
       },
+      Name: 'BooksAuthorizer',
     });
   });
 
@@ -37,9 +38,8 @@ describe('HttpJwtAuthorizer', () => {
     const stack = new Stack();
     const api = new HttpApi(stack, 'HttpApi');
 
-    const authorizer = new HttpJwtAuthorizer({
+    const authorizer = new HttpJwtAuthorizer('BooksAuthorizer', 'https://test.us.auth0.com', {
       jwtAudience: ['3131231'],
-      jwtIssuer: 'https://test.us.auth0.com',
     });
 
     // WHEN
@@ -58,13 +58,3 @@ describe('HttpJwtAuthorizer', () => {
     Template.fromStack(stack).resourceCountIs('AWS::ApiGatewayV2::Authorizer', 1);
   });
 });
-
-class DummyRouteIntegration implements IHttpRouteIntegration {
-  public bind(_: HttpRouteIntegrationBindOptions) {
-    return {
-      payloadFormatVersion: PayloadFormatVersion.VERSION_2_0,
-      type: HttpIntegrationType.HTTP_PROXY,
-      uri: 'some-uri',
-    };
-  }
-}

@@ -53,7 +53,7 @@ export interface BaseNetworkListenerProps {
   readonly protocol?: Protocol;
 
   /**
-   * Certificate list of ACM cert ARNs
+   * Certificate list of ACM cert ARNs. You must provide exactly one certificate if the listener protocol is HTTPS or TLS.
    *
    * @default - No certificates.
    */
@@ -361,7 +361,8 @@ export interface AddNetworkTargetsProps {
   /**
    * Health check configuration
    *
-   * @default No health check
+   * @default - The default value for each property in this configuration varies depending on the target.
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticloadbalancingv2-targetgroup.html#aws-resource-elasticloadbalancingv2-targetgroup-properties
    */
   readonly healthCheck?: HealthCheck;
 }

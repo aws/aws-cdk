@@ -44,7 +44,7 @@ export class ElasticsearchAccessPolicy extends cr.AwsCustomResource {
           AccessPolicies: JSON.stringify(policyDocument.toJSON()),
         },
         // this is needed to limit the response body, otherwise it exceeds the CFN 4k limit
-        outputPath: 'DomainConfig.ElasticsearchClusterConfig.AccessPolicies',
+        outputPaths: ['DomainConfig.ElasticsearchClusterConfig.AccessPolicies'],
         physicalResourceId: cr.PhysicalResourceId.of(`${props.domainName}AccessPolicy`),
       },
       policy: cr.AwsCustomResourcePolicy.fromSdkCalls({ resources: [props.domainArn] }),

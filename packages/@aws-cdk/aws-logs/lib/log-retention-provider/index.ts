@@ -18,14 +18,37 @@ interface SdkRetryOptions {
  * @param options CloudWatch API SDK options.
  */
 async function createLogGroupSafe(logGroupName: string, region?: string, options?: SdkRetryOptions) {
-  try { // Try to create the log group
-    const cloudwatchlogs = new AWS.CloudWatchLogs({ apiVersion: '2014-03-28', region, ...options });
-    await cloudwatchlogs.createLogGroup({ logGroupName }).promise();
-  } catch (e) {
-    if (e.code !== 'ResourceAlreadyExistsException') {
-      throw e;
+  // If we set the log retention for a lambda, then due to the async nature of
+  // Lambda logging there could be a race condition when the same log group is
+  // already being created by the lambda execution. This can sometime result in
+  // an error "OperationAbortedException: A conflicting operation is currently
+  // in progress...Please try again."
+  // To avoid an error, we do as requested and try again.
+  let retryCount = options?.maxRetries == undefined ? 10 : options.maxRetries;
+  const delay = options?.retryOptions?.base == undefined ? 10 : options.retryOptions.base;
+  do {
+    try {
+      const cloudwatchlogs = new AWS.CloudWatchLogs({ apiVersion: '2014-03-28', region, ...options });
+      await cloudwatchlogs.createLogGroup({ logGroupName }).promise();
+      return;
+    } catch (error) {
+      if (error.code === 'ResourceAlreadyExistsException') {
+        // The log group is already created by the lambda execution
+        return;
+      }
+      if (error.code === 'OperationAbortedException') {
+        if (retryCount > 0) {
+          retryCount--;
+          await new Promise(resolve => setTimeout(resolve, delay));
+          continue;
+        } else {
+          // The log group is still being created by another execution but we are out of retries
+          throw new Error('Out of attempts to create a logGroup');
+        }
+      }
+      throw error;
     }
-  }
+  } while (true); // exit happens on retry count check
 }
 
 /**
@@ -37,12 +60,36 @@ async function createLogGroupSafe(logGroupName: string, region?: string, options
  * @param retentionInDays the number of days to retain the log events in the specified log group.
  */
 async function setRetentionPolicy(logGroupName: string, region?: string, options?: SdkRetryOptions, retentionInDays?: number) {
-  const cloudwatchlogs = new AWS.CloudWatchLogs({ apiVersion: '2014-03-28', region, ...options });
-  if (!retentionInDays) {
-    await cloudwatchlogs.deleteRetentionPolicy({ logGroupName }).promise();
-  } else {
-    await cloudwatchlogs.putRetentionPolicy({ logGroupName, retentionInDays }).promise();
-  }
+  // The same as in createLogGroupSafe(), here we could end up with the race
+  // condition where a log group is either already being created or its retention
+  // policy is being updated. This would result in an OperationAbortedException,
+  // which we will try to catch and retry the command a number of times before failing
+  let retryCount = options?.maxRetries == undefined ? 10 : options.maxRetries;
+  const delay = options?.retryOptions?.base == undefined ? 10 : options.retryOptions.base;
+  do {
+    try {
+      const cloudwatchlogs = new AWS.CloudWatchLogs({ apiVersion: '2014-03-28', region, ...options });
+      if (!retentionInDays) {
+        await cloudwatchlogs.deleteRetentionPolicy({ logGroupName }).promise();
+      } else {
+        await cloudwatchlogs.putRetentionPolicy({ logGroupName, retentionInDays }).promise();
+      }
+      return;
+
+    } catch (error) {
+      if (error.code === 'OperationAbortedException') {
+        if (retryCount > 0) {
+          retryCount--;
+          await new Promise(resolve => setTimeout(resolve, delay));
+          continue;
+        } else {
+          // The log group is still being created by another execution but we are out of retries
+          throw new Error('Out of attempts to create a logGroup');
+        }
+      }
+      throw error;
+    }
+  } while (true); // exit happens on retry count check
 }
 
 export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent, context: AWSLambda.Context) {
@@ -64,21 +111,16 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
       await setRetentionPolicy(logGroupName, logGroupRegion, retryOptions, parseInt(event.ResourceProperties.RetentionInDays, 10));
 
       if (event.RequestType === 'Create') {
-        // Set a retention policy of 1 day on the logs of this function. The log
-        // group for this function should already exist at this stage because we
-        // already logged the event but due to the async nature of Lambda logging
-        // there could be a race condition. So we also try to create the log group
-        // of this function first. If multiple LogRetention constructs are present
-        // in the stack, they will try to act on this function's log group at the
-        // same time. This can sometime result in an OperationAbortedException. To
-        // avoid this and because this operation is not critical we catch all errors.
-        try {
-          const region = process.env.AWS_REGION;
-          await createLogGroupSafe(`/aws/lambda/${context.functionName}`, region, retryOptions);
-          await setRetentionPolicy(`/aws/lambda/${context.functionName}`, region, retryOptions, 1);
-        } catch (e) {
-          console.log(e);
-        }
+        // Set a retention policy of 1 day on the logs of this very function.
+        // Due to the async nature of the log group creation, the log group for this function might
+        // still be not created yet at this point. Therefore we attempt to create it.
+        // In case it is being created, createLogGroupSafe will handle the conflict.
+        const region = process.env.AWS_REGION;
+        await createLogGroupSafe(`/aws/lambda/${context.functionName}`, region, retryOptions);
+        // If createLogGroupSafe fails, the log group is not created even after multiple attempts.
+        // In this case we have nothing to set the retention policy on but an exception will skip
+        // the next line.
+        await setRetentionPolicy(`/aws/lambda/${context.functionName}`, region, retryOptions, 1);
       }
     }
 

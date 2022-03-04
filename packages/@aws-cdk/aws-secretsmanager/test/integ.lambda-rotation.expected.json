@@ -165,7 +165,9 @@
             "Arn"
           ]
         }
-      }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
     "SecretSchedule18F2CB66": {
       "Type": "AWS::SecretsManager::RotationSchedule",

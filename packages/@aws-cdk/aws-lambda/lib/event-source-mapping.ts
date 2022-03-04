@@ -35,6 +35,12 @@ export class SourceAccessConfigurationType {
    */
   public static readonly SASL_SCRAM_512_AUTH = new SourceAccessConfigurationType('SASL_SCRAM_512_AUTH');
 
+  /**
+   * The Secrets Manager ARN of your secret key containing the certificate chain (X.509 PEM), private key (PKCS#8 PEM),
+   * and private key password (optional) used for mutual TLS authentication of your MSK/Apache Kafka brokers.
+   */
+  public static readonly CLIENT_CERTIFICATE_TLS_AUTH = new SourceAccessConfigurationType('CLIENT_CERTIFICATE_TLS_AUTH');
+
   /** A custom source access configuration property */
   public static of(name: string): SourceAccessConfigurationType {
     return new SourceAccessConfigurationType(name);
@@ -85,7 +91,7 @@ export interface EventSourceMappingOptions {
    * Valid Range: Minimum value of 1. Maximum value of 10000.
    *
    * @default - Amazon Kinesis, Amazon DynamoDB, and Amazon MSK is 100 records.
-   * Both the default and maximum for Amazon SQS are 10 messages.
+   * The default for Amazon SQS is 10 messages. For standard SQS queues, the maximum is 10,000. For FIFO SQS queues, the maximum is 10.
    */
   readonly batchSize?: number;
 

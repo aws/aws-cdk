@@ -47,10 +47,10 @@ describe('delivery stream', () => {
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::KinesisFirehose::DeliveryStream', {
-      DeliveryStreamEncryptionConfigurationInput: Match.absentProperty(),
-      DeliveryStreamName: Match.absentProperty(),
+      DeliveryStreamEncryptionConfigurationInput: Match.absent(),
+      DeliveryStreamName: Match.absent(),
       DeliveryStreamType: 'DirectPut',
-      KinesisStreamSourceConfiguration: Match.absentProperty(),
+      KinesisStreamSourceConfiguration: Match.absent(),
       ExtendedS3DestinationConfiguration: {
         BucketARN: bucketArn,
         RoleARN: roleArn,
@@ -205,7 +205,7 @@ describe('delivery stream', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::KinesisFirehose::DeliveryStream', {
       DeliveryStreamType: 'DirectPut',
       DeliveryStreamEncryptionConfigurationInput: {
-        KeyARN: Match.absentProperty(),
+        KeyARN: Match.absent(),
         KeyType: 'AWS_OWNED_CMK',
       },
     });
@@ -222,7 +222,7 @@ describe('delivery stream', () => {
     Template.fromStack(stack).resourceCountIs('AWS::IAM::Policy', 0);
     Template.fromStack(stack).hasResourceProperties('AWS::KinesisFirehose::DeliveryStream', {
       DeliveryStreamType: 'DirectPut',
-      DeliveryStreamEncryptionConfigurationInput: Match.absentProperty(),
+      DeliveryStreamEncryptionConfigurationInput: Match.absent(),
     });
   });
 
@@ -326,7 +326,7 @@ describe('delivery stream', () => {
       DependsOn: [dependableId],
     });
     Template.fromStack(stack).hasResource('AWS::IAM::Role', {
-      DependsOn: Match.absentProperty(),
+      DependsOn: Match.absent(),
     });
   });
 
@@ -371,7 +371,7 @@ describe('delivery stream', () => {
         region: stack.region,
         namespace: 'AWS/Firehose',
         metricName: 'IncomingBytes',
-        statistic: cloudwatch.Statistic.AVERAGE,
+        statistic: cloudwatch.Statistic.SUM,
         dimensions: {
           DeliveryStreamName: deliveryStream.deliveryStreamName,
         },
@@ -386,7 +386,7 @@ describe('delivery stream', () => {
         region: stack.region,
         namespace: 'AWS/Firehose',
         metricName: 'IncomingRecords',
-        statistic: cloudwatch.Statistic.AVERAGE,
+        statistic: cloudwatch.Statistic.SUM,
         dimensions: {
           DeliveryStreamName: deliveryStream.deliveryStreamName,
         },
@@ -401,7 +401,7 @@ describe('delivery stream', () => {
         region: stack.region,
         namespace: 'AWS/Firehose',
         metricName: 'BackupToS3.Bytes',
-        statistic: cloudwatch.Statistic.AVERAGE,
+        statistic: cloudwatch.Statistic.SUM,
         dimensions: {
           DeliveryStreamName: deliveryStream.deliveryStreamName,
         },
@@ -431,7 +431,7 @@ describe('delivery stream', () => {
         region: stack.region,
         namespace: 'AWS/Firehose',
         metricName: 'BackupToS3.Records',
-        statistic: cloudwatch.Statistic.AVERAGE,
+        statistic: cloudwatch.Statistic.SUM,
         dimensions: {
           DeliveryStreamName: deliveryStream.deliveryStreamName,
         },
@@ -491,7 +491,7 @@ describe('delivery stream', () => {
       destinations: [mockS3Destination],
     });
 
-    Template.fromStack(stack).hasMapping({
+    Template.fromStack(stack).hasMapping('*', {
       'af-south-1': {
         FirehoseCidrBlock: '13.244.121.224/27',
       },

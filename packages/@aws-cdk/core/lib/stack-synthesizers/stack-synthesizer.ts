@@ -1,3 +1,4 @@
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, FileAssetSource } from '../assets';
 import { ISynthesisSession } from '../construct-compat';
 import { Stack } from '../stack';
@@ -45,7 +46,6 @@ export abstract class StackSynthesizer implements IStackSynthesizer {
   protected synthesizeStackTemplate(stack: Stack, session: ISynthesisSession): void {
     stack._synthesizeTemplate(session);
   }
-
 
   /**
    * Write the stack artifact to the session
@@ -99,6 +99,13 @@ export interface SynthesizeStackArtifactOptions {
    * @default - No role is passed (currently assumed role/credentials are used)
    */
   readonly cloudFormationExecutionRoleArn?: string;
+
+  /**
+   * The role to use to look up values from the target AWS account
+   *
+   * @default - None
+   */
+  readonly lookupRole?: cxschema.BootstrapRole;
 
   /**
    * If the stack template has already been included in the asset manifest, its asset URL

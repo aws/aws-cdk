@@ -20,3 +20,4 @@ tsconfig.json
 !.eslintrc.js
 
 junit.xml
+!jest.config.js

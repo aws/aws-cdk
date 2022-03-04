@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Match, Template } from '@aws-cdk/assertions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as kms from '@aws-cdk/aws-kms';
 import * as lambda from '@aws-cdk/aws-lambda';
@@ -26,7 +26,7 @@ test('create a rotation schedule with a rotation Lambda', () => {
   });
 
   // THEN
-  expect(stack).toHaveResource('AWS::SecretsManager::RotationSchedule', {
+  Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::RotationSchedule', {
     SecretId: {
       Ref: 'SecretA720EF05',
     },
@@ -58,7 +58,7 @@ test('assign permissions for rotation schedule with a rotation Lambda', () => {
   });
 
   // THEN
-  expect(stack).toHaveResource('AWS::Lambda::Permission', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
     Action: 'lambda:InvokeFunction',
     FunctionName: {
       'Fn::GetAtt': [
@@ -69,7 +69,7 @@ test('assign permissions for rotation schedule with a rotation Lambda', () => {
     Principal: 'secretsmanager.amazonaws.com',
   });
 
-  expect(stack).toHaveResource('AWS::IAM::Policy', {
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
     PolicyDocument: {
       Statement: [
         {
@@ -101,6 +101,57 @@ test('assign permissions for rotation schedule with a rotation Lambda', () => {
   });
 });
 
+test('grants correct permissions for secret imported by name', () => {
+  // GIVEN
+  const secret = secretsmanager.Secret.fromSecretNameV2(stack, 'Secret', 'mySecretName');
+  const rotationLambda = new lambda.Function(stack, 'Lambda', {
+    runtime: lambda.Runtime.NODEJS_10_X,
+    code: lambda.Code.fromInline('export.handler = event => event;'),
+    handler: 'index.handler',
+  });
+
+  // WHEN
+  new secretsmanager.RotationSchedule(stack, 'RotationSchedule', {
+    secret,
+    rotationLambda,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: Match.arrayWith([
+        {
+          Action: [
+            'secretsmanager:DescribeSecret',
+            'secretsmanager:GetSecretValue',
+            'secretsmanager:PutSecretValue',
+            'secretsmanager:UpdateSecretVersionStage',
+          ],
+          Effect: 'Allow',
+          Resource: {
+            'Fn::Join': ['', [
+              'arn:',
+              { Ref: 'AWS::Partition' },
+              ':secretsmanager:',
+              { Ref: 'AWS::Region' },
+              ':',
+              { Ref: 'AWS::AccountId' },
+              ':secret:mySecretName-??????',
+            ]],
+          },
+        },
+      ]),
+      Version: '2012-10-17',
+    },
+    PolicyName: 'LambdaServiceRoleDefaultPolicyDAE46E21',
+    Roles: [
+      {
+        Ref: 'LambdaServiceRoleA8ED4D3B',
+      },
+    ],
+  });
+});
+
 test('assign kms permissions for rotation schedule with a rotation Lambda', () => {
   // GIVEN
   const encryptionKey = new kms.Key(stack, 'Key');
@@ -118,9 +169,9 @@ test('assign kms permissions for rotation schedule with a rotation Lambda', () =
   });
 
   // THEN
-  expect(stack).toHaveResourceLike('AWS::KMS::Key', {
+  Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
     KeyPolicy: {
-      Statement: [{}, {}, {},
+      Statement: [Match.anyValue(), Match.anyValue(), Match.anyValue(),
         {
           Action: [
             'kms:Decrypt',
@@ -172,7 +223,7 @@ describe('hosted rotation', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::SecretsManager::RotationSchedule', {
+    Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::RotationSchedule', {
       SecretId: {
         Ref: 'SecretA720EF05',
       },
@@ -188,7 +239,7 @@ describe('hosted rotation', () => {
       Transform: 'AWS::SecretsManager-2020-07-23',
     }));
 
-    expect(stack).toHaveResource('AWS::SecretsManager::ResourcePolicy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::ResourcePolicy', {
       ResourcePolicy: {
         Statement: [
           {
@@ -236,7 +287,7 @@ describe('hosted rotation', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::SecretsManager::RotationSchedule', {
+    Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::RotationSchedule', {
       SecretId: {
         Ref: 'SecretA720EF05',
       },
@@ -251,7 +302,7 @@ describe('hosted rotation', () => {
       },
     });
 
-    expect(stack).toHaveResource('AWS::SecretsManager::ResourcePolicy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::ResourcePolicy', {
       ResourcePolicy: {
         Statement: [
           {
@@ -302,7 +353,7 @@ describe('hosted rotation', () => {
     dbConnections.allowDefaultPortFrom(hostedRotation);
 
     // THEN
-    expect(stack).toHaveResource('AWS::SecretsManager::RotationSchedule', {
+    Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::RotationSchedule', {
       SecretId: {
         Ref: 'SecretA720EF05',
       },
@@ -334,7 +385,7 @@ describe('hosted rotation', () => {
       },
     });
 
-    expect(stack).toHaveResource('AWS::EC2::SecurityGroupIngress', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroupIngress', {
       FromPort: 3306,
       GroupId: {
         'Fn::GetAtt': [
@@ -374,7 +425,7 @@ describe('hosted rotation', () => {
     dbConnections.allowDefaultPortFrom(hostedRotation);
 
     // THEN
-    expect(stack).toHaveResource('AWS::SecretsManager::RotationSchedule', {
+    Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::RotationSchedule', {
       SecretId: {
         Ref: 'SecretA720EF05',
       },
@@ -420,7 +471,7 @@ describe('hosted rotation', () => {
       },
     });
 
-    expect(stack).toHaveResource('AWS::EC2::SecurityGroupIngress', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroupIngress', {
       FromPort: 3306,
       GroupId: {
         'Fn::GetAtt': [

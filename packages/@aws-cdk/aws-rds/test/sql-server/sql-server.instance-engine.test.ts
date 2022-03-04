@@ -1,11 +1,10 @@
-import { expect, haveResourceLike } from '@aws-cdk/assert-internal';
+import { Template } from '@aws-cdk/assertions';
 import * as core from '@aws-cdk/core';
-import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as rds from '../../lib';
 
-nodeunitShim({
-  'SQL Server instance engine': {
-    "has ParameterGroup family ending in '11.0' for major version 11"(test: Test) {
+describe('sql server instance engine', () => {
+  describe('SQL Server instance engine', () => {
+    test("has ParameterGroup family ending in '11.0' for major version 11", () => {
       const stack = new core.Stack();
       new rds.ParameterGroup(stack, 'ParameterGroup', {
         engine: rds.DatabaseInstanceEngine.sqlServerWeb({
@@ -13,14 +12,12 @@ nodeunitShim({
         }),
       }).bindToInstance({});
 
-      expect(stack).to(haveResourceLike('AWS::RDS::DBParameterGroup', {
+      Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBParameterGroup', {
         Family: 'sqlserver-web-11.0',
-      }));
+      });
+    });
 
-      test.done();
-    },
-
-    "has MajorEngineVersion ending in '11.00' for major version 11"(test: Test) {
+    test("has MajorEngineVersion ending in '11.00' for major version 11", () => {
       const stack = new core.Stack();
       new rds.OptionGroup(stack, 'OptionGroup', {
         engine: rds.DatabaseInstanceEngine.sqlServerWeb({
@@ -36,11 +33,9 @@ nodeunitShim({
         ],
       });
 
-      expect(stack).to(haveResourceLike('AWS::RDS::OptionGroup', {
+      Template.fromStack(stack).hasResourceProperties('AWS::RDS::OptionGroup', {
         MajorEngineVersion: '11.00',
-      }));
-
-      test.done();
-    },
-  },
+      });
+    });
+  });
 });

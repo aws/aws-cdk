@@ -1,9 +1,8 @@
-import { ABSENT, expect, haveResourceLike, ResourcePart } from '@aws-cdk/assert-internal';
+import { Match, Template } from '@aws-cdk/assertions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import { AccountPrincipal, Role } from '@aws-cdk/aws-iam';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import * as cdk from '@aws-cdk/core';
-import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as rds from '../lib';
 
 let stack: cdk.Stack;
@@ -11,18 +10,18 @@ let vpc: ec2.IVpc;
 
 let importedDbProxy: rds.IDatabaseProxy;
 
-nodeunitShim({
-  'setUp'(cb: () => void) {
+describe('proxy', () => {
+  beforeEach(() => {
     stack = new cdk.Stack();
     vpc = new ec2.Vpc(stack, 'VPC');
+  });
 
-    cb();
-  },
-
-  'create a DB proxy from an instance'(test: Test) {
+  test('create a DB proxy from an instance', () => {
     // GIVEN
     const instance = new rds.DatabaseInstance(stack, 'Instance', {
-      engine: rds.DatabaseInstanceEngine.MYSQL,
+      engine: rds.DatabaseInstanceEngine.mysql({
+        version: rds.MysqlEngineVersion.VER_5_7,
+      }),
       vpc,
     });
 
@@ -34,7 +33,7 @@ nodeunitShim({
     });
 
     // THEN
-    expect(stack).to(haveResourceLike('AWS::RDS::DBProxy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBProxy', {
       Auth: [
         {
           AuthScheme: 'SECRETS',
@@ -61,10 +60,10 @@ nodeunitShim({
           Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A',
         },
       ],
-    }));
+    });
 
     // THEN
-    expect(stack).to(haveResourceLike('AWS::RDS::DBProxyTargetGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBProxyTargetGroup', {
       DBProxyName: {
         Ref: 'ProxyCB0DFB71',
       },
@@ -75,12 +74,10 @@ nodeunitShim({
         },
       ],
       TargetGroupName: 'default',
-    }));
+    });
+  });
 
-    test.done();
-  },
-
-  'create a DB proxy from a cluster'(test: Test) {
+  test('create a DB proxy from a cluster', () => {
     // GIVEN
     const cluster = new rds.DatabaseCluster(stack, 'Database', {
       engine: rds.DatabaseClusterEngine.auroraPostgres({
@@ -97,7 +94,7 @@ nodeunitShim({
     });
 
     // THEN
-    expect(stack).to(haveResourceLike('AWS::RDS::DBProxy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBProxy', {
       Auth: [
         {
           AuthScheme: 'SECRETS',
@@ -124,8 +121,8 @@ nodeunitShim({
           Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A',
         },
       ],
-    }));
-    expect(stack).to(haveResourceLike('AWS::RDS::DBProxyTargetGroup', {
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBProxyTargetGroup', {
       DBProxyName: {
         Ref: 'ProxyCB0DFB71',
       },
@@ -135,10 +132,10 @@ nodeunitShim({
           Ref: 'DatabaseB269D8BB',
         },
       ],
-      DBInstanceIdentifiers: ABSENT,
+      DBInstanceIdentifiers: Match.absent(),
       TargetGroupName: 'default',
-    }));
-    expect(stack).to(haveResourceLike('AWS::EC2::SecurityGroupIngress', {
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroupIngress', {
       IpProtocol: 'tcp',
       Description: 'Allow connections to the database Cluster from the Proxy',
       FromPort: {
@@ -153,12 +150,10 @@ nodeunitShim({
       ToPort: {
         'Fn::GetAtt': ['DatabaseB269D8BB', 'Endpoint.Port'],
       },
-    }));
+    });
+  });
 
-    test.done();
-  },
-
-  'One or more secrets are required.'(test: Test) {
+  test('One or more secrets are required.', () => {
     // GIVEN
     const cluster = new rds.DatabaseCluster(stack, 'Database', {
       engine: rds.DatabaseClusterEngine.auroraPostgres({ version: rds.AuroraPostgresEngineVersion.VER_10_7 }),
@@ -166,34 +161,30 @@ nodeunitShim({
     });
 
     // WHEN
-    test.throws(() => {
+    expect(() => {
       new rds.DatabaseProxy(stack, 'Proxy', {
         proxyTarget: rds.ProxyTarget.fromCluster(cluster),
         secrets: [], // No secret
         vpc,
       });
-    }, 'One or more secrets are required.');
+    }).toThrow('One or more secrets are required.');
+  });
 
-    test.done();
-  },
-
-  'fails when trying to create a proxy for a target without an engine'(test: Test) {
+  test('fails when trying to create a proxy for a target without an engine', () => {
     const importedCluster = rds.DatabaseCluster.fromDatabaseClusterAttributes(stack, 'Cluster', {
       clusterIdentifier: 'my-cluster',
     });
 
-    test.throws(() => {
+    expect(() => {
       new rds.DatabaseProxy(stack, 'Proxy', {
         proxyTarget: rds.ProxyTarget.fromCluster(importedCluster),
         vpc,
         secrets: [new secretsmanager.Secret(stack, 'Secret')],
       });
-    }, /Could not determine engine for proxy target 'Default\/Cluster'\. Please provide it explicitly when importing the resource/);
+    }).toThrow(/Could not determine engine for proxy target 'Default\/Cluster'\. Please provide it explicitly when importing the resource/);
+  });
 
-    test.done();
-  },
-
-  "fails when trying to create a proxy for a target with an engine that doesn't have engineFamily"(test: Test) {
+  test("fails when trying to create a proxy for a target with an engine that doesn't have engineFamily", () => {
     const importedInstance = rds.DatabaseInstance.fromDatabaseInstanceAttributes(stack, 'Cluster', {
       instanceIdentifier: 'my-instance',
       instanceEndpointAddress: 'instance-address',
@@ -204,18 +195,16 @@ nodeunitShim({
       }),
     });
 
-    test.throws(() => {
+    expect(() => {
       new rds.DatabaseProxy(stack, 'Proxy', {
         proxyTarget: rds.ProxyTarget.fromInstance(importedInstance),
         vpc,
         secrets: [new secretsmanager.Secret(stack, 'Secret')],
       });
-    }, /Engine 'mariadb-10\.0\.24' does not support proxies/);
+    }).toThrow(/Engine 'mariadb-10\.0\.24' does not support proxies/);
+  });
 
-    test.done();
-  },
-
-  'correctly creates a proxy for an imported Cluster if its engine is known'(test: Test) {
+  test('correctly creates a proxy for an imported Cluster if its engine is known', () => {
     const importedCluster = rds.DatabaseCluster.fromDatabaseClusterAttributes(stack, 'Cluster', {
       clusterIdentifier: 'my-cluster',
       engine: rds.DatabaseClusterEngine.auroraPostgres({
@@ -230,35 +219,31 @@ nodeunitShim({
       secrets: [new secretsmanager.Secret(stack, 'Secret')],
     });
 
-    expect(stack).to(haveResourceLike('AWS::RDS::DBProxy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBProxy', {
       EngineFamily: 'POSTGRESQL',
-    }));
-    expect(stack).to(haveResourceLike('AWS::RDS::DBProxyTargetGroup', {
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBProxyTargetGroup', {
       DBClusterIdentifiers: [
         'my-cluster',
       ],
-    }));
-    expect(stack).to(haveResourceLike('AWS::EC2::SecurityGroup', {
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroup', {
       GroupDescription: 'SecurityGroup for Database Proxy',
       VpcId: { Ref: 'VPCB9E5F0B4' },
-    }));
+    });
+  });
 
-    test.done();
-  },
-
-  'imported Proxies': {
-    'setUp'(cb: () => void) {
+  describe('imported Proxies', () => {
+    beforeEach(() => {
       importedDbProxy = rds.DatabaseProxy.fromDatabaseProxyAttributes(stack, 'Proxy', {
         dbProxyName: 'my-proxy',
         dbProxyArn: 'arn:aws:rds:us-east-1:123456789012:db-proxy:prx-1234abcd',
         endpoint: 'my-endpoint',
         securityGroups: [],
       });
+    });
 
-      cb();
-    },
-
-    'grant rds-db:connect in grantConnect() with a dbUser explicitly passed'(test: Test) {
+    test('grant rds-db:connect in grantConnect() with a dbUser explicitly passed', () => {
       // WHEN
       const role = new Role(stack, 'DBProxyRole', {
         assumedBy: new AccountPrincipal(stack.account),
@@ -267,7 +252,7 @@ nodeunitShim({
       importedDbProxy.grantConnect(role, databaseUser);
 
       // THEN
-      expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         PolicyDocument: {
           Statement: [{
             Effect: 'Allow',
@@ -286,27 +271,23 @@ nodeunitShim({
           }],
           Version: '2012-10-17',
         },
-      }));
+      });
+    });
 
-      test.done();
-    },
-
-    'throws when grantConnect() is used without a dbUser'(test: Test) {
+    test('throws when grantConnect() is used without a dbUser', () => {
       // WHEN
       const role = new Role(stack, 'DBProxyRole', {
         assumedBy: new AccountPrincipal(stack.account),
       });
 
       // THEN
-      test.throws(() => {
+      expect(() => {
         importedDbProxy.grantConnect(role);
-      }, /For imported Database Proxies, the dbUser is required in grantConnect/);
+      }).toThrow(/For imported Database Proxies, the dbUser is required in grantConnect/);
+    });
+  });
 
-      test.done();
-    },
-  },
-
-  'new Proxy with a single Secret can use grantConnect() without a dbUser passed'(test: Test) {
+  test('new Proxy with a single Secret can use grantConnect() without a dbUser passed', () => {
     // GIVEN
     const cluster = new rds.DatabaseCluster(stack, 'Database', {
       engine: rds.DatabaseClusterEngine.AURORA,
@@ -326,7 +307,7 @@ nodeunitShim({
     proxy.grantConnect(role);
 
     // THEN
-    expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [{
           Effect: 'Allow',
@@ -359,12 +340,10 @@ nodeunitShim({
         }],
         Version: '2012-10-17',
       },
-    }));
+    });
+  });
 
-    test.done();
-  },
-
-  'new Proxy with multiple Secrets cannot use grantConnect() without a dbUser passed'(test: Test) {
+  test('new Proxy with multiple Secrets cannot use grantConnect() without a dbUser passed', () => {
     // GIVEN
     const cluster = new rds.DatabaseCluster(stack, 'Database', {
       engine: rds.DatabaseClusterEngine.AURORA,
@@ -386,14 +365,12 @@ nodeunitShim({
     });
 
     // THEN
-    test.throws(() => {
+    expect(() => {
       proxy.grantConnect(role);
-    }, /When the Proxy contains multiple Secrets, you must pass a dbUser explicitly to grantConnect/);
+    }).toThrow(/When the Proxy contains multiple Secrets, you must pass a dbUser explicitly to grantConnect/);
+  });
 
-    test.done();
-  },
-
-  'DBProxyTargetGroup should have dependency on the proxy targets'(test: Test) {
+  test('DBProxyTargetGroup should have dependency on the proxy targets', () => {
     // GIVEN
     const cluster = new rds.DatabaseCluster(stack, 'cluster', {
       engine: rds.DatabaseClusterEngine.AURORA,
@@ -410,7 +387,7 @@ nodeunitShim({
     });
 
     // THEN
-    expect(stack).to(haveResourceLike('AWS::RDS::DBProxyTargetGroup', {
+    Template.fromStack(stack).hasResource('AWS::RDS::DBProxyTargetGroup', {
       Properties: {
         DBProxyName: {
           Ref: 'proxy3A1DA9C7',
@@ -427,8 +404,6 @@ nodeunitShim({
         'clusterSecurityGroupF441DCEA',
         'clusterSubnets81E3593F',
       ],
-    }, ResourcePart.CompleteDefinition));
-
-    test.done();
-  },
+    });
+  });
 });
