@@ -208,42 +208,36 @@
             {
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "PipelineSourceCodePipelineActionRoleC6F9E7F5",
-                  "Arn"
-                ]
-              }
-            },
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "PipelineDeployPrepareChangesCodePipelineActionRole41931444",
-                  "Arn"
-                ]
-              }
-            },
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "PipelineDeployApproveChangesCodePipelineActionRole5AA6E21B",
-                  "Arn"
-                ]
-              }
-            },
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "PipelineDeployExecuteChangesCodePipelineActionRole6AA2756F",
-                  "Arn"
-                ]
-              }
+              "Resource": [
+                [
+                  [
+                    {
+                      "Fn::GetAtt": [
+                        "PipelineSourceCodePipelineActionRoleC6F9E7F5",
+                        "Arn"
+                      ]
+                    },
+                    {
+                      "Fn::GetAtt": [
+                        "PipelineDeployPrepareChangesCodePipelineActionRole41931444",
+                        "Arn"
+                      ]
+                    }
+                  ],
+                  {
+                    "Fn::GetAtt": [
+                      "PipelineDeployApproveChangesCodePipelineActionRole5AA6E21B",
+                      "Arn"
+                    ]
+                  }
+                ],
+                {
+                  "Fn::GetAtt": [
+                    "PipelineDeployExecuteChangesCodePipelineActionRole6AA2756F",
+                    "Arn"
+                  ]
+                }
+              ]
             }
           ],
           "Version": "2012-10-17"

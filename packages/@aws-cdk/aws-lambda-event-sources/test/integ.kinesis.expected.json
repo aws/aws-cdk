@@ -38,31 +38,29 @@
           "Statement": [
             {
               "Action": [
+                "kinesis:DescribeStream",
                 "kinesis:DescribeStreamSummary",
                 "kinesis:GetRecords",
                 "kinesis:GetShardIterator",
                 "kinesis:ListShards",
-                "kinesis:SubscribeToShard",
-                "kinesis:DescribeStream",
-                "kinesis:ListStreams"
+                "kinesis:ListStreams",
+                "kinesis:SubscribeToShard"
               ],
               "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "Q63C6E3AB",
-                  "Arn"
-                ]
-              }
-            },
-            {
-              "Action": "kinesis:DescribeStream",
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "Q63C6E3AB",
-                  "Arn"
-                ]
-              }
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "Q63C6E3AB",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::GetAtt": [
+                    "Q63C6E3AB",
+                    "Arn"
+                  ]
+                }
+              ]
             }
           ],
           "Version": "2012-10-17"
@@ -108,18 +106,15 @@
             "Arn"
           ]
         },
-        "TumblingWindowInSeconds": 60,
-        "StartingPosition": "TRIM_HORIZON"
+        "StartingPosition": "TRIM_HORIZON",
+        "TumblingWindowInSeconds": 60
       }
     },
     "Q63C6E3AB": {
       "Type": "AWS::Kinesis::Stream",
       "Properties": {
-        "ShardCount": 1,
-        "StreamModeDetails": {
-          "StreamMode": "PROVISIONED"
-        },
         "RetentionPeriodHours": 24,
+        "ShardCount": 1,
         "StreamEncryption": {
           "Fn::If": [
             "AwsCdkKinesisEncryptedStreamsUnsupportedRegions",
@@ -131,6 +126,9 @@
               "KeyId": "alias/aws/kinesis"
             }
           ]
+        },
+        "StreamModeDetails": {
+          "StreamMode": "PROVISIONED"
         }
       }
     }
