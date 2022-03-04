@@ -730,7 +730,7 @@ vpc.addVpnConnection('Dynamic', {
 ```
 
 By default, routes will be propagated on the route tables associated with the private subnets. If no
-private subnets exists, isolated subnets are used. If no isolated subnets exists, public subnets are
+private subnets exist, isolated subnets are used. If no isolated subnets exist, public subnets are
 used. Use the `Vpc` property `vpnRoutePropagation` to customize this behavior.
 
 VPN connections expose [metrics (cloudwatch.Metric)](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/aws-cloudwatch/README.md) across all tunnels in the account/region and per connection:
@@ -877,7 +877,7 @@ The endpoint must use at least one [authentication method](https://docs.aws.amaz
 If user-based authentication is used, the [self-service portal URL](https://docs.aws.amazon.com/vpn/latest/clientvpn-user/self-service-portal.html)
 is made available via a CloudFormation output.
 
-By default, a new security group is created and logging is enabled. Moreover, a rule to
+By default, a new security group is created, and logging is enabled. Moreover, a rule to
 authorize all users to the VPC CIDR is created.
 
 To customize authorization rules, set the `authorizeAllUsersToVpcCidr` prop to `false`
@@ -965,7 +965,7 @@ new ec2.Instance(this, 'Instance4', {
 
 CloudFormation Init allows you to configure your instances by writing files to them, installing software
 packages, starting services and running arbitrary commands. By default, if any of the instance setup
-commands throw an error, the deployment will fail and roll back to the previously known good state.
+commands throw an error; the deployment will fail and roll back to the previously known good state.
 The following documentation also applies to `AutoScalingGroup`s.
 
 For the full set of capabilities of this system, see the documentation for
@@ -1118,6 +1118,37 @@ new ec2.Instance(this, 'Instance', {
 
 ```
 
+It is also possible to encrypt the block devices. In this example we will create an customer managed key encrypted EBS-backed root device:
+
+```ts
+import { Key } from '@aws-cdk/aws-kms';
+
+declare const vpc: ec2.Vpc;
+declare const instanceType: ec2.InstanceType;
+declare const machineImage: ec2.IMachineImage;
+
+const kmsKey = new Key(this, 'KmsKey')
+
+new ec2.Instance(this, 'Instance', {
+  vpc,
+  instanceType,
+  machineImage,
+
+  // ...
+
+  blockDevices: [
+    {
+      deviceName: '/dev/sda1',
+      volume: ec2.BlockDeviceVolume.ebs(50, {
+        encrypted: true,
+        kmsKey: kmsKey,
+      }),
+    },
+  ],
+});
+
+```
+
 ### Volumes
 
 Whereas a `BlockDeviceVolume` is an EBS volume that is created and destroyed as part of the creation and destruction of a specific instance. A `Volume` is for when you want an EBS volume separate from any particular instance. A `Volume` is an EBS block device that can be attached to, or detached from, any instance at any time. Some types of `Volume`s can also be attached to multiple instances at the same time to allow you to have shared storage between those instances.
@@ -1237,7 +1268,7 @@ Aspects.of(this).add(aspect);
 
 VPC Flow Logs is a feature that enables you to capture information about the IP traffic going to and from network interfaces in your VPC. Flow log data can be published to Amazon CloudWatch Logs and Amazon S3. After you've created a flow log, you can retrieve and view its data in the chosen destination. (<https://docs.aws.amazon.com/vpc/latest/userguide/flow-logs.html>).
 
-By default a flow log will be created with CloudWatch Logs as the destination.
+By default, a flow log will be created with CloudWatch Logs as the destination.
 
 You can create a flow log like this:
 
@@ -1271,7 +1302,7 @@ vpc.addFlowLog('FlowLogCloudWatch', {
 });
 ```
 
-By default the CDK will create the necessary resources for the destination. For the CloudWatch Logs destination
+By default, the CDK will create the necessary resources for the destination. For the CloudWatch Logs destination
 it will create a CloudWatch Logs Log Group as well as the IAM role with the necessary permissions to publish to
 the log group. In the case of an S3 destination, it will create the S3 bucket.
 
@@ -1347,9 +1378,9 @@ from separate parts forming archive. The most common parts are scripts executed 
 kinds, too.
 
 The advantage of multipart archive is in flexibility when it's needed to add additional parts or to use specialized parts to
-fine tune instance startup. Some services (like AWS Batch) supports only `MultipartUserData`.
+fine tune instance startup. Some services (like AWS Batch) support only `MultipartUserData`.
 
-The parts can be executed at different moment of instance start-up and can serve a different purposes. This is controlled by `contentType` property.
+The parts can be executed at different moment of instance start-up and can serve a different purpose. This is controlled by `contentType` property.
 For common scripts, `text/x-shellscript; charset="utf-8"` can be used as content type.
 
 In order to create archive the `MultipartUserData` has to be instantiated. Than, user can add parts to multipart archive using `addPart`. The `MultipartBody` contains methods supporting creation of body parts.
