@@ -137,10 +137,14 @@ test('file system is created correctly with a life cycle property and out of inf
   });
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::EFS::FileSystem', {
-    LifecyclePolicies: [{
-      TransitionToIA: 'AFTER_7_DAYS',
-      TransitionToPrimaryStorageClass: 'AFTER_1_ACCESS',
-    }],
+    LifecyclePolicies: [
+      {
+        TransitionToIA: 'AFTER_7_DAYS',
+      },
+      {
+        TransitionToPrimaryStorageClass: 'AFTER_1_ACCESS',
+      },
+    ],
   });
 });
 
