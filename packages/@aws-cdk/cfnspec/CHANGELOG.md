@@ -1,3 +1,45 @@
+# CloudFormation Resource Specification v59.0.0
+
+## New Resource Types
+
+* AWS::EKS::IdentityProviderConfig
+* AWS::MSK::BatchScramSecret
+* AWS::MSK::Configuration
+
+## Attribute Changes
+
+* AWS::ImageBuilder::Image ImageUri (__added__)
+* AWS::MSK::Cluster Arn (__added__)
+
+## Property Changes
+
+* AWS::AmplifyUIBuilder::Component SchemaVersion (__added__)
+* AWS::ApiGateway::BasePathMapping Id (__added__)
+* AWS::EC2::TransitGatewayVpcAttachment SubnetIds.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::EC2::TransitGatewayVpcAttachment TransitGatewayId.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::EC2::TransitGatewayVpcAttachment VpcId.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::ImageBuilder::Image ContainerRecipeArn.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::MSK::Cluster CurrentVersion (__added__)
+* AWS::MSK::Cluster Tags.PrimitiveType (__deleted__)
+* AWS::MSK::Cluster Tags.PrimitiveItemType (__added__)
+* AWS::MSK::Cluster Tags.Type (__added__)
+
+## Property Type Changes
+
+* AWS::DataBrew::Job.Output MaxOutputFiles (__added__)
+* AWS::MSK::Cluster.BrokerNodeGroupInfo ClientSubnets.DuplicatesAllowed (__added__)
+* AWS::MSK::Cluster.BrokerNodeGroupInfo SecurityGroups.DuplicatesAllowed (__added__)
+* AWS::MSK::Cluster.Tls CertificateAuthorityArnList.DuplicatesAllowed (__added__)
+
+
 # CloudFormation Resource Specification v58.0.0
 
 ## New Resource Types
