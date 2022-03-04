@@ -2,9 +2,7 @@ import * as ecr from '@aws-cdk/aws-ecr';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import { BuildSpec } from './build-spec';
 import { runScriptLinuxBuildSpec } from './private/run-script-linux-build-spec';
-import {
-  BuildEnvironment, ComputeType, IBuildImage, ImagePullPrincipalType,
-} from './project';
+import { BuildEnvironment, ComputeType, IBuildImage, ImagePullPrincipalType, } from './project';
 
 /**
  * Construction properties of {@link LinuxArmBuildImage}.

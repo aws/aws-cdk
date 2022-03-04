@@ -17,6 +17,7 @@ import { CodeBuildMetrics } from './codebuild-canned-metrics.generated';
 import { CfnProject } from './codebuild.generated';
 import { CodePipelineArtifacts } from './codepipeline-artifacts';
 import { IFileSystemLocation } from './file-location';
+import { LinuxArmBuildImage } from './linux-arm-build-image';
 import { NoArtifacts } from './no-artifacts';
 import { NoSource } from './no-source';
 import { runScriptLinuxBuildSpec, S3_BUCKET_ENV, S3_KEY_ENV } from './private/run-script-linux-build-spec';
@@ -2104,5 +2105,3 @@ export enum ProjectNotificationEvents {
 function isBindableBuildImage(x: unknown): x is IBindableBuildImage {
   return typeof x === 'object' && !!x && !!(x as any).bind;
 }
-
-import { LinuxArmBuildImage } from './linux-arm-build-image';
