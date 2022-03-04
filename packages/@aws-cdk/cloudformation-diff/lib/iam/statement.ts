@@ -1,5 +1,8 @@
-import * as deepEqual from 'fast-deep-equal';
 import { deepRemoveUndefined } from '../util';
+
+// namespace object imports won't work in the bundle for function exports
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const deepEqual = require('fast-deep-equal');
 
 export class Statement {
   /**

@@ -59,7 +59,8 @@ export interface BundlingOptions {
   readonly loader?: { [ext: string]: string };
 
   /**
-   * Log level for esbuild
+   * Log level for esbuild. This is also propagated to the package manager and
+   * applies to its specific install command.
    *
    * @default LogLevel.WARNING
    */
@@ -278,6 +279,15 @@ export interface BundlingOptions {
    * @default ['main', 'module']
    */
   readonly mainFields?: string[];
+
+  /**
+   * This option allows you to automatically replace a global variable with an
+   * import from another file.
+   *
+   * @see https://esbuild.github.io/api/#inject
+   * @default - no code is injected
+   */
+  readonly inject?: string[]
 }
 
 /**
@@ -340,7 +350,7 @@ export interface ICommandHooks {
 }
 
 /**
- * Log level for esbuild
+ * Log levels for esbuild and package managers' install commands.
  */
 export enum LogLevel {
   /** Show everything */

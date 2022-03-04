@@ -1,5 +1,6 @@
 import * as mockery from 'mockery';
 import { CommandHandler } from '../lib/command-api';
+import { realHandler } from '../lib/commands/docs';
 
 const argv = {
   browser: 'echo %u',
@@ -25,9 +26,7 @@ describe('`cdk docs`', () => {
   });
 
   test('exits with 0 when everything is OK', async () => {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    require('../lib/commands/docs').handler(argv);
-    const result = await argv.commandHandler!({ args: argv } as any);
+    const result = await realHandler({ args: argv } as any);
     expect(result).toBe(0);
   });
 
@@ -37,9 +36,7 @@ describe('`cdk docs`', () => {
         cb(new Error('TEST'));
       },
     });
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    require('../lib/commands/docs').handler(argv);
-    const result = await argv.commandHandler!({ args: argv } as any);
+    const result = await realHandler({ args: argv } as any);
     expect(result).toBe(0);
   });
 });
