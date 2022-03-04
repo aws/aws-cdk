@@ -133,7 +133,7 @@ describe('Linux ARM build image', () => {
       const stack = new cdk.Stack();
       new codebuild.PipelineProject(stack, 'Project', {
         environment: {
-          computeType: ComputeType.LARGE,
+          computeType: codebuild.ComputeType.LARGE,
           buildImage: codebuild.LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_2_0,
         },
       });
