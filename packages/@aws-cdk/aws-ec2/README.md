@@ -617,6 +617,9 @@ we would make the connection like:
 
 ```ts fixture=with-vpc
 // Stack 1
+declare const stack1: Stack;
+declare const stack2: Stack;
+
 const sg1 = new ec2.SecurityGroup(stack1, 'SG1', {
   allowAllOutbound: false, // if this is `true` then no egress rule will be created
   vpc,
@@ -642,6 +645,9 @@ in `Stack 1` which avoids the cyclic reference.
 
 ```ts fixture=with-vpc
 // Stack 1
+declare const stack1: Stack;
+declare const stack2: Stack;
+
 const sg1 = new ec2.SecurityGroup(stack1, 'SG1', {
   allowAllOutbound: false, // if this is `true` then no egress rule will be created
   vpc,
