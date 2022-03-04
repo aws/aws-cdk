@@ -97,7 +97,7 @@ let samePrincipal[a, b] = { a.principal = b.principal and a.notPrincipal = b.not
 pred merged[a: Statement, b: Statement, m: Statement] {
   a.effect = b.effect and m.effect = a.effect
 
-  -- If 2 of the pairs { Resource, Action, Principal } are subsets of each other, then the 3rd may be merged
+  -- If 2 of the pairs { Resource, Action, Principal } are the same, then the 3rd may be merged
   let R = a.resource = b.resource, A = a.action = b.action, P = a.principal = b.principal {
     (R and A) or (R and P) or (A and P)
   }
@@ -135,3 +135,42 @@ check merging_is_associative {
     m1 != m2
   }
 } for 10
+
+
+---------------------------------------------------------
+-- Repeated application of merging
+
+// Whether a and b are mergeable
+pred mergeable[a: Statement, b: Statement] {
+  some m: Statement | m != a and m != b and merged[a, b, m]
+}
+
+// Maximally merged items in a set
+pred maxMerged(input: set Statement, output: set Statement) {
+  no disj a, b: output | mergeable[a, b]
+
+  input = output or {
+    #input > #output
+    some a, b: input | some m: Statement {
+      m != a
+      m != b
+      merged[a, b, m]
+      maxMerged[input - a - b + m, output]
+    }
+  }
+}
+
+run some_interesting_maxMerged_statements {
+  some input, output: set Statement { 
+    maxMerged[input, output]
+    #input = 3
+    #output = 1
+    all x: output | x not in input
+  }
+} for 5
+
+check max_merging_does_not_change_eval {
+  all input, output: set Statement, r: Request { 
+    maxMerged[input, output] implies (allow[r, input] iff allow[r, output])
+  }
+} for 5
