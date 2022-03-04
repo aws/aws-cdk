@@ -40,7 +40,10 @@
                   }
                 },
                 {
-                  "Action": "s3:PutObject",
+                  "Action": [
+                    "s3:GetObject",
+                    "s3:PutObject"
+                  ],
                   "Effect": "Allow",
                   "Resource": {
                     "Fn::Join": [
@@ -235,7 +238,10 @@
                   }
                 },
                 {
-                  "Action": "s3:PutObject",
+                  "Action": [
+                    "s3:GetObject",
+                    "s3:PutObject"
+                  ],
                   "Effect": "Allow",
                   "Resource": {
                     "Fn::Join": [
@@ -464,7 +470,10 @@
                   }
                 },
                 {
-                  "Action": "s3:PutObject",
+                  "Action": [
+                    "s3:GetObject",
+                    "s3:PutObject"
+                  ],
                   "Effect": "Allow",
                   "Resource": {
                     "Fn::Join": [
@@ -693,7 +702,10 @@
                   }
                 },
                 {
-                  "Action": "s3:PutObject",
+                  "Action": [
+                    "s3:GetObject",
+                    "s3:PutObject"
+                  ],
                   "Effect": "Allow",
                   "Resource": {
                     "Fn::Join": [
@@ -922,7 +934,10 @@
                   }
                 },
                 {
-                  "Action": "s3:PutObject",
+                  "Action": [
+                    "s3:GetObject",
+                    "s3:PutObject"
+                  ],
                   "Effect": "Allow",
                   "Resource": {
                     "Fn::Join": [

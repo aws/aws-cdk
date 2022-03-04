@@ -106,6 +106,7 @@ export interface CanaryProps {
    * If you provide a Role, you must add the required permissions.
    *
    * @see required permissions: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-synthetics-canary.html#cfn-synthetics-canary-executionrolearn
+   * @see required permissions: https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_CanaryPermissions.html
    *
    * @default - A unique role will be generated for this canary.
    * You can add permissions to roles by calling 'addToRolePolicy'.
@@ -346,6 +347,7 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
 
     // Created role will need these policies to run the Canary.
     // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-synthetics-canary.html#cfn-synthetics-canary-executionrolearn
+    // https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_CanaryPermissions.html
     const policy = new iam.PolicyDocument({
       statements: [
         new iam.PolicyStatement({
@@ -358,7 +360,7 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
         }),
         new iam.PolicyStatement({
           resources: [this.artifactsBucket.arnForObjects(`${prefix ? prefix+'/*' : '*'}`)],
-          actions: ['s3:PutObject'],
+          actions: ['s3:GetObject', 's3:PutObject'],
         }),
         new iam.PolicyStatement({
           resources: ['*'],

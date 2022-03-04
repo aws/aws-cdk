@@ -594,7 +594,10 @@ test('Role policy generated as expected', () => {
             },
           },
           {
-            Action: 's3:PutObject',
+            Action: [
+              's3:GetObject',
+              's3:PutObject',
+            ],
             Effect: 'Allow',
             Resource: {
               'Fn::Join': [
