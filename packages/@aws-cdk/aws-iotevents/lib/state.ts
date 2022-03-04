@@ -156,7 +156,7 @@ function toEventsJson(
   scope: Construct,
   actionBindOptions: ActionBindOptions,
   events: Event[],
-): CfnDetectorModel.EventProperty[] | undefined {
+): CfnDetectorModel.EventProperty[] {
   return events.map(event => ({
     eventName: event.eventName,
     condition: event.condition?.evaluate(),

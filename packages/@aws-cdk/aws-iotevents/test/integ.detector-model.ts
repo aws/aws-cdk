@@ -1,11 +1,3 @@
-/**
- * Stack verification steps:
- * * put a message
- *   * aws iotevents-data batch-put-message --messages=messageId=(date | md5),inputName=test_input,payload=(echo '{"payload":{"temperature":31.9,"deviceId":"000"}}' | base64)
- * * describe the detector
- *   * aws iotevents-data describe-detector --detector-model-name test-detector-model --key-value=000
- * * verify `stateName` and `variables` of the detector
- */
 import * as cdk from '@aws-cdk/core';
 import * as iotevents from '../lib';
 
@@ -17,17 +9,6 @@ class TestStack extends cdk.Stack {
       inputName: 'test_input',
       attributeJsonPaths: ['payload.deviceId', 'payload.temperature'],
     });
-
-    const setTemperatureAction: iotevents.IAction = {
-      bind: () => ({
-        configuration: {
-          setVariable: {
-            variableName: 'temperature',
-            value: iotevents.Expression.inputAttribute(input, 'payload.temperature').evaluate(),
-          },
-        },
-      }),
-    };
 
     const onlineState = new iotevents.State({
       stateName: 'online',
@@ -41,20 +22,20 @@ class TestStack extends cdk.Stack {
             iotevents.Expression.fromString('31.5'),
           ),
         ),
-        actions: [setTemperatureAction],
       }],
     });
     const offlineState = new iotevents.State({
       stateName: 'offline',
     });
 
+    // 1st => 2nd
     onlineState.transitionTo(offlineState, {
       when: iotevents.Expression.eq(
         iotevents.Expression.inputAttribute(input, 'payload.temperature'),
         iotevents.Expression.fromString('12'),
       ),
-      executing: [setTemperatureAction],
     });
+    // 2st => 1st
     offlineState.transitionTo(onlineState, {
       when: iotevents.Expression.eq(
         iotevents.Expression.inputAttribute(input, 'payload.temperature'),

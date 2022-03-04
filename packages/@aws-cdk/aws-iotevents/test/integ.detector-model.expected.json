@@ -43,25 +43,6 @@
               "OnEnter": {
                 "Events": [
                   {
-                    "Actions": [
-                      {
-                        "SetVariable": {
-                          "Value": {
-                            "Fn::Join": [
-                              "",
-                              [
-                                "$input.",
-                                {
-                                  "Ref": "MyInput08947B23"
-                                },
-                                ".payload.temperature"
-                              ]
-                            ]
-                          },
-                          "VariableName": "temperature"
-                        }
-                      }
-                    ],
                     "Condition": {
                       "Fn::Join": [
                         "",
@@ -85,25 +66,6 @@
               "OnInput": {
                 "TransitionEvents": [
                   {
-                    "Actions": [
-                      {
-                        "SetVariable": {
-                          "Value": {
-                            "Fn::Join": [
-                              "",
-                              [
-                                "$input.",
-                                {
-                                  "Ref": "MyInput08947B23"
-                                },
-                                ".payload.temperature"
-                              ]
-                            ]
-                          },
-                          "VariableName": "temperature"
-                        }
-                      }
-                    ],
                     "Condition": {
                       "Fn::Join": [
                         "",
