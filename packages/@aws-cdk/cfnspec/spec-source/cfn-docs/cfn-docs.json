@@ -10818,7 +10818,7 @@
         "GlobalSecondaryIndexes": "Global secondary indexes to be created on the global table. You can create up to 20 global secondary indexes. Each replica in your global table will have the same global secondary index settings. You can only create or delete one global secondary index in a single stack operation.\n\nSince the backfilling of an index could take a long time, CloudFormation does not wait for the index to become active. If a stack operation rolls back, CloudFormation might not delete an index that has been added. In that case, you will need to delete the index manually.",
         "KeySchema": "Specifies the attributes that make up the primary key for the table. The attributes in the `KeySchema` property must also be defined in the `AttributeDefinitions` property.",
         "LocalSecondaryIndexes": "Local secondary indexes to be created on the table. You can create up to five local secondary indexes. Each index is scoped to a given hash key value. The size of each hash key can be up to 10 gigabytes. Each replica in your global table will have the same local secondary index settings.",
-        "Replicas": "Specifies the list of replicas for your global table. The list must contain at least one element, the region where the stack defining the global table is deployed. For example, if you define your table in a stack deployed to us-east-1, you must have an entry in `Replicas` with the region us-east-1. You cannot remove the replica in the stack region.\n\n> Adding a replica might take a few minutes for an empty table, or up to several hours for large tables. If you want to add or remove a replica, we recommend submitting an `UpdateStack` operation containing only that change.\n> \n> If you add or delete a replica during an update, we recommend that you don't update any other resources. If your stack fails to update and is rolled back while adding a new replica, you might need to manually delete the replica. \n\nYou can create a new global table with up to two replicas. You can add or remove replicas after table creation, but you can only add or remove a single replica in each update.",
+        "Replicas": "Specifies the list of replicas for your global table. The list must contain at least one element, the region where the stack defining the global table is deployed. For example, if you define your table in a stack deployed to us-east-1, you must have an entry in `Replicas` with the region us-east-1. You cannot remove the replica in the stack region.\n\n> Adding a replica might take a few minutes for an empty table, or up to several hours for large tables. If you want to add or remove a replica, we recommend submitting an `UpdateStack` operation containing only that change.\n> \n> If you add or delete a replica during an update, we recommend that you don't update any other resources. If your stack fails to update and is rolled back while adding a new replica, you might need to manually delete the replica. \n\nYou can create a new global table with as many replicas as needed. You can add or remove replicas after table creation, but you can only add or remove a single replica in each update.",
         "SSESpecification": "Specifies the settings to enable server-side encryption. These settings will be applied to all replicas. If you plan to use customer-managed KMS keys, you must provide a key for each replica using the `ReplicaSpecification.ReplicaSSESpecification` property.",
         "StreamSpecification": "Specifies the streams settings on your global table. You must provide a value for this property if your global table contains more than one replica. You can only change the streams settings if your global table has only one replica.",
         "TableName": "A name for the global table. If you don't specify a name, AWS CloudFormation generates a unique ID and uses that ID as the table name. For more information, see [Name type](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-name.html) .\n\n> If you specify a name, you cannot perform updates that require replacement of this resource. You can perform updates that require no or some interruption. If you must replace the resource, specify a new name.",
@@ -10927,7 +10927,7 @@
         "ReadProvisionedThroughputSettings": "Defines read capacity settings for the replica table.",
         "Region": "The region in which this replica exists.",
         "SSESpecification": "Allows you to specify a customer-managed key for the replica. When using customer-managed keys for server-side encryption, this property must have a value in all replicas.",
-        "TableClass": "",
+        "TableClass": "The table class of the specified table. Valid values are `STANDARD` and `STANDARD_INFREQUENT_ACCESS` .",
         "Tags": "An array of key-value pairs to apply to this replica.\n\nFor more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) ."
       }
     },
@@ -14671,7 +14671,7 @@
     },
     "AWS::EKS::FargateProfile": {
       "attributes": {
-        "Arn": "The ARN of the cluster, such as `arn:aws:eks:us-west-2:666666666666:fargateprofile/myCluster/myFargateProfile/1cb1a11a-1dc1-1d11-cf11-1111f11fa111` .",
+        "Arn": "The ARN of the Fargate profile, such as `arn:aws:eks:us-west-2:111122223333:fargateprofile/myCluster/myFargateProfile/1cb1a11a-1dc1-1d11-cf11-1111f11fa111` .",
         "Ref": "`Ref` returns the resource name. For example:\n\n`{ \"Ref\": \"myFargateProfile\" }`\n\nFor the Fargate profile `myFargateProfile` , Ref returns the physical resource ID of the Fargate profile. For example, `<cluster_name>/<Fargate_profile_name>` ."
       },
       "description": "Creates an AWS Fargate profile for your Amazon EKS cluster. You must have at least one Fargate profile in a cluster to be able to run pods on Fargate.\n\nThe Fargate profile allows an administrator to declare which pods run on Fargate and specify which pods run on which Fargate profile. This declaration is done through the profile\u2019s selectors. Each profile can have up to five selectors that contain a namespace and labels. A namespace is required for every selector. The label field consists of multiple optional key-value pairs. Pods that match the selectors are scheduled on Fargate. If a to-be-scheduled pod matches any of the selectors in the Fargate profile, then that pod is run on Fargate.\n\nWhen you create a Fargate profile, you must specify a pod execution role to use with the pods that are scheduled with the profile. This role is added to the cluster's Kubernetes [Role Based Access Control](https://docs.aws.amazon.com/https://kubernetes.io/docs/admin/authorization/rbac/) (RBAC) for authorization so that the `kubelet` that is running on the Fargate infrastructure can register with your Amazon EKS cluster so that it can appear in your cluster as a node. The pod execution role also provides IAM permissions to the Fargate infrastructure to allow read access to Amazon ECR image repositories. For more information, see [Pod Execution Role](https://docs.aws.amazon.com/eks/latest/userguide/pod-execution-role.html) in the *Amazon EKS User Guide* .\n\nFargate profiles are immutable. However, you can create a new updated profile to replace an existing profile and then delete the original after the updated profile has finished creating.\n\nIf any Fargate profiles in a cluster are in the `DELETING` status, you must wait for that Fargate profile to finish deleting before you can create any other profiles in that cluster.\n\nFor more information, see [AWS Fargate Profile](https://docs.aws.amazon.com/eks/latest/userguide/fargate-profile.html) in the *Amazon EKS User Guide* .",
@@ -27015,27 +27015,15 @@
     },
     "AWS::MSK::Configuration": {
       "attributes": {
-        "CreationTime": "The time the configuration was created.",
-        "LatestRevision": "The latest revision of the configuration.",
-        "Ref": "The ARN of the configuration.",
-        "State": "The state of the configuration."
+        "Arn": "The ARN of the configuration.",
+        "Ref": "The ARN of the configuration."
       },
       "description": "Creates a new MSK configuration.",
       "properties": {
-        "Arn": "The Amazon Resource Name (ARN) that uniquely identifies an MSK configuration and all of its revisions.",
         "Description": "The description of the configuration.",
         "KafkaVersionsList": "A list of the versions of Apache Kafka with which you can use this MSK configuration. You can use this configuration for an MSK cluster only if the Apache Kafka version specified for the cluster appears in this list.",
         "Name": "The name of the configuration. Configuration names are strings that match the regex \"^[0-9A-Za-z][0-9A-Za-z-]{0,}$\".",
         "ServerProperties": "Contents of the server.properties file. When using the API, you must ensure that the contents of the file are base64 encoded. When using the console, the SDK, or the CLI, the contents of server.properties can be in plaintext."
-      }
-    },
-    "AWS::MSK::Configuration.ConfigurationRevision": {
-      "attributes": {},
-      "description": "Describes a configuration revision.",
-      "properties": {
-        "CreationTime": "The time when the configuration revision was created.",
-        "Description": "The description of the configuration revision.",
-        "Revision": "The revision number."
       }
     },
     "AWS::MWAA::Environment": {
@@ -32912,7 +32900,7 @@
         "AllowMajorVersionUpgrade": "A value that indicates whether major version upgrades are allowed. Changing this parameter doesn't result in an outage and the change is asynchronously applied as soon as possible.\n\nConstraints: Major version upgrades must be allowed when specifying a value for the `EngineVersion` parameter that is a different major version than the DB instance's current version.",
         "AssociatedRoles": "The AWS Identity and Access Management (IAM) roles associated with the DB instance.",
         "AutoMinorVersionUpgrade": "A value that indicates whether minor engine upgrades are applied automatically to the DB instance during the maintenance window. By default, minor engine upgrades are applied automatically.",
-        "AvailabilityZone": "The Availability Zone (AZ) where the database will be created. For information on AWS Regions and Availability Zones, see [Regions and Availability Zones](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.RegionsAndAvailabilityZones.html) .\n\n*Amazon Aurora*\n\nNot applicable. Availability Zones are managed by the DB cluster.\n\nDefault: A random, system-chosen Availability Zone in the endpoint's AWS Region.\n\nExample: `us-east-1d`\n\nConstraint: The `AvailabilityZone` parameter can't be specified if the DB instance is a Multi-AZ deployment. The specified Availability Zone must be in the same AWS Region as the current endpoint.\n\n> If you're creating a DB instance in an RDS on VMware environment, specify the identifier of the custom Availability Zone to create the DB instance in.\n> \n> For more information about RDS on VMware, see the [RDS on VMware User Guide.](https://docs.aws.amazon.com/AmazonRDS/latest/RDSonVMwareUserGuide/rds-on-vmware.html)",
+        "AvailabilityZone": "The Availability Zone that the database instance will be created in.\n\nDefault: A random, system-chosen Availability Zone in the endpoint's region.\n\nExample: `us-east-1d`\n\nConstraint: The AvailabilityZone parameter cannot be specified if the MultiAZ parameter is set to `true` . The specified Availability Zone must be in the same region as the current endpoint.",
         "BackupRetentionPeriod": "The number of days for which automated backups are retained. Setting this parameter to a positive number enables backups. Setting this parameter to 0 disables automated backups.\n\n*Amazon Aurora*\n\nNot applicable. The retention period for automated backups is managed by the DB cluster.\n\nDefault: 1\n\nConstraints:\n\n- Must be a value from 0 to 35\n- Can't be set to 0 if the DB instance is a source to read replicas",
         "CACertificateIdentifier": "The identifier of the CA certificate for this DB instance.\n\n> Specifying or updating this property triggers a reboot. \n\nFor more information about CA certificate identifiers for RDS DB engines, see [Rotating Your SSL/TLS Certificate](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.SSL-certificate-rotation.html) in the *Amazon RDS User Guide* .\n\nFor more information about CA certificate identifiers for Aurora DB engines, see [Rotating Your SSL/TLS Certificate](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/UsingWithRDS.SSL-certificate-rotation.html) in the *Amazon Aurora User Guide* .",
         "CharacterSetName": "For supported engines, indicates that the DB instance should be associated with the specified character set.\n\n*Amazon Aurora*\n\nNot applicable. The character set is managed by the DB cluster. For more information, see [AWS::RDS::DBCluster](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbcluster.html) .",
@@ -32984,7 +32972,7 @@
       },
       "description": "The `AWS::RDS::DBParameterGroup` resource creates a custom parameter group for an RDS database family.\n\nThis type can be declared in a template and referenced in the `DBParameterGroupName` property of an `[AWS::RDS::DBInstance](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-database-instance.html)` resource.\n\nFor information about configuring parameters for Amazon RDS DB instances, see [Working with DB parameter groups](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_WorkingWithParamGroups.html) in the *Amazon RDS User Guide* .\n\nFor information about configuring parameters for Amazon Aurora DB instances, see [Working with DB parameter groups and DB cluster parameter groups](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/USER_WorkingWithParamGroups.html) in the *Amazon Aurora User Guide* .\n\n> Applying a parameter group to a DB instance may require the DB instance to reboot, resulting in a database outage for the duration of the reboot.",
       "properties": {
-        "Description": "Provides the customer-specified description for this DB parameter group.",
+        "Description": "Provides the customer-specified description for this DB Parameter Group.",
         "Family": "The DB parameter group family name. A DB parameter group can be associated with one and only one DB parameter group family, and can be applied only to a DB instance running a DB engine and engine version compatible with that DB parameter group family.\n\n> The DB parameter group family can't be changed when updating a DB parameter group. \n\nTo list all of the available parameter group families, use the following command:\n\n`aws rds describe-db-engine-versions --query \"DBEngineVersions[].DBParameterGroupFamily\"`\n\nThe output contains duplicates.\n\nFor more information, see `[CreateDBParameterGroup](https://docs.aws.amazon.com//AmazonRDS/latest/APIReference/API_CreateDBParameterGroup.html)` .",
         "Parameters": "An array of parameter names and values for the parameter update. At least one parameter name and value must be supplied. Subsequent arguments are optional.\n\nFor more information about DB parameters and DB parameter groups for Amazon RDS DB engines, see [Working with DB Parameter Groups](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_WorkingWithParamGroups.html) in the *Amazon RDS User Guide* .\n\nFor more information about DB cluster and DB instance parameters and parameter groups for Amazon Aurora DB engines, see [Working with DB Parameter Groups and DB Cluster Parameter Groups](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/USER_WorkingWithParamGroups.html) in the *Amazon Aurora User Guide* .\n\n> AWS CloudFormation doesn't support specifying an apply method for each individual parameter. The default apply method for each parameter is used.",
         "Tags": "Tags to assign to the DB parameter group."
@@ -33088,7 +33076,7 @@
       "properties": {
         "DBSecurityGroupIngress": "Ingress rules to be applied to the DB security group.",
         "EC2VpcId": "The identifier of an Amazon VPC. This property indicates the VPC that this DB security group belongs to.\n\n> The `EC2VpcId` property is for backward compatibility with older regions, and is no longer recommended for providing security information to an RDS DB instance.",
-        "GroupDescription": "Provides the description of the DB security group.",
+        "GroupDescription": "Provides the description of the DB Security Group.",
         "Tags": "Tags to assign to the DB security group."
       }
     },
@@ -33097,9 +33085,9 @@
       "description": "The `Ingress` property type specifies an individual ingress rule within an `AWS::RDS::DBSecurityGroup` resource.",
       "properties": {
         "CIDRIP": "The IP range to authorize.",
-        "EC2SecurityGroupId": "Id of the EC2 security group to authorize. For VPC DB security groups, `EC2SecurityGroupId` must be provided. Otherwise, `EC2SecurityGroupOwnerId` and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided.",
-        "EC2SecurityGroupName": "Name of the EC2 security group to authorize. For VPC DB security groups, `EC2SecurityGroupId` must be provided. Otherwise, `EC2SecurityGroupOwnerId` and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided.",
-        "EC2SecurityGroupOwnerId": "AWS account number of the owner of the EC2 security group specified in the `EC2SecurityGroupName` parameter. The AWS access key ID isn't an acceptable value. For VPC DB security groups, `EC2SecurityGroupId` must be provided. Otherwise, `EC2SecurityGroupOwnerId` and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided."
+        "EC2SecurityGroupId": "Id of the EC2 Security Group to authorize. For VPC DB Security Groups, `EC2SecurityGroupId` must be provided. Otherwise, EC2SecurityGroupOwnerId and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided.",
+        "EC2SecurityGroupName": "Name of the EC2 Security Group to authorize. For VPC DB Security Groups, `EC2SecurityGroupId` must be provided. Otherwise, EC2SecurityGroupOwnerId and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided.",
+        "EC2SecurityGroupOwnerId": "AWS Account Number of the owner of the EC2 Security Group specified in the EC2SecurityGroupName parameter. The AWS Access Key ID is not an acceptable value. For VPC DB Security Groups, `EC2SecurityGroupId` must be provided. Otherwise, EC2SecurityGroupOwnerId and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided."
       }
     },
     "AWS::RDS::DBSecurityGroupIngress": {
@@ -33109,10 +33097,10 @@
       "description": "The `AWS::RDS::DBSecurityGroupIngress` resource enables ingress to a DB security group using one of two forms of authorization. First, you can add EC2 or VPC security groups to the DB security group if the application using the database is running on EC2 or VPC instances. Second, IP ranges are available if the application accessing your database is running on the Internet.\n\nThis type supports updates. For more information about updating stacks, see [AWS CloudFormation Stacks Updates](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks.html) .\n\nFor details about the settings for DB security group ingress, see [AuthorizeDBSecurityGroupIngress](https://docs.aws.amazon.com/AmazonRDS/latest/APIReference/API_AuthorizeDBSecurityGroupIngress.html) .",
       "properties": {
         "CIDRIP": "The IP range to authorize.",
-        "DBSecurityGroupName": "The name of the DB security group to add authorization to.",
-        "EC2SecurityGroupId": "Id of the EC2 security group to authorize. For VPC DB security groups, `EC2SecurityGroupId` must be provided. Otherwise, `EC2SecurityGroupOwnerId` and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided.",
-        "EC2SecurityGroupName": "Name of the EC2 security group to authorize. For VPC DB security groups, `EC2SecurityGroupId` must be provided. Otherwise, `EC2SecurityGroupOwnerId` and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided.",
-        "EC2SecurityGroupOwnerId": "AWS account number of the owner of the EC2 security group specified in the `EC2SecurityGroupName` parameter. The AWS access key ID isn't an acceptable value. For VPC DB security groups, `EC2SecurityGroupId` must be provided. Otherwise, `EC2SecurityGroupOwnerId` and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided."
+        "DBSecurityGroupName": "The name of the DB Security Group to add authorization to.",
+        "EC2SecurityGroupId": "Id of the EC2 Security Group to authorize. For VPC DB Security Groups, `EC2SecurityGroupId` must be provided. Otherwise, EC2SecurityGroupOwnerId and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided.",
+        "EC2SecurityGroupName": "Name of the EC2 Security Group to authorize. For VPC DB Security Groups, `EC2SecurityGroupId` must be provided. Otherwise, EC2SecurityGroupOwnerId and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided.",
+        "EC2SecurityGroupOwnerId": "AWS Account Number of the owner of the EC2 Security Group specified in the EC2SecurityGroupName parameter. The AWS Access Key ID is not an acceptable value. For VPC DB Security Groups, `EC2SecurityGroupId` must be provided. Otherwise, EC2SecurityGroupOwnerId and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided."
       }
     },
     "AWS::RDS::DBSubnetGroup": {
@@ -33121,9 +33109,9 @@
       },
       "description": "The `AWS::RDS::DBSubnetGroup` resource creates a database subnet group. Subnet groups must contain at least two subnets in two different Availability Zones in the same region.\n\nFor more information, see [Working with DB subnet groups](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_VPC.WorkingWithRDSInstanceinaVPC.html#USER_VPC.Subnets) in the *Amazon RDS User Guide* .",
       "properties": {
-        "DBSubnetGroupDescription": "The description for the DB subnet group.",
+        "DBSubnetGroupDescription": "The description for the DB Subnet Group.",
         "DBSubnetGroupName": "The name for the DB subnet group. This value is stored as a lowercase string.\n\nConstraints: Must contain no more than 255 lowercase alphanumeric characters or hyphens. Must not be \"Default\".\n\nExample: `mysubnetgroup`",
-        "SubnetIds": "The EC2 Subnet IDs for the DB subnet group.",
+        "SubnetIds": "The EC2 Subnet IDs for the DB Subnet Group.",
         "Tags": "Tags to assign to the DB subnet group."
       }
     },
@@ -33133,8 +33121,8 @@
       },
       "description": "The `AWS::RDS::EventSubscription` resource allows you to receive notifications for Amazon Relational Database Service events through the Amazon Simple Notification Service (Amazon SNS). For more information, see [Using Amazon RDS Event Notification](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_Events.html) in the *Amazon RDS User Guide* .",
       "properties": {
-        "Enabled": "A value that indicates whether to activate the subscription. If the event notification subscription isn't activated, the subscription is created but not active.",
-        "EventCategories": "A list of event categories for a particular source type ( `SourceType` ) that you want to subscribe to. You can see a list of the categories for a given source type in the \"Amazon RDS event categories and event messages\" section of the [*Amazon RDS User Guide*](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_Events.Messages.html) or the [*Amazon Aurora User Guide*](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/USER_Events.Messages.html) . You can also see this list by using the `DescribeEventCategories` operation.",
+        "Enabled": "A Boolean value; set to *true* to activate the subscription, set to *false* to create the subscription but not active it.",
+        "EventCategories": "A list of event categories for a SourceType that you want to subscribe to. You can see a list of the categories for a given SourceType in the [Events](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_Events.html) topic in the Amazon RDS User Guide or by using the *DescribeEventCategories* action.",
         "SnsTopicArn": "The Amazon Resource Name (ARN) of the SNS topic created for event notification. The ARN is created by Amazon SNS when you create a topic and subscribe to it.",
         "SourceIds": "The list of identifiers of the event sources for which events are returned. If not specified, then all sources are included in the response. An identifier must begin with a letter and must contain only ASCII letters, digits, and hyphens. It can't end with a hyphen or contain two consecutive hyphens.\n\nConstraints:\n\n- If a `SourceIds` value is supplied, `SourceType` must also be provided.\n- If the source type is a DB instance, a `DBInstanceIdentifier` value must be supplied.\n- If the source type is a DB cluster, a `DBClusterIdentifier` value must be supplied.\n- If the source type is a DB parameter group, a `DBParameterGroupName` value must be supplied.\n- If the source type is a DB security group, a `DBSecurityGroupName` value must be supplied.\n- If the source type is a DB snapshot, a `DBSnapshotIdentifier` value must be supplied.\n- If the source type is a DB cluster snapshot, a `DBClusterSnapshotIdentifier` value must be supplied.",
         "SourceType": "The type of source that is generating the events. For example, if you want to be notified of events generated by a DB instance, set this parameter to `db-instance` . If this value isn't specified, all events are returned.\n\nValid values: `db-instance` | `db-cluster` | `db-parameter-group` | `db-security-group` | `db-snapshot` | `db-cluster-snapshot`"
@@ -34640,7 +34628,6 @@
       "attributes": {},
       "description": "Specifies a metrics configuration for the CloudWatch request metrics (specified by the metrics configuration ID) from an Amazon S3 bucket. If you're updating an existing metrics configuration, note that this is a full replacement of the existing metrics configuration. If you don't include the elements you want to keep, they are erased. For examples, see [AWS::S3::Bucket](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-bucket.html#aws-properties-s3-bucket--examples) . For more information, see [PUT Bucket metrics](https://docs.aws.amazon.com/AmazonS3/latest/API/RESTBucketPUTMetricConfiguration.html) in the *Amazon S3 API Reference* .",
       "properties": {
-        "AccessPointArn": "The access point that was used while performing operations on the object. The metrics configuration only includes objects that meet the filter's criteria.",
         "Id": "The ID used to identify the metrics configuration. This can be any value you choose that helps you identify your metrics configuration.",
         "Prefix": "The prefix that an object must have to be included in the metrics results.",
         "TagFilters": "Specifies a list of tag filters to use as a metrics configuration filter. The metrics configuration includes only objects that meet the filter's criteria."
@@ -34667,7 +34654,6 @@
       "attributes": {},
       "description": "Describes the notification configuration for an Amazon S3 bucket.\n\n> If you create the target resource and related permissions in the same template, you might have a circular dependency.\n> \n> For example, you might use the `AWS::Lambda::Permission` resource to grant the bucket permission to invoke an AWS Lambda function. However, AWS CloudFormation can't create the bucket until the bucket has permission to invoke the function ( AWS CloudFormation checks whether the bucket can invoke the function). If you're using Refs to pass the bucket name, this leads to a circular dependency.\n> \n> To avoid this dependency, you can create all resources without specifying the notification configuration. Then, update the stack with a notification configuration.\n> \n> For more information on permissions, see [AWS::Lambda::Permission](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lambda-permission.html) and [Granting Permissions to Publish Event Notification Messages to a Destination](https://docs.aws.amazon.com/AmazonS3/latest/dev/NotificationHowTo.html#grant-destinations-permissions-to-s3) .",
       "properties": {
-        "EventBridgeConfiguration": "Enables delivery of events to Amazon EventBridge.",
         "LambdaConfigurations": "Describes the AWS Lambda functions to invoke and the events for which to invoke them.",
         "QueueConfigurations": "The Amazon Simple Queue Service queues to publish messages to and the events for which to publish messages.",
         "TopicConfigurations": "The topic to which notifications are sent and the events for which notifications are generated."
@@ -34948,12 +34934,7 @@
     "AWS::S3::Bucket.WebsiteConfiguration": {
       "attributes": {},
       "description": "Specifies website configuration parameters for an Amazon S3 bucket.",
-      "properties": {
-        "ErrorDocument": "The name of the error document for the website.",
-        "IndexDocument": "The name of the index document for the website.",
-        "RedirectAllRequestsTo": "The redirect behavior for every request to this bucket's website endpoint.\n\n> If you specify this property, you can't specify any other property.",
-        "RoutingRules": "Rules that define when a redirect is applied and the redirect behavior."
-      }
+      "properties": {}
     },
     "AWS::S3::BucketPolicy": {
       "attributes": {},
