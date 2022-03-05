@@ -892,6 +892,10 @@ describe('instance', () => {
       },
     });
 
+    const privateSubnetIds = vpcWithIsolated.selectSubnets({
+      subnetType: ec2.SubnetType.PRIVATE_WITH_NAT,
+    }).subnetIds;
+
     Template.fromStack(stack).hasResourceProperties('AWS::Serverless::Application', {
       Parameters: {
         endpoint: {
@@ -902,24 +906,8 @@ describe('instance', () => {
             { Ref: 'AWS::URLSuffix' },
           ]],
         },
-        functionName: 'DatabaseuserAE6D9789',
-        vpcSubnetIds: {
-          'Fn::Join': ['', [
-            { Ref: 'VpcprivateSubnet1SubnetCEAD3716' },
-            ',',
-            { Ref: 'VpcprivateSubnet2Subnet2DE7549C' },
-          ]],
-        },
-        vpcSecurityGroupIds: {
-          'Fn::GetAtt': [
-            'DatabaseuserSecurityGroupFB2AA194',
-            'GroupId',
-          ],
-        },
+        vpcSubnetIds: stack.resolve(privateSubnetIds.join(',')),
         excludeCharacters: '°_@',
-        masterSecretArn: {
-          Ref: 'DatabaseSecretAttachmentE5D1B020',
-        },
       },
     });
   });
