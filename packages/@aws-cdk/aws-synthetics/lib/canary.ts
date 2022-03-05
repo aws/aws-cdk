@@ -198,6 +198,16 @@ export interface CanaryProps {
   readonly vpcSubnets?: ec2.SubnetSelection;
 
   /**
+   * Whether or not to allow placing a canary to be run in only private subnets. By default, the Synthetics runtime
+   * needs access to the S3 and CloudWatch APIs, which will fail in a private subnet without internet access enabled.
+   *
+   * You can bypass this check if you've enabled VPC Endpoints for these two APIs in your VPC or have an Internet Gateway setup.
+   *
+   * @default false Don't allow subnets without internet access.
+   */
+  readonly allowPrivateSubnet?: boolean;
+
+  /**
    * The list of security groups to associate with the canary's network interfaces.
    *
    * @default - If the canary is placed within a VPC and a security group is
@@ -398,8 +408,8 @@ export class Canary extends cdk.Resource {
   }
 
   /**
-  * Returns a canary schedule object
-  */
+   * Returns a canary schedule object
+   */
   private createSchedule(props: CanaryProps): CfnCanary.ScheduleProperty {
     return {
       durationInSeconds: String(`${props.timeToLive?.toSeconds() ?? 0}`),
@@ -412,7 +422,19 @@ export class Canary extends cdk.Resource {
       return undefined;
     }
 
-    const { subnetIds } = props.vpc.selectSubnets(props.vpcSubnets);
+    const { subnetIds, hasPublic } = props.vpc.selectSubnets(props.vpcSubnets ?? {
+      // If we're allowing private subnets, go with the default select subnet behavior (private w/ nat).
+      // Otherwise, select public subnets by default.
+      subnetType: props.allowPrivateSubnet ? ec2.SubnetType.PRIVATE_WITH_NAT : ec2.SubnetType.PUBLIC,
+    });
+    if (!hasPublic && !props.allowPrivateSubnet) {
+      throw new Error("When specifying 'vpc', your VPC subnet selection much either include public subnets or 'allowPrivateSubnet' must be true.");
+    }
+
+    if (subnetIds.length < 1) {
+      throw new Error('No matching subnets found in the VPC.');
+    }
+
     let securityGroups: ec2.ISecurityGroup[];
 
     if (props.securityGroups && props.securityGroups.length > 0) {
