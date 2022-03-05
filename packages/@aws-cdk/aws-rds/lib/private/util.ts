@@ -1,9 +1,10 @@
+import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
 import { RemovalPolicy } from '@aws-cdk/core';
 import { DatabaseSecret } from '../database-secret';
 import { IEngine } from '../engine';
-import { Credentials } from '../props';
+import { CommonRotationUserOptions, Credentials } from '../props';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
@@ -138,6 +139,20 @@ export function renderUnless<A>(value: A, suppressValue: A): A | undefined {
 /**
  * Transforms optional properties to required properties that may be undefined
  */
-export type Complete<T> = {
+type Complete<T> = {
   [P in keyof Required<T>]: Pick<T, P> extends Required<Pick<T, P>> ? T[P] : (T[P] | undefined);
+}
+
+/**
+ * Applies defaults for rotation options
+ */
+export function applyDefaultRotationOptions(
+  options: CommonRotationUserOptions,
+  vpcSubnets?: ec2.SubnetSelection): Complete<CommonRotationUserOptions> {
+  return {
+    automaticallyAfter: options.automaticallyAfter,
+    endpoint: options.endpoint,
+    excludeCharacters: options.excludeCharacters ?? DEFAULT_PASSWORD_EXCLUDE_CHARS,
+    vpcSubnets: options.vpcSubnets ?? vpcSubnets,
+  };
 }
