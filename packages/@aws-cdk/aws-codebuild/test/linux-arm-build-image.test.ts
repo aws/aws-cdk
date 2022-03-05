@@ -7,9 +7,9 @@ describe('Linux ARM build image', () => {
   describe('AMAZON_LINUX_2_STANDARD_1_0', () => {
     test('has type ARM_CONTAINER and default ComputeType LARGE', () => {
       const stack = new cdk.Stack();
-      new PipelineProject(stack, 'Project', {
+      new codebuild.PipelineProject(stack, 'Project', {
         environment: {
-          buildImage: LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_1_0,
+          buildImage: codebuild.LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_1_0,
         },
       });
 
@@ -23,10 +23,10 @@ describe('Linux ARM build image', () => {
 
     test('can be used with ComputeType SMALL', () => {
       const stack = new cdk.Stack();
-      new PipelineProject(stack, 'Project', {
+      new codebuild.PipelineProject(stack, 'Project', {
         environment: {
-          computeType: ComputeType.SMALL,
-          buildImage: LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_1_0,
+          computeType: codebuild.ComputeType.SMALL,
+          buildImage: codebuild.LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_1_0,
         },
       });
 
@@ -42,10 +42,10 @@ describe('Linux ARM build image', () => {
       const stack = new cdk.Stack();
 
       expect(() => {
-        new PipelineProject(stack, 'Project', {
+        new codebuild.PipelineProject(stack, 'Project', {
           environment: {
-            buildImage: LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_1_0,
-            computeType: ComputeType.MEDIUM,
+            buildImage: codebuild.LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_1_0,
+            computeType: codebuild.ComputeType.MEDIUM,
           },
         });
       }).toThrow(/ARM images only support ComputeTypes 'BUILD_GENERAL1_SMALL' and 'BUILD_GENERAL1_LARGE' - 'BUILD_GENERAL1_MEDIUM' was given/);
@@ -53,10 +53,10 @@ describe('Linux ARM build image', () => {
 
     test('can be used with ComputeType LARGE', () => {
       const stack = new cdk.Stack();
-      new PipelineProject(stack, 'Project', {
+      new codebuild.PipelineProject(stack, 'Project', {
         environment: {
-          computeType: ComputeType.LARGE,
-          buildImage: LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_1_0,
+          computeType: codebuild.ComputeType.LARGE,
+          buildImage: codebuild.LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_1_0,
         },
       });
 
@@ -72,10 +72,10 @@ describe('Linux ARM build image', () => {
       const stack = new cdk.Stack();
 
       expect(() => {
-        new PipelineProject(stack, 'Project', {
+        new codebuild.PipelineProject(stack, 'Project', {
           environment: {
-            buildImage: LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_1_0,
-            computeType: ComputeType.X2_LARGE,
+            buildImage: codebuild.LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_1_0,
+            computeType: codebuild.ComputeType.X2_LARGE,
           },
         });
       }).toThrow(/ARM images only support ComputeTypes 'BUILD_GENERAL1_SMALL' and 'BUILD_GENERAL1_LARGE' - 'BUILD_GENERAL1_2XLARGE' was given/);
@@ -85,9 +85,9 @@ describe('Linux ARM build image', () => {
   describe('AMAZON_LINUX_2_STANDARD_2_0', () => {
     test('has type ARM_CONTAINER and default ComputeType LARGE', () => {
       const stack = new cdk.Stack();
-      new PipelineProject(stack, 'Project', {
+      new codebuild.PipelineProject(stack, 'Project', {
         environment: {
-          buildImage: LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_2_0,
+          buildImage: codebuild.LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_2_0,
         },
       });
 
@@ -101,10 +101,10 @@ describe('Linux ARM build image', () => {
 
     test('can be used with ComputeType SMALL', () => {
       const stack = new cdk.Stack();
-      new PipelineProject(stack, 'Project', {
+      new codebuild.PipelineProject(stack, 'Project', {
         environment: {
-          computeType: ComputeType.SMALL,
-          buildImage: LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_2_0,
+          computeType: codebuild.ComputeType.SMALL,
+          buildImage: codebuild.LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_2_0,
         },
       });
 
@@ -120,10 +120,10 @@ describe('Linux ARM build image', () => {
       const stack = new cdk.Stack();
 
       expect(() => {
-        new PipelineProject(stack, 'Project', {
+        new codebuild.PipelineProject(stack, 'Project', {
           environment: {
-            buildImage: LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_2_0,
-            computeType: ComputeType.MEDIUM,
+            buildImage: codebuild.LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_2_0,
+            computeType: codebuild.ComputeType.MEDIUM,
           },
         });
       }).toThrow(/ARM images only support ComputeTypes 'BUILD_GENERAL1_SMALL' and 'BUILD_GENERAL1_LARGE' - 'BUILD_GENERAL1_MEDIUM' was given/);
@@ -131,10 +131,10 @@ describe('Linux ARM build image', () => {
 
     test('can be used with ComputeType LARGE', () => {
       const stack = new cdk.Stack();
-      new PipelineProject(stack, 'Project', {
+      new codebuild.PipelineProject(stack, 'Project', {
         environment: {
-          computeType: ComputeType.LARGE,
-          buildImage: LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_2_0,
+          computeType: codebuild.ComputeType.LARGE,
+          buildImage: codebuild.LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_2_0,
         },
       });
 
@@ -150,10 +150,10 @@ describe('Linux ARM build image', () => {
       const stack = new cdk.Stack();
 
       expect(() => {
-        new PipelineProject(stack, 'Project', {
+        new codebuild.PipelineProject(stack, 'Project', {
           environment: {
-            buildImage: LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_2_0,
-            computeType: ComputeType.X2_LARGE,
+            buildImage: codebuild.LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_2_0,
+            computeType: codebuild.ComputeType.X2_LARGE,
           },
         });
       }).toThrow(/ARM images only support ComputeTypes 'BUILD_GENERAL1_SMALL' and 'BUILD_GENERAL1_LARGE' - 'BUILD_GENERAL1_2XLARGE' was given/);
@@ -166,15 +166,15 @@ describe('Linux ARM build image', () => {
 
       const repository = new ecr.Repository(stack, 'my-repo');
 
-      new Project(stack, 'Project', {
-        buildSpec: BuildSpec.fromObject({
+      new codebuild.Project(stack, 'Project', {
+        buildSpec: codebuild.BuildSpec.fromObject({
           version: '0.2',
           phases: {
             build: { commands: ['ls'] },
           },
         }),
         environment: {
-          buildImage: LinuxArmBuildImage.fromEcrRepository(repository, 'v1'),
+          buildImage: codebuild.LinuxArmBuildImage.fromEcrRepository(repository, 'v1'),
         },
       });
 
@@ -229,15 +229,15 @@ describe('Linux ARM build image', () => {
 
       const repository = ecr.Repository.fromRepositoryName(stack, 'my-imported-repo', 'test-repo');
 
-      new Project(stack, 'Project', {
-        buildSpec: BuildSpec.fromObject({
+      new codebuild.Project(stack, 'Project', {
+        buildSpec: codebuild.BuildSpec.fromObject({
           version: '0.2',
           phases: {
             build: { commands: ['ls'] },
           },
         }),
         environment: {
-          buildImage: LinuxArmBuildImage.fromEcrRepository(repository),
+          buildImage: codebuild.LinuxArmBuildImage.fromEcrRepository(repository),
         },
       });
 
@@ -286,15 +286,15 @@ describe('Linux ARM build image', () => {
 
       const repository = ecr.Repository.fromRepositoryArn(stack, 'my-cross-acount-repo', 'arn:aws:ecr:us-east-1:585695036304:repository/foo/bar/foo/fooo');
 
-      new Project(stack, 'Project', {
-        buildSpec: BuildSpec.fromObject({
+      new codebuild.Project(stack, 'Project', {
+        buildSpec: codebuild.BuildSpec.fromObject({
           version: '0.2',
           phases: {
             build: { commands: ['ls'] },
           },
         }),
         environment: {
-          buildImage: LinuxArmBuildImage.fromEcrRepository(repository),
+          buildImage: codebuild.LinuxArmBuildImage.fromEcrRepository(repository),
         },
       });
 
