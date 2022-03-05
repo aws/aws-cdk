@@ -623,10 +623,10 @@
           ],
           "SubnetIds": [
             {
-              "Ref": "MyVpcPublicSubnet1SubnetF6608456"
+              "Ref": "MyVpcPrivateSubnet1Subnet5057CF7E"
             },
             {
-              "Ref": "MyVpcPublicSubnet2Subnet492B6BFB"
+              "Ref": "MyVpcPrivateSubnet2Subnet0040C983"
             }
           ],
           "VpcId": {

@@ -422,17 +422,13 @@ export class Canary extends cdk.Resource {
       return undefined;
     }
 
-    const { subnetIds, hasPublic } = props.vpc.selectSubnets(props.vpcSubnets ?? {
-      // If we're allowing private subnets, go with the default select subnet behavior (private w/ nat).
-      // Otherwise, select public subnets by default.
-      subnetType: props.allowPrivateSubnet ? ec2.SubnetType.PRIVATE_WITH_NAT : ec2.SubnetType.PUBLIC,
-    });
-    if (!hasPublic && !props.allowPrivateSubnet) {
-      throw new Error("When specifying 'vpc', your VPC subnet selection much either include public subnets or 'allowPrivateSubnet' must be true.");
-    }
-
+    const { subnetIds } = props.vpc.selectSubnets(props.vpcSubnets);
     if (subnetIds.length < 1) {
       throw new Error('No matching subnets found in the VPC.');
+    }
+
+    if (subnetIds.every(id => props.vpc!.isolatedSubnets.some(subnet => subnet.subnetId === id))) {
+      throw new Error("When specifying 'vpc', your VPC subnet selection must include subnets with internet access or 'allowPrivateSubnet' must be true and VPC endpoints for S3 and CloudWatch must be enabled.");
     }
 
     let securityGroups: ec2.ISecurityGroup[];
