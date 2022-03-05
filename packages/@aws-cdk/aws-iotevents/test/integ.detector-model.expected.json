@@ -63,7 +63,43 @@
                   }
                 ]
               },
+              "OnExit": {
+                "Events": [
+                  {
+                    "Condition": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "$input.",
+                          {
+                            "Ref": "MyInput08947B23"
+                          },
+                          ".payload.temperature == 31.7"
+                        ]
+                      ]
+                    },
+                    "EventName": "test-exit-event"
+                  }
+                ]
+              },
               "OnInput": {
+                "Events": [
+                  {
+                    "Condition": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "$input.",
+                          {
+                            "Ref": "MyInput08947B23"
+                          },
+                          ".payload.temperature == 31.6"
+                        ]
+                      ]
+                    },
+                    "EventName": "test-input-event"
+                  }
+                ],
                 "TransitionEvents": [
                   {
                     "Condition": {
@@ -86,6 +122,8 @@
               "StateName": "online"
             },
             {
+              "OnEnter": {},
+              "OnExit": {},
               "OnInput": {
                 "TransitionEvents": [
                   {
