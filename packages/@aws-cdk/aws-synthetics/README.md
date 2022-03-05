@@ -182,8 +182,12 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 
 const vpc: ec2.IVpc;
 new synthetics.Canary(this, 'Vpc Canary', {
-  /* ... */,
-  vpc,
+  test: synthetics.Test.custom({
+    code: synthetics.Code.fromAsset(path.join(__dirname, 'canary')),
+    handler: 'index.handler',
+  }),
+  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_3,
+  vpc: vpc,
 });
 ```
 
