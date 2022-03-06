@@ -5,6 +5,7 @@ import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
 import * as cloudmap from '@aws-cdk/aws-servicediscovery';
 import * as cdk from '@aws-cdk/core';
 import * as ecs from '../../lib';
+import { NetworkMode } from '../../lib';
 import { LaunchType } from '../../lib/base/base-service';
 
 describe('external service', () => {
@@ -227,6 +228,26 @@ describe('external service', () => {
     })).toThrow('Supplied TaskDefinition is not configured for compatibility with ECS Anywhere cluster');
 
 
+  });
+
+
+  test('throws when task definition network mode is not External compatible', () => {
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+    const taskDefinition = new ecs.TaskDefinition(stack, 'ExternalTaskDef', {
+      compatibility: ecs.Compatibility.EXTERNAL,
+      networkMode: NetworkMode.AWS_VPC
+    });
+    taskDefinition.addContainer('BaseContainer', {
+      image: ecs.ContainerImage.fromRegistry('test'),
+      memoryReservationMiB: 10,
+    });
+
+    expect(() => new ecs.ExternalService(stack, 'ExternalService', {
+      cluster,
+      taskDefinition,
+    })).toThrow('External tasks only support Bridge, Host or None network mode, got: awsvpc');
   });
 
   test('errors if minimum not less than maximum', () => {

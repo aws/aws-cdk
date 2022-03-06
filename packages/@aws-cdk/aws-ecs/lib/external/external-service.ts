@@ -164,7 +164,7 @@ export class ExternalService extends BaseService implements IExternalService {
    */
   // eslint-disable-next-line max-len, no-unused-vars
   protected configureAwsVpcNetworkingWithSecurityGroups(_vpc: ec2.IVpc, _assignPublicIp?: boolean, _vpcSubnets?: ec2.SubnetSelection, _securityGroups?: ec2.ISecurityGroup[]) {
-    throw new Error ('Only Bridge network mode is supported for external service');
+    throw new Error ('Only Bridge, Host and none network mode is supported for external service');
   }
 
   /**
