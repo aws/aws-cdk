@@ -757,6 +757,20 @@ integTest('templates on disk contain metadata resource, also in nested assemblie
   expect(JSON.parse(nestedTemplateContents).Resources.CDKMetadata).toBeTruthy();
 }));
 
+integTest('skips notice refresh', withDefaultFixture(async (fixture) => {
+  const output = await fixture.cdkSynth({
+    options: ['--no-notices'],
+    modEnv: {
+      INTEG_STACK_SET: 'stage-using-context',
+    },
+    allowErrExit: true,
+  });
+
+  // Neither succeeds nor fails, but skips the refresh
+  await expect(output).not.toContain('Notices refreshed');
+  await expect(output).not.toContain('Notices refresh failed');
+}));
+
 async function listChildren(parent: string, pred: (x: string) => Promise<boolean>) {
   const ret = new Array<string>();
   for (const child of await fs.readdir(parent, { encoding: 'utf-8' })) {
