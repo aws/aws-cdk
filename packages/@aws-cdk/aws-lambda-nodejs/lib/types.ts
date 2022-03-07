@@ -279,6 +279,15 @@ export interface BundlingOptions {
    * @default ['main', 'module']
    */
   readonly mainFields?: string[];
+
+  /**
+   * This option allows you to automatically replace a global variable with an
+   * import from another file.
+   *
+   * @see https://esbuild.github.io/api/#inject
+   * @default - no code is injected
+   */
+  readonly inject?: string[]
 }
 
 /**
