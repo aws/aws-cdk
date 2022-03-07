@@ -148,11 +148,11 @@ type Complete<T> = {
  */
 export function applyDefaultRotationOptions(
   options: CommonRotationUserOptions,
-  vpcSubnets?: ec2.SubnetSelection): Complete<CommonRotationUserOptions> {
+  defaultvpcSubnets?: ec2.SubnetSelection): Complete<CommonRotationUserOptions> {
   return {
     automaticallyAfter: options.automaticallyAfter,
     endpoint: options.endpoint,
     excludeCharacters: options.excludeCharacters ?? DEFAULT_PASSWORD_EXCLUDE_CHARS,
-    vpcSubnets: options.vpcSubnets ?? vpcSubnets,
+    vpcSubnets: options.vpcSubnets ?? defaultvpcSubnets,
   };
 }
