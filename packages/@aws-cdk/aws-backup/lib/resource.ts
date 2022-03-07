@@ -2,6 +2,7 @@ import * as dynamodb from '@aws-cdk/aws-dynamodb';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as efs from '@aws-cdk/aws-efs';
 import * as rds from '@aws-cdk/aws-rds';
+import * as fsx from '@aws-/aws-fsx';
 import { Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 
@@ -86,6 +87,17 @@ export class BackupResource {
   public static fromEfsFileSystem(fileSystem: efs.IFileSystem) {
     return BackupResource.fromArn(Stack.of(fileSystem).formatArn({
       service: 'elasticfilesystem',
+      resource: 'file-system',
+      resourceName: fileSystem.fileSystemId,
+    }));
+  }
+
+  /**
+   * An FSX file system
+   */
+  public static fromFsxFileSystem(fileSystem: fsx.IFileSystem) {
+    return BackupResource.fromArn(Stack.of(fileSystem).formatArn({
+      service: 'fsx',
       resource: 'file-system',
       resourceName: fileSystem.fileSystemId,
     }));
