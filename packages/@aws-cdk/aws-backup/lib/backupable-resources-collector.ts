@@ -2,6 +2,7 @@ import * as dynamodb from '@aws-cdk/aws-dynamodb';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as efs from '@aws-cdk/aws-efs';
 import * as rds from '@aws-cdk/aws-rds';
+import * as fsx from '@aws-cdk/aws-fsx';
 import { IAspect, Stack } from '@aws-cdk/core';
 import { IConstruct } from 'constructs';
 
@@ -12,6 +13,14 @@ export class BackupableResourcesCollector implements IAspect {
     if (node instanceof efs.CfnFileSystem) {
       this.resources.push(Stack.of(node).formatArn({
         service: 'elasticfilesystem',
+        resource: 'file-system',
+        resourceName: node.ref,
+      }));
+    }
+
+    if (node instanceof fsx.CfnFileSystem) {
+      this.resources.push(Stack.of(node).formatArn({
+        service: 'fsx',
         resource: 'file-system',
         resourceName: node.ref,
       }));
