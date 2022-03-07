@@ -160,7 +160,7 @@
           "IntegrationResponses": [
             {
               "ResponseTemplates": {
-                "application/json": "#set($inputRoot = $input.path('$'))\n#if($input.path('$.status').toString().equals(\"FAILED\"))\n#set($context.responseOverride.status = 500)\n{\n\"error\": \"$input.path('$.error')\"\n\"cause\": \"$input.path('$.cause')\"\n}\n#else\n$input.path('$.output')\n#end"
+                "application/json": "#set($inputRoot = $input.path('$'))\n#if($input.path('$.status').toString().equals(\"FAILED\"))\n#set($context.responseOverride.status = 500)\n{\n\"error\": \"$input.path('$.error')\",\n\"cause\": \"$input.path('$.cause')\"\n}\n#else\n$input.path('$.output')\n#end"
               },
               "StatusCode": "200"
             },

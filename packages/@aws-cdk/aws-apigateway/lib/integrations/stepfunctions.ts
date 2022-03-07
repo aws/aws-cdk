@@ -203,7 +203,7 @@ function integrationResponse() {
           '#if($input.path(\'$.status\').toString().equals("FAILED"))', 
             '#set($context.responseOverride.status = 500)', 
             '{',
-              '"error": "$input.path(\'$.error\')"',
+              '"error": "$input.path(\'$.error\')",',
               '"cause": "$input.path(\'$.cause\')"',
             '}',
           '#else',
