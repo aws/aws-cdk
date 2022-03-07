@@ -16,6 +16,7 @@ beforeEach(() => {
   jest.resetAllMocks();
   jest.restoreAllMocks();
   Bundling.clearEsbuildInstallationCache();
+  Bundling.clearTscInstallationCache();
 
   jest.spyOn(Code, 'fromAsset');
 
@@ -602,6 +603,8 @@ test('esbuild bundling with pre compilations', () => {
       ],
     }),
   });
+
+  expect(detectPackageInstallationMock).toHaveBeenCalledWith('typescript');
 });
 
 test('throws with pre compilation and not found tsconfig', () => {

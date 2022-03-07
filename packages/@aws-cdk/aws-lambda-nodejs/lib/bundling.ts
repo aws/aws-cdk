@@ -89,7 +89,7 @@ export class Bundling implements cdk.BundlingOptions {
     this.packageManager = PackageManager.fromLockFile(props.depsLockFilePath, props.logLevel);
 
     Bundling.esbuildInstallation = Bundling.esbuildInstallation ?? PackageInstallation.detect('esbuild');
-    Bundling.tscInstallation = Bundling.tscInstallation ?? PackageInstallation.detect('tsc');
+    Bundling.tscInstallation = Bundling.tscInstallation ?? PackageInstallation.detect('typescript');
 
     this.projectRoot = props.projectRoot;
     this.relativeEntryPath = path.relative(this.projectRoot, path.resolve(props.entry));
