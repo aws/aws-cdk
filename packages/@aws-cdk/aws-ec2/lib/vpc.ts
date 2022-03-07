@@ -1805,6 +1805,13 @@ export interface AddRouteOptions {
    * @default false
    */
   readonly enablesInternetConnectivity?: boolean;
+
+  /**
+   * Dependables that can be added as dependencies to the route
+   *
+   * @default - No dependables
+   */
+  readonly dependsOn?: IDependable[];
 }
 
 /**
