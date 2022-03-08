@@ -66,6 +66,8 @@ export interface IDatabaseInstance extends IResource, ec2.IConnectable, secretsm
 
   /**
    * Grant the given identity connection access to the database.
+   * **Note**: this method does not currently work, see https://github.com/aws/aws-cdk/issues/11851 for details.
+   * @see https://github.com/aws/aws-cdk/issues/11851
    */
   grantConnect(grantee: iam.IGrantable): iam.Grant;
 
