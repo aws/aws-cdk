@@ -64,9 +64,17 @@ const input = new iotevents.Input(this, 'MyInput', {
 const warmState = new iotevents.State({
   stateName: 'warm',
   onEnter: [{
-    eventName: 'test-event',
+    eventName: 'test-enter-event',
     condition: iotevents.Expression.currentInput(input),
     actions: [new actions.LambdaInvokeAction(func)], // optional
+  }],
+  onInput: [{ // optional
+    eventName: 'test-input-event',
+    actions: [new actions.LambdaInvokeAction(func)],
+  }],
+  onExit: [{ // optional
+    eventName: 'test-exit-event',
+    actions: [new actions.LambdaInvokeAction(func)],
   }],
 });
 const coldState = new iotevents.State({

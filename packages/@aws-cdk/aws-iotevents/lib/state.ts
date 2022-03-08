@@ -66,12 +66,28 @@ export interface StateProps {
   readonly stateName: string;
 
   /**
-   * Specifies the events on enter. the conditions of the events are evaluated when the state is entered.
-   * If the condition is `TRUE`, the actions of the event are performed.
+   * Specifies the events on enter. The conditions of the events will be evaluated when entering this state.
+   * If the condition of the event evaluates to `true`, the actions of the event will be executed.
    *
-   * @default - events on enter will not be set
+   * @default - no events will trigger on entering this state
    */
   readonly onEnter?: Event[];
+
+  /**
+   * Specifies the events on input. The conditions of the events will be evaluated when any input is received.
+   * If the condition of the event evaluates to `true`, the actions of the event will be executed.
+   *
+   * @default - no events will trigger on input in this state
+   */
+  readonly onInput?: Event[];
+
+  /**
+   * Specifies the events on exit. The conditions of the events are evaluated when an exiting this state.
+   * If the condition evaluates to `true`, the actions of the event will be executed.
+   *
+   * @default - no events will trigger on exiting this state
+   */
+  readonly onExit?: Event[];
 }
 
 /**
@@ -141,12 +157,18 @@ export class State {
   }
 
   private toStateJson(scope: Construct, actionBindOptions: ActionBindOptions): CfnDetectorModel.StateProperty {
-    const { onEnter } = this.props;
+    const { onEnter, onInput, onExit } = this.props;
     return {
       stateName: this.stateName,
-      onEnter: onEnter && { events: toEventsJson(scope, actionBindOptions, onEnter) },
-      onInput: {
+      onEnter: onEnter && {
+        events: toEventsJson(scope, actionBindOptions, onEnter),
+      },
+      onInput: (onInput || this.transitionEvents.length !== 0) ? {
+        events: toEventsJson(scope, actionBindOptions, onInput),
         transitionEvents: toTransitionEventsJson(scope, actionBindOptions, this.transitionEvents),
+      } : undefined,
+      onExit: onExit && {
+        events: toEventsJson(scope, actionBindOptions, onExit),
       },
     };
   }
@@ -155,9 +177,9 @@ export class State {
 function toEventsJson(
   scope: Construct,
   actionBindOptions: ActionBindOptions,
-  events: Event[],
-): CfnDetectorModel.EventProperty[] {
-  return events.map(event => ({
+  events?: Event[],
+): CfnDetectorModel.EventProperty[] | undefined {
+  return events?.map(event => ({
     eventName: event.eventName,
     condition: event.condition?.evaluate(),
     actions: event.actions?.map(action => action.bind(scope, actionBindOptions).configuration),

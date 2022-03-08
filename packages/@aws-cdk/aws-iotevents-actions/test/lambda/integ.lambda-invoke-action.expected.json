@@ -144,7 +144,6 @@
                   }
                 ]
               },
-              "OnInput": {},
               "StateName": "MyState"
             }
           ]
