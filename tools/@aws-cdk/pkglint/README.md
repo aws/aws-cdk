@@ -1,6 +1,6 @@
 # pkglint
 
-enforces CDK specific linter rules
+enforces CDK-specific linter rules
 
 ## Rules
 
