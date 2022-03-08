@@ -489,23 +489,6 @@ describe('tests', () => {
     }).toThrow(/Specify at most one/);
   });
 
-  test('not allowed to specify defaultTargetGroups and defaultAction together', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const vpc = new ec2.Vpc(stack, 'Stack');
-    const group = new elbv2.NetworkTargetGroup(stack, 'TargetGroup', { vpc, port: 80 });
-    const lb = new elbv2.NetworkLoadBalancer(stack, 'LB', { vpc });
-
-    // WHEN
-    expect(() => {
-      lb.addListener('Listener1', {
-        port: 80,
-        defaultTargetGroups: [group],
-        defaultAction: elbv2.NetworkListenerAction.forward([group]),
-      });
-    }).toThrow(/Specify at most one/);
-  });
-
   test('Can look up an NetworkListener', () => {
     // GIVEN
     const app = new cdk.App();
