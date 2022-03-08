@@ -931,11 +931,11 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
     }
 
     return new secretsmanager.SecretRotation(this, id, {
+      ...applyDefaultRotationOptions(options, this.vpcPlacement),
       secret: this.secret,
       application: this.singleUserRotationApplication,
       vpc: this.vpc,
       target: this,
-      ...applyDefaultRotationOptions(options, this.vpcPlacement),
     });
   }
 
@@ -948,12 +948,12 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
     }
 
     return new secretsmanager.SecretRotation(this, id, {
+      ...applyDefaultRotationOptions(options, this.vpcPlacement),
+      secret: options.secret,
       masterSecret: this.secret,
       application: this.multiUserRotationApplication,
       vpc: this.vpc,
       target: this,
-      secret: options.secret,
-      ...applyDefaultRotationOptions(options, this.vpcPlacement),
     });
   }
 }

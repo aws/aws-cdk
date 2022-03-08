@@ -595,11 +595,11 @@ export class DatabaseCluster extends DatabaseClusterNew {
     }
 
     return new secretsmanager.SecretRotation(this, id, {
+      ...applyDefaultRotationOptions(options, this.vpcSubnets),
       secret: this.secret,
       application: this.singleUserRotationApplication,
       vpc: this.vpc,
       target: this,
-      ...applyDefaultRotationOptions(options, this.vpcSubnets),
     });
   }
 
@@ -612,12 +612,12 @@ export class DatabaseCluster extends DatabaseClusterNew {
     }
 
     return new secretsmanager.SecretRotation(this, id, {
+      ...applyDefaultRotationOptions(options, this.vpcSubnets),
+      secret: options.secret,
       masterSecret: this.secret,
       application: this.multiUserRotationApplication,
       vpc: this.vpc,
       target: this,
-      secret: options.secret,
-      ...applyDefaultRotationOptions(options, this.vpcSubnets),
     });
   }
 }
