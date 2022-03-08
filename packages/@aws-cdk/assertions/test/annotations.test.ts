@@ -7,13 +7,12 @@ describe('Messages', () => {
   let annotations: _Annotations;
   beforeAll(() => {
     stack = new Stack();
-    const foo = new CfnResource(stack, 'Foo', {
+    new CfnResource(stack, 'Foo', {
       type: 'Foo::Bar',
       properties: {
         Fred: 'Thud',
       },
     });
-    foo.node.setContext('disable-stack-trace', false);
 
     new CfnResource(stack, 'Bar', {
       type: 'Foo::Bar',
@@ -60,11 +59,6 @@ describe('Messages', () => {
     test('no match', () => {
       const result = annotations.findError('*', 'no message looks like this');
       expect(result.length).toEqual(0);
-    });
-
-    test('trace is redacted', () => {
-      const result = annotations.findError('/Default/Foo', Match.anyValue());
-      expect(result[0].entry.trace).toEqual('redacted');
     });
   });
 
@@ -165,15 +159,7 @@ describe('Multiple Messages on the Resource', () => {
     const result2 = annotations.findError('/Default/Bar', Match.stringLikeRegexp('error:.*'));
     expect(result2.length).toEqual(2);
     const result3 = annotations.findWarning('/Default/Bar', 'warning: Foo::Bar is deprecated');
-    expect(result3).toEqual([{
-      level: 'warning',
-      entry: {
-        type: 'aws:cdk:warning',
-        data: 'warning: Foo::Bar is deprecated',
-        trace: 'redacted',
-      },
-      id: '/Default/Bar',
-    }]);
+    expect(result3[0].entry.data).toEqual('warning: Foo::Bar is deprecated');
   });
 });
 class MyAspect implements IAspect {
