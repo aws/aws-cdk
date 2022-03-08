@@ -11,7 +11,7 @@ import { IClusterEngine } from './cluster-engine';
 import { DatabaseClusterAttributes, IDatabaseCluster } from './cluster-ref';
 import { Endpoint } from './endpoint';
 import { IParameterGroup, ParameterGroup } from './parameter-group';
-import { DEFAULT_PASSWORD_EXCLUDE_CHARS, defaultDeletionProtection, renderCredentials, setupS3ImportExport, helperRemovalPolicy, renderUnless } from './private/util';
+import { applyDefaultRotationOptions, defaultDeletionProtection, renderCredentials, setupS3ImportExport, helperRemovalPolicy, renderUnless } from './private/util';
 import { BackupProps, Credentials, InstanceProps, PerformanceInsightRetention, RotationSingleUserOptions, RotationMultiUserOptions } from './props';
 import { DatabaseProxy, DatabaseProxyOptions, ProxyTarget } from './proxy';
 import { CfnDBCluster, CfnDBClusterProps, CfnDBInstance } from './rds.generated';
@@ -595,13 +595,11 @@ export class DatabaseCluster extends DatabaseClusterNew {
     }
 
     return new secretsmanager.SecretRotation(this, id, {
+      ...applyDefaultRotationOptions(options, this.vpcSubnets),
       secret: this.secret,
       application: this.singleUserRotationApplication,
       vpc: this.vpc,
-      vpcSubnets: this.vpcSubnets,
       target: this,
-      ...options,
-      excludeCharacters: options.excludeCharacters ?? DEFAULT_PASSWORD_EXCLUDE_CHARS,
     });
   }
 
@@ -612,13 +610,13 @@ export class DatabaseCluster extends DatabaseClusterNew {
     if (!this.secret) {
       throw new Error('Cannot add multi user rotation for a cluster without secret.');
     }
+
     return new secretsmanager.SecretRotation(this, id, {
-      ...options,
-      excludeCharacters: options.excludeCharacters ?? DEFAULT_PASSWORD_EXCLUDE_CHARS,
+      ...applyDefaultRotationOptions(options, this.vpcSubnets),
+      secret: options.secret,
       masterSecret: this.secret,
       application: this.multiUserRotationApplication,
       vpc: this.vpc,
-      vpcSubnets: this.vpcSubnets,
       target: this,
     });
   }
