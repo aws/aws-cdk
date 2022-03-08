@@ -97,7 +97,9 @@ Add branches:
 declare const amplifyApp: amplify.App;
 
 const master = amplifyApp.addBranch('master'); // `id` will be used as repo branch name
-const dev = amplifyApp.addBranch('dev');
+const dev = amplifyApp.addBranch('dev', {
+  performanceMode: true, // optional, enables performance mode
+});
 dev.addEnvironment('STAGE', 'dev');
 ```
 

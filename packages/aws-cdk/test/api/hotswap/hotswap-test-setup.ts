@@ -1,12 +1,11 @@
 import * as cxapi from '@aws-cdk/cx-api';
-import { CloudFormation } from 'aws-sdk';
 import * as AWS from 'aws-sdk';
 import * as codebuild from 'aws-sdk/clients/codebuild';
 import * as lambda from 'aws-sdk/clients/lambda';
 import * as stepfunctions from 'aws-sdk/clients/stepfunctions';
 import { DeployStackResult } from '../../../lib/api';
 import * as deployments from '../../../lib/api/hotswap-deployments';
-import { Template } from '../../../lib/api/util/cloudformation';
+import { CloudFormationStack, Template } from '../../../lib/api/util/cloudformation';
 import { testStack, TestStackArtifact } from '../../util';
 import { MockSdkProvider, SyncHandlerSubsetOf } from '../../util/mock-sdk';
 import { FakeCloudformationStack } from '../fake-cloudformation-stack';
@@ -16,9 +15,11 @@ export const STACK_ID = 'stackId';
 
 let hotswapMockSdkProvider: HotswapMockSdkProvider;
 let currentCfnStack: FakeCloudformationStack;
-const currentCfnStackResources: CloudFormation.StackResourceSummary[] = [];
+const currentCfnStackResources: AWS.CloudFormation.StackResourceSummary[] = [];
+let stackTemplates: { [stackName: string]: any };
+let currentNestedCfnStackResources: { [stackName: string]: AWS.CloudFormation.StackResourceSummary[] };
 
-export function setupHotswapTests() {
+export function setupHotswapTests(): HotswapMockSdkProvider {
   jest.resetAllMocks();
   // clear the array
   currentCfnStackResources.splice(0);
@@ -27,6 +28,26 @@ export function setupHotswapTests() {
     stackName: STACK_NAME,
     stackId: STACK_ID,
   });
+  CloudFormationStack.lookup = async (_: AWS.CloudFormation, _stackName: string) => {
+    return currentCfnStack;
+  };
+
+  return hotswapMockSdkProvider;
+}
+
+export function setupHotswapNestedStackTests(rootStackName: string) {
+  jest.resetAllMocks();
+  currentNestedCfnStackResources = {};
+  hotswapMockSdkProvider = new HotswapMockSdkProvider(rootStackName);
+  currentCfnStack = new FakeCloudformationStack({
+    stackName: rootStackName,
+    stackId: STACK_ID,
+  });
+  stackTemplates = {};
+  CloudFormationStack.lookup = async (_: AWS.CloudFormation, stackName: string) => {
+    currentCfnStack.template = async () => stackTemplates[stackName];
+    return currentCfnStack;
+  };
 
   return hotswapMockSdkProvider;
 }
@@ -38,8 +59,15 @@ export function cdkStackArtifactOf(testStackArtifact: Partial<TestStackArtifact>
   });
 }
 
-export function pushStackResourceSummaries(...items: CloudFormation.StackResourceSummary[]) {
+export function pushStackResourceSummaries(...items: AWS.CloudFormation.StackResourceSummary[]) {
   currentCfnStackResources.push(...items);
+}
+
+export function pushNestedStackResourceSummaries(stackName: string, ...items: AWS.CloudFormation.StackResourceSummary[]) {
+  if (!currentNestedCfnStackResources[stackName]) {
+    currentNestedCfnStackResources[stackName] = [];
+  }
+  currentNestedCfnStackResources[stackName].push(...items);
 }
 
 export function setCurrentCfnStackTemplate(template: Template) {
@@ -47,7 +75,12 @@ export function setCurrentCfnStackTemplate(template: Template) {
   currentCfnStack.setTemplate(templateDeepCopy);
 }
 
-export function stackSummaryOf(logicalId: string, resourceType: string, physicalResourceId: string): CloudFormation.StackResourceSummary {
+export function addTemplateToCloudFormationLookupMock(stackArtifact: cxapi.CloudFormationStackArtifact) {
+  const templateDeepCopy = JSON.parse(JSON.stringify(stackArtifact.template)); // deep copy the template, so our tests can mutate one template instead of creating two
+  stackTemplates[stackArtifact.stackName] = templateDeepCopy;
+}
+
+export function stackSummaryOf(logicalId: string, resourceType: string, physicalResourceId: string): AWS.CloudFormation.StackResourceSummary {
   return {
     LogicalResourceId: logicalId,
     PhysicalResourceId: physicalResourceId,
@@ -60,16 +93,21 @@ export function stackSummaryOf(logicalId: string, resourceType: string, physical
 export class HotswapMockSdkProvider {
   public readonly mockSdkProvider: MockSdkProvider;
 
-  constructor() {
+  constructor(rootStackName?: string) {
     this.mockSdkProvider = new MockSdkProvider({ realSdk: false });
 
     this.mockSdkProvider.stubCloudFormation({
       listStackResources: ({ StackName: stackName }) => {
-        if (stackName !== STACK_NAME) {
-          throw new Error(`Expected Stack name in listStackResources() call to be: '${STACK_NAME}', but received: ${stackName}'`);
+        if (rootStackName) {
+          const knownStackNames = Object.keys(currentNestedCfnStackResources);
+          if (stackName !== rootStackName && !knownStackNames.includes(stackName)) {
+            throw new Error(`Expected Stack name in listStackResources() call to be a member of ['${rootStackName}, ${knownStackNames}'], but received: '${stackName}'`);
+          }
+        } else if (stackName !== STACK_NAME) {
+          throw new Error(`Expected Stack name in listStackResources() call to be: '${STACK_NAME}', but received: '${stackName}'`);
         }
         return {
-          StackResourceSummaries: currentCfnStackResources,
+          StackResourceSummaries: rootStackName ? currentNestedCfnStackResources[stackName] : currentCfnStackResources,
         };
       },
     });
@@ -112,6 +150,10 @@ export class HotswapMockSdkProvider {
     this.mockSdkProvider.stubCodeBuild({
       updateProject: mockUpdateProject,
     });
+  }
+
+  public stubAppSync(stubs: SyncHandlerSubsetOf<AWS.AppSync>) {
+    this.mockSdkProvider.stubAppSync(stubs);
   }
 
   public setInvokeLambdaMock(mockInvokeLambda: (input: lambda.InvocationRequest) => lambda.InvocationResponse) {
