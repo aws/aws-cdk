@@ -12,7 +12,7 @@ import { DatabaseSecret } from './database-secret';
 import { Endpoint } from './endpoint';
 import { IInstanceEngine } from './instance-engine';
 import { IOptionGroup } from './option-group';
-import { IParameterGroup } from './parameter-group';
+import { IParameterGroup, ParameterGroup } from './parameter-group';
 import { DEFAULT_PASSWORD_EXCLUDE_CHARS, defaultDeletionProtection, engineDescription, renderCredentials, setupS3ImportExport, helperRemovalPolicy, renderUnless } from './private/util';
 import { Credentials, PerformanceInsightRetention, RotationMultiUserOptions, RotationSingleUserOptions, SnapshotCredentials } from './props';
 import { DatabaseProxy, DatabaseProxyOptions, ProxyTarget } from './proxy';
@@ -822,6 +822,16 @@ export interface DatabaseInstanceSourceProps extends DatabaseInstanceNewProps {
    * @default - no name
    */
   readonly databaseName?: string;
+
+  /**
+   * The parameters in the DBParameterGroup to create automatically
+   *
+   * You can only specify parameterGroup or parameters but not both.
+   * You need to use a versioned engine to auto-generate a DBParameterGroup.
+   *
+   * @default - None
+   */
+  readonly parameters?: { [key: string]: string };
 }
 
 /**
@@ -877,6 +887,17 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
 
     this.instanceType = props.instanceType ?? ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.LARGE);
 
+    if (props.parameterGroup && props.parameters) {
+      throw new Error('You cannot specify both parameterGroup and parameters');
+    }
+
+    const dbParameterGroupName = props.parameters
+      ? new ParameterGroup(this, 'ParameterGroup', {
+        engine: props.engine,
+        parameters: props.parameters,
+      }).bindToInstance({}).parameterGroupName
+      : this.newCfnProps.dbParameterGroupName;
+
     this.sourceCfnProps = {
       ...this.newCfnProps,
       associatedRoles: instanceAssociatedRoles.length > 0 ? instanceAssociatedRoles : undefined,
@@ -888,6 +909,7 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
       engineVersion: props.engine.engineVersion?.fullVersion,
       licenseModel: props.licenseModel,
       timezone: props.timezone,
+      dbParameterGroupName,
     };
   }
 
@@ -1149,12 +1171,18 @@ export class DatabaseInstanceReadReplica extends DatabaseInstanceNew implements 
       throw new Error(`Cannot set 'backupRetention', as engine '${engineDescription(props.sourceDatabaseInstance.engine)}' does not support automatic backups for read replicas`);
     }
 
+    // The read replica instance always uses the same engine as the source instance
+    // but some CF validations require the engine to be explicitely passed when some
+    // properties are specified.
+    const shouldPassEngine = props.domain != null;
+
     const instance = new CfnDBInstance(this, 'Resource', {
       ...this.newCfnProps,
       // this must be ARN, not ID, because of https://github.com/terraform-providers/terraform-provider-aws/issues/528#issuecomment-391169012
       sourceDbInstanceIdentifier: props.sourceDatabaseInstance.instanceArn,
       kmsKeyId: props.storageEncryptionKey?.keyArn,
       storageEncrypted: props.storageEncryptionKey ? true : props.storageEncrypted,
+      engine: shouldPassEngine ? props.sourceDatabaseInstance.engine?.engineType : undefined,
     });
 
     this.instanceType = props.instanceType;

@@ -102,10 +102,10 @@ function constructMessage(type: 'info' | 'warning' | 'error', message: any): {[k
 }
 
 function convertArrayToMessagesType(messages: SynthesisMessage[]): Messages {
-  return messages.reduce((obj, item) => {
+  return messages.reduce((obj, item, index) => {
     return {
       ...obj,
-      [item.id]: item,
+      [index]: item,
     };
   }, {}) as Messages;
 }
