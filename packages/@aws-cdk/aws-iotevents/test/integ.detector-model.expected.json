@@ -122,8 +122,6 @@
               "StateName": "online"
             },
             {
-              "OnEnter": {},
-              "OnExit": {},
               "OnInput": {
                 "TransitionEvents": [
                   {

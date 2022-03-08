@@ -160,14 +160,14 @@ export class State {
     const { onEnter, onInput, onExit } = this.props;
     return {
       stateName: this.stateName,
-      onEnter: {
+      onEnter: onEnter && {
         events: toEventsJson(scope, actionBindOptions, onEnter),
       },
-      onInput: {
+      onInput: (onInput || this.transitionEvents.length !== 0) ? {
         events: toEventsJson(scope, actionBindOptions, onInput),
         transitionEvents: toTransitionEventsJson(scope, actionBindOptions, this.transitionEvents),
-      },
-      onExit: {
+      } : undefined,
+      onExit: onExit && {
         events: toEventsJson(scope, actionBindOptions, onExit),
       },
     };
@@ -179,11 +179,7 @@ function toEventsJson(
   actionBindOptions: ActionBindOptions,
   events?: Event[],
 ): CfnDetectorModel.EventProperty[] | undefined {
-  if (!events) {
-    return undefined;
-  }
-
-  return events.map(event => ({
+  return events?.map(event => ({
     eventName: event.eventName,
     condition: event.condition?.evaluate(),
     actions: event.actions?.map(action => action.bind(scope, actionBindOptions).configuration),

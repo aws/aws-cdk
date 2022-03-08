@@ -144,8 +144,6 @@
                   }
                 ]
               },
-              "OnExit": {},
-              "OnInput": {},
               "StateName": "MyState"
             }
           ]
