@@ -137,22 +137,12 @@ export function renderUnless<A>(value: A, suppressValue: A): A | undefined {
 }
 
 /**
- * Transforms optional properties to required properties that may be undefined
- */
-type Complete<T> = {
-  [P in keyof Required<T>]: Pick<T, P> extends Required<Pick<T, P>> ? T[P] : (T[P] | undefined);
-}
-
-/**
  * Applies defaults for rotation options
  */
-export function applyDefaultRotationOptions(
-  options: CommonRotationUserOptions,
-  defaultvpcSubnets?: ec2.SubnetSelection): Complete<CommonRotationUserOptions> {
+export function applyDefaultRotationOptions(options: CommonRotationUserOptions, defaultvpcSubnets?: ec2.SubnetSelection): CommonRotationUserOptions {
   return {
-    automaticallyAfter: options.automaticallyAfter,
-    endpoint: options.endpoint,
-    excludeCharacters: options.excludeCharacters ?? DEFAULT_PASSWORD_EXCLUDE_CHARS,
-    vpcSubnets: options.vpcSubnets ?? defaultvpcSubnets,
+    excludeCharacters: DEFAULT_PASSWORD_EXCLUDE_CHARS,
+    vpcSubnets: defaultvpcSubnets,
+    ...options,
   };
 }
