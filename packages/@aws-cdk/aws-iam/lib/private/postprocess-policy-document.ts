@@ -55,7 +55,7 @@ export class PostProcessPolicyDocument implements cdk.IPostProcessor {
   }
 }
 
-// An IAM value is a string or a CloudFormatin intrinsic
+// An IAM value is a string or a CloudFormation intrinsic
 export type IamValue = string | {} | Array<string | {}>;
 
 export interface StatementSchema {

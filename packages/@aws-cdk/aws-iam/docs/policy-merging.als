@@ -15,12 +15,12 @@ Find Alloy at https://alloytools.org/.
 (*) Some of these sets may be empty--that is fine, the logic still works out.
 */
 
----------------------------------------------------------
--- Base Statement definitions
+//-------------------------------------------------------
+// Base Statement definitions
 enum Effect { Allow, Deny }
-enum Resource { ResourceA, ResourceB }
-enum Action { ActionA, ActionB }
-enum Principal { PrincipalA, PrincipalB }
+enum Resource { ResourceA, ResourceB, ResourceC }
+enum Action { ActionA, ActionB, ActionC }
+enum Principal { PrincipalA, PrincipalB, PrincipalC }
 
 sig Statement {
   effect: Effect,
@@ -52,8 +52,8 @@ fact {
   }
 }
 
----------------------------------------------------------
--- Requests and evaluations
+//-------------------------------------------------------
+// Requests and evaluations
 sig Request {
   principal: Principal,
   action: Action,
@@ -83,8 +83,8 @@ run show_some_allowed_requests {
   some ss: set Statement, r: Request | allow[r, ss] and /* no useless Statements floating around */ (no s" : Statement | s" not in ss)
 } for 3 but 1 Request
 
----------------------------------------------------------
--- Statement merging
+//-------------------------------------------------------
+// Statement merging
 
 // Helpers to assert that certain fields are the same
 let sameAction[a, b] = { a.action = b.action and a.notAction = b.notAction }
@@ -97,15 +97,21 @@ let samePrincipal[a, b] = { a.principal = b.principal and a.notPrincipal = b.not
 pred merged[a: Statement, b: Statement, m: Statement] {
   a.effect = b.effect and m.effect = a.effect
 
-  -- If 2 of the pairs { Resource, Action, Principal } are the same, then the 3rd may be merged
+  // If 2 of the pairs { Resource, Action, Principal } are the same, then the 3rd may be merged
   let R = a.resource = b.resource, A = a.action = b.action, P = a.principal = b.principal {
     (R and A) or (R and P) or (A and P)
   }
 
-  -- Result of merging
-  m.action = a.action + b.action and m.notAction = a.notAction and m.notAction = b.notAction
-  m.resource = a.resource + b.resource and m.notResource = a.notResource and m.notResource = b.notResource
-  m.principal = a.principal + b.principal and m.notPrincipal = a.notPrincipal and m.notPrincipal = b.notPrincipal
+  // Result of merging
+  m.action = a.action + b.action
+  m.notAction = a.notAction
+  m.notAction = b.notAction
+  m.resource = a.resource + b.resource
+  m.notResource = a.notResource 
+  m.notResource = b.notResource
+  m.principal = a.principal + b.principal
+  m.notPrincipal = a.notPrincipal
+m.notPrincipal = b.notPrincipal
 }
 
 run show_some_nontrivial_merges {
@@ -115,7 +121,7 @@ run show_some_nontrivial_merges {
 // For any pair of statements, there is only one possible merging
 check merging_is_unique {
   all s0, s1: Statement {
-    no disj m1, m2 : Statement | merged[s0, s1, m1] and merged[s0, s1, m2]
+    no disj m0, m1 : Statement | merged[s0, s1, m0] and merged[s0, s1, m1]
   }
 } for 5
 
@@ -129,16 +135,22 @@ check merging_does_not_change_evaluation {
 
 // There are no 3 statements such that merged(merged(s0, s1), s2) != merged(s0, merged(s1, s2))
 check merging_is_associative {
-  no s0, s1, s2, h1, h2, m1, m2 : Statement {
-    merged[s0, s1, h1] and merged[h1, s2, m1]
-    merged[s1, s2, h2] and merged[h2, s0, m2]
-    m1 != m2
+  no s0, s1, s2, h0, h1, m0, m1: Statement {
+    merged[s0, s1, h0] and merged[h0, s2, m0]
+    merged[s1, s2, h1] and merged[h1, s0, m1]
+    m0 != m1
   }
 } for 10
 
+// For all statements, merged(s0, s1) = merged(s1, s0)
+check merging_is_commutative {
+  all s0, s1, m: Statement {
+    merged[s0, s1, m] implies merged[s1, s0, m]
+  }
+} for 5
 
----------------------------------------------------------
--- Repeated application of merging
+//-------------------------------------------------------
+// Repeated application of merging
 
 // Whether a and b are mergeable
 pred mergeable[a: Statement, b: Statement] {
@@ -172,5 +184,17 @@ run some_interesting_maxMerged_statements {
 check max_merging_does_not_change_eval {
   all input, output: set Statement, r: Request { 
     maxMerged[input, output] implies (allow[r, input] iff allow[r, output])
+  }
+} for 5
+
+// This used to be written the opposite way. But you know: merging is NOT unique.
+// Counterexample found by Alloy:
+//     {{ A, B, A }, {B, B, A} { A, B, B }}
+// Reduces to either:
+//     {{ AB, B, A }, { A, B, B }}
+// or {{ A, B, AB }, { B, B, A }}
+run max_merging_is_not_unique {
+  some input, m0, m1: set Statement { 
+    maxMerged[input, m0] and maxMerged[input, m1] and m0 != m1
   }
 } for 5

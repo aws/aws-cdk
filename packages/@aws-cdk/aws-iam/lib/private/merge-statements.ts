@@ -11,11 +11,9 @@ const STATEMENT_ANALYSIS_SYM = Symbol('statement-analysis');
 /**
  * Merge as many statements as possible to shrink the total policy doc, modifying the input array in place
  *
- * If there are multiple merges to be made (which may involve the same
- * statements, so we can only pick 1 of them), we merge the ones that make the
- * biggest size different first. This is a greedy strategy in a complex
- * optimization problem: it's not guanteed to produce the smallest result, but
- * it will probably do something sensible in most cases.
+ * We compare and merge all pairs of statements (O(N^2) complexity), opportunistically
+ * merging them. This is not guaranteed to produce the optimal output, but it's probably
+ * Good Enough(tm).
  */
 export function mergeStatements(statements: StatementSchema[]): StatementSchema[] {
   let i = 0;

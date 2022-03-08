@@ -170,7 +170,7 @@ test('if conditions are different, statements are not merged', () => {
   ]);
 });
 
-test('if conditions are the smae, statements are merged', () => {
+test('if conditions are the same, statements are merged', () => {
   assertMerged([
     new iam.PolicyStatement({
       resources: ['a'],
