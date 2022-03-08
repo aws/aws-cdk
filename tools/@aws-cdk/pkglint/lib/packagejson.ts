@@ -346,7 +346,10 @@ export class PackageJson {
 }
 
 /**
- * Interface for validation rules
+ * Interface for validation rules.
+ *
+ * Do not validate any compiled code or otherwise assume that your rule will run
+ * on an unbuilt CDK repository.
  */
 export abstract class ValidationRule {
   public abstract readonly name: string;
