@@ -176,6 +176,26 @@ test('can set actions to events', () => {
   });
 });
 
+test.each([
+  ['onInput', { onInput: [{ eventName: 'test-eventName1' }] }, { OnInput: { Events: [{ EventName: 'test-eventName1' }] } }],
+  ['onExit', { onExit: [{ eventName: 'test-eventName1' }] }, { OnExit: { Events: [{ EventName: 'test-eventName1' }] } }],
+])('can set %s to State', (_, events, expected) => {
+  // WHEN
+  new iotevents.DetectorModel(stack, 'MyDetectorModel', {
+    initialState: new iotevents.State({
+      stateName: 'test-state',
+      onEnter: [{ eventName: 'test-eventName1', condition: iotevents.Expression.currentInput(input) }],
+      ...events,
+    }),
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::IoTEvents::DetectorModel', {
+    DetectorModelDefinition: {
+      States: [Match.objectLike(expected)],
+    },
+  });
+});
 
 test('can set an action to multiple detector models', () => {
   // GIVEN an action
