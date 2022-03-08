@@ -1693,7 +1693,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
         });
 
         if (this.encryptionAtRestOptions?.kmsKey) {
-          // https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/encryption-at-rest.html
+          // https://docs.aws.amazon.com/opensearch-service/latest/developerguide/encryption-at-rest.html
 
           // these permissions are documented as required during domain creation.
           // while not strictly documented for updates as well, it stands to reason that an update

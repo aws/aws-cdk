@@ -16,7 +16,7 @@ beforeEach(() => {
 test('minimal example renders correctly', () => {
   const domainArn = 'test:arn';
 
-  new OpenSearchAccessPolicy(stack, 'ElasticsearchAccessPolicy', {
+  new OpenSearchAccessPolicy(stack, 'OpenSearchAccessPolicy', {
     domainName: 'TestDomain',
     domainArn: domainArn,
     accessPolicies: [new iam.PolicyStatement({
@@ -68,7 +68,7 @@ test('minimal example renders correctly', () => {
 });
 
 test('support access policy added inline and later', () => {
-  const elasticsearchAccessPolicy = new OpenSearchAccessPolicy(stack, 'OpenSearchAccessPolicy', {
+  const opensearchAccessPolicy = new OpenSearchAccessPolicy(stack, 'OpenSearchAccessPolicy', {
     domainName: 'TestDomain',
     domainArn: 'test:arn',
     accessPolicies: [
@@ -80,7 +80,7 @@ test('support access policy added inline and later', () => {
       }),
     ],
   });
-  elasticsearchAccessPolicy.addAccessPolicies(
+  opensearchAccessPolicy.addAccessPolicies(
     new iam.PolicyStatement({
       effect: iam.Effect.ALLOW,
       actions: ['*'],
