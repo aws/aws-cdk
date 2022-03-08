@@ -69,7 +69,7 @@ export class Bundling implements CdkBundlingOptions {
       image,
     } = props;
 
-    const outputPath = path.join(AssetStaging.BUNDLING_OUTPUT_DIR, outputPathSuffix);
+    const outputPath = path.posix.join(AssetStaging.BUNDLING_OUTPUT_DIR, outputPathSuffix);
 
     const bundlingCommands = this.createBundlingCommand({
       entry,
