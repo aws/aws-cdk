@@ -326,6 +326,8 @@ You can also authenticate to a database instance using AWS Identity and Access M
 See <https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.IAMDBAuth.html> for more information
 and a list of supported versions and limitations.
 
+**Note**: `grantConnect()` does not currently work - see [this GitHub issue](https://github.com/aws/aws-cdk/issues/11851).
+
 The following example shows enabling IAM authentication for a database instance and granting connection access to an IAM role.
 
 ```ts
