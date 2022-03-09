@@ -9,7 +9,7 @@ jobs:
     name: Creates a checklist for PRs that contain changes to custom resources
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Dynamic checklist action
         uses: vishalsinha21/dynamic-checklist@v1
         with:

@@ -5,6 +5,16 @@
 # - Run the script
 set -eu
 scriptdir=$(cd $(dirname $0) && pwd)
+CLI_INSTALLER="${CLI_INSTALLER:=npm}"
+
+if [ ${CLI_INSTALLER} = "npm" ]; then
+  install_command="install"
+elif [ ${CLI_INSTALLER} = "yarn" ]; then
+  install_command="add"
+else
+  echo "CLI_INSTALLER can only be set to either npm or yarn (got ${CLI_INSTALLER})"
+  exit 1
+fi
 
 # NPM Workspace. Will have CDK CLI installed into it.
 npmws=/tmp/cdk-runrelease
@@ -12,7 +22,7 @@ rm -rf $npmws
 mkdir -p $npmws
 
 # Install the CLI and put it on the PATH
-(cd $npmws && npm install aws-cdk@${RELEASE_TAG:-latest})
+(cd $npmws && ${CLI_INSTALLER} ${install_command} aws-cdk@${RELEASE_TAG:-latest})
 
 # FRAMEWORK_VERSION is the version that will be 'npm install'ed by the tests
 if [[ "${FRAMEWORK_VERSION:-}" = "" ]]; then

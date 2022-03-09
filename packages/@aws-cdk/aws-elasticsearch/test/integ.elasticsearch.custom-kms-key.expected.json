@@ -222,10 +222,7 @@
             "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
           }
         ]
-      },
-      "DependsOn": [
-        "Domain66AC69E0"
-      ]
+      }
     },
     "DomainESAccessPolicy89986F33": {
       "Type": "Custom::ElasticsearchAccessPolicy",
@@ -287,8 +284,7 @@
         "InstallLatestAwsSdk": true
       },
       "DependsOn": [
-        "DomainESAccessPolicyCustomResourcePolicy9747FC42",
-        "Domain66AC69E0"
+        "DomainESAccessPolicyCustomResourcePolicy9747FC42"
       ],
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete"

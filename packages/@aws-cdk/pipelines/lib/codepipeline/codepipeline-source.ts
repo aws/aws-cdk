@@ -139,21 +139,27 @@ export abstract class CodePipelineSource extends Step implements ICodePipelineAc
    * What attributes are available depends on the type of source. These attributes
    * are supported:
    *
-   * - GitHub, CodeCommit, and CodeStar connection
+   * - GitHub, CodeCommit, and CodeStarSourceConnection
    *   - `AuthorDate`
    *   - `BranchName`
    *   - `CommitId`
    *   - `CommitMessage`
+   * - GitHub, CodeCommit and ECR
+   *   - `RepositoryName`
    * - GitHub and CodeCommit
    *   - `CommitterDate`
-   *   - `RepositoryName`
    * - GitHub
    *   - `CommitUrl`
-   * - CodeStar Connection
+   * - CodeStarSourceConnection
    *   - `FullRepositoryName`
    * - S3
    *   - `ETag`
    *   - `VersionId`
+   * - ECR
+   *   - `ImageDigest`
+   *   - `ImageTag`
+   *   - `ImageURI`
+   *   - `RegistryId`
    *
    * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/reference-variables.html#reference-variables-list
    */
