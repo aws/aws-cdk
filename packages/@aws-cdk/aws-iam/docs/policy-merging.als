@@ -86,11 +86,6 @@ run show_some_allowed_requests {
 //-------------------------------------------------------
 // Statement merging
 
-// Helpers to assert that certain fields are the same
-let sameAction[a, b] = { a.action = b.action and a.notAction = b.notAction }
-let sameResource[a, b] = { a.resource = b.resource and a.notResource = b.notResource }
-let samePrincipal[a, b] = { a.principal = b.principal and a.notPrincipal = b.notPrincipal }
-
 // Assert that m is the merged version of a and b
 //
 // This encodes the important logic: the rules of merging.
@@ -111,7 +106,7 @@ pred merged[a: Statement, b: Statement, m: Statement] {
   m.notResource = b.notResource
   m.principal = a.principal + b.principal
   m.notPrincipal = a.notPrincipal
-m.notPrincipal = b.notPrincipal
+  m.notPrincipal = b.notPrincipal
 }
 
 run show_some_nontrivial_merges {
