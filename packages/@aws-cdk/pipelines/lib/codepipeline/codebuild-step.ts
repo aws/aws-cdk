@@ -233,9 +233,6 @@ export class CodeBuildStep extends ShellStep {
    * The variable must be set in the shell of the CodeBuild step when
    * it finishes its `post_build` phase.
    *
-   * ```ts
-   * ```
-   *
    * @param variableName the name of the variable for reference.
    * @example
    * // Access the output of one CodeBuildStep in another CodeBuildStep
