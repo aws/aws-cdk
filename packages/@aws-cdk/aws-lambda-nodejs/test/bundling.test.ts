@@ -213,7 +213,7 @@ test('esbuild bundling with esbuild options', () => {
     esbuildArgs: {
       '--log-limit': '0',
       '--resolve-extensions': '.ts,.js',
-      '--keep-names': 'true',
+      '--splitting': 'true',
     },
   });
 
@@ -223,7 +223,8 @@ test('esbuild bundling with esbuild options', () => {
     assetHashType: AssetHashType.OUTPUT,
     bundling: expect.objectContaining({
       command: [
-        'bash', '-c',
+        'bash',
+        '-c',
         [
           'esbuild --bundle "/asset-input/lib/handler.ts"',
           '--target=es2020 --platform=node --format=esm --outfile="/asset-output/index.mjs"',
@@ -231,9 +232,8 @@ test('esbuild bundling with esbuild options', () => {
           defineInstructions,
           '--log-level=silent --keep-names --tsconfig=/asset-input/lib/custom-tsconfig.ts',
           '--metafile=/asset-output/index.meta.json --banner:js="/* comments */" --footer:js="/* comments */"',
-          '--charset=utf8',
           '--charset=utf8 --main-fields=module,main --inject:./my-shim.js',
-          '--log-limit="0" --resolve-extensions=".ts,.js" --keep-names="true"',
+          '--log-limit="0" --resolve-extensions=".ts,.js" --splitting="true"',
         ].join(' '),
       ],
     }),

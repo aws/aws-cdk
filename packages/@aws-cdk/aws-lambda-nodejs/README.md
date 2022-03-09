@@ -201,7 +201,7 @@ new lambda.NodejsFunction(this, 'my-handler', {
     inject: ['./my-shim.js', './other-shim.js'] // allows to automatically replace a global variable with an import from another file
     esbuildArgs: { // pass additional arguments to esbuild
       "--log-limit": "0"
-      "--keep-names": true
+      "--splitting": true
     }
   },
 });
