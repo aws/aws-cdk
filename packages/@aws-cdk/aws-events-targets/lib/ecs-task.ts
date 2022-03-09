@@ -80,6 +80,15 @@ export interface EcsTaskProps {
    * @default - ECS will set the Fargate platform version to 'LATEST'
    */
   readonly platformVersion?: ecs.FargatePlatformVersion;
+
+  /**
+   * Specifies whether the task's elastic network interface receives a public IP address.
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-events-rule-awsvpcconfiguration.html#cfn-events-rule-awsvpcconfiguration-assignpublicip
+   *
+   * @default enabled if the task is in a Public subnet, disabled otherwise
+   */
+  readonly assignPublicIp?: boolean;
 }
 
 /**
@@ -163,7 +172,9 @@ export class EcsTask implements events.IRuleTarget {
     const taskDefinitionArn = this.taskDefinition.taskDefinitionArn;
 
     const subnetSelection = this.props.subnetSelection || { subnetType: ec2.SubnetType.PRIVATE };
-    const assignPublicIp = subnetSelection.subnetType === ec2.SubnetType.PUBLIC ? 'ENABLED' : 'DISABLED';
+    const assignPublicIp = this.props.assignPublicIp ??
+      subnetSelection.subnetType === ec2.SubnetType.PUBLIC ? 'ENABLED' : 'DISABLED';
+    // const assignPublicIp = subnetSelection.subnetType === ec2.SubnetType.PUBLIC ? 'ENABLED' : 'DISABLED';
 
     const baseEcsParameters = { taskCount, taskDefinitionArn };
 

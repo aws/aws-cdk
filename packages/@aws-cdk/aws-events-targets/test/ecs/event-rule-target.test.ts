@@ -70,28 +70,28 @@ test('Can use EC2 taskdef as EventRule target', () => {
 });
 
 test('Throws error for lacking of taskRole ' +
-    'when importing from an EC2 task definition just from a task definition arn as EventRule target', () => {
-  // GIVEN
-  const taskDefinition = ecs.Ec2TaskDefinition.fromEc2TaskDefinitionArn(stack, 'TaskDef', 'importedTaskDefArn');
+  'when importing from an EC2 task definition just from a task definition arn as EventRule target', () => {
+    // GIVEN
+    const taskDefinition = ecs.Ec2TaskDefinition.fromEc2TaskDefinitionArn(stack, 'TaskDef', 'importedTaskDefArn');
 
-  const rule = new events.Rule(stack, 'Rule', {
-    schedule: events.Schedule.expression('rate(1 min)'),
+    const rule = new events.Rule(stack, 'Rule', {
+      schedule: events.Schedule.expression('rate(1 min)'),
+    });
+
+    // THEN
+    expect(() => {
+      rule.addTarget(new targets.EcsTask({
+        cluster,
+        taskDefinition,
+        taskCount: 1,
+        containerOverrides: [{
+          containerName: 'TheContainer',
+          command: ['echo', events.EventField.fromPath('$.detail.event')],
+        }],
+      }));
+    }).toThrow('This operation requires the taskRole in ImportedTaskDefinition to be defined. ' +
+      'Add the \'taskRole\' in ImportedTaskDefinitionProps to instantiate ImportedTaskDefinition');
   });
-
-  // THEN
-  expect(() => {
-    rule.addTarget(new targets.EcsTask({
-      cluster,
-      taskDefinition,
-      taskCount: 1,
-      containerOverrides: [{
-        containerName: 'TheContainer',
-        command: ['echo', events.EventField.fromPath('$.detail.event')],
-      }],
-    }));
-  }).toThrow('This operation requires the taskRole in ImportedTaskDefinition to be defined. ' +
-    'Add the \'taskRole\' in ImportedTaskDefinitionProps to instantiate ImportedTaskDefinition');
-});
 
 test('Can import an EC2 task definition from task definition attributes as EventRule target', () => {
   // GIVEN
@@ -142,27 +142,27 @@ test('Can import an EC2 task definition from task definition attributes as Event
 
 test('Throws error for lacking of taskRole ' +
   'when importing from a Fargate task definition just from a task definition arn as EventRule target', () => {
-  // GIVEN
-  const taskDefinition = ecs.FargateTaskDefinition.fromFargateTaskDefinitionArn(stack, 'TaskDef', 'ImportedTaskDefArn');
+    // GIVEN
+    const taskDefinition = ecs.FargateTaskDefinition.fromFargateTaskDefinitionArn(stack, 'TaskDef', 'ImportedTaskDefArn');
 
-  const rule = new events.Rule(stack, 'Rule', {
-    schedule: events.Schedule.expression('rate(1 min)'),
+    const rule = new events.Rule(stack, 'Rule', {
+      schedule: events.Schedule.expression('rate(1 min)'),
+    });
+
+    // THEN
+    expect(() => {
+      rule.addTarget(new targets.EcsTask({
+        cluster,
+        taskDefinition,
+        taskCount: 1,
+        containerOverrides: [{
+          containerName: 'TheContainer',
+          command: ['echo', events.EventField.fromPath('$.detail.event')],
+        }],
+      }));
+    }).toThrow('This operation requires the taskRole in ImportedTaskDefinition to be defined. ' +
+      'Add the \'taskRole\' in ImportedTaskDefinitionProps to instantiate ImportedTaskDefinition');
   });
-
-  // THEN
-  expect(() => {
-    rule.addTarget(new targets.EcsTask({
-      cluster,
-      taskDefinition,
-      taskCount: 1,
-      containerOverrides: [{
-        containerName: 'TheContainer',
-        command: ['echo', events.EventField.fromPath('$.detail.event')],
-      }],
-    }));
-  }).toThrow('This operation requires the taskRole in ImportedTaskDefinition to be defined. ' +
-    'Add the \'taskRole\' in ImportedTaskDefinitionProps to instantiate ImportedTaskDefinition');
-});
 
 test('Can import a Fargate task definition from task definition attributes as EventRule target', () => {
   // GIVEN
@@ -213,27 +213,27 @@ test('Can import a Fargate task definition from task definition attributes as Ev
 
 test('Throws error for lacking of taskRole ' +
   'when importing from a task definition just from a task definition arn as EventRule target', () => {
-  // GIVEN
-  const taskDefinition = ecs.TaskDefinition.fromTaskDefinitionArn(stack, 'TaskDef', 'ImportedTaskDefArn');
+    // GIVEN
+    const taskDefinition = ecs.TaskDefinition.fromTaskDefinitionArn(stack, 'TaskDef', 'ImportedTaskDefArn');
 
-  const rule = new events.Rule(stack, 'Rule', {
-    schedule: events.Schedule.expression('rate(1 min)'),
+    const rule = new events.Rule(stack, 'Rule', {
+      schedule: events.Schedule.expression('rate(1 min)'),
+    });
+
+    // THEN
+    expect(() => {
+      rule.addTarget(new targets.EcsTask({
+        cluster,
+        taskDefinition,
+        taskCount: 1,
+        containerOverrides: [{
+          containerName: 'TheContainer',
+          command: ['echo', events.EventField.fromPath('$.detail.event')],
+        }],
+      }));
+    }).toThrow('This operation requires the taskRole in ImportedTaskDefinition to be defined. ' +
+      'Add the \'taskRole\' in ImportedTaskDefinitionProps to instantiate ImportedTaskDefinition');
   });
-
-  // THEN
-  expect(() => {
-    rule.addTarget(new targets.EcsTask({
-      cluster,
-      taskDefinition,
-      taskCount: 1,
-      containerOverrides: [{
-        containerName: 'TheContainer',
-        command: ['echo', events.EventField.fromPath('$.detail.event')],
-      }],
-    }));
-  }).toThrow('This operation requires the taskRole in ImportedTaskDefinition to be defined. ' +
-    'Add the \'taskRole\' in ImportedTaskDefinitionProps to instantiate ImportedTaskDefinition');
-});
 
 test('Can import a Task definition from task definition attributes as EventRule target', () => {
   // GIVEN
@@ -642,6 +642,211 @@ test('uses the specific fargate platform version', () => {
           },
           PlatformVersion: '1.4.0',
         },
+        Id: 'Target0',
+      },
+    ],
+  });
+});
+test('Public subnet does have AssignPublicIp=ENABLED', () => {
+  // GIVEN
+  vpc = new ec2.Vpc(stack, 'Vpc2', {
+    maxAzs: 1,
+    subnetConfiguration: [{
+      subnetType: ec2.SubnetType.PUBLIC,
+      name: 'Public',
+    }],
+  });
+  cluster = new ecs.Cluster(stack, 'EcsCluster2', { vpc });
+
+  const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef');
+  taskDefinition.addContainer('TheContainer', {
+    image: ecs.ContainerImage.fromRegistry('henk'),
+  });
+
+  const rule = new events.Rule(stack, 'Rule', {
+    schedule: events.Schedule.expression('rate(1 min)'),
+  });
+
+  // WHEN
+  rule.addTarget(new targets.EcsTask({
+    cluster,
+    taskDefinition,
+    taskCount: 1,
+    subnetSelection: { subnetType: ec2.SubnetType.PUBLIC },
+    containerOverrides: [{
+      containerName: 'TheContainer',
+      command: ['echo', 'yay'],
+    }],
+  }));
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+    Targets: [
+      {
+        Arn: { 'Fn::GetAtt': ['EcsCluster2F191ADEC', 'Arn'] },
+        EcsParameters: {
+          TaskCount: 1,
+          TaskDefinitionArn: { Ref: 'TaskDef54694570' },
+          LaunchType: 'FARGATE',
+          NetworkConfiguration: {
+            AwsVpcConfiguration: {
+              Subnets: [
+                {
+                  Ref: 'Vpc2PublicSubnet1Subnet758D49A9',
+                },
+              ],
+              AssignPublicIp: 'ENABLED',
+              SecurityGroups: [
+                {
+                  'Fn::GetAtt': [
+                    'TaskDefSecurityGroupD50E7CF0',
+                    'GroupId',
+                  ],
+                },
+              ],
+            },
+          },
+        },
+        Input: '{"containerOverrides":[{"name":"TheContainer","command":["echo","yay"]}]}',
+        RoleArn: { 'Fn::GetAtt': ['TaskDefEventsRoleFB3B67B8', 'Arn'] },
+        Id: 'Target0',
+      },
+    ],
+  });
+});
+
+test('With assignPublicIp=false and public subnet AssignPublicIp=DISABLED', () => {
+  // GIVEN
+  vpc = new ec2.Vpc(stack, 'Vpc2', {
+    maxAzs: 1,
+    subnetConfiguration: [{
+      subnetType: ec2.SubnetType.PUBLIC,
+      name: 'Public',
+    }],
+  });
+  cluster = new ecs.Cluster(stack, 'EcsCluster2', { vpc });
+
+  const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef');
+  taskDefinition.addContainer('TheContainer', {
+    image: ecs.ContainerImage.fromRegistry('henk'),
+  });
+
+  const rule = new events.Rule(stack, 'Rule', {
+    schedule: events.Schedule.expression('rate(1 min)'),
+  });
+
+  // WHEN
+  rule.addTarget(new targets.EcsTask({
+    assignPublicIp: false,
+    cluster,
+    taskDefinition,
+    taskCount: 1,
+    subnetSelection: { subnetType: ec2.SubnetType.PUBLIC },
+    containerOverrides: [{
+      containerName: 'TheContainer',
+      command: ['echo', 'yay'],
+    }],
+  }));
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+    Targets: [
+      {
+        Arn: { 'Fn::GetAtt': ['EcsCluster2F191ADEC', 'Arn'] },
+        EcsParameters: {
+          TaskCount: 1,
+          TaskDefinitionArn: { Ref: 'TaskDef54694570' },
+          LaunchType: 'FARGATE',
+          NetworkConfiguration: {
+            AwsVpcConfiguration: {
+              Subnets: [
+                {
+                  Ref: 'Vpc2PublicSubnet1Subnet758D49A9',
+                },
+              ],
+              AssignPublicIp: 'DISABLED',
+              SecurityGroups: [
+                {
+                  'Fn::GetAtt': [
+                    'TaskDefSecurityGroupD50E7CF0',
+                    'GroupId',
+                  ],
+                },
+              ],
+            },
+          },
+        },
+        Input: '{"containerOverrides":[{"name":"TheContainer","command":["echo","yay"]}]}',
+        RoleArn: { 'Fn::GetAtt': ['TaskDefEventsRoleFB3B67B8', 'Arn'] },
+        Id: 'Target0',
+      },
+    ],
+  });
+});
+
+test('With assignPublicIp=true and isolated subnet AssignPublicIp=ENABLED', () => {
+  // GIVEN
+  vpc = new ec2.Vpc(stack, 'Vpc2', {
+    maxAzs: 1,
+    subnetConfiguration: [{
+      subnetType: ec2.SubnetType.ISOLATED,
+      name: 'Isolated',
+    }],
+  });
+  cluster = new ecs.Cluster(stack, 'EcsCluster2', { vpc });
+
+  const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef');
+  taskDefinition.addContainer('TheContainer', {
+    image: ecs.ContainerImage.fromRegistry('henk'),
+  });
+
+  const rule = new events.Rule(stack, 'Rule', {
+    schedule: events.Schedule.expression('rate(1 min)'),
+  });
+
+  // WHEN
+  rule.addTarget(new targets.EcsTask({
+    assignPublicIp: true,
+    cluster,
+    taskDefinition,
+    taskCount: 1,
+    subnetSelection: { subnetType: ec2.SubnetType.ISOLATED },
+    containerOverrides: [{
+      containerName: 'TheContainer',
+      command: ['echo', 'yay'],
+    }],
+  }));
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+    Targets: [
+      {
+        Arn: { 'Fn::GetAtt': ['EcsCluster2F191ADEC', 'Arn'] },
+        EcsParameters: {
+          TaskCount: 1,
+          TaskDefinitionArn: { Ref: 'TaskDef54694570' },
+          LaunchType: 'FARGATE',
+          NetworkConfiguration: {
+            AwsVpcConfiguration: {
+              Subnets: [
+                {
+                  Ref: 'Vpc2IsolatedSubnet1SubnetB1A200D6',
+                },
+              ],
+              AssignPublicIp: 'ENABLED',
+              SecurityGroups: [
+                {
+                  'Fn::GetAtt': [
+                    'TaskDefSecurityGroupD50E7CF0',
+                    'GroupId',
+                  ],
+                },
+              ],
+            },
+          },
+        },
+        Input: '{"containerOverrides":[{"name":"TheContainer","command":["echo","yay"]}]}',
+        RoleArn: { 'Fn::GetAtt': ['TaskDefEventsRoleFB3B67B8', 'Arn'] },
         Id: 'Target0',
       },
     ],
