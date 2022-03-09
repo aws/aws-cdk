@@ -206,14 +206,14 @@ export interface BundlingOptions {
   /**
    * Build arguments to pass into esbuild.
    *
-   * For example, to add the [--main-fields](https://esbuild.github.io/api/#main-fields) flag:
+   * For example, to add the [--log-limit](https://esbuild.github.io/api/#log-limit) flag:
    *
    * ```text
    * new NodejsFunction(scope, id, {
    *   ...
    *   bundling: {
    *     esbuildArgs: {
-   *       "--main-fields": "module,main"
+   *       "--log-limit": "0",
    *     }
    *   }
    * });
