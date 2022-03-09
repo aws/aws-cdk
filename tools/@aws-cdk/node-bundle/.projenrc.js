@@ -24,6 +24,15 @@ const project = new typescript.TypeScriptProject({
 
 project.gitignore.exclude('.vscode/');
 
+// Ensure `npm run build` behaves the same as in other packages. Failure to do
+// so results in re-generating the `package.json` with `version: 0.0.0` which
+// undoes the work of `align-versions.sh` and breaks jsii integration tests.
+// This can be removed if the `@aws-cdk/node-bundle` is moved out of this mono
+// repository.
+project.buildTask._locked = false; // <-- !HAXX! there is (understandably) not API to unlock...
+project.buildTask.reset();
+project.buildTask.prependSpawn(project.compileTask);
+
 // needed for CLI tests to run
 project.testTask.prependSpawn(project.compileTask);
 
