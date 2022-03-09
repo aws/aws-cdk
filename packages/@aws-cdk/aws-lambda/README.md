@@ -509,10 +509,19 @@ const fn = lambda.Function.fromFunctionAttributes(this, 'Function', {
 });
 ```
 
+If `fromFunctionArn()` causes an error related to having to provide an account and/or region in a different construct,
+and the lambda is in the same account and region as the stack you're importing it into,
+you can use `Function.fromFunctionName()` instead:
+
+```ts
+const fn = lambda.Function.fromFunctionName(this, 'Function', 'MyFn');
+```
+
 ## Lambda with DLQ
 
 A dead-letter queue can be automatically created for a Lambda function by
-setting the `deadLetterQueueEnabled: true` configuration.
+setting the `deadLetterQueueEnabled: true` configuration. In such case CDK creates
+a `sqs.Queue` as `deadLetterQueue`.
 
 ```ts
 const fn = new lambda.Function(this, 'MyFunction', {
@@ -534,6 +543,20 @@ const fn = new lambda.Function(this, 'MyFunction', {
   handler: 'index.handler',
   code: lambda.Code.fromInline('exports.handler = function(event, ctx, cb) { return cb(null, "hi"); }'),
   deadLetterQueue: dlq,
+});
+```
+
+You can also use a `sns.Topic` instead of an `sqs.Queue` as dead-letter queue:
+
+```ts
+import * as sns from '@aws-cdk/aws-sns';
+
+const dlt = new sns.Topic(this, 'DLQ');
+const fn = new lambda.Function(this, 'MyFunction', {
+  runtime: lambda.Runtime.NODEJS_12_X,
+  handler: 'index.handler',
+  code: lambda.Code.fromInline('// your code here'),
+  deadLetterTopic: dlt,
 });
 ```
 
