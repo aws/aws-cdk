@@ -17,7 +17,7 @@ Currently supported are:
 
 * [Start a CodeBuild build](#start-a-codebuild-build)
 * [Start a CodePipeline pipeline](#start-a-codepipeline-pipeline)
-* Run an ECS task
+* [Run an ECS task](#invoke-an-ecs-task)
 * [Invoke a Lambda function](#invoke-a-lambda-function)
 * [Invoke a API Gateway REST API](#invoke-an-api-gateway-rest-api)
 * Publish a message to an SNS topic
@@ -311,4 +311,48 @@ rule.addTarget(new targets.EventBus(
     `arn:aws:events:eu-west-1:999999999999:event-bus/test-bus`,
   ),
 ));
+```
+
+## Invoke an ECS Task
+
+The code snippet below makes a scheduled rule to invoke an ECS Task.
+
+The Fargate launch type supports the ability to add a public IP address to the
+running task. Tasks can support additional [vpc configurations](https://docs.aws.amazon.com/eventbridge/latest/APIReference/API_AwsVpcConfiguration.html).
+
+```ts
+import { Vpc, SubnetType } from 'aws-cdk-lib/aws-ec2';
+import { EcsTask } from 'aws-cdk-lib/aws-events-targets';
+import { Rule, Schedule } from 'aws-cdk-lib/aws-events';
+import { Cluster, ContainerImage, FargateTaskDefinition } from 'aws-cdk-lib/aws-ecs';
+
+const vpc = new Vpc(this, 'Vpc2', {
+  maxAzs: 1,
+  subnetConfiguration: [{
+    subnetType: SubnetType.PUBLIC,
+    name: 'Public',
+  }],
+});
+const cluster = new Cluster(this, 'EcsCluster2', { vpc });
+
+const taskDefinition = new FargateTaskDefinition(this, 'TaskDef');
+taskDefinition.addContainer('TheContainer', {
+  image: ContainerImage.fromRegistry('henk'),
+});
+
+const rule = new Rule(this, 'Rule', {
+  schedule: Schedule.expression('rate(1 min)'),
+});
+
+rule.addTarget(new EcsTask({
+  // assignPublicIp: true,
+  cluster,
+  taskDefinition,
+  taskCount: 1,
+  subnetSelection: { subnetType: SubnetType.PUBLIC },
+  containerOverrides: [{
+    containerName: 'TheContainer',
+    command: ['echo', 'yay'],
+  }],
+}));
 ```
