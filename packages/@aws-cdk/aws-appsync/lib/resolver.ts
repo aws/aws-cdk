@@ -114,10 +114,7 @@ export class Resolver extends CoreConstruct {
       pipelineConfig: pipelineConfig,
       requestMappingTemplate: props.requestMappingTemplate ? props.requestMappingTemplate.renderTemplate() : undefined,
       responseMappingTemplate: props.responseMappingTemplate ? props.responseMappingTemplate.renderTemplate() : undefined,
-      cachingConfig: {
-        cachingKeys: props.cachingConfig?.cachingKeys,
-        ttl: props.cachingConfig?.ttl?.toSeconds(),
-      },
+      cachingConfig: this.createCachingConfig(props.cachingConfig),
     });
     props.api.addSchemaDependency(this.resolver);
     if (props.dataSource) {
@@ -125,4 +122,12 @@ export class Resolver extends CoreConstruct {
     }
     this.arn = this.resolver.attrResolverArn;
   }
+
+  private createCachingConfig(config?: CachingConfig) {
+    return config ? {
+      cachingKeys: config.cachingKeys,
+      ttl: config.ttl?.toSeconds(),
+    } : undefined;
+  }
+
 }

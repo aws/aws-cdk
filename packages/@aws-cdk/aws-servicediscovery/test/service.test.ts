@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
 import * as servicediscovery from '../lib';
@@ -21,7 +21,7 @@ describe('service', () => {
     });
 
     // THEN
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       Resources: {
         MyNamespaceD0BB8558: {
           Type: 'AWS::ServiceDiscovery::HttpNamespace',
@@ -69,7 +69,7 @@ describe('service', () => {
     });
 
     // THEN
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       Resources: {
         MyNamespaceD0BB8558: {
           Type: 'AWS::ServiceDiscovery::HttpNamespace',
@@ -118,7 +118,7 @@ describe('service', () => {
     });
 
     // THEN
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       Resources: {
         MyNamespaceD0BB8558: {
           Type: 'AWS::ServiceDiscovery::PublicDnsNamespace',
@@ -176,7 +176,7 @@ describe('service', () => {
     });
 
     // THEN
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       Resources: {
         MyNamespaceD0BB8558: {
           Type: 'AWS::ServiceDiscovery::PublicDnsNamespace',
@@ -233,7 +233,7 @@ describe('service', () => {
     });
 
     // THEN
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       Resources: {
         MyNamespaceD0BB8558: {
           Type: 'AWS::ServiceDiscovery::PublicDnsNamespace',
@@ -417,11 +417,11 @@ describe('service', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ServiceDiscovery::PrivateDnsNamespace', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ServiceDiscovery::PrivateDnsNamespace', {
       Name: 'private',
     });
 
-    expect(stack).toHaveResource('AWS::ServiceDiscovery::Service', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ServiceDiscovery::Service', {
       Description: 'service description',
       DnsConfig: {
         DnsRecords: [

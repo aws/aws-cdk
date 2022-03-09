@@ -239,16 +239,18 @@ export class EventBus extends EventBusBase {
     });
   }
 
-  private static eventBusProps(defaultEventBusName: string, props?: EventBusProps) {
-    if (props) {
-      const { eventBusName, eventSourceName } = props;
-      const eventBusNameRegex = /^[\/\.\-_A-Za-z0-9]{1,256}$/;
+  private static eventBusProps(defaultEventBusName: string, props: EventBusProps = {}) {
+    const { eventBusName, eventSourceName } = props;
+    const eventBusNameRegex = /^[\/\.\-_A-Za-z0-9]{1,256}$/;
 
-      if (eventBusName !== undefined && eventSourceName !== undefined) {
-        throw new Error(
-          '\'eventBusName\' and \'eventSourceName\' cannot both be provided',
-        );
-      } else if (eventBusName !== undefined && !Token.isUnresolved(eventBusName)) {
+    if (eventBusName !== undefined && eventSourceName !== undefined) {
+      throw new Error(
+        '\'eventBusName\' and \'eventSourceName\' cannot both be provided',
+      );
+    }
+
+    if (eventBusName !== undefined) {
+      if (!Token.isUnresolved(eventBusName)) {
         if (eventBusName === 'default') {
           throw new Error(
             '\'eventBusName\' must not be \'default\'',
@@ -262,24 +264,25 @@ export class EventBus extends EventBusBase {
             `'eventBusName' must satisfy: ${eventBusNameRegex}`,
           );
         }
-        return { eventBusName };
-      } else if (eventSourceName !== undefined) {
-        // Ex: aws.partner/PartnerName/acct1/repo1
-        const eventSourceNameRegex = /^aws\.partner(\/[\.\-_A-Za-z0-9]+){2,}$/;
-        if (!eventSourceNameRegex.test(eventSourceName)) {
-          throw new Error(
-            `'eventSourceName' must satisfy: ${eventSourceNameRegex}`,
-          );
-        } else if (!eventBusNameRegex.test(eventSourceName)) {
-          throw new Error(
-            `'eventSourceName' must satisfy: ${eventBusNameRegex}`,
-          );
-        }
-        return { eventBusName: eventSourceName, eventSourceName };
-      } else {
-        return { eventBusName: props.eventBusName };
       }
+      return { eventBusName };
     }
+
+    if (eventSourceName !== undefined) {
+      // Ex: aws.partner/PartnerName/acct1/repo1
+      const eventSourceNameRegex = /^aws\.partner(\/[\.\-_A-Za-z0-9]+){2,}$/;
+      if (!eventSourceNameRegex.test(eventSourceName)) {
+        throw new Error(
+          `'eventSourceName' must satisfy: ${eventSourceNameRegex}`,
+        );
+      } else if (!eventBusNameRegex.test(eventSourceName)) {
+        throw new Error(
+          `'eventSourceName' must satisfy: ${eventBusNameRegex}`,
+        );
+      }
+      return { eventBusName: eventSourceName, eventSourceName };
+    }
+
     return { eventBusName: defaultEventBusName };
   }
 

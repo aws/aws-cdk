@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { Template } from '@aws-cdk/assertions';
+import { Match, Template } from '@aws-cdk/assertions';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
 import { Duration } from '@aws-cdk/core';
@@ -26,6 +26,23 @@ describe('Lambda caching config', () => {
       code: lambda.Code.fromAsset(path.join(__dirname, 'verify/lambda-tutorial')),
       handler: 'lambda-tutorial.handler',
       runtime: lambda.Runtime.NODEJS_12_X,
+    });
+  });
+
+  test('Lambda resolver can be created without caching config', () => {
+    // WHEN
+    const lambdaDS = api.addLambdaDataSource('LambdaDS', func);
+
+    lambdaDS.createResolver({
+      typeName: 'Query',
+      fieldName: 'allPosts',
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::Resolver', {
+      TypeName: 'Query',
+      FieldName: 'allPosts',
+      CachingConfig: Match.absent(),
     });
   });
 

@@ -15,6 +15,24 @@ import { LogDriver, LogDriverConfig } from './log-drivers/log-driver';
 import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
+ * Specify the secret's version id or version stage
+ */
+export interface SecretVersionInfo {
+  /**
+   * version id of the secret
+   *
+   * @default - use default version id
+   */
+  readonly versionId?: string;
+  /**
+   * version stage of the secret
+   *
+   * @default - use default version stage
+   */
+  readonly versionStage?: string;
+}
+
+/**
  * A secret environment variable.
  */
 export abstract class Secret {
@@ -42,6 +60,25 @@ export abstract class Secret {
   public static fromSecretsManager(secret: secretsmanager.ISecret, field?: string): Secret {
     return {
       arn: field ? `${secret.secretArn}:${field}::` : secret.secretArn,
+      hasField: !!field,
+      grantRead: grantee => secret.grantRead(grantee),
+    };
+  }
+
+  /**
+   * Creates a environment variable value from a secret stored in AWS Secrets
+   * Manager.
+   *
+   * @param secret the secret stored in AWS Secrets Manager
+   * @param versionInfo the version information to reference the secret
+   * @param field the name of the field with the value that you want to set as
+   * the environment variable value. Only values in JSON format are supported.
+   * If you do not specify a JSON field, then the full content of the secret is
+   * used.
+   */
+  public static fromSecretsManagerVersion(secret: secretsmanager.ISecret, versionInfo: SecretVersionInfo, field?: string): Secret {
+    return {
+      arn: `${secret.secretArn}:${field ?? ''}:${versionInfo.versionStage ?? ''}:${versionInfo.versionId ?? ''}`,
       hasField: !!field,
       grantRead: grantee => secret.grantRead(grantee),
     };
@@ -409,6 +446,11 @@ export class ContainerDefinition extends CoreConstruct {
   public readonly referencesSecretJsonField?: boolean;
 
   /**
+   * The name of the image referenced by this container.
+   */
+  public readonly imageName: string;
+
+  /**
    * The inference accelerators referenced by this container.
    */
   private readonly inferenceAcceleratorResources: string[] = [];
@@ -421,6 +463,8 @@ export class ContainerDefinition extends CoreConstruct {
   private readonly imageConfig: ContainerImageConfig;
 
   private readonly secrets?: CfnTaskDefinition.SecretProperty[];
+
+  private readonly environment: { [key: string]: string };
 
   /**
    * Constructs a new instance of the ContainerDefinition class.
@@ -439,6 +483,8 @@ export class ContainerDefinition extends CoreConstruct {
     this.containerName = props.containerName ?? this.node.id;
 
     this.imageConfig = props.image.bind(this, this);
+    this.imageName = this.imageConfig.imageName;
+
     if (props.logging) {
       this.logDriverConfig = props.logging.bind(this, this);
     }
@@ -455,6 +501,12 @@ export class ContainerDefinition extends CoreConstruct {
           valueFrom: secret.arn,
         });
       }
+    }
+
+    if (props.environment) {
+      this.environment = { ...props.environment };
+    } else {
+      this.environment = {};
     }
 
     if (props.environmentFiles) {
@@ -545,6 +597,13 @@ export class ContainerDefinition extends CoreConstruct {
 
       return pm;
     }));
+  }
+
+  /**
+   * This method adds an environment variable to the container.
+   */
+  public addEnvironment(name: string, value: string) {
+    this.environment[name] = value;
   }
 
   /**
@@ -669,8 +728,8 @@ export class ContainerDefinition extends CoreConstruct {
       volumesFrom: cdk.Lazy.any({ produce: () => this.volumesFrom.map(renderVolumeFrom) }, { omitEmptyArray: true }),
       workingDirectory: this.props.workingDirectory,
       logConfiguration: this.logDriverConfig,
-      environment: this.props.environment && renderKV(this.props.environment, 'name', 'value'),
-      environmentFiles: this.environmentFiles && renderEnvironmentFiles(this.environmentFiles),
+      environment: this.environment && Object.keys(this.environment).length ? renderKV(this.environment, 'name', 'value') : undefined,
+      environmentFiles: this.environmentFiles && renderEnvironmentFiles(cdk.Stack.of(this).partition, this.environmentFiles),
       secrets: this.secrets,
       extraHosts: this.props.extraHosts && renderKV(this.props.extraHosts, 'hostname', 'ipAddress'),
       healthCheck: this.props.healthCheck && renderHealthCheck(this.props.healthCheck),
@@ -742,7 +801,7 @@ function renderKV(env: { [key: string]: string }, keyName: string, valueName: st
   return ret;
 }
 
-function renderEnvironmentFiles(environmentFiles: EnvironmentFileConfig[]): any[] {
+function renderEnvironmentFiles(partition: string, environmentFiles: EnvironmentFileConfig[]): any[] {
   const ret = [];
   for (const environmentFile of environmentFiles) {
     const s3Location = environmentFile.s3Location;
@@ -753,7 +812,7 @@ function renderEnvironmentFiles(environmentFiles: EnvironmentFileConfig[]): any[
 
     ret.push({
       type: environmentFile.fileType,
-      value: `arn:aws:s3:::${s3Location.bucketName}/${s3Location.objectKey}`,
+      value: `arn:${partition}:s3:::${s3Location.bucketName}/${s3Location.objectKey}`,
     });
   }
   return ret;

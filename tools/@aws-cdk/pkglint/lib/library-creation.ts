@@ -19,7 +19,7 @@ export interface ModuleDefinition {
 
 export function createModuleDefinitionFromCfnNamespace(namespace: string): ModuleDefinition {
   const [moduleFamily, moduleBaseName] = (namespace === 'AWS::Serverless' ? 'AWS::SAM' : namespace).split('::');
-  const moduleName = `${moduleFamily}-${moduleBaseName.replace(/V\d+$/, '')}`.toLocaleLowerCase();
+  const moduleName = `${moduleFamily}-${moduleBaseName}`.toLocaleLowerCase();
 
   const lowcaseModuleName = moduleBaseName.toLocaleLowerCase();
   const packageName = `@aws-cdk/${moduleName}`;
@@ -56,11 +56,12 @@ export function createModuleDefinitionFromCfnNamespace(namespace: string): Modul
 }
 
 
-export async function createLibraryReadme(namespace: string, readmePath: string) {
+export async function createLibraryReadme(namespace: string, readmePath: string, alphaPackageName?: string) {
   const module = createModuleDefinitionFromCfnNamespace(namespace);
 
   await fs.writeFile(readmePath, cfnOnlyReadmeContents({
     cfnNamespace: namespace,
     packageName: module.packageName,
+    alphaPackageName,
   }));
 }

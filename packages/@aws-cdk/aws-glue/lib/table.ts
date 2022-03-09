@@ -1,13 +1,33 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
-import { ArnFormat, Fn, IResource, Resource, Stack } from '@aws-cdk/core';
+import { ArnFormat, Fn, IResource, Names, Resource, Stack } from '@aws-cdk/core';
+import * as cr from '@aws-cdk/custom-resources';
+import { AwsCustomResource } from '@aws-cdk/custom-resources';
 import { Construct } from 'constructs';
 import { DataFormat } from './data-format';
 import { IDatabase } from './database';
 import { CfnTable } from './glue.generated';
 import { Column } from './schema';
 
+/**
+ * Properties of a Partition Index.
+ */
+export interface PartitionIndex {
+  /**
+   * The name of the partition index.
+   *
+   * @default - a name will be generated for you.
+   */
+  readonly indexName?: string;
+
+  /**
+   * The partition key names that comprise the partition
+   * index. The names must correspond to a name in the
+   * table's partition keys.
+   */
+  readonly keyNames: string[];
+}
 export interface ITable extends IResource {
   /**
    * @attribute
@@ -102,7 +122,16 @@ export interface TableProps {
    *
    * @default table is not partitioned
    */
-  readonly partitionKeys?: Column[]
+  readonly partitionKeys?: Column[];
+
+  /**
+   * Partition indexes on the table. A maximum of 3 indexes
+   * are allowed on a table. Keys in the index must be part
+   * of the table's partition keys.
+   *
+   * @default table has no partition indexes
+   */
+  readonly partitionIndexes?: PartitionIndex[];
 
   /**
    * Storage type of the table's data.
@@ -230,6 +259,18 @@ export class Table extends Resource implements ITable {
    */
   public readonly partitionKeys?: Column[];
 
+  /**
+   * This table's partition indexes.
+   */
+  public readonly partitionIndexes?: PartitionIndex[];
+
+  /**
+   * Partition indexes must be created one at a time. To avoid
+   * race conditions, we store the resource and add dependencies
+   * each time a new partition index is created.
+   */
+  private partitionIndexCustomResources: AwsCustomResource[] = [];
+
   constructor(scope: Construct, id: string, props: TableProps) {
     super(scope, id, {
       physicalName: props.tableName,
@@ -287,6 +328,77 @@ export class Table extends Resource implements ITable {
       resourceName: `${this.database.databaseName}/${this.tableName}`,
     });
     this.node.defaultChild = tableResource;
+
+    // Partition index creation relies on created table.
+    if (props.partitionIndexes) {
+      this.partitionIndexes = props.partitionIndexes;
+      this.partitionIndexes.forEach((index) => this.addPartitionIndex(index));
+    }
+  }
+
+  /**
+   * Add a partition index to the table. You can have a maximum of 3 partition
+   * indexes to a table. Partition index keys must be a subset of the table's
+   * partition keys.
+   *
+   * @see https://docs.aws.amazon.com/glue/latest/dg/partition-indexes.html
+   */
+  public addPartitionIndex(index: PartitionIndex) {
+    const numPartitions = this.partitionIndexCustomResources.length;
+    if (numPartitions >= 3) {
+      throw new Error('Maximum number of partition indexes allowed is 3');
+    }
+    this.validatePartitionIndex(index);
+
+    const indexName = index.indexName ?? this.generateIndexName(index.keyNames);
+    const partitionIndexCustomResource = new cr.AwsCustomResource(this, `partition-index-${indexName}`, {
+      onCreate: {
+        service: 'Glue',
+        action: 'createPartitionIndex',
+        parameters: {
+          DatabaseName: this.database.databaseName,
+          TableName: this.tableName,
+          PartitionIndex: {
+            IndexName: indexName,
+            Keys: index.keyNames,
+          },
+        },
+        physicalResourceId: cr.PhysicalResourceId.of(
+          indexName,
+        ),
+      },
+      policy: cr.AwsCustomResourcePolicy.fromSdkCalls({
+        resources: cr.AwsCustomResourcePolicy.ANY_RESOURCE,
+      }),
+    });
+    this.grantToUnderlyingResources(partitionIndexCustomResource, ['glue:UpdateTable']);
+
+    // Depend on previous partition index if possible, to avoid race condition
+    if (numPartitions > 0) {
+      this.partitionIndexCustomResources[numPartitions-1].node.addDependency(partitionIndexCustomResource);
+    }
+    this.partitionIndexCustomResources.push(partitionIndexCustomResource);
+  }
+
+  private generateIndexName(keys: string[]): string {
+    const prefix = keys.join('-') + '-';
+    const uniqueId = Names.uniqueId(this);
+    const maxIndexLength = 80; // arbitrarily specified
+    const startIndex = Math.max(0, uniqueId.length - (maxIndexLength - prefix.length));
+    return prefix + uniqueId.substring(startIndex);
+  }
+
+  private validatePartitionIndex(index: PartitionIndex) {
+    if (index.indexName !== undefined && (index.indexName.length < 1 || index.indexName.length > 255)) {
+      throw new Error(`Index name must be between 1 and 255 characters, but got ${index.indexName.length}`);
+    }
+    if (!this.partitionKeys || this.partitionKeys.length === 0) {
+      throw new Error('The table must have partition keys to create a partition index');
+    }
+    const keyNames = this.partitionKeys.map(pk => pk.name);
+    if (!index.keyNames.every(k => keyNames.includes(k))) {
+      throw new Error(`All index keys must also be partition keys. Got ${index.keyNames} but partition key names are ${keyNames}`);
+    }
   }
 
   /**
@@ -325,10 +437,29 @@ export class Table extends Resource implements ITable {
     return ret;
   }
 
-  private grant(grantee: iam.IGrantable, actions: string[]) {
+  /**
+   * Grant the given identity custom permissions.
+   */
+  public grant(grantee: iam.IGrantable, actions: string[]) {
     return iam.Grant.addToPrincipal({
       grantee,
       resourceArns: [this.tableArn],
+      actions,
+    });
+  }
+
+  /**
+   * Grant the given identity custom permissions to ALL underlying resources of the table.
+   * Permissions will be granted to the catalog, the database, and the table.
+   */
+  public grantToUnderlyingResources(grantee: iam.IGrantable, actions: string[]) {
+    return iam.Grant.addToPrincipal({
+      grantee,
+      resourceArns: [
+        this.tableArn,
+        this.database.catalogArn,
+        this.database.databaseArn,
+      ],
       actions,
     });
   }
@@ -400,7 +531,6 @@ function createBucket(table: Table, props: TableProps) {
 }
 
 const readPermissions = [
-  'glue:BatchDeletePartition',
   'glue:BatchGetPartition',
   'glue:GetPartition',
   'glue:GetPartitions',

@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
 import * as servicediscovery from '../lib';
@@ -11,7 +11,7 @@ describe('namespace', () => {
       name: 'foobar.com',
     });
 
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       Resources: {
         MyNamespaceD0BB8558: {
           Type: 'AWS::ServiceDiscovery::HttpNamespace',
@@ -32,7 +32,7 @@ describe('namespace', () => {
       name: 'foobar.com',
     });
 
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       Resources: {
         MyNamespaceD0BB8558: {
           Type: 'AWS::ServiceDiscovery::PublicDnsNamespace',
@@ -55,7 +55,7 @@ describe('namespace', () => {
       vpc,
     });
 
-    expect(stack).toHaveResource('AWS::ServiceDiscovery::PrivateDnsNamespace', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ServiceDiscovery::PrivateDnsNamespace', {
       Name: 'foobar.com',
       Vpc: {
         Ref: 'MyVpcF9F0CA6F',

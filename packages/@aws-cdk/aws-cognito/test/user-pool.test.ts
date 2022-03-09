@@ -1702,47 +1702,7 @@ describe('User Pool', () => {
     });
 
   });
-  test('email withSES invalid region throws error', () => {
-    // GIVEN
-    const stack = new Stack(undefined, undefined, {
-      env: {
-        region: 'us-east-2',
-        account: '11111111111',
-      },
-    });
 
-    // WHEN
-    expect(() => new UserPool(stack, 'Pool', {
-      email: UserPoolEmail.withSES({
-        fromEmail: 'mycustomemail@example.com',
-        fromName: 'My Custom Email',
-        replyTo: 'reply@example.com',
-        configurationSetName: 'default',
-      }),
-    })).toThrow(/Please provide a valid value/);
-
-  });
-
-  test('email withSES invalid sesRegion throws error', () => {
-    // GIVEN
-    const stack = new Stack(undefined, undefined, {
-      env: {
-        account: '11111111111',
-      },
-    });
-
-    // WHEN
-    expect(() => new UserPool(stack, 'Pool', {
-      email: UserPoolEmail.withSES({
-        sesRegion: 'us-east-2',
-        fromEmail: 'mycustomemail@example.com',
-        fromName: 'My Custom Email',
-        replyTo: 'reply@example.com',
-        configurationSetName: 'default',
-      }),
-    })).toThrow(/sesRegion must be one of/);
-
-  });
 });
 
 test('device tracking is configured correctly', () => {

@@ -1,7 +1,8 @@
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as AWS from 'aws-sdk';
-import { Mode, SdkProvider } from '../api';
+import { Mode } from '../api/aws-auth/credentials';
+import { SdkProvider } from '../api/aws-auth/sdk-provider';
 import { debug } from '../logging';
 import { ContextProviderPlugin } from './provider';
 
@@ -15,7 +16,7 @@ export class VpcNetworkContextProviderPlugin implements ContextProviderPlugin {
     const region: string = args.region!;
 
     const options = { assumeRoleArn: args.lookupRoleArn };
-    const ec2 = (await this.aws.forEnvironment(cxapi.EnvironmentUtils.make(account, region), Mode.ForReading, options)).ec2();
+    const ec2 = (await this.aws.forEnvironment(cxapi.EnvironmentUtils.make(account, region), Mode.ForReading, options)).sdk.ec2();
 
     const vpcId = await this.findVpc(ec2, args);
 
@@ -78,6 +79,10 @@ export class VpcNetworkContextProviderPlugin implements ContextProviderPlugin {
       if (!isValidSubnetType(type)) {
         // eslint-disable-next-line max-len
         throw new Error(`Subnet ${subnet.SubnetArn} has invalid subnet type ${type} (must be ${SubnetType.Public}, ${SubnetType.Private} or ${SubnetType.Isolated})`);
+      }
+
+      if (args.subnetGroupNameTag && !getTag(args.subnetGroupNameTag, subnet.Tags)) {
+        throw new Error(`Invalid subnetGroupNameTag: Subnet ${subnet.SubnetArn} does not have an associated tag with Key='${args.subnetGroupNameTag}'`);
       }
 
       const name = getTag(args.subnetGroupNameTag || 'aws-cdk:subnet-name', subnet.Tags) || type;

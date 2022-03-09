@@ -3,6 +3,7 @@ import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import { ArnFormat, IResource, Lazy, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
+import { Code } from './code';
 import { CfnRepository } from './codecommit.generated';
 
 /**
@@ -488,6 +489,13 @@ export interface RepositoryProps {
    * @default - No description.
    */
   readonly description?: string;
+
+  /**
+   * The contents with which to initialize the repository after it has been created.
+   *
+   * @default - No initialization (create empty repo)
+   */
+  readonly code?: Code;
 }
 
 /**
@@ -552,6 +560,7 @@ export class Repository extends RepositoryBase {
       repositoryName: props.repositoryName,
       repositoryDescription: props.description,
       triggers: Lazy.any({ produce: () => this.triggers }, { omitEmptyArray: true }),
+      code: (props.code?.bind(this))?.code,
     });
 
     this.repositoryName = this.getResourceNameAttribute(repository.attrName);

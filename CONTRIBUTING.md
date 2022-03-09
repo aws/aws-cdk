@@ -22,7 +22,7 @@ let us know if it's not up-to-date (even better, submit a PR with your  correcti
   - [Step 5: Merge](#step-5-merge)
 - [Breaking Changes](#breaking-changes)
 - [Documentation](#documentation)
-  - [rosetta](#rosetta)
+  - [Rosetta](#rosetta)
 - [Tools](#tools)
   - [Linters](#linters)
   - [cfn2ts](#cfn2ts)
@@ -46,15 +46,14 @@ let us know if it's not up-to-date (even better, submit a PR with your  correcti
 
 The following steps describe how to set up the AWS CDK repository on your local machine.
 The alternative is to use [Gitpod](https://www.gitpod.io/), a Cloud IDE for your development.
-See [Gitpod section](#gitpod) on how to set up the CDK repo on Gitpod.
+See [Gitpod section](#gitpod-alternative) on how to set up the CDK repo on Gitpod.
 
 ### Setup
 
 The following tools need to be installed on your system prior to installing the CDK:
 
-- [Node.js >= 10.13.0](https://nodejs.org/download/release/latest-v10.x/)
+- [Node.js >= 14.15.0](https://nodejs.org/download/release/latest-v14.x/)
   - We recommend using a version in [Active LTS](https://nodejs.org/en/about/releases/)
-  - ⚠️ versions `13.0.0` to `13.6.0` are not supported due to compatibility issues with our dependencies.
 - [Yarn >= 1.19.1, < 2](https://yarnpkg.com/lang/en/docs/install)
 - [.NET Core SDK 3.1.x](https://www.microsoft.com/net/download)
 - [Python >= 3.6.5, < 4.0](https://www.python.org/downloads/release/python-365/)
@@ -70,7 +69,7 @@ $ yarn install
 ```
 
 We recommend that you use [Visual Studio Code](https://code.visualstudio.com/) to work on the CDK.
-We use `eslint` to keep our code consistent in terms of style and reducing defects. We recommend installing the
+We use `eslint` to keep our code consistent in terms of style and reducing defects. We recommend installing
 the [eslint extension](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) as well.
 
 ### Repo Layout
@@ -218,6 +217,8 @@ Work your magic. Here are some guidelines:
     Watch out for their error messages and adjust your code accordingly.
 * Every change requires a unit test
 * If you change APIs, make sure to update the module's README file
+  * When you add new examples to the module's README file, you must also ensure they compile - the PR build will fail
+    if they do not. To learn more about how to ensure that they compile, see [Documentation](#documentation).
 * Try to maintain a single feature/bugfix per pull request. It's okay to introduce a little bit of housekeeping
   changes along the way, but try to avoid conflating multiple features. Eventually, all these are going to go into a
   single commit, so you can use that to frame your scope.
@@ -509,7 +510,7 @@ the README for the `aws-ec2` module - https://docs.aws.amazon.com/cdk/api/latest
 
 ### Rosetta
 
-The README file contains code snippets written as typescript code.  Code snippets typed in fenced code blocks
+The README file contains code snippets written as typescript code. Code snippets typed in fenced code blocks
 (such as `` ```ts ``) will be automatically extracted, compiled and translated to other languages when the
 during the [pack](#pack) step. We call this feature 'rosetta'.
 
@@ -542,11 +543,12 @@ When no fixture is specified, the fixture with the name
 `rosetta/default.ts-fixture` will be used if present. `nofixture` can be used to
 opt out of that behavior.
 
-In an `@example` block, which is unfenced, the first line of the example can
-contain three slashes to achieve the same effect:
+In an `@example` block, which is unfenced, additional information pertaining to
+the example can be provided via the `@exampleMetadata` tag:
 
 ```
 /**
+ * @exampleMetadata fixture=with-bucket
  * @example
  *   /// fixture=with-bucket
  *   bucket.addLifecycleTransition({ ...props });
@@ -583,20 +585,20 @@ cases where some of those do not apply - good judgement is to be applied):
   // ...rest of the example...
   ```
 
-- Within `.ts-fixture` files, make use of `declare` statements instead of
-  writing a compatible value (this will make your fixtures more durable):
+- Make use of `declare` statements directly in examples for values that are
+  necessary for compilation but unimportant to the example:
 
   ```ts
-  // An hypothetical 'rosetta/default.ts-fixture' file in `@aws-cdk/core`
-  import * as kms from '@aws-cdk/aws-kms';
-  import * as s3 from '@aws-cdk/aws-s3';
-  import { StackProps } from '@aws-cdk/core';
-
-  declare const kmsKey: kms.IKey;
-  declare const bucket: s3.Bucket;
-
-  declare const props: StackProps;
+  // An example about adding a stage to a pipeline in the @aws-cdk/pipelines library
+  declare const pipeline: pipelines.CodePipeline;
+  declare const myStage: Stage;
+  pipeline.addStage(myStage);   
   ```
+
+- Utilize the `default.ts-fixture` that already exists rather than writing new
+  `.ts-fixture` files. This is because values stored in `.ts-fixture` files do
+  not surface to the examples visible in the docs, so while they help successful
+  compilation, they do not help users understand the example.
 
 ## Tools (Advanced)
 
@@ -663,7 +665,7 @@ extension](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-e
 
 #### pkglint
 
-The `pkglint` tool "lints" package.json files across the repo according to [rules.ts](tools/pkglint/lib/rules.ts).
+The `pkglint` tool "lints" package.json files across the repo according to [rules.ts](tools/@aws-cdk/pkglint/lib/rules.ts).
 
 To evaluate (and attempt to fix) all package linting issues in the repo, run the following command from the root of the
 repository (after bootstrapping):
@@ -727,7 +729,7 @@ these directories.
 ### Linking against this repository
 
 If you are developing your own CDK application or library and want to use the locally checked out version of the
-AWS CDK, instead of the the version of npm, the `./link-all.sh` script will help here.
+AWS CDK, instead of the version of npm, the `./link-all.sh` script will help here.
 
 This script symlinks the built modules from the local AWS CDK repo under the `node_modules/` folder of the CDK app or
 library.
@@ -804,34 +806,16 @@ The pattern is simple:
    with the name of the context key that **enables** this new feature (for
    example, `ENABLE_STACK_NAME_DUPLICATES`). The context key should be in the
    form `module.Type:feature` (e.g. `@aws-cdk/core:enableStackNameDuplicates`).
-2. Use `node.tryGetContext(cxapi.ENABLE_XXX)` to check if this feature is enabled
+2. Use `FeatureFlags.of(construct).isEnabled(cxapi.ENABLE_XXX)` to check if this feature is enabled
    in your code. If it is not defined, revert to the legacy behavior.
 3. Add your feature flag to the `FUTURE_FLAGS` map in
    [cx-api/lib/features.ts](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/cx-api/lib/features.ts).
    This map is inserted to generated `cdk.json` files for new projects created
    through `cdk init`.
-4. In your PR title (which goes into CHANGELOG), add a `(under feature flag)` suffix. e.g:
+4. In your tests, use the `testFutureBehavior` and `testLegacyBehavior` [jest helper methods] to test the enabled and disabled behavior.
+5. In your PR title (which goes into CHANGELOG), add a `(under feature flag)` suffix. e.g:
 
     `fix(core): impossible to use the same physical stack name for two stacks (under feature flag)`
-
-In the [next major version of the
-CDK](https://github.com/aws/aws-cdk/issues/3398) we will either remove the
-legacy behavior or flip the logic for all these features and then
-reset the `FEATURE_FLAGS` map for the next cycle.
-
-### Feature Flags - CDKv2
-
-We have started working on the next version of the CDK, specifically CDKv2. This is currently being maintained
-on a separate branch `v2-main` whereas `master` continues to track versions `1.x`.
-
-Feature flags introduced in the CDK 1.x and removed in 2.x, must be added to the `FUTURE_FLAGS_EXPIRED` list in
-[cx-api/lib/features.ts](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/cx-api/lib/features.ts)
-on the `v2-main` branch.
-This will make the default behaviour in CDKv2 as if the flag is enabled and also prevents users from disabling
-the feature flag.
-
-A couple of [jest helper methods] are available for use with unit tests. These help run unit tests that test
-behaviour when flags are enabled or disabled in the two major versions.
 
 [jest helper methods]: https://github.com/aws/aws-cdk/blob/master/tools/@aws-cdk/cdk-build-tools/lib/feature-flag.ts
 

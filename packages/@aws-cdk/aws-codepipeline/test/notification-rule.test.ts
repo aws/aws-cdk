@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as cdk from '@aws-cdk/core';
 import * as codepipeline from '../lib';
 import { FakeBuildAction } from './fake-build-action';
@@ -35,7 +35,7 @@ describe('pipeline with codestar notification integration', () => {
 
     pipeline.notifyOnExecutionStateChange('NotifyOnExecutionStateChange', target);
 
-    expect(stack).toHaveResourceLike('AWS::CodeStarNotifications::NotificationRule', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeStarNotifications::NotificationRule', {
       Name: 'PipelineNotifyOnExecutionStateChange9FE60973',
       DetailType: 'FULL',
       EventTypeIds: [
@@ -77,7 +77,7 @@ describe('pipeline with codestar notification integration', () => {
 
     pipeline.notifyOnAnyStageStateChange('NotifyOnAnyStageStateChange', target);
 
-    expect(stack).toHaveResourceLike('AWS::CodeStarNotifications::NotificationRule', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeStarNotifications::NotificationRule', {
       Name: 'PipelineNotifyOnAnyStageStateChange05355CCD',
       DetailType: 'FULL',
       EventTypeIds: [
@@ -118,7 +118,7 @@ describe('pipeline with codestar notification integration', () => {
 
     pipeline.notifyOnAnyActionStateChange('NotifyOnAnyActionStateChange', target);
 
-    expect(stack).toHaveResourceLike('AWS::CodeStarNotifications::NotificationRule', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeStarNotifications::NotificationRule', {
       Name: 'PipelineNotifyOnAnyActionStateChange64D5B2AA',
       DetailType: 'FULL',
       EventTypeIds: [
@@ -158,7 +158,7 @@ describe('pipeline with codestar notification integration', () => {
 
     pipeline.notifyOnAnyManualApprovalStateChange('NotifyOnAnyManualApprovalStateChange', target);
 
-    expect(stack).toHaveResourceLike('AWS::CodeStarNotifications::NotificationRule', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeStarNotifications::NotificationRule', {
       Name: 'PipelineNotifyOnAnyManualApprovalStateChangeE60778F7',
       DetailType: 'FULL',
       EventTypeIds: [

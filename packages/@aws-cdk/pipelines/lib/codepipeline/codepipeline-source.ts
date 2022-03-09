@@ -3,15 +3,17 @@ import * as cp from '@aws-cdk/aws-codepipeline';
 import { Artifact } from '@aws-cdk/aws-codepipeline';
 import * as cp_actions from '@aws-cdk/aws-codepipeline-actions';
 import { Action, CodeCommitTrigger, GitHubTrigger, S3Trigger } from '@aws-cdk/aws-codepipeline-actions';
+import { IRepository } from '@aws-cdk/aws-ecr';
 import * as iam from '@aws-cdk/aws-iam';
 import { IBucket } from '@aws-cdk/aws-s3';
-import { SecretValue, Token } from '@aws-cdk/core';
+import { Fn, SecretValue, Token } from '@aws-cdk/core';
 import { Node } from 'constructs';
 import { FileSet, Step } from '../blueprint';
 import { CodePipelineActionFactoryResult, ProduceActionOptions, ICodePipelineActionFactory } from './codepipeline-action-factory';
+import { makeCodePipelineOutput } from './private/outputs';
 
 /**
- * CodePipeline source steps
+ * Factory for CodePipeline source steps
  *
  * This class contains a number of factory methods for the different types
  * of sources that CodePipeline supports.
@@ -48,17 +50,28 @@ export abstract class CodePipelineSource extends Step implements ICodePipelineAc
    * @param props The options, which include the key that identifies the source code file and
    * and how the pipeline should be triggered.
    *
-   * Example:
-   *
-   * ```ts
+   * @example
    * declare const bucket: s3.Bucket;
-   * pipelines.CodePipelineSource.s3(bucket, {
-   *   key: 'path/to/file.zip',
-   * });
-   * ```
+   * pipelines.CodePipelineSource.s3(bucket, 'path/to/file.zip');
    */
   public static s3(bucket: IBucket, objectKey: string, props: S3SourceOptions = {}): CodePipelineSource {
     return new S3Source(bucket, objectKey, props);
+  }
+
+  /**
+   * Returns an ECR source.
+   *
+   * @param repository The repository that will be watched for changes.
+   * @param props The options, which include the image tag to be checked for changes.
+   *
+   * @example
+   * declare const repository: ecr.IRepository;
+   * pipelines.CodePipelineSource.ecr(repository, {
+   *   imageTag: 'latest',
+   * });
+   */
+  public static ecr(repository: IRepository, props: ECRSourceOptions = {}): CodePipelineSource {
+    return new ECRSource(repository, props);
   }
 
   /**
@@ -96,12 +109,9 @@ export abstract class CodePipelineSource extends Step implements ICodePipelineAc
    * @param branch The branch to use.
    * @param props The source properties.
    *
-   * Example:
-   *
-   * ```ts
-   * const repository: IRepository = ...
-   * CodePipelineSource.codeCommit(repository, 'main');
-   * ```
+   * @example
+   * declare const repository: codecommit.IRepository;
+   * pipelines.CodePipelineSource.codeCommit(repository, 'main');
    */
   public static codeCommit(repository: codecommit.IRepository, branch: string, props: CodeCommitSourceOptions = {}): CodePipelineSource {
     return new CodeCommitSource(repository, branch, props);
@@ -112,12 +122,50 @@ export abstract class CodePipelineSource extends Step implements ICodePipelineAc
 
   public produceAction(stage: cp.IStage, options: ProduceActionOptions): CodePipelineActionFactoryResult {
     const output = options.artifacts.toCodePipeline(this.primaryOutput!);
-    const action = this.getAction(output, options.actionName, options.runOrder);
+
+    const action = this.getAction(output, options.actionName, options.runOrder, options.variablesNamespace);
     stage.addAction(action);
     return { runOrdersConsumed: 1 };
   }
 
-  protected abstract getAction(output: Artifact, actionName: string, runOrder: number): Action;
+  protected abstract getAction(output: Artifact, actionName: string, runOrder: number, variablesNamespace?: string): Action;
+
+  /**
+   * Return an attribute of the current source revision
+   *
+   * These values can be passed into the environment variables of pipeline steps,
+   * so your steps can access information about the source revision.
+   *
+   * What attributes are available depends on the type of source. These attributes
+   * are supported:
+   *
+   * - GitHub, CodeCommit, and CodeStarSourceConnection
+   *   - `AuthorDate`
+   *   - `BranchName`
+   *   - `CommitId`
+   *   - `CommitMessage`
+   * - GitHub, CodeCommit and ECR
+   *   - `RepositoryName`
+   * - GitHub and CodeCommit
+   *   - `CommitterDate`
+   * - GitHub
+   *   - `CommitUrl`
+   * - CodeStarSourceConnection
+   *   - `FullRepositoryName`
+   * - S3
+   *   - `ETag`
+   *   - `VersionId`
+   * - ECR
+   *   - `ImageDigest`
+   *   - `ImageTag`
+   *   - `ImageURI`
+   *   - `RegistryId`
+   *
+   * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/reference-variables.html#reference-variables-list
+   */
+  public sourceAttribute(name: string): string {
+    return makeCodePipelineOutput(this, name);
+  }
 }
 
 /**
@@ -181,7 +229,7 @@ class GitHubSource extends CodePipelineSource {
     this.configurePrimaryOutput(new FileSet('Source', this));
   }
 
-  protected getAction(output: Artifact, actionName: string, runOrder: number) {
+  protected getAction(output: Artifact, actionName: string, runOrder: number, variablesNamespace?: string) {
     return new cp_actions.GitHubSourceAction({
       output,
       actionName,
@@ -191,6 +239,7 @@ class GitHubSource extends CodePipelineSource {
       repo: this.repo,
       branch: this.branch,
       trigger: this.props.trigger,
+      variablesNamespace,
     });
   }
 }
@@ -224,7 +273,7 @@ class S3Source extends CodePipelineSource {
     this.configurePrimaryOutput(new FileSet('Source', this));
   }
 
-  protected getAction(output: Artifact, _actionName: string, runOrder: number) {
+  protected getAction(output: Artifact, _actionName: string, runOrder: number, variablesNamespace?: string) {
     return new cp_actions.S3SourceAction({
       output,
       // Bucket names are guaranteed to conform to ActionName restrictions
@@ -233,6 +282,47 @@ class S3Source extends CodePipelineSource {
       bucketKey: this.objectKey,
       trigger: this.props.trigger,
       bucket: this.bucket,
+      variablesNamespace,
+    });
+  }
+}
+
+/**
+ * Options for ECR sources
+ */
+export interface ECRSourceOptions {
+  /**
+   * The image tag that will be checked for changes.
+   *
+   * @default latest
+   */
+  readonly imageTag?: string;
+
+  /**
+   * The action name used for this source in the CodePipeline
+   *
+   * @default - The repository name
+   */
+  readonly actionName?: string;
+}
+
+class ECRSource extends CodePipelineSource {
+  constructor(readonly repository: IRepository, readonly props: ECRSourceOptions) {
+    super(Node.of(repository).addr);
+
+    this.configurePrimaryOutput(new FileSet('Source', this));
+  }
+
+  protected getAction(output: Artifact, _actionName: string, runOrder: number, variablesNamespace: string) {
+    // RepositoryName can contain '/' that is not a valid ActionName character, use '_' instead
+    const formattedRepositoryName = Fn.join('_', Fn.split('/', this.repository.repositoryName));
+    return new cp_actions.EcrSourceAction({
+      output,
+      actionName: this.props.actionName ?? formattedRepositoryName,
+      runOrder,
+      repository: this.repository,
+      imageTag: this.props.imageTag,
+      variablesNamespace,
     });
   }
 }
@@ -292,7 +382,7 @@ class CodeStarConnectionSource extends CodePipelineSource {
     this.configurePrimaryOutput(new FileSet('Source', this));
   }
 
-  protected getAction(output: Artifact, actionName: string, runOrder: number) {
+  protected getAction(output: Artifact, actionName: string, runOrder: number, variablesNamespace?: string) {
     return new cp_actions.CodeStarConnectionsSourceAction({
       output,
       actionName,
@@ -303,6 +393,7 @@ class CodeStarConnectionSource extends CodePipelineSource {
       branch: this.branch,
       codeBuildCloneOutput: this.props.codeBuildCloneOutput,
       triggerOnPush: this.props.triggerOnPush,
+      variablesNamespace,
     });
   }
 }
@@ -349,7 +440,7 @@ class CodeCommitSource extends CodePipelineSource {
     this.configurePrimaryOutput(new FileSet('Source', this));
   }
 
-  protected getAction(output: Artifact, _actionName: string, runOrder: number) {
+  protected getAction(output: Artifact, _actionName: string, runOrder: number, variablesNamespace?: string) {
     return new cp_actions.CodeCommitSourceAction({
       output,
       // Guaranteed to be okay as action name
@@ -360,6 +451,7 @@ class CodeCommitSource extends CodePipelineSource {
       repository: this.repository,
       eventRole: this.props.eventRole,
       codeBuildCloneOutput: this.props.codeBuildCloneOutput,
+      variablesNamespace,
     });
   }
 }

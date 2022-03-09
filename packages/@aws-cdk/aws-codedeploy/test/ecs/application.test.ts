@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as cdk from '@aws-cdk/core';
 import * as codedeploy from '../../lib';
 
@@ -7,7 +7,7 @@ describe('CodeDeploy ECS Application', () => {
     const stack = new cdk.Stack();
     new codedeploy.EcsApplication(stack, 'MyApp');
 
-    expect(stack).toHaveResource('AWS::CodeDeploy::Application', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeDeploy::Application', {
       ComputePlatform: 'ECS',
     });
   });
@@ -18,7 +18,7 @@ describe('CodeDeploy ECS Application', () => {
       applicationName: 'my-name',
     });
 
-    expect(stack).toHaveResource('AWS::CodeDeploy::Application', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeDeploy::Application', {
       ApplicationName: 'my-name',
       ComputePlatform: 'ECS',
     });

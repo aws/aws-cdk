@@ -104,7 +104,7 @@ describe('with intercepted network calls', () => {
       await expect(provider.defaultAccount()).resolves.toEqual({ accountId: uniq('11111'), partition: 'aws-here' });
 
       // Ask for a different region
-      const sdk = await provider.forEnvironment({ ...env(uniq('11111')), region: 'rgn' }, Mode.ForReading);
+      const sdk = (await provider.forEnvironment({ ...env(uniq('11111')), region: 'rgn' }, Mode.ForReading)).sdk;
       expect(sdkConfig(sdk).credentials!.accessKeyId).toEqual(uniq('access'));
       expect(sdk.currentRegion).toEqual('rgn');
     });
@@ -136,7 +136,7 @@ describe('with intercepted network calls', () => {
       const provider = await providerFromProfile(undefined);
 
       // THEN
-      const sdk = await provider.forEnvironment(cxapi.EnvironmentUtils.make(cxapi.UNKNOWN_ACCOUNT, cxapi.UNKNOWN_REGION), Mode.ForReading);
+      const sdk = (await provider.forEnvironment(cxapi.EnvironmentUtils.make(cxapi.UNKNOWN_ACCOUNT, cxapi.UNKNOWN_REGION), Mode.ForReading)).sdk;
       expect(sdkConfig(sdk).credentials!.accessKeyId).toEqual(uniq('access'));
       expect((await sdk.currentAccount()).accountId).toEqual(uniq('11111'));
       expect(sdk.currentRegion).toEqual('eu-bla-5');
@@ -182,7 +182,7 @@ describe('with intercepted network calls', () => {
       expect(provider.defaultRegion).toEqual('eu-west-1');
       await expect(provider.defaultAccount()).resolves.toEqual({ accountId: uniq('22222'), partition: 'aws' });
 
-      const sdk = await provider.forEnvironment(env(uniq('22222')), Mode.ForReading);
+      const sdk = (await provider.forEnvironment(env(uniq('22222')), Mode.ForReading)).sdk;
       expect(sdkConfig(sdk).credentials!.accessKeyId).toEqual(uniq('fooccess'));
     });
 
@@ -201,7 +201,7 @@ describe('with intercepted network calls', () => {
       expect(provider.defaultRegion).toEqual('eu-bla-5'); // Fall back to default config
       await expect(provider.defaultAccount()).resolves.toEqual({ accountId: uniq('22222'), partition: 'aws' });
 
-      const sdk = await provider.forEnvironment(env(uniq('22222')), Mode.ForReading);
+      const sdk = (await provider.forEnvironment(env(uniq('22222')), Mode.ForReading)).sdk;
       expect(sdkConfig(sdk).credentials!.accessKeyId).toEqual(uniq('fooccess'));
     });
 
@@ -226,7 +226,7 @@ describe('with intercepted network calls', () => {
       const provider = await providerFromProfile('assumable');
 
       // WHEN
-      const sdk = await provider.forEnvironment(env(uniq('66666')), Mode.ForReading);
+      const sdk = (await provider.forEnvironment(env(uniq('66666')), Mode.ForReading)).sdk;
 
       // THEN
       expect((await sdk.currentAccount()).accountId).toEqual(uniq('66666'));
@@ -275,7 +275,7 @@ describe('with intercepted network calls', () => {
       const promptlyMockCalls = (promptly.prompt as jest.Mock).mock.calls.length;
 
       // THEN
-      const sdk = await provider.forEnvironment(env(uniq('66666')), Mode.ForReading);
+      const sdk = (await provider.forEnvironment(env(uniq('66666')), Mode.ForReading)).sdk;
       expect((await sdk.currentAccount()).accountId).toEqual(uniq('66666'));
       expect(fakeSts.assumedRoles[0]).toEqual(expect.objectContaining({
         roleArn: 'arn:aws:iam::66666:role/Assumable',
@@ -331,7 +331,7 @@ describe('with intercepted network calls', () => {
         // WHEN
         const provider = await providerFromProfile(undefined);
 
-        const sdk = await provider.forEnvironment(env(uniq('88888')), Mode.ForReading, { assumeRoleArn: 'arn:aws:role' }) as SDK;
+        const sdk = (await provider.forEnvironment(env(uniq('88888')), Mode.ForReading, { assumeRoleArn: 'arn:aws:role' })).sdk as SDK;
         await sdk.currentAccount();
 
         // THEN
@@ -352,7 +352,7 @@ describe('with intercepted network calls', () => {
       const provider = await providerFromProfile(undefined);
 
       // WHEN
-      const sdk = await provider.forEnvironment(env(uniq('88888')), Mode.ForReading, { assumeRoleArn: 'arn:aws:role' }) as SDK;
+      const sdk = (await provider.forEnvironment(env(uniq('88888')), Mode.ForReading, { assumeRoleArn: 'arn:aws:role' })).sdk as SDK;
 
       // THEN
       expect((await sdk.currentAccount()).accountId).toEqual(uniq('88888'));
@@ -369,7 +369,7 @@ describe('with intercepted network calls', () => {
       const provider = await providerFromProfile(undefined);
 
       // WHEN - assumeRole fails because the role can only be assumed from account 11111
-      const sdk = await provider.forEnvironment(env(uniq('88888')), Mode.ForReading, { assumeRoleArn: 'arn:aws:role' }) as SDK;
+      const sdk = (await provider.forEnvironment(env(uniq('88888')), Mode.ForReading, { assumeRoleArn: 'arn:aws:role' })).sdk as SDK;
 
       // THEN
       expect((await sdk.currentAccount()).accountId).toEqual(uniq('88888'));
@@ -411,7 +411,7 @@ describe('with intercepted network calls', () => {
 
     test('even if AssumeRole fails but current credentials are from a plugin, we will still use them', async () => {
       const provider = await providerFromProfile(undefined);
-      const sdk = await provider.forEnvironment(env(uniq('99999')), Mode.ForReading, { assumeRoleArn: 'does:not:exist' });
+      const sdk = (await provider.forEnvironment(env(uniq('99999')), Mode.ForReading, { assumeRoleArn: 'does:not:exist' })).sdk;
 
       // THEN
       expect((await sdk.currentAccount()).accountId).toEqual(uniq('99999'));

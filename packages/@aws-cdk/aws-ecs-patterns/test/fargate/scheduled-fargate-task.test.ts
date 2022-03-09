@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Match, Template } from '@aws-cdk/assertions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as events from '@aws-cdk/aws-events';
@@ -21,7 +21,7 @@ test('Can create a scheduled Fargate Task - with only required props', () => {
   });
 
   // THEN
-  expect(stack).toHaveResource('AWS::Events::Rule', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
     State: 'ENABLED',
     Targets: [
       {
@@ -56,7 +56,7 @@ test('Can create a scheduled Fargate Task - with only required props', () => {
     ],
   });
 
-  expect(stack).toHaveResource('AWS::ECS::TaskDefinition', {
+  Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
     ContainerDefinitions: [
       {
         Essential: true,
@@ -100,7 +100,7 @@ test('Can create a scheduled Fargate Task - with optional props', () => {
   });
 
   // THEN
-  expect(stack).toHaveResource('AWS::Events::Rule', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
     Name: 'sample-scheduled-task-rule',
     State: 'DISABLED',
     Targets: [
@@ -136,7 +136,7 @@ test('Can create a scheduled Fargate Task - with optional props', () => {
     ],
   });
 
-  expect(stack).toHaveResource('AWS::ECS::TaskDefinition', {
+  Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
     ContainerDefinitions: [
       {
         Environment: [
@@ -180,7 +180,7 @@ test('Scheduled Fargate Task - with MemoryReservation defined', () => {
   });
 
   // THEN
-  expect(stack).toHaveResource('AWS::ECS::TaskDefinition', {
+  Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
     ContainerDefinitions: [
       {
         Essential: true,
@@ -219,7 +219,7 @@ test('Scheduled Fargate Task - with Command defined', () => {
   });
 
   // THEN
-  expect(stack).toHaveResource('AWS::ECS::TaskDefinition', {
+  Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
     ContainerDefinitions: [
       {
         Command: [
@@ -268,22 +268,22 @@ test('Scheduled Fargate Task - with subnetSelection defined', () => {
   });
 
   // THEN
-  expect(stack).toHaveResourceLike('AWS::Events::Rule', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
     Targets: [
-      {
-        EcsParameters: {
+      Match.objectLike({
+        EcsParameters: Match.objectLike({
           NetworkConfiguration: {
-            AwsVpcConfiguration: {
+            AwsVpcConfiguration: Match.objectLike({
               AssignPublicIp: 'ENABLED',
               Subnets: [
                 {
                   Ref: 'VpcPublicSubnet1Subnet5C2D37C4',
                 },
               ],
-            },
+            }),
           },
-        },
-      },
+        }),
+      }),
     ],
   });
 });
@@ -305,7 +305,7 @@ test('Scheduled Fargate Task - with platformVersion defined', () => {
   });
 
   // THEN
-  expect(stack).toHaveResource('AWS::Events::Rule', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
     Targets: [
       {
         Arn: { 'Fn::GetAtt': ['EcsCluster97242B84', 'Arn'] },
@@ -359,7 +359,7 @@ test('Scheduled Fargate Task - with securityGroups defined', () => {
   });
 
   // THEN
-  expect(stack).toHaveResource('AWS::Events::Rule', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
     Targets: [
       {
         Arn: { 'Fn::GetAtt': ['EcsCluster97242B84', 'Arn'] },

@@ -523,6 +523,46 @@ describe('DatabaseCluster', () => {
     // THEN
     expect(() => { cluster.grantConnect(role); }).toThrow(/Cannot grant connect when IAM authentication is disabled/);
   });
+
+  test('autoMinorVersionUpgrade is enabled when configured', () => {
+
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Cluster', {
+      vpc,
+      instanceType: InstanceType.R5_LARGE,
+      autoMinorVersionUpgrade: true,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Neptune::DBInstance', {
+      AutoMinorVersionUpgrade: true,
+    });
+
+  });
+
+  test('autoMinorVersionUpgrade is not enabled when not configured', () => {
+
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Cluster', {
+      vpc,
+      instanceType: InstanceType.R5_LARGE,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Neptune::DBInstance', {
+      AutoMinorVersionUpgrade: false,
+    });
+
+  });
+
 });
 
 function testStack() {
