@@ -71,27 +71,27 @@ test('Can use EC2 taskdef as EventRule target', () => {
 
 test('Throws error for lacking of taskRole ' +
   'when importing from an EC2 task definition just from a task definition arn as EventRule target', () => {
-    // GIVEN
-    const taskDefinition = ecs.Ec2TaskDefinition.fromEc2TaskDefinitionArn(stack, 'TaskDef', 'importedTaskDefArn');
+  // GIVEN
+  const taskDefinition = ecs.Ec2TaskDefinition.fromEc2TaskDefinitionArn(stack, 'TaskDef', 'importedTaskDefArn');
 
-    const rule = new events.Rule(stack, 'Rule', {
-      schedule: events.Schedule.expression('rate(1 min)'),
-    });
-
-    // THEN
-    expect(() => {
-      rule.addTarget(new targets.EcsTask({
-        cluster,
-        taskDefinition,
-        taskCount: 1,
-        containerOverrides: [{
-          containerName: 'TheContainer',
-          command: ['echo', events.EventField.fromPath('$.detail.event')],
-        }],
-      }));
-    }).toThrow('This operation requires the taskRole in ImportedTaskDefinition to be defined. ' +
-      'Add the \'taskRole\' in ImportedTaskDefinitionProps to instantiate ImportedTaskDefinition');
+  const rule = new events.Rule(stack, 'Rule', {
+    schedule: events.Schedule.expression('rate(1 min)'),
   });
+
+  // THEN
+  expect(() => {
+    rule.addTarget(new targets.EcsTask({
+      cluster,
+      taskDefinition,
+      taskCount: 1,
+      containerOverrides: [{
+        containerName: 'TheContainer',
+        command: ['echo', events.EventField.fromPath('$.detail.event')],
+      }],
+    }));
+  }).toThrow('This operation requires the taskRole in ImportedTaskDefinition to be defined. ' +
+      'Add the \'taskRole\' in ImportedTaskDefinitionProps to instantiate ImportedTaskDefinition');
+});
 
 test('Can import an EC2 task definition from task definition attributes as EventRule target', () => {
   // GIVEN
@@ -142,27 +142,27 @@ test('Can import an EC2 task definition from task definition attributes as Event
 
 test('Throws error for lacking of taskRole ' +
   'when importing from a Fargate task definition just from a task definition arn as EventRule target', () => {
-    // GIVEN
-    const taskDefinition = ecs.FargateTaskDefinition.fromFargateTaskDefinitionArn(stack, 'TaskDef', 'ImportedTaskDefArn');
+  // GIVEN
+  const taskDefinition = ecs.FargateTaskDefinition.fromFargateTaskDefinitionArn(stack, 'TaskDef', 'ImportedTaskDefArn');
 
-    const rule = new events.Rule(stack, 'Rule', {
-      schedule: events.Schedule.expression('rate(1 min)'),
-    });
-
-    // THEN
-    expect(() => {
-      rule.addTarget(new targets.EcsTask({
-        cluster,
-        taskDefinition,
-        taskCount: 1,
-        containerOverrides: [{
-          containerName: 'TheContainer',
-          command: ['echo', events.EventField.fromPath('$.detail.event')],
-        }],
-      }));
-    }).toThrow('This operation requires the taskRole in ImportedTaskDefinition to be defined. ' +
-      'Add the \'taskRole\' in ImportedTaskDefinitionProps to instantiate ImportedTaskDefinition');
+  const rule = new events.Rule(stack, 'Rule', {
+    schedule: events.Schedule.expression('rate(1 min)'),
   });
+
+  // THEN
+  expect(() => {
+    rule.addTarget(new targets.EcsTask({
+      cluster,
+      taskDefinition,
+      taskCount: 1,
+      containerOverrides: [{
+        containerName: 'TheContainer',
+        command: ['echo', events.EventField.fromPath('$.detail.event')],
+      }],
+    }));
+  }).toThrow('This operation requires the taskRole in ImportedTaskDefinition to be defined. ' +
+      'Add the \'taskRole\' in ImportedTaskDefinitionProps to instantiate ImportedTaskDefinition');
+});
 
 test('Can import a Fargate task definition from task definition attributes as EventRule target', () => {
   // GIVEN
@@ -213,27 +213,27 @@ test('Can import a Fargate task definition from task definition attributes as Ev
 
 test('Throws error for lacking of taskRole ' +
   'when importing from a task definition just from a task definition arn as EventRule target', () => {
-    // GIVEN
-    const taskDefinition = ecs.TaskDefinition.fromTaskDefinitionArn(stack, 'TaskDef', 'ImportedTaskDefArn');
+  // GIVEN
+  const taskDefinition = ecs.TaskDefinition.fromTaskDefinitionArn(stack, 'TaskDef', 'ImportedTaskDefArn');
 
-    const rule = new events.Rule(stack, 'Rule', {
-      schedule: events.Schedule.expression('rate(1 min)'),
-    });
-
-    // THEN
-    expect(() => {
-      rule.addTarget(new targets.EcsTask({
-        cluster,
-        taskDefinition,
-        taskCount: 1,
-        containerOverrides: [{
-          containerName: 'TheContainer',
-          command: ['echo', events.EventField.fromPath('$.detail.event')],
-        }],
-      }));
-    }).toThrow('This operation requires the taskRole in ImportedTaskDefinition to be defined. ' +
-      'Add the \'taskRole\' in ImportedTaskDefinitionProps to instantiate ImportedTaskDefinition');
+  const rule = new events.Rule(stack, 'Rule', {
+    schedule: events.Schedule.expression('rate(1 min)'),
   });
+
+  // THEN
+  expect(() => {
+    rule.addTarget(new targets.EcsTask({
+      cluster,
+      taskDefinition,
+      taskCount: 1,
+      containerOverrides: [{
+        containerName: 'TheContainer',
+        command: ['echo', events.EventField.fromPath('$.detail.event')],
+      }],
+    }));
+  }).toThrow('This operation requires the taskRole in ImportedTaskDefinition to be defined. ' +
+      'Add the \'taskRole\' in ImportedTaskDefinitionProps to instantiate ImportedTaskDefinition');
+});
 
 test('Can import a Task definition from task definition attributes as EventRule target', () => {
   // GIVEN

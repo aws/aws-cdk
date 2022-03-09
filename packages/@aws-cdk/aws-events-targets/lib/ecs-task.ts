@@ -86,7 +86,7 @@ export interface EcsTaskProps {
    *
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-events-rule-awsvpcconfiguration.html#cfn-events-rule-awsvpcconfiguration-assignpublicip
    *
-   * @default enabled if the task is in a Public subnet, disabled otherwise
+   * @default enabled if the task is in a public subnet, disabled otherwise
    */
   readonly assignPublicIp?: boolean;
 }
@@ -174,7 +174,6 @@ export class EcsTask implements events.IRuleTarget {
     const subnetSelection = this.props.subnetSelection || { subnetType: ec2.SubnetType.PRIVATE };
     const assignPublicIp = this.props.assignPublicIp ??
       subnetSelection.subnetType === ec2.SubnetType.PUBLIC ? 'ENABLED' : 'DISABLED';
-    // const assignPublicIp = subnetSelection.subnetType === ec2.SubnetType.PUBLIC ? 'ENABLED' : 'DISABLED';
 
     const baseEcsParameters = { taskCount, taskDefinitionArn };
 
