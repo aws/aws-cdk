@@ -66,6 +66,7 @@ import { instanceMockFrom, MockCloudExecutable, TestStackArtifact } from './util
 
 let cloudExecutable: MockCloudExecutable;
 let bootstrapper: jest.Mocked<Bootstrapper>;
+let stderrMock: jest.SpyInstance;
 beforeEach(() => {
   jest.resetAllMocks();
 
@@ -86,6 +87,7 @@ beforeEach(() => {
     }],
   });
 
+  stderrMock = jest.spyOn(process.stderr, 'write').mockImplementation(() => { return true; });
 });
 
 function defaultToolkitSetup() {
@@ -105,9 +107,7 @@ describe('readCurrentTemplate', () => {
   let template: any;
   let mockForEnvironment = jest.fn();
   let mockCloudExecutable: MockCloudExecutable;
-  let stderrMock: jest.SpyInstance;
   beforeEach(() => {
-    stderrMock = jest.spyOn(process.stderr, 'write').mockImplementation(() => { return true; });
 
     template = {
       Resources: {
@@ -677,6 +677,13 @@ describe('watch', () => {
 });
 
 describe('synth', () => {
+  test('successful synth outputs hierarchical stack ids', async () => {
+    const toolkit = defaultToolkitSetup();
+    await toolkit.synth([], false, false);
+
+    expect(stderrMock.mock.calls[1][0]).toMatch('Test-Stack-A-Display-Name, Test-Stack-B');
+  });
+
   test('with no stdout option', async () => {
     // GIVE
     const toolkit = defaultToolkitSetup();
@@ -787,6 +794,7 @@ class MockStack {
         },
       ],
     },
+    displayName: 'Test-Stack-A-Display-Name',
   };
   public static readonly MOCK_STACK_B: TestStackArtifact = {
     stackName: 'Test-Stack-B',
