@@ -53,10 +53,19 @@ export -f dirs_for_existing_pkgs
 if ! ${SKIP_DOWNLOAD:-false}; then
     echo "Filtering on existing packages on NPM..." >&2
 
-    echo "Determining baseline version..." >&2
-    version=$(node -p 'require("./scripts/resolve-version.js").version')
-    echo "  Current version is $version." >&2
-    echo "Using version '$version' as the baseline..."
+    echo "Determining baseline version... " >&2
+    build_version=$(node -p 'require("./scripts/resolve-version.js").version')
+    echo "Build version:    ${build_version}." >&2
+
+    # Either called as:
+    # - find-latest-release "<=2.14.0" (PR build); or
+    # - find-latest-release "<=2.15.0-rc.0" (CI build); or
+    # - find-latest-release "<=2.15.0" (release build)
+    # all of which will find 2.14.0 as the version to compare against.
+    version=$(node ./scripts/find-latest-release.js "<=${build_version}")
+    echo "Released version: $version." >&2
+
+    echo "Using version '$version' as the baseline..." >&2
 
     # Filter packages by existing at the target version
     existing_pkg_dirs=$(echo "$jsii_package_dirs" | xargs -n1 -P4 -I {} bash -c 'dirs_for_existing_pkgs "$@" "'$version'"' _ {})
@@ -68,7 +77,8 @@ if ! ${SKIP_DOWNLOAD:-false}; then
     mkdir -p $tmpdir
 
     echo "Installing from NPM..." >&2
-    # use npm7 to automatically install peer dependencies
+    # Use npm7 instead of whatever the current NPM version is to make sure we
+    # automatically install peer dependencies
     (cd $tmpdir && npx npm@^7.0.0 install --prefix $tmpdir $install_versions)
 fi
 
