@@ -885,10 +885,6 @@ describe('instance', () => {
       },
     });
 
-    vpcWithIsolated.selectSubnets({
-      subnetType: ec2.SubnetType.PRIVATE_WITH_NAT,
-    }).subnetIds;
-
     Template.fromStack(stack).hasResourceProperties('AWS::Serverless::Application', {
       Parameters: {
         endpoint: {
