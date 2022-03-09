@@ -124,7 +124,7 @@ export class DetectorModel extends Resource implements IDetectorModel {
       key: props.detectorKey,
       detectorModelDefinition: {
         initialStateName: props.initialState.stateName,
-        states: props.initialState._collectStateJsons(new Set<State>()),
+        states: props.initialState._collectStateJsons(this, { role }, new Set<State>()),
       },
       roleArn: role.roleArn,
     });
