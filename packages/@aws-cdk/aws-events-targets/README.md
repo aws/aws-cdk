@@ -318,7 +318,7 @@ rule.addTarget(new targets.EventBus(
 The code snippet below makes a scheduled rule to invoke an ECS Task.
 
 The Fargate launch type supports the ability to add a public IP address to the
-running task. Tasks can support additional [vpc configurations](https://docs.aws.amazon.com/eventbridge/latest/APIReference/API_AwsVpcConfiguration.html).
+running task. Tasks can support additional [VPC configurations](https://docs.aws.amazon.com/eventbridge/latest/APIReference/API_AwsVpcConfiguration.html).
 
 ```ts
 import { Vpc, SubnetType } from 'aws-cdk-lib/aws-ec2';
