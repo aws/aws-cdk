@@ -67,7 +67,7 @@ export interface StatementSchema {
   readonly NotResource?: IamValue;
   readonly Action?: IamValue;
   readonly NotAction?: IamValue;
-  readonly Condition?: any;
+  readonly Condition?: unknown;
 }
 
 
