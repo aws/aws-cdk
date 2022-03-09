@@ -221,7 +221,7 @@ export interface BundlingOptions {
    *
    * @default - no additional esbuild arguments are passed
    */
-  readonly esbuildArgs?: { [key: string]: string };
+  readonly esbuildArgs?: { [key: string]: string | boolean };
 
   /**
    * Build arguments to pass when building the bundling image.
