@@ -90,7 +90,7 @@ export enum Protocol {
   SECURE_VMTP = '82',
   VINES = '83',
   TTP = '84',
-  IPTM = '84',
+  IPTM = '84_',
   NSFNET_IGP = '85',
   DGP = '86',
   TCF = '87',
@@ -154,6 +154,7 @@ export enum Protocol {
   EXPERIMENT_2 = '254',
   RESERVED = '255',
 }
+
 /**
  * Properties to create a port range
  */
@@ -243,7 +244,9 @@ export class Port {
       protocol: Protocol.UDP,
       fromPort: startPort,
       toPort: endPort,
-      stringRepresentation: `UDP ${renderPort(startPort)}-${renderPort(endPort)}`,
+      stringRepresentation: `UDP ${renderPort(startPort)}-${renderPort(
+        endPort,
+      )}`,
     });
   }
 
@@ -344,15 +347,20 @@ export class Port {
   public readonly canInlineRule: boolean;
 
   constructor(private readonly props: PortProps) {
-    this.canInlineRule = !Token.isUnresolved(props.fromPort) && !Token.isUnresolved(props.toPort);
+    this.canInlineRule =
+      !Token.isUnresolved(props.fromPort) && !Token.isUnresolved(props.toPort);
   }
 
   /**
    * Produce the ingress/egress rule JSON for the given connection
    */
   public toRuleJson(): any {
+    // JSII does not allow enum types to have same value. So to support the enum, the enum with same value has to be mapped later.
+    const PROTOCOL_MAP: Partial<Record<Protocol, string>> = {
+      [Protocol.IPTM]: '84',
+    };
     return {
-      ipProtocol: this.props.protocol,
+      ipProtocol: PROTOCOL_MAP[this.props.protocol] ?? this.props.protocol,
       fromPort: this.props.fromPort,
       toPort: this.props.toPort,
     };
