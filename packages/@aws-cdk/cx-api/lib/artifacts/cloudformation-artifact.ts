@@ -37,9 +37,10 @@ export class CloudFormationStackArtifact extends CloudArtifact {
   public readonly stackName: string;
 
   /**
-   * A string that represents this stack. Should only be used in user interfaces.
-   * If the stackName and artifactId are the same, it will just return that. Otherwise,
-   * it will return something like "<artifactId> (<stackName>)"
+   * A string that represents this stack. Should only be used in user
+   * interfaces. If the stackName has not been set explicitly, or has been set
+   * to artifactId, it will return the hierarchicalId of the stack. Otherwise,
+   * it will return something like "<hierarchicalId> (<stackName>)"
    */
   public readonly displayName: string;
 
@@ -148,8 +149,8 @@ export class CloudFormationStackArtifact extends CloudArtifact {
     this.assets = this.findMetadataByType(cxschema.ArtifactMetadataEntryType.ASSET).map(e => e.data as cxschema.AssetMetadataEntry);
 
     this.displayName = this.stackName === artifactId
-      ? this.stackName
-      : `${artifactId} (${this.stackName})`;
+      ? this.hierarchicalId
+      : `${this.hierarchicalId} (${this.stackName})`;
 
     this.name = this.stackName; // backwards compat
     this.originalName = this.stackName;

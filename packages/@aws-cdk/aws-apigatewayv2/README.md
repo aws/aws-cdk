@@ -404,6 +404,12 @@ webSocketApi.addRoute('sendmessage', {
 });
 ```
 
+To import an existing WebSocketApi:
+
+```ts
+const webSocketApi = apigwv2.WebSocketApi.fromWebSocketApiAttributes(this, 'mywsapi', { webSocketId: 'api-1234' });
+```
+
 ### Manage Connections Permission
 
 Grant permission to use API Gateway Management API of a WebSocket API by calling the `grantManageConnections` API.
