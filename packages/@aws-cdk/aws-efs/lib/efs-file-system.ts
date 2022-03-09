@@ -341,15 +341,21 @@ export class FileSystem extends FileSystemBase {
     const encrypted = props.encrypted ?? (FeatureFlags.of(this).isEnabled(
       cxapi.EFS_DEFAULT_ENCRYPTION_AT_REST) ? true : undefined);
 
+    // LifecyclePolicies is an array of lists containing a single policy
+    let lifecyclePolicies = [];
+
+    if (props.lifecyclePolicy) {
+      lifecyclePolicies.push({ transitionToIa: props.lifecyclePolicy });
+    }
+
+    if (props.outOfInfrequentAccessPolicy) {
+      lifecyclePolicies.push({ transitionToPrimaryStorageClass: props.outOfInfrequentAccessPolicy });
+    }
+
     const filesystem = new CfnFileSystem(this, 'Resource', {
       encrypted: encrypted,
       kmsKeyId: props.kmsKey?.keyArn,
-      lifecyclePolicies: (
-        (props.lifecyclePolicy || props.outOfInfrequentAccessPolicy) ?
-          [{
-            transitionToIa: props.lifecyclePolicy,
-            transitionToPrimaryStorageClass: props.outOfInfrequentAccessPolicy,
-          }] : undefined),
+      lifecyclePolicies: lifecyclePolicies.length > 0 ? lifecyclePolicies : undefined,
       performanceMode: props.performanceMode,
       throughputMode: props.throughputMode,
       provisionedThroughputInMibps: props.provisionedThroughputPerSecond?.toMebibytes(),

@@ -45,7 +45,8 @@ export interface BaseTargetGroupProps {
   /**
    * Health check configuration
    *
-   * @default - None.
+   * @default - The default value for each property in this configuration varies depending on the target.
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticloadbalancingv2-targetgroup.html#aws-resource-elasticloadbalancingv2-targetgroup-properties
    */
   readonly healthCheck?: HealthCheck;
 

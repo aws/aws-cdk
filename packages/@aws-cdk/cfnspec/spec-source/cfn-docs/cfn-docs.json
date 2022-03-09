@@ -649,10 +649,11 @@
         "Children": "A list of the component's `ComponentChild` instances.",
         "CollectionProperties": "The data binding configuration for the component's properties. Use this for a collection component. You can't specify `tags` as a valid property for `collectionProperties` .",
         "ComponentType": "The type of the component. This can be an Amplify custom UI component or another custom component.",
-        "Events": "",
+        "Events": "Describes the events that can be raised on the component. Use for the workflow feature in Amplify Studio that allows you to bind events and actions to components.",
         "Name": "The name of the component.",
         "Overrides": "Describes the component's properties that can be overriden in a customized instance of the component. You can't specify `tags` as a valid property for `overrides` .",
         "Properties": "Describes the component's properties. You can't specify `tags` as a valid property for `properties` .",
+        "SchemaVersion": "The schema version of the component when it was imported.",
         "SourceId": "The unique ID of the component in its original source system, such as Figma.",
         "Tags": "One or more key-value pairs to use when tagging the component.",
         "Variants": "A list of the component's variants. A variant is a unique style configuration of a main component."
@@ -660,17 +661,17 @@
     },
     "AWS::AmplifyUIBuilder::Component.ActionParameters": {
       "attributes": {},
-      "description": "",
+      "description": "The `ActionParameters` property specifies the event action configuration for an element of a `Component` or `ComponentChild` . Use for the workflow feature in Amplify Studio that allows you to bind events and actions to components. `ActionParameters` defines the action that is performed when an event occurs on the component.",
       "properties": {
-        "Anchor": "",
-        "Fields": "",
-        "Global": "",
-        "Id": "",
-        "Model": "",
-        "State": "",
-        "Target": "",
-        "Type": "",
-        "Url": ""
+        "Anchor": "The HTML anchor link to the location to open. Specify this value for a navigation action.",
+        "Fields": "A dictionary of key-value pairs mapping Amplify Studio properties to fields in a data model. Use when the action performs an operation on an Amplify DataStore model.",
+        "Global": "Specifies whether the user should be signed out globally. Specify this value for an auth sign out action.",
+        "Id": "The unique ID of the component that the `ActionParameters` apply to.",
+        "Model": "The name of the data model. Use when the action performs an operation on an Amplify DataStore model.",
+        "State": "A key-value pair that specifies the state property name and its initial value.",
+        "Target": "The element within the same component to modify when the action occurs.",
+        "Type": "The type of navigation action. Valid values are `url` and `anchor` . This value is required for a navigation action.",
+        "Url": "The URL to the location to open. Specify this value for a navigation action."
       }
     },
     "AWS::AmplifyUIBuilder::Component.ComponentBindingPropertiesValue": {
@@ -701,7 +702,7 @@
       "properties": {
         "Children": "The list of `ComponentChild` instances for this component.",
         "ComponentType": "The type of the child component.",
-        "Events": "",
+        "Events": "Describes the events that can be raised on the child component. Use for the workflow feature in Amplify Studio that allows you to bind events and actions to components.",
         "Name": "The name of the child component.",
         "Properties": "Describes the properties of the child component. You can't specify `tags` as a valid property for `properties` ."
       }
@@ -713,7 +714,7 @@
         "Else": "The value to assign to the property if the condition is not met.",
         "Field": "The name of a field. Specify this when the property is a data model.",
         "Operand": "The value of the property to evaluate.",
-        "OperandType": "",
+        "OperandType": "The type of the property to evaluate.",
         "Operator": "The operator to use to perform the evaluation, such as `eq` to represent equals.",
         "Property": "The name of the conditional property.",
         "Then": "The value to assign to the property if the condition is met."
@@ -731,15 +732,15 @@
     },
     "AWS::AmplifyUIBuilder::Component.ComponentEvent": {
       "attributes": {},
-      "description": "",
+      "description": "The `ComponentEvent` property specifies the configuration of an event. You can bind an event and a corresponding action to a `Component` or a `ComponentChild` . A button click is an example of an event.",
       "properties": {
-        "Action": "",
-        "Parameters": ""
+        "Action": "The action to perform when a specific event is raised.",
+        "Parameters": "Describes information about the action."
       }
     },
     "AWS::AmplifyUIBuilder::Component.ComponentEvents": {
       "attributes": {},
-      "description": "",
+      "description": "The `ComponentEvents` property specifies the events that can be raised on the component. Use for the workflow feature in Amplify Studio that allows you to bind events and actions to components.",
       "properties": {}
     },
     "AWS::AmplifyUIBuilder::Component.ComponentOverrides": {
@@ -764,7 +765,7 @@
         "BindingProperties": "The information to bind the component property to data at runtime.",
         "Bindings": "The information to bind the component property to form data.",
         "CollectionBindingProperties": "The information to bind the component property to data at runtime. Use this for collection components.",
-        "ComponentName": "",
+        "ComponentName": "The name of the component that is affected by an event.",
         "Concat": "A list of component properties to concatenate to create the value to assign to this component property.",
         "Condition": "The conditional expression to use to assign a value to the component property.",
         "Configured": "Specifies whether the user configured the property in Amplify Studio after importing it.",
@@ -772,7 +773,7 @@
         "Event": "An event that occurs in your app. Use this for workflow data binding.",
         "ImportedValue": "The default value assigned to the property when the component is imported into an app.",
         "Model": "The data model to use to assign a value to the component property.",
-        "Property": "",
+        "Property": "The name of the component's property that is affected by an event.",
         "Type": "The component type.",
         "UserAttribute": "An authenticated user attribute to use to assign a value to the component property.",
         "Value": "The value to assign to the component property."
@@ -806,11 +807,11 @@
     },
     "AWS::AmplifyUIBuilder::Component.MutationActionSetStateParameter": {
       "attributes": {},
-      "description": "",
+      "description": "The `MutationActionSetStateParameter` property specifies the state configuration when an action modifies a property of another element within the same component.",
       "properties": {
-        "ComponentName": "",
-        "Property": "",
-        "Set": ""
+        "ComponentName": "The name of the component that is being modified.",
+        "Property": "The name of the component property to apply the state configuration to.",
+        "Set": "The state configuration to assign to the property."
       }
     },
     "AWS::AmplifyUIBuilder::Component.Predicate": {
@@ -925,6 +926,7 @@
       "properties": {
         "BasePath": "The base path name that callers of the API must provide in the URL after the domain name.",
         "DomainName": "The `DomainName` of an [AWS::ApiGateway::DomainName](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigateway-domainname.html) resource.",
+        "Id": "",
         "RestApiId": "The ID of the API.",
         "Stage": "The name of the API's stage."
       }
@@ -5134,7 +5136,7 @@
         "MixedInstancesPolicy": "An embedded object that specifies a mixed instances policy.\n\nThe policy includes properties that not only define the distribution of On-Demand Instances and Spot Instances, the maximum price to pay for Spot Instances (optional), and how the Auto Scaling group allocates instance types to fulfill On-Demand and Spot capacities, but also the properties that specify the instance configuration information\u2014the launch template and instance types. The policy can also include a weight for each instance type and different launch templates for individual instance types.\n\nFor more information, see [Auto Scaling groups with multiple instance types and purchase options](https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-mixed-instances-groups.html) in the *Amazon EC2 Auto Scaling User Guide* .\n\nIf you specify `LaunchTemplate` , `InstanceId` , or `LaunchConfigurationName` , don't specify `MixedInstancesPolicy` .",
         "NewInstancesProtectedFromScaleIn": "Indicates whether newly launched instances are protected from termination by Amazon EC2 Auto Scaling when scaling in. For more information about preventing instances from terminating on scale in, see [Instance Protection](https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-instance-termination.html#instance-protection) in the *Amazon EC2 Auto Scaling User Guide* .",
         "NotificationConfigurations": "Configures an Auto Scaling group to send notifications when specified events take place.",
-        "PlacementGroup": "The name of the placement group into which you want to launch your instances. A placement group is a logical grouping of instances within a single Availability Zone. For more information, see [Placement Groups](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/placement-groups.html) in the *Amazon EC2 User Guide for Linux Instances* .",
+        "PlacementGroup": "The name of the placement group into which you want to launch your instances. For more information, see [Placement groups](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/placement-groups.html) in the *Amazon EC2 User Guide for Linux Instances* .\n\n> A *cluster* placement group is a logical grouping of instances within a single Availability Zone. You cannot specify multiple Availability Zones and a cluster placement group.",
         "ServiceLinkedRoleARN": "The Amazon Resource Name (ARN) of the service-linked role that the Auto Scaling group uses to call other AWS services on your behalf. By default, Amazon EC2 Auto Scaling uses a service-linked role named `AWSServiceRoleForAutoScaling` , which it creates if it does not exist. For more information, see [Service-linked roles for Amazon EC2 Auto Scaling](https://docs.aws.amazon.com/autoscaling/ec2/userguide/autoscaling-service-linked-role.html) in the *Amazon EC2 Auto Scaling User Guide* .",
         "Tags": "One or more tags. You can tag your Auto Scaling group and propagate the tags to the Amazon EC2 instances it launches. For more information, see [Tagging Auto Scaling groups and instances](https://docs.aws.amazon.com/autoscaling/ec2/userguide/autoscaling-tagging.html) in the *Amazon EC2 Auto Scaling User Guide* .",
         "TargetGroupARNs": "One or more Amazon Resource Names (ARN) of load balancer target groups to associate with the Auto Scaling group. Instances are registered as targets in a target group, and traffic is routed to the target group. For more information, see [Elastic Load Balancing and Amazon EC2 Auto Scaling](https://docs.aws.amazon.com/autoscaling/ec2/userguide/autoscaling-load-balancer.html) in the *Amazon EC2 Auto Scaling User Guide* .",
@@ -8677,7 +8679,7 @@
         "AllowedOAuthFlows": "The allowed OAuth flows.\n\nSet to `code` to initiate a code grant flow, which provides an authorization code as the response. This code can be exchanged for access tokens with the token endpoint.\n\nSet to `implicit` to specify that the client should get the access token (and, optionally, ID token, based on scopes) directly.\n\nSet to `client_credentials` to specify that the client should get the access token (and, optionally, ID token, based on scopes) from the token endpoint using a combination of client and client_secret.",
         "AllowedOAuthFlowsUserPoolClient": "Set to true if the client is allowed to follow the OAuth protocol when interacting with Amazon Cognito user pools.",
         "AllowedOAuthScopes": "The allowed OAuth scopes. Possible values provided by OAuth are: `phone` , `email` , `openid` , and `profile` . Possible values provided by AWS are: `aws.cognito.signin.user.admin` . Custom scopes created in Resource Servers are also supported.",
-        "AnalyticsConfiguration": "The Amazon Pinpoint analytics configuration for collecting metrics for this user pool.\n\n> In AWS Regions where isn't available, User Pools only supports sending events to Amazon Pinpoint projects in AWS Region us-east-1. In Regions where is available, User Pools will support sending events to Amazon Pinpoint projects within that same Region.",
+        "AnalyticsConfiguration": "The Amazon Pinpoint analytics configuration for collecting metrics for this user pool.\n\n> In AWS Regions where Amazon Pinpoint isn't available, User Pools only supports sending events to Amazon Pinpoint projects in AWS Region us-east-1. In Regions where is available, User Pools will support sending events to Amazon Pinpoint projects within that same Region.",
         "CallbackURLs": "A list of allowed redirect (callback) URLs for the identity providers.\n\nA redirect URI must:\n\n- Be an absolute URI.\n- Be registered with the authorization server.\n- Not include a fragment component.\n\nSee [OAuth 2.0 - Redirection Endpoint](https://docs.aws.amazon.com/https://tools.ietf.org/html/rfc6749#section-3.1.2) .\n\nAmazon Cognito requires HTTPS over HTTP except for http://localhost for testing purposes only.\n\nApp callback URLs such as myapp://example are also supported.",
         "ClientName": "The client name for the user pool client you would like to create.",
         "DefaultRedirectURI": "The default redirect URI. Must be in the `CallbackURLs` list.\n\nA redirect URI must:\n\n- Be an absolute URI.\n- Be registered with the authorization server.\n- Not include a fragment component.\n\nSee [OAuth 2.0 - Redirection Endpoint](https://docs.aws.amazon.com/https://tools.ietf.org/html/rfc6749#section-3.1.2) .\n\nAmazon Cognito requires HTTPS over HTTP except for http://localhost for testing purposes only.\n\nApp callback URLs such as myapp://example are also supported.",
@@ -10818,7 +10820,7 @@
         "GlobalSecondaryIndexes": "Global secondary indexes to be created on the global table. You can create up to 20 global secondary indexes. Each replica in your global table will have the same global secondary index settings. You can only create or delete one global secondary index in a single stack operation.\n\nSince the backfilling of an index could take a long time, CloudFormation does not wait for the index to become active. If a stack operation rolls back, CloudFormation might not delete an index that has been added. In that case, you will need to delete the index manually.",
         "KeySchema": "Specifies the attributes that make up the primary key for the table. The attributes in the `KeySchema` property must also be defined in the `AttributeDefinitions` property.",
         "LocalSecondaryIndexes": "Local secondary indexes to be created on the table. You can create up to five local secondary indexes. Each index is scoped to a given hash key value. The size of each hash key can be up to 10 gigabytes. Each replica in your global table will have the same local secondary index settings.",
-        "Replicas": "Specifies the list of replicas for your global table. The list must contain at least one element, the region where the stack defining the global table is deployed. For example, if you define your table in a stack deployed to us-east-1, you must have an entry in `Replicas` with the region us-east-1. You cannot remove the replica in the stack region.\n\n> Adding a replica might take a few minutes for an empty table, or up to several hours for large tables. If you want to add or remove a replica, we recommend submitting an `UpdateStack` operation containing only that change.\n> \n> If you add or delete a replica during an update, we recommend that you don't update any other resources. If your stack fails to update and is rolled back while adding a new replica, you might need to manually delete the replica. \n\nYou can create a new global table with up to two replicas. You can add or remove replicas after table creation, but you can only add or remove a single replica in each update.",
+        "Replicas": "Specifies the list of replicas for your global table. The list must contain at least one element, the region where the stack defining the global table is deployed. For example, if you define your table in a stack deployed to us-east-1, you must have an entry in `Replicas` with the region us-east-1. You cannot remove the replica in the stack region.\n\n> Adding a replica might take a few minutes for an empty table, or up to several hours for large tables. If you want to add or remove a replica, we recommend submitting an `UpdateStack` operation containing only that change.\n> \n> If you add or delete a replica during an update, we recommend that you don't update any other resources. If your stack fails to update and is rolled back while adding a new replica, you might need to manually delete the replica. \n\nYou can create a new global table with as many replicas as needed. You can add or remove replicas after table creation, but you can only add or remove a single replica in each update.",
         "SSESpecification": "Specifies the settings to enable server-side encryption. These settings will be applied to all replicas. If you plan to use customer-managed KMS keys, you must provide a key for each replica using the `ReplicaSpecification.ReplicaSSESpecification` property.",
         "StreamSpecification": "Specifies the streams settings on your global table. You must provide a value for this property if your global table contains more than one replica. You can only change the streams settings if your global table has only one replica.",
         "TableName": "A name for the global table. If you don't specify a name, AWS CloudFormation generates a unique ID and uses that ID as the table name. For more information, see [Name type](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-name.html) .\n\n> If you specify a name, you cannot perform updates that require replacement of this resource. You can perform updates that require no or some interruption. If you must replace the resource, specify a new name.",
@@ -10927,7 +10929,7 @@
         "ReadProvisionedThroughputSettings": "Defines read capacity settings for the replica table.",
         "Region": "The region in which this replica exists.",
         "SSESpecification": "Allows you to specify a customer-managed key for the replica. When using customer-managed keys for server-side encryption, this property must have a value in all replicas.",
-        "TableClass": "",
+        "TableClass": "The table class of the specified table. Valid values are `STANDARD` and `STANDARD_INFREQUENT_ACCESS` .",
         "Tags": "An array of key-value pairs to apply to this replica.\n\nFor more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) ."
       }
     },
@@ -13880,7 +13882,7 @@
         "InstanceWarmupPeriod": "The period of time, in seconds, after a newly launched Amazon EC2 instance can contribute to CloudWatch metrics for Auto Scaling group. If this parameter is omitted, the default value of `300` seconds is used.",
         "MaximumScalingStepSize": "The maximum number of container instances that Amazon ECS scales in or scales out at one time. If this parameter is omitted, the default value of `10000` is used.",
         "MinimumScalingStepSize": "The minimum number of container instances that Amazon ECS scales in or scales out at one time. If this parameter is omitted, the default value of `1` is used.",
-        "Status": "Determines whether to enable managed scaling for the capacity provider.",
+        "Status": "Determines whether to use managed scaling for the capacity provider.",
         "TargetCapacity": "The target capacity value for the capacity provider. The specified value must be greater than `0` and less than or equal to `100` . A value of `100` results in the Amazon EC2 instances in your Auto Scaling group being completely used."
       }
     },
@@ -13917,7 +13919,7 @@
     },
     "AWS::ECS::Cluster.ClusterSettings": {
       "attributes": {},
-      "description": "The settings to use when creating a cluster. This parameter is used to enable CloudWatch Container Insights for a cluster.",
+      "description": "The settings to use when creating a cluster. This parameter is used to turn on CloudWatch Container Insights for a cluster.",
       "properties": {
         "Name": "The name of the cluster setting. The only supported value is `containerInsights` .",
         "Value": "The value to set for the cluster setting. The supported values are `enabled` and `disabled` . If `enabled` is specified, CloudWatch Container Insights will be enabled for the cluster, otherwise it will be disabled unless the `containerInsights` account setting is enabled. If a cluster value is specified, it will override the `containerInsights` value set with [PutAccountSetting](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_PutAccountSetting.html) or [PutAccountSettingDefault](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_PutAccountSettingDefault.html) ."
@@ -13936,7 +13938,7 @@
       "attributes": {},
       "description": "The log configuration for the results of the execute command actions. The logs can be sent to CloudWatch Logs or an Amazon S3 bucket.",
       "properties": {
-        "CloudWatchEncryptionEnabled": "Determines whether to enable encryption on the CloudWatch logs. If not specified, encryption will be disabled.",
+        "CloudWatchEncryptionEnabled": "Determines whether to use encryption on the CloudWatch logs. If not specified, encryption will be disabled.",
         "CloudWatchLogGroupName": "The name of the CloudWatch log group to send logs to.\n\n> The CloudWatch log group must already be created.",
         "S3BucketName": "The name of the S3 bucket to send logs to.\n\n> The S3 bucket must already be created.",
         "S3EncryptionEnabled": "Determines whether to use encryption on the S3 logs. If not specified, encryption is not used.",
@@ -13987,7 +13989,7 @@
         "DeploymentConfiguration": "Optional deployment parameters that control how many tasks run during the deployment and the ordering of stopping and starting tasks.",
         "DeploymentController": "The deployment controller to use for the service. If no deployment controller is specified, the default value of `ECS` is used.",
         "DesiredCount": "The number of instantiations of the specified task definition to place and keep running on your cluster.\n\nFor new services, if a desired count is not specified, a default value of `1` is used. When using the `DAEMON` scheduling strategy, the desired count is not required.\n\nFor existing services, if a desired count is not specified, it is omitted from the operation.",
-        "EnableECSManagedTags": "Specifies whether to enable Amazon ECS managed tags for the tasks within the service. For more information, see [Tagging Your Amazon ECS Resources](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-using-tags.html) in the *Amazon Elastic Container Service Developer Guide* .",
+        "EnableECSManagedTags": "Specifies whether to turn on Amazon ECS managed tags for the tasks within the service. For more information, see [Tagging Your Amazon ECS Resources](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-using-tags.html) in the *Amazon Elastic Container Service Developer Guide* .",
         "EnableExecuteCommand": "Determines whether the execute command functionality is enabled for the service. If `true` , the execute command functionality is enabled for all containers in tasks as part of the service.",
         "HealthCheckGracePeriodSeconds": "The period of time, in seconds, that the Amazon ECS service scheduler ignores unhealthy Elastic Load Balancing target health checks after a task has first started. This is only used when your service is configured to use a load balancer. If your service has a load balancer defined and you don't specify a health check grace period value, the default value of `0` is used.\n\nIf you do not use an Elastic Load Balancing, we recomend that you use the `startPeriod` in the task definition healtch check parameters. For more information, see [Health check](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_HealthCheck.html) .\n\nIf your service's tasks take a while to start and respond to Elastic Load Balancing health checks, you can specify a health check grace period of up to 2,147,483,647 seconds (about 69 years). During that time, the Amazon ECS service scheduler ignores health check status. This grace period can prevent the service scheduler from marking tasks as unhealthy and stopping them before they have time to come up.",
         "LaunchType": "The launch type on which to run your service. For more information, see [Amazon ECS Launch Types](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/launch_types.html) in the *Amazon Elastic Container Service Developer Guide* .",
@@ -14027,8 +14029,8 @@
       "attributes": {},
       "description": "> The deployment circuit breaker can only be used for services using the rolling update ( `ECS` ) deployment type. \n\nThe `DeploymentCircuitBreaker` property determines whether a service deployment will fail if the service can't reach a steady state. If deployment circuit breaker is enabled, a service deployment will transition to a failed state and stop launching new tasks. If rollback is enabled, when a service deployment fails, the service is rolled back to the last deployment that completed successfully.",
       "properties": {
-        "Enable": "Determines whether to enable the deployment circuit breaker logic for the service.",
-        "Rollback": "Determines whether to enable Amazon ECS to roll back the service if a service deployment fails. If rollback is enabled, when a service deployment fails, the service is rolled back to the last deployment that completed successfully."
+        "Enable": "Determines whether to use the deployment circuit breaker logic for the service.",
+        "Rollback": "Determines whether to configure Amazon ECS to roll back the service if a service deployment fails. If rollback is enabled, when a service deployment fails, the service is rolled back to the last deployment that completed successfully."
       }
     },
     "AWS::ECS::Service.DeploymentConfiguration": {
@@ -14129,7 +14131,7 @@
       "properties": {
         "Command": "The command that's passed to the container. This parameter maps to `Cmd` in the [Create a container](https://docs.aws.amazon.com/https://docs.docker.com/engine/api/v1.35/#operation/ContainerCreate) section of the [Docker Remote API](https://docs.aws.amazon.com/https://docs.docker.com/engine/api/v1.35/) and the `COMMAND` parameter to [docker run](https://docs.aws.amazon.com/https://docs.docker.com/engine/reference/run/#security-configuration) . For more information, see [https://docs.docker.com/engine/reference/builder/#cmd](https://docs.aws.amazon.com/https://docs.docker.com/engine/reference/builder/#cmd) . If there are multiple arguments, each argument is a separated string in the array.",
         "Cpu": "The number of `cpu` units reserved for the container. This parameter maps to `CpuShares` in the [Create a container](https://docs.aws.amazon.com/https://docs.docker.com/engine/api/v1.35/#operation/ContainerCreate) section of the [Docker Remote API](https://docs.aws.amazon.com/https://docs.docker.com/engine/api/v1.35/) and the `--cpu-shares` option to [docker run](https://docs.aws.amazon.com/https://docs.docker.com/engine/reference/run/#security-configuration) .\n\nThis field is optional for tasks using the Fargate launch type, and the only requirement is that the total amount of CPU reserved for all containers within a task be lower than the task-level `cpu` value.\n\n> You can determine the number of CPU units that are available per EC2 instance type by multiplying the vCPUs listed for that instance type on the [Amazon EC2 Instances](https://docs.aws.amazon.com/ec2/instance-types/) detail page by 1,024. \n\nLinux containers share unallocated CPU units with other containers on the container instance with the same ratio as their allocated amount. For example, if you run a single-container task on a single-core instance type with 512 CPU units specified for that container, and that's the only task running on the container instance, that container could use the full 1,024 CPU unit share at any given time. However, if you launched another copy of the same task on that container instance, each task is guaranteed a minimum of 512 CPU units when needed. Moreover, each container could float to higher CPU usage if the other container was not using it. If both tasks were 100% active all of the time, they would be limited to 512 CPU units.\n\nOn Linux container instances, the Docker daemon on the container instance uses the CPU value to calculate the relative CPU share ratios for running containers. For more information, see [CPU share constraint](https://docs.aws.amazon.com/https://docs.docker.com/engine/reference/run/#cpu-share-constraint) in the Docker documentation. The minimum valid CPU share value that the Linux kernel allows is 2. However, the CPU parameter isn't required, and you can use CPU values below 2 in your container definitions. For CPU values below 2 (including null), the behavior varies based on your Amazon ECS container agent version:\n\n- *Agent versions less than or equal to 1.1.0:* Null and zero CPU values are passed to Docker as 0, which Docker then converts to 1,024 CPU shares. CPU values of 1 are passed to Docker as 1, which the Linux kernel converts to two CPU shares.\n- *Agent versions greater than or equal to 1.2.0:* Null, zero, and CPU values of 1 are passed to Docker as 2.\n\nOn Windows container instances, the CPU limit is enforced as an absolute limit, or a quota. Windows containers only have access to the specified amount of CPU that's described in the task definition. A null or zero CPU value is passed to Docker as `0` , which Windows interprets as 1% of one CPU.",
-        "DependsOn": "The dependencies defined for container startup and shutdown. A container can contain multiple dependencies. When a dependency is defined for container startup, for container shutdown it is reversed.\n\nFor tasks using the EC2 launch type, the container instances require at least version 1.26.0 of the container agent to enable container dependencies. However, we recommend using the latest container agent version. For information about checking your agent version and updating to the latest version, see [Updating the Amazon ECS Container Agent](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-agent-update.html) in the *Amazon Elastic Container Service Developer Guide* . If you're using an Amazon ECS-optimized Linux AMI, your instance needs at least version 1.26.0-1 of the `ecs-init` package. If your container instances are launched from version `20190301` or later, then they contain the required versions of the container agent and `ecs-init` . For more information, see [Amazon ECS-optimized Linux AMI](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-optimized_AMI.html) in the *Amazon Elastic Container Service Developer Guide* .\n\nFor tasks using the Fargate launch type, the task or service requires the following platforms:\n\n- Linux platform version `1.3.0` or later.\n- Windows platform version `1.0.0` or later.",
+        "DependsOn": "The dependencies defined for container startup and shutdown. A container can contain multiple dependencies. When a dependency is defined for container startup, for container shutdown it is reversed.\n\nFor tasks using the EC2 launch type, the container instances require at least version 1.26.0 of the container agent to turn on container dependencies. However, we recommend using the latest container agent version. For information about checking your agent version and updating to the latest version, see [Updating the Amazon ECS Container Agent](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-agent-update.html) in the *Amazon Elastic Container Service Developer Guide* . If you're using an Amazon ECS-optimized Linux AMI, your instance needs at least version 1.26.0-1 of the `ecs-init` package. If your container instances are launched from version `20190301` or later, then they contain the required versions of the container agent and `ecs-init` . For more information, see [Amazon ECS-optimized Linux AMI](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-optimized_AMI.html) in the *Amazon Elastic Container Service Developer Guide* .\n\nFor tasks using the Fargate launch type, the task or service requires the following platforms:\n\n- Linux platform version `1.3.0` or later.\n- Windows platform version `1.0.0` or later.",
         "DisableNetworking": "When this parameter is true, networking is disabled within the container. This parameter maps to `NetworkDisabled` in the [Create a container](https://docs.aws.amazon.com/https://docs.docker.com/engine/api/v1.35/#operation/ContainerCreate) section of the [Docker Remote API](https://docs.aws.amazon.com/https://docs.docker.com/engine/api/v1.35/) .\n\n> This parameter is not supported for Windows containers.",
         "DnsSearchDomains": "A list of DNS search domains that are presented to the container. This parameter maps to `DnsSearch` in the [Create a container](https://docs.aws.amazon.com/https://docs.docker.com/engine/api/v1.35/#operation/ContainerCreate) section of the [Docker Remote API](https://docs.aws.amazon.com/https://docs.docker.com/engine/api/v1.35/) and the `--dns-search` option to [docker run](https://docs.aws.amazon.com/https://docs.docker.com/engine/reference/run/#security-configuration) .\n\n> This parameter is not supported for Windows containers.",
         "DnsServers": "A list of DNS servers that are presented to the container. This parameter maps to `Dns` in the [Create a container](https://docs.aws.amazon.com/https://docs.docker.com/engine/api/v1.35/#operation/ContainerCreate) section of the [Docker Remote API](https://docs.aws.amazon.com/https://docs.docker.com/engine/api/v1.35/) and the `--dns` option to [docker run](https://docs.aws.amazon.com/https://docs.docker.com/engine/reference/run/#security-configuration) .\n\n> This parameter is not supported for Windows containers.",
@@ -14159,8 +14161,8 @@
         "RepositoryCredentials": "The private repository authentication credentials to use.",
         "ResourceRequirements": "The type and amount of a resource to assign to a container. The only supported resource is a GPU.",
         "Secrets": "The secrets to pass to the container. For more information, see [Specifying Sensitive Data](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/specifying-sensitive-data.html) in the *Amazon Elastic Container Service Developer Guide* .",
-        "StartTimeout": "Time duration (in seconds) to wait before giving up on resolving dependencies for a container. For example, you specify two containers in a task definition with containerA having a dependency on containerB reaching a `COMPLETE` , `SUCCESS` , or `HEALTHY` status. If a `startTimeout` value is specified for containerB and it doesn't reach the desired status within that time then containerA gives up and not start. This results in the task transitioning to a `STOPPED` state.\n\n> When the `ECS_CONTAINER_START_TIMEOUT` container agent configuration variable is used, it's enforced independently from this start timeout value. \n\nFor tasks using the Fargate launch type, the task or service requires the following platforms:\n\n- Linux platform version `1.3.0` or later.\n- Windows platform version `1.0.0` or later.\n\nFor tasks using the EC2 launch type, your container instances require at least version `1.26.0` of the container agent to enable a container start timeout value. However, we recommend using the latest container agent version. For information about checking your agent version and updating to the latest version, see [Updating the Amazon ECS Container Agent](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-agent-update.html) in the *Amazon Elastic Container Service Developer Guide* . If you're using an Amazon ECS-optimized Linux AMI, your instance needs at least version `1.26.0-1` of the `ecs-init` package. If your container instances are launched from version `20190301` or later, then they contain the required versions of the container agent and `ecs-init` . For more information, see [Amazon ECS-optimized Linux AMI](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-optimized_AMI.html) in the *Amazon Elastic Container Service Developer Guide* .",
-        "StopTimeout": "Time duration (in seconds) to wait before the container is forcefully killed if it doesn't exit normally on its own.\n\nFor tasks using the Fargate launch type, the task or service requires the following platforms:\n\n- Linux platform version `1.3.0` or later.\n- Windows platform version `1.0.0` or later.\n\nThe max stop timeout value is 120 seconds and if the parameter is not specified, the default value of 30 seconds is used.\n\nFor tasks that use the EC2 launch type, if the `stopTimeout` parameter isn't specified, the value set for the Amazon ECS container agent configuration variable `ECS_CONTAINER_STOP_TIMEOUT` is used. If neither the `stopTimeout` parameter or the `ECS_CONTAINER_STOP_TIMEOUT` agent configuration variable are set, then the default values of 30 seconds for Linux containers and 30 seconds on Windows containers are used. Your container instances require at least version 1.26.0 of the container agent to enable a container stop timeout value. However, we recommend using the latest container agent version. For information about checking your agent version and updating to the latest version, see [Updating the Amazon ECS Container Agent](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-agent-update.html) in the *Amazon Elastic Container Service Developer Guide* . If you're using an Amazon ECS-optimized Linux AMI, your instance needs at least version 1.26.0-1 of the `ecs-init` package. If your container instances are launched from version `20190301` or later, then they contain the required versions of the container agent and `ecs-init` . For more information, see [Amazon ECS-optimized Linux AMI](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-optimized_AMI.html) in the *Amazon Elastic Container Service Developer Guide* .",
+        "StartTimeout": "Time duration (in seconds) to wait before giving up on resolving dependencies for a container. For example, you specify two containers in a task definition with containerA having a dependency on containerB reaching a `COMPLETE` , `SUCCESS` , or `HEALTHY` status. If a `startTimeout` value is specified for containerB and it doesn't reach the desired status within that time then containerA gives up and not start. This results in the task transitioning to a `STOPPED` state.\n\n> When the `ECS_CONTAINER_START_TIMEOUT` container agent configuration variable is used, it's enforced independently from this start timeout value. \n\nFor tasks using the Fargate launch type, the task or service requires the following platforms:\n\n- Linux platform version `1.3.0` or later.\n- Windows platform version `1.0.0` or later.\n\nFor tasks using the EC2 launch type, your container instances require at least version `1.26.0` of the container agent to use a container start timeout value. However, we recommend using the latest container agent version. For information about checking your agent version and updating to the latest version, see [Updating the Amazon ECS Container Agent](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-agent-update.html) in the *Amazon Elastic Container Service Developer Guide* . If you're using an Amazon ECS-optimized Linux AMI, your instance needs at least version `1.26.0-1` of the `ecs-init` package. If your container instances are launched from version `20190301` or later, then they contain the required versions of the container agent and `ecs-init` . For more information, see [Amazon ECS-optimized Linux AMI](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-optimized_AMI.html) in the *Amazon Elastic Container Service Developer Guide* .",
+        "StopTimeout": "Time duration (in seconds) to wait before the container is forcefully killed if it doesn't exit normally on its own.\n\nFor tasks using the Fargate launch type, the task or service requires the following platforms:\n\n- Linux platform version `1.3.0` or later.\n- Windows platform version `1.0.0` or later.\n\nThe max stop timeout value is 120 seconds and if the parameter is not specified, the default value of 30 seconds is used.\n\nFor tasks that use the EC2 launch type, if the `stopTimeout` parameter isn't specified, the value set for the Amazon ECS container agent configuration variable `ECS_CONTAINER_STOP_TIMEOUT` is used. If neither the `stopTimeout` parameter or the `ECS_CONTAINER_STOP_TIMEOUT` agent configuration variable are set, then the default values of 30 seconds for Linux containers and 30 seconds on Windows containers are used. Your container instances require at least version 1.26.0 of the container agent to use a container stop timeout value. However, we recommend using the latest container agent version. For information about checking your agent version and updating to the latest version, see [Updating the Amazon ECS Container Agent](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-agent-update.html) in the *Amazon Elastic Container Service Developer Guide* . If you're using an Amazon ECS-optimized Linux AMI, your instance needs at least version 1.26.0-1 of the `ecs-init` package. If your container instances are launched from version `20190301` or later, then they contain the required versions of the container agent and `ecs-init` . For more information, see [Amazon ECS-optimized Linux AMI](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-optimized_AMI.html) in the *Amazon Elastic Container Service Developer Guide* .",
         "SystemControls": "A list of namespaced kernel parameters to set in the container. This parameter maps to `Sysctls` in the [Create a container](https://docs.aws.amazon.com/https://docs.docker.com/engine/api/v1.35/#operation/ContainerCreate) section of the [Docker Remote API](https://docs.aws.amazon.com/https://docs.docker.com/engine/api/v1.35/) and the `--sysctl` option to [docker run](https://docs.aws.amazon.com/https://docs.docker.com/engine/reference/run/#security-configuration) .\n\n> We don't recommended that you specify network-related `systemControls` parameters for multiple containers in a single task that also uses either the `awsvpc` or `host` network modes. For tasks that use the `awsvpc` network mode, the container that's started last determines which `systemControls` parameters take effect. For tasks that use the `host` network mode, it changes the container instance's namespaced kernel parameters as well as the containers.",
         "Ulimits": "A list of `ulimits` to set in the container. This parameter maps to `Ulimits` in the [Create a container](https://docs.aws.amazon.com/https://docs.docker.com/engine/api/v1.35/#operation/ContainerCreate) section of the [Docker Remote API](https://docs.aws.amazon.com/https://docs.docker.com/engine/api/v1.35/) and the `--ulimit` option to [docker run](https://docs.aws.amazon.com/https://docs.docker.com/engine/reference/run/) . Valid naming values are displayed in the [Ulimit](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_Ulimit.html) data type. This parameter requires version 1.18 of the Docker Remote API or greater on your container instance. To check the Docker Remote API version on your container instance, log in to your container instance and run the following command: `sudo docker version --format '{{.Server.APIVersion}}'`\n\n> This parameter is not supported for Windows containers.",
         "User": "The user to use inside the container. This parameter maps to `User` in the [Create a container](https://docs.aws.amazon.com/https://docs.docker.com/engine/api/v1.35/#operation/ContainerCreate) section of the [Docker Remote API](https://docs.aws.amazon.com/https://docs.docker.com/engine/api/v1.35/) and the `--user` option to [docker run](https://docs.aws.amazon.com/https://docs.docker.com/engine/reference/run/#security-configuration) .\n\n> When running tasks using the `host` network mode, don't run containers using the root user (UID 0). We recommend using a non-root user for better security. \n\nYou can specify the `user` using the following formats. If specifying a UID or GID, you must specify it as a positive integer.\n\n- `user`\n- `user:group`\n- `uid`\n- `uid:gid`\n- `user:gid`\n- `uid:group`\n\n> This parameter is not supported for Windows containers.",
@@ -14203,7 +14205,7 @@
         "AuthorizationConfig": "The authorization configuration details for the Amazon EFS file system.",
         "FilesystemId": "The Amazon EFS file system ID to use.",
         "RootDirectory": "The directory within the Amazon EFS file system to mount as the root directory inside the host. If this parameter is omitted, the root of the Amazon EFS volume will be used. Specifying `/` will have the same effect as omitting this parameter.\n\n> If an EFS access point is specified in the `authorizationConfig` , the root directory parameter must either be omitted or set to `/` which will enforce the path set on the EFS access point.",
-        "TransitEncryption": "Determines whether to enable encryption for Amazon EFS data in transit between the Amazon ECS host and the Amazon EFS server. Transit encryption must be enabled if Amazon EFS IAM authorization is used. If this parameter is omitted, the default value of `DISABLED` is used. For more information, see [Encrypting Data in Transit](https://docs.aws.amazon.com/efs/latest/ug/encryption-in-transit.html) in the *Amazon Elastic File System User Guide* .",
+        "TransitEncryption": "Determines whether to use encryption for Amazon EFS data in transit between the Amazon ECS host and the Amazon EFS server. Transit encryption must be enabled if Amazon EFS IAM authorization is used. If this parameter is omitted, the default value of `DISABLED` is used. For more information, see [Encrypting Data in Transit](https://docs.aws.amazon.com/efs/latest/ug/encryption-in-transit.html) in the *Amazon Elastic File System User Guide* .",
         "TransitEncryptionPort": "The port to use when sending encrypted data between the Amazon ECS host and the Amazon EFS server. If you do not specify a transit encryption port, it will use the port selection strategy that the Amazon EFS mount helper uses. For more information, see [EFS Mount Helper](https://docs.aws.amazon.com/efs/latest/ug/efs-mount-helper.html) in the *Amazon Elastic File System User Guide* ."
       }
     },
@@ -14467,7 +14469,7 @@
     },
     "AWS::ECS::TaskSet.ServiceRegistry": {
       "attributes": {},
-      "description": "The details for the service registry.",
+      "description": "The details for the service registry.\n\nEach service may be associated with one service registry. Multiple service registries for each service are not supported.\n\nWhen you add, update, or remove the service registries configuration, Amazon ECS starts a new deployment. New tasks are registered and deregistered to the updated service registry configuration.",
       "properties": {
         "ContainerName": "The container name value to be used for your service discovery service. It's already specified in the task definition. If the task definition that your service task specifies uses the `bridge` or `host` network mode, you must specify a `containerName` and `containerPort` combination from the task definition. If the task definition that your service task specifies uses the `awsvpc` network mode and a type SRV DNS record is used, you must specify either a `containerName` and `containerPort` combination or a `port` value. However, you can't specify both.",
         "ContainerPort": "The port value to be used for your service discovery service. It's already specified in the task definition. If the task definition your service task specifies uses the `bridge` or `host` network mode, you must specify a `containerName` and `containerPort` combination from the task definition. If the task definition your service task specifies uses the `awsvpc` network mode and a type SRV DNS record is used, you must specify either a `containerName` and `containerPort` combination or a `port` value. However, you can't specify both.",
@@ -14585,7 +14587,7 @@
     "AWS::EKS::Addon": {
       "attributes": {
         "Arn": "The ARN of the add-on, such as `arn:aws:eks:us-west-2:111122223333:addon/1-19/vpc-cni/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx` .",
-        "Ref": "`Ref` returns the resource name. For example:\n\n`{ \"Ref\": \"vpc-cni\" }`\n\nFor the add-on `vpc-cni` , `Ref` returns the name of the add-on. For example, `<cluster_name>|<vpc-cni>` ."
+        "Ref": "`Ref` returns the resource name. For example:\n\n`{ \"Ref\": \"vpc-cni\" }`\n\nFor the add-on `vpc-cni` , `Ref` returns the name of the add-on. For example, `cluster-name|vpc-cni` ."
       },
       "description": "Creates an Amazon EKS add-on.\n\nAmazon EKS add-ons help to automate the provisioning and lifecycle management of common operational software for Amazon EKS clusters. Amazon EKS add-ons require clusters running version 1.18 or later because Amazon EKS add-ons rely on the Server-side Apply Kubernetes feature, which is only available in Kubernetes 1.18 and later. For more information, see [Amazon EKS add-ons](https://docs.aws.amazon.com/eks/latest/userguide/eks-add-ons.html) in the *Amazon EKS User Guide* .",
       "properties": {
@@ -14605,7 +14607,7 @@
         "EncryptionConfigKeyArn": "Amazon Resource Name (ARN) or alias of the customer master key (CMK).",
         "Endpoint": "The endpoint for your Kubernetes API server, such as `https://5E1D0CEXAMPLEA591B746AFC5AB30262.yl4.us-west-2.eks.amazonaws.com` .",
         "KubernetesNetworkConfig.ServiceIpv6Cidr": "The CIDR block that Kubernetes Service IP addresses are assigned from if you created a 1.21 or later cluster with version 1.10.1 or later of the Amazon VPC CNI add-on and specified `ipv6` for *ipFamily* when you created the cluster. Kubernetes assigns Service addresses from the unique local address range ( `fc00::/7` ) because you can't specify a custom IPv6 CIDR block when you create the cluster.",
-        "OpenIdConnectIssuerUrl": "The issuer URL for the OIDC identity provider of the cluster, such as `https://oidc.eks.us-west-2.amazonaws.com/id/EXAMPLED539D4633E53DE1B716D3041E` . If you need to remove `https://` from this output value, you can include the following code in your template.\n\n`!Select [1, !Split [\"//\", !GetAtt EKSCluster.OpenIdConnectIssuerUrl]]`",
+        "OpenIdConnectIssuerUrl": "",
         "Ref": "`Ref` returns the resource name. For example:\n\n`{ \"Ref\": \"myCluster\" }`\n\nFor the Amazon EKS cluster `myCluster` , `Ref` returns the name of the cluster."
       },
       "description": "Creates an Amazon EKS control plane.\n\nThe Amazon EKS control plane consists of control plane instances that run the Kubernetes software, such as `etcd` and the API server. The control plane runs in an account managed by AWS , and the Kubernetes API is exposed by the Amazon EKS API server endpoint. Each Amazon EKS cluster control plane is single tenant and unique. It runs on its own set of Amazon EC2 instances.\n\nThe cluster control plane is provisioned across multiple Availability Zones and fronted by an Elastic Load Balancing Network Load Balancer. Amazon EKS also provisions elastic network interfaces in your VPC subnets to provide connectivity from the control plane instances to the nodes (for example, to support `kubectl exec` , `logs` , and `proxy` data flows).\n\nAmazon EKS nodes run in your AWS account and connect to your cluster's control plane over the Kubernetes API server endpoint and a certificate file that is created for your cluster.\n\nIn most cases, it takes several minutes to create a cluster. After you create an Amazon EKS cluster, you must configure your Kubernetes tooling to communicate with the API server and launch nodes into your cluster. For more information, see [Managing Cluster Authentication](https://docs.aws.amazon.com/eks/latest/userguide/managing-auth.html) and [Launching Amazon EKS nodes](https://docs.aws.amazon.com/eks/latest/userguide/launch-workers.html) in the *Amazon EKS User Guide* .",
@@ -14672,7 +14674,7 @@
     "AWS::EKS::FargateProfile": {
       "attributes": {
         "Arn": "The ARN of the cluster, such as `arn:aws:eks:us-west-2:666666666666:fargateprofile/myCluster/myFargateProfile/1cb1a11a-1dc1-1d11-cf11-1111f11fa111` .",
-        "Ref": "`Ref` returns the resource name. For example:\n\n`{ \"Ref\": \"myFargateProfile\" }`\n\nFor the Fargate profile `myFargateProfile` , Ref returns the physical resource ID of the Fargate profile. For example, `<cluster_name>/<Fargate_profile_name>` ."
+        "Ref": "`Ref` returns the resource name. For example:\n\n`{ \"Ref\": \"myFargateProfile\" }`\n\nFor the Fargate profile `myFargateProfile` , Ref returns the physical resource ID of the Fargate profile. For example, `<cluster-name>/<Fargate_profile_name>` ."
       },
       "description": "Creates an AWS Fargate profile for your Amazon EKS cluster. You must have at least one Fargate profile in a cluster to be able to run pods on Fargate.\n\nThe Fargate profile allows an administrator to declare which pods run on Fargate and specify which pods run on which Fargate profile. This declaration is done through the profile\u2019s selectors. Each profile can have up to five selectors that contain a namespace and labels. A namespace is required for every selector. The label field consists of multiple optional key-value pairs. Pods that match the selectors are scheduled on Fargate. If a to-be-scheduled pod matches any of the selectors in the Fargate profile, then that pod is run on Fargate.\n\nWhen you create a Fargate profile, you must specify a pod execution role to use with the pods that are scheduled with the profile. This role is added to the cluster's Kubernetes [Role Based Access Control](https://docs.aws.amazon.com/https://kubernetes.io/docs/admin/authorization/rbac/) (RBAC) for authorization so that the `kubelet` that is running on the Fargate infrastructure can register with your Amazon EKS cluster so that it can appear in your cluster as a node. The pod execution role also provides IAM permissions to the Fargate infrastructure to allow read access to Amazon ECR image repositories. For more information, see [Pod Execution Role](https://docs.aws.amazon.com/eks/latest/userguide/pod-execution-role.html) in the *Amazon EKS User Guide* .\n\nFargate profiles are immutable. However, you can create a new updated profile to replace an existing profile and then delete the original after the updated profile has finished creating.\n\nIf any Fargate profiles in a cluster are in the `DELETING` status, you must wait for that Fargate profile to finish deleting before you can create any other profiles in that cluster.\n\nFor more information, see [AWS Fargate Profile](https://docs.aws.amazon.com/eks/latest/userguide/fargate-profile.html) in the *Amazon EKS User Guide* .",
       "properties": {
@@ -14700,13 +14702,48 @@
         "Namespace": "The Kubernetes namespace that the selector should match."
       }
     },
+    "AWS::EKS::IdentityProviderConfig": {
+      "attributes": {
+        "IdentityProviderConfigArn": "The Amazon Resource Name (ARN) associated with the identity provider config.",
+        "Ref": "`Ref` returns the resource name. For example:\n\n`{ \"Ref\": \"myIdentityProviderConfig\" }`\n\nFor the IdentityProviderConfig, Ref returns the physical resource ID of the config. For example, `cluster-name/oidc/identity-provider-config-name` ."
+      },
+      "description": "Associate an identity provider configuration to a cluster.\n\nIf you want to authenticate identities using an identity provider, you can create an identity provider configuration and associate it to your cluster. After configuring authentication to your cluster you can create Kubernetes `roles` and `clusterroles` to assign permissions to the roles, and then bind the roles to the identities using Kubernetes `rolebindings` and `clusterrolebindings` . For more information see [Using RBAC Authorization](https://docs.aws.amazon.com/https://kubernetes.io/docs/reference/access-authn-authz/rbac/) in the Kubernetes documentation.\n\nThis resource isn't available in all AWS Regions .",
+      "properties": {
+        "ClusterName": "The cluster that the configuration is associated to.",
+        "IdentityProviderConfigName": "The name of the configuration.",
+        "Oidc": "An object that represents an OpenID Connect (OIDC) identity provider configuration.",
+        "Tags": "The metadata to apply to the provider configuration to assist with categorization and organization. Each tag consists of a key and an optional value. You define both.",
+        "Type": "The type of the identity provider configuration. The only type available is `oidc` ."
+      }
+    },
+    "AWS::EKS::IdentityProviderConfig.OidcIdentityProviderConfig": {
+      "attributes": {},
+      "description": "An object that represents the configuration for an OpenID Connect (OIDC) identity provider.\n\nThis resource isn't available in all AWS Regions .",
+      "properties": {
+        "ClientId": "This is also known as *audience* . The ID of the client application that makes authentication requests to the OIDC identity provider.",
+        "GroupsClaim": "The JSON web token (JWT) claim that the provider uses to return your groups.",
+        "GroupsPrefix": "The prefix that is prepended to group claims to prevent clashes with existing names (such as `system:` groups). For example, the value `oidc:` creates group names like `oidc:engineering` and `oidc:infra` . The prefix can't contain `system:`",
+        "IssuerUrl": "The URL of the OIDC identity provider that allows the API server to discover public signing keys for verifying tokens.",
+        "RequiredClaims": "The key-value pairs that describe required claims in the identity token. If set, each claim is verified to be present in the token with a matching value.",
+        "UsernameClaim": "The JSON Web token (JWT) claim that is used as the username.",
+        "UsernamePrefix": "The prefix that is prepended to username claims to prevent clashes with existing names. The prefix can't contain `system:`"
+      }
+    },
+    "AWS::EKS::IdentityProviderConfig.RequiredClaim": {
+      "attributes": {},
+      "description": "A key-value pair that describes a required claim in the identity token. If set, each claim is verified to be present in the token with a matching value.\n\nThis resource isn't available in all AWS Regions .",
+      "properties": {
+        "Key": "The key to match from the token.",
+        "Value": "The value for the key from the token."
+      }
+    },
     "AWS::EKS::Nodegroup": {
       "attributes": {
         "Arn": "The Amazon Resource Name (ARN) associated with the managed node group.",
         "ClusterName": "The name of the cluster that the managed node group resides in.",
         "Id": "",
         "NodegroupName": "The name associated with an Amazon EKS managed node group.",
-        "Ref": "`Ref` returns the resource name. For example:\n\n`{ \"Ref\": \"myNodegroup\" }`\n\nFor the Amazon EKS node group `myNodegroup` , Ref returns the physical resource ID of the node group. For example, `<cluster_name>/<nodegroup_name>` ."
+        "Ref": "`Ref` returns the resource name. For example:\n\n`{ \"Ref\": \"myNodegroup\" }`\n\nFor the Amazon EKS node group `myNodegroup` , Ref returns the physical resource ID of the node group. For example, `cluster-name/nodegroup_name` ."
       },
       "description": "Creates a managed node group for an Amazon EKS cluster. You can only create a node group for your cluster that is equal to the current Kubernetes version for the cluster. All node groups are created with the latest AMI release version for the respective minor Kubernetes version of the cluster, unless you deploy a custom AMI using a launch template. For more information about using launch templates, see [Launch template support](https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html) .\n\nAn Amazon EKS managed node group is an Amazon EC2 Auto Scaling group and associated Amazon EC2 instances that are managed by AWS for an Amazon EKS cluster. Each node group uses a version of the Amazon EKS optimized Amazon Linux 2 AMI. For more information, see [Managed Node Groups](https://docs.aws.amazon.com/eks/latest/userguide/managed-node-groups.html) in the *Amazon EKS User Guide* .",
       "properties": {
@@ -15551,7 +15588,7 @@
       "description": "The `AWS::ElastiCache::ReplicationGroup` resource creates an Amazon ElastiCache Redis replication group. A Redis (cluster mode disabled) replication group is a collection of cache clusters, where one of the clusters is a primary read-write cluster and the others are read-only replicas.\n\nA Redis (cluster mode enabled) cluster is comprised of from 1 to 90 shards (API/CLI: node groups). Each shard has a primary node and up to 5 read-only replica nodes. The configuration can range from 90 shards and 0 replicas to 15 shards and 5 replicas, which is the maximum number or replicas allowed.\n\nThe node or shard limit can be increased to a maximum of 500 per cluster if the Redis engine version is 5.0.6 or higher. For example, you can choose to configure a 500 node cluster that ranges between 83 shards (one primary and 5 replicas per shard) and 500 shards (single primary and no replicas). Make sure there are enough available IP addresses to accommodate the increase. Common pitfalls include the subnets in the subnet group have too small a CIDR range or the subnets are shared and heavily used by other clusters. For more information, see [Creating a Subnet Group](https://docs.aws.amazon.com/AmazonElastiCache/latest/red-ug/SubnetGroups.Creating.html) . For versions below 5.0.6, the limit is 250 per cluster.\n\nTo request a limit increase, see [Amazon Service Limits](https://docs.aws.amazon.com/general/latest/gr/aws_service_limits.html) and choose the limit type *Nodes per cluster per instance type* .",
       "properties": {
         "AtRestEncryptionEnabled": "A flag that enables encryption at rest when set to `true` .\n\nYou cannot modify the value of `AtRestEncryptionEnabled` after the replication group is created. To enable encryption at rest on a replication group you must set `AtRestEncryptionEnabled` to `true` when you create the replication group.\n\n*Required:* Only available when creating a replication group in an Amazon VPC using redis version `3.2.6` or `4.x` onward.\n\nDefault: `false`",
-        "AuthToken": "*Reserved parameter.* The password used to access a password protected server.\n\n`AuthToken` can be specified only on replication groups where `TransitEncryptionEnabled` is `true` . For more information, see [Authenticating Users with the Redis AUTH Command](https://docs.aws.amazon.com/AmazonElastiCache/latest/red-ug/auth.html) .\n\n> For HIPAA compliance, you must specify `TransitEncryptionEnabled` as `true` , an `AuthToken` , and a `CacheSubnetGroup` . \n\nPassword constraints:\n\n- Must be only printable ASCII characters.\n- Must be at least 16 characters and no more than 128 characters in length.\n- Cannot contain any of the following characters: '/', '\"', or '@'.\n\nFor more information, see [AUTH password](https://docs.aws.amazon.com/http://redis.io/commands/AUTH) at http://redis.io/commands/AUTH.",
+        "AuthToken": "*Reserved parameter.* The password used to access a password protected server.\n\n`AuthToken` can be specified only on replication groups where `TransitEncryptionEnabled` is `true` . For more information, see [Authenticating Users with the Redis AUTH Command](https://docs.aws.amazon.com/AmazonElastiCache/latest/red-ug/auth.html) .\n\n> For HIPAA compliance, you must specify `TransitEncryptionEnabled` as `true` , an `AuthToken` , and a `CacheSubnetGroup` . \n\nPassword constraints:\n\n- Must be only printable ASCII characters.\n- Must be at least 16 characters and no more than 128 characters in length.\n- Nonalphanumeric characters are restricted to (!, &, #, $, ^, <, >, -, ).\n\nFor more information, see [AUTH password](https://docs.aws.amazon.com/http://redis.io/commands/AUTH) at http://redis.io/commands/AUTH.",
         "AutoMinorVersionUpgrade": "If you are running Redis engine version 6.0 or later, set this parameter to yes if you want to opt-in to the next minor version upgrade campaign. This parameter is disabled for previous versions.",
         "AutomaticFailoverEnabled": "Specifies whether a read-only replica is automatically promoted to read/write primary if the existing primary fails.\n\n`AutomaticFailoverEnabled` must be enabled for Redis (cluster mode enabled) replication groups.\n\nDefault: false",
         "CacheNodeType": "The compute and memory capacity of the nodes in the node group (shard).\n\nThe following node types are supported by ElastiCache. Generally speaking, the current generation types provide more memory and computational power at lower cost when compared to their equivalent previous generation counterparts.\n\n- General purpose:\n\n- Current generation:\n\n*M6g node types:* `cache.m6g.large` , `cache.m6g.xlarge` , `cache.m6g.2xlarge` , `cache.m6g.4xlarge` , `cache.m6g.12xlarge` , `cache.m6g.24xlarge`\n\n*M5 node types:* `cache.m5.large` , `cache.m5.xlarge` , `cache.m5.2xlarge` , `cache.m5.4xlarge` , `cache.m5.12xlarge` , `cache.m5.24xlarge`\n\n*M4 node types:* `cache.m4.large` , `cache.m4.xlarge` , `cache.m4.2xlarge` , `cache.m4.4xlarge` , `cache.m4.10xlarge`\n\n*T4g node types:* `cache.t4g.micro` , `cache.t4g.small` , `cache.t4g.medium`\n\n*T3 node types:* `cache.t3.micro` , `cache.t3.small` , `cache.t3.medium`\n\n*T2 node types:* `cache.t2.micro` , `cache.t2.small` , `cache.t2.medium`\n- Previous generation: (not recommended)\n\n*T1 node types:* `cache.t1.micro`\n\n*M1 node types:* `cache.m1.small` , `cache.m1.medium` , `cache.m1.large` , `cache.m1.xlarge`\n\n*M3 node types:* `cache.m3.medium` , `cache.m3.large` , `cache.m3.xlarge` , `cache.m3.2xlarge`\n- Compute optimized:\n\n- Previous generation: (not recommended)\n\n*C1 node types:* `cache.c1.xlarge`\n- Memory optimized:\n\n- Current generation:\n\n*R6gd node types:* `cache.r6gd.xlarge` , `cache.r6gd.2xlarge` , `cache.r6gd.4xlarge` , `cache.r6gd.8xlarge` , `cache.r6gd.12xlarge` , `cache.r6gd.16xlarge`\n\n> The `r6gd` family is available in the following regions: `us-east-2` , `us-east-1` , `us-west-2` , `us-west-1` , `eu-west-1` , `eu-central-1` , `ap-northeast-1` , `ap-southeast-1` , `ap-southeast-2` . \n\n*R6g node types:* `cache.r6g.large` , `cache.r6g.xlarge` , `cache.r6g.2xlarge` , `cache.r6g.4xlarge` , `cache.r6g.12xlarge` , `cache.r6g.24xlarge`\n\n*R5 node types:* `cache.r5.large` , `cache.r5.xlarge` , `cache.r5.2xlarge` , `cache.r5.4xlarge` , `cache.r5.12xlarge` , `cache.r5.24xlarge`\n\n*R4 node types:* `cache.r4.large` , `cache.r4.xlarge` , `cache.r4.2xlarge` , `cache.r4.4xlarge` , `cache.r4.8xlarge` , `cache.r4.16xlarge`\n- Previous generation: (not recommended)\n\n*M2 node types:* `cache.m2.xlarge` , `cache.m2.2xlarge` , `cache.m2.4xlarge`\n\n*R3 node types:* `cache.r3.large` , `cache.r3.xlarge` , `cache.r3.2xlarge` , `cache.r3.4xlarge` , `cache.r3.8xlarge`\n\nFor region availability, see [Supported Node Types by Amazon Region](https://docs.aws.amazon.com/AmazonElastiCache/latest/red-ug/CacheNodes.SupportedTypes.html#CacheNodes.SupportedTypesByRegion)",
@@ -17221,7 +17258,7 @@
         "KmsKeyId": "The ID of the AWS Key Management Service ( AWS KMS ) key used to encrypt the file system's data for Amazon FSx for Windows File Server file systems, Amazon FSx for NetApp ONTAP file systems, and `PERSISTENT` Amazon FSx for Lustre file systems at rest. If this ID isn't specified, the Amazon FSx-managed key for your account is used. The scratch Amazon FSx for Lustre file systems are always encrypted at rest using the Amazon FSx-managed key for your account. For more information, see [Encrypt](https://docs.aws.amazon.com//kms/latest/APIReference/API_Encrypt.html) in the *AWS Key Management Service API Reference* .",
         "LustreConfiguration": "The Lustre configuration for the file system being created.\n\n> The following parameters are not supported for file systems with the `Persistent_2` deployment type. Instead, use `CreateDataRepositoryAssociation` to create a data repository association to link your Lustre file system to a data repository.\n> \n> - `AutoImportPolicy`\n> - `ExportPath`\n> - `ImportedChunkSize`\n> - `ImportPath`",
         "OntapConfiguration": "The ONTAP configuration properties of the FSx for ONTAP file system that you are creating.",
-        "OpenZFSConfiguration": "The OpenZFS configuration properties for the file system that you are creating.",
+        "OpenZFSConfiguration": "The Amazon FSx for OpenZFS configuration properties for the file system that you are creating.",
         "SecurityGroupIds": "A list of IDs specifying the security groups to apply to all network interfaces created for file system access. This list isn't returned in later requests to describe the file system.",
         "StorageCapacity": "Sets the storage capacity of the file system that you're creating. `StorageCapacity` is required if you are creating a new file system. Do not include `StorageCapacity` if you are creating a file system from a backup.\n\nFor Lustre file systems:",
         "StorageType": "Sets the storage type for the file system that you're creating. Valid values are `SSD` and `HDD` .\n\n- Set to `SSD` to use solid state drive storage. SSD is supported on all Windows, Lustre, ONTAP, and OpenZFS deployment types.\n- Set to `HDD` to use hard disk drive storage. HDD is supported on `SINGLE_AZ_2` and `MULTI_AZ_1` Windows file system deployment types, and on `PERSISTENT` Lustre file system deployment types.\n\nDefault value is `SSD` . For more information, see [Storage type options](https://docs.aws.amazon.com/fsx/latest/WindowsGuide/optimize-fsx-costs.html#storage-type-options) in the *FSx for Windows File Server User Guide* and [Multiple storage options](https://docs.aws.amazon.com/fsx/latest/LustreGuide/what-is.html#storage-options) in the *FSx for Lustre User Guide* .",
@@ -17243,8 +17280,8 @@
       "attributes": {},
       "description": "Specifies who can mount the file system and the options that can be used while mounting the file system.",
       "properties": {
-        "Clients": "A value that specifies who can mount the file system. You can provide a wildcard character ( `*` ), an IP address ( `0.0.0.0` ), or a CIDR address ( `192.0.2.0/24` . By default, Amazon FSx uses the wildcard character when specifying the client.",
-        "Options": "The options to use when mounting the file system. For a list of options that you can use with Network File System (NFS), see the [exports(5) - Linux man page](https://docs.aws.amazon.com/https://linux.die.net/man/5/exports) . When choosing your options, consider the following:\n\n- `crossmount` is used by default. If you don't specify `crossmount` when changing the client configuration, you won't be able to see or access snapshots in your file system's snapshot directory.\n- `sync` is used by default. If you instead specify `async` , the system acknowledges writes before writing to disk. If the system crashes before the writes are finished, you lose the unwritten data."
+        "Clients": "A value that specifies who can mount the file system. You can provide a wildcard character ( `*` ), an IP address ( `0.0.0.0` ), or a CIDR address ( `192.0.2.0/24` ). By default, Amazon FSx uses the wildcard character when specifying the client.",
+        "Options": "The options to use when mounting the file system. For a list of options that you can use with Network File System (NFS), see the [exports(5) - Linux man page](https://docs.aws.amazon.com/https://linux.die.net/man/5/exports) . When choosing your options, consider the following:\n\n- `crossmnt` is used by default. If you don't specify `crossmnt` when changing the client configuration, you won't be able to see or access snapshots in your file system's snapshot directory.\n- `sync` is used by default. If you instead specify `async` , the system acknowledges writes before writing to disk. If the system crashes before the writes are finished, you lose the unwritten data."
       }
     },
     "AWS::FSx::FileSystem.DiskIopsConfiguration": {
@@ -17288,7 +17325,7 @@
         "DailyAutomaticBackupStartTime": "A recurring daily time, in the format `HH:MM` . `HH` is the zero-padded hour of the day (0-23), and `MM` is the zero-padded minute of the hour. For example, `05:00` specifies 5 AM daily.",
         "DeploymentType": "Specifies the FSx for ONTAP file system deployment type to use in creating the file system. `MULTI_AZ_1` is the supported ONTAP deployment type.",
         "DiskIopsConfiguration": "The SSD IOPS configuration for the FSx for ONTAP file system.",
-        "EndpointIpAddressRange": "Specifies the IP address range in which the endpoints to access your file system will be created. By default, Amazon FSx selects an unused IP address range for you from the 198.19.* range.",
+        "EndpointIpAddressRange": "Specifies the IP address range in which the endpoints to access your file system will be created. By default, Amazon FSx selects an unused IP address range for you from the 198.19.* range.\n\n> The Endpoint IP address range you select for your file system must exist outside the VPC's CIDR range and must be at least /30 or larger.",
         "FsxAdminPassword": "The ONTAP administrative password for the `fsxadmin` user with which you administer your file system using the NetApp ONTAP CLI and REST API.",
         "PreferredSubnetId": "Required when `DeploymentType` is set to `MULTI_AZ_1` . This specifies the subnet in which you want the preferred file server to be located.",
         "RouteTableIds": "Specifies the virtual private cloud (VPC) route tables in which your file system's endpoints will be created. You should specify all VPC route tables associated with the subnets in which your clients are located. By default, Amazon FSx selects your VPC's default route table.",
@@ -17304,7 +17341,7 @@
         "CopyTagsToBackups": "A Boolean value indicating whether tags for the file system should be copied to backups. This value defaults to `false` . If it's set to `true` , all tags for the file system are copied to all automatic and user-initiated backups where the user doesn't specify tags. If this value is `true` , and you specify one or more tags, only the specified tags are copied to backups. If you specify one or more tags when creating a user-initiated backup, no tags are copied from the file system, regardless of this value.",
         "CopyTagsToVolumes": "A Boolean value indicating whether tags for the volume should be copied to snapshots. This value defaults to `false` . If it's set to `true` , all tags for the volume are copied to snapshots where the user doesn't specify tags. If this value is `true` , and you specify one or more tags, only the specified tags are copied to snapshots. If you specify one or more tags when creating the snapshot, no tags are copied from the volume, regardless of this value.",
         "DailyAutomaticBackupStartTime": "A recurring daily time, in the format `HH:MM` . `HH` is the zero-padded hour of the day (0-23), and `MM` is the zero-padded minute of the hour. For example, `05:00` specifies 5 AM daily.",
-        "DeploymentType": "Specifies the file system deployment type. Amazon FSx for OpenZFS supports `SINGLE_AZ_1` . `SINGLE_AZ_1` is a file system configured for a single Availability Zone (AZ) of redundancy.",
+        "DeploymentType": "Specifies the file system deployment type. Amazon FSx for OpenZFS supports `SINGLE_AZ_1` . `SINGLE_AZ_1` deployment type is configured for redundancy within a single Availability Zone.",
         "DiskIopsConfiguration": "The SSD IOPS (input/output operations per second) configuration for an Amazon FSx for NetApp ONTAP or Amazon FSx for OpenZFS file system. The default is 3 IOPS per GB of storage capacity, but you can provision additional IOPS per GB of storage. The configuration consists of the total number of provisioned SSD IOPS and how the amount was provisioned (by the customer or by the system).",
         "RootVolumeConfiguration": "The configuration Amazon FSx uses when creating the root value of the Amazon FSx for OpenZFS file system. All volumes are children of the root volume.",
         "ThroughputCapacity": "Specifies the throughput of an Amazon FSx for OpenZFS file system, measured in megabytes per second (MB/s). Valid values are 64, 128, 256, 512, 1024, 2048, 3072, or 4096 MB/s. You pay for additional throughput capacity that you provision.",
@@ -17315,8 +17352,8 @@
       "attributes": {},
       "description": "The configuration of an Amazon FSx for OpenZFS root volume.",
       "properties": {
-        "CopyTagsToSnapshots": "A Boolean value indicating whether tags for the volume should be copied to snapshots. This value defaults to `false` . If it's set to `true` , all tags for the volume are copied to snapshots where the user doesn't specify tags. If this value is `true` and you specify one or more tags, only the specified tags are copied to snapshots. If you specify one or more tags when creating the snapshot, no tags are copied from the volume, regardless of this value.",
-        "DataCompressionType": "Specifies the method used to compress the data on the volume. Unless the compression type is specified, volumes inherit the `DataCompressionType` value of their parent volume.\n\n- `NONE` - Doesn't compress the data on the volume.\n- `ZSTD` - Compresses the data in the volume using the ZStandard (ZSTD) compression algorithm. This algorithm reduces the amount of space used on your volume and has very little impact on compute resources.",
+        "CopyTagsToSnapshots": "A Boolean value indicating whether tags for the volume should be copied to snapshots of the volume. This value defaults to `false` . If it's set to `true` , all tags for the volume are copied to snapshots where the user doesn't specify tags. If this value is `true` and you specify one or more tags, only the specified tags are copied to snapshots. If you specify one or more tags when creating the snapshot, no tags are copied from the volume, regardless of this value.",
+        "DataCompressionType": "Specifies the method used to compress the data on the volume. The compression type is `NONE` by default.\n\n- `NONE` - Doesn't compress the data on the volume. `NONE` is the default.\n- `ZSTD` - Compresses the data in the volume using the Zstandard (ZSTD) compression algorithm. Compared to LZ4, Z-Standard provides a better compression ratio to minimize on-disk storage utilization.\n- `LZ4` - Compresses the data in the volume using the LZ4 compression algorithm. Compared to Z-Standard, LZ4 is less compute-intensive and delivers higher write throughput speeds.",
         "NfsExports": "The configuration object for mounting a file system.",
         "ReadOnly": "A Boolean value indicating whether the volume is read-only. Setting this value to `true` can be useful after you have completed changes to a volume and no longer want changes to occur.",
         "UserAndGroupQuotas": "An object specifying how much storage users or groups can use on the volume."
@@ -17416,12 +17453,12 @@
         "UUID": "Returns the volume's universally unique identifier (UUID).\n\nExample: `abcd0123-cd45-ef67-11aa-1111aaaa23bc`",
         "VolumeId": "Returns the volume's ID.\n\nExample: `fsvol-0123456789abcdefa`"
       },
-      "description": "Creates an Amazon FSx for NetApp ONTAP or Amazon FSx for OpenZFS storage volume.",
+      "description": "Creates an FSx for ONTAP or Amazon FSx for OpenZFS storage volume.",
       "properties": {
         "BackupId": "The ID of the source backup. Specifies the backup that you are copying.",
         "Name": "The name of the volume.",
         "OntapConfiguration": "The configuration of an Amazon FSx for NetApp ONTAP volume.",
-        "OpenZFSConfiguration": "Specifies the configuration of the OpenZFS volume that you are creating.",
+        "OpenZFSConfiguration": "Specifies the configuration of the Amazon FSx for OpenZFS volume that you are creating.",
         "Options": "To delete the volume's child volumes, snapshots, and clones, use the string `DELETE_CHILD_VOLUMES_AND_SNAPSHOTS` .",
         "SnapshotId": "A unique ID that represents the snapshot.",
         "Tags": "An array of key-value pairs to apply to this resource.\n\nFor more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) .",
@@ -17432,8 +17469,8 @@
       "attributes": {},
       "description": "Specifies who can mount the file system and the options that can be used while mounting the file system.",
       "properties": {
-        "Clients": "A value that specifies who can mount the file system. You can provide a wildcard character ( `*` ), an IP address ( `0.0.0.0` ), or a CIDR address ( `192.0.2.0/24` . By default, Amazon FSx uses the wildcard character when specifying the client.",
-        "Options": "The options to use when mounting the file system. For a list of options that you can use with Network File System (NFS), see the [exports(5) - Linux man page](https://docs.aws.amazon.com/https://linux.die.net/man/5/exports) . When choosing your options, consider the following:\n\n- `crossmount` is used by default. If you don't specify `crossmount` when changing the client configuration, you won't be able to see or access snapshots in your file system's snapshot directory.\n- `sync` is used by default. If you instead specify `async` , the system acknowledges writes before writing to disk. If the system crashes before the writes are finished, you lose the unwritten data."
+        "Clients": "A value that specifies who can mount the file system. You can provide a wildcard character ( `*` ), an IP address ( `0.0.0.0` ), or a CIDR address ( `192.0.2.0/24` ). By default, Amazon FSx uses the wildcard character when specifying the client.",
+        "Options": "The options to use when mounting the file system. For a list of options that you can use with Network File System (NFS), see the [exports(5) - Linux man page](https://docs.aws.amazon.com/https://linux.die.net/man/5/exports) . When choosing your options, consider the following:\n\n- `crossmnt` is used by default. If you don't specify `crossmnt` when changing the client configuration, you won't be able to see or access snapshots in your file system's snapshot directory.\n- `sync` is used by default. If you instead specify `async` , the system acknowledges writes before writing to disk. If the system crashes before the writes are finished, you lose the unwritten data."
       }
     },
     "AWS::FSx::Volume.NfsExports": {
@@ -17457,16 +17494,16 @@
     },
     "AWS::FSx::Volume.OpenZFSConfiguration": {
       "attributes": {},
-      "description": "Specifies the configuration of the OpenZFS volume that you are creating.",
+      "description": "Specifies the configuration of the Amazon FSx for OpenZFS volume that you are creating.",
       "properties": {
         "CopyTagsToSnapshots": "A Boolean value indicating whether tags for the volume should be copied to snapshots. This value defaults to `false` . If it's set to `true` , all tags for the volume are copied to snapshots where the user doesn't specify tags. If this value is `true` , and you specify one or more tags, only the specified tags are copied to snapshots. If you specify one or more tags when creating the snapshot, no tags are copied from the volume, regardless of this value.",
-        "DataCompressionType": "The method used to compress the data on the volume. Unless a compression type is specified, volumes inherit the `DataCompressionType` value of their parent volume.\n\n- `NONE` - Doesn't compress the data on the volume.\n- `ZSTD` - Compresses the data in the volume using the Zstandard (ZSTD) compression algorithm. This algorithm reduces the amount of space used on your volume and has very little impact on compute resources.",
+        "DataCompressionType": "Specifies the method used to compress the data on the volume. The compression type is `NONE` by default.\n\n- `NONE` - Doesn't compress the data on the volume. `NONE` is the default.\n- `ZSTD` - Compresses the data in the volume using the Zstandard (ZSTD) compression algorithm. Compared to LZ4, Z-Standard provides a better compression ratio to minimize on-disk storage utilization.\n- `LZ4` - Compresses the data in the volume using the LZ4 compression algorithm. Compared to Z-Standard, LZ4 is less compute-intensive and delivers higher write throughput speeds.",
         "NfsExports": "The configuration object for mounting a Network File System (NFS) file system.",
         "OriginSnapshot": "The configuration object that specifies the snapshot to use as the origin of the data for the volume.",
-        "ParentVolumeId": "The ID of the volume to use as the parent volume.",
+        "ParentVolumeId": "The ID of the volume to use as the parent volume of the volume that you are creating.",
         "ReadOnly": "A Boolean value indicating whether the volume is read-only.",
-        "StorageCapacityQuotaGiB": "The maximum amount of storage in gibibytes (GiB) that the volume can use from its parent. You can specify a quota larger than the storage on the parent volume.",
-        "StorageCapacityReservationGiB": "The amount of storage in gibibytes (GiB) to reserve from the parent volume. You can't reserve more storage than the parent volume has reserved.",
+        "StorageCapacityQuotaGiB": "Sets the maximum storage size in gibibytes (GiB) for the volume. You can specify a quota that is larger than the storage on the parent volume. A volume quota limits the amount of storage that the volume can consume to the configured amount, but does not guarantee the space will be available on the parent volume. To guarantee quota space, you must also set `StorageCapacityReservationGiB` . To *not* specify a storage capacity quota, set this to `-1` .\n\nFor more information, see [Volume properties](https://docs.aws.amazon.com/fsx/latest/OpenZFSGuide/managing-volumes.html#volume-properties) in the *Amazon FSx for OpenZFS User Guide* .",
+        "StorageCapacityReservationGiB": "Specifies the amount of storage in gibibytes (GiB) to reserve from the parent volume. Setting `StorageCapacityReservationGiB` guarantees that the specified amount of storage space on the parent volume will always be available for the volume. You can't reserve more storage than the parent volume has. To *not* specify a storage capacity reservation, set this to `0` or `-1` . For more information, see [Volume properties](https://docs.aws.amazon.com/fsx/latest/OpenZFSGuide/managing-volumes.html#volume-properties) in the *Amazon FSx for OpenZFS User Guide* .",
         "UserAndGroupQuotas": "An object specifying how much storage users or groups can use on the volume."
       }
     },
@@ -17859,10 +17896,10 @@
       "attributes": {},
       "description": "A range of IP addresses and port settings that allow inbound traffic to connect to server processes on an instance in a fleet. New game sessions are assigned an IP address/port number combination, which must fall into the fleet's allowed ranges. Fleets with custom game builds must have permissions explicitly set. For Realtime Servers fleets, GameLift automatically opens two port ranges, one for TCP messaging and one for UDP.",
       "properties": {
-        "FromPort": "A starting value for a range of allowed port numbers.\n\nFor fleets using Linux builds, only port 22, 443, 1026-60000 are valid. For fleets using Windows builds, only port 443, 1026-60000 are valid.",
+        "FromPort": "A starting value for a range of allowed port numbers.\n\nFor fleets using Windows and Linux builds, only ports 1026-60000 are valid.",
         "IpRange": "A range of allowed IP addresses. This value must be expressed in CIDR notation. Example: \" `000.000.000.000/[subnet mask]` \" or optionally the shortened version \" `0.0.0.0/[subnet mask]` \".",
         "Protocol": "The network communication protocol used by the fleet.",
-        "ToPort": "An ending value for a range of allowed port numbers. Port numbers are end-inclusive. This value must be higher than `FromPort` .\n\nFor fleets using Linux builds, only port 22, 443, 1026-60000 are valid. For fleets using Windows builds, only port 443, 1026-60000 are valid."
+        "ToPort": "An ending value for a range of allowed port numbers. Port numbers are end-inclusive. This value must be higher than `FromPort` .\n\nFor fleets using Windows and Linux builds, only ports 1026-60000 are valid."
       }
     },
     "AWS::GameLift::Fleet.LocationCapacity": {
@@ -17918,7 +17955,7 @@
       "properties": {
         "AutoScalingPolicy": "Configuration settings to define a scaling policy for the Auto Scaling group that is optimized for game hosting. The scaling policy uses the metric `\"PercentUtilizedGameServers\"` to maintain a buffer of idle game servers that can immediately accommodate new games and players. After the Auto Scaling group is created, update this value directly in the Auto Scaling group using the AWS console or APIs.",
         "BalancingStrategy": "Indicates how GameLift FleetIQ balances the use of Spot Instances and On-Demand Instances in the game server group. Method options include the following:\n\n- `SPOT_ONLY` - Only Spot Instances are used in the game server group. If Spot Instances are unavailable or not viable for game hosting, the game server group provides no hosting capacity until Spot Instances can again be used. Until then, no new instances are started, and the existing nonviable Spot Instances are terminated (after current gameplay ends) and are not replaced.\n- `SPOT_PREFERRED` - (default value) Spot Instances are used whenever available in the game server group. If Spot Instances are unavailable, the game server group continues to provide hosting capacity by falling back to On-Demand Instances. Existing nonviable Spot Instances are terminated (after current gameplay ends) and are replaced with new On-Demand Instances.\n- `ON_DEMAND_ONLY` - Only On-Demand Instances are used in the game server group. No Spot Instances are used, even when available, while this balancing strategy is in force.",
-        "DeleteOption": "The type of delete to perform. Options include the following:\n\n- `SAFE_DELETE` \u2013 (default) Terminates the game server group and Amazon EC2 Auto Scaling group only when it has no game servers that are in `UTILIZED` status.\n- `FORCE_DELETE` \u2013 Terminates the game server group, including all active game servers regardless of their utilization status, and the Amazon EC2 Auto Scaling group.\n- `RETAIN` \u2013 Does a safe delete of the game server group but retains the Amazon EC2 Auto Scaling group as is.",
+        "DeleteOption": "The type of delete to perform. To delete a game server group, specify the `DeleteOption` . Options include the following:\n\n- `SAFE_DELETE` \u2013 (default) Terminates the game server group and Amazon EC2 Auto Scaling group only when it has no game servers that are in `UTILIZED` status.\n- `FORCE_DELETE` \u2013 Terminates the game server group, including all active game servers regardless of their utilization status, and the Amazon EC2 Auto Scaling group.\n- `RETAIN` \u2013 Does a safe delete of the game server group but retains the Amazon EC2 Auto Scaling group as is.",
         "GameServerGroupName": "A developer-defined identifier for the game server group. The name is unique for each Region in each AWS account.",
         "GameServerProtectionPolicy": "A flag that indicates whether instances in the game server group are protected from early termination. Unprotected instances that have active game servers running might be terminated during a scale-down event, causing players to be dropped from the game. Protected instances cannot be terminated while there are active game servers running except in the event of a forced game server group deletion (see ). An exception to this is with Spot Instances, which can be terminated by AWS regardless of protection status.",
         "InstanceDefinitions": "The set of Amazon EC2 instance types that GameLift FleetIQ can use when balancing and automatically scaling instances in the corresponding Auto Scaling group.",
@@ -17952,7 +17989,7 @@
       "properties": {
         "LaunchTemplateId": "A unique identifier for an existing Amazon EC2 launch template.",
         "LaunchTemplateName": "A readable identifier for an existing Amazon EC2 launch template.",
-        "Version": "The version of the Amazon EC2 launch template to use. If no version is specified, the default version will be used. With Amazon Elastic Compute Cloud, you can specify a default version for a launch template. If none is set, the default is the first version created."
+        "Version": "The version of the Amazon EC2 launch template to use. If no version is specified, the default version will be used. With Amazon EC2, you can specify a default version for a launch template. If none is set, the default is the first version created."
       }
     },
     "AWS::GameLift::GameServerGroup.TargetTrackingConfiguration": {
@@ -20508,6 +20545,7 @@
       "attributes": {
         "Arn": "Returns the Amazon Resource Name (ARN) of the image. For example, `arn:aws:imagebuilder:us-west-2:123456789012:image/mybasicrecipe/2019.12.03/1` .",
         "ImageId": "Returns the AMI ID of the Amazon EC2 AMI in the Region in which you are using Image Builder.",
+        "ImageUri": "",
         "Name": "Returns the name of the image.",
         "Ref": "`Ref` returns the resource ARN, such as `arn:aws:imagebuilder:us-west-2:123456789012:image/my-example-image` ."
       },
@@ -27015,27 +27053,15 @@
     },
     "AWS::MSK::Configuration": {
       "attributes": {
-        "CreationTime": "The time the configuration was created.",
-        "LatestRevision": "The latest revision of the configuration.",
-        "Ref": "The ARN of the configuration.",
-        "State": "The state of the configuration."
+        "Arn": "The ARN of the configuration.",
+        "Ref": "The ARN of the configuration."
       },
       "description": "Creates a new MSK configuration.",
       "properties": {
-        "Arn": "The Amazon Resource Name (ARN) that uniquely identifies an MSK configuration and all of its revisions.",
         "Description": "The description of the configuration.",
         "KafkaVersionsList": "A list of the versions of Apache Kafka with which you can use this MSK configuration. You can use this configuration for an MSK cluster only if the Apache Kafka version specified for the cluster appears in this list.",
         "Name": "The name of the configuration. Configuration names are strings that match the regex \"^[0-9A-Za-z][0-9A-Za-z-]{0,}$\".",
         "ServerProperties": "Contents of the server.properties file. When using the API, you must ensure that the contents of the file are base64 encoded. When using the console, the SDK, or the CLI, the contents of server.properties can be in plaintext."
-      }
-    },
-    "AWS::MSK::Configuration.ConfigurationRevision": {
-      "attributes": {},
-      "description": "Describes a configuration revision.",
-      "properties": {
-        "CreationTime": "The time when the configuration revision was created.",
-        "Description": "The description of the configuration revision.",
-        "Revision": "The revision number."
       }
     },
     "AWS::MWAA::Environment": {
@@ -30400,7 +30426,7 @@
         "ClusterConfig": "`ClusterConfig` is a property of the AWS::OpenSearchService::Domain resource that configures an Amazon OpenSearch Service cluster.",
         "CognitoOptions": "Configures OpenSearch Service to use Amazon Cognito authentication for OpenSearch Dashboards.",
         "DomainEndpointOptions": "Specifies additional options for the domain endpoint, such as whether to require HTTPS for all traffic or whether to use a custom endpoint rather than the default endpoint.",
-        "DomainName": "A name for the OpenSearch Service domain. For valid values, see the [DomainName](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/configuration-api.html#configuration-api-datatypes-domainname) data type in the *Amazon OpenSearch Service Developer Guide* . If you don't specify a name, AWS CloudFormation generates a unique physical ID and uses that ID for the domain name. For more information, see [Name Type](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-name.html) .\n\n> If you specify a name, you can't perform updates that require replacement of this resource. You can perform updates that require no or some interruption. If you must replace the resource, specify a new name.",
+        "DomainName": "A name for the OpenSearch Service domain. For valid values, see the [DomainName](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/configuration-api.html#configuration-api-datatypes-domainname) data type in the *Amazon OpenSearch Service Developer Guide* . If you don't specify a name, AWS CloudFormation generates a unique physical ID and uses that ID for the domain name. For more information, see [Name Type](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-name.html) .\n\nRequired when creating a new domain.\n\n> If you specify a name, you can't perform updates that require replacement of this resource. You can perform updates that require no or some interruption. If you must replace the resource, specify a new name.",
         "EBSOptions": "The configurations of Amazon Elastic Block Store (Amazon EBS) volumes that are attached to data nodes in the OpenSearch Service domain. For more information, see [EBS volume size limits](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/limits.html#ebsresource) in the *Amazon OpenSearch Service Developer Guide* .",
         "EncryptionAtRestOptions": "Whether the domain should encrypt data at rest, and if so, the AWS KMS key to use. See [Encryption of data at rest for Amazon OpenSearch Service](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/encryption-at-rest.html) .",
         "EngineVersion": "The version of OpenSearch to use. The value must be in the format `OpenSearch_X.Y` or `Elasticsearch_X.Y` . If not specified, the latest version of OpenSearch is used. For information about the versions that OpenSearch Service supports, see [Supported versions of OpenSearch and Elasticsearch](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/what-is.html#choosing-version) in the *Amazon OpenSearch Service Developer Guide* .\n\nIf you set the [EnableVersionUpgrade](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-attribute-updatepolicy.html#cfn-attributes-updatepolicy-upgradeopensearchdomain) update policy to `true` , you can update `EngineVersion` without interruption. When `EnableVersionUpgrade` is set to `false` , or is not specified, updating `EngineVersion` results in [replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement) .",
@@ -30441,17 +30467,17 @@
       "description": "Configures OpenSearch Service to use Amazon Cognito authentication for OpenSearch Dashboards.",
       "properties": {
         "Enabled": "Whether to enable or disable Amazon Cognito authentication for OpenSearch Dashboards. See [Amazon Cognito authentication for OpenSearch Dashboards](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/cognito-auth.html) .",
-        "IdentityPoolId": "The Amazon Cognito identity pool ID that you want OpenSearch Service to use for OpenSearch Dashboards authentication.",
-        "RoleArn": "The `AmazonESCognitoAccess` role that allows OpenSearch Service to configure your user pool and identity pool.",
-        "UserPoolId": "The Amazon Cognito user pool ID that you want OpenSearch Service to use for OpenSearch Dashboards authentication."
+        "IdentityPoolId": "The Amazon Cognito identity pool ID that you want OpenSearch Service to use for OpenSearch Dashboards authentication.\n\nRequired if you enabled Cognito Authentication for OpenSearch Dashboards.",
+        "RoleArn": "The `AmazonOpenSearchServiceCognitoAccess` role that allows OpenSearch Service to configure your user pool and identity pool.\n\nRequired if you enabled Cognito Authentication for OpenSearch Dashboards.",
+        "UserPoolId": "The Amazon Cognito user pool ID that you want OpenSearch Service to use for OpenSearch Dashboards authentication.\n\nRequired if you enabled Cognito Authentication for OpenSearch Dashboards."
       }
     },
     "AWS::OpenSearchService::Domain.DomainEndpointOptions": {
       "attributes": {},
       "description": "Specifies additional options for the domain endpoint, such as whether to require HTTPS for all traffic or whether to use a custom endpoint rather than the default endpoint.",
       "properties": {
-        "CustomEndpoint": "The fully qualified URL for your custom endpoint.",
-        "CustomEndpointCertificateArn": "The AWS Certificate Manager ARN for your domain's SSL/TLS certificate.",
+        "CustomEndpoint": "The fully qualified URL for your custom endpoint. Required if you enabled a custom endpoint for the domain.",
+        "CustomEndpointCertificateArn": "The AWS Certificate Manager ARN for your domain's SSL/TLS certificate. Required if you enabled a custom endpoint for the domain.",
         "CustomEndpointEnabled": "True to enable a custom endpoint for the domain. If enabled, you must also provide values for `CustomEndpoint` and `CustomEndpointCertificateArn` .",
         "EnforceHTTPS": "True to require that all traffic to the domain arrive over HTTPS.",
         "TLSSecurityPolicy": "The minimum TLS version required for traffic to the domain. Valid values are TLS 1.0 (default) or 1.2:\n\n- `Policy-Min-TLS-1-0-2019-07`\n- `Policy-Min-TLS-1-2-2019-07`"
@@ -30472,20 +30498,20 @@
       "description": "Whether the domain should encrypt data at rest, and if so, the AWS Key Management Service key to use.",
       "properties": {
         "Enabled": "Specify `true` to enable encryption at rest.",
-        "KmsKeyId": "The KMS key ID. Takes the form `1a2a3a4-1a2a-3a4a-5a6a-1a2a3a4a5a6a` ."
+        "KmsKeyId": "The KMS key ID. Takes the form `1a2a3a4-1a2a-3a4a-5a6a-1a2a3a4a5a6a` . Required if you enable encryption at rest."
       }
     },
     "AWS::OpenSearchService::Domain.LogPublishingOption": {
       "attributes": {},
       "description": "Specifies whether the OpenSearch Service domain publishes application, search slow logs, or index slow logs to Amazon CloudWatch. Each option must be an object of name `SEARCH_SLOW_LOGS` , `ES_APPLICATION_LOGS` , `INDEX_SLOW_LOGS` , or `AUDIT_LOGS` depending on the type of logs you want to publish. For the full syntax, see the [examples](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-opensearchservice-domain.html#aws-resource-opensearchservice-domain--examples) .\n\nBefore you enable log publishing, you need to create a CloudWatch log group and provide OpenSearch Service the correct permissions to write to it. To learn more, see [Enabling log publishing ( AWS CloudFormation)](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/createdomain-configure-slow-logs.html#createdomain-configure-slow-logs-cfn) .",
       "properties": {
-        "CloudWatchLogsLogGroupArn": "Specifies the CloudWatch log group to publish to.",
+        "CloudWatchLogsLogGroupArn": "Specifies the CloudWatch log group to publish to. Required if you enable log publishing.",
         "Enabled": "If `true` , enables the publishing of logs to CloudWatch.\n\nDefault: `false` ."
       }
     },
     "AWS::OpenSearchService::Domain.MasterUserOptions": {
       "attributes": {},
-      "description": "Specifies information about the master user.",
+      "description": "Specifies information about the master user.\n\nRequired if if `InternalUserDatabaseEnabled` is true in `AdvancedSecurityOptions` .",
       "properties": {
         "MasterUserARN": "ARN for the master user. Only specify if `InternalUserDatabaseEnabled` is false in `AdvancedSecurityOptions` .",
         "MasterUserName": "Username for the master user. Only specify if `InternalUserDatabaseEnabled` is true in `AdvancedSecurityOptions` . If you don't want to specify this value directly within the template, you can use a [dynamic reference](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/dynamic-references.html) instead.",
@@ -34640,7 +34666,6 @@
       "attributes": {},
       "description": "Specifies a metrics configuration for the CloudWatch request metrics (specified by the metrics configuration ID) from an Amazon S3 bucket. If you're updating an existing metrics configuration, note that this is a full replacement of the existing metrics configuration. If you don't include the elements you want to keep, they are erased. For examples, see [AWS::S3::Bucket](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-bucket.html#aws-properties-s3-bucket--examples) . For more information, see [PUT Bucket metrics](https://docs.aws.amazon.com/AmazonS3/latest/API/RESTBucketPUTMetricConfiguration.html) in the *Amazon S3 API Reference* .",
       "properties": {
-        "AccessPointArn": "The access point that was used while performing operations on the object. The metrics configuration only includes objects that meet the filter's criteria.",
         "Id": "The ID used to identify the metrics configuration. This can be any value you choose that helps you identify your metrics configuration.",
         "Prefix": "The prefix that an object must have to be included in the metrics results.",
         "TagFilters": "Specifies a list of tag filters to use as a metrics configuration filter. The metrics configuration includes only objects that meet the filter's criteria."
@@ -34667,7 +34692,6 @@
       "attributes": {},
       "description": "Describes the notification configuration for an Amazon S3 bucket.\n\n> If you create the target resource and related permissions in the same template, you might have a circular dependency.\n> \n> For example, you might use the `AWS::Lambda::Permission` resource to grant the bucket permission to invoke an AWS Lambda function. However, AWS CloudFormation can't create the bucket until the bucket has permission to invoke the function ( AWS CloudFormation checks whether the bucket can invoke the function). If you're using Refs to pass the bucket name, this leads to a circular dependency.\n> \n> To avoid this dependency, you can create all resources without specifying the notification configuration. Then, update the stack with a notification configuration.\n> \n> For more information on permissions, see [AWS::Lambda::Permission](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lambda-permission.html) and [Granting Permissions to Publish Event Notification Messages to a Destination](https://docs.aws.amazon.com/AmazonS3/latest/dev/NotificationHowTo.html#grant-destinations-permissions-to-s3) .",
       "properties": {
-        "EventBridgeConfiguration": "Enables delivery of events to Amazon EventBridge.",
         "LambdaConfigurations": "Describes the AWS Lambda functions to invoke and the events for which to invoke them.",
         "QueueConfigurations": "The Amazon Simple Queue Service queues to publish messages to and the events for which to publish messages.",
         "TopicConfigurations": "The topic to which notifications are sent and the events for which notifications are generated."
@@ -34948,12 +34972,7 @@
     "AWS::S3::Bucket.WebsiteConfiguration": {
       "attributes": {},
       "description": "Specifies website configuration parameters for an Amazon S3 bucket.",
-      "properties": {
-        "ErrorDocument": "The name of the error document for the website.",
-        "IndexDocument": "The name of the index document for the website.",
-        "RedirectAllRequestsTo": "The redirect behavior for every request to this bucket's website endpoint.\n\n> If you specify this property, you can't specify any other property.",
-        "RoutingRules": "Rules that define when a redirect is applied and the redirect behavior."
-      }
+      "properties": {}
     },
     "AWS::S3::BucketPolicy": {
       "attributes": {},
@@ -37578,11 +37597,11 @@
       "description": "Specifies that you want to create a hosted Lambda rotation function.\n\nTo use these values, you must specify `Transform: AWS::SecretsManager-2020-07-23` at the beginning of the CloudFormation template.",
       "properties": {
         "KmsKeyArn": "The ARN of the KMS key that Secrets Manager uses to encrypt the secret. If you don't specify this value, then Secrets Manager uses the key `aws/secretsmanager` . If `aws/secretsmanager` doesn't yet exist, then Secrets Manager creates it for you automatically the first time it encrypts the secret value.",
-        "MasterSecretArn": "The ARN of the secret that contains elevated credentials. The Lambda rotation function uses this secret for the [Alternating users rotation strategy](https://docs.aws.amazon.com/secretsmanager/latest/userguide/rotating-secrets_strategies.html#rotating-secrets-two-users) .",
+        "MasterSecretArn": "The ARN of the secret that contains elevated credentials. You must create the elevated secret before you can set this property. The Lambda rotation function uses this secret for the [Alternating users rotation strategy](https://docs.aws.amazon.com/secretsmanager/latest/userguide/rotating-secrets_strategies.html#rotating-secrets-two-users) .",
         "MasterSecretKmsKeyArn": "The ARN of the KMS key that Secrets Manager uses to encrypt the elevated secret if you use the [alternating users strategy](https://docs.aws.amazon.com/secretsmanager/latest/userguide/rotating-secrets_strategies.html#rotating-secrets-two-users) . If you don't specify this value and you use the alternating users strategy, then Secrets Manager uses the key `aws/secretsmanager` . If `aws/secretsmanager` doesn't yet exist, then Secrets Manager creates it for you automatically the first time it encrypts the secret value.",
         "RotationLambdaName": "The name of the Lambda rotation function.",
         "RotationType": "The type of rotation template to use. For more information, see [Secrets Manager rotation function templates](https://docs.aws.amazon.com/secretsmanager/latest/userguide/reference_available-rotation-templates.html) .\n\nYou can specify one of the following `RotationTypes` :\n\n- MySQLSingleUser\n- MySQLMultiUser\n- PostgreSQLSingleUser\n- PostgreSQLMultiUser\n- OracleSingleUser\n- OracleMultiUser\n- MariaDBSingleUser\n- MariaDBMultiUser\n- SQLServerSingleUser\n- SQLServerMultiUser\n- RedshiftSingleUser\n- RedshiftMultiUser\n- MongoDBSingleUser\n- MongoDBMultiUser",
-        "SuperuserSecretArn": "The ARN of the secret that contains elevated credentials. The Lambda rotation function uses this secret for the [Alternating users rotation strategy](https://docs.aws.amazon.com/secretsmanager/latest/userguide/rotating-secrets_strategies.html#rotating-secrets-two-users) .",
+        "SuperuserSecretArn": "The ARN of the secret that contains elevated credentials. You must create the superuser secret before you can set this property. The Lambda rotation function uses this secret for the [Alternating users rotation strategy](https://docs.aws.amazon.com/secretsmanager/latest/userguide/rotating-secrets_strategies.html#rotating-secrets-two-users) .",
         "SuperuserSecretKmsKeyArn": "The ARN of the KMS key that Secrets Manager uses to encrypt the elevated secret if you use the [alternating users strategy](https://docs.aws.amazon.com/secretsmanager/latest/userguide/rotating-secrets_strategies.html#rotating-secrets-two-users) . If you don't specify this value and you use the alternating users strategy, then Secrets Manager uses the key `aws/secretsmanager` . If `aws/secretsmanager` doesn't yet exist, then Secrets Manager creates it for you automatically the first time it encrypts the secret value.",
         "VpcSecurityGroupIds": "A comma-separated list of security group IDs applied to the target database.\n\nThe templates applies the same security groups as on the Lambda rotation function that is created as part of this stack.",
         "VpcSubnetIds": "A comma separated list of VPC subnet IDs of the target database network. The Lambda rotation function is in the same subnet group."
@@ -38282,7 +38301,7 @@
       "attributes": {},
       "description": "Use this structure to input your script code for the canary. This structure contains the Lambda handler with the location where the canary should start running the script. If the script is stored in an S3 bucket, the bucket name, key, and version are also included. If the script is passed into the canary directly, the script code is contained in the value of `Script` .",
       "properties": {
-        "Handler": "The entry point to use for the source code when running the canary. This value must end with the string `.handler` . The string is limited to 29 characters or fewer.",
+        "Handler": "The entry point to use for the source code when running the canary. For canaries that use the `syn-python-selenium-1.0` runtime or a `syn-nodejs.puppeteer` runtime earlier than `syn-nodejs.puppeteer-3.4` , the handler must be specified as `*fileName* .handler` . For `syn-python-selenium-1.1` , `syn-nodejs.puppeteer-3.4` , and later runtimes, the handler can be specified as `*fileName* . *functionName*` , or you can specify a folder where canary scripts reside as `*folder* / *fileName* . *functionName*` .",
         "S3Bucket": "If your canary script is located in S3, specify the bucket name here. The bucket must already exist.",
         "S3Key": "The S3 key of your script. For more information, see [Working with Amazon S3 Objects](https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingObjects.html) .",
         "S3ObjectVersion": "The S3 version ID of your script.",
@@ -39050,21 +39069,21 @@
       },
       "description": "Defines an association between logging destinations and a web ACL resource, for logging from AWS WAF . As part of the association, you can specify parts of the standard logging fields to keep out of the logs and you can specify filters so that you log only a subset of the logging records.\n\n> You can define one logging destination per web ACL. \n\nYou can access information about the traffic that AWS WAF inspects using the following steps:\n\n- Create your logging destination. You can use an Amazon CloudWatch Logs log group, an Amazon Simple Storage Service (Amazon S3) bucket, or an Amazon Kinesis Data Firehose. For information about configuring logging destinations and the permissions that are required for each, see [Logging web ACL traffic information](https://docs.aws.amazon.com/waf/latest/developerguide/logging.html) in the *AWS WAF Developer Guide* .\n- Associate your logging destination to your web ACL using a `PutLoggingConfiguration` request.\n\nWhen you successfully enable logging using a `PutLoggingConfiguration` request, AWS WAF creates an additional role or policy that is required to write logs to the logging destination. For an Amazon CloudWatch Logs log group, AWS WAF creates a resource policy on the log group. For an Amazon S3 bucket, AWS WAF creates a bucket policy. For an Amazon Kinesis Data Firehose, AWS WAF creates a service-linked role.\n\nFor additional information about web ACL logging, see [Logging web ACL traffic information](https://docs.aws.amazon.com/waf/latest/developerguide/logging.html) in the *AWS WAF Developer Guide* .",
       "properties": {
-        "LogDestinationConfigs": "The Amazon Resource Names (ARNs) of the logging destinations that you want to associate with the web ACL.",
+        "LogDestinationConfigs": "The logging destination configuration that you want to associate with the web ACL.\n\n> You can associate one logging destination to a web ACL.",
         "LoggingFilter": "Filtering that specifies which web requests are kept in the logs and which are dropped. You can filter on the rule action and on the web request labels that were applied by matching rules during web ACL evaluation.",
-        "RedactedFields": "The parts of the request that you want to keep out of the logs. For example, if you redact the `SingleHeader` field, the `HEADER` field in the firehose will be `xxx` .\n\n> You can specify only the following fields for redaction: `UriPath` , `QueryString` , `SingleHeader` , `Method` , and `JsonBody` .",
+        "RedactedFields": "The parts of the request that you want to keep out of the logs. For example, if you redact the `SingleHeader` field, the `HEADER` field in the logs will be `xxx` .\n\n> You can specify only the following fields for redaction: `UriPath` , `QueryString` , `SingleHeader` , `Method` , and `JsonBody` .",
         "ResourceArn": "The Amazon Resource Name (ARN) of the web ACL that you want to associate with `LogDestinationConfigs` ."
       }
     },
     "AWS::WAFv2::LoggingConfiguration.FieldToMatch": {
       "attributes": {},
-      "description": "The parts of the request that you want to keep out of the logs. For example, if you redact the `SingleHeader` field, the `HEADER` field in the firehose will be `xxx` .\n\nJSON specification for a `QueryString` field to match:\n\n`\"FieldToMatch\": { \"QueryString\": {} }`\n\nExample JSON for a `Method` field to match specification:\n\n`\"FieldToMatch\": { \"Method\": { \"Name\": \"DELETE\" } }`",
+      "description": "The part of a web request that you want AWS WAF to inspect. Include the single `FieldToMatch` type that you want to inspect, with additional specifications as needed, according to the type. You specify a single request component in `FieldToMatch` for each rule statement that requires it. To inspect more than one component of a web request, create a separate rule statement for each component.\n\nJSON specification for a `QueryString` field to match:\n\n`\"FieldToMatch\": { \"QueryString\": {} }`\n\nExample JSON for a `Method` field to match specification:\n\n`\"FieldToMatch\": { \"Method\": { \"Name\": \"DELETE\" } }`",
       "properties": {
-        "JsonBody": "Redact the JSON body from the logs.",
-        "Method": "Redact the method from the logs.",
-        "QueryString": "Redact the query string from the logs.",
-        "SingleHeader": "Redact the header from the logs.",
-        "UriPath": "Redact the URI path from the logs."
+        "JsonBody": "Inspect the request body as JSON. The request body immediately follows the request headers. This is the part of a request that contains any additional data that you want to send to your web server as the HTTP request body, such as data from a form.\n\nNote that only the first 8 KB (8192 bytes) of the request body are forwarded to AWS WAF for inspection by the underlying host service. If you don't need to inspect more than 8 KB, you can guarantee that you don't allow additional bytes in by combining a statement that inspects the body of the web request, such as `ByteMatchStatement` or `RegexPatternSetReferenceStatement` , with a `SizeConstraintStatement` that enforces an 8 KB size limit on the body of the request. AWS WAF doesn't support inspecting the entire contents of web requests whose bodies exceed the 8 KB limit.",
+        "Method": "Inspect the HTTP method. The method indicates the type of operation that the request is asking the origin to perform.",
+        "QueryString": "Inspect the query string. This is the part of a URL that appears after a `?` character, if any.",
+        "SingleHeader": "Inspect a single header. Provide the name of the header to inspect, for example, `User-Agent` or `Referer` . This setting isn't case sensitive.\n\nExample JSON: `\"SingleHeader\": { \"Name\": \"haystack\" }`",
+        "UriPath": "Inspect the request URI path. This is the part of a web request that identifies a resource, for example, `/images/daily-ad.jpg` ."
       }
     },
     "AWS::WAFv2::RegexPatternSet": {
@@ -39572,7 +39591,7 @@
     },
     "AWS::WAFv2::WebACL.ManagedRuleGroupConfig": {
       "attributes": {},
-      "description": "Additional information that's used by a managed rule group. Most managed rule groups don't require this.\n\nUse this for the account takeover prevention managed rule group `AWSManagedRulesATPRuleSet` , to provide information about the sign-in page of your application.",
+      "description": "Additional information that's used by a managed rule group. Most managed rule groups don't require this.\n\nUse this for the account takeover prevention managed rule group `AWSManagedRulesATPRuleSet` , to provide information about the sign-in page of your application.\n\nYou can provide multiple individual `ManagedRuleGroupConfig` objects for any rule group configuration, for example `UsernameField` and `PasswordField` . The configuration that you provide depends on the needs of the managed rule group. For the ATP managed rule group, you provide the following individual configuration objects: `LoginPath` , `PasswordField` , `PayloadType` and `UsernameField` .",
       "properties": {
         "LoginPath": "The path of the login endpoint for your application. For example, for the URL `https://example.com/web/login` , you would provide the path `/web/login` .",
         "PasswordField": "Details about your login page password field.",
@@ -39585,7 +39604,7 @@
       "description": "A rule statement used to run the rules that are defined in a managed rule group. To use this, provide the vendor name and the name of the rule group in this statement.\n\nYou can't nest a `ManagedRuleGroupStatement` , for example for use inside a `NotStatement` or `OrStatement` . It can only be referenced as a top-level statement within a rule.",
       "properties": {
         "ExcludedRules": "The rules whose actions are set to `COUNT` by the web ACL, regardless of the action that is configured in the rule. This effectively excludes the rule from acting on web requests.",
-        "ManagedRuleGroupConfigs": "Additional information that's used by a managed rule group. Most managed rule groups don't require this.\n\nUse this for the account takeover prevention managed rule group `AWSManagedRulesATPRuleSet` , to provide information about the sign-in page of your application.",
+        "ManagedRuleGroupConfigs": "Additional information that's used by a managed rule group. Most managed rule groups don't require this.\n\nUse this for the account takeover prevention managed rule group `AWSManagedRulesATPRuleSet` , to provide information about the sign-in page of your application.\n\nYou can provide multiple individual `ManagedRuleGroupConfig` objects for any rule group configuration, for example `UsernameField` and `PasswordField` . The configuration that you provide depends on the needs of the managed rule group. For the ATP managed rule group, you provide the following individual configuration objects: `LoginPath` , `PasswordField` , `PayloadType` and `UsernameField` .",
         "Name": "The name of the managed rule group. You use this, along with the vendor name, to identify the rule group.",
         "ScopeDownStatement": "Statement nested inside a managed rule group statement to narrow the scope of the requests that AWS WAF evaluates using the rule group. Requests that match the scope-down statement are evaluated using the rule group. Requests that don't match the scope-down statement are not a match for the managed rule group statement, without any further evaluation.",
         "VendorName": "The name of the managed rule group vendor. You use this, along with the rule group name, to identify the rule group.",
@@ -39668,10 +39687,10 @@
     },
     "AWS::WAFv2::WebACL.RuleGroupReferenceStatement": {
       "attributes": {},
-      "description": "A rule statement used to run the rules that are defined in a `RuleGroup` . To use this, create a rule group with your rules, then provide the ARN of the rule group in this statement.\n\nYou cannot nest a `RuleGroupReferenceStatement` , for example for use inside a `NotStatement` or `OrStatement` . It can only be referenced as a top-level statement within a rule.",
+      "description": "A rule statement used to run the rules that are defined in a `RuleGroup` . To use this, create a rule group with your rules, then provide the ARN of the rule group in this statement.\n\nYou cannot nest a `RuleGroupReferenceStatement` , for example for use inside a `NotStatement` or `OrStatement` . You can only use a rule group reference statement at the top level inside a web ACL.",
       "properties": {
         "Arn": "The Amazon Resource Name (ARN) of the entity.",
-        "ExcludedRules": "The names of rules that are in the referenced rule group, but that you want AWS WAF to exclude from processing for this rule statement."
+        "ExcludedRules": "The rules in the referenced rule group whose actions are set to `Count` . When you exclude a rule, AWS WAF evaluates it exactly as it would if the rule action setting were `Count` . This is a useful option for testing the rules in a rule group without modifying how they handle your web traffic."
       }
     },
     "AWS::WAFv2::WebACL.SizeConstraintStatement": {
