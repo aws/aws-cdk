@@ -5,6 +5,7 @@ import { RegionInfo } from '@aws-cdk/region-info';
 /**
  * Use an Elastic Beanstalk environment URL as an alias record target.
  * E.g. mysampleenvironment.xyz.us-east-1.elasticbeanstalk.com
+ * or mycustomcnameprefix.us-east-1.elasticbeanstalk.com
  *
  * Only supports Elastic Beanstalk environments created after 2016 that have a regional endpoint.
  */
@@ -18,7 +19,9 @@ export class ElasticBeanstalkEnvironmentEndpointTarget implements route53.IAlias
     }
 
     const dnsName = this.environmentEndpoint;
-    const region = cdk.Fn.select(2, cdk.Fn.split('.', dnsName));
+    const subDomains = cdk.Fn.split('.', dnsName);
+    const regionSubdomainIndex = subDomains.length - 3;
+    const region = cdk.Fn.select(regionSubdomainIndex, subDomains);
     const { ebsEnvEndpointHostedZoneId: hostedZoneId } = RegionInfo.get(region);
 
     if (!hostedZoneId || !dnsName) {
