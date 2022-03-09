@@ -69,6 +69,9 @@ export class PolicyStatement {
   private readonly condition: { [key: string]: any } = { };
   private principalConditionsJson?: string;
 
+  // Hold on to those principals
+  private readonly _principals = new Array<IPrincipal>();
+
   constructor(props: PolicyStatementProps = {}) {
     // Validate actions
     for (const action of [...props.actions || [], ...props.notActions || []]) {
@@ -144,6 +147,7 @@ export class PolicyStatement {
    * @param principals IAM principals that will be added
    */
   public addPrincipals(...principals: IPrincipal[]) {
+    this._principals.push(...principals);
     if (Object.keys(principals).length > 0 && Object.keys(this.notPrincipal).length > 0) {
       throw new Error('Cannot add \'Principals\' to policy statement if \'NotPrincipals\' have been added');
     }
@@ -153,6 +157,10 @@ export class PolicyStatement {
       mergePrincipal(this.principal, fragment.principalJson);
       this.addPrincipalConditions(fragment.conditions);
     }
+  }
+
+  public get principals(): IPrincipal[] {
+    return [...this._principals];
   }
 
   /**
@@ -319,32 +327,7 @@ export class PolicyStatement {
   }
 
   public copy(overrides: PolicyStatementProps = {}) {
-    /*
-    for (const action of [...props.actions || [], ...props.notActions || []]) {
-
-      if (!/^(\*|[a-zA-Z0-9-]+:[a-zA-Z0-9*]+)$/.test(action) && !cdk.Token.isUnresolved(action)) {
-        throw new Error(`Action '${action}' is invalid. An action string consists of a service namespace, a colon, and the name of an action. Action names can include wildcards.`);
-      }
-    }
-
-    this.sid = props.sid;
-    this.effect = props.effect || Effect.ALLOW;
-
-    this.addActions(...props.actions || []);
-    this.addNotActions(...props.notActions || []);
-    this.addPrincipals(...props.principals || []);
-    this.addNotPrincipals(...props.notPrincipals || []);
-    this.addResources(...props.resources || []);
-    this.addNotResources(...props.notResources || []);
-    if (props.conditions !== undefined) {
-      this.addConditions(props.conditions);
-    }
-    */
-
-
-
-
-    const props:PolicyStatementProps = {
+    return new PolicyStatement({
       sid: overrides.sid ?? this.sid,
       effect: overrides.effect ?? this.effect,
       actions: overrides.actions ?? this.action,
@@ -355,9 +338,7 @@ export class PolicyStatement {
 
       resources: overrides.resources ?? this.resource,
       notResources: overrides.notResources ?? this.notResource,
-
-    };
-    return new PolicyStatement();
+    });
   }
 
   /**
