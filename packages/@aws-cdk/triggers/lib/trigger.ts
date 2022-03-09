@@ -91,7 +91,7 @@ export class Trigger extends CoreConstruct implements ITrigger {
         {
           Effect: 'Allow',
           Action: ['lambda:InvokeFunction'],
-          Resource: [handlerArn],
+          Resource: [`${props.handler.functionArn}:*`],
         },
       ],
     });
