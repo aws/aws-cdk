@@ -113,7 +113,7 @@ function patchSdk(awsSdk: any): any {
 
 /* eslint-disable @typescript-eslint/no-require-imports, import/no-extraneous-dependencies */
 export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent, context: AWSLambda.Context) {
-  let physicalResourceId = event.PhysicalResourceId ?? context.logStreamName;
+  let physicalResourceId = context.logStreamName;
   try {
     let AWS: any;
     if (!latestSdkInstalled && event.ResourceProperties.InstallLatestAwsSdk === 'true') {
