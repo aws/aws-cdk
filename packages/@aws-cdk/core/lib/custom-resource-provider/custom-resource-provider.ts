@@ -13,10 +13,6 @@ import { Token } from '../token';
 const ENTRYPOINT_FILENAME = '__entrypoint__';
 const ENTRYPOINT_NODEJS_SOURCE = path.join(__dirname, 'nodejs-entrypoint.js');
 
-// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
-// eslint-disable-next-line
-import { Construct as CoreConstruct } from '../construct-compat';
-
 /**
  * Initialization properties for `CustomResourceProvider`.
  *
@@ -94,15 +90,15 @@ export interface CustomResourceProviderProps {
 export enum CustomResourceProviderRuntime {
   /**
    * Node.js 12.x
+   */
+  NODEJS_12_X = 'nodejs12.x',
+
+  /**
+   * Node.js 12.x
    *
    * @deprecated Use {@link NODEJS_12_X}
    */
   NODEJS_12 = 'nodejs12.x',
-
-  /**
-   * Node.js 12.x
-   */
-  NODEJS_12_X = 'nodejs12.x',
 
   /**
    * Node.js 14.x
@@ -132,7 +128,7 @@ export enum CustomResourceProviderRuntime {
  * in that module a read, regardless of whether you end up using the Provider
  * class in there or this one.
  */
-export class CustomResourceProvider extends CoreConstruct {
+export class CustomResourceProvider extends Construct {
   /**
    * Returns a stack-level singleton ARN (service token) for the custom resource
    * provider.
