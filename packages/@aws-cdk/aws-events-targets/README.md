@@ -345,7 +345,7 @@ const rule = new Rule(this, 'Rule', {
 });
 
 rule.addTarget(new EcsTask({
-  // assignPublicIp: true,
+  assignPublicIp: true,
   cluster,
   taskDefinition,
   taskCount: 1,
