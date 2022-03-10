@@ -35,10 +35,52 @@ export abstract class Expression {
   }
 
   /**
+   * Create a expression for the Not Equal operator.
+   */
+  public static neq(left: Expression, right: Expression): Expression {
+    return new BinaryOperationExpression(left, '!=', right);
+  }
+
+  /**
+   * Create a expression for the Less Than operator.
+   */
+  public static lt(left: Expression, right: Expression): Expression {
+    return new BinaryOperationExpression(left, '<', right);
+  }
+
+  /**
+   * Create a expression for the Less Than Or Equal operator.
+   */
+  public static lte(left: Expression, right: Expression): Expression {
+    return new BinaryOperationExpression(left, '<=', right);
+  }
+
+  /**
+   * Create a expression for the Greater Than operator.
+   */
+  public static gt(left: Expression, right: Expression): Expression {
+    return new BinaryOperationExpression(left, '>', right);
+  }
+
+  /**
+   * Create a expression for the Greater Than Or Equal operator.
+   */
+  public static gte(left: Expression, right: Expression): Expression {
+    return new BinaryOperationExpression(left, '>=', right);
+  }
+
+  /**
    * Create a expression for the AND operator.
    */
   public static and(left: Expression, right: Expression): Expression {
     return new BinaryOperationExpression(left, '&&', right);
+  }
+
+  /**
+   * Create a expression for the OR operator.
+   */
+  public static or(left: Expression, right: Expression): Expression {
+    return new BinaryOperationExpression(left, '||', right);
   }
 
   constructor() {
@@ -70,6 +112,6 @@ class BinaryOperationExpression extends Expression {
   }
 
   public evaluate() {
-    return `${this.left.evaluate()} ${this.operator} ${this.right.evaluate()}`;
+    return `(${this.left.evaluate()} ${this.operator} ${this.right.evaluate()})`;
   }
 }

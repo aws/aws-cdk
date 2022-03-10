@@ -345,7 +345,7 @@ test('can set states with transitions', () => {
             TransitionEvents: [{
               EventName: 'firstState_to_secondState',
               NextState: 'secondState',
-              Condition: '$input.test-input.payload.temperature == 12',
+              Condition: '($input.test-input.payload.temperature == 12)',
             }],
           },
         },
@@ -356,12 +356,12 @@ test('can set states with transitions', () => {
               {
                 EventName: 'secondToFirst',
                 NextState: 'firstState',
-                Condition: '$input.test-input.payload.temperature == 21',
+                Condition: '($input.test-input.payload.temperature == 21)',
               },
               {
                 EventName: 'secondState_to_thirdState',
                 NextState: 'thirdState',
-                Condition: '$input.test-input.payload.temperature == 23',
+                Condition: '($input.test-input.payload.temperature == 23)',
               },
             ],
           },
@@ -498,14 +498,26 @@ test('cannot create transitions that transit to duprecated target state', () => 
 });
 
 describe('Expression', () => {
-  test('currentInput', () => {
+  const E = iotevents.Expression;
+  test.each([
+    ['currentInput', (_input: iotevents.IInput) => E.currentInput(_input), 'currentInput("test-input")'],
+    ['inputAttribute', (_input: iotevents.IInput) => E.inputAttribute(_input, 'json.path'), '$input.test-input.json.path'],
+    ['eq', () => E.eq(E.fromString('"aaa"'), E.fromString('"bbb"')), '("aaa" == "bbb")'],
+    ['neq', () => E.neq(E.fromString('"aaa"'), E.fromString('"bbb"')), '("aaa" != "bbb")'],
+    ['lt', () => E.lt(E.fromString('5'), E.fromString('2')), '(5 < 2)'],
+    ['lte', () => E.lte(E.fromString('5'), E.fromString('2')), '(5 <= 2)'],
+    ['gt', () => E.gt(E.fromString('5'), E.fromString('2')), '(5 > 2)'],
+    ['gte', () => E.gte(E.fromString('5'), E.fromString('2')), '(5 >= 2)'],
+    ['and', () => E.and(E.fromString('true'), E.fromString('false')), '(true && false)'],
+    ['or', () => E.or(E.fromString('true'), E.fromString('false')), '(true || false)'],
+  ])('%s', (_, getExpression, expectedCondition) => {
     // WHEN
     new iotevents.DetectorModel(stack, 'MyDetectorModel', {
       initialState: new iotevents.State({
         stateName: 'test-state',
         onEnter: [{
           eventName: 'test-eventName',
-          condition: iotevents.Expression.currentInput(input),
+          condition: getExpression(input),
         }],
       }),
     });
@@ -517,97 +529,7 @@ describe('Expression', () => {
           Match.objectLike({
             OnEnter: {
               Events: [Match.objectLike({
-                Condition: 'currentInput("test-input")',
-              })],
-            },
-          }),
-        ],
-      },
-    });
-  });
-
-  test('inputAttribute', () => {
-    // WHEN
-    new iotevents.DetectorModel(stack, 'MyDetectorModel', {
-      initialState: new iotevents.State({
-        stateName: 'test-state',
-        onEnter: [{
-          eventName: 'test-eventName',
-          condition: iotevents.Expression.inputAttribute(input, 'json.path'),
-        }],
-      }),
-    });
-
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::IoTEvents::DetectorModel', {
-      DetectorModelDefinition: {
-        States: [
-          Match.objectLike({
-            OnEnter: {
-              Events: [Match.objectLike({
-                Condition: '$input.test-input.json.path',
-              })],
-            },
-          }),
-        ],
-      },
-    });
-  });
-
-  test('eq', () => {
-    // WHEN
-    new iotevents.DetectorModel(stack, 'MyDetectorModel', {
-      initialState: new iotevents.State({
-        stateName: 'test-state',
-        onEnter: [{
-          eventName: 'test-eventName',
-          condition: iotevents.Expression.eq(
-            iotevents.Expression.fromString('"aaa"'),
-            iotevents.Expression.fromString('"bbb"'),
-          ),
-        }],
-      }),
-    });
-
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::IoTEvents::DetectorModel', {
-      DetectorModelDefinition: {
-        States: [
-          Match.objectLike({
-            OnEnter: {
-              Events: [Match.objectLike({
-                Condition: '"aaa" == "bbb"',
-              })],
-            },
-          }),
-        ],
-      },
-    });
-  });
-
-  test('eq', () => {
-    // WHEN
-    new iotevents.DetectorModel(stack, 'MyDetectorModel', {
-      initialState: new iotevents.State({
-        stateName: 'test-state',
-        onEnter: [{
-          eventName: 'test-eventName',
-          condition: iotevents.Expression.and(
-            iotevents.Expression.fromString('true'),
-            iotevents.Expression.fromString('false'),
-          ),
-        }],
-      }),
-    });
-
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::IoTEvents::DetectorModel', {
-      DetectorModelDefinition: {
-        States: [
-          Match.objectLike({
-            OnEnter: {
-              Events: [Match.objectLike({
-                Condition: 'true && false',
+                Condition: expectedCondition,
               })],
             },
           }),
