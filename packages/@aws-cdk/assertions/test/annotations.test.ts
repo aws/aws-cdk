@@ -50,6 +50,17 @@ describe('Messages', () => {
     });
   });
 
+  describe('hasNoError', () => {
+    test('match', () => {
+      annotations.hasNoError('/Default/Fred', Match.anyValue());
+    });
+
+    test('no match', () => {
+      expect(() => annotations.hasNoError('/Default/Foo', 'this is an error'))
+        .toThrowError(/Stack has 1 messages./);
+    });
+  });
+
   describe('findError', () => {
     test('match', () => {
       const result = annotations.findError('*', Match.anyValue());

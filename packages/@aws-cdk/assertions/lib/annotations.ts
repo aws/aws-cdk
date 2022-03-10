@@ -1,7 +1,7 @@
 import { Stack, Stage } from '@aws-cdk/core';
 import { SynthesisMessage } from '@aws-cdk/cx-api';
 import { Messages } from './private/message';
-import { findMessage, hasMessage } from './private/messages';
+import { findMessage, hasMessage, hasNoMessage } from './private/messages';
 
 /**
  * Suite of assertions that can be run on a CDK Stack.
@@ -30,6 +30,19 @@ export class Annotations {
    */
   public hasError(constructPath: string, message: any): void {
     const matchError = hasMessage(this._messages, constructPath, constructMessage('error', message));
+    if (matchError) {
+      throw new Error(matchError);
+    }
+  }
+
+  /**
+   * Assert that an error with the given message does not exist in the synthesized CDK `Stack`.
+   *
+   * @param constructPath the construct path to the error. Provide `'*'` to match all errors in the template.
+   * @param message the error message as should be expected. This should be a string or Matcher object.
+   */
+  public hasNoError(constructPath: string, message: any): void {
+    const matchError = hasNoMessage(this._messages, constructPath, constructMessage('error', message));
     if (matchError) {
       throw new Error(matchError);
     }
