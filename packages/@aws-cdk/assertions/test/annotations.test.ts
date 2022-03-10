@@ -83,6 +83,17 @@ describe('Messages', () => {
     });
   });
 
+  describe('hasNoWarning', () => {
+    test('match', () => {
+      annotations.hasNoWarning('/Default/Foo', Match.anyValue());
+    });
+
+    test('no match', () => {
+      expect(() => annotations.hasNoWarning('/Default/Fred', 'this is a warning'))
+        .toThrowError(/Stack has 1 messages./);
+    });
+  });
+
   describe('findWarning', () => {
     test('match', () => {
       const result = annotations.findWarning('*', Match.anyValue());

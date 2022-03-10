@@ -72,6 +72,19 @@ export class Annotations {
   }
 
   /**
+   * Assert that an warning with the given message does not exist in the synthesized CDK `Stack`.
+   *
+   * @param constructPath the construct path to the warning. Provide `'*'` to match all warnings in the template.
+   * @param message the warning message as should be expected. This should be a string or Matcher object.
+   */
+  public hasNoWarning(constructPath: string, message: any): void {
+    const matchError = hasNoMessage(this._messages, constructPath, constructMessage('warning', message));
+    if (matchError) {
+      throw new Error(matchError);
+    }
+  }
+
+  /**
    * Get the set of matching warning of a given construct path and message.
    *
    * @param constructPath the construct path to the warning. Provide `'*'` to match all warnings in the template.
