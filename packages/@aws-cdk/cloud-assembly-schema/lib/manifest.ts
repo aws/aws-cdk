@@ -35,6 +35,16 @@ export interface LoadManifestOptions {
    * @default false
    */
   readonly skipVersionCheck?: boolean;
+
+  /**
+   * Skip enum checks
+   *
+   * This means you may read enum values you don't know about yet. Make sure to always
+   * check the values of enums you encounter in the manifest.
+   *
+   * @default false
+   */
+  readonly skipEnumCheck?: boolean;
 }
 
 /**
@@ -98,7 +108,7 @@ export class Manifest {
    */
   public static load(filePath: string): assembly.AssemblyManifest { return this.loadAssemblyManifest(filePath); }
 
-  private static validate(manifest: { version: string }, schema: jsonschema.Schema, skipVersionCheck: boolean) {
+  private static validate(manifest: { version: string }, schema: jsonschema.Schema, options?: LoadManifestOptions) {
     function parseVersion(version: string) {
       const ver = semver.valid(version);
       if (!ver) {
@@ -111,7 +121,7 @@ export class Manifest {
     const actual = parseVersion(manifest.version);
 
     // first validate the version should be accepted.
-    if (semver.gt(actual, maxSupported) && !skipVersionCheck) {
+    if (semver.gt(actual, maxSupported) && !options?.skipVersionCheck) {
       // we use a well known error prefix so that the CLI can identify this specific error
       // and print some more context to the user.
       throw new Error(`${VERSION_MISMATCH}: Maximum schema version supported is ${maxSupported}, but found ${actual}`);
@@ -127,15 +137,21 @@ export class Manifest {
       allowUnknownAttributes: false,
 
     } as any);
-    if (!result.valid) {
-      throw new Error(`Invalid assembly manifest:\n${result}`);
+
+    let errors = result.errors;
+    if (options?.skipEnumCheck) {
+      // Enum validations aren't useful when
+      errors = stripEnumErrors(errors);
     }
 
+    if (errors.length > 0) {
+      throw new Error(`Invalid assembly manifest:\n${errors.map(e => e.stack).join('\n')}`);
+    }
   }
 
   private static saveManifest(manifest: any, filePath: string, schema: jsonschema.Schema, preprocess?: (obj: any) => any) {
     let withVersion = { ...manifest, version: Manifest.version() };
-    Manifest.validate(withVersion, schema, false);
+    Manifest.validate(withVersion, schema);
     if (preprocess) {
       withVersion = preprocess(withVersion);
     }
@@ -147,7 +163,7 @@ export class Manifest {
     if (preprocess) {
       obj = preprocess(obj);
     }
-    Manifest.validate(obj, schema, options?.skipVersionCheck ?? false);
+    Manifest.validate(obj, schema, options);
     return obj;
   }
 
@@ -231,4 +247,8 @@ function noUndefined<A extends object>(xs: A): A {
     }
   }
   return ret;
+}
+
+function stripEnumErrors(errors: jsonschema.ValidationError[]) {
+  return errors.filter(e => typeof e.schema ==='string' || !('enum' in e.schema));
 }
