@@ -117,6 +117,7 @@ export class LambdaInvoke extends sfn.TaskStateBase {
       },
     };
 
+    // TODO - This also should be udpated to have the correct resources
     this.taskPolicies = [
       new iam.PolicyStatement({
         resources: [this.props.lambdaFunction.functionArn],

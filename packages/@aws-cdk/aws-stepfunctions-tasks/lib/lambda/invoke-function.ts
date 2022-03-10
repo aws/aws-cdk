@@ -32,6 +32,7 @@ export class InvokeFunction implements sfn.IStepFunctionsTask {
   }
 
   public bind(_task: sfn.Task): sfn.StepFunctionsTaskConfig {
+    // TODO - This also should be udpated
     return {
       resourceArn: this.lambdaFunction.functionArn,
       policyStatements: [new iam.PolicyStatement({
