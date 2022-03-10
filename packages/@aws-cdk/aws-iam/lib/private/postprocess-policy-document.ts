@@ -84,7 +84,7 @@ export function normalizeStatement(s: StatementSchema) {
     Sid: _norm(s.Sid),
   });
 
-  function _norm(values: any, { unique }: { unique: boolean } = { unique: false }) {
+  function _norm(values: any, { unique = false }: { unique: boolean } = { unique: false }) {
 
     if (values == null) {
       return undefined;
@@ -103,10 +103,10 @@ export function normalizeStatement(s: StatementSchema) {
         return values[0];
       }
 
-      return unique ? [...new Set(values)] : values;
+      return unique ? Array.from(new Set(values)) : values;
     }
 
-    if (typeof(values) === 'object') {
+    if (values && typeof(values) === 'object') {
       if (Object.keys(values).length === 0) {
         return undefined;
       }
