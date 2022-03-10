@@ -42,7 +42,7 @@ export class AwsCliCompatible {
       const theProfile = options.profile;
       return new AWS.CredentialProviderChain([
         () => profileCredentials(theProfile),
-        () => new AWS.SingleSignOnCredentials({ profile: theProfile }),
+        () => new AWS.SsoCredentials({ profile: theProfile }),
         () => new AWS.ProcessCredentials({ profile: theProfile }),
       ]);
     }
