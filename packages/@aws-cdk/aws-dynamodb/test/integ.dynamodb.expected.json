@@ -383,6 +383,7 @@
               "Action": [
                 "dynamodb:BatchGetItem",
                 "dynamodb:ConditionCheckItem",
+                "dynamodb:DescribeTable",
                 "dynamodb:GetItem",
                 "dynamodb:GetRecords",
                 "dynamodb:GetShardIterator",

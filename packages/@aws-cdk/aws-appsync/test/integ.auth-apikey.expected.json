@@ -62,6 +62,7 @@
                 "dynamodb:BatchWriteItem",
                 "dynamodb:ConditionCheckItem",
                 "dynamodb:DeleteItem",
+                "dynamodb:DescribeTable",
                 "dynamodb:GetItem",
                 "dynamodb:GetRecords",
                 "dynamodb:GetShardIterator",
