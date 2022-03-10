@@ -86,7 +86,7 @@ export function normalizeStatement(s: StatementSchema) {
 
   function _norm(values: any, { unique }: { unique: boolean } = { unique: false }) {
 
-    if (typeof(values) === 'undefined') {
+    if (values == null) {
       return undefined;
     }
 
