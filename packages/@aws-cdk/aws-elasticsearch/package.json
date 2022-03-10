@@ -119,12 +119,6 @@
   },
   "stability": "deprecated",
   "maturity": "deprecated",
-  "features": [
-    {
-      "name": "Higher level constructs for Domain",
-      "stability": "Deprecated"
-    }
-  ],
   "awscdkio": {
     "announce": false
   },
