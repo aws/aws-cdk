@@ -2,7 +2,7 @@ import { spawnSync } from 'child_process';
 import * as path from 'path';
 
 beforeAll(() => {
-  spawnSync('docker', ['build', '--build-arg', 'IMAGE=public.ecr.aws/bitnami/golang:1.15', '-t', 'golang', path.join(__dirname, '../lib')]);
+  spawnSync('docker', ['build', '-t', 'golang', path.join(__dirname, '../lib')]);
 });
 
 test('golang is available', async () => {

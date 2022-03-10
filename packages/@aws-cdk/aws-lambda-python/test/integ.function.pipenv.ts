@@ -22,14 +22,6 @@ class TestStack extends Stack {
       value: pythonFunctionInline.functionName,
     });
 
-    const pythonFunction27 = new lambda.PythonFunction(this, 'my_handler_python_27', {
-      entry: path.join(__dirname, 'lambda-handler-pipenv'),
-      runtime: Runtime.PYTHON_2_7,
-    });
-    new CfnOutput(this, 'Python27FunctionName', {
-      value: pythonFunction27.functionName,
-    });
-
     const pythonFunction38 = new lambda.PythonFunction(this, 'my_handler_python_38', {
       entry: path.join(__dirname, 'lambda-handler-pipenv'),
       runtime: Runtime.PYTHON_3_8,

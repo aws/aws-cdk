@@ -95,12 +95,16 @@
           },
           {
             "CachingEnabled": true,
+            "DataTraceEnabled": false,
             "HttpMethod": "GET",
             "ResourcePath": "/~1api~1appliances"
           }
         ],
         "StageName": "beta"
-      }
+      },
+      "DependsOn": [
+        "myapiAccountEC421A0A"
+      ]
     },
     "myapiv113487378": {
       "Type": "AWS::ApiGateway::Resource",
@@ -651,14 +655,14 @@
         "Code": {
           "ZipFile": "exports.handler = function handlerCode(event, _, callback) {\n            return callback(undefined, {\n                isBase64Encoded: false,\n                statusCode: 200,\n                headers: { 'content-type': 'application/json' },\n                body: JSON.stringify(event),\n            });\n        }"
         },
-        "Handler": "index.handler",
         "Role": {
           "Fn::GetAtt": [
             "MyHandlerServiceRoleFFA06653",
             "Arn"
           ]
         },
-        "Runtime": "nodejs10.x"
+        "Handler": "index.handler",
+        "Runtime": "nodejs14.x"
       },
       "DependsOn": [
         "MyHandlerServiceRoleFFA06653"

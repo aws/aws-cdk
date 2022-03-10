@@ -116,7 +116,7 @@ export interface PassProps {
 /**
  * Define a Pass in the state machine
  *
- * A Pass state can be used to transform the current exeuction's state.
+ * A Pass state can be used to transform the current execution's state.
  */
 export class Pass extends State implements INextable {
   public readonly endStates: INextable[];

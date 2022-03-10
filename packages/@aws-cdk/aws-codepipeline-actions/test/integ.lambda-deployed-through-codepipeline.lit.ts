@@ -124,9 +124,7 @@ pipeline.addStage({
       templatePath: cdkBuildOutput.atPath('LambdaStack.template.yaml'),
       stackName: 'LambdaStackDeployedName',
       adminPermissions: true,
-      parameterOverrides: {
-        ...lambdaCode.assign(lambdaBuildOutput.s3Location),
-      },
+      parameterOverrides: lambdaCode.assign(lambdaBuildOutput.s3Location),
       extraInputs: [
         lambdaBuildOutput,
       ],

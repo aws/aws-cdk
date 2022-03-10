@@ -1,6 +1,5 @@
-import '@aws-cdk/assert-internal/jest';
 import * as path from 'path';
-import { canonicalizeTemplate, ResourcePart, SynthUtils } from '@aws-cdk/assert-internal';
+import { Template } from '@aws-cdk/assertions';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
@@ -20,7 +19,7 @@ describe('layers', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::Lambda::LayerVersion', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::LayerVersion', {
       Content: {
         S3Bucket: stack.resolve(bucket.bucketName),
         S3Key: 'ObjectKey',
@@ -44,12 +43,12 @@ describe('layers', () => {
     layer.addPermission('GrantUsage-o-123456', { accountId: '*', organizationId: 'o-123456' });
 
     // THEN
-    expect(stack).toHaveResource('AWS::Lambda::LayerVersionPermission', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::LayerVersionPermission', {
       Action: 'lambda:GetLayerVersion',
       LayerVersionArn: stack.resolve(layer.layerVersionArn),
       Principal: '123456789012',
     });
-    expect(stack).toHaveResource('AWS::Lambda::LayerVersionPermission', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::LayerVersionPermission', {
       Action: 'lambda:GetLayerVersion',
       LayerVersionArn: stack.resolve(layer.layerVersionArn),
       Principal: '*',
@@ -79,12 +78,13 @@ describe('layers', () => {
     });
 
     // THEN
-    expect(canonicalizeTemplate(SynthUtils.toCloudFormation(stack))).toHaveResource('AWS::Lambda::LayerVersion', {
+    Template.fromStack(stack).hasResource('AWS::Lambda::LayerVersion', {
       Metadata: {
-        'aws:asset:path': 'asset.Asset1Hash',
+        'aws:asset:path': 'asset.8811a2632ac5564a08fd269e159298f7e497f259578b0dc5e927a1f48ab24d34',
+        'aws:asset:is-bundled': false,
         'aws:asset:property': 'Content',
       },
-    }, ResourcePart.CompleteDefinition);
+    });
   });
 
   test('creating a layer with a removal policy', () => {
@@ -98,10 +98,10 @@ describe('layers', () => {
     });
 
     // THEN
-    expect(canonicalizeTemplate(SynthUtils.toCloudFormation(stack))).toHaveResource('AWS::Lambda::LayerVersion', {
+    Template.fromStack(stack).hasResource('AWS::Lambda::LayerVersion', {
       UpdateReplacePolicy: 'Retain',
       DeletionPolicy: 'Retain',
-    }, ResourcePart.CompleteDefinition);
+    });
   });
 
   test('specified compatible architectures is recognized', () => {
@@ -113,7 +113,7 @@ describe('layers', () => {
       compatibleArchitectures: [lambda.Architecture.ARM_64],
     });
 
-    expect(stack).toHaveResource('AWS::Lambda::LayerVersion', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::LayerVersion', {
       CompatibleArchitectures: ['arm64'],
     });
   });

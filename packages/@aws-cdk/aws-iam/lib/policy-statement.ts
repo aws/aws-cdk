@@ -1,8 +1,7 @@
 import * as cdk from '@aws-cdk/core';
-import { AnyPrincipal } from '.';
 import { Group } from './group';
 import {
-  AccountPrincipal, AccountRootPrincipal, ArnPrincipal, CanonicalUserPrincipal,
+  AccountPrincipal, AccountRootPrincipal, AnyPrincipal, ArnPrincipal, CanonicalUserPrincipal,
   FederatedPrincipal, IPrincipal, PrincipalBase, PrincipalPolicyFragment, ServicePrincipal, ServicePrincipalOpts,
 } from './principals';
 import { LITERAL_STRING_KEY, mergePrincipal } from './util';

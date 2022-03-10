@@ -77,6 +77,8 @@ export class CrossRegionSupportConstruct extends Construct {
       bucketName: cdk.PhysicalName.GENERATE_IF_NEEDED,
       encryption: encryptionAlias ? s3.BucketEncryption.KMS : s3.BucketEncryption.KMS_MANAGED,
       encryptionKey: encryptionAlias,
+      enforceSSL: true,
+      blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
     });
   }
 }

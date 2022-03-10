@@ -1,3 +1,4 @@
+import { Asset } from '@aws-cdk/aws-s3-assets';
 import { CustomResource, Duration, Names, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { ICluster } from './cluster';
@@ -14,8 +15,11 @@ import { Construct as CoreConstruct } from '@aws-cdk/core';
 export interface HelmChartOptions {
   /**
    * The name of the chart.
+   * Either this or `chartAsset` must be specified.
+   *
+   * @default - No chart name. Implies `chartAsset` is used.
    */
-  readonly chart: string;
+  readonly chart?: string;
 
   /**
    * The name of the release.
@@ -34,6 +38,14 @@ export interface HelmChartOptions {
    * @default - No repository will be used, which means that the chart needs to be an absolute URL.
    */
   readonly repository?: string;
+
+  /**
+  * The chart in the form of an asset.
+  * Either this or `chart` must be specified.
+  *
+  * @default - No chart asset. Implies `chart` is used.
+  */
+  readonly chartAsset?: Asset;
 
   /**
    * The Kubernetes namespace scope of the requests.
@@ -102,10 +114,22 @@ export class HelmChart extends CoreConstruct {
       throw new Error('Helm chart timeout cannot be higher than 15 minutes.');
     }
 
+    if (!props.chart && !props.chartAsset) {
+      throw new Error("Either 'chart' or 'chartAsset' must be specified to install a helm chart");
+    }
+
+    if (props.chartAsset && (props.repository || props.version)) {
+      throw new Error(
+        "Neither 'repository' nor 'version' can be used when configuring 'chartAsset'",
+      );
+    }
+
     // default not to wait
     const wait = props.wait ?? false;
     // default to create new namespace
     const createNamespace = props.createNamespace ?? true;
+
+    props.chartAsset?.grantRead(provider.handlerRole);
 
     new CustomResource(this, 'Resource', {
       serviceToken: provider.serviceToken,
@@ -115,6 +139,7 @@ export class HelmChart extends CoreConstruct {
         RoleArn: provider.roleArn, // TODO: bake into the provider's environment
         Release: props.release ?? Names.uniqueId(this).slice(-53).toLowerCase(), // Helm has a 53 character limit for the name
         Chart: props.chart,
+        ChartAssetURL: props.chartAsset?.s3ObjectUrl,
         Version: props.version,
         Wait: wait || undefined, // props are stringified so we encode “false” as undefined
         Timeout: timeout ? `${timeout.toString()}s` : undefined, // Helm v3 expects duration instead of integer

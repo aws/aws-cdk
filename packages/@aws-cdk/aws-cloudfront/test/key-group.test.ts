@@ -1,5 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
-import { expect as expectStack } from '@aws-cdk/assert-internal';
+import { Template } from '@aws-cdk/assertions';
 import { App, Stack } from '@aws-cdk/core';
 import { KeyGroup, PublicKey } from '../lib';
 
@@ -49,7 +48,7 @@ describe('KeyGroup', () => {
       ],
     });
 
-    expectStack(stack).toMatch({
+    Template.fromStack(stack).templateMatches({
       Resources: {
         MyPublicKey78071F3D: {
           Type: 'AWS::CloudFront::PublicKey',
@@ -91,7 +90,7 @@ describe('KeyGroup', () => {
       ],
     });
 
-    expectStack(stack).toMatch({
+    Template.fromStack(stack).templateMatches({
       Resources: {
         MyPublicKey78071F3D: {
           Type: 'AWS::CloudFront::PublicKey',
@@ -140,7 +139,7 @@ describe('KeyGroup', () => {
       ],
     });
 
-    expectStack(stack).toMatch({
+    Template.fromStack(stack).templateMatches({
       Resources: {
         BingoKeyCBEC786C: {
           Type: 'AWS::CloudFront::PublicKey',

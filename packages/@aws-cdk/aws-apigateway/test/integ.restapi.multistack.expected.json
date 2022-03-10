@@ -38,15 +38,15 @@
           "Code": {
             "ZipFile": "exports.handler = async function(event) {\n          return  {\n            'headers': { 'Content-Type': 'text/plain' },\n            'statusCode': 200\n          }\n        }"
           },
-          "Handler": "index.handler",
           "Role": {
             "Fn::GetAtt": [
               "firstLambdaServiceRoleB6408C31",
               "Arn"
             ]
           },
-          "Runtime": "nodejs10.x",
-          "FunctionName": "FirstLambda"
+          "FunctionName": "FirstLambda",
+          "Handler": "index.handler",
+          "Runtime": "nodejs14.x"
         },
         "DependsOn": [
           "firstLambdaServiceRoleB6408C31"
@@ -144,7 +144,10 @@
             "Ref": "BooksApiDeployment86CA39AF4ff82f86c127f53c9de94d266b1906be"
           },
           "StageName": "prod"
-        }
+        },
+        "DependsOn": [
+          "BooksApiAccount9C44AF8E"
+        ]
       },
       "BooksApiANY0C4EABE3": {
         "Type": "AWS::ApiGateway::Method",

@@ -3,13 +3,14 @@
 
 ---
 
-![cdk-constructs: Experimental](https://img.shields.io/badge/cdk--constructs-experimental-important.svg?style=for-the-badge)
+![Deprecated](https://img.shields.io/badge/deprecated-critical.svg?style=for-the-badge)
 
-> The APIs of higher level constructs in this module are experimental and under active development.
-> They are subject to non-backward compatible changes or removal in any future version. These are
-> not subject to the [Semantic Versioning](https://semver.org/) model and breaking changes will be
-> announced in the release notes. This means that while you may use them, you may need to update
-> your source code when upgrading to a newer version of this package.
+ > This API may emit warnings. Backward compatibility is not guaranteed.
+
+## Replacement recommended
+
+This library has been deprecated. We recommend you use the
+[@aws-cdk/assertions](https://docs.aws.amazon.com/cdk/api/v1/docs/assertions-readme.html) module instead.
 
 ---
 
@@ -101,7 +102,7 @@ The following matchers exist:
   back to exact value matching.
 - `arrayWith(E, [F, ...])` - value must be an array containing the given elements (or matchers) in any order.
 - `stringLike(S)` - value must be a string matching `S`. `S` may contain `*` as wildcard to match any number
-  of characters.
+  of characters. Multiline strings are supported.
 - `anything()` - matches any value.
 - `notMatching(M)` - any value that does NOT match the given matcher (or exact value) given.
 - `encodedJson(M)` - value must be a string which, when decoded as JSON, matches the given matcher or

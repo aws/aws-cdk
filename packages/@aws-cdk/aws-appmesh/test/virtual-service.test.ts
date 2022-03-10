@@ -1,7 +1,5 @@
-import '@aws-cdk/assert-internal/jest';
-import { ABSENT } from '@aws-cdk/assert-internal';
+import { Match, Template } from '@aws-cdk/assertions';
 import * as cdk from '@aws-cdk/core';
-
 import * as appmesh from '../lib';
 
 describe('virtual service', () => {
@@ -17,8 +15,6 @@ describe('virtual service', () => {
     // THEN
     expect(virtualRouter.mesh.meshName).toEqual(meshName);
     expect(virtualRouter.virtualRouterName).toEqual(virtualServiceName);
-
-
   });
 
   test('Can import Virtual Services using attributes', () => {
@@ -36,8 +32,6 @@ describe('virtual service', () => {
     // THEN
     expect(virtualService.mesh.meshName).toEqual(meshName);
     expect(virtualService.virtualServiceName).toEqual(virtualServiceName);
-
-
   });
 
   describe('When adding a VirtualService to a mesh', () => {
@@ -63,8 +57,8 @@ describe('virtual service', () => {
         });
 
         // THEN
-        expect(stack).
-          toHaveResource('AWS::AppMesh::VirtualService', {
+        Template.fromStack(stack).
+          hasResourceProperties('AWS::AppMesh::VirtualService', {
             Spec: {
               Provider: {
                 VirtualRouter: {
@@ -74,10 +68,8 @@ describe('virtual service', () => {
                 },
               },
             },
-            MeshOwner: ABSENT,
+            MeshOwner: Match.absent(),
           });
-
-
       });
     });
 
@@ -104,8 +96,8 @@ describe('virtual service', () => {
         });
 
         // THEN
-        expect(stack).
-          toHaveResource('AWS::AppMesh::VirtualService', {
+        Template.fromStack(stack).
+          hasResourceProperties('AWS::AppMesh::VirtualService', {
             Spec: {
               Provider: {
                 VirtualNode: {
@@ -116,8 +108,6 @@ describe('virtual service', () => {
               },
             },
           });
-
-
       });
     });
   });
@@ -149,11 +139,9 @@ describe('virtual service', () => {
         });
 
         // THEN
-        expect(stack).toHaveResourceLike('AWS::AppMesh::VirtualService', {
+        Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::VirtualService', {
           MeshOwner: meshEnv.account,
         });
-
-
       });
     });
   });

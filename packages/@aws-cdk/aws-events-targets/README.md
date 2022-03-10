@@ -19,7 +19,7 @@ Currently supported are:
 * [Start a CodePipeline pipeline](#start-a-codepipeline-pipeline)
 * Run an ECS task
 * [Invoke a Lambda function](#invoke-a-lambda-function)
-* [Invoke a API Gateway REST API](#invoke-a-api-gateway-rest-api)
+* [Invoke a API Gateway REST API](#invoke-an-api-gateway-rest-api)
 * Publish a message to an SNS topic
 * Send a message to an SQS queue
 * [Start a StepFunctions state machine](#start-a-stepfunctions-state-machine)
@@ -28,14 +28,15 @@ Currently supported are:
 * Put a record to a Kinesis stream
 * [Log an event into a LogGroup](#log-an-event-into-a-loggroup)
 * Put a record to a Kinesis Data Firehose stream
-* Put an event on an EventBridge bus
+* [Put an event on an EventBridge bus](#put-an-event-on-an-eventbridge-bus)
+* [Send an event to EventBridge API Destination](#invoke-an-api-destination)
 
 See the README of the `@aws-cdk/aws-events` library for more information on
 EventBridge.
 
 ## Event retry policy and using dead-letter queues
 
-The Codebuild, CodePipeline, Lambda, StepFunctions and LogGroup targets support attaching a [dead letter queue and setting retry policies](https://docs.aws.amazon.com/eventbridge/latest/userguide/rule-dlq.html). See the [lambda example](#invoke-a-lambda-function).
+The Codebuild, CodePipeline, Lambda, StepFunctions, LogGroup and SQSQueue targets support attaching a [dead letter queue and setting retry policies](https://docs.aws.amazon.com/eventbridge/latest/userguide/rule-dlq.html). See the [lambda example](#invoke-a-lambda-function).
 Use [escape hatches](https://docs.aws.amazon.com/cdk/latest/guide/cfn_layer.html) for the other target types.
 
 ## Invoke a Lambda function
@@ -65,7 +66,7 @@ const queue = new sqs.Queue(this, 'Queue');
 
 rule.addTarget(new targets.LambdaFunction(fn, {
   deadLetterQueue: queue, // Optional: add a dead letter queue
-  maxEventAge: cdk.Duration.hours(2), // Otional: set the maxEventAge retry policy
+  maxEventAge: cdk.Duration.hours(2), // Optional: set the maxEventAge retry policy
   retryAttempts: 2, // Optional: set the max number of retry attempts
 }));
 ```
@@ -166,13 +167,13 @@ const role = new iam.Role(this, 'Role', {
   assumedBy: new iam.ServicePrincipal('events.amazonaws.com'),
 });
 const stateMachine = new sfn.StateMachine(this, 'SM', {
-  definition: new sfn.Wait(this, 'Hello', { time: sfn.WaitTime.duration(cdk.Duration.seconds(10)) }),
-  role,
+  definition: new sfn.Wait(this, 'Hello', { time: sfn.WaitTime.duration(cdk.Duration.seconds(10)) })
 });
 
 rule.addTarget(new targets.SfnStateMachine(stateMachine, {
   input: events.RuleTargetInput.fromObject({ SomeParam: 'SomeValue' }),
   deadLetterQueue: dlq,
+  role: role
 }));
 ```
 
@@ -226,7 +227,7 @@ rule.addTarget(new targets.BatchJob(
 ));
 ```
 
-## Invoke a API Gateway REST API
+## Invoke an API Gateway REST API
 
 Use the `ApiGateway` target to trigger a REST API.
 
@@ -265,4 +266,49 @@ rule.addTarget(
     deadLetterQueue: dlq
   } ),
 )
+```
+
+## Invoke an API Destination
+
+Use the `targets.ApiDestination` target to trigger an external API. You need to
+create an `events.Connection` and `events.ApiDestination` as well.
+
+The code snippet below creates an external destination that is invoked every hour.
+
+```ts
+const connection = new events.Connection(this, 'Connection', {
+  authorization: events.Authorization.apiKey('x-api-key', SecretValue.secretsManager('ApiSecretName')),
+  description: 'Connection with API Key x-api-key',
+});
+
+const destination = new events.ApiDestination(this, 'Destination', {
+  connection,
+  endpoint: 'https://example.com',
+  description: 'Calling example.com with API key x-api-key',
+});
+
+const rule = new events.Rule(this, 'Rule', {
+  schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
+  targets: [new targets.ApiDestination(destination)],
+});
+```
+
+## Put an event on an EventBridge bus
+
+Use the `EventBus` target to route event to a different EventBus.
+
+The code snippet below creates the scheduled event rule that route events to an imported event bus.
+
+```ts
+const rule = new events.Rule(this, 'Rule', {
+  schedule: events.Schedule.expression('rate(1 minute)'),
+});
+
+rule.addTarget(new targets.EventBus(
+  events.EventBus.fromEventBusArn(
+    this,
+    'External',
+    `arn:aws:events:eu-west-1:999999999999:event-bus/test-bus`,
+  ),
+));
 ```

@@ -65,11 +65,11 @@ export interface ShellStepProps {
    * following configuration:
    *
    * ```ts
-   * const script = new ShellStep('MainScript', {
-   *   // ...
-   *   input: MyEngineSource.gitHub('org/source1'),
+   * const script = new pipelines.ShellStep('MainScript', {
+   *   commands: ['npm ci','npm run build','npx cdk synth'],
+   *   input: pipelines.CodePipelineSource.gitHub('org/source1', 'main'),
    *   additionalInputs: {
-   *     '../siblingdir': MyEngineSource.gitHub('org/source2'),
+   *     '../siblingdir': pipelines.CodePipelineSource.gitHub('org/source2', 'main'),
    *   }
    * });
    * ```
@@ -87,11 +87,11 @@ export interface ShellStepProps {
    * @default - No primary output
    */
   readonly primaryOutputDirectory?: string;
-
 }
 
 /**
- * Run shell script commands in the pipeline
+ * Run shell script commands in the pipeline. This is a generic step designed
+ * to be deployment engine agnostic.
  */
 export class ShellStep extends Step {
   /**
@@ -150,6 +150,11 @@ export class ShellStep extends Step {
     this.installCommands = props.installCommands ?? [];
     this.env = props.env ?? {};
     this.envFromCfnOutputs = mapValues(props.envFromCfnOutputs ?? {}, StackOutputReference.fromCfnOutput);
+
+    // 'env' is the only thing that can contain outputs
+    this.discoverReferencedOutputs({
+      env: this.env,
+    });
 
     // Inputs
     if (props.input) {

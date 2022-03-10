@@ -1,6 +1,7 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
+import { describeDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
 import * as eks from '../lib';
 import { spotInterruptHandler } from '../lib/spot-interrupt-handler';
@@ -8,7 +9,7 @@ import { testFixture, testFixtureNoVpc } from './util';
 
 /* eslint-disable max-len */
 
-describe('cluster', () => {
+describeDeprecated('cluster', () => {
   test('a default cluster spans all subnets', () => {
     // GIVEN
     const { stack, vpc } = testFixture();
@@ -17,7 +18,7 @@ describe('cluster', () => {
     new eks.Cluster(stack, 'Cluster', { vpc, kubectlEnabled: false, defaultCapacity: 0 });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::EKS::Cluster', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EKS::Cluster', {
       ResourcesVpcConfig: {
         SubnetIds: [
           { Ref: 'VPCPublicSubnet1SubnetB4246D30' },
@@ -39,7 +40,7 @@ describe('cluster', () => {
     new eks.Cluster(stack, 'cluster');
 
     // THEN
-    expect(stack).toHaveResource('AWS::EC2::VPC');
+    Template.fromStack(stack).resourceCountIs('AWS::EC2::VPC', 1);
 
   });
 
@@ -54,8 +55,8 @@ describe('cluster', () => {
 
       // THEN
       expect(cluster.defaultCapacity).toBeDefined();
-      expect(stack).toHaveResource('AWS::AutoScaling::AutoScalingGroup', { DesiredCapacity: '2' });
-      expect(stack).toHaveResource('AWS::AutoScaling::LaunchConfiguration', { InstanceType: 'm5.large' });
+      Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::AutoScalingGroup', { DesiredCapacity: '2' });
+      Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::LaunchConfiguration', { InstanceType: 'm5.large' });
 
     });
 
@@ -71,8 +72,8 @@ describe('cluster', () => {
 
       // THEN
       expect(cluster.defaultCapacity).toBeDefined();
-      expect(stack).toHaveResource('AWS::AutoScaling::AutoScalingGroup', { DesiredCapacity: '10' });
-      expect(stack).toHaveResource('AWS::AutoScaling::LaunchConfiguration', { InstanceType: 'm2.xlarge' });
+      Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::AutoScalingGroup', { DesiredCapacity: '10' });
+      Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::LaunchConfiguration', { InstanceType: 'm2.xlarge' });
 
     });
 
@@ -85,8 +86,8 @@ describe('cluster', () => {
 
       // THEN
       expect(cluster.defaultCapacity).toBeUndefined();
-      expect(stack).not.toHaveResource('AWS::AutoScaling::AutoScalingGroup');
-      expect(stack).not.toHaveResource('AWS::AutoScaling::LaunchConfiguration');
+      Template.fromStack(stack).resourceCountIs('AWS::AutoScaling::AutoScalingGroup', 0);
+      Template.fromStack(stack).resourceCountIs('AWS::AutoScaling::LaunchConfiguration', 0);
 
     });
   });
@@ -99,7 +100,7 @@ describe('cluster', () => {
     new eks.Cluster(stack, 'Cluster', { vpc, kubectlEnabled: false, defaultCapacity: 0 });
 
     // THEN
-    expect(stack).toHaveResource('AWS::EC2::Subnet', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::Subnet', {
       Tags: [
         { Key: 'aws-cdk:subnet-name', Value: 'Private' },
         { Key: 'aws-cdk:subnet-type', Value: 'Private' },
@@ -119,7 +120,7 @@ describe('cluster', () => {
     new eks.Cluster(stack, 'Cluster', { vpc, kubectlEnabled: false, defaultCapacity: 0 });
 
     // THEN
-    expect(stack).toHaveResource('AWS::EC2::Subnet', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::Subnet', {
       MapPublicIpOnLaunch: true,
       Tags: [
         { Key: 'aws-cdk:subnet-name', Value: 'Public' },
@@ -143,7 +144,7 @@ describe('cluster', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::AutoScaling::AutoScalingGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::AutoScalingGroup', {
       Tags: [
         {
           Key: { 'Fn::Join': ['', ['kubernetes.io/cluster/', { Ref: 'ClusterEB0386A7' }]] },
@@ -181,7 +182,7 @@ describe('cluster', () => {
     new cdk.CfnOutput(stack2, 'ClusterARN', { value: imported.clusterArn });
 
     // THEN
-    expect(stack2).toMatchTemplate({
+    Template.fromStack(stack2).templateMatches({
       Outputs: {
         ClusterARN: {
           Value: {
@@ -215,7 +216,7 @@ describe('cluster', () => {
     new eks.Cluster(stack, 'Cluster', { vpc, mastersRole: role, defaultCapacity: 0 });
 
     // THEN
-    expect(stack).toHaveResource(eks.KubernetesResource.RESOURCE_TYPE, {
+    Template.fromStack(stack).hasResourceProperties(eks.KubernetesResource.RESOURCE_TYPE, {
       Manifest: {
         'Fn::Join': [
           '',
@@ -246,11 +247,11 @@ describe('cluster', () => {
     cluster.addResource('manifest2', { bar: 123 }, { boor: [1, 2, 3] });
 
     // THEN
-    expect(stack).toHaveResource(eks.KubernetesResource.RESOURCE_TYPE, {
+    Template.fromStack(stack).hasResourceProperties(eks.KubernetesResource.RESOURCE_TYPE, {
       Manifest: '[{"foo":123}]',
     });
 
-    expect(stack).toHaveResource(eks.KubernetesResource.RESOURCE_TYPE, {
+    Template.fromStack(stack).hasResourceProperties(eks.KubernetesResource.RESOURCE_TYPE, {
       Manifest: '[{"bar":123},{"boor":[1,2,3]}]',
     });
 
@@ -268,7 +269,7 @@ describe('cluster', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource(eks.KubernetesResource.RESOURCE_TYPE, {
+    Template.fromStack(stack).hasResourceProperties(eks.KubernetesResource.RESOURCE_TYPE, {
       Manifest: {
         'Fn::Join': [
           '',
@@ -301,7 +302,7 @@ describe('cluster', () => {
     });
 
     // THEN
-    expect(stack).not.toHaveResource(eks.KubernetesResource.RESOURCE_TYPE);
+    Template.fromStack(stack).resourceCountIs(eks.KubernetesResource.RESOURCE_TYPE, 0);
 
   });
 
@@ -316,7 +317,7 @@ describe('cluster', () => {
     });
 
     // THEN
-    expect(stack).not.toHaveResource(eks.KubernetesResource.RESOURCE_TYPE);
+    Template.fromStack(stack).resourceCountIs(eks.KubernetesResource.RESOURCE_TYPE, 0);
 
   });
 
@@ -523,7 +524,7 @@ describe('cluster', () => {
         });
 
         // THEN
-        expect(stack).toHaveResource(eks.KubernetesResource.RESOURCE_TYPE, { Manifest: JSON.stringify(spotInterruptHandler()) });
+        Template.fromStack(stack).hasResourceProperties(eks.KubernetesResource.RESOURCE_TYPE, { Manifest: JSON.stringify(spotInterruptHandler()) });
 
       });
 
@@ -539,7 +540,7 @@ describe('cluster', () => {
         });
 
         // THEN
-        expect(stack).not.toHaveResource(eks.KubernetesResource.RESOURCE_TYPE);
+        Template.fromStack(stack).resourceCountIs(eks.KubernetesResource.RESOURCE_TYPE, 0);
 
       });
 

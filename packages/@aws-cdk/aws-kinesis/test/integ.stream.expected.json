@@ -44,6 +44,8 @@
                 "kinesis:GetShardIterator",
                 "kinesis:ListShards",
                 "kinesis:SubscribeToShard",
+                "kinesis:DescribeStream",
+                "kinesis:ListStreams",
                 "kinesis:PutRecord",
                 "kinesis:PutRecords"
               ],
@@ -70,6 +72,9 @@
       "Type": "AWS::Kinesis::Stream",
       "Properties": {
         "ShardCount": 1,
+        "StreamModeDetails": {
+          "StreamMode": "PROVISIONED"
+        },
         "RetentionPeriodHours": 24,
         "StreamEncryption": {
           "Fn::If": [

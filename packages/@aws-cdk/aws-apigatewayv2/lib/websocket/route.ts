@@ -3,7 +3,8 @@ import { Construct } from 'constructs';
 import { CfnRoute } from '../apigatewayv2.generated';
 import { IRoute } from '../common';
 import { IWebSocketApi } from './api';
-import { IWebSocketRouteIntegration } from './integration';
+import { IWebSocketRouteAuthorizer, WebSocketNoneAuthorizer } from './authorizer';
+import { WebSocketRouteIntegration } from './integration';
 
 /**
  * Represents a Route for an WebSocket API.
@@ -28,16 +29,22 @@ export interface WebSocketRouteOptions {
   /**
    * The integration to be configured on this route.
    */
-  readonly integration: IWebSocketRouteIntegration;
-}
+  readonly integration: WebSocketRouteIntegration;
 
+  /**
+   * The authorize to this route. You can only set authorizer to a $connect route.
+   *
+   * @default - No Authorizer
+   */
+  readonly authorizer?: IWebSocketRouteAuthorizer;
+}
 
 /**
  * Properties to initialize a new Route
  */
 export interface WebSocketRouteProps extends WebSocketRouteOptions {
   /**
-   * the API the route is associated with
+   * The API the route is associated with.
    */
   readonly webSocketApi: IWebSocketApi;
 
@@ -45,6 +52,12 @@ export interface WebSocketRouteProps extends WebSocketRouteOptions {
    * The key to this route.
    */
   readonly routeKey: string;
+
+  /**
+   * Whether the route requires an API Key to be provided
+   * @default false
+   */
+  readonly apiKeyRequired?: boolean;
 }
 
 /**
@@ -64,20 +77,31 @@ export class WebSocketRoute extends Resource implements IWebSocketRoute {
   constructor(scope: Construct, id: string, props: WebSocketRouteProps) {
     super(scope, id);
 
+    if (props.routeKey != '$connect' && props.authorizer) {
+      throw new Error('You can only set a WebSocket authorizer to a $connect route.');
+    }
+
     this.webSocketApi = props.webSocketApi;
     this.routeKey = props.routeKey;
 
-    const config = props.integration.bind({
+    const config = props.integration._bindToRoute({
       route: this,
       scope: this,
     });
 
-    const integration = props.webSocketApi._addIntegration(this, config);
+    const authorizer = props.authorizer ?? new WebSocketNoneAuthorizer(); // must be explicitly NONE (not undefined) for stack updates to work correctly
+    const authBindResult = authorizer.bind({
+      route: this,
+      scope: this.webSocketApi instanceof Construct ? this.webSocketApi : this, // scope under the API if it's not imported
+    });
 
     const route = new CfnRoute(this, 'Resource', {
       apiId: props.webSocketApi.apiId,
+      apiKeyRequired: props.apiKeyRequired,
       routeKey: props.routeKey,
-      target: `integrations/${integration.integrationId}`,
+      target: `integrations/${config.integrationId}`,
+      authorizerId: authBindResult.authorizerId,
+      authorizationType: authBindResult.authorizationType,
     });
     this.routeId = route.ref;
   }

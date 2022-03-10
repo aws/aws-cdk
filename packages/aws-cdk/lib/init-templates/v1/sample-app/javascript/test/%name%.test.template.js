@@ -1,15 +1,17 @@
-const { expect, haveResource } = require('@aws-cdk/assert');
+const { Template, Match } = require('@aws-cdk/assertions');
 const cdk = require('@aws-cdk/core');
 const %name.PascalCased% = require('../lib/%name%-stack');
 
 test('SQS Queue Created', () => {
-    const app = new cdk.App();
-    // WHEN
-    const stack = new %name.PascalCased%.%name.PascalCased%Stack(app, 'MyTestStack');
-    // THEN
-    expect(stack).to(haveResource("AWS::SQS::Queue",{
-      VisibilityTimeout: 300
-    }));
+  const app = new cdk.App();
+  // WHEN
+  const stack = new %name.PascalCased%.%name.PascalCased%Stack(app, 'MyTestStack');
+  // THEN
+  const template = Template.fromStack(stack);
+
+  template.hasResourceProperties('AWS::SQS::Queue', {
+    VisibilityTimeout: 300
+  });
 });
 
 test('SNS Topic Created', () => {
@@ -17,5 +19,7 @@ test('SNS Topic Created', () => {
   // WHEN
   const stack = new %name.PascalCased%.%name.PascalCased%Stack(app, 'MyTestStack');
   // THEN
-  expect(stack).to(haveResource("AWS::SNS::Topic"));
+  const template = Template.fromStack(stack);
+
+  template.resourceCountIs('AWS::SNS::Topic', 1);
 });

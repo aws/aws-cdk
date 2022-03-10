@@ -36,9 +36,11 @@ async function main() {
   const yarnPackages = yarnLockPackages();
   const projects = await new Project(repoRoot()).getPackages();
 
+  const localPackageNames = new Set(projects.map(p => p.name));
+
   function errorIfNotInYarnLock(package, dependencyName, dependencyVersion) {
     const dependencyId = `${dependencyName}@${dependencyVersion}`;
-    const isLocalDependency = dependencyVersion === '0.0.0' || dependencyVersion === '^0.0.0';
+    const isLocalDependency = localPackageNames.has(dependencyName);
     if (!isLocalDependency && !yarnPackages.has(dependencyId)) {
       throw new Error(`ERROR! Dependency ${dependencyId} from ${package.name} not present in yarn.lock. Please run 'yarn install' and try again!`);
     }
@@ -50,4 +52,7 @@ async function main() {
   });
 }
 
-main();
+main().catch(e => {
+  console.error(e)
+  process.exitCode = 1;
+});

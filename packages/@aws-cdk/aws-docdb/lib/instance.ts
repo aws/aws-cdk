@@ -1,5 +1,6 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
+import { ArnFormat } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { IDatabaseCluster } from './cluster-ref';
 import { CfnDBInstance } from './docdb.generated';
@@ -102,7 +103,7 @@ abstract class DatabaseInstanceBase extends cdk.Resource implements IDatabaseIns
     return cdk.Stack.of(this).formatArn({
       service: 'docdb',
       resource: 'db',
-      sep: ':',
+      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
       resourceName: this.instanceIdentifier,
     });
   }

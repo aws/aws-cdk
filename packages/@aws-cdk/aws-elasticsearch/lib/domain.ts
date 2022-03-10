@@ -952,7 +952,7 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
     return new Metric({
       namespace: 'AWS/ES',
       metricName,
-      dimensions: {
+      dimensionsMap: {
         DomainName: this.domainName,
         ClientId: this.stack.account,
       },
@@ -1212,12 +1212,13 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
    */
   public static fromDomainAttributes(scope: Construct, id: string, attrs: DomainAttributes): IDomain {
     const { domainArn, domainEndpoint } = attrs;
-    const domainName = cdk.Stack.of(scope).parseArn(domainArn).resourceName ?? extractNameFromEndpoint(domainEndpoint);
+    const domainName = cdk.Stack.of(scope).splitArn(domainArn, cdk.ArnFormat.SLASH_RESOURCE_NAME).resourceName
+      ?? extractNameFromEndpoint(domainEndpoint);
 
     return new class extends DomainBase {
       public readonly domainArn = domainArn;
       public readonly domainName = domainName;
-      public readonly domainEndpoint = domainEndpoint;
+      public readonly domainEndpoint = domainEndpoint.replace(/^https?:\/\//, '');
 
       constructor() { super(scope, id); }
     };
@@ -1263,6 +1264,9 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
 
   private readonly domain: CfnDomain;
 
+  private accessPolicy?: ElasticsearchAccessPolicy
+  private encryptionAtRestOptions?: EncryptionAtRestOptions
+
   private readonly _connections: ec2.Connections | undefined;
 
   constructor(scope: Construct, id: string, props: DomainProps) {
@@ -1273,22 +1277,16 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
     const defaultInstanceType = 'r5.large.elasticsearch';
     const warmDefaultInstanceType = 'ultrawarm1.medium.elasticsearch';
 
-    const dedicatedMasterType =
-      props.capacity?.masterNodeInstanceType?.toLowerCase() ??
-      defaultInstanceType;
+    const dedicatedMasterType = initializeInstanceType(defaultInstanceType, props.capacity?.masterNodeInstanceType);
     const dedicatedMasterCount = props.capacity?.masterNodes ?? 0;
-    const dedicatedMasterEnabled = dedicatedMasterCount > 0;
+    const dedicatedMasterEnabled = cdk.Token.isUnresolved(dedicatedMasterCount) ? true : dedicatedMasterCount > 0;
 
-    const instanceType =
-      props.capacity?.dataNodeInstanceType?.toLowerCase() ??
-      defaultInstanceType;
+    const instanceType = initializeInstanceType(defaultInstanceType, props.capacity?.dataNodeInstanceType);
     const instanceCount = props.capacity?.dataNodes ?? 1;
 
-    const warmType =
-      props.capacity?.warmInstanceType?.toLowerCase() ??
-      warmDefaultInstanceType;
+    const warmType = initializeInstanceType(warmDefaultInstanceType, props.capacity?.warmInstanceType);
     const warmCount = props.capacity?.warmNodes ?? 0;
-    const warmEnabled = warmCount > 0;
+    const warmEnabled = cdk.Token.isUnresolved(warmCount) ? true : warmCount > 0;
 
     const availabilityZoneCount =
       props.zoneAwareness?.availabilityZoneCount ?? 2;
@@ -1319,11 +1317,11 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       throw new Error('When providing vpc options you need to provide a subnet for each AZ you are using');
     }
 
-    if ([dedicatedMasterType, instanceType, warmType].some(t => !t.endsWith('.elasticsearch'))) {
+    if ([dedicatedMasterType, instanceType, warmType].some(t => (!cdk.Token.isUnresolved(t) && !t.endsWith('.elasticsearch')))) {
       throw new Error('Master, data and UltraWarm node instance types must end with ".elasticsearch".');
     }
 
-    if (!warmType.startsWith('ultrawarm')) {
+    if (!cdk.Token.isUnresolved(warmType) && !warmType.startsWith('ultrawarm')) {
       throw new Error('UltraWarm node instance type must start with "ultrawarm".');
     }
 
@@ -1408,9 +1406,8 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       return instanceTypes.some(isInstanceType);
     };
 
-    function isEveryInstanceType(...instanceTypes: string[]): Boolean {
-      return instanceTypes.some(t => dedicatedMasterType.startsWith(t))
-        && instanceTypes.some(t => instanceType.startsWith(t));
+    function isEveryDatanodeInstanceType(...instanceTypes: string[]): Boolean {
+      return instanceTypes.some(t => instanceType.startsWith(t));
     };
 
     // Validate feature support for the given Elasticsearch version, per
@@ -1469,7 +1466,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
 
     // Only R3, I3 and r6gd support instance storage, per
     // https://aws.amazon.com/elasticsearch-service/pricing/
-    if (!ebsEnabled && !isEveryInstanceType('r3', 'i3', 'r6gd')) {
+    if (!ebsEnabled && !isEveryDatanodeInstanceType('r3', 'i3', 'r6gd')) {
       throw new Error('EBS volumes are required when using instance types other than r3, i3 or r6gd.');
     }
 
@@ -1540,9 +1537,9 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
 
     if (props.logging?.auditLogEnabled) {
       this.auditLogGroup = props.logging.auditLogGroup ??
-          new logs.LogGroup(this, 'AuditLogs', {
-            retention: logs.RetentionDays.ONE_MONTH,
-          });
+        new logs.LogGroup(this, 'AuditLogs', {
+          retention: logs.RetentionDays.ONE_MONTH,
+        });
 
       logGroups.push(this.auditLogGroup);
     };
@@ -1692,7 +1689,21 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
 
     if (logGroupResourcePolicy) { this.domain.node.addDependency(logGroupResourcePolicy); }
 
-    if (props.domainName) { this.node.addMetadata('aws:cdk:hasPhysicalName', props.domainName); }
+    if (props.domainName) {
+      if (!cdk.Token.isUnresolved(props.domainName)) {
+        // https://docs.aws.amazon.com/opensearch-service/latest/developerguide/configuration-api.html#configuration-api-datatypes-domainname
+        if (!props.domainName.match(/^[a-z0-9\-]+$/)) {
+          throw new Error(`Invalid domainName '${props.domainName}'. Valid characters are a-z (lowercase only), 0-9, and – (hyphen).`);
+        }
+        if (props.domainName.length < 3 || props.domainName.length > 28) {
+          throw new Error(`Invalid domainName '${props.domainName}'. It must be between 3 and 28 characters`);
+        }
+        if (props.domainName[0] < 'a' || props.domainName[0] > 'z') {
+          throw new Error(`Invalid domainName '${props.domainName}'. It must start with a lowercase letter`);
+        }
+      }
+      this.node.addMetadata('aws:cdk:hasPhysicalName', props.domainName);
+    }
 
     this.domainName = this.getResourceNameAttribute(this.domain.ref);
 
@@ -1712,33 +1723,12 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       });
     }
 
-    const accessPolicyStatements: iam.PolicyStatement[] | undefined = unsignedBasicAuthEnabled
-      ? (props.accessPolicies ?? []).concat(unsignedAccessPolicy)
-      : props.accessPolicies;
-
-    if (accessPolicyStatements != null) {
-      const accessPolicy = new ElasticsearchAccessPolicy(this, 'ESAccessPolicy', {
-        domainName: this.domainName,
-        domainArn: this.domainArn,
-        accessPolicies: accessPolicyStatements,
-      });
-
-      if (props.encryptionAtRest?.kmsKey) {
-
-        // https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/encryption-at-rest.html
-
-        // these permissions are documented as required during domain creation.
-        // while not strictly documented for updates as well, it stands to reason that an update
-        // operation might require these in case the cluster uses a kms key.
-        // empircal evidence shows this is indeed required: https://github.com/aws/aws-cdk/issues/11412
-        accessPolicy.grantPrincipal.addToPrincipalPolicy(new iam.PolicyStatement({
-          actions: ['kms:List*', 'kms:Describe*', 'kms:CreateGrant'],
-          resources: [props.encryptionAtRest.kmsKey.keyArn],
-          effect: iam.Effect.ALLOW,
-        }));
-      }
-
-      accessPolicy.node.addDependency(this.domain);
+    this.encryptionAtRestOptions = props.encryptionAtRest;
+    if (props.accessPolicies) {
+      this.addAccessPolicies(...props.accessPolicies);
+    }
+    if (unsignedBasicAuthEnabled) {
+      this.addAccessPolicies(unsignedAccessPolicy);
     }
   }
 
@@ -1751,6 +1741,38 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       throw new Error("Connections are only available on VPC enabled domains. Use the 'vpc' property to place a domain inside a VPC");
     }
     return this._connections;
+  }
+
+  /**
+   * Add policy statements to the domain access policy
+   */
+  public addAccessPolicies(...accessPolicyStatements: iam.PolicyStatement[]) {
+    if (accessPolicyStatements.length > 0) {
+      if (!this.accessPolicy) {
+        // Only create the custom resource after there are statements to set.
+        this.accessPolicy = new ElasticsearchAccessPolicy(this, 'ESAccessPolicy', {
+          domainName: this.domainName,
+          domainArn: this.domainArn,
+          accessPolicies: accessPolicyStatements,
+        });
+
+        if (this.encryptionAtRestOptions?.kmsKey) {
+          // https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/encryption-at-rest.html
+
+          // these permissions are documented as required during domain creation.
+          // while not strictly documented for updates as well, it stands to reason that an update
+          // operation might require these in case the cluster uses a kms key.
+          // empircal evidence shows this is indeed required: https://github.com/aws/aws-cdk/issues/11412
+          this.accessPolicy.grantPrincipal.addToPrincipalPolicy(new iam.PolicyStatement({
+            actions: ['kms:List*', 'kms:Describe*', 'kms:CreateGrant'],
+            resources: [this.encryptionAtRestOptions.kmsKey.keyArn],
+            effect: iam.Effect.ALLOW,
+          }));
+        }
+      } else {
+        this.accessPolicy.addAccessPolicies(...accessPolicyStatements);
+      }
+    }
   }
 }
 
@@ -1807,4 +1829,19 @@ function selectSubnets(vpc: ec2.IVpc, vpcSubnets: ec2.SubnetSelection[]): ec2.IS
     selected.push(...vpc.selectSubnets(selection).subnets);
   }
   return selected;
+}
+
+/**
+ * Initializes an instance type.
+ *
+ * @param defaultInstanceType Default instance type which is used if no instance type is provided
+ * @param instanceType Instance type
+ * @returns Instance type in lowercase (if provided) or default instance type
+ */
+function initializeInstanceType(defaultInstanceType: string, instanceType?: string): string {
+  if (instanceType) {
+    return cdk.Token.isUnresolved(instanceType) ? instanceType : instanceType.toLowerCase();
+  } else {
+    return defaultInstanceType;
+  }
 }

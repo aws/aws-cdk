@@ -1,7 +1,7 @@
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { ApplicationProtocol, Protocol } from './enums';
 
-export type Attributes = {[key: string]: string | undefined};
+export type Attributes = { [key: string]: string | undefined };
 
 /**
  * Render an attribute dict to a list of { key, value } pairs

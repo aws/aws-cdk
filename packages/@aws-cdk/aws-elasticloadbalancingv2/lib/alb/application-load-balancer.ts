@@ -148,7 +148,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
     return new cloudwatch.Metric({
       namespace: 'AWS/ApplicationELB',
       metricName,
-      dimensions: { LoadBalancer: this.loadBalancerFullName },
+      dimensionsMap: { LoadBalancer: this.loadBalancerFullName },
       ...props,
     });
   }
@@ -642,7 +642,7 @@ class LookedUpApplicationLoadBalancer extends Resource implements IApplicationLo
 
     this.connections = new ec2.Connections();
     for (const securityGroupId of props.securityGroupIds) {
-      const securityGroup = ec2.SecurityGroup.fromLookup(this, `SecurityGroup-${securityGroupId}`, securityGroupId);
+      const securityGroup = ec2.SecurityGroup.fromLookupById(this, `SecurityGroup-${securityGroupId}`, securityGroupId);
       this.connections.addSecurityGroup(securityGroup);
     }
   }

@@ -1,7 +1,7 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as sns from '@aws-cdk/aws-sns';
-import { Names, Stack } from '@aws-cdk/core';
+import { ArnFormat, Names, Stack, Token } from '@aws-cdk/core';
 import { SubscriptionProps } from './subscription';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
@@ -36,6 +36,12 @@ export class LambdaSubscription implements sns.ITopicSubscription {
       principal: new iam.ServicePrincipal('sns.amazonaws.com'),
     });
 
+    // if the topic and function are created in different stacks
+    // then we need to make sure the topic is created first
+    if (topic instanceof sns.Topic && topic.stack !== this.fn.stack) {
+      this.fn.stack.addDependency(topic.stack);
+    }
+
     return {
       subscriberScope: this.fn,
       subscriberId: topic.node.id,
@@ -50,8 +56,16 @@ export class LambdaSubscription implements sns.ITopicSubscription {
   private regionFromArn(topic: sns.ITopic): string | undefined {
     // no need to specify `region` for topics defined within the same stack.
     if (topic instanceof sns.Topic) {
+      if (topic.stack !== this.fn.stack) {
+        // only if we know the region, will not work for
+        // env agnostic stacks
+        if (!Token.isUnresolved(topic.stack.region) &&
+          (topic.stack.region !== this.fn.stack.region)) {
+          return topic.stack.region;
+        }
+      }
       return undefined;
     }
-    return Stack.of(topic).parseArn(topic.topicArn).region;
+    return Stack.of(topic).splitArn(topic.topicArn, ArnFormat.SLASH_RESOURCE_NAME).region;
   }
 }

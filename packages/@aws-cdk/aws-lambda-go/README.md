@@ -29,7 +29,7 @@ Define a `GoFunction`:
 
 ```ts
 new lambda.GoFunction(this, 'handler', {
-  entry: 'app/cmd/api'
+  entry: 'app/cmd/api',
 });
 ```
 
@@ -154,7 +154,7 @@ Use the `bundling.dockerImage` prop to use a custom bundling image:
 new lambda.GoFunction(this, 'handler', {
   entry: 'app/cmd/api',
   bundling: {
-    dockerImage: cdk.DockerImage.fromBuild('/path/to/Dockerfile'),
+    dockerImage: DockerImage.fromBuild('/path/to/Dockerfile'),
   },
 });
 ```
@@ -174,7 +174,9 @@ new lambda.GoFunction(this, 'handler', {
 
 It is  possible to run additional commands by specifying the `commandHooks` prop:
 
-```ts
+```text
+// This example only available in TypeScript
+// Run additional commands on a GoFunction via `commandHooks` property
 new lambda.GoFunction(this, 'handler', {
   bundling: {
     commandHooks: {

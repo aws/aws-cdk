@@ -13,6 +13,46 @@ import { IParameterGroup } from './parameter-group';
 export class InstanceType {
 
   /**
+   * db.r6g.large
+   */
+  public static readonly R6G_LARGE = InstanceType.of('db.r6g.large');
+
+  /**
+   * db.r6g.xlarge
+   */
+  public static readonly R6G_XLARGE = InstanceType.of('db.r6g.xlarge');
+
+  /**
+   * db.r6g.2xlarge
+   */
+  public static readonly R6G_2XLARGE = InstanceType.of('db.r6g.2xlarge');
+
+  /**
+   * db.r6g.4xlarge
+   */
+  public static readonly R6G_4XLARGE = InstanceType.of('db.r6g.4xlarge');
+
+  /**
+   * db.r6g.8xlarge
+   */
+  public static readonly R6G_8XLARGE = InstanceType.of('db.r6g.8xlarge');
+
+  /**
+  * db.r6g.12xlarge
+  */
+  public static readonly R6G_12XLARGE = InstanceType.of('db.r6g.12xlarge');
+
+  /**
+   * db.r6g.16xlarge
+   */
+  public static readonly R6G_16XLARGE = InstanceType.of('db.r6g.16xlarge');
+
+  /**
+   * db.t4g.medium
+   */
+  public static readonly T4G_MEDIUM = InstanceType.of('db.t4g.medium');
+
+  /**
    * db.r5.large
    */
   public static readonly R5_LARGE = InstanceType.of('db.r5.large');

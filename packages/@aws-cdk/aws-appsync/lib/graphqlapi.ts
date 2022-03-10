@@ -1,7 +1,7 @@
 import { IUserPool } from '@aws-cdk/aws-cognito';
 import { ManagedPolicy, Role, IRole, ServicePrincipal, Grant, IGrantable } from '@aws-cdk/aws-iam';
 import { IFunction } from '@aws-cdk/aws-lambda';
-import { CfnResource, Duration, Expiration, IResolvable, Stack } from '@aws-cdk/core';
+import { ArnFormat, CfnResource, Duration, Expiration, IResolvable, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnApiKey, CfnGraphQLApi, CfnGraphQLSchema } from './appsync.generated';
 import { IGraphqlApi, GraphqlApiBase } from './graphqlapi-base';
@@ -150,7 +150,7 @@ export interface OpenIdConnectConfig {
   /**
    * The client identifier of the Relying party at the OpenID identity provider.
    * A regular expression can be specified so AppSync can validate against multiple client identifiers at a time.
-   * @example - 'ABCD|CDEF' where ABCD and CDEF are two different clientId
+   * @example - 'ABCD|CDEF' // where ABCD and CDEF are two different clientId
    * @default - * (All)
    */
   readonly clientId?: string;
@@ -347,7 +347,7 @@ export class IamResource {
     return this.arns.map((arn) => Stack.of(api).formatArn({
       service: 'appsync',
       resource: `apis/${api.apiId}`,
-      sep: '/',
+      arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
       resourceName: `${arn}`,
     }));
   }

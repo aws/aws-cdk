@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as cdk from '@aws-cdk/core';
 import * as ecs from '../lib';
 
@@ -33,7 +33,7 @@ describe('app mesh proxy configuration', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
       ProxyConfiguration: {
         ContainerName: 'envoy',
         ProxyConfigurationProperties: [
@@ -99,7 +99,7 @@ describe('app mesh proxy configuration', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
       ProxyConfiguration: {
         ContainerName: 'envoy',
         ProxyConfigurationProperties: [
@@ -155,7 +155,7 @@ describe('app mesh proxy configuration', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
       ProxyConfiguration: {
         ContainerName: 'envoy',
         ProxyConfigurationProperties: [

@@ -34,8 +34,8 @@ Using the CDK, a new Kinesis stream can be created as part of the stack using th
 your own identifier to the stream. If not, CloudFormation will generate a name.
 
 ```ts
-new Stream(this, "MyFirstStream", {
-  streamName: "my-awesome-stream"
+new kinesis.Stream(this, 'MyFirstStream', {
+  streamName: 'my-awesome-stream',
 });
 ```
 
@@ -44,10 +44,10 @@ to specify how long the data in the shards should remain accessible.
 Read more at [Creating and Managing Streams](https://docs.aws.amazon.com/streams/latest/dev/working-with-streams.html)
 
 ```ts
-new Stream(this, "MyFirstStream", {
-  streamName: "my-awesome-stream",
+new kinesis.Stream(this, 'MyFirstStream', {
+  streamName: 'my-awesome-stream',
   shardCount: 3,
-  retentionPeriod: Duration.hours(48)
+  retentionPeriod: Duration.hours(48),
 });
 ```
 
@@ -59,28 +59,26 @@ server-side encryption using an AWS KMS key for a specified stream.
 Encryption is enabled by default on your stream with the master key owned by Kinesis Data Streams in regions where it is supported.
 
 ```ts
-new Stream(this, 'MyEncryptedStream');
+new kinesis.Stream(this, 'MyEncryptedStream');
 ```
 
 You can enable encryption on your stream with a user-managed key by specifying the `encryption` property.
 A KMS key will be created for you and associated with the stream.
 
 ```ts
-new Stream(this, "MyEncryptedStream", {
-  encryption: StreamEncryption.KMS
+new kinesis.Stream(this, 'MyEncryptedStream', {
+  encryption: kinesis.StreamEncryption.KMS,
 });
 ```
 
 You can also supply your own external KMS key to use for stream encryption by specifying the `encryptionKey` property.
 
 ```ts
-import * as kms from "@aws-cdk/aws-kms";
+const key = new kms.Key(this, 'MyKey');
 
-const key = new kms.Key(this, "MyKey");
-
-new Stream(this, "MyEncryptedStream", {
-  encryption: StreamEncryption.KMS,
-  encryptionKey: key
+new kinesis.Stream(this, 'MyEncryptedStream', {
+  encryption: kinesis.StreamEncryption.KMS,
+  encryptionKey: key,
 });
 ```
 
@@ -91,32 +89,20 @@ Any Kinesis stream that has been created outside the stack can be imported into 
 Streams can be imported by their ARN via the `Stream.fromStreamArn()` API
 
 ```ts
-const stack = new Stack(app, "MyStack");
-
-const importedStream = Stream.fromStreamArn(
-  stack,
-  "ImportedStream",
-  "arn:aws:kinesis:us-east-2:123456789012:stream/f3j09j2230j"
+const importedStream = kinesis.Stream.fromStreamArn(this, 'ImportedStream',
+  'arn:aws:kinesis:us-east-2:123456789012:stream/f3j09j2230j',
 );
 ```
 
 Encrypted Streams can also be imported by their attributes via the `Stream.fromStreamAttributes()` API
 
 ```ts
-import { Key } from "@aws-cdk/aws-kms";
-
-const stack = new Stack(app, "MyStack");
-
-const importedStream = Stream.fromStreamAttributes(
-  stack,
-  "ImportedEncryptedStream",
-  {
-    streamArn: "arn:aws:kinesis:us-east-2:123456789012:stream/f3j09j2230j",
-    encryptionKey: kms.Key.fromKeyArn(
-      "arn:aws:kms:us-east-1:123456789012:key/12345678-1234-1234-1234-123456789012"
-    )
-  }
-);
+const importedStream = kinesis.Stream.fromStreamAttributes(this, 'ImportedEncryptedStream', {
+  streamArn: 'arn:aws:kinesis:us-east-2:123456789012:stream/f3j09j2230j',
+  encryptionKey: kms.Key.fromKeyArn(this, 'key',
+    'arn:aws:kms:us-east-1:123456789012:key/12345678-1234-1234-1234-123456789012',
+  ),
+});
 ```
 
 ### Permission Grants
@@ -138,10 +124,10 @@ If the stream has an encryption key, read permissions will also be granted to th
 const lambdaRole = new iam.Role(this, 'Role', {
   assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
   description: 'Example role...',
-}
+});
 
-const stream = new Stream(this, 'MyEncryptedStream', {
-    encryption: StreamEncryption.KMS
+const stream = new kinesis.Stream(this, 'MyEncryptedStream', {
+  encryption: kinesis.StreamEncryption.KMS,
 });
 
 // give lambda permissions to read stream
@@ -165,10 +151,10 @@ If the stream has an encryption key, write permissions will also be granted to t
 const lambdaRole = new iam.Role(this, 'Role', {
   assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
   description: 'Example role...',
-}
+});
 
-const stream = new Stream(this, 'MyEncryptedStream', {
-    encryption: StreamEncryption.KMS
+const stream = new kinesis.Stream(this, 'MyEncryptedStream', {
+  encryption: kinesis.StreamEncryption.KMS,
 });
 
 // give lambda permissions to write to stream
@@ -186,9 +172,9 @@ The following write permissions are provided to a service principal by the `gran
 You can add any set of permissions to a stream by calling the `grant()` API.
 
 ```ts
-const user = new iam.User(stack, 'MyUser');
+const user = new iam.User(this, 'MyUser');
 
-const stream = new Stream(stack, 'MyStream');
+const stream = new kinesis.Stream(this, 'MyStream');
 
 // give my user permissions to list shards
 stream.grant(user, 'kinesis:ListShards');
@@ -199,7 +185,7 @@ stream.grant(user, 'kinesis:ListShards');
 You can use common metrics from your stream to create alarms and/or dashboards. The `stream.metric('MetricName')` method creates a metric with the stream namespace and dimension. You can also use pre-define methods like `stream.metricGetRecordsSuccess()`. To find out more about Kinesis metrics check [Monitoring the Amazon Kinesis Data Streams Service with Amazon CloudWatch](https://docs.aws.amazon.com/streams/latest/dev/monitoring-with-cloudwatch.html).
 
 ```ts
-const stream = new Stream(stack, 'MyStream');
+const stream = new kinesis.Stream(this, 'MyStream');
 
 // Using base metric method passing the metric name
 stream.metric('GetRecords.Success');
@@ -210,4 +196,3 @@ stream.metricGetRecordsSuccess();
 // using pre-defined and overriding the statistic
 stream.metricGetRecordsSuccess({ statistic: 'Maximum' });
 ```
-

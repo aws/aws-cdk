@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import * as ecs from '../lib';
@@ -17,7 +17,7 @@ describe('task definition', () => {
       });
 
       // THEN
-      expect(stack).toHaveResource('AWS::ECS::TaskDefinition', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
         NetworkMode: 'awsvpc',
       });
 

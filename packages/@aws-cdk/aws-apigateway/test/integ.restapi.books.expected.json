@@ -37,14 +37,14 @@
         "Code": {
           "ZipFile": "exports.handler = function echoHandlerCode(event, _, callback) {\n    return callback(undefined, {\n        isBase64Encoded: false,\n        statusCode: 200,\n        headers: { 'content-type': 'application/json' },\n        body: JSON.stringify(event),\n    });\n}"
         },
-        "Handler": "index.handler",
         "Role": {
           "Fn::GetAtt": [
             "BooksHandlerServiceRole5B6A8847",
             "Arn"
           ]
         },
-        "Runtime": "nodejs10.x"
+        "Handler": "index.handler",
+        "Runtime": "nodejs14.x"
       },
       "DependsOn": [
         "BooksHandlerServiceRole5B6A8847"
@@ -87,14 +87,14 @@
         "Code": {
           "ZipFile": "exports.handler = function echoHandlerCode(event, _, callback) {\n    return callback(undefined, {\n        isBase64Encoded: false,\n        statusCode: 200,\n        headers: { 'content-type': 'application/json' },\n        body: JSON.stringify(event),\n    });\n}"
         },
-        "Handler": "index.handler",
         "Role": {
           "Fn::GetAtt": [
             "BookHandlerServiceRole894768AD",
             "Arn"
           ]
         },
-        "Runtime": "nodejs10.x"
+        "Handler": "index.handler",
+        "Runtime": "nodejs14.x"
       },
       "DependsOn": [
         "BookHandlerServiceRole894768AD"
@@ -137,14 +137,14 @@
         "Code": {
           "ZipFile": "exports.handler = function helloCode(_event, _context, callback) {\n    return callback(undefined, {\n        statusCode: 200,\n        body: 'hello, world!',\n    });\n}"
         },
-        "Handler": "index.handler",
         "Role": {
           "Fn::GetAtt": [
             "HelloServiceRole1E55EA16",
             "Arn"
           ]
         },
-        "Runtime": "nodejs10.x"
+        "Handler": "index.handler",
+        "Runtime": "nodejs14.x"
       },
       "DependsOn": [
         "HelloServiceRole1E55EA16"
@@ -229,7 +229,10 @@
           "Ref": "booksapiDeployment308B08F132cc25cf8168bd5e99b9e6d4915866b5"
         },
         "StageName": "prod"
-      }
+      },
+      "DependsOn": [
+        "booksapiAccountDBA98FB9"
+      ]
     },
     "booksapiANYApiPermissionrestapibooksexamplebooksapi4538F335ANY73B3CDDC": {
       "Type": "AWS::Lambda::Permission",

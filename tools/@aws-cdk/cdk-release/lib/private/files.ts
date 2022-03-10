@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 
-interface WriteFileOpts {
+export interface WriteFileOpts {
   readonly dryRun?: boolean;
 }
 

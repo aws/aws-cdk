@@ -23,7 +23,7 @@ $ npm i @aws-cdk/aws-ssm
 
 Import it into your code:
 
-```ts
+```ts nofixture
 import * as ssm from '@aws-cdk/aws-ssm';
 ```
 
@@ -43,7 +43,7 @@ to provision secrets automatically, use Secrets Manager Secrets (see the
 `@aws-cdk/aws-secretsmanager` package).
 
 ```ts
-new ssm.StringParameter(stack, 'Parameter', {
+new ssm.StringParameter(this, 'Parameter', {
   allowedPattern: '.*',
   description: 'The value Foo',
   parameterName: 'FooParameter',
