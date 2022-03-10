@@ -16,6 +16,7 @@ beforeEach(() => {
   jest.resetAllMocks();
   jest.restoreAllMocks();
   Bundling.clearEsbuildInstallationCache();
+  Bundling.clearTscInstallationCache();
 
   jest.spyOn(Code, 'fromAsset');
 
@@ -208,6 +209,12 @@ test('esbuild bundling with esbuild options', () => {
       'process.env.STRING': JSON.stringify('this is a "test"'),
     },
     format: OutputFormat.ESM,
+    inject: ['./my-shim.js'],
+    esbuildArgs: {
+      '--log-limit': '0',
+      '--resolve-extensions': '.ts,.js',
+      '--splitting': 'true',
+    },
   });
 
   // Correctly bundles with esbuild
@@ -216,7 +223,8 @@ test('esbuild bundling with esbuild options', () => {
     assetHashType: AssetHashType.OUTPUT,
     bundling: expect.objectContaining({
       command: [
-        'bash', '-c',
+        'bash',
+        '-c',
         [
           'esbuild --bundle "/asset-input/lib/handler.ts"',
           '--target=es2020 --platform=node --format=esm --outfile="/asset-output/index.mjs"',
@@ -224,7 +232,8 @@ test('esbuild bundling with esbuild options', () => {
           defineInstructions,
           '--log-level=silent --keep-names --tsconfig=/asset-input/lib/custom-tsconfig.ts',
           '--metafile=/asset-output/index.meta.json --banner:js="/* comments */" --footer:js="/* comments */"',
-          '--charset=utf8 --main-fields=module,main',
+          '--charset=utf8 --main-fields=module,main --inject:./my-shim.js',
+          '--log-limit="0" --resolve-extensions=".ts,.js" --splitting="true"',
         ].join(' '),
       ],
     }),
@@ -601,6 +610,8 @@ test('esbuild bundling with pre compilations', () => {
       ],
     }),
   });
+
+  expect(detectPackageInstallationMock).toHaveBeenCalledWith('typescript');
 });
 
 test('throws with pre compilation and not found tsconfig', () => {
