@@ -569,6 +569,7 @@ export class FeatureStabilityRule extends ValidationRule {
     'Experimental': 'https://img.shields.io/badge/experimental-important.svg?style=for-the-badge',
     'Developer Preview': 'https://img.shields.io/badge/developer--preview-informational.svg?style=for-the-badge',
     'Stable': 'https://img.shields.io/badge/stable-success.svg?style=for-the-badge',
+    'Deprecated': 'https://img.shields.io/badge/deprecated-critical.svg?style=for-the-badge',
   };
 
   public validate(pkg: PackageJson): void {
