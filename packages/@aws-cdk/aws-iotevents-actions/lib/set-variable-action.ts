@@ -4,7 +4,7 @@ import { Construct } from 'constructs';
 /**
  * The action to create a variable with a specified value.
  */
-export class IoteventsSetVariableAction implements iotevents.IAction {
+export class SetVariableAction implements iotevents.IAction {
   /**
    * @param variableName the name of the variable
    * @param value the new value of the variable

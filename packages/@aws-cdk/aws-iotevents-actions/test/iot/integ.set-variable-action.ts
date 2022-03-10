@@ -22,7 +22,7 @@ class TestStack extends cdk.Stack {
         eventName: 'enter-event',
         condition: iotevents.Expression.currentInput(input),
         actions: [
-          new actions.IoteventsSetVariableAction(
+          new actions.SetVariableAction(
             'MyVariable',
             iotevents.Expression.inputAttribute(input, 'payload.temperature'),
           ),

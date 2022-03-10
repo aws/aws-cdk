@@ -18,7 +18,7 @@ test('Default property', () => {
       onEnter: [{
         eventName: 'test-eventName',
         condition: iotevents.Expression.currentInput(input),
-        actions: [new actions.IoteventsSetVariableAction('MyVariable', iotevents.Expression.fromString('foo'))],
+        actions: [new actions.SetVariableAction('MyVariable', iotevents.Expression.fromString('foo'))],
       }],
     }),
   });
