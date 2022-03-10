@@ -32,6 +32,17 @@ export function hasMessage(messages: Messages, constructPath: string, props: any
   ].join('\n');
 }
 
+export function hasNoMessage(messages: Messages, constructPath: string, props: any): string | void {
+  const section: { [key: string]: SynthesisMessage } = messages;
+  const result = matchSection(filterPath(section, constructPath), props);
+
+  if (!result.match) {
+    return;
+  }
+
+  return `Stack has ${Object.keys(result.matches).length} messages.`;
+}
+
 // We redact the stack trace by default because it is unnecessarily long and unintelligible.
 // If there is a use case for rendering the trace, we can add it later.
 function handleTrace(match: any, redact: boolean = true): void {
