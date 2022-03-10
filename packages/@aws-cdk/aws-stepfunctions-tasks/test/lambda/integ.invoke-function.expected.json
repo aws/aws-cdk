@@ -209,13 +209,13 @@
               "Resource": [
                 {
                   "Fn::GetAtt": [
-                    "Handler886CB40B",
+                    "CallbackHandler4434C38D",
                     "Arn"
                   ]
                 },
                 {
                   "Fn::GetAtt": [
-                    "CallbackHandler4434C38D",
+                    "Handler886CB40B",
                     "Arn"
                   ]
                 }

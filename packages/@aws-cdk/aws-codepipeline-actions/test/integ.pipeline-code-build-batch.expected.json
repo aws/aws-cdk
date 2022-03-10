@@ -137,54 +137,26 @@
                       "/*"
                     ]
                   ]
-                },
-                {
-                  "Fn::GetAtt": [
-                    "MyBucketF68F3FF0",
-                    "Arn"
-                  ]
-                },
-                {
-                  "Fn::Join": [
-                    "",
-                    [
-                      {
-                        "Fn::GetAtt": [
-                          "MyBucketF68F3FF0",
-                          "Arn"
-                        ]
-                      },
-                      "/*"
-                    ]
-                  ]
                 }
               ]
             },
             {
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
-              "Resource": [
-                {
-                  "Fn::GetAtt": [
-                    "PipelineRoleD68726F7",
-                    "Arn"
-                  ]
-                },
-                {
-                  "Fn::GetAtt": [
-                    "PipelineRoleD68726F7",
-                    "Arn"
-                  ]
-                }
-              ]
+              "Resource": {
+                "Fn::GetAtt": [
+                  "PipelineRoleD68726F7",
+                  "Arn"
+                ]
+              }
             },
             {
               "Action": [
+                "codecommit:CancelUploadArchive",
                 "codecommit:GetBranch",
                 "codecommit:GetCommit",
-                "codecommit:UploadArchive",
                 "codecommit:GetUploadArchiveStatus",
-                "codecommit:CancelUploadArchive"
+                "codecommit:UploadArchive"
               ],
               "Effect": "Allow",
               "Resource": {
@@ -419,7 +391,8 @@
                       ":log-group:/aws/codebuild/",
                       {
                         "Ref": "MyBuildProject30DB9D6E"
-                      }
+                      },
+                      ":*"
                     ]
                   ]
                 },
@@ -442,8 +415,7 @@
                       ":log-group:/aws/codebuild/",
                       {
                         "Ref": "MyBuildProject30DB9D6E"
-                      },
-                      ":*"
+                      }
                     ]
                   ]
                 }
@@ -451,8 +423,8 @@
             },
             {
               "Action": [
-                "s3:GetObject*",
                 "s3:GetBucket*",
+                "s3:GetObject*",
                 "s3:List*"
               ],
               "Effect": "Allow",
@@ -550,9 +522,9 @@
           "Statement": [
             {
               "Action": [
+                "codebuild:RetryBuild",
                 "codebuild:StartBuild",
-                "codebuild:StopBuild",
-                "codebuild:RetryBuild"
+                "codebuild:StopBuild"
               ],
               "Effect": "Allow",
               "Resource": {

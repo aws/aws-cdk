@@ -526,6 +526,12 @@
                   ]
                 },
                 {
+                  "Fn::GetAtt": [
+                    "MyEncryptedTableBucket7B28486D",
+                    "Arn"
+                  ]
+                },
+                {
                   "Fn::Join": [
                     "",
                     [
@@ -537,12 +543,6 @@
                       },
                       "/*"
                     ]
-                  ]
-                },
-                {
-                  "Fn::GetAtt": [
-                    "MyEncryptedTableBucket7B28486D",
-                    "Arn"
                   ]
                 },
                 {
@@ -566,8 +566,8 @@
                 "kms:Decrypt",
                 "kms:DescribeKey",
                 "kms:Encrypt",
-                "kms:ReEncrypt*",
-                "kms:GenerateDataKey*"
+                "kms:GenerateDataKey*",
+                "kms:ReEncrypt*"
               ],
               "Effect": "Allow",
               "Resource": {
@@ -613,62 +613,60 @@
               ],
               "Effect": "Allow",
               "Resource": [
-                [
-                  {
-                    "Fn::Join": [
-                      "",
-                      [
-                        "arn:",
-                        {
-                          "Ref": "AWS::Partition"
-                        },
-                        ":glue:",
-                        {
-                          "Ref": "AWS::Region"
-                        },
-                        ":",
-                        {
-                          "Ref": "AWS::AccountId"
-                        },
-                        ":table/",
-                        {
-                          "Ref": "MyDatabase1E2517DB"
-                        },
-                        "/",
-                        {
-                          "Ref": "AVROTable58646ABF"
-                        }
-                      ]
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":glue:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":table/",
+                      {
+                        "Ref": "MyDatabase1E2517DB"
+                      },
+                      "/",
+                      {
+                        "Ref": "AVROTable58646ABF"
+                      }
                     ]
-                  },
-                  {
-                    "Fn::Join": [
-                      "",
-                      [
-                        "arn:",
-                        {
-                          "Ref": "AWS::Partition"
-                        },
-                        ":glue:",
-                        {
-                          "Ref": "AWS::Region"
-                        },
-                        ":",
-                        {
-                          "Ref": "AWS::AccountId"
-                        },
-                        ":table/",
-                        {
-                          "Ref": "MyDatabase1E2517DB"
-                        },
-                        "/",
-                        {
-                          "Ref": "JSONTable00348F1D"
-                        }
-                      ]
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":glue:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":table/",
+                      {
+                        "Ref": "MyDatabase1E2517DB"
+                      },
+                      "/",
+                      {
+                        "Ref": "JSONTable00348F1D"
+                      }
                     ]
-                  }
-                ],
+                  ]
+                },
                 {
                   "Fn::Join": [
                     "",
@@ -713,46 +711,6 @@
               ],
               "Effect": "Allow",
               "Resource": [
-                {
-                  "Fn::GetAtt": [
-                    "DataBucketE3889A50",
-                    "Arn"
-                  ]
-                },
-                {
-                  "Fn::Join": [
-                    "",
-                    [
-                      {
-                        "Fn::GetAtt": [
-                          "DataBucketE3889A50",
-                          "Arn"
-                        ]
-                      },
-                      "/*"
-                    ]
-                  ]
-                },
-                {
-                  "Fn::GetAtt": [
-                    "DataBucketE3889A50",
-                    "Arn"
-                  ]
-                },
-                {
-                  "Fn::Join": [
-                    "",
-                    [
-                      {
-                        "Fn::GetAtt": [
-                          "DataBucketE3889A50",
-                          "Arn"
-                        ]
-                      },
-                      "/*"
-                    ]
-                  ]
-                },
                 {
                   "Fn::GetAtt": [
                     "DataBucketE3889A50",

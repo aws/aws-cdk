@@ -90,17 +90,16 @@
             {
               "Action": [
                 "dynamodb:BatchGetItem",
+                "dynamodb:BatchWriteItem",
+                "dynamodb:ConditionCheckItem",
+                "dynamodb:DeleteItem",
+                "dynamodb:GetItem",
                 "dynamodb:GetRecords",
                 "dynamodb:GetShardIterator",
-                "dynamodb:Query",
-                "dynamodb:GetItem",
-                "dynamodb:Scan",
-                "dynamodb:ConditionCheckItem",
-                "dynamodb:BatchWriteItem",
                 "dynamodb:PutItem",
-                "dynamodb:UpdateItem",
-                "dynamodb:DeleteItem",
-                "dynamodb:DescribeTable"
+                "dynamodb:Query",
+                "dynamodb:Scan",
+                "dynamodb:UpdateItem"
               ],
               "Effect": "Allow",
               "Resource": [
@@ -316,7 +315,7 @@
                           "ApiId"
                         ]
                       },
-                      "/types/test/*"
+                      "/types/Mutation/fields/addTest"
                     ]
                   ]
                 },
@@ -343,7 +342,7 @@
                           "ApiId"
                         ]
                       },
-                      "/types/Mutation/fields/addTest"
+                      "/types/test/*"
                     ]
                   ]
                 }

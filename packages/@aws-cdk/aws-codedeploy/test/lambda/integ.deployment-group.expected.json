@@ -486,13 +486,13 @@
               "Resource": [
                 {
                   "Fn::GetAtt": [
-                    "PreHook8B53F672",
+                    "PostHookF2E49B30",
                     "Arn"
                   ]
                 },
                 {
                   "Fn::GetAtt": [
-                    "PostHookF2E49B30",
+                    "PreHook8B53F672",
                     "Arn"
                   ]
                 }

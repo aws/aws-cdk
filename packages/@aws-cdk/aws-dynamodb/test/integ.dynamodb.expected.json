@@ -387,10 +387,7 @@
                 "dynamodb:GetRecords",
                 "dynamodb:GetShardIterator",
                 "dynamodb:Query",
-                "dynamodb:GetItem",
-                "dynamodb:Scan",
-                "dynamodb:ConditionCheckItem",
-                "dynamodb:DescribeTable"
+                "dynamodb:Scan"
               ],
               "Effect": "Allow",
               "Resource": [
@@ -400,24 +397,6 @@
                     "Arn"
                   ]
                 },
-                {
-                  "Ref": "AWS::NoValue"
-                }
-              ]
-            },
-            {
-              "Action": [
-                "dynamodb:BatchGetItem",
-                "dynamodb:GetRecords",
-                "dynamodb:GetShardIterator",
-                "dynamodb:Query",
-                "dynamodb:GetItem",
-                "dynamodb:Scan",
-                "dynamodb:ConditionCheckItem",
-                "dynamodb:DescribeTable"
-              ],
-              "Effect": "Allow",
-              "Resource": [
                 {
                   "Fn::GetAtt": [
                     "TableWithGlobalAndLocalSecondaryIndexBC540710",
@@ -437,6 +416,9 @@
                       "/index/*"
                     ]
                   ]
+                },
+                {
+                  "Ref": "AWS::NoValue"
                 }
               ]
             }

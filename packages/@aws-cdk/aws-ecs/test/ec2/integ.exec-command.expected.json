@@ -364,50 +364,32 @@
               "Action": "kms:*",
               "Effect": "Allow",
               "Principal": {
-                "AWS": [
-                  {
-                    "Fn::Join": [
-                      "",
-                      [
-                        "arn:",
-                        {
-                          "Ref": "AWS::Partition"
-                        },
-                        ":iam::",
-                        {
-                          "Ref": "AWS::AccountId"
-                        },
-                        ":root"
-                      ]
+                "AWS": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":iam::",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":root"
                     ]
-                  },
-                  {
-                    "Fn::Join": [
-                      "",
-                      [
-                        "arn:",
-                        {
-                          "Ref": "AWS::Partition"
-                        },
-                        ":iam::",
-                        {
-                          "Ref": "AWS::AccountId"
-                        },
-                        ":root"
-                      ]
-                    ]
-                  }
-                ]
+                  ]
+                }
               },
               "Resource": "*"
             },
             {
               "Action": [
-                "kms:Encrypt*",
                 "kms:Decrypt*",
-                "kms:ReEncrypt*",
+                "kms:Describe*",
+                "kms:Encrypt*",
                 "kms:GenerateDataKey*",
-                "kms:Describe*"
+                "kms:ReEncrypt*"
               ],
               "Condition": {
                 "ArnLike": {
@@ -614,8 +596,8 @@
             },
             {
               "Action": [
-                "ecs:DiscoverPollEndpoint",
                 "ecr:GetAuthorizationToken",
+                "ecs:DiscoverPollEndpoint",
                 "logs:CreateLogStream",
                 "logs:PutLogEvents"
               ],
@@ -758,10 +740,10 @@
           "Statement": [
             {
               "Action": [
-                "ec2:DescribeInstances",
+                "ec2:DescribeHosts",
                 "ec2:DescribeInstanceAttribute",
                 "ec2:DescribeInstanceStatus",
-                "ec2:DescribeHosts"
+                "ec2:DescribeInstances"
               ],
               "Effect": "Allow",
               "Resource": "*"

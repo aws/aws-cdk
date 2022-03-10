@@ -45,52 +45,20 @@
                 "s3:putObject"
               ],
               "Effect": "Allow",
-              "Resource": [
-                [
-                  {
-                    "Fn::Join": [
-                      "",
-                      [
-                        {
-                          "Fn::GetAtt": [
-                            "Bucket83908E77",
-                            "Arn"
-                          ]
-                        },
-                        "/*"
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    {
+                      "Fn::GetAtt": [
+                        "Bucket83908E77",
+                        "Arn"
                       ]
-                    ]
-                  },
-                  {
-                    "Fn::Join": [
-                      "",
-                      [
-                        {
-                          "Fn::GetAtt": [
-                            "Bucket83908E77",
-                            "Arn"
-                          ]
-                        },
-                        "/*"
-                      ]
-                    ]
-                  }
-                ],
-                {
-                  "Fn::Join": [
-                    "",
-                    [
-                      {
-                        "Fn::GetAtt": [
-                          "Bucket83908E77",
-                          "Arn"
-                        ]
-                      },
-                      "/*"
-                    ]
+                    },
+                    "/*"
                   ]
-                }
-              ]
+                ]
+              }
             }
           ],
           "Version": "2012-10-17"

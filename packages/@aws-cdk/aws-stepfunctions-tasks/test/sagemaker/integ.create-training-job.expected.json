@@ -79,11 +79,11 @@
                 {
                   "Action": [
                     "cloudwatch:PutMetricData",
-                    "logs:CreateLogStream",
-                    "logs:PutLogEvents",
+                    "ecr:GetAuthorizationToken",
                     "logs:CreateLogGroup",
+                    "logs:CreateLogStream",
                     "logs:DescribeLogStreams",
-                    "ecr:GetAuthorizationToken"
+                    "logs:PutLogEvents"
                   ],
                   "Effect": "Allow",
                   "Resource": "*"
@@ -103,8 +103,8 @@
           "Statement": [
             {
               "Action": [
-                "s3:GetObject*",
                 "s3:GetBucket*",
+                "s3:GetObject*",
                 "s3:List*"
               ],
               "Effect": "Allow",
@@ -140,30 +140,22 @@
                 "kms:ReEncrypt*"
               ],
               "Effect": "Allow",
-              "Resource": [
-                {
-                  "Fn::GetAtt": [
-                    "EncryptionKey1B843E66",
-                    "Arn"
-                  ]
-                },
-                {
-                  "Fn::GetAtt": [
-                    "EncryptionKey1B843E66",
-                    "Arn"
-                  ]
-                }
-              ]
+              "Resource": {
+                "Fn::GetAtt": [
+                  "EncryptionKey1B843E66",
+                  "Arn"
+                ]
+              }
             },
             {
               "Action": [
+                "s3:Abort*",
                 "s3:DeleteObject*",
                 "s3:PutObject",
                 "s3:PutObjectLegalHold",
                 "s3:PutObjectRetention",
                 "s3:PutObjectTagging",
-                "s3:PutObjectVersionTagging",
-                "s3:Abort*"
+                "s3:PutObjectVersionTagging"
               ],
               "Effect": "Allow",
               "Resource": [

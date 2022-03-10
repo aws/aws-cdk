@@ -71,7 +71,7 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete"
     },
-    "DomainAccessPolicyCustomResourcePolicyE61F1845": {
+    "DomainAccessPolicyCustomResourcePolicy107E31EB": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -89,15 +89,18 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "DomainAccessPolicyCustomResourcePolicyE61F1845",
+        "PolicyName": "DomainAccessPolicyCustomResourcePolicy107E31EB",
         "Roles": [
           {
             "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
           }
         ]
-      }
+      },
+      "DependsOn": [
+        "Domain66AC69E0"
+      ]
     },
-    "DomainAccessPolicyEE735B04": {
+    "DomainAccessPolicyFCD6BE37": {
       "Type": "Custom::OpenSearchAccessPolicy",
       "Properties": {
         "ServiceToken": {
@@ -157,7 +160,8 @@
         "InstallLatestAwsSdk": true
       },
       "DependsOn": [
-        "DomainAccessPolicyCustomResourcePolicyE61F1845"
+        "DomainAccessPolicyCustomResourcePolicy107E31EB",
+        "Domain66AC69E0"
       ],
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete"
@@ -200,9 +204,9 @@
           "Statement": [
             {
               "Action": [
-                "kms:List*",
+                "kms:CreateGrant",
                 "kms:Describe*",
-                "kms:CreateGrant"
+                "kms:List*"
               ],
               "Effect": "Allow",
               "Resource": {

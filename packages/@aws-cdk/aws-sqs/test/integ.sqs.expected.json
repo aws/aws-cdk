@@ -128,31 +128,27 @@
               ],
               "Effect": "Allow",
               "Resource": [
-                [
-                  [
-                    {
-                      "Fn::GetAtt": [
-                        "DeadLetterQueue9F481546",
-                        "Arn"
-                      ]
-                    },
-                    {
-                      "Fn::GetAtt": [
-                        "Queue4A7E3555",
-                        "Arn"
-                      ]
-                    }
-                  ],
-                  {
-                    "Fn::GetAtt": [
-                      "FifoQueueE5FF7273",
-                      "Arn"
-                    ]
-                  }
-                ],
+                {
+                  "Fn::GetAtt": [
+                    "DeadLetterQueue9F481546",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::GetAtt": [
+                    "FifoQueueE5FF7273",
+                    "Arn"
+                  ]
+                },
                 {
                   "Fn::GetAtt": [
                     "HighThroughputFifoQueue40A0EEE4",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::GetAtt": [
+                    "Queue4A7E3555",
                     "Arn"
                   ]
                 }

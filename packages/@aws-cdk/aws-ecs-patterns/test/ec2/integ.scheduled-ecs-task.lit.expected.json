@@ -293,8 +293,8 @@
             },
             {
               "Action": [
-                "ecs:DiscoverPollEndpoint",
                 "ecr:GetAuthorizationToken",
+                "ecs:DiscoverPollEndpoint",
                 "logs:CreateLogStream",
                 "logs:PutLogEvents"
               ],
@@ -434,10 +434,10 @@
           "Statement": [
             {
               "Action": [
-                "ec2:DescribeInstances",
+                "ec2:DescribeHosts",
                 "ec2:DescribeInstanceAttribute",
                 "ec2:DescribeInstanceStatus",
-                "ec2:DescribeHosts"
+                "ec2:DescribeInstances"
               ],
               "Effect": "Allow",
               "Resource": "*"

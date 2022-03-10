@@ -47,20 +47,12 @@
                 "kinesis:SubscribeToShard"
               ],
               "Effect": "Allow",
-              "Resource": [
-                {
-                  "Fn::GetAtt": [
-                    "Q63C6E3AB",
-                    "Arn"
-                  ]
-                },
-                {
-                  "Fn::GetAtt": [
-                    "Q63C6E3AB",
-                    "Arn"
-                  ]
-                }
-              ]
+              "Resource": {
+                "Fn::GetAtt": [
+                  "Q63C6E3AB",
+                  "Arn"
+                ]
+              }
             }
           ],
           "Version": "2012-10-17"

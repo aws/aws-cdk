@@ -419,12 +419,25 @@
           "Statement": [
             {
               "Action": [
-                "s3:GetObject*",
+                "s3:Abort*",
+                "s3:DeleteObject*",
                 "s3:GetBucket*",
-                "s3:List*"
+                "s3:GetObject*",
+                "s3:List*",
+                "s3:PutObject",
+                "s3:PutObjectLegalHold",
+                "s3:PutObjectRetention",
+                "s3:PutObjectTagging",
+                "s3:PutObjectVersionTagging"
               ],
               "Effect": "Allow",
               "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "ExportBucket4E99310E",
+                    "Arn"
+                  ]
+                },
                 {
                   "Fn::GetAtt": [
                     "ImportBucketBAF3A8E9",
@@ -437,35 +450,12 @@
                     [
                       {
                         "Fn::GetAtt": [
-                          "ImportBucketBAF3A8E9",
+                          "ExportBucket4E99310E",
                           "Arn"
                         ]
                       },
                       "/*"
                     ]
-                  ]
-                }
-              ]
-            },
-            {
-              "Action": [
-                "s3:GetObject*",
-                "s3:GetBucket*",
-                "s3:List*",
-                "s3:DeleteObject*",
-                "s3:PutObject",
-                "s3:PutObjectLegalHold",
-                "s3:PutObjectRetention",
-                "s3:PutObjectTagging",
-                "s3:PutObjectVersionTagging",
-                "s3:Abort*"
-              ],
-              "Effect": "Allow",
-              "Resource": [
-                {
-                  "Fn::GetAtt": [
-                    "ExportBucket4E99310E",
-                    "Arn"
                   ]
                 },
                 {
@@ -474,7 +464,7 @@
                     [
                       {
                         "Fn::GetAtt": [
-                          "ExportBucket4E99310E",
+                          "ImportBucketBAF3A8E9",
                           "Arn"
                         ]
                       },

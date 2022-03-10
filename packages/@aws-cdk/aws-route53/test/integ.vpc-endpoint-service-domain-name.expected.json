@@ -552,97 +552,35 @@
             {
               "Action": "ec2:ModifyVpcEndpointServiceConfiguration",
               "Effect": "Allow",
-              "Resource": [
-                [
-                  {
-                    "Fn::Join": [
-                      ":",
-                      [
-                        "arn",
-                        {
-                          "Ref": "AWS::Partition"
-                        },
-                        "ec2",
-                        {
-                          "Ref": "AWS::Region"
-                        },
-                        {
-                          "Ref": "AWS::AccountId"
-                        },
-                        {
-                          "Fn::Join": [
-                            "/",
-                            [
-                              "vpc-endpoint-service",
-                              {
-                                "Ref": "VPCES3AE7D565"
-                              }
-                            ]
-                          ]
-                        }
-                      ]
-                    ]
-                  },
-                  {
-                    "Fn::Join": [
-                      ":",
-                      [
-                        "arn",
-                        {
-                          "Ref": "AWS::Partition"
-                        },
-                        "ec2",
-                        {
-                          "Ref": "AWS::Region"
-                        },
-                        {
-                          "Ref": "AWS::AccountId"
-                        },
-                        {
-                          "Fn::Join": [
-                            "/",
-                            [
-                              "vpc-endpoint-service",
-                              {
-                                "Ref": "VPCES3AE7D565"
-                              }
-                            ]
-                          ]
-                        }
-                      ]
-                    ]
-                  }
-                ],
-                {
-                  "Fn::Join": [
-                    ":",
-                    [
-                      "arn",
-                      {
-                        "Ref": "AWS::Partition"
-                      },
-                      "ec2",
-                      {
-                        "Ref": "AWS::Region"
-                      },
-                      {
-                        "Ref": "AWS::AccountId"
-                      },
-                      {
-                        "Fn::Join": [
-                          "/",
-                          [
-                            "vpc-endpoint-service",
-                            {
-                              "Ref": "VPCES3AE7D565"
-                            }
-                          ]
+              "Resource": {
+                "Fn::Join": [
+                  ":",
+                  [
+                    "arn",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    "ec2",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    {
+                      "Fn::Join": [
+                        "/",
+                        [
+                          "vpc-endpoint-service",
+                          {
+                            "Ref": "VPCES3AE7D565"
+                          }
                         ]
-                      }
-                    ]
+                      ]
+                    }
                   ]
-                }
-              ]
+                ]
+              }
             }
           ],
           "Version": "2012-10-17"
@@ -834,66 +772,35 @@
             {
               "Action": "ec2:StartVpcEndpointServicePrivateDnsVerification",
               "Effect": "Allow",
-              "Resource": [
-                {
-                  "Fn::Join": [
-                    ":",
-                    [
-                      "arn",
-                      {
-                        "Ref": "AWS::Partition"
-                      },
-                      "ec2",
-                      {
-                        "Ref": "AWS::Region"
-                      },
-                      {
-                        "Ref": "AWS::AccountId"
-                      },
-                      {
-                        "Fn::Join": [
-                          "/",
-                          [
-                            "vpc-endpoint-service",
-                            {
-                              "Ref": "VPCES3AE7D565"
-                            }
-                          ]
+              "Resource": {
+                "Fn::Join": [
+                  ":",
+                  [
+                    "arn",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    "ec2",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    {
+                      "Fn::Join": [
+                        "/",
+                        [
+                          "vpc-endpoint-service",
+                          {
+                            "Ref": "VPCES3AE7D565"
+                          }
                         ]
-                      }
-                    ]
+                      ]
+                    }
                   ]
-                },
-                {
-                  "Fn::Join": [
-                    ":",
-                    [
-                      "arn",
-                      {
-                        "Ref": "AWS::Partition"
-                      },
-                      "ec2",
-                      {
-                        "Ref": "AWS::Region"
-                      },
-                      {
-                        "Ref": "AWS::AccountId"
-                      },
-                      {
-                        "Fn::Join": [
-                          "/",
-                          [
-                            "vpc-endpoint-service",
-                            {
-                              "Ref": "VPCES3AE7D565"
-                            }
-                          ]
-                        ]
-                      }
-                    ]
-                  ]
-                }
-              ]
+                ]
+              }
             }
           ],
           "Version": "2012-10-17"

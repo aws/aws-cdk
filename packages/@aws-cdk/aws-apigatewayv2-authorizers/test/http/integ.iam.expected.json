@@ -28,7 +28,7 @@
                       {
                         "Ref": "HttpApiF5A9A8A7"
                       },
-                      "/*/*/foo"
+                      "/*/*/books/*"
                     ]
                   ]
                 },
@@ -48,7 +48,7 @@
                       {
                         "Ref": "HttpApiF5A9A8A7"
                       },
-                      "/*/*/books/*"
+                      "/*/*/foo"
                     ]
                   ]
                 }

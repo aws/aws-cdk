@@ -356,7 +356,8 @@
                       ":log-group:/aws/codebuild/",
                       {
                         "Ref": "EcsProject54EFDCA6"
-                      }
+                      },
+                      ":*"
                     ]
                   ]
                 },
@@ -379,8 +380,7 @@
                       ":log-group:/aws/codebuild/",
                       {
                         "Ref": "EcsProject54EFDCA6"
-                      },
-                      ":*"
+                      }
                     ]
                   ]
                 }
@@ -397,20 +397,12 @@
                 "ecr:UploadLayerPart"
               ],
               "Effect": "Allow",
-              "Resource": [
-                {
-                  "Fn::GetAtt": [
-                    "EcrRepoBB83A592",
-                    "Arn"
-                  ]
-                },
-                {
-                  "Fn::GetAtt": [
-                    "EcrRepoBB83A592",
-                    "Arn"
-                  ]
-                }
-              ]
+              "Resource": {
+                "Fn::GetAtt": [
+                  "EcrRepoBB83A592",
+                  "Arn"
+                ]
+              }
             },
             {
               "Action": "ecr:GetAuthorizationToken",
@@ -419,16 +411,16 @@
             },
             {
               "Action": [
-                "s3:GetObject*",
-                "s3:GetBucket*",
-                "s3:List*",
+                "s3:Abort*",
                 "s3:DeleteObject*",
+                "s3:GetBucket*",
+                "s3:GetObject*",
+                "s3:List*",
                 "s3:PutObject",
                 "s3:PutObjectLegalHold",
                 "s3:PutObjectRetention",
                 "s3:PutObjectTagging",
-                "s3:PutObjectVersionTagging",
-                "s3:Abort*"
+                "s3:PutObjectVersionTagging"
               ],
               "Effect": "Allow",
               "Resource": [
@@ -572,16 +564,16 @@
           "Statement": [
             {
               "Action": [
-                "s3:GetObject*",
-                "s3:GetBucket*",
-                "s3:List*",
+                "s3:Abort*",
                 "s3:DeleteObject*",
+                "s3:GetBucket*",
+                "s3:GetObject*",
+                "s3:List*",
                 "s3:PutObject",
                 "s3:PutObjectLegalHold",
                 "s3:PutObjectRetention",
                 "s3:PutObjectTagging",
-                "s3:PutObjectVersionTagging",
-                "s3:Abort*"
+                "s3:PutObjectVersionTagging"
               ],
               "Effect": "Allow",
               "Resource": [
@@ -611,23 +603,21 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Resource": [
-                [
-                  {
-                    "Fn::GetAtt": [
-                      "MyPipelineSourceCodePipelineActionRoleAA05D76F",
-                      "Arn"
-                    ]
-                  },
-                  {
-                    "Fn::GetAtt": [
-                      "MyPipelineBuildCodeBuildCodePipelineActionRoleCAE538CA",
-                      "Arn"
-                    ]
-                  }
-                ],
+                {
+                  "Fn::GetAtt": [
+                    "MyPipelineBuildCodeBuildCodePipelineActionRoleCAE538CA",
+                    "Arn"
+                  ]
+                },
                 {
                   "Fn::GetAtt": [
                     "MyPipelineDeployDeployActionCodePipelineActionRole854184EF",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::GetAtt": [
+                    "MyPipelineSourceCodePipelineActionRoleAA05D76F",
                     "Arn"
                   ]
                 }
@@ -812,8 +802,8 @@
           "Statement": [
             {
               "Action": [
-                "s3:GetObject*",
                 "s3:GetBucket*",
+                "s3:GetObject*",
                 "s3:List*"
               ],
               "Effect": "Allow",
@@ -842,13 +832,13 @@
             },
             {
               "Action": [
+                "s3:Abort*",
                 "s3:DeleteObject*",
                 "s3:PutObject",
                 "s3:PutObjectLegalHold",
                 "s3:PutObjectRetention",
                 "s3:PutObjectTagging",
-                "s3:PutObjectVersionTagging",
-                "s3:Abort*"
+                "s3:PutObjectVersionTagging"
               ],
               "Effect": "Allow",
               "Resource": [
@@ -1011,8 +1001,8 @@
             },
             {
               "Action": [
-                "s3:GetObject*",
                 "s3:GetBucket*",
+                "s3:GetObject*",
                 "s3:List*"
               ],
               "Effect": "Allow",

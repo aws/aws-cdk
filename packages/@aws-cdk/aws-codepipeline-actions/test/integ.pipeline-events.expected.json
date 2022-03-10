@@ -148,16 +148,16 @@
           "Statement": [
             {
               "Action": [
-                "s3:GetObject*",
-                "s3:GetBucket*",
-                "s3:List*",
+                "s3:Abort*",
                 "s3:DeleteObject*",
+                "s3:GetBucket*",
+                "s3:GetObject*",
+                "s3:List*",
                 "s3:PutObject",
                 "s3:PutObjectLegalHold",
                 "s3:PutObjectRetention",
                 "s3:PutObjectTagging",
-                "s3:PutObjectVersionTagging",
-                "s3:Abort*"
+                "s3:PutObjectVersionTagging"
               ],
               "Effect": "Allow",
               "Resource": [
@@ -188,8 +188,8 @@
                 "kms:Decrypt",
                 "kms:DescribeKey",
                 "kms:Encrypt",
-                "kms:ReEncrypt*",
-                "kms:GenerateDataKey*"
+                "kms:GenerateDataKey*",
+                "kms:ReEncrypt*"
               ],
               "Effect": "Allow",
               "Resource": {
@@ -205,13 +205,13 @@
               "Resource": [
                 {
                   "Fn::GetAtt": [
-                    "MyPipelineSourceCodeCommitSourceCodePipelineActionRole0B6D0F4F",
+                    "MyPipelineBuildCodeBuildActionCodePipelineActionRole3185ADC7",
                     "Arn"
                   ]
                 },
                 {
                   "Fn::GetAtt": [
-                    "MyPipelineBuildCodeBuildActionCodePipelineActionRole3185ADC7",
+                    "MyPipelineSourceCodeCommitSourceCodePipelineActionRole0B6D0F4F",
                     "Arn"
                   ]
                 }
@@ -371,16 +371,16 @@
           "Statement": [
             {
               "Action": [
-                "s3:GetObject*",
-                "s3:GetBucket*",
-                "s3:List*",
+                "s3:Abort*",
                 "s3:DeleteObject*",
+                "s3:GetBucket*",
+                "s3:GetObject*",
+                "s3:List*",
                 "s3:PutObject",
                 "s3:PutObjectLegalHold",
                 "s3:PutObjectRetention",
                 "s3:PutObjectTagging",
-                "s3:PutObjectVersionTagging",
-                "s3:Abort*"
+                "s3:PutObjectVersionTagging"
               ],
               "Effect": "Allow",
               "Resource": [
@@ -411,8 +411,8 @@
                 "kms:Decrypt",
                 "kms:DescribeKey",
                 "kms:Encrypt",
-                "kms:ReEncrypt*",
-                "kms:GenerateDataKey*"
+                "kms:GenerateDataKey*",
+                "kms:ReEncrypt*"
               ],
               "Effect": "Allow",
               "Resource": {
@@ -424,11 +424,11 @@
             },
             {
               "Action": [
+                "codecommit:CancelUploadArchive",
                 "codecommit:GetBranch",
                 "codecommit:GetCommit",
-                "codecommit:UploadArchive",
                 "codecommit:GetUploadArchiveStatus",
-                "codecommit:CancelUploadArchive"
+                "codecommit:UploadArchive"
               ],
               "Effect": "Allow",
               "Resource": {
@@ -730,7 +730,8 @@
                       ":log-group:/aws/codebuild/",
                       {
                         "Ref": "BuildProject097C5DB7"
-                      }
+                      },
+                      ":*"
                     ]
                   ]
                 },
@@ -753,8 +754,7 @@
                       ":log-group:/aws/codebuild/",
                       {
                         "Ref": "BuildProject097C5DB7"
-                      },
-                      ":*"
+                      }
                     ]
                   ]
                 }
@@ -762,16 +762,16 @@
             },
             {
               "Action": [
-                "s3:GetObject*",
-                "s3:GetBucket*",
-                "s3:List*",
+                "s3:Abort*",
                 "s3:DeleteObject*",
+                "s3:GetBucket*",
+                "s3:GetObject*",
+                "s3:List*",
                 "s3:PutObject",
                 "s3:PutObjectLegalHold",
                 "s3:PutObjectRetention",
                 "s3:PutObjectTagging",
-                "s3:PutObjectVersionTagging",
-                "s3:Abort*"
+                "s3:PutObjectVersionTagging"
               ],
               "Effect": "Allow",
               "Resource": [
@@ -806,20 +806,12 @@
                 "kms:ReEncrypt*"
               ],
               "Effect": "Allow",
-              "Resource": [
-                {
-                  "Fn::GetAtt": [
-                    "MyPipelineArtifactsBucketEncryptionKey8BF0A7F3",
-                    "Arn"
-                  ]
-                },
-                {
-                  "Fn::GetAtt": [
-                    "MyPipelineArtifactsBucketEncryptionKey8BF0A7F3",
-                    "Arn"
-                  ]
-                }
-              ]
+              "Resource": {
+                "Fn::GetAtt": [
+                  "MyPipelineArtifactsBucketEncryptionKey8BF0A7F3",
+                  "Arn"
+                ]
+              }
             }
           ],
           "Version": "2012-10-17"
@@ -879,19 +871,9 @@
               "Principal": {
                 "Service": "events.amazonaws.com"
               },
-              "Resource": [
-                [
-                  {
-                    "Ref": "MyTopic86869434"
-                  },
-                  {
-                    "Ref": "MyTopic86869434"
-                  }
-                ],
-                {
-                  "Ref": "MyTopic86869434"
-                }
-              ],
+              "Resource": {
+                "Ref": "MyTopic86869434"
+              },
               "Sid": "0"
             }
           ],

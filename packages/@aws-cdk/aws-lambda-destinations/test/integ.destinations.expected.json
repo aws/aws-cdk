@@ -47,14 +47,9 @@
             {
               "Action": "sns:Publish",
               "Effect": "Allow",
-              "Resource": [
-                {
-                  "Ref": "TopicBFC7AF6E"
-                },
-                {
-                  "Ref": "TopicBFC7AF6E"
-                }
-              ]
+              "Resource": {
+                "Ref": "TopicBFC7AF6E"
+              }
             },
             {
               "Action": [
@@ -63,20 +58,12 @@
                 "sqs:SendMessage"
               ],
               "Effect": "Allow",
-              "Resource": [
-                {
-                  "Fn::GetAtt": [
-                    "Queue4A7E3555",
-                    "Arn"
-                  ]
-                },
-                {
-                  "Fn::GetAtt": [
-                    "Queue4A7E3555",
-                    "Arn"
-                  ]
-                }
-              ]
+              "Resource": {
+                "Fn::GetAtt": [
+                  "Queue4A7E3555",
+                  "Arn"
+                ]
+              }
             }
           ],
           "Version": "2012-10-17"

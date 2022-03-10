@@ -139,8 +139,8 @@
             },
             {
               "Action": [
-                "s3:GetObject*",
                 "s3:GetBucket*",
+                "s3:GetObject*",
                 "s3:List*"
               ],
               "Effect": "Allow",
@@ -210,16 +210,16 @@
           "Statement": [
             {
               "Action": [
-                "s3:GetObject*",
-                "s3:GetBucket*",
-                "s3:List*",
+                "s3:Abort*",
                 "s3:DeleteObject*",
+                "s3:GetBucket*",
+                "s3:GetObject*",
+                "s3:List*",
                 "s3:PutObject",
                 "s3:PutObjectLegalHold",
                 "s3:PutObjectRetention",
                 "s3:PutObjectTagging",
-                "s3:PutObjectVersionTagging",
-                "s3:Abort*"
+                "s3:PutObjectVersionTagging"
               ],
               "Effect": "Allow",
               "Resource": [
@@ -250,8 +250,8 @@
                 "kms:Decrypt",
                 "kms:DescribeKey",
                 "kms:Encrypt",
-                "kms:ReEncrypt*",
-                "kms:GenerateDataKey*"
+                "kms:GenerateDataKey*",
+                "kms:ReEncrypt*"
               ],
               "Effect": "Allow",
               "Resource": {
@@ -265,58 +265,30 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Resource": [
-                [
-                  [
-                    [
-                      [
-                        [
-                          {
-                            "Fn::GetAtt": [
-                              "PipelineBuildSynthCodePipelineActionRole4E7A6C97",
-                              "Arn"
-                            ]
-                          },
-                          {
-                            "Fn::GetAtt": [
-                              "PipelineUpdatePipelineSelfMutateCodePipelineActionRoleD6D4E5CF",
-                              "Arn"
-                            ]
-                          }
-                        ],
-                        {
-                          "Fn::GetAtt": [
-                            "PipelineAssetsFileRole59943A77",
-                            "Arn"
-                          ]
-                        }
-                      ],
-                      {
-                        "Fn::GetAtt": [
-                          "PipelineAssetsFileRole59943A77",
-                          "Arn"
-                        ]
-                      }
-                    ],
-                    {
-                      "Fn::GetAtt": [
-                        "PipelinePreProdUseSourceCodePipelineActionRoleA2043BDA",
-                        "Arn"
-                      ]
-                    }
-                  ],
-                  {
-                    "Fn::Join": [
-                      "",
-                      [
-                        "arn:",
-                        {
-                          "Ref": "AWS::Partition"
-                        },
-                        ":iam::12345678:role/cdk-hnb659fds-deploy-role-12345678-test-region"
-                      ]
-                    ]
-                  }
-                ],
+                {
+                  "Fn::GetAtt": [
+                    "PipelineAssetsFileRole59943A77",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::GetAtt": [
+                    "PipelineBuildSynthCodePipelineActionRole4E7A6C97",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::GetAtt": [
+                    "PipelinePreProdUseSourceCodePipelineActionRoleA2043BDA",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::GetAtt": [
+                    "PipelineUpdatePipelineSelfMutateCodePipelineActionRoleD6D4E5CF",
+                    "Arn"
+                  ]
+                },
                 {
                   "Fn::Join": [
                     "",
@@ -736,7 +708,8 @@
                       ":logs:test-region:12345678:log-group:/aws/codebuild/",
                       {
                         "Ref": "PipelineBuildSynthCdkBuildProject6BEFA8E6"
-                      }
+                      },
+                      ":*"
                     ]
                   ]
                 },
@@ -751,8 +724,7 @@
                       ":logs:test-region:12345678:log-group:/aws/codebuild/",
                       {
                         "Ref": "PipelineBuildSynthCdkBuildProject6BEFA8E6"
-                      },
-                      ":*"
+                      }
                     ]
                   ]
                 }
@@ -760,11 +732,11 @@
             },
             {
               "Action": [
-                "codebuild:CreateReportGroup",
-                "codebuild:CreateReport",
-                "codebuild:UpdateReport",
+                "codebuild:BatchPutCodeCoverages",
                 "codebuild:BatchPutTestCases",
-                "codebuild:BatchPutCodeCoverages"
+                "codebuild:CreateReport",
+                "codebuild:CreateReportGroup",
+                "codebuild:UpdateReport"
               ],
               "Effect": "Allow",
               "Resource": {
@@ -786,16 +758,16 @@
             },
             {
               "Action": [
-                "s3:GetObject*",
-                "s3:GetBucket*",
-                "s3:List*",
+                "s3:Abort*",
                 "s3:DeleteObject*",
+                "s3:GetBucket*",
+                "s3:GetObject*",
+                "s3:List*",
                 "s3:PutObject",
                 "s3:PutObjectLegalHold",
                 "s3:PutObjectRetention",
                 "s3:PutObjectTagging",
-                "s3:PutObjectVersionTagging",
-                "s3:Abort*"
+                "s3:PutObjectVersionTagging"
               ],
               "Effect": "Allow",
               "Resource": [
@@ -830,20 +802,12 @@
                 "kms:ReEncrypt*"
               ],
               "Effect": "Allow",
-              "Resource": [
-                {
-                  "Fn::GetAtt": [
-                    "PipelineArtifactsBucketEncryptionKeyF5BF0670",
-                    "Arn"
-                  ]
-                },
-                {
-                  "Fn::GetAtt": [
-                    "PipelineArtifactsBucketEncryptionKeyF5BF0670",
-                    "Arn"
-                  ]
-                }
-              ]
+              "Resource": {
+                "Fn::GetAtt": [
+                  "PipelineArtifactsBucketEncryptionKeyF5BF0670",
+                  "Arn"
+                ]
+              }
             }
           ],
           "Version": "2012-10-17"
@@ -1055,7 +1019,8 @@
                       ":logs:test-region:12345678:log-group:/aws/codebuild/",
                       {
                         "Ref": "PipelinePreProdUseSourceProject2E711EB4"
-                      }
+                      },
+                      ":*"
                     ]
                   ]
                 },
@@ -1070,8 +1035,7 @@
                       ":logs:test-region:12345678:log-group:/aws/codebuild/",
                       {
                         "Ref": "PipelinePreProdUseSourceProject2E711EB4"
-                      },
-                      ":*"
+                      }
                     ]
                   ]
                 }
@@ -1079,11 +1043,11 @@
             },
             {
               "Action": [
-                "codebuild:CreateReportGroup",
-                "codebuild:CreateReport",
-                "codebuild:UpdateReport",
+                "codebuild:BatchPutCodeCoverages",
                 "codebuild:BatchPutTestCases",
-                "codebuild:BatchPutCodeCoverages"
+                "codebuild:CreateReport",
+                "codebuild:CreateReportGroup",
+                "codebuild:UpdateReport"
               ],
               "Effect": "Allow",
               "Resource": {
@@ -1105,8 +1069,8 @@
             },
             {
               "Action": [
-                "s3:GetObject*",
                 "s3:GetBucket*",
+                "s3:GetObject*",
                 "s3:List*"
               ],
               "Effect": "Allow",
@@ -1142,20 +1106,12 @@
                 "kms:ReEncrypt*"
               ],
               "Effect": "Allow",
-              "Resource": [
-                {
-                  "Fn::GetAtt": [
-                    "PipelineArtifactsBucketEncryptionKeyF5BF0670",
-                    "Arn"
-                  ]
-                },
-                {
-                  "Fn::GetAtt": [
-                    "PipelineArtifactsBucketEncryptionKeyF5BF0670",
-                    "Arn"
-                  ]
-                }
-              ]
+              "Resource": {
+                "Fn::GetAtt": [
+                  "PipelineArtifactsBucketEncryptionKeyF5BF0670",
+                  "Arn"
+                ]
+              }
             }
           ],
           "Version": "2012-10-17"
@@ -1243,7 +1199,8 @@
                       ":logs:test-region:12345678:log-group:/aws/codebuild/",
                       {
                         "Ref": "PipelineUpdatePipelineSelfMutationDAA41400"
-                      }
+                      },
+                      ":*"
                     ]
                   ]
                 },
@@ -1258,8 +1215,7 @@
                       ":logs:test-region:12345678:log-group:/aws/codebuild/",
                       {
                         "Ref": "PipelineUpdatePipelineSelfMutationDAA41400"
-                      },
-                      ":*"
+                      }
                     ]
                   ]
                 }
@@ -1267,11 +1223,11 @@
             },
             {
               "Action": [
-                "codebuild:CreateReportGroup",
-                "codebuild:CreateReport",
-                "codebuild:UpdateReport",
+                "codebuild:BatchPutCodeCoverages",
                 "codebuild:BatchPutTestCases",
-                "codebuild:BatchPutCodeCoverages"
+                "codebuild:CreateReport",
+                "codebuild:CreateReportGroup",
+                "codebuild:UpdateReport"
               ],
               "Effect": "Allow",
               "Resource": {
@@ -1315,8 +1271,8 @@
             },
             {
               "Action": [
-                "s3:GetObject*",
                 "s3:GetBucket*",
+                "s3:GetObject*",
                 "s3:List*"
               ],
               "Effect": "Allow",
@@ -1352,20 +1308,12 @@
                 "kms:ReEncrypt*"
               ],
               "Effect": "Allow",
-              "Resource": [
-                {
-                  "Fn::GetAtt": [
-                    "PipelineArtifactsBucketEncryptionKeyF5BF0670",
-                    "Arn"
-                  ]
-                },
-                {
-                  "Fn::GetAtt": [
-                    "PipelineArtifactsBucketEncryptionKeyF5BF0670",
-                    "Arn"
-                  ]
-                }
-              ]
+              "Resource": {
+                "Fn::GetAtt": [
+                  "PipelineArtifactsBucketEncryptionKeyF5BF0670",
+                  "Arn"
+                ]
+              }
             }
           ],
           "Version": "2012-10-17"
@@ -1421,7 +1369,6 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": "codebuild.amazonaws.com",
                 "AWS": {
                   "Fn::Join": [
                     "",
@@ -1433,7 +1380,8 @@
                       ":iam::12345678:root"
                     ]
                   ]
-                }
+                },
+                "Service": "codebuild.amazonaws.com"
               }
             }
           ],
@@ -1468,11 +1416,11 @@
             },
             {
               "Action": [
-                "codebuild:CreateReportGroup",
-                "codebuild:CreateReport",
-                "codebuild:UpdateReport",
+                "codebuild:BatchPutCodeCoverages",
                 "codebuild:BatchPutTestCases",
-                "codebuild:BatchPutCodeCoverages"
+                "codebuild:CreateReport",
+                "codebuild:CreateReportGroup",
+                "codebuild:UpdateReport"
               ],
               "Effect": "Allow",
               "Resource": {
@@ -1500,11 +1448,9 @@
             {
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
-              "Resource": [
-                {
-                  "Fn::Sub": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-file-publishing-role-12345678-test-region"
-                }
-              ]
+              "Resource": {
+                "Fn::Sub": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-file-publishing-role-12345678-test-region"
+              }
             },
             {
               "Action": [
@@ -1533,26 +1479,6 @@
                       "/*"
                     ]
                   ]
-                },
-                {
-                  "Fn::GetAtt": [
-                    "PipelineArtifactsBucketAEA9A052",
-                    "Arn"
-                  ]
-                },
-                {
-                  "Fn::Join": [
-                    "",
-                    [
-                      {
-                        "Fn::GetAtt": [
-                          "PipelineArtifactsBucketAEA9A052",
-                          "Arn"
-                        ]
-                      },
-                      "/*"
-                    ]
-                  ]
                 }
               ]
             },
@@ -1562,20 +1488,12 @@
                 "kms:DescribeKey"
               ],
               "Effect": "Allow",
-              "Resource": [
-                {
-                  "Fn::GetAtt": [
-                    "PipelineArtifactsBucketEncryptionKeyF5BF0670",
-                    "Arn"
-                  ]
-                },
-                {
-                  "Fn::GetAtt": [
-                    "PipelineArtifactsBucketEncryptionKeyF5BF0670",
-                    "Arn"
-                  ]
-                }
-              ]
+              "Resource": {
+                "Fn::GetAtt": [
+                  "PipelineArtifactsBucketEncryptionKeyF5BF0670",
+                  "Arn"
+                ]
+              }
             }
           ],
           "Version": "2012-10-17"

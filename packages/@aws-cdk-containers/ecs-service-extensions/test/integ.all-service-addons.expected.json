@@ -941,44 +941,43 @@
             {
               "Action": [
                 "ecr:BatchCheckLayerAvailability",
-                "ecr:GetDownloadUrlForLayer",
-                "ecr:BatchGetImage"
-              ],
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::Join": [
-                  "",
-                  [
-                    "arn:",
-                    {
-                      "Ref": "AWS::Partition"
-                    },
-                    ":ecr:",
-                    {
-                      "Ref": "AWS::Region"
-                    },
-                    ":",
-                    {
-                      "Fn::FindInMap": [
-                        "nameenvoyimageaccountmapping",
-                        {
-                          "Ref": "AWS::Region"
-                        },
-                        "ecrRepo"
-                      ]
-                    },
-                    ":repository/aws-appmesh-envoy"
-                  ]
-                ]
-              }
-            },
-            {
-              "Action": [
-                "ecr:BatchCheckLayerAvailability",
                 "ecr:BatchGetImage",
                 "ecr:GetAuthorizationToken",
                 "ecr:GetDownloadUrlForLayer"
               ],
+              "Effect": "Allow",
+              "Resource": [
+                "*",
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":ecr:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":",
+                      {
+                        "Fn::FindInMap": [
+                          "nameenvoyimageaccountmapping",
+                          {
+                            "Ref": "AWS::Region"
+                          },
+                          "ecrRepo"
+                        ]
+                      },
+                      ":repository/aws-appmesh-envoy"
+                    ]
+                  ]
+                }
+              ]
+            },
+            {
+              "Action": "ecr:GetAuthorizationToken",
               "Effect": "Allow",
               "Resource": "*"
             },
@@ -989,31 +988,27 @@
               ],
               "Effect": "Allow",
               "Resource": [
-                [
-                  [
-                    {
-                      "Fn::GetAtt": [
-                        "nametaskdefinitionenvoyLogGroup258B673B",
-                        "Arn"
-                      ]
-                    },
-                    {
-                      "Fn::GetAtt": [
-                        "nametaskdefinitionfirelensLogGroup80DDA60F",
-                        "Arn"
-                      ]
-                    }
-                  ],
-                  {
-                    "Fn::GetAtt": [
-                      "nametaskdefinitionxrayLogGroup4AF4CA37",
-                      "Arn"
-                    ]
-                  }
-                ],
                 {
                   "Fn::GetAtt": [
                     "nametaskdefinitioncloudwatchagentLogGroup78DDC685",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::GetAtt": [
+                    "nametaskdefinitionenvoyLogGroup258B673B",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::GetAtt": [
+                    "nametaskdefinitionfirelensLogGroup80DDA60F",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::GetAtt": [
+                    "nametaskdefinitionxrayLogGroup4AF4CA37",
                     "Arn"
                   ]
                 }
@@ -1794,44 +1789,43 @@
             {
               "Action": [
                 "ecr:BatchCheckLayerAvailability",
-                "ecr:GetDownloadUrlForLayer",
-                "ecr:BatchGetImage"
-              ],
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::Join": [
-                  "",
-                  [
-                    "arn:",
-                    {
-                      "Ref": "AWS::Partition"
-                    },
-                    ":ecr:",
-                    {
-                      "Ref": "AWS::Region"
-                    },
-                    ":",
-                    {
-                      "Fn::FindInMap": [
-                        "greetingenvoyimageaccountmapping",
-                        {
-                          "Ref": "AWS::Region"
-                        },
-                        "ecrRepo"
-                      ]
-                    },
-                    ":repository/aws-appmesh-envoy"
-                  ]
-                ]
-              }
-            },
-            {
-              "Action": [
-                "ecr:BatchCheckLayerAvailability",
                 "ecr:BatchGetImage",
                 "ecr:GetAuthorizationToken",
                 "ecr:GetDownloadUrlForLayer"
               ],
+              "Effect": "Allow",
+              "Resource": [
+                "*",
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":ecr:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":",
+                      {
+                        "Fn::FindInMap": [
+                          "greetingenvoyimageaccountmapping",
+                          {
+                            "Ref": "AWS::Region"
+                          },
+                          "ecrRepo"
+                        ]
+                      },
+                      ":repository/aws-appmesh-envoy"
+                    ]
+                  ]
+                }
+              ]
+            },
+            {
+              "Action": "ecr:GetAuthorizationToken",
               "Effect": "Allow",
               "Resource": "*"
             },
@@ -1842,31 +1836,27 @@
               ],
               "Effect": "Allow",
               "Resource": [
-                [
-                  [
-                    {
-                      "Fn::GetAtt": [
-                        "greetingtaskdefinitionenvoyLogGroup6556AC35",
-                        "Arn"
-                      ]
-                    },
-                    {
-                      "Fn::GetAtt": [
-                        "greetingtaskdefinitionfirelensLogGroupD7A398A7",
-                        "Arn"
-                      ]
-                    }
-                  ],
-                  {
-                    "Fn::GetAtt": [
-                      "greetingtaskdefinitionxrayLogGroupD25C072D",
-                      "Arn"
-                    ]
-                  }
-                ],
                 {
                   "Fn::GetAtt": [
                     "greetingtaskdefinitioncloudwatchagentLogGroupCEF72742",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::GetAtt": [
+                    "greetingtaskdefinitionenvoyLogGroup6556AC35",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::GetAtt": [
+                    "greetingtaskdefinitionfirelensLogGroupD7A398A7",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::GetAtt": [
+                    "greetingtaskdefinitionxrayLogGroupD25C072D",
                     "Arn"
                   ]
                 }
@@ -2770,44 +2760,43 @@
             {
               "Action": [
                 "ecr:BatchCheckLayerAvailability",
-                "ecr:GetDownloadUrlForLayer",
-                "ecr:BatchGetImage"
-              ],
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::Join": [
-                  "",
-                  [
-                    "arn:",
-                    {
-                      "Ref": "AWS::Partition"
-                    },
-                    ":ecr:",
-                    {
-                      "Ref": "AWS::Region"
-                    },
-                    ":",
-                    {
-                      "Fn::FindInMap": [
-                        "greeterenvoyimageaccountmapping",
-                        {
-                          "Ref": "AWS::Region"
-                        },
-                        "ecrRepo"
-                      ]
-                    },
-                    ":repository/aws-appmesh-envoy"
-                  ]
-                ]
-              }
-            },
-            {
-              "Action": [
-                "ecr:BatchCheckLayerAvailability",
                 "ecr:BatchGetImage",
                 "ecr:GetAuthorizationToken",
                 "ecr:GetDownloadUrlForLayer"
               ],
+              "Effect": "Allow",
+              "Resource": [
+                "*",
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":ecr:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":",
+                      {
+                        "Fn::FindInMap": [
+                          "greeterenvoyimageaccountmapping",
+                          {
+                            "Ref": "AWS::Region"
+                          },
+                          "ecrRepo"
+                        ]
+                      },
+                      ":repository/aws-appmesh-envoy"
+                    ]
+                  ]
+                }
+              ]
+            },
+            {
+              "Action": "ecr:GetAuthorizationToken",
               "Effect": "Allow",
               "Resource": "*"
             },
@@ -2818,31 +2807,27 @@
               ],
               "Effect": "Allow",
               "Resource": [
-                [
-                  [
-                    {
-                      "Fn::GetAtt": [
-                        "greetertaskdefinitionenvoyLogGroup6E10B93E",
-                        "Arn"
-                      ]
-                    },
-                    {
-                      "Fn::GetAtt": [
-                        "greetertaskdefinitionfirelensLogGroupD5BAAC35",
-                        "Arn"
-                      ]
-                    }
-                  ],
-                  {
-                    "Fn::GetAtt": [
-                      "greetertaskdefinitionxrayLogGroupBC1558B6",
-                      "Arn"
-                    ]
-                  }
-                ],
                 {
                   "Fn::GetAtt": [
                     "greetertaskdefinitioncloudwatchagentLogGroupE7EAF327",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::GetAtt": [
+                    "greetertaskdefinitionenvoyLogGroup6E10B93E",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::GetAtt": [
+                    "greetertaskdefinitionfirelensLogGroupD5BAAC35",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::GetAtt": [
+                    "greetertaskdefinitionxrayLogGroupBC1558B6",
                     "Arn"
                   ]
                 }

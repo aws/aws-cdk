@@ -550,10 +550,10 @@
               "Effect": "Allow",
               "Resource": [
                 {
-                  "Ref": "signupD2AAA171"
+                  "Ref": "delete1CCE71FF"
                 },
                 {
-                  "Ref": "delete1CCE71FF"
+                  "Ref": "signupD2AAA171"
                 }
               ]
             }
