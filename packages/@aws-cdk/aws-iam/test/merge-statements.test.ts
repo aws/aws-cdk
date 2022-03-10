@@ -259,6 +259,59 @@ test('merges 3 statements in multiple steps', () => {
   ]);
 });
 
+test('winnow down literal duplicates', () => {
+  assertMerged([
+    new iam.PolicyStatement({
+      resources: ['a'],
+      actions: ['service:Action'],
+      principals: [principal1],
+    }),
+    new iam.PolicyStatement({
+      resources: ['a', 'b'],
+      actions: ['service:Action'],
+      principals: [principal1],
+    }),
+  ], [
+    {
+      Effect: 'Allow',
+      Resource: ['a', 'b'],
+      Action: 'service:Action',
+      Principal: { AWS: PRINCIPAL_ARN1 },
+    },
+  ]);
+});
+
+test('winnow down literal duplicates if they are Refs', () => {
+  const stack = new Stack();
+  const user1 = new iam.User(stack, 'User1');
+  const user2 = new iam.User(stack, 'User2');
+
+  assertMerged([
+    new iam.PolicyStatement({
+      resources: ['a'],
+      actions: ['service:Action'],
+      principals: [user1],
+    }),
+    new iam.PolicyStatement({
+      resources: ['a'],
+      actions: ['service:Action'],
+      principals: [user1, user2],
+    }),
+  ], [
+    {
+      Effect: 'Allow',
+      Resource: 'a',
+      Action: 'service:Action',
+      Principal: {
+        AWS: [
+          { 'Fn::GetAtt': ['User1E278A736', 'Arn'] },
+          { 'Fn::GetAtt': ['User21F1486D1', 'Arn'] },
+        ],
+      },
+    },
+  ]);
+});
+
 test('merges 2 pairs separately', () => {
   // Merges pairs (0,2) and (1,3)
   assertMerged([
