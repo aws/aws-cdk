@@ -36,7 +36,7 @@ describe('task definition', () => {
       });
 
       //THEN
-      expect(stack).toHaveResource('AWS::ECS::TaskDefinition', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
         NetworkMode: 'bridge',
       });
     });
