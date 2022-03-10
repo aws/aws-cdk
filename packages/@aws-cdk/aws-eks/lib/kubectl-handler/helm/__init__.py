@@ -80,8 +80,7 @@ def helm_handler(event, context):
             # future work: support versions from s3 assets
             chart = get_chart_asset_from_url(chart_asset_url)
 
-        if repository.startswith('oci://'):
-            assert(repository is not None)
+        if repository is not None and repository.startswith('oci://'):
             tmpdir = tempfile.TemporaryDirectory()
             chart_dir = get_chart_from_oci(tmpdir.name, release, repository, version)
             chart = chart_dir
