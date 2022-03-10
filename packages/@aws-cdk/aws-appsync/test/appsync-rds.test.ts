@@ -36,7 +36,7 @@ describe('Rds Data Source configuration', () => {
       credentials: { username: 'clusteradmin' },
       clusterIdentifier: 'db-endpoint-test',
       vpc,
-      vpcSubnets: { subnetType: SubnetType.PRIVATE },
+      vpcSubnets: { subnetType: SubnetType.PRIVATE_WITH_NAT },
       securityGroups: [securityGroup],
       defaultDatabaseName: 'Animals',
     });
