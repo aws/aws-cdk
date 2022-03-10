@@ -116,6 +116,16 @@ describe('Messages', () => {
     });
   });
 
+  describe('hasNoInfo', () => {
+    test('match', () => {
+      annotations.hasNoInfo('/Default/Qux', 'this info is incorrect');
+    });
+
+    test('no match', () => {
+      expect(() => annotations.hasNoInfo('/Default/Qux', 'this is an info')).toThrowError(/Stack has 1 messages./);
+    });
+  });
+
   describe('findInfo', () => {
     test('match', () => {
       const result = annotations.findInfo('/Default/Qux', 'this is an info');

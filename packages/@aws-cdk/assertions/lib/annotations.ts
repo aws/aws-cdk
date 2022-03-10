@@ -108,6 +108,19 @@ export class Annotations {
   }
 
   /**
+   * Assert that an info with the given message does not exist in the synthesized CDK `Stack`.
+   *
+   * @param constructPath the construct path to the info. Provide `'*'` to match all info in the template.
+   * @param message the info message as should be expected. This should be a string or Matcher object.
+   */
+  public hasNoInfo(constructPath: string, message: any): void {
+    const matchError = hasNoMessage(this._messages, constructPath, constructMessage('info', message));
+    if (matchError) {
+      throw new Error(matchError);
+    }
+  }
+
+  /**
    * Get the set of matching infos of a given construct path and message.
    *
    * @param constructPath the construct path to the info. Provide `'*'` to match all infos in the template.
