@@ -263,7 +263,7 @@ export interface AwsCustomResourceProps {
   readonly policy: AwsCustomResourcePolicy;
 
   /**
-   * The execution role for the Lambda function implementing this custom
+   * The execution role for the singleton Lambda function implementing this custom
    * resource provider. This role will apply to all `AwsCustomResource`
    * instances in the stack. The role must be assumable by the
    * `lambda.amazonaws.com` service principal.
@@ -273,14 +273,14 @@ export interface AwsCustomResourceProps {
   readonly role?: iam.IRole;
 
   /**
-   * The timeout for the Lambda function implementing this custom resource.
+   * The timeout for the singleton Lambda function implementing this custom resource.
    *
    * @default Duration.minutes(2)
    */
   readonly timeout?: cdk.Duration
 
   /**
-   * The number of days log events of the Lambda function implementing
+   * The number of days log events of the singleton Lambda function implementing
    * this custom resource are kept in CloudWatch Logs.
    *
    * @default logs.RetentionDays.INFINITE
@@ -298,7 +298,8 @@ export interface AwsCustomResourceProps {
   readonly installLatestAwsSdk?: boolean;
 
   /**
-   * A name for the Lambda function implementing this custom resource.
+   * A name for the singleton Lambda function implementing this custom resource.
+   * The function name will remain the same after the first AwsCustomResource is created in a stack.
    *
    * @default - AWS CloudFormation generates a unique physical ID and uses that
    * ID for the function's name. For more information, see Name Type.
@@ -307,7 +308,8 @@ export interface AwsCustomResourceProps {
 }
 
 /**
- * Defines a custom resource that is materialized using specific AWS API calls.
+ * Defines a custom resource that is materialized using specific AWS API calls. These calls are created using
+ * a singleton Lambda function.
  *
  * Use this to bridge any gap that might exist in the CloudFormation Coverage.
  * You can specify exactly which calls are invoked for the 'CREATE', 'UPDATE' and 'DELETE' life cycle events.
