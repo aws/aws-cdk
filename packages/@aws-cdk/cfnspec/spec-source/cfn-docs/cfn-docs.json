@@ -5408,7 +5408,7 @@
         "MetricAggregationType": "The aggregation type for the CloudWatch metrics. The valid values are `Minimum` , `Maximum` , and `Average` . If the aggregation type is null, the value is treated as `Average` .\n\nValid only if the policy type is `StepScaling` .",
         "MinAdjustmentMagnitude": "The minimum value to scale by when the adjustment type is `PercentChangeInCapacity` . For example, suppose that you create a step scaling policy to scale out an Auto Scaling group by 25 percent and you specify a `MinAdjustmentMagnitude` of 2. If the group has 4 instances and the scaling policy is performed, 25 percent of 4 is 1. However, because you specified a `MinAdjustmentMagnitude` of 2, Amazon EC2 Auto Scaling scales out the group by 2 instances.\n\nValid only if the policy type is `StepScaling` or `SimpleScaling` . For more information, see [Scaling adjustment types](https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-scaling-simple-step.html#as-scaling-adjustment) in the *Amazon EC2 Auto Scaling User Guide* .\n\n> Some Auto Scaling groups use instance weights. In this case, set the `MinAdjustmentMagnitude` to a value that is at least as large as your largest instance weight.",
         "PolicyType": "One of the following policy types:\n\n- `TargetTrackingScaling`\n- `StepScaling`\n- `SimpleScaling` (default)\n- `PredictiveScaling`\n\nFor more information, see [Target tracking scaling policies](https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-scaling-target-tracking.html) and [Step and simple scaling policies](https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-scaling-simple-step.html) in the *Amazon EC2 Auto Scaling User Guide* .",
-        "PredictiveScalingConfiguration": "A predictive scaling policy. Includes support for predefined metrics only.",
+        "PredictiveScalingConfiguration": "A predictive scaling policy. Provides support for predefined and custom metrics.\n\nPredefined metrics include CPU utilization, network in/out, and the Application Load Balancer request count.",
         "ScalingAdjustment": "The amount by which to scale, based on the specified adjustment type. A positive value adds to the current capacity while a negative number removes from the current capacity. For exact capacity, you must specify a positive value.\n\nRequired if the policy type is `SimpleScaling` . (Not used with any other policy type.)",
         "StepAdjustments": "A set of adjustments that enable you to scale based on the size of the alarm breach.\n\nRequired if the policy type is `StepScaling` . (Not used with any other policy type.)",
         "TargetTrackingConfiguration": "A target tracking scaling policy. Includes support for predefined or customized metrics.\n\nThe following predefined metrics are available:\n\n- `ASGAverageCPUUtilization`\n- `ASGAverageNetworkIn`\n- `ASGAverageNetworkOut`\n- `ALBRequestCountPerTarget`\n\nIf you specify `ALBRequestCountPerTarget` for the metric, you must specify the `ResourceLabel` property with the `PredefinedMetricSpecification` ."
@@ -5425,12 +5425,41 @@
         "Unit": "The unit of the metric. For a complete list of the units that CloudWatch supports, see the [MetricDatum](https://docs.aws.amazon.com/AmazonCloudWatch/latest/APIReference/API_MetricDatum.html) data type in the *Amazon CloudWatch API Reference* ."
       }
     },
+    "AWS::AutoScaling::ScalingPolicy.Metric": {
+      "attributes": {},
+      "description": "Represents a specific metric.\n\n`Metric` is a property of the [AWS::AutoScaling::ScalingPolicy MetricStat](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscaling-scalingpolicy-metricstat.html) property type.",
+      "properties": {
+        "Dimensions": "The dimensions for the metric. For the list of available dimensions, see the AWS documentation available from the table in [AWS services that publish CloudWatch metrics](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/aws-services-cloudwatch-metrics.html) in the *Amazon CloudWatch User Guide* .\n\nConditional: If you published your metric with dimensions, you must specify the same dimensions in your scaling policy.",
+        "MetricName": "The name of the metric.",
+        "Namespace": "The namespace of the metric. For more information, see the table in [AWS services that publish CloudWatch metrics](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/aws-services-cloudwatch-metrics.html) in the *Amazon CloudWatch User Guide* ."
+      }
+    },
+    "AWS::AutoScaling::ScalingPolicy.MetricDataQuery": {
+      "attributes": {},
+      "description": "The metric data to return. Also defines whether this call is returning data for one metric only, or whether it is performing a math expression on the values of returned metric statistics to create a new time series. A time series is a series of data points, each of which is associated with a timestamp.\n\n`MetricDataQuery` is a property of the following property types:\n\n- [AWS::AutoScaling::ScalingPolicy PredictiveScalingCustomizedScalingMetric](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscaling-scalingpolicy-predictivescalingcustomizedscalingmetric.html)\n- [AWS::AutoScaling::ScalingPolicy PredictiveScalingCustomizedLoadMetric](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscaling-scalingpolicy-predictivescalingcustomizedloadmetric.html)\n- [AWS::AutoScaling::ScalingPolicy PredictiveScalingCustomizedCapacityMetric](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscaling-scalingpolicy-predictivescalingcustomizedcapacitymetric.html)\n\nPredictive scaling uses the time series data received from CloudWatch to understand how to schedule capacity based on your historical workload patterns.\n\nYou can call for a single metric or perform math expressions on multiple metrics. Any expressions used in a metric specification must eventually return a single time series.\n\nFor more information and examples, see [Advanced predictive scaling policy configurations using custom metrics](https://docs.aws.amazon.com/autoscaling/ec2/userguide/predictive-scaling-customized-metric-specification.html) in the *Amazon EC2 Auto Scaling User Guide* .",
+      "properties": {
+        "Expression": "The math expression to perform on the returned data, if this object is performing a math expression. This expression can use the `Id` of the other metrics to refer to those metrics, and can also use the `Id` of other expressions to use the result of those expressions.\n\nConditional: Within each `MetricDataQuery` object, you must specify either `Expression` or `MetricStat` , but not both.",
+        "Id": "A short name that identifies the object's results in the response. This name must be unique among all `MetricDataQuery` objects specified for a single scaling policy. If you are performing math expressions on this set of data, this name represents that data and can serve as a variable in the mathematical expression. The valid characters are letters, numbers, and underscores. The first character must be a lowercase letter.",
+        "Label": "A human-readable label for this metric or expression. This is especially useful if this is a math expression, so that you know what the value represents.",
+        "MetricStat": "Information about the metric data to return.\n\nConditional: Within each `MetricDataQuery` object, you must specify either `Expression` or `MetricStat` , but not both.",
+        "ReturnData": "Indicates whether to return the timestamps and raw data values of this metric.\n\nIf you use any math expressions, specify `true` for this value for only the final math expression that the metric specification is based on. You must specify `false` for `ReturnData` for all the other metrics and expressions used in the metric specification.\n\nIf you are only retrieving metrics and not performing any math expressions, do not specify anything for `ReturnData` . This sets it to its default ( `true` )."
+      }
+    },
     "AWS::AutoScaling::ScalingPolicy.MetricDimension": {
       "attributes": {},
       "description": "`MetricDimension` specifies a name/value pair that is part of the identity of a CloudWatch metric for the `Dimensions` property of the [AWS::AutoScaling::ScalingPolicy CustomizedMetricSpecification](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscaling-scalingpolicy-customizedmetricspecification.html) property type. Duplicate dimensions are not allowed.",
       "properties": {
         "Name": "The name of the dimension.",
         "Value": "The value of the dimension."
+      }
+    },
+    "AWS::AutoScaling::ScalingPolicy.MetricStat": {
+      "attributes": {},
+      "description": "`MetricStat` is a property of the [AWS::AutoScaling::ScalingPolicy MetricDataQuery](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscaling-scalingpolicy-metricdataquery.html) property type.\n\nThis structure defines the CloudWatch metric to return, along with the statistic, period, and unit.\n\nFor more information about the CloudWatch terminology below, see [Amazon CloudWatch concepts](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/cloudwatch_concepts.html) in the *Amazon CloudWatch User Guide* .",
+      "properties": {
+        "Metric": "The CloudWatch metric to return, including the metric name, namespace, and dimensions. To get the exact metric name, namespace, and dimensions, inspect the [Metric](https://docs.aws.amazon.com/AmazonCloudWatch/latest/APIReference/API_Metric.html) object that is returned by a call to [ListMetrics](https://docs.aws.amazon.com/AmazonCloudWatch/latest/APIReference/API_ListMetrics.html) .",
+        "Stat": "The statistic to return. It can include any CloudWatch statistic or extended statistic. For a list of valid values, see the table in [Statistics](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/cloudwatch_concepts.html#Statistic) in the *Amazon CloudWatch User Guide* .\n\nThe most commonly used metrics for predictive scaling are `Average` and `Sum` .",
+        "Unit": "The unit to use for the returned data points. For a complete list of the units that CloudWatch supports, see the [MetricDatum](https://docs.aws.amazon.com/AmazonCloudWatch/latest/APIReference/API_MetricDatum.html) data type in the *Amazon CloudWatch API Reference* ."
       }
     },
     "AWS::AutoScaling::ScalingPolicy.PredefinedMetricSpecification": {
@@ -5452,10 +5481,34 @@
         "SchedulingBufferTime": "The amount of time, in seconds, by which the instance launch time can be advanced. For example, the forecast says to add capacity at 10:00 AM, and you choose to pre-launch instances by 5 minutes. In that case, the instances will be launched at 9:55 AM. The intention is to give resources time to be provisioned. It can take a few minutes to launch an EC2 instance. The actual amount of time required depends on several factors, such as the size of the instance and whether there are startup scripts to complete.\n\nThe value must be less than the forecast interval duration of 3600 seconds (60 minutes). Defaults to 300 seconds if not specified."
       }
     },
+    "AWS::AutoScaling::ScalingPolicy.PredictiveScalingCustomizedCapacityMetric": {
+      "attributes": {},
+      "description": "Contains capacity metric information for the `CustomizedCapacityMetricSpecification` property of the [AWS::AutoScaling::ScalingPolicy PredictiveScalingMetricSpecification](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscaling-scalingpolicy-predictivescalingmetricspecification.html) property type.",
+      "properties": {
+        "MetricDataQueries": "One or more metric data queries to provide the data points for a capacity metric. Use multiple metric data queries only if you are performing a math expression on returned data."
+      }
+    },
+    "AWS::AutoScaling::ScalingPolicy.PredictiveScalingCustomizedLoadMetric": {
+      "attributes": {},
+      "description": "Contains load metric information for the `CustomizedLoadMetricSpecification` property of the [AWS::AutoScaling::ScalingPolicy PredictiveScalingMetricSpecification](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscaling-scalingpolicy-predictivescalingmetricspecification.html) property type.",
+      "properties": {
+        "MetricDataQueries": "One or more metric data queries to provide the data points for a load metric. Use multiple metric data queries only if you are performing a math expression on returned data."
+      }
+    },
+    "AWS::AutoScaling::ScalingPolicy.PredictiveScalingCustomizedScalingMetric": {
+      "attributes": {},
+      "description": "Contains scaling metric information for the `CustomizedScalingMetricSpecification` property of the [AWS::AutoScaling::ScalingPolicy PredictiveScalingMetricSpecification](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscaling-scalingpolicy-predictivescalingmetricspecification.html) property type.",
+      "properties": {
+        "MetricDataQueries": "One or more metric data queries to provide the data points for a scaling metric. Use multiple metric data queries only if you are performing a math expression on returned data."
+      }
+    },
     "AWS::AutoScaling::ScalingPolicy.PredictiveScalingMetricSpecification": {
       "attributes": {},
       "description": "A structure that specifies a metric specification for the `MetricSpecifications` property of the [AWS::AutoScaling::ScalingPolicy PredictiveScalingConfiguration](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscaling-scalingpolicy-predictivescalingconfiguration.html) property type.\n\nFor more information, see [Predictive scaling](https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-predictive-scaling.html) in the *Amazon EC2 Auto Scaling User Guide* .",
       "properties": {
+        "CustomizedCapacityMetricSpecification": "The customized capacity metric specification.",
+        "CustomizedLoadMetricSpecification": "The customized load metric specification.",
+        "CustomizedScalingMetricSpecification": "The customized scaling metric specification.",
         "PredefinedLoadMetricSpecification": "The load metric specification.\n\nIf you specify `PredefinedMetricPairSpecification` , don't specify this property.",
         "PredefinedMetricPairSpecification": "The metric pair specification from which Amazon EC2 Auto Scaling determines the appropriate scaling metric and load metric to use.\n\n> With predictive scaling, you must specify either a metric pair, or a load metric and a scaling metric individually. Specifying a metric pair instead of individual metrics provides a simpler way to configure metrics for a scaling policy. You choose the metric pair, and the policy automatically knows the correct sum and average statistics to use for the load metric and the scaling metric.",
         "PredefinedScalingMetricSpecification": "The scaling metric specification.\n\nIf you specify `PredefinedMetricPairSpecification` , don't specify this property.",
@@ -8679,7 +8732,7 @@
         "AllowedOAuthFlows": "The allowed OAuth flows.\n\nSet to `code` to initiate a code grant flow, which provides an authorization code as the response. This code can be exchanged for access tokens with the token endpoint.\n\nSet to `implicit` to specify that the client should get the access token (and, optionally, ID token, based on scopes) directly.\n\nSet to `client_credentials` to specify that the client should get the access token (and, optionally, ID token, based on scopes) from the token endpoint using a combination of client and client_secret.",
         "AllowedOAuthFlowsUserPoolClient": "Set to true if the client is allowed to follow the OAuth protocol when interacting with Amazon Cognito user pools.",
         "AllowedOAuthScopes": "The allowed OAuth scopes. Possible values provided by OAuth are: `phone` , `email` , `openid` , and `profile` . Possible values provided by AWS are: `aws.cognito.signin.user.admin` . Custom scopes created in Resource Servers are also supported.",
-        "AnalyticsConfiguration": "The Amazon Pinpoint analytics configuration for collecting metrics for this user pool.\n\n> In AWS Regions where Amazon Pinpoint isn't available, User Pools only supports sending events to Amazon Pinpoint projects in AWS Region us-east-1. In Regions where is available, User Pools will support sending events to Amazon Pinpoint projects within that same Region.",
+        "AnalyticsConfiguration": "The Amazon Pinpoint analytics configuration for collecting metrics for this user pool.\n\n> In AWS Regions where isn't available, User Pools only supports sending events to Amazon Pinpoint projects in AWS Region us-east-1. In Regions where is available, User Pools will support sending events to Amazon Pinpoint projects within that same Region.",
         "CallbackURLs": "A list of allowed redirect (callback) URLs for the identity providers.\n\nA redirect URI must:\n\n- Be an absolute URI.\n- Be registered with the authorization server.\n- Not include a fragment component.\n\nSee [OAuth 2.0 - Redirection Endpoint](https://docs.aws.amazon.com/https://tools.ietf.org/html/rfc6749#section-3.1.2) .\n\nAmazon Cognito requires HTTPS over HTTP except for http://localhost for testing purposes only.\n\nApp callback URLs such as myapp://example are also supported.",
         "ClientName": "The client name for the user pool client you would like to create.",
         "DefaultRedirectURI": "The default redirect URI. Must be in the `CallbackURLs` list.\n\nA redirect URI must:\n\n- Be an absolute URI.\n- Be registered with the authorization server.\n- Not include a fragment component.\n\nSee [OAuth 2.0 - Redirection Endpoint](https://docs.aws.amazon.com/https://tools.ietf.org/html/rfc6749#section-3.1.2) .\n\nAmazon Cognito requires HTTPS over HTTP except for http://localhost for testing purposes only.\n\nApp callback URLs such as myapp://example are also supported.",
@@ -33010,7 +33063,7 @@
       },
       "description": "The `AWS::RDS::DBParameterGroup` resource creates a custom parameter group for an RDS database family.\n\nThis type can be declared in a template and referenced in the `DBParameterGroupName` property of an `[AWS::RDS::DBInstance](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-database-instance.html)` resource.\n\nFor information about configuring parameters for Amazon RDS DB instances, see [Working with DB parameter groups](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_WorkingWithParamGroups.html) in the *Amazon RDS User Guide* .\n\nFor information about configuring parameters for Amazon Aurora DB instances, see [Working with DB parameter groups and DB cluster parameter groups](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/USER_WorkingWithParamGroups.html) in the *Amazon Aurora User Guide* .\n\n> Applying a parameter group to a DB instance may require the DB instance to reboot, resulting in a database outage for the duration of the reboot.",
       "properties": {
-        "Description": "Provides the customer-specified description for this DB parameter group.",
+        "Description": "Provides the customer-specified description for this DB Parameter Group.",
         "Family": "The DB parameter group family name. A DB parameter group can be associated with one and only one DB parameter group family, and can be applied only to a DB instance running a DB engine and engine version compatible with that DB parameter group family.\n\n> The DB parameter group family can't be changed when updating a DB parameter group. \n\nTo list all of the available parameter group families, use the following command:\n\n`aws rds describe-db-engine-versions --query \"DBEngineVersions[].DBParameterGroupFamily\"`\n\nThe output contains duplicates.\n\nFor more information, see `[CreateDBParameterGroup](https://docs.aws.amazon.com//AmazonRDS/latest/APIReference/API_CreateDBParameterGroup.html)` .",
         "Parameters": "An array of parameter names and values for the parameter update. At least one parameter name and value must be supplied. Subsequent arguments are optional.\n\nFor more information about DB parameters and DB parameter groups for Amazon RDS DB engines, see [Working with DB Parameter Groups](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_WorkingWithParamGroups.html) in the *Amazon RDS User Guide* .\n\nFor more information about DB cluster and DB instance parameters and parameter groups for Amazon Aurora DB engines, see [Working with DB Parameter Groups and DB Cluster Parameter Groups](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/USER_WorkingWithParamGroups.html) in the *Amazon Aurora User Guide* .\n\n> AWS CloudFormation doesn't support specifying an apply method for each individual parameter. The default apply method for each parameter is used.",
         "Tags": "Tags to assign to the DB parameter group."
@@ -33114,7 +33167,7 @@
       "properties": {
         "DBSecurityGroupIngress": "Ingress rules to be applied to the DB security group.",
         "EC2VpcId": "The identifier of an Amazon VPC. This property indicates the VPC that this DB security group belongs to.\n\n> The `EC2VpcId` property is for backward compatibility with older regions, and is no longer recommended for providing security information to an RDS DB instance.",
-        "GroupDescription": "Provides the description of the DB security group.",
+        "GroupDescription": "Provides the description of the DB Security Group.",
         "Tags": "Tags to assign to the DB security group."
       }
     },
@@ -34666,6 +34719,7 @@
       "attributes": {},
       "description": "Specifies a metrics configuration for the CloudWatch request metrics (specified by the metrics configuration ID) from an Amazon S3 bucket. If you're updating an existing metrics configuration, note that this is a full replacement of the existing metrics configuration. If you don't include the elements you want to keep, they are erased. For examples, see [AWS::S3::Bucket](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-bucket.html#aws-properties-s3-bucket--examples) . For more information, see [PUT Bucket metrics](https://docs.aws.amazon.com/AmazonS3/latest/API/RESTBucketPUTMetricConfiguration.html) in the *Amazon S3 API Reference* .",
       "properties": {
+        "AccessPointArn": "The access point that was used while performing operations on the object. The metrics configuration only includes objects that meet the filter's criteria.",
         "Id": "The ID used to identify the metrics configuration. This can be any value you choose that helps you identify your metrics configuration.",
         "Prefix": "The prefix that an object must have to be included in the metrics results.",
         "TagFilters": "Specifies a list of tag filters to use as a metrics configuration filter. The metrics configuration includes only objects that meet the filter's criteria."
@@ -34692,6 +34746,7 @@
       "attributes": {},
       "description": "Describes the notification configuration for an Amazon S3 bucket.\n\n> If you create the target resource and related permissions in the same template, you might have a circular dependency.\n> \n> For example, you might use the `AWS::Lambda::Permission` resource to grant the bucket permission to invoke an AWS Lambda function. However, AWS CloudFormation can't create the bucket until the bucket has permission to invoke the function ( AWS CloudFormation checks whether the bucket can invoke the function). If you're using Refs to pass the bucket name, this leads to a circular dependency.\n> \n> To avoid this dependency, you can create all resources without specifying the notification configuration. Then, update the stack with a notification configuration.\n> \n> For more information on permissions, see [AWS::Lambda::Permission](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lambda-permission.html) and [Granting Permissions to Publish Event Notification Messages to a Destination](https://docs.aws.amazon.com/AmazonS3/latest/dev/NotificationHowTo.html#grant-destinations-permissions-to-s3) .",
       "properties": {
+        "EventBridgeConfiguration": "Enables delivery of events to Amazon EventBridge.",
         "LambdaConfigurations": "Describes the AWS Lambda functions to invoke and the events for which to invoke them.",
         "QueueConfigurations": "The Amazon Simple Queue Service queues to publish messages to and the events for which to publish messages.",
         "TopicConfigurations": "The topic to which notifications are sent and the events for which notifications are generated."
@@ -34972,7 +35027,12 @@
     "AWS::S3::Bucket.WebsiteConfiguration": {
       "attributes": {},
       "description": "Specifies website configuration parameters for an Amazon S3 bucket.",
-      "properties": {}
+      "properties": {
+        "ErrorDocument": "The name of the error document for the website.",
+        "IndexDocument": "The name of the index document for the website.",
+        "RedirectAllRequestsTo": "The redirect behavior for every request to this bucket's website endpoint.\n\n> If you specify this property, you can't specify any other property.",
+        "RoutingRules": "Rules that define when a redirect is applied and the redirect behavior."
+      }
     },
     "AWS::S3::BucketPolicy": {
       "attributes": {},
