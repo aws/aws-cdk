@@ -170,7 +170,7 @@ Docker container even if `esbuild` is available in your environment. This can be
 
 ## Configuring `esbuild`
 
-The `NodejsFunction` construct exposes some [esbuild options](https://esbuild.github.io/api/#build-api)
+The `NodejsFunction` construct exposes [esbuild options](https://esbuild.github.io/api/#build-api)
 via properties under `bundling`:
 
 ```ts
@@ -198,6 +198,11 @@ new lambda.NodejsFunction(this, 'my-handler', {
     charset: lambda.Charset.UTF8, // do not escape non-ASCII characters, defaults to Charset.ASCII
     format: lambda.OutputFormat.ESM, // ECMAScript module output format, defaults to OutputFormat.CJS (OutputFormat.ESM requires Node.js 14.x)
     mainFields: ['module', 'main'], // prefer ECMAScript versions of dependencies
+    inject: ['./my-shim.js', './other-shim.js'], // allows to automatically replace a global variable with an import from another file
+    esbuildArgs: { // Pass additional arguments to esbuild
+      "--log-limit": "0",
+      "--splitting": true,
+    },
   },
 });
 ```

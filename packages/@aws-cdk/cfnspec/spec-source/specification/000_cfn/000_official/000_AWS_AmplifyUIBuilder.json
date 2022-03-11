@@ -1,5 +1,5 @@
 {
-  "$version": "58.0.0",
+  "$version": "60.0.0",
   "PropertyTypes": {
     "AWS::AmplifyUIBuilder::Component.ActionParameters": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-amplifyuibuilder-component-actionparameters.html",
@@ -608,6 +608,12 @@
           "ItemType": "ComponentProperty",
           "Required": true,
           "Type": "Map",
+          "UpdateType": "Mutable"
+        },
+        "SchemaVersion": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-amplifyuibuilder-component.html#cfn-amplifyuibuilder-component-schemaversion",
+          "PrimitiveType": "String",
+          "Required": false,
           "UpdateType": "Mutable"
         },
         "SourceId": {
