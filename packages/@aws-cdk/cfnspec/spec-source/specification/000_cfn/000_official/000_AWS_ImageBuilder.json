@@ -1,5 +1,5 @@
 {
-  "$version": "57.0.0",
+  "$version": "60.0.0",
   "PropertyTypes": {
     "AWS::ImageBuilder::ContainerRecipe.ComponentConfiguration": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-imagebuilder-containerrecipe-componentconfiguration.html",
@@ -666,6 +666,9 @@
         "ImageId": {
           "PrimitiveType": "String"
         },
+        "ImageUri": {
+          "PrimitiveType": "String"
+        },
         "Name": {
           "PrimitiveType": "String"
         }
@@ -676,7 +679,7 @@
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-imagebuilder-image.html#cfn-imagebuilder-image-containerrecipearn",
           "PrimitiveType": "String",
           "Required": false,
-          "UpdateType": "Mutable"
+          "UpdateType": "Immutable"
         },
         "DistributionConfigurationArn": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-imagebuilder-image.html#cfn-imagebuilder-image-distributionconfigurationarn",

@@ -2222,6 +2222,24 @@ const DUMMY_VPC_PROPS: cxapi.VpcContextResponse = {
         },
       ],
     },
+    {
+      name: 'Isolated',
+      type: cxapi.VpcSubnetGroupType.ISOLATED,
+      subnets: [
+        {
+          availabilityZone: 'dummy1a',
+          subnetId: 'p-12345',
+          routeTableId: 'rtb-12345p',
+          cidr: '1.2.3.4/5',
+        },
+        {
+          availabilityZone: 'dummy1b',
+          subnetId: 'p-67890',
+          routeTableId: 'rtb-57890p',
+          cidr: '1.2.3.4/5',
+        },
+      ],
+    },
   ],
   vpcId: 'vpc-12345',
 };
