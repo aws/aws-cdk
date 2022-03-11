@@ -1,4 +1,5 @@
 import * as iam from '@aws-cdk/aws-iam';
+import * as cdk from '@aws-cdk/core';
 import * as cr from '@aws-cdk/custom-resources';
 import { Construct } from 'constructs';
 
@@ -26,11 +27,10 @@ export interface ElasticsearchAccessPolicyProps {
  * Creates LogGroup resource policies.
  */
 export class ElasticsearchAccessPolicy extends cr.AwsCustomResource {
-  constructor(scope: Construct, id: string, props: ElasticsearchAccessPolicyProps) {
-    const policyDocument = new iam.PolicyDocument({
-      statements: props.accessPolicies,
-    });
 
+  private accessPolicyStatements: iam.PolicyStatement[] = [];
+
+  constructor(scope: Construct, id: string, props: ElasticsearchAccessPolicyProps) {
     super(scope, id, {
       resourceType: 'Custom::ElasticsearchAccessPolicy',
       onUpdate: {
@@ -38,7 +38,13 @@ export class ElasticsearchAccessPolicy extends cr.AwsCustomResource {
         service: 'ES',
         parameters: {
           DomainName: props.domainName,
-          AccessPolicies: JSON.stringify(policyDocument.toJSON()),
+          AccessPolicies: cdk.Lazy.string({
+            produce: () => JSON.stringify(
+              new iam.PolicyDocument({
+                statements: this.accessPolicyStatements,
+              }).toJSON(),
+            ),
+          }),
         },
         // this is needed to limit the response body, otherwise it exceeds the CFN 4k limit
         outputPaths: ['DomainConfig.ElasticsearchClusterConfig.AccessPolicies'],
@@ -46,5 +52,14 @@ export class ElasticsearchAccessPolicy extends cr.AwsCustomResource {
       },
       policy: cr.AwsCustomResourcePolicy.fromSdkCalls({ resources: [props.domainArn] }),
     });
+
+    this.addAccessPolicies(...props.accessPolicies);
+  }
+
+  /**
+   * Add policy statements to the domain access policy
+   */
+  public addAccessPolicies(...accessPolicyStatements: iam.PolicyStatement[]) {
+    this.accessPolicyStatements.push(...accessPolicyStatements);
   }
 }

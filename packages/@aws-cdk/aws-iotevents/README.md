@@ -46,8 +46,15 @@ The following example creates an AWS IoT Events detector model to your stack.
 The detector model need a reference to at least one AWS IoT Events input.
 AWS IoT Events inputs enable the detector to get MQTT payload values from IoT Core rules.
 
+You can define built-in actions to use a timer or set a variable, or send data to other AWS resources.
+See also [@aws-cdk/aws-iotevents-actions](https://docs.aws.amazon.com/cdk/api/v1/docs/aws-iotevents-actions-readme.html) for other actions.
+
 ```ts
 import * as iotevents from '@aws-cdk/aws-iotevents';
+import * as actions from '@aws-cdk/aws-iotevents-actions';
+import * as lambda from '@aws-cdk/aws-lambda';
+
+declare const func: lambda.IFunction;
 
 const input = new iotevents.Input(this, 'MyInput', {
   inputName: 'my_input', // optional
@@ -57,8 +64,17 @@ const input = new iotevents.Input(this, 'MyInput', {
 const warmState = new iotevents.State({
   stateName: 'warm',
   onEnter: [{
-    eventName: 'test-event',
+    eventName: 'test-enter-event',
     condition: iotevents.Expression.currentInput(input),
+    actions: [new actions.LambdaInvokeAction(func)], // optional
+  }],
+  onInput: [{ // optional
+    eventName: 'test-input-event',
+    actions: [new actions.LambdaInvokeAction(func)],
+  }],
+  onExit: [{ // optional
+    eventName: 'test-exit-event',
+    actions: [new actions.LambdaInvokeAction(func)],
   }],
 });
 const coldState = new iotevents.State({
@@ -72,6 +88,7 @@ warmState.transitionTo(coldState, {
     iotevents.Expression.inputAttribute(input, 'payload.temperature'),
     iotevents.Expression.fromString('10'),
   ),
+  executing: [new actions.LambdaInvokeAction(func)], // optional
 });
 // transit to warmState when temperature is 20
 coldState.transitionTo(warmState, {

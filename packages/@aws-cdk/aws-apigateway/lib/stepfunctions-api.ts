@@ -11,12 +11,12 @@ import { Model } from './model';
  *
  */
 export interface StepFunctionsRestApiProps extends RestApiProps {
-/**
- * The default State Machine that handles all requests from this API.
- *
- * This stateMachine will be used as a the default integration for all methods in
- * this API, unless specified otherwise in `addMethod`.
- */
+  /**
+   * The default State Machine that handles all requests from this API.
+   *
+   * This stateMachine will be used as a the default integration for all methods in
+   * this API, unless specified otherwise in `addMethod`.
+   */
   readonly stateMachine: sfn.IStateMachine;
 
   /**
@@ -75,6 +75,20 @@ export interface StepFunctionsRestApiProps extends RestApiProps {
    * @default false
    */
   readonly headers?: boolean;
+
+  /**
+   * If the whole authorizer object, including custom context values should be in the execution input. The execution input will include a new key `authorizer`:
+   *
+   * {
+   *   "body": {},
+   *   "authorizer": {
+   *     "key": "value"
+   *   }
+   * }
+   *
+   * @default false
+   */
+  readonly authorizer?: boolean;
 }
 
 /**
@@ -96,6 +110,7 @@ export class StepFunctionsRestApi extends RestApi {
       path: props.path?? true,
       querystring: props.querystring?? true,
       headers: props.headers,
+      authorizer: props.authorizer,
     });
 
     super(scope, id, props);

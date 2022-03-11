@@ -165,7 +165,7 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete"
     },
-    "Domain1AccessPolicyCustomResourcePolicy3BDE9B82": {
+    "Domain1AccessPolicyCustomResourcePolicy3BA04487": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -183,18 +183,15 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "Domain1AccessPolicyCustomResourcePolicy3BDE9B82",
+        "PolicyName": "Domain1AccessPolicyCustomResourcePolicy3BA04487",
         "Roles": [
           {
             "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
           }
         ]
-      },
-      "DependsOn": [
-        "Domain19FCBCB91"
-      ]
+      }
     },
-    "Domain1AccessPolicy4A36C656": {
+    "Domain1AccessPolicy1FDDB3CF": {
       "Type": "Custom::OpenSearchAccessPolicy",
       "Properties": {
         "ServiceToken": {
@@ -254,8 +251,7 @@
         "InstallLatestAwsSdk": true
       },
       "DependsOn": [
-        "Domain1AccessPolicyCustomResourcePolicy3BDE9B82",
-        "Domain19FCBCB91"
+        "Domain1AccessPolicyCustomResourcePolicy3BA04487"
       ],
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete"
@@ -511,7 +507,7 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete"
     },
-    "Domain2AccessPolicyCustomResourcePolicy1FB37294": {
+    "Domain2AccessPolicyCustomResourcePolicy7C8260FD": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -529,18 +525,15 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "Domain2AccessPolicyCustomResourcePolicy1FB37294",
+        "PolicyName": "Domain2AccessPolicyCustomResourcePolicy7C8260FD",
         "Roles": [
           {
             "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
           }
         ]
-      },
-      "DependsOn": [
-        "Domain2644FE48C"
-      ]
+      }
     },
-    "Domain2AccessPolicy8AB4B908": {
+    "Domain2AccessPolicyB81CB6CE": {
       "Type": "Custom::OpenSearchAccessPolicy",
       "Properties": {
         "ServiceToken": {
@@ -600,8 +593,7 @@
         "InstallLatestAwsSdk": true
       },
       "DependsOn": [
-        "Domain2AccessPolicyCustomResourcePolicy1FB37294",
-        "Domain2644FE48C"
+        "Domain2AccessPolicyCustomResourcePolicy7C8260FD"
       ],
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete"
