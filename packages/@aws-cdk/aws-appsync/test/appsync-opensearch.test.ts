@@ -14,8 +14,8 @@ beforeEach(() => {
     name: 'api',
     schema: appsync.Schema.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
   });
-  domain = new opensearch.Domain(stack, 'EsDomain', {
-    version: opensearch.EngineVersion.ELASTICSEARCH_7_10,
+  domain = new opensearch.Domain(stack, 'OsDomain', {
+    version: opensearch.EngineVersion.OPENSEARCH_1_1,
   });
 });
 
@@ -39,11 +39,11 @@ describe('OpenSearch Data Source Configuration', () => {
           ],
           Effect: 'Allow',
           Resource: [{
-            'Fn::GetAtt': ['EsDomain1213C634', 'Arn'],
+            'Fn::GetAtt': ['OsDomain5D09FC6A', 'Arn'],
           },
           {
             'Fn::Join': ['', [{
-              'Fn::GetAtt': ['EsDomain1213C634', 'Arn'],
+              'Fn::GetAtt': ['OsDomain5D09FC6A', 'Arn'],
             }, '/*']],
           }],
         }],
@@ -60,7 +60,7 @@ describe('OpenSearch Data Source Configuration', () => {
       OpenSearchServiceConfig: {
         Endpoint: {
           'Fn::Join': ['', ['https://', {
-            'Fn::GetAtt': ['EsDomain1213C634', 'DomainEndpoint'],
+            'Fn::GetAtt': ['OsDomain5D09FC6A', 'DomainEndpoint'],
           }]],
         },
       },

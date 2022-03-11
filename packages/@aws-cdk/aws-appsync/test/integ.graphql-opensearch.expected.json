@@ -39,7 +39,7 @@
         "EncryptionAtRestOptions": {
           "Enabled": true
         },
-        "EngineVersion": "Elasticsearch_7.1",
+        "EngineVersion": "OpenSearch_1.1",
         "LogPublishingOptions": {},
         "NodeToNodeEncryptionOptions": {
           "Enabled": true
