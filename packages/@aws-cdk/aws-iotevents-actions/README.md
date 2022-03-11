@@ -45,7 +45,7 @@ const state = new iotevents.State({
     condition: iotevents.Expression.currentInput(input),
     actions: [
       actions: [
-        new actions.IoteventsSetVariableAction(
+        new actions.SetVariableAction(
           'MyVariable',
           iotevents.Expression.inputAttribute(input, 'payload.temperature'),
         ),
