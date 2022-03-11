@@ -191,7 +191,7 @@ export interface CanaryProps {
   readonly vpc?: ec2.IVpc;
 
   /**
-   * Where to place the network interfaces within the VPC.
+   * Where to place the network interfaces within the VPC. You must provide `vpc` when using this prop.
    *
    * @default - the Vpc default strategy if not specified
    */
@@ -203,12 +203,14 @@ export interface CanaryProps {
    *
    * You can bypass this check if you've enabled VPC Endpoints for these two APIs in your VPC or have an Internet Gateway setup.
    *
-   * @default false Don't allow subnets without internet access.
+   *  You must provide `vpc` when using this prop.
+   *
+   * @default false
    */
   readonly allowPrivateSubnet?: boolean;
 
   /**
-   * The list of security groups to associate with the canary's network interfaces.
+   * The list of security groups to associate with the canary's network interfaces. You must provide `vpc` when using this prop.
    *
    * @default - If the canary is placed within a VPC and a security group is
    * not specified a dedicated security group will be created for this canary.
@@ -419,6 +421,10 @@ export class Canary extends cdk.Resource {
 
   private createVpcConfig(props: CanaryProps): CfnCanary.VPCConfigProperty | undefined {
     if (!props.vpc) {
+      if (props.vpcSubnets != null || props.allowPrivateSubnet != null || props.securityGroups != null) {
+        throw new Error("You must provide the 'vpc' prop when using VPC-related properties.");
+      }
+
       return undefined;
     }
 
@@ -427,8 +433,8 @@ export class Canary extends cdk.Resource {
       throw new Error('No matching subnets found in the VPC.');
     }
 
-    if (subnetIds.every(id => props.vpc!.isolatedSubnets.some(subnet => subnet.subnetId === id))) {
-      throw new Error("When specifying 'vpc', your VPC subnet selection must include subnets with internet access or 'allowPrivateSubnet' must be true and VPC endpoints for S3 and CloudWatch must be enabled.");
+    if (subnetIds.every(id => props.vpc!.isolatedSubnets.some(subnet => subnet.subnetId === id)) && !props.allowPrivateSubnet) {
+      throw new Error("A canary in a vpc must have access to CloudWatch and S3. Your vpc must either have internet access or private vpc endpoints with 'allowPrivateSubnet=true'.\nSee https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_VPC.html");
     }
 
     let securityGroups: ec2.ISecurityGroup[];
