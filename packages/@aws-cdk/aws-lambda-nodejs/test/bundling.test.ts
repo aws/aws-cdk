@@ -213,7 +213,8 @@ test('esbuild bundling with esbuild options', () => {
     esbuildArgs: {
       '--log-limit': '0',
       '--resolve-extensions': '.ts,.js',
-      '--splitting': 'true',
+      '--splitting': true,
+      '--keep-names': '',
     },
   });
 
@@ -233,7 +234,7 @@ test('esbuild bundling with esbuild options', () => {
           '--log-level=silent --keep-names --tsconfig=/asset-input/lib/custom-tsconfig.ts',
           '--metafile=/asset-output/index.meta.json --banner:js="/* comments */" --footer:js="/* comments */"',
           '--charset=utf8 --main-fields=module,main --inject:./my-shim.js',
-          '--log-limit="0" --resolve-extensions=".ts,.js" --splitting="true"',
+          '--log-limit="0" --resolve-extensions=".ts,.js" --splitting --keep-names',
         ].join(' '),
       ],
     }),
