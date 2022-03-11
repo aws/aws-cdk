@@ -1,5 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
+import * as cdk from '@aws-cdk/core';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as s3_assets from '@aws-cdk/aws-s3-assets';
 import { Construct } from 'constructs';
@@ -97,8 +98,6 @@ export class AssetCode extends Code {
   }
 
   public bind(scope: Construct, handler: string, family: RuntimeFamily): CodeConfig {
-    this.validateCanaryAsset(handler, family);
-
     // If the same AssetCode is used multiple times, retain only the first instantiation.
     if (!this.asset) {
       this.asset = new s3_assets.Asset(scope, 'Code', {
@@ -106,6 +105,8 @@ export class AssetCode extends Code {
         ...this.options,
       });
     }
+
+    this.validateCanaryAsset(scope, handler, family);
 
     return {
       s3Location: {
@@ -127,18 +128,21 @@ export class AssetCode extends Code {
    *
    * @param handler the canary handler
    */
-  private validateCanaryAsset(handler: string, family: RuntimeFamily) {
-    if (path.extname(this.assetPath) !== '.zip') {
-      if (!fs.lstatSync(this.assetPath).isDirectory()) {
-        throw new Error(`Asset must be a .zip file or a directory (${this.assetPath})`);
+  private validateCanaryAsset(scope: Construct, handler: string, family: RuntimeFamily) {
+    // Get the staged (or copied) asset path.
+    const assetOutdir = Stage.of(scope).assetOutdir;
+    const assetPath = path.join(assetOutdir, this.asset.assetPath);
+    if (path.extname(assetPath) !== '.zip') {
+      if (!fs.lstatSync(assetPath).isDirectory()) {
+        throw new Error(`Asset must be a .zip file or a directory (${assetPath})`);
       }
       const filename = handler.split('.')[0];
       const nodeFilename = `${filename}.js`;
       const pythonFilename = `${filename}.py`;
-      if (family === RuntimeFamily.NODEJS && !fs.existsSync(path.join(this.assetPath, 'nodejs', 'node_modules', nodeFilename))) {
+      if (family === RuntimeFamily.NODEJS && !fs.existsSync(path.join(assetPath, 'nodejs', 'node_modules', nodeFilename))) {
         throw new Error(`The canary resource requires that the handler is present at "nodejs/node_modules/${nodeFilename}" but not found at ${this.assetPath} (https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_WritingCanary_Nodejs.html)`);
       }
-      if (family === RuntimeFamily.PYTHON && !fs.existsSync(path.join(this.assetPath, 'python', pythonFilename))) {
+      if (family === RuntimeFamily.PYTHON && !fs.existsSync(path.join(assetPath, 'python', pythonFilename))) {
         throw new Error(`The canary resource requires that the handler is present at "python/${pythonFilename}" but not found at ${this.assetPath} (https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_WritingCanary_Python.html)`);
       }
     }
