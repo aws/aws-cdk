@@ -450,7 +450,7 @@ export class CdkToolkit {
 
     // not outputting template to stdout, let's explain things to the user a little bit...
     success(`Successfully synthesized to ${chalk.blue(path.resolve(stacks.assembly.directory))}`);
-    print(`Supply a stack id (${stacks.stackArtifacts.map(s => chalk.green(s.id)).join(', ')}) to display its template.`);
+    print(`Supply a stack id (${stacks.stackArtifacts.map(s => chalk.green(s.hierarchicalId)).join(', ')}) to display its template.`);
 
     return undefined;
   }

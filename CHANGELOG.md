@@ -2,6 +2,96 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.148.0](https://github.com/aws/aws-cdk/compare/v1.147.0...v1.148.0) (2022-03-09)
+
+
+### Features
+
+* **aws-apigateway:** add ability to include authorizer context in apigw sfn integration ([#18892](https://github.com/aws/aws-cdk/issues/18892)) ([e7c0c75](https://github.com/aws/aws-cdk/commit/e7c0c75dbc7cf71164673626dc0ab63fb3706223)), closes [#18891](https://github.com/aws/aws-cdk/issues/18891)
+* **aws-s3objectlambda:** add L2 construct for S3 Object Lambda ([#15833](https://github.com/aws/aws-cdk/issues/15833)) ([fe9f750](https://github.com/aws/aws-cdk/commit/fe9f750bd9dd9974b9ae6f73c78fcd12ab2edd91)), closes [#13675](https://github.com/aws/aws-cdk/issues/13675)
+* **cfnspec:** cloudformation spec v59.0.0 ([#19236](https://github.com/aws/aws-cdk/issues/19236)) ([f46a14d](https://github.com/aws/aws-cdk/commit/f46a14da9bec1aad7096b62666cb80ce42f04b53))
+* **codebuild:** improved support for ARM build images ([#19052](https://github.com/aws/aws-cdk/issues/19052)) ([4eac4de](https://github.com/aws/aws-cdk/commit/4eac4deb98411e921e5a2e6477185207b8588f75)), closes [#18916](https://github.com/aws/aws-cdk/issues/18916) [#9817](https://github.com/aws/aws-cdk/issues/9817)
+* **eks:** Service Account names validation ([#19251](https://github.com/aws/aws-cdk/issues/19251)) ([7c3099e](https://github.com/aws/aws-cdk/commit/7c3099e958d7bf0ddb5a7b08afb672a0c652b27d)), closes [#18189](https://github.com/aws/aws-cdk/issues/18189)
+* **elasticsearch:** Decouple setting access policies from domain constructor ([#15876](https://github.com/aws/aws-cdk/issues/15876)) ([cefdfd3](https://github.com/aws/aws-cdk/commit/cefdfd384eeac1752567f672452296def68b1206))
+* **iotevents:** support actions ([#18869](https://github.com/aws/aws-cdk/issues/18869)) ([e01654e](https://github.com/aws/aws-cdk/commit/e01654e792708ee283d7a31e1370d0d1ae383171))
+* **iotevents:** support setting Events on input and exit for State ([#19249](https://github.com/aws/aws-cdk/issues/19249)) ([ffa9e0d](https://github.com/aws/aws-cdk/commit/ffa9e0d287d0a86e1e0eb7dc2dec16d9f3e84450))
+* **lambda-nodejs:** support esbuild inject ([#19221](https://github.com/aws/aws-cdk/issues/19221)) ([3432c45](https://github.com/aws/aws-cdk/commit/3432c457fe38a83743d7ce2a5cb6c36a6ec01b8f)), closes [#19133](https://github.com/aws/aws-cdk/issues/19133)
+* **s3:** add `s3:ObjectRestore:Delete` to `EventType` for notification ([#19250](https://github.com/aws/aws-cdk/issues/19250)) ([e0f863a](https://github.com/aws/aws-cdk/commit/e0f863a4c56041860e14c75b9aa5a6d35860fae6)), closes [#19223](https://github.com/aws/aws-cdk/issues/19223)
+* **servicecatalog:** Service Catalog is now in Developer Preview ([#19204](https://github.com/aws/aws-cdk/issues/19204)) ([6dfc254](https://github.com/aws/aws-cdk/commit/6dfc254e1925597b4ef2ece9c132b1a0e580dd6d))
+
+
+### Bug Fixes
+
+* **apigatewayv2-integrations:** in case of multiple routes, only one execute permission is created ([#18716](https://github.com/aws/aws-cdk/issues/18716)) ([1e352ca](https://github.com/aws/aws-cdk/commit/1e352ca2ab458bfe4e1de6cf431166654ce9aa58))
+* **aws-apigateway:** missing comma to make failure response payload valid json ([#19253](https://github.com/aws/aws-cdk/issues/19253)) ([b1fce4f](https://github.com/aws/aws-cdk/commit/b1fce4f1641c90a4b7d1d33139453260b452d5cd)), closes [#19252](https://github.com/aws/aws-cdk/issues/19252)
+* **aws-route53-targets:** add support for custom cname_prefix urls in elastic beanstalk environment endpoint target ([#18804](https://github.com/aws/aws-cdk/issues/18804)) ([289a794](https://github.com/aws/aws-cdk/commit/289a79467d9974ee3582c9e30843b0eb9e90b467))
+* **cli:** `watch` logs always end with the 'truncated' message ([#19241](https://github.com/aws/aws-cdk/issues/19241)) ([d3fdfe5](https://github.com/aws/aws-cdk/commit/d3fdfe5264e64cb333795b32edbad36cfaab3dc7)), closes [#18805](https://github.com/aws/aws-cdk/issues/18805)
+* **cli:** deprecated stack ids printed at the end of synth ([#19216](https://github.com/aws/aws-cdk/issues/19216)) ([7d8a479](https://github.com/aws/aws-cdk/commit/7d8a4792a142f45109f35a51c6e1b3888d4111d3)), closes [#18599](https://github.com/aws/aws-cdk/issues/18599)
+* **cli:** notices refresh doesn't respect the --no-notices flag ([#19226](https://github.com/aws/aws-cdk/issues/19226)) ([b3c5fe8](https://github.com/aws/aws-cdk/commit/b3c5fe8d0b695e06558bce23a6dd39b20265594f))
+* **efs:** fix bug when setting both lifecyclePolicy and outOfInfrequentAccessPolicy ([#19082](https://github.com/aws/aws-cdk/issues/19082)) ([d435ab6](https://github.com/aws/aws-cdk/commit/d435ab6120c47464427489d98bea9347983a2123)), closes [#19058](https://github.com/aws/aws-cdk/issues/19058)
+* **lambda-nodejs:** local tsc detection with pre compilation ([#19266](https://github.com/aws/aws-cdk/issues/19266)) ([5de7b86](https://github.com/aws/aws-cdk/commit/5de7b86d916be6ab892e75e18c54a327fe1f65ff)), closes [#19242](https://github.com/aws/aws-cdk/issues/19242)
+* **lambda-python:** asset bundling fails on windows ([#19270](https://github.com/aws/aws-cdk/issues/19270)) ([0da57da](https://github.com/aws/aws-cdk/commit/0da57da9606d982788350a6257f0f0ed6e9fd92a)), closes [#18861](https://github.com/aws/aws-cdk/issues/18861)
+* **lambda-python:** docker image gets built even when we don't need to bundle assets  ([#16192](https://github.com/aws/aws-cdk/issues/16192)) ([5dc61ea](https://github.com/aws/aws-cdk/commit/5dc61eabc0ea3e6294f83db5deb8528461a1d5bc)), closes [#14747](https://github.com/aws/aws-cdk/issues/14747)
+* **rds:** allow cluster from snapshot to enable encrypted storage ([#19175](https://github.com/aws/aws-cdk/issues/19175)) ([bd4141d](https://github.com/aws/aws-cdk/commit/bd4141d864612974829c95d530085d4f18bdfeb8)), closes [#17241](https://github.com/aws/aws-cdk/issues/17241)
+* **rds:** read replica instance cannot join domain ([#19202](https://github.com/aws/aws-cdk/issues/19202)) ([cef8fec](https://github.com/aws/aws-cdk/commit/cef8fec1b0410daa6b57c152e9bad73dcc034397)), closes [#18786](https://github.com/aws/aws-cdk/issues/18786)
+* **rds:** subnet selection not respected for multi user secret rotation ([#19237](https://github.com/aws/aws-cdk/issues/19237)) ([dc7a17c](https://github.com/aws/aws-cdk/commit/dc7a17cd20198a6eb52c2ab25857e73bd7048d26)), closes [#19233](https://github.com/aws/aws-cdk/issues/19233)
+
+## [1.147.0](https://github.com/aws/aws-cdk/compare/v1.146.0...v1.147.0) (2022-03-01)
+
+
+### Features
+
+* **cfnspec:** cloudformation spec v58.0.0 ([#19153](https://github.com/aws/aws-cdk/issues/19153)) ([a6b0a10](https://github.com/aws/aws-cdk/commit/a6b0a1018694a0696ed27635d4def5d1630b8f9a))
+* **cli:** hotswap support for resources in nested stacks ([#18950](https://github.com/aws/aws-cdk/issues/18950)) ([2ea9da1](https://github.com/aws/aws-cdk/commit/2ea9da118794809265d215e3d2f554bbcb91b271))
+* **ec2:** add c6a instances ([#19113](https://github.com/aws/aws-cdk/issues/19113)) ([427cdfd](https://github.com/aws/aws-cdk/commit/427cdfde5e8c48ed7c1f86b275ccb2516a901239))
+
+
+### Bug Fixes
+
+* **apigateway:** fix strange vtl template for cors preflight request ([#19104](https://github.com/aws/aws-cdk/issues/19104)) ([59ef06a](https://github.com/aws/aws-cdk/commit/59ef06ae2a70fcb1800fcc1f40eec671c77440f0)), closes [/datatracker.ietf.org/doc/html/rfc6454#section-7](https://github.com/aws//datatracker.ietf.org/doc/html/rfc6454/issues/section-7)
+* **aws-apigateway:** api gateway usage plan ([#19023](https://github.com/aws/aws-cdk/issues/19023)) ([5b764cc](https://github.com/aws/aws-cdk/commit/5b764cc397de4f4b203f5c69fa0128c6dced49f9)), closes [#18994](https://github.com/aws/aws-cdk/issues/18994)
+* **aws-lambda-python:** skip default docker build when image passed ([#19143](https://github.com/aws/aws-cdk/issues/19143)) ([7300f2e](https://github.com/aws/aws-cdk/commit/7300f2eee9e1593eef271d7a953edf80a8962e08)), closes [#18082](https://github.com/aws/aws-cdk/issues/18082)
+* **cli:** cdk version displays notices ([#19181](https://github.com/aws/aws-cdk/issues/19181)) ([fa16f7a](https://github.com/aws/aws-cdk/commit/fa16f7a9c11981da75e44ffc83adcdc6edad94fc))
+* **cli:** long connection timeout slows the CLI down ([#19187](https://github.com/aws/aws-cdk/issues/19187)) ([6595d04](https://github.com/aws/aws-cdk/commit/6595d044e29fb262fb62430783ad08359e16bc30))
+* **custom-resources:** physical resource id must be determined before isComplete ([#18630](https://github.com/aws/aws-cdk/issues/18630)) ([c190367](https://github.com/aws/aws-cdk/commit/c1903678aba31ca5b23a3bebb84249921e15dd5c))
+* **dynamodb:** `grant*Data()` methods are missing the `dynamodb:DescribeTable` permission ([#19129](https://github.com/aws/aws-cdk/issues/19129)) ([4a44a65](https://github.com/aws/aws-cdk/commit/4a44a65bb4634081e04811966d5f4e2fd49bc7c6)), closes [#18773](https://github.com/aws/aws-cdk/issues/18773)
+* **dynamodb:** `Table.grantWriteData()` doesn't include enough KMS permissions ([#19102](https://github.com/aws/aws-cdk/issues/19102)) ([77f1e0b](https://github.com/aws/aws-cdk/commit/77f1e0b57bd4508ade86be7733e71e94a47d7f4c)), closes [#10010](https://github.com/aws/aws-cdk/issues/10010)
+* **ec2:** invalid volume type check for iops ([#19073](https://github.com/aws/aws-cdk/issues/19073)) ([3f49f02](https://github.com/aws/aws-cdk/commit/3f49f020090142c77feb892894c54e62dc4de7ae))
+* **eks:** Helm charts fail to install when provided as an asset ([#19180](https://github.com/aws/aws-cdk/issues/19180)) ([9961257](https://github.com/aws/aws-cdk/commit/99612574bbaf97379482e9e424e1d1115809d74b))
+* **lambda-nodejs:** `logLevel` property of `BundlingOptions` is ignored when `nodeModules` are defined ([#18456](https://github.com/aws/aws-cdk/issues/18456)) ([5c40b90](https://github.com/aws/aws-cdk/commit/5c40b90707b869f62e59613d50d5deaafbaa52f1)), closes [#18383](https://github.com/aws/aws-cdk/issues/18383)
+* **stepfunctions-tasks:** RUN_JOB integration pattern not supported for CallAwsService ([#19186](https://github.com/aws/aws-cdk/issues/19186)) ([4b134b7](https://github.com/aws/aws-cdk/commit/4b134b785115f026a0eaa37b699cd32c85ff8e73)), closes [#19174](https://github.com/aws/aws-cdk/issues/19174)
+* apply tags to nested stack ([#19128](https://github.com/aws/aws-cdk/issues/19128)) ([3af329b](https://github.com/aws/aws-cdk/commit/3af329bcb66b9dffce0c03f0816b33e91e901808)), closes [#17463](https://github.com/aws/aws-cdk/issues/17463)
+* **triggers:** not published as part of v2 ([#19168](https://github.com/aws/aws-cdk/issues/19168)) ([8f727d1](https://github.com/aws/aws-cdk/commit/8f727d15f8f87d4ca323fee449826908db7971a4)), closes [#19164](https://github.com/aws/aws-cdk/issues/19164)
+* construct paths are not printed for nested stacks in CLI output ([#18725](https://github.com/aws/aws-cdk/issues/18725)) ([b0e0155](https://github.com/aws/aws-cdk/commit/b0e0155f87a65c34a75e11776f98d55b83d2b220))
+* **rds:** MySQL Cluster version 8.0 uses wrong Parameter for S3 import ([#19145](https://github.com/aws/aws-cdk/issues/19145)) ([96b2034](https://github.com/aws/aws-cdk/commit/96b2034c44b441a96cfe19855d343b0f983c8772)), closes [#19126](https://github.com/aws/aws-cdk/issues/19126)
+
+## [1.146.0](https://github.com/aws/aws-cdk/compare/v1.145.0...v1.146.0) (2022-02-24)
+
+
+### Features
+
+* **apigatewayv2:** Import existing WebSocketApi from attributes ([#18958](https://github.com/aws/aws-cdk/issues/18958)) ([f203845](https://github.com/aws/aws-cdk/commit/f203845d26ae8333f467f1cb91ad965697087d85))
+* **cli:** bundle dependencies ([#18667](https://github.com/aws/aws-cdk/issues/18667)) ([31d135f](https://github.com/aws/aws-cdk/commit/31d135fb51d3cd4e26fbdc132e03815a1416da75))
+* **cli:** support for matching notices with arbitrary module names ([#19088](https://github.com/aws/aws-cdk/issues/19088)) ([a87dee7](https://github.com/aws/aws-cdk/commit/a87dee756057e554909207237b70f80af185b110))
+* **cli:** support for notices ([#18936](https://github.com/aws/aws-cdk/issues/18936)) ([d37fbbb](https://github.com/aws/aws-cdk/commit/d37fbbbb31003d69da88b9340a6a9c9e1e927ac5))
+* **cloudfront-origins:** extend max keepaliveTimeout of HttpOrigin to 180 ([#18837](https://github.com/aws/aws-cdk/issues/18837)) ([171fdcd](https://github.com/aws/aws-cdk/commit/171fdcdf595fcff5b2567b17e6fa73bf0d42e1bc)), closes [#18697](https://github.com/aws/aws-cdk/issues/18697)
+* **eks:** Allow helm pull from OCI repositories ([#18547](https://github.com/aws/aws-cdk/issues/18547)) ([7e624d9](https://github.com/aws/aws-cdk/commit/7e624d994c94dbd584643c4cb6e9f8df53dabc18))
+* **lambda:** add a fromFunctionName() method ([#19076](https://github.com/aws/aws-cdk/issues/19076)) ([5b92cc3](https://github.com/aws/aws-cdk/commit/5b92cc3a31eea29b40814498fca614eb1c7c8724)), closes [#18255](https://github.com/aws/aws-cdk/issues/18255) [#19031](https://github.com/aws/aws-cdk/issues/19031)
+* **pipelines:** ECR source action  ([#16385](https://github.com/aws/aws-cdk/issues/16385)) ([fc11ae2](https://github.com/aws/aws-cdk/commit/fc11ae2c4ec3bd9dfe3ff813aa831c744d8ac444)), closes [#16378](https://github.com/aws/aws-cdk/issues/16378)
+* **pipelines:** step outputs ([#19024](https://github.com/aws/aws-cdk/issues/19024)) ([0dec2ee](https://github.com/aws/aws-cdk/commit/0dec2ee78a70832c3a697be26c67498460a587dd)), closes [#17189](https://github.com/aws/aws-cdk/issues/17189) [#18893](https://github.com/aws/aws-cdk/issues/18893) [#15943](https://github.com/aws/aws-cdk/issues/15943) [#16407](https://github.com/aws/aws-cdk/issues/16407)
+* **rds:** make VPC optional for serverless Clusters ([#17413](https://github.com/aws/aws-cdk/issues/17413)) ([4f7818d](https://github.com/aws/aws-cdk/commit/4f7818dd76bd48ed652407f4852cc97ba57d7395)), closes [#17401](https://github.com/aws/aws-cdk/issues/17401)
+* triggers ([#19011](https://github.com/aws/aws-cdk/issues/19011)) ([11d6c69](https://github.com/aws/aws-cdk/commit/11d6c69a8b1ee70cbea025d134be7702dd804444))
+
+
+### Bug Fixes
+
+* **cli:** hotswapping is slow for many resources deployed at once ([#19081](https://github.com/aws/aws-cdk/issues/19081)) ([040238e](https://github.com/aws/aws-cdk/commit/040238e9285945d1c48ef79474e527b871e7824c)), closes [#19021](https://github.com/aws/aws-cdk/issues/19021)
+* **s3-notifications:** notifications allowed with imported kms keys ([#18989](https://github.com/aws/aws-cdk/issues/18989)) ([7441418](https://github.com/aws/aws-cdk/commit/7441418fbf9ffdf8d85a573e3c81c45c5648fe8a))
+* API compatibility check fails in CI pipeline ([#19069](https://github.com/aws/aws-cdk/issues/19069)) ([6ec1005](https://github.com/aws/aws-cdk/commit/6ec1005c9cfa9723520885748d759b00be5cd2fa)), closes [#19070](https://github.com/aws/aws-cdk/issues/19070)
+* **cloudfront:** trim autogenerated cache policy name ([#18953](https://github.com/aws/aws-cdk/issues/18953)) ([c7394c9](https://github.com/aws/aws-cdk/commit/c7394c96c42cb6a5af1e309bee2a5f11eb3ad35c)), closes [#18918](https://github.com/aws/aws-cdk/issues/18918)
+* **elasticloadbalancingv2:** validate port/protocol are not provided for lambda targets ([#19043](https://github.com/aws/aws-cdk/issues/19043)) ([64d26cc](https://github.com/aws/aws-cdk/commit/64d26cc22b1fe456777c3367769ddbe860f26cf3)), closes [#12514](https://github.com/aws/aws-cdk/issues/12514)
+* **route53:** fix cross account delegation deployment dependency ([#19047](https://github.com/aws/aws-cdk/issues/19047)) ([692a0d0](https://github.com/aws/aws-cdk/commit/692a0d06f2865503d1d88b0ba8af38ecceaec871)), closes [#19041](https://github.com/aws/aws-cdk/issues/19041)
+
 ## [1.145.0](https://github.com/aws/aws-cdk/compare/v1.144.0...v1.145.0) (2022-02-18)
 
 

@@ -86,10 +86,10 @@ export class Bundling implements cdk.BundlingOptions {
   private readonly packageManager: PackageManager;
 
   constructor(private readonly props: BundlingProps) {
-    this.packageManager = PackageManager.fromLockFile(props.depsLockFilePath);
+    this.packageManager = PackageManager.fromLockFile(props.depsLockFilePath, props.logLevel);
 
     Bundling.esbuildInstallation = Bundling.esbuildInstallation ?? PackageInstallation.detect('esbuild');
-    Bundling.tscInstallation = Bundling.tscInstallation ?? PackageInstallation.detect('tsc');
+    Bundling.tscInstallation = Bundling.tscInstallation ?? PackageInstallation.detect('typescript');
 
     this.projectRoot = props.projectRoot;
     this.relativeEntryPath = path.relative(this.projectRoot, path.resolve(props.entry));
@@ -198,6 +198,8 @@ export class Bundling implements cdk.BundlingOptions {
       ...this.props.footer ? [`--footer:js=${JSON.stringify(this.props.footer)}`] : [],
       ...this.props.charset ? [`--charset=${this.props.charset}`] : [],
       ...this.props.mainFields ? [`--main-fields=${this.props.mainFields.join(',')}`] : [],
+      ...this.props.inject ? this.props.inject.map(i => `--inject:${i}`) : [],
+      ...this.props.esbuildArgs ? [toCliArgs(this.props.esbuildArgs)] : [],
     ];
 
     let depsCommand = '';
@@ -350,4 +352,18 @@ function toTarget(runtime: Runtime): string {
   }
 
   return `node${match[1]}`;
+}
+
+function toCliArgs(esbuildArgs: { [key: string]: string | boolean }): string {
+  const args = [];
+
+  for (const [key, value] of Object.entries(esbuildArgs)) {
+    if (value === true || value === '') {
+      args.push(key);
+    } else if (value) {
+      args.push(`${key}="${value}"`);
+    }
+  }
+
+  return args.join(' ');
 }
