@@ -199,7 +199,7 @@ export class Bundling implements cdk.BundlingOptions {
       ...this.props.charset ? [`--charset=${this.props.charset}`] : [],
       ...this.props.mainFields ? [`--main-fields=${this.props.mainFields.join(',')}`] : [],
       ...this.props.inject ? this.props.inject.map(i => `--inject:${i}`) : [],
-      ...this.props.esbuildArgs ? [Object.entries(this.props.esbuildArgs).map(([key, value]) => `${key}="${value}"`).join(' ')] : [],
+      ...this.props.esbuildArgs ? [toCliArgs(this.props.esbuildArgs)] : [],
     ];
 
     let depsCommand = '';
@@ -352,4 +352,18 @@ function toTarget(runtime: Runtime): string {
   }
 
   return `node${match[1]}`;
+}
+
+function toCliArgs(esbuildArgs: { [key: string]: string | boolean }): string {
+  const args = [];
+
+  for (const [key, value] of Object.entries(esbuildArgs)) {
+    if (value === true || value === '') {
+      args.push(key);
+    } else if (value) {
+      args.push(`${key}="${value}"`);
+    }
+  }
+
+  return args.join(' ');
 }
