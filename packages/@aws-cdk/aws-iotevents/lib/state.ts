@@ -1,3 +1,5 @@
+import { Construct } from 'constructs';
+import { IAction, ActionBindOptions } from './action';
 import { Event } from './event';
 import { Expression } from './expression';
 import { CfnDetectorModel } from './iotevents.generated';
@@ -15,13 +17,20 @@ export interface TransitionOptions {
 
   /**
    * The condition that is used to determine to cause the state transition and the actions.
-   * When this was evaluated to TRUE, the state transition and the actions are triggered.
+   * When this was evaluated to `true`, the state transition and the actions are triggered.
    */
   readonly when: Expression;
+
+  /**
+   * The actions to be performed with the transition.
+   *
+   * @default - no actions will be performed
+   */
+  readonly executing?: IAction[];
 }
 
 /**
- * Specifies the state transition and the actions to be performed when the condition evaluates to TRUE.
+ * Specifies the state transition and the actions to be performed when the condition evaluates to `true`.
  */
 interface TransitionEvent {
   /**
@@ -30,12 +39,19 @@ interface TransitionEvent {
   readonly eventName: string;
 
   /**
-   * The Boolean expression that, when TRUE, causes the state transition and the actions to be performed.
+   * The Boolean expression that, when `true`, causes the state transition and the actions to be performed.
    */
   readonly condition: Expression;
 
   /**
-   * The next state to transit to. When the resuld of condition expression is TRUE, the state is transited.
+   * The actions to be performed.
+   *
+   * @default - no actions will be performed
+   */
+  readonly actions?: IAction[];
+
+  /**
+   * The next state to transit to. When the resuld of condition expression is `true`, the state is transited.
    */
   readonly nextState: State;
 }
@@ -50,12 +66,28 @@ export interface StateProps {
   readonly stateName: string;
 
   /**
-   * Specifies the events on enter. the conditions of the events are evaluated when the state is entered.
-   * If the condition is `TRUE`, the actions of the event are performed.
+   * Specifies the events on enter. The conditions of the events will be evaluated when entering this state.
+   * If the condition of the event evaluates to `true`, the actions of the event will be executed.
    *
-   * @default - events on enter will not be set
+   * @default - no events will trigger on entering this state
    */
   readonly onEnter?: Event[];
+
+  /**
+   * Specifies the events on input. The conditions of the events will be evaluated when any input is received.
+   * If the condition of the event evaluates to `true`, the actions of the event will be executed.
+   *
+   * @default - no events will trigger on input in this state
+   */
+  readonly onInput?: Event[];
+
+  /**
+   * Specifies the events on exit. The conditions of the events are evaluated when an exiting this state.
+   * If the condition evaluates to `true`, the actions of the event will be executed.
+   *
+   * @default - no events will trigger on exiting this state
+   */
+  readonly onExit?: Event[];
 }
 
 /**
@@ -75,7 +107,7 @@ export class State {
 
   /**
    * Add a transition event to the state.
-   * The transition event will be triggered if condition is evaluated to TRUE.
+   * The transition event will be triggered if condition is evaluated to `true`.
    *
    * @param targetState the state that will be transit to when the event triggered
    * @param options transition options including the condition that causes the state transition
@@ -90,6 +122,7 @@ export class State {
       eventName: options.eventName ?? `${this.stateName}_to_${targetState.stateName}`,
       nextState: targetState,
       condition: options.when,
+      actions: options.executing,
     });
   }
 
@@ -100,16 +133,16 @@ export class State {
    *
    * @internal
    */
-  public _collectStateJsons(collectedStates: Set<State>): CfnDetectorModel.StateProperty[] {
+  public _collectStateJsons(scope: Construct, actionBindOptions: ActionBindOptions, collectedStates: Set<State>): CfnDetectorModel.StateProperty[] {
     if (collectedStates.has(this)) {
       return [];
     }
     collectedStates.add(this);
 
     return [
-      this.toStateJson(),
+      this.toStateJson(scope, actionBindOptions),
       ...this.transitionEvents.flatMap(transitionEvent => {
-        return transitionEvent.nextState._collectStateJsons(collectedStates);
+        return transitionEvent.nextState._collectStateJsons(scope, actionBindOptions, collectedStates);
       }),
     ];
   }
@@ -123,26 +156,41 @@ export class State {
     return this.props.onEnter?.some(event => event.condition) ?? false;
   }
 
-  private toStateJson(): CfnDetectorModel.StateProperty {
-    const { onEnter } = this.props;
+  private toStateJson(scope: Construct, actionBindOptions: ActionBindOptions): CfnDetectorModel.StateProperty {
+    const { onEnter, onInput, onExit } = this.props;
     return {
       stateName: this.stateName,
-      onEnter: onEnter && { events: toEventsJson(onEnter) },
-      onInput: {
-        transitionEvents: toTransitionEventsJson(this.transitionEvents),
+      onEnter: onEnter && {
+        events: toEventsJson(scope, actionBindOptions, onEnter),
+      },
+      onInput: (onInput || this.transitionEvents.length !== 0) ? {
+        events: toEventsJson(scope, actionBindOptions, onInput),
+        transitionEvents: toTransitionEventsJson(scope, actionBindOptions, this.transitionEvents),
+      } : undefined,
+      onExit: onExit && {
+        events: toEventsJson(scope, actionBindOptions, onExit),
       },
     };
   }
 }
 
-function toEventsJson(events: Event[]): CfnDetectorModel.EventProperty[] {
-  return events.map(event => ({
+function toEventsJson(
+  scope: Construct,
+  actionBindOptions: ActionBindOptions,
+  events?: Event[],
+): CfnDetectorModel.EventProperty[] | undefined {
+  return events?.map(event => ({
     eventName: event.eventName,
     condition: event.condition?.evaluate(),
+    actions: event.actions?.map(action => action.bind(scope, actionBindOptions).configuration),
   }));
 }
 
-function toTransitionEventsJson(transitionEvents: TransitionEvent[]): CfnDetectorModel.TransitionEventProperty[] | undefined {
+function toTransitionEventsJson(
+  scope: Construct,
+  actionBindOptions: ActionBindOptions,
+  transitionEvents: TransitionEvent[],
+): CfnDetectorModel.TransitionEventProperty[] | undefined {
   if (transitionEvents.length === 0) {
     return undefined;
   }
@@ -150,6 +198,7 @@ function toTransitionEventsJson(transitionEvents: TransitionEvent[]): CfnDetecto
   return transitionEvents.map(transitionEvent => ({
     eventName: transitionEvent.eventName,
     condition: transitionEvent.condition.evaluate(),
+    actions: transitionEvent.actions?.map(action => action.bind(scope, actionBindOptions).configuration),
     nextState: transitionEvent.nextState.stateName,
   }));
 }
