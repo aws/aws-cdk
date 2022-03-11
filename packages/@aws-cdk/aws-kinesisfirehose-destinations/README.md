@@ -20,3 +20,7 @@ delivery stream. Destinations can be added by specifying the `destinations` prop
 defining a delivery stream.
 
 See [Amazon Kinesis Data Firehose module README](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-kinesisfirehose-readme.html) for usage examples.
+
+```ts nofixture
+import * as destinations from '@aws-cdk/aws-kinesisfirehose-destinations';
+```

@@ -280,7 +280,7 @@ abstract class JobBase extends cdk.Resource implements IJob {
     return new cloudwatch.Metric({
       metricName,
       namespace: 'Glue',
-      dimensions: {
+      dimensionsMap: {
         JobName: this.jobName,
         JobRunId: 'ALL',
         Type: type,
@@ -782,7 +782,7 @@ function metricRule(rule: events.IRule, props?: cloudwatch.MetricOptions): cloud
   return new cloudwatch.Metric({
     namespace: 'AWS/Events',
     metricName: 'TriggeredRules',
-    dimensions: { RuleName: rule.ruleName },
+    dimensionsMap: { RuleName: rule.ruleName },
     statistic: cloudwatch.Statistic.SUM,
     ...props,
   }).attachTo(rule);

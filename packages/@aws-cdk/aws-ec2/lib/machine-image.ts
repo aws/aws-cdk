@@ -149,10 +149,12 @@ export interface MachineImageConfig {
  * on the instance if you are using this image.
  *
  * The AMI ID is selected using the values published to the SSM parameter store.
- *
- * @deprecated Use `MachineImage.fromSsmParameter()` instead
  */
 export class GenericSSMParameterImage implements IMachineImage {
+  // FIXME: this class ought to be `@deprecated` and removed from v2, but that
+  // is causing build failure right now. Ref: https://github.com/aws/jsii/issues/3025
+  // @-deprecated Use `MachineImage.fromSsmParameter()` instead
+
   /**
    * Name of the SSM parameter we're looking up
    */
@@ -308,6 +310,13 @@ export interface AmazonLinuxImageProps {
   readonly edition?: AmazonLinuxEdition;
 
   /**
+   * What kernel version of Amazon Linux to use
+   *
+   * @default -
+   */
+  readonly kernel?: AmazonLinuxKernel;
+
+  /**
    * Virtualization type
    *
    * @default HVM
@@ -374,13 +383,29 @@ export class AmazonLinuxImage extends GenericSSMParameterImage {
   public static ssmParameterName(props: AmazonLinuxImageProps = {}) {
     const generation = (props && props.generation) || AmazonLinuxGeneration.AMAZON_LINUX;
     const edition = (props && props.edition) || AmazonLinuxEdition.STANDARD;
-    const virtualization = (props && props.virtualization) || AmazonLinuxVirt.HVM;
-    const storage = (props && props.storage) || AmazonLinuxStorage.GENERAL_PURPOSE;
     const cpu = (props && props.cpuType) || AmazonLinuxCpuType.X86_64;
+    let kernel = (props && props.kernel) || undefined;
+    let virtualization: AmazonLinuxVirt | undefined;
+    let storage: AmazonLinuxStorage | undefined;
+
+    if (generation === AmazonLinuxGeneration.AMAZON_LINUX_2022) {
+      kernel = AmazonLinuxKernel.KERNEL5_X;
+      if (props && props.storage) {
+        throw new Error('Storage parameter does not exist in smm parameter name for Amazon Linux 2022.');
+      }
+      if (props && props.virtualization) {
+        throw new Error('Virtualization parameter does not exist in smm parameter name for Amazon Linux 2022.');
+      }
+    } else {
+      virtualization = (props && props.virtualization) || AmazonLinuxVirt.HVM;
+      storage = (props && props.storage) || AmazonLinuxStorage.GENERAL_PURPOSE;
+    }
+
     const parts: Array<string|undefined> = [
       generation,
       'ami',
       edition !== AmazonLinuxEdition.STANDARD ? edition : undefined,
+      kernel,
       virtualization,
       cpu,
       storage,
@@ -425,6 +450,21 @@ export enum AmazonLinuxGeneration {
    * Amazon Linux 2
    */
   AMAZON_LINUX_2 = 'amzn2',
+
+  /**
+   * Amazon Linux 2022
+   */
+  AMAZON_LINUX_2022 = 'al2022',
+}
+
+/**
+ * Amazon Linux Kernel
+ */
+export enum AmazonLinuxKernel {
+  /**
+   * Standard edition
+   */
+  KERNEL5_X = 'kernel-5.10',
 }
 
 /**
@@ -439,7 +479,7 @@ export enum AmazonLinuxEdition {
   /**
    * Minimal edition
    */
-  MINIMAL = 'minimal'
+  MINIMAL = 'minimal',
 }
 
 /**
@@ -454,7 +494,7 @@ export enum AmazonLinuxVirt {
   /**
    * PV virtualization
    */
-  PV = 'pv'
+  PV = 'pv',
 }
 
 export enum AmazonLinuxStorage {
@@ -466,7 +506,7 @@ export enum AmazonLinuxStorage {
   /**
    * S3-backed storage
    */
-  S3 = 'ebs',
+  S3 = 's3',
 
   /**
    * General Purpose-based storage (recommended)

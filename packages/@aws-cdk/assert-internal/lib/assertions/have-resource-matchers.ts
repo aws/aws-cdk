@@ -239,11 +239,11 @@ function isCallable(x: any): x is ((...args: any[]) => any) {
 }
 
 /**
- * Do a glob-like pattern match (which only supports *s)
+ * Do a glob-like pattern match (which only supports *s). Supports multiline strings.
  */
 export function stringLike(pattern: string): PropertyMatcher {
   // Replace * with .* in the string, escape the rest and brace with ^...$
-  const regex = new RegExp(`^${pattern.split('*').map(escapeRegex).join('.*')}$`);
+  const regex = new RegExp(`^${pattern.split('*').map(escapeRegex).join('.*')}$`, 'm');
 
   return annotateMatcher({ $stringContaining: pattern }, (value: any, failure: InspectionFailure) => {
     if (typeof value !== 'string') {

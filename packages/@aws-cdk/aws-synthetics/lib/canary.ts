@@ -226,6 +226,7 @@ export class Canary extends cdk.Resource {
 
     this.artifactsBucket = props.artifactsBucketLocation?.bucket ?? new s3.Bucket(this, 'ArtifactsBucket', {
       encryption: s3.BucketEncryption.KMS_MANAGED,
+      enforceSSL: true,
     });
 
     this.role = props.role ?? this.createDefaultRole(props.artifactsBucketLocation?.prefix);
@@ -256,7 +257,11 @@ export class Canary extends cdk.Resource {
    * @default avg over 5 minutes
    */
   public metricDuration(options?: MetricOptions): Metric {
-    return this.cannedMetric(CloudWatchSyntheticsMetrics.durationAverage, options);
+    return new Metric({
+      ...CloudWatchSyntheticsMetrics.durationMaximum({ CanaryName: this.canaryName }),
+      ...{ statistic: 'Average' },
+      ...options,
+    }).attachTo(this);
   }
 
   /**
@@ -285,7 +290,6 @@ export class Canary extends cdk.Resource {
    * Returns a default role for the canary
    */
   private createDefaultRole(prefix?: string): iam.IRole {
-    const { partition } = cdk.Stack.of(this);
     // Created role will need these policies to run the Canary.
     // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-synthetics-canary.html#cfn-synthetics-canary-executionrolearn
     const policy = new iam.PolicyDocument({
@@ -295,8 +299,12 @@ export class Canary extends cdk.Resource {
           actions: ['s3:ListAllMyBuckets'],
         }),
         new iam.PolicyStatement({
+          resources: [this.artifactsBucket.bucketArn],
+          actions: ['s3:GetBucketLocation'],
+        }),
+        new iam.PolicyStatement({
           resources: [this.artifactsBucket.arnForObjects(`${prefix ? prefix+'/*' : '*'}`)],
-          actions: ['s3:PutObject', 's3:GetBucketLocation'],
+          actions: ['s3:PutObject'],
         }),
         new iam.PolicyStatement({
           resources: ['*'],
@@ -304,7 +312,7 @@ export class Canary extends cdk.Resource {
           conditions: { StringEquals: { 'cloudwatch:namespace': 'CloudWatchSynthetics' } },
         }),
         new iam.PolicyStatement({
-          resources: [`arn:${partition}:logs:::*`],
+          resources: [this.logGroupArn()],
           actions: ['logs:CreateLogStream', 'logs:CreateLogGroup', 'logs:PutLogEvents'],
         }),
       ],
@@ -315,6 +323,15 @@ export class Canary extends cdk.Resource {
       inlinePolicies: {
         canaryPolicy: policy,
       },
+    });
+  }
+
+  private logGroupArn() {
+    return cdk.Stack.of(this).formatArn({
+      service: 'logs',
+      resource: 'log-group',
+      arnFormat: cdk.ArnFormat.COLON_RESOURCE_NAME,
+      resourceName: '/aws/lambda/cwsyn-*',
     });
   }
 

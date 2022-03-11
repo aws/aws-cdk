@@ -77,7 +77,7 @@ describe('Matchers', () => {
     });
 
     test('absent', () => {
-      expect(() => Match.exact(Match.absentProperty()).test('foo')).toThrow(/absentProperty/);
+      expect(() => Match.exact(Match.absent())).toThrow(/cannot directly contain another matcher/);
     });
   });
 
@@ -125,8 +125,9 @@ describe('Matchers', () => {
       expectFailure(matcher, [{ foo: 'baz', fred: 'waldo' }], [/Missing element at pattern index 0/]);
     });
 
-    test('absent', () => {
-      expect(() => Match.arrayWith([Match.absentProperty()]).test(['foo'])).toThrow(/absentProperty/);
+    test('incompatible with absent', () => {
+      matcher = Match.arrayWith(['foo', Match.absent()]);
+      expect(() => matcher.test(['foo', 'bar'])).toThrow(/absent\(\) cannot be nested within arrayWith\(\)/);
     });
 
     test('incompatible with anyValue', () => {
@@ -175,7 +176,7 @@ describe('Matchers', () => {
       expectPass(matcher, { foo: 'bar', baz: { fred: 'waldo', wobble: 'flob' } });
     });
 
-    test('nested with ArrayMatch', () => {
+    test('ArrayMatch nested inside ObjectMatch', () => {
       matcher = Match.objectLike({
         foo: Match.arrayWith(['bar']),
       });
@@ -183,10 +184,27 @@ describe('Matchers', () => {
       expectFailure(matcher, { foo: ['baz'], fred: 'waldo' }, [/Missing element \[bar\] at pattern index 0 at \/foo/]);
     });
 
+    test('Partiality is maintained throughout arrays', () => {
+      // Before this fix:
+      //
+      //   - objectLike({ x: { LITERAL }) ==> LITERAL would be matched partially as well
+      //   - objectLike({ xs: [ { LITERAL } ] }) ==> but here LITERAL would be matched fully
+      //
+      // That passing through an array resets the partial matching to full is a
+      // surprising inconsistency.
+      //
+      matcher = Match.objectLike({
+        foo: [{ bar: 'bar' }],
+      });
+      expectPass(matcher, { foo: [{ bar: 'bar' }] }); // Trivially true
+      expectPass(matcher, { boo: 'boo', foo: [{ bar: 'bar' }] }); // Additional members at top level okay
+      expectPass(matcher, { foo: [{ bar: 'bar', boo: 'boo' }] }); // Additional members at inner level okay
+    });
+
     test('absent', () => {
-      matcher = Match.objectLike({ foo: Match.absentProperty() });
+      matcher = Match.objectLike({ foo: Match.absent() });
       expectPass(matcher, { bar: 'baz' });
-      expectFailure(matcher, { foo: 'baz' }, [/Key should be absent at \/foo/]);
+      expectFailure(matcher, { foo: 'baz' }, [/key should be absent at \/foo/]);
     });
   });
 
@@ -363,12 +381,48 @@ describe('Matchers', () => {
       expectFailure(matcher, '{ "Foo"', [/invalid JSON string/i]);
     });
   });
+
+  describe('absent', () => {
+    let matcher: Matcher;
+
+    test('simple', () => {
+      matcher = Match.absent();
+      expectFailure(matcher, 'foo', ['Received foo, but key should be absent']);
+      expectPass(matcher, undefined);
+    });
+
+    test('nested in object', () => {
+      matcher = Match.objectLike({ foo: Match.absent() });
+      expectFailure(matcher, { foo: 'bar' }, [/key should be absent at \/foo/]);
+      expectFailure(matcher, { foo: [1, 2] }, [/key should be absent at \/foo/]);
+      expectFailure(matcher, { foo: null }, [/key should be absent at \/foo/]);
+
+      expectPass(matcher, { foo: undefined });
+      expectPass(matcher, {});
+    });
+  });
+
+  describe('stringLikeRegexp', () => {
+    let matcher: Matcher;
+
+    test('simple', () => {
+      matcher = Match.stringLikeRegexp('.*includeHeaders = true.*');
+      expectFailure(matcher, 'const includeHeaders = false;', [/did not match pattern/]);
+      expectPass(matcher, 'const includeHeaders = true;');
+    });
+
+    test('nested in object', () => {
+      matcher = Match.objectLike({ foo: Match.stringLikeRegexp('.*includeHeaders = true.*') });
+      expectFailure(matcher, { foo: 'const includeHeaders = false;' }, [/did not match pattern/]);
+      expectPass(matcher, { foo: 'const includeHeaders = true;' });
+    });
+  });
 });
 
 function expectPass(matcher: Matcher, target: any): void {
   const result = matcher.test(target);
   if (result.hasFailed()) {
-    fail(result.toHumanStrings()); // eslint-disable-line jest/no-jasmine-globals
+    throw new Error(result.toHumanStrings().join('\n')); // eslint-disable-line jest/no-jasmine-globals
   }
 }
 

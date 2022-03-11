@@ -95,18 +95,21 @@ method `tryBundle()` which should return `true` if local bundling was performed.
 If `false` is returned, docker bundling will be done:
 
 ```ts
+class MyBundle implements ILocalBundling {
+  public tryBundle(outputDir: string, options: BundlingOptions) {
+    const canRunLocally = true // replace with actual logic
+    if (canRunLocally) {
+      // perform local bundling here
+      return true;
+    }
+    return false; 
+  }
+}
+
 new assets.Asset(this, 'BundledAsset', {
   path: '/path/to/asset',
   bundling: {
-    local: {
-      tryBundle(outputDir: string, options: BundlingOptions) {
-        if (canRunLocally) {
-          // perform local bundling here
-          return true;
-        }
-        return false;
-      },
-    },
+    local: new MyBundle(),
     // Docker bundling fallback
     image: DockerImage.fromRegistry('alpine'),
     entrypoint: ['/bin/sh', '-c'],

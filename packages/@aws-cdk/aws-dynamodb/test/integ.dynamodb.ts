@@ -1,6 +1,6 @@
 import * as iam from '@aws-cdk/aws-iam';
 import { App, RemovalPolicy, Stack, Tags } from '@aws-cdk/core';
-import { Attribute, AttributeType, ProjectionType, StreamViewType, Table } from '../lib';
+import { Attribute, AttributeType, ProjectionType, StreamViewType, Table, TableEncryption } from '../lib';
 
 // CDK parameters
 const STACK_NAME = 'aws-cdk-dynamodb';
@@ -48,7 +48,7 @@ const table = new Table(stack, TABLE, {
 
 const tableWithGlobalAndLocalSecondaryIndex = new Table(stack, TABLE_WITH_GLOBAL_AND_LOCAL_SECONDARY_INDEX, {
   pointInTimeRecovery: true,
-  serverSideEncryption: true,
+  encryption: TableEncryption.AWS_MANAGED,
   stream: StreamViewType.KEYS_ONLY,
   timeToLiveAttribute: 'timeToLive',
   partitionKey: TABLE_PARTITION_KEY,

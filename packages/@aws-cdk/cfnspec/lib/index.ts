@@ -13,6 +13,15 @@ export function specification(): schema.Specification {
 }
 
 /**
+ * The complete AWS CloudFormation Resource specification, having any CDK patches and enhancements included in it.
+ */
+export function docs(): schema.CloudFormationDocsFile {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  return require('../spec/cfn-docs.json');
+}
+
+
+/**
  * Return the resource specification for the given typename
  *
  * Validates that the resource exists. If you don't want this validating behavior, read from
@@ -22,6 +31,21 @@ export function resourceSpecification(typeName: string): schema.ResourceType {
   const ret = specification().ResourceTypes[typeName];
   if (!ret) {
     throw new Error(`No such resource type: ${typeName}`);
+  }
+  return ret;
+}
+
+/**
+ * Return documentation for the given type
+ */
+export function typeDocs(resourceName: string, propertyTypeName?: string): schema.CloudFormationTypeDocs {
+  const key = propertyTypeName ? `${resourceName}.${propertyTypeName}` : resourceName;
+  const ret = docs().Types[key];
+  if (!ret) {
+    return {
+      description: '',
+      properties: {},
+    };
   }
   return ret;
 }

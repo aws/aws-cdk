@@ -17,6 +17,8 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
 
 ```ts
 import * as chatbot from '@aws-cdk/aws-chatbot';
+import * as sns from '@aws-cdk/aws-sns';
+import * as iam from '@aws-cdk/aws-iam';
 
 const slackChannel = new chatbot.SlackChannelConfiguration(this, 'MySlackChannel', {
   slackChannelConfigurationName: 'YOUR_CHANNEL_NAME',
@@ -31,6 +33,8 @@ slackChannel.addToRolePolicy(new iam.PolicyStatement({
   ],
   resources: ['arn:aws:s3:::abc/xyz/123.txt'],
 }));
+
+slackChannel.addNotificationTopic(new sns.Topic(this, 'MyTopic'));
 ```
 
 ## Log Group

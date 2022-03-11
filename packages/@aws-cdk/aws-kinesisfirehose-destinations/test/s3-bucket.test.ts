@@ -169,7 +169,7 @@ describe('S3 destination', () => {
       Template.fromStack(stack).resourceCountIs('AWS::Logs::LogGroup', 0);
       Template.fromStack(stack).hasResourceProperties('AWS::KinesisFirehose::DeliveryStream', {
         ExtendedS3DestinationConfiguration: {
-          CloudWatchLoggingOptions: Match.absentProperty(),
+          CloudWatchLoggingOptions: Match.absent(),
         },
       });
     });
@@ -548,7 +548,7 @@ describe('S3 destination', () => {
       Template.fromStack(stack).resourceCountIs('AWS::S3::Bucket', 1);
       Template.fromStack(stack).hasResourceProperties('AWS::KinesisFirehose::DeliveryStream', {
         ExtendedS3DestinationConfiguration: {
-          S3BackupConfiguration: Match.absentProperty(),
+          S3BackupConfiguration: Match.absent(),
         },
       });
     });

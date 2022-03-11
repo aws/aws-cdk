@@ -124,7 +124,7 @@ abstract class DeliveryStreamBase extends cdk.Resource implements IDeliveryStrea
     return new cloudwatch.Metric({
       namespace: 'AWS/Firehose',
       metricName: metricName,
-      dimensions: {
+      dimensionsMap: {
         DeliveryStreamName: this.deliveryStreamName,
       },
       ...props,
@@ -132,15 +132,15 @@ abstract class DeliveryStreamBase extends cdk.Resource implements IDeliveryStrea
   }
 
   public metricIncomingBytes(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.cannedMetric(FirehoseMetrics.incomingBytesAverage, props);
+    return this.cannedMetric(FirehoseMetrics.incomingBytesSum, props);
   }
 
   public metricIncomingRecords(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.cannedMetric(FirehoseMetrics.incomingRecordsAverage, props);
+    return this.cannedMetric(FirehoseMetrics.incomingRecordsSum, props);
   }
 
   public metricBackupToS3Bytes(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.cannedMetric(FirehoseMetrics.backupToS3BytesAverage, props);
+    return this.cannedMetric(FirehoseMetrics.backupToS3BytesSum, props);
   }
 
   public metricBackupToS3DataFreshness(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
@@ -148,7 +148,7 @@ abstract class DeliveryStreamBase extends cdk.Resource implements IDeliveryStrea
   }
 
   public metricBackupToS3Records(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.cannedMetric(FirehoseMetrics.backupToS3RecordsAverage, props);
+    return this.cannedMetric(FirehoseMetrics.backupToS3RecordsSum, props);
   }
 
   private cannedMetric(fn: (dims: { DeliveryStreamName: string }) => cloudwatch.MetricProps, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
@@ -358,13 +358,6 @@ export class DeliveryStream extends DeliveryStreamBase {
       roleArn: role.roleArn,
     } : undefined;
     const readStreamGrant = props.sourceStream?.grantRead(role);
-    /*
-     * Firehose still uses the deprecated DescribeStream API instead of the modern DescribeStreamSummary API.
-     * kinesis.IStream.grantRead does not provide DescribeStream permissions so we add it manually here.
-     */
-    if (readStreamGrant && readStreamGrant.principalStatement) {
-      readStreamGrant.principalStatement.addActions('kinesis:DescribeStream');
-    }
 
     const destinationConfig = props.destinations[0].bind(this, {});
 

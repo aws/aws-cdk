@@ -1,4 +1,4 @@
-import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert-internal';
+import { Template } from '@aws-cdk/assertions';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
@@ -67,7 +67,7 @@ describe('CodePipeline event target', () => {
       });
 
       test("adds the pipeline's ARN and role to the targets of the rule", () => {
-        expect(stack).to(haveResource('AWS::Events::Rule', {
+        Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
           Targets: [
             {
               Arn: pipelineArn,
@@ -75,11 +75,11 @@ describe('CodePipeline event target', () => {
               RoleArn: { 'Fn::GetAtt': ['PipelineEventsRole46BEEA7C', 'Arn'] },
             },
           ],
-        }));
+        });
       });
 
       test("creates a policy that has StartPipeline permissions on the pipeline's ARN", () => {
-        expect(stack).to(haveResource('AWS::IAM::Policy', {
+        Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
           PolicyDocument: {
             Statement: [
               {
@@ -90,7 +90,7 @@ describe('CodePipeline event target', () => {
             ],
             Version: '2012-10-17',
           },
-        }));
+        });
       });
     });
 
@@ -106,7 +106,7 @@ describe('CodePipeline event target', () => {
         }));
 
         // THEN
-        expect(stack).to(haveResource('AWS::Events::Rule', {
+        Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
           ScheduleExpression: 'rate(1 minute)',
           State: 'ENABLED',
           Targets: [
@@ -155,7 +155,7 @@ describe('CodePipeline event target', () => {
               },
             },
           ],
-        }));
+        });
       });
     });
 
@@ -173,14 +173,14 @@ describe('CodePipeline event target', () => {
       });
 
       test("points at the given event role in the rule's targets", () => {
-        expect(stack).to(haveResourceLike('AWS::Events::Rule', {
+        Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
           Targets: [
             {
               Arn: pipelineArn,
               RoleArn: { 'Fn::GetAtt': ['MyRole', 'Arn'] },
             },
           ],
-        }));
+        });
       });
     });
   });

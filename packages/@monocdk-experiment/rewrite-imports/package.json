@@ -19,9 +19,6 @@
     "build+extract": "yarn build",
     "build+test+extract": "yarn build+test"
   },
-  "cdk-build": {
-    "jest": true
-  },
   "keywords": [
     "aws",
     "cdk",
@@ -34,15 +31,15 @@
   },
   "license": "Apache-2.0",
   "dependencies": {
-    "glob": "^7.1.7",
+    "glob": "^7.2.0",
     "typescript": "~3.9.10"
   },
   "devDependencies": {
-    "@types/glob": "^7.1.4",
-    "@types/jest": "^26.0.24",
+    "@types/glob": "^7.2.0",
+    "@types/jest": "^27.4.1",
     "@types/node": "^10.17.60",
-    "cdk-build-tools": "0.0.0",
-    "pkglint": "0.0.0"
+    "@aws-cdk/cdk-build-tools": "0.0.0",
+    "@aws-cdk/pkglint": "0.0.0"
   },
   "repository": {
     "type": "git",

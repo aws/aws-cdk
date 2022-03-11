@@ -36,7 +36,7 @@ To set up a Neptune database, define a `DatabaseCluster`. You must always launch
 ```ts
 const cluster = new neptune.DatabaseCluster(this, 'Database', {
   vpc,
-  instanceType: neptune.InstanceType.R5_LARGE
+  instanceType: neptune.InstanceType.R5_LARGE,
 });
 ```
 
@@ -92,7 +92,7 @@ const clusterParams = new neptune.ClusterParameterGroup(this, 'ClusterParams', {
 const dbParams = new neptune.ParameterGroup(this, 'DbParams', {
   description: 'Db parameter group',
   parameters: {
-    neptune_query_timeout: '120000'
+    neptune_query_timeout: '120000',
   },
 });
 
@@ -113,7 +113,7 @@ attribute.
 const cluster = new neptune.DatabaseCluster(this, 'Database', {
   vpc,
   instanceType: neptune.InstanceType.R5_LARGE,
-  instances: 2
+  instances: 2,
 });
 ```
 
@@ -122,6 +122,20 @@ Additionally it is also possible to add replicas using `DatabaseInstance` for an
 ```ts fixture=with-cluster
 const replica1 = new neptune.DatabaseInstance(this, 'Instance', {
   cluster,
-  instanceType: neptune.InstanceType.R5_LARGE
+  instanceType: neptune.InstanceType.R5_LARGE,
+});
+```
+
+## Automatic minor version upgrades
+
+By setting `autoMinorVersionUpgrade` to true, Neptune will automatically update 
+the engine of the entire cluster to the latest minor version after a stabilization 
+window of 2 to 3 weeks. 
+
+```ts
+new neptune.DatabaseCluster(this, 'Cluster', {
+  vpc,
+  instanceType: neptune.InstanceType.R5_LARGE,
+  autoMinorVersionUpgrade: true,
 });
 ```

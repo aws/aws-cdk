@@ -322,6 +322,20 @@ export interface MetricExpressionConfig {
    * How many seconds to aggregate over
    */
   readonly period: number;
+
+  /**
+   * Account to evaluate search expressions within.
+   *
+   * @default - Deployment account.
+   */
+  readonly searchAccount?: string;
+
+  /**
+   * Region to evaluate search expressions within.
+   *
+   * @default - Deployment region.
+   */
+  readonly searchRegion?: string;
 }
 
 /**

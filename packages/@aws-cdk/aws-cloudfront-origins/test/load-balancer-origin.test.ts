@@ -1,4 +1,3 @@
-import '@aws-cdk/assert-internal/jest';
 import * as cloudfront from '@aws-cdk/aws-cloudfront';
 import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
 import { App, Duration, Stack } from '@aws-cdk/core';

@@ -355,6 +355,7 @@ export class CustomRule extends RuleNew {
 
     props.lambdaFunction.addPermission('Permission', {
       principal: new iam.ServicePrincipal('config.amazonaws.com'),
+      sourceAccount: this.env.account,
     });
 
     if (props.lambdaFunction.role) {
@@ -1135,6 +1136,13 @@ export class ManagedRuleIdentifiers {
    * @see https://docs.aws.amazon.com/config/latest/developerguide/s3-account-level-public-access-blocks.html
    */
   public static readonly S3_ACCOUNT_LEVEL_PUBLIC_ACCESS_BLOCKS = 'S3_ACCOUNT_LEVEL_PUBLIC_ACCESS_BLOCKS';
+  /**
+   * Checks if Amazon Simple Storage Service (Amazon S3) buckets are publicly accessible. This rule is
+   * NON_COMPLIANT if an Amazon S3 bucket is not listed in the excludedPublicBuckets parameter and bucket level
+   * settings are public.
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/s3-bucket-level-public-access-prohibited.html
+   */
+  public static readonly S3_BUCKET_LEVEL_PUBLIC_ACCESS_PROHIBITED = 'S3_BUCKET_LEVEL_PUBLIC_ACCESS_PROHIBITED';
   /**
    * Checks that the Amazon Simple Storage Service bucket policy does not allow
    * blocked bucket-level and object-level actions on resources in the bucket

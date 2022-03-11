@@ -1,6 +1,6 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
-import { CustomResource, ITaggable, Lazy, TagManager, TagType } from '@aws-cdk/core';
+import { Annotations, CustomResource, ITaggable, Lazy, TagManager, TagType } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { Cluster } from './cluster';
 import { FARGATE_PROFILE_RESOURCE_TYPE } from './cluster-resource-handler/consts';
@@ -46,7 +46,7 @@ export interface FargateProfileOptions {
    * By default, all private subnets are selected. You can customize this using
    * `subnetSelection`.
    *
-   * @default - all private subnets used by theEKS cluster
+   * @default - all private subnets used by the EKS cluster
    */
   readonly vpc?: ec2.IVpc;
 
@@ -54,6 +54,8 @@ export interface FargateProfileOptions {
    * Select which subnets to launch your pods into. At this time, pods running
    * on Fargate are not assigned public IP addresses, so only private subnets
    * (with no direct route to an Internet Gateway) are allowed.
+   *
+   * You must specify the VPC to customize the subnet selection
    *
    * @default - all private subnets of the VPC are selected.
    */
@@ -147,6 +149,7 @@ export class FargateProfile extends CoreConstruct implements ITaggable {
 
     const provider = ClusterResourceProvider.getOrCreate(this, {
       adminRole: props.cluster.adminRole,
+      onEventLayer: props.cluster.onEventLayer,
     });
 
     this.podExecutionRole = props.podExecutionRole ?? new iam.Role(this, 'PodExecutionRole', {
@@ -155,6 +158,10 @@ export class FargateProfile extends CoreConstruct implements ITaggable {
     });
 
     this.podExecutionRole.grantPassRole(props.cluster.adminRole);
+
+    if (props.subnetSelection && !props.vpc) {
+      Annotations.of(this).addWarning('Vpc must be defined to use a custom subnet selection. All private subnets belonging to the EKS cluster will be used by default');
+    }
 
     let subnets: string[] | undefined;
     if (props.vpc) {

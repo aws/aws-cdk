@@ -72,7 +72,7 @@
         "MyLambdaServiceRole4539ECB6"
       ]
     },
-    "MyLambdaVersion16CDE3C40": {
+    "MyLambdaCurrentVersionE7A382CC306b64ef431b3e873cc6258340b63a78": {
       "Type": "AWS::Lambda::Version",
       "Properties": {
         "FunctionName": {
@@ -88,7 +88,7 @@
         },
         "FunctionVersion": {
           "Fn::GetAtt": [
-            "MyLambdaVersion16CDE3C40",
+            "MyLambdaCurrentVersionE7A382CC306b64ef431b3e873cc6258340b63a78",
             "Version"
           ]
         },

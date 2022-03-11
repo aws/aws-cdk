@@ -1,10 +1,11 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
+import { describeDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as eks from '../lib';
 import { testFixtureCluster } from './util';
 
 /* eslint-disable max-len */
 
-describe('helm chart', () => {
+describeDeprecated('helm chart', () => {
   describe('add Helm chart', () => {
     test('should have default namespace', () => {
       // GIVEN
@@ -14,7 +15,7 @@ describe('helm chart', () => {
       new eks.HelmChart(stack, 'MyChart', { cluster, chart: 'chart' });
 
       // THEN
-      expect(stack).toHaveResource(eks.HelmChart.RESOURCE_TYPE, { Namespace: 'default' });
+      Template.fromStack(stack).hasResourceProperties(eks.HelmChart.RESOURCE_TYPE, { Namespace: 'default' });
 
     });
     test('should have a lowercase default release name', () => {
@@ -25,7 +26,7 @@ describe('helm chart', () => {
       new eks.HelmChart(stack, 'MyChart', { cluster, chart: 'chart' });
 
       // THEN
-      expect(stack).toHaveResource(eks.HelmChart.RESOURCE_TYPE, { Release: 'stackmychartff398361' });
+      Template.fromStack(stack).hasResourceProperties(eks.HelmChart.RESOURCE_TYPE, { Release: 'stackmychartff398361' });
 
     });
     test('should trim the last 63 of the default release name', () => {
@@ -36,7 +37,7 @@ describe('helm chart', () => {
       new eks.HelmChart(stack, 'MyChartNameWhichISMostProbablyLongerThenSixtyThreeCharacters', { cluster, chart: 'chart' });
 
       // THEN
-      expect(stack).toHaveResource(eks.HelmChart.RESOURCE_TYPE, { Release: 'rtnamewhichismostprobablylongerthensixtythreecharactersb800614d' });
+      Template.fromStack(stack).hasResourceProperties(eks.HelmChart.RESOURCE_TYPE, { Release: 'rtnamewhichismostprobablylongerthensixtythreecharactersb800614d' });
 
     });
     test('with values', () => {
@@ -47,7 +48,7 @@ describe('helm chart', () => {
       new eks.HelmChart(stack, 'MyChart', { cluster, chart: 'chart', values: { foo: 123 } });
 
       // THEN
-      expect(stack).toHaveResource(eks.HelmChart.RESOURCE_TYPE, { Values: '{\"foo\":123}' });
+      Template.fromStack(stack).hasResourceProperties(eks.HelmChart.RESOURCE_TYPE, { Values: '{\"foo\":123}' });
 
     });
   });

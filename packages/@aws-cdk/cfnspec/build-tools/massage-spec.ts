@@ -1,4 +1,3 @@
-import * as fastJsonPatch from 'fast-json-patch';
 import { schema } from '../lib';
 import { detectScrutinyTypes } from './scrutiny';
 
@@ -6,22 +5,6 @@ export function massageSpec(spec: schema.Specification) {
   detectScrutinyTypes(spec);
   replaceIncompleteTypes(spec);
   dropTypelessAttributes(spec);
-}
-
-export function forEachSection(spec: schema.Specification, data: any, cb: (spec: any, fragment: any, path: string[]) => void) {
-  cb(spec.PropertyTypes, data.PropertyTypes, ['PropertyTypes']);
-  cb(spec.ResourceTypes, data.ResourceTypes, ['ResourceTypes']);
-  // Per-resource specs are keyed on ResourceType (singular), but we want it in ResourceTypes (plural)
-  cb(spec.ResourceTypes, data.ResourceType, ['ResourceType']);
-}
-
-export function decorateResourceTypes(data: any) {
-  const requiredTransform = data.ResourceSpecificationTransform as string | undefined;
-  if (!requiredTransform) { return; }
-  const resourceTypes = data.ResourceTypes || data.ResourceType;
-  for (const name of Object.keys(resourceTypes)) {
-    resourceTypes[name].RequiredTransform = requiredTransform;
-  }
 }
 
 /**
@@ -61,40 +44,6 @@ function dropTypelessAttributes(spec: schema.Specification) {
       }
     });
   });
-}
-
-export function merge(spec: any, fragment: any, jsonPath: string[]) {
-  if (!fragment) { return; }
-  for (const key of Object.keys(fragment)) {
-    if (key in spec) {
-      const specVal = spec[key];
-      const fragVal = fragment[key];
-      if (typeof specVal !== typeof fragVal) {
-        // eslint-disable-next-line max-len
-        throw new Error(`Attempted to merge ${JSON.stringify(fragVal)} into incompatible ${JSON.stringify(specVal)} at path ${jsonPath.join('/')}/${key}`);
-      }
-      if (typeof specVal !== 'object') {
-        // eslint-disable-next-line max-len
-        throw new Error(`Conflict when attempting to merge ${JSON.stringify(fragVal)} into ${JSON.stringify(specVal)} at path ${jsonPath.join('/')}/${key}`);
-      }
-      merge(specVal, fragVal, [...jsonPath, key]);
-    } else {
-      spec[key] = fragment[key];
-    }
-  }
-}
-
-export function patch(spec: any, fragment: any) {
-  if (!fragment) { return; }
-  if ('patch' in fragment) {
-    // eslint-disable-next-line no-console
-    console.log(`Applying patch: ${fragment.patch.description}`);
-    fastJsonPatch.applyPatch(spec, fragment.patch.operations);
-  } else {
-    for (const key of Object.keys(fragment)) {
-      patch(spec[key], fragment[key]);
-    }
-  }
 }
 
 /**

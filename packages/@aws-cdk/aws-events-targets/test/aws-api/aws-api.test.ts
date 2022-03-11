@@ -1,7 +1,7 @@
-import { countResources, expect as cdkExpect, haveResource, SynthUtils } from '@aws-cdk/assert-internal';
+import { Template } from '@aws-cdk/assertions';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
-import { Stack } from '@aws-cdk/core';
+import { App, Stack } from '@aws-cdk/core';
 import * as targets from '../../lib';
 
 test('use AwsApi as an event rule target', () => {
@@ -32,7 +32,7 @@ test('use AwsApi as an event rule target', () => {
   }));
 
   // THEN
-  cdkExpect(stack).to(haveResource('AWS::Events::Rule', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
     Targets: [
       {
         Arn: {
@@ -70,12 +70,12 @@ test('use AwsApi as an event rule target', () => {
         }),
       },
     ],
-  }));
+  });
 
   // Uses a singleton function
-  cdkExpect(stack).to(countResources('AWS::Lambda::Function', 1));
+  Template.fromStack(stack).resourceCountIs('AWS::Lambda::Function', 1);
 
-  cdkExpect(stack).to(haveResource('AWS::IAM::Policy', {
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
     PolicyDocument: {
       Statement: [
         {
@@ -91,7 +91,7 @@ test('use AwsApi as an event rule target', () => {
       ],
       Version: '2012-10-17',
     },
-  }));
+  });
 });
 
 test('with policy statement', () => {
@@ -112,7 +112,7 @@ test('with policy statement', () => {
   }));
 
   // THEN
-  cdkExpect(stack).to(haveResource('AWS::Events::Rule', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
     Targets: [
       {
         Arn: {
@@ -128,9 +128,9 @@ test('with policy statement', () => {
         }),
       },
     ],
-  }));
+  });
 
-  cdkExpect(stack).to(haveResource('AWS::IAM::Policy', {
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
     PolicyDocument: {
       Statement: [
         {
@@ -141,7 +141,7 @@ test('with policy statement', () => {
       ],
       Version: '2012-10-17',
     },
-  }));
+  });
 });
 
 test('with service not in AWS SDK', () => {
@@ -163,7 +163,7 @@ test('with service not in AWS SDK', () => {
   rule.addTarget(awsApi);
 
   // THEN
-  const assembly = SynthUtils.synthesize(stack);
+  const assembly = App.of(stack)!.synth().getStackArtifact(stack.stackName);
   expect(assembly.messages.length).toBe(1);
   const message = assembly.messages[0];
   expect(message.entry.type).toBe('aws:cdk:warning');

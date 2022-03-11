@@ -1,4 +1,3 @@
-import '@aws-cdk/assert-internal/jest';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
 import * as tasks from '../../lib';

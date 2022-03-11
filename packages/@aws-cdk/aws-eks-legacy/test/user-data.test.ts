@@ -1,11 +1,12 @@
 import * as autoscaling from '@aws-cdk/aws-autoscaling';
 import * as ec2 from '@aws-cdk/aws-ec2';
+import { describeDeprecated } from '@aws-cdk/cdk-build-tools';
 import { App, Stack } from '@aws-cdk/core';
 import { renderUserData } from '../lib/user-data';
 
 /* eslint-disable max-len */
 
-describe('user data', () => {
+describeDeprecated('user data', () => {
   test('default user data', () => {
     // GIVEN
     const { asg, stack } = newFixtures();

@@ -21,9 +21,7 @@ listener.addTargets('target', { port: 80 });
 listener.addAction('dsf', { action: elbv2.ListenerAction.fixedResponse(200) });
 
 const httpEndpoint = new HttpApi(stack, 'HttpProxyPrivateApi', {
-  defaultIntegration: new HttpAlbIntegration({
-    listener,
-  }),
+  defaultIntegration: new HttpAlbIntegration('DefaultIntegration', listener),
 });
 
 new CfnOutput(stack, 'Endpoint', {

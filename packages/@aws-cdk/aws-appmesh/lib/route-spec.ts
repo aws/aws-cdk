@@ -120,8 +120,8 @@ export interface GrpcRouteMatch {
  */
 export interface RouteSpecOptionsBase {
   /**
-   * The priority for the route. Routes are matched based on the specified
-   * value, where 0 is the highest priority.
+   * The priority for the route. When a Virtual Router has multiple routes, route match is performed in the
+   * order of specified value, where 0 is the highest priority, and first matched route is selected.
    *
    * @default - no particular priority
    */
@@ -357,8 +357,8 @@ export interface RouteSpecConfig {
   readonly tcpRouteSpec?: CfnRoute.TcpRouteProperty;
 
   /**
-   * The priority for the route. Routes are matched based on the specified
-   * value, where 0 is the highest priority.
+   * The priority for the route. When a Virtual Router has multiple routes, route match is performed in the
+   * order of specified value, where 0 is the highest priority, and first matched route is selected.
    *
    * @default - no particular priority
    */

@@ -28,7 +28,14 @@
         ]
       }
     },
-    "projectReferences": true
+    "projectReferences": true,
+    "metadata": {
+      "jsii": {
+        "rosetta": {
+          "strict": true
+        }
+      }
+    }
   },
   "scripts": {
     "build": "cdk-build",
@@ -52,10 +59,10 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@types/jest": "^26.0.24",
-    "cdk-build-tools": "0.0.0",
-    "jest": "^26.6.3",
-    "pkglint": "0.0.0"
+    "@aws-cdk/cdk-build-tools": "0.0.0",
+    "@aws-cdk/pkglint": "0.0.0",
+    "@types/jest": "^27.4.1",
+    "jest": "^27.5.1"
   },
   "repository": {
     "url": "https://github.com/aws/aws-cdk.git",
@@ -76,9 +83,6 @@
   },
   "deprecated": "merged into @aws-cdk/cloud-assembly-schema",
   "maturity": "deprecated",
-  "cdk-build": {
-    "jest": true
-  },
   "publishConfig": {
     "tag": "latest"
   }

@@ -1,3 +1,5 @@
+import { Capture } from './capture';
+
 /**
  * Represents a matcher that can perform special data matching
  * capabilities between a given pattern and a target.
@@ -26,6 +28,43 @@ export abstract class Matcher {
 }
 
 /**
+ * Match failure details
+ */
+export interface MatchFailure {
+  /**
+   * The matcher that had the failure
+   */
+  readonly matcher: Matcher;
+
+  /**
+   * The relative path in the target where the failure occurred.
+   * If the failure occurred at root of the match tree, set the path to an empty list.
+   * If it occurs in the 5th index of an array nested within the 'foo' key of an object,
+   * set the path as `['/foo', '[5]']`.
+   */
+  readonly path: string[];
+
+  /**
+   * Failure message
+   */
+  readonly message: string;
+}
+
+/**
+ * Information about a value captured during match
+ */
+export interface MatchCapture {
+  /**
+   * The instance of Capture class to which this capture is associated with.
+   */
+  readonly capture: Capture;
+  /**
+   * The value that was captured
+   */
+  readonly value: any;
+}
+
+/**
  * The result of `Match.test()`.
  */
 export class MatchResult {
@@ -34,21 +73,26 @@ export class MatchResult {
    */
   public readonly target: any;
   private readonly failures: MatchFailure[] = [];
+  private readonly captures: Map<Capture, any[]> = new Map();
+  private finalized: boolean = false;
 
   constructor(target: any) {
     this.target = target;
   }
 
   /**
-   * Push a new failure into this result at a specific path.
-   * If the failure occurred at root of the match tree, set the path to an empty list.
-   * If it occurs in the 5th index of an array nested within the 'foo' key of an object,
-   * set the path as `['/foo', '[5]']`.
-   * @param path the path at which the failure occurred.
-   * @param message the failure
+   * DEPRECATED
+   * @deprecated use recordFailure()
    */
   public push(matcher: Matcher, path: string[], message: string): this {
-    this.failures.push({ matcher, path, message });
+    return this.recordFailure({ matcher, path, message });
+  }
+
+  /**
+   * Record a new failure into this result at a specific path.
+   */
+  public recordFailure(failure: MatchFailure): this {
+    this.failures.push(failure);
     return this;
   }
 
@@ -67,10 +111,29 @@ export class MatchResult {
    * @param id the id of the parent tree.
    */
   public compose(id: string, inner: MatchResult): this {
-    const innerF = (inner as any).failures as MatchFailure[];
+    const innerF = inner.failures;
     this.failures.push(...innerF.map(f => {
       return { path: [id, ...f.path], message: f.message, matcher: f.matcher };
     }));
+    inner.captures.forEach((vals, capture) => {
+      vals.forEach(value => this.recordCapture({ capture, value }));
+    });
+    return this;
+  }
+
+  /**
+   * Prepare the result to be analyzed.
+   * This API *must* be called prior to analyzing these results.
+   */
+  public finished(): this {
+    if (this.finalized) {
+      return this;
+    }
+
+    if (this.failCount === 0) {
+      this.captures.forEach((vals, cap) => cap._captured.push(...vals));
+    }
+    this.finalized = true;
     return this;
   }
 
@@ -83,10 +146,16 @@ export class MatchResult {
       return '' + r.message + loc + ` (using ${r.matcher.name} matcher)`;
     });
   }
-}
 
-type MatchFailure = {
-  matcher: Matcher;
-  path: string[];
-  message: string;
+  /**
+   * Record a capture against in this match result.
+   */
+  public recordCapture(options: MatchCapture): void {
+    let values = this.captures.get(options.capture);
+    if (values === undefined) {
+      values = [];
+    }
+    values.push(options.value);
+    this.captures.set(options.capture, values);
+  }
 }

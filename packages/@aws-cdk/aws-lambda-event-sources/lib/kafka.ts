@@ -3,8 +3,8 @@ import { ISecurityGroup, IVpc, SubnetSelection } from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
-import { Stack } from '@aws-cdk/core';
-import { StreamEventSource, StreamEventSourceProps } from './stream';
+import { Stack, Names } from '@aws-cdk/core';
+import { StreamEventSource, BaseStreamEventSourceProps } from './stream';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
@@ -13,7 +13,7 @@ import { Construct } from '@aws-cdk/core';
 /**
  * Properties for a Kafka event source
  */
-export interface KafkaEventSourceProps extends StreamEventSourceProps {
+export interface KafkaEventSourceProps extends BaseStreamEventSourceProps{
   /**
    * The Kafka topic to subscribe to
    */
@@ -49,6 +49,14 @@ export enum AuthenticationMethod {
    * SASL_SCRAM_256_AUTH authentication method for your Kafka cluster
    */
   SASL_SCRAM_256_AUTH = 'SASL_SCRAM_256_AUTH',
+  /**
+   * BASIC_AUTH (SASL/PLAIN) authentication method for your Kafka cluster
+   */
+  BASIC_AUTH = 'BASIC_AUTH',
+  /**
+   * CLIENT_CERTIFICATE_TLS_AUTH (mTLS) authentication method for your Kafka cluster
+   */
+  CLIENT_CERTIFICATE_TLS_AUTH = 'CLIENT_CERTIFICATE_TLS_AUTH',
 }
 
 /**
@@ -97,6 +105,7 @@ export interface SelfManagedKafkaEventSourceProps extends KafkaEventSourceProps 
 export class ManagedKafkaEventSource extends StreamEventSource {
   // This is to work around JSII inheritance problems
   private innerProps: ManagedKafkaEventSourceProps;
+  private _eventSourceMappingId?: string = undefined;
 
   constructor(props: ManagedKafkaEventSourceProps) {
     super(props);
@@ -104,8 +113,8 @@ export class ManagedKafkaEventSource extends StreamEventSource {
   }
 
   public bind(target: lambda.IFunction) {
-    target.addEventSourceMapping(
-      `KafkaEventSource:${this.innerProps.clusterArn}${this.innerProps.topic}`,
+    const eventSourceMapping = target.addEventSourceMapping(
+      `KafkaEventSource:${Names.nodeUniqueId(target.node)}${this.innerProps.topic}`,
       this.enrichMappingOptions({
         eventSourceArn: this.innerProps.clusterArn,
         startingPosition: this.innerProps.startingPosition,
@@ -113,6 +122,8 @@ export class ManagedKafkaEventSource extends StreamEventSource {
         kafkaTopic: this.innerProps.topic,
       }),
     );
+
+    this._eventSourceMappingId = eventSourceMapping.eventSourceMappingId;
 
     if (this.innerProps.secret !== undefined) {
       this.innerProps.secret.grantRead(target);
@@ -141,6 +152,16 @@ export class ManagedKafkaEventSource extends StreamEventSource {
     return sourceAccessConfigurations.length === 0
       ? undefined
       : sourceAccessConfigurations;
+  }
+
+  /**
+  * The identifier for this EventSourceMapping
+  */
+  public get eventSourceMappingId(): string {
+    if (!this._eventSourceMappingId) {
+      throw new Error('KafkaEventSource is not yet bound to an event source mapping');
+    }
+    return this._eventSourceMappingId;
   }
 }
 
@@ -193,6 +214,12 @@ export class SelfManagedKafkaEventSource extends StreamEventSource {
   private sourceAccessConfigurations() {
     let authType;
     switch (this.innerProps.authenticationMethod) {
+      case AuthenticationMethod.BASIC_AUTH:
+        authType = lambda.SourceAccessConfigurationType.BASIC_AUTH;
+        break;
+      case AuthenticationMethod.CLIENT_CERTIFICATE_TLS_AUTH:
+        authType = lambda.SourceAccessConfigurationType.CLIENT_CERTIFICATE_TLS_AUTH;
+        break;
       case AuthenticationMethod.SASL_SCRAM_256_AUTH:
         authType = lambda.SourceAccessConfigurationType.SASL_SCRAM_256_AUTH;
         break;

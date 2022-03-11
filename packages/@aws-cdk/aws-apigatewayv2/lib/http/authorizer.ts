@@ -10,6 +10,9 @@ import { IHttpRoute } from './route';
  * Supported Authorizer types
  */
 export enum HttpAuthorizerType {
+  /** IAM Authorizer */
+  IAM = 'AWS_IAM',
+
   /** JSON Web Tokens */
   JWT = 'JWT',
 
@@ -166,7 +169,7 @@ export class HttpAuthorizer extends Resource implements IHttpAuthorizer {
     }
 
     /**
-     * This check is required because Cloudformation will fail stack creation is this property
+     * This check is required because Cloudformation will fail stack creation if this property
      * is set for the JWT authorizer. AuthorizerPayloadFormatVersion can only be set for REQUEST authorizer
      */
     if (props.type === HttpAuthorizerType.LAMBDA && typeof authorizerPayloadFormatVersion === 'undefined') {
@@ -221,6 +224,7 @@ export interface HttpRouteAuthorizerConfig {
    * The type of authorization
    *
    * Possible values are:
+   * - AWS_IAM - IAM Authorizer
    * - JWT - JSON Web Token Authorizer
    * - CUSTOM - Lambda Authorizer
    * - NONE - No Authorization

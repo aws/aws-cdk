@@ -102,7 +102,7 @@ export class VirtualRouter extends VirtualRouterBase {
   public static fromVirtualRouterArn(scope: Construct, id: string, virtualRouterArn: string): IVirtualRouter {
     return new class extends VirtualRouterBase {
       readonly virtualRouterArn = virtualRouterArn;
-      private readonly parsedArn = cdk.Fn.split('/', cdk.Stack.of(scope).parseArn(virtualRouterArn).resourceName!);
+      private readonly parsedArn = cdk.Fn.split('/', cdk.Stack.of(scope).splitArn(virtualRouterArn, cdk.ArnFormat.SLASH_RESOURCE_NAME).resourceName!);
       readonly virtualRouterName = cdk.Fn.select(2, this.parsedArn);
       readonly mesh = Mesh.fromMeshName(this, 'Mesh', cdk.Fn.select(0, this.parsedArn));
     }(scope, id);

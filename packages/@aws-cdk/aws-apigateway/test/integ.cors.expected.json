@@ -51,7 +51,7 @@
         "corsapitest8682546E"
       ]
     },
-    "corsapitestDeployment2BF1633A228079ea05e5799220dd4ca13512b92d": {
+    "corsapitestDeployment2BF1633A51392cbce1ac2785bd0e53063423e203": {
       "Type": "AWS::ApiGateway::Deployment",
       "Properties": {
         "RestApiId": {
@@ -74,10 +74,13 @@
           "Ref": "corsapitest8682546E"
         },
         "DeploymentId": {
-          "Ref": "corsapitestDeployment2BF1633A228079ea05e5799220dd4ca13512b92d"
+          "Ref": "corsapitestDeployment2BF1633A51392cbce1ac2785bd0e53063423e203"
         },
         "StageName": "prod"
-      }
+      },
+      "DependsOn": [
+        "corsapitestAccount7D1D6854"
+      ]
     },
     "corsapitesttwitch0E3D1559": {
       "Type": "AWS::ApiGateway::Resource",
@@ -469,7 +472,7 @@
                 "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'"
               },
               "ResponseTemplates": {
-                "application/json": "#set($origin = $input.params(\"Origin\"))\n#if($origin == \"\") #set($origin = $input.params(\"origin\")) #end\n#if($origin.matches(\"https://www.test-cors.org\"))\n  #set($context.responseOverride.header.Access-Control-Allow-Origin = $origin)\n#end"
+                "application/json": "#set($origin = $input.params().header.get(\"Origin\"))\n#if($origin == \"\") #set($origin = $input.params().header.get(\"origin\")) #end\n#if($origin.matches(\"https://www.test-cors.org\"))\n  #set($context.responseOverride.header.Access-Control-Allow-Origin = $origin)\n#end"
               },
               "StatusCode": "204"
             }
@@ -564,14 +567,14 @@
             ]
           }
         },
-        "Handler": "index.handler",
         "Role": {
           "Fn::GetAtt": [
             "handlerServiceRole187D5A5A",
             "Arn"
           ]
         },
-        "Runtime": "nodejs10.x"
+        "Handler": "index.handler",
+        "Runtime": "nodejs14.x"
       },
       "DependsOn": [
         "handlerServiceRole187D5A5A"

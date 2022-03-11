@@ -169,6 +169,9 @@
             ]
           }
         },
+        "Cache": {
+          "Type": "NO_CACHE"
+        },
         "EncryptionKey": "alias/aws/s3",
         "Triggers": {
           "BuildType": "BUILD_BATCH",

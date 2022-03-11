@@ -604,6 +604,15 @@
               }
             ],
             "Essential": true,
+            "HealthCheck": {
+              "Command": [
+                "CMD-SHELL", 
+                "curl -f http://localhost/ || exit 1" 
+              ],
+              "Interval": 720,
+              "Retries": 34,
+              "Timeout": 5
+            },
             "Image": {
               "Fn::Join": [
                 "",
