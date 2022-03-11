@@ -1,8 +1,8 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import * as cdk from '@aws-cdk/core';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as s3_assets from '@aws-cdk/aws-s3-assets';
+import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { RuntimeFamily } from './runtime';
 
@@ -130,11 +130,15 @@ export class AssetCode extends Code {
    */
   private validateCanaryAsset(scope: Construct, handler: string, family: RuntimeFamily) {
     // Get the staged (or copied) asset path.
-    const assetOutdir = Stage.of(scope).assetOutdir;
-    const assetPath = path.join(assetOutdir, this.asset.assetPath);
-    if (path.extname(assetPath) !== '.zip') {
-      if (!fs.lstatSync(assetPath).isDirectory()) {
-        throw new Error(`Asset must be a .zip file or a directory (${assetPath})`);
+    const assetOutdir = cdk.Stage.of(scope)?.assetOutdir;
+    let assetPath = this.assetPath;
+    if (assetOutdir) {
+      assetPath = path.join(assetOutdir, this.asset!.assetPath);
+    }
+
+    if (path.extname(this.assetPath) !== '.zip') {
+      if (this.asset!.isFile) {
+        throw new Error(`Asset must be a .zip file or a directory (${this.assetPath})`);
       }
       const filename = handler.split('.')[0];
       const nodeFilename = `${filename}.js`;

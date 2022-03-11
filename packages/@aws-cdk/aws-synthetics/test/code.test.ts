@@ -1,7 +1,8 @@
+import * as fs from 'fs';
 import * as path from 'path';
 import { Template } from '@aws-cdk/assertions';
 import * as s3 from '@aws-cdk/aws-s3';
-import { App, Stack } from '@aws-cdk/core';
+import { App, Stack, DockerImage } from '@aws-cdk/core';
 import * as synthetics from '../lib';
 import { RuntimeFamily } from '../lib';
 
@@ -161,6 +162,55 @@ describe(synthetics.Code.fromAsset, () => {
     const assetPath = path.join(__dirname, 'canaries', 'nodejs', 'node_modules');
     expect(() => synthetics.Code.fromAsset(assetPath).bind(stack, 'incorrect.handler', synthetics.RuntimeFamily.NODEJS))
       .toThrowError(`The canary resource requires that the handler is present at "nodejs/node_modules/incorrect.js" but not found at ${assetPath} (https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_WritingCanary_Nodejs.html)`);
+  });
+
+  test('passes if bundling is specified', () => {
+    // GIVEN
+    const stack = new Stack(new App(), 'canaries');
+
+    // WHEN
+    const assetPath = path.join(__dirname, 'canaries', 'nodejs', 'node_modules');
+    const code = synthetics.Code.fromAsset(assetPath, {
+      bundling: {
+        image: DockerImage.fromRegistry('dummy'),
+        local: {
+          tryBundle(outputDir) {
+            const stageDir = path.join(outputDir, 'nodejs', 'node_modules');
+            fs.mkdirSync(path.join(outputDir, 'nodejs'));
+            fs.mkdirSync(stageDir);
+            fs.copyFileSync(path.join(assetPath, 'canary.js'), path.join(stageDir, 'canary.js'));
+            return true;
+          },
+        },
+      },
+    });
+
+    // THEN
+    expect(() => code.bind(stack, 'canary.handler', synthetics.RuntimeFamily.NODEJS))
+      .not.toThrow();
+  });
+
+  test('fails if bundling is specified but folder structure is wrong', () => {
+    // GIVEN
+    const stack = new Stack(new App(), 'canaries');
+
+    // WHEN
+    const assetPath = path.join(__dirname, 'canaries', 'nodejs', 'node_modules');
+    const code = synthetics.Code.fromAsset(assetPath, {
+      bundling: {
+        image: DockerImage.fromRegistry('dummy'),
+        local: {
+          tryBundle(outputDir) {
+            fs.copyFileSync(path.join(assetPath, 'canary.js'), path.join(outputDir, 'canary.js'));
+            return true;
+          },
+        },
+      },
+    });
+
+    // THEN
+    expect(() => code.bind(stack, 'canary.handler', synthetics.RuntimeFamily.NODEJS))
+      .toThrowError(`The canary resource requires that the handler is present at "nodejs/node_modules/canary.js" but not found at ${assetPath} (https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_WritingCanary_Nodejs.html)`);
   });
 });
 
