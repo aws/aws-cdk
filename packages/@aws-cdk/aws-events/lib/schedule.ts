@@ -1,4 +1,8 @@
-import { Duration } from '@aws-cdk/core';
+import { Annotations, Duration } from '@aws-cdk/core';
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
 
 /**
  * Schedule for scheduled event rules
@@ -42,8 +46,6 @@ export abstract class Schedule {
       throw new Error('Cannot supply both \'day\' and \'weekDay\', use at most one');
     }
 
-    const minuteUndefinedWarning = options.minute ?? "When 'minute' is undefined in CronOptions, '*' is used as the default value, scheduling the event for every minute within the supplied parameters.";
-
     const minute = fallback(options.minute, '*');
     const hour = fallback(options.hour, '*');
     const month = fallback(options.month, '*');
@@ -53,7 +55,15 @@ export abstract class Schedule {
     const day = fallback(options.day, options.weekDay !== undefined ? '?' : '*');
     const weekDay = fallback(options.weekDay, '?');
 
-    return new LiteralSchedule(`cron(${minute} ${hour} ${day} ${month} ${weekDay} ${year})`, minuteUndefinedWarning);
+    return new class extends Schedule {
+      public readonly expressionString: string = `cron(${minute} ${hour} ${day} ${month} ${weekDay} ${year})`;
+      public _bind(scope: Construct) {
+        if (!options.minute) {
+          Annotations.of(scope).addWarning('cron: If you don\'t pass \'minute\', by default the event runs every minute. Pass \'minute: \'*\'\' if that\'s what you intend, or \'minute: 0\' to run once per hour instead.');
+        }
+        return new LiteralSchedule(this.expressionString);
+      }
+    };
   }
 
   /**
@@ -61,13 +71,13 @@ export abstract class Schedule {
    */
   public abstract readonly expressionString: string;
 
-  /**
-   * The warning displayed when the user has not defined the minute field in CronOptions.
-   */
-  public abstract readonly minuteUndefinedWarning?: string;
+  protected constructor() {}
 
-  protected constructor() {
-  }
+  /**
+   *
+   * @internal
+   */
+  public abstract _bind(scope: Construct): void;
 }
 
 /**
@@ -123,9 +133,11 @@ export interface CronOptions {
 }
 
 class LiteralSchedule extends Schedule {
-  constructor(public readonly expressionString: string, public readonly minuteUndefinedWarning?: string) {
+  constructor(public readonly expressionString: string) {
     super();
   }
+
+  public _bind() {}
 }
 
 function fallback<T>(x: T | undefined, def: T): T {
