@@ -234,6 +234,20 @@ export class CodeBuildStep extends ShellStep {
    * it finishes its `post_build` phase.
    *
    * @param variableName the name of the variable for reference.
+   * @example
+   * // Access the output of one CodeBuildStep in another CodeBuildStep
+   * declare const pipeline: pipelines.CodePipeline;
+   *
+   * const step1 = new pipelines.CodeBuildStep('Step1', {
+   *   commands: ['export MY_VAR=hello'],
+   * });
+   *
+   * const step2 = new pipelines.CodeBuildStep('Step2', {
+   *   env: {
+   *     IMPORTED_VAR: step1.exportedVariable('MY_VAR'),
+   *   },
+   *   commands: ['echo $IMPORTED_VAR'],
+   * });
    */
   public exportedVariable(variableName: string): string {
     if (this.exportedVarsRendered && !this.exportedVariables.has(variableName)) {
