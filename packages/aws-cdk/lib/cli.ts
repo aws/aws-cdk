@@ -235,10 +235,6 @@ if (!process.stdout.isTTY) {
 }
 
 async function initCommandLine() {
-  void refreshNotices()
-    .then(_ => debug('Notices refreshed'))
-    .catch(e => debug(`Notices refresh failed: ${e}`));
-
   const argv = await parseCommandLineArguments();
   if (argv.verbose) {
     setLogLevel(argv.verbose);
@@ -253,6 +249,12 @@ async function initCommandLine() {
     },
   });
   await configuration.load();
+
+  if (shouldDisplayNotices()) {
+    void refreshNotices()
+      .then(_ => debug('Notices refreshed'))
+      .catch(e => debug(`Notices refresh failed: ${e}`));
+  }
 
   const sdkProvider = await SdkProvider.withAwsCliCompatibleDefaults({
     profile: configuration.settings.get(['profile']),
@@ -318,7 +320,7 @@ async function initCommandLine() {
           acknowledgedIssueNumbers: [],
           ignoreCache: true,
         });
-      } else {
+      } else if (cmd !== 'version') {
         await displayNotices({
           outdir: configuration.settings.get(['output']) ?? 'cdk.out',
           acknowledgedIssueNumbers: configuration.context.get('acknowledged-issue-numbers') ?? [],
@@ -326,10 +328,10 @@ async function initCommandLine() {
         });
       }
     }
+  }
 
-    function shouldDisplayNotices(): boolean {
-      return configuration.settings.get(['notices']) ?? true;
-    }
+  function shouldDisplayNotices(): boolean {
+    return configuration.settings.get(['notices']) ?? true;
   }
 
   async function main(command: string, args: any): Promise<number | void> {
