@@ -1,5 +1,4 @@
-import { expect as cdkExpect, haveResource } from '@aws-cdk/assert';
-import '@aws-cdk/assert/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as cdk from '@aws-cdk/core';
 import * as glue from '../lib';
 
@@ -17,8 +16,8 @@ test('minimal config', () => {
     tableName: 'x_table',
     statement: 'SELECT 1 x',
   });
-  cdkExpect(viewStack).to(
-    haveResource('AWS::Glue::Table', {
+  Template.fromStack(viewStack).
+    hasResourceProperties('AWS::Glue::Table', {
       CatalogId: {
         Ref: 'AWS::AccountId',
       },
@@ -65,8 +64,8 @@ test('minimal config', () => {
           ],
         },
       },
-    }),
-  );
+    });
+
 });
 
 test('placeholders', () => {
@@ -87,8 +86,8 @@ test('placeholders', () => {
       table: 'otherTable',
     },
   });
-  cdkExpect(viewStack).to(
-    haveResource('AWS::Glue::Table', {
+  Template.fromStack(viewStack).
+    hasResourceProperties('AWS::Glue::Table', {
       CatalogId: {
         Ref: 'AWS::AccountId',
       },
@@ -137,8 +136,7 @@ test('placeholders', () => {
           ],
         },
       },
-    }),
-  );
+    });
 });
 
 test('presto types', () => {
@@ -167,8 +165,8 @@ test('presto types', () => {
     tableName: 'x_table',
     statement: 'SELECT * FROM table',
   });
-  cdkExpect(viewStack).to(
-    haveResource('AWS::Glue::Table', {
+  Template.fromStack(viewStack).
+    hasResourceProperties('AWS::Glue::Table', {
       CatalogId: {
         Ref: 'AWS::AccountId',
       },
@@ -255,6 +253,5 @@ test('presto types', () => {
           ],
         },
       },
-    }),
-  );
+    });
 });
