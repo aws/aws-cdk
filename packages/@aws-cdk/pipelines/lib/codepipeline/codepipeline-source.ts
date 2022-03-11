@@ -162,6 +162,19 @@ export abstract class CodePipelineSource extends Step implements ICodePipelineAc
    *   - `RegistryId`
    *
    * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/reference-variables.html#reference-variables-list
+   * @example
+   * // Access the CommitId of a GitHub source in the synth
+   * const source = pipelines.CodePipelineSource.gitHub('owner/repo', 'main');
+   *
+   * const pipeline = new pipelines.CodePipeline(scope, 'MyPipeline', {
+   *   synth: new pipelines.ShellStep('Synth', {
+   *     input: source,
+   *     commands: [],
+   *     env: {
+   *       'COMMIT_ID': source.sourceAttribute('CommitId'),
+   *     }
+   *   })
+   * });
    */
   public sourceAttribute(name: string): string {
     return makeCodePipelineOutput(this, name);
