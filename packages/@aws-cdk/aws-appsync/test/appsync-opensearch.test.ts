@@ -57,7 +57,7 @@ describe('OpenSearch Data Source Configuration', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::AppSync::DataSource', {
-      OpenSearchConfig: {
+      OpenSearchServiceConfig: {
         Endpoint: {
           'Fn::Join': ['', ['https://', {
             'Fn::GetAtt': ['EsDomain1213C634', 'DomainEndpoint'],
@@ -73,7 +73,7 @@ describe('OpenSearch Data Source Configuration', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::AppSync::DataSource', {
-      Type: 'AMAZON_OPENSEARCH',
+      Type: 'AMAZON_OPENSEARCH_SERVICE',
       Name: 'ds',
     });
   });
@@ -86,7 +86,7 @@ describe('OpenSearch Data Source Configuration', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::AppSync::DataSource', {
-      Type: 'AMAZON_OPENSEARCH',
+      Type: 'AMAZON_OPENSEARCH_SERVICE',
       Name: 'custom',
     });
   });
@@ -100,7 +100,7 @@ describe('OpenSearch Data Source Configuration', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::AppSync::DataSource', {
-      Type: 'AMAZON_OPENSEARCH',
+      Type: 'AMAZON_OPENSEARCH_SERVICE',
       Name: 'custom',
       Description: 'custom description',
     });
@@ -128,7 +128,7 @@ describe('adding openSearch data source from imported api', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::AppSync::DataSource', {
-      Type: 'AMAZON_OPENSEARCH',
+      Type: 'AMAZON_OPENSEARCH_SERVICE',
       ApiId: { 'Fn::GetAtt': ['baseApiCDA4D43A', 'ApiId'] },
     });
   });
@@ -143,7 +143,7 @@ describe('adding openSearch data source from imported api', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::AppSync::DataSource', {
-      Type: 'AMAZON_OPENSEARCH',
+      Type: 'AMAZON_OPENSEARCH_SERVICE',
       ApiId: { 'Fn::GetAtt': ['baseApiCDA4D43A', 'ApiId'] },
     });
   });

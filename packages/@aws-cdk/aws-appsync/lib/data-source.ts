@@ -76,7 +76,7 @@ export interface ExtendedDataSourceProps {
    *
    * @default - No config
    */
-  readonly openSearchConfig?: CfnDataSource.OpenSearchConfigProperty | IResolvable;
+  readonly openSearchServiceConfig?: CfnDataSource.OpenSearchServiceConfigProperty | IResolvable;
   /**
    * configuration for HTTP Datasource
    *
@@ -424,9 +424,8 @@ export interface OpenSearchDataSourceProps extends BackedDataSourceProps {
 export class OpenSearchDataSource extends BackedDataSource {
   constructor(scope: Construct, id: string, props: OpenSearchDataSourceProps) {
     super(scope, id, props, {
-      // TODO: confirm this is the right type
-      type: 'AMAZON_OPENSEARCH',
-      openSearchConfig: {
+      type: 'AMAZON_OPENSEARCH_SERVICE',
+      openSearchServiceConfig: {
         awsRegion: props.domain.stack.region,
         endpoint: `https://${props.domain.domainEndpoint}`,
       },
