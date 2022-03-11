@@ -250,10 +250,10 @@ subscriptions.
 ```ts
 import * as opensearch from '@aws-cdk/aws-opensearchservice';
 
-const user = new User(stack, 'User');
-const domain = new opensearch.Domain(stack, 'Domain', {
-  version: opensearch.OpenSearchVersion.ELASTICSEARCH_7_1,
-  removalPolicy: cdk.RemovalPolicy.DESTROY,
+const user = new iam.User(this, 'User');
+const domain = new opensearch.Domain(this, 'Domain', {
+  version: opensearch.EngineVersion.OPENSEARCH_1_1,
+  removalPolicy: RemovalPolicy.DESTROY,
   fineGrainedAccessControl: { masterUserArn: user.userArn },
   encryptionAtRest: { enabled: true },
   nodeToNodeEncryption: true,
