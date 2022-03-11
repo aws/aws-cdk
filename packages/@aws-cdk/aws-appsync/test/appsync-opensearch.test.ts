@@ -1,29 +1,28 @@
 import * as path from 'path';
 import { Template } from '@aws-cdk/assertions';
-import * as es from '@aws-cdk/aws-elasticsearch';
-import { testDeprecated } from '@aws-cdk/cdk-build-tools';
+import * as opensearch from '@aws-cdk/aws-opensearchservice';
 import * as cdk from '@aws-cdk/core';
 import * as appsync from '../lib';
 
 // GLOBAL GIVEN
 let stack: cdk.Stack;
 let api: appsync.GraphqlApi;
-let domain: es.Domain;
+let domain: opensearch.Domain;
 beforeEach(() => {
   stack = new cdk.Stack();
   api = new appsync.GraphqlApi(stack, 'baseApi', {
     name: 'api',
     schema: appsync.Schema.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
   });
-  domain = new es.Domain(stack, 'EsDomain', {
-    version: es.ElasticsearchVersion.V7_10,
+  domain = new opensearch.Domain(stack, 'OsDomain', {
+    version: opensearch.EngineVersion.OPENSEARCH_1_1,
   });
 });
 
-describe('Elasticsearch Data Source Configuration', () => {
-  testDeprecated('Elasticsearch configure properly', () => {
+describe('OpenSearch Data Source Configuration', () => {
+  test('OpenSearch configure properly', () => {
     // WHEN
-    api.addElasticsearchDataSource('ds', domain);
+    api.addOpenSearchDataSource('ds', domain);
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
@@ -40,11 +39,11 @@ describe('Elasticsearch Data Source Configuration', () => {
           ],
           Effect: 'Allow',
           Resource: [{
-            'Fn::GetAtt': ['EsDomain1213C634', 'Arn'],
+            'Fn::GetAtt': ['OsDomain5D09FC6A', 'Arn'],
           },
           {
             'Fn::Join': ['', [{
-              'Fn::GetAtt': ['EsDomain1213C634', 'Arn'],
+              'Fn::GetAtt': ['OsDomain5D09FC6A', 'Arn'],
             }, '/*']],
           }],
         }],
@@ -52,66 +51,66 @@ describe('Elasticsearch Data Source Configuration', () => {
     });
   });
 
-  testDeprecated('Elastic search configuration contains fully qualified url', () => {
+  test('OpenSearch configuration contains fully qualified url', () => {
     // WHEN
-    api.addElasticsearchDataSource('ds', domain);
+    api.addOpenSearchDataSource('ds', domain);
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::AppSync::DataSource', {
-      ElasticsearchConfig: {
+      OpenSearchServiceConfig: {
         Endpoint: {
           'Fn::Join': ['', ['https://', {
-            'Fn::GetAtt': ['EsDomain1213C634', 'DomainEndpoint'],
+            'Fn::GetAtt': ['OsDomain5D09FC6A', 'DomainEndpoint'],
           }]],
         },
       },
     });
   });
 
-  testDeprecated('default configuration produces name identical to the id', () => {
+  test('default configuration produces name identical to the id', () => {
     // WHEN
-    api.addElasticsearchDataSource('ds', domain);
+    api.addOpenSearchDataSource('ds', domain);
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::AppSync::DataSource', {
-      Type: 'AMAZON_ELASTICSEARCH',
+      Type: 'AMAZON_OPENSEARCH_SERVICE',
       Name: 'ds',
     });
   });
 
-  testDeprecated('appsync configures name correctly', () => {
+  test('appsync configures name correctly', () => {
     // WHEN
-    api.addElasticsearchDataSource('ds', domain, {
+    api.addOpenSearchDataSource('ds', domain, {
       name: 'custom',
     });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::AppSync::DataSource', {
-      Type: 'AMAZON_ELASTICSEARCH',
+      Type: 'AMAZON_OPENSEARCH_SERVICE',
       Name: 'custom',
     });
   });
 
-  testDeprecated('appsync configures name and description correctly', () => {
+  test('appsync configures name and description correctly', () => {
     // WHEN
-    api.addElasticsearchDataSource('ds', domain, {
+    api.addOpenSearchDataSource('ds', domain, {
       name: 'custom',
       description: 'custom description',
     });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::AppSync::DataSource', {
-      Type: 'AMAZON_ELASTICSEARCH',
+      Type: 'AMAZON_OPENSEARCH_SERVICE',
       Name: 'custom',
       Description: 'custom description',
     });
   });
 
-  testDeprecated('appsync errors when creating multiple elasticsearch data sources with no configuration', () => {
+  test('appsync errors when creating multiple openSearch data sources with no configuration', () => {
     // WHEN
     const when = () => {
-      api.addElasticsearchDataSource('ds', domain);
-      api.addElasticsearchDataSource('ds', domain);
+      api.addOpenSearchDataSource('ds', domain);
+      api.addOpenSearchDataSource('ds', domain);
     };
 
     // THEN
@@ -119,32 +118,32 @@ describe('Elasticsearch Data Source Configuration', () => {
   });
 });
 
-describe('adding elasticsearch data source from imported api', () => {
-  testDeprecated('imported api can add ElasticsearchDataSource from id', () => {
+describe('adding openSearch data source from imported api', () => {
+  test('imported api can add OpenSearchDataSource from id', () => {
     // WHEN
     const importedApi = appsync.GraphqlApi.fromGraphqlApiAttributes(stack, 'importedApi', {
       graphqlApiId: api.apiId,
     });
-    importedApi.addElasticsearchDataSource('ds', domain);
+    importedApi.addOpenSearchDataSource('ds', domain);
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::AppSync::DataSource', {
-      Type: 'AMAZON_ELASTICSEARCH',
+      Type: 'AMAZON_OPENSEARCH_SERVICE',
       ApiId: { 'Fn::GetAtt': ['baseApiCDA4D43A', 'ApiId'] },
     });
   });
 
-  testDeprecated('imported api can add ElasticsearchDataSource from attributes', () => {
+  test('imported api can add OpenSearchDataSource from attributes', () => {
     // WHEN
     const importedApi = appsync.GraphqlApi.fromGraphqlApiAttributes(stack, 'importedApi', {
       graphqlApiId: api.apiId,
       graphqlApiArn: api.arn,
     });
-    importedApi.addElasticsearchDataSource('ds', domain);
+    importedApi.addOpenSearchDataSource('ds', domain);
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::AppSync::DataSource', {
-      Type: 'AMAZON_ELASTICSEARCH',
+      Type: 'AMAZON_OPENSEARCH_SERVICE',
       ApiId: { 'Fn::GetAtt': ['baseApiCDA4D43A', 'ApiId'] },
     });
   });
