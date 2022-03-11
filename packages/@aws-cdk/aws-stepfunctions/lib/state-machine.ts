@@ -385,29 +385,18 @@ export class StateMachine extends StateMachineBase {
       this.validateStateMachineName(props.stateMachineName);
     }
 
-    this.role = props.role || new iam.Role(this, 'Role', {
-      assumedBy: new iam.ServicePrincipal('states.amazonaws.com'),
-    });
+    this.role = props.role || this.createRole();
 
     const graph = new StateGraph(props.definition.startState, `State Machine ${id} definition`);
     graph.timeout = props.timeout;
 
     this.stateMachineType = props.stateMachineType ?? StateMachineType.STANDARD;
 
-    const resource = new CfnStateMachine(this, 'Resource', {
-      stateMachineName: this.physicalName,
-      stateMachineType: props.stateMachineType ?? undefined,
-      roleArn: this.role.roleArn,
-      definitionString: Stack.of(this).toJsonString(graph.toGraphJson()),
-      loggingConfiguration: props.logs ? this.buildLoggingConfiguration(props.logs) : undefined,
-      tracingConfiguration: props.tracingEnabled ? this.buildTracingConfiguration() : undefined,
-    });
+    const resource = this.createStateMachine(props, graph);
 
     resource.node.addDependency(this.role);
 
-    for (const statement of graph.policyStatements) {
-      this.addToRolePolicy(statement);
-    }
+    this.addPolicyStatements(graph);
 
     this.stateMachineName = this.getResourceNameAttribute(resource.attrName);
     this.stateMachineArn = this.getResourceArnAttribute(resource.ref, {
@@ -415,6 +404,29 @@ export class StateMachine extends StateMachineBase {
       resource: 'stateMachine',
       resourceName: this.physicalName,
       arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+    });
+  }
+
+  protected addPolicyStatements(graph: StateGraph) {
+    for (const statement of graph.policyStatements) {
+      this.addToRolePolicy(statement);
+    }
+  }
+
+  protected createStateMachine(props: StateMachineProps, graph: StateGraph) {
+    return new CfnStateMachine(this, 'Resource', {
+      stateMachineName: this.physicalName,
+      stateMachineType: props.stateMachineType ?? undefined,
+      roleArn: this.role.roleArn,
+      definitionString: Stack.of(this).toJsonString(graph.toGraphJson()),
+      loggingConfiguration: props.logs ? this.buildLoggingConfiguration(props.logs) : undefined,
+      tracingConfiguration: props.tracingEnabled ? this.buildTracingConfiguration() : undefined,
+    });
+  }
+
+  protected createRole() {
+    return new iam.Role(this, 'Role', {
+      assumedBy: new iam.ServicePrincipal('states.amazonaws.com'),
     });
   }
 
@@ -432,7 +444,7 @@ export class StateMachine extends StateMachineBase {
     this.role.addToPrincipalPolicy(statement);
   }
 
-  private validateStateMachineName(stateMachineName: string) {
+  protected validateStateMachineName(stateMachineName: string) {
     if (!Token.isUnresolved(stateMachineName)) {
       if (stateMachineName.length < 1 || stateMachineName.length > 80) {
         throw new Error(`State Machine name must be between 1 and 80 characters. Received: ${stateMachineName}`);
@@ -444,7 +456,7 @@ export class StateMachine extends StateMachineBase {
     }
   }
 
-  private buildLoggingConfiguration(logOptions: LogOptions): CfnStateMachine.LoggingConfigurationProperty {
+  protected buildLoggingConfiguration(logOptions: LogOptions): CfnStateMachine.LoggingConfigurationProperty {
     // https://docs.aws.amazon.com/step-functions/latest/dg/cw-logs.html#cloudwatch-iam-policy
     this.addToRolePolicy(new iam.PolicyStatement({
       effect: iam.Effect.ALLOW,
@@ -470,7 +482,7 @@ export class StateMachine extends StateMachineBase {
     };
   }
 
-  private buildTracingConfiguration(): CfnStateMachine.TracingConfigurationProperty {
+  protected buildTracingConfiguration(): CfnStateMachine.TracingConfigurationProperty {
     this.addToRolePolicy(new iam.PolicyStatement({
       // https://docs.aws.amazon.com/xray/latest/devguide/security_iam_id-based-policy-examples.html#xray-permissions-resources
       // https://docs.aws.amazon.com/step-functions/latest/dg/xray-iam.html
