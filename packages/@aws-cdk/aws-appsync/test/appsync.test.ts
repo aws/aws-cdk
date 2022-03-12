@@ -3,6 +3,7 @@ import { Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import * as appsync from '../lib';
+import { Certificate } from '@aws-cdk/aws-certificatemanager';
 
 let stack: cdk.Stack;
 let api: appsync.GraphqlApi;
@@ -153,5 +154,40 @@ test('appsync GraphqlApi should not use custom role for CW Logs when not specifi
         ],
       },
     },
+  });
+});
+
+test('appsync GraphqlApi should be configured with custom domain when specified', () => {
+  const domainName = 'api.example.com';
+  // GIVEN
+  const certificate = new Certificate(stack, 'AcmCertificate', {
+    domainName,
+  });
+
+  // WHEN
+  new appsync.GraphqlApi(stack, 'api-custom-cw-logs-role', {
+    authorizationConfig: {},
+    name: 'apiWithCustomRole',
+    schema: appsync.Schema.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
+    domainName: {
+      domainName,
+      certificate,
+    },
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::AppSync::DomainNameApiAssociation', {
+    ApiId: {
+      "Fn::GetAtt": [
+        "apicustomcwlogsrole508EAC74",
+        "ApiId"
+      ]
+    },
+    DomainName: domainName,
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::AppSync::DomainName', {
+    CertificateArn: { "Ref": "AcmCertificate49D3B5AF" },
+    DomainName: domainName,
   });
 });
