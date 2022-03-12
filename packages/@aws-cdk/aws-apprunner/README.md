@@ -134,3 +134,27 @@ ECR image repositories (but not for ECR Public repositories). If not defined, a 
 when required.
 
 See [App Runner IAM Roles](https://docs.aws.amazon.com/apprunner/latest/dg/security_iam_service-with-iam.html#security_iam_service-with-iam-roles) for more details.
+
+## VPC Connector
+
+To associate an App Runner service with a custom VPC, define `vpcConnector` for the service, optionally specifying security groups and a name.
+
+```ts
+const vpc = new ec2.Vpc(stack, 'Vpc', {
+  cidr: '10.0.0.0/16',
+});
+
+const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', { vpc });
+
+new apprunner.Service(this, 'Service', {
+  source: apprunner.Source.fromEcrPublic({
+    imageConfiguration: { port: 8000 },
+    imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
+  }),
+  vpcConnector: {
+    subnets: vpc.publicSubnets,
+    securityGroups: [securityGroup],
+    name: 'MyVpcConnector',
+  },
+});
+```
