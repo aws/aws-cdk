@@ -122,7 +122,8 @@ describe('Messages', () => {
     });
 
     test('no match', () => {
-      expect(() => annotations.hasNoInfo('/Default/Qux', 'this is an info')).toThrowError(/Stack has 1 messages./);
+      expect(() => annotations.hasNoInfo('/Default/Qux', 'this is an info'))
+	      .toThrowError(/Stack has 1 messages./);
     });
   });
 
