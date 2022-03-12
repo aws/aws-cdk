@@ -40,7 +40,10 @@ export function hasNoMessage(messages: Messages, constructPath: string, props: a
     return;
   }
 
-  return `Stack has ${Object.keys(result.matches).length} messages.`;
+  return [
+    `Expected no matches, but stack has ${Object.keys(result.matches).length} messages as follows`,
+    JSON.stringify(result.matches),
+  ].join('\n');
 }
 
 // We redact the stack trace by default because it is unnecessarily long and unintelligible.
