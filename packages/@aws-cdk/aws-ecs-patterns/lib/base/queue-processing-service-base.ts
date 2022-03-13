@@ -4,6 +4,7 @@ import {
   AwsLogDriver, BaseService, CapacityProviderStrategy, Cluster, ContainerImage, DeploymentController, DeploymentCircuitBreaker,
   ICluster, LogDriver, PropagatedTagSource, Secret,
 } from '@aws-cdk/aws-ecs';
+import { IRole } from '@aws-cdk/aws-iam/lib/role';
 import { IQueue, Queue } from '@aws-cdk/aws-sqs';
 import { CfnOutput, Duration, Stack } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
@@ -12,6 +13,78 @@ import { Construct } from 'constructs';
 // v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
 // eslint-disable-next-line
 import { Construct as CoreConstruct } from '@aws-cdk/core';
+
+export interface QueueProcessingTaskImageOptions {
+  /**
+   * The image used to start a container. Image or taskDefinition must be specified, not both.
+   *
+   * @default - none
+   */
+  readonly image: ContainerImage;
+
+  /**
+   * The environment variables to pass to the container.
+   *
+   * @default - No environment variables.
+   */
+  readonly environment?: { [key: string]: string };
+
+  /**
+   * The secret to expose to the container as an environment variable.
+   *
+   * @default - No secret environment variables.
+   */
+  readonly secrets?: { [key: string]: Secret };
+
+  /**
+   * Flag to indicate whether to enable logging.
+   *
+   * @default true
+   */
+  readonly enableLogging?: boolean;
+
+  /**
+   * The log driver to use.
+   *
+   * @default - AwsLogDriver if enableLogging is true
+   */
+  readonly logDriver?: LogDriver;
+
+  /**
+   * The name of the task execution IAM role that grants the Amazon ECS container agent permission to call AWS APIs on your behalf.
+   *
+   * @default - No value
+   */
+  readonly executionRole?: IRole;
+
+  /**
+   * The name of the task IAM role that grants containers in the task permission to call AWS APIs on your behalf.
+   *
+   * @default - A task role is automatically created for you.
+   */
+  readonly taskRole?: IRole;
+
+  /**
+   * The container name value to be specified in the task definition.
+   *
+   * @default - none
+   */
+  readonly containerName?: string;
+
+  /**
+   * The name of a family that this task definition is registered to. A family groups multiple versions of a task definition.
+   *
+   * @default - Automatically generated name.
+   */
+  readonly family?: string;
+
+  /**
+   * A key/value map of labels to add to the container.
+   *
+   * @default - No labels.
+   */
+  readonly dockerLabels?: { [key: string]: string };
+}
 
 /**
  * The properties for the base QueueProcessingEc2Service or QueueProcessingFargateService service.
@@ -39,6 +112,13 @@ export interface QueueProcessingServiceBaseProps {
    * @default - uses the VPC defined in the cluster or creates a new VPC.
    */
   readonly vpc?: IVpc;
+
+  /**
+   * The properties required to create a new task definition. TaskDefinition or TaskImageOptions must be specified, but not both.
+   *
+   * @default none
+   */
+  readonly taskImageOptions?: QueueProcessingTaskImageOptions;
 
   /**
    * The image used to start a container.
