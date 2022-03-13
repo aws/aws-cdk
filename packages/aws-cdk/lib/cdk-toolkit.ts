@@ -4,6 +4,7 @@ import * as cxapi from '@aws-cdk/cx-api';
 import * as chalk from 'chalk';
 import * as chokidar from 'chokidar';
 import * as fs from 'fs-extra';
+import PQueue from 'p-queue';
 import * as promptly from 'promptly';
 import { environmentsFromDescriptors, globEnvironmentsFromStacks, looksLikeGlob } from '../lib/api/cxapp/environments';
 import { SdkProvider } from './api/aws-auth';
@@ -127,7 +128,7 @@ export class CdkToolkit {
     }
 
     const startSynthTime = new Date().getTime();
-    const stacks = await this.selectStacksForDeploy(options.selector, options.exclusively, options.cacheCloudAssembly);
+    const stackCollection = await this.selectStacksForDeploy(options.selector, options.exclusively, options.cacheCloudAssembly);
     const elapsedSynthTime = new Date().getTime() - startSynthTime;
     print('\n✨  Synthesis time: %ss\n', formatTime(elapsedSynthTime));
 
@@ -153,11 +154,16 @@ export class CdkToolkit {
       warning('⚠️ It should only be used for development - never use it for your production Stacks!');
     }
 
+    const stacks = stackCollection.stackArtifacts;
+
     const stackOutputs: { [key: string]: any } = { };
     const outputsFile = options.outputsFile;
 
-    for (const stack of stacks.stackArtifacts) {
-      if (stacks.stackCount !== 1) { highlight(stack.displayName); }
+    const concurrency = options.concurrency || 1;
+    const queue = new PQueue({ concurrency });
+
+    const deployStack = async (stack: cxapi.CloudFormationStackArtifact) => {
+      if (stackCollection.stackCount !== 1) { highlight(stack.displayName); }
       if (!stack.environment) {
         // eslint-disable-next-line max-len
         throw new Error(`Stack ${stack.displayName} does not define an environment, and AWS credentials could not be obtained from standard locations or no region was configured.`);
@@ -176,7 +182,7 @@ export class CdkToolkit {
             fromDeploy: true,
           });
         }
-        continue;
+        return;
       }
 
       if (requireApproval !== RequireApproval.Never) {
@@ -266,8 +272,21 @@ export class CdkToolkit {
           });
         }
       }
-      print('\n✨  Total time: %ss\n', formatTime(elapsedSynthTime + elapsedDeployTime));
-    }
+    };
+
+    const enqueueStackDeploys = async () => {
+      // TODO: Enqueue all stacks not blocked by dependencies
+      const stack = stacks.pop();
+      if (stack) {
+        await queue.add(async () => {
+          await deployStack(stack);
+          await enqueueStackDeploys();
+        });
+      }
+    };
+
+    await enqueueStackDeploys();
+    await queue.onIdle();
   }
 
   public async watch(options: WatchOptions) {
@@ -849,6 +868,14 @@ export interface DeployOptions extends WatchOptions {
    * @default - not monitoring CloudWatch logs
    */
   readonly cloudWatchLogMonitor?: CloudWatchLogEventMonitor;
+
+  /**
+   * Maximum number of simulatenous deployments (dependency permitting) to execute.
+   * The default is '1', which executes all deployments serially.
+   *
+   * @default - 1
+   */
+  readonly concurrency?: number;
 }
 
 export interface DestroyOptions {
