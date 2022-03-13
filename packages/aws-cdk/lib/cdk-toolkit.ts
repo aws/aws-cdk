@@ -274,17 +274,17 @@ export class CdkToolkit {
       }
     };
 
-    const isStackUnblocked = (stack: cxapi.CloudFormationStackArtifact) => {
-      const dependentStackIds = stack.dependencies.map(({ id }) => id).filter((id) => !id.endsWith('.assets'));
-
-      return dependentStackIds.every((id) => !!stackOutputs[id]);
-    };
+    const isStackUnblocked = (stack: cxapi.CloudFormationStackArtifact) =>
+      stack.dependencies
+        .map(({ id }) => id)
+        .filter((id) => !id.endsWith('.assets'))
+        .every((id) => !!stackOutputs[id]);
 
     const enqueueStackDeploys = async () => {
       while (stacks[0] && isStackUnblocked(stacks[0])) {
         const stack = stacks.shift();
         if (stack) {
-          await queue.add(async () => {
+          void queue.add(async () => {
             await deployStack(stack);
             await enqueueStackDeploys();
           });
