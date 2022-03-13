@@ -159,6 +159,7 @@ export class CdkToolkit {
     const stackOutputs: { [key: string]: any } = { };
     const outputsFile = options.outputsFile;
 
+    // TODO: Support infinite concurrency
     const concurrency = options.concurrency || 1;
     const queue = new PQueue({ concurrency });
 
@@ -239,10 +240,9 @@ export class CdkToolkit {
         elapsedDeployTime = new Date().getTime() - startDeployTime;
         print('\n✨  Deployment time: %ss\n', formatTime(elapsedDeployTime));
 
+        stackOutputs[stack.stackName] = result.outputs;
         if (Object.keys(result.outputs).length > 0) {
           print('Outputs:');
-
-          stackOutputs[stack.stackName] = result.outputs;
         }
 
         for (const name of Object.keys(result.outputs).sort()) {
@@ -274,14 +274,21 @@ export class CdkToolkit {
       }
     };
 
+    const isStackUnblocked = (stack: cxapi.CloudFormationStackArtifact) => {
+      const dependentStackIds = stack.dependencies.map(({ id }) => id).filter((id) => !id.endsWith('.assets'));
+
+      return dependentStackIds.every((id) => !!stackOutputs[id]);
+    };
+
     const enqueueStackDeploys = async () => {
-      // TODO: Enqueue all stacks not blocked by dependencies
-      const stack = stacks.pop();
-      if (stack) {
-        await queue.add(async () => {
-          await deployStack(stack);
-          await enqueueStackDeploys();
-        });
+      while (stacks[0] && isStackUnblocked(stacks[0])) {
+        const stack = stacks.shift();
+        if (stack) {
+          await queue.add(async () => {
+            await deployStack(stack);
+            await enqueueStackDeploys();
+          });
+        }
       }
     };
 
