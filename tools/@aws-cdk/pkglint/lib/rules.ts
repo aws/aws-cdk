@@ -1756,6 +1756,7 @@ export class NoExperimentalDependents extends ValidationRule {
   // experimental -> experimental dependencies that are allowed for now.
   private readonly excludedDependencies = new Map([
     ['@aws-cdk/aws-secretsmanager', ['@aws-cdk/aws-sam']],
+    ['@aws-cdk/aws-eks', ['@aws-cdk/aws-sam']],
     ['@aws-cdk/aws-kinesisanalytics-flink', ['@aws-cdk/aws-kinesisanalytics']],
     ['@aws-cdk/aws-apigatewayv2-integrations', ['@aws-cdk/aws-apigatewayv2']],
     ['@aws-cdk/aws-apigatewayv2-authorizers', ['@aws-cdk/aws-apigatewayv2']],

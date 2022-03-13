@@ -2,9 +2,9 @@ import * as path from 'path';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
+import * as sam from '@aws-cdk/aws-sam';
 import { Duration, NestedStack, Stack } from '@aws-cdk/core';
 import * as cr from '@aws-cdk/custom-resources';
-import * as sam from '@aws-cdk/aws-sam';
 import { NodeProxyAgentLayer } from '@aws-cdk/lambda-layer-node-proxy-agent';
 import { Construct } from 'constructs';
 

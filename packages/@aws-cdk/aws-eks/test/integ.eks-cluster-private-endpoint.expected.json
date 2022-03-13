@@ -796,6 +796,9 @@
             ],
             "endpointPublicAccess": false,
             "endpointPrivateAccess": true
+          },
+          "kubernetesNetworkConfig": {
+            "ipFamily": "ipv4"
           }
         },
         "AssumeRoleArn": {

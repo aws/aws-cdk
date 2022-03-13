@@ -602,10 +602,10 @@ export interface ClusterOptions extends CommonClusterOptions {
   /**
    * Specify which IP family is used to assign Kubernetes pod and service IP addresses.
    *
-   * @default - ipv4
+   * @default - IpFamily.IP_V4
    * @see https://docs.aws.amazon.com/eks/latest/APIReference/API_KubernetesNetworkConfigRequest.html#AmazonEKS-Type-KubernetesNetworkConfigRequest-ipFamily
    */
-   readonly ipFamily?: string;
+  readonly ipFamily?: IpFamily;
 
   /**
    * The CIDR block to assign Kubernetes service IP addresses from.
@@ -858,6 +858,20 @@ export enum ClusterLoggingTypes {
    * Logs pertaining to scheduling decisions.
    */
   SCHEDULER = 'scheduler',
+}
+
+/**
+ * EKS cluster IP family.
+ */
+export enum IpFamily {
+  /**
+   * Use IPv4 for pods and services in your cluster.
+   */
+  IP_V4 = 'ipv4',
+  /**
+   * Use IPv6 for pods and services in your cluster.
+   */
+  IP_V6 = 'ipv6',
 }
 
 abstract class ClusterBase extends Resource implements ICluster {
@@ -1405,8 +1419,8 @@ export class Cluster extends ClusterBase {
       throw new Error('Cannot specify clusterHandlerSecurityGroup without placeClusterHandlerInVpc set to true');
     }
 
-    if (props.serviceIpv4Cidr && props.ipFamily !== 'ipv4') {
-      throw new Error('Cannot specify serviceIpv4Cidr without ipFamily equal to ipv4');
+    if (props.serviceIpv4Cidr && props.ipFamily == IpFamily.IP_V6) {
+      throw new Error('Cannot specify serviceIpv4Cidr with ipFamily equal to IpFamily.IP_V6');
     }
 
     const resource = this._clusterResource = new ClusterResource(this, 'Resource', {
@@ -1427,7 +1441,7 @@ export class Cluster extends ClusterBase {
         }],
       } : {}),
       kubernetesNetworkConfig: {
-        ipFamily: props.ipFamily,
+        ipFamily: props.ipFamily ?? IpFamily.IP_V4,
         serviceIpv4Cidr: props.serviceIpv4Cidr,
       },
       endpointPrivateAccess: this.endpointAccess._config.privateAccess,

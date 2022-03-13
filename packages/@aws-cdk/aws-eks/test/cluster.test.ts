@@ -3140,24 +3140,63 @@ describe('cluster', () => {
 
   });
 
-  test('create a cluster using custom kubernetes network config', () => {
-    // GIVEN
-    const { stack } = testFixture();
-    const customCidr = '172.16.0.0/12';
+  describe('networking configuration', () => {
 
-    // WHEN
-    new eks.Cluster(stack, 'Cluster', {
-      version: CLUSTER_VERSION,
-      serviceIpv4Cidr: customCidr,
+    test('create a cluster using custom kubernetes network config', () => {
+      // GIVEN
+      const { stack } = testFixture();
+      const customCidr = '172.16.0.0/12';
+
+      // WHEN
+      new eks.Cluster(stack, 'Cluster', {
+        version: CLUSTER_VERSION,
+        serviceIpv4Cidr: customCidr,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('Custom::AWSCDK-EKS-Cluster', {
+        Config: {
+          kubernetesNetworkConfig: {
+            serviceIpv4Cidr: customCidr,
+          },
+        },
+      });
+
     });
 
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('Custom::AWSCDK-EKS-Cluster', {
-      Config: {
-        kubernetesNetworkConfig: {
-          serviceIpv4Cidr: customCidr,
+    test('create a cluster with ipv6 netwokring', () => {
+      // GIVEN
+      const { stack } = testFixture();
+      const ipFamily = eks.IpFamily.IP_V6;
+
+      // WHEN
+      new eks.Cluster(stack, 'Cluster', {
+        version: CLUSTER_VERSION,
+        ipFamily,
+      });
+
+      //THEN
+      Template.fromStack(stack).hasResourceProperties('Custom::AWSCDK-EKS-Cluster', {
+        Config: {
+          kubernetesNetworkConfig: {
+            ipFamily,
+          },
         },
-      },
+      });
+    });
+
+    test('throw if serviceIpv4Cidr is combined with ipv6 networking', () => {
+      const { stack } = testFixture();
+      const ipFamily = eks.IpFamily.IP_V6;
+      const serviceIpv4Cidr = '10.0.0.1/24';
+
+      expect(() => {
+        new eks.Cluster(stack, 'Cluster', {
+          version: CLUSTER_VERSION,
+          ipFamily,
+          serviceIpv4Cidr,
+        });
+      }).toThrow(/Cannot specify serviceIpv4Cidr with ipFamily equal to IpFamily.IP_V6/);
     });
 
   });
