@@ -409,7 +409,7 @@ describe('deploy', () => {
 
       // WHEN
       await cdkToolkit.deploy({
-        selector: { patterns: ['Test-Stack-A'] },
+        selector: { patterns: ['Test-Stack-A-Display-Name'] },
         requireApproval: RequireApproval.Never,
         hotswap: true,
       });
@@ -444,7 +444,7 @@ describe('deploy', () => {
       const toolkit = defaultToolkitSetup();
 
       // WHEN
-      await toolkit.deploy({ selector: { patterns: ['Test-Stack-A'] } });
+      await toolkit.deploy({ selector: { patterns: ['Test-Stack-A-Display-Name'] } });
     });
 
     test('with stacks all stacks specified as wildcard', async () => {
@@ -689,7 +689,7 @@ describe('synth', () => {
     const toolkit = defaultToolkitSetup();
 
     // THEN
-    await toolkit.synth(['Test-Stack-A'], false, true);
+    await toolkit.synth(['Test-Stack-A-Display-Name'], false, true);
     expect(mockData.mock.calls.length).toEqual(0);
   });
 
