@@ -241,7 +241,7 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
   /**
    * Actual connections object for the underlying Lambda
    *
-   * May be unset, in which case the Canary Lambda is not configured for use in a VPC.
+   * May be unset, in which case the canary Lambda is not configured for use in a VPC.
    * @internal
    */
   private readonly _connections?: ec2.Connections;
@@ -291,12 +291,12 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
   /**
    * Access the Connections object
    *
-   * Will fail if not a VPC-enabled Lambda Function
+   * Will fail if not a VPC-enabled Canary
    */
   public get connections(): ec2.Connections {
     if (!this._connections) {
       // eslint-disable-next-line max-len
-      throw new Error('Only VPC-associated Lambda Functions have security groups to manage. Supply the "vpc" parameter when creating the Lambda, or "securityGroupId" when importing it.');
+      throw new Error('Only VPC-associated Canaries have security groups to manage. Supply the "vpc" parameter when creating the Canary.');
     }
     return this._connections;
   }
