@@ -832,6 +832,11 @@
 | @aws-cdk/aws-ecs-patterns | NetworkMultipleTargetGroupsServiceBase.​desiredCount | Use `internalDesiredCount` instead. |
 | @aws-cdk/aws-ecs-patterns | QueueProcessingServiceBase.​desiredCount | Use `minCapacity` instead. |
 | @aws-cdk/aws-ecs-patterns | QueueProcessingServiceBaseProps.​desiredTaskCount | Use `minScalingCapacity` or a literal object instead. |
+| @aws-cdk/aws-ecs-patterns | QueueProcessingServiceBaseProps.image | Use `taskImageOptions` or `taskDefinition` instead. |
+| @aws-cdk/aws-ecs-patterns | QueueProcessingServiceBaseProps.environment | Use `taskImageOptions` or `taskDefinition` instead. |
+| @aws-cdk/aws-ecs-patterns | QueueProcessingServiceBaseProps.family | Use `taskImageOptions` or `taskDefinition` instead. |
+| @aws-cdk/aws-ecs-patterns | QueueProcessingEc2ServiceProps.containerName | Use `taskImageOptions` or `taskDefinition` instead. |
+| @aws-cdk/aws-ecs-patterns | QueueProcessingFargateServiceProps.containerName | Use `taskImageOptions` or `taskDefinition` instead. |
 | @aws-cdk/aws-eks | NodegroupOptions.​instanceType | Use `instanceTypes` instead. |
 | @aws-cdk/aws-eks | ServiceAccount.​addToPolicy() | use `addToPrincipalPolicy()` |
 | @aws-cdk/aws-s3-deployment | Expires | use core.Expiration |
