@@ -232,20 +232,10 @@ describe('external service', () => {
 
   test('throws when task definition network mode is not External compatible', () => {
     const stack = new cdk.Stack();
-    const vpc = new ec2.Vpc(stack, 'MyVpc', {});
-    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
-    const taskDefinition = new ecs.TaskDefinition(stack, 'ExternalTaskDef', {
+    
+    expect(() => new ecs.TaskDefinition(stack, 'ExternalTaskDef', {
       compatibility: ecs.Compatibility.EXTERNAL,
       networkMode: NetworkMode.AWS_VPC,
-    });
-    taskDefinition.addContainer('BaseContainer', {
-      image: ecs.ContainerImage.fromRegistry('test'),
-      memoryReservationMiB: 10,
-    });
-
-    expect(() => new ecs.ExternalService(stack, 'ExternalService', {
-      cluster,
-      taskDefinition,
     })).toThrow('External tasks only support Bridge, Host or None network mode, got: awsvpc');
   });
 
