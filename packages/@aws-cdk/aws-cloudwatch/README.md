@@ -380,6 +380,20 @@ dashboard.addWidgets(new cloudwatch.AlarmWidget({
 }));
 ```
 
+An alarm widget only showing alarms firing, sorted by state and timestamp:
+
+```ts
+declare const dashboard: cloudwatch.Dashboard;
+declare const errorAlarm: cloudwatch.Alarm;
+
+dashboard.addWidgets(new cloudwatch.AlarmWidget({
+  title: "Errors",
+  alarm: errorAlarm,
+  sortBy: cloudwatch.AlarmStatusWidgetSortBy.STATE_UPDATED_TIMESTAMP,
+  states: [cloudwatch.AlarmState.ALARM],
+}));
+```
+
 ### Single value widget
 
 A single-value widget shows the latest value of a set of metrics (as opposed
