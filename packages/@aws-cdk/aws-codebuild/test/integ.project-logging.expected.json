@@ -71,18 +71,25 @@
             },
             {
               "Action": [
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "LogingGroupE599B53B",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              "Action": [
                 "logs:CreateLogGroup",
                 "logs:CreateLogStream",
                 "logs:PutLogEvents"
               ],
               "Effect": "Allow",
               "Resource": [
-                {
-                  "Fn::GetAtt": [
-                    "LogingGroupE599B53B",
-                    "Arn"
-                  ]
-                },
                 {
                   "Fn::Join": [
                     "",

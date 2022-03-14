@@ -60,10 +60,6 @@ function tryMerge(a: ComparableStatement, b: ComparableStatement): ComparableSta
   if (a.conditionString !== b.conditionString) { return; }
   if (!setEqual(a.notAction, b.notAction) || !setEqual(a.notResource, b.notResource) || !setEqual(a.notPrincipal, b.notPrincipal)) { return; }
 
-  console.log('action', setEqual(a.action, b.action), a.action, b.action);
-  console.log('resource', setEqual(a.resource, b.resource));
-  console.log('principal', setEqual(a.principal, b.principal));
-
   // We can merge these statements if 2 out of the 3 sets of Action, Resource, Principal
   // are the same.
   const setsEqual = (setEqual(a.action, b.action) ? 1 : 0) +

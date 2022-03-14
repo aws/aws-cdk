@@ -372,8 +372,31 @@
               }
             },
             {
+              "Action": "sagemaker:CreateEndpointConfig",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":sagemaker:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":endpoint-config/*"
+                  ]
+                ]
+              }
+            },
+            {
               "Action": [
-                "sagemaker:CreateEndpointConfig",
                 "sagemaker:createEndpoint",
                 "sagemaker:updateEndpoint"
               ],
