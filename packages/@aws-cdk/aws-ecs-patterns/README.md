@@ -481,7 +481,7 @@ const queueProcessingFargateService = new ecsPatterns.QueueProcessingFargateServ
   taskImageOptions: {
     image: ecs.ContainerImage.fromRegistry('test'),
     environment: {},
-  }
+  },
   maxScalingCapacity: 5,
   maxHealthyPercent: 200,
   minHealthyPercent: 66,
@@ -597,7 +597,7 @@ const queueProcessingFargateService = new ecsPatterns.QueueProcessingFargateServ
   memoryLimitMiB: 512,
   taskImageOptions: {
     image: ecs.ContainerImage.fromRegistry('test')
-  }
+  },
   capacityProviderStrategies: [
     {
       capacityProvider: capacityProvider.capacityProviderName,
