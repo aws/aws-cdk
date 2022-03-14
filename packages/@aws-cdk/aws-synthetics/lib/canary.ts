@@ -198,18 +198,6 @@ export interface CanaryProps {
   readonly vpcSubnets?: ec2.SubnetSelection;
 
   /**
-   * Whether or not to allow placing a canary to be run in only private subnets. By default, the Synthetics runtime
-   * needs access to the S3 and CloudWatch APIs, which will fail in a private subnet without internet access enabled.
-   *
-   * You can bypass this check if you've enabled VPC Endpoints for these two APIs in your VPC or have an Internet Gateway setup.
-   *
-   *  You must provide `vpc` when using this prop.
-   *
-   * @default false
-   */
-  readonly allowPrivateSubnet?: boolean;
-
-  /**
    * The list of security groups to associate with the canary's network interfaces. You must provide `vpc` when using this prop.
    *
    * @default - If the canary is placed within a VPC and a security group is
@@ -221,7 +209,7 @@ export interface CanaryProps {
 /**
  * Define a new Canary
  */
-export class Canary extends cdk.Resource {
+export class Canary extends cdk.Resource implements ec2.IConnectable {
   /**
    * Execution role associated with this Canary.
    */
@@ -250,6 +238,8 @@ export class Canary extends cdk.Resource {
    */
   public readonly artifactsBucket: s3.IBucket;
 
+  private readonly _connections: ec2.Connections;
+
   public constructor(scope: Construct, id: string, props: CanaryProps) {
     if (props.canaryName && !cdk.Token.isUnresolved(props.canaryName)) {
       validateName(props.canaryName);
@@ -268,6 +258,9 @@ export class Canary extends cdk.Resource {
 
     this.role = props.role ?? this.createDefaultRole(props);
 
+    // Security Groups are created and/or appended in `createVpcConfig`.
+    this._connections = new ec2.Connections({});
+
     const resource: CfnCanary = new CfnCanary(this, 'Resource', {
       artifactS3Location: this.artifactsBucket.s3UrlForObject(props.artifactsBucketLocation?.prefix),
       executionRoleArn: this.role.roleArn,
@@ -285,6 +278,19 @@ export class Canary extends cdk.Resource {
     this.canaryId = resource.attrId;
     this.canaryState = resource.attrState;
     this.canaryName = this.getResourceNameAttribute(resource.ref);
+  }
+
+  /**
+   * Access the Connections object
+   *
+   * Will fail if not a VPC-enabled Lambda Function
+   */
+  public get connections(): ec2.Connections {
+    if (!this._connections) {
+      // eslint-disable-next-line max-len
+      throw new Error('Only VPC-associated Lambda Functions have security groups to manage. Supply the "vpc" parameter when creating the Lambda, or "securityGroupId" when importing it.');
+    }
+    return this._connections;
   }
 
   /**
@@ -421,7 +427,7 @@ export class Canary extends cdk.Resource {
 
   private createVpcConfig(props: CanaryProps): CfnCanary.VPCConfigProperty | undefined {
     if (!props.vpc) {
-      if (props.vpcSubnets != null || props.allowPrivateSubnet != null || props.securityGroups != null) {
+      if (props.vpcSubnets != null || props.securityGroups != null) {
         throw new Error("You must provide the 'vpc' prop when using VPC-related properties.");
       }
 
@@ -433,12 +439,7 @@ export class Canary extends cdk.Resource {
       throw new Error('No matching subnets found in the VPC.');
     }
 
-    if (subnetIds.every(id => props.vpc!.isolatedSubnets.some(subnet => subnet.subnetId === id)) && !props.allowPrivateSubnet) {
-      throw new Error("A canary in a vpc must have access to CloudWatch and S3. Your vpc must either have internet access or private vpc endpoints with 'allowPrivateSubnet=true'.\nSee https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_VPC.html");
-    }
-
     let securityGroups: ec2.ISecurityGroup[];
-
     if (props.securityGroups && props.securityGroups.length > 0) {
       securityGroups = props.securityGroups;
     } else {
@@ -448,6 +449,7 @@ export class Canary extends cdk.Resource {
       });
       securityGroups = [securityGroup];
     }
+    this._connections.addSecurityGroup(...securityGroups);
 
     return {
       vpcId: props.vpc.vpcId,
