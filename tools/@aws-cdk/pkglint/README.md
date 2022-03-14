@@ -9,5 +9,5 @@ in that file that extends `ValidationRule`. That class will be automatically
 picked up by pkglint when it is run.
 
 When designing a new rule, do not assume that pkglint will run on a built
-`aws-cdk` repository. pkglint is sometimes run on an unbuilt repository where
-validating compiled code will result in failure.
+`aws-cdk` repository. pkglint is sometimes run on just the source code of
+`aws-cdk` modules so validating compiled code will result in failure.
