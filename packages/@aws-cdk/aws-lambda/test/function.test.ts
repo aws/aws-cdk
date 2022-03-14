@@ -1292,7 +1292,10 @@ describe('function', () => {
 
     fn.addLayers(layer);
 
-    const newVesrion = fn.currentVersion;
+    const newVersion = fn.currentVersion;
+    // eslint-disable-next-line no-console
+    console.log(version.version, newVersion.version);
+    expect(version).toEqual(newVersion);
   });
 
   test('using an incompatible layer', () => {
