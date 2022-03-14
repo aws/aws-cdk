@@ -216,10 +216,6 @@ export abstract class BaseLoadBalancer extends Resource {
 
     this.vpc = baseProps.vpc;
 
-    if (!Token.isUnresolved(baseProps.loadBalancerName) && baseProps.loadBalancerName !== undefined && (baseProps.loadBalancerName.length > 32 || baseProps.loadBalancerName.startsWith('internal-') || !/^[0-9a-z]+[0-9a-z-]*[0-9a-z]+$/i.test(baseProps.loadBalancerName))) {
-      throw new Error(`Load balancer name: "${baseProps.loadBalancerName}" is not allowed. Load balancer name can have a maximum of 32 characters, must contain only alphanumeric characters or hyphens, must not begin or end with a hyphen, and must not begin with "internal-".`);
-    }
-
     const resource = new CfnLoadBalancer(this, 'Resource', {
       name: this.physicalName,
       subnets: subnetIds,
@@ -303,5 +299,28 @@ export abstract class BaseLoadBalancer extends Resource {
    */
   public removeAttribute(key: string) {
     this.setAttribute(key, undefined);
+  }
+
+  protected validate(): string[] {
+    const ret = super.validate();
+
+    // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticloadbalancingv2-loadbalancer.html#cfn-elasticloadbalancingv2-loadbalancer-name
+    const loadBalancerName = this.physicalName;
+    if (!Token.isUnresolved(loadBalancerName) && loadBalancerName !== undefined) {
+      if (loadBalancerName.length > 32) {
+        ret.push(`Load balancer name: "${loadBalancerName}" can have a maximum of 32 characters.`);
+      }
+      if (loadBalancerName.startsWith('internal-')) {
+        ret.push(`Load balancer name: "${loadBalancerName}" must not begin with "internal-".`);
+      }
+      if (loadBalancerName.startsWith('-') || loadBalancerName.endsWith('-')) {
+        ret.push(`Load balancer name: "${loadBalancerName}" must not begin or end with a hyphen.`);
+      }
+      if (!/^[0-9a-z-]+$/i.test(loadBalancerName)) {
+        ret.push(`Load balancer name: "${loadBalancerName}" must contain only alphanumeric characters or hyphens.`);
+      }
+    }
+
+    return ret;
   }
 }

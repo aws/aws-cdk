@@ -245,10 +245,6 @@ export abstract class TargetGroupBase extends CoreConstruct implements ITargetGr
       this.setAttribute('deregistration_delay.timeout_seconds', baseProps.deregistrationDelay.toSeconds().toString());
     }
 
-    if (!cdk.Token.isUnresolved(baseProps.targetGroupName) && baseProps.targetGroupName !== undefined && (baseProps.targetGroupName.length > 32 || !/^[0-9a-z]+[0-9a-z-]*[0-9a-z]+$/i.test(baseProps.targetGroupName))) {
-      throw new Error(`Target group name: "${baseProps.targetGroupName}" is not allowed. Target group name can have a maximum of 32 characters, must contain only alphanumeric characters or hyphens, and must not begin or end with a hyphen.`);
-    }
-
     this.healthCheck = baseProps.healthCheck || {};
     this.vpc = baseProps.vpc;
     this.targetType = baseProps.targetType;
@@ -341,6 +337,20 @@ export abstract class TargetGroupBase extends CoreConstruct implements ITargetGr
 
     if (this.targetType !== TargetType.LAMBDA && this.vpc === undefined) {
       ret.push("'vpc' is required for a non-Lambda TargetGroup");
+    }
+
+    // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticloadbalancingv2-targetgroup.html#cfn-elasticloadbalancingv2-targetgroup-name
+    const targetGroupName = this.resource.name;
+    if (!cdk.Token.isUnresolved(targetGroupName) && targetGroupName !== undefined) {
+      if (targetGroupName.length > 32) {
+        ret.push(`Target group name: "${targetGroupName}" can have a maximum of 32 characters.`);
+      }
+      if (targetGroupName.startsWith('-') || targetGroupName.endsWith('-')) {
+        ret.push(`Target group name: "${targetGroupName}" must not begin or end with a hyphen.`);
+      }
+      if (!/^[0-9a-z-]+$/i.test(targetGroupName)) {
+        ret.push(`Target group name: "${targetGroupName}" must contain only alphanumeric characters or hyphens.`);
+      }
     }
 
     return ret;
