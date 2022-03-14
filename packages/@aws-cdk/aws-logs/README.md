@@ -315,7 +315,11 @@ Example:
 ```ts
 new logs.QueryDefinition(this, 'QueryDefinition', {
   queryDefinitionName: 'MyQuery',
-  queryString: 'fields @timestamp, @message | sort @timestamp desc | limit 20',
+  queryString: new logs.QueryString({
+    fields: '@timestamp, @message',
+    sort: '@timestamp desc',
+    limit: 20,
+  }),
 });
 ```
 

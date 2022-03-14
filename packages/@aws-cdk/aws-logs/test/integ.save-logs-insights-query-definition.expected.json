@@ -1,10 +1,17 @@
 {
   "Resources": {
-    "QueryDefinition4190BC36": {
+    "QueryDefinitionUsingProps3D5A3517": {
       "Type": "AWS::Logs::QueryDefinition",
       "Properties": {
-        "Name": "MyQuery",
+        "Name": "QueryDefinitionUsingProps",
         "QueryString": "fields @timestamp, @message | sort @timestamp desc | limit 20"
+      }
+    },
+    "QueryDefinitionUsingQueryStringAddCommandMethods145826E0": {
+      "Type": "AWS::Logs::QueryDefinition",
+      "Properties": {
+        "Name": "QueryDefinitionUsingQueryStringAddCommandMethods",
+        "QueryString": "fields @timestamp, @message | parse @message \"[*] *\" as loggingType, loggingMessage | filter loggingType = \"ERROR\" | sort @timestamp desc | limit 20 | display loggingMessage"
       }
     }
   }
