@@ -41,7 +41,7 @@ export function hasNoMessage(messages: Messages, constructPath: string, props: a
   }
 
   return [
-    `Expected no matches, but stack has ${Object.keys(result.matches).length} messages as follows`,
+    `Expected no matches, but stack has ${Object.keys(result.matches).length} messages as follows:`,
     formatAllMatches(result.matches),
   ].join('\n');
 }
