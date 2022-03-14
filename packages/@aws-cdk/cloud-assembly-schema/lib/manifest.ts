@@ -22,6 +22,32 @@ const ASSEMBLY_SCHEMA = require('../schema/cloud-assembly.schema.json');
 const SCHEMA_VERSION = require('../schema/cloud-assembly.version.json').version;
 
 /**
+ * Options for the loadManifest operation
+ */
+export interface LoadManifestOptions {
+  /**
+   * Skip the version check
+   *
+   * This means you may read a newer cloud assembly than the CX API is designed
+   * to support, and your application may not be aware of all features that in use
+   * in the Cloud Assembly.
+   *
+   * @default false
+   */
+  readonly skipVersionCheck?: boolean;
+
+  /**
+   * Skip enum checks
+   *
+   * This means you may read enum values you don't know about yet. Make sure to always
+   * check the values of enums you encounter in the manifest.
+   *
+   * @default false
+   */
+  readonly skipEnumCheck?: boolean;
+}
+
+/**
  * Protocol utility class.
  */
 export class Manifest {
@@ -40,8 +66,8 @@ export class Manifest {
    *
    * @param filePath - path to the manifest file.
    */
-  public static loadAssemblyManifest(filePath: string): assembly.AssemblyManifest {
-    return Manifest.loadManifest(filePath, ASSEMBLY_SCHEMA, Manifest.patchStackTagsOnRead);
+  public static loadAssemblyManifest(filePath: string, options?: LoadManifestOptions): assembly.AssemblyManifest {
+    return Manifest.loadManifest(filePath, ASSEMBLY_SCHEMA, Manifest.patchStackTagsOnRead, options);
   }
 
   /**
@@ -82,8 +108,7 @@ export class Manifest {
    */
   public static load(filePath: string): assembly.AssemblyManifest { return this.loadAssemblyManifest(filePath); }
 
-  private static validate(manifest: { version: string }, schema: jsonschema.Schema) {
-
+  private static validate(manifest: { version: string }, schema: jsonschema.Schema, options?: LoadManifestOptions) {
     function parseVersion(version: string) {
       const ver = semver.valid(version);
       if (!ver) {
@@ -96,7 +121,7 @@ export class Manifest {
     const actual = parseVersion(manifest.version);
 
     // first validate the version should be accepted.
-    if (semver.gt(actual, maxSupported)) {
+    if (semver.gt(actual, maxSupported) && !options?.skipVersionCheck) {
       // we use a well known error prefix so that the CLI can identify this specific error
       // and print some more context to the user.
       throw new Error(`${VERSION_MISMATCH}: Maximum schema version supported is ${maxSupported}, but found ${actual}`);
@@ -112,10 +137,16 @@ export class Manifest {
       allowUnknownAttributes: false,
 
     } as any);
-    if (!result.valid) {
-      throw new Error(`Invalid assembly manifest:\n${result}`);
+
+    let errors = result.errors;
+    if (options?.skipEnumCheck) {
+      // Enum validations aren't useful when
+      errors = stripEnumErrors(errors);
     }
 
+    if (errors.length > 0) {
+      throw new Error(`Invalid assembly manifest:\n${errors.map(e => e.stack).join('\n')}`);
+    }
   }
 
   private static saveManifest(manifest: any, filePath: string, schema: jsonschema.Schema, preprocess?: (obj: any) => any) {
@@ -127,12 +158,12 @@ export class Manifest {
     fs.writeFileSync(filePath, JSON.stringify(withVersion, undefined, 2));
   }
 
-  private static loadManifest(filePath: string, schema: jsonschema.Schema, preprocess?: (obj: any) => any) {
+  private static loadManifest(filePath: string, schema: jsonschema.Schema, preprocess?: (obj: any) => any, options?: LoadManifestOptions) {
     let obj = JSON.parse(fs.readFileSync(filePath, { encoding: 'utf-8' }));
     if (preprocess) {
       obj = preprocess(obj);
     }
-    Manifest.validate(obj, schema);
+    Manifest.validate(obj, schema, options);
     return obj;
   }
 
@@ -216,4 +247,8 @@ function noUndefined<A extends object>(xs: A): A {
     }
   }
   return ret;
+}
+
+function stripEnumErrors(errors: jsonschema.ValidationError[]) {
+  return errors.filter(e => typeof e.schema ==='string' || !('enum' in e.schema));
 }
