@@ -8,6 +8,15 @@ import { QueueProcessingServiceBase, QueueProcessingServiceBaseProps } from '../
  */
 export interface QueueProcessingEc2ServiceProps extends QueueProcessingServiceBaseProps {
   /**
+   * The task definition to use for tasks in the service. TaskDefinition or TaskImageOptions must be specified, but not both..
+   *
+   * [disable-awslint:ref-via-interface]
+   *
+   * @default - none
+   */
+  readonly taskDefinition?: Ec2TaskDefinition;
+
+  /**
    * The number of cpu units used by the task.
    *
    * Valid values, which determines your range of valid values for the memory parameter:
@@ -60,13 +69,6 @@ export interface QueueProcessingEc2ServiceProps extends QueueProcessingServiceBa
    * @default - No GPUs assigned.
    */
   readonly gpuCount?: number;
-
-  /**
-   * Optional name for the container added
-   *
-   * @default - QueueProcessingContainer
-   */
-  readonly containerName?: string;
 }
 
 /**
@@ -81,31 +83,39 @@ export class QueueProcessingEc2Service extends QueueProcessingServiceBase {
   /**
    * The EC2 task definition in this construct
    */
-  public readonly taskDefinition: Ec2TaskDefinition;
+  public readonly taskDefinition!: Ec2TaskDefinition;
 
   /**
    * Constructs a new instance of the QueueProcessingEc2Service class.
    */
-  constructor(scope: Construct, id: string, props: QueueProcessingEc2ServiceProps) {
+  constructor(scope: Construct, id: string, props: QueueProcessingEc2ServiceProps = {}) {
     super(scope, id, props);
 
-    const containerName = props.containerName ?? 'QueueProcessingContainer';
+    if (props?.taskDefinition && props.taskImageOptions) {
+      throw new Error('You must specify either a taskDefinition or taskImageOptions, not both.');
+    } else if (props.taskDefinition) {
+      this.taskDefinition = props.taskDefinition;
+    } else if (props.taskImageOptions) {
+      const taskImageOptions = props.taskImageOptions;
+      this.taskDefinition = new Ec2TaskDefinition(this, 'QueueProcessingTaskDef', {
+        executionRole: taskImageOptions.executionRole,
+        taskRole: taskImageOptions.taskRole,
+        family: taskImageOptions.family,
+      });
 
-    // Create a Task Definition for the container to start
-    this.taskDefinition = new Ec2TaskDefinition(this, 'QueueProcessingTaskDef', {
-      family: props.family,
-    });
-    this.taskDefinition.addContainer(containerName, {
-      image: props.image,
-      memoryLimitMiB: props.memoryLimitMiB,
-      memoryReservationMiB: props.memoryReservationMiB,
-      cpu: props.cpu,
-      gpuCount: props.gpuCount,
-      command: props.command,
-      environment: this.environment,
-      secrets: this.secrets,
-      logging: this.logDriver,
-    });
+      const containerName = taskImageOptions.containerName ?? 'QueueProcessingContainer';
+      this.taskDefinition.addContainer(containerName, {
+        image: taskImageOptions.image,
+        cpu: props.cpu,
+        gpuCount: props.gpuCount,
+        memoryLimitMiB: props.memoryLimitMiB,
+        memoryReservationMiB: props.memoryReservationMiB,
+        environment: taskImageOptions.environment,
+        secrets: taskImageOptions.secrets,
+        logging: this.logDriver,
+        dockerLabels: taskImageOptions.dockerLabels,
+      });
+    }
 
     // The desiredCount should be removed from the fargate service when the feature flag is removed.
     const desiredCount = this.node.tryGetContext(cxapi.ECS_REMOVE_DEFAULT_DESIRED_COUNT) ? undefined : this.desiredCount;

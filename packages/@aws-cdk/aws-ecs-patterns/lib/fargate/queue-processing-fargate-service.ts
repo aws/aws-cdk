@@ -9,6 +9,15 @@ import { QueueProcessingServiceBase, QueueProcessingServiceBaseProps } from '../
  */
 export interface QueueProcessingFargateServiceProps extends QueueProcessingServiceBaseProps {
   /**
+   * The task definition to use for tasks in the service. TaskDefinition or TaskImageOptions must be specified, but not both.
+   *
+   * [disable-awslint:ref-via-interface]
+   *
+   * @default - none
+   */
+  readonly taskDefinition?: FargateTaskDefinition;
+
+  /**
    * The number of cpu units used by the task.
    *
    * Valid values, which determines your range of valid values for the memory parameter:
@@ -108,34 +117,43 @@ export class QueueProcessingFargateService extends QueueProcessingServiceBase {
    * The Fargate service in this construct.
    */
   public readonly service: FargateService;
+
   /**
    * The Fargate task definition in this construct.
    */
-  public readonly taskDefinition: FargateTaskDefinition;
+  public readonly taskDefinition!: FargateTaskDefinition;
 
   /**
    * Constructs a new instance of the QueueProcessingFargateService class.
    */
-  constructor(scope: Construct, id: string, props: QueueProcessingFargateServiceProps) {
+  constructor(scope: Construct, id: string, props: QueueProcessingFargateServiceProps = {}) {
     super(scope, id, props);
 
-    // Create a Task Definition for the container to start
-    this.taskDefinition = new FargateTaskDefinition(this, 'QueueProcessingTaskDef', {
-      memoryLimitMiB: props.memoryLimitMiB || 512,
-      cpu: props.cpu || 256,
-      family: props.family,
-    });
+    if (props.taskDefinition && props.taskImageOptions) {
+      throw new Error('You must specify either a taskDefinition or taskImageOptions, not both.');
+    } else if (props.taskDefinition) {
+      this.taskDefinition = props.taskDefinition;
+    } else if (props.taskImageOptions) {
+      const taskImageOptions = props.taskImageOptions;
+      this.taskDefinition = new FargateTaskDefinition(this, 'QueueProcessingTaskDef', {
+        executionRole: taskImageOptions.executionRole,
+        taskRole: taskImageOptions.taskRole,
+        family: taskImageOptions.family,
+        memoryLimitMiB: props.memoryLimitMiB || 512,
+        cpu: props.cpu || 256,
+      });
 
-    const containerName = props.containerName ?? 'QueueProcessingContainer';
-
-    this.taskDefinition.addContainer(containerName, {
-      image: props.image,
-      command: props.command,
-      environment: this.environment,
-      secrets: this.secrets,
-      logging: this.logDriver,
-      healthCheck: props.healthCheck,
-    });
+      const containerName = taskImageOptions.containerName ?? 'QueueProcessingContainer';
+      this.taskDefinition.addContainer(containerName, {
+        image: taskImageOptions.image,
+        command: props.command,
+        environment: this.environment,
+        secrets: this.secrets,
+        logging: this.logDriver,
+        healthCheck: props.healthCheck,
+        dockerLabels: taskImageOptions.dockerLabels,
+      });
+    }
 
     // The desiredCount should be removed from the fargate service when the feature flag is removed.
     const desiredCount = this.node.tryGetContext(cxapi.ECS_REMOVE_DEFAULT_DESIRED_COUNT) ? undefined : this.desiredCount;

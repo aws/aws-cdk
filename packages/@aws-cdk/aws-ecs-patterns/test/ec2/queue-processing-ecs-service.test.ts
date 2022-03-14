@@ -28,7 +28,9 @@ test('test ECS queue worker service construct - with only required props', () =>
   new ecsPatterns.QueueProcessingEc2Service(stack, 'Service', {
     cluster,
     memoryLimitMiB: 512,
-    image: ecs.ContainerImage.fromRegistry('test'),
+    taskImageOptions: {
+      image: ecs.ContainerImage.fromRegistry('test'),
+    },
   });
 
   // THEN - QueueWorker is of EC2 launch type, an SQS queue is created and all default properties are set.
@@ -107,7 +109,9 @@ test('test ECS queue worker service construct - with remove default desiredCount
   new ecsPatterns.QueueProcessingEc2Service(stack, 'Service', {
     cluster,
     memoryLimitMiB: 512,
-    image: ecs.ContainerImage.fromRegistry('test'),
+    taskImageOptions: {
+      image: ecs.ContainerImage.fromRegistry('test'),
+    },
   });
 
   // THEN - QueueWorker is of EC2 launch type, and desiredCount is not defined on the Ec2Service.
@@ -134,7 +138,9 @@ test('test ECS queue worker service construct - with optional props for queues',
   new ecsPatterns.QueueProcessingEc2Service(stack, 'Service', {
     cluster,
     memoryLimitMiB: 512,
-    image: ecs.ContainerImage.fromRegistry('test'),
+    taskImageOptions: {
+      image: ecs.ContainerImage.fromRegistry('test'),
+    },
     maxReceiveCount: 42,
     retentionPeriod: cdk.Duration.days(7),
     visibilityTimeout: cdk.Duration.minutes(5),
@@ -218,7 +224,9 @@ testDeprecated('test ECS queue worker service construct - with optional props', 
   new ecsPatterns.QueueProcessingEc2Service(stack, 'Service', {
     cluster,
     memoryLimitMiB: 1024,
-    image: ecs.ContainerImage.fromRegistry('test'),
+    taskImageOptions: {
+      image: ecs.ContainerImage.fromRegistry('test'),
+    },
     command: ['-c', '4', 'amazon.com'],
     enableLogging: false,
     desiredTaskCount: 2,
@@ -318,7 +326,9 @@ testDeprecated('can set desiredTaskCount to 0', () => {
     desiredTaskCount: 0,
     maxScalingCapacity: 2,
     memoryLimitMiB: 512,
-    image: ecs.ContainerImage.fromRegistry('test'),
+    taskImageOptions: {
+      image: ecs.ContainerImage.fromRegistry('test'),
+    },
   });
 
   // THEN - QueueWorker is of EC2 launch type, an SQS queue is created and all default properties are set.
@@ -347,7 +357,9 @@ testDeprecated('throws if desiredTaskCount and maxScalingCapacity are 0', () => 
       cluster,
       desiredTaskCount: 0,
       memoryLimitMiB: 512,
-      image: ecs.ContainerImage.fromRegistry('test'),
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('test'),
+      },
     }),
   ).toThrow(/maxScalingCapacity must be set and greater than 0 if desiredCount is 0/);
 });
@@ -369,8 +381,10 @@ test('can set custom containerName', () => {
   new ecsPatterns.QueueProcessingEc2Service(stack, 'Service', {
     cluster,
     memoryLimitMiB: 512,
-    image: ecs.ContainerImage.fromRegistry('test'),
-    containerName: 'my-container',
+    taskImageOptions: {
+      image: ecs.ContainerImage.fromRegistry('test'),
+      containerName: 'my-container',
+    },
   });
 
   // THEN
@@ -401,7 +415,9 @@ test('can set capacity provider strategies', () => {
   // WHEN
   new ecsPatterns.QueueProcessingEc2Service(stack, 'Service', {
     cluster,
-    image: ecs.ContainerImage.fromRegistry('test'),
+    taskImageOptions: {
+      image: ecs.ContainerImage.fromRegistry('test'),
+    },
     memoryLimitMiB: 512,
     capacityProviderStrategies: [
       {

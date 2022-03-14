@@ -15,7 +15,9 @@ new QueueProcessingFargateService(stack, 'QueueProcessingService', {
   vpc,
   memoryLimitMiB: 512,
   circuitBreaker: { rollback: true },
-  image: new ecs.AssetImage(path.join(__dirname, '..', 'sqs-reader')),
+  taskImageOptions: {
+    image: new ecs.AssetImage(path.join(__dirname, '..', 'sqs-reader')),
+  },
 });
 
 app.synth();

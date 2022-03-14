@@ -12,7 +12,9 @@ const vpc = new ec2.Vpc(stack, 'VPC');
 new QueueProcessingFargateService(stack, 'PublicQueueService', {
   vpc,
   memoryLimitMiB: 512,
-  image: new ecs.AssetImage(path.join(__dirname, '..', 'sqs-reader')),
+  taskImageOptions: {
+    image: new ecs.AssetImage(path.join(__dirname, '..', 'sqs-reader')),
+  },
   assignPublicIp: true,
   healthCheck: {
     command: ['CMD-SHELL', 'curl -f http://localhost/ || exit 1'],

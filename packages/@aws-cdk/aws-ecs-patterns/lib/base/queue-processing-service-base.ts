@@ -14,6 +14,9 @@ import { Construct } from 'constructs';
 // eslint-disable-next-line
 import { Construct as CoreConstruct } from '@aws-cdk/core';
 
+/**
+ * The properties for QueueProcessingTaskImageOptions
+ */
 export interface QueueProcessingTaskImageOptions {
   /**
    * The image used to start a container. Image or taskDefinition must be specified, not both.
@@ -119,11 +122,6 @@ export interface QueueProcessingServiceBaseProps {
    * @default none
    */
   readonly taskImageOptions?: QueueProcessingTaskImageOptions;
-
-  /**
-   * The image used to start a container.
-   */
-  readonly image: ContainerImage;
 
   /**
    * The command that is passed to the container.
@@ -357,7 +355,7 @@ export abstract class QueueProcessingServiceBase extends CoreConstruct {
   /**
    * Constructs a new instance of the QueueProcessingServiceBase class.
    */
-  constructor(scope: Construct, id: string, props: QueueProcessingServiceBaseProps) {
+  constructor(scope: Construct, id: string, props: QueueProcessingServiceBaseProps = {}) {
     super(scope, id);
 
     if (props.cluster && props.vpc) {

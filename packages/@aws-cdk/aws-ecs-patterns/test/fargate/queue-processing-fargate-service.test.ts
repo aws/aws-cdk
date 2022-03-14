@@ -27,7 +27,9 @@ test('test fargate queue worker service construct - with only required props', (
   new ecsPatterns.QueueProcessingFargateService(stack, 'Service', {
     cluster,
     memoryLimitMiB: 512,
-    image: ecs.ContainerImage.fromRegistry('test'),
+    taskImageOptions: {
+      image: ecs.ContainerImage.fromRegistry('test'),
+    },
   });
 
   // THEN - QueueWorker is of FARGATE launch type, an SQS queue is created and all default properties are set.
@@ -121,7 +123,9 @@ test('test fargate queue worker service construct - with remove default desiredC
   new ecsPatterns.QueueProcessingFargateService(stack, 'Service', {
     cluster,
     memoryLimitMiB: 512,
-    image: ecs.ContainerImage.fromRegistry('test'),
+    taskImageOptions: {
+      image: ecs.ContainerImage.fromRegistry('test'),
+    },
   });
 
   // THEN - QueueWorker is of FARGATE launch type, and desiredCount is not defined on the FargateService.
@@ -148,7 +152,9 @@ test('test fargate queue worker service construct - with optional props for queu
   new ecsPatterns.QueueProcessingFargateService(stack, 'Service', {
     cluster,
     memoryLimitMiB: 512,
-    image: ecs.ContainerImage.fromRegistry('test'),
+    taskImageOptions: {
+      image: ecs.ContainerImage.fromRegistry('test'),
+    },
     maxReceiveCount: 42,
     retentionPeriod: cdk.Duration.days(7),
     visibilityTimeout: cdk.Duration.minutes(5),
@@ -254,7 +260,9 @@ test('test Fargate queue worker service construct - without desiredCount specifi
   new ecsPatterns.QueueProcessingFargateService(stack, 'Service', {
     cluster,
     memoryLimitMiB: 512,
-    image: ecs.ContainerImage.fromRegistry('test'),
+    taskImageOptions: {
+      image: ecs.ContainerImage.fromRegistry('test'),
+    },
     command: ['-c', '4', 'amazon.com'],
     enableLogging: false,
     environment: {
@@ -349,7 +357,9 @@ testDeprecated('test Fargate queue worker service construct - with optional prop
   new ecsPatterns.QueueProcessingFargateService(stack, 'Service', {
     cluster,
     memoryLimitMiB: 512,
-    image: ecs.ContainerImage.fromRegistry('test'),
+    taskImageOptions: {
+      image: ecs.ContainerImage.fromRegistry('test'),
+    },
     command: ['-c', '4', 'amazon.com'],
     enableLogging: false,
     desiredTaskCount: 2,
@@ -439,7 +449,9 @@ test('can set custom containerName', () => {
   new ecsPatterns.QueueProcessingFargateService(stack, 'Service', {
     cluster,
     containerName: 'my-container',
-    image: ecs.ContainerImage.fromRegistry('test'),
+    taskImageOptions: {
+      image: ecs.ContainerImage.fromRegistry('test'),
+    },
   });
 
   Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
@@ -475,7 +487,9 @@ test('can set custom networking options', () => {
   new ecsPatterns.QueueProcessingFargateService(stack, 'Service', {
     vpc,
     memoryLimitMiB: 512,
-    image: ecs.ContainerImage.fromRegistry('test'),
+    taskImageOptions: {
+      image: ecs.ContainerImage.fromRegistry('test'),
+    },
     securityGroups: [securityGroup],
     taskSubnets: { subnetType: ec2.SubnetType.ISOLATED },
   });
@@ -515,7 +529,9 @@ test('can set use public IP', () => {
   new ecsPatterns.QueueProcessingFargateService(stack, 'Service', {
     vpc,
     memoryLimitMiB: 512,
-    image: ecs.ContainerImage.fromRegistry('test'),
+    taskImageOptions: {
+      image: ecs.ContainerImage.fromRegistry('test'),
+    },
     assignPublicIp: true,
   });
 
@@ -558,7 +574,9 @@ test('can set capacity provider strategies', () => {
   // WHEN
   new ecsPatterns.QueueProcessingFargateService(stack, 'Service', {
     cluster,
-    image: ecs.ContainerImage.fromRegistry('test'),
+    taskImageOptions: {
+      image: ecs.ContainerImage.fromRegistry('test'),
+    },
     capacityProviderStrategies: [
       {
         capacityProvider: 'FARGATE_SPOT',

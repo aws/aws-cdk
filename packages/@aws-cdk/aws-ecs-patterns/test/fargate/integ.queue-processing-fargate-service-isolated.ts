@@ -33,7 +33,9 @@ const securityGroup = new ec2.SecurityGroup(stack, 'MyCustomSG', {
 const queueProcessing = new QueueProcessingFargateService(stack, 'IsolatedQueueService', {
   vpc,
   memoryLimitMiB: 512,
-  image: new ecs.AssetImage(path.join(__dirname, '..', 'sqs-reader')),
+  taskImageOptions: {
+    image: new ecs.AssetImage(path.join(__dirname, '..', 'sqs-reader')),
+  },
   securityGroups: [securityGroup],
   taskSubnets: { subnetType: ec2.SubnetType.ISOLATED },
 });
