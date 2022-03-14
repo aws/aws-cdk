@@ -75,6 +75,8 @@ export interface QueueProcessingFargateServiceProps extends QueueProcessingServi
    * Optional name for the container added
    *
    * @default - QueueProcessingContainer
+   *
+   * @deprecated use `taskImageOptions` or `taskDefinition` instead
    */
   readonly containerName?: string;
 
@@ -152,6 +154,24 @@ export class QueueProcessingFargateService extends QueueProcessingServiceBase {
         logging: this.logDriver,
         healthCheck: props.healthCheck,
         dockerLabels: taskImageOptions.dockerLabels,
+      });
+    } else if (props.image) {
+      // If image property is provided default to old behavior
+      // This is deprecated and will be removed in a future version
+      this.taskDefinition = new FargateTaskDefinition(this, 'QueueProcessingTaskDef', {
+        family: props.family,
+        memoryLimitMiB: props.memoryLimitMiB || 512,
+        cpu: props.cpu || 256,
+      });
+
+      const containerName = props.containerName ?? 'QueueProcessingContainer';
+      this.taskDefinition.addContainer(containerName, {
+        image: props.image,
+        command: props.command,
+        environment: this.environment,
+        secrets: this.secrets,
+        logging: this.logDriver,
+        healthCheck: props.healthCheck,
       });
     }
 

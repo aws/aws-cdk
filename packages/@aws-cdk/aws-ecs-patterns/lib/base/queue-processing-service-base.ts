@@ -117,6 +117,15 @@ export interface QueueProcessingServiceBaseProps {
   readonly vpc?: IVpc;
 
   /**
+   * The image used to start a container.
+   *
+   * @default - none
+   *
+   * @deprecated - Use `taskImageOptions` or `taskDefinition` instead.
+   */
+  readonly image?: ContainerImage;
+
+  /**
    * The properties required to create a new task definition. TaskDefinition or TaskImageOptions must be specified, but not both.
    *
    * @default none
@@ -150,9 +159,23 @@ export interface QueueProcessingServiceBaseProps {
   readonly enableLogging?: boolean;
 
   /**
+   * The environment variables to pass to the container.
+   *
+   * The variable `QUEUE_NAME` with value `queue.queueName` will
+   * always be passed.
+   *
+   * @default 'QUEUE_NAME: queue.queueName'
+   *
+   * @deprecated - use `taskImageOptions` or `taskDefinition` instead
+   */
+  readonly environment?: { [key: string]: string };
+
+  /**
    * The secret to expose to the container as an environment variable.
    *
    * @default - No secret environment variables.
+   *
+   * @deprecated - use `taskImageOptions` or `taskDefinition` instead.
    */
   readonly secrets?: { [key: string]: Secret };
 
@@ -240,6 +263,8 @@ export interface QueueProcessingServiceBaseProps {
    * The name of a family that the task definition is registered to. A family groups multiple versions of a task definition.
    *
    * @default - Automatically generated name.
+   *
+   * @deprecated - use `taskImageOptions` or `taskDefinition` instead.
    */
   readonly family?: string;
 
@@ -381,7 +406,7 @@ export abstract class QueueProcessingServiceBase extends CoreConstruct {
     this.logDriver = props.logDriver ?? (enableLogging ? this.createAWSLogDriver(this.node.id) : undefined);
 
     // Add the queue name to environment variables
-    this.environment = { ...(props.taskImageOptions?.environment || {}), QUEUE_NAME: this.sqsQueue.queueName };
+    this.environment = { ...(props.taskImageOptions?.environment || props.environment || {}), QUEUE_NAME: this.sqsQueue.queueName };
     this.secrets = props.secrets;
 
     this.desiredCount = props.desiredTaskCount ?? 1;

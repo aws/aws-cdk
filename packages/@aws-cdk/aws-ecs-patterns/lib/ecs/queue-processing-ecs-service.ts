@@ -69,6 +69,15 @@ export interface QueueProcessingEc2ServiceProps extends QueueProcessingServiceBa
    * @default - No GPUs assigned.
    */
   readonly gpuCount?: number;
+
+  /**
+   * Optional name for the container added
+   *
+   * @default - QueueProcessingContainer
+   *
+   * @deprecated Use `taskImageOptions` or `taskDefinition` instead.
+   */
+  readonly containerName?: string;
 }
 
 /**
@@ -115,6 +124,25 @@ export class QueueProcessingEc2Service extends QueueProcessingServiceBase {
         secrets: taskImageOptions.secrets,
         logging: this.logDriver,
         dockerLabels: taskImageOptions.dockerLabels,
+      });
+    } else if (props.image) {
+      // If image property is provided default to old behavior
+      // This is deprecated and will be removed in a future version
+      this.taskDefinition = new Ec2TaskDefinition(this, 'QueueProcessingTaskDef', {
+        family: props.family,
+      });
+
+      const containerName = props.containerName ?? 'QueueProcessingContainer';
+      this.taskDefinition.addContainer(containerName, {
+        image: props.image,
+        command: props.command,
+        cpu: props.cpu,
+        gpuCount: props.gpuCount,
+        memoryLimitMiB: props.memoryLimitMiB,
+        memoryReservationMiB: props.memoryReservationMiB,
+        environment: this.environment,
+        secrets: props.secrets,
+        logging: this.logDriver,
       });
     }
 
