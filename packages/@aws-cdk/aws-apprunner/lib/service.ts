@@ -118,6 +118,13 @@ export class Runtime {
   private constructor(public readonly name: string) { }
 }
 
+/**
+ * The environment variable for the service.
+ */
+interface EnvironmentVariable {
+  readonly name: string;
+  readonly value: string;
+}
 
 /**
  * Result of binding `Source` into a `Service`.
@@ -483,6 +490,10 @@ export interface ServiceProps {
    * The IAM role that grants the App Runner service access to a source repository.
    * It's required for ECR image repositories (but not for ECR Public repositories).
    *
+   * The role must be assumable by the 'build.apprunner.amazonaws.com' service principal.
+   *
+   * @see https://docs.aws.amazon.com/apprunner/latest/dg/security_iam_service-with-iam.html#security_iam_service-with-iam-roles-service.access
+   *
    * @default - generate a new access role.
    */
   readonly accessRole?: iam.IRole;
@@ -490,6 +501,10 @@ export interface ServiceProps {
   /**
    * The IAM role that provides permissions to your App Runner service.
    * These are permissions that your code needs when it calls any AWS APIs.
+   *
+   * The role must be assumable by the 'tasks.apprunner.amazonaws.com' service principal.
+   *
+   * @see https://docs.aws.amazon.com/apprunner/latest/dg/security_iam_service-with-iam.html#security_iam_service-with-iam-roles-service.instance
    *
    * @default - no instance role attached.
    */
@@ -707,6 +722,10 @@ export class Service extends cdk.Resource {
   private readonly props: ServiceProps;
   private accessRole?: iam.IRole;
   private source: SourceConfig;
+  /**
+   * Environment variables for this service
+   */
+  private environment?: { [key: string]: string } = {};
 
   /**
    * The ARN of the Service.
@@ -798,22 +817,39 @@ export class Service extends cdk.Resource {
 
   }
   private renderCodeConfigurationValues(props: CodeConfigurationValues): any {
+    this.environment = props.environment;
     return {
-      ...props,
+      port: props.port,
+      buildCommand: props.buildCommand,
       runtime: props.runtime.name,
+      runtimeEnvironmentVariables: this.renderEnvironmentVariables(),
+      startCommand: props.startCommand,
     };
   }
   private renderImageRepository(): any {
     const repo = this.source.imageRepository!;
-    if (repo.imageConfiguration?.port) {
-      // convert port from type number to string
-      return Object.assign(repo, {
-        imageConfiguration: {
-          port: repo.imageConfiguration.port.toString(),
-        },
-      });
+    this.environment = repo.imageConfiguration?.environment;
+    return Object.assign(repo, {
+      imageConfiguration: {
+        port: repo.imageConfiguration?.port?.toString(),
+        startCommand: repo.imageConfiguration?.startCommand,
+        runtimeEnvironmentVariables: this.renderEnvironmentVariables(),
+      },
+    });
+  }
+
+  private renderEnvironmentVariables(): EnvironmentVariable[] | undefined {
+    if (this.environment) {
+      let env: EnvironmentVariable[] = [];
+      for (const [key, value] of Object.entries(this.environment)) {
+        if (key.startsWith('AWSAPPRUNNER')) {
+          throw new Error(`Environment variable key ${key} with a prefix of AWSAPPRUNNER is not allowed`);
+        }
+        env.push({ name: key, value: value });
+      }
+      return env;
     } else {
-      return repo;
+      return undefined;
     }
   }
 

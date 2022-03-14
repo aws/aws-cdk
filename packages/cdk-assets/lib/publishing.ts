@@ -1,5 +1,6 @@
 import { AssetManifest, IManifestEntry } from './asset-manifest';
 import { IAws } from './aws';
+import { IHandlerHost } from './private/asset-handler';
 import { makeAssetHandler } from './private/handlers';
 import { EventType, IPublishProgress, IPublishProgressListener } from './progress';
 
@@ -67,6 +68,12 @@ export class AssetPublishing implements IPublishProgress {
   public async publish(): Promise<void> {
     const self = this;
 
+    const handlerHost: IHandlerHost = {
+      aws: this.options.aws,
+      get aborted() { return self.aborted; },
+      emitMessage(t, m) { self.progressEvent(t, m); },
+    };
+
     for (const asset of this.assets) {
       if (this.aborted) { break; }
       this.currentAsset = asset;
@@ -74,11 +81,7 @@ export class AssetPublishing implements IPublishProgress {
       try {
         if (this.progressEvent(EventType.START, `Publishing ${asset.id}`)) { break; }
 
-        const handler = makeAssetHandler(this.manifest, asset, {
-          aws: this.options.aws,
-          get aborted() { return self.aborted; },
-          emitMessage(t, m) { self.progressEvent(t, m); },
-        });
+        const handler = makeAssetHandler(this.manifest, asset, handlerHost);
         await handler.publish();
 
         if (this.aborted) {

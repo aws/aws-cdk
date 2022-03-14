@@ -39,7 +39,14 @@
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       }
     },
-    "projectReferences": true
+    "projectReferences": true,
+    "metadata": {
+      "jsii": {
+        "rosetta": {
+          "strict": true
+        }
+      }
+    }
   },
   "keywords": [
     "aws",
@@ -56,12 +63,12 @@
     "constructs": "^3.3.69"
   },
   "devDependencies": {
-    "@aws-cdk/assert-internal": "0.0.0",
+    "@aws-cdk/assertions": "0.0.0",
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/cdk-integ-tools": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/jest": "^27.0.2",
-    "jest": "^27.3.1"
+    "@types/jest": "^27.4.1",
+    "jest": "^27.5.1"
   },
   "peerDependencies": {
     "@aws-cdk/aws-dynamodb": "0.0.0",

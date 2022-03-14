@@ -1,4 +1,4 @@
-import { Duration, Resource, Stack, Token, TokenComparison } from '@aws-cdk/core';
+import { ArnFormat, Duration, Resource, Stack, Token, TokenComparison } from '@aws-cdk/core';
 import { Construct, Node } from 'constructs';
 import { Grant } from './grant';
 import { CfnRole } from './iam.generated';
@@ -8,7 +8,9 @@ import { Policy } from './policy';
 import { PolicyDocument } from './policy-document';
 import { PolicyStatement } from './policy-statement';
 import { AddToPrincipalPolicyResult, ArnPrincipal, IPrincipal, PrincipalPolicyFragment } from './principals';
+import { defaultAddPrincipalToAssumeRole } from './private/assume-role-policy';
 import { ImmutableRole } from './private/immutable-role';
+import { MutatingPolicyDocumentAdapter } from './private/policydoc-adapter';
 import { AttachedPolicies, UniqueStringSet } from './util';
 
 /**
@@ -185,7 +187,7 @@ export class Role extends Resource implements IRole {
    */
   public static fromRoleArn(scope: Construct, id: string, roleArn: string, options: FromRoleArnOptions = {}): IRole {
     const scopeStack = Stack.of(scope);
-    const parsedArn = scopeStack.parseArn(roleArn);
+    const parsedArn = scopeStack.splitArn(roleArn, ArnFormat.SLASH_RESOURCE_NAME);
     const resourceName = parsedArn.resourceName!;
     const roleAccount = parsedArn.account;
     // service roles have an ARN like 'arn:aws:iam::<account>:role/service-role/<roleName>'
@@ -270,6 +272,21 @@ export class Role extends Resource implements IRole {
     return options.mutable !== false && equalOrAnyUnresolved
       ? importedRole
       : new ImmutableRole(scope, `ImmutableRole${id}`, importedRole, options.addGrantsToResources ?? false);
+  }
+
+  /**
+   * Import an external role by name.
+   *
+   * The imported role is assumed to exist in the same account as the account
+   * the scope's containing Stack is being deployed to.
+   */
+  public static fromRoleName(scope: Construct, id: string, roleName: string) {
+    return Role.fromRoleArn(scope, id, Stack.of(scope).formatArn({
+      region: '',
+      service: 'iam',
+      resource: 'role',
+      resourceName: roleName,
+    }));
   }
 
   public readonly grantPrincipal: IPrincipal = this;
@@ -484,17 +501,21 @@ export interface IRole extends IIdentity {
 }
 
 function createAssumeRolePolicy(principal: IPrincipal, externalIds: string[]) {
-  const statement = new AwsStarStatement();
-  statement.addPrincipals(principal);
-  statement.addActions(principal.assumeRoleAction);
+  const actualDoc = new PolicyDocument();
 
-  if (externalIds.length) {
-    statement.addCondition('StringEquals', { 'sts:ExternalId': externalIds.length === 1 ? externalIds[0] : externalIds });
-  }
+  // If requested, add externalIds to every statement added to this doc
+  const addDoc = externalIds.length === 0
+    ? actualDoc
+    : new MutatingPolicyDocumentAdapter(actualDoc, (statement) => {
+      statement.addCondition('StringEquals', {
+        'sts:ExternalId': externalIds.length === 1 ? externalIds[0] : externalIds,
+      });
+      return statement;
+    });
 
-  const doc = new PolicyDocument();
-  doc.addStatements(statement);
-  return doc;
+  defaultAddPrincipalToAssumeRole(principal, addDoc);
+
+  return actualDoc;
 }
 
 function validateMaxSessionDuration(duration?: number) {
@@ -504,24 +525,6 @@ function validateMaxSessionDuration(duration?: number) {
 
   if (duration < 3600 || duration > 43200) {
     throw new Error(`maxSessionDuration is set to ${duration}, but must be >= 3600sec (1hr) and <= 43200sec (12hrs)`);
-  }
-}
-
-/**
- * A PolicyStatement that normalizes its Principal field differently
- *
- * Normally, "anyone" is normalized to "Principal: *", but this statement
- * normalizes to "Principal: { AWS: * }".
- */
-class AwsStarStatement extends PolicyStatement {
-  public toStatementJson(): any {
-    const stat = super.toStatementJson();
-
-    if (stat.Principal === '*') {
-      stat.Principal = { AWS: '*' };
-    }
-
-    return stat;
   }
 }
 

@@ -1,6 +1,7 @@
 import * as path from 'path';
 import { Template } from '@aws-cdk/assertions';
 import * as es from '@aws-cdk/aws-elasticsearch';
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
 import * as appsync from '../lib';
 
@@ -20,7 +21,7 @@ beforeEach(() => {
 });
 
 describe('Elasticsearch Data Source Configuration', () => {
-  test('Elasticsearch configure properly', () => {
+  testDeprecated('Elasticsearch configure properly', () => {
     // WHEN
     api.addElasticsearchDataSource('ds', domain);
 
@@ -51,7 +52,7 @@ describe('Elasticsearch Data Source Configuration', () => {
     });
   });
 
-  test('Elastic search configuration contains fully qualified url', () => {
+  testDeprecated('Elastic search configuration contains fully qualified url', () => {
     // WHEN
     api.addElasticsearchDataSource('ds', domain);
 
@@ -67,7 +68,7 @@ describe('Elasticsearch Data Source Configuration', () => {
     });
   });
 
-  test('default configuration produces name identical to the id', () => {
+  testDeprecated('default configuration produces name identical to the id', () => {
     // WHEN
     api.addElasticsearchDataSource('ds', domain);
 
@@ -78,7 +79,7 @@ describe('Elasticsearch Data Source Configuration', () => {
     });
   });
 
-  test('appsync configures name correctly', () => {
+  testDeprecated('appsync configures name correctly', () => {
     // WHEN
     api.addElasticsearchDataSource('ds', domain, {
       name: 'custom',
@@ -91,7 +92,7 @@ describe('Elasticsearch Data Source Configuration', () => {
     });
   });
 
-  test('appsync configures name and description correctly', () => {
+  testDeprecated('appsync configures name and description correctly', () => {
     // WHEN
     api.addElasticsearchDataSource('ds', domain, {
       name: 'custom',
@@ -106,7 +107,7 @@ describe('Elasticsearch Data Source Configuration', () => {
     });
   });
 
-  test('appsync errors when creating multiple elasticsearch data sources with no configuration', () => {
+  testDeprecated('appsync errors when creating multiple elasticsearch data sources with no configuration', () => {
     // WHEN
     const when = () => {
       api.addElasticsearchDataSource('ds', domain);
@@ -119,7 +120,7 @@ describe('Elasticsearch Data Source Configuration', () => {
 });
 
 describe('adding elasticsearch data source from imported api', () => {
-  test('imported api can add ElasticsearchDataSource from id', () => {
+  testDeprecated('imported api can add ElasticsearchDataSource from id', () => {
     // WHEN
     const importedApi = appsync.GraphqlApi.fromGraphqlApiAttributes(stack, 'importedApi', {
       graphqlApiId: api.apiId,
@@ -133,7 +134,7 @@ describe('adding elasticsearch data source from imported api', () => {
     });
   });
 
-  test('imported api can add ElasticsearchDataSource from attributes', () => {
+  testDeprecated('imported api can add ElasticsearchDataSource from attributes', () => {
     // WHEN
     const importedApi = appsync.GraphqlApi.fromGraphqlApiAttributes(stack, 'importedApi', {
       graphqlApiId: api.apiId,

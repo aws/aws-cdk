@@ -1,4 +1,3 @@
-import '@aws-cdk/assert-internal/jest';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as notifications from '@aws-cdk/aws-codestarnotifications';
 import * as events from '@aws-cdk/aws-events';

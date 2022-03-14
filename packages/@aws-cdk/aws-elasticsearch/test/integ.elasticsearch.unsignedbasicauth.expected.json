@@ -88,10 +88,7 @@
             "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
           }
         ]
-      },
-      "DependsOn": [
-        "Domain66AC69E0"
-      ]
+      }
     },
     "DomainESAccessPolicy89986F33": {
       "Type": "Custom::ElasticsearchAccessPolicy",
@@ -117,7 +114,7 @@
                   "Arn"
                 ]
               },
-              "/*\\\"}],\\\"Version\\\":\\\"2012-10-17\\\"}\"},\"outputPath\":\"DomainConfig.ElasticsearchClusterConfig.AccessPolicies\",\"physicalResourceId\":{\"id\":\"",
+              "/*\\\"}],\\\"Version\\\":\\\"2012-10-17\\\"}\"},\"outputPaths\":[\"DomainConfig.ElasticsearchClusterConfig.AccessPolicies\"],\"physicalResourceId\":{\"id\":\"",
               {
                 "Ref": "Domain66AC69E0"
               },
@@ -140,7 +137,7 @@
                   "Arn"
                 ]
               },
-              "/*\\\"}],\\\"Version\\\":\\\"2012-10-17\\\"}\"},\"outputPath\":\"DomainConfig.ElasticsearchClusterConfig.AccessPolicies\",\"physicalResourceId\":{\"id\":\"",
+              "/*\\\"}],\\\"Version\\\":\\\"2012-10-17\\\"}\"},\"outputPaths\":[\"DomainConfig.ElasticsearchClusterConfig.AccessPolicies\"],\"physicalResourceId\":{\"id\":\"",
               {
                 "Ref": "Domain66AC69E0"
               },
@@ -151,8 +148,7 @@
         "InstallLatestAwsSdk": true
       },
       "DependsOn": [
-        "DomainESAccessPolicyCustomResourcePolicy9747FC42",
-        "Domain66AC69E0"
+        "DomainESAccessPolicyCustomResourcePolicy9747FC42"
       ],
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete"

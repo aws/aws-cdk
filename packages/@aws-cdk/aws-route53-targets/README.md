@@ -58,7 +58,7 @@ This library contains Route53 Alias Record targets for:
 
   ```ts
   import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
-  
+
   declare const zone: route53.HostedZone;
   declare const lb: elbv2.ApplicationLoadBalancer;
 
@@ -73,7 +73,7 @@ This library contains Route53 Alias Record targets for:
 
   ```ts
   import * as elb from '@aws-cdk/aws-elasticloadbalancing';
-  
+
   declare const zone: route53.HostedZone;
   declare const lb: elb.LoadBalancer;
 
@@ -108,7 +108,7 @@ See [the documentation on DNS addressing](https://docs.aws.amazon.com/global-acc
 
 * InterfaceVpcEndpoints
 
-**Important:** Based on the CFN docs for VPCEndpoints - [see here](attrDnsEntries) - the attributes returned for DnsEntries in CloudFormation is a combination of the hosted zone ID and the DNS name. The entries are ordered as follows: regional public DNS, zonal public DNS, private DNS, and wildcard DNS. This order is not enforced for AWS Marketplace services, and therefore this CDK construct is ONLY guaranteed to work with non-marketplace services.
+**Important:** Based on the CFN docs for VPCEndpoints - [see here](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpcendpoint.html#aws-resource-ec2-vpcendpoint-return-values) - the attributes returned for DnsEntries in CloudFormation is a combination of the hosted zone ID and the DNS name. The entries are ordered as follows: regional public DNS, zonal public DNS, private DNS, and wildcard DNS. This order is not enforced for AWS Marketplace services, and therefore this CDK construct is ONLY guaranteed to work with non-marketplace services.
 
   ```ts
   import * as ec2 from '@aws-cdk/aws-ec2';
@@ -129,7 +129,7 @@ See [the Developer Guide](https://docs.aws.amazon.com/Route53/latest/DeveloperGu
 
   ```ts
   import * as s3 from '@aws-cdk/aws-s3';
-  
+
   const recordName = 'www';
   const domainName = 'example.com';
 
@@ -176,11 +176,14 @@ See [the Developer Guide](https://docs.aws.amazon.com/Route53/latest/DeveloperGu
 
 **Important:** Only supports Elastic Beanstalk environments created after 2016 that have a regional endpoint.
 
-  ```ts
-  new route53.ARecord(this, 'AliasRecord', {
-    zone,
-    target: route53.RecordTarget.fromAlias(new alias.ElasticBeanstalkEnvironmentEndpointTarget(ebsEnvironmentUrl)),
-  });
-  ```
+```ts
+declare const zone: route53.HostedZone;
+declare const ebsEnvironmentUrl: string;
+
+new route53.ARecord(this, 'AliasRecord', {
+  zone,
+  target: route53.RecordTarget.fromAlias(new targets.ElasticBeanstalkEnvironmentEndpointTarget(ebsEnvironmentUrl)),
+});
+```
 
 See the documentation of `@aws-cdk/aws-route53` for more information.

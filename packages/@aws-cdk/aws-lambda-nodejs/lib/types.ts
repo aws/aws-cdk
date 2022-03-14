@@ -52,14 +52,15 @@ export interface BundlingOptions {
    *
    * @see https://esbuild.github.io/api/#loader
    *
-   * @example { '.png': 'dataurl' }
+   * For example, `{ '.png': 'dataurl' }`.
    *
    * @default - use esbuild default loaders
    */
   readonly loader?: { [ext: string]: string };
 
   /**
-   * Log level for esbuild
+   * Log level for esbuild. This is also propagated to the package manager and
+   * applies to its specific install command.
    *
    * @default LogLevel.WARNING
    */
@@ -92,7 +93,7 @@ export interface BundlingOptions {
    *
    * This can be useful if you need to do multiple builds of the same code with different settings.
    *
-   * @example { 'tsconfig': 'path/custom.tsconfig.json' }
+   * For example, `{ 'tsconfig': 'path/custom.tsconfig.json' }`.
    *
    * @default - automatically discovered by `esbuild`
    */
@@ -103,19 +104,18 @@ export interface BundlingOptions {
    *
    * The metadata in this JSON file follows this schema (specified using TypeScript syntax):
    *
-   * ```typescript
-   *  {
-   *     outputs: {
-   *          [path: string]: {
-   *            bytes: number
-   *            inputs: {
-   *              [path: string]: { bytesInOutput: number }
-   *            }
-   *            imports: { path: string }[]
-   *            exports: string[]
-   *          }
-   *        }
+   * ```text
+   * {
+   *   outputs: {
+   *     [path: string]: {
+   *       bytes: number
+   *       inputs: {
+   *         [path: string]: { bytesInOutput: number }
+   *       }
+   *       imports: { path: string }[]
+   *       exports: string[]
    *     }
+   *   }
    * }
    * ```
    * This data can then be analyzed by other tools. For example,
@@ -171,8 +171,9 @@ export interface BundlingOptions {
   /**
    * Replace global identifiers with constant expressions.
    *
-   * @example { 'process.env.DEBUG': 'true' }
-   * @example { 'process.env.API_KEY': JSON.stringify('xxx-xxxx-xxx') }
+   * For example, `{ 'process.env.DEBUG': 'true' }`.
+   *
+   * Another example, `{ 'process.env.API_KEY': JSON.stringify('xxx-xxxx-xxx') }`.
    *
    * @default - no replacements are made
    */
@@ -203,11 +204,31 @@ export interface BundlingOptions {
   readonly esbuildVersion?: string;
 
   /**
+   * Build arguments to pass into esbuild.
+   *
+   * For example, to add the [--log-limit](https://esbuild.github.io/api/#log-limit) flag:
+   *
+   * ```text
+   * new NodejsFunction(scope, id, {
+   *   ...
+   *   bundling: {
+   *     esbuildArgs: {
+   *       "--log-limit": "0",
+   *     }
+   *   }
+   * });
+   * ```
+   *
+   * @default - no additional esbuild arguments are passed
+   */
+  readonly esbuildArgs?: { [key: string]: string | boolean };
+
+  /**
    * Build arguments to pass when building the bundling image.
    *
    * @default - no build arguments are passed
    */
-  readonly buildArgs?: { [key:string] : string };
+  readonly buildArgs?: { [key: string]: string };
 
   /**
    * Force bundling in a Docker container even if local bundling is
@@ -263,6 +284,47 @@ export interface BundlingOptions {
    * @default - asset hash is calculated based on the bundled output
    */
   readonly assetHash?: string;
+
+  /**
+   * Output format for the generated JavaScript files
+   *
+   * @default OutputFormat.CJS
+   */
+  readonly format?: OutputFormat;
+
+  /**
+   * How to determine the entry point for modules.
+   * Try ['module', 'main'] to default to ES module versions.
+   *
+   * @default ['main', 'module']
+   */
+  readonly mainFields?: string[];
+
+  /**
+   * This option allows you to automatically replace a global variable with an
+   * import from another file.
+   *
+   * @see https://esbuild.github.io/api/#inject
+   * @default - no code is injected
+   */
+  readonly inject?: string[]
+}
+
+/**
+ * Output format for the generated JavaScript files
+ */
+export enum OutputFormat {
+  /**
+   * CommonJS
+   */
+  CJS = 'cjs',
+
+  /**
+   * ECMAScript module
+   *
+   * Requires a running environment that supports `import` and `export` syntax.
+   */
+  ESM = 'esm'
 }
 
 /**
@@ -273,15 +335,14 @@ export interface BundlingOptions {
  *
  * Commands are chained with `&&`.
  *
- * @example
- * {
- *   // Copy a file from the input directory to the output directory
- *   // to include it in the bundled asset
- *   afterBundling(inputDir: string, outputDir: string): string[] {
- *     return [`cp ${inputDir}/my-binary.node ${outputDir}`];
- *   }
- *   // ...
+ * The following example (specified in TypeScript) copies a file from the input
+ * directory to the output directory to include it in the bundled asset:
+ *
+ * ```text
+ * afterBundling(inputDir: string, outputDir: string): string[]{
+ *   return [`cp ${inputDir}/my-binary.node ${outputDir}`];
  * }
+ * ```
  */
 export interface ICommandHooks {
   /**
@@ -309,7 +370,7 @@ export interface ICommandHooks {
 }
 
 /**
- * Log level for esbuild
+ * Log levels for esbuild and package managers' install commands.
  */
 export enum LogLevel {
   /** Show everything */

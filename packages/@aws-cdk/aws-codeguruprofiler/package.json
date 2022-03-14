@@ -28,7 +28,14 @@
         ]
       }
     },
-    "projectReferences": true
+    "projectReferences": true,
+    "metadata": {
+      "jsii": {
+        "rosetta": {
+          "strict": true
+        }
+      }
+    }
   },
   "repository": {
     "type": "git",
@@ -74,12 +81,12 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert-internal": "0.0.0",
+    "@aws-cdk/assertions": "0.0.0",
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/cdk-integ-tools": "0.0.0",
     "@aws-cdk/cfn2ts": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/jest": "^27.0.2"
+    "@types/jest": "^27.4.1"
   },
   "dependencies": {
     "@aws-cdk/aws-iam": "0.0.0",

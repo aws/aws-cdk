@@ -14,7 +14,7 @@ class TestProductStack extends servicecatalog.ProductStack {
   }
 }
 
-new servicecatalog.CloudFormationProduct(stack, 'TestProduct', {
+const product = new servicecatalog.CloudFormationProduct(stack, 'TestProduct', {
   productName: 'testProduct',
   owner: 'testOwner',
   productVersions: [
@@ -37,5 +37,14 @@ new servicecatalog.CloudFormationProduct(stack, 'TestProduct', {
     },
   ],
 });
+
+const tagOptions = new servicecatalog.TagOptions(stack, 'TagOptions', {
+  allowedValuesForTags: {
+    key1: ['value1', 'value2'],
+    key2: ['value1'],
+  },
+});
+
+product.associateTagOptions(tagOptions);
 
 app.synth();

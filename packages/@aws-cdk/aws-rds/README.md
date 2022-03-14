@@ -129,6 +129,10 @@ new rds.DatabaseInstanceReadReplica(this, 'ReadReplica', {
 });
 ```
 
+Automatic backups of read replica instances are only supported for MySQL and MariaDB. By default,
+automatic backups are disabled for read replicas and can only be enabled (using `backupRetention`)
+if also enabled on the source instance.
+
 Creating a "production" Oracle database instance with option and parameter groups:
 
 [example of setting up a production oracle instance](test/integ.instance.lit.ts)
@@ -321,6 +325,8 @@ See also [@aws-cdk/aws-secretsmanager](https://github.com/aws/aws-cdk/blob/maste
 You can also authenticate to a database instance using AWS Identity and Access Management (IAM) database authentication;
 See <https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.IAMDBAuth.html> for more information
 and a list of supported versions and limitations.
+
+**Note**: `grantConnect()` does not currently work - see [this GitHub issue](https://github.com/aws/aws-cdk/issues/11851).
 
 The following example shows enabling IAM authentication for a database instance and granting connection access to an IAM role.
 
@@ -523,6 +529,51 @@ new rds.OptionGroup(this, 'Options', {
 });
 ```
 
+## Parameter Groups
+
+Database parameters specify how the database is configured.
+For example, database parameters can specify the amount of resources, such as memory, to allocate to a database.
+You manage your database configuration by associating your DB instances with parameter groups.
+Amazon RDS defines parameter groups with default settings.
+
+You can create your own parameter group for your cluster or instance and associate it with your database:
+
+```ts
+declare const vpc: ec2.Vpc;
+
+const parameterGroup = new rds.ParameterGroup(this, 'ParameterGroup', {
+  engine: rds.DatabaseInstanceEngine.sqlServerEe({
+    version: rds.SqlServerEngineVersion.VER_11,
+  }),
+  parameters: {
+    locks: '100',
+  },
+});
+
+new rds.DatabaseInstance(this, 'Database', {
+  engine: rds.DatabaseInstanceEngine.SQL_SERVER_EE,
+  vpc,
+  parameterGroup,
+});
+```
+
+Another way to specify parameters is to use the inline field `parameters` that creates an RDS parameter group for you.
+You can use this if you do not want to reuse the parameter group instance for different instances:
+
+```ts
+declare const vpc: ec2.Vpc;
+
+new rds.DatabaseInstance(this, 'Database', {
+  engine: rds.DatabaseInstanceEngine.sqlServerEe({ version: rds.SqlServerEngineVersion.VER_11 }),
+  vpc,
+  parameters: {
+    locks: '100',
+  },
+});
+```
+
+You cannot specify a parameter map and a parameter group at the same time.
+
 ## Serverless
 
 [Amazon Aurora Serverless](https://aws.amazon.com/rds/aurora/serverless/) is an on-demand, auto-scaling configuration for Amazon
@@ -568,6 +619,17 @@ Read more about the [limitations of Aurora Serverless](https://docs.aws.amazon.c
 
 Learn more about using Amazon Aurora Serverless by reading the [documentation](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless.html)
 
+Use `ServerlessClusterFromSnapshot` to create a serverless cluster from a snapshot:
+
+```ts
+declare const vpc: ec2.Vpc;
+new rds.ServerlessClusterFromSnapshot(this, 'Cluster', {
+  engine: rds.DatabaseClusterEngine.AURORA_MYSQL,
+  vpc,
+  snapshotIdentifier: 'mySnapshot',
+});
+```
+
 ### Data API
 
 You can access your Aurora Serverless DB cluster using the built-in Data API. The Data API doesn't require a persistent connection to the DB cluster. Instead, it provides a secure HTTP endpoint and integration with AWS SDKs.
@@ -579,7 +641,7 @@ declare const vpc: ec2.Vpc;
 
 const cluster = new rds.ServerlessCluster(this, 'AnotherCluster', {
   engine: rds.DatabaseClusterEngine.AURORA_MYSQL,
-  vpc,
+  vpc, // this parameter is optional for serverless Clusters
   enableDataApi: true, // Optional - will be automatically set if you call grantDataApiAccess()
 });
 
@@ -599,3 +661,11 @@ cluster.grantDataApiAccess(fn);
 **Note**: To invoke the Data API, the resource will need to read the secret associated with the cluster.
 
 To learn more about using the Data API, see the [documentation](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/data-api.html).
+
+### Default VPC
+
+The `vpc` parameter is optional. 
+
+If not provided, the cluster will be created in the default VPC of the account and region.
+As this VPC is not deployed with AWS CDK, you can't configure the `vpcSubnets`, `subnetGroup` or `securityGroups` of the Aurora Serverless Cluster. 
+If you want to provide one of `vpcSubnets`, `subnetGroup` or `securityGroups` parameter, please provide a `vpc`.

@@ -9,6 +9,17 @@ import { Schedule } from './schedule';
  */
 export interface BasicScheduledActionProps {
   /**
+   * Specifies the time zone for a cron expression. If a time zone is not provided, UTC is used by default.
+   *
+   * Valid values are the canonical names of the IANA time zones, derived from the IANA Time Zone Database (such as Etc/GMT+9 or Pacific/Tahiti).
+   *
+   * For more information, see https://en.wikipedia.org/wiki/List_of_tz_database_time_zones.
+   *
+   * @default - UTC
+   *
+   */
+  readonly timeZone?: string;
+  /**
    * When to perform this action.
    *
    * Supports cron expressions.
@@ -94,6 +105,7 @@ export class ScheduledAction extends Resource {
       maxSize: props.maxCapacity,
       desiredCapacity: props.desiredCapacity,
       recurrence: props.schedule.expressionString,
+      timeZone: props.timeZone,
     });
   }
 }

@@ -81,10 +81,15 @@ test("calls tryHotswapDeployment() if 'hotswap' is true", async () => {
   await deployStack({
     ...standardDeployStackArguments(),
     hotswap: true,
+    extraUserAgent: 'extra-user-agent',
   });
 
   // THEN
   expect(tryHotswapDeployment).toHaveBeenCalled();
+  // check that the extra User-Agent is honored
+  expect(sdk.appendCustomUserAgent).toHaveBeenCalledWith('extra-user-agent');
+  // check that the fallback has been called if hotswapping failed
+  expect(sdk.appendCustomUserAgent).toHaveBeenCalledWith('cdk-hotswap/fallback');
 });
 
 test("does not call tryHotswapDeployment() if 'hotswap' is false", async () => {

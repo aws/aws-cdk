@@ -1,5 +1,6 @@
 // Fixture with packages imported and a VPC created
-import { Construct, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
+import { Stack } from '@aws-cdk/core';
 import iam = require('@aws-cdk/aws-iam');
 import ec2 = require('@aws-cdk/aws-ec2');
 

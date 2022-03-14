@@ -4,7 +4,7 @@
 /**
  * these types can be accessed without needing to `import` the module.
  * e.g. `AWSCDKAsyncCustomResource.OnEventRequest`
- */ 
+ */
 export as namespace AWSCDKAsyncCustomResource;
 
 /**
@@ -80,6 +80,15 @@ interface OnEventResponse {
    * Custom fields returned from OnEvent will be passed to IsComplete.
    */
   readonly [key: string]: any;
+
+  /**
+   * Whether to mask the output of the custom resource when retrieved
+   * by using the `Fn::GetAtt` function. If set to `true`, all returned
+   * values are masked with asterisks (*****).
+   *
+   * @default false
+   */
+  readonly NoEcho?: boolean;
 }
 
 /**
@@ -95,6 +104,11 @@ export interface IsCompleteResponse {
    * Indicates if the resource operation is complete or should we retry.
    */
   readonly IsComplete: boolean;
+
+  /**
+   * If present, overrides the PhysicalResourceId of OnEventResponse with the PhysicalResourceId of IsCompleteResponse.
+   */
+  readonly PhysicalResourceId?: string;
 
   /**
    * Additional/changes to resource attributes. This hash will be merged with the one returned from `OnEventResponse`.

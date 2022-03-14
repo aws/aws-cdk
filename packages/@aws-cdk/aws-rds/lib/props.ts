@@ -44,6 +44,16 @@ export interface InstanceProps {
   readonly parameterGroup?: IParameterGroup;
 
   /**
+   * The parameters in the DBParameterGroup to create automatically
+   *
+   * You can only specify parameterGroup or parameters but not both.
+   * You need to use a versioned engine to auto-generate a DBParameterGroup.
+   *
+   * @default - None
+   */
+  readonly parameters?: { [key: string]: string };
+
+  /**
    * Whether to enable Performance Insights for the DB instance.
    *
    * @default - false, unless ``performanceInsightRentention`` or ``performanceInsightEncryptionKey`` is set.
@@ -158,7 +168,6 @@ export interface CredentialsBaseOptions {
 
 /**
  * Options for creating Credentials from a username.
- * @deprecated supporting API `fromUsername()` has been deprecated. See deprecation notice of the API.
  */
 export interface CredentialsFromUsernameOptions extends CredentialsBaseOptions {
   /**
@@ -202,10 +211,6 @@ export abstract class Credentials {
   /**
    * Creates Credentials for the given username, and optional password and key.
    * If no password is provided, one will be generated and stored in Secrets Manager.
-   *
-   * @deprecated use `fromGeneratedSecret()` or `fromPassword()` for new Clusters and Instances.
-   *   Note that switching from `fromUsername()` to `fromGeneratedSecret()` or `fromPassword()` for already deployed
-   *   Clusters or Instances will result in their replacement!
    */
   public static fromUsername(username: string, options: CredentialsFromUsernameOptions = {}): Credentials {
     return {
@@ -351,9 +356,7 @@ export abstract class SnapshotCredentials {
    *
    * Note - The username must match the existing master username of the snapshot.
    *
-   * @deprecated use `fromGeneratedSecret()` for new Clusters and Instances.
-   *   Note that switching from `fromGeneratedPassword()` to `fromGeneratedSecret()` for already deployed
-   *   Clusters or Instances will update their master password.
+   * NOTE: use `fromGeneratedSecret()` for new Clusters and Instances.
    */
   public static fromGeneratedPassword(username: string, options: SnapshotCredentialsFromGeneratedPasswordOptions = {}): SnapshotCredentials {
     return {
@@ -453,7 +456,7 @@ export abstract class SnapshotCredentials {
 /**
  * Properties common to single-user and multi-user rotation options.
  */
-interface CommonRotationUserOptions {
+export interface CommonRotationUserOptions {
   /**
    * Specifies the number of days after the previous rotation
    * before Secrets Manager triggers the next automatic rotation.

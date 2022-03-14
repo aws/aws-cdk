@@ -21,7 +21,7 @@ module.exports = {
     coveragePathIgnorePatterns: [
         "<rootDir>/lib/.*\\.generated\\.[jt]s",
         "<rootDir>/test/.*\\.[jt]s",
-        "<rootDir>/.*\\.jsii\\.js",
+        "<rootDir>/.warnings.jsii.js",
     ],
 	reporters: [
         "default",

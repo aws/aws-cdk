@@ -1,6 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as util from 'util';
+import type { BundleProps } from '@aws-cdk/node-bundle';
 
 const readdir = util.promisify(fs.readdir);
 const stat = util.promisify(fs.stat);
@@ -97,7 +98,7 @@ export interface CompilerOverrides {
  */
 export function packageCompiler(compilers: CompilerOverrides, options?: CDKBuildOptions): string[] {
   if (isJsii()) {
-    const args = ['--silence-warnings=reserved-word'];
+    const args = ['--silence-warnings=reserved-word', '--add-deprecation-warnings'];
     if (options?.stripDeprecated) {
       args.push(`--strip-deprecated ${path.join(__dirname, '..', '..', '..', '..', 'deprecated_apis.txt')}`);
     }
@@ -184,6 +185,11 @@ export interface CDKPackageOptions {
    * An optional command (formatted as a list of strings) to run after packaging
   */
   post?: string[];
+
+  /**
+   * Should this package be bundled. (and if so, how)
+   */
+  bundle?: Omit<BundleProps, 'packageDir'>;
 }
 
 /**

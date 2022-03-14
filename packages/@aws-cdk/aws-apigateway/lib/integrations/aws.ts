@@ -1,4 +1,5 @@
 import * as cdk from '@aws-cdk/core';
+import { ArnFormat } from '@aws-cdk/core';
 import { Integration, IntegrationConfig, IntegrationOptions, IntegrationType } from '../integration';
 import { Method } from '../method';
 import { parseAwsApiCall } from '../util';
@@ -92,7 +93,7 @@ export class AwsIntegration extends Integration {
             service: 'apigateway',
             account: backend,
             resource: apiType,
-            sep: '/',
+            arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
             resourceName: apiValue,
             region: props.region,
           });

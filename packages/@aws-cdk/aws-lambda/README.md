@@ -119,6 +119,38 @@ myRole.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName("service-role
 myRole.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName("service-role/AWSLambdaVPCAccessExecutionRole")); // only required if your function lives in a VPC
 ```
 
+## Function Timeout
+
+AWS Lambda functions have a default timeout of 3 seconds, but this can be increased
+up to 15 minutes. The timeout is available as a property of `Function` so that
+you can reference it elsewhere in your stack. For instance, you could use it to create
+a CloudWatch alarm to report when your function timed out:
+
+```ts
+import * as cdk from '@aws-cdk/core';
+import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
+
+const fn = new lambda.Function(this, 'MyFunction', {
+   runtime: lambda.Runtime.NODEJS_12_X,
+   handler: 'index.handler',
+   code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
+   timeout: cdk.Duration.minutes(5),
+});
+
+if (fn.timeout) {
+   new cloudwatch.Alarm(this, `MyAlarm`, {
+      metric: fn.metricDuration().with({
+         statistic: 'Maximum',
+      }),
+      evaluationPeriods: 1,
+      datapointsToAlarm: 1,
+      threshold: fn.timeout.toMilliseconds(),
+      treatMissingData: cloudwatch.TreatMissingData.IGNORE,
+      alarmName: 'My Lambda Timeout',
+   });
+}
+```
+
 ## Resource-based Policies
 
 AWS Lambda supports resource-based policies for controlling access to Lambda
@@ -379,6 +411,19 @@ new lambda.Function(this, 'MyFunction', {
 });
 ```
 
+If you are deploying an ARM_64 Lambda Function, you must specify a
+Lambda Insights Version >= `1_0_119_0`.
+
+```ts
+new lambda.Function(this, 'MyFunction', {
+  runtime: lambda.Runtime.NODEJS_12_X,
+  handler: 'index.handler',
+  architecture: lambda.Architecture.ARM_64,
+  code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
+  insightsVersion: lambda.LambdaInsightsVersion.VERSION_1_0_119_0,
+});
+```
+
 ## Event Rule Target
 
 You can use an AWS Lambda function as a target for an Amazon CloudWatch event
@@ -435,10 +480,48 @@ fn.addEventSource(new eventsources.S3EventSource(bucket, {
 
 See the documentation for the __@aws-cdk/aws-lambda-event-sources__ module for more details.
 
+## Imported Lambdas
+
+When referencing an imported lambda in the CDK, use `fromFunctionArn()` for most use cases:
+
+```ts
+const fn = lambda.Function.fromFunctionArn(
+  this,
+  'Function',
+  'arn:aws:lambda:us-east-1:123456789012:function:MyFn',
+);
+```
+
+The `fromFunctionAttributes()` API is available for more specific use cases:
+
+```ts
+const fn = lambda.Function.fromFunctionAttributes(this, 'Function', {
+  functionArn: 'arn:aws:lambda:us-east-1:123456789012:function:MyFn',
+  // The following are optional properties for specific use cases and should be used with caution:
+
+  // Use Case: imported function is in the same account as the stack. This tells the CDK that it
+  // can modify the function's permissions.
+  sameEnvironment: true,
+
+  // Use Case: imported function is in a different account and user commits to ensuring that the
+  // imported function has the correct permissions outside the CDK.
+  skipPermissions: true,
+});
+```
+
+If `fromFunctionArn()` causes an error related to having to provide an account and/or region in a different construct,
+and the lambda is in the same account and region as the stack you're importing it into,
+you can use `Function.fromFunctionName()` instead:
+
+```ts
+const fn = lambda.Function.fromFunctionName(this, 'Function', 'MyFn');
+```
+
 ## Lambda with DLQ
 
 A dead-letter queue can be automatically created for a Lambda function by
-setting the `deadLetterQueueEnabled: true` configuration.
+setting the `deadLetterQueueEnabled: true` configuration. In such case CDK creates
+a `sqs.Queue` as `deadLetterQueue`.
 
 ```ts
 const fn = new lambda.Function(this, 'MyFunction', {
@@ -460,6 +543,20 @@ const fn = new lambda.Function(this, 'MyFunction', {
   handler: 'index.handler',
   code: lambda.Code.fromInline('exports.handler = function(event, ctx, cb) { return cb(null, "hi"); }'),
   deadLetterQueue: dlq,
+});
+```
+
+You can also use a `sns.Topic` instead of an `sqs.Queue` as dead-letter queue:
+
+```ts
+import * as sns from '@aws-cdk/aws-sns';
+
+const dlt = new sns.Topic(this, 'DLQ');
+const fn = new lambda.Function(this, 'MyFunction', {
+  runtime: lambda.Runtime.NODEJS_12_X,
+  handler: 'index.handler',
+  code: lambda.Code.fromInline('// your code here'),
+  deadLetterTopic: dlt,
 });
 ```
 

@@ -109,7 +109,43 @@ nameDescription.add(new Container({
 Every `ServiceDescription` requires at minimum that you add a `Container` extension
 which defines the main application (essential) container to run for the service.
 
-After that, you can optionally enable additional features for the service using the `ServiceDescription.add()` method:
+### Logging using `awslogs` log driver
+
+If no observability extensions have been configured for a service, the ECS Service Extensions configures an `awslogs` log driver for the application container of the service to send the container logs to CloudWatch Logs.
+
+You can either provide a log group to the `Container` extension or one will be created for you by the CDK.
+
+Following is an example of an application with an `awslogs` log driver configured for the application container:
+
+```ts
+const environment = new Environment(stack, 'production');
+
+const nameDescription = new ServiceDescription();
+nameDescription.add(new Container({
+  cpu: 1024,
+  memoryMiB: 2048,
+  trafficPort: 80,
+  image: ContainerImage.fromRegistry('nathanpeck/name'),
+  environment: {
+    PORT: '80',
+  },
+  logGroup: new awslogs.LogGroup(stack, 'MyLogGroup'),
+}));
+```
+
+If a log group is not provided, no observability extensions have been created, and the `ECS_SERVICE_EXTENSIONS_ENABLE_DEFAULT_LOG_DRIVER` feature flag is enabled, then logging will be configured by default and a log group will be created for you.
+ 
+The `ECS_SERVICE_EXTENSIONS_ENABLE_DEFAULT_LOG_DRIVER` feature flag is enabled by default in any CDK apps that are created with CDK v1.140.0 or v2.8.0 and later.
+
+To enable default logging for previous versions, ensure that the `ECS_SERVICE_EXTENSIONS_ENABLE_DEFAULT_LOG_DRIVER` flag within the application stack context is set to true, like so:
+
+```ts
+stack.node.setContext(cxapi.ECS_SERVICE_EXTENSIONS_ENABLE_DEFAULT_LOG_DRIVER, true);
+```
+
+Alternatively, you can also set the feature flag in the `cdk.json` file. For more information, refer the [docs](https://docs.aws.amazon.com/cdk/v2/guide/featureflags.html).  
+
+After adding the `Container` extension, you can optionally enable additional features for the service using the `ServiceDescription.add()` method:
 
 ```ts
 nameDescription.add(new AppMeshExtension({ mesh }));
@@ -392,11 +428,42 @@ For setting up a topic-specific queue subscription, you can provide a custom que
 
 ```ts
 nameDescription.add(new QueueExtension({
-  queue: myEventsQueue,
+  eventsQueue: myEventsQueue,
   subscriptions: [new TopicSubscription({
     topic: new sns.Topic(stack, 'my-topic'),
     // `myTopicQueue` will subscribe to the `my-topic` instead of `eventsQueue`
-    queue: myTopicQueue,
+    topicSubscriptionQueue: {
+      queue: myTopicQueue,
+    },
+  }],
+}));
+```
+
+### Configuring auto scaling based on SQS Queues
+
+You can scale your service up or down to maintain an acceptable queue latency by tracking the backlog per task. It configures a target tracking scaling policy with target value (acceptable backlog per task) calculated by dividing the `acceptableLatency` by `messageProcessingTime`. For example, if the maximum acceptable latency for a message to be processed after its arrival in the SQS Queue is 10 mins and the average processing time for a task is 250 milliseconds per message, then `acceptableBacklogPerTask = 10 *  60 / 0.25 = 2400`. Therefore, each queue can hold up to 2400 messages before the service starts to scale up. For this, a target tracking policy will be attached to the scaling target for your service with target value `2400`. For more information, please refer: https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-using-sqs-queue.html .
+
+You can configure auto scaling based on SQS Queue for your service as follows:
+
+```ts
+nameDescription.add(new QueueExtension({
+  eventsQueue: myEventsQueue,
+  // Need to specify `scaleOnLatency` to configure auto scaling based on SQS Queue
+  scaleOnLatency: {
+    acceptableLatency: cdk.Duration.minutes(10),
+    messageProcessingTime: cdk.Duration.millis(250),
+  },
+  subscriptions: [new TopicSubscription({
+    topic: new sns.Topic(stack, 'my-topic'),
+    // `myTopicQueue` will subscribe to the `my-topic` instead of `eventsQueue`
+    topicSubscriptionQueue: {
+      queue: myTopicQueue,
+      // Optionally provide `scaleOnLatency` for configuring separate autoscaling for `myTopicQueue`
+      scaleOnLatency: {
+        acceptableLatency: cdk.Duration.minutes(10),
+        messageProcessingTime: cdk.Duration.millis(250),
+      }
+    },
   }],
 }));
 ```

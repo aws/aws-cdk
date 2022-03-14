@@ -266,6 +266,8 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly CODEBUILD_FIPS = new InterfaceVpcEndpointAwsService('codebuild-fips');
   public static readonly CODECOMMIT = new InterfaceVpcEndpointAwsService('codecommit');
   public static readonly CODECOMMIT_FIPS = new InterfaceVpcEndpointAwsService('codecommit-fips');
+  public static readonly CODEGURU_PROFILER = new InterfaceVpcEndpointAwsService('codeguru-profiler');
+  public static readonly CODEGURU_REVIEWER = new InterfaceVpcEndpointAwsService('codeguru-reviewer');
   public static readonly CODEPIPELINE = new InterfaceVpcEndpointAwsService('codepipeline');
   public static readonly CONFIG = new InterfaceVpcEndpointAwsService('config');
   public static readonly EC2 = new InterfaceVpcEndpointAwsService('ec2');
@@ -572,7 +574,7 @@ export class InterfaceVpcEndpoint extends VpcEndpoint implements IInterfaceVpcEn
     const subnets = subnetSelection.subnets;
 
     // Sanity check the subnet count
-    if (subnetSelection.subnets.length == 0) {
+    if (!subnetSelection.isPendingLookup && subnetSelection.subnets.length == 0) {
       throw new Error('Cannot create a VPC Endpoint with no subnets');
     }
 

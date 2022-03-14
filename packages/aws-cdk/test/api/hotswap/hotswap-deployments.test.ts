@@ -1,24 +1,26 @@
 import { Lambda, StepFunctions } from 'aws-sdk';
 import * as setup from './hotswap-test-setup';
 
-let cfnMockProvider: setup.CfnMockProvider;
+let hotswapMockSdkProvider: setup.HotswapMockSdkProvider;
 let mockUpdateLambdaCode: (params: Lambda.Types.UpdateFunctionCodeRequest) => Lambda.Types.FunctionConfiguration;
 let mockUpdateMachineDefinition: (params: StepFunctions.Types.UpdateStateMachineInput) => StepFunctions.Types.UpdateStateMachineOutput;
 let mockGetEndpointSuffix: () => string;
 
 beforeEach(() => {
-  cfnMockProvider = setup.setupHotswapTests();
-  mockUpdateLambdaCode = jest.fn();
+  hotswapMockSdkProvider = setup.setupHotswapTests();
+  mockUpdateLambdaCode = jest.fn().mockReturnValue({});
   mockUpdateMachineDefinition = jest.fn();
   mockGetEndpointSuffix = jest.fn(() => 'amazonaws.com');
-  cfnMockProvider.setUpdateFunctionCodeMock(mockUpdateLambdaCode);
-  cfnMockProvider.setUpdateStateMachineMock(mockUpdateMachineDefinition);
-  cfnMockProvider.stubGetEndpointSuffix(mockGetEndpointSuffix);
+  hotswapMockSdkProvider.stubLambda({
+    updateFunctionCode: mockUpdateLambdaCode,
+  });
+  hotswapMockSdkProvider.setUpdateStateMachineMock(mockUpdateMachineDefinition);
+  hotswapMockSdkProvider.stubGetEndpointSuffix(mockGetEndpointSuffix);
 });
 
 test('returns a deployStackResult with noOp=true when it receives an empty set of changes', async () => {
   // WHEN
-  const deployStackResult = await cfnMockProvider.tryHotswapDeployment(setup.cdkStackArtifactOf());
+  const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(setup.cdkStackArtifactOf());
 
   // THEN
   expect(deployStackResult).not.toBeUndefined();
@@ -52,7 +54,7 @@ test('A change to only a non-hotswappable resource results in a full deployment'
   });
 
   // WHEN
-  const deployStackResult = await cfnMockProvider.tryHotswapDeployment(cdkStackArtifact);
+  const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(cdkStackArtifact);
 
   // THEN
   expect(deployStackResult).toBeUndefined();
@@ -112,7 +114,7 @@ test('A change to both a hotswappable resource and a non-hotswappable resource r
   });
 
   // WHEN
-  const deployStackResult = await cfnMockProvider.tryHotswapDeployment(cdkStackArtifact);
+  const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(cdkStackArtifact);
 
   // THEN
   expect(deployStackResult).toBeUndefined();
@@ -125,7 +127,7 @@ test('changes only to CDK::Metadata result in a noOp', async () => {
   setup.setCurrentCfnStackTemplate({
     Resources: {
       MetaData: {
-        Type: 'AWS::CDK::MetaData',
+        Type: 'AWS::CDK::Metadata',
         Properties: {
           Prop: 'old-value',
         },
@@ -146,7 +148,7 @@ test('changes only to CDK::Metadata result in a noOp', async () => {
   });
 
   // WHEN
-  const deployStackResult = await cfnMockProvider.tryHotswapDeployment(cdkStackArtifact);
+  const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(cdkStackArtifact);
 
   // THEN
   expect(deployStackResult).not.toBeUndefined();
@@ -167,7 +169,7 @@ test('resource deletions require full deployments', async () => {
   const cdkStackArtifact = setup.cdkStackArtifactOf();
 
   // WHEN
-  const deployStackResult = await cfnMockProvider.tryHotswapDeployment(cdkStackArtifact);
+  const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(cdkStackArtifact);
 
   // THEN
   expect(deployStackResult).toBeUndefined();
@@ -233,7 +235,7 @@ test('can correctly reference AWS::Partition in hotswappable changes', async () 
   });
 
   // WHEN
-  const deployStackResult = await cfnMockProvider.tryHotswapDeployment(cdkStackArtifact);
+  const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(cdkStackArtifact);
 
   // THEN
   expect(deployStackResult).not.toBeUndefined();
@@ -298,7 +300,7 @@ test('can correctly reference AWS::URLSuffix in hotswappable changes', async () 
   });
 
   // WHEN
-  const deployStackResult = await cfnMockProvider.tryHotswapDeployment(cdkStackArtifact);
+  const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(cdkStackArtifact);
 
   // THEN
   expect(deployStackResult).not.toBeUndefined();
@@ -308,4 +310,49 @@ test('can correctly reference AWS::URLSuffix in hotswappable changes', async () 
     S3Key: 'new-key',
   });
   expect(mockGetEndpointSuffix).toHaveBeenCalledTimes(1);
+
+  // the User-Agent is set correctly
+  expect(hotswapMockSdkProvider.mockSdkProvider.sdk.appendCustomUserAgent)
+    .toHaveBeenCalledWith('cdk-hotswap/success-lambda-function');
+  expect(hotswapMockSdkProvider.mockSdkProvider.sdk.removeCustomUserAgent)
+    .toHaveBeenCalledWith('cdk-hotswap/success-lambda-function');
+});
+
+test('changing the type of a deployed resource always results in a full deployment', async () => {
+  // GIVEN
+  setup.setCurrentCfnStackTemplate({
+    Resources: {
+      SharedLogicalId: {
+        Type: 'AWS::Lambda::Function',
+        Properties: {
+          Code: {
+            S3Bucket: 'current-bucket',
+            S3Key: 'new-key',
+          },
+          FunctionName: 'my-function',
+        },
+      },
+    },
+  });
+  const cdkStackArtifact = setup.cdkStackArtifactOf({
+    template: {
+      Resources: {
+        SharedLogicalId: {
+          Type: 'AWS::StepFunctions::StateMachine',
+          Properties: {
+            DefinitionString: '{ Prop: "new-value" }',
+            StateMachineName: 'my-machine',
+          },
+        },
+      },
+    },
+  });
+
+  // WHEN
+  const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(cdkStackArtifact);
+
+  // THEN
+  expect(deployStackResult).toBeUndefined();
+  expect(mockUpdateMachineDefinition).not.toHaveBeenCalled();
+  expect(mockUpdateLambdaCode).not.toHaveBeenCalled();
 });

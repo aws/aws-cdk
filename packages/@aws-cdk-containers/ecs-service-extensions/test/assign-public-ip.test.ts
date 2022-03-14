@@ -1,4 +1,5 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
+import * as autoscaling from '@aws-cdk/aws-autoscaling';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as route53 from '@aws-cdk/aws-route53';
@@ -28,15 +29,13 @@ describe('assign public ip', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::ECS::Service', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
       NetworkConfiguration: {
         AwsvpcConfiguration: {
           AssignPublicIp: 'ENABLED',
         },
       },
     });
-
-
   });
 
   test('errors when adding a public ip to ec2-backed service', () => {
@@ -45,9 +44,13 @@ describe('assign public ip', () => {
 
     const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
-    cluster.addCapacity('DefaultAutoScalingGroup', {
-      instanceType: new ec2.InstanceType('t2.micro'),
-    });
+    cluster.addAsgCapacityProvider(new ecs.AsgCapacityProvider(stack, 'Provider', {
+      autoScalingGroup: new autoscaling.AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
+        vpc,
+        machineImage: ec2.MachineImage.latestAmazonLinux(),
+        instanceType: new ec2.InstanceType('t2.micro'),
+      }),
+    }));
 
     const environment = new Environment(stack, 'production', {
       vpc,
@@ -71,8 +74,6 @@ describe('assign public ip', () => {
         serviceDescription,
       });
     }).toThrow(/Fargate/i);
-
-
   });
 
   test('should not add a task record manager by default', () => {
@@ -98,8 +99,6 @@ describe('assign public ip', () => {
 
     // THEN
     expect(service.ecsService.node.tryFindChild('TaskRecordManager')).toBeUndefined();
-
-
   });
 
   test('should add a task record manager when dns is requested', () => {
@@ -133,8 +132,6 @@ describe('assign public ip', () => {
 
     // THEN
     expect(service.ecsService.node.tryFindChild('TaskRecordManager')).toBeDefined();
-
-
   });
 
   test('task record manager listens for ecs events', () => {
@@ -167,7 +164,7 @@ describe('assign public ip', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::Events::Rule', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
       EventPattern: {
         'source': ['aws.ecs'],
         'detail-type': [
@@ -180,7 +177,7 @@ describe('assign public ip', () => {
       },
     });
 
-    expect(stack).toHaveResourceLike('AWS::Events::Rule', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
       EventPattern: {
         'source': ['aws.ecs'],
         'detail-type': [
@@ -192,7 +189,5 @@ describe('assign public ip', () => {
         },
       },
     });
-
-
   });
 });

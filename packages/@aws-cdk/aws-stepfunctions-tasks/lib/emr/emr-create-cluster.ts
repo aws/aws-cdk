@@ -5,7 +5,6 @@ import { Construct } from 'constructs';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 import {
   ApplicationConfigPropertyToJson,
-  AutoTerminationPolicyPropertyToJson,
   BootstrapActionConfigToJson,
   ConfigurationPropertyToJson,
   InstancesConfigPropertyToJson,
@@ -67,15 +66,6 @@ export interface EmrCreateClusterProps extends sfn.TaskStateBaseProps {
    * @default - A role will be created.
    */
   readonly autoScalingRole?: iam.IRole;
-
-  /**
-   * An auto-termination policy for an Amazon EMR cluster. An auto-termination policy defines the amount of
-   * idle time in seconds after which a cluster automatically terminates. The value must be between
-   * 60 seconds and 7 days.
-   *
-   * @default - None
-   */
-  readonly autoTerminationPolicy?: EmrCreateCluster.AutoTerminationPolicyProperty;
 
   /**
    * A list of bootstrap actions to run before Hadoop starts on the cluster nodes.
@@ -212,11 +202,11 @@ export class EmrCreateCluster extends sfn.TaskStateBase {
 
     this.taskPolicies = this.createPolicyStatements(this._serviceRole, this._clusterRole, this._autoScalingRole);
 
-    if (this.props.releaseLabel !== undefined) {
+    if (this.props.releaseLabel !== undefined && !cdk.Token.isUnresolved(this.props.releaseLabel)) {
       this.validateReleaseLabel(this.props.releaseLabel);
     }
 
-    if (this.props.stepConcurrencyLevel !== undefined) {
+    if (this.props.stepConcurrencyLevel !== undefined && !cdk.Token.isUnresolved(this.props.stepConcurrencyLevel)) {
       if (this.props.stepConcurrencyLevel < 1 || this.props.stepConcurrencyLevel > 256) {
         throw new Error(`Step concurrency level must be in range [1, 256], but got ${this.props.stepConcurrencyLevel}.`);
       }
@@ -279,7 +269,6 @@ export class EmrCreateCluster extends sfn.TaskStateBase {
         AdditionalInfo: cdk.stringToCloudFormation(this.props.additionalInfo),
         Applications: cdk.listMapper(ApplicationConfigPropertyToJson)(this.props.applications),
         AutoScalingRole: cdk.stringToCloudFormation(this._autoScalingRole?.roleName),
-        AutoTerminationPolicy: this.props.autoTerminationPolicy ? AutoTerminationPolicyPropertyToJson(this.props.autoTerminationPolicy) : undefined,
         BootstrapActions: cdk.listMapper(BootstrapActionConfigToJson)(this.props.bootstrapActions),
         Configurations: cdk.listMapper(ConfigurationPropertyToJson)(this.props.configurations),
         CustomAmiId: cdk.stringToCloudFormation(this.props.customAmiId),
@@ -1398,20 +1387,6 @@ export namespace EmrCreateCluster {
      * @default No version
      */
     readonly version?: string;
-  }
-
-  /**
-   * Auto-termination policy for the EMR cluster.
-   *
-   * @see https://docs.aws.amazon.com/emr/latest/APIReference/API_AutoTerminationPolicy.html
-   *
-   */
-  export interface AutoTerminationPolicyProperty {
-
-    /**
-     * Specifies the amount of idle time after which the cluster automatically terminates.
-     */
-    readonly idleTimeout: cdk.Duration;
   }
 
   /**

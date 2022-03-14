@@ -134,6 +134,17 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
     this.protocol = protocol;
     this.port = port;
 
+    // this.targetType is lazy
+    this.node.addValidation({
+      validate: () => {
+        if (this.targetType === TargetType.LAMBDA && (this.port || this.protocol)) {
+          return ['port/protocol should not be specified for Lambda targets'];
+        } else {
+          return [];
+        }
+      },
+    });
+
     this.connectableMembers = [];
     this.listeners = [];
 
@@ -165,6 +176,10 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
     for (const target of targets) {
       const result = target.attachToApplicationTargetGroup(this);
       this.addLoadBalancerTarget(result);
+    }
+
+    if (this.targetType === TargetType.LAMBDA) {
+      this.setAttribute('stickiness.enabled', undefined);
     }
   }
 
@@ -254,7 +269,7 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
     return new cloudwatch.Metric({
       namespace: 'AWS/ApplicationELB',
       metricName,
-      dimensions: {
+      dimensionsMap: {
         TargetGroup: this.targetGroupFullName,
         LoadBalancer: this.firstLoadBalancerFullName,
       },

@@ -17,7 +17,7 @@ class TestStack extends cdk.Stack {
       runtime: lambda.Runtime.NODEJS_10_X,
     });
 
-    const version = fn.addVersion('1', undefined, 'integ-test');
+    const version = fn.currentVersion;
 
     const alias = new lambda.Alias(this, 'Alias', {
       aliasName: 'prod',

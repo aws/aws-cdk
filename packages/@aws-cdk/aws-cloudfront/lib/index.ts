@@ -7,6 +7,7 @@ export * from './origin';
 export * from './origin-access-identity';
 export * from './origin-request-policy';
 export * from './public-key';
+export * from './response-headers-policy';
 export * from './web-distribution';
 
 export * as experimental from './experimental';

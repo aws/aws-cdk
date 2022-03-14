@@ -106,6 +106,37 @@ capacity.scaleOnMetric('ScaleToCPU', {
 The AutoScaling construct library will create the required CloudWatch alarms and
 AutoScaling policies for you.
 
+### Scaling based on multiple datapoints
+
+The Step Scaling configuration above will initiate a scaling event when a single
+datapoint of the scaling metric is breaching a scaling step breakpoint. In cases
+where you might want to initiate scaling actions on a larger number of datapoints
+(ie in order to smooth out randomness in the metric data), you can use the
+optional `evaluationPeriods` and `datapointsToAlarm` properties:
+
+```ts
+declare const capacity: ScalableAttribute;
+declare const cpuUtilization: cloudwatch.Metric;
+
+capacity.scaleOnMetric('ScaleToCPUWithMultipleDatapoints', {
+  metric: cpuUtilization,
+  scalingSteps: [
+    { upper: 10, change: -1 },
+    { lower: 50, change: +1 },
+    { lower: 70, change: +3 },
+  ],
+
+  // if the cpuUtilization metric has a period of 1 minute, then data points
+  // in the last 10 minutes will be evaluated
+  evaluationPeriods: 10,
+
+  // Only trigger a scaling action when 6 datapoints out of the last 10 are
+  // breaching. If this is left unspecified, then ALL datapoints in the 
+  // evaluation period must be breaching to trigger a scaling action
+  datapointsToAlarm: 6
+});
+```
+
 ## Target Tracking Scaling
 
 This type of scaling scales in and out in order to keep a metric (typically
@@ -205,4 +236,21 @@ target.scaleToTrackMetric('PceTracking', {
   targetValue: 0.9,
   predefinedMetric: appscaling.PredefinedMetric.LAMBDA_PROVISIONED_CONCURRENCY_UTILIZATION,
 })
+```
+
+### ElastiCache Redis shards scaling with target value
+
+```ts
+const shardsScalableTarget = new appscaling.ScalableTarget(this, 'ElastiCacheRedisShardsScalableTarget', {
+  serviceNamespace: appscaling.ServiceNamespace.ELASTICACHE,
+  scalableDimension: 'elasticache:replication-group:NodeGroups',
+  minCapacity: 2,
+  maxCapacity: 10,
+  resourceId: 'replication-group/main-cluster',
+});
+
+shardsScalableTarget.scaleToTrackMetric('ElastiCacheRedisShardsCPUUtilization', {
+  targetValue: 20,
+  predefinedMetric: appscaling.PredefinedMetric.ELASTICACHE_PRIMARY_ENGINE_CPU_UTILIZATION,
+});
 ```

@@ -22,9 +22,8 @@ export interface KubernetesResourceProps {
    * cluster through `kubectl apply` and when the resource or the stack is
    * deleted, the manifest will be deleted through `kubectl delete`.
    *
-   * @example
-   *
-   * {
+   * ```
+   * const manifest = {
    *   apiVersion: 'v1',
    *   kind: 'Pod',
    *   metadata: { name: 'mypod' },
@@ -32,7 +31,7 @@ export interface KubernetesResourceProps {
    *     containers: [ { name: 'hello', image: 'paulbouwer/hello-kubernetes:1.5', ports: [ { containerPort: 8080 } ] } ]
    *   }
    * }
-   *
+   * ```
    */
   readonly manifest: any[];
 }

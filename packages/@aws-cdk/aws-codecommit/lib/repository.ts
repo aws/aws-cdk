@@ -1,8 +1,9 @@
 import * as notifications from '@aws-cdk/aws-codestarnotifications';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
-import { IResource, Lazy, Resource, Stack } from '@aws-cdk/core';
+import { ArnFormat, IResource, Lazy, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
+import { Code } from './code';
 import { CfnRepository } from './codecommit.generated';
 
 /**
@@ -488,6 +489,13 @@ export interface RepositoryProps {
    * @default - No description.
    */
   readonly description?: string;
+
+  /**
+   * The contents with which to initialize the repository after it has been created.
+   *
+   * @default - No initialization (create empty repo)
+   */
+  readonly code?: Code;
 }
 
 /**
@@ -501,7 +509,7 @@ export class Repository extends RepositoryBase {
    */
   public static fromRepositoryArn(scope: Construct, id: string, repositoryArn: string): IRepository {
     const stack = Stack.of(scope);
-    const arn = stack.parseArn(repositoryArn);
+    const arn = stack.splitArn(repositoryArn, ArnFormat.NO_RESOURCE_NAME);
     const repositoryName = arn.resource;
     const region = arn.region;
 
@@ -552,6 +560,7 @@ export class Repository extends RepositoryBase {
       repositoryName: props.repositoryName,
       repositoryDescription: props.description,
       triggers: Lazy.any({ produce: () => this.triggers }, { omitEmptyArray: true }),
+      code: (props.code?.bind(this))?.code,
     });
 
     this.repositoryName = this.getResourceNameAttribute(repository.attrName);

@@ -82,6 +82,19 @@ describe('ban breaking changes in stable modules', () => {
     await expect(linter.validatePr(1000)).rejects.toThrow('Breaking changes in stable modules [lambda, ecs] is disallowed.');
   });
 
+  test('unless exempt-breaking-change label added', async () => {
+    const issue = {
+      title: 'chore(lambda): some title',
+      body: `
+        BREAKING CHANGE: this breaking change
+        continued message
+      `,
+      labels: [{ name: 'pr-linter/exempt-breaking-change' }],
+    };
+    configureMock(issue, undefined);
+    await expect(linter.validatePr(1000)).resolves; // not throw
+  });
+
   test('with additional "closes" footer', async () => {
     const issue = {
       title: 'chore(s3): some title',

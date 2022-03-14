@@ -1,7 +1,7 @@
 /// !cdk-integ pragma:ignore-assets
 import * as path from 'path';
 import { HttpApi, HttpMethod } from '@aws-cdk/aws-apigatewayv2';
-import { LambdaProxyIntegration } from '@aws-cdk/aws-apigatewayv2-integrations';
+import { HttpLambdaIntegration } from '@aws-cdk/aws-apigatewayv2-integrations';
 import * as cognito from '@aws-cdk/aws-cognito';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { App, Stack } from '@aws-cdk/core';
@@ -21,12 +21,7 @@ const httpApi = new HttpApi(stack, 'MyHttpApi');
 
 const userPool = new cognito.UserPool(stack, 'userpool');
 
-const userPoolClient = userPool.addClient('my-client');
-
-const authorizer = new HttpUserPoolAuthorizer({
-  userPool,
-  userPoolClients: [userPoolClient],
-});
+const authorizer = new HttpUserPoolAuthorizer('UserPoolAuthorizer', userPool);
 
 const handler = new lambda.Function(stack, 'lambda', {
   runtime: lambda.Runtime.NODEJS_12_X,
@@ -37,6 +32,6 @@ const handler = new lambda.Function(stack, 'lambda', {
 httpApi.addRoutes({
   path: '/',
   methods: [HttpMethod.GET],
-  integration: new LambdaProxyIntegration({ handler }),
+  integration: new HttpLambdaIntegration('RootIntegratin', handler),
   authorizer,
 });

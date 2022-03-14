@@ -15,7 +15,7 @@ export class StateTransitionMetric {
     return new cloudwatch.Metric({
       namespace: 'AWS/States',
       metricName,
-      dimensions: { ServiceMetric: 'StateTransition' },
+      dimensionsMap: { ServiceMetric: 'StateTransition' },
       ...props,
     });
   }
