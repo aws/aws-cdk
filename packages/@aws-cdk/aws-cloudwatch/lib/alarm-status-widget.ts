@@ -2,6 +2,10 @@ import { IAlarm } from './alarm-base';
 import { AlarmState } from './alarm-rule';
 import { ConcreteWidget } from './widget';
 
+
+/**
+ * The sort possibilities for AlarmStatusWidgets
+ */
 export enum AlarmStatusWidgetSortBy {
 
   /**
@@ -53,18 +57,18 @@ export interface AlarmStatusWidgetProps {
 
   /**
    * Specifies how to sort the alarms in the widget.
-   * 
+   *
    * @default DEFAULT
    */
   readonly sortBy?: AlarmStatusWidgetSortBy;
 
   /**
-   * Use this field to filter the list of alarms displayed in the widget to only those alarms currently in the specified states. 
-   * You can specify one or more alarm states in the value for this field. 
+   * Use this field to filter the list of alarms displayed in the widget to only those alarms currently in the specified states.
+   * You can specify one or more alarm states in the value for this field.
    * The alarm states that you can specify are ALARM, INSUFFICIENT_DATA, and OK.
-   * 
+   *
    * If you omit this field or specify an empty array, all the alarms specifed in alarms are displayed.
-   * 
+   *
    * @default - [] - all the alarms specifed in alarms are displayed.
    */
   readonly states?: AlarmState[];
