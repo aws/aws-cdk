@@ -18,9 +18,9 @@ Find Alloy at https://alloytools.org/.
 //-------------------------------------------------------
 // Base Statement definitions
 enum Effect { Allow, Deny }
-enum Resource { ResourceA, ResourceB, ResourceC }
-enum Action { ActionA, ActionB, ActionC }
-enum Principal { PrincipalA, PrincipalB, PrincipalC }
+enum Resource { ResourceA, ResourceB }
+enum Action { ActionA, ActionB }
+enum Principal { PrincipalA, PrincipalB }
 
 sig Statement {
   effect: Effect,
@@ -90,23 +90,29 @@ run show_some_allowed_requests {
 //
 // This encodes the important logic: the rules of merging.
 pred merged[a: Statement, b: Statement, m: Statement] {
-  a.effect = b.effect and m.effect = a.effect
+  // Preconditions
+  a.effect = b.effect
+  a.notAction = b.notAction
+  a.notResource = b.notResource
+  a.notPrincipal = b.notPrincipal
 
-  // If 2 of the pairs { Resource, Action, Principal } are the same, then the 3rd may be merged
+  // Merging is allowed in one of 2 cases:
+  // - of the pairs { Resource, Action, Principal } 2 are the same (then the 3rd pair may be merged)
+  // - if one statement is a full subset of the other one (then it may be subsumed) [not implemented yet]
   let R = a.resource = b.resource, A = a.action = b.action, P = a.principal = b.principal {
-    (R and A) or (R and P) or (A and P)
+    ((R and A) or (R and P) or  (A and P) or 
+     (a.resource in b.resource and a.action in b.action and a.principal in b.principal) or
+     (b.resource in a.resource and b.action in a.action and b.principal in a.principal))
   }
 
   // Result of merging
+  m.effect = a.effect
   m.action = a.action + b.action
   m.notAction = a.notAction
-  m.notAction = b.notAction
   m.resource = a.resource + b.resource
   m.notResource = a.notResource 
-  m.notResource = b.notResource
   m.principal = a.principal + b.principal
   m.notPrincipal = a.notPrincipal
-  m.notPrincipal = b.notPrincipal
 }
 
 run show_some_nontrivial_merges {
