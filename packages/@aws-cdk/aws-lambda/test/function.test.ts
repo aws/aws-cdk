@@ -1270,6 +1270,31 @@ describe('function', () => {
     expect(bindTarget).toEqual(fn);
   });
 
+  test('layer is baked into the function version', () => {
+    // GIVEN
+    const stack = new cdk.Stack(undefined, 'TestStack');
+    const bucket = new s3.Bucket(stack, 'Bucket');
+    const code = new lambda.S3Code(bucket, 'ObjectKey');
+
+    const fn = new lambda.Function(stack, 'fn', {
+      runtime: lambda.Runtime.NODEJS_10_X,
+      code: lambda.Code.fromInline('exports.main = function() { console.log("DONE"); }'),
+      handler: 'index.main',
+    });
+
+    const version = fn.currentVersion;
+
+    // WHEN
+    const layer = new lambda.LayerVersion(stack, 'LayerVersion', {
+      code,
+      compatibleRuntimes: [lambda.Runtime.NODEJS_10_X],
+    });
+
+    fn.addLayers(layer);
+
+    const newVesrion = fn.currentVersion;
+  });
+
   test('using an incompatible layer', () => {
     // GIVEN
     const stack = new cdk.Stack(undefined, 'TestStack');
