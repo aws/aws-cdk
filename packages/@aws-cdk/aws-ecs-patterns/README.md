@@ -264,16 +264,18 @@ declare const cluster: ecs.Cluster;
 const queueProcessingEc2Service = new ecsPatterns.QueueProcessingEc2Service(this, 'Service', {
   cluster,
   memoryLimitMiB: 1024,
-  image: ecs.ContainerImage.fromRegistry('test'),
   command: ["-c", "4", "amazon.com"],
   enableLogging: false,
   desiredTaskCount: 2,
-  environment: {
-    TEST_ENVIRONMENT_VARIABLE1: "test environment variable 1 value",
-    TEST_ENVIRONMENT_VARIABLE2: "test environment variable 2 value",
+  taskImageOptions: {
+    containerName: 'test',
+    image: ecs.ContainerImage.fromRegistry('test'),
+    environment: {
+      TEST_ENVIRONMENT_VARIABLE1: "test environment variable 1 value",
+      TEST_ENVIRONMENT_VARIABLE2: "test environment variable 2 value",
+    },
   },
   maxScalingCapacity: 5,
-  containerName: 'test',
 });
 ```
 
@@ -284,13 +286,16 @@ declare const cluster: ecs.Cluster;
 const queueProcessingFargateService = new ecsPatterns.QueueProcessingFargateService(this, 'Service', {
   cluster,
   memoryLimitMiB: 512,
-  image: ecs.ContainerImage.fromRegistry('test'),
   command: ["-c", "4", "amazon.com"],
   enableLogging: false,
   desiredTaskCount: 2,
-  environment: {
-    TEST_ENVIRONMENT_VARIABLE1: "test environment variable 1 value",
-    TEST_ENVIRONMENT_VARIABLE2: "test environment variable 2 value",
+  taskImageOptions: {
+    containerName: 'test',
+    image: ecs.ContainerImage.fromRegistry('test'),
+    environment: {
+      TEST_ENVIRONMENT_VARIABLE1: "test environment variable 1 value",
+      TEST_ENVIRONMENT_VARIABLE2: "test environment variable 2 value",
+    },
   },
   maxScalingCapacity: 5,
   containerName: 'test',
@@ -470,11 +475,13 @@ declare const cluster: ecs.Cluster;
 const queueProcessingFargateService = new ecsPatterns.QueueProcessingFargateService(this, 'Service', {
   cluster,
   memoryLimitMiB: 512,
-  image: ecs.ContainerImage.fromRegistry('test'),
   command: ["-c", "4", "amazon.com"],
   enableLogging: false,
   desiredTaskCount: 2,
-  environment: {},
+  taskImageOptions: {
+    image: ecs.ContainerImage.fromRegistry('test'),
+    environment: {},
+  }
   maxScalingCapacity: 5,
   maxHealthyPercent: 200,
   minHealthyPercent: 66,
@@ -530,7 +537,9 @@ cluster.enableFargateCapacityProviders();
 const queueProcessingFargateService = new ecsPatterns.QueueProcessingFargateService(this, 'Service', {
   cluster,
   memoryLimitMiB: 512,
-  image: ecs.ContainerImage.fromRegistry('test'),
+  taskImageOptions: {
+    image: ecs.ContainerImage.fromRegistry('test'),
+  },
   capacityProviderStrategies: [
     {
       capacityProvider: 'FARGATE_SPOT',
@@ -552,7 +561,9 @@ declare const securityGroup: ec2.SecurityGroup;
 const queueProcessingFargateService = new ecsPatterns.QueueProcessingFargateService(this, 'Service', {
   vpc,
   memoryLimitMiB: 512,
-  image: ecs.ContainerImage.fromRegistry('test'),
+  taskImageOptions: {
+    image: ecs.ContainerImage.fromRegistry('test'),
+  },
   healthCheck: {
     command: [ "CMD-SHELL", "curl -f http://localhost/ || exit 1" ],
     // the properties below are optional
@@ -584,7 +595,9 @@ cluster.addAsgCapacityProvider(capacityProvider);
 const queueProcessingFargateService = new ecsPatterns.QueueProcessingFargateService(this, 'Service', {
   cluster,
   memoryLimitMiB: 512,
-  image: ecs.ContainerImage.fromRegistry('test'),
+  taskImageOptions: {
+    image: ecs.ContainerImage.fromRegistry('test')
+  }
   capacityProviderStrategies: [
     {
       capacityProvider: capacityProvider.capacityProviderName,
@@ -686,7 +699,9 @@ const vpc = new ec2.Vpc(stack, 'VPC', {
 new ecsPatterns.QueueProcessingFargateService(stack, 'QueueProcessingService', {
   vpc,
   memoryLimitMiB: 512,
-  image: new ecs.AssetImage(path.join(__dirname, '..', 'sqs-reader')),
+  taskImageOptions: {
+    image: new ecs.AssetImage(path.join(__dirname, '..', 'sqs-reader'))
+  }
 });
 ```
 
