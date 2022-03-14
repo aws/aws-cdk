@@ -3164,7 +3164,7 @@ describe('cluster', () => {
 
     });
 
-    test('create a cluster with ipv6 netwokring', () => {
+    test('create a cluster with ipv6 networking', () => {
       // GIVEN
       const { stack } = testFixture();
       const ipFamily = eks.IpFamily.IP_V6;
