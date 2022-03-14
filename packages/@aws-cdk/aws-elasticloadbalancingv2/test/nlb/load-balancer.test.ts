@@ -241,6 +241,76 @@ describe('tests', () => {
     });
   });
 
+  test('loadBalancerName unallowed: starts with "internal-"', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Stack');
+
+    // WHEN/THEN
+    expect(() =>
+      new elbv2.NetworkLoadBalancer(stack, 'NLB', {
+        loadBalancerName: 'internal-myLoadBalancer',
+        vpc,
+      }),
+    ).toThrow();
+  });
+
+  test('loadBalancerName unallowed: more than 32 characters', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Stack');
+
+    // WHEN/THEN
+    expect(() =>
+      new elbv2.NetworkLoadBalancer(stack, 'NLB', {
+        loadBalancerName: 'a'.repeat(33),
+        vpc,
+      }),
+    ).toThrow();
+  });
+
+  test('loadBalancerName unallowed: unallowed characters', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Stack');
+
+    // WHEN/THEN
+    expect(() =>
+      new elbv2.NetworkLoadBalancer(stack, 'NLB', {
+        loadBalancerName: 'my load balancer',
+        vpc,
+      }),
+    ).toThrow();
+  });
+
+  test('loadBalancerName unallowed: ends with hyphen', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Stack');
+
+    // WHEN/THEN
+    expect(() =>
+      new elbv2.NetworkLoadBalancer(stack, 'NLB', {
+        loadBalancerName: 'myLoadBalancer-',
+        vpc,
+      }),
+    ).toThrow();
+  });
+
+  test('loadBalancerName unallowed: starts with hyphen', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Stack');
+
+    // WHEN/THEN
+    expect(() =>
+      new elbv2.NetworkLoadBalancer(stack, 'NLB', {
+        loadBalancerName: '-myLoadBalancer',
+        vpc,
+      }),
+    ).toThrow();
+  });
+
   test('imported network load balancer with no vpc specified throws error when calling addTargets', () => {
     // GIVEN
     const stack = new cdk.Stack();

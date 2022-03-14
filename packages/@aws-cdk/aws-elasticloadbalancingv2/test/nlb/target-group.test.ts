@@ -144,6 +144,66 @@ describe('tests', () => {
     }).toThrow(/Health check interval '5' not supported. Must be one of the following values '10,30'./);
   });
 
+  test('loadBalancerName unallowed: more than 32 characters', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Stack');
+
+    // WHEN/THEN
+    expect(() =>
+      new elbv2.NetworkTargetGroup(stack, 'Group', {
+        vpc,
+        port: 80,
+        targetGroupName: 'a'.repeat(33),
+      }),
+    ).toThrow();
+  });
+
+  test('loadBalancerName unallowed: unallowed characters', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Stack');
+
+    // WHEN/THEN
+    expect(() =>
+      new elbv2.NetworkTargetGroup(stack, 'Group', {
+        vpc,
+        port: 80,
+        targetGroupName: 'my target group',
+      }),
+    ).toThrow();
+  });
+
+  test('loadBalancerName unallowed: ends with hyphen', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Stack');
+
+    // WHEN/THEN
+    expect(() =>
+      new elbv2.NetworkTargetGroup(stack, 'Group', {
+        vpc,
+        port: 80,
+        targetGroupName: 'myTargetGroup-',
+      }),
+    ).toThrow();
+  });
+
+  test('loadBalancerName unallowed: starts with hyphen', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Stack');
+
+    // WHEN/THEN
+    expect(() =>
+      new elbv2.NetworkTargetGroup(stack, 'Group', {
+        vpc,
+        port: 80,
+        targetGroupName: '-myTargetGroup',
+      }),
+    ).toThrow();
+  });
+
   test.each([elbv2.Protocol.UDP, elbv2.Protocol.TCP_UDP, elbv2.Protocol.TLS])(
     'Throws validation error, when `healthCheck` has `protocol` set to %s',
     (protocol) => {

@@ -216,6 +216,10 @@ export abstract class BaseLoadBalancer extends Resource {
 
     this.vpc = baseProps.vpc;
 
+    if (!Token.isUnresolved(baseProps.loadBalancerName) && baseProps.loadBalancerName !== undefined && (baseProps.loadBalancerName.length > 32 || baseProps.loadBalancerName.startsWith('internal-') || !/^[0-9a-z]+[0-9a-z-]*[0-9a-z]+$/i.test(baseProps.loadBalancerName))) {
+      throw new Error(`Load balancer name: "${baseProps.loadBalancerName}" is not allowed. Load balancer name can have a maximum of 32 characters, must contain only alphanumeric characters or hyphens, must not begin or end with a hyphen, and must not begin with "internal-".`);
+    }
+
     const resource = new CfnLoadBalancer(this, 'Resource', {
       name: this.physicalName,
       subnets: subnetIds,
