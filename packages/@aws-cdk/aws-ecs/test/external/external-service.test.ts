@@ -232,7 +232,7 @@ describe('external service', () => {
 
   test('throws when task definition network mode is not External compatible', () => {
     const stack = new cdk.Stack();
-    
+
     expect(() => new ecs.TaskDefinition(stack, 'ExternalTaskDef', {
       compatibility: ecs.Compatibility.EXTERNAL,
       networkMode: NetworkMode.AWS_VPC,
