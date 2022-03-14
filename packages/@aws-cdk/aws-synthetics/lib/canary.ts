@@ -238,7 +238,13 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
    */
   public readonly artifactsBucket: s3.IBucket;
 
-  private readonly _connections: ec2.Connections;
+  /**
+   * Actual connections object for the underlying Lambda
+   *
+   * May be unset, in which case the Canary Lambda is not configured for use in a VPC.
+   * @internal
+   */
+  private readonly _connections?: ec2.Connections;
 
   public constructor(scope: Construct, id: string, props: CanaryProps) {
     if (props.canaryName && !cdk.Token.isUnresolved(props.canaryName)) {
@@ -258,8 +264,10 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
 
     this.role = props.role ?? this.createDefaultRole(props);
 
-    // Security Groups are created and/or appended in `createVpcConfig`.
-    this._connections = new ec2.Connections({});
+    if (props.vpc) {
+      // Security Groups are created and/or appended in `createVpcConfig`.
+      this._connections = new ec2.Connections({});
+    }
 
     const resource: CfnCanary = new CfnCanary(this, 'Resource', {
       artifactS3Location: this.artifactsBucket.s3UrlForObject(props.artifactsBucketLocation?.prefix),
@@ -449,7 +457,7 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
       });
       securityGroups = [securityGroup];
     }
-    this._connections.addSecurityGroup(...securityGroups);
+    this._connections!.addSecurityGroup(...securityGroups);
 
     return {
       vpcId: props.vpc.vpcId,
