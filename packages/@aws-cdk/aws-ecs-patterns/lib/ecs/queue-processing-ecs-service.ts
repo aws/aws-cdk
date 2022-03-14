@@ -106,11 +106,12 @@ export class QueueProcessingEc2Service extends QueueProcessingServiceBase {
       const containerName = taskImageOptions.containerName ?? 'QueueProcessingContainer';
       this.taskDefinition.addContainer(containerName, {
         image: taskImageOptions.image,
+        command: props.command,
         cpu: props.cpu,
         gpuCount: props.gpuCount,
         memoryLimitMiB: props.memoryLimitMiB,
         memoryReservationMiB: props.memoryReservationMiB,
-        environment: taskImageOptions.environment,
+        environment: this.environment,
         secrets: taskImageOptions.secrets,
         logging: this.logDriver,
         dockerLabels: taskImageOptions.dockerLabels,

@@ -154,6 +154,7 @@ test('test fargate queue worker service construct - with optional props for queu
     memoryLimitMiB: 512,
     taskImageOptions: {
       image: ecs.ContainerImage.fromRegistry('test'),
+      family: 'ecs-task-family',
     },
     maxReceiveCount: 42,
     retentionPeriod: cdk.Duration.days(7),
@@ -236,7 +237,7 @@ test('test fargate queue worker service construct - with optional props for queu
         Image: 'test',
       }),
     ],
-    Family: 'ServiceQueueProcessingTaskDef83DB34F1',
+    Family: 'ecs-task-family',
   });
 });
 
@@ -262,13 +263,14 @@ test('test Fargate queue worker service construct - without desiredCount specifi
     memoryLimitMiB: 512,
     taskImageOptions: {
       image: ecs.ContainerImage.fromRegistry('test'),
+      family: 'fargate-task-family',
+      environment: {
+        TEST_ENVIRONMENT_VARIABLE1: 'test environment variable 1 value',
+        TEST_ENVIRONMENT_VARIABLE2: 'test environment variable 2 value',
+      },
     },
     command: ['-c', '4', 'amazon.com'],
     enableLogging: false,
-    environment: {
-      TEST_ENVIRONMENT_VARIABLE1: 'test environment variable 1 value',
-      TEST_ENVIRONMENT_VARIABLE2: 'test environment variable 2 value',
-    },
     queue,
     maxScalingCapacity: 5,
     minScalingCapacity: 2,
@@ -359,20 +361,20 @@ testDeprecated('test Fargate queue worker service construct - with optional prop
     memoryLimitMiB: 512,
     taskImageOptions: {
       image: ecs.ContainerImage.fromRegistry('test'),
+      family: 'fargate-task-family',
+      environment: {
+        TEST_ENVIRONMENT_VARIABLE1: 'test environment variable 1 value',
+        TEST_ENVIRONMENT_VARIABLE2: 'test environment variable 2 value',
+      },
     },
     command: ['-c', '4', 'amazon.com'],
     enableLogging: false,
     desiredTaskCount: 2,
-    environment: {
-      TEST_ENVIRONMENT_VARIABLE1: 'test environment variable 1 value',
-      TEST_ENVIRONMENT_VARIABLE2: 'test environment variable 2 value',
-    },
     queue,
     maxScalingCapacity: 5,
     minHealthyPercent: 60,
     maxHealthyPercent: 150,
     serviceName: 'fargate-test-service',
-    family: 'fargate-task-family',
     platformVersion: ecs.FargatePlatformVersion.VERSION1_4,
     circuitBreaker: { rollback: true },
   });
@@ -448,9 +450,9 @@ test('can set custom containerName', () => {
   // WHEN
   new ecsPatterns.QueueProcessingFargateService(stack, 'Service', {
     cluster,
-    containerName: 'my-container',
     taskImageOptions: {
       image: ecs.ContainerImage.fromRegistry('test'),
+      containerName: 'my-container',
     },
   });
 

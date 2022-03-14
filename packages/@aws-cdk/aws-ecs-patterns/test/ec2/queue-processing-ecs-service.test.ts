@@ -140,6 +140,7 @@ test('test ECS queue worker service construct - with optional props for queues',
     memoryLimitMiB: 512,
     taskImageOptions: {
       image: ecs.ContainerImage.fromRegistry('test'),
+      family: 'ecs-task-family',
     },
     maxReceiveCount: 42,
     retentionPeriod: cdk.Duration.days(7),
@@ -200,7 +201,7 @@ test('test ECS queue worker service construct - with optional props for queues',
         Memory: 512,
       }),
     ],
-    Family: 'ServiceQueueProcessingTaskDef83DB34F1',
+    Family: 'ecs-task-family',
   });
 });
 
@@ -226,14 +227,15 @@ testDeprecated('test ECS queue worker service construct - with optional props', 
     memoryLimitMiB: 1024,
     taskImageOptions: {
       image: ecs.ContainerImage.fromRegistry('test'),
+      family: 'ecs-task-family',
+      environment: {
+        TEST_ENVIRONMENT_VARIABLE1: 'test environment variable 1 value',
+        TEST_ENVIRONMENT_VARIABLE2: 'test environment variable 2 value',
+      },
     },
     command: ['-c', '4', 'amazon.com'],
     enableLogging: false,
     desiredTaskCount: 2,
-    environment: {
-      TEST_ENVIRONMENT_VARIABLE1: 'test environment variable 1 value',
-      TEST_ENVIRONMENT_VARIABLE2: 'test environment variable 2 value',
-    },
     queue,
     maxScalingCapacity: 5,
     minHealthyPercent: 60,

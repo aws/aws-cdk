@@ -150,16 +150,6 @@ export interface QueueProcessingServiceBaseProps {
   readonly enableLogging?: boolean;
 
   /**
-   * The environment variables to pass to the container.
-   *
-   * The variable `QUEUE_NAME` with value `queue.queueName` will
-   * always be passed.
-   *
-   * @default 'QUEUE_NAME: queue.queueName'
-   */
-  readonly environment?: { [key: string]: string };
-
-  /**
    * The secret to expose to the container as an environment variable.
    *
    * @default - No secret environment variables.
@@ -391,7 +381,7 @@ export abstract class QueueProcessingServiceBase extends CoreConstruct {
     this.logDriver = props.logDriver ?? (enableLogging ? this.createAWSLogDriver(this.node.id) : undefined);
 
     // Add the queue name to environment variables
-    this.environment = { ...(props.environment || {}), QUEUE_NAME: this.sqsQueue.queueName };
+    this.environment = { ...(props.taskImageOptions?.environment || {}), QUEUE_NAME: this.sqsQueue.queueName };
     this.secrets = props.secrets;
 
     this.desiredCount = props.desiredTaskCount ?? 1;
