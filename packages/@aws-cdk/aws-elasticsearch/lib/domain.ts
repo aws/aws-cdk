@@ -18,74 +18,154 @@ import * as perms from './perms';
 
 /**
  * Elasticsearch version
+ *
+ * @deprecated
  */
 export class ElasticsearchVersion {
-  /** AWS Elasticsearch 1.5 */
+  /**
+   * AWS Elasticsearch 1.5
+   *
+   * @deprecated
+   */
   public static readonly V1_5 = ElasticsearchVersion.of('1.5');
 
-  /** AWS Elasticsearch 2.3 */
+  /**
+   * AWS Elasticsearch 2.3
+   *
+   * @deprecated
+   */
   public static readonly V2_3 = ElasticsearchVersion.of('2.3');
 
-  /** AWS Elasticsearch 5.1 */
+  /**
+   * AWS Elasticsearch 5.1
+   *
+   * @deprecated
+   */
   public static readonly V5_1 = ElasticsearchVersion.of('5.1');
 
-  /** AWS Elasticsearch 5.3 */
+  /**
+   * AWS Elasticsearch 5.3
+   *
+   * @deprecated
+   */
   public static readonly V5_3 = ElasticsearchVersion.of('5.3');
 
-  /** AWS Elasticsearch 5.5 */
+  /**
+   * AWS Elasticsearch 5.5
+   *
+   * @deprecated
+   */
   public static readonly V5_5 = ElasticsearchVersion.of('5.5');
 
-  /** AWS Elasticsearch 5.6 */
+  /**
+   * AWS Elasticsearch 5.6
+   *
+   * @deprecated
+   */
   public static readonly V5_6 = ElasticsearchVersion.of('5.6');
 
-  /** AWS Elasticsearch 6.0 */
+  /**
+   * AWS Elasticsearch 6.0
+   *
+   * @deprecated
+   */
   public static readonly V6_0 = ElasticsearchVersion.of('6.0');
 
-  /** AWS Elasticsearch 6.2 */
+  /**
+   * AWS Elasticsearch 6.2
+   *
+   * @deprecated
+   */
   public static readonly V6_2 = ElasticsearchVersion.of('6.2');
 
-  /** AWS Elasticsearch 6.3 */
+  /**
+   * AWS Elasticsearch 6.3
+   *
+   * @deprecated
+   */
   public static readonly V6_3 = ElasticsearchVersion.of('6.3');
 
-  /** AWS Elasticsearch 6.4 */
+  /**
+   * AWS Elasticsearch 6.4
+   *
+   * @deprecated
+   */
   public static readonly V6_4 = ElasticsearchVersion.of('6.4');
 
-  /** AWS Elasticsearch 6.5 */
+  /**
+   * AWS Elasticsearch 6.5
+   *
+   * @deprecated
+   */
   public static readonly V6_5 = ElasticsearchVersion.of('6.5');
 
-  /** AWS Elasticsearch 6.7 */
+  /**
+   * AWS Elasticsearch 6.7
+   *
+   * @deprecated
+   */
   public static readonly V6_7 = ElasticsearchVersion.of('6.7');
 
-  /** AWS Elasticsearch 6.8 */
+  /**
+   * AWS Elasticsearch 6.8
+   *
+   * @deprecated
+   */
   public static readonly V6_8 = ElasticsearchVersion.of('6.8');
 
-  /** AWS Elasticsearch 7.1 */
+  /**
+   * AWS Elasticsearch 7.1
+   *
+   * @deprecated
+   */
   public static readonly V7_1 = ElasticsearchVersion.of('7.1');
 
-  /** AWS Elasticsearch 7.4 */
+  /**
+   * AWS Elasticsearch 7.4
+   *
+   * @deprecated
+   */
   public static readonly V7_4 = ElasticsearchVersion.of('7.4');
 
-  /** AWS Elasticsearch 7.7 */
+  /**
+   * AWS Elasticsearch 7.7
+   *
+   * @deprecated
+   */
   public static readonly V7_7 = ElasticsearchVersion.of('7.7');
 
-  /** AWS Elasticsearch 7.8 */
+  /**
+   * AWS Elasticsearch 7.8
+   *
+   * @deprecated
+   */
   public static readonly V7_8 = ElasticsearchVersion.of('7.8');
 
-  /** AWS Elasticsearch 7.9 */
+  /**
+   * AWS Elasticsearch 7.9
+   *
+   * @deprecated
+   */
   public static readonly V7_9 = ElasticsearchVersion.of('7.9');
 
-  /** AWS Elasticsearch 7.10 */
+  /**
+   * AWS Elasticsearch 7.10
+   *
+   * @deprecated
+   */
   public static readonly V7_10 = ElasticsearchVersion.of('7.10');
 
   /**
    * Custom Elasticsearch version
    * @param version custom version number
+   * @deprecated
    */
   public static of(version: string) { return new ElasticsearchVersion(version); }
 
   /**
    *
    * @param version Elasticsearch version number
+   * @deprecated
    */
   private constructor(public readonly version: string) { }
 }
@@ -93,12 +173,15 @@ export class ElasticsearchVersion {
 /**
  * Configures the capacity of the cluster such as the instance type and the
  * number of instances.
+ *
+ * @deprecated
  */
 export interface CapacityConfig {
   /**
    * The number of instances to use for the master node.
    *
    * @default - no dedicated master nodes
+   * @deprecated
    */
   readonly masterNodes?: number;
 
@@ -110,6 +193,7 @@ export interface CapacityConfig {
    * in the Amazon Elasticsearch Service Developer Guide.
    *
    * @default - r5.large.elasticsearch
+   * @deprecated
    */
   readonly masterNodeInstanceType?: string;
 
@@ -117,6 +201,7 @@ export interface CapacityConfig {
    * The number of data nodes (instances) to use in the Amazon ES domain.
    *
    * @default - 1
+   * @deprecated
    */
   readonly dataNodes?: number;
 
@@ -127,6 +212,7 @@ export interface CapacityConfig {
    * in the Amazon Elasticsearch Service Developer Guide.
    *
    * @default - r5.large.elasticsearch
+   * @deprecated
    */
   readonly dataNodeInstanceType?: string;
 
@@ -134,6 +220,7 @@ export interface CapacityConfig {
    * The number of UltraWarm nodes (instances) to use in the Amazon ES domain.
    *
    * @default - no UltraWarm nodes
+   * @deprecated
    */
   readonly warmNodes?: number;
 
@@ -144,6 +231,7 @@ export interface CapacityConfig {
    * in the Amazon Elasticsearch Service Developer Guide.
    *
    * @default - ultrawarm1.medium.elasticsearch
+   * @deprecated
    */
   readonly warmInstanceType?: string;
 
@@ -151,6 +239,8 @@ export interface CapacityConfig {
 
 /**
  * Specifies zone awareness configuration options.
+ *
+ * @deprecated
  */
 export interface ZoneAwarenessConfig {
   /**
@@ -165,6 +255,7 @@ export interface ZoneAwarenessConfig {
    * in the Amazon Elasticsearch Service Developer Guide.
    *
    * @default - false
+   * @deprecated
    */
   readonly enabled?: boolean;
 
@@ -173,6 +264,7 @@ export interface ZoneAwarenessConfig {
    * want the domain to use. Valid values are 2 and 3.
    *
    * @default - 2 if zone awareness is enabled.
+   * @deprecated
    */
   readonly availabilityZoneCount?: number;
 }
@@ -183,6 +275,8 @@ export interface ZoneAwarenessConfig {
  * [Configuring EBS-based Storage]
  * (https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/es-createupdatedomains.html#es-createdomain-configure-ebs)
  * in the Amazon Elasticsearch Service Developer Guide.
+ *
+ * @deprecated
  */
 export interface EbsOptions {
   /**
@@ -190,6 +284,7 @@ export interface EbsOptions {
    * Amazon ES domain.
    *
    * @default - true
+   * @deprecated
    */
   readonly enabled?: boolean;
 
@@ -199,6 +294,7 @@ export interface EbsOptions {
    * volume type.
    *
    * @default - iops are not set.
+   * @deprecated
    */
   readonly iops?: number;
 
@@ -211,6 +307,7 @@ export interface EbsOptions {
    * in the Amazon Elasticsearch Service Developer Guide.
    *
    * @default 10
+   * @deprecated
    */
   readonly volumeSize?: number;
 
@@ -221,12 +318,15 @@ export interface EbsOptions {
    * in the Amazon Elasticsearch Service Developer Guide.
    *
    * @default gp2
+   * @deprecated
    */
   readonly volumeType?: ec2.EbsDeviceVolumeType;
 }
 
 /**
  * Configures log settings for the domain.
+ *
+ * @deprecated
  */
 export interface LoggingOptions {
   /**
@@ -234,6 +334,7 @@ export interface LoggingOptions {
    * Requires Elasticsearch version 5.1 or later.
    *
    * @default - false
+   * @deprecated
    */
   readonly slowSearchLogEnabled?: boolean;
 
@@ -241,6 +342,7 @@ export interface LoggingOptions {
    * Log slow searches to this log group.
    *
    * @default - a new log group is created if slow search logging is enabled
+   * @deprecated
    */
   readonly slowSearchLogGroup?: logs.ILogGroup;
 
@@ -249,6 +351,7 @@ export interface LoggingOptions {
    * Requires Elasticsearch version 5.1 or later.
    *
    * @default - false
+   * @deprecated
    */
   readonly slowIndexLogEnabled?: boolean;
 
@@ -256,6 +359,7 @@ export interface LoggingOptions {
    * Log slow indices to this log group.
    *
    * @default - a new log group is created if slow index logging is enabled
+   * @deprecated
    */
   readonly slowIndexLogGroup?: logs.ILogGroup;
 
@@ -264,6 +368,7 @@ export interface LoggingOptions {
    * Requires Elasticsearch version 5.1 or later.
    *
    * @default - false
+   * @deprecated
    */
   readonly appLogEnabled?: boolean;
 
@@ -271,6 +376,7 @@ export interface LoggingOptions {
    * Log Elasticsearch application logs to this log group.
    *
    * @default - a new log group is created if app logging is enabled
+   * @deprecated
    */
   readonly appLogGroup?: logs.ILogGroup;
 
@@ -279,6 +385,7 @@ export interface LoggingOptions {
    * Requires Elasticsearch version 6.7 or later and fine grained access control to be enabled.
    *
    * @default - false
+   * @deprecated
    */
   readonly auditLogEnabled?: boolean;
 
@@ -286,6 +393,7 @@ export interface LoggingOptions {
    * Log Elasticsearch audit logs to this log group.
    *
    * @default - a new log group is created if audit logging is enabled
+   * @deprecated
    */
   readonly auditLogGroup?: logs.ILogGroup;
 }
@@ -294,12 +402,15 @@ export interface LoggingOptions {
  * Whether the domain should encrypt data at rest, and if so, the AWS Key
  * Management Service (KMS) key to use. Can only be used to create a new domain,
  * not update an existing one. Requires Elasticsearch version 5.1 or later.
+ *
+ * @deprecated
  */
 export interface EncryptionAtRestOptions {
   /**
    * Specify true to enable encryption at rest.
    *
    * @default - encryption at rest is disabled.
+   * @deprecated
    */
   readonly enabled?: boolean;
 
@@ -307,6 +418,7 @@ export interface EncryptionAtRestOptions {
    * Supply if using KMS key for encryption at rest.
    *
    * @default - uses default aws/es KMS key.
+   * @deprecated
    */
   readonly kmsKey?: kms.IKey;
 }
@@ -314,10 +426,13 @@ export interface EncryptionAtRestOptions {
 /**
  * Configures Amazon ES to use Amazon Cognito authentication for Kibana.
  * @see https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/es-cognito-auth.html
+ * @deprecated
  */
 export interface CognitoOptions {
   /**
    * The Amazon Cognito identity pool ID that you want Amazon ES to use for Kibana authentication.
+   *
+   * @deprecated
    */
   readonly identityPoolId: string;
 
@@ -325,17 +440,22 @@ export interface CognitoOptions {
    * A role that allows Amazon ES to configure your user pool and identity pool. It must have the `AmazonESCognitoAccess` policy attached to it.
    *
    * @see https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/es-cognito-auth.html#es-cognito-auth-prereq
+   * @deprecated
    */
   readonly role: iam.IRole;
 
   /**
    * The Amazon Cognito user pool ID that you want Amazon ES to use for Kibana authentication.
+   *
+   * @deprecated
    */
   readonly userPoolId: string;
 }
 
 /**
  * The minimum TLS version required for traffic to the domain.
+ *
+ * @deprecated
  */
 export enum TLSSecurityPolicy {
   /** Cipher suite TLS 1.0 */
@@ -346,12 +466,15 @@ export enum TLSSecurityPolicy {
 
 /**
  * Specifies options for fine-grained access control.
+ *
+ * @deprecated
  */
 export interface AdvancedSecurityOptions {
   /**
    * ARN for the master user. Only specify this or masterUserName, but not both.
    *
    * @default - fine-grained access control is disabled
+   * @deprecated
    */
   readonly masterUserArn?: string;
 
@@ -359,6 +482,7 @@ export interface AdvancedSecurityOptions {
    * Username for the master user. Only specify this or masterUserArn, but not both.
    *
    * @default - fine-grained access control is disabled
+   * @deprecated
    */
   readonly masterUserName?: string;
 
@@ -370,40 +494,50 @@ export interface AdvancedSecurityOptions {
    * Secrets Manager.
    *
    * @default - A Secrets Manager generated password
+   * @deprecated
    */
   readonly masterUserPassword?: cdk.SecretValue;
 }
 
 /**
  * Configures a custom domain endpoint for the ES domain
+ *
+ * @deprecated
  */
 export interface CustomEndpointOptions {
   /**
    * The custom domain name to assign
+   *
+   * @deprecated
    */
   readonly domainName: string;
 
   /**
    * The certificate to use
    * @default - create a new one
+   * @deprecated
    */
   readonly certificate?: acm.ICertificate;
 
   /**
    * The hosted zone in Route53 to create the CNAME record in
    * @default - do not create a CNAME
+   * @deprecated
    */
   readonly hostedZone?: route53.IHostedZone;
 }
 
 /**
  * Properties for an AWS Elasticsearch Domain.
+ *
+ * @deprecated
  */
 export interface DomainProps {
   /**
    * Domain Access policies.
    *
    * @default - No access policies.
+   * @deprecated
    */
   readonly accessPolicies?: iam.PolicyStatement[];
 
@@ -412,6 +546,7 @@ export interface DomainProps {
    *
    * @see https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/es-createupdatedomains.html#es-createdomain-configure-advanced-options
    * @default - no advanced options are specified
+   * @deprecated
    */
   readonly advancedOptions?: { [key: string]: (string) };
 
@@ -419,6 +554,7 @@ export interface DomainProps {
    * Configures Amazon ES to use Amazon Cognito authentication for Kibana.
    *
    * @default - Cognito not used for authentication to Kibana.
+   * @deprecated
    */
   readonly cognitoKibanaAuth?: CognitoOptions;
 
@@ -426,6 +562,7 @@ export interface DomainProps {
    * Enforces a particular physical domain name.
    *
    * @default - A name will be auto-generated.
+   * @deprecated
    */
   readonly domainName?: string;
 
@@ -437,6 +574,7 @@ export interface DomainProps {
    * in the Amazon Elasticsearch Service Developer Guide.
    *
    * @default - 10 GiB General Purpose (SSD) volumes per node.
+   * @deprecated
    */
   readonly ebs?: EbsOptions;
 
@@ -444,6 +582,7 @@ export interface DomainProps {
    * The cluster capacity configuration for the Amazon ES domain.
    *
    * @default - 1 r5.large.elasticsearch data node; no dedicated master nodes.
+   * @deprecated
    */
   readonly capacity?: CapacityConfig;
 
@@ -451,11 +590,14 @@ export interface DomainProps {
    * The cluster zone awareness configuration for the Amazon ES domain.
    *
    * @default - no zone awareness (1 AZ)
+   * @deprecated
    */
   readonly zoneAwareness?: ZoneAwarenessConfig;
 
   /**
    * The Elasticsearch version that your domain will leverage.
+   *
+   * @deprecated
    */
   readonly version: ElasticsearchVersion;
 
@@ -463,6 +605,7 @@ export interface DomainProps {
    * Encryption at rest options for the cluster.
    *
    * @default - No encryption at rest
+   * @deprecated
    */
   readonly encryptionAtRest?: EncryptionAtRestOptions;
 
@@ -470,6 +613,7 @@ export interface DomainProps {
    * Configuration log publishing configuration options.
    *
    * @default - No logs are published
+   * @deprecated
    */
   readonly logging?: LoggingOptions;
 
@@ -478,6 +622,7 @@ export interface DomainProps {
    * Requires Elasticsearch version 6.0 or later.
    *
    * @default - Node to node encryption is not enabled.
+   * @deprecated
    */
   readonly nodeToNodeEncryption?: boolean;
 
@@ -487,6 +632,7 @@ export interface DomainProps {
    * versions below 5.3.
    *
    * @default - Hourly automated snapshots not used
+   * @deprecated
    */
   readonly automatedSnapshotStartHour?: number;
 
@@ -495,6 +641,7 @@ export interface DomainProps {
    *
    * @see https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/es-vpc.html
    * @default - Domain is not placed in a VPC.
+   * @deprecated
    */
   readonly vpc?: ec2.IVpc;
 
@@ -506,6 +653,7 @@ export interface DomainProps {
    *
    * @see https://docs.aws.amazon.com/vpc/latest/userguide/VPC_SecurityGroups.html
    * @default - One new security group is created.
+   * @deprecated
    */
   readonly securityGroups?: ec2.ISecurityGroup[];
 
@@ -518,6 +666,7 @@ export interface DomainProps {
    *
    * @see https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Subnets.html
    * @default - All private subnets.
+   * @deprecated
    */
   readonly vpcSubnets?: ec2.SubnetSelection[];
 
@@ -525,6 +674,7 @@ export interface DomainProps {
    * True to require that all traffic to the domain arrive over HTTPS.
    *
    * @default - false
+   * @deprecated
    */
   readonly enforceHttps?: boolean;
 
@@ -532,6 +682,7 @@ export interface DomainProps {
    * The minimum TLS version required for traffic to the domain.
    *
    * @default - TLSSecurityPolicy.TLS_1_0
+   * @deprecated
    */
   readonly tlsSecurityPolicy?: TLSSecurityPolicy;
 
@@ -542,6 +693,7 @@ export interface DomainProps {
    * enforced HTTPS.
    *
    * @default - fine-grained access control is disabled
+   * @deprecated
    */
   readonly fineGrainedAccessControl?: AdvancedSecurityOptions;
 
@@ -556,6 +708,7 @@ export interface DomainProps {
    * setting will cause a failure.
    *
    * @default - false
+   * @deprecated
    */
   readonly useUnsignedBasicAuth?: boolean;
 
@@ -565,6 +718,7 @@ export interface DomainProps {
    *
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-attribute-updatepolicy.html#cfn-attributes-updatepolicy-upgradeelasticsearchdomain
    * @default - false
+   * @deprecated
    */
   readonly enableVersionUpgrade?: boolean;
 
@@ -572,6 +726,7 @@ export interface DomainProps {
    * Policy to apply when the domain is removed from the stack
    *
    * @default RemovalPolicy.RETAIN
+   * @deprecated
    */
   readonly removalPolicy?: cdk.RemovalPolicy;
 
@@ -580,18 +735,22 @@ export interface DomainProps {
    *
    * If you specify a Route53 hosted zone it will create a CNAME record and use DNS validation for the certificate
    * @default - no custom domain endpoint will be configured
+   * @deprecated
    */
   readonly customEndpoint?: CustomEndpointOptions;
 }
 
 /**
  * An interface that represents an Elasticsearch domain - either created with the CDK, or an existing one.
+ *
+ * @deprecated
  */
 export interface IDomain extends cdk.IResource {
   /**
    * Arn of the Elasticsearch domain.
    *
    * @attribute
+   * @deprecated
    */
   readonly domainArn: string;
 
@@ -599,6 +758,7 @@ export interface IDomain extends cdk.IResource {
    * Domain name of the Elasticsearch domain.
    *
    * @attribute
+   * @deprecated
    */
   readonly domainName: string;
 
@@ -606,6 +766,7 @@ export interface IDomain extends cdk.IResource {
    * Endpoint of the Elasticsearch domain.
    *
    * @attribute
+   * @deprecated
    */
   readonly domainEndpoint: string;
 
@@ -614,6 +775,7 @@ export interface IDomain extends cdk.IResource {
    * principal (Role/Group/User).
    *
    * @param identity The principal
+   * @deprecated
    */
   grantRead(identity: iam.IGrantable): iam.Grant;
 
@@ -622,6 +784,7 @@ export interface IDomain extends cdk.IResource {
    * principal (Role/Group/User).
    *
    * @param identity The principal
+   * @deprecated
    */
   grantWrite(identity: iam.IGrantable): iam.Grant;
 
@@ -630,6 +793,7 @@ export interface IDomain extends cdk.IResource {
    * principal (Role/Group/User).
    *
    * @param identity The principal
+   * @deprecated
    */
   grantReadWrite(identity: iam.IGrantable): iam.Grant;
 
@@ -639,6 +803,7 @@ export interface IDomain extends cdk.IResource {
    *
    * @param index The index to grant permissions for
    * @param identity The principal
+   * @deprecated
    */
   grantIndexRead(index: string, identity: iam.IGrantable): iam.Grant;
 
@@ -648,6 +813,7 @@ export interface IDomain extends cdk.IResource {
    *
    * @param index The index to grant permissions for
    * @param identity The principal
+   * @deprecated
    */
   grantIndexWrite(index: string, identity: iam.IGrantable): iam.Grant;
 
@@ -657,6 +823,7 @@ export interface IDomain extends cdk.IResource {
    *
    * @param index The index to grant permissions for
    * @param identity The principal
+   * @deprecated
    */
   grantIndexReadWrite(index: string, identity: iam.IGrantable): iam.Grant;
 
@@ -666,6 +833,7 @@ export interface IDomain extends cdk.IResource {
    *
    * @param path The path to grant permissions for
    * @param identity The principal
+   * @deprecated
    */
   grantPathRead(path: string, identity: iam.IGrantable): iam.Grant;
 
@@ -675,6 +843,7 @@ export interface IDomain extends cdk.IResource {
    *
    * @param path The path to grant permissions for
    * @param identity The principal
+   * @deprecated
    */
   grantPathWrite(path: string, identity: iam.IGrantable): iam.Grant;
 
@@ -684,11 +853,14 @@ export interface IDomain extends cdk.IResource {
    *
    * @param path The path to grant permissions for
    * @param identity The principal
+   * @deprecated
    */
   grantPathReadWrite(path: string, identity: iam.IGrantable): iam.Grant;
 
   /**
    * Return the given named metric for this Domain.
+   *
+   * @deprecated
    */
   metric(metricName: string, props?: MetricOptions): Metric;
 
@@ -696,6 +868,7 @@ export interface IDomain extends cdk.IResource {
    * Metric for the time the cluster status is red.
    *
    * @default maximum over 5 minutes
+   * @deprecated
    */
   metricClusterStatusRed(props?: MetricOptions): Metric;
 
@@ -703,6 +876,7 @@ export interface IDomain extends cdk.IResource {
    * Metric for the time the cluster status is yellow.
    *
    * @default maximum over 5 minutes
+   * @deprecated
    */
   metricClusterStatusYellow(props?: MetricOptions): Metric;
 
@@ -710,6 +884,7 @@ export interface IDomain extends cdk.IResource {
    * Metric for the storage space of nodes in the cluster.
    *
    * @default minimum over 5 minutes
+   * @deprecated
    */
   metricFreeStorageSpace(props?: MetricOptions): Metric;
 
@@ -717,6 +892,7 @@ export interface IDomain extends cdk.IResource {
    * Metric for the cluster blocking index writes.
    *
    * @default maximum over 1 minute
+   * @deprecated
    */
   metricClusterIndexWritesBlocked(props?: MetricOptions): Metric;
 
@@ -724,6 +900,7 @@ export interface IDomain extends cdk.IResource {
    * Metric for the number of nodes.
    *
    * @default minimum over 1 hour
+   * @deprecated
    */
   metricNodes(props?: MetricOptions): Metric;
 
@@ -731,6 +908,7 @@ export interface IDomain extends cdk.IResource {
    * Metric for automated snapshot failures.
    *
    * @default maximum over 5 minutes
+   * @deprecated
    */
   metricAutomatedSnapshotFailure(props?: MetricOptions): Metric;
 
@@ -738,6 +916,7 @@ export interface IDomain extends cdk.IResource {
    * Metric for CPU utilization.
    *
    * @default maximum over 5 minutes
+   * @deprecated
    */
   metricCPUUtilization(props?: MetricOptions): Metric;
 
@@ -745,6 +924,7 @@ export interface IDomain extends cdk.IResource {
    * Metric for JVM memory pressure.
    *
    * @default maximum over 5 minutes
+   * @deprecated
    */
   metricJVMMemoryPressure(props?: MetricOptions): Metric;
 
@@ -752,6 +932,7 @@ export interface IDomain extends cdk.IResource {
    * Metric for master CPU utilization.
    *
    * @default maximum over 5 minutes
+   * @deprecated
    */
   metricMasterCPUUtilization(props?: MetricOptions): Metric;
 
@@ -759,6 +940,7 @@ export interface IDomain extends cdk.IResource {
    * Metric for master JVM memory pressure.
    *
    * @default maximum over 5 minutes
+   * @deprecated
    */
   metricMasterJVMMemoryPressure(props?: MetricOptions): Metric;
 
@@ -766,6 +948,7 @@ export interface IDomain extends cdk.IResource {
    * Metric for KMS key errors.
    *
    * @default maximum over 5 minutes
+   * @deprecated
    */
   metricKMSKeyError(props?: MetricOptions): Metric;
 
@@ -773,6 +956,7 @@ export interface IDomain extends cdk.IResource {
    * Metric for KMS key being inaccessible.
    *
    * @default maximum over 5 minutes
+   * @deprecated
    */
   metricKMSKeyInaccessible(props?: MetricOptions): Metric;
 
@@ -780,6 +964,7 @@ export interface IDomain extends cdk.IResource {
    * Metric for number of searchable documents.
    *
    * @default maximum over 5 minutes
+   * @deprecated
    */
   metricSearchableDocuments(props?: MetricOptions): Metric;
 
@@ -787,6 +972,7 @@ export interface IDomain extends cdk.IResource {
    * Metric for search latency.
    *
    * @default p99 over 5 minutes
+   * @deprecated
    */
   metricSearchLatency(props?: MetricOptions): Metric;
 
@@ -794,6 +980,7 @@ export interface IDomain extends cdk.IResource {
    * Metric for indexing latency.
    *
    * @default p99 over 5 minutes
+   * @deprecated
    */
   metricIndexingLatency(props?: MetricOptions): Metric;
 }
@@ -812,6 +999,7 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    * principal (Role/Group/User).
    *
    * @param identity The principal
+   * @deprecated
    */
   grantRead(identity: iam.IGrantable): iam.Grant {
     return this.grant(
@@ -827,6 +1015,7 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    * principal (Role/Group/User).
    *
    * @param identity The principal
+   * @deprecated
    */
   grantWrite(identity: iam.IGrantable): iam.Grant {
     return this.grant(
@@ -842,6 +1031,7 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    * principal (Role/Group/User).
    *
    * @param identity The principal
+   * @deprecated
    */
   grantReadWrite(identity: iam.IGrantable): iam.Grant {
     return this.grant(
@@ -858,6 +1048,7 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    *
    * @param index The index to grant permissions for
    * @param identity The principal
+   * @deprecated
    */
   grantIndexRead(index: string, identity: iam.IGrantable): iam.Grant {
     return this.grant(
@@ -874,6 +1065,7 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    *
    * @param index The index to grant permissions for
    * @param identity The principal
+   * @deprecated
    */
   grantIndexWrite(index: string, identity: iam.IGrantable): iam.Grant {
     return this.grant(
@@ -890,6 +1082,7 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    *
    * @param index The index to grant permissions for
    * @param identity The principal
+   * @deprecated
    */
   grantIndexReadWrite(index: string, identity: iam.IGrantable): iam.Grant {
     return this.grant(
@@ -906,6 +1099,7 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    *
    * @param path The path to grant permissions for
    * @param identity The principal
+   * @deprecated
    */
   grantPathRead(path: string, identity: iam.IGrantable): iam.Grant {
     return this.grant(
@@ -921,6 +1115,7 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    *
    * @param path The path to grant permissions for
    * @param identity The principal
+   * @deprecated
    */
   grantPathWrite(path: string, identity: iam.IGrantable): iam.Grant {
     return this.grant(
@@ -936,6 +1131,7 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    *
    * @param path The path to grant permissions for
    * @param identity The principal
+   * @deprecated
    */
   grantPathReadWrite(path: string, identity: iam.IGrantable): iam.Grant {
     return this.grant(
@@ -947,6 +1143,8 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
 
   /**
    * Return the given named metric for this Domain.
+   *
+   * @deprecated
    */
   public metric(metricName: string, props?: MetricOptions): Metric {
     return new Metric({
@@ -964,6 +1162,7 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    * Metric for the time the cluster status is red.
    *
    * @default maximum over 5 minutes
+   * @deprecated
    */
   public metricClusterStatusRed(props?: MetricOptions): Metric {
     return this.metric('ClusterStatus.red', {
@@ -976,6 +1175,7 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    * Metric for the time the cluster status is yellow.
    *
    * @default maximum over 5 minutes
+   * @deprecated
    */
   public metricClusterStatusYellow(props?: MetricOptions): Metric {
     return this.metric('ClusterStatus.yellow', {
@@ -988,6 +1188,7 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    * Metric for the storage space of nodes in the cluster.
    *
    * @default minimum over 5 minutes
+   * @deprecated
    */
   public metricFreeStorageSpace(props?: MetricOptions): Metric {
     return this.metric('FreeStorageSpace', {
@@ -1000,6 +1201,7 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    * Metric for the cluster blocking index writes.
    *
    * @default maximum over 1 minute
+   * @deprecated
    */
   public metricClusterIndexWritesBlocked(props?: MetricOptions): Metric {
     return this.metric('ClusterIndexWritesBlocked', {
@@ -1013,6 +1215,7 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    * Metric for the number of nodes.
    *
    * @default minimum over 1 hour
+   * @deprecated
    */
   public metricNodes(props?: MetricOptions): Metric {
     return this.metric('Nodes', {
@@ -1026,6 +1229,7 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    * Metric for automated snapshot failures.
    *
    * @default maximum over 5 minutes
+   * @deprecated
    */
   public metricAutomatedSnapshotFailure(props?: MetricOptions): Metric {
     return this.metric('AutomatedSnapshotFailure', {
@@ -1038,6 +1242,7 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    * Metric for CPU utilization.
    *
    * @default maximum over 5 minutes
+   * @deprecated
    */
   public metricCPUUtilization(props?: MetricOptions): Metric {
     return this.metric('CPUUtilization', {
@@ -1050,6 +1255,7 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    * Metric for JVM memory pressure.
    *
    * @default maximum over 5 minutes
+   * @deprecated
    */
   public metricJVMMemoryPressure(props?: MetricOptions): Metric {
     return this.metric('JVMMemoryPressure', {
@@ -1062,6 +1268,7 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    * Metric for master CPU utilization.
    *
    * @default maximum over 5 minutes
+   * @deprecated
    */
   public metricMasterCPUUtilization(props?: MetricOptions): Metric {
     return this.metric('MasterCPUUtilization', {
@@ -1074,6 +1281,7 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    * Metric for master JVM memory pressure.
    *
    * @default maximum over 5 minutes
+   * @deprecated
    */
   public metricMasterJVMMemoryPressure(props?: MetricOptions): Metric {
     return this.metric('MasterJVMMemoryPressure', {
@@ -1086,6 +1294,7 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    * Metric for KMS key errors.
    *
    * @default maximum over 5 minutes
+   * @deprecated
    */
   public metricKMSKeyError(props?: MetricOptions): Metric {
     return this.metric('KMSKeyError', {
@@ -1098,6 +1307,7 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    * Metric for KMS key being inaccessible.
    *
    * @default maximum over 5 minutes
+   * @deprecated
    */
   public metricKMSKeyInaccessible(props?: MetricOptions): Metric {
     return this.metric('KMSKeyInaccessible', {
@@ -1110,6 +1320,7 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    * Metric for number of searchable documents.
    *
    * @default maximum over 5 minutes
+   * @deprecated
    */
   public metricSearchableDocuments(props?: MetricOptions): Metric {
     return this.metric('SearchableDocuments', {
@@ -1122,6 +1333,7 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    * Metric for search latency.
    *
    * @default p99 over 5 minutes
+   * @deprecated
    */
   public metricSearchLatency(props?: MetricOptions): Metric {
     return this.metric('SearchLatency', { statistic: 'p99', ...props });
@@ -1131,6 +1343,7 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    * Metric for indexing latency.
    *
    * @default p99 over 5 minutes
+   * @deprecated
    */
   public metricIndexingLatency(props?: MetricOptions): Metric {
     return this.metric('IndexingLatency', { statistic: 'p99', ...props });
@@ -1159,15 +1372,21 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
 
 /**
  * Reference to an Elasticsearch domain.
+ *
+ * @deprecated
  */
 export interface DomainAttributes {
   /**
    * The ARN of the Elasticsearch domain.
+   *
+   * @deprecated
    */
   readonly domainArn: string;
 
   /**
    * The domain endpoint of the Elasticsearch domain.
+   *
+   * @deprecated
    */
   readonly domainEndpoint: string;
 }
@@ -1175,6 +1394,8 @@ export interface DomainAttributes {
 
 /**
  * Provides an Elasticsearch domain.
+ *
+ * @deprecated
  */
 export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
   /**
@@ -1183,6 +1404,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
    * @param scope The parent creating construct (usually `this`).
    * @param id The construct's name.
    * @param domainEndpoint The domain's endpoint.
+   * @deprecated
    */
   public static fromDomainEndpoint(
     scope: Construct,
@@ -1209,6 +1431,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
    * @param scope The parent creating construct (usually `this`).
    * @param id The construct's name.
    * @param attrs A `DomainAttributes` object.
+   * @deprecated
    */
   public static fromDomainAttributes(scope: Construct, id: string, attrs: DomainAttributes): IDomain {
     const { domainArn, domainEndpoint } = attrs;
@@ -1224,14 +1447,26 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
     };
   }
 
+  /**
+   * @deprecated
+   */
   public readonly domainArn: string;
+
+  /**
+   * @deprecated
+   */
   public readonly domainName: string;
+
+  /**
+   * @deprecated
+   */
   public readonly domainEndpoint: string;
 
   /**
    * Log group that slow searches are logged to.
    *
    * @attribute
+   * @deprecated
    */
   public readonly slowSearchLogGroup?: logs.ILogGroup;
 
@@ -1239,6 +1474,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
    * Log group that slow indices are logged to.
    *
    * @attribute
+   * @deprecated
    */
   public readonly slowIndexLogGroup?: logs.ILogGroup;
 
@@ -1246,6 +1482,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
    * Log group that application logs are logged to.
    *
    * @attribute
+   * @deprecated
    */
   public readonly appLogGroup?: logs.ILogGroup;
 
@@ -1253,11 +1490,14 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
    * Log group that audit logs are logged to.
    *
    * @attribute
+   * @deprecated
    */
   public readonly auditLogGroup?: logs.ILogGroup;
 
   /**
    * Master user password if fine grained access control is configured.
+   *
+   * @deprecated
    */
   public readonly masterUserPassword?: cdk.SecretValue;
 
@@ -1735,6 +1975,8 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
   /**
    * Manages network connections to the domain. This will throw an error in case the domain
    * is not placed inside a VPC.
+   *
+   * @deprecated
    */
   public get connections(): ec2.Connections {
     if (!this._connections) {
@@ -1745,6 +1987,8 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
 
   /**
    * Add policy statements to the domain access policy
+   *
+   * @deprecated
    */
   public addAccessPolicies(...accessPolicyStatements: iam.PolicyStatement[]) {
     if (accessPolicyStatements.length > 0) {
