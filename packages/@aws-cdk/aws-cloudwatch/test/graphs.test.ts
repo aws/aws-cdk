@@ -1,5 +1,6 @@
+import { Function } from '@aws-cdk/aws-lambda';
 import { Duration, Stack } from '@aws-cdk/core';
-import { Alarm, AlarmWidget, Color, GraphWidget, GraphWidgetView, LegendPosition, LogQueryWidget, Metric, Shading, SingleValueWidget, LogQueryVisualizationType } from '../lib';
+import { Alarm, AlarmWidget, Color, GraphWidget, GraphWidgetView, LegendPosition, LogQueryWidget, Metric, Shading, SingleValueWidget, LogQueryVisualizationType, CustomWidget } from '../lib';
 
 describe('Graphs', () => {
   test('add stacked property to graphs', () => {
@@ -346,6 +347,35 @@ describe('Graphs', () => {
     }]);
 
 
+  });
+
+  test('custom widget', () => {
+    // GIVEN
+    const stack = new Stack();
+    const fn = Function.fromFunctionArn(stack, 'CustomWidgetFunction', 'arn:aws:lambda:us-east-1:123456789:function:customwidgetfunction');
+
+    // WHEN
+    const widget = new CustomWidget({
+      function: fn,
+      title: 'CustomWidget',
+    });
+
+    // THEN
+    expect(stack.resolve(widget.toJson())).toEqual([{
+      type: 'custom',
+      width: 6,
+      height: 6,
+      properties: {
+        title: 'CustomWidget',
+        endpoint: fn.functionArn,
+        params: {},
+        updateOn: {
+          refresh: true,
+          resize: true,
+          timeRange: true,
+        },
+      },
+    }]);
   });
 
   test('add annotations to graph', () => {
