@@ -1,6 +1,6 @@
 import { SynthesisMessage } from '@aws-cdk/cx-api';
 import { Messages } from './message';
-import { formatFailure, matchSection } from './section';
+import { formatAllMatches, formatFailure, matchSection } from './section';
 
 export function findMessage(messages: Messages, constructPath: string, props: any = {}): { [key: string]: { [key: string]: any } } {
   const section: { [key: string]: SynthesisMessage } = messages;
@@ -42,7 +42,7 @@ export function hasNoMessage(messages: Messages, constructPath: string, props: a
 
   return [
     `Expected no matches, but stack has ${Object.keys(result.matches).length} messages as follows`,
-    JSON.stringify(result.matches),
+    formatAllMatches(result.matches),
   ].join('\n');
 }
 
