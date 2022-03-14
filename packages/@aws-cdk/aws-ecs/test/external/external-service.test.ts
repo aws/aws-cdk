@@ -236,7 +236,7 @@ describe('external service', () => {
     const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
     const taskDefinition = new ecs.TaskDefinition(stack, 'ExternalTaskDef', {
       compatibility: ecs.Compatibility.EXTERNAL,
-      networkMode: NetworkMode.AWS_VPC
+      networkMode: NetworkMode.AWS_VPC,
     });
     taskDefinition.addContainer('BaseContainer', {
       image: ecs.ContainerImage.fromRegistry('test'),
