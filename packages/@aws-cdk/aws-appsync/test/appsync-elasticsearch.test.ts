@@ -1,16 +1,9 @@
 import * as path from 'path';
 import { Template } from '@aws-cdk/assertions';
+import * as es from '@aws-cdk/aws-elasticsearch';
 import { describeDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
 import * as appsync from '../lib';
-
-// we need this to import Elasticsearch since jsii complains
-// that `ElasticsearchVersion.of()` is deprecated.
-const deprecated = process.env.JSII_DEPRECATED;
-process.env.JSII_DEPRECATED = 'quiet';
-// eslint-disable-next-line import/order
-import * as es from '@aws-cdk/aws-elasticsearch';
-process.env.JSII_DEPRECATED = deprecated;
 
 // GLOBAL GIVEN
 let stack: cdk.Stack;

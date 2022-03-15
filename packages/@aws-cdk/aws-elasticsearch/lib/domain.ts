@@ -18,154 +18,112 @@ import * as perms from './perms';
 
 /**
  * Elasticsearch version
- *
- * @deprecated use opensearchservice module instead
  */
 export class ElasticsearchVersion {
   /**
    * AWS Elasticsearch 1.5
-   *
-   * @deprecated use opensearchservice module instead
    */
   public static readonly V1_5 = ElasticsearchVersion.of('1.5');
 
   /**
    * AWS Elasticsearch 2.3
-   *
-   * @deprecated use opensearchservice module instead
    */
   public static readonly V2_3 = ElasticsearchVersion.of('2.3');
 
   /**
    * AWS Elasticsearch 5.1
-   *
-   * @deprecated use opensearchservice module instead
    */
   public static readonly V5_1 = ElasticsearchVersion.of('5.1');
 
   /**
    * AWS Elasticsearch 5.3
-   *
-   * @deprecated use opensearchservice module instead
    */
   public static readonly V5_3 = ElasticsearchVersion.of('5.3');
 
   /**
    * AWS Elasticsearch 5.5
-   *
-   * @deprecated use opensearchservice module instead
    */
   public static readonly V5_5 = ElasticsearchVersion.of('5.5');
 
   /**
    * AWS Elasticsearch 5.6
-   *
-   * @deprecated use opensearchservice module instead
    */
   public static readonly V5_6 = ElasticsearchVersion.of('5.6');
 
   /**
    * AWS Elasticsearch 6.0
-   *
-   * @deprecated use opensearchservice module instead
    */
   public static readonly V6_0 = ElasticsearchVersion.of('6.0');
 
   /**
    * AWS Elasticsearch 6.2
-   *
-   * @deprecated use opensearchservice module instead
    */
   public static readonly V6_2 = ElasticsearchVersion.of('6.2');
 
   /**
    * AWS Elasticsearch 6.3
-   *
-   * @deprecated use opensearchservice module instead
    */
   public static readonly V6_3 = ElasticsearchVersion.of('6.3');
 
   /**
    * AWS Elasticsearch 6.4
-   *
-   * @deprecated use opensearchservice module instead
    */
   public static readonly V6_4 = ElasticsearchVersion.of('6.4');
 
   /**
    * AWS Elasticsearch 6.5
-   *
-   * @deprecated use opensearchservice module instead
    */
   public static readonly V6_5 = ElasticsearchVersion.of('6.5');
 
   /**
    * AWS Elasticsearch 6.7
-   *
-   * @deprecated use opensearchservice module instead
    */
   public static readonly V6_7 = ElasticsearchVersion.of('6.7');
 
   /**
    * AWS Elasticsearch 6.8
-   *
-   * @deprecated use opensearchservice module instead
    */
   public static readonly V6_8 = ElasticsearchVersion.of('6.8');
 
   /**
    * AWS Elasticsearch 7.1
-   *
-   * @deprecated use opensearchservice module instead
    */
   public static readonly V7_1 = ElasticsearchVersion.of('7.1');
 
   /**
    * AWS Elasticsearch 7.4
-   *
-   * @deprecated use opensearchservice module instead
    */
   public static readonly V7_4 = ElasticsearchVersion.of('7.4');
 
   /**
    * AWS Elasticsearch 7.7
-   *
-   * @deprecated use opensearchservice module instead
    */
   public static readonly V7_7 = ElasticsearchVersion.of('7.7');
 
   /**
    * AWS Elasticsearch 7.8
-   *
-   * @deprecated use opensearchservice module instead
    */
   public static readonly V7_8 = ElasticsearchVersion.of('7.8');
 
   /**
    * AWS Elasticsearch 7.9
-   *
-   * @deprecated use opensearchservice module instead
    */
   public static readonly V7_9 = ElasticsearchVersion.of('7.9');
 
   /**
    * AWS Elasticsearch 7.10
-   *
-   * @deprecated use opensearchservice module instead
    */
   public static readonly V7_10 = ElasticsearchVersion.of('7.10');
 
   /**
    * Custom Elasticsearch version
    * @param version custom version number
-   * @deprecated use opensearchservice module instead
    */
   public static of(version: string) { return new ElasticsearchVersion(version); }
 
   /**
    *
    * @param version Elasticsearch version number
-   * @deprecated use opensearchservice module instead
    */
   private constructor(public readonly version: string) { }
 }

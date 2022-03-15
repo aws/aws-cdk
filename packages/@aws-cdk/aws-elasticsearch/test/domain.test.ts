@@ -10,13 +10,7 @@ import * as route53 from '@aws-cdk/aws-route53';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { App, Stack, Duration, SecretValue, CfnParameter, Token } from '@aws-cdk/core';
 
-// we need this to import ElasticsearchVersion since jsii complains
-// that `ElasticsearchVersion.of()` is deprecated.
-// it is essentially the same implementation as 'testDeprecated'
-const deprecated = process.env.JSII_DEPRECATED;
-process.env.JSII_DEPRECATED = 'quiet';
 import { Domain, ElasticsearchVersion } from '../lib/domain';
-process.env.JSII_DEPRECATED = deprecated;
 
 let app: App;
 let stack: Stack;
