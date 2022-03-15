@@ -1448,19 +1448,16 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
   }
 
   /**
-   *
    * @deprecated use opensearchservice module instead
    */
   public readonly domainArn: string;
 
   /**
-   *
    * @deprecated use opensearchservice module instead
    */
   public readonly domainName: string;
 
   /**
-   *
    * @deprecated use opensearchservice module instead
    */
   public readonly domainEndpoint: string;
