@@ -129,15 +129,16 @@ export class AssetCode extends Code {
    * @param handler the canary handler
    */
   private validateCanaryAsset(scope: Construct, handler: string, family: RuntimeFamily) {
-    // Get the staged (or copied) asset path.
-    const assetOutdir = cdk.Stage.of(scope)?.assetOutdir;
-    let assetPath = this.assetPath;
-    if (assetOutdir) {
-      assetPath = path.join(assetOutdir, this.asset!.assetPath);
+    if (!this.asset) {
+      throw new Error("'validateCanaryAsset' must be called after 'this.asset' is instantiated");
     }
 
+    // Get the staged (or copied) asset path.
+    const assetOutdir = cdk.Stage.of(scope)?.assetOutdir;
+    const assetPath = assetOutdir ? path.join(assetOutdir, this.asset.assetPath) : this.assetPath;
+
     if (path.extname(this.assetPath) !== '.zip') {
-      if (this.asset!.isFile) {
+      if (this.asset.isFile) {
         throw new Error(`Asset must be a .zip file or a directory (${this.assetPath})`);
       }
       const filename = handler.split('.')[0];
