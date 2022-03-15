@@ -94,7 +94,7 @@ export interface ApplicationLoadBalancedServiceBaseProps {
    * @default - No certificate associated with the load balancer, if using
    * the HTTP protocol. For HTTPS, a DNS-validated certificate will be
    * created for the load balancer's specified domain name if a domain name
-   * domain zone are specified.
+   * and domain zone are specified.
    */
   readonly certificate?: ICertificate;
 
