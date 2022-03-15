@@ -499,6 +499,15 @@ interface ThirdPartyGitSourceProps extends GitSourceProps {
    * @default every push and every Pull Request (create or update) triggers a build
    */
   readonly webhookFilters?: FilterGroup[];
+
+  /**
+ * Any customization of the build status configuration.
+ *
+ *
+ * @example '{context: 'My build $CODEBUILD_BUILD_NUMBER in the region $AWS_REGION'}'
+ * @default undefined
+ */
+  readonly buildStatusConfig?: CfnProject.BuildStatusConfigProperty;
 }
 
 /**
@@ -510,6 +519,7 @@ abstract class ThirdPartyGitSource extends GitSource {
   private readonly reportBuildStatus: boolean;
   private readonly webhook?: boolean;
   private readonly webhookTriggersBatchBuild?: boolean;
+  private readonly buildStatusConfig?: CfnProject.BuildStatusConfigProperty;
 
   protected constructor(props: ThirdPartyGitSourceProps) {
     super(props);
@@ -518,6 +528,7 @@ abstract class ThirdPartyGitSource extends GitSource {
     this.reportBuildStatus = props.reportBuildStatus ?? true;
     this.webhookFilters = props.webhookFilters || [];
     this.webhookTriggersBatchBuild = props.webhookTriggersBatchBuild;
+    this.buildStatusConfig = props.buildStatusConfig;
   }
 
   public bind(_scope: CoreConstruct, project: IProject): SourceConfig {
@@ -542,6 +553,7 @@ abstract class ThirdPartyGitSource extends GitSource {
       sourceProperty: {
         ...superConfig.sourceProperty,
         reportBuildStatus: this.reportBuildStatus,
+        ...this.buildStatusConfig,
       },
       sourceVersion: superConfig.sourceVersion,
       buildTriggers: webhook === undefined ? undefined : {
