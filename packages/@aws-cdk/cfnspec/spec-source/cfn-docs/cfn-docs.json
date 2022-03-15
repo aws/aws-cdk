@@ -2256,6 +2256,7 @@
       "properties": {
         "EventBridge": "The properties required to query Amazon EventBridge.",
         "LookoutMetrics": "The properties required to query Amazon Lookout for Metrics.",
+        "Marketo": "The properties required to query Marketo.",
         "Redshift": "The properties required to query Amazon Redshift.",
         "S3": "The properties required to query Amazon S3.",
         "SAPOData": "The properties required to query SAPOData.",
@@ -2324,6 +2325,14 @@
       "description": "The properties that are applied when Amazon Lookout for Metrics is used as a destination.",
       "properties": {
         "Object": "The object specified in the Amazon Lookout for Metrics flow destination."
+      }
+    },
+    "AWS::AppFlow::Flow.MarketoDestinationProperties": {
+      "attributes": {},
+      "description": "The properties that Amazon AppFlow applies when you use Marketo as a flow destination.",
+      "properties": {
+        "ErrorHandlingConfig": "",
+        "Object": "The object specified in the Marketo flow destination."
       }
     },
     "AWS::AppFlow::Flow.MarketoSourceProperties": {
@@ -4429,6 +4438,7 @@
     "AWS::AppSync::DomainName": {
       "attributes": {
         "AppSyncDomainName": "The domain name provided by AWS AppSync .",
+        "DomainName": "",
         "HostedZoneId": "The ID of your Amazon Route\u00a053 hosted zone.",
         "Ref": "When you pass the logical ID of an `AWS::AppSync::DomainName` resource to the intrinsic `Ref` function, the function returns the domain name.\n\nFor more information about using the `Ref` function, see [Ref](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-ref) ."
       },
@@ -13276,15 +13286,6 @@
         "VpcId": "The ID of the VPC the subnet is in.\n\nIf you update this property, you must also update the `CidrBlock` property."
       }
     },
-    "AWS::EC2::Subnet.PrivateDnsNameOptionsOnLaunch": {
-      "attributes": {},
-      "description": "Describes the options for instance hostnames.",
-      "properties": {
-        "EnableResourceNameDnsAAAARecord": "Indicates whether to respond to DNS queries for instance hostname with DNS AAAA records.",
-        "EnableResourceNameDnsARecord": "Indicates whether to respond to DNS queries for instance hostnames with DNS A records.",
-        "HostnameType": "The type of hostname for EC2 instances. For IPv4 only subnets, an instance DNS name must be based on the instance IPv4 address. For IPv6 only subnets, an instance DNS name must be based on the instance ID. For dual-stack subnets, you can specify whether DNS names use the instance IPv4 address or the instance ID."
-      }
-    },
     "AWS::EC2::SubnetCidrBlock": {
       "attributes": {
         "Ref": "`Ref` returns the association ID for the subnet\u2019s IPv6 CIDR block."
@@ -13513,19 +13514,11 @@
       },
       "description": "Requests a transit gateway peering attachment between the specified transit gateway (requester) and a peer transit gateway (accepter). The transit gateways must be in different Regions. The peer transit gateway can be in your account or a different AWS account .\n\nAfter you create the peering attachment, the owner of the accepter transit gateway must accept the attachment request.",
       "properties": {
-        "Options": "",
         "PeerAccountId": "The ID of the AWS account that owns the transit gateway.",
         "PeerRegion": "The Region of the transit gateway.",
         "PeerTransitGatewayId": "The ID of the transit gateway.",
         "Tags": "The tags for the transit gateway peering attachment.",
         "TransitGatewayId": "The ID of the transit gateway peering attachment."
-      }
-    },
-    "AWS::EC2::TransitGatewayPeeringAttachment.TransitGatewayPeeringAttachmentOptions": {
-      "attributes": {},
-      "description": "",
-      "properties": {
-        "DynamicRouting": ""
       }
     },
     "AWS::EC2::TransitGatewayRoute": {
@@ -15047,8 +15040,6 @@
         "MasterInstanceGroup": "Describes the EC2 instances and instance configurations for the master instance group when using clusters with the uniform instance group configuration.",
         "Placement": "The Availability Zone in which the cluster runs.",
         "ServiceAccessSecurityGroup": "The identifier of the Amazon EC2 security group for the Amazon EMR service to access clusters in VPC private subnets.",
-        "TaskInstanceFleets": "Describes the EC2 instances and instance configurations for the task instance fleets when using clusters with the instance fleet configuration. These task instance fleets are added to the cluster as part of the cluster launch. Each task instance fleet must have a unique name specified so that CloudFormation can differentiate between the task instance fleets.\n\n> You can currently specify only one task instance fleet for a cluster. After creating the cluster, you can only modify the mutable properties of `InstanceFleetConfig` , which are `TargetOnDemandCapacity` and `TargetSpotCapacity` . Modifying any other property results in cluster replacement.",
-        "TaskInstanceGroups": "Describes the EC2 instances and instance configurations for task instance groups when using clusters with the uniform instance group configuration. These task instance groups are added to the cluster as part of the cluster launch. Each task instance group must have a unique name specified so that CloudFormation can differentiate between the task instance groups.\n\n> After creating the cluster, you can only modify the mutable properties of `InstanceGroupConfig` , which are `AutoScalingPolicy` and `InstanceCount` . Modifying any other property results in cluster replacement.",
         "TerminationProtected": "Specifies whether to lock the cluster to prevent the Amazon EC2 instances from being terminated by API call, user intervention, or in the event of a job-flow error."
       }
     },
@@ -17196,6 +17187,7 @@
       "properties": {
         "Actions": "The actions for the experiment.",
         "Description": "A description for the experiment template.",
+        "LogConfiguration": "The configuration for experiment logging.",
         "RoleArn": "The Amazon Resource Name (ARN) of an IAM role that grants the AWS FIS service permission to perform service actions on your behalf.",
         "StopConditions": "The stop conditions.",
         "Tags": "The tags to apply to the experiment template.",
@@ -17213,6 +17205,15 @@
         "Targets": "The targets for the action."
       }
     },
+    "AWS::FIS::ExperimentTemplate.ExperimentTemplateLogConfiguration": {
+      "attributes": {},
+      "description": "Specifies the configuration for experiment logging.",
+      "properties": {
+        "CloudWatchLogsConfiguration": "The configuration for experiment logging to Amazon CloudWatch Logs. The supported field is `logGroupArn` . For example:\n\n`{\"logGroupArn\": \"aws:arn:logs: *region_name* : *account_id* :log-group: *log_group_name* \"}`",
+        "LogSchemaVersion": "The schema version. The supported value is 1.",
+        "S3Configuration": "The configuration for experiment logging to Amazon S3. The following fields are supported:\n\n- `bucketName` - The name of the destination bucket.\n- `prefix` - An optional bucket prefix.\n\nFor example:\n\n`{\"bucketName\": \" *my-s3-bucket* \", \"prefix\": \" *log-folder* \"}`"
+      }
+    },
     "AWS::FIS::ExperimentTemplate.ExperimentTemplateStopCondition": {
       "attributes": {},
       "description": "Specifies a stop condition for an experiment template.",
@@ -17226,6 +17227,7 @@
       "description": "Specifies a target for an experiment. You must specify at least one Amazon Resource Name (ARN) or at least one resource tag. You cannot specify both ARNs and tags.\n\nFor more information, see [Targets](https://docs.aws.amazon.com/fis/latest/userguide/targets.html) in the *AWS Fault Injection Simulator User Guide* .",
       "properties": {
         "Filters": "The filters to apply to identify target resources using specific attributes.",
+        "Parameters": "The parameters for the resource type.",
         "ResourceArns": "The Amazon Resource Names (ARNs) of the resources.",
         "ResourceTags": "The tags for the target resources.",
         "ResourceType": "The resource type. The resource type must be supported for the specified action.",
@@ -17448,141 +17450,6 @@
         "SelfManagedActiveDirectoryConfiguration": "The configuration that Amazon FSx uses to join a FSx for Windows File Server file system or an ONTAP storage virtual machine (SVM) to a self-managed (including on-premises) Microsoft Active Directory (AD) directory. For more information, see [Using Amazon FSx with your self-managed Microsoft Active Directory](https://docs.aws.amazon.com/fsx/latest/WindowsGuide/self-managed-AD.html) or [Managing SVMs](https://docs.aws.amazon.com/fsx/latest/ONTAPGuide/managing-svms.html) .",
         "ThroughputCapacity": "Sets the throughput capacity of an Amazon FSx file system, measured in megabytes per second (MB/s), in 2 to the *n* th increments, between 2^3 (8) and 2^11 (2048).",
         "WeeklyMaintenanceStartTime": "The preferred start time to perform weekly maintenance, formatted d:HH:MM in the UTC time zone, where d is the weekday number, from 1 through 7, beginning with Monday and ending with Sunday."
-      }
-    },
-    "AWS::FSx::Snapshot": {
-      "attributes": {
-        "Ref": "`Ref` returns the ID of the snapshot. For example:\n\n`{\"Ref\":\"logical_snapshot_id\"}`\n\nReturns `fsvolsnap-0123456789abcedf5` .",
-        "ResourceARN": "Returns the snapshot's Amazon Resource Name (ARN).\n\nExample: `arn:aws:fsx:us-east-2:111133334444:snapshot/fsvol-01234567890123456/fsvolsnap-0123456789abcedf5`"
-      },
-      "description": "A snapshot of an Amazon FSx for OpenZFS volume.",
-      "properties": {
-        "Name": "The name of the snapshot.",
-        "Tags": "An array of key-value pairs to apply to this resource.\n\nFor more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) .",
-        "VolumeId": "The ID of the volume that the snapshot is of."
-      }
-    },
-    "AWS::FSx::StorageVirtualMachine": {
-      "attributes": {
-        "Ref": "`Ref` returns the resource ID, such as `svm-01234567890123456` . For example:\n\n`{\"Ref\": \"svm_logical_id\"}` returns\n\n`svm-01234567890123456`",
-        "ResourceARN": "Returns the storage virtual machine's Amazon Resource Name (ARN).\n\nExample: `arn:aws:fsx:us-east-2:111111111111:storage-virtual-machine/fs-0123456789abcdef1/svm-01234567890123456`",
-        "StorageVirtualMachineId": "Returns the storgage virtual machine's system generated ID.\n\nExample: `svm-0123456789abcedf1`",
-        "UUID": "Returns the storage virtual machine's system generated unique identifier (UUID).\n\nExample: `abcd0123-cd45-ef67-11aa-1111aaaa23bc`"
-      },
-      "description": "Creates a storage virtual machine (SVM) for an Amazon FSx for ONTAP file system.",
-      "properties": {
-        "ActiveDirectoryConfiguration": "Describes the Microsoft Active Directory configuration to which the SVM is joined, if applicable.",
-        "FileSystemId": "The system-generated, unique 17-digit ID of the file system.",
-        "Name": "The name of the SVM, if provisioned.",
-        "RootVolumeSecurityStyle": "The security style of the root volume of the SVM. Specify one of the following values:\n\n- `UNIX` if the file system is managed by a UNIX administrator, the majority of users are NFS clients, and an application accessing the data uses a UNIX user as the service account.\n- `NTFS` if the file system is managed by a Windows administrator, the majority of users are SMB clients, and an application accessing the data uses a Windows user as the service account.\n- `MIXED` if the file system is managed by both UNIX and Windows administrators and users consist of both NFS and SMB clients.",
-        "SvmAdminPassword": "The password to use when managing the SVM using the NetApp ONTAP CLI or REST API. If you do not specify a password, you can still use the file system's `fsxadmin` user to manage the SVM.",
-        "Tags": "An array of key-value pairs to apply to this resource.\n\nFor more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) ."
-      }
-    },
-    "AWS::FSx::StorageVirtualMachine.ActiveDirectoryConfiguration": {
-      "attributes": {},
-      "description": "Describes the self-managed Microsoft Active Directory to which you want to join the SVM. Joining an Active Directory provides user authentication and access control for SMB clients, including Microsoft Windows and macOS client accessing the file system.",
-      "properties": {
-        "NetBiosName": "The NetBIOS name of the Active Directory computer object that will be created for your SVM.",
-        "SelfManagedActiveDirectoryConfiguration": "The configuration that Amazon FSx uses to join the ONTAP storage virtual machine (SVM) to your self-managed (including on-premises) Microsoft Active Directory (AD) directory."
-      }
-    },
-    "AWS::FSx::StorageVirtualMachine.SelfManagedActiveDirectoryConfiguration": {
-      "attributes": {},
-      "description": "The configuration that Amazon FSx uses to join a FSx for Windows File Server file system or an ONTAP storage virtual machine (SVM) to a self-managed (including on-premises) Microsoft Active Directory (AD) directory. For more information, see [Using Amazon FSx with your self-managed Microsoft Active Directory](https://docs.aws.amazon.com/fsx/latest/WindowsGuide/self-managed-AD.html) or [Managing SVMs](https://docs.aws.amazon.com/fsx/latest/ONTAPGuide/managing-svms.html) .",
-      "properties": {
-        "DnsIps": "A list of up to three IP addresses of DNS servers or domain controllers in the self-managed AD directory.",
-        "DomainName": "The fully qualified domain name of the self-managed AD directory, such as `corp.example.com` .",
-        "FileSystemAdministratorsGroup": "(Optional) The name of the domain group whose members are granted administrative privileges for the file system. Administrative privileges include taking ownership of files and folders, setting audit controls (audit ACLs) on files and folders, and administering the file system remotely by using the FSx Remote PowerShell. The group that you specify must already exist in your domain. If you don't provide one, your AD domain's Domain Admins group is used.",
-        "OrganizationalUnitDistinguishedName": "(Optional) The fully qualified distinguished name of the organizational unit within your self-managed AD directory. Amazon FSx only accepts OU as the direct parent of the file system. An example is `OU=FSx,DC=yourdomain,DC=corp,DC=com` . To learn more, see [RFC 2253](https://docs.aws.amazon.com/https://tools.ietf.org/html/rfc2253) . If none is provided, the FSx file system is created in the default location of your self-managed AD directory.\n\n> Only Organizational Unit (OU) objects can be the direct parent of the file system that you're creating.",
-        "Password": "The password for the service account on your self-managed AD domain that Amazon FSx will use to join to your AD domain.",
-        "UserName": "The user name for the service account on your self-managed AD domain that Amazon FSx will use to join to your AD domain. This account must have the permission to join computers to the domain in the organizational unit provided in `OrganizationalUnitDistinguishedName` , or in the default location of your AD domain."
-      }
-    },
-    "AWS::FSx::Volume": {
-      "attributes": {
-        "Ref": "`Ref` returns the ID for the volume. For example:\n\n`{\"Ref\":\"vol_logical_id\"}`\n\nReturns `fsvol-0123456789abcdef6` .",
-        "ResourceARN": "Returns the volume's Amazon Resource Name (ARN).\n\nExample: `arn:aws:fsx:us-east-2:111122223333:volume/fs-0123456789abcdef9/fsvol-01234567891112223`",
-        "UUID": "Returns the volume's universally unique identifier (UUID).\n\nExample: `abcd0123-cd45-ef67-11aa-1111aaaa23bc`",
-        "VolumeId": "Returns the volume's ID.\n\nExample: `fsvol-0123456789abcdefa`"
-      },
-      "description": "Creates an FSx for ONTAP or Amazon FSx for OpenZFS storage volume.",
-      "properties": {
-        "BackupId": "The ID of the source backup. Specifies the backup that you are copying.",
-        "Name": "The name of the volume.",
-        "OntapConfiguration": "The configuration of an Amazon FSx for NetApp ONTAP volume.",
-        "OpenZFSConfiguration": "Specifies the configuration of the Amazon FSx for OpenZFS volume that you are creating.",
-        "Options": "To delete the volume's child volumes, snapshots, and clones, use the string `DELETE_CHILD_VOLUMES_AND_SNAPSHOTS` .",
-        "SnapshotId": "A unique ID that represents the snapshot.",
-        "Tags": "An array of key-value pairs to apply to this resource.\n\nFor more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) .",
-        "VolumeType": "The type of the volume."
-      }
-    },
-    "AWS::FSx::Volume.ClientConfigurations": {
-      "attributes": {},
-      "description": "Specifies who can mount the file system and the options that can be used while mounting the file system.",
-      "properties": {
-        "Clients": "A value that specifies who can mount the file system. You can provide a wildcard character ( `*` ), an IP address ( `0.0.0.0` ), or a CIDR address ( `192.0.2.0/24` ). By default, Amazon FSx uses the wildcard character when specifying the client.",
-        "Options": "The options to use when mounting the file system. For a list of options that you can use with Network File System (NFS), see the [exports(5) - Linux man page](https://docs.aws.amazon.com/https://linux.die.net/man/5/exports) . When choosing your options, consider the following:\n\n- `crossmnt` is used by default. If you don't specify `crossmnt` when changing the client configuration, you won't be able to see or access snapshots in your file system's snapshot directory.\n- `sync` is used by default. If you instead specify `async` , the system acknowledges writes before writing to disk. If the system crashes before the writes are finished, you lose the unwritten data."
-      }
-    },
-    "AWS::FSx::Volume.NfsExports": {
-      "attributes": {},
-      "description": "The configuration object for mounting a Network File System (NFS) file system.",
-      "properties": {
-        "ClientConfigurations": "A list of configuration objects that contain the client and options for mounting the OpenZFS file system."
-      }
-    },
-    "AWS::FSx::Volume.OntapConfiguration": {
-      "attributes": {},
-      "description": "Specifies the configuration of the ONTAP volume that you are creating.",
-      "properties": {
-        "JunctionPath": "Specifies the location in the SVM's namespace where the volume is mounted. The `JunctionPath` must have a leading forward slash, such as `/vol3` .",
-        "SecurityStyle": "The security style for the volume. Specify one of the following values:\n\n- `UNIX` if the file system is managed by a UNIX administrator, the majority of users are NFS clients, and an application accessing the data uses a UNIX user as the service account. `UNIX` is the default.\n- `NTFS` if the file system is managed by a Windows administrator, the majority of users are SMB clients, and an application accessing the data uses a Windows user as the service account.\n- `MIXED` if the file system is managed by both UNIX and Windows administrators and users consist of both NFS and SMB clients.",
-        "SizeInMegabytes": "Specifies the size of the volume, in megabytes (MB), that you are creating.",
-        "StorageEfficiencyEnabled": "Set to true to enable deduplication, compression, and compaction storage efficiency features on the volume.",
-        "StorageVirtualMachineId": "Specifies the ONTAP SVM in which to create the volume.",
-        "TieringPolicy": "Describes the data tiering policy for an ONTAP volume. When enabled, Amazon FSx for ONTAP's intelligent tiering automatically transitions a volume's data between the file system's primary storage and capacity pool storage based on your access patterns.\n\nValid tiering policies are the following:\n\n- `SNAPSHOT_ONLY` - (Default value) moves cold snapshots to the capacity pool storage tier.\n\n- `AUTO` - moves cold user data and snapshots to the capacity pool storage tier based on your access patterns.\n\n- `ALL` - moves all user data blocks in both the active file system and Snapshot copies to the storage pool tier.\n\n- `NONE` - keeps a volume's data in the primary storage tier, preventing it from being moved to the capacity pool tier."
-      }
-    },
-    "AWS::FSx::Volume.OpenZFSConfiguration": {
-      "attributes": {},
-      "description": "Specifies the configuration of the Amazon FSx for OpenZFS volume that you are creating.",
-      "properties": {
-        "CopyTagsToSnapshots": "A Boolean value indicating whether tags for the volume should be copied to snapshots. This value defaults to `false` . If it's set to `true` , all tags for the volume are copied to snapshots where the user doesn't specify tags. If this value is `true` , and you specify one or more tags, only the specified tags are copied to snapshots. If you specify one or more tags when creating the snapshot, no tags are copied from the volume, regardless of this value.",
-        "DataCompressionType": "Specifies the method used to compress the data on the volume. The compression type is `NONE` by default.\n\n- `NONE` - Doesn't compress the data on the volume. `NONE` is the default.\n- `ZSTD` - Compresses the data in the volume using the Zstandard (ZSTD) compression algorithm. Compared to LZ4, Z-Standard provides a better compression ratio to minimize on-disk storage utilization.\n- `LZ4` - Compresses the data in the volume using the LZ4 compression algorithm. Compared to Z-Standard, LZ4 is less compute-intensive and delivers higher write throughput speeds.",
-        "NfsExports": "The configuration object for mounting a Network File System (NFS) file system.",
-        "OriginSnapshot": "The configuration object that specifies the snapshot to use as the origin of the data for the volume.",
-        "ParentVolumeId": "The ID of the volume to use as the parent volume of the volume that you are creating.",
-        "ReadOnly": "A Boolean value indicating whether the volume is read-only.",
-        "StorageCapacityQuotaGiB": "Sets the maximum storage size in gibibytes (GiB) for the volume. You can specify a quota that is larger than the storage on the parent volume. A volume quota limits the amount of storage that the volume can consume to the configured amount, but does not guarantee the space will be available on the parent volume. To guarantee quota space, you must also set `StorageCapacityReservationGiB` . To *not* specify a storage capacity quota, set this to `-1` .\n\nFor more information, see [Volume properties](https://docs.aws.amazon.com/fsx/latest/OpenZFSGuide/managing-volumes.html#volume-properties) in the *Amazon FSx for OpenZFS User Guide* .",
-        "StorageCapacityReservationGiB": "Specifies the amount of storage in gibibytes (GiB) to reserve from the parent volume. Setting `StorageCapacityReservationGiB` guarantees that the specified amount of storage space on the parent volume will always be available for the volume. You can't reserve more storage than the parent volume has. To *not* specify a storage capacity reservation, set this to `0` or `-1` . For more information, see [Volume properties](https://docs.aws.amazon.com/fsx/latest/OpenZFSGuide/managing-volumes.html#volume-properties) in the *Amazon FSx for OpenZFS User Guide* .",
-        "UserAndGroupQuotas": "An object specifying how much storage users or groups can use on the volume."
-      }
-    },
-    "AWS::FSx::Volume.OriginSnapshot": {
-      "attributes": {},
-      "description": "The configuration object that specifies the snapshot to use as the origin of the data for the volume.",
-      "properties": {
-        "CopyStrategy": "The strategy used when copying data from the snapshot to the new volume.\n\n- `CLONE` - The new volume references the data in the origin snapshot. Cloning a snapshot is faster than copying data from the snapshot to a new volume and doesn't consume disk throughput. However, the origin snapshot can't be deleted if there is a volume using its copied data.\n- `FULL_COPY` - Copies all data from the snapshot to the new volume.",
-        "SnapshotARN": "The Amazon Resource Name (ARN) for a given resource. ARNs uniquely identify AWS resources. We require an ARN when you need to specify a resource unambiguously across all of AWS . For more information, see [Amazon Resource Names (ARNs)](https://docs.aws.amazon.com//general/latest/gr/aws-arns-and-namespaces.html) in the *AWS General Reference* ."
-      }
-    },
-    "AWS::FSx::Volume.TieringPolicy": {
-      "attributes": {},
-      "description": "Describes the data tiering policy for an ONTAP volume. When enabled, Amazon FSx for ONTAP's intelligent tiering automatically transitions a volume's data between the file system's primary storage and capacity pool storage based on your access patterns.\n\nValid tiering policies are the following:\n\n- `SNAPSHOT_ONLY` - (Default value) moves cold snapshots to the capacity pool storage tier.\n\n- `AUTO` - moves cold user data and snapshots to the capacity pool storage tier based on your access patterns.\n\n- `ALL` - moves all user data blocks in both the active file system and Snapshot copies to the storage pool tier.\n\n- `NONE` - keeps a volume's data in the primary storage tier, preventing it from being moved to the capacity pool tier.",
-      "properties": {
-        "CoolingPeriod": "Specifies the number of days that user data in a volume must remain inactive before it is considered \"cold\" and moved to the capacity pool. Used with the `AUTO` and `SNAPSHOT_ONLY` tiering policies. Enter a whole number between 2 and 183. Default values are 31 days for `AUTO` and 2 days for `SNAPSHOT_ONLY` .",
-        "Name": "Specifies the tiering policy used to transition data. Default value is `SNAPSHOT_ONLY` .\n\n- `SNAPSHOT_ONLY` - moves cold snapshots to the capacity pool storage tier.\n- `AUTO` - moves cold user data and snapshots to the capacity pool storage tier based on your access patterns.\n- `ALL` - moves all user data blocks in both the active file system and Snapshot copies to the storage pool tier.\n- `NONE` - keeps a volume's data in the primary storage tier, preventing it from being moved to the capacity pool tier."
-      }
-    },
-    "AWS::FSx::Volume.UserAndGroupQuotas": {
-      "attributes": {},
-      "description": "An object specifying how much storage users or groups can use on the volume.",
-      "properties": {
-        "Id": "The ID of the user or group.",
-        "StorageCapacityQuotaGiB": "The amount of storage that the user or group can use in gibibytes (GiB).",
-        "Type": "A value that specifies whether the quota applies to a user or group."
       }
     },
     "AWS::FinSpace::Environment": {
@@ -23242,15 +23109,15 @@
     },
     "AWS::Kendra::DataSource.ConfluenceAttachmentConfiguration": {
       "attributes": {},
-      "description": "Specifies the attachment settings for the Confluence data source. Attachment settings are optional, if you don't specify settings attachments, Amazon Kendra won't index them.",
+      "description": "Configuration of attachment settings for the Confluence data source. Attachment settings are optional, if you don't specify settings attachments, Amazon Kendra won't index them.",
       "properties": {
-        "AttachmentFieldMappings": "Defines how attachment metadata fields should be mapped to index fields. Before you can map a field, you must first create an index field with a matching type using the console or the `UpdateIndex` API.\n\nIf you specify the `AttachentFieldMappings` parameter, you must specify at least one field mapping.",
+        "AttachmentFieldMappings": "Maps attributes or field names of Confluence attachments to Amazon Kendra index field names. To create custom fields, use the `UpdateIndex` API before you map to Confluence fields. For more information, see [Mapping data source fields](https://docs.aws.amazon.com/kendra/latest/dg/field-mapping.html) . The Confluence data source field names must exist in your Confluence custom metadata.\n\nIf you specify the `AttachentFieldMappings` parameter, you must specify at least one field mapping.",
         "CrawlAttachments": "Indicates whether Amazon Kendra indexes attachments to the pages and blogs in the Confluence data source."
       }
     },
     "AWS::Kendra::DataSource.ConfluenceAttachmentToIndexFieldMapping": {
       "attributes": {},
-      "description": "Defines the mapping between a field in the Confluence data source to a Amazon Kendra index field.\n\nYou must first create the index field using the `UpdateIndex` API.",
+      "description": "Maps attributes or field names of Confluence attachments to Amazon Kendra index field names. To create custom fields, use the `UpdateIndex` API before you map to Confluence fields. For more information, see [Mapping data source fields](https://docs.aws.amazon.com/kendra/latest/dg/field-mapping.html) . The Confuence data source field names must exist in your Confluence custom metadata.",
       "properties": {
         "DataSourceFieldName": "The name of the field in the data source.\n\nYou must first create the index field using the `UpdateIndex` API.",
         "DateFieldFormat": "The format for date fields in the data source. If the field specified in `DataSourceFieldName` is a date field you must specify the date format. If the field is not a date field, an exception is thrown.",
@@ -23259,14 +23126,14 @@
     },
     "AWS::Kendra::DataSource.ConfluenceBlogConfiguration": {
       "attributes": {},
-      "description": "Specifies the blog settings for the Confluence data source. Blogs are always indexed unless filtered from the index by the `ExclusionPatterns` or `InclusionPatterns` fields in the `ConfluenceConfiguration` object.",
+      "description": "Configuration of blog settings for the Confluence data source. Blogs are always indexed unless filtered from the index by the `ExclusionPatterns` or `InclusionPatterns` fields in the `ConfluenceConfiguration` object.",
       "properties": {
-        "BlogFieldMappings": "Defines how blog metadata fields should be mapped to index fields. Before you can map a field, you must first create an index field with a matching type using the console or the `UpdateIndex` API.\n\nIf you specify the `BlogFieldMappings` parameter, you must specify at least one field mapping."
+        "BlogFieldMappings": "Maps attributes or field names of Confluence blogs to Amazon Kendra index field names. To create custom fields, use the `UpdateIndex` API before you map to Confluence fields. For more information, see [Mapping data source fields](https://docs.aws.amazon.com/kendra/latest/dg/field-mapping.html) . The Confluence data source field names must exist in your Confluence custom metadata.\n\nIf you specify the `BlogFieldMappings` parameter, you must specify at least one field mapping."
       }
     },
     "AWS::Kendra::DataSource.ConfluenceBlogToIndexFieldMapping": {
       "attributes": {},
-      "description": "Defines the mapping between a blog field in the Confluence data source to a Amazon Kendra index field.\n\nYou must first create the index field using the `UpdateIndex` API.",
+      "description": "Maps attributes or field names of Confluence blog to Amazon Kendra index field names. To create custom fields, use the `UpdateIndex` API before you map to Confluence fields. For more information, see [Mapping data source fields](https://docs.aws.amazon.com/kendra/latest/dg/field-mapping.html) . The Confluence data source field names must exist in your Confluence custom metadata.",
       "properties": {
         "DataSourceFieldName": "The name of the field in the data source.",
         "DateFieldFormat": "The format for date fields in the data source. If the field specified in `DataSourceFieldName` is a date field you must specify the date format. If the field is not a date field, an exception is thrown.",
@@ -23277,28 +23144,28 @@
       "attributes": {},
       "description": "Provides the configuration information to connect to Confluence as your data source.",
       "properties": {
-        "AttachmentConfiguration": "Specifies configuration information for indexing attachments to Confluence blogs and pages.",
-        "BlogConfiguration": "Specifies configuration information for indexing Confluence blogs.",
-        "ExclusionPatterns": "A list of regular expression patterns that apply to a URL on the Confluence server. An exclusion pattern can apply to a blog post, a page, a space, or an attachment. Items that match the pattern are excluded from the index. Items that don't match the pattern are included in the index. If a item matches both an exclusion pattern and an inclusion pattern, the item isn't included in the index.",
-        "InclusionPatterns": "A list of regular expression patterns that apply to a URL on the Confluence server. An inclusion pattern can apply to a blog post, a page, a space, or an attachment. Items that match the patterns are included in the index. Items that don't match the pattern are excluded from the index. If an item matches both an inclusion pattern and an exclusion pattern, the item isn't included in the index.",
-        "PageConfiguration": "Specifies configuration information for indexing Confluence pages.",
-        "SecretArn": "The Amazon Resource Name (ARN) of an AWS Secrets Manager secret that contains the key/value pairs required to connect to your Confluence server. The secret must contain a JSON structure with the following keys:\n\n- username - The user name or email address of a user with administrative privileges for the Confluence server.\n- password - The password associated with the user logging in to the Confluence server.",
-        "ServerUrl": "The URL of your Confluence instance. Use the full URL of the server. For example, `https://server.example.com:port/` . You can also use an IP address, for example, `https://192.168.1.113/` .",
-        "SpaceConfiguration": "Specifies configuration information for indexing Confluence spaces.",
+        "AttachmentConfiguration": "Configuration information for indexing attachments to Confluence blogs and pages.",
+        "BlogConfiguration": "Configuration information for indexing Confluence blogs.",
+        "ExclusionPatterns": ">A list of regular expression patterns to exclude certain blog posts, pages, spaces, or attachments in your Confluence. Content that matches the patterns are excluded from the index. Content that doesn't match the patterns is included in the index. If content matches both an inclusion and exclusion pattern, the exclusion pattern takes precedence and the content isn't included in the index.",
+        "InclusionPatterns": "A list of regular expression patterns to include certain blog posts, pages, spaces, or attachments in your Confluence. Content that matches the patterns are included in the index. Content that doesn't match the patterns is excluded from the index. If content matches both an inclusion and exclusion pattern, the exclusion pattern takes precedence and the content isn't included in the index.",
+        "PageConfiguration": "Configuration information for indexing Confluence pages.",
+        "SecretArn": "The Amazon Resource Name (ARN) of an AWS Secrets Manager secret that contains the key-value pairs required to connect to your Confluence server. The secret must contain a JSON structure with the following keys:\n\n- username\u2014The user name or email address of a user with administrative privileges for the Confluence server.\n- password\u2014The password associated with the user logging in to the Confluence server.",
+        "ServerUrl": "The URL of your Confluence instance. Use the full URL of the server. For example, *https://server.example.com:port/* . You can also use an IP address, for example, *https://192.168.1.113/* .",
+        "SpaceConfiguration": "Configuration information for indexing Confluence spaces.",
         "Version": "Specifies the version of the Confluence installation that you are connecting to.",
-        "VpcConfiguration": "Specifies the information for connecting to an Amazon VPC."
+        "VpcConfiguration": "Configuration information for an Amazon Virtual Private Cloud to connect to your Confluence. For more information, see [Configuring a VPC](https://docs.aws.amazon.com/kendra/latest/dg/vpc-configuration.html) ."
       }
     },
     "AWS::Kendra::DataSource.ConfluencePageConfiguration": {
       "attributes": {},
-      "description": "Specifies the page settings for the Confluence data source.",
+      "description": "Configuration of the page settings for the Confluence data source.",
       "properties": {
-        "PageFieldMappings": "Defines how page metadata fields should be mapped to index fields. Before you can map a field, you must first create an index field with a matching type using the console or the `UpdateIndex` API.\n\nIf you specify the `PageFieldMappings` parameter, you must specify at least one field mapping."
+        "PageFieldMappings": ">Maps attributes or field names of Confluence pages to Amazon Kendra index field names. To create custom fields, use the `UpdateIndex` API before you map to Confluence fields. For more information, see [Mapping data source fields](https://docs.aws.amazon.com/kendra/latest/dg/field-mapping.html) . The Confluence data source field names must exist in your Confluence custom metadata.\n\nIf you specify the `PageFieldMappings` parameter, you must specify at least one field mapping."
       }
     },
     "AWS::Kendra::DataSource.ConfluencePageToIndexFieldMapping": {
       "attributes": {},
-      "description": "Defines the mapping between a field in the Confluence data source to a Amazon Kendra index field.\n\nYou must first create the index field using the `UpdateIndex` API.",
+      "description": ">Maps attributes or field names of Confluence pages to Amazon Kendra index field names. To create custom fields, use the `UpdateIndex` API before you map to Confluence fields. For more information, see [Mapping data source fields](https://docs.aws.amazon.com/kendra/latest/dg/field-mapping.html) . The Confluence data source field names must exist in your Confluence custom metadata.",
       "properties": {
         "DataSourceFieldName": "The name of the field in the data source.",
         "DateFieldFormat": "The format for date fields in the data source. If the field specified in `DataSourceFieldName` is a date field you must specify the date format. If the field is not a date field, an exception is thrown.",
@@ -23307,18 +23174,18 @@
     },
     "AWS::Kendra::DataSource.ConfluenceSpaceConfiguration": {
       "attributes": {},
-      "description": "Specifies the configuration for indexing Confluence spaces.",
+      "description": "Configuration information for indexing Confluence spaces.",
       "properties": {
         "CrawlArchivedSpaces": "Specifies whether Amazon Kendra should index archived spaces.",
         "CrawlPersonalSpaces": "Specifies whether Amazon Kendra should index personal spaces. Users can add restrictions to items in personal spaces. If personal spaces are indexed, queries without user context information may return restricted items from a personal space in their results. For more information, see [Filtering on user context](https://docs.aws.amazon.com/kendra/latest/dg/user-context-filter.html) .",
         "ExcludeSpaces": "A list of space keys of Confluence spaces. If you include a key, the blogs, documents, and attachments in the space are not indexed. If a space is in both the `ExcludeSpaces` and the `IncludeSpaces` list, the space is excluded.",
         "IncludeSpaces": "A list of space keys for Confluence spaces. If you include a key, the blogs, documents, and attachments in the space are indexed. Spaces that aren't in the list aren't indexed. A space in the list must exist. Otherwise, Amazon Kendra logs an error when the data source is synchronized. If a space is in both the `IncludeSpaces` and the `ExcludeSpaces` list, the space is excluded.",
-        "SpaceFieldMappings": "Defines how space metadata fields should be mapped to index fields. Before you can map a field, you must first create an index field with a matching type using the console or the `UpdateIndex` API.\n\nIf you specify the `SpaceFieldMappings` parameter, you must specify at least one field mapping."
+        "SpaceFieldMappings": "Maps attributes or field names of Confluence spaces to Amazon Kendra index field names. To create custom fields, use the `UpdateIndex` API before you map to Confluence fields. For more information, see [Mapping data source fields](https://docs.aws.amazon.com/kendra/latest/dg/field-mapping.html) . The Confluence data source field names must exist in your Confluence custom metadata.\n\nIf you specify the `SpaceFieldMappings` parameter, you must specify at least one field mapping."
       }
     },
     "AWS::Kendra::DataSource.ConfluenceSpaceToIndexFieldMapping": {
       "attributes": {},
-      "description": "Defines the mapping between a field in the Confluence data source to an Amazon Kendra index field.\n\nYou must first create the index field using the `UpdateIndex` API.",
+      "description": ">Maps attributes or field names of Confluence spaces to Amazon Kendra index field names. To create custom fields, use the `UpdateIndex` API before you map to Confluence fields. For more information, see [Mapping data source fields](https://docs.aws.amazon.com/kendra/latest/dg/field-mapping.html) . The Confluence data source field names must exist in your Confluence custom metadata.",
       "properties": {
         "DataSourceFieldName": "The name of the field in the data source.",
         "DateFieldFormat": "The format for date fields in the data source. If the field specified in `DataSourceFieldName` is a date field you must specify the date format. If the field is not a date field, an exception is thrown.",
@@ -23350,7 +23217,7 @@
       "attributes": {},
       "description": "Provides the configuration information for an Amazon Kendra data source.",
       "properties": {
-        "ConfluenceConfiguration": "Provides configuration information for connecting to a Confluence data source.",
+        "ConfluenceConfiguration": "Provides the configuration information to connect to Confluence as your data source.",
         "DatabaseConfiguration": "Provides the configuration information to connect to a database as your data source.",
         "GoogleDriveConfiguration": "Provides the configuration information to connect to Google Drive as your data source.",
         "OneDriveConfiguration": "Provides the configuration information to connect to Microsoft OneDrive as your data source.",
@@ -23433,9 +23300,9 @@
         "ExcludeMimeTypes": "A list of MIME types to exclude from the index. All documents matching the specified MIME type are excluded.\n\nFor a list of MIME types, see [Using a Google Workspace Drive data source](https://docs.aws.amazon.com/kendra/latest/dg/data-source-google-drive.html) .",
         "ExcludeSharedDrives": "A list of identifiers or shared drives to exclude from the index. All files and folders stored on the shared drive are excluded.",
         "ExcludeUserAccounts": "A list of email addresses of the users. Documents owned by these users are excluded from the index. Documents shared with excluded users are indexed unless they are excluded in another way.",
-        "ExclusionPatterns": "A list of regular expression patterns that apply to the path on Google Drive. Items that match the pattern are excluded from the index from both shared drives and users' My Drives. Items that don't match the pattern are included in the index. If an item matches both an exclusion pattern and an inclusion pattern, it is excluded from the index.",
-        "FieldMappings": "Defines mapping between a field in the Google Drive and a Amazon Kendra index field.\n\nIf you are using the console, you can define index fields when creating the mapping. If you are using the API, you must first create the field using the `UpdateIndex` API.",
-        "InclusionPatterns": "A list of regular expression patterns that apply to path on Google Drive. Items that match the pattern are included in the index from both shared drives and users' My Drives. Items that don't match the pattern are excluded from the index. If an item matches both an inclusion pattern and an exclusion pattern, it is excluded from the index.",
+        "ExclusionPatterns": "A list of regular expression patterns to exclude certain items in your Google Drive, including shared drives and users' My Drives. Items that match the patterns are excluded from the index. Items that don't match the patterns are included in the index. If an item matches both an inclusion and exclusion pattern, the exclusion pattern takes precedence and the item isn't included in the index.",
+        "FieldMappings": "Maps Google Drive data source attributes or field names to Amazon Kendra index field names. To create custom fields, use the `UpdateIndex` API before you map to Google Drive fields. For more information, see [Mapping data source fields](https://docs.aws.amazon.com/kendra/latest/dg/field-mapping.html) . The Google Drive data source field names must exist in your Google Drive custom metadata.",
+        "InclusionPatterns": "A list of regular expression patterns to include certain items in your Google Drive, including shared drives and users' My Drives. Items that match the patterns are included in the index. Items that don't match the patterns are excluded from the index. If an item matches both an inclusion and exclusion pattern, the exclusion pattern takes precedence and the item isn't included in the index.",
         "SecretArn": "The Amazon Resource Name (ARN) of a AWS Secrets Manager secret that contains the credentials required to connect to Google Drive. For more information, see [Using a Google Workspace Drive data source](https://docs.aws.amazon.com/kendra/latest/dg/data-source-google-drive.html) ."
       }
     },
@@ -23462,9 +23329,9 @@
       "description": "Provides the configuration information to connect to OneDrive as your data source.",
       "properties": {
         "DisableLocalGroups": "A Boolean value that specifies whether local groups are disabled ( `True` ) or enabled ( `False` ).",
-        "ExclusionPatterns": "List of regular expressions applied to documents. Items that match the exclusion pattern are not indexed. If you provide both an inclusion pattern and an exclusion pattern, any item that matches the exclusion pattern isn't indexed.\n\nThe exclusion pattern is applied to the file name.",
-        "FieldMappings": "A list of `DataSourceToIndexFieldMapping` objects that map Microsoft OneDrive fields to custom fields in the Amazon Kendra index. You must first create the index fields before you map OneDrive fields.",
-        "InclusionPatterns": "A list of regular expression patterns. Documents that match the pattern are included in the index. Documents that don't match the pattern are excluded from the index. If a document matches both an inclusion pattern and an exclusion pattern, the document is not included in the index.\n\nThe exclusion pattern is applied to the file name.",
+        "ExclusionPatterns": "A list of regular expression patterns to exclude certain documents in your OneDrive. Documents that match the patterns are excluded from the index. Documents that don't match the patterns are included in the index. If a document matches both an inclusion and exclusion pattern, the exclusion pattern takes precedence and the document isn't included in the index.\n\nThe pattern is applied to the file name.",
+        "FieldMappings": "A list of `DataSourceToIndexFieldMapping` objects that map OneDrive data source attributes or field names to Amazon Kendra index field names. To create custom fields, use the `UpdateIndex` API before you map to OneDrive fields. For more information, see [Mapping data source fields](https://docs.aws.amazon.com/kendra/latest/dg/field-mapping.html) . The OneDrive data source field names must exist in your OneDrive custom metadata.",
+        "InclusionPatterns": "A list of regular expression patterns to include certain documents in your OneDrive. Documents that match the patterns are included in the index. Documents that don't match the patterns are excluded from the index. If a document matches both an inclusion and exclusion pattern, the exclusion pattern takes precedence and the document isn't included in the index.\n\nThe pattern is applied to the file name.",
         "OneDriveUsers": "A list of user accounts whose documents should be indexed.",
         "SecretArn": "The Amazon Resource Name (ARN) of an AWS Secrets Manager secret that contains the user name and password to connect to OneDrive. The user named should be the application ID for the OneDrive application, and the password is the application key for the OneDrive application.",
         "TenantDomain": "The Azure Active Directory domain of the organization."
@@ -23519,26 +23386,26 @@
     },
     "AWS::Kendra::DataSource.SalesforceConfiguration": {
       "attributes": {},
-      "description": "Provides configuration information for connecting to a Salesforce data source.",
+      "description": "Provides the configuration information to connect to Salesforce as your data source.",
       "properties": {
-        "ChatterFeedConfiguration": "Specifies configuration information for Salesforce chatter feeds.",
+        "ChatterFeedConfiguration": "Configuration information for Salesforce chatter feeds.",
         "CrawlAttachments": "Indicates whether Amazon Kendra should index attachments to Salesforce objects.",
-        "ExcludeAttachmentFilePatterns": "A list of regular expression patterns. Documents that match the patterns are excluded from the index. Documents that don't match the patterns are included in the index. If a document matches both an exclusion pattern and an inclusion pattern, the document is not included in the index.\n\nThe regex is applied to the name of the attached file.",
-        "IncludeAttachmentFilePatterns": "A list of regular expression patterns. Documents that match the patterns are included in the index. Documents that don't match the patterns are excluded from the index. If a document matches both an inclusion pattern and an exclusion pattern, the document is not included in the index.\n\nThe regex is applied to the name of the attached file.",
-        "KnowledgeArticleConfiguration": "Specifies configuration information for the knowledge article types that Amazon Kendra indexes. Amazon Kendra indexes standard knowledge articles and the standard fields of knowledge articles, or the custom fields of custom knowledge articles, but not both.",
+        "ExcludeAttachmentFilePatterns": "A list of regular expression patterns to exclude certain documents in your Salesforce. Documents that match the patterns are excluded from the index. Documents that don't match the patterns are included in the index. If a document matches both an inclusion and exclusion pattern, the exclusion pattern takes precedence and the document isn't included in the index.\n\nThe pattern is applied to the name of the attached file.",
+        "IncludeAttachmentFilePatterns": "A list of regular expression patterns to include certain documents in your Salesforce. Documents that match the patterns are included in the index. Documents that don't match the patterns are excluded from the index. If a document matches both an inclusion and exclusion pattern, the exclusion pattern takes precedence and the document isn't included in the index.\n\nThe pattern is applied to the name of the attached file.",
+        "KnowledgeArticleConfiguration": "Configuration information for the knowledge article types that Amazon Kendra indexes. Amazon Kendra indexes standard knowledge articles and the standard fields of knowledge articles, or the custom fields of custom knowledge articles, but not both.",
         "SecretArn": "The Amazon Resource Name (ARN) of an AWS Secrets Manager secret that contains the key/value pairs required to connect to your Salesforce instance. The secret must contain a JSON structure with the following keys:\n\n- authenticationUrl - The OAUTH endpoint that Amazon Kendra connects to get an OAUTH token.\n- consumerKey - The application public key generated when you created your Salesforce application.\n- consumerSecret - The application private key generated when you created your Salesforce application.\n- password - The password associated with the user logging in to the Salesforce instance.\n- securityToken - The token associated with the user account logging in to the Salesforce instance.\n- username - The user name of the user logging in to the Salesforce instance.",
         "ServerUrl": "The instance URL for the Salesforce site that you want to index.",
         "StandardObjectAttachmentConfiguration": "Configuration information for processing attachments to Salesforce standard objects.",
-        "StandardObjectConfigurations": "Specifies the Salesforce standard objects that Amazon Kendra indexes."
+        "StandardObjectConfigurations": "Configuration of the Salesforce standard objects that Amazon Kendra indexes."
       }
     },
     "AWS::Kendra::DataSource.SalesforceCustomKnowledgeArticleTypeConfiguration": {
       "attributes": {},
-      "description": "Provides configuration information for indexing Salesforce custom articles.",
+      "description": "Provides the configuration information for indexing Salesforce custom articles.",
       "properties": {
         "DocumentDataFieldName": "The name of the field in the custom knowledge article that contains the document data to index.",
         "DocumentTitleFieldName": "The name of the field in the custom knowledge article that contains the document title.",
-        "FieldMappings": "One or more objects that map fields in the custom knowledge article to fields in the Amazon Kendra index.",
+        "FieldMappings": "Maps attributes or field names of the custom knowledge article to Amazon Kendra index field names. To create custom fields, use the `UpdateIndex` API before you map to Salesforce fields. For more information, see [Mapping data source fields](https://docs.aws.amazon.com/kendra/latest/dg/field-mapping.html) . The Salesforce data source field names must exist in your Salesforce custom metadata.",
         "Name": "The name of the configuration."
       }
     },
@@ -23553,11 +23420,11 @@
     },
     "AWS::Kendra::DataSource.SalesforceStandardKnowledgeArticleTypeConfiguration": {
       "attributes": {},
-      "description": "Configuration information for standard Salesforce knowledge articles.",
+      "description": "Provides the configuration information for standard Salesforce knowledge articles.",
       "properties": {
         "DocumentDataFieldName": "The name of the field that contains the document data to index.",
         "DocumentTitleFieldName": "The name of the field that contains the document title.",
-        "FieldMappings": "One or more objects that map fields in the knowledge article to Amazon Kendra index fields. The index field must exist before you can map a Salesforce field to it."
+        "FieldMappings": "Maps attributes or field names of the knowledge article to Amazon Kendra index field names. To create custom fields, use the `UpdateIndex` API before you map to Salesforce fields. For more information, see [Mapping data source fields](https://docs.aws.amazon.com/kendra/latest/dg/field-mapping.html) . The Salesforce data source field names must exist in your Salesforce custom metadata."
       }
     },
     "AWS::Kendra::DataSource.SalesforceStandardObjectAttachmentConfiguration": {
@@ -23574,7 +23441,7 @@
       "properties": {
         "DocumentDataFieldName": "The name of the field in the standard object table that contains the document contents.",
         "DocumentTitleFieldName": "The name of the field in the standard object table that contains the document title.",
-        "FieldMappings": "One or more objects that map fields in the standard object to Amazon Kendra index fields. The index field must exist before you can map a Salesforce field to it.",
+        "FieldMappings": "Maps attributes or field names of the standard object to Amazon Kendra index field names. To create custom fields, use the `UpdateIndex` API before you map to Salesforce fields. For more information, see [Mapping data source fields](https://docs.aws.amazon.com/kendra/latest/dg/field-mapping.html) . The Salesforce data source field names must exist in your Salesforce custom metadata.",
         "Name": "The name of the standard object."
       }
     },
@@ -23582,8 +23449,8 @@
       "attributes": {},
       "description": "Provides the configuration information to connect to ServiceNow as your data source.",
       "properties": {
-        "AuthenticationType": "Determines the type of authentication used to connect to the ServiceNow instance. If you choose `HTTP_BASIC` , Amazon Kendra is authenticated using the user name and password provided in the AWS Secrets Manager secret in the `SecretArn` field. When you choose `OAUTH2` , Amazon Kendra is authenticated using the OAuth token and secret provided in the Secrets Manager secret, and the user name and password are used to determine which information Amazon Kendra has access to.\n\nWhen you use `OAUTH2` authentication, you must generate a token and a client secret using the ServiceNow console. For more information, see [Using a ServiceNow data source](https://docs.aws.amazon.com/kendra/latest/dg/data-source-servicenow.html) .",
-        "HostUrl": "The ServiceNow instance that the data source connects to. The host endpoint should look like the following: `{instance}.service-now.com.`",
+        "AuthenticationType": "The type of authentication used to connect to the ServiceNow instance. If you choose `HTTP_BASIC` , Amazon Kendra is authenticated using the user name and password provided in the AWS Secrets Manager secret in the `SecretArn` field. When you choose `OAUTH2` , Amazon Kendra is authenticated using the OAuth token and secret provided in the Secrets Manager secret, and the user name and password are used to determine which information Amazon Kendra has access to.\n\nWhen you use `OAUTH2` authentication, you must generate a token and a client secret using the ServiceNow console. For more information, see [Using a ServiceNow data source](https://docs.aws.amazon.com/kendra/latest/dg/data-source-servicenow.html) .",
+        "HostUrl": "The ServiceNow instance that the data source connects to. The host endpoint should look like the following: *{instance}.service-now.com.*",
         "KnowledgeArticleConfiguration": "Configuration information for crawling knowledge articles in the ServiceNow site.",
         "SecretArn": "The Amazon Resource Name (ARN) of the AWS Secrets Manager secret that contains the user name and password required to connect to the ServiceNow instance.",
         "ServiceCatalogConfiguration": "Configuration information for crawling service catalogs in the ServiceNow site.",
@@ -23597,10 +23464,10 @@
         "CrawlAttachments": "Indicates whether Amazon Kendra should index attachments to knowledge articles.",
         "DocumentDataFieldName": "The name of the ServiceNow field that is mapped to the index document contents field in the Amazon Kendra index.",
         "DocumentTitleFieldName": "The name of the ServiceNow field that is mapped to the index document title field.",
-        "ExcludeAttachmentFilePatterns": "List of regular expressions applied to knowledge articles. Items that don't match the inclusion pattern are not indexed. The regex is applied to the field specified in the `PatternTargetField`",
-        "FieldMappings": "Mapping between ServiceNow fields and Amazon Kendra index fields. You must create the index field before you map the field.",
+        "ExcludeAttachmentFilePatterns": "A list of regular expression patterns to exclude certain attachments of knowledge articles in your ServiceNow. Item that match the patterns are excluded from the index. Items that don't match the patterns are included in the index. If an item matches both an inclusion and exclusion pattern, the exclusion pattern takes precedence and the item isn't included in the index.\n\nThe regex is applied to the field specified in the `PatternTargetField` .",
+        "FieldMappings": "Maps attributes or field names of knoweldge articles to Amazon Kendra index field names. To create custom fields, use the `UpdateIndex` API before you map to ServiceNow fields. For more information, see [Mapping data source fields](https://docs.aws.amazon.com/kendra/latest/dg/field-mapping.html) . The ServiceNow data source field names must exist in your ServiceNow custom metadata.",
         "FilterQuery": "A query that selects the knowledge articles to index. The query can return articles from multiple knowledge bases, and the knowledge bases can be public or private.\n\nThe query string must be one generated by the ServiceNow console. For more information, see [Specifying documents to index with a query](https://docs.aws.amazon.com/kendra/latest/dg/servicenow-query.html) .",
-        "IncludeAttachmentFilePatterns": "List of regular expressions applied to knowledge articles. Items that don't match the inclusion pattern are not indexed. The regex is applied to the field specified in the `PatternTargetField` ."
+        "IncludeAttachmentFilePatterns": "A list of regular expression patterns to include certain attachments of knowledge articles in your ServiceNow. Item that match the patterns are included in the index. Items that don't match the patterns are excluded from the index. If an item matches both an inclusion and exclusion pattern, the exclusion pattern takes precedence and the item isn't included in the index.\n\nThe regex is applied to the field specified in the `PatternTargetField` ."
       }
     },
     "AWS::Kendra::DataSource.ServiceNowServiceCatalogConfiguration": {
@@ -23610,9 +23477,9 @@
         "CrawlAttachments": "Indicates whether Amazon Kendra should crawl attachments to the service catalog items.",
         "DocumentDataFieldName": "The name of the ServiceNow field that is mapped to the index document contents field in the Amazon Kendra index.",
         "DocumentTitleFieldName": "The name of the ServiceNow field that is mapped to the index document title field.",
-        "ExcludeAttachmentFilePatterns": "A list of regular expression patterns. Documents that match the patterns are excluded from the index. Documents that don't match the patterns are included in the index. If a document matches both an exclusion pattern and an inclusion pattern, the document is not included in the index.\n\nThe regex is applied to the file name of the attachment.",
-        "FieldMappings": "Mapping between ServiceNow fields and Amazon Kendra index fields. You must create the index field before you map the field.",
-        "IncludeAttachmentFilePatterns": "A list of regular expression patterns. Documents that match the patterns are included in the index. Documents that don't match the patterns are excluded from the index. If a document matches both an exclusion pattern and an inclusion pattern, the document is not included in the index.\n\nThe regex is applied to the file name of the attachment."
+        "ExcludeAttachmentFilePatterns": "A list of regular expression patterns to exclude certain attachments of catalogs in your ServiceNow. Item that match the patterns are excluded from the index. Items that don't match the patterns are included in the index. If an item matches both an inclusion and exclusion pattern, the exclusion pattern takes precedence and the item isn't included in the index.\n\nThe regex is applied to the file name of the attachment.",
+        "FieldMappings": "Maps attributes or field names of catalogs to Amazon Kendra index field names. To create custom fields, use the `UpdateIndex` API before you map to ServiceNow fields. For more information, see [Mapping data source fields](https://docs.aws.amazon.com/kendra/latest/dg/field-mapping.html) . The ServiceNow data source field names must exist in your ServiceNow custom metadata.",
+        "IncludeAttachmentFilePatterns": "A list of regular expression patterns to include certain attachments of catalogs in your ServiceNow. Item that match the patterns are included in the index. Items that don't match the patterns are excluded from the index. If an item matches both an inclusion and exclusion pattern, the exclusion pattern takes precedence and the item isn't included in the index.\n\nThe regex is applied to the file name of the attachment."
       }
     },
     "AWS::Kendra::DataSource.SharePointConfiguration": {
@@ -23624,12 +23491,12 @@
         "DocumentTitleFieldName": "The Microsoft SharePoint attribute field that contains the title of the document.",
         "ExclusionPatterns": "A list of regular expression patterns. Documents that match the patterns are excluded from the index. Documents that don't match the patterns are included in the index. If a document matches both an exclusion pattern and an inclusion pattern, the document is not included in the index.\n\nThe regex is applied to the display URL of the SharePoint document.",
         "FieldMappings": "A list of `DataSourceToIndexFieldMapping` objects that map Microsoft SharePoint attributes to custom fields in the Amazon Kendra index. You must first create the index fields using the [UpdateIndex](https://docs.aws.amazon.com/kendra/latest/dg/API_UpdateIndex.html) operation before you map SharePoint attributes. For more information, see [Mapping Data Source Fields](https://docs.aws.amazon.com/kendra/latest/dg/field-mapping.html) .",
-        "InclusionPatterns": "A list of regular expression patterns. Documents that match the patterns are included in the index. Documents that don't match the patterns are excluded from the index. If a document matches both an inclusion pattern and an exclusion pattern, the document is not included in the index.\n\nThe regex is applied to the display URL of the SharePoint document.",
+        "InclusionPatterns": "A list of regular expression patterns to include certain documents in your SharePoint. Documents that match the patterns are included in the index. Documents that don't match the patterns are excluded from the index. If a document matches both an inclusion and exclusion pattern, the exclusion pattern takes precedence and the document isn't included in the index.\n\nThe regex is applied to the display URL of the SharePoint document.",
         "SecretArn": "The Amazon Resource Name (ARN) of credentials stored in AWS Secrets Manager . The credentials should be a user/password pair. If you use SharePoint Server, you also need to provide the sever domain name as part of the credentials. For more information, see [Using a Microsoft SharePoint Data Source](https://docs.aws.amazon.com/kendra/latest/dg/data-source-sharepoint.html) . For more information about AWS Secrets Manager see [What Is AWS Secrets Manager](https://docs.aws.amazon.com/secretsmanager/latest/userguide/intro.html) in the *AWS Secrets Manager* user guide.",
         "SharePointVersion": "The version of Microsoft SharePoint that you are using as a data source.",
         "SslCertificateS3Path": "Information required to find a specific file in an Amazon S3 bucket.",
         "Urls": "The URLs of the Microsoft SharePoint site that contains the documents that should be indexed.",
-        "UseChangeLog": "Set to `TRUE` to use the Microsoft SharePoint change log to determine the documents that need to be updated in the index. Depending on the size of the SharePoint change log, it may take longer for Amazon Kendra to use the change log than it takes it to determine the changed documents using the Amazon Kendra document crawler.",
+        "UseChangeLog": "`TRUE` to use the SharePoint change log to determine which documents require updating in the index. Depending on the change log's size, it may take longer for Amazon Kendra to use the change log than to scan all of your documents in SharePoint.",
         "VpcConfiguration": "Provides information for connecting to an Amazon VPC."
       }
     },
@@ -23666,8 +23533,8 @@
         "MaxLinksPerPage": "The maximum number of URLs on a webpage to include when crawling a website. This number is per webpage.\n\nAs a website\u2019s webpages are crawled, any URLs the webpages link to are also crawled. URLs on a webpage are crawled in order of appearance.\n\nThe default maximum links per page is 100.",
         "MaxUrlsPerMinuteCrawlRate": "The maximum number of URLs crawled per website host per minute.\n\nA minimum of one URL is required.\n\nThe default maximum number of URLs crawled per website host per minute is 300.",
         "ProxyConfiguration": "Configuration information required to connect to your internal websites via a web proxy.\n\nYou must provide the website host name and port number. For example, the host name of https://a.example.com/page1.html is \"a.example.com\" and the port is 443, the standard port for HTTPS.\n\nWeb proxy credentials are optional and you can use them to connect to a web proxy server that requires basic authentication. To store web proxy credentials, you use a secret in [AWS Secrets Manager](https://docs.aws.amazon.com/secretsmanager/latest/userguide/intro.html) .",
-        "UrlExclusionPatterns": "The regular expression pattern to exclude certain URLs to crawl.\n\nIf there is a regular expression pattern to include certain URLs that conflicts with the exclude pattern, the exclude pattern takes precedence.",
-        "UrlInclusionPatterns": "The regular expression pattern to include certain URLs to crawl.\n\nIf there is a regular expression pattern to exclude certain URLs that conflicts with the include pattern, the exclude pattern takes precedence.",
+        "UrlExclusionPatterns": "A list of regular expression patterns to exclude certain URLs to crawl. URLs that match the patterns are excluded from the index. URLs that don't match the patterns are included in the index. If a URL matches both an inclusion and exclusion pattern, the exclusion pattern takes precedence and the URL file isn't included in the index.",
+        "UrlInclusionPatterns": "A list of regular expression patterns to include certain URLs to crawl. URLs that match the patterns are included in the index. URLs that don't match the patterns are excluded from the index. If a URL matches both an inclusion and exclusion pattern, the exclusion pattern takes precedence and the URL file isn't included in the index.",
         "Urls": "Specifies the seed or starting point URLs of the websites or the sitemap URLs of the websites you want to crawl.\n\nYou can include website subdomains. You can list up to 100 seed URLs and up to three sitemap URLs.\n\nYou can only crawl websites that use the secure communication protocol, Hypertext Transfer Protocol Secure (HTTPS). If you receive an error when crawling a website, it could be that the website is blocked from crawling.\n\n*When selecting websites to index, you must adhere to the [Amazon Acceptable Use Policy](https://docs.aws.amazon.com/aup/) and all other Amazon terms. Remember that you must only use Amazon Kendra Web Crawler to index your own webpages, or webpages that you have authorization to index.*"
       }
     },
@@ -23699,11 +23566,11 @@
       "description": "Provides the configuration information to connect to Amazon WorkDocs as your data source.\n\nAmazon WorkDocs connector is available in Oregon, North Virginia, Sydney, Singapore and Ireland regions.",
       "properties": {
         "CrawlComments": "`TRUE` to include comments on documents in your index. Including comments in your index means each comment is a document that can be searched on.\n\nThe default is set to `FALSE` .",
-        "ExclusionPatterns": "A list of regular expression patterns to exclude certain files in your Amazon WorkDocs site repository. Files that match the patterns are excluded from the index. Files that don\u2019t match the patterns are included in the index. If a file matches both an inclusion pattern and an exclusion pattern, the exclusion pattern takes precedence and the file isn\u2019t included in the index.",
-        "FieldMappings": "A list of `DataSourceToIndexFieldMapping` objects that map Amazon WorkDocs field names to custom index field names in Amazon Kendra. You must first create the custom index fields using the `UpdateIndex` API before you map to Amazon WorkDocs fields. For more information, see [Mapping Data Source Fields](https://docs.aws.amazon.com/kendra/latest/dg/field-mapping.html) . The Amazon WorkDocs data source field names need to exist in your Amazon WorkDocs custom metadata.",
-        "InclusionPatterns": "A list of regular expression patterns to include certain files in your Amazon WorkDocs site repository. Files that match the patterns are included in the index. Files that don't match the patterns are excluded from the index. If a file matches both an inclusion pattern and an exclusion pattern, the exclusion pattern takes precedence and the file isn\u2019t included in the index.",
+        "ExclusionPatterns": "A list of regular expression patterns to exclude certain files in your Amazon WorkDocs site repository. Files that match the patterns are excluded from the index. Files that don\u2019t match the patterns are included in the index. If a file matches both an inclusion and exclusion pattern, the exclusion pattern takes precedence and the file isn't included in the index.",
+        "FieldMappings": "A list of `DataSourceToIndexFieldMapping` objects that map Amazon WorkDocs data source attributes or field names to Amazon Kendra index field names. To create custom fields, use the `UpdateIndex` API before you map to Amazon WorkDocs fields. For more information, see [Mapping data source fields](https://docs.aws.amazon.com/kendra/latest/dg/field-mapping.html) . The Amazon WorkDocs data source field names must exist in your Amazon WorkDocs custom metadata.",
+        "InclusionPatterns": "A list of regular expression patterns to include certain files in your Amazon WorkDocs site repository. Files that match the patterns are included in the index. Files that don't match the patterns are excluded from the index. If a file matches both an inclusion and exclusion pattern, the exclusion pattern takes precedence and the file isn't included in the index.",
         "OrganizationId": "The identifier of the directory corresponding to your Amazon WorkDocs site repository.\n\nYou can find the organization ID in the [AWS Directory Service](https://docs.aws.amazon.com/directoryservicev2/) by going to *Active Directory* , then *Directories* . Your Amazon WorkDocs site directory has an ID, which is the organization ID. You can also set up a new Amazon WorkDocs directory in the AWS Directory Service console and enable a Amazon WorkDocs site for the directory in the Amazon WorkDocs console.",
-        "UseChangeLog": "`TRUE` to use the change logs to update documents in your index instead of scanning all documents.\n\nIf you are syncing your Amazon WorkDocs data source with your index for the first time, all documents are scanned. After your first sync, you can use the change logs to update your documents in your index for future syncs.\n\nThe default is set to `FALSE` ."
+        "UseChangeLog": "`TRUE` to use the Amazon WorkDocs change log to determine which documents require updating in the index. Depending on the change log's size, it may take longer for Amazon Kendra to use the change log than to scan all of your documents in Amazon WorkDocs."
       }
     },
     "AWS::Kendra::Faq": {
@@ -25887,17 +25754,10 @@
         "LocaleId": "The identifier of the locale to add to the version."
       }
     },
-    "AWS::Lex::BotVersion.BotVersionLocaleSpecificationItem": {
-      "attributes": {},
-      "description": "Specifies the details of a locale in a bot version.",
-      "properties": {
-        "BotVersionLocaleDetails": "Information about the version of a bot used in a locale.",
-        "LocaleId": "The identifier of a specific bot locale."
-      }
-    },
     "AWS::Lex::ResourcePolicy": {
       "attributes": {
-        "Id": "The identifier of the resource policy."
+        "Id": "The identifier of the resource policy.",
+        "RevisionId": ""
       },
       "description": "Specifies a new resource policy with the specified policy statements.",
       "properties": {
@@ -32482,20 +32342,20 @@
         "Permissions": "A list of resource permissions on the data source.",
         "SslProperties": "Secure Socket Layer (SSL) properties that apply when Amazon QuickSight connects to your underlying source.",
         "Tags": "Contains a map of the key-value pairs for the resource tag or tags assigned to the data source.",
-        "Type": "The type of the data source. To return a list of all data sources, use `ListDataSources` .\n\nUse `AMAZON_ELASTICSEARCH` for Amazon OpenSearch Service .",
+        "Type": "The type of the data source. To return a list of all data sources, use `ListDataSources` .\n\nUse `AMAZON_ELASTICSEARCH` for Amazon OpenSearch Service.",
         "VpcConnectionProperties": "Use this parameter only when you want Amazon QuickSight to use a VPC connection when connecting to your underlying source."
       }
     },
     "AWS::QuickSight::DataSource.AmazonElasticsearchParameters": {
       "attributes": {},
-      "description": "The parameters for OpenSearch .",
+      "description": "The parameters for OpenSearch.",
       "properties": {
         "Domain": "The OpenSearch domain."
       }
     },
     "AWS::QuickSight::DataSource.AmazonOpenSearchParameters": {
       "attributes": {},
-      "description": "The parameters for OpenSearch .",
+      "description": "The parameters for OpenSearch.",
       "properties": {
         "Domain": "The OpenSearch domain."
       }
@@ -32554,8 +32414,8 @@
       "attributes": {},
       "description": "The parameters that Amazon QuickSight uses to connect to your underlying data source. This is a variant type structure. For this structure to be valid, only one of the attributes can be non-null.",
       "properties": {
-        "AmazonElasticsearchParameters": "The parameters for OpenSearch .",
-        "AmazonOpenSearchParameters": "The parameters for OpenSearch .",
+        "AmazonElasticsearchParameters": "The parameters for OpenSearch.",
+        "AmazonOpenSearchParameters": "The parameters for OpenSearch.",
         "AthenaParameters": "The parameters for Amazon Athena.",
         "AuroraParameters": "The parameters for Amazon Aurora MySQL.",
         "AuroraPostgreSqlParameters": "The parameters for Amazon Aurora.",
@@ -38628,7 +38488,7 @@
       "attributes": {},
       "description": "Container for the `WorkflowDetail` data type. It is used by actions that trigger a workflow to begin execution.",
       "properties": {
-        "OnUpload": "A trigger that starts a workflow: the workflow begins to execute after a file is uploaded."
+        "OnUpload": "A trigger that starts a workflow: the workflow begins to execute after a file is uploaded.\n\nTo remove an associated workflow from a server, you can provide an empty `OnUpload` object, as in the following example.\n\n`aws transfer update-server --server-id s-01234567890abcdef --workflow-details '{\"OnUpload\":[]}'`"
       }
     },
     "AWS::Transfer::User": {
