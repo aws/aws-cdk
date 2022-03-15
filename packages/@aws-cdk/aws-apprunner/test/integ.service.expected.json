@@ -833,7 +833,7 @@
         }
       }
     },
-    "Service6VpcConnector7B91ABE1": {
+    "VpcConnectorCF6E3C30": {
       "Type": "AWS::AppRunner::VpcConnector",
       "Properties": {
         "Subnets": [
@@ -877,7 +877,34 @@
             "EgressType": "VPC",
             "VpcConnectorArn": {
               "Fn::GetAtt": [
-                "Service6VpcConnector7B91ABE1",
+                "VpcConnectorCF6E3C30",
+                "VpcConnectorArn"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "Service7E1F980B2": {
+      "Type": "AWS::AppRunner::Service",
+      "Properties": {
+        "SourceConfiguration": {
+          "AuthenticationConfiguration": {},
+          "ImageRepository": {
+            "ImageConfiguration": {
+              "Port": "8000"
+            },
+            "ImageIdentifier": "public.ecr.aws/aws-containers/hello-app-runner:latest",
+            "ImageRepositoryType": "ECR_PUBLIC"
+          }
+        },
+        "InstanceConfiguration": {},
+        "NetworkConfiguration": {
+          "EgressConfiguration": {
+            "EgressType": "VPC",
+            "VpcConnectorArn": {
+              "Fn::GetAtt": [
+                "VpcConnectorCF6E3C30",
                 "VpcConnectorArn"
               ]
             }
@@ -976,6 +1003,22 @@
             {
               "Fn::GetAtt": [
                 "Service6DF16DDFB",
+                "ServiceUrl"
+              ]
+            }
+          ]
+        ]
+      }
+    },
+    "URL7": {
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            "https://",
+            {
+              "Fn::GetAtt": [
+                "Service7E1F980B2",
                 "ServiceUrl"
               ]
             }

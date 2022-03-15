@@ -5,7 +5,7 @@ import * as ecr from '@aws-cdk/aws-ecr';
 import * as ecr_assets from '@aws-cdk/aws-ecr-assets';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
-import { Service, GitHubConnection, Runtime, Source, Cpu, Memory, ConfigurationSourceType } from '../lib';
+import { Service, GitHubConnection, Runtime, Source, Cpu, Memory, ConfigurationSourceType, VpcConnector } from '../lib';
 
 test('create a service with ECR Public(image repository type: ECR_PUBLIC)', () => {
   // GIVEN
@@ -645,7 +645,7 @@ test('environment variable with a prefix of AWSAPPRUNNER should throw an error',
   }).toThrow('Environment variable key AWSAPPRUNNER_FOO with a prefix of AWSAPPRUNNER is not allowed');
 });
 
-test('specifying a vpcConnector should create a service with a vpcConnector and set the egressType to VPC', () => {
+test('specifying a vpcConnector should assign the service to it and set the egressType to VPC', () => {
   // GIVEN
   const app = new cdk.App();
   const stack = new cdk.Stack(app, 'demo-stack');
@@ -655,16 +655,18 @@ test('specifying a vpcConnector should create a service with a vpcConnector and 
   });
 
   const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', { vpc });
+
+  const vpcConnector = new VpcConnector(stack, 'VpcConnector', {
+    securityGroups: [securityGroup],
+    subnets: vpc.publicSubnets,
+    vpcConnectorName: 'MyVpcConnector',
+  });
   // WHEN
   new Service(stack, 'DemoService', {
     source: Source.fromEcrPublic({
       imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
     }),
-    vpcConnector: {
-      subnets: vpc.publicSubnets,
-      securityGroups: [securityGroup],
-      name: 'MyVpcConnector',
-    },
+    vpcConnector,
   });
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::AppRunner::Service', {
@@ -673,7 +675,7 @@ test('specifying a vpcConnector should create a service with a vpcConnector and 
         EgressType: 'VPC',
         VpcConnectorArn: {
           'Fn::GetAtt': [
-            'DemoServiceVpcConnector4C0DFCF8',
+            'VpcConnectorCF6E3C30',
             'VpcConnectorArn',
           ],
         },
@@ -699,57 +701,5 @@ test('specifying a vpcConnector should create a service with a vpcConnector and 
       },
     ],
     VpcConnectorName: 'MyVpcConnector',
-  });
-});
-
-test('specifying a vpcConnector without security groups should create a service with a vpcConnector that uses the default security group and set the egressType to VPC', () => {
-  // GIVEN
-  const app = new cdk.App();
-  const stack = new cdk.Stack(app, 'demo-stack');
-
-  const vpc = new ec2.Vpc(stack, 'Vpc', {
-    cidr: '10.0.0.0/16',
-  });
-
-  // WHEN
-  new Service(stack, 'DemoService', {
-    source: Source.fromEcrPublic({
-      imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
-    }),
-    vpcConnector: {
-      subnets: vpc.publicSubnets,
-    },
-  });
-  // THEN
-  Template.fromStack(stack).hasResourceProperties('AWS::AppRunner::Service', {
-    SourceConfiguration: {
-      AuthenticationConfiguration: {},
-      ImageRepository: {
-        ImageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
-        ImageRepositoryType: 'ECR_PUBLIC',
-      },
-    },
-    NetworkConfiguration: {
-      EgressConfiguration: {
-        EgressType: 'VPC',
-        VpcConnectorArn: {
-          'Fn::GetAtt': [
-            'DemoServiceVpcConnector4C0DFCF8',
-            'VpcConnectorArn',
-          ],
-        },
-      },
-    },
-  });
-
-  Template.fromStack(stack).hasResourceProperties('AWS::AppRunner::VpcConnector', {
-    Subnets: [
-      {
-        Ref: 'VpcPublicSubnet1Subnet5C2D37C4',
-      },
-      {
-        Ref: 'VpcPublicSubnet2Subnet691E08A3',
-      },
-    ],
   });
 });

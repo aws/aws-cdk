@@ -137,24 +137,28 @@ See [App Runner IAM Roles](https://docs.aws.amazon.com/apprunner/latest/dg/secur
 
 ## VPC Connector
 
-To associate an App Runner service with a custom VPC, define `vpcConnector` for the service, optionally specifying security groups and a name.
+To associate an App Runner service with a custom VPC, define `vpcConnector` for the service.
 
 ```ts
-const vpc = new ec2.Vpc(stack, 'Vpc', {
+import * as ec2 from '@aws-cdk/aws-ec2';
+
+const vpc = new ec2.Vpc(this, 'Vpc', {
   cidr: '10.0.0.0/16',
 });
 
-const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', { vpc });
+const securityGroup = new ec2.SecurityGroup(this, 'SecurityGroup', { vpc });
+
+const vpcConnector = new apprunner.VpcConnector(this, 'VpcConnector', {
+  subnets: vpc.publicSubnets,
+  securityGroups: [securityGroup],
+  vpcConnectorName: 'MyVpcConnector',
+});
 
 new apprunner.Service(this, 'Service', {
   source: apprunner.Source.fromEcrPublic({
     imageConfiguration: { port: 8000 },
     imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
   }),
-  vpcConnector: {
-    subnets: vpc.publicSubnets,
-    securityGroups: [securityGroup],
-    name: 'MyVpcConnector',
-  },
+  vpcConnector,
 });
 ```
