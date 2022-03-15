@@ -1,4 +1,3 @@
-import { IFunction } from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
 import { IAlarm } from './alarm-base';
 import { IMetric } from './metric-types';
@@ -368,10 +367,9 @@ export class SingleValueWidget extends ConcreteWidget {
 
 export interface CustomWidgetProps {
   /**
-   * The AWS Lambda function that returns HTML or JSON that will be displayed in the widget
-   * 
+   * The Arn of the AWS Lambda function that returns HTML or JSON that will be displayed in the widget
    */
-  readonly function: IFunction;
+  readonly functionArn: string;
 
   /**
    * Width of the widget, in a grid of 24 units wide
@@ -380,44 +378,43 @@ export interface CustomWidgetProps {
    */
   readonly width?: number;
 
-   /**
-    * Height of the widget
-    *
-    * @default - 6 for Alarm and Graph widgets.
-    *   3 for single value widgets where most recent value of a metric is displayed.
-    */
+  /**
+   * Height of the widget
+   *
+   * @default - 6 for Alarm and Graph widgets.
+   *   3 for single value widgets where most recent value of a metric is displayed.
+   */
   readonly height?: number;
 
   /**
    * The title of the widget
-   * 
    */
   readonly title: string;
 
   /**
    * Update the widget on refresh
-   * 
+   *
    * @default true
    */
   readonly updateOnRefresh?: boolean;
 
   /**
    * Update the widget on resize
-   * 
+   *
    * @default true
    */
   readonly updateOnResize?: boolean;
 
   /**
    * Update the widget on time range change
-   * 
+   *
    * @default true
    */
   readonly updateOnTimeRangeChange?: boolean;
 
   /**
    * Parameters passed to the lambda function
-   * 
+   *
    * @default {}
    */
   readonly params?: any;
@@ -427,28 +424,28 @@ export class CustomWidget extends ConcreteWidget {
   private readonly props: CustomWidgetProps;
 
   public constructor(props: CustomWidgetProps) {
-    super(props.width ?? 6, props.height ?? 6)
+    super(props.width ?? 6, props.height ?? 6);
     this.props = props;
   }
 
   public toJson(): any[] {
-      return [{
-        type: 'custom1',
-        width: this.width,
-        height: this.height,
-        x: this.x,
-        y: this.y,
-        properties: {
-          endpoint: this.props.function.functionArn,
-          params: this.props.params ?? {},
-          title: this.props.title,
-          updateOn: {
-            refresh: this.props.updateOnRefresh ?? true,
-            resize: this.props.updateOnResize ?? true,
-            timeRange: this.props.updateOnTimeRangeChange ?? true,
-          }
-        }
-      }]
+    return [{
+      type: 'custom',
+      width: this.width,
+      height: this.height,
+      x: this.x,
+      y: this.y,
+      properties: {
+        endpoint: this.props.functionArn,
+        params: this.props.params ?? {},
+        title: this.props.title,
+        updateOn: {
+          refresh: this.props.updateOnRefresh ?? true,
+          resize: this.props.updateOnResize ?? true,
+          timeRange: this.props.updateOnTimeRangeChange ?? true,
+        },
+      },
+    }];
   }
 }
 

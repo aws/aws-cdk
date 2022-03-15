@@ -469,7 +469,7 @@ const fn = lambda.Function.fromFunctionArn(
 );
 
 dashboard.addWidgets(new cloudwatch.CustomWidget({
-  function: fn,
+  functionArn: fn.functionArn,
   title: 'My lambda baked widget',
 }));
 ```

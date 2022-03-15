@@ -1,4 +1,3 @@
-import { Function } from '@aws-cdk/aws-lambda';
 import { Duration, Stack } from '@aws-cdk/core';
 import { Alarm, AlarmWidget, Color, GraphWidget, GraphWidgetView, LegendPosition, LogQueryWidget, Metric, Shading, SingleValueWidget, LogQueryVisualizationType, CustomWidget } from '../lib';
 
@@ -349,14 +348,13 @@ describe('Graphs', () => {
 
   });
 
-  test('custom widget', () => {
+  test('custom widget basic', () => {
     // GIVEN
     const stack = new Stack();
-    const fn = Function.fromFunctionArn(stack, 'CustomWidgetFunction', 'arn:aws:lambda:us-east-1:123456789:function:customwidgetfunction');
 
     // WHEN
     const widget = new CustomWidget({
-      function: fn,
+      functionArn: 'arn:aws:lambda:us-east-1:123456789:function:customwidgetfunction',
       title: 'CustomWidget',
     });
 
@@ -367,12 +365,50 @@ describe('Graphs', () => {
       height: 6,
       properties: {
         title: 'CustomWidget',
-        endpoint: fn.functionArn,
+        endpoint: 'arn:aws:lambda:us-east-1:123456789:function:customwidgetfunction',
         params: {},
         updateOn: {
           refresh: true,
           resize: true,
           timeRange: true,
+        },
+      },
+    }]);
+  });
+
+  test('custom widget full config', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const widget = new CustomWidget({
+      functionArn: 'arn:aws:lambda:us-east-1:123456789:function:customwidgetfunction',
+      title: 'CustomWidget',
+      height: 1,
+      width: 1,
+      params: {
+        any: 'param',
+      },
+      updateOnRefresh: false,
+      updateOnResize: false,
+      updateOnTimeRangeChange: false,
+    });
+
+    // THEN
+    expect(stack.resolve(widget.toJson())).toEqual([{
+      type: 'custom',
+      width: 1,
+      height: 1,
+      properties: {
+        title: 'CustomWidget',
+        endpoint: 'arn:aws:lambda:us-east-1:123456789:function:customwidgetfunction',
+        params: {
+          any: 'param',
+        },
+        updateOn: {
+          refresh: false,
+          resize: false,
+          timeRange: false,
         },
       },
     }]);
