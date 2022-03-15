@@ -16,7 +16,11 @@ export function integTest(
 ) {
 
   // Integ tests can run concurrently, and are responsible for blocking themselves if they cannot.
-  const runner = shouldSkip(name) ? test.skip : test.concurrent;
+  // Because `test.concurrent` executes the test code immediately (to obtain a promise), we allow
+  // setting the `JEST_TEST_CONCURRENT` environment variable to 'false' in order to use `test`
+  // instead of `test.concurrent` (this is necessary when specifying a test pattern to verify).
+  const testKind = process.env.JEST_TEST_CONCURRENT === 'false' ? test.concurrent : test;
+  const runner = shouldSkip(name) ? testKind.skip : testKind;
 
   runner(name, async () => {
     const output = new MemoryStream();
