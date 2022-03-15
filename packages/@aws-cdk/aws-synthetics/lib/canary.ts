@@ -462,7 +462,7 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
     return {
       vpcId: props.vpc.vpcId,
       subnetIds,
-      securityGroupIds: securityGroups.map(sg => sg.securityGroupId),
+      securityGroupIds: cdk.Lazy.list({ produce: () => this.connections.securityGroups.map(sg => sg.securityGroupId) }),
     };
   }
 
