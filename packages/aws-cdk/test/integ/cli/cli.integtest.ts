@@ -33,7 +33,7 @@ integTest('Construct with builtin Lambda function', withDefaultFixture(async (fi
   await fixture.cdkDestroy('builtin-lambda-function');
 }));
 
-integTest('Two ways of shoing the version', withDefaultFixture(async (fixture) => {
+integTest('Two ways of showing the version', withDefaultFixture(async (fixture) => {
   const version1 = await fixture.cdk(['version'], { verbose: false });
   const version2 = await fixture.cdk(['--version'], { verbose: false });
 
@@ -972,7 +972,20 @@ integTest('sam can locally test the synthesized cdk application', withSamIntegra
   expect(result.actionOutput).toEqual(expect.objectContaining({
     message: 'Hello World',
   }));
+}));
 
+integTest('skips notice refresh', withDefaultFixture(async (fixture) => {
+  const output = await fixture.cdkSynth({
+    options: ['--no-notices'],
+    modEnv: {
+      INTEG_STACK_SET: 'stage-using-context',
+    },
+    allowErrExit: true,
+  });
+
+  // Neither succeeds nor fails, but skips the refresh
+  await expect(output).not.toContain('Notices refreshed');
+  await expect(output).not.toContain('Notices refresh failed');
 }));
 
 async function listChildren(parent: string, pred: (x: string) => Promise<boolean>) {
