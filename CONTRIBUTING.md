@@ -89,7 +89,7 @@ specific to the CDK.
 
 ### Build
 
-The full build of the CDK takes a long time complete; 1-2 hours depending on the performance of the build machine.
+The full build of the CDK takes a long time to complete; 1-2 hours depending on the performance of the build machine.
 However, most first time contributions will require changing only one CDK module, sometimes two. A full build of the
 CDK is not required in these cases.
 
@@ -481,7 +481,7 @@ grantAwesomePowerBeta1();
 ```
 
 Times goes by, we get feedback that this method will actually be much better
-if it accept a `Principal`. Since adding a required property is a breaking
+if it accepts a `Principal`. Since adding a required property is a breaking
 change, we will add `grantAwesomePowerBeta2()` and deprecate
 `grantAwesomePowerBeta1`:
 
