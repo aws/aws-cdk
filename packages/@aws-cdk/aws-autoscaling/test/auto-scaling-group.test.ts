@@ -890,8 +890,10 @@ describe('auto scaling group', () => {
     });
 
     // THEN
-    expect(asg.node.metadataEntry[0].type).toEqual(cxschema.ArtifactMetadataEntryType.WARN);
-    expect(asg.node.metadataEntry[0].data).toEqual('iops will be ignored without volumeType: EbsDeviceVolumeType.IO1');
+    expect(asg.node.metadata[0].type).toEqual(cxschema.ArtifactMetadataEntryType.WARN);
+    expect(asg.node.metadata[0].data).toEqual('iops will be ignored without volumeType: EbsDeviceVolumeType.IO1');
+
+
   });
 
   test('warning if iops and volumeType !== IO1', () => {
@@ -915,8 +917,10 @@ describe('auto scaling group', () => {
     });
 
     // THEN
-    expect(asg.node.metadataEntry[0].type).toEqual(cxschema.ArtifactMetadataEntryType.WARN);
-    expect(asg.node.metadataEntry[0].data).toEqual('iops will be ignored without volumeType: EbsDeviceVolumeType.IO1');
+    expect(asg.node.metadata[0].type).toEqual(cxschema.ArtifactMetadataEntryType.WARN);
+    expect(asg.node.metadata[0].data).toEqual('iops will be ignored without volumeType: EbsDeviceVolumeType.IO1');
+
+
   });
 
   test('step scaling on metric', () => {

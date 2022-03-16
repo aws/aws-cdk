@@ -11,3 +11,5 @@
 *.snk
 junit.xml
 !.eslintrc.js
+dist
+.LAST_PACKAGE
