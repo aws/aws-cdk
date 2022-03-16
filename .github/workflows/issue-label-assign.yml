@@ -23,6 +23,7 @@ jobs:
           excluded-labels: "[p1|p2|p0|effort-small|effort-medium|effort-large|guidance]"
           default-area: ${{ env.OSDS_DEVS }}
           parameters: ${{ env.AREA_PARAMS }}
+          affixes: ${{ env.AREA_AFFIXES }}
   guidance-triage-manager:
     permissions:
       issues: write
@@ -52,12 +53,19 @@ jobs:
           area-is-keyword: true
           excluded-labels: "[contribution/core]"
           parameters: ${{ env.AREA_PARAMS }}
+          affixes: ${{ env.AREA_AFFIXES }}
 
 env:
  OSDS_DEVS: >
            {
              "assignees":["NGL321","peterwoodworth","ryparker"]
            }
+
+ AREA_AFFIXES: >
+           {
+             "prefixes":["@aws-cdk/"]
+           }
+    
 
  AREA_PARAMS: >
            [
