@@ -6,7 +6,7 @@ import { cloneDirectory, MAJOR_VERSION, shell, withDefaultFixture } from '../hel
 import { randomInteger, withSamIntegrationFixture } from '../helpers/sam';
 import { integTest } from '../helpers/test-helpers';
 
-jest.setTimeout(600 * 1000);
+jest.setTimeout(600_000);
 
 integTest('VPC Lookup', withDefaultFixture(async (fixture) => {
   fixture.log('Making sure we are clean before starting.');
