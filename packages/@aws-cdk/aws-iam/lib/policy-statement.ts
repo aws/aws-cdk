@@ -159,6 +159,9 @@ export class PolicyStatement {
     }
   }
 
+  /**
+   * aaaaaaaaaaaa
+   */
   public get principals(): IPrincipal[] {
     return [...this._principals];
   }
@@ -326,6 +329,11 @@ export class PolicyStatement {
     this.addCondition('StringEquals', { 'sts:ExternalId': accountId });
   }
 
+  /**
+   * aaaaaaaaaaaaaaaaaaaaaaa
+   * @param overrides
+   * @returns
+   */
   public copy(overrides: PolicyStatementProps = {}) {
     return new PolicyStatement({
       sid: overrides.sid ?? this.sid,

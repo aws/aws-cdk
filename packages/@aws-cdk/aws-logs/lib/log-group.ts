@@ -1,7 +1,7 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
-import { ArnFormat, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/core';
+import { Arn, ArnFormat, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { LogStream } from './log-stream';
 import { CfnLogGroup } from './logs.generated';
@@ -201,9 +201,33 @@ abstract class LogGroupBase extends Resource implements ILogGroup {
       this.policy = new ResourcePolicy(this, 'Policy');
     }
     this.policy.document.addStatements(statement.copy({
-      principals: statement.principals.map(p => p.principalAccount !== undefined ? new iam.ArnPrincipal(p.principalAccount) : p),
+      //principals: statement.principals.map(p => p.principalAccount !== undefined ? new iam.ArnPrincipal(p.principalAccount) : p),
+      principals: statement.principals.map(p => this.mutatePrincipal(p)),
     }));
     return { statementAdded: true, policyDependable: this.policy };
+  }
+
+  private mutatePrincipal(p: iam.IPrincipal) {
+    if (p.principalAccount) {
+    console.log('oiadjk;adfsjk;;jkadsf')
+      console.log(p)
+      return new iam.ArnPrincipal(p.principalAccount);
+    }
+
+    if (p instanceof iam.ArnPrincipal) {
+    console.log('ayayaya 1')
+      const parsedArn = Arn.split(p.arn, ArnFormat.SLASH_RESOURCE_NAME);
+    console.log('ayayaya 2')
+      if (parsedArn.account) {
+    console.log('ayayaya 3')
+        return new iam.ArnPrincipal(parsedArn.account);
+      }
+    }
+
+    console.log('ffffffffffffffffff')
+      console.log(p)
+
+    return p;
   }
 }
 
