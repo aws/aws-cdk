@@ -427,7 +427,7 @@ test('Scheduled Fargate Task shows warning when minute is not defined in cron', 
   });
 
   // THEN
-  expect(stack.node.metadataEntry).toEqual([{
+  expect(stack.node.metadata).toEqual([{
     type: 'aws:cdk:warning',
     data: 'cron: If you don\'t pass \'minute\', by default the event runs every minute. Pass \'minute: \'*\'\' if that\'s what you intend, or \'minute: 0\' to run once per hour instead.',
     trace: undefined,
@@ -451,7 +451,7 @@ test('Scheduled Fargate Task shows no warning when minute is * in cron', () => {
   });
 
   // THEN
-  expect(stack.node.metadataEntry).toEqual([]);
+  expect(stack.node.metadata).toEqual([]);
   const annotations = Annotations.fromStack(stack).findWarning('*', Match.anyValue());
   expect(annotations.length).toBe(0);
 });
