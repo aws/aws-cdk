@@ -889,15 +889,18 @@ describe('cluster', () => {
     });
   });
 
-  test('addRotationSingleUser() with options', () => {
+  test('addRotationSingleUser() with custom automaticallyAfter, excludeCharacters and vpcSubnets', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    const vpcWithIsolated = new ec2.Vpc(stack, 'Vpc', {
-      subnetConfiguration: [
-        { name: 'public', subnetType: ec2.SubnetType.PUBLIC },
-        { name: 'private', subnetType: ec2.SubnetType.PRIVATE_WITH_NAT },
-        { name: 'isolated', subnetType: ec2.SubnetType.PRIVATE_ISOLATED },
-      ],
+    const vpcWithIsolated = ec2.Vpc.fromVpcAttributes(stack, 'Vpc', {
+      vpcId: 'vpc-id',
+      availabilityZones: ['az1'],
+      publicSubnetIds: ['public-subnet-id-1', 'public-subnet-id-2'],
+      publicSubnetNames: ['public-subnet-name-1', 'public-subnet-name-2'],
+      privateSubnetIds: ['private-subnet-id-1', 'private-subnet-id-2'],
+      privateSubnetNames: ['private-subnet-name-1', 'private-subnet-name-2'],
+      isolatedSubnetIds: ['isolated-subnet-id-1', 'isolated-subnet-id-2'],
+      isolatedSubnetNames: ['isolated-subnet-name-1', 'isolated-subnet-name-2'],
     });
 
     // WHEN
@@ -935,20 +938,64 @@ describe('cluster', () => {
             { Ref: 'AWS::URLSuffix' },
           ]],
         },
-        functionName: 'DatabaseRotationSingleUser458A45BE',
-        vpcSubnetIds: {
+        vpcSubnetIds: 'private-subnet-id-1,private-subnet-id-2',
+        excludeCharacters: '°_@',
+      },
+    });
+  });
+
+  test('addRotationMultiUser() with custom automaticallyAfter, excludeCharacters and vpcSubnets', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpcWithIsolated = ec2.Vpc.fromVpcAttributes(stack, 'Vpc', {
+      vpcId: 'vpc-id',
+      availabilityZones: ['az1'],
+      publicSubnetIds: ['public-subnet-id-1', 'public-subnet-id-2'],
+      publicSubnetNames: ['public-subnet-name-1', 'public-subnet-name-2'],
+      privateSubnetIds: ['private-subnet-id-1', 'private-subnet-id-2'],
+      privateSubnetNames: ['private-subnet-name-1', 'private-subnet-name-2'],
+      isolatedSubnetIds: ['isolated-subnet-id-1', 'isolated-subnet-id-2'],
+      isolatedSubnetNames: ['isolated-subnet-name-1', 'isolated-subnet-name-2'],
+    });
+    const userSecret = new DatabaseSecret(stack, 'UserSecret', { username: 'user' });
+
+    // WHEN
+    // DB in isolated subnet (no internet connectivity)
+    const cluster = new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
+      instanceProps: {
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+        vpc: vpcWithIsolated,
+        vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_ISOLATED },
+      },
+    });
+
+    // Rotation in private subnet (internet via NAT)
+    cluster.addRotationMultiUser('user', {
+      secret: userSecret.attach(cluster),
+      automaticallyAfter: cdk.Duration.days(15),
+      excludeCharacters: '°_@',
+      vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_NAT },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::RotationSchedule', {
+      RotationRules: {
+        AutomaticallyAfterDays: 15,
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Serverless::Application', {
+      Parameters: {
+        endpoint: {
           'Fn::Join': ['', [
-            { Ref: 'VpcprivateSubnet1SubnetCEAD3716' },
-            ',',
-            { Ref: 'VpcprivateSubnet2Subnet2DE7549C' },
+            'https://secretsmanager.',
+            { Ref: 'AWS::Region' },
+            '.',
+            { Ref: 'AWS::URLSuffix' },
           ]],
         },
-        vpcSecurityGroupIds: {
-          'Fn::GetAtt': [
-            'DatabaseRotationSingleUserSecurityGroupAC6E0E73',
-            'GroupId',
-          ],
-        },
+        vpcSubnetIds: 'private-subnet-id-1,private-subnet-id-2',
         excludeCharacters: '°_@',
       },
     });
