@@ -364,7 +364,9 @@ export class SingleValueWidget extends ConcreteWidget {
   }
 }
 
-
+/**
+ * The properties for a CustomWidget
+ */
 export interface CustomWidgetProps {
   /**
    * The Arn of the AWS Lambda function that returns HTML or JSON that will be displayed in the widget
@@ -419,6 +421,10 @@ export interface CustomWidgetProps {
    */
   readonly params?: any;
 }
+
+/**
+ * A CustomWidget shows the result of a AWS lambda function
+ */
 export class CustomWidget extends ConcreteWidget {
 
   private readonly props: CustomWidgetProps;
