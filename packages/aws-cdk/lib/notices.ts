@@ -43,13 +43,14 @@ export async function displayNotices(props: DisplayNoticesProps) {
 
 export async function generateMessage(dataSource: NoticeDataSource, props: DisplayNoticesProps) {
   const data = await dataSource.fetch();
-  const individualMessages = formatNotices(filterNotices(data, {
+  const filteredNotices = filterNotices(data, {
     outdir: props.outdir,
     acknowledgedIssueNumbers: new Set(props.acknowledgedIssueNumbers),
-  }));
+  });
 
-  if (individualMessages.length > 0) {
-    return finalMessage(individualMessages, data[0].issueNumber);
+  if (filteredNotices.length > 0) {
+    const individualMessages = formatNotices(filteredNotices);
+    return finalMessage(individualMessages, filteredNotices[0].issueNumber);
   }
   return '';
 }
@@ -108,18 +109,15 @@ export class WebsiteNoticeDataSource implements NoticeDataSource {
     const timeout = 3000;
 
     return new Promise((resolve) => {
+      setTimeout(() => resolve([]), timeout);
       try {
         const req = https.get('https://cli.cdk.dev-tools.aws.dev/notices.json',
           { timeout },
           res => {
-            const startTime = Date.now();
             if (res.statusCode === 200) {
               res.setEncoding('utf8');
               let rawData = '';
               res.on('data', (chunk) => {
-                if (Date.now() - startTime > timeout) {
-                  resolve([]);
-                }
                 rawData += chunk;
               });
               res.on('end', () => {

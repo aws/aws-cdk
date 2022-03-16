@@ -5,7 +5,7 @@ import { retry, sleep } from '../helpers/aws';
 import { cloneDirectory, MAJOR_VERSION, shell, withDefaultFixture } from '../helpers/cdk';
 import { integTest } from '../helpers/test-helpers';
 
-jest.setTimeout(600 * 1000);
+jest.setTimeout(600_000);
 
 integTest('VPC Lookup', withDefaultFixture(async (fixture) => {
   fixture.log('Making sure we are clean before starting.');
@@ -755,6 +755,20 @@ integTest('templates on disk contain metadata resource, also in nested assemblie
   const nestedTemplateContents = await fixture.shell(['cat', 'cdk.out/assembly-*-stage/*StackInStage*.template.json']);
 
   expect(JSON.parse(nestedTemplateContents).Resources.CDKMetadata).toBeTruthy();
+}));
+
+integTest('skips notice refresh', withDefaultFixture(async (fixture) => {
+  const output = await fixture.cdkSynth({
+    options: ['--no-notices'],
+    modEnv: {
+      INTEG_STACK_SET: 'stage-using-context',
+    },
+    allowErrExit: true,
+  });
+
+  // Neither succeeds nor fails, but skips the refresh
+  await expect(output).not.toContain('Notices refreshed');
+  await expect(output).not.toContain('Notices refresh failed');
 }));
 
 async function listChildren(parent: string, pred: (x: string) => Promise<boolean>) {
