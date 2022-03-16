@@ -2,6 +2,40 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.148.0](https://github.com/aws/aws-cdk/compare/v1.147.0...v1.148.0) (2022-03-09)
+
+
+### Features
+
+* **aws-apigateway:** add ability to include authorizer context in apigw sfn integration ([#18892](https://github.com/aws/aws-cdk/issues/18892)) ([e7c0c75](https://github.com/aws/aws-cdk/commit/e7c0c75dbc7cf71164673626dc0ab63fb3706223)), closes [#18891](https://github.com/aws/aws-cdk/issues/18891)
+* **aws-s3objectlambda:** add L2 construct for S3 Object Lambda ([#15833](https://github.com/aws/aws-cdk/issues/15833)) ([fe9f750](https://github.com/aws/aws-cdk/commit/fe9f750bd9dd9974b9ae6f73c78fcd12ab2edd91)), closes [#13675](https://github.com/aws/aws-cdk/issues/13675)
+* **cfnspec:** cloudformation spec v59.0.0 ([#19236](https://github.com/aws/aws-cdk/issues/19236)) ([f46a14d](https://github.com/aws/aws-cdk/commit/f46a14da9bec1aad7096b62666cb80ce42f04b53))
+* **codebuild:** improved support for ARM build images ([#19052](https://github.com/aws/aws-cdk/issues/19052)) ([4eac4de](https://github.com/aws/aws-cdk/commit/4eac4deb98411e921e5a2e6477185207b8588f75)), closes [#18916](https://github.com/aws/aws-cdk/issues/18916) [#9817](https://github.com/aws/aws-cdk/issues/9817)
+* **eks:** Service Account names validation ([#19251](https://github.com/aws/aws-cdk/issues/19251)) ([7c3099e](https://github.com/aws/aws-cdk/commit/7c3099e958d7bf0ddb5a7b08afb672a0c652b27d)), closes [#18189](https://github.com/aws/aws-cdk/issues/18189)
+* **elasticsearch:** Decouple setting access policies from domain constructor ([#15876](https://github.com/aws/aws-cdk/issues/15876)) ([cefdfd3](https://github.com/aws/aws-cdk/commit/cefdfd384eeac1752567f672452296def68b1206))
+* **iotevents:** support actions ([#18869](https://github.com/aws/aws-cdk/issues/18869)) ([e01654e](https://github.com/aws/aws-cdk/commit/e01654e792708ee283d7a31e1370d0d1ae383171))
+* **iotevents:** support setting Events on input and exit for State ([#19249](https://github.com/aws/aws-cdk/issues/19249)) ([ffa9e0d](https://github.com/aws/aws-cdk/commit/ffa9e0d287d0a86e1e0eb7dc2dec16d9f3e84450))
+* **lambda-nodejs:** support esbuild inject ([#19221](https://github.com/aws/aws-cdk/issues/19221)) ([3432c45](https://github.com/aws/aws-cdk/commit/3432c457fe38a83743d7ce2a5cb6c36a6ec01b8f)), closes [#19133](https://github.com/aws/aws-cdk/issues/19133)
+* **s3:** add `s3:ObjectRestore:Delete` to `EventType` for notification ([#19250](https://github.com/aws/aws-cdk/issues/19250)) ([e0f863a](https://github.com/aws/aws-cdk/commit/e0f863a4c56041860e14c75b9aa5a6d35860fae6)), closes [#19223](https://github.com/aws/aws-cdk/issues/19223)
+* **servicecatalog:** Service Catalog is now in Developer Preview ([#19204](https://github.com/aws/aws-cdk/issues/19204)) ([6dfc254](https://github.com/aws/aws-cdk/commit/6dfc254e1925597b4ef2ece9c132b1a0e580dd6d))
+
+
+### Bug Fixes
+
+* **apigatewayv2-integrations:** in case of multiple routes, only one execute permission is created ([#18716](https://github.com/aws/aws-cdk/issues/18716)) ([1e352ca](https://github.com/aws/aws-cdk/commit/1e352ca2ab458bfe4e1de6cf431166654ce9aa58))
+* **aws-apigateway:** missing comma to make failure response payload valid json ([#19253](https://github.com/aws/aws-cdk/issues/19253)) ([b1fce4f](https://github.com/aws/aws-cdk/commit/b1fce4f1641c90a4b7d1d33139453260b452d5cd)), closes [#19252](https://github.com/aws/aws-cdk/issues/19252)
+* **aws-route53-targets:** add support for custom cname_prefix urls in elastic beanstalk environment endpoint target ([#18804](https://github.com/aws/aws-cdk/issues/18804)) ([289a794](https://github.com/aws/aws-cdk/commit/289a79467d9974ee3582c9e30843b0eb9e90b467))
+* **cli:** `watch` logs always end with the 'truncated' message ([#19241](https://github.com/aws/aws-cdk/issues/19241)) ([d3fdfe5](https://github.com/aws/aws-cdk/commit/d3fdfe5264e64cb333795b32edbad36cfaab3dc7)), closes [#18805](https://github.com/aws/aws-cdk/issues/18805)
+* **cli:** deprecated stack ids printed at the end of synth ([#19216](https://github.com/aws/aws-cdk/issues/19216)) ([7d8a479](https://github.com/aws/aws-cdk/commit/7d8a4792a142f45109f35a51c6e1b3888d4111d3)), closes [#18599](https://github.com/aws/aws-cdk/issues/18599)
+* **cli:** notices refresh doesn't respect the --no-notices flag ([#19226](https://github.com/aws/aws-cdk/issues/19226)) ([b3c5fe8](https://github.com/aws/aws-cdk/commit/b3c5fe8d0b695e06558bce23a6dd39b20265594f))
+* **efs:** fix bug when setting both lifecyclePolicy and outOfInfrequentAccessPolicy ([#19082](https://github.com/aws/aws-cdk/issues/19082)) ([d435ab6](https://github.com/aws/aws-cdk/commit/d435ab6120c47464427489d98bea9347983a2123)), closes [#19058](https://github.com/aws/aws-cdk/issues/19058)
+* **lambda-nodejs:** local tsc detection with pre compilation ([#19266](https://github.com/aws/aws-cdk/issues/19266)) ([5de7b86](https://github.com/aws/aws-cdk/commit/5de7b86d916be6ab892e75e18c54a327fe1f65ff)), closes [#19242](https://github.com/aws/aws-cdk/issues/19242)
+* **lambda-python:** asset bundling fails on windows ([#19270](https://github.com/aws/aws-cdk/issues/19270)) ([0da57da](https://github.com/aws/aws-cdk/commit/0da57da9606d982788350a6257f0f0ed6e9fd92a)), closes [#18861](https://github.com/aws/aws-cdk/issues/18861)
+* **lambda-python:** docker image gets built even when we don't need to bundle assets  ([#16192](https://github.com/aws/aws-cdk/issues/16192)) ([5dc61ea](https://github.com/aws/aws-cdk/commit/5dc61eabc0ea3e6294f83db5deb8528461a1d5bc)), closes [#14747](https://github.com/aws/aws-cdk/issues/14747)
+* **rds:** allow cluster from snapshot to enable encrypted storage ([#19175](https://github.com/aws/aws-cdk/issues/19175)) ([bd4141d](https://github.com/aws/aws-cdk/commit/bd4141d864612974829c95d530085d4f18bdfeb8)), closes [#17241](https://github.com/aws/aws-cdk/issues/17241)
+* **rds:** read replica instance cannot join domain ([#19202](https://github.com/aws/aws-cdk/issues/19202)) ([cef8fec](https://github.com/aws/aws-cdk/commit/cef8fec1b0410daa6b57c152e9bad73dcc034397)), closes [#18786](https://github.com/aws/aws-cdk/issues/18786)
+* **rds:** subnet selection not respected for multi user secret rotation ([#19237](https://github.com/aws/aws-cdk/issues/19237)) ([dc7a17c](https://github.com/aws/aws-cdk/commit/dc7a17cd20198a6eb52c2ab25857e73bd7048d26)), closes [#19233](https://github.com/aws/aws-cdk/issues/19233)
+
 ## [1.147.0](https://github.com/aws/aws-cdk/compare/v1.146.0...v1.147.0) (2022-03-01)
 
 
