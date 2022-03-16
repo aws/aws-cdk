@@ -346,8 +346,12 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
    */
   public grantInvoke(grantee: iam.IGrantable): iam.Grant {
     const hash = createHash('sha256')
-      .update(JSON.stringify(grantee.grantPrincipal.policyFragment), 'utf8')
+      .update(JSON.stringify({
+        principal: grantee.grantPrincipal.toString(),
+        conditions: grantee.grantPrincipal.policyFragment.conditions,
+      }), 'utf8')
       .digest('base64');
+
     const identifier = `Invoke${hash}`;
 
     // Memoize the result so subsequent grantInvoke() calls are idempotent
