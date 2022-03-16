@@ -37,7 +37,7 @@ describe('rule', () => {
         day: '1',
       }),
     });
-    expect(rule.node.metadataEntry).toEqual([{
+    expect(rule.node.metadata).toEqual([{
       type: 'aws:cdk:warning',
       data: 'cron: If you don\'t pass \'minute\', by default the event runs every minute. Pass \'minute: \'*\'\' if that\'s what you intend, or \'minute: 0\' to run once per hour instead.',
       trace: undefined,
@@ -55,7 +55,7 @@ describe('rule', () => {
         day: '1',
       }),
     });
-    expect(rule.node.metadataEntry).toEqual([]);
+    expect(rule.node.metadata).toEqual([]);
     const annotations = Annotations.fromStack(stack).findWarning('*', Match.anyValue());
     expect(annotations.length).toBe(0);
   });
