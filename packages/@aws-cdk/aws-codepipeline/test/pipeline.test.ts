@@ -2,6 +2,7 @@ import { Match, Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
+import { testFutureBehavior, testLegacyBehavior } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as codepipeline from '../lib';
@@ -484,6 +485,94 @@ describe('', () => {
         });
       });
     });
+
+    testFutureBehavior('cross account key alias is named with stack name instead of ID when feature flag is enabled', { [cxapi.CODEPIPELINE_CROSS_ACCOUNT_KEY_ALIAS_NAMED_WITH_STACK_NAME]: true }, cdk.App, (app) => {
+      const stack = createPipelineStack(app, 'Name', 'PipelineStack');
+
+      Template.fromStack(stack).hasResourceProperties('AWS::KMS::Alias', {
+        AliasName: 'alias/codepipeline-actualstacknamepipeline0a412eb5',
+      });
+    });
+
+    testLegacyBehavior('cross account key alias is named with stack ID when feature flag is not enabled', cdk.App, (app) => {
+      const stack = createPipelineStack(app, 'name', 'PipelineStack');
+
+      Template.fromStack(stack).hasResourceProperties('AWS::KMS::Alias', {
+        AliasName: 'alias/codepipeline-pipelinestackpipeline9db740af',
+      });
+    });
+
+    testFutureBehavior('cross account key alias is named with stack name and nested stack ID for nested stacks when feature flag is enabled', { [cxapi.CODEPIPELINE_CROSS_ACCOUNT_KEY_ALIAS_NAMED_WITH_STACK_NAME]: true }, cdk.App, (app) => {
+      const stack = new cdk.Stack(app, 'TopLevelStack', {
+        stackName: 'StackWithNestedStack',
+      });
+      const nestedStack = new cdk.NestedStack(stack, 'NestedPipelineStack');
+      const artifact = new codepipeline.Artifact();
+      new codepipeline.Pipeline(nestedStack, 'ActualPipeline', {
+        enableKeyRotation: true,
+        stages: [
+          {
+            stageName: 'Source',
+            actions: [new FakeSourceAction({ actionName: 'Source', output: artifact })],
+          },
+          {
+            stageName: 'Build',
+            actions: [new FakeBuildAction({ actionName: 'Build', input: artifact })],
+          },
+        ],
+      });
+
+      Template.fromStack(nestedStack).hasResourceProperties('AWS::KMS::Alias', {
+        AliasName: 'alias/codepipeline-stackwithnestedstacknestedpipelinestackactualpipeline07af5fc0',
+      });
+    });
+
+    testLegacyBehavior('cross account key alias is named with stack ID and nested stack ID when feature flag is not enabled', cdk.App, (app) => {
+      const stack = new cdk.Stack(app, 'TopLevelStack', {
+        stackName: 'StackWithNestedStack',
+      });
+      const nestedStack = new cdk.NestedStack(stack, 'NestedPipelineStack');
+      const artifact = new codepipeline.Artifact();
+      new codepipeline.Pipeline(nestedStack, 'ActualPipeline', {
+        enableKeyRotation: true,
+        stages: [
+          {
+            stageName: 'Source',
+            actions: [new FakeSourceAction({ actionName: 'Source', output: artifact })],
+          },
+          {
+            stageName: 'Build',
+            actions: [new FakeBuildAction({ actionName: 'Build', input: artifact })],
+          },
+        ],
+      });
+
+      Template.fromStack(nestedStack).hasResourceProperties('AWS::KMS::Alias', {
+        AliasName: 'alias/codepipeline-toplevelstacknestedpipelinestackactualpipeline3161a537',
+      });
+    });
+
+    testFutureBehavior('cross account key alias is properly shortened to 256 characters when stack name is too long and feature flag is enabled', { [cxapi.CODEPIPELINE_CROSS_ACCOUNT_KEY_ALIAS_NAMED_WITH_STACK_NAME]: true }, cdk.App, (app) => {
+      const stack = createPipelineStack(app, 'PipelineStackWithSuperExtraLongNameThatWillNeedToBeShortenedDueToTheAlsoVerySuperExtraLongNameOfThePipelineInTheStack-WithSomeOtherCharactersAdded', 'too-long', 'ActualPipelineWithExtraSuperLongNameThatWillNeedToBeShortenedDueToTheAlsoVerySuperExtraLongNameOfTheStack-AlsoWithSomeDifferentCharactersAddedToTheEnd');
+
+      Template.fromStack(stack).hasResourceProperties('AWS::KMS::Alias', {
+        AliasName: 'alias/codepipeline-pipelinestackwithsuperextralongnamethatwillneedtobeshortenedduetothealsoverysuperextralongnameofthepipelineinthestackwithsomeothercharactersaddedactualpipelinewithextrasuperlongnamethatwillneedtobeshortenedduetothealsoverysuperexfb0435c3',
+      });
+    });
+
+    testFutureBehavior('cross account key alias names are not the same when the stack ID is the same and pipeline ID is the same and feature flag is enabled', { [cxapi.CODEPIPELINE_CROSS_ACCOUNT_KEY_ALIAS_NAMED_WITH_STACK_NAME]: true }, cdk.App, (app1) => {
+      const app2 = new cdk.App(({ context: { [cxapi.CODEPIPELINE_CROSS_ACCOUNT_KEY_ALIAS_NAMED_WITH_STACK_NAME]: true } }));
+      const stack1 = createPipelineStack(app1, '1', 'StackID');
+      const stack2 = createPipelineStack(app2, '2', 'StackID');
+      expect(Template.fromStack(stack1).findResources('AWS::KMS::Alias')).not.toEqual(Template.fromStack(stack2).findResources('AWS::KMS::Alias'));
+    });
+
+    testLegacyBehavior('cross account key alias names are the same when the stack ID is the same and pipeline ID is the same when feature flag is not enabled', cdk.App, (app1) => {
+      const app2 = new cdk.App();
+      const stack1 = createPipelineStack(app1, '1', 'StackID');
+      const stack2 = createPipelineStack(app2, '2', 'StackID');
+      expect(Template.fromStack(stack1).findResources('AWS::KMS::Alias')).toEqual(Template.fromStack(stack2).findResources('AWS::KMS::Alias'));
+    });
   });
 });
 
@@ -566,3 +655,44 @@ class ReusePipelineStack extends cdk.Stack {
     });
   }
 }
+
+interface PipelineStackProps extends cdk.StackProps {
+  pipelineName: string;
+  pipelineId?: string;
+}
+
+class PipelineStack extends cdk.Stack {
+
+  constructor(scope?: Construct, id?: string, props?: PipelineStackProps) {
+    super (scope, id, props);
+
+    this.createPipeline(props?.pipelineName, props?.pipelineId);
+  }
+
+  createPipeline(pipelineName?: string, pipelineId: string = 'Pipeline') {
+    const artifact = new codepipeline.Artifact();
+    return new codepipeline.Pipeline(this, pipelineId, {
+      pipelineName,
+      crossAccountKeys: true,
+      reuseCrossRegionSupportStacks: false,
+      stages: [
+        {
+          stageName: 'Source',
+          actions: [new FakeSourceAction({ actionName: 'Source', output: artifact })],
+        },
+        {
+          stageName: 'Build',
+          actions: [new FakeBuildAction({ actionName: 'Build', input: artifact })],
+        },
+      ],
+    });
+  }
+}
+
+const createPipelineStack = (app: cdk.App, suffix: string, stackId?: string, pipelineId?: string): PipelineStack => {
+  return new PipelineStack(app, stackId, {
+    stackName: `Actual-Stack-${suffix}`,
+    pipelineName: `Actual-Pipeline-${suffix}`.substring(0, 100),
+    pipelineId,
+  });
+};

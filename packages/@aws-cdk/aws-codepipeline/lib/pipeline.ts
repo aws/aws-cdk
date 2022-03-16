@@ -7,6 +7,7 @@ import {
   ArnFormat,
   BootstraplessSynthesizer,
   DefaultStackSynthesizer,
+  FeatureFlags,
   IStackSynthesizer,
   Lazy,
   Names,
@@ -17,6 +18,7 @@ import {
   Stage as CdkStage,
   Token,
 } from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import { ActionCategory, IAction, IPipeline, IStage, PipelineNotificationEvents, PipelineNotifyOnOptions } from './action';
 import { CfnPipeline } from './codepipeline.generated';
@@ -697,10 +699,16 @@ export class Pipeline extends PipelineBase {
   private generateNameForDefaultBucketKeyAlias(): string {
     const prefix = 'alias/codepipeline-';
     const maxAliasLength = 256;
-    const uniqueId = Names.uniqueId(this);
-    // take the last 256 - (prefix length) characters of uniqueId
-    const startIndex = Math.max(0, uniqueId.length - (maxAliasLength - prefix.length));
-    return prefix + uniqueId.substring(startIndex).toLowerCase();
+    const maxUniqueIdLength = maxAliasLength - prefix.length;
+    if (FeatureFlags.of(this).isEnabled(cxapi.CODEPIPELINE_CROSS_ACCOUNT_KEY_ALIAS_NAMED_WITH_STACK_NAME)) {
+      const uniqueId = Names.uniqueIdWithStackName(this, maxUniqueIdLength);
+      return prefix + uniqueId.toLowerCase();
+    } else {
+      const uniqueId = Names.uniqueId(this);
+      // take the last 256 - (prefix length) characters of uniqueId
+      const startIndex = Math.max(0, uniqueId.length - (maxUniqueIdLength));
+      return prefix + uniqueId.substring(startIndex).toLowerCase();
+    }
   }
 
   /**
