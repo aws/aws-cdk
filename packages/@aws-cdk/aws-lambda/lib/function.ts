@@ -6,7 +6,8 @@ import * as kms from '@aws-cdk/aws-kms';
 import * as logs from '@aws-cdk/aws-logs';
 import * as sns from '@aws-cdk/aws-sns';
 import * as sqs from '@aws-cdk/aws-sqs';
-import { Annotations, ArnFormat, CfnResource, Duration, Fn, Lazy, Names, Stack, Token } from '@aws-cdk/core';
+import { Annotations, ArnFormat, CfnResource, Duration, FeatureFlags, Fn, Lazy, Names, Stack, Token } from '@aws-cdk/core';
+import { LAMBDA_RECOGNIZE_LAYER_VERSION } from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import { Architecture } from './architecture';
 import { Code, CodeConfig } from './code';
@@ -748,7 +749,7 @@ export class Function extends FunctionBase {
         zipFile: code.inlineCode,
         imageUri: code.image?.imageUri,
       },
-      layers: Lazy.list({ produce: () => this.layers.map(layer => layer.layerVersionArn) }, { omitEmpty: true }), // Evaluated on synthesis
+      layers: Lazy.list({ produce: () => this.renderLayers() }), // Evaluated on synthesis
       handler: props.handler === Handler.FROM_IMAGE ? undefined : props.handler,
       timeout: props.timeout && props.timeout.toSeconds(),
       packageType: props.runtime === Runtime.FROM_IMAGE ? 'Image' : undefined,
@@ -991,6 +992,18 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
       this.addLayers(LayerVersion.fromLayerVersionArn(this, 'LambdaInsightsLayer', props.insightsVersion._bind(this, this).arn));
     }
     this.role?.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('CloudWatchLambdaInsightsExecutionRolePolicy'));
+  }
+
+  private renderLayers() {
+    if (!this.layers || this.layers.length === 0) {
+      return undefined;
+    }
+
+    if (FeatureFlags.of(this).isEnabled(LAMBDA_RECOGNIZE_LAYER_VERSION)) {
+      this.layers.sort();
+    }
+
+    return this.layers.map(layer => layer.layerVersionArn);
   }
 
   private renderEnvironment() {
