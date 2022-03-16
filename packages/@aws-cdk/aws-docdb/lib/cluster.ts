@@ -235,6 +235,74 @@ abstract class DatabaseClusterBase extends Resource implements IDatabaseCluster 
 }
 
 /**
+ * Represents an imported database cluster.
+ */
+class ImportedDatabaseCluster extends DatabaseClusterBase implements IDatabaseCluster {
+  public readonly clusterIdentifier: string;
+  public readonly connections: ec2.Connections;
+
+  private readonly _clusterEndpoint?: Endpoint;
+  private readonly _clusterReadEndpoint?: Endpoint;
+  private readonly _instanceIdentifiers?: string[];
+  private readonly _instanceEndpoints?: Endpoint[];
+  private readonly _securityGroupId?: string;
+
+  constructor(scope: Construct, id: string, attrs: DatabaseClusterAttributes) {
+    super(scope, id);
+
+    const defaultPort = attrs.port ? ec2.Port.tcp(attrs.port) : undefined;
+    this.connections = new ec2.Connections({
+      securityGroups: !!attrs.securityGroup ? [attrs.securityGroup] : undefined,
+      defaultPort,
+    });
+
+    this.clusterIdentifier = attrs.clusterIdentifier;
+    this._clusterEndpoint = (attrs.clusterEndpointAddress && attrs.port) ? new Endpoint(attrs.clusterEndpointAddress, attrs.port) : undefined;
+    this._clusterReadEndpoint = (attrs.readerEndpointAddress && attrs.port) ? new Endpoint(attrs.readerEndpointAddress, attrs.port) : undefined;
+    this._instanceIdentifiers = attrs.instanceIdentifiers;
+    this._instanceEndpoints = (attrs.instanceEndpointAddresses && attrs.port)
+      ? attrs.instanceEndpointAddresses.map(addr => new Endpoint(addr, attrs.port!))
+      : undefined;
+    this._securityGroupId = attrs.securityGroup?.securityGroupId;
+  }
+
+  public get clusterEndpoint() {
+    if (!this._clusterEndpoint) {
+      throw new Error('Cannot access `clusterEndpoint` of an imported cluster without an endpoint address and port');
+    }
+    return this._clusterEndpoint;
+  }
+
+  public get clusterReadEndpoint() {
+    if (!this._clusterReadEndpoint) {
+      throw new Error('Cannot access `clusterReadEndpoint` of an imported cluster without a readerEndpointAddress and port');
+    }
+    return this._clusterReadEndpoint;
+  }
+
+  public get instanceIdentifiers() {
+    if (!this._instanceIdentifiers) {
+      throw new Error('Cannot access `instanceIdentifiers` of an imported cluster without provided instanceIdentifiers');
+    }
+    return this._instanceIdentifiers;
+  }
+
+  public get instanceEndpoints() {
+    if (!this._instanceEndpoints) {
+      throw new Error('Cannot access `instanceEndpoints` of an imported cluster without instanceEndpointAddresses and port');
+    }
+    return this._instanceEndpoints;
+  }
+
+  public get securityGroupId() {
+    if (!this._securityGroupId) {
+      throw new Error('Cannot access `securityGroupId` of an imported cluster without securityGroupId');
+    }
+    return this._securityGroupId;
+  }
+}
+
+/**
  * Create a clustered database with a given number of instances.
  *
  * @resource AWS::DocDB::DBCluster
@@ -256,21 +324,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
    * Import an existing DatabaseCluster from properties
    */
   public static fromDatabaseClusterAttributes(scope: Construct, id: string, attrs: DatabaseClusterAttributes): IDatabaseCluster {
-    class Import extends DatabaseClusterBase implements IDatabaseCluster {
-      public readonly defaultPort = ec2.Port.tcp(attrs.port);
-      public readonly connections = new ec2.Connections({
-        securityGroups: [attrs.securityGroup],
-        defaultPort: this.defaultPort,
-      });
-      public readonly clusterIdentifier = attrs.clusterIdentifier;
-      public readonly instanceIdentifiers = attrs.instanceIdentifiers;
-      public readonly clusterEndpoint = new Endpoint(attrs.clusterEndpointAddress, attrs.port);
-      public readonly clusterReadEndpoint = new Endpoint(attrs.readerEndpointAddress, attrs.port);
-      public readonly instanceEndpoints = attrs.instanceEndpointAddresses.map(a => new Endpoint(a, attrs.port));
-      public readonly securityGroupId = attrs.securityGroup.securityGroupId;
-    }
-
-    return new Import(scope, id);
+    return new ImportedDatabaseCluster(scope, id, attrs);
   }
 
   /**
