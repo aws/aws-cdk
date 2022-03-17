@@ -50,6 +50,17 @@ describe('Messages', () => {
     });
   });
 
+  describe('hasNoError', () => {
+    test('match', () => {
+      annotations.hasNoError('/Default/Fred', Match.anyValue());
+    });
+
+    test('no match', () => {
+      expect(() => annotations.hasNoError('/Default/Foo', 'this is an error'))
+        .toThrowError(/Expected no matches, but stack has 1 messages as follows:/);
+    });
+  });
+
   describe('findError', () => {
     test('match', () => {
       const result = annotations.findError('*', Match.anyValue());
@@ -72,6 +83,17 @@ describe('Messages', () => {
     });
   });
 
+  describe('hasNoWarning', () => {
+    test('match', () => {
+      annotations.hasNoWarning('/Default/Foo', Match.anyValue());
+    });
+
+    test('no match', () => {
+      expect(() => annotations.hasNoWarning('/Default/Fred', 'this is a warning'))
+        .toThrowError(/Expected no matches, but stack has 1 messages as follows:/);
+    });
+  });
+
   describe('findWarning', () => {
     test('match', () => {
       const result = annotations.findWarning('*', Match.anyValue());
@@ -91,6 +113,17 @@ describe('Messages', () => {
 
     test('no match', () => {
       expect(() => annotations.hasInfo('/Default/Qux', 'this info is incorrect')).toThrowError(/Stack has 1 messages, but none match as expected./);
+    });
+  });
+
+  describe('hasNoInfo', () => {
+    test('match', () => {
+      annotations.hasNoInfo('/Default/Qux', 'this info is incorrect');
+    });
+
+    test('no match', () => {
+      expect(() => annotations.hasNoInfo('/Default/Qux', 'this is an info'))
+        .toThrowError(/Expected no matches, but stack has 1 messages as follows:/);
     });
   });
 

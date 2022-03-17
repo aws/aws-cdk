@@ -81,7 +81,7 @@ env:
            {"area":"@aws-cdk/aws-appintegrations","keywords":["(aws-appintegrations)","(appintegrations)"],"labels":["@aws-cdk/aws-appintegrations"],"assignees":["skinny85"]},
            {"area":"@aws-cdk/aws-applicationautoscaling","keywords":["aws-applicationautoscaling","application-autoscaling","scalabletarget"],"labels":["@aws-cdk/aws-applicationautoscaling"],"assignees":["comcalvi"]},
            {"area":"@aws-cdk/aws-applicationinsights","keywords":["aws-applicationinsights","application-insights"],"labels":["@aws-cdk/aws-applicationinsights"],"assignees":["corymhall"]},
-           {"area":"@aws-cdk/aws-appmesh","keywords":["aws-appmesh","app-mesh","GatewayRoute","VirtualGateway","VirtualNode","VirtualRouter","VirtualService"],"labels":["@aws-cdk/aws-appmesh"],"assignees":["Seiya6329"]},
+           {"area":"@aws-cdk/aws-appmesh","keywords":["aws-appmesh","app-mesh","GatewayRoute","VirtualGateway","VirtualNode","VirtualRouter","VirtualService"],"labels":["@aws-cdk/aws-appmesh"],"assignees":["ytsssun"]},
            {"area":"@aws-cdk/aws-appstream","keywords":["aws-appstream","app-stream"],"labels":["@aws-cdk/aws-appstream"],"assignees":["madeline-k"]},
            {"area":"@aws-cdk/aws-appsync","keywords":["aws-appsync","app-sync","appsyncfunction","graphqlapi","dynamodbdatasource","lambdadatasource","nonedatasource","rdsdatasource","resolver"],"labels":["@aws-cdk/aws-appsync"],"assignees":["otaviomacedo"]},
            {"area":"@aws-cdk/aws-athena","keywords":["aws-athena","athena","cfndatacatalog","cfnnamedquery","cfnworkgroup"],"labels":["@aws-cdk/aws-athena"],"assignees":["comcalvi"]},
@@ -273,5 +273,6 @@ env:
            {"area":"@aws-cdk/yaml-cfn","keywords":["(aws-yaml-cfn)","(yaml-cfn)"],"labels":["@aws-cdk/aws-yaml-cfn"],"assignees":["skinny85"]},
            {"area":"@aws-cdk/aws-apprunner","keywords":["apprunner","aws-apprunner"],"labels":["@aws-cdk/aws-apprunner"],"assignees":["corymhall"]},
            {"area":"@aws-cdk/aws-lightsail","keywords":["lightsail","aws-lightsail"],"labels":["@aws-cdk/aws-lightsail"],"assignees":["corymhall"]},
-           {"area":"@aws-cdk/aws-aps","keywords":["aps","aws-aps","prometheus"],"labels":["@aws-cdk/aws-aps"],"assignees":["corymhall"]}
+           {"area":"@aws-cdk/aws-aps","keywords":["aps","aws-aps","prometheus"],"labels":["@aws-cdk/aws-aps"],"assignees":["corymhall"]},
+           {"area":"@aws-cdk/triggers","keywords":["trigger","aws-cdk/triggers","triggers"],"labels":["@aws-cdk/triggers"],"assignees":["otaviomacedo"]}
            ]

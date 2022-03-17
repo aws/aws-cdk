@@ -346,7 +346,10 @@ export class PackageJson {
 }
 
 /**
- * Interface for validation rules
+ * Interface for validation rules.
+ *
+ * Do not validate any compiled code. pkglint will run pre-build
+ * on modules with just source code.
  */
 export abstract class ValidationRule {
   public abstract readonly name: string;

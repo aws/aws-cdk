@@ -557,6 +557,26 @@ export enum InstanceClass {
   X2GD = 'x2gd',
 
   /**
+   * Memory-intensive instances with higher network bandwith, local NVME drive, and extended memory. Intel Xeon Scalable (Ice Lake) processors
+   */
+  MEMORY_INTENSIVE_2_XT_INTEL = 'x2iedn',
+
+  /**
+   *  Memory-intensive instances with higher network bandwith, local NVME drive, and extended memory. Intel Xeon Scalable (Ice Lake) processors
+   */
+  X2IEDN = 'x2iedn',
+
+  /**
+   * Memory-intensive instances with higher network bandwith and local NVME drive, Intel Xeon Scalable (Ice Lake) processors
+   */
+  MEMORY_INTENSIVE_2_INTEL = 'x2idn',
+
+  /**
+   * Memory-intensive instances with higher network bandwith and local NVME drive, Intel Xeon Scalable (Ice Lake) processors
+   */
+  X2IDN = 'x2idn',
+
+  /**
    * Instances with customizable hardware acceleration, 1st generation
    */
   FPGA1 = 'f1',
