@@ -295,29 +295,29 @@ import { Certificate } from '@aws-cdk/aws-certificatemanager';
 
 declare const certificate: Certificate;
 const api = new appsync.GraphqlApi(this, 'api', {
-    name: 'myApi',
-    domainName: {
-     certificate,
-     domainName: 'api.mycompany.com',
-    },
-  });
+  name: 'myApi',
+  domainName: {
+   certificate,
+   domainName: 'api.mycompany.com',
+  },
+});
 
-  // hosted zone and route53 features
-  declare const hostedZoneId: string;
-  declare const zoneName = 'mycompany.com';
+// hosted zone and route53 features
+declare const hostedZoneId: string;
+declare const zoneName = 'mycompany.com';
 
-  // hosten zone for adding appsync domain
-  const zone = HostedZone.fromHostedZoneAttributes(this, `HostedZone`, {
-      hostedZoneId,
-      zoneName,
-  });
+// hosten zone for adding appsync domain
+const zone = HostedZone.fromHostedZoneAttributes(this, `HostedZone`, {
+  hostedZoneId,
+  zoneName,
+});
 
-    // create a cname to the appsync domain. will map to something like xxxx.cloudfront.net
-  new CnameRecord(this, `CnameApiRecord`, {
-      recordName: 'api',
-      zone,
-      domainName: appsyncDomain.attrAppSyncDomainName
-  });
+// create a cname to the appsync domain. will map to something like xxxx.cloudfront.net
+new CnameRecord(this, `CnameApiRecord`, {
+  recordName: 'api',
+  zone,
+  domainName: appsyncDomain.attrAppSyncDomainName
+});
 ```
 
 ## Schema
