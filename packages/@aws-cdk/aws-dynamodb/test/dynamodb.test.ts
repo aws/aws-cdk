@@ -1,4 +1,4 @@
-import { Match, Template } from '@aws-cdk/assertions';
+import { Annotations, Match, Template } from '@aws-cdk/assertions';
 import * as appscaling from '@aws-cdk/aws-applicationautoscaling';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kinesis from '@aws-cdk/aws-kinesis';
@@ -1620,6 +1620,47 @@ test('can autoscale on a schedule', () => {
       },
     ],
   });
+});
+
+test('scheduled scaling shows warning when minute is not defined in cron', () => {
+  // GIVEN
+  const stack = new Stack();
+  const table = new Table(stack, CONSTRUCT_NAME, {
+    readCapacity: 42,
+    writeCapacity: 1337,
+    partitionKey: { name: 'Hash', type: AttributeType.STRING },
+  });
+
+  // WHEN
+  const scaling = table.autoScaleReadCapacity({ minCapacity: 1, maxCapacity: 100 });
+  scaling.scaleOnSchedule('SaveMoneyByNotScalingUp', {
+    schedule: appscaling.Schedule.cron({}),
+    maxCapacity: 10,
+  });
+
+  // THEN
+  Annotations.fromStack(stack).hasWarning('/Default/MyTable/ReadScaling/Target', "cron: If you don't pass 'minute', by default the event runs every minute. Pass 'minute: '*'' if that's what you intend, or 'minute: 0' to run once per hour instead.");
+});
+
+test('scheduled scaling shows no warning when minute is * in cron', () => {
+  // GIVEN
+  const stack = new Stack();
+  const table = new Table(stack, CONSTRUCT_NAME, {
+    readCapacity: 42,
+    writeCapacity: 1337,
+    partitionKey: { name: 'Hash', type: AttributeType.STRING },
+  });
+
+  // WHEN
+  const scaling = table.autoScaleReadCapacity({ minCapacity: 1, maxCapacity: 100 });
+  scaling.scaleOnSchedule('SaveMoneyByNotScalingUp', {
+    schedule: appscaling.Schedule.cron({ minute: '*' }),
+    maxCapacity: 10,
+  });
+
+  // THEN
+  const annotations = Annotations.fromStack(stack).findWarning('*', Match.anyValue());
+  expect(annotations.length).toBe(0);
 });
 
 describe('metrics', () => {

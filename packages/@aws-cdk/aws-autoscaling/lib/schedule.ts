@@ -1,3 +1,6 @@
+import { Annotations } from '@aws-cdk/core';
+import { Construct } from 'constructs';
+
 /**
  * Schedule for scheduled scaling actions
  */
@@ -26,7 +29,15 @@ export abstract class Schedule {
     const day = fallback(options.day, '*');
     const weekDay = fallback(options.weekDay, '*');
 
-    return new LiteralSchedule(`${minute} ${hour} ${day} ${month} ${weekDay}`);
+    return new class extends Schedule {
+      public readonly expressionString: string = `${minute} ${hour} ${day} ${month} ${weekDay}`;
+      public _bind(scope: Construct) {
+        if (!options.minute) {
+          Annotations.of(scope).addWarning('cron: If you don\'t pass \'minute\', by default the event runs every minute. Pass \'minute: \'*\'\' if that\'s what you intend, or \'minute: 0\' to run once per hour instead.');
+        }
+        return new LiteralSchedule(this.expressionString);
+      }
+    };
   }
 
   /**
@@ -34,8 +45,13 @@ export abstract class Schedule {
    */
   public abstract readonly expressionString: string;
 
-  protected constructor() {
-  }
+  protected constructor() {}
+
+  /**
+   *
+   * @internal
+   */
+  public abstract _bind(scope: Construct): void;
 }
 
 /**
@@ -87,6 +103,8 @@ class LiteralSchedule extends Schedule {
   constructor(public readonly expressionString: string) {
     super();
   }
+
+  public _bind(): void {}
 }
 
 function fallback<T>(x: T | undefined, def: T): T {
