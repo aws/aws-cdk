@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { Match, Template } from '@aws-cdk/assertions';
+import { Annotations, Match, Template } from '@aws-cdk/assertions';
 import { ProfilingGroup } from '@aws-cdk/aws-codeguruprofiler';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as efs from '@aws-cdk/aws-efs';
@@ -434,6 +434,65 @@ describe('function', () => {
 
       // THEN
       Template.fromStack(stack).resourceCountIs('AWS::Lambda::Permission', 0);
+    });
+
+    describe('annotations on different IFunctions', () => {
+      let stack: cdk.Stack;
+      let fn: lambda.Function;
+      let warningMessage: string;
+      beforeEach(() => {
+        warningMessage = 'Lambda has changed their authorization strategy';
+        stack = new cdk.Stack();
+        fn = new lambda.Function(stack, 'MyLambda', {
+          code: lambda.Code.fromAsset(path.join(__dirname, 'my-lambda-handler')),
+          handler: 'index.handler',
+          runtime: lambda.Runtime.PYTHON_3_6,
+        });
+      });
+
+      test('function', () => {
+        // WHEN
+        fn.addPermission('MyPermission', {
+          principal: new iam.ServicePrincipal('lambda.amazonaws.com'),
+        });
+
+        // THEN
+        Annotations.fromStack(stack).hasWarning('*', Match.stringLikeRegexp(warningMessage));
+      });
+
+      test('version', () => {
+        // GIVEN
+        const version = new lambda.Version(stack, 'MyVersion', {
+          lambda: fn,
+        });
+
+        //WHEN
+        version.addPermission('MyPermission', {
+          principal: new iam.ServicePrincipal('lambda.amazonaws.com'),
+        });
+
+        // THEN
+        Annotations.fromStack(stack).hasNoWarning('*', Match.stringLikeRegexp(warningMessage));
+      });
+
+      test('alias', () => {
+        // GIVEN
+        const version = new lambda.Version(stack, 'MyVersion', {
+          lambda: fn,
+        });
+        const alias = new lambda.Alias(stack, 'MyAlias', {
+          aliasName: 'alias',
+          version,
+        });
+
+        //WHEN
+        alias.addPermission('MyPermission', {
+          principal: new iam.ServicePrincipal('lambda.amazonaws.com'),
+        });
+
+        // THEN
+        Annotations.fromStack(stack).hasNoWarning('*', Match.stringLikeRegexp(warningMessage));
+      });
     });
   });
 
