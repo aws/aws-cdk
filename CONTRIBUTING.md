@@ -314,13 +314,13 @@ $ yarn watch & # runs in the background
 * Make sure to update the PR title/description if things change. The PR title/description are going to be used as the
   commit title/message and will appear in the CHANGELOG, so maintain them all the way throughout the process.
 
-#### Adding new dependencies
+#### Adding new unconventional dependencies
 
-Sometimes constructs introduce new unconventional dependencies. For the aws-cdk an
-unconventional dependency is defined as any dependency that is not managed via the module's
-`package.json` file. Any new unconventional dependency that is introduced needs to have
-an auto upgrade process in place. The recommended way to update dependencies is through
-[dependabot](https://docs.github.com/en/code-security/supply-chain-security/keeping-your-dependencies-updated-automatically/configuration-options-for-dependency-updates). 
+**For the aws-cdk an unconventional dependency is defined as any dependency that is not managed via the module's
+`package.json` file.**
+
+Sometimes constructs introduce new unconventional dependencies.  Any new unconventional dependency that is introduced needs to have
+an auto upgrade process in place. The recommended way to update dependencies is through [dependabot](https://docs.github.com/en/code-security/supply-chain-security/keeping-your-dependencies-updated-automatically/configuration-options-for-dependency-updates). 
 You can find the dependabot config file [here](./.github/dependabot.yml).
 
 An example of this is the [@aws-cdk/lambda-layer-awscli](packages/@aws-cdk/lambda-layer-awscli) module.
@@ -335,8 +335,8 @@ to see how the build works, but at a high level a [requirements.txt](packages/@a
 file was created to manage the version. This file was then added to [dependabot.yml](https://github.com/aws/aws-cdk/blob/ab57eb6d1ed69b40ed6ec774853c275785acace8/.github/dependabot.yml#L14-L20)
 so that dependabot will automatically upgrade the version as new versions are released.
 
-If you think your PR introduces a new unconventional dependency, make sure to call it
-out in the description so that we can discuss the best way to manage that dependency.
+**If you think your PR introduces a new unconventional dependency, make sure to call it
+out in the description so that we can discuss the best way to manage that dependency.**
 
 ### Step 5: Merge
 
