@@ -317,7 +317,7 @@ const zone = route53.HostedZone.fromHostedZoneAttributes(this, `HostedZone`, {
 new route53.CnameRecord(this, `CnameApiRecord`, {
   recordName: 'api',
   zone,
-  domainName: appsyncDomain.attrAppSyncDomainName,
+  domainName: 'appsync.domainName',
 });
 ```
 
