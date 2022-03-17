@@ -210,7 +210,7 @@ Resources:
           - Fn::Sub: "${ContainerAssetsRepositoryName}"
           - Fn::Sub: cdk-${Qualifier}-container-assets-${AWS::AccountId}-${AWS::Region}
       RepositoryPolicyText:
-        Version: "2008-10-17"
+        Version: "2012-10-17"
         Statement:
           # Necessary for Lambda container images
           # https://docs.aws.amazon.com/lambda/latest/dg/configuration-images.html#configuration-images-permissions
