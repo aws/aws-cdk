@@ -255,6 +255,9 @@ export interface LogConfig {
   readonly role?: IRole;
 }
 
+/**
+ * Domain Name configuration for AppSync
+ */
 export interface DomainOptions {
   /**
    * The certificate to use with the domain name
@@ -309,10 +312,10 @@ export interface GraphqlApiProps {
   /**
    * The domain name configuration for the GraphQL API
    *
-   * The hosted zone and CName must be configured in addition to this setting to
+   * The Route 53 hosted zone and CName DNS record must be configured in addition to this setting to
    * enable custom domain URL
    *
-   * @default - none a unique name is generated
+   * @default - None
    */
   readonly domainName?: DomainOptions;
 }
