@@ -7,7 +7,12 @@ import { S3File } from './integration-test-fixtures/s3-file';
 
 class TestStack extends Stack {
   constructor(scope: Construct, id: string) {
-    super(scope, id);
+    super(scope, id, {
+      env: {
+        account: process.env.CDK_INTEG_ACCOUNT || process.env.CDK_DEFAULT_ACCOUNT,
+        region: process.env.CDK_INTEG_REGION || process.env.CDK_DEFAULT_REGION,
+      },
+    });
 
     const file2Contents = 'this file has a generated physical id';
     const bucket = new s3.Bucket(this, 'MyBucket');
