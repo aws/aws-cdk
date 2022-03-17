@@ -159,7 +159,6 @@ export class CdkToolkit {
     const stackOutputs: { [key: string]: any } = { };
     const outputsFile = options.outputsFile;
 
-    // TODO: Support infinite concurrency
     const concurrency = options.concurrency || 1;
     const queue = new PQueue({ concurrency });
 
