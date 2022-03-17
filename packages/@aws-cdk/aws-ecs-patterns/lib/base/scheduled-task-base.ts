@@ -170,6 +170,9 @@ export abstract class ScheduledTaskBase extends CoreConstruct {
       ruleName: props.ruleName,
       enabled: props.enabled,
     });
+
+    // add a warning on synth when minute is not defined in a cron schedule
+    props.schedule._bind(scope);
   }
 
   /**

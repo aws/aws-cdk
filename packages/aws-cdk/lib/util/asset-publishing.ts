@@ -21,6 +21,7 @@ export async function publishAssets(manifest: cdk_assets.AssetManifest, sdk: Sdk
     aws: new PublishingAws(sdk, targetEnv),
     progressListener: new PublishingProgressListener(),
     throwOnError: false,
+    publishInParallel: true,
   });
   await publisher.publish();
   if (publisher.hasFailures) {

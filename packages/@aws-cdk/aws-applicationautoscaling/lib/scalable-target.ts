@@ -148,6 +148,10 @@ export class ScalableTarget extends Resource implements IScalableTarget {
     if (action.minCapacity === undefined && action.maxCapacity === undefined) {
       throw new Error(`You must supply at least one of minCapacity or maxCapacity, got ${JSON.stringify(action)}`);
     }
+
+    // add a warning on synth when minute is not defined in a cron schedule
+    action.schedule._bind(this);
+
     this.actions.push({
       scheduledActionName: id,
       schedule: action.schedule.expressionString,

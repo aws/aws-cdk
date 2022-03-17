@@ -138,6 +138,11 @@ export class Runtime {
   });
 
   /**
+   * The .NET 6 runtime (dotnet6)
+   */
+  public static readonly DOTNET_6 = new Runtime('dotnet6', RuntimeFamily.DOTNET_CORE);
+
+  /**
    * The .NET Core 1.0 runtime (dotnetcore1.0)
    * Legacy runtime no longer supported by AWS Lambda.
    */

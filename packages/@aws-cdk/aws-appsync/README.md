@@ -240,18 +240,19 @@ httpDs.createResolver({
 });
 ```
 
-### Elasticsearch
+### Amazon OpenSearch Service
 
-AppSync has builtin support for Elasticsearch from domains that are provisioned
-through your AWS account. You can use AppSync resolvers to perform GraphQL operations
-such as queries, mutations, and subscriptions.
+AppSync has builtin support for Amazon OpenSearch Service (successor to Amazon
+Elasticsearch Service) from domains that are provisioned through your AWS account. You can
+use AppSync resolvers to perform GraphQL operations such as queries, mutations, and
+subscriptions.
 
 ```ts
-import * as es from '@aws-cdk/aws-elasticsearch';
+import * as opensearch from '@aws-cdk/aws-opensearchservice';
 
 const user = new iam.User(this, 'User');
-const domain = new es.Domain(this, 'Domain', {
-  version: es.ElasticsearchVersion.V7_1,
+const domain = new opensearch.Domain(this, 'Domain', {
+  version: opensearch.EngineVersion.OPENSEARCH_1_1,
   removalPolicy: RemovalPolicy.DESTROY,
   fineGrainedAccessControl: { masterUserArn: user.userArn },
   encryptionAtRest: { enabled: true },
@@ -260,7 +261,7 @@ const domain = new es.Domain(this, 'Domain', {
 });
 
 declare const api: appsync.GraphqlApi;
-const ds = api.addElasticsearchDataSource('ds', domain);
+const ds = api.addOpenSearchDataSource('ds', domain);
 
 ds.createResolver({
   typeName: 'Query',
