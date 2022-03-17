@@ -1,10 +1,9 @@
 import { inspect } from 'util';
 import * as chalk from 'chalk';
 
-import { CredentialProviderSource } from './api/aws-auth/credentials';
-import { registerPluginContextProvider } from './context-providers';
-import { ContextProviderPlugin, isContextProviderPlugin } from './context-providers/provider';
-import { error } from './logging';
+import { error } from './_env';
+import { ContextProviderPlugin, isContextProviderPlugin } from './context-provider-plugin';
+import { CredentialProviderSource } from './credential-provider-source';
 
 /**
  * The basic contract for plug-ins to adhere to::
@@ -50,6 +49,8 @@ export class PluginHost {
    */
   public readonly credentialProviderSources = new Array<CredentialProviderSource>();
 
+  public readonly contextProviderPlugins: Record<string, ContextProviderPlugin> = {};
+
   constructor() {
     if (PluginHost.instance && PluginHost.instance !== this) {
       throw new Error('New instances of PluginHost must not be built. Use PluginHost.instance instead!');
@@ -87,6 +88,7 @@ export class PluginHost {
    * @param source a new CredentialProviderSource to register.
    */
   public registerCredentialProviderSource(source: CredentialProviderSource) {
+    // Forward to the right credentials-related plugin host
     this.credentialProviderSources.push(source);
   }
 
@@ -126,6 +128,6 @@ export class PluginHost {
     if (!isContextProviderPlugin(provider)) {
       throw new Error(`Object you gave me does not look like a ContextProviderPlugin: ${inspect(provider)}`);
     }
-    registerPluginContextProvider(pluginProviderName, provider);
+    this.contextProviderPlugins[pluginProviderName] = provider;
   }
 }
