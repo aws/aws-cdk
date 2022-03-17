@@ -5,7 +5,7 @@ import * as util from 'util';
 import * as AWS from 'aws-sdk';
 import * as fs from 'fs-extra';
 import * as promptly from 'promptly';
-import { debug } from '../../logging';
+import { debug } from './_env';
 import { PatchedSharedIniFileCredentials } from './aws-sdk-inifile';
 import { SharedIniFile } from './sdk_ini_file';
 

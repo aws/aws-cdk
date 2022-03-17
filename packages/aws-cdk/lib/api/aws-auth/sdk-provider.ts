@@ -4,11 +4,11 @@ import * as cxapi from '@aws-cdk/cx-api';
 import * as AWS from 'aws-sdk';
 import type { ConfigurationOptions } from 'aws-sdk/lib/config-base';
 import * as fs from 'fs-extra';
-import { debug, warning } from '../../logging';
-import { cached } from '../../util/functions';
-import { CredentialPlugins } from '../aws-auth/credential-plugins';
-import { Mode } from '../aws-auth/credentials';
+import { debug, warning } from './_env';
 import { AwsCliCompatible } from './awscli-compatible';
+import { cached } from './cached';
+import { CredentialPlugins } from './credential-plugins';
+import { Mode } from './credentials';
 import { ISDK, SDK } from './sdk';
 
 
