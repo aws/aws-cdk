@@ -97,6 +97,9 @@ export class ScheduledAction extends Resource {
       throw new Error('At least one of minCapacity, maxCapacity, or desiredCapacity is required');
     }
 
+    // add a warning on synth when minute is not defined in a cron schedule
+    props.schedule._bind(this);
+
     new CfnScheduledAction(this, 'Resource', {
       autoScalingGroupName: props.autoScalingGroup.autoScalingGroupName,
       startTime: formatISO(props.startTime),
