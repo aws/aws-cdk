@@ -5,8 +5,8 @@
 
 * [ ] Have you followed the guidelines in our [Contributing guide?](../CONTRIBUTING.md)
 
-### Adding new Dependencies:
+### Adding new Unconventional Dependencies:
 
-* [ ] This PR adds new dependencies following the process described [here](../CONTRIBUTING.md/#adding-new-unconventional-dependencies)
+* [ ] This PR adds new unconventional dependencies following the process described [here](../CONTRIBUTING.md/#adding-new-unconventional-dependencies)
 
 *By submitting this pull request, I confirm that my contribution is made under the terms of the Apache-2.0 license*
