@@ -278,6 +278,8 @@ export class CdkToolkit {
           });
         }
       }
+
+      print('\n✨  Total time: %ss\n', formatTime(elapsedSynthTime + elapsedDeployTime));
     };
 
     const isStackUnblocked = (stack: cxapi.CloudFormationStackArtifact) =>
