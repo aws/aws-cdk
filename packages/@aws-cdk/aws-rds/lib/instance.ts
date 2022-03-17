@@ -13,7 +13,7 @@ import { Endpoint } from './endpoint';
 import { IInstanceEngine } from './instance-engine';
 import { IOptionGroup } from './option-group';
 import { IParameterGroup, ParameterGroup } from './parameter-group';
-import { DEFAULT_PASSWORD_EXCLUDE_CHARS, defaultDeletionProtection, engineDescription, renderCredentials, setupS3ImportExport, helperRemovalPolicy, renderUnless } from './private/util';
+import { applyDefaultRotationOptions, defaultDeletionProtection, engineDescription, renderCredentials, setupS3ImportExport, helperRemovalPolicy, renderUnless } from './private/util';
 import { Credentials, PerformanceInsightRetention, RotationMultiUserOptions, RotationSingleUserOptions, SnapshotCredentials } from './props';
 import { DatabaseProxy, DatabaseProxyOptions, ProxyTarget } from './proxy';
 import { CfnDBInstance, CfnDBInstanceProps } from './rds.generated';
@@ -66,6 +66,8 @@ export interface IDatabaseInstance extends IResource, ec2.IConnectable, secretsm
 
   /**
    * Grant the given identity connection access to the database.
+   * **Note**: this method does not currently work, see https://github.com/aws/aws-cdk/issues/11851 for details.
+   * @see https://github.com/aws/aws-cdk/issues/11851
    */
   grantConnect(grantee: iam.IGrantable): iam.Grant;
 
@@ -931,13 +933,11 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
     }
 
     return new secretsmanager.SecretRotation(this, id, {
+      ...applyDefaultRotationOptions(options, this.vpcPlacement),
       secret: this.secret,
       application: this.singleUserRotationApplication,
       vpc: this.vpc,
-      vpcSubnets: this.vpcPlacement,
       target: this,
-      ...options,
-      excludeCharacters: options.excludeCharacters ?? DEFAULT_PASSWORD_EXCLUDE_CHARS,
     });
   }
 
@@ -948,13 +948,13 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
     if (!this.secret) {
       throw new Error('Cannot add multi user rotation for an instance without secret.');
     }
+
     return new secretsmanager.SecretRotation(this, id, {
-      ...options,
-      excludeCharacters: options.excludeCharacters ?? DEFAULT_PASSWORD_EXCLUDE_CHARS,
+      ...applyDefaultRotationOptions(options, this.vpcPlacement),
+      secret: options.secret,
       masterSecret: this.secret,
       application: this.multiUserRotationApplication,
       vpc: this.vpc,
-      vpcSubnets: this.vpcPlacement,
       target: this,
     });
   }
