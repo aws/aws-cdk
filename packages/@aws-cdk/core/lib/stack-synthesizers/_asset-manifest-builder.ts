@@ -4,9 +4,9 @@ import * as path from 'path';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { FileAssetSource, FileAssetLocation, FileAssetPackaging, DockerImageAssetSource, DockerImageAssetLocation } from '../assets';
 import { Fn } from '../cfn-fn';
-import { ISynthesisSession } from '../construct-compat';
 import { Stack } from '../stack';
 import { resolvedOr } from './_shared';
+import { ISynthesisSession } from './types';
 
 /**
  * Build an manifest from assets added to a stack synthesizer

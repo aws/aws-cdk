@@ -12,10 +12,6 @@ import { Cache } from './private/cache';
 import { Stack } from './stack';
 import { Stage } from './stage';
 
-// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
-// eslint-disable-next-line
-import { Construct as CoreConstruct } from './construct-compat';
-
 const ARCHIVE_EXTENSIONS = ['.zip', '.jar'];
 
 /**
@@ -71,7 +67,7 @@ export interface AssetStagingProps extends FingerprintOptions, AssetOptions {
  * The file/directory are staged based on their content hash (fingerprint). This
  * means that only if content was changed, copy will happen.
  */
-export class AssetStaging extends CoreConstruct {
+export class AssetStaging extends Construct {
   /**
    * The directory inside the bundling container into which the asset sources will be mounted.
    */

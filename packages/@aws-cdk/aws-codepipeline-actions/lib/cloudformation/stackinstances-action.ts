@@ -6,7 +6,7 @@ import { CommonCloudFormationStackSetOptions, StackInstances, StackSetParameters
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct as CoreConstruct } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 
 /**
  * Properties for the CloudFormationDeployStackInstancesAction
@@ -74,7 +74,7 @@ export class CloudFormationDeployStackInstancesAction extends Action {
     validatePercentage('maxAccountConcurrencyPercentage', props.maxAccountConcurrencyPercentage);
   }
 
-  protected bound(scope: CoreConstruct, _stage: codepipeline.IStage, options: codepipeline.ActionBindOptions): codepipeline.ActionConfig {
+  protected bound(scope: Construct, _stage: codepipeline.IStage, options: codepipeline.ActionBindOptions): codepipeline.ActionConfig {
     const singletonPolicy = SingletonPolicy.forRole(options.role);
     singletonPolicy.grantCreateUpdateStackSet(this.props);
 

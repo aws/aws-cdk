@@ -10,13 +10,10 @@ import * as sns from '@aws-cdk/aws-sns';
 import * as subscription from '@aws-cdk/aws-sns-subscriptions';
 import * as sqs from '@aws-cdk/aws-sqs';
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { Service } from '../../service';
 import { Container } from '../container';
 import { ContainerMutatingHook, ServiceExtension } from '../extension-interfaces';
-
-// Keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from '@aws-cdk/core';
 
 /**
  * An interface that will be implemented by all the resources that can be subscribed to.

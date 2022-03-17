@@ -1,6 +1,7 @@
 import { ContextProvider } from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
-import { CfnResource, Construct, DefaultStackSynthesizer, Stack, StackProps } from '../lib';
+import { Construct } from 'constructs';
+import { CfnResource, DefaultStackSynthesizer, Stack, StackProps } from '../lib';
 import { Annotations } from '../lib/annotations';
 import { App, AppProps } from '../lib/app';
 
@@ -8,6 +9,10 @@ function withApp(props: AppProps, block: (app: App) => void): cxapi.CloudAssembl
   const app = new App({
     stackTraces: false,
     ...props,
+    context: {
+      [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false,
+      ...props.context,
+    },
   });
 
   block(app);
@@ -170,8 +175,10 @@ describe('app', () => {
   test('app.synth() performs validation first and if there are errors, it returns the errors', () => {
 
     class Child extends Construct {
-      protected validate() {
-        return [`Error from ${this.node.id}`];
+      constructor(scope: Construct, id: string) {
+        super(scope, id);
+
+        this.node.addValidation({ validate: () => [`Error from ${this.node.id}`] });
       }
     }
 
