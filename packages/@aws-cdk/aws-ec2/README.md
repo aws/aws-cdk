@@ -1482,6 +1482,7 @@ The following demonstrates how to enable [Detailed Monitoring](https://docs.aws.
 
 ```ts
 declare const vpc: ec2.Vpc;
+declare const instanceType: ec2.InstanceType;
 
 new ec2.Instance(this, 'Instance1', {
   vpc,
