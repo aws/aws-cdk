@@ -115,6 +115,16 @@ export class Runtime {
   public static readonly SYNTHETICS_NODEJS_PUPPETEER_3_3 = new Runtime('syn-nodejs-puppeteer-3.3', RuntimeFamily.NODEJS);
 
   /**
+   * `syn-nodejs-puppeteer-3.4` includes the following:
+   * - Lambda runtime Node.js 12.x
+   * - Puppeteer-core version 5.5.0
+   * - Chromium version 88.0.4298.0
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_nodejs_puppeteer.html#CloudWatch_Synthetics_runtimeversion-nodejs-puppeteer-3.4
+   */
+   public static readonly SYNTHETICS_NODEJS_PUPPETEER_3_4 = new Runtime('syn-nodejs-puppeteer-3.4', RuntimeFamily.NODEJS);
+
+  /**
    * `syn-python-selenium-1.0` includes the following:
    * - Lambda runtime Python 3.8
    * - Selenium version 3.141.0
@@ -130,4 +140,4 @@ export class Runtime {
     */
   public constructor(public readonly name: string, public readonly family: RuntimeFamily) {
   }
-}
+}}
