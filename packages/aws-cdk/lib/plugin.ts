@@ -2,7 +2,7 @@ import { inspect } from 'util';
 import * as chalk from 'chalk';
 
 import { CredentialProviderSource } from './api/aws-auth/credentials';
-import { registerContextProvider } from './context-providers';
+import { registerPluginContextProvider } from './context-providers';
 import { ContextProviderPlugin, isContextProviderPlugin } from './context-providers/provider';
 import { error } from './logging';
 
@@ -106,12 +106,26 @@ export class PluginHost {
    * This feature is experimental, and only intended to be used internally at Amazon
    * as a trial.
    *
+   * After registering with 'my-plugin-name', the provider must be addressed as follows:
+   *
+   * ```ts
+   * const value = ContextProvider.getValue(this, {
+   *   providerName: 'plugin',
+   *   props: {
+   *     pluginName: 'my-plugin-name',
+   *     myParameter1: 'xyz',
+   *   },
+   *   includeEnvironment: true | false,
+   *   dummyValue: 'what-to-return-on-the-first-pass',
+   * })
+   * ```
+   *
    * @experimental
    */
-  public registerContextProviderAlpha(providerName: string, provider: ContextProviderPlugin) {
+  public registerContextProviderAlpha(pluginProviderName: string, provider: ContextProviderPlugin) {
     if (!isContextProviderPlugin(provider)) {
       throw new Error(`Object you gave me does not look like a ContextProviderPlugin: ${inspect(provider)}`);
     }
-    registerContextProvider(providerName, provider);
+    registerPluginContextProvider(pluginProviderName, provider);
   }
 }
