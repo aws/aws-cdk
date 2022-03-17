@@ -196,6 +196,13 @@ export class CdkToolkit {
               'but terminal (TTY) is not attached so we are unable to get a confirmation from the user');
           }
 
+          // only talk to user if concurreny is 1 (otherwise, fail)
+          if (concurrency > 1) {
+            throw new Error(
+              '"--require-approval" is enabled and stack includes security-sensitive updates, ' +
+              'but concurrency is greater than 1 so we are unable to get a confirmation from the user');
+          }
+
           const confirmed = await promptly.confirm('Do you wish to deploy these changes (y/n)?');
           if (!confirmed) { throw new Error('Aborted by user'); }
         }
