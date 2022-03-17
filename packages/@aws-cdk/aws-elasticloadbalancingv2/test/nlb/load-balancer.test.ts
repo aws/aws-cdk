@@ -241,6 +241,96 @@ describe('tests', () => {
     });
   });
 
+  test('loadBalancerName unallowed: more than 32 characters', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app);
+    const vpc = new ec2.Vpc(stack, 'Stack');
+
+    // WHEN
+    new elbv2.NetworkLoadBalancer(stack, 'NLB', {
+      loadBalancerName: 'a'.repeat(33),
+      vpc,
+    });
+
+    // THEN
+    expect(() => {
+      app.synth();
+    }).toThrow('Load balancer name: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" can have a maximum of 32 characters.');
+  });
+
+  test('loadBalancerName unallowed: starts with "internal-"', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app);
+    const vpc = new ec2.Vpc(stack, 'Stack');
+
+    // WHEN
+    new elbv2.NetworkLoadBalancer(stack, 'NLB', {
+      loadBalancerName: 'internal-myLoadBalancer',
+      vpc,
+    });
+
+    // THEN
+    expect(() => {
+      app.synth();
+    }).toThrow('Load balancer name: "internal-myLoadBalancer" must not begin with "internal-".');
+  });
+
+  test('loadBalancerName unallowed: starts with hyphen', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app);
+    const vpc = new ec2.Vpc(stack, 'Stack');
+
+    // WHEN
+    new elbv2.NetworkLoadBalancer(stack, 'NLB', {
+      loadBalancerName: '-myLoadBalancer',
+      vpc,
+    });
+
+    // THEN
+    expect(() => {
+      app.synth();
+    }).toThrow('Load balancer name: "-myLoadBalancer" must not begin or end with a hyphen.');
+  });
+
+  test('loadBalancerName unallowed: ends with hyphen', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app);
+    const vpc = new ec2.Vpc(stack, 'Stack');
+
+    // WHEN
+    new elbv2.NetworkLoadBalancer(stack, 'NLB', {
+      loadBalancerName: 'myLoadBalancer-',
+      vpc,
+    });
+
+    // THEN
+    expect(() => {
+      app.synth();
+    }).toThrow('Load balancer name: "myLoadBalancer-" must not begin or end with a hyphen.');
+  });
+
+  test('loadBalancerName unallowed: unallowed characters', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app);
+    const vpc = new ec2.Vpc(stack, 'Stack');
+
+    // WHEN
+    new elbv2.NetworkLoadBalancer(stack, 'NLB', {
+      loadBalancerName: 'my load balancer',
+      vpc,
+    });
+
+    // THEN
+    expect(() => {
+      app.synth();
+    }).toThrow('Load balancer name: "my load balancer" must contain only alphanumeric characters or hyphens.');
+  });
+
   test('imported network load balancer with no vpc specified throws error when calling addTargets', () => {
     // GIVEN
     const stack = new cdk.Stack();

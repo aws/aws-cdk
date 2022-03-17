@@ -1,4 +1,4 @@
-import { Template } from '@aws-cdk/assertions';
+import { Annotations, Match, Template } from '@aws-cdk/assertions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import { describeDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
@@ -119,6 +119,40 @@ describeDeprecated('scheduled action', () => {
         },
       },
     });
+  });
+
+  test('scheduled scaling shows warning when minute is not defined in cron', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const asg = makeAutoScalingGroup(stack);
+
+    // WHEN
+    asg.scaleOnSchedule('ScaleOutInTheMorning', {
+      schedule: autoscaling.Schedule.cron({ hour: '8' }),
+      minCapacity: 10,
+    });
+
+    // THEN
+    Annotations.fromStack(stack).hasWarning('/Default/ASG/ScheduledActionScaleOutInTheMorning', "cron: If you don't pass 'minute', by default the event runs every minute. Pass 'minute: '*'' if that's what you intend, or 'minute: 0' to run once per hour instead.");
+  });
+
+  test('scheduled scaling shows no warning when minute is * in cron', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const asg = makeAutoScalingGroup(stack);
+
+    // WHEN
+    asg.scaleOnSchedule('ScaleOutInTheMorning', {
+      schedule: autoscaling.Schedule.cron({
+        hour: '8',
+        minute: '*',
+      }),
+      minCapacity: 10,
+    });
+
+    // THEN
+    const annotations = Annotations.fromStack(stack).findWarning('*', Match.anyValue());
+    expect(annotations.length).toBe(0);
   });
 });
 
