@@ -205,28 +205,6 @@ describe('with intercepted network calls', () => {
       expect(sdkConfig(sdk).credentials!.accessKeyId).toEqual(uniq('fooccess'));
     });
 
-    test('supports sso creds in config_file', async () => {
-      // WHEN
-      prepareCreds({
-        fakeSts,
-        config: {
-          'profile sso': {
-            sso_start_url: 'https://d-magic-hash.awsapps.com/start',
-            sso_region: 'eu-bla-5',
-            sso_account_id: '123456789012',
-            sso_role_name: 'admin',
-          },
-        },
-      });
-      const provider = await providerFromProfile('sso');
-
-      // THEN
-      await expect(provider.defaultAccount()).resolves.toEqual({ accountId: uniq('00000'), partition: 'aws' });
-
-      const sdk = (await provider.forEnvironment(env(uniq('00000')), Mode.ForReading)).sdk;
-      expect(sdkConfig(sdk).credentials!.accessKeyId).toEqual(uniq('ssoccess'));
-    });
-
     test('can assume-role configured in config', async () => {
       // GIVEN
       prepareCreds({
@@ -603,7 +581,7 @@ function sdkConfig(sdk: ISDK): ConfigurationOptions {
  * register users and roles in FakeSts at the same time.
  */
 function prepareCreds(options: PrepareCredsOptions) {
-  function convertSections(sections?: Record<string, ProfileUser | ProfileRole | ProfileSso>) {
+  function convertSections(sections?: Record<string, ProfileUser | ProfileRole>) {
     const ret = [];
     for (const [profile, user] of Object.entries(sections ?? {})) {
       ret.push(`[${profile}]`);
@@ -624,12 +602,7 @@ function prepareCreds(options: PrepareCredsOptions) {
           allowedAccounts: user.$fakeStsOptions?.allowedAccounts?.map(uniq),
         });
       } else {
-        if (isProfileSso(user)) {
-          const aws_access_key_id = 'ssoccess';
-          ret.push(`aws_access_key_id=${uniq(aws_access_key_id)}`);
-          ret.push('aws_secret_access_key=secret');
-          options.fakeSts?.registerUser(uniq('00000'), uniq(aws_access_key_id));
-        } else if (user.aws_access_key_id) {
+        if (user.aws_access_key_id) {
           ret.push(`aws_access_key_id=${uniq(user.aws_access_key_id)}`);
           ret.push('aws_secret_access_key=secret');
           options.fakeSts?.registerUser(uniq(user.$account ?? '00000'), uniq(user.aws_access_key_id), user.$fakeStsOptions);
@@ -662,7 +635,7 @@ interface PrepareCredsOptions {
   /**
    * Write the aws/config file
    */
-  readonly config?: Record<string, ProfileUser | ProfileRole | ProfileSso>;
+  readonly config?: Record<string, ProfileUser | ProfileRole>;
 
   /**
    * If given, add users to FakeSTS
@@ -685,20 +658,8 @@ type ProfileRole = {
   readonly $fakeStsOptions?: RegisterRoleOptions;
 } & ({ readonly source_profile: string } | { readonly credential_source: string });
 
-type ProfileSso = {
-  readonly sso_start_url: string;
-  readonly sso_region: string;
-  readonly sso_account_id: string;
-  readonly sso_role_name: string;
-  readonly region?: string;
-};
-
-function isProfileRole(x: ProfileUser | ProfileRole | ProfileSso): x is ProfileRole {
+function isProfileRole(x: ProfileUser | ProfileRole): x is ProfileRole {
   return 'role_arn' in x;
-}
-
-function isProfileSso(x: ProfileUser | ProfileRole | ProfileSso): x is ProfileSso {
-  return 'sso_start_url' in x;
 }
 
 function providerFromProfile(profile: string | undefined) {
