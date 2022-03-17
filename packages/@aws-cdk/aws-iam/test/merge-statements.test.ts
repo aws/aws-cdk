@@ -1,5 +1,6 @@
 import { App, Stack } from '@aws-cdk/core';
 import * as iam from '../lib';
+import { PolicyStatement } from '../lib';
 
 const PRINCIPAL_ARN1 = 'arn:aws:iam::111111111:user/user-name';
 const principal1 = new iam.ArnPrincipal(PRINCIPAL_ARN1);
@@ -378,6 +379,64 @@ test('do not deep-merge info Refs and GetAtts', () => {
           { 'Fn::GetAtt': ['User21F1486D1', 'Arn'] },
         ],
       },
+    },
+  ]);
+});
+
+test('properly merge untyped principals (star)', () => {
+  const statements = [
+    PolicyStatement.fromJson({
+      Action: ['service:Action1'],
+      Effect: 'Allow',
+      Resource: ['Resource'],
+      Principal: '*',
+    }),
+    PolicyStatement.fromJson({
+      Action: ['service:Action2'],
+      Effect: 'Allow',
+      Resource: ['Resource'],
+      Principal: '*',
+    }),
+  ];
+
+  assertMerged(statements, [
+    {
+      Action: ['service:Action1', 'service:Action2'],
+      Effect: 'Allow',
+      Resource: 'Resource',
+      Principal: '*',
+    },
+  ]);
+});
+
+test('fail merging typed and untyped principals', () => {
+  const statements = [
+    PolicyStatement.fromJson({
+      Action: ['service:Action'],
+      Effect: 'Allow',
+      Resource: ['Resource'],
+      Principal: '*',
+    }),
+    PolicyStatement.fromJson({
+      Action: ['service:Action'],
+      Effect: 'Allow',
+      Resource: ['Resource'],
+      Principal: { AWS: PRINCIPAL_ARN1 },
+    }),
+  ];
+
+  assertMerged(statements, [
+    {
+      Action: 'service:Action',
+      Effect: 'Allow',
+      Resource: 'Resource',
+      Principal: '*',
+    },
+    {
+      Action: 'service:Action',
+      Effect: 'Allow',
+      Resource: 'Resource',
+      Principal: { AWS: PRINCIPAL_ARN1 },
     },
   ]);
 });

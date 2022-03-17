@@ -4,6 +4,7 @@
 // implemented here.
 
 
+import { LITERAL_STRING_KEY } from '../util';
 import { StatementSchema, normalizeStatement, IamValue } from './postprocess-policy-document';
 
 /**
@@ -60,17 +61,13 @@ function tryMerge(a: ComparableStatement, b: ComparableStatement): ComparableSta
   if (a.conditionString !== b.conditionString) { return; }
   if (!setEqual(a.notAction, b.notAction) || !setEqual(a.notResource, b.notResource) || !setEqual(a.notPrincipal, b.notPrincipal)) { return; }
 
-  console.log('action', setEqual(a.action, b.action), a.action, b.action);
-  console.log('resource', setEqual(a.resource, b.resource));
-  console.log('principal', setEqual(a.principal, b.principal));
-
   // We can merge these statements if 2 out of the 3 sets of Action, Resource, Principal
   // are the same.
   const setsEqual = (setEqual(a.action, b.action) ? 1 : 0) +
     (setEqual(a.resource, b.resource) ? 1 : 0) +
     (setEqual(a.principal, b.principal) ? 1 : 0);
 
-  if (setsEqual < 2) { return; }
+  if (setsEqual < 2 || unmergeablePrincipals(a, b)) { return; }
 
   return {
     effect: a.effect,
@@ -84,10 +81,6 @@ function tryMerge(a: ComparableStatement, b: ComparableStatement): ComparableSta
     resource: setMerge(a.resource, b.resource),
     principal: setMerge(a.principal, b.principal),
   };
-
-  function setMerge(x: IamValueSet, y: IamValueSet): IamValueSet {
-    return { ...x, ...y };
-  }
 }
 
 /**
@@ -122,7 +115,7 @@ function makeComparable(s: StatementSchema): ComparableStatement {
     if (x === undefined) { return {}; }
 
     if (Array.isArray(x) || typeof x === 'string') {
-      x = { AWS: x };
+      x = { [LITERAL_STRING_KEY]: x };
     }
 
     if (typeof x === 'object' && x !== null) {
@@ -132,6 +125,21 @@ function makeComparable(s: StatementSchema): ComparableStatement {
     }
     return {};
   }
+}
+
+/**
+ * Return 'true' if the two principals are unmergeable
+ *
+ * This only happens if one of them is a literal, untyped principal (typically,
+ * `Principal: '*'`) and the other one is typed.
+ *
+ * `Principal: '*'` behaves subtly different than `Principal: { AWS: '*' }` and must
+ * therefore be preserved.
+ */
+function unmergeablePrincipals(a: ComparableStatement, b: ComparableStatement) {
+  const aHasLiteral = Object.values(a.principal).some(v => LITERAL_STRING_KEY in v);
+  const bHasLiteral = Object.values(b.principal).some(v => LITERAL_STRING_KEY in v);
+  return aHasLiteral !== bHasLiteral;
 }
 
 /**
@@ -216,6 +224,13 @@ function setEqual(a: IamValueSet, b: IamValueSet) {
   const keysA = Object.keys(a);
   const keysB = Object.keys(b);
   return keysA.length === keysB.length && keysA.every(k => k in b);
+}
+
+/**
+ * Merge two IAM value sets
+ */
+function setMerge(x: IamValueSet, y: IamValueSet): IamValueSet {
+  return { ...x, ...y };
 }
 
 function mkdict<A>(xs: Array<[string, A]>): Record<string, A> {
