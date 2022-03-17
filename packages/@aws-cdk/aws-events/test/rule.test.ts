@@ -982,7 +982,7 @@ describe('rule', () => {
       const eventBusPolicyStack = app.node.findChild(`EventBusPolicy-${sourceAccount}-us-west-2-${targetAccount}`) as cdk.Stack;
       Template.fromStack(eventBusPolicyStack).hasResourceProperties('AWS::Events::EventBusPolicy', {
         'Action': 'events:PutEvents',
-        'StatementId': `Allow-account-${sourceAccount}`,
+        'StatementId': `Allow-account-${sourceAccount}-${this.node.addr}`,
         'Principal': sourceAccount,
       });
     });
