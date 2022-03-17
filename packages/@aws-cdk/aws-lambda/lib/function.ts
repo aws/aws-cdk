@@ -889,7 +889,6 @@ export class Function extends FunctionBase {
       // Currently no validations for compatible architectures since Lambda service
       // allows layers configured with one architecture to be used with a Lambda function
       // from another architecture.
-
       this.layers.push(layer);
     }
   }

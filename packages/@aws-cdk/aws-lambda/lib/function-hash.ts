@@ -2,6 +2,7 @@ import * as crypto from 'crypto';
 import { CfnResource, FeatureFlags, Stack } from '@aws-cdk/core';
 import { LAMBDA_RECOGNIZE_VERSION_PROPS } from '@aws-cdk/cx-api';
 import { Function as LambdaFunction } from './function';
+import { LayerVersion } from '.';
 
 export function calculateFunctionHash(fn: LambdaFunction) {
   const stack = Stack.of(fn);
