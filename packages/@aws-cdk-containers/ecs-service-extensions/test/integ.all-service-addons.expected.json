@@ -942,42 +942,43 @@
               "Action": [
                 "ecr:BatchCheckLayerAvailability",
                 "ecr:BatchGetImage",
-                "ecr:GetAuthorizationToken",
                 "ecr:GetDownloadUrlForLayer"
               ],
               "Effect": "Allow",
-              "Resource": [
-                "*",
-                {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "arn:",
-                      {
-                        "Ref": "AWS::Partition"
-                      },
-                      ":ecr:",
-                      {
-                        "Ref": "AWS::Region"
-                      },
-                      ":",
-                      {
-                        "Fn::FindInMap": [
-                          "nameenvoyimageaccountmapping",
-                          {
-                            "Ref": "AWS::Region"
-                          },
-                          "ecrRepo"
-                        ]
-                      },
-                      ":repository/aws-appmesh-envoy"
-                    ]
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":ecr:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Fn::FindInMap": [
+                        "nameenvoyimageaccountmapping",
+                        {
+                          "Ref": "AWS::Region"
+                        },
+                        "ecrRepo"
+                      ]
+                    },
+                    ":repository/aws-appmesh-envoy"
                   ]
-                }
-              ]
+                ]
+              }
             },
             {
-              "Action": "ecr:GetAuthorizationToken",
+              "Action": [
+                "ecr:BatchCheckLayerAvailability",
+                "ecr:BatchGetImage",
+                "ecr:GetAuthorizationToken",
+                "ecr:GetDownloadUrlForLayer"
+              ],
               "Effect": "Allow",
               "Resource": "*"
             },
@@ -1790,42 +1791,43 @@
               "Action": [
                 "ecr:BatchCheckLayerAvailability",
                 "ecr:BatchGetImage",
-                "ecr:GetAuthorizationToken",
                 "ecr:GetDownloadUrlForLayer"
               ],
               "Effect": "Allow",
-              "Resource": [
-                "*",
-                {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "arn:",
-                      {
-                        "Ref": "AWS::Partition"
-                      },
-                      ":ecr:",
-                      {
-                        "Ref": "AWS::Region"
-                      },
-                      ":",
-                      {
-                        "Fn::FindInMap": [
-                          "greetingenvoyimageaccountmapping",
-                          {
-                            "Ref": "AWS::Region"
-                          },
-                          "ecrRepo"
-                        ]
-                      },
-                      ":repository/aws-appmesh-envoy"
-                    ]
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":ecr:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Fn::FindInMap": [
+                        "greetingenvoyimageaccountmapping",
+                        {
+                          "Ref": "AWS::Region"
+                        },
+                        "ecrRepo"
+                      ]
+                    },
+                    ":repository/aws-appmesh-envoy"
                   ]
-                }
-              ]
+                ]
+              }
             },
             {
-              "Action": "ecr:GetAuthorizationToken",
+              "Action": [
+                "ecr:BatchCheckLayerAvailability",
+                "ecr:BatchGetImage",
+                "ecr:GetAuthorizationToken",
+                "ecr:GetDownloadUrlForLayer"
+              ],
               "Effect": "Allow",
               "Resource": "*"
             },
@@ -2761,42 +2763,43 @@
               "Action": [
                 "ecr:BatchCheckLayerAvailability",
                 "ecr:BatchGetImage",
-                "ecr:GetAuthorizationToken",
                 "ecr:GetDownloadUrlForLayer"
               ],
               "Effect": "Allow",
-              "Resource": [
-                "*",
-                {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "arn:",
-                      {
-                        "Ref": "AWS::Partition"
-                      },
-                      ":ecr:",
-                      {
-                        "Ref": "AWS::Region"
-                      },
-                      ":",
-                      {
-                        "Fn::FindInMap": [
-                          "greeterenvoyimageaccountmapping",
-                          {
-                            "Ref": "AWS::Region"
-                          },
-                          "ecrRepo"
-                        ]
-                      },
-                      ":repository/aws-appmesh-envoy"
-                    ]
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":ecr:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Fn::FindInMap": [
+                        "greeterenvoyimageaccountmapping",
+                        {
+                          "Ref": "AWS::Region"
+                        },
+                        "ecrRepo"
+                      ]
+                    },
+                    ":repository/aws-appmesh-envoy"
                   ]
-                }
-              ]
+                ]
+              }
             },
             {
-              "Action": "ecr:GetAuthorizationToken",
+              "Action": [
+                "ecr:BatchCheckLayerAvailability",
+                "ecr:BatchGetImage",
+                "ecr:GetAuthorizationToken",
+                "ecr:GetDownloadUrlForLayer"
+              ],
               "Effect": "Allow",
               "Resource": "*"
             },
