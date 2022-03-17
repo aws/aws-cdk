@@ -1052,18 +1052,7 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "states.",
-                      {
-                        "Ref": "AWS::Region"
-                      },
-                      ".amazonaws.com"
-                    ]
-                  ]
-                }
+                "Service": "states.test-region.amazonaws.com"
               }
             }
           ],

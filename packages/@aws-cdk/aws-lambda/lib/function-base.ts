@@ -63,6 +63,11 @@ export interface IFunction extends IResource, ec2.IConnectable, iam.IGrantable {
   readonly architecture: Architecture;
 
   /**
+   * The ARN(s) to put into the resource field of the generated IAM policy for grantInvoke()
+   */
+  readonly resourceArnsForGrantInvoke: string[];
+
+  /**
    * Adds an event source that maps to this AWS Lambda function.
    * @param id construct ID
    * @param options mapping options

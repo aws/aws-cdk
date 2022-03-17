@@ -58,10 +58,9 @@ export class EvaluateExpression extends sfn.TaskStateBase {
 
     this.evalFn = createEvalFn(this.props.runtime ?? lambda.Runtime.NODEJS_14_X, this);
 
-    // TODO - this should be updated, but I can't just replace it with a grantInvoke()
     this.taskPolicies = [
       new iam.PolicyStatement({
-        resources: [this.evalFn.functionArn],
+        resources: this.evalFn.resourceArnsForGrantInvoke,
         actions: ['lambda:InvokeFunction'],
       }),
     ];
