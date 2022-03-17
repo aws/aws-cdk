@@ -389,6 +389,17 @@
         }
       }
     },
+    "Ec2ClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicF7263B30": {
+      "Type": "AWS::SNS::Topic",
+      "Properties": {
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-sfn-tasks-ecs-ec2-integ/Ec2Cluster/DefaultAutoScalingGroup"
+          }
+        ]
+      }
+    },
     "Ec2ClusterDefaultAutoScalingGroupLifecycleHookDrainHookRole71045ED7": {
       "Type": "AWS::IAM::Role",
       "Properties": {
@@ -431,17 +442,6 @@
         "Roles": [
           {
             "Ref": "Ec2ClusterDefaultAutoScalingGroupLifecycleHookDrainHookRole71045ED7"
-          }
-        ]
-      }
-    },
-    "Ec2ClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicF7263B30": {
-      "Type": "AWS::SNS::Topic",
-      "Properties": {
-        "Tags": [
-          {
-            "Key": "Name",
-            "Value": "aws-sfn-tasks-ecs-ec2-integ/Ec2Cluster/DefaultAutoScalingGroup"
           }
         ]
       }
