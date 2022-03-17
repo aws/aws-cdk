@@ -245,7 +245,7 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
   /**
    * The ARN(s) to put into the resource field of the generated IAM policy for grantInvoke()
    */
-  protected abstract readonly resourceArnsForGrantInvoke: string[];
+  public abstract readonly resourceArnsForGrantInvoke: string[];
 
   /**
    * Whether the user decides to skip adding permissions.
@@ -531,7 +531,7 @@ export abstract class QualifiedFunctionBase extends FunctionBase {
     return this.lambda.latestVersion;
   }
 
-  protected get resourceArnsForGrantInvoke() {
+  public get resourceArnsForGrantInvoke() {
     return [this.functionArn];
   }
 
@@ -591,7 +591,7 @@ class LatestVersion extends FunctionBase implements IVersion {
     throw new Error('$LATEST function version cannot be used for Lambda@Edge');
   }
 
-  protected get resourceArnsForGrantInvoke() {
+  public get resourceArnsForGrantInvoke() {
     return [this.functionArn];
   }
 

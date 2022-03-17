@@ -421,7 +421,7 @@ export class Function extends FunctionBase {
     return this._currentVersion;
   }
 
-  protected get resourceArnsForGrantInvoke() {
+  public get resourceArnsForGrantInvoke() {
     return [this.functionArn, `${this.functionArn}:*`];
   }
 
@@ -480,10 +480,10 @@ export class Function extends FunctionBase {
       public readonly role = role;
       public readonly permissionsNode = this.node;
       public readonly architecture = attrs.architecture ?? Architecture.X86_64;
+      public readonly resourceArnsForGrantInvoke = [this.functionArn, `${this.functionArn}:*`];
 
       protected readonly canCreatePermissions = attrs.sameEnvironment ?? this._isStackAccount();
       protected readonly _skipPermissions = attrs.skipPermissions ?? false;
-      protected readonly resourceArnsForGrantInvoke = [this.functionArn, `${this.functionArn}:*`];
 
       constructor(s: Construct, i: string) {
         super(s, i, {

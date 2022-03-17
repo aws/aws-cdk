@@ -117,7 +117,7 @@ export class SingletonFunction extends FunctionBase {
     return this.lambdaFunction.currentVersion;
   }
 
-  protected get resourceArnsForGrantInvoke() {
+  public get resourceArnsForGrantInvoke() {
     return [this.functionArn, `${this.functionArn}:*`];
   };
 
