@@ -501,6 +501,7 @@ export class GraphqlApi extends GraphqlApiBase {
         certificateArn: props.domainName.certificate.certificateArn,
         description: `domain for ${this.name} at ${this.graphqlUrl}`,
       });
+
       new CfnDomainNameApiAssociation(this, 'DomainAssociation', {
         domainName: props.domainName.domainName,
         apiId: this.apiId,

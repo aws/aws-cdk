@@ -1,9 +1,9 @@
 import * as path from 'path';
 import { Template } from '@aws-cdk/assertions';
+import { Certificate } from '@aws-cdk/aws-certificatemanager';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import * as appsync from '../lib';
-import { Certificate } from '@aws-cdk/aws-certificatemanager';
 
 let stack: cdk.Stack;
 let api: appsync.GraphqlApi;
@@ -178,16 +178,16 @@ test('appsync GraphqlApi should be configured with custom domain when specified'
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::AppSync::DomainNameApiAssociation', {
     ApiId: {
-      "Fn::GetAtt": [
-        "apicustomcwlogsrole508EAC74",
-        "ApiId",
+      'Fn::GetAtt': [
+        'apicustomcwlogsrole508EAC74',
+        'ApiId',
       ],
     },
     DomainName: domainName,
   });
 
   Template.fromStack(stack).hasResourceProperties('AWS::AppSync::DomainName', {
-    CertificateArn: { "Ref": "AcmCertificate49D3B5AF" },
+    CertificateArn: { Ref: 'AcmCertificate49D3B5AF' },
     DomainName: domainName,
   });
 });
