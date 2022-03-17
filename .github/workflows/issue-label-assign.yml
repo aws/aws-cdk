@@ -65,7 +65,6 @@ env:
            {
              "prefixes":["@aws-cdk/"]
            }
-    
 
  AREA_PARAMS: >
            [
@@ -99,7 +98,7 @@ env:
            {"area":"@aws-cdk/aws-autoscaling-common","keywords":["aws-autoscaling-common","autoscaling-common","arbitraryintervals","completescalinginterval","scalinginterval"],"labels":["@aws-cdk/aws-autoscaling-common"],"assignees":["comcalvi"]},
            {"area":"@aws-cdk/aws-autoscaling-hooktargets","keywords":["aws-autoscaling-hooktargets","autoscaling hooktargets","functionhook","queuehook","topichook"],"labels":["@aws-cdk/aws-autoscaling-hooktargets"],"assignees":["comcalvi"]},
            {"area":"@aws-cdk/aws-autoscalingplans","keywords":["aws-autoscalingplans","autoscaling-plans"],"labels":["@aws-cdk/aws-autoscalingplans"],"assignees":["comcalvi"]},
-           {"area":"@aws-cdk/aws-backup","keywords":["aws-backup","backup","backupselection","backupvault"],"labels":["@aws-cdk/aws-backup"],"assignees":["kaizen3031593"]},
+           {"area":"@aws-cdk/aws-backup","keywords":["aws-backup","backup","backupselection","backupvault","backupplan"],"labels":["@aws-cdk/aws-backup"],"assignees":["kaizen3031593"]},
            {"area":"@aws-cdk/aws-batch","keywords":["aws-batch","batch","computeenvironment","jobdefinition","jobqueue"],"labels":["@aws-cdk/aws-batch"],"assignees":["madeline-k"],"affixes":{"suffixes":["-alpha"]}},
            {"area":"@aws-cdk/aws-budgets","keywords":["aws-budgets","budgets"],"labels":["@aws-cdk/aws-budgets"],"assignees":["otaviomacedo"]},
            {"area":"@aws-cdk/aws-cassandra","keywords":["aws-cassandra","cassandra"],"labels":["@aws-cdk/aws-cassandra"],"assignees":["otaviomacedo"]},
@@ -108,7 +107,7 @@ env:
            {"area":"@aws-cdk/aws-chatbot","keywords":["aws-chatbot","chatbot","slackchannelconfiguration"],"labels":["@aws-cdk/aws-chatbot"],"assignees":["kaizen3031593"]},
            {"area":"@aws-cdk/aws-cloud9","keywords":["aws-cloud9","cloud9","ec2environment"],"labels":["@aws-cdk/aws-cloud9"],"assignees":["skinny85"],"affixes":{"suffixes":["-alpha"]}},
            {"area":"@aws-cdk/aws-cloudformation","keywords":["aws-cloudformation","cloudformation"],"labels":["@aws-cdk/aws-cloudformation"],"assignees":["rix0rrr"]},
-           {"area":"@aws-cdk/aws-cloudfront","keywords":["aws-cloudfront","cloudfront","cachepolicy","distribution"],"labels":["@aws-cdk/aws-cloudfront"],"assignees":["comcalvi"]},
+           {"area":"@aws-cdk/aws-cloudfront","keywords":["aws-cloudfront","cloudfront","cachepolicy","distribution","cloudfrontwebdistribution"],"labels":["@aws-cdk/aws-cloudfront"],"assignees":["comcalvi"]},
            {"area":"@aws-cdk/aws-cloudfront-origins","keywords":["aws-cloudfront-origins","cloudfront-origins"],"labels":["@aws-cdk/aws-cloudfront-origins"],"assignees":["comcalvi"]},
            {"area":"@aws-cdk/aws-cloudtrail","keywords":["aws-cloudtrail","cloud-trail","trail"],"labels":["@aws-cdk/aws-cloudtrail"],"assignees":["comcalvi"]},
            {"area":"@aws-cdk/aws-cloudwatch","keywords":["aws-cloudwatch","cloudwatch","compositealarm","dashboard"],"labels":["@aws-cdk/aws-cloudwatch"],"assignees":["madeline-k"]},
@@ -272,7 +271,7 @@ env:
            {"area":"@aws-cdk/cloud-assembly-schema","keywords":["cloud-assembly-schema","manifest"],"labels":["@aws-cdk/cloud-assembly-schema"],"assignees":["rix0rrr"]},
            {"area":"@aws-cdk/cloudformation-diff","keywords":["cloudformation-diff","cfn-diff"],"labels":["@aws-cdk/cloudformation-diff"],"assignees":["skinny85"]},
            {"area":"@aws-cdk/cloudformation-include","keywords":["cloudformation-include","cfn-include"],"labels":["@aws-cdk/cloudformation-include"],"assignees":["comcalvi"]},
-           {"area":"@aws-cdk/core","keywords":["core"],"labels":["@aws-cdk/core"],"assignees":["rix0rrr"]},
+           {"area":"@aws-cdk/core","keywords":["core","nested-stack","cross-account"],"labels":["@aws-cdk/core"],"assignees":["rix0rrr"]},
            {"area":"@aws-cdk/custom-resources","keywords":["custom-resource","provider","custom-resources"],"labels":["@aws-cdk/custom-resources"],"assignees":["rix0rrr"]},
            {"area":"@aws-cdk/cx-api","keywords":["cx-api","cloudartifact","cloudassembly"],"labels":["@aws-cdk/cx-api"],"assignees":["rix0rrr"]},
            {"area":"@aws-cdk/aws-lambda-layer-awscli","keywords":["aws-lambda-layer-awscli","lambda-layer-awscli"],"labels":["@aws-cdk/aws-lambda-layer-awscli"],"assignees":["rix0rrr"]},
