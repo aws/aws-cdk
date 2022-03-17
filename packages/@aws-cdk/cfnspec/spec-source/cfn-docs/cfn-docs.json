@@ -19,7 +19,7 @@
     },
     "AWS::ACMPCA::Certificate.ApiPassthrough": {
       "attributes": {},
-      "description": "Contains X.509 certificate information to be placed in an issued certificate. An `APIPassthrough` or `APICSRPassthrough` template variant must be selected, or else this parameter is ignored.\n\nIf conflicting or duplicate certificate information is supplied from other sources, ACM Private CA applies [order of operation rules](https://docs.aws.amazon.com/acm-pca/latest/userguide/UsingTemplates.html#template-order-of-operations) to determine what information is used.",
+      "description": "Contains X.509 certificate information to be placed in an issued certificate. An `APIPassthrough` or `APICSRPassthrough` template variant must be selected, or else this parameter is ignored.\n\nIf conflicting or duplicate certificate information is supplied from other sources, AWS Private CA applies [order of operation rules](https://docs.aws.amazon.com/acm-pca/latest/userguide/UsingTemplates.html#template-order-of-operations) to determine what information is used.",
       "properties": {
         "Extensions": "Specifies X.509 extension information for a certificate.",
         "Subject": "Contains information about the certificate subject. The Subject field in the certificate identifies the entity that owns or controls the public key in the certificate. The entity can be a user, computer, device, or service. The Subject must contain an X.500 distinguished name (DN). A DN is a sequence of relative distinguished names (RDNs). The RDNs are separated by commas in the certificate."
@@ -27,7 +27,7 @@
     },
     "AWS::ACMPCA::Certificate.EdiPartyName": {
       "attributes": {},
-      "description": "Describes an Electronic Data Interchange (EDI) entity as described in as defined in [Subject Alternative Name](https://docs.aws.amazon.com/https://tools.ietf.org/html/rfc5280) in RFC 5280.",
+      "description": "Describes an Electronic Data Interchange (EDI) entity as described in as defined in [Subject Alternative Name](https://docs.aws.amazon.com/https://datatracker.ietf.org/doc/html/rfc5280) in RFC 5280.",
       "properties": {
         "NameAssigner": "Specifies the name assigner.",
         "PartyName": "Specifies the party name."
@@ -38,7 +38,7 @@
       "description": "Specifies additional purposes for which the certified public key may be used other than basic purposes indicated in the `KeyUsage` extension.",
       "properties": {
         "ExtendedKeyUsageObjectIdentifier": "Specifies a custom `ExtendedKeyUsage` with an object identifier (OID).",
-        "ExtendedKeyUsageType": "Specifies a standard `ExtendedKeyUsage` as defined as in [RFC 5280](https://docs.aws.amazon.com/https://tools.ietf.org/html/rfc5280#section-4.2.1.12) ."
+        "ExtendedKeyUsageType": "Specifies a standard `ExtendedKeyUsage` as defined as in [RFC 5280](https://docs.aws.amazon.com/https://datatracker.ietf.org/doc/html/rfc5280#section-4.2.1.12) ."
       }
     },
     "AWS::ACMPCA::Certificate.Extensions": {
@@ -53,7 +53,7 @@
     },
     "AWS::ACMPCA::Certificate.GeneralName": {
       "attributes": {},
-      "description": "Describes an ASN.1 X.400 `GeneralName` as defined in [RFC 5280](https://docs.aws.amazon.com/https://tools.ietf.org/html/rfc5280) . Only one of the following naming options should be provided. Providing more than one option results in an `InvalidArgsException` error.",
+      "description": "Describes an ASN.1 X.400 `GeneralName` as defined in [RFC 5280](https://docs.aws.amazon.com/https://datatracker.ietf.org/doc/html/rfc5280) . Only one of the following naming options should be provided. Providing more than one option results in an `InvalidArgsException` error.",
       "properties": {
         "DirectoryName": "Contains information about the certificate subject. The certificate can be one issued by your private certificate authority (CA) or it can be your private CA certificate. The Subject field in the certificate identifies the entity that owns or controls the public key in the certificate. The entity can be a user, computer, device, or service. The Subject must contain an X.500 distinguished name (DN). A DN is a sequence of relative distinguished names (RDNs). The RDNs are separated by commas in the certificate. The DN must be unique for each entity, but your private CA can issue more than one certificate with the same DN to the same entity.",
         "DnsName": "Represents `GeneralName` as a DNS name.",
@@ -61,7 +61,7 @@
         "IpAddress": "Represents `GeneralName` as an IPv4 or IPv6 address.",
         "OtherName": "Represents `GeneralName` using an `OtherName` object.",
         "RegisteredId": "Represents `GeneralName` as an object identifier (OID).",
-        "Rfc822Name": "Represents `GeneralName` as an [RFC 822](https://docs.aws.amazon.com/https://tools.ietf.org/html/rfc822) email address.",
+        "Rfc822Name": "Represents `GeneralName` as an [RFC 822](https://docs.aws.amazon.com/https://datatracker.ietf.org/doc/html/rfc822) email address.",
         "UniformResourceIdentifier": "Represents `GeneralName` as a URI."
       }
     },
@@ -93,20 +93,20 @@
       "description": "Defines the X.509 `CertificatePolicies` extension.",
       "properties": {
         "CertPolicyId": "Specifies the object identifier (OID) of the certificate policy under which the certificate was issued. For more information, see NIST's definition of [Object Identifier (OID)](https://docs.aws.amazon.com/https://csrc.nist.gov/glossary/term/Object_Identifier) .",
-        "PolicyQualifiers": "Modifies the given `CertPolicyId` with a qualifier. ACM Private CA supports the certification practice statement (CPS) qualifier."
+        "PolicyQualifiers": "Modifies the given `CertPolicyId` with a qualifier. AWS Private CA supports the certification practice statement (CPS) qualifier."
       }
     },
     "AWS::ACMPCA::Certificate.PolicyQualifierInfo": {
       "attributes": {},
-      "description": "Modifies the `CertPolicyId` of a `PolicyInformation` object with a qualifier. ACM Private CA supports the certification practice statement (CPS) qualifier.",
+      "description": "Modifies the `CertPolicyId` of a `PolicyInformation` object with a qualifier. AWS Private CA supports the certification practice statement (CPS) qualifier.",
       "properties": {
         "PolicyQualifierId": "Identifies the qualifier modifying a `CertPolicyId` .",
-        "Qualifier": "Defines the qualifier type. ACM Private CA supports the use of a URI for a CPS qualifier in this field."
+        "Qualifier": "Defines the qualifier type. AWS Private CA supports the use of a URI for a CPS qualifier in this field."
       }
     },
     "AWS::ACMPCA::Certificate.Qualifier": {
       "attributes": {},
-      "description": "Defines a `PolicyInformation` qualifier. ACM Private CA supports the [certification practice statement (CPS) qualifier](https://docs.aws.amazon.com/https://tools.ietf.org/html/rfc5280#section-4.2.1.4) defined in RFC 5280.",
+      "description": "Defines a `PolicyInformation` qualifier. AWS Private CA supports the [certification practice statement (CPS) qualifier](https://docs.aws.amazon.com/https://datatracker.ietf.org/doc/html/rfc5280#section-4.2.1.4) defined in RFC 5280.",
       "properties": {
         "CpsUri": "Contains a pointer to a certification practice statement (CPS) published by the CA."
       }
@@ -159,7 +159,7 @@
     },
     "AWS::ACMPCA::CertificateAuthority.AccessDescription": {
       "attributes": {},
-      "description": "Provides access information used by the `authorityInfoAccess` and `subjectInfoAccess` extensions described in [RFC 5280](https://docs.aws.amazon.com/https://tools.ietf.org/html/rfc5280) .",
+      "description": "Provides access information used by the `authorityInfoAccess` and `subjectInfoAccess` extensions described in [RFC 5280](https://docs.aws.amazon.com/https://datatracker.ietf.org/doc/html/rfc5280) .",
       "properties": {
         "AccessLocation": "The location of `AccessDescription` information.",
         "AccessMethod": "The type and format of `AccessDescription` information."
@@ -175,12 +175,12 @@
     },
     "AWS::ACMPCA::CertificateAuthority.CrlConfiguration": {
       "attributes": {},
-      "description": "Contains configuration information for a certificate revocation list (CRL). Your private certificate authority (CA) creates base CRLs. Delta CRLs are not supported. You can enable CRLs for your new or an existing private CA by setting the *Enabled* parameter to `true` . Your private CA writes CRLs to an S3 bucket that you specify in the *S3BucketName* parameter. You can hide the name of your bucket by specifying a value for the *CustomCname* parameter. Your private CA copies the CNAME or the S3 bucket name to the *CRL Distribution Points* extension of each certificate it issues. Your S3 bucket policy must give write permission to ACM Private CA.\n\nACM Private CA assets that are stored in Amazon S3 can be protected with encryption. For more information, see [Encrypting Your CRLs](https://docs.aws.amazon.com/acm-pca/latest/userguide/PcaCreateCa.html#crl-encryption) .\n\nYour private CA uses the value in the *ExpirationInDays* parameter to calculate the *nextUpdate* field in the CRL. The CRL is refreshed at 1/2 the age of next update or when a certificate is revoked. When a certificate is revoked, it is recorded in the next CRL that is generated and in the next audit report. Only time valid certificates are listed in the CRL. Expired certificates are not included.\n\nA CRL is typically updated approximately 30 minutes after a certificate is revoked. If for any reason a CRL update fails, ACM Private CA makes further attempts every 15 minutes.\n\nCRLs contain the following fields:\n\n- *Version* : The current version number defined in RFC 5280 is V2. The integer value is 0x1.\n- *Signature Algorithm* : The name of the algorithm used to sign the CRL.\n- *Issuer* : The X.500 distinguished name of your private CA that issued the CRL.\n- *Last Update* : The issue date and time of this CRL.\n- *Next Update* : The day and time by which the next CRL will be issued.\n- *Revoked Certificates* : List of revoked certificates. Each list item contains the following information.\n\n- *Serial Number* : The serial number, in hexadecimal format, of the revoked certificate.\n- *Revocation Date* : Date and time the certificate was revoked.\n- *CRL Entry Extensions* : Optional extensions for the CRL entry.\n\n- *X509v3 CRL Reason Code* : Reason the certificate was revoked.\n- *CRL Extensions* : Optional extensions for the CRL.\n\n- *X509v3 Authority Key Identifier* : Identifies the public key associated with the private key used to sign the certificate.\n- *X509v3 CRL Number:* : Decimal sequence number for the CRL.\n- *Signature Algorithm* : Algorithm used by your private CA to sign the CRL.\n- *Signature Value* : Signature computed over the CRL.\n\nCertificate revocation lists created by ACM Private CA are DER-encoded. You can use the following OpenSSL command to list a CRL.\n\n`openssl crl -inform DER -text -in *crl_path* -noout`\n\nFor more information, see [Planning a certificate revocation list (CRL)](https://docs.aws.amazon.com/acm-pca/latest/userguide/crl-planning.html) in the *AWS Certificate Manager Private Certificate Authority (PCA) User Guide*",
+      "description": "Contains configuration information for a certificate revocation list (CRL). Your private certificate authority (CA) creates base CRLs. Delta CRLs are not supported. You can enable CRLs for your new or an existing private CA by setting the *Enabled* parameter to `true` . Your private CA writes CRLs to an S3 bucket that you specify in the *S3BucketName* parameter. You can hide the name of your bucket by specifying a value for the *CustomCname* parameter. Your private CA copies the CNAME or the S3 bucket name to the *CRL Distribution Points* extension of each certificate it issues. Your S3 bucket policy must give write permission to AWS Private CA.\n\nAWS Private CA assets that are stored in Amazon S3 can be protected with encryption. For more information, see [Encrypting Your CRLs](https://docs.aws.amazon.com/acm-pca/latest/userguide/PcaCreateCa.html#crl-encryption) .\n\nYour private CA uses the value in the *ExpirationInDays* parameter to calculate the *nextUpdate* field in the CRL. The CRL is refreshed prior to a certificate's expiration date or when a certificate is revoked. When a certificate is revoked, it appears in the CRL until the certificate expires, and then in one additional CRL after expiration, and it always appears in the audit report.\n\nA CRL is typically updated approximately 30 minutes after a certificate is revoked. If for any reason a CRL update fails, AWS Private CA makes further attempts every 15 minutes.\n\nCRLs contain the following fields:\n\n- *Version* : The current version number defined in RFC 5280 is V2. The integer value is 0x1.\n- *Signature Algorithm* : The name of the algorithm used to sign the CRL.\n- *Issuer* : The X.500 distinguished name of your private CA that issued the CRL.\n- *Last Update* : The issue date and time of this CRL.\n- *Next Update* : The day and time by which the next CRL will be issued.\n- *Revoked Certificates* : List of revoked certificates. Each list item contains the following information.\n\n- *Serial Number* : The serial number, in hexadecimal format, of the revoked certificate.\n- *Revocation Date* : Date and time the certificate was revoked.\n- *CRL Entry Extensions* : Optional extensions for the CRL entry.\n\n- *X509v3 CRL Reason Code* : Reason the certificate was revoked.\n- *CRL Extensions* : Optional extensions for the CRL.\n\n- *X509v3 Authority Key Identifier* : Identifies the public key associated with the private key used to sign the certificate.\n- *X509v3 CRL Number:* : Decimal sequence number for the CRL.\n- *Signature Algorithm* : Algorithm used by your private CA to sign the CRL.\n- *Signature Value* : Signature computed over the CRL.\n\nCertificate revocation lists created by AWS Private CA are DER-encoded. You can use the following OpenSSL command to list a CRL.\n\n`openssl crl -inform DER -text -in *crl_path* -noout`\n\nFor more information, see [Planning a certificate revocation list (CRL)](https://docs.aws.amazon.com/acm-pca/latest/userguide/crl-planning.html) in the *AWS Private Certificate Authority User Guide*",
       "properties": {
         "CustomCname": "Name inserted into the certificate *CRL Distribution Points* extension that enables the use of an alias for the CRL distribution point. Use this value if you don't want the name of your S3 bucket to be public.",
         "Enabled": "Boolean value that specifies whether certificate revocation lists (CRLs) are enabled. You can use this value to enable certificate revocation for a new CA when you call the `CreateCertificateAuthority` operation or for an existing CA when you call the `UpdateCertificateAuthority` operation.",
         "ExpirationInDays": "Validity period of the CRL in days.",
-        "S3BucketName": "Name of the S3 bucket that contains the CRL. If you do not provide a value for the *CustomCname* argument, the name of your S3 bucket is placed into the *CRL Distribution Points* extension of the issued certificate. You can change the name of your bucket by calling the [UpdateCertificateAuthority](https://docs.aws.amazon.com/acm-pca/latest/APIReference/API_UpdateCertificateAuthority.html) operation. You must specify a [bucket policy](https://docs.aws.amazon.com/acm-pca/latest/userguide/PcaCreateCa.html#s3-policies) that allows ACM Private CA to write the CRL to your bucket.",
+        "S3BucketName": "Name of the S3 bucket that contains the CRL. If you do not provide a value for the *CustomCname* argument, the name of your S3 bucket is placed into the *CRL Distribution Points* extension of the issued certificate. You can change the name of your bucket by calling the [UpdateCertificateAuthority](https://docs.aws.amazon.com/acm-pca/latest/APIReference/API_UpdateCertificateAuthority.html) operation. You must specify a [bucket policy](https://docs.aws.amazon.com/acm-pca/latest/userguide/PcaCreateCa.html#s3-policies) that allows AWS Private CA to write the CRL to your bucket.",
         "S3ObjectAcl": "Determines whether the CRL will be publicly readable or privately held in the CRL Amazon S3 bucket. If you choose PUBLIC_READ, the CRL will be accessible over the public internet. If you choose BUCKET_OWNER_FULL_CONTROL, only the owner of the CRL S3 bucket can access the CRL, and your PKI clients may need an alternative method of access.\n\nIf no value is specified, the default is PUBLIC_READ.\n\n> This default can cause CA creation to fail in some circumstances. If you have enabled the Block Public Access (BPA) feature in your S3 account, then you must specify the value of this parameter as `BUCKET_OWNER_FULL_CONTROL` , and not doing so results in an error. If you have disabled BPA in S3, then you can specify either `BUCKET_OWNER_FULL_CONTROL` or `PUBLIC_READ` as the value. \n\nFor more information, see [Blocking public access to the S3 bucket](https://docs.aws.amazon.com/acm-pca/latest/userguide/PcaCreateCa.html#s3-bpa) ."
       }
     },
@@ -189,12 +189,12 @@
       "description": "Describes the certificate extensions to be added to the certificate signing request (CSR).",
       "properties": {
         "KeyUsage": "Indicates the purpose of the certificate and of the key contained in the certificate.",
-        "SubjectInformationAccess": "For CA certificates, provides a path to additional information pertaining to the CA, such as revocation and policy. For more information, see [Subject Information Access](https://docs.aws.amazon.com/https://tools.ietf.org/html/rfc5280#section-4.2.2.2) in RFC 5280."
+        "SubjectInformationAccess": "For CA certificates, provides a path to additional information pertaining to the CA, such as revocation and policy. For more information, see [Subject Information Access](https://docs.aws.amazon.com/https://datatracker.ietf.org/doc/html/rfc5280#section-4.2.2.2) in RFC 5280."
       }
     },
     "AWS::ACMPCA::CertificateAuthority.EdiPartyName": {
       "attributes": {},
-      "description": "Describes an Electronic Data Interchange (EDI) entity as described in as defined in [Subject Alternative Name](https://docs.aws.amazon.com/https://tools.ietf.org/html/rfc5280) in RFC 5280.",
+      "description": "Describes an Electronic Data Interchange (EDI) entity as described in as defined in [Subject Alternative Name](https://docs.aws.amazon.com/https://datatracker.ietf.org/doc/html/rfc5280) in RFC 5280.",
       "properties": {
         "NameAssigner": "Specifies the name assigner.",
         "PartyName": "Specifies the party name."
@@ -202,7 +202,7 @@
     },
     "AWS::ACMPCA::CertificateAuthority.GeneralName": {
       "attributes": {},
-      "description": "Describes an ASN.1 X.400 `GeneralName` as defined in [RFC 5280](https://docs.aws.amazon.com/https://tools.ietf.org/html/rfc5280) . Only one of the following naming options should be provided. Providing more than one option results in an `InvalidArgsException` error.",
+      "description": "Describes an ASN.1 X.400 `GeneralName` as defined in [RFC 5280](https://docs.aws.amazon.com/https://datatracker.ietf.org/doc/html/rfc5280) . Only one of the following naming options should be provided. Providing more than one option results in an `InvalidArgsException` error.",
       "properties": {
         "DirectoryName": "Contains information about the certificate subject. The certificate can be one issued by your private certificate authority (CA) or it can be your private CA certificate. The Subject field in the certificate identifies the entity that owns or controls the public key in the certificate. The entity can be a user, computer, device, or service. The Subject must contain an X.500 distinguished name (DN). A DN is a sequence of relative distinguished names (RDNs). The RDNs are separated by commas in the certificate. The DN must be unique for each entity, but your private CA can issue more than one certificate with the same DN to the same entity.",
         "DnsName": "Represents `GeneralName` as a DNS name.",
@@ -210,7 +210,7 @@
         "IpAddress": "Represents `GeneralName` as an IPv4 or IPv6 address.",
         "OtherName": "Represents `GeneralName` using an `OtherName` object.",
         "RegisteredId": "Represents `GeneralName` as an object identifier (OID).",
-        "Rfc822Name": "Represents `GeneralName` as an [RFC 822](https://docs.aws.amazon.com/https://tools.ietf.org/html/rfc822) email address.",
+        "Rfc822Name": "Represents `GeneralName` as an [RFC 822](https://docs.aws.amazon.com/https://datatracker.ietf.org/doc/html/rfc822) email address.",
         "UniformResourceIdentifier": "Represents `GeneralName` as a URI."
       }
     },
@@ -6100,7 +6100,7 @@
         "BillingViewArn": "The Amazon Resource Name (ARN) of the billing view. You can get this value by using the billing view service public APIs.",
         "Compression": "The compression format that Amazon Web Services uses for the report.",
         "Format": "The format that Amazon Web Services saves the report in.",
-        "RefreshClosedReports": "Whether you want Amazon Web Services to update your reports after they have been finalized if Amazon Web Services detects charges related to previous months. These charges can include refunds, credits, or support fees.",
+        "RefreshClosedReports": "Whether you want Amazon Web Services to update your reports after they have been finalized if AWS detects charges related to previous months. These charges can include refunds, credits, or support fees.",
         "ReportName": "The name of the report that you want to create. The name must be unique, is case sensitive, and can't include spaces.",
         "ReportVersioning": "Whether you want Amazon Web Services to overwrite the previous version of each report or to deliver the report in addition to the previous versions.",
         "S3Bucket": "The S3 bucket where Amazon Web Services delivers the report.",
@@ -32923,7 +32923,7 @@
       },
       "description": "The `AWS::RDS::DBParameterGroup` resource creates a custom parameter group for an RDS database family.\n\nThis type can be declared in a template and referenced in the `DBParameterGroupName` property of an `[AWS::RDS::DBInstance](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-database-instance.html)` resource.\n\nFor information about configuring parameters for Amazon RDS DB instances, see [Working with DB parameter groups](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_WorkingWithParamGroups.html) in the *Amazon RDS User Guide* .\n\nFor information about configuring parameters for Amazon Aurora DB instances, see [Working with DB parameter groups and DB cluster parameter groups](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/USER_WorkingWithParamGroups.html) in the *Amazon Aurora User Guide* .\n\n> Applying a parameter group to a DB instance may require the DB instance to reboot, resulting in a database outage for the duration of the reboot.",
       "properties": {
-        "Description": "Provides the customer-specified description for this DB parameter group.",
+        "Description": "Provides the customer-specified description for this DB Parameter Group.",
         "Family": "The DB parameter group family name. A DB parameter group can be associated with one and only one DB parameter group family, and can be applied only to a DB instance running a DB engine and engine version compatible with that DB parameter group family.\n\n> The DB parameter group family can't be changed when updating a DB parameter group. \n\nTo list all of the available parameter group families, use the following command:\n\n`aws rds describe-db-engine-versions --query \"DBEngineVersions[].DBParameterGroupFamily\"`\n\nThe output contains duplicates.\n\nFor more information, see `[CreateDBParameterGroup](https://docs.aws.amazon.com//AmazonRDS/latest/APIReference/API_CreateDBParameterGroup.html)` .",
         "Parameters": "An array of parameter names and values for the parameter update. At least one parameter name and value must be supplied. Subsequent arguments are optional.\n\nFor more information about DB parameters and DB parameter groups for Amazon RDS DB engines, see [Working with DB Parameter Groups](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_WorkingWithParamGroups.html) in the *Amazon RDS User Guide* .\n\nFor more information about DB cluster and DB instance parameters and parameter groups for Amazon Aurora DB engines, see [Working with DB Parameter Groups and DB Cluster Parameter Groups](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/USER_WorkingWithParamGroups.html) in the *Amazon Aurora User Guide* .\n\n> AWS CloudFormation doesn't support specifying an apply method for each individual parameter. The default apply method for each parameter is used.",
         "Tags": "Tags to assign to the DB parameter group."
@@ -33027,7 +33027,7 @@
       "properties": {
         "DBSecurityGroupIngress": "Ingress rules to be applied to the DB security group.",
         "EC2VpcId": "The identifier of an Amazon VPC. This property indicates the VPC that this DB security group belongs to.\n\n> The `EC2VpcId` property is for backward compatibility with older regions, and is no longer recommended for providing security information to an RDS DB instance.",
-        "GroupDescription": "Provides the description of the DB security group.",
+        "GroupDescription": "Provides the description of the DB Security Group.",
         "Tags": "Tags to assign to the DB security group."
       }
     },
@@ -33675,17 +33675,17 @@
         "CurrentRevisionId": "The current revision id.",
         "Environment": "The environment of the robot application.",
         "Name": "The name of the robot application.",
-        "RobotSoftwareSuite": "The robot software suite (ROS distribuition) used by the robot application.",
+        "RobotSoftwareSuite": "The robot software suite used by the robot application.",
         "Sources": "The sources of the robot application.",
         "Tags": "A map that contains tag keys and tag values that are attached to the robot application."
       }
     },
     "AWS::RoboMaker::RobotApplication.RobotSoftwareSuite": {
       "attributes": {},
-      "description": "Information about a robot software suite (ROS distribution).",
+      "description": "Information about a robot software suite.",
       "properties": {
-        "Name": "The name of the robot software suite (ROS distribution).",
-        "Version": "The version of the robot software suite (ROS distribution)."
+        "Name": "The name of the robot software suite. `General` is the only supported value.",
+        "Version": "The version of the robot software suite. Not applicable for General software suite."
       }
     },
     "AWS::RoboMaker::RobotApplication.SourceConfig": {
@@ -33721,7 +33721,7 @@
         "Environment": "The environment of the simulation application.",
         "Name": "The name of the simulation application.",
         "RenderingEngine": "The rendering engine for the simulation application.",
-        "RobotSoftwareSuite": "The robot software suite (ROS distribution) used by the simulation application.",
+        "RobotSoftwareSuite": "The robot software suite used by the simulation application.",
         "SimulationSoftwareSuite": "The simulation software suite used by the simulation application.",
         "Sources": "The sources of the simulation application.",
         "Tags": "A map that contains tag keys and tag values that are attached to the simulation application."
@@ -33737,18 +33737,18 @@
     },
     "AWS::RoboMaker::SimulationApplication.RobotSoftwareSuite": {
       "attributes": {},
-      "description": "Information about a robot software suite (ROS distribution).",
+      "description": "Information about a robot software suite.",
       "properties": {
-        "Name": "The name of the robot software suite (ROS distribution).",
-        "Version": "The version of the robot software suite (ROS distribution)."
+        "Name": "The name of the robot software suite. `General` is the only supported value.",
+        "Version": "The version of the robot software suite. Not applicable for General software suite."
       }
     },
     "AWS::RoboMaker::SimulationApplication.SimulationSoftwareSuite": {
       "attributes": {},
       "description": "Information about a simulation software suite.",
       "properties": {
-        "Name": "The name of the simulation software suite.",
-        "Version": "The version of the simulation software suite."
+        "Name": "The name of the simulation software suite. `SimulationRuntime` is the only supported value.",
+        "Version": "The version of the simulation software suite. Not applicable for `SimulationRuntime` ."
       }
     },
     "AWS::RoboMaker::SimulationApplication.SourceConfig": {
