@@ -294,12 +294,13 @@ GraphQL API. This can be done during the API creation.
 import * as acm from '@aws-cdk/aws-certificatemanager';
 import * as route53 from '@aws-cdk/aws-route53';
 
-const certificate = new acm.Certificate(this, 'cert', { domainName: 'example.com' });
+const myDomainName = 'api.example.com';
+const certificate = new acm.Certificate(this, 'cert', { domainName: myDomainName });
 const api = new appsync.GraphqlApi(this, 'api', {
   name: 'myApi',
   domainName: {
     certificate,
-    domainName: 'example.com',
+    domainName: myDomainName,
   },
 });
 
@@ -317,7 +318,7 @@ const zone = route53.HostedZone.fromHostedZoneAttributes(this, `HostedZone`, {
 new route53.CnameRecord(this, `CnameApiRecord`, {
   recordName: 'api',
   zone,
-  domainName: 'appsync.domainName',
+  domainName: myDomainName,
 });
 ```
 
