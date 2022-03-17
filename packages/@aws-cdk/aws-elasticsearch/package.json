@@ -119,12 +119,6 @@
   },
   "stability": "stable",
   "maturity": "stable",
-  "features": [
-    {
-      "name": "Higher level constructs for Domain",
-      "stability": "Stable"
-    }
-  ],
   "awscdkio": {
     "announce": false
   },
