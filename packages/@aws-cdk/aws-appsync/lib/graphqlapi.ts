@@ -262,7 +262,7 @@ export interface DomainOptions {
   readonly certificate: ICertificate;
 
   /**
-   * The actual domain name e.g. api.example.com
+   * The actual domain name. For example, `api.example.com`.
    */
   readonly domainName: string;
 }

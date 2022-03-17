@@ -304,7 +304,7 @@ const api = new appsync.GraphqlApi(this, 'api', {
 
   // hosted zone and route53 features
   declare const hostedZoneId: string;
-  declare const zoneName = 'mycompany.com'
+  declare const zoneName = 'mycompany.com';
 
   // hosten zone for adding appsync domain
   const zone = HostedZone.fromHostedZoneAttributes(this, `HostedZone`, {

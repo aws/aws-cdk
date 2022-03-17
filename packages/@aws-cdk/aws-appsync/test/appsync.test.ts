@@ -180,8 +180,8 @@ test('appsync GraphqlApi should be configured with custom domain when specified'
     ApiId: {
       "Fn::GetAtt": [
         "apicustomcwlogsrole508EAC74",
-        "ApiId"
-      ]
+        "ApiId",
+      ],
     },
     DomainName: domainName,
   });
