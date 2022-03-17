@@ -493,6 +493,17 @@ describe('function', () => {
         // THEN
         Annotations.fromStack(stack).hasNoWarning('*', Match.stringLikeRegexp(warningMessage));
       });
+
+      test('function without lambda:InvokeFunction', () => {
+        // WHEN
+        fn.addPermission('MyPermission', {
+          action: 'lambda.GetFunction',
+          principal: new iam.ServicePrincipal('lambda.amazonaws.com'),
+        });
+
+        // THEN
+        Annotations.fromStack(stack).hasNoWarning('*', Match.stringLikeRegexp(warningMessage));
+      });
     });
   });
 
