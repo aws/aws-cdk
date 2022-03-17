@@ -1,7 +1,7 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
-import { ArnFormat, ConstructNode, IResource, Resource, Token } from '@aws-cdk/core';
+import { Annotations, ArnFormat, ConstructNode, IResource, Resource, Token } from '@aws-cdk/core';
 import { AliasOptions } from './alias';
 import { Architecture } from './architecture';
 import { EventInvokeConfig, EventInvokeConfigOptions } from './event-invoke-config';
@@ -273,6 +273,13 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
    * @param permission The permission to grant to this Lambda function. @see Permission for details.
    */
   public addPermission(id: string, permission: Permission) {
+    this.addPermissionHelper(id, permission, false);
+  }
+
+  /**
+   * @param qualified Whether or not the function is qualified (i.e. is an alias or a version)
+   */
+  protected addPermissionHelper(id: string, permission: Permission, qualified?: boolean) {
     if (!this.canCreatePermissions) {
       // FIXME: @deprecated(v2) - throw an error if calling `addPermission` on a resource that doesn't support it.
       return;
@@ -282,6 +289,10 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
     const { sourceAccount, sourceArn } = this.parseConditions(permission.principal) ?? {};
     const action = permission.action ?? 'lambda:InvokeFunction';
     const scope = permission.scope ?? this;
+
+    if (['lambda:InvokeFunction', 'lambda:*'].includes(action) && !qualified) {
+      Annotations.of(this).addWarning('Lambda has changed their authorization strategy, which may affect resource permissions on unqualified arns. See https://github.com/aws/aws-cdk/issues/19273');
+    }
 
     new CfnPermission(scope, id, {
       action,
@@ -536,6 +547,10 @@ export abstract class QualifiedFunctionBase extends FunctionBase {
       qualifier: this.qualifier,
       ...options,
     });
+  }
+
+  public addPermission(id: string, permission: Permission): void {
+    super.addPermissionHelper(id, permission, true);
   }
 }
 
