@@ -385,11 +385,11 @@
             },
             {
               "Action": [
-                "kms:Encrypt*",
                 "kms:Decrypt*",
-                "kms:ReEncrypt*",
+                "kms:Describe*",
+                "kms:Encrypt*",
                 "kms:GenerateDataKey*",
-                "kms:Describe*"
+                "kms:ReEncrypt*"
               ],
               "Condition": {
                 "ArnLike": {
@@ -526,6 +526,8 @@
           "Statement": [
             {
               "Action": [
+                "logs:DescribeLogGroups",
+                "s3:GetBucketLocation",
                 "ssmmessages:CreateControlChannel",
                 "ssmmessages:CreateDataChannel",
                 "ssmmessages:OpenControlChannel",
@@ -546,11 +548,6 @@
                   "Arn"
                 ]
               }
-            },
-            {
-              "Action": "logs:DescribeLogGroups",
-              "Effect": "Allow",
-              "Resource": "*"
             },
             {
               "Action": [
@@ -583,11 +580,6 @@
                   ]
                 ]
               }
-            },
-            {
-              "Action": "s3:GetBucketLocation",
-              "Effect": "Allow",
-              "Resource": "*"
             },
             {
               "Action": "s3:PutObject",
