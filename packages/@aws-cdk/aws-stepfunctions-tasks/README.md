@@ -74,6 +74,7 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
   - [SageMaker](#sagemaker)
     - [Create Training Job](#create-training-job)
     - [Create Transform Job](#create-transform-job)
+    - [Create Processing Job](#create-processing-job)
     - [Create Endpoint](#create-endpoint)
     - [Create Endpoint Config](#create-endpoint-config)
     - [Create Model](#create-model)
@@ -1232,6 +1233,46 @@ new tasks.SageMakerCreateTransformJob(this, 'Batch Inference', {
   }
 });
 
+```
+
+### Create Processing Job
+
+You can call the [`CreateProcessingJob`](https://docs.aws.amazon.com/sagemaker/latest/dg/API_CreateProcessingJob.html) API from a `Task` state.
+
+```ts
+new tasks.SageMakerCreateProcessingJob(this, 'ProcessSagemaker', {
+  processingJobName: sfn.JsonPath.stringAt('$.JobName'),
+  appSpecification: {
+    containerImage: tasks.DockerImage.fromJsonExpression(sfn.JsonPath.stringAt('$.ImageName')),
+  },
+  processingInputs: [{
+    inputName: 'input1', // optional: default is `input<N>`, where N is the index of the specified input
+    s3Input: {
+      localPathPrefix: 'input1PathPrefix', // optional: default uses inputName. Data from the specified s3Location is mounted to the following prefix: `/opt/ml/processing/inputs/s3/<localPathPrefix>`/
+      s3Location: tasks.S3Location.fromJsonExpression('$.S3BucketInputs'),
+    },
+  }],
+  processingOutputConfig: {
+    outputs: [{
+      outputName: 'output1', // optional: default is `output<N>`, where N is the index of the specified output
+      s3Output: {
+        localPathPrefix: 'output1PathPrefix', // optional: default uses outputName. Data is written to the configured s3Location from the following prefix: `/opt/ml/processing/inputs/s3/<localPathPrefix>`/
+        s3Location: tasks.S3Location.fromJsonExpression('$.S3BucketOutputs'),
+      },
+    }],
+  },
+  processingResources: {
+    clusterConfig: {
+      instanceCount: 1,
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.P3, ec2.InstanceSize.XLARGE2),
+      volumeSize: Size.gibibytes(50),
+      volumeEncryptionKey: new kms.Key(this, 'StorageVolumeKey'),
+    },
+  }, // optional: default is 1 instance of EC2 `M4.XLarge` with a `10GB` unencrypted attached storage volume
+  stoppingCondition: {
+    maxRuntime: Duration.hours(2),
+  }, // optional: default is 1 hour
+});
 ```
 
 ### Create Endpoint
