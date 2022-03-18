@@ -162,6 +162,11 @@ export class CdkToolkit {
     const concurrency = options.concurrency || 1;
     const queue = new PQueue({ concurrency });
 
+    const progress = concurrency > 1 ? StackActivityProgress.EVENTS : options.progress;
+    if (concurrency > 1 && options.progress && options.progress != StackActivityProgress.EVENTS) {
+      warning('⚠️ The --concurrency flag only supports --progress "events". Switching to "events".');
+    }
+
     const deployStack = async (stack: cxapi.CloudFormationStackArtifact) => {
       if (stackCollection.stackCount !== 1) { highlight(stack.displayName); }
       if (!stack.environment) {
@@ -231,7 +236,7 @@ export class CdkToolkit {
           force: options.force,
           parameters: Object.assign({}, parameterMap['*'], parameterMap[stack.stackName]),
           usePreviousParameters: options.usePreviousParameters,
-          progress: options.progress,
+          progress,
           ci: options.ci,
           rollback: options.rollback,
           hotswap: options.hotswap,
