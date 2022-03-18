@@ -54,18 +54,13 @@ export class AwsCliCompatible {
       () => new AWS.EnvironmentCredentials('AMAZON'),
     ];
 
-    if (process.env.AWS_PROFILE) {
-      await forceSdkToReadConfigIfPresent();
-      sources.push(() => new AWS.SsoCredentials({ profile: implicitProfile }));
-    }
-
-    if (await fs.pathExists(credentialsFileName())) {
-      // Force reading the `config` file if it exists by setting the appropriate
-      // environment variable.
-      await forceSdkToReadConfigIfPresent();
-      sources.push(() => profileCredentials(implicitProfile));
-      sources.push(() => new AWS.ProcessCredentials({ profile: implicitProfile }));
-    }
+    // Force reading the `config` file if it exists by setting the appropriate
+    // environment variable.
+    await forceSdkToReadConfigIfPresent();
+    sources.push(() => profileCredentials(implicitProfile));
+    sources.push(() => new AWS.SsoCredentials({ profile: implicitProfile }));
+    sources.push(() => new AWS.ProcessCredentials({ profile: implicitProfile }));
+    //}
 
     if (options.containerCreds ?? hasEcsCredentials()) {
       sources.push(() => new AWS.ECSCredentials());
