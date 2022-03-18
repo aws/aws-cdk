@@ -354,6 +354,11 @@
     },
     "MyEcrRepo767466D0": {
       "Type": "AWS::ECR::Repository",
+      "Properties": {
+        "ImageScanningConfiguration": {
+          "ScanOnPush": false
+        }
+      },
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete"
     },
