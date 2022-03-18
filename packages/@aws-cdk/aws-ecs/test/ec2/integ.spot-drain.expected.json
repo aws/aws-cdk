@@ -95,14 +95,14 @@
     "VpcPublicSubnet1NATGateway4D7517AA": {
       "Type": "AWS::EC2::NatGateway",
       "Properties": {
+        "SubnetId": {
+          "Ref": "VpcPublicSubnet1Subnet5C2D37C4"
+        },
         "AllocationId": {
           "Fn::GetAtt": [
             "VpcPublicSubnet1EIPD7E02669",
             "AllocationId"
           ]
-        },
-        "SubnetId": {
-          "Ref": "VpcPublicSubnet1Subnet5C2D37C4"
         },
         "Tags": [
           {
@@ -192,14 +192,14 @@
     "VpcPublicSubnet2NATGateway9182C01D": {
       "Type": "AWS::EC2::NatGateway",
       "Properties": {
+        "SubnetId": {
+          "Ref": "VpcPublicSubnet2Subnet691E08A3"
+        },
         "AllocationId": {
           "Fn::GetAtt": [
             "VpcPublicSubnet2EIP3C605A87",
             "AllocationId"
           ]
-        },
-        "SubnetId": {
-          "Ref": "VpcPublicSubnet2Subnet691E08A3"
         },
         "Tags": [
           {
@@ -452,8 +452,8 @@
             },
             {
               "Action": [
-                "ecs:DiscoverPollEndpoint",
                 "ecr:GetAuthorizationToken",
+                "ecs:DiscoverPollEndpoint",
                 "logs:CreateLogStream",
                 "logs:PutLogEvents"
               ],
@@ -598,10 +598,10 @@
           "Statement": [
             {
               "Action": [
-                "ec2:DescribeInstances",
+                "ec2:DescribeHosts",
                 "ec2:DescribeInstanceAttribute",
                 "ec2:DescribeInstanceStatus",
-                "ec2:DescribeHosts"
+                "ec2:DescribeInstances"
               ],
               "Effect": "Allow",
               "Resource": "*"
@@ -636,7 +636,9 @@
             {
               "Action": [
                 "ecs:DescribeContainerInstances",
-                "ecs:DescribeTasks"
+                "ecs:DescribeTasks",
+                "ecs:ListTasks",
+                "ecs:UpdateContainerInstancesState"
               ],
               "Condition": {
                 "ArnEquals": {
@@ -664,24 +666,6 @@
                   "Arn"
                 ]
               }
-            },
-            {
-              "Action": [
-                "ecs:UpdateContainerInstancesState",
-                "ecs:ListTasks"
-              ],
-              "Condition": {
-                "ArnEquals": {
-                  "ecs:cluster": {
-                    "Fn::GetAtt": [
-                      "EcsCluster97242B84",
-                      "Arn"
-                    ]
-                  }
-                }
-              },
-              "Effect": "Allow",
-              "Resource": "*"
             }
           ],
           "Version": "2012-10-17"
@@ -759,6 +743,17 @@
         }
       }
     },
+    "EcsClusterasgSpotLifecycleHookDrainHookTopic6212EC83": {
+      "Type": "AWS::SNS::Topic",
+      "Properties": {
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ-spot/EcsCluster/asgSpot"
+          }
+        ]
+      }
+    },
     "EcsClusterasgSpotLifecycleHookDrainHookRole1B427C77": {
       "Type": "AWS::IAM::Role",
       "Properties": {
@@ -801,17 +796,6 @@
         "Roles": [
           {
             "Ref": "EcsClusterasgSpotLifecycleHookDrainHookRole1B427C77"
-          }
-        ]
-      }
-    },
-    "EcsClusterasgSpotLifecycleHookDrainHookTopic6212EC83": {
-      "Type": "AWS::SNS::Topic",
-      "Properties": {
-        "Tags": [
-          {
-            "Key": "Name",
-            "Value": "aws-ecs-integ-spot/EcsCluster/asgSpot"
           }
         ]
       }
@@ -934,8 +918,8 @@
             },
             {
               "Action": [
-                "ecs:DiscoverPollEndpoint",
                 "ecr:GetAuthorizationToken",
+                "ecs:DiscoverPollEndpoint",
                 "logs:CreateLogStream",
                 "logs:PutLogEvents"
               ],
@@ -1079,10 +1063,10 @@
           "Statement": [
             {
               "Action": [
-                "ec2:DescribeInstances",
+                "ec2:DescribeHosts",
                 "ec2:DescribeInstanceAttribute",
                 "ec2:DescribeInstanceStatus",
-                "ec2:DescribeHosts"
+                "ec2:DescribeInstances"
               ],
               "Effect": "Allow",
               "Resource": "*"
@@ -1117,7 +1101,9 @@
             {
               "Action": [
                 "ecs:DescribeContainerInstances",
-                "ecs:DescribeTasks"
+                "ecs:DescribeTasks",
+                "ecs:ListTasks",
+                "ecs:UpdateContainerInstancesState"
               ],
               "Condition": {
                 "ArnEquals": {
@@ -1145,24 +1131,6 @@
                   "Arn"
                 ]
               }
-            },
-            {
-              "Action": [
-                "ecs:UpdateContainerInstancesState",
-                "ecs:ListTasks"
-              ],
-              "Condition": {
-                "ArnEquals": {
-                  "ecs:cluster": {
-                    "Fn::GetAtt": [
-                      "EcsCluster97242B84",
-                      "Arn"
-                    ]
-                  }
-                }
-              },
-              "Effect": "Allow",
-              "Resource": "*"
             }
           ],
           "Version": "2012-10-17"
@@ -1240,6 +1208,17 @@
         }
       }
     },
+    "EcsClusterasgOdLifecycleHookDrainHookTopic673CE202": {
+      "Type": "AWS::SNS::Topic",
+      "Properties": {
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ-spot/EcsCluster/asgOd"
+          }
+        ]
+      }
+    },
     "EcsClusterasgOdLifecycleHookDrainHookRole695B2DF1": {
       "Type": "AWS::IAM::Role",
       "Properties": {
@@ -1282,17 +1261,6 @@
         "Roles": [
           {
             "Ref": "EcsClusterasgOdLifecycleHookDrainHookRole695B2DF1"
-          }
-        ]
-      }
-    },
-    "EcsClusterasgOdLifecycleHookDrainHookTopic673CE202": {
-      "Type": "AWS::SNS::Topic",
-      "Properties": {
-        "Tags": [
-          {
-            "Key": "Name",
-            "Value": "aws-ecs-integ-spot/EcsCluster/asgOd"
           }
         ]
       }

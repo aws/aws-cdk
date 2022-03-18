@@ -93,16 +93,16 @@
           "Statement": [
             {
               "Action": [
-                "s3:GetObject*",
-                "s3:GetBucket*",
-                "s3:List*",
+                "s3:Abort*",
                 "s3:DeleteObject*",
+                "s3:GetBucket*",
+                "s3:GetObject*",
+                "s3:List*",
                 "s3:PutObject",
                 "s3:PutObjectLegalHold",
                 "s3:PutObjectRetention",
                 "s3:PutObjectTagging",
-                "s3:PutObjectVersionTagging",
-                "s3:Abort*"
+                "s3:PutObjectVersionTagging"
               ],
               "Effect": "Allow",
               "Resource": [
@@ -131,32 +131,26 @@
             {
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "PipelineBuildSynthCodePipelineActionRole4E7A6C97",
-                  "Arn"
-                ]
-              }
-            },
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "PipelineMyWaveProduceCodePipelineActionRoleE0DCE9D3",
-                  "Arn"
-                ]
-              }
-            },
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "PipelineMyWaveConsumeCodePipelineActionRole7FAA4EFA",
-                  "Arn"
-                ]
-              }
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "PipelineBuildSynthCodePipelineActionRole4E7A6C97",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::GetAtt": [
+                    "PipelineMyWaveConsumeCodePipelineActionRole7FAA4EFA",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::GetAtt": [
+                    "PipelineMyWaveProduceCodePipelineActionRoleE0DCE9D3",
+                    "Arn"
+                  ]
+                }
+              ]
             }
           ],
           "Version": "2012-10-17"
@@ -356,7 +350,8 @@
                       ":logs:test-region:12345678:log-group:/aws/codebuild/",
                       {
                         "Ref": "PipelineBuildSynthCdkBuildProject6BEFA8E6"
-                      }
+                      },
+                      ":*"
                     ]
                   ]
                 },
@@ -371,8 +366,7 @@
                       ":logs:test-region:12345678:log-group:/aws/codebuild/",
                       {
                         "Ref": "PipelineBuildSynthCdkBuildProject6BEFA8E6"
-                      },
-                      ":*"
+                      }
                     ]
                   ]
                 }
@@ -380,11 +374,11 @@
             },
             {
               "Action": [
-                "codebuild:CreateReportGroup",
-                "codebuild:CreateReport",
-                "codebuild:UpdateReport",
+                "codebuild:BatchPutCodeCoverages",
                 "codebuild:BatchPutTestCases",
-                "codebuild:BatchPutCodeCoverages"
+                "codebuild:CreateReport",
+                "codebuild:CreateReportGroup",
+                "codebuild:UpdateReport"
               ],
               "Effect": "Allow",
               "Resource": {
@@ -406,16 +400,16 @@
             },
             {
               "Action": [
-                "s3:GetObject*",
-                "s3:GetBucket*",
-                "s3:List*",
+                "s3:Abort*",
                 "s3:DeleteObject*",
+                "s3:GetBucket*",
+                "s3:GetObject*",
+                "s3:List*",
                 "s3:PutObject",
                 "s3:PutObjectLegalHold",
                 "s3:PutObjectRetention",
                 "s3:PutObjectTagging",
-                "s3:PutObjectVersionTagging",
-                "s3:Abort*"
+                "s3:PutObjectVersionTagging"
               ],
               "Effect": "Allow",
               "Resource": [
@@ -581,7 +575,8 @@
                       ":logs:test-region:12345678:log-group:/aws/codebuild/",
                       {
                         "Ref": "PipelineMyWaveProduce884410D6"
-                      }
+                      },
+                      ":*"
                     ]
                   ]
                 },
@@ -596,8 +591,7 @@
                       ":logs:test-region:12345678:log-group:/aws/codebuild/",
                       {
                         "Ref": "PipelineMyWaveProduce884410D6"
-                      },
-                      ":*"
+                      }
                     ]
                   ]
                 }
@@ -605,11 +599,11 @@
             },
             {
               "Action": [
-                "codebuild:CreateReportGroup",
-                "codebuild:CreateReport",
-                "codebuild:UpdateReport",
+                "codebuild:BatchPutCodeCoverages",
                 "codebuild:BatchPutTestCases",
-                "codebuild:BatchPutCodeCoverages"
+                "codebuild:CreateReport",
+                "codebuild:CreateReportGroup",
+                "codebuild:UpdateReport"
               ],
               "Effect": "Allow",
               "Resource": {
@@ -631,8 +625,8 @@
             },
             {
               "Action": [
-                "s3:GetObject*",
                 "s3:GetBucket*",
+                "s3:GetObject*",
                 "s3:List*"
               ],
               "Effect": "Allow",
@@ -799,7 +793,8 @@
                       ":logs:test-region:12345678:log-group:/aws/codebuild/",
                       {
                         "Ref": "PipelineMyWaveConsumeC5D5CCD7"
-                      }
+                      },
+                      ":*"
                     ]
                   ]
                 },
@@ -814,8 +809,7 @@
                       ":logs:test-region:12345678:log-group:/aws/codebuild/",
                       {
                         "Ref": "PipelineMyWaveConsumeC5D5CCD7"
-                      },
-                      ":*"
+                      }
                     ]
                   ]
                 }
@@ -823,11 +817,11 @@
             },
             {
               "Action": [
-                "codebuild:CreateReportGroup",
-                "codebuild:CreateReport",
-                "codebuild:UpdateReport",
+                "codebuild:BatchPutCodeCoverages",
                 "codebuild:BatchPutTestCases",
-                "codebuild:BatchPutCodeCoverages"
+                "codebuild:CreateReport",
+                "codebuild:CreateReportGroup",
+                "codebuild:UpdateReport"
               ],
               "Effect": "Allow",
               "Resource": {
@@ -849,8 +843,8 @@
             },
             {
               "Action": [
-                "s3:GetObject*",
                 "s3:GetBucket*",
+                "s3:GetObject*",
                 "s3:List*"
               ],
               "Effect": "Allow",
