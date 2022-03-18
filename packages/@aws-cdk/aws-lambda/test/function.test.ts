@@ -441,7 +441,7 @@ describe('function', () => {
       let fn: lambda.Function;
       let warningMessage: string;
       beforeEach(() => {
-        warningMessage = 'Lambda has changed their authorization strategy';
+        warningMessage = 'AWS Lambda has changed their authorization strategy';
         stack = new cdk.Stack();
         fn = new lambda.Function(stack, 'MyLambda', {
           code: lambda.Code.fromAsset(path.join(__dirname, 'my-lambda-handler')),
@@ -473,6 +473,17 @@ describe('function', () => {
 
         // THEN
         Annotations.fromStack(stack).hasNoWarning('/Default/MyVersion', Match.stringLikeRegexp(warningMessage));
+      });
+
+      test('latest version', () => {
+        // WHEN
+        fn.latestVersion.addPermission('MyPermission', {
+          principal: new iam.ServicePrincipal('lambda.amazonaws.com'),
+        });
+
+        // THEN
+        // cannot add permissions on latest version, so no warning necessary
+        Annotations.fromStack(stack).hasNoWarning('/Default/MyLambda/$LATEST', Match.stringLikeRegexp(warningMessage));
       });
 
       test('alias', () => {

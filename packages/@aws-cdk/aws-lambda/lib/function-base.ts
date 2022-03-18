@@ -291,7 +291,11 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
     const scope = permission.scope ?? this;
 
     if (['lambda:InvokeFunction', 'lambda:*'].includes(action) && !qualified) {
-      Annotations.of(this).addWarning('Lambda has changed their authorization strategy, which may affect resource permissions on unqualified arns. See https://github.com/aws/aws-cdk/issues/19273');
+      Annotations.of(this).addWarning([
+        'AWS Lambda has changed their authorization strategy, which may cause client invocations of the lambda function to fail with Access Denied errors.',
+        "If you are using a lambda Version or Alias, make sure to call 'grantInvoke' or 'addPermission' on the Version or Alias, not the underlying Function",
+        'See: https://github.com/aws/aws-cdk/issues/19273',
+      ].join('\n'));
     }
 
     new CfnPermission(scope, id, {
