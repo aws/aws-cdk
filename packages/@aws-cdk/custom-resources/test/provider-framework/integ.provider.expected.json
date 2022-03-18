@@ -131,7 +131,7 @@
           ]
         },
         "Handler": "index.onEvent",
-        "Runtime": "nodejs12.x"
+        "Runtime": "nodejs10.x"
       },
       "DependsOn": [
         "comamazonawscdkcustomresourcess3fileproviders3fileoneventServiceRoleDefaultPolicy10D24725",
@@ -1052,7 +1052,18 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": "states.test-region.amazonaws.com"
+                "Service": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "states.",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ".amazonaws.com"
+                    ]
+                  ]
+                }
               }
             }
           ],
