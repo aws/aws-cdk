@@ -1,7 +1,6 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
-import { debug } from '../../logging';
-import { cdkCacheDir } from '../../util/directories';
+import { accountCacheDir, debug } from './_env';
 import { Account } from './sdk-provider';
 
 /**
@@ -22,7 +21,7 @@ export class AccountAccessKeyCache {
    * @param filePath Path to the cache file
    */
   constructor(filePath?: string) {
-    this.cacheFile = filePath || path.join(cdkCacheDir(), 'accounts_partitions.json');
+    this.cacheFile = filePath || path.join(accountCacheDir(), 'accounts_partitions.json');
   }
 
   /**
