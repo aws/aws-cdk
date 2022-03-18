@@ -10,6 +10,7 @@ import { CloudFormationDeployments } from '../lib/api/cloudformation-deployments
 import { StackSelector } from '../lib/api/cxapp/cloud-assembly';
 import { CloudExecutable } from '../lib/api/cxapp/cloud-executable';
 import { execProgram } from '../lib/api/cxapp/exec';
+import { PluginHost } from '../lib/api/plugin';
 import { ToolkitInfo } from '../lib/api/toolkit-info';
 import { StackActivityProgress } from '../lib/api/util/cloudformation/stack-activity-monitor';
 import { CdkToolkit } from '../lib/cdk-toolkit';
@@ -20,7 +21,6 @@ import { RequireApproval } from '../lib/diff';
 import { availableInitLanguages, cliInit, printAvailableTemplates } from '../lib/init';
 import { data, debug, error, print, setLogLevel } from '../lib/logging';
 import { displayNotices, refreshNotices } from '../lib/notices';
-import { PluginHost } from '../lib/plugin';
 import { Command, Configuration, Settings } from '../lib/settings';
 import * as version from '../lib/version';
 
@@ -235,10 +235,6 @@ if (!process.stdout.isTTY) {
 }
 
 async function initCommandLine() {
-  void refreshNotices()
-    .then(_ => debug('Notices refreshed'))
-    .catch(e => debug(`Notices refresh failed: ${e}`));
-
   const argv = await parseCommandLineArguments();
   if (argv.verbose) {
     setLogLevel(argv.verbose);
@@ -253,6 +249,12 @@ async function initCommandLine() {
     },
   });
   await configuration.load();
+
+  if (shouldDisplayNotices()) {
+    void refreshNotices()
+      .then(_ => debug('Notices refreshed'))
+      .catch(e => debug(`Notices refresh failed: ${e}`));
+  }
 
   const sdkProvider = await SdkProvider.withAwsCliCompatibleDefaults({
     profile: configuration.settings.get(['profile']),
@@ -318,7 +320,7 @@ async function initCommandLine() {
           acknowledgedIssueNumbers: [],
           ignoreCache: true,
         });
-      } else {
+      } else if (cmd !== 'version') {
         await displayNotices({
           outdir: configuration.settings.get(['output']) ?? 'cdk.out',
           acknowledgedIssueNumbers: configuration.context.get('acknowledged-issue-numbers') ?? [],
@@ -326,10 +328,10 @@ async function initCommandLine() {
         });
       }
     }
+  }
 
-    function shouldDisplayNotices(): boolean {
-      return configuration.settings.get(['notices']) ?? true;
-    }
+  function shouldDisplayNotices(): boolean {
+    return configuration.settings.get(['notices']) ?? true;
   }
 
   async function main(command: string, args: any): Promise<number | void> {
