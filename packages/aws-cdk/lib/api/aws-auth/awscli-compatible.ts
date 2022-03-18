@@ -60,7 +60,6 @@ export class AwsCliCompatible {
     sources.push(() => profileCredentials(implicitProfile));
     sources.push(() => new AWS.SsoCredentials({ profile: implicitProfile }));
     sources.push(() => new AWS.ProcessCredentials({ profile: implicitProfile }));
-    //}
 
     if (options.containerCreds ?? hasEcsCredentials()) {
       sources.push(() => new AWS.ECSCredentials());
