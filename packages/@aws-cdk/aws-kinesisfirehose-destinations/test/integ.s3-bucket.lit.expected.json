@@ -23,9 +23,9 @@
           "Statement": [
             {
               "Action": [
+                "s3:DeleteObject*",
                 "s3:GetBucket*",
-                "s3:List*",
-                "s3:DeleteObject*"
+                "s3:List*"
               ],
               "Effect": "Allow",
               "Principal": {
@@ -196,9 +196,9 @@
           "Statement": [
             {
               "Action": [
+                "s3:DeleteObject*",
                 "s3:GetBucket*",
-                "s3:List*",
-                "s3:DeleteObject*"
+                "s3:List*"
               ],
               "Effect": "Allow",
               "Principal": {
@@ -476,23 +476,43 @@
           "Statement": [
             {
               "Action": [
-                "s3:GetObject*",
-                "s3:GetBucket*",
-                "s3:List*",
+                "s3:Abort*",
                 "s3:DeleteObject*",
+                "s3:GetBucket*",
+                "s3:GetObject*",
+                "s3:List*",
                 "s3:PutObject",
                 "s3:PutObjectLegalHold",
                 "s3:PutObjectRetention",
                 "s3:PutObjectTagging",
-                "s3:PutObjectVersionTagging",
-                "s3:Abort*"
+                "s3:PutObjectVersionTagging"
               ],
               "Effect": "Allow",
               "Resource": [
                 {
                   "Fn::GetAtt": [
+                    "BackupBucket26B8E51C",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::GetAtt": [
                     "Bucket83908E77",
                     "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "BackupBucket26B8E51C",
+                          "Arn"
+                        ]
+                      },
+                      "/*"
+                    ]
                   ]
                 },
                 {
@@ -517,77 +537,43 @@
                 "logs:PutLogEvents"
               ],
               "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "LogGroupF5B46931",
-                  "Arn"
-                ]
-              }
-            },
-            {
-              "Action": [
-                "s3:GetObject*",
-                "s3:GetBucket*",
-                "s3:List*",
-                "s3:DeleteObject*",
-                "s3:PutObject",
-                "s3:PutObjectLegalHold",
-                "s3:PutObjectRetention",
-                "s3:PutObjectTagging",
-                "s3:PutObjectVersionTagging",
-                "s3:Abort*"
-              ],
-              "Effect": "Allow",
               "Resource": [
                 {
                   "Fn::GetAtt": [
-                    "BackupBucket26B8E51C",
+                    "DeliveryStreamLogGroup9D8FA3BB",
                     "Arn"
                   ]
                 },
                 {
-                  "Fn::Join": [
-                    "",
-                    [
-                      {
-                        "Fn::GetAtt": [
-                          "BackupBucket26B8E51C",
-                          "Arn"
-                        ]
-                      },
-                      "/*"
-                    ]
+                  "Fn::GetAtt": [
+                    "LogGroupF5B46931",
+                    "Arn"
                   ]
                 }
               ]
             },
             {
               "Action": [
-                "logs:CreateLogStream",
-                "logs:PutLogEvents"
-              ],
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "DeliveryStreamLogGroup9D8FA3BB",
-                  "Arn"
-                ]
-              }
-            },
-            {
-              "Action": [
                 "kms:Decrypt",
                 "kms:Encrypt",
-                "kms:ReEncrypt*",
-                "kms:GenerateDataKey*"
+                "kms:GenerateDataKey*",
+                "kms:ReEncrypt*"
               ],
               "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "BackupKey60B97760",
-                  "Arn"
-                ]
-              }
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "BackupKey60B97760",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::GetAtt": [
+                    "Key961B73FD",
+                    "Arn"
+                  ]
+                }
+              ]
             },
             {
               "Action": "lambda:InvokeFunction",

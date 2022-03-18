@@ -1163,23 +1163,18 @@
             },
             {
               "Action": [
-                "secretsmanager:GetSecretValue",
-                "secretsmanager:DescribeSecret"
+                "secretsmanager:DescribeSecret",
+                "secretsmanager:GetSecretValue"
               ],
               "Effect": "Allow",
-              "Resource": {
-                "Ref": "ClusterSecretAttachment769E6258"
-              }
-            },
-            {
-              "Action": [
-                "secretsmanager:GetSecretValue",
-                "secretsmanager:DescribeSecret"
-              ],
-              "Effect": "Allow",
-              "Resource": {
-                "Ref": "UserSecretAttachment02022609"
-              }
+              "Resource": [
+                {
+                  "Ref": "ClusterSecretAttachment769E6258"
+                },
+                {
+                  "Ref": "UserSecretAttachment02022609"
+                }
+              ]
             }
           ],
           "Version": "2012-10-17"
