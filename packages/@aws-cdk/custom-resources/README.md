@@ -401,7 +401,7 @@ the `installLatestAwsSdk` prop to `false`.
 You must provide the `policy` property defining the IAM Policy that will be applied to the API calls.
 The library provides two factory methods to quickly configure this:
 
-* **`AwsCustomResourcePolicy.fromSdkCalls`** - Use this to auto-generate IAM
+- **`AwsCustomResourcePolicy.fromSdkCalls`** - Use this to auto-generate IAM
   Policy statements based on the configured SDK calls. Keep two things in mind
   when using this policy:
   - This policy variant assumes the IAM policy name has the same name as the API
@@ -412,7 +412,7 @@ The library provides two factory methods to quickly configure this:
     do a call that requires different IAM action names.
   - You will have to either provide specific ARNs, or explicitly use
     `AwsCustomResourcePolicy.ANY_RESOURCE` to allow access to any resource.
-* **`AwsCustomResourcePolicy.fromStatements`** - Use this to specify your own
+- **`AwsCustomResourcePolicy.fromStatements`** - Use this to specify your own
   custom statements.
 
 The custom resource also implements `iam.IGrantable`, making it possible to use the `grantXxx()` methods.
