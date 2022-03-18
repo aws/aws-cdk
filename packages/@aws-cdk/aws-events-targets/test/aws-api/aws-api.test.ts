@@ -1,4 +1,4 @@
-import { Template } from '@aws-cdk/assertions';
+import { Annotations, Template } from '@aws-cdk/assertions';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import { App, Stack } from '@aws-cdk/core';
@@ -163,9 +163,5 @@ test('with service not in AWS SDK', () => {
   rule.addTarget(awsApi);
 
   // THEN
-  const assembly = App.of(stack)!.synth().getStackArtifact(stack.stackName);
-  expect(assembly.messages.length).toBe(1);
-  const message = assembly.messages[0];
-  expect(message.entry.type).toBe('aws:cdk:warning');
-  expect(message.entry.data).toBe('Service no-such-service does not exist in the AWS SDK. Check the list of available services and actions from https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/index.html');
+  Annotations.fromStack(stack).hasWarning('*', 'Service no-such-service does not exist in the AWS SDK. Check the list of available services and actions from https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/index.html');
 });
