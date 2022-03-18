@@ -457,7 +457,7 @@ describe('function', () => {
         });
 
         // THEN
-        Annotations.fromStack(stack).hasWarning('*', Match.stringLikeRegexp(warningMessage));
+        Annotations.fromStack(stack).hasWarning('/Default/MyLambda', Match.stringLikeRegexp(warningMessage));
       });
 
       test('version', () => {
@@ -466,13 +466,13 @@ describe('function', () => {
           lambda: fn,
         });
 
-        //WHEN
+        // WHEN
         version.addPermission('MyPermission', {
           principal: new iam.ServicePrincipal('lambda.amazonaws.com'),
         });
 
         // THEN
-        Annotations.fromStack(stack).hasNoWarning('*', Match.stringLikeRegexp(warningMessage));
+        Annotations.fromStack(stack).hasNoWarning('/Default/MyVersion', Match.stringLikeRegexp(warningMessage));
       });
 
       test('alias', () => {
@@ -485,13 +485,29 @@ describe('function', () => {
           version,
         });
 
-        //WHEN
+        // WHEN
         alias.addPermission('MyPermission', {
           principal: new iam.ServicePrincipal('lambda.amazonaws.com'),
         });
 
         // THEN
-        Annotations.fromStack(stack).hasNoWarning('*', Match.stringLikeRegexp(warningMessage));
+        Annotations.fromStack(stack).hasNoWarning('/Default/MyAlias', Match.stringLikeRegexp(warningMessage));
+      });
+
+      test('alias on latest version', () => {
+        // GIVEN
+        const alias = new lambda.Alias(stack, 'MyAlias', {
+          aliasName: 'alias',
+          version: fn.latestVersion,
+        });
+
+        // WHEN
+        alias.addPermission('MyPermission', {
+          principal: new iam.ServicePrincipal('lambda.amazonaws.com'),
+        });
+
+        // THEN
+        Annotations.fromStack(stack).hasNoWarning('/Default/MyAlias', Match.stringLikeRegexp(warningMessage));
       });
 
       test('function without lambda:InvokeFunction', () => {
@@ -502,7 +518,7 @@ describe('function', () => {
         });
 
         // THEN
-        Annotations.fromStack(stack).hasNoWarning('*', Match.stringLikeRegexp(warningMessage));
+        Annotations.fromStack(stack).hasNoWarning('/Default/MyLambda', Match.stringLikeRegexp(warningMessage));
       });
     });
   });
