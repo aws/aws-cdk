@@ -1,3 +1,59 @@
+# CloudFormation Resource Specification v61.0.0
+
+## New Resource Types
+
+* AWS::BillingConductor::BillingGroup
+* AWS::BillingConductor::CustomLineItem
+* AWS::BillingConductor::PricingPlan
+* AWS::BillingConductor::PricingRule
+
+## Attribute Changes
+
+* AWS::DMS::ReplicationInstance ReplicationInstancePrivateIpAddresses.PrimitiveItemType (__deleted__)
+* AWS::DMS::ReplicationInstance ReplicationInstancePrivateIpAddresses.Type (__deleted__)
+* AWS::DMS::ReplicationInstance ReplicationInstancePrivateIpAddresses.PrimitiveType (__added__)
+* AWS::DMS::ReplicationInstance ReplicationInstancePublicIpAddresses.PrimitiveItemType (__deleted__)
+* AWS::DMS::ReplicationInstance ReplicationInstancePublicIpAddresses.Type (__deleted__)
+* AWS::DMS::ReplicationInstance ReplicationInstancePublicIpAddresses.PrimitiveType (__added__)
+* AWS::EC2::Subnet Id (__deleted__)
+* AWS::EC2::Subnet SubnetId (__added__)
+
+## Property Changes
+
+* AWS::CodeDeploy::DeploymentGroup OutdatedInstancesStrategy (__added__)
+* AWS::CodeDeploy::DeploymentGroup Tags (__added__)
+* AWS::DMS::Endpoint Tags.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::DMS::ReplicationSubnetGroup Tags.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::EC2::Subnet AvailabilityZoneId (__added__)
+* AWS::EC2::Subnet EnableDns64 (__added__)
+* AWS::EC2::Subnet Ipv6Native (__added__)
+* AWS::EC2::Subnet PrivateDnsNameOptionsOnLaunch (__added__)
+* AWS::EC2::Subnet CidrBlock.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::Inspector::AssessmentTemplate RulesPackageArns.DuplicatesAllowed (__added__)
+* AWS::Inspector::AssessmentTemplate UserAttributesForFindings.DuplicatesAllowed (__added__)
+* AWS::Inspector::ResourceGroup ResourceGroupTags.DuplicatesAllowed (__added__)
+
+## Property Type Changes
+
+* AWS::ACMPCA::Certificate.CustomAttribute (__added__)
+* AWS::ACMPCA::Certificate.CustomExtension (__added__)
+* AWS::ACMPCA::CertificateAuthority.CustomAttribute (__added__)
+* AWS::CodeDeploy::DeploymentGroup.TargetGroupPairInfo (__added__)
+* AWS::CodeDeploy::DeploymentGroup.TrafficRoute (__added__)
+* AWS::ACMPCA::Certificate.Extensions CustomExtensions (__added__)
+* AWS::ACMPCA::Certificate.Subject CustomAttributes (__added__)
+* AWS::ACMPCA::CertificateAuthority.Subject CustomAttributes (__added__)
+* AWS::CodeDeploy::DeploymentGroup.LoadBalancerInfo TargetGroupPairInfoList (__added__)
+* AWS::FSx::FileSystem.OpenZFSConfiguration Options (__added__)
+* AWS::FSx::FileSystem.RootVolumeConfiguration RecordSizeKiB (__added__)
+
+
 # CloudFormation Resource Specification v60.0.0
 
 ## New Resource Types
