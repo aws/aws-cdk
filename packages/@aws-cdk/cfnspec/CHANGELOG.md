@@ -1,3 +1,202 @@
+# CloudFormation Resource Specification v60.0.0
+
+## New Resource Types
+
+* AWS::Personalize::Dataset
+* AWS::Personalize::DatasetGroup
+* AWS::Personalize::Schema
+* AWS::Personalize::Solution
+
+## Attribute Changes
+
+* AWS::EC2::Subnet Id (__added__)
+* AWS::EC2::Subnet Ipv6CidrBlocks.DuplicatesAllowed (__added__)
+
+## Property Changes
+
+* AWS::EC2::Subnet AvailabilityZoneId (__deleted__)
+* AWS::EC2::Subnet EnableDns64 (__deleted__)
+* AWS::EC2::Subnet Ipv6Native (__deleted__)
+* AWS::EC2::Subnet PrivateDnsNameOptionsOnLaunch (__deleted__)
+* AWS::EC2::Subnet Ipv6CidrBlock.UpdateType (__changed__)
+  * Old: Conditional
+  * New: Mutable
+* AWS::EC2::Subnet VpcId.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-subnet.html#cfn-awsec2subnet-prop-vpcid
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-subnet.html#cfn-ec2-subnet-vpcid
+* AWS::EC2::TransitGatewayPeeringAttachment Options (__deleted__)
+* AWS::ECS::Service EnableECSManagedTags.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::ECS::Service LoadBalancers.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::ECS::Service PropagateTags.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::ECS::Service ServiceRegistries.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::FIS::ExperimentTemplate LogConfiguration (__added__)
+
+## Property Type Changes
+
+* AWS::EC2::Subnet.PrivateDnsNameOptionsOnLaunch (__removed__)
+* AWS::EC2::TransitGatewayPeeringAttachment.TransitGatewayPeeringAttachmentOptions (__removed__)
+* AWS::AppFlow::Flow.MarketoDestinationProperties (__added__)
+* AWS::AutoScaling::ScalingPolicy.Metric (__added__)
+* AWS::AutoScaling::ScalingPolicy.MetricDataQuery (__added__)
+* AWS::AutoScaling::ScalingPolicy.MetricStat (__added__)
+* AWS::AutoScaling::ScalingPolicy.PredictiveScalingCustomizedCapacityMetric (__added__)
+* AWS::AutoScaling::ScalingPolicy.PredictiveScalingCustomizedLoadMetric (__added__)
+* AWS::AutoScaling::ScalingPolicy.PredictiveScalingCustomizedScalingMetric (__added__)
+* AWS::FIS::ExperimentTemplate.ExperimentTemplateLogConfiguration (__added__)
+* AWS::AppFlow::Flow.DestinationConnectorProperties Marketo (__added__)
+* AWS::AutoScaling::ScalingPolicy.PredictiveScalingMetricSpecification CustomizedCapacityMetricSpecification (__added__)
+* AWS::AutoScaling::ScalingPolicy.PredictiveScalingMetricSpecification CustomizedLoadMetricSpecification (__added__)
+* AWS::AutoScaling::ScalingPolicy.PredictiveScalingMetricSpecification CustomizedScalingMetricSpecification (__added__)
+* AWS::ECS::Service.LoadBalancer ContainerName.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::ECS::Service.LoadBalancer ContainerPort.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::ECS::Service.LoadBalancer LoadBalancerName.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::ECS::Service.LoadBalancer TargetGroupArn.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::ECS::Service.ServiceRegistry ContainerName.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::ECS::Service.ServiceRegistry ContainerPort.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::ECS::Service.ServiceRegistry Port.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::ECS::Service.ServiceRegistry RegistryArn.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::FIS::ExperimentTemplate.ExperimentTemplateTarget Parameters (__added__)
+* AWS::Lex::BotAlias.AudioLogDestination S3Bucket.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::Lex::BotAlias.TextLogDestination CloudWatch.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::Lex::BotAlias.TextLogSetting Destination.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::Lex::BotAlias.TextLogSetting Enabled.Required (__changed__)
+  * Old: false
+  * New: true
+
+
+# CloudFormation Resource Specification v59.0.0
+
+## New Resource Types
+
+* AWS::EKS::IdentityProviderConfig
+* AWS::MSK::BatchScramSecret
+* AWS::MSK::Configuration
+
+## Attribute Changes
+
+* AWS::ImageBuilder::Image ImageUri (__added__)
+* AWS::MSK::Cluster Arn (__added__)
+
+## Property Changes
+
+* AWS::AmplifyUIBuilder::Component SchemaVersion (__added__)
+* AWS::ApiGateway::BasePathMapping Id (__added__)
+* AWS::EC2::TransitGatewayVpcAttachment SubnetIds.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::EC2::TransitGatewayVpcAttachment TransitGatewayId.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::EC2::TransitGatewayVpcAttachment VpcId.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::ImageBuilder::Image ContainerRecipeArn.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::MSK::Cluster CurrentVersion (__added__)
+* AWS::MSK::Cluster Tags.PrimitiveType (__deleted__)
+* AWS::MSK::Cluster Tags.PrimitiveItemType (__added__)
+* AWS::MSK::Cluster Tags.Type (__added__)
+
+## Property Type Changes
+
+* AWS::DataBrew::Job.Output MaxOutputFiles (__added__)
+* AWS::MSK::Cluster.BrokerNodeGroupInfo ClientSubnets.DuplicatesAllowed (__added__)
+* AWS::MSK::Cluster.BrokerNodeGroupInfo SecurityGroups.DuplicatesAllowed (__added__)
+* AWS::MSK::Cluster.Tls CertificateAuthorityArnList.DuplicatesAllowed (__added__)
+
+
+# CloudFormation Resource Specification v58.0.0
+
+## New Resource Types
+
+* AWS::AppIntegrations::DataIntegration
+* AWS::DataSync::LocationFSxLustre
+
+## Attribute Changes
+
+* AWS::AmplifyUIBuilder::Component CreatedAt (__deleted__)
+* AWS::AmplifyUIBuilder::Component ModifiedAt (__deleted__)
+
+## Property Changes
+
+* AWS::AmplifyUIBuilder::Component Events (__added__)
+* AWS::AmplifyUIBuilder::Component BindingProperties.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::AmplifyUIBuilder::Component ComponentType.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::AmplifyUIBuilder::Component Name.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::AmplifyUIBuilder::Component Overrides.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::AmplifyUIBuilder::Component Properties.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::AmplifyUIBuilder::Component Variants.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::Events::Connection AuthParameters.PrimitiveType (__deleted__)
+* AWS::Events::Connection AuthParameters.Type (__added__)
+* AWS::Transfer::Server PostAuthenticationLoginBanner (__added__)
+* AWS::Transfer::Server PreAuthenticationLoginBanner (__added__)
+
+## Property Type Changes
+
+* AWS::AmplifyUIBuilder::Component.ActionParameters (__added__)
+* AWS::AmplifyUIBuilder::Component.ComponentEvent (__added__)
+* AWS::AmplifyUIBuilder::Component.ComponentEvents (__added__)
+* AWS::AmplifyUIBuilder::Component.MutationActionSetStateParameter (__added__)
+* AWS::AppFlow::Flow.SAPODataDestinationProperties (__added__)
+* AWS::AppFlow::Flow.SuccessResponseHandlingConfig (__added__)
+* AWS::AppMesh::Mesh.MeshServiceDiscovery (__added__)
+* AWS::Events::Connection.ApiKeyAuthParameters (__added__)
+* AWS::Events::Connection.AuthParameters (__added__)
+* AWS::Events::Connection.BasicAuthParameters (__added__)
+* AWS::Events::Connection.ClientParameters (__added__)
+* AWS::Events::Connection.ConnectionHttpParameters (__added__)
+* AWS::Events::Connection.OAuthParameters (__added__)
+* AWS::Events::Connection.Parameter (__added__)
+* AWS::AmplifyUIBuilder::Component.ComponentChild Events (__added__)
+* AWS::AmplifyUIBuilder::Component.ComponentConditionProperty OperandType (__added__)
+* AWS::AmplifyUIBuilder::Component.ComponentProperty ComponentName (__added__)
+* AWS::AmplifyUIBuilder::Component.ComponentProperty Property (__added__)
+* AWS::AppFlow::Flow.DestinationConnectorProperties SAPOData (__added__)
+
+
 # CloudFormation Resource Specification v57.0.0
 
 ## New Resource Types
