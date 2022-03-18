@@ -20,6 +20,11 @@ describe('repository', () => {
       Resources: {
         Repo02AC86CF: {
           Type: 'AWS::ECR::Repository',
+          Properties: {
+            ImageScanningConfiguration: {
+              ScanOnPush: false,
+            },
+          },
           DeletionPolicy: 'Retain',
           UpdateReplacePolicy: 'Retain',
         },

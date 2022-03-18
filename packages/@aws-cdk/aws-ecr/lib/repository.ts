@@ -508,9 +508,7 @@ export class Repository extends RepositoryBase {
       // It says "Text", but they actually mean "Object".
       repositoryPolicyText: Lazy.any({ produce: () => this.policyDocument }),
       lifecyclePolicy: Lazy.any({ produce: () => this.renderLifecyclePolicy() }),
-      imageScanningConfiguration: !props.imageScanOnPush ? undefined : {
-        scanOnPush: true,
-      },
+      imageScanningConfiguration: props.imageScanOnPush ? { scanOnPush: true } : { scanOnPush: false },
       imageTagMutability: props.imageTagMutability || undefined,
       encryptionConfiguration: this.parseEncryption(props),
     });
