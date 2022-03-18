@@ -285,6 +285,43 @@ ds.createResolver({
 });
 ```
 
+## Custom Domain Names
+
+For many use cases you may want to associate a custom domain name with your
+GraphQL API. This can be done during the API creation.
+
+```ts
+import * as acm from '@aws-cdk/aws-certificatemanager';
+import * as route53 from '@aws-cdk/aws-route53';
+
+const myDomainName = 'api.example.com';
+const certificate = new acm.Certificate(this, 'cert', { domainName: myDomainName });
+const api = new appsync.GraphqlApi(this, 'api', {
+  name: 'myApi',
+  domainName: {
+    certificate,
+    domainName: myDomainName,
+  },
+});
+
+// hosted zone and route53 features
+declare const hostedZoneId: string;
+declare const zoneName = 'example.com';
+
+// hosted zone for adding appsync domain
+const zone = route53.HostedZone.fromHostedZoneAttributes(this, `HostedZone`, {
+  hostedZoneId,
+  zoneName,
+});
+
+// create a cname to the appsync domain. will map to something like xxxx.cloudfront.net
+new route53.CnameRecord(this, `CnameApiRecord`, {
+  recordName: 'api',
+  zone,
+  domainName: myDomainName,
+});
+```
+
 ## Schema
 
 Every GraphQL Api needs a schema to define the Api. CDK offers `appsync.Schema`
