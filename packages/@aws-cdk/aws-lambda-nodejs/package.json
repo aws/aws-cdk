@@ -78,7 +78,7 @@
     "@aws-cdk/pkglint": "0.0.0",
     "@types/jest": "^27.4.1",
     "delay": "5.0.0",
-    "esbuild": "^0.14.25"
+    "esbuild": "^0.14.27"
   },
   "dependencies": {
     "@aws-cdk/aws-lambda": "0.0.0",
