@@ -129,7 +129,7 @@ async function findLibrariesToPackage(uberPackageJson: PackageJson): Promise<rea
   for (const dir of await fs.readdir(librariesRoot)) {
     const packageJson = await fs.readJson(path.resolve(librariesRoot, dir, 'package.json'));
 
-    if (packageJson.ubergen?.exclude) {
+    if (packageJson.private || packageJson.ubergen?.exclude) {
       console.log(`\t⚠️ Skipping (ubergen excluded):   ${packageJson.name}`);
       continue;
     } else if (packageJson.jsii == null ) {
