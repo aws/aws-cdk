@@ -72,8 +72,8 @@
                 },
                 {
                   "Action": [
-                    "logs:CreateLogGroup",
                     "logs:CreateLogStream",
+                    "logs:CreateLogGroup",
                     "logs:PutLogEvents"
                   ],
                   "Effect": "Allow",
@@ -270,8 +270,8 @@
                 },
                 {
                   "Action": [
-                    "logs:CreateLogGroup",
                     "logs:CreateLogStream",
+                    "logs:CreateLogGroup",
                     "logs:PutLogEvents"
                   ],
                   "Effect": "Allow",
@@ -502,8 +502,8 @@
                 },
                 {
                   "Action": [
-                    "logs:CreateLogGroup",
                     "logs:CreateLogStream",
+                    "logs:CreateLogGroup",
                     "logs:PutLogEvents"
                   ],
                   "Effect": "Allow",
@@ -734,8 +734,8 @@
                 },
                 {
                   "Action": [
-                    "logs:CreateLogGroup",
                     "logs:CreateLogStream",
+                    "logs:CreateLogGroup",
                     "logs:PutLogEvents"
                   ],
                   "Effect": "Allow",
@@ -966,8 +966,8 @@
                 },
                 {
                   "Action": [
-                    "logs:CreateLogGroup",
                     "logs:CreateLogStream",
+                    "logs:CreateLogGroup",
                     "logs:PutLogEvents"
                   ],
                   "Effect": "Allow",
