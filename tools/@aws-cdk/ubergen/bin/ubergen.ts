@@ -129,7 +129,7 @@ async function findLibrariesToPackage(uberPackageJson: PackageJson): Promise<rea
   for (const dir of await fs.readdir(librariesRoot)) {
     const packageJson = await fs.readJson(path.resolve(librariesRoot, dir, 'package.json'));
 
-    if (packageJson.ubergen?.exclude) {
+    if (packageJson.private || packageJson.ubergen?.exclude) {
       console.log(`\t⚠️ Skipping (ubergen excluded):   ${packageJson.name}`);
       continue;
     } else if (packageJson.jsii == null ) {
@@ -365,7 +365,7 @@ async function transformPackage(
     await cfn2ts(cfnScopes, destinationLib);
 
     // We know what this is going to be, so predict it
-    const alphaPackageName = `${library.packageJson.name}-alpha`;
+    const alphaPackageName = hasL2s(library) ? `${library.packageJson.name}-alpha` : undefined;
 
     // create a lib/index.ts which only exports the generated files
     fs.writeFileSync(path.join(destinationLib, 'index.ts'),
@@ -411,6 +411,23 @@ async function transformPackage(
   }
 
   return true;
+}
+
+/**
+ * Return whether a package has L2s
+ *
+ * We determine this on the cheap: the answer is yes if the package has
+ * any .ts files in the `lib` directory other than `index.ts` and `*.generated.ts`.
+ */
+function hasL2s(library: LibraryReference) {
+  try {
+    const sourceFiles = fs.readdirSync(path.join(library.root, 'lib')).filter(n => n.endsWith('.ts') && !n.endsWith('.d.ts'));
+    return sourceFiles.some(n => n !== 'index.ts' && !n.includes('.generated.'));
+  } catch (e) {
+    if (e.code === 'ENOENT') { return false; }
+
+    throw e;
+  }
 }
 
 function transformTargets(monoConfig: PackageJson['jsii']['targets'], targets: PackageJson['jsii']['targets']): PackageJson['jsii']['targets'] {
