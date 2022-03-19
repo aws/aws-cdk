@@ -8,9 +8,10 @@ beforeEach(() => {
   stack = new cdk.Stack();
 });
 
-test('DetectDominantLanguage task', () => {
+test('ContainsPiiEntities task', () => {
   // WHEN
-  const task = new tasks.ComprehendDetectDominantLanguage(stack, 'DetectDominantLanguage', {
+  const task = new tasks.ComprehendContainsPiiEntities(stack, 'ContainsPiiEntities', {
+    languageCode: 'en',
     text: 'I love this',
   });
 
@@ -25,12 +26,13 @@ test('DetectDominantLanguage task', () => {
           {
             Ref: 'AWS::Partition',
           },
-          ':states:::aws-sdk:comprehend:detectDominantLanguage',
+          ':states:::aws-sdk:comprehend:containsPiiEntities',
         ],
       ],
     },
     End: true,
     Parameters: {
+      LanguageCode: 'en',
       Text: 'I love this',
     },
   });

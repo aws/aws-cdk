@@ -8,10 +8,10 @@ beforeEach(() => {
   stack = new cdk.Stack();
 });
 
-test('DetectDominantLanguage task', () => {
+test('BatchDetectDominantLanguage task', () => {
   // WHEN
-  const task = new tasks.ComprehendDetectDominantLanguage(stack, 'DetectDominantLanguage', {
-    text: 'I love this',
+  const task = new tasks.ComprehendBatchDetectDominantLanguage(stack, 'BatchDetectDominantLanguage', {
+    textList: ['I love this'],
   });
 
   // THEN
@@ -25,13 +25,13 @@ test('DetectDominantLanguage task', () => {
           {
             Ref: 'AWS::Partition',
           },
-          ':states:::aws-sdk:comprehend:detectDominantLanguage',
+          ':states:::aws-sdk:comprehend:batchDetectDominantLanguage',
         ],
       ],
     },
     End: true,
     Parameters: {
-      Text: 'I love this',
+      TextList: ['I love this'],
     },
   });
 });
