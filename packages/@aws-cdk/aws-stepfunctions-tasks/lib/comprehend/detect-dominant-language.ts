@@ -5,7 +5,7 @@ import { ComprehendMethod, getComprehendResourceArn } from './private/utils';
 
 /**
  * Properties for ComprehendDetectDominantLanguage Task
- * 
+ *
  * @see https://docs.aws.amazon.com/comprehend/latest/dg/API_DetectDominantLanguage.html#API_DetectDominantLanguage_RequestSyntax
  */
 export interface ComprehendDetectDominantLanguageProps extends sfn.TaskStateBaseProps {
@@ -28,7 +28,7 @@ export class ComprehendDetectDominantLanguage extends sfn.TaskStateBase {
 
     this.taskPolicies = [
       new iam.PolicyStatement({
-        actions: ['comprehend:DetectDominantLanguage'],
+        actions: ['comprehend:detectDominantLanguage'],
         resources: ['*'],
       }),
     ];

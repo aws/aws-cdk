@@ -5,7 +5,7 @@ import { ComprehendMethod, getComprehendResourceArn } from './private/utils';
 
 /**
  * Properties for ComprehendBatchDetectSentiment Task
- * 
+ *
  * @see https://docs.aws.amazon.com/comprehend/latest/dg/API_BatchDetectSentiment.html#API_BatchDetectSentiment_RequestSyntax
  */
 export interface ComprehendBatchDetectSentimentProps extends sfn.TaskStateBaseProps {

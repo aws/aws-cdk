@@ -8,11 +8,11 @@ beforeEach(() => {
   stack = new cdk.Stack();
 });
 
-test('ClassifyDocument task', () => {
+test('DetectEntities task', () => {
   // WHEN
-  const task = new tasks.ComprehendClassifyDocument(stack, 'ClassifyDocument', {
-    endpointArn: 'arn:aws:states:::my-test',
-    text: 'I love this',
+  const task = new tasks.ComprehendDetectEntities(stack, 'DetectEntities', {
+    languageCode: 'en',
+    textList: ['I love this'],
   });
 
   // THEN
@@ -26,14 +26,14 @@ test('ClassifyDocument task', () => {
           {
             Ref: 'AWS::Partition',
           },
-          ':states:::aws-sdk:comprehend:classifyDocument',
+          ':states:::aws-sdk:comprehend:detectEntities',
         ],
       ],
     },
     End: true,
     Parameters: {
-      EndpointArn: 'arn:aws:states:::my-test',
-      Text: 'I love this',
+      LanguageCode: 'en',
+      TextList: ['I love this'],
     },
   });
 });

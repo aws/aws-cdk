@@ -12,6 +12,7 @@ export enum ComprehendMethod {
   CREATE_DOCUMENT_CLASSIFIER = 'createDocumentClassifier',
 
   DETECT_DOMINANT_LANGUAGE = 'detectDominantLanguage',
+  DETECT_ENTITIES = 'detectEntities',
 }
 
 export function getComprehendResourceArn(method: ComprehendMethod) {

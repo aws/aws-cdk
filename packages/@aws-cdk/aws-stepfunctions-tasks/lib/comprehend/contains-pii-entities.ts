@@ -5,7 +5,7 @@ import { ComprehendMethod, getComprehendResourceArn } from './private/utils';
 
 /**
  * Properties for ComprehendContainsPiiEntities Task
- * 
+ *
  * @see https://docs.aws.amazon.com/comprehend/latest/dg/API_ContainsPiiEntities.html#API_ContainsPiiEntities_RequestSyntax
  */
 export interface ComprehendContainsPiiEntitiesProps extends sfn.TaskStateBaseProps {

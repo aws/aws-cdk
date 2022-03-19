@@ -5,7 +5,7 @@ import { ComprehendMethod, getComprehendResourceArn } from './private/utils';
 
 /**
  * Properties for ComprehendBatchDetectDominantLanguage Task
- * 
+ *
  * @see https://docs.aws.amazon.com/comprehend/latest/dg/API_BatchDetectDominantLanguage.html#API_BatchDetectDominantLanguage_RequestSyntax
  */
 export interface ComprehendBatchDetectDominantLanguageProps extends sfn.TaskStateBaseProps {

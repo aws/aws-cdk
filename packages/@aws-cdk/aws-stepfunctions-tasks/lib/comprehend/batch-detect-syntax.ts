@@ -5,7 +5,7 @@ import { ComprehendMethod, getComprehendResourceArn } from './private/utils';
 
 /**
  * Properties for ComprehendDetectSyntax Task
- * 
+ *
  * @see https://docs.aws.amazon.com/comprehend/latest/dg/API_BatchDetectSyntax.html#API_BatchDetectSyntax_RequestSyntax
  */
 export interface ComprehendBatchDetectSyntaxProps extends sfn.TaskStateBaseProps {
