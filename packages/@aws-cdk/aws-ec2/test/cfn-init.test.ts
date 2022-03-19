@@ -217,6 +217,58 @@ describe('userdata', () => {
     expectLine(lines, /fingerprint/);
   });
 
+  test('linux userdata contains https proxy when provided', () => {
+    // WHEN
+    const httpsProxy = 'https://exampleproxy.com';
+    simpleInit.attach(resource, {
+      platform: ec2.OperatingSystemType.LINUX,
+      instanceRole,
+      httpsProxy,
+      userData: linuxUserData,
+    });
+
+    // THEN
+    const lines = linuxUserData.render().split('\n');
+    expectLine(lines, cmdArg('cfn-init', `--region ${Aws.REGION}`));
+    expectLine(lines, cmdArg('cfn-init', `--stack ${Aws.STACK_NAME}`));
+    expectLine(lines, cmdArg('cfn-init', `--resource ${resource.logicalId}`));
+    expectLine(lines, cmdArg('cfn-init', `--https-proxy ${httpsProxy}`));
+    expectLine(lines, cmdArg('cfn-init', '-c default'));
+    expectLine(lines, cmdArg('cfn-signal', `--region ${Aws.REGION}`));
+    expectLine(lines, cmdArg('cfn-signal', `--stack ${Aws.STACK_NAME}`));
+    expectLine(lines, cmdArg('cfn-signal', `--resource ${resource.logicalId}`));
+    expectLine(lines, cmdArg('cfn-signal', `--https-proxy ${httpsProxy}`));
+    expectLine(lines, cmdArg('cfn-signal', '-e $?'));
+    expectLine(lines, cmdArg('cat', 'cfn-init.log'));
+    expectLine(lines, /fingerprint/);
+  });
+
+  test('linux userdata contains http proxy when provided', () => {
+    // WHEN
+    const httpProxy = 'http://exampleproxy.com';
+    simpleInit.attach(resource, {
+      platform: ec2.OperatingSystemType.LINUX,
+      instanceRole,
+      httpProxy,
+      userData: linuxUserData,
+    });
+
+    // THEN
+    const lines = linuxUserData.render().split('\n');
+    expectLine(lines, cmdArg('cfn-init', `--region ${Aws.REGION}`));
+    expectLine(lines, cmdArg('cfn-init', `--stack ${Aws.STACK_NAME}`));
+    expectLine(lines, cmdArg('cfn-init', `--resource ${resource.logicalId}`));
+    expectLine(lines, cmdArg('cfn-init', `--http-proxy ${httpProxy}`));
+    expectLine(lines, cmdArg('cfn-init', '-c default'));
+    expectLine(lines, cmdArg('cfn-signal', `--region ${Aws.REGION}`));
+    expectLine(lines, cmdArg('cfn-signal', `--stack ${Aws.STACK_NAME}`));
+    expectLine(lines, cmdArg('cfn-signal', `--resource ${resource.logicalId}`));
+    expectLine(lines, cmdArg('cfn-signal', `--http-proxy ${httpProxy}`));
+    expectLine(lines, cmdArg('cfn-signal', '-e $?'));
+    expectLine(lines, cmdArg('cat', 'cfn-init.log'));
+    expectLine(lines, /fingerprint/);
+  });
+
   test('Windows userdata contains right commands', () => {
     // WHEN
     const windowsUserData = ec2.UserData.forWindows();

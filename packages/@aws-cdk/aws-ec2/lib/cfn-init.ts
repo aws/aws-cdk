@@ -137,6 +137,14 @@ export class CloudFormationInit {
       resourceLocator = `${resourceLocator} --role ${attachOptions.instanceRole.roleName}`;
       notifyResourceLocator = `${notifyResourceLocator} --role ${attachOptions.instanceRole.roleName}`;
     }
+    if (attachOptions.httpProxy) {
+      resourceLocator = `${resourceLocator} --http-proxy ${attachOptions.httpProxy}`;
+      notifyResourceLocator = `${notifyResourceLocator} --http-proxy ${attachOptions.httpProxy}`;
+    }
+    if (attachOptions.httpsProxy) {
+      resourceLocator = `${resourceLocator} --https-proxy ${attachOptions.httpsProxy}`;
+      notifyResourceLocator = `${notifyResourceLocator} --https-proxy ${attachOptions.httpsProxy}`;
+    }
 
     const configSets = (attachOptions.configSets ?? ['default']).join(',');
     const printLog = attachOptions.printLog ?? true;
@@ -381,6 +389,24 @@ export interface AttachInitOptions {
    * @default false
    */
   readonly includeRole?: boolean;
+
+  /**
+   * Include --http-proxy argument when running cfn-init and cfn-signal commands
+   *
+   * An HTTP proxy (non-SSL). Use the following format: http://user:password@host:port
+   *
+   * @default
+   */
+  readonly httpProxy?: string;
+
+  /**
+   * Include --https-proxy argument when running cfn-init and cfn-signal commands
+   *
+   * An HTTPS proxy. Use the following format: https://user:password@host:port
+   *
+   * @default
+   */
+  readonly httpsProxy?: string;
 
   /**
    * OS Platform the init config will be used for
