@@ -474,6 +474,8 @@ export class Instance extends Resource implements IInstance {
       ignoreFailures: options.ignoreFailures,
       includeRole: options.includeRole,
       includeUrl: options.includeUrl,
+      httpProxy: options.httpProxy,
+      httpsProxy: options.httpsProxy,
     });
     this.waitForResourceSignal(options.timeout ?? Duration.minutes(5));
   }
@@ -598,4 +600,22 @@ export interface ApplyCloudFormationInitOptions {
    * @default false
    */
   readonly includeRole?: boolean;
+
+  /**
+   * Include --http-proxy argument when running cfn-init and cfn-signal commands
+   *
+   * An HTTP proxy (non-SSL). Use the following format: http://user:password@host:port
+   *
+   * @default
+   */
+  readonly httpProxy?: string;
+
+  /**
+    * Include --https-proxy argument when running cfn-init and cfn-signal commands
+    *
+    * An HTTPS proxy. Use the following format: https://user:password@host:port
+    *
+    * @default
+    */
+  readonly httpsProxy?: string;
 }

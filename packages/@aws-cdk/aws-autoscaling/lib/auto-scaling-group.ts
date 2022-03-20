@@ -477,7 +477,7 @@ export abstract class Signals {
   protected doRender(options: SignalsOptions, count?: number): CfnCreationPolicy {
     const minSuccessfulInstancesPercent = validatePercentage(options.minSuccessPercentage);
     return {
-      ...options.minSuccessPercentage !== undefined ? { autoScalingCreationPolicy: { minSuccessfulInstancesPercent } } : { },
+      ...options.minSuccessPercentage !== undefined ? { autoScalingCreationPolicy: { minSuccessfulInstancesPercent } } : {},
       resourceSignal: {
         count,
         timeout: options.timeout?.toIsoString(),
@@ -1072,7 +1072,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
 
     this.autoScalingGroup = new CfnAutoScalingGroup(this, 'ASG', asgProps);
     this.osType = imageConfig.osType;
-    this.autoScalingGroupName = this.getResourceNameAttribute(this.autoScalingGroup.ref),
+    this.autoScalingGroupName = this.getResourceNameAttribute(this.autoScalingGroup.ref);
     this.autoScalingGroupArn = Stack.of(this).formatArn({
       service: 'autoscaling',
       resource: 'autoScalingGroup:*:autoScalingGroupName',
@@ -1172,6 +1172,8 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       ignoreFailures: options.ignoreFailures,
       includeRole: options.includeRole,
       includeUrl: options.includeUrl,
+      httpProxy: options.httpProxy,
+      httpsProxy: options.httpsProxy,
     });
   }
 
@@ -1819,12 +1821,12 @@ export interface ApplyCloudFormationInitOptions {
   readonly includeUrl?: boolean;
 
   /**
-  * Include --role argument when running cfn-init and cfn-signal commands
-  *
-  * This will be the IAM instance profile attached to the EC2 instance
-  *
-  * @default false
-  */
+   * Include --role argument when running cfn-init and cfn-signal commands
+   *
+   * This will be the IAM instance profile attached to the EC2 instance
+   *
+   * @default false
+   */
   readonly includeRole?: boolean;
   /**
    * Include --http-proxy argument when running cfn-init and cfn-signal commands
@@ -1833,14 +1835,14 @@ export interface ApplyCloudFormationInitOptions {
    *
    * @default
    */
-   readonly httpProxy?: string;
+  readonly httpProxy?: string;
 
-   /**
-    * Include --https-proxy argument when running cfn-init and cfn-signal commands
-    *
-    * An HTTPS proxy. Use the following format: https://user:password@host:port
-    *
-    * @default
-    */
-   readonly httpsProxy?: string;
+  /**
+   * Include --https-proxy argument when running cfn-init and cfn-signal commands
+   *
+   * An HTTPS proxy. Use the following format: https://user:password@host:port
+   *
+   * @default
+   */
+  readonly httpsProxy?: string;
 }
