@@ -225,8 +225,8 @@ export class Bundle {
     const target = fs.mkdtempSync(path.join(os.tmpdir(), 'bundle-write-'));
 
     // copy the entire project since we are retaining the original files.
-    // except for `node_modules` and `.git` which definitely don't belong in the package.
-    fs.copySync(this.packageDir, target, { filter: n => !n.includes('node_modules') && !n.includes('.git') });
+    // except for `node_modules` and `.git` directories which definitely don't belong in the package.
+    fs.copySync(this.packageDir, target, { filter: n => !n.includes(`node_modules${path.sep}`) && !n.includes(`.git${path.sep}`) });
 
     // clone the original manifest since we are going to
     // to mutate it.
