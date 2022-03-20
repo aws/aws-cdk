@@ -83,6 +83,8 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
     - [Start Execution](#start-execution)
     - [Invoke Activity](#invoke-activity)
   - [SQS](#sqs)
+  - [Translate](#translate)
+    - [TranslateText](#translatetext)
 
 ## Task
 
@@ -1428,5 +1430,19 @@ const task2 = new tasks.SqsSendMessage(this, 'Send2', {
     field1: 'somedata',
     field2: sfn.JsonPath.stringAt('$.field2'),
   }),
+});
+```
+
+## Translate
+
+### TranslateText
+
+The [TranslateText](https://docs.aws.amazon.com/translate/latest/dg/API_TranslateText.html) translates input text from the source language to the target language.
+
+```ts
+new tasks.TranslateTranslateText(this, 'TranslateText', {
+  sourceLanguageCode: sfn.TaskInput.fromJsonPathAt('$.SourceLanguageCode').value,
+  targetLanguageCode: sfn.TaskInput.fromJsonPathAt('$.TargetLanguageCode').value,
+  text: sfn.TaskInput.fromJsonPathAt('$.Text').value,
 });
 ```
