@@ -36,5 +36,5 @@ class CallTranslateStack extends cdk.Stack {
 }
 
 const app = new cdk.App();
-new CallTranslateStack(app, 'aws-stepfunctions-tasks-translate-text-integ');
+new CallTranslateStack(app, 'aws-stepfunctions-tasks-translate-integ');
 app.synth();
