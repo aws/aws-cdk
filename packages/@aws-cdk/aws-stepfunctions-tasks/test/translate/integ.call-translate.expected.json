@@ -62,11 +62,11 @@
           "Fn::Join": [
             "",
             [
-              "{\"StartAt\":\"TranslateTranslateText\",\"States\":{\"TranslateTranslateText\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"arn:",
+              "{\"StartAt\":\"Start\",\"States\":{\"Start\":{\"Type\":\"Pass\",\"Result\":{\"bar\":\"SomeValue\"},\"Next\":\"TranslateTranslateText\"},\"TranslateTranslateText\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"arn:",
               {
                 "Ref": "AWS::Partition"
               },
-              ":states:::aws-sdk:translate:translateText\",\"Parameters\":{\"SourceLanguageCode\":\"en\",\"TargetLanguageCode\":\"pt\",\"Text\":\"translate this phrase\"}}},\"TimeoutSeconds\":30}"
+              ":states:::aws-sdk:translate:translateText\",\"Parameters\":{\"SourceLanguageCode\":\"en\",\"TargetLanguageCode\":\"pt\",\"Text\":\"translate this phrase\"}}}}"
             ]
           ]
         }
