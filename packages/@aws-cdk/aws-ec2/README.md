@@ -1023,6 +1023,12 @@ new ec2.Instance(this, 'Instance', {
 
     // Optional, whether to include the --role argument when running cfn-init and cfn-signal commands (false by default)
     includeRole: true,
+
+    // Optional, whether to include the --http-proxy argument when running cfn-init and cfn-signal commands (not included by default)
+    httpProxy: 'http://my-proxy.example',
+
+    // Optional, whether to include the --https-proxy argument when running cfn-init and cfn-signal commands (not included by default)
+    httpsProxy: 'https://my-proxy.example',
   },
 });
 ```
