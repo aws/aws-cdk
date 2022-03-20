@@ -1,0 +1,103 @@
+{
+  "Resources": {
+    "StateMachineRoleB840431D": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": {
+                  "Fn::FindInMap": [
+                    "ServiceprincipalMap",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    "states"
+                  ]
+                }
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "aws-stepfunctions-tasks-detect-key-phrases-integ/StateMachine/Role/Resource"
+      }
+    },
+    "StateMachineRoleDefaultPolicyDF1E6607": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "comprehend:containsPiiEntities",
+              "Effect": "Allow",
+              "Resource": "*"
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "StateMachineRoleDefaultPolicyDF1E6607",
+        "Roles": [
+          {
+            "Ref": "StateMachineRoleB840431D"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "aws-stepfunctions-tasks-detect-key-phrases-integ/StateMachine/Role/DefaultPolicy/Resource"
+      }
+    },
+    "StateMachine2E01A3A5": {
+      "Type": "AWS::StepFunctions::StateMachine",
+      "Properties": {
+        "RoleArn": {
+          "Fn::GetAtt": [
+            "StateMachineRoleB840431D",
+            "Arn"
+          ]
+        },
+        "DefinitionString": {
+          "Fn::Join": [
+            "",
+            [
+              "{\"StartAt\":\"ComprehendContainsPiiEntities\",\"States\":{\"ComprehendContainsPiiEntities\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":states:::aws-sdk:comprehend:containsPiiEntities\",\"Parameters\":{\"LanguageCode\":\"en\",\"Text\":\"detecting syntax from this phrase\"}}},\"TimeoutSeconds\":30}"
+            ]
+          ]
+        }
+      },
+      "DependsOn": [
+        "StateMachineRoleDefaultPolicyDF1E6607",
+        "StateMachineRoleB840431D"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "aws-stepfunctions-tasks-detect-key-phrases-integ/StateMachine/Resource"
+      }
+    },
+    "CDKMetadata": {
+      "Type": "AWS::CDK::Metadata",
+      "Properties": {
+        "Analytics": "v2:deflate64:H4sIAAAAAAAA/1VOQQ7CMAx7C/cubBIHjkgTRwQaL6i6AGEsrZoUhKb+nXVc4GQ7lu3UUEO92tmXVK4f1pPzEWE6q3WDaS98TBqSmtazaExOy61D8Sk6LHw2elLyXMTBhkB8zaa0TaIYLoldcaVSK4NA68cQ8Ybcz0G1xHIi2rPOFSjmL7E8oXiw7ka8bP3qbMiOMHX+sVgLnvyD3LvIL8s5G/Y9wl3Wz2YDzRaa1V2IqpjmyRGh++IHbsTE6gQBAAA="
+      },
+      "Metadata": {
+        "aws:cdk:path": "aws-stepfunctions-tasks-detect-key-phrases-integ/CDKMetadata/Default"
+      },
+      "Condition": "CDKMetadataAvailable"
+    }
+  },
+  "Outputs": {
+    "stateMachineArn": {
+      "Value": {
+        "Ref": "StateMachine2E01A3A5"
+      }
+    }
+  }
+}

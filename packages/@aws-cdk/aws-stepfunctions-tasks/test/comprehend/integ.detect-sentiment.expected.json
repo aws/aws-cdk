@@ -1,0 +1,103 @@
+{
+  "Resources": {
+    "StateMachineRoleB840431D": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": {
+                  "Fn::FindInMap": [
+                    "ServiceprincipalMap",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    "states"
+                  ]
+                }
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "aws-stepfunctions-tasks-detect-sentiment-integ/StateMachine/Role/Resource"
+      }
+    },
+    "StateMachineRoleDefaultPolicyDF1E6607": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "comprehend:DetectSentiment",
+              "Effect": "Allow",
+              "Resource": "*"
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "StateMachineRoleDefaultPolicyDF1E6607",
+        "Roles": [
+          {
+            "Ref": "StateMachineRoleB840431D"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "aws-stepfunctions-tasks-detect-sentiment-integ/StateMachine/Role/DefaultPolicy/Resource"
+      }
+    },
+    "StateMachine2E01A3A5": {
+      "Type": "AWS::StepFunctions::StateMachine",
+      "Properties": {
+        "RoleArn": {
+          "Fn::GetAtt": [
+            "StateMachineRoleB840431D",
+            "Arn"
+          ]
+        },
+        "DefinitionString": {
+          "Fn::Join": [
+            "",
+            [
+              "{\"StartAt\":\"ComprehendDetectSentiment\",\"States\":{\"ComprehendDetectSentiment\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":states:::aws-sdk:comprehend:detectSentiment\",\"Parameters\":{\"LanguageCode\":\"en\",\"Text\":\"detecting syntax from this phrase\"}}},\"TimeoutSeconds\":30}"
+            ]
+          ]
+        }
+      },
+      "DependsOn": [
+        "StateMachineRoleDefaultPolicyDF1E6607",
+        "StateMachineRoleB840431D"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "aws-stepfunctions-tasks-detect-sentiment-integ/StateMachine/Resource"
+      }
+    },
+    "CDKMetadata": {
+      "Type": "AWS::CDK::Metadata",
+      "Properties": {
+        "Analytics": "v2:deflate64:H4sIAAAAAAAA/1VOMW7DMAx8S3aZsYEMGQu4a9DCeYFAMw3jmBJEqkVg6O+NlKVdeHc84o499NDv3vyPdjgv+w1DItjO5nFx40U+ssVsbgyiljJa3U2kISekyp/GzMZBqjj5GFm+iqtpmxrFSxasrnbmdVEYwxoTXUnmdzJCO5MYr8/h/l23B4xOHq8sreevLo79CtsU7s1q+BnujI8qX6yU4iTMBDfdfw8HGI4w7G7K3KXcKmF64S8DAzfAAAEAAA=="
+      },
+      "Metadata": {
+        "aws:cdk:path": "aws-stepfunctions-tasks-detect-sentiment-integ/CDKMetadata/Default"
+      },
+      "Condition": "CDKMetadataAvailable"
+    }
+  },
+  "Outputs": {
+    "stateMachineArn": {
+      "Value": {
+        "Ref": "StateMachine2E01A3A5"
+      }
+    }
+  }
+}

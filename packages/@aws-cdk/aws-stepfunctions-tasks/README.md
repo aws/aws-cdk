@@ -43,6 +43,18 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
     - [SubmitJob](#submitjob)
   - [CodeBuild](#codebuild)
     - [StartBuild](#startbuild)
+  - [Comprehend](#comprehend)
+    - [BatchDetectDominantLanguage](#batchdetectdominantlanguage)
+    - [BatchDetectEntities](#batchdetectentities)
+    - [BatchDetectKeyPhrases](#batchdetectkeyphrases)
+    - [BatchDetectSentiment](#batchdetectsentiment)
+    - [BatchDetectSyntax](#batchdetectsyntax)
+    - [ContainsPiiEntities](#containspiientities)
+    - [DetectDominantLanguage](#detectdominantlanguage)
+    - [DetectEntities](#detectentities)
+    - [DetectKeyPhrases](#detectkeyphrases)
+    - [DetectSentiment](#detectsentiment)
+    - [DetectSyntax](#detectsyntax)
   - [DynamoDB](#dynamodb)
     - [GetItem](#getitem)
     - [PutItem](#putitem)
@@ -488,6 +500,142 @@ const task = new tasks.CodeBuildStartBuild(this, 'Task', {
       value: sfn.JsonPath.stringAt('$.envVariables.zone'),
     },
   },
+});
+```
+
+## Comprehend
+
+Step Functions supports [Comprehend](https://docs.aws.amazon.com/step-functions/latest/dg/supported-services-awssdk.html) through AWS SDK service integration.
+
+### BatchDetectDominantLanguage
+
+The [BatchDetectDominantLanguage](https://docs.aws.amazon.com/comprehend/latest/dg/API_BatchDetectDominantLanguage.html) determines the dominant language of the input text for a batch of documents.
+
+```ts
+new tasks.BatchDetectDominantLanguage(this, 'BatchDetectDominantLanguages', {
+  textList: [
+    'Some phrase',
+    'Alguma outra frase',
+  ],
+});
+```
+
+### BatchDetectEntities
+
+The [BatchDetectEntities](https://docs.aws.amazon.com/comprehend/latest/dg/API_BatchDetectEntities.html) inspects the text of a batch of documents for named entities and returns information about them.
+
+```ts
+new tasks.BatchDetectEntities(this, 'BatchDetectEntities', {
+  textList: [
+    'Some phrase',
+    'Alguma outra frase',
+  ],
+});
+```
+
+### BatchDetectKeyPhrases
+
+The [BatchDetectKeyPhrases](https://docs.aws.amazon.com/comprehend/latest/dg/API_BatchDetectKeyPhrases.html) detects the key noun phrases found in a batch of documents.
+
+```ts
+new tasks.BatchDetectKeyPhrases(this, 'BatchDetectKeyPhrases', {
+  languageCode: ComprehendLanguageCode.ENGLISH,
+  textList: [
+    'Some phrase',
+    'And another phrase',
+  ],
+});
+```
+
+### BatchDetectSentiment
+
+The [BatchDetectSentiment](https://docs.aws.amazon.com/comprehend/latest/dg/API_BatchDetectSentiment.html) inspects a batch of documents and returns an inference of the prevailing sentiment, POSITIVE, NEUTRAL, MIXED, or NEGATIVE, in each one.
+
+```ts
+new tasks.BatchDetectSentiment(this, 'BatchDetectSentiment', {
+  languageCode: ComprehendLanguageCode.ENGLISH,
+  textList: [
+    'Some phrase',
+    'And another phrase',
+  ],
+});
+```
+
+### BatchDetectSyntax
+
+The [BatchDetectSyntax](https://docs.aws.amazon.com/comprehend/latest/dg/API_BatchDetectSyntax.html) inspects the text of a batch of documents for the syntax and part of speech of the words in the document and returns information about them.
+
+```ts
+new tasks.BatchDetectSyntax(this, 'BatchDetectSyntax', {
+  languageCode: ComprehendLanguageCode.ENGLISH,
+  textList: [
+    'Some phrase',
+    'And another phrase',
+  ],
+});
+```
+
+### ContainsPiiEntities
+
+The [ContainsPiiEntities](https://docs.aws.amazon.com/comprehend/latest/dg/API_ContainsPiiEntities.html) analyzes input text for the presence of personally identifiable information (PII) and returns the labels of identified PII entity types such as name, address, bank account number, or phone number.
+
+```ts
+new tasks.ContainsPiiEntities(this, 'ContainsPiiEntities', {
+  languageCode: ComprehendLanguageCode.ENGLISH,
+  textList: 'And another phrase',
+});
+```
+
+### DetectDominantLanguage
+
+The [DetectDominantLanguage](https://docs.aws.amazon.com/comprehend/latest/dg/API_DetectDominantLanguage.html) determines the dominant language of the input text.
+
+```ts
+new tasks.DetectDominantLanguage(this, 'DetectDominantLanguage', {
+  textList: 'And another phrase',
+});
+```
+
+### DetectEntities
+
+The [DetectEntities](https://docs.aws.amazon.com/comprehend/latest/dg/API_DetectEntities.html) inspects text for named entities, and returns information about them.
+
+```ts
+new tasks.DetectEntities(this, 'DetectEntities', {
+  textList: 'And another phrase',
+});
+```
+
+### DetectKeyPhrases
+
+The [DetectKeyPhrases](https://docs.aws.amazon.com/comprehend/latest/dg/API_DetectKeyPhrases.html) detects the key noun phrases found in the text.
+
+```ts
+new tasks.DetectKeyPhrases(this, 'DetectKeyPhrases', {
+  languageCode: ComprehendLanguageCode.ENGLISH,
+  textList: 'And another phrase',
+});
+```
+
+### DetectSentiment
+
+The [DetectSentiment](https://docs.aws.amazon.com/comprehend/latest/dg/API_DetectSentiment.html) inspects text and returns an inference of the prevailing sentiment (POSITIVE, NEUTRAL, MIXED, or NEGATIVE).
+
+```ts
+new tasks.DetectSentiment(this, 'DetectSentiment', {
+  languageCode: ComprehendLanguageCode.ENGLISH,
+  textList: 'And another phrase',
+});
+```
+
+### DetectSyntax
+
+The [DetectSyntax](https://docs.aws.amazon.com/comprehend/latest/dg/API_DetectSyntax.html) inspects text for syntax and the part of speech of words in the document.
+
+```ts
+new tasks.DetectSyntax(this, 'DetectSyntax', {
+  languageCode: ComprehendLanguageCode.ENGLISH,
+  textList: 'And another phrase',
 });
 ```
 
