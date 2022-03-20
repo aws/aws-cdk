@@ -5,42 +5,40 @@ import { ComprehendLanguageCode } from './base-types';
 import { ComprehendMethod, getComprehendResourceArn } from './private/utils';
 
 /**
- * Properties for ComprehendBatchDetectSentiment Task
+ * Properties for ComprehendDetectSentiment Task
  *
  * @see https://docs.aws.amazon.com/comprehend/latest/dg/API_BatchDetectSentiment.html#API_BatchDetectSentiment_RequestSyntax
  */
-export interface ComprehendBatchDetectSentimentProps extends sfn.TaskStateBaseProps {
+export interface ComprehendDetectSentimentProps extends sfn.TaskStateBaseProps {
   /**
    * The language of the input documents. You can specify any of the primary languages
    * supported by Amazon Comprehend. All documents must be in the same language.
    *
-   * @see https://docs.aws.amazon.com/comprehend/latest/dg/API_BatchDetectSentiment.html#comprehend-BatchDetectSentiment-request-LanguageCode
+   * @see https://docs.aws.amazon.com/comprehend/latest/dg/API_DetectSentiment.html#comprehend-DetectSentiment-request-LanguageCode
    */
   readonly languageCode: ComprehendLanguageCode;
 
   /**
-   * A list containing the text of the input documents. The list can contain a maximum of 25
-   * documents. Each document should contain at least 20 characters and must contain fewer
-   * than 5,000 bytes of UTF-8 encoded characters.
+   * A UTF-8 text string. Each string must contain fewer that 5,000 bytes of UTF-8 encoded characters.
    *
-   * @see https://docs.aws.amazon.com/comprehend/latest/dg/API_BatchDetectSentiment.html#comprehend-BatchDetectSentiment-request-TextList
+   * @see https://docs.aws.amazon.com/comprehend/latest/dg/API_DetectSentiment.html#comprehend-DetectSentiment-request-Text
    */
-  readonly textList: string[];
+  readonly text: string;
 }
 
 /**
- * A StepFunctions task to call ComprehendBatchDetectSentiment
+ * A StepFunctions task to call ComprehendDetectSentiment
  */
-export class ComprehendBatchDetectSentiment extends sfn.TaskStateBase {
+export class ComprehendDetectSentiment extends sfn.TaskStateBase {
   protected readonly taskMetrics?: sfn.TaskMetricsConfig;
   protected readonly taskPolicies?: iam.PolicyStatement[];
 
-  constructor(scope: Construct, id: string, private readonly props: ComprehendBatchDetectSentimentProps) {
+  constructor(scope: Construct, id: string, private readonly props: ComprehendDetectSentimentProps) {
     super(scope, id, props);
 
     this.taskPolicies = [
       new iam.PolicyStatement({
-        actions: ['comprehend:batchDetectSentiment'],
+        actions: ['comprehend:DetectSentiment'],
         resources: ['*'],
       }),
     ];
@@ -51,10 +49,10 @@ export class ComprehendBatchDetectSentiment extends sfn.TaskStateBase {
     */
   protected _renderTask(): any {
     return {
-      Resource: getComprehendResourceArn(ComprehendMethod.BATCH_DETECT_SENTIMENT),
+      Resource: getComprehendResourceArn(ComprehendMethod.DETECT_SENTIMENT),
       Parameters: sfn.FieldUtils.renderObject({
         LanguageCode: this.props.languageCode,
-        TextList: this.props.textList,
+        Text: this.props.text,
       }),
     };
   }

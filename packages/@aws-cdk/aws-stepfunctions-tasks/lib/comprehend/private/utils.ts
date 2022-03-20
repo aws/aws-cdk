@@ -7,12 +7,12 @@ export enum ComprehendMethod {
   BATCH_DETECT_KEY_PHRASES = 'batchDetectKeyPhrases',
   BATCH_DETECT_SENTIMENT = 'batchDetectSentiment',
   BATCH_DETECT_SYNTAX = 'batchDetectSyntax',
-  CLASSIFY_DOCUMENT = 'classifyDocument',
   CONTAINS_PII_ENTITIES = 'containsPiiEntities',
-  CREATE_DOCUMENT_CLASSIFIER = 'createDocumentClassifier',
-
   DETECT_DOMINANT_LANGUAGE = 'detectDominantLanguage',
   DETECT_ENTITIES = 'detectEntities',
+  DETECT_KEY_PHRASES = 'detectKeyPhrases',
+  DETECT_SENTIMENT = 'detectSentiment',
+  DETECT_SYNTAX = 'detectSyntax',
 }
 
 export function getComprehendResourceArn(method: ComprehendMethod) {

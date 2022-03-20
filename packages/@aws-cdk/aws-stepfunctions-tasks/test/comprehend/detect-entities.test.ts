@@ -1,5 +1,6 @@
 import * as cdk from '@aws-cdk/core';
 import * as tasks from '../../lib';
+import { ComprehendLanguageCode } from '../../lib';
 
 let stack: cdk.Stack;
 
@@ -11,8 +12,8 @@ beforeEach(() => {
 test('DetectEntities task', () => {
   // WHEN
   const task = new tasks.ComprehendDetectEntities(stack, 'DetectEntities', {
-    languageCode: 'en',
-    textList: ['I love this'],
+    languageCode: ComprehendLanguageCode.ENGLISH,
+    text: 'I love this',
   });
 
   // THEN
@@ -33,7 +34,7 @@ test('DetectEntities task', () => {
     End: true,
     Parameters: {
       LanguageCode: 'en',
-      TextList: ['I love this'],
+      Text: 'I love this',
     },
   });
 });

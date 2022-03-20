@@ -1,5 +1,6 @@
 import * as cdk from '@aws-cdk/core';
 import * as tasks from '../../lib';
+import { ComprehendLanguageCode } from '../../lib';
 
 let stack: cdk.Stack;
 
@@ -11,7 +12,7 @@ beforeEach(() => {
 test('BatchDetectSyntax task', () => {
   // WHEN
   const task = new tasks.ComprehendBatchDetectSyntax(stack, 'BatchDetectSyntax', {
-    languageCode: 'en',
+    languageCode: ComprehendLanguageCode.ENGLISH,
     textList: ['I love this'],
   });
 

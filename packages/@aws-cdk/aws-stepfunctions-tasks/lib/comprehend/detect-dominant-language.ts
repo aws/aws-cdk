@@ -5,13 +5,13 @@ import { ComprehendMethod, getComprehendResourceArn } from './private/utils';
 
 /**
  * Properties for ComprehendDetectDominantLanguage Task
- *
- * @see https://docs.aws.amazon.com/comprehend/latest/dg/API_DetectDominantLanguage.html#API_DetectDominantLanguage_RequestSyntax
  */
 export interface ComprehendDetectDominantLanguageProps extends sfn.TaskStateBaseProps {
   /**
    * A UTF-8 text string. Each string should contain at least 20 characters and must
    * contain fewer that 5,000 bytes of UTF-8 encoded characters.
+   *
+   * @see https://docs.aws.amazon.com/comprehend/latest/dg/API_DetectDominantLanguage.html#comprehend-ContainsPiiEntities-request-Text
    */
   readonly text: string;
 }

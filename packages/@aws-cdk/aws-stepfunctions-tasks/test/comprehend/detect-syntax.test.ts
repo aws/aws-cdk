@@ -9,11 +9,11 @@ beforeEach(() => {
   stack = new cdk.Stack();
 });
 
-test('BatchDetectSentiment task', () => {
+test('DetectSyntax task', () => {
   // WHEN
-  const task = new tasks.ComprehendBatchDetectSentiment(stack, 'BatchDetectSentiment', {
+  const task = new tasks.ComprehendDetectSyntax(stack, 'DetectSyntax', {
     languageCode: ComprehendLanguageCode.ENGLISH,
-    textList: ['I love this'],
+    text: 'I love this',
   });
 
   // THEN
@@ -27,14 +27,14 @@ test('BatchDetectSentiment task', () => {
           {
             Ref: 'AWS::Partition',
           },
-          ':states:::aws-sdk:comprehend:batchDetectSentiment',
+          ':states:::aws-sdk:comprehend:detectSyntax',
         ],
       ],
     },
     End: true,
     Parameters: {
       LanguageCode: 'en',
-      TextList: ['I love this'],
+      Text: 'I love this',
     },
   });
 });
