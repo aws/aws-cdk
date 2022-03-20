@@ -108,5 +108,5 @@ class CallComprehendStack extends cdk.Stack {
 }
 
 const app = new cdk.App();
-new CallComprehendStack(app, 'aws-stepfunctions-tasks-batch-detect-syntax-integ');
+new CallComprehendStack(app, 'aws-stepfunctions-comprehend-tasks-integ');
 app.synth();

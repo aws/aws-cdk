@@ -12,10 +12,8 @@ export interface ComprehendDetectEntitiesProps extends sfn.TaskStateBaseProps {
    * supported by Amazon Comprehend. All documents must be in the same language.
    *
    * @see https://docs.aws.amazon.com/comprehend/latest/dg/API_DetectEntities.html#comprehend-DetectEntities-request-LanguageCode
-   *
-   * @default - No language required, valid values (en | es | fr | de | it | pt | ar | hi | ja | ko | zh | zh-TW)
    */
-  readonly languageCode?: string;
+  readonly languageCode: string;
 
   /**
    * A UTF-8 text string. Each string must contain fewer that 5,000 bytes of UTF-8

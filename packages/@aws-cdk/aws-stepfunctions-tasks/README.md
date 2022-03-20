@@ -588,6 +588,7 @@ The [DetectEntities](https://docs.aws.amazon.com/comprehend/latest/dg/API_Detect
 
 ```ts
 new tasks.ComprehendDetectEntities(this, 'DetectEntities', {
+  languageCode: sfn.TaskInput.fromJsonPathAt('$.LanguageCode').value,
   text: sfn.TaskInput.fromJsonPathAt('$.Text').value,
 });
 ```

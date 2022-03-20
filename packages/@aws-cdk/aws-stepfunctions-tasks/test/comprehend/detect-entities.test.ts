@@ -12,6 +12,7 @@ beforeEach(() => {
 test('DetectEntities task', () => {
   // WHEN
   const task = new tasks.ComprehendDetectEntities(stack, 'DetectEntities', {
+    languageCode: sfn.TaskInput.fromJsonPathAt('$.TestLanguageCode').value,
     text: sfn.TaskInput.fromJsonPathAt('$.TestText').value,
   });
 
@@ -32,6 +33,7 @@ test('DetectEntities task', () => {
     },
     End: true,
     Parameters: {
+      'LanguageCode.$': '$.TestLanguageCode',
       'Text.$': '$.TestText',
     },
   });
