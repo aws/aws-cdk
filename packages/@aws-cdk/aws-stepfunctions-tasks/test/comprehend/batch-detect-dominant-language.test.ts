@@ -1,3 +1,4 @@
+import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
 import * as tasks from '../../lib';
 
@@ -11,7 +12,7 @@ beforeEach(() => {
 test('BatchDetectDominantLanguage task', () => {
   // WHEN
   const task = new tasks.ComprehendBatchDetectDominantLanguage(stack, 'BatchDetectDominantLanguage', {
-    textList: ['I love this'],
+    textList: sfn.TaskInput.fromObject(sfn.JsonPath.listAt('$.TestTextList')).value,
   });
 
   // THEN
@@ -31,7 +32,7 @@ test('BatchDetectDominantLanguage task', () => {
     },
     End: true,
     Parameters: {
-      TextList: ['I love this'],
+      'TextList.$': '$.TestTextList',
     },
   });
 });

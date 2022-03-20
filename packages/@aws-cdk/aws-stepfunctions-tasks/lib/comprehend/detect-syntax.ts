@@ -1,7 +1,6 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import { Construct } from 'constructs';
-import { ComprehendLanguageCode } from './base-types';
 import { ComprehendMethod, getComprehendResourceArn } from './private/utils';
 
 /**
@@ -15,7 +14,7 @@ export interface ComprehendDetectSyntaxProps extends sfn.TaskStateBaseProps {
    *
    * @see https://docs.aws.amazon.com/comprehend/latest/dg/API_DetectSyntax.html#comprehend-DetectSyntax-request-LanguageCode
    */
-  readonly languageCode: ComprehendLanguageCode;
+  readonly languageCode: string;
 
   /**
    * A UTF-8 string. Each string must contain fewer that 5,000 bytes of UTF encoded characters.
@@ -56,5 +55,3 @@ export class ComprehendDetectSyntax extends sfn.TaskStateBase {
     };
   }
 }
-
-

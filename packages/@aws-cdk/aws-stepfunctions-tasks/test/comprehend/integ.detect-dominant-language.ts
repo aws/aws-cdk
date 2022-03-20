@@ -14,7 +14,7 @@ const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-stepfunctions-tasks-detect-dominant-language-integ');
 
 const detectSyntaxTask = new tasks.ComprehendDetectDominantLanguage(stack, 'ComprehendDetectDominantLanguage', {
-  text: 'detecting syntax from this phrase',
+  text: 'detecting dominant language from this phrase',
 });
 
 const sm = new sfn.StateMachine(stack, 'StateMachine', {

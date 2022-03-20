@@ -1,7 +1,6 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import { Construct } from 'constructs';
-import { ComprehendLanguageCode } from './base-types';
 import { ComprehendMethod, getComprehendResourceArn } from './private/utils';
 
 /**
@@ -14,7 +13,7 @@ export interface ComprehendBatchDetectSyntaxProps extends sfn.TaskStateBaseProps
    *
    * @see https://docs.aws.amazon.com/comprehend/latest/dg/API_BatchDetectSyntax.html#comprehend-BatchDetectSyntax-request-LanguageCode
    */
-  readonly languageCode: ComprehendLanguageCode;
+  readonly languageCode: string;
 
   /**
    * A list containing the text of the input documents. The list can contain a maximum of 25
@@ -57,5 +56,3 @@ export class ComprehendBatchDetectSyntax extends sfn.TaskStateBase {
     };
   }
 }
-
-

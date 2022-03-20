@@ -1,7 +1,6 @@
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
 import * as tasks from '../../lib';
-import { ComprehendLanguageCode } from '../../lib';
 
 /**
  *
@@ -15,8 +14,8 @@ const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-stepfunctions-tasks-contains-pii-entities-integ');
 
 const detectSyntaxTask = new tasks.ComprehendContainsPiiEntities(stack, 'ComprehendContainsPiiEntities', {
-  languageCode: ComprehendLanguageCode.ENGLISH,
-  text: 'detecting syntax from this phrase',
+  languageCode: 'en',
+  text: 'verify pii entities from this phrase',
 });
 
 const sm = new sfn.StateMachine(stack, 'StateMachine', {

@@ -1,7 +1,6 @@
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
 import * as tasks from '../../lib';
-import { ComprehendLanguageCode } from '../../lib';
 
 /**
  *
@@ -15,8 +14,11 @@ const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-stepfunctions-tasks-batch-detect-sentiment-integ');
 
 const detectSyntaxTask = new tasks.ComprehendBatchDetectSentiment(stack, 'ComprehendBatchDetectSentiment', {
-  languageCode: ComprehendLanguageCode.ENGLISH,
-  textList: ['detecting syntax from this phrase'],
+  languageCode: 'en',
+  textList: [
+    'detecting sentiment from this phrase',
+    'detecting sentiment from this phrase again',
+  ],
 });
 
 const sm = new sfn.StateMachine(stack, 'StateMachine', {

@@ -1,6 +1,6 @@
+import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
 import * as tasks from '../../lib';
-import { ComprehendLanguageCode } from '../../lib';
 
 let stack: cdk.Stack;
 
@@ -12,8 +12,8 @@ beforeEach(() => {
 test('DetectSentiment task', () => {
   // WHEN
   const task = new tasks.ComprehendDetectSentiment(stack, 'DetectSentiment', {
-    languageCode: ComprehendLanguageCode.ENGLISH,
-    text: 'I love this',
+    languageCode: sfn.TaskInput.fromJsonPathAt('$.TestLanguageCode').value,
+    text: sfn.TaskInput.fromJsonPathAt('$.TestText').value,
   });
 
   // THEN
@@ -33,8 +33,8 @@ test('DetectSentiment task', () => {
     },
     End: true,
     Parameters: {
-      LanguageCode: 'en',
-      Text: 'I love this',
+      'LanguageCode.$': '$.TestLanguageCode',
+      'Text.$': '$.TestText',
     },
   });
 });

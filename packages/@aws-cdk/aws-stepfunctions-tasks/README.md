@@ -512,11 +512,8 @@ Step Functions supports [Comprehend](https://docs.aws.amazon.com/step-functions/
 The [BatchDetectDominantLanguage](https://docs.aws.amazon.com/comprehend/latest/dg/API_BatchDetectDominantLanguage.html) determines the dominant language of the input text for a batch of documents.
 
 ```ts
-new tasks.BatchDetectDominantLanguage(this, 'BatchDetectDominantLanguages', {
-  textList: [
-    'Some phrase',
-    'Alguma outra frase',
-  ],
+new tasks.ComprehendBatchDetectDominantLanguage(this, 'BatchDetectDominantLanguages', {
+  textList: sfn.TaskInput.fromObject(sfn.JsonPath.listAt('$.TextList')).value,
 });
 ```
 
@@ -525,11 +522,9 @@ new tasks.BatchDetectDominantLanguage(this, 'BatchDetectDominantLanguages', {
 The [BatchDetectEntities](https://docs.aws.amazon.com/comprehend/latest/dg/API_BatchDetectEntities.html) inspects the text of a batch of documents for named entities and returns information about them.
 
 ```ts
-new tasks.BatchDetectEntities(this, 'BatchDetectEntities', {
-  textList: [
-    'Some phrase',
-    'Alguma outra frase',
-  ],
+new tasks.ComprehendBatchDetectEntities(this, 'BatchDetectEntities', {
+  languageCode: sfn.TaskInput.fromJsonPathAt('$.LanguageCode').value,
+  textList: sfn.TaskInput.fromObject(sfn.JsonPath.listAt('$.TextList')).value,
 });
 ```
 
@@ -538,12 +533,9 @@ new tasks.BatchDetectEntities(this, 'BatchDetectEntities', {
 The [BatchDetectKeyPhrases](https://docs.aws.amazon.com/comprehend/latest/dg/API_BatchDetectKeyPhrases.html) detects the key noun phrases found in a batch of documents.
 
 ```ts
-new tasks.BatchDetectKeyPhrases(this, 'BatchDetectKeyPhrases', {
-  languageCode: ComprehendLanguageCode.ENGLISH,
-  textList: [
-    'Some phrase',
-    'And another phrase',
-  ],
+new tasks.ComprehendBatchDetectKeyPhrases(this, 'BatchDetectKeyPhrases', {
+  languageCode: sfn.TaskInput.fromJsonPathAt('$.LanguageCode').value,
+  textList: sfn.TaskInput.fromObject(sfn.JsonPath.listAt('$.TextList')).value,
 });
 ```
 
@@ -552,12 +544,9 @@ new tasks.BatchDetectKeyPhrases(this, 'BatchDetectKeyPhrases', {
 The [BatchDetectSentiment](https://docs.aws.amazon.com/comprehend/latest/dg/API_BatchDetectSentiment.html) inspects a batch of documents and returns an inference of the prevailing sentiment, POSITIVE, NEUTRAL, MIXED, or NEGATIVE, in each one.
 
 ```ts
-new tasks.BatchDetectSentiment(this, 'BatchDetectSentiment', {
-  languageCode: ComprehendLanguageCode.ENGLISH,
-  textList: [
-    'Some phrase',
-    'And another phrase',
-  ],
+new tasks.ComprehendBatchDetectSentiment(this, 'BatchDetectSentiment', {
+  languageCode: sfn.TaskInput.fromJsonPathAt('$.LanguageCode').value,
+  textList: sfn.TaskInput.fromObject(sfn.JsonPath.listAt('$.TextList')).value,
 });
 ```
 
@@ -566,12 +555,9 @@ new tasks.BatchDetectSentiment(this, 'BatchDetectSentiment', {
 The [BatchDetectSyntax](https://docs.aws.amazon.com/comprehend/latest/dg/API_BatchDetectSyntax.html) inspects the text of a batch of documents for the syntax and part of speech of the words in the document and returns information about them.
 
 ```ts
-new tasks.BatchDetectSyntax(this, 'BatchDetectSyntax', {
-  languageCode: ComprehendLanguageCode.ENGLISH,
-  textList: [
-    'Some phrase',
-    'And another phrase',
-  ],
+new tasks.ComprehendBatchDetectSyntax(this, 'BatchDetectSyntax', {
+  languageCode: sfn.TaskInput.fromJsonPathAt('$.LanguageCode').value,
+  textList: sfn.TaskInput.fromObject(sfn.JsonPath.listAt('$.TextList')).value,
 });
 ```
 
@@ -580,9 +566,9 @@ new tasks.BatchDetectSyntax(this, 'BatchDetectSyntax', {
 The [ContainsPiiEntities](https://docs.aws.amazon.com/comprehend/latest/dg/API_ContainsPiiEntities.html) analyzes input text for the presence of personally identifiable information (PII) and returns the labels of identified PII entity types such as name, address, bank account number, or phone number.
 
 ```ts
-new tasks.ContainsPiiEntities(this, 'ContainsPiiEntities', {
-  languageCode: ComprehendLanguageCode.ENGLISH,
-  textList: 'And another phrase',
+new tasks.ComprehendContainsPiiEntities(this, 'ContainsPiiEntities', {
+  languageCode: sfn.TaskInput.fromJsonPathAt('$.LanguageCode').value,
+  text: sfn.TaskInput.fromJsonPathAt('$.Text').value,
 });
 ```
 
@@ -591,8 +577,8 @@ new tasks.ContainsPiiEntities(this, 'ContainsPiiEntities', {
 The [DetectDominantLanguage](https://docs.aws.amazon.com/comprehend/latest/dg/API_DetectDominantLanguage.html) determines the dominant language of the input text.
 
 ```ts
-new tasks.DetectDominantLanguage(this, 'DetectDominantLanguage', {
-  textList: 'And another phrase',
+new tasks.ComprehendDetectDominantLanguage(this, 'DetectDominantLanguage', {
+  text: sfn.TaskInput.fromJsonPathAt('$.Text').value,
 });
 ```
 
@@ -601,8 +587,8 @@ new tasks.DetectDominantLanguage(this, 'DetectDominantLanguage', {
 The [DetectEntities](https://docs.aws.amazon.com/comprehend/latest/dg/API_DetectEntities.html) inspects text for named entities, and returns information about them.
 
 ```ts
-new tasks.DetectEntities(this, 'DetectEntities', {
-  textList: 'And another phrase',
+new tasks.ComprehendDetectEntities(this, 'DetectEntities', {
+  text: sfn.TaskInput.fromJsonPathAt('$.Text').value,
 });
 ```
 
@@ -611,9 +597,9 @@ new tasks.DetectEntities(this, 'DetectEntities', {
 The [DetectKeyPhrases](https://docs.aws.amazon.com/comprehend/latest/dg/API_DetectKeyPhrases.html) detects the key noun phrases found in the text.
 
 ```ts
-new tasks.DetectKeyPhrases(this, 'DetectKeyPhrases', {
-  languageCode: ComprehendLanguageCode.ENGLISH,
-  textList: 'And another phrase',
+new tasks.ComprehendDetectKeyPhrases(this, 'DetectKeyPhrases', {
+  languageCode: sfn.TaskInput.fromJsonPathAt('$.LanguageCode').value,
+  text: sfn.TaskInput.fromJsonPathAt('$.Text').value,
 });
 ```
 
@@ -622,9 +608,9 @@ new tasks.DetectKeyPhrases(this, 'DetectKeyPhrases', {
 The [DetectSentiment](https://docs.aws.amazon.com/comprehend/latest/dg/API_DetectSentiment.html) inspects text and returns an inference of the prevailing sentiment (POSITIVE, NEUTRAL, MIXED, or NEGATIVE).
 
 ```ts
-new tasks.DetectSentiment(this, 'DetectSentiment', {
-  languageCode: ComprehendLanguageCode.ENGLISH,
-  textList: 'And another phrase',
+new tasks.ComprehendDetectSentiment(this, 'DetectSentiment', {
+  languageCode: sfn.TaskInput.fromJsonPathAt('$.LanguageCode').value,
+  text: sfn.TaskInput.fromJsonPathAt('$.Text').value,
 });
 ```
 
@@ -633,9 +619,9 @@ new tasks.DetectSentiment(this, 'DetectSentiment', {
 The [DetectSyntax](https://docs.aws.amazon.com/comprehend/latest/dg/API_DetectSyntax.html) inspects text for syntax and the part of speech of words in the document.
 
 ```ts
-new tasks.DetectSyntax(this, 'DetectSyntax', {
-  languageCode: ComprehendLanguageCode.ENGLISH,
-  textList: 'And another phrase',
+new tasks.ComprehendDetectSyntax(this, 'DetectSyntax', {
+  languageCode: sfn.TaskInput.fromJsonPathAt('$.LanguageCode').value,
+  text: sfn.TaskInput.fromJsonPathAt('$.Text').value,
 });
 ```
 

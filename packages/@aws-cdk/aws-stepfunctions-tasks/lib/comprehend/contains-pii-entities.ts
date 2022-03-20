@@ -1,7 +1,6 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import { Construct } from 'constructs';
-import { ComprehendLanguageCode } from './base-types';
 import { ComprehendMethod, getComprehendResourceArn } from './private/utils';
 
 /**
@@ -13,7 +12,7 @@ export interface ComprehendContainsPiiEntitiesProps extends sfn.TaskStateBasePro
    *
    * @see https://docs.aws.amazon.com/comprehend/latest/dg/API_ContainsPiiEntities.html#comprehend-ContainsPiiEntities-request-LanguageCode
    */
-  readonly languageCode: ComprehendLanguageCode;
+  readonly languageCode: string;
 
   /**
    * Creates a new document classification request to analyze a single document in real-time,
@@ -55,5 +54,3 @@ export class ComprehendContainsPiiEntities extends sfn.TaskStateBase {
     };
   }
 }
-
-

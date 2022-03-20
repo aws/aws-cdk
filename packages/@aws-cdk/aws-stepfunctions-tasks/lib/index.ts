@@ -51,7 +51,6 @@ export * from './eks/call';
 export * from './apigateway';
 export * from './eventbridge/put-events';
 export * from './aws-sdk/call-aws-service';
-export * from './comprehend/base-types';
 export * from './comprehend/batch-detect-dominant-language';
 export * from './comprehend/batch-detect-entities';
 export * from './comprehend/batch-detect-key-phrases';

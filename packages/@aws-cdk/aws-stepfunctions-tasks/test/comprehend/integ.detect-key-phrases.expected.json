@@ -66,7 +66,7 @@
               {
                 "Ref": "AWS::Partition"
               },
-              ":states:::aws-sdk:comprehend:detectKeyPhrases\",\"Parameters\":{\"LanguageCode\":\"en\",\"Text\":\"detecting syntax from this phrase\"}}},\"TimeoutSeconds\":30}"
+              ":states:::aws-sdk:comprehend:detectKeyPhrases\",\"Parameters\":{\"LanguageCode\":\"en\",\"Text\":\"detecting key phrases from this phrase\"}}},\"TimeoutSeconds\":30}"
             ]
           ]
         }

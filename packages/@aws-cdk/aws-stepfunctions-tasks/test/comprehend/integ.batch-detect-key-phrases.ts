@@ -1,7 +1,6 @@
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
 import * as tasks from '../../lib';
-import { ComprehendLanguageCode } from '../../lib';
 
 /**
  *
@@ -15,8 +14,12 @@ const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-stepfunctions-tasks-batch-detect-key-phrases-integ');
 
 const detectSyntaxTask = new tasks.ComprehendBatchDetectKeyPhrases(stack, 'ComprehendBatchDetectKeyPhrases', {
-  languageCode: ComprehendLanguageCode.ENGLISH,
-  textList: ['detecting syntax from this phrase'],
+  languageCode: 'en',
+  textList: [
+    'detecting key phrases from this phrase',
+    'detecting key phrases from this phrase again',
+  ],
+
 });
 
 const sm = new sfn.StateMachine(stack, 'StateMachine', {

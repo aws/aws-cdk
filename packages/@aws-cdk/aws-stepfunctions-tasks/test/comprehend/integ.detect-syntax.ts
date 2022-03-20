@@ -1,7 +1,6 @@
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
 import * as tasks from '../../lib';
-import { ComprehendLanguageCode } from '../../lib';
 
 /**
  *
@@ -15,7 +14,7 @@ const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-stepfunctions-tasks-detect-syntax-integ');
 
 const detectSyntaxTask = new tasks.ComprehendDetectSyntax(stack, 'ComprehendDetectSyntax', {
-  languageCode: ComprehendLanguageCode.ENGLISH,
+  languageCode: 'en',
   text: 'detecting syntax from this phrase',
 });
 
