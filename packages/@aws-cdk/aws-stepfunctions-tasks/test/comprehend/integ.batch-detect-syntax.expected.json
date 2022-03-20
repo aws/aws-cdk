@@ -10,12 +10,15 @@
               "Effect": "Allow",
               "Principal": {
                 "Service": {
-                  "Fn::FindInMap": [
-                    "ServiceprincipalMap",
-                    {
-                      "Ref": "AWS::Region"
-                    },
-                    "states"
+                  "Fn::Join": [
+                    "",
+                    [
+                      "states.",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ".amazonaws.com"
+                    ]
                   ]
                 }
               }
@@ -23,9 +26,6 @@
           ],
           "Version": "2012-10-17"
         }
-      },
-      "Metadata": {
-        "aws:cdk:path": "aws-stepfunctions-tasks-batch-detect-syntax-integ/StateMachine/Role/Resource"
       }
     },
     "StateMachineRoleDefaultPolicyDF1E6607": {
@@ -47,9 +47,6 @@
             "Ref": "StateMachineRoleB840431D"
           }
         ]
-      },
-      "Metadata": {
-        "aws:cdk:path": "aws-stepfunctions-tasks-batch-detect-syntax-integ/StateMachine/Role/DefaultPolicy/Resource"
       }
     },
     "StateMachine2E01A3A5": {
@@ -77,20 +74,7 @@
       "DependsOn": [
         "StateMachineRoleDefaultPolicyDF1E6607",
         "StateMachineRoleB840431D"
-      ],
-      "Metadata": {
-        "aws:cdk:path": "aws-stepfunctions-tasks-batch-detect-syntax-integ/StateMachine/Resource"
-      }
-    },
-    "CDKMetadata": {
-      "Type": "AWS::CDK::Metadata",
-      "Properties": {
-        "Analytics": "v2:deflate64:H4sIAAAAAAAA/1WOsW7DMAxEvyW7zNhAh4xF3TVo4HyBQDM145gSRKppYOjfWzlLO90dH8FjCy20u1d/1wbHeb9iSATr2TzOrr/IR7aYzfVB1FJGq7OBNOSEVP0vGNk4SA1HHyPLZ3H12qpG8ZIFK9XGvM4KfVhioolkfPOG0zsZoZ0fYv7b/dvfXjA6epxYtqa/uTj2C6xDuG1o01O4MT5qfLpSipMwElx1/9W9QHeAbndV5iZlMV4Ihqf+AEgrqRMCAQAA"
-      },
-      "Metadata": {
-        "aws:cdk:path": "aws-stepfunctions-tasks-batch-detect-syntax-integ/CDKMetadata/Default"
-      },
-      "Condition": "CDKMetadataAvailable"
+      ]
     }
   },
   "Outputs": {

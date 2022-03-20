@@ -10,12 +10,15 @@
               "Effect": "Allow",
               "Principal": {
                 "Service": {
-                  "Fn::FindInMap": [
-                    "ServiceprincipalMap",
-                    {
-                      "Ref": "AWS::Region"
-                    },
-                    "states"
+                  "Fn::Join": [
+                    "",
+                    [
+                      "states.",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ".amazonaws.com"
+                    ]
                   ]
                 }
               }
@@ -23,9 +26,6 @@
           ],
           "Version": "2012-10-17"
         }
-      },
-      "Metadata": {
-        "aws:cdk:path": "aws-stepfunctions-tasks-detect-dominant-language-integ/StateMachine/Role/Resource"
       }
     },
     "StateMachineRoleDefaultPolicyDF1E6607": {
@@ -47,9 +47,6 @@
             "Ref": "StateMachineRoleB840431D"
           }
         ]
-      },
-      "Metadata": {
-        "aws:cdk:path": "aws-stepfunctions-tasks-detect-dominant-language-integ/StateMachine/Role/DefaultPolicy/Resource"
       }
     },
     "StateMachine2E01A3A5": {
@@ -77,20 +74,7 @@
       "DependsOn": [
         "StateMachineRoleDefaultPolicyDF1E6607",
         "StateMachineRoleB840431D"
-      ],
-      "Metadata": {
-        "aws:cdk:path": "aws-stepfunctions-tasks-detect-dominant-language-integ/StateMachine/Resource"
-      }
-    },
-    "CDKMetadata": {
-      "Type": "AWS::CDK::Metadata",
-      "Properties": {
-        "Analytics": "v2:deflate64:H4sIAAAAAAAA/1WOsW7DMAxEvyW7zNhAh44FnLFBC+cLBJlxGMekIFIpCkP/3spZkunu+EAeW2ih3X34H23COO/XIAlhPZkPs+vP/JUtZnO9sFrKwepsQJWcAlb/D0YyEq7h6GMknoqr11Y1jOfMoVJtzOus0MsSE16QxwMaBjvIQuzZPj1P2U/oXpa2PwyPPlyIt7rnXBz5BdZBbhva9FtuFH5rfLhSimMZEa66v3dv0L1Dt7sqUZMyGy0Iw0P/ALMnMh0HAQAA"
-      },
-      "Metadata": {
-        "aws:cdk:path": "aws-stepfunctions-tasks-detect-dominant-language-integ/CDKMetadata/Default"
-      },
-      "Condition": "CDKMetadataAvailable"
+      ]
     }
   },
   "Outputs": {
