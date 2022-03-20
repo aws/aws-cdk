@@ -25,7 +25,7 @@
         }
       },
       "Metadata": {
-        "aws:cdk:path": "aws-stepfunctions-tasks-detect-key-phrases-integ/StateMachine/Role/Resource"
+        "aws:cdk:path": "aws-stepfunctions-tasks-contains-pii-entities-integ/StateMachine/Role/Resource"
       }
     },
     "StateMachineRoleDefaultPolicyDF1E6607": {
@@ -49,7 +49,7 @@
         ]
       },
       "Metadata": {
-        "aws:cdk:path": "aws-stepfunctions-tasks-detect-key-phrases-integ/StateMachine/Role/DefaultPolicy/Resource"
+        "aws:cdk:path": "aws-stepfunctions-tasks-contains-pii-entities-integ/StateMachine/Role/DefaultPolicy/Resource"
       }
     },
     "StateMachine2E01A3A5": {
@@ -79,7 +79,7 @@
         "StateMachineRoleB840431D"
       ],
       "Metadata": {
-        "aws:cdk:path": "aws-stepfunctions-tasks-detect-key-phrases-integ/StateMachine/Resource"
+        "aws:cdk:path": "aws-stepfunctions-tasks-contains-pii-entities-integ/StateMachine/Resource"
       }
     },
     "CDKMetadata": {
@@ -88,7 +88,7 @@
         "Analytics": "v2:deflate64:H4sIAAAAAAAA/1VOQQ7CMAx7C/cubBIHjkgTRwQaL6i6AGEsrZoUhKb+nXVc4GQ7lu3UUEO92tmXVK4f1pPzEWE6q3WDaS98TBqSmtazaExOy61D8Sk6LHw2elLyXMTBhkB8zaa0TaIYLoldcaVSK4NA68cQ8Ybcz0G1xHIi2rPOFSjmL7E8oXiw7ka8bP3qbMiOMHX+sVgLnvyD3LvIL8s5G/Y9wl3Wz2YDzRaa1V2IqpjmyRGh++IHbsTE6gQBAAA="
       },
       "Metadata": {
-        "aws:cdk:path": "aws-stepfunctions-tasks-detect-key-phrases-integ/CDKMetadata/Default"
+        "aws:cdk:path": "aws-stepfunctions-tasks-contains-pii-entities-integ/CDKMetadata/Default"
       },
       "Condition": "CDKMetadataAvailable"
     }

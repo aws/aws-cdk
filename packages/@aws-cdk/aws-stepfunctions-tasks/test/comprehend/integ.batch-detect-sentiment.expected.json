@@ -25,7 +25,7 @@
         }
       },
       "Metadata": {
-        "aws:cdk:path": "aws-stepfunctions-tasks-detect-syntax-integ/StateMachine/Role/Resource"
+        "aws:cdk:path": "aws-stepfunctions-tasks-batch-detect-sentiment-integ/StateMachine/Role/Resource"
       }
     },
     "StateMachineRoleDefaultPolicyDF1E6607": {
@@ -49,7 +49,7 @@
         ]
       },
       "Metadata": {
-        "aws:cdk:path": "aws-stepfunctions-tasks-detect-syntax-integ/StateMachine/Role/DefaultPolicy/Resource"
+        "aws:cdk:path": "aws-stepfunctions-tasks-batch-detect-sentiment-integ/StateMachine/Role/DefaultPolicy/Resource"
       }
     },
     "StateMachine2E01A3A5": {
@@ -79,7 +79,7 @@
         "StateMachineRoleB840431D"
       ],
       "Metadata": {
-        "aws:cdk:path": "aws-stepfunctions-tasks-detect-syntax-integ/StateMachine/Resource"
+        "aws:cdk:path": "aws-stepfunctions-tasks-batch-detect-sentiment-integ/StateMachine/Resource"
       }
     },
     "CDKMetadata": {
@@ -88,7 +88,7 @@
         "Analytics": "v2:deflate64:H4sIAAAAAAAA/1VOMW7DMAx8S3aZsYEOHYu6a9DCeYFAMzXjmBJEqkVh6O+NlKVdeHc88I499NAfXvy3djivxx1DItjP5nF140Xes8VsbgyiljJa3U2kISekyu/GzMZBqjj5GFk+i6tpuxrFSxasrnbmdVUYwxYTLSTzqzdc3sgI7UxivN2H+3fSvjA6eVxYWtlfXRz7DfYp3JrV8CPcGH+qfLBSipMwE1z1+DU8wfAMw+GqzF3KrRKmB/4CCwY2EAUBAAA="
       },
       "Metadata": {
-        "aws:cdk:path": "aws-stepfunctions-tasks-detect-syntax-integ/CDKMetadata/Default"
+        "aws:cdk:path": "aws-stepfunctions-tasks-batch-detect-sentiment-integ/CDKMetadata/Default"
       },
       "Condition": "CDKMetadataAvailable"
     }

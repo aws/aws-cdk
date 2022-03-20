@@ -10,15 +10,12 @@
               "Effect": "Allow",
               "Principal": {
                 "Service": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "states.",
-                      {
-                        "Ref": "AWS::Region"
-                      },
-                      ".amazonaws.com"
-                    ]
+                  "Fn::FindInMap": [
+                    "ServiceprincipalMap",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    "states"
                   ]
                 }
               }
@@ -26,6 +23,9 @@
           ],
           "Version": "2012-10-17"
         }
+      },
+      "Metadata": {
+        "aws:cdk:path": "aws-stepfunctions-tasks-detect-entities-integ/StateMachine/Role/Resource"
       }
     },
     "StateMachineRoleDefaultPolicyDF1E6607": {
@@ -47,6 +47,9 @@
             "Ref": "StateMachineRoleB840431D"
           }
         ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "aws-stepfunctions-tasks-detect-entities-integ/StateMachine/Role/DefaultPolicy/Resource"
       }
     },
     "StateMachine2E01A3A5": {
@@ -74,7 +77,20 @@
       "DependsOn": [
         "StateMachineRoleDefaultPolicyDF1E6607",
         "StateMachineRoleB840431D"
-      ]
+      ],
+      "Metadata": {
+        "aws:cdk:path": "aws-stepfunctions-tasks-detect-entities-integ/StateMachine/Resource"
+      }
+    },
+    "CDKMetadata": {
+      "Type": "AWS::CDK::Metadata",
+      "Properties": {
+        "Analytics": "v2:deflate64:H4sIAAAAAAAA/1WNQa7CMAxEz8I+Na3EgiVSP0sEKieIXPMJpU4UOyBU5e40ZQOrmeexPTXUUK929ikV9sN6Qh8JprNaHEx74WPSkNS0nkVjQi2zjsSniFT8HPROnecCBxuC4/9syrdJlMIlMZZUKrUyCLR+DJGuxP0fKaHuWedrEvOzvPQrHSxeHS8135yNsyNMnb8v0aInf3f4KvhxOWfDvie4yfrRbKDZQrO6iXNVTHPlSNB99A0HW4c1/wAAAA=="
+      },
+      "Metadata": {
+        "aws:cdk:path": "aws-stepfunctions-tasks-detect-entities-integ/CDKMetadata/Default"
+      },
+      "Condition": "CDKMetadataAvailable"
     }
   },
   "Outputs": {
