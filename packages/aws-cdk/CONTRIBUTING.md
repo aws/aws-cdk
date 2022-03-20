@@ -213,6 +213,6 @@ Whenever a dependency changes (be it direct or transitive, new package or new ve
 will change, and needs to be regenerated. For you, this means that:
 
 1. When you manually upgrade a dependency, you must also regenerate the document by running `yarn pkglint` inside the CLI package.
-2. When you build the CLI locally, you must ensure your dependencies are up to date by running `yarn install`.
+2. When you build the CLI locally, you must ensure your dependencies are up to date by running `yarn install` inside the CLI package.
 Otherwise, you might get an error like so: `aws-cdk: - [bundle/outdated-attributions] THIRD_PARTY_LICENSES is outdated (fixable)`.
 
