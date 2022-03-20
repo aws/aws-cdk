@@ -36,7 +36,7 @@ export class ComprehendDetectSyntax extends sfn.TaskStateBase {
 
     this.taskPolicies = [
       new iam.PolicyStatement({
-        actions: ['comprehend:detectSyntax'],
+        actions: [`comprehend:${ComprehendMethod.DETECT_SYNTAX}`],
         resources: ['*'],
       }),
     ];

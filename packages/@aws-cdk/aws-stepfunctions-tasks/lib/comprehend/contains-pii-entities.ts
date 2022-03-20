@@ -35,7 +35,7 @@ export class ComprehendContainsPiiEntities extends sfn.TaskStateBase {
 
     this.taskPolicies = [
       new iam.PolicyStatement({
-        actions: ['comprehend:containsPiiEntities'],
+        actions: [`comprehend:${ComprehendMethod.CONTAINS_PII_ENTITIES}`],
         resources: ['*'],
       }),
     ];

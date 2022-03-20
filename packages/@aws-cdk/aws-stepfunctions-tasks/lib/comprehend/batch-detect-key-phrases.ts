@@ -37,7 +37,7 @@ export class ComprehendBatchDetectKeyPhrases extends sfn.TaskStateBase {
 
     this.taskPolicies = [
       new iam.PolicyStatement({
-        actions: ['comprehend:batchDetectKeyPhrases'],
+        actions: [`comprehend:${ComprehendMethod.BATCH_DETECT_KEY_PHRASES}`],
         resources: ['*'],
       }),
     ];

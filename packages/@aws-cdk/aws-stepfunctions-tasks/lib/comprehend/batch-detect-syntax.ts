@@ -37,7 +37,7 @@ export class ComprehendBatchDetectSyntax extends sfn.TaskStateBase {
 
     this.taskPolicies = [
       new iam.PolicyStatement({
-        actions: ['comprehend:batchDetectSyntax'],
+        actions: [`comprehend:${ComprehendMethod.BATCH_DETECT_SYNTAX}`],
         resources: ['*'],
       }),
     ];

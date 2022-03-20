@@ -39,7 +39,7 @@ export class ComprehendBatchDetectSentiment extends sfn.TaskStateBase {
 
     this.taskPolicies = [
       new iam.PolicyStatement({
-        actions: ['comprehend:batchDetectSentiment'],
+        actions: [`comprehend:${ComprehendMethod.BATCH_DETECT_SENTIMENT}`],
         resources: ['*'],
       }),
     ];

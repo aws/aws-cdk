@@ -35,7 +35,7 @@ export class ComprehendDetectKeyPhrases extends sfn.TaskStateBase {
 
     this.taskPolicies = [
       new iam.PolicyStatement({
-        actions: ['comprehend:detectKeyPhrases'],
+        actions: [`comprehend:${ComprehendMethod.DETECT_KEY_PHRASES}`],
         resources: ['*'],
       }),
     ];

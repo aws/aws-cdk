@@ -37,7 +37,7 @@ export class ComprehendDetectSentiment extends sfn.TaskStateBase {
 
     this.taskPolicies = [
       new iam.PolicyStatement({
-        actions: ['comprehend:DetectSentiment'],
+        actions: [`comprehend:${ComprehendMethod.DETECT_SENTIMENT}`],
         resources: ['*'],
       }),
     ];

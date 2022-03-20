@@ -28,7 +28,7 @@ export class ComprehendDetectDominantLanguage extends sfn.TaskStateBase {
 
     this.taskPolicies = [
       new iam.PolicyStatement({
-        actions: ['comprehend:detectDominantLanguage'],
+        actions: [`comprehend:${ComprehendMethod.DETECT_DOMINANT_LANGUAGE}`],
         resources: ['*'],
       }),
     ];

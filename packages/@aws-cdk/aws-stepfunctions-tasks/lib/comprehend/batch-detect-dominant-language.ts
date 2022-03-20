@@ -29,7 +29,7 @@ export class ComprehendBatchDetectDominantLanguage extends sfn.TaskStateBase {
 
     this.taskPolicies = [
       new iam.PolicyStatement({
-        actions: ['comprehend:BatchDetectDominantLanguage'],
+        actions: [`comprehend:${ComprehendMethod.BATCH_DETECT_DOMINANT_LANGUAGE}`],
         resources: ['*'],
       }),
     ];

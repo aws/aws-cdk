@@ -37,7 +37,7 @@ export class ComprehendBatchDetectEntities extends sfn.TaskStateBase {
 
     this.taskPolicies = [
       new iam.PolicyStatement({
-        actions: ['comprehend:BatchDetectEntities'],
+        actions: [`comprehend:${ComprehendMethod.BATCH_DETECT_ENTITIES}`],
         resources: ['*'],
       }),
     ];

@@ -38,7 +38,7 @@ export class ComprehendDetectEntities extends sfn.TaskStateBase {
 
     this.taskPolicies = [
       new iam.PolicyStatement({
-        actions: ['comprehend:detectEntities'],
+        actions: [`comprehend:${ComprehendMethod.DETECT_ENTITIES}`],
         resources: ['*'],
       }),
     ];
