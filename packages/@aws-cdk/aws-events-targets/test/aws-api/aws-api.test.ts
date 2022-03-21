@@ -1,7 +1,7 @@
 import { Annotations, Template } from '@aws-cdk/assertions';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
-import { App, Stack } from '@aws-cdk/core';
+import { Stack } from '@aws-cdk/core';
 import * as targets from '../../lib';
 
 test('use AwsApi as an event rule target', () => {
