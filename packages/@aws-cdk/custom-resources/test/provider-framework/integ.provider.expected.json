@@ -62,12 +62,12 @@
           "Statement": [
             {
               "Action": [
-                "s3:GetObject*",
-                "s3:GetBucket*",
-                "s3:List*",
+                "s3:Abort*",
                 "s3:DeleteObject*",
-                "s3:PutObject*",
-                "s3:Abort*"
+                "s3:GetBucket*",
+                "s3:GetObject*",
+                "s3:List*",
+                "s3:PutObject*"
               ],
               "Effect": "Allow",
               "Resource": "*"
@@ -444,8 +444,8 @@
           "Statement": [
             {
               "Action": [
-                "s3:GetObject*",
                 "s3:GetBucket*",
+                "s3:GetObject*",
                 "s3:List*"
               ],
               "Effect": "Allow",
@@ -559,6 +559,12 @@
               "Resource": [
                 {
                   "Fn::GetAtt": [
+                    "comamazonawscdkcustomresourcess3assertproviders3assertiscomplete6AC08EF9",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::GetAtt": [
                     "comamazonawscdkcustomresourcess3assertproviders3assertoneventF1EEF783",
                     "Arn"
                   ]
@@ -569,24 +575,12 @@
                     [
                       {
                         "Fn::GetAtt": [
-                          "comamazonawscdkcustomresourcess3assertproviders3assertoneventF1EEF783",
+                          "comamazonawscdkcustomresourcess3assertproviders3assertiscomplete6AC08EF9",
                           "Arn"
                         ]
                       },
                       ":*"
                     ]
-                  ]
-                }
-              ]
-            },
-            {
-              "Action": "lambda:InvokeFunction",
-              "Effect": "Allow",
-              "Resource": [
-                {
-                  "Fn::GetAtt": [
-                    "comamazonawscdkcustomresourcess3assertproviders3assertiscomplete6AC08EF9",
-                    "Arn"
                   ]
                 },
                 {
@@ -595,7 +589,7 @@
                     [
                       {
                         "Fn::GetAtt": [
-                          "comamazonawscdkcustomresourcess3assertproviders3assertiscomplete6AC08EF9",
+                          "comamazonawscdkcustomresourcess3assertproviders3assertoneventF1EEF783",
                           "Arn"
                         ]
                       },
@@ -741,6 +735,12 @@
               "Resource": [
                 {
                   "Fn::GetAtt": [
+                    "comamazonawscdkcustomresourcess3assertproviders3assertiscomplete6AC08EF9",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::GetAtt": [
                     "comamazonawscdkcustomresourcess3assertproviders3assertoneventF1EEF783",
                     "Arn"
                   ]
@@ -751,24 +751,12 @@
                     [
                       {
                         "Fn::GetAtt": [
-                          "comamazonawscdkcustomresourcess3assertproviders3assertoneventF1EEF783",
+                          "comamazonawscdkcustomresourcess3assertproviders3assertiscomplete6AC08EF9",
                           "Arn"
                         ]
                       },
                       ":*"
                     ]
-                  ]
-                }
-              ]
-            },
-            {
-              "Action": "lambda:InvokeFunction",
-              "Effect": "Allow",
-              "Resource": [
-                {
-                  "Fn::GetAtt": [
-                    "comamazonawscdkcustomresourcess3assertproviders3assertiscomplete6AC08EF9",
-                    "Arn"
                   ]
                 },
                 {
@@ -777,7 +765,7 @@
                     [
                       {
                         "Fn::GetAtt": [
-                          "comamazonawscdkcustomresourcess3assertproviders3assertiscomplete6AC08EF9",
+                          "comamazonawscdkcustomresourcess3assertproviders3assertoneventF1EEF783",
                           "Arn"
                         ]
                       },
@@ -913,6 +901,12 @@
               "Resource": [
                 {
                   "Fn::GetAtt": [
+                    "comamazonawscdkcustomresourcess3assertproviders3assertiscomplete6AC08EF9",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::GetAtt": [
                     "comamazonawscdkcustomresourcess3assertproviders3assertoneventF1EEF783",
                     "Arn"
                   ]
@@ -923,24 +917,12 @@
                     [
                       {
                         "Fn::GetAtt": [
-                          "comamazonawscdkcustomresourcess3assertproviders3assertoneventF1EEF783",
+                          "comamazonawscdkcustomresourcess3assertproviders3assertiscomplete6AC08EF9",
                           "Arn"
                         ]
                       },
                       ":*"
                     ]
-                  ]
-                }
-              ]
-            },
-            {
-              "Action": "lambda:InvokeFunction",
-              "Effect": "Allow",
-              "Resource": [
-                {
-                  "Fn::GetAtt": [
-                    "comamazonawscdkcustomresourcess3assertproviders3assertiscomplete6AC08EF9",
-                    "Arn"
                   ]
                 },
                 {
@@ -949,7 +931,7 @@
                     [
                       {
                         "Fn::GetAtt": [
-                          "comamazonawscdkcustomresourcess3assertproviders3assertiscomplete6AC08EF9",
+                          "comamazonawscdkcustomresourcess3assertproviders3assertoneventF1EEF783",
                           "Arn"
                         ]
                       },
@@ -1087,6 +1069,12 @@
                   ]
                 },
                 {
+                  "Fn::GetAtt": [
+                    "comamazonawscdkcustomresourcess3assertproviderframeworkonTimeoutA1E1E5DC",
+                    "Arn"
+                  ]
+                },
+                {
                   "Fn::Join": [
                     "",
                     [
@@ -1098,18 +1086,6 @@
                       },
                       ":*"
                     ]
-                  ]
-                }
-              ]
-            },
-            {
-              "Action": "lambda:InvokeFunction",
-              "Effect": "Allow",
-              "Resource": [
-                {
-                  "Fn::GetAtt": [
-                    "comamazonawscdkcustomresourcess3assertproviderframeworkonTimeoutA1E1E5DC",
-                    "Arn"
                   ]
                 },
                 {
