@@ -12,6 +12,10 @@ import { CfnPermission } from './lambda.generated';
 import { Permission } from './permission';
 import { addAlias, flatMap } from './util';
 
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
+
 export interface IFunction extends IResource, ec2.IConnectable, iam.IGrantable {
 
   /**
@@ -268,18 +272,27 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
   protected _invocationGrants: Record<string, iam.Grant> = {};
 
   /**
+   * Adds a warning to function permissions that include `lambda:InvokeFunction`.
+   * This should apply only to permissions on Lambda functions, not versions or aliases.
+   * This function is overridden as a noOp for QualifiedFunctionBase.
+   */
+  public addWarningOnInvokeFunctionPermissions(scope: Construct, action: string) {
+    const affectedPermissions = ['lambda:InvokeFunction', 'lambda:*', 'lambda:Invoke*'];
+    if (affectedPermissions.includes(action)) {
+      Annotations.of(scope).addWarning([
+        "AWS Lambda has changed their authorization strategy, which may cause client invocations using the 'Qualifier' parameter of the lambda function to fail with Access Denied errors.",
+        "If you are using a lambda Version or Alias, make sure to call 'grantInvoke' or 'addPermission' on the Version or Alias, not the underlying Function",
+        'See: https://github.com/aws/aws-cdk/issues/19273',
+      ].join('\n'));
+    }
+  }
+
+  /**
    * Adds a permission to the Lambda resource policy.
    * @param id The id for the permission construct
    * @param permission The permission to grant to this Lambda function. @see Permission for details.
    */
   public addPermission(id: string, permission: Permission) {
-    this.addPermissionHelper(id, permission, false);
-  }
-
-  /**
-   * @param qualified Whether or not the function is qualified (i.e. is an alias or a version)
-   */
-  protected addPermissionHelper(id: string, permission: Permission, qualified?: boolean) {
     if (!this.canCreatePermissions) {
       // FIXME: @deprecated(v2) - throw an error if calling `addPermission` on a resource that doesn't support it.
       return;
@@ -290,13 +303,7 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
     const action = permission.action ?? 'lambda:InvokeFunction';
     const scope = permission.scope ?? this;
 
-    if (['lambda:InvokeFunction', 'lambda:*'].includes(action) && !qualified) {
-      Annotations.of(this).addWarning([
-        'AWS Lambda has changed their authorization strategy, which may cause client invocations of the lambda function to fail with Access Denied errors.',
-        "If you are using a lambda Version or Alias, make sure to call 'grantInvoke' or 'addPermission' on the Version or Alias, not the underlying Function",
-        'See: https://github.com/aws/aws-cdk/issues/19273',
-      ].join('\n'));
-    }
+    this.addWarningOnInvokeFunctionPermissions(scope, action);
 
     new CfnPermission(scope, id, {
       action,
@@ -553,8 +560,9 @@ export abstract class QualifiedFunctionBase extends FunctionBase {
     });
   }
 
-  public addPermission(id: string, permission: Permission): void {
-    super.addPermissionHelper(id, permission, true);
+  public addWarningOnInvokeFunctionPermissions(_scope: Construct, _action: string): void {
+    // noOp
+    return;
   }
 }
 
