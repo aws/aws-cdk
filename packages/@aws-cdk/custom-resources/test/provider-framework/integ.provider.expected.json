@@ -18,8 +18,7 @@
           "Ref": "MyBucketF68F3FF0"
         },
         "Contents": "Hello, world, 1980!",
-        "ObjectKey": "second.txt",
-        "PublicRead": true
+        "ObjectKey": "second.txt"
       },
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete"
@@ -131,7 +130,7 @@
           ]
         },
         "Handler": "index.onEvent",
-        "Runtime": "nodejs10.x"
+        "Runtime": "nodejs12.x"
       },
       "DependsOn": [
         "comamazonawscdkcustomresourcess3fileproviders3fileoneventServiceRoleDefaultPolicy10D24725",
