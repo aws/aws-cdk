@@ -12,7 +12,8 @@ export class Names {
   /**
    * Returns a CloudFormation-compatible unique identifier for a construct based
    * on its path. The identifier includes a human readable portion rendered
-   * from the path components and a hash suffix.
+   * from the path components and a hash suffix. uniqueId is not unique if multiple
+   * copies of the stack are deployed. Prefer using stackSafeUniqueId().
    *
    * @param construct The construct
    * @returns a unique id based on the construct path
@@ -46,7 +47,7 @@ export class Names {
    * @param maxUniqueIdLength The maximum length of the unique id
    * @returns a unique id based on the construct path
    */
-  public static uniqueIdWithStackName(construct: Construct, maxUniqueIdLength: number = 256): string {
+  public static stackSafeUniqueId(construct: Construct, maxUniqueIdLength: number = 256): string {
     const node = Node.of(construct);
     const components = node.scopes.slice(1).map(component => {
       if (Stack.isStack(component) && !unresolved(component.stackName)) {

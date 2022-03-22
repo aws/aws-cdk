@@ -700,8 +700,8 @@ export class Pipeline extends PipelineBase {
     const prefix = 'alias/codepipeline-';
     const maxAliasLength = 256;
     const maxUniqueIdLength = maxAliasLength - prefix.length;
-    if (FeatureFlags.of(this).isEnabled(cxapi.CODEPIPELINE_CROSS_ACCOUNT_KEY_ALIAS_NAMED_WITH_STACK_NAME)) {
-      const uniqueId = Names.uniqueIdWithStackName(this, maxUniqueIdLength);
+    if (FeatureFlags.of(this).isEnabled(cxapi.CODEPIPELINE_CROSS_ACCOUNT_KEY_ALIAS_STACK_SAFE_UNIQUE_ID)) {
+      const uniqueId = Names.stackSafeUniqueId(this, maxUniqueIdLength);
       return prefix + uniqueId.toLowerCase();
     } else {
       const uniqueId = Names.uniqueId(this);
