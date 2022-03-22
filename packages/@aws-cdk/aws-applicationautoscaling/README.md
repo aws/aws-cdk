@@ -131,7 +131,7 @@ capacity.scaleOnMetric('ScaleToCPUWithMultipleDatapoints', {
   evaluationPeriods: 10,
 
   // Only trigger a scaling action when 6 datapoints out of the last 10 are
-  // breaching. If this is left unspecified, then ALL datapoints in the 
+  // breaching. If this is left unspecified, then ALL datapoints in the
   // evaluation period must be breaching to trigger a scaling action
   datapointsToAlarm: 6
 });
@@ -195,12 +195,12 @@ const capacity = resource.autoScaleCapacity({
 });
 
 capacity.scaleOnSchedule('PrescaleInTheMorning', {
-  schedule: appscaling.Schedule.cron({ hour: '8', minute: '0' }),
+  schedule: Schedule.cron({ hour: '8', minute: '0' }),
   minCapacity: 20,
 });
 
 capacity.scaleOnSchedule('AllowDownscalingAtNight', {
-  schedule: appscaling.Schedule.cron({ hour: '20', minute: '0' }),
+  schedule: Schedule.cron({ hour: '20', minute: '0' }),
   minCapacity: 1
 });
 ```

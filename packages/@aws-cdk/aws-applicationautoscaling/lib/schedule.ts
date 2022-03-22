@@ -3,12 +3,15 @@ import { Construct } from 'constructs';
 
 /**
  * Schedule for scheduled scaling actions
+ *
+ * @deprecated use `core.Schedule`
  */
 export abstract class Schedule {
   /**
    * Construct a schedule from a literal schedule expression
    *
    * @param expression The expression to use. Must be in a format that Application AutoScaling will recognize
+   *
    */
   public static expression(expression: string): Schedule {
     return new LiteralSchedule(expression);
@@ -91,6 +94,8 @@ export abstract class Schedule {
  * a field implies '*' or '?', whichever one is appropriate.
  *
  * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/ScheduledEvents.html#CronExpressions
+ *
+ * @deprecated use `core.Schedule`
  */
 export interface CronOptions {
   /**

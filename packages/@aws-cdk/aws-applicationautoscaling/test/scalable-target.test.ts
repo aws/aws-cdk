@@ -59,7 +59,7 @@ describe('scalable target', () => {
 
     // WHEN
     target.scaleOnSchedule('ScaleUp', {
-      schedule: appscaling.Schedule.rate(cdk.Duration.minutes(1)),
+      schedule: cdk.Schedule.rate(cdk.Duration.minutes(1)),
       maxCapacity: 50,
       minCapacity: 1,
     });
@@ -86,7 +86,7 @@ describe('scalable target', () => {
 
     // WHEN
     target.scaleOnSchedule('ScaleUp', {
-      schedule: appscaling.Schedule.cron({
+      schedule: cdk.Schedule.cron({
         hour: '8',
         day: '1',
       }),
@@ -111,7 +111,7 @@ describe('scalable target', () => {
 
     // WHEN
     target.scaleOnSchedule('ScaleUp', {
-      schedule: appscaling.Schedule.cron({
+      schedule: cdk.Schedule.cron({
         hour: '8',
         day: '1',
         minute: '*',
@@ -270,7 +270,7 @@ describe('scalable target', () => {
     const target = createScalableTarget(stack);
     expect(() => {
       target.scaleOnSchedule('ScaleUp', {
-        schedule: appscaling.Schedule.rate(cdk.Duration.minutes(1)),
+        schedule: cdk.Schedule.rate(cdk.Duration.minutes(1)),
       });
     }).toThrow(/You must supply at least one of minCapacity or maxCapacity, got/);
   });

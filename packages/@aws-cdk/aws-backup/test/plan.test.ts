@@ -1,6 +1,5 @@
 import { Template } from '@aws-cdk/assertions';
-import * as events from '@aws-cdk/aws-events';
-import { App, Duration, Stack } from '@aws-cdk/core';
+import { App, Duration, Stack, Schedule } from '@aws-cdk/core';
 import { BackupPlan, BackupPlanRule, BackupVault } from '../lib';
 
 let stack: Stack;
@@ -20,7 +19,7 @@ test('create a plan and add rules', () => {
       new BackupPlanRule({
         completionWindow: Duration.hours(2),
         startWindow: Duration.hours(1),
-        scheduleExpression: events.Schedule.cron({
+        scheduleExpression: Schedule.cron({
           day: '15',
           hour: '3',
           minute: '30',
@@ -157,7 +156,7 @@ test('create a plan and add rules - add BackupPlan.AdvancedBackupSettings.Backup
       new BackupPlanRule({
         completionWindow: Duration.hours(2),
         startWindow: Duration.hours(1),
-        scheduleExpression: events.Schedule.cron({
+        scheduleExpression: Schedule.cron({
           day: '15',
           hour: '3',
           minute: '30',
@@ -295,7 +294,7 @@ test('throws when deleteAfter is not greater than moveToColdStorageAfter', () =>
 
 test('throws when scheduleExpression is not of type cron', () => {
   expect(() => new BackupPlanRule({
-    scheduleExpression: events.Schedule.rate(Duration.hours(5)),
+    scheduleExpression: Schedule.rate(Duration.hours(5)),
   })).toThrow(/`scheduleExpression` must be of type `cron`/);
 });
 

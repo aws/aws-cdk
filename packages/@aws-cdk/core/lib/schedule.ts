@@ -1,19 +1,15 @@
-import { Annotations, Duration } from '@aws-cdk/core';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from '@aws-cdk/core';
+import { Construct } from 'constructs';
+import { Annotations } from './annotations';
+import { Duration } from './duration';
 
 /**
- * Schedule for scheduled event rules
- *
- * @deprecated use `core.Schedule`
+ * Represents a schedule
  */
 export abstract class Schedule {
   /**
    * Construct a schedule from a literal schedule expression
    *
-   * @param expression The expression to use. Must be in a format that EventBridge will recognize
+   * @param expression The expression to use. Must be in a format that Application AutoScaling will recognize
    */
   public static expression(expression: string): Schedule {
     return new LiteralSchedule(expression);
@@ -25,8 +21,8 @@ export abstract class Schedule {
   public static rate(duration: Duration): Schedule {
     if (duration.isUnresolved()) {
       const validDurationUnit = ['minute', 'minutes', 'hour', 'hours', 'day', 'days'];
-      if (validDurationUnit.indexOf(duration.unitLabel()) === -1) {
-        throw new Error("Allowed units for scheduling are: 'minute', 'minutes', 'hour', 'hours', 'day', 'days'");
+      if (!validDurationUnit.includes(duration.unitLabel())) {
+        throw new Error("Allowed units for scheduling are: 'minute', 'minutes', 'hour', 'hours', 'day' or 'days'");
       }
       return new LiteralSchedule(`rate(${duration.formatTokenToNumber()})`);
     }
@@ -38,6 +34,13 @@ export abstract class Schedule {
     if (rate === undefined) { rate = maybeRate(duration.toHours({ integral: false }), 'hour'); }
     if (rate === undefined) { rate = makeRate(duration.toMinutes({ integral: true }), 'minute'); }
     return new LiteralSchedule(rate);
+  }
+
+  /**
+   * Construct a Schedule from a moment in time
+   */
+  public static at(moment: Date): Schedule {
+    return new LiteralSchedule(`at(${formatISO(moment)})`);
   }
 
   /**
@@ -88,9 +91,7 @@ export abstract class Schedule {
  * All fields are strings so you can use complex expressions. Absence of
  * a field implies '*' or '?', whichever one is appropriate.
  *
- * @see https://docs.aws.amazon.com/eventbridge/latest/userguide/scheduled-events.html#cron-expressions
- *
- * @deprecated use `core.Schedule`
+ * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/ScheduledEvents.html#CronExpressions
  */
 export interface CronOptions {
   /**
@@ -145,7 +146,25 @@ class LiteralSchedule extends Schedule {
 }
 
 function fallback<T>(x: T | undefined, def: T): T {
-  return x ?? def;
+  return x === undefined ? def : x;
+}
+
+function formatISO(date?: Date) {
+  if (!date) { return undefined; }
+
+  return date.getUTCFullYear() +
+    '-' + pad(date.getUTCMonth() + 1) +
+    '-' + pad(date.getUTCDate()) +
+    'T' + pad(date.getUTCHours()) +
+    ':' + pad(date.getUTCMinutes()) +
+    ':' + pad(date.getUTCSeconds());
+
+  function pad(num: number) {
+    if (num < 10) {
+      return '0' + num;
+    }
+    return num;
+  }
 }
 
 /**

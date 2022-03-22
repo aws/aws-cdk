@@ -1,6 +1,6 @@
 // Fixture with packages imported, but nothing else
 import { Construct } from 'constructs';
-import { Stack, Duration } from '@aws-cdk/core';
+import { Stack, Duration, Schedule } from '@aws-cdk/core';
 
 class Fixture extends Stack {
   constructor(scope: Construct, id: string) {

@@ -109,7 +109,7 @@ Rate must be specified in minutes, hours or days.
 The following example runs a task every day at 4am:
 
 ```ts fixture=basic
-import { Rule, Schedule } from '@aws-cdk/aws-events';
+import { Rule } from '@aws-cdk/aws-events';
 import { EcsTask } from '@aws-cdk/aws-events-targets';
 import { Cluster, TaskDefinition } from '@aws-cdk/aws-ecs';
 import { Role } from '@aws-cdk/aws-iam';

@@ -1,5 +1,4 @@
-import * as events from '@aws-cdk/aws-events';
-import { Duration } from '@aws-cdk/core';
+import { Duration, Schedule } from '@aws-cdk/core';
 import { IBackupVault } from './vault';
 
 /**
@@ -42,7 +41,7 @@ export interface BackupPlanRuleProps {
    *
    * @default - no schedule
    */
-  readonly scheduleExpression?: events.Schedule;
+  readonly scheduleExpression?: Schedule;
 
   /**
    * The duration after a backup is scheduled before a job is canceled if it doesn't start successfully.
@@ -83,7 +82,7 @@ export class BackupPlanRule {
     return new BackupPlanRule({
       backupVault,
       ruleName: 'Daily',
-      scheduleExpression: events.Schedule.cron({
+      scheduleExpression: Schedule.cron({
         hour: '5',
         minute: '0',
       }),
@@ -98,7 +97,7 @@ export class BackupPlanRule {
     return new BackupPlanRule({
       backupVault,
       ruleName: 'Weekly',
-      scheduleExpression: events.Schedule.cron({
+      scheduleExpression: Schedule.cron({
         hour: '5',
         minute: '0',
         weekDay: 'SAT',
@@ -114,7 +113,7 @@ export class BackupPlanRule {
     return new BackupPlanRule({
       backupVault,
       ruleName: 'Monthly1Year',
-      scheduleExpression: events.Schedule.cron({
+      scheduleExpression: Schedule.cron({
         day: '1',
         hour: '5',
         minute: '0',
@@ -131,7 +130,7 @@ export class BackupPlanRule {
     return new BackupPlanRule({
       backupVault,
       ruleName: 'Monthly5Year',
-      scheduleExpression: events.Schedule.cron({
+      scheduleExpression: Schedule.cron({
         day: '1',
         hour: '5',
         minute: '0',
@@ -148,7 +147,7 @@ export class BackupPlanRule {
     return new BackupPlanRule({
       backupVault,
       ruleName: 'Monthly7Year',
-      scheduleExpression: events.Schedule.cron({
+      scheduleExpression: Schedule.cron({
         day: '1',
         hour: '5',
         minute: '0',

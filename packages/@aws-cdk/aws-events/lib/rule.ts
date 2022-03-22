@@ -1,11 +1,10 @@
 import { IRole, PolicyStatement, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
-import { App, IResource, Lazy, Names, Resource, Stack, Token, PhysicalName, ArnFormat } from '@aws-cdk/core';
+import { App, IResource, Lazy, Names, Resource, Stack, Token, PhysicalName, ArnFormat, Schedule } from '@aws-cdk/core';
 import { Node, Construct } from 'constructs';
 import { IEventBus } from './event-bus';
 import { EventPattern } from './event-pattern';
 import { CfnEventBusPolicy, CfnRule } from './events.generated';
 import { IRule } from './rule-ref';
-import { Schedule } from './schedule';
 import { IRuleTarget } from './target';
 import { mergeEventPattern, renderEventPattern, sameEnvDimension } from './util';
 
@@ -125,6 +124,10 @@ export class Rule extends Resource implements IRule {
 
     if (props.eventBus && props.schedule) {
       throw new Error('Cannot associate rule with \'eventBus\' when using \'schedule\'');
+    }
+
+    if (props.schedule && /^at/.test(props.schedule.expressionString)) {
+      throw new Error('`schedule` cannot be of type `at`');
     }
 
     this.description = props.description;
