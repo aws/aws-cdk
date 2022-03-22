@@ -9,13 +9,13 @@ export interface SynthOptions extends DefaultCdkOptions {
    * After synthesis, validate stacks with the "validateOnSynth"
    * attribute set (can also be controlled with CDK_VALIDATION)
    *
-   * @default - true;
+   * @default true;
    */
   readonly validation?: boolean;
 
   /**
    * Do not output CloudFormation Template to stdout
-   * @default - false;
+   * @default false;
    */
   readonly quiet?: boolean;
 

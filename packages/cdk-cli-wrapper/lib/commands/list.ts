@@ -7,7 +7,7 @@ export interface ListOptions extends DefaultCdkOptions {
   /**
    *Display environment information for each stack
    *
-   * @default - false
+   * @default false
    */
   readonly long?: boolean;
 }

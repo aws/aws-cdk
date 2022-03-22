@@ -55,14 +55,14 @@ export interface DefaultCdkOptions {
   /**
    * Print trace for stack warnings
    *
-   * @default -
+   * @default false
    */
   readonly trace?: boolean;
 
   /**
    * Do not construct stacks with warnings
    *
-   * @default -
+   * @default false
    */
   readonly strict?: boolean;
 
@@ -72,14 +72,14 @@ export interface DefaultCdkOptions {
    * Synthesis fails if this is disabled and context lookups need
    * to be performed
    *
-   * @default - true
+   * @default true
    */
   readonly lookups?: boolean;
 
   /**
     * Ignores synthesis errors, which will likely produce an invalid output
    *
-   * @default - false
+   * @default false
    */
   readonly ignoreErrors?: boolean;
 
@@ -87,14 +87,14 @@ export interface DefaultCdkOptions {
    * Use JSON output instead of YAML when templates are printed
    * to STDOUT
    *
-   * @default - false
+   * @default false
    */
   readonly json?: boolean;
 
   /**
    * show debug logs
    *
-   * @default - false
+   * @default false
    */
   readonly verbose?: boolean;
 
@@ -102,7 +102,7 @@ export interface DefaultCdkOptions {
    * enable emission of additional debugging information, such as creation stack
    * traces of tokens
    *
-   * @default - false
+   * @default false
    */
   readonly debug?: boolean;
 
@@ -117,7 +117,7 @@ export interface DefaultCdkOptions {
    * Use the indicated proxy. Will read from
    * HTTPS_PROXY environment if specified
    *
-   * @default -no proxy
+   * @default - no proxy
    */
   readonly proxy?: string;
 
@@ -139,21 +139,21 @@ export interface DefaultCdkOptions {
   /**
    * Include "AWS::CDK::Metadata" resource in synthesized templates
    *
-   * @default - true
+   * @default true
    */
   readonly versionReporting?: boolean;
 
   /**
    * Include "aws:cdk:path" CloudFormation metadata for each resource
    *
-   * @default - true
+   * @default true
    */
   readonly pathMetadata?: boolean;
 
   /**
    * Include "aws:asset:*" CloudFormation metadata for resources that use assets
    *
-   * @default - true
+   * @default true
    */
   readonly assetMetadata?: boolean;
 
@@ -162,28 +162,28 @@ export interface DefaultCdkOptions {
    *
    * Needed for local debugging the source files with SAM CLI
    *
-   * @default - false
+   * @default false
    */
   readonly staging?: boolean;
 
   /**
    * Emits the synthesized cloud assembly into a directory
    *
-   * @default - cdk.out
+   * @default cdk.out
    */
   readonly output?: string;
 
   /**
    * Show relevant notices
    *
-   * @default - true
+   * @default true
    */
   readonly notices?: boolean;
 
   /**
    * Show colors and other style from console output
    *
-   * @default - true
+   * @default true
    */
   readonly color?: boolean;
 }

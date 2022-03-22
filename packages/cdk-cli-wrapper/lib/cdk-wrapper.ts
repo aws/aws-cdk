@@ -44,7 +44,7 @@ export interface SynthFastOptions {
   /**
    * Emits the synthesized cloud assembly into a directory
    *
-   * @default - cdk.out
+   * @default cdk.out
    */
   readonly output?: string,
 
@@ -86,7 +86,7 @@ export interface CdkCliWrapperOptions {
   /**
    * The path to the cdk executable
    *
-   * @default - 'aws-cdk/bin/cdk'
+   * @default 'aws-cdk/bin/cdk'
    */
   readonly cdkExecutable?: string;
 }
