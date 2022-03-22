@@ -25,6 +25,8 @@ new ec2.Instance(stack, 'Instance2', {
   userDataCausesReplacement: true,
   initOptions: {
     timeout: cdk.Duration.minutes(30),
+    includeRole: true,
+    includeUrl: true,
   },
   init: ec2.CloudFormationInit.fromConfigSets({
     configSets: {
