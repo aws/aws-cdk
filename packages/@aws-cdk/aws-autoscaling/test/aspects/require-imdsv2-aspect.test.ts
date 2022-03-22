@@ -38,8 +38,7 @@ describe('AutoScalingGroupRequireImdsv2Aspect', () => {
         HttpTokens: 'required',
       },
     }));
-
-    expect(asg.node.metadataEntry).toContainEqual({
+    expect(asg.node.metadata).toContainEqual({
       data: expect.stringContaining('CfnLaunchConfiguration.MetadataOptions field is a CDK token.'),
       type: 'aws:cdk:warning',
       trace: undefined,

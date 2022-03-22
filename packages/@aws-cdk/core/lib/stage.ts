@@ -3,10 +3,6 @@ import { IConstruct, Construct, Node } from 'constructs';
 import { Environment } from './environment';
 import { synthesize } from './private/synthesis';
 
-// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
-// eslint-disable-next-line
-import { Construct as CoreConstruct } from './construct-compat';
-
 const STAGE_SYMBOL = Symbol.for('@aws-cdk/core.Stage');
 
 /**
@@ -70,7 +66,7 @@ export interface StageProps {
  * copies of your application which should be be deployed to different
  * environments.
  */
-export class Stage extends CoreConstruct {
+export class Stage extends Construct {
   /**
    * Return the stage this construct is contained with, if available. If called
    * on a nested stage, returns its parent.

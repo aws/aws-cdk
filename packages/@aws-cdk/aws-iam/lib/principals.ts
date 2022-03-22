@@ -1,5 +1,6 @@
 import * as cdk from '@aws-cdk/core';
 import { Default, FactName, RegionInfo } from '@aws-cdk/region-info';
+import { IDependable } from 'constructs';
 import { IOpenIdConnectProvider } from './oidc-provider';
 import { PolicyDocument } from './policy-document';
 import { Condition, Conditions, PolicyStatement } from './policy-statement';
@@ -104,7 +105,7 @@ export interface AddToPrincipalPolicyResult {
    *
    * @default - Required if `statementAdded` is true.
    */
-  readonly policyDependable?: cdk.IDependable;
+  readonly policyDependable?: IDependable;
 }
 
 /**
