@@ -582,7 +582,7 @@ export enum InstanceClass {
   MEMORY_INTENSIVE_2_XTZ_INTEL = 'x2iezn',
 
   /**
-   * Memory-intensive instances with higher network bandwith and local NVME drive, Intel Xeon Scalable (Ice Lake) processors
+   * Memory-intensive instances with higher network bandwith and single-threaded performance, Intel Xeon Scalable (Cascade Lake) processors
    */
   X2IEZN = 'x2iezn',
 
