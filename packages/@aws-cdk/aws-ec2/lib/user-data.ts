@@ -1,5 +1,5 @@
 import { IBucket } from '@aws-cdk/aws-s3';
-import { CfnElement, Fn, Resource, Stack } from '@aws-cdk/core';
+import { Fn, Resource, Stack, CfnResource } from '@aws-cdk/core';
 import { OperatingSystemType } from './machine-image';
 
 /**
@@ -36,6 +36,12 @@ export interface S3DownloadOptions {
    *          Windows - %TEMP%/bucketKey
    */
   readonly localFile?: string;
+
+  /**
+   * The region of the S3 Bucket (needed for access via VPC Gateway)
+   * @default none
+   */
+  readonly region?: string
 
 }
 
@@ -156,7 +162,7 @@ class LinuxUserData extends UserData {
     const localPath = ( params.localFile && params.localFile.length !== 0 ) ? params.localFile : `/tmp/${ params.bucketKey }`;
     this.addCommands(
       `mkdir -p $(dirname '${localPath}')`,
-      `aws s3 cp '${s3Path}' '${localPath}'`,
+      `aws s3 cp '${s3Path}' '${localPath}'` + (params.region !== undefined ? ` --region ${params.region}` : ''),
     );
 
     return localPath;
@@ -172,7 +178,7 @@ class LinuxUserData extends UserData {
 
   public addSignalOnExitCommand( resource: Resource ): void {
     const stack = Stack.of(resource);
-    const resourceID = stack.getLogicalId(resource.node.defaultChild as CfnElement);
+    const resourceID = (resource.node.defaultChild as CfnResource).logicalId;
     this.addOnExitCommands(`/opt/aws/bin/cfn-signal --stack ${stack.stackName} --resource ${resourceID} --region ${stack.region} -e $exitCode || echo 'Failed to send Cloudformation Signal'`);
   }
 
@@ -215,7 +221,7 @@ class WindowsUserData extends UserData {
     const localPath = ( params.localFile && params.localFile.length !== 0 ) ? params.localFile : `C:/temp/${ params.bucketKey }`;
     this.addCommands(
       `mkdir (Split-Path -Path '${localPath}' ) -ea 0`,
-      `Read-S3Object -BucketName '${params.bucket.bucketName}' -key '${params.bucketKey}' -file '${localPath}' -ErrorAction Stop`,
+      `Read-S3Object -BucketName '${params.bucket.bucketName}' -key '${params.bucketKey}' -file '${localPath}' -ErrorAction Stop` + (params.region !== undefined ? ` -Region ${params.region}` : ''),
     );
     return localPath;
   }
@@ -229,7 +235,7 @@ class WindowsUserData extends UserData {
 
   public addSignalOnExitCommand( resource: Resource ): void {
     const stack = Stack.of(resource);
-    const resourceID = stack.getLogicalId(resource.node.defaultChild as CfnElement);
+    const resourceID = (resource.node.defaultChild as CfnResource).logicalId;
 
     this.addOnExitCommands(`cfn-signal --stack ${stack.stackName} --resource ${resourceID} --region ${stack.region} --success ($success.ToString().ToLower())`);
   }
@@ -483,7 +489,11 @@ export class MultipartUserData extends UserData {
    * If `makeDefault` is false, then this is the same as calling:
    *
    * ```ts
-   * multiPart.addPart(MultipartBody.fromUserData(userData, contentType));
+   * declare const multiPart: ec2.MultipartUserData;
+   * declare const userData: ec2.UserData;
+   * declare const contentType: string;
+   *
+   * multiPart.addPart(ec2.MultipartBody.fromUserData(userData, contentType));
    * ```
    *
    * An undefined `makeDefault` defaults to either:

@@ -17,7 +17,7 @@
         "AutoDeploy": true
       }
     },
-    "MyHttpApiGETAuthorizerIntegMyHttpApiGET16D02385PermissionBB02EBFE": {
+    "MyHttpApiGETRootIntegratinPermissionCEEEB498": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
@@ -54,7 +54,7 @@
         }
       }
     },
-    "MyHttpApiGETHttpIntegration6f095b8469365f72e33fa33d9711b140516EBE31": {
+    "MyHttpApiGETRootIntegratin93150A89": {
       "Type": "AWS::ApiGatewayV2::Integration",
       "Properties": {
         "ApiId": {
@@ -87,7 +87,7 @@
             [
               "integrations/",
               {
-                "Ref": "MyHttpApiGETHttpIntegration6f095b8469365f72e33fa33d9711b140516EBE31"
+                "Ref": "MyHttpApiGETRootIntegratin93150A89"
               }
             ]
           ]
@@ -101,14 +101,14 @@
           "Ref": "MyHttpApi8AEAAC21"
         },
         "AuthorizerType": "JWT",
+        "Name": "UserPoolAuthorizer",
         "IdentitySource": [
           "$request.header.Authorization"
         ],
-        "Name": "UserPoolAuthorizer",
         "JwtConfiguration": {
           "Audience": [
             {
-              "Ref": "userpoolmyclientFAD947AB"
+              "Ref": "userpoolUserPoolAuthorizerClient6A7486E8"
             }
           ],
           "Issuer": {
@@ -160,7 +160,7 @@
       "UpdateReplacePolicy": "Retain",
       "DeletionPolicy": "Retain"
     },
-    "userpoolmyclientFAD947AB": {
+    "userpoolUserPoolAuthorizerClient6A7486E8": {
       "Type": "AWS::Cognito::UserPoolClient",
       "Properties": {
         "UserPoolId": {

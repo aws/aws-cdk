@@ -17,6 +17,7 @@
     "AWS::Logs::LogGroup" : {},
     "AWS::Neptune::DBCluster" : {},
     "AWS::Neptune::DBInstance" : {},
+    "AWS::OpenSearchService::Domain" : {},
     "AWS::QLDB::Ledger" : {},
     "AWS::RDS::DBCluster" : {},
     "AWS::RDS::DBInstance" : {},
@@ -25,6 +26,7 @@
     "AWS::SQS::Queue" : {},
     "AWS::S3::Bucket" : {
       "DeleteRequiresEmptyResource": true
-    }
+    },
+    "AWS::SecretsManager::Secret" : {}
   }
 }

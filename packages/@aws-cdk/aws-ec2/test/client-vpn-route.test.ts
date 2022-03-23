@@ -1,5 +1,6 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import { SamlMetadataDocument, SamlProvider } from '@aws-cdk/aws-iam';
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { App, Stack } from '@aws-cdk/core';
 import * as ec2 from '../lib';
 import {
@@ -41,12 +42,12 @@ describe('ClientVpnRoute constructor', () => {
       cidr: '0.0.0.0/0',
       target: ClientVpnRouteTarget.local(),
     });
-    expect(stack).toCountResources('AWS::EC2::VPC', 1);
-    expect(stack).toCountResources('AWS::EC2::ClientVpnEndpoint', 1);
-    expect(stack).toCountResources('AWS::EC2::ClientVpnRoute', 1);
+    Template.fromStack(stack).resourceCountIs('AWS::EC2::VPC', 1);
+    Template.fromStack(stack).resourceCountIs('AWS::EC2::ClientVpnEndpoint', 1);
+    Template.fromStack(stack).resourceCountIs('AWS::EC2::ClientVpnRoute', 1);
     expect(stack.node.children.length).toBe(3);
   });
-  test('either clientVpnEndoint (deprecated, typo) or clientVpnEndpoint is required', () => {
+  testDeprecated('either clientVpnEndoint (deprecated, typo) or clientVpnEndpoint is required', () => {
     expect(() => {
       new ClientVpnRoute(stack, 'RouteNoEndointOrEndpoint', {
         cidr: '0.0.0.0/0',
@@ -58,7 +59,7 @@ describe('ClientVpnRoute constructor', () => {
       ),
     );
   });
-  test('specifying both clientVpnEndoint (deprecated, typo) and clientVpnEndpoint is not allowed', () => {
+  testDeprecated('specifying both clientVpnEndoint (deprecated, typo) and clientVpnEndpoint is not allowed', () => {
     const samlProvider = new SamlProvider(stack, 'Provider', {
       metadataDocument: SamlMetadataDocument.fromXml('xml'),
     });
@@ -95,10 +96,10 @@ describe('ClientVpnRoute constructor', () => {
         target: ClientVpnRouteTarget.local(),
       });
     }).toThrow();
-    expect(stack).toCountResources('AWS::EC2::VPC', 1);
+    Template.fromStack(stack).resourceCountIs('AWS::EC2::VPC', 1);
     expect(stack.node.children.length).toBe(1);
   });
-  test('supplying clientVpnEndoint (deprecated due to typo) should still work', () => {
+  testDeprecated('supplying clientVpnEndoint (deprecated due to typo) should still work', () => {
     const samlProvider = new SamlProvider(stack, 'Provider', {
       metadataDocument: SamlMetadataDocument.fromXml('xml'),
     });
@@ -118,9 +119,9 @@ describe('ClientVpnRoute constructor', () => {
       cidr: '0.0.0.0/0',
       target: ClientVpnRouteTarget.local(),
     });
-    expect(stack).toCountResources('AWS::EC2::VPC', 1);
-    expect(stack).toCountResources('AWS::EC2::ClientVpnEndpoint', 1);
-    expect(stack).toCountResources('AWS::EC2::ClientVpnRoute', 1);
+    Template.fromStack(stack).resourceCountIs('AWS::EC2::VPC', 1);
+    Template.fromStack(stack).resourceCountIs('AWS::EC2::ClientVpnEndpoint', 1);
+    Template.fromStack(stack).resourceCountIs('AWS::EC2::ClientVpnRoute', 1);
     expect(stack.node.children.length).toBe(3);
   });
 });

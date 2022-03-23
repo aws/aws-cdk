@@ -1,6 +1,5 @@
-import '@aws-cdk/assert-internal/jest';
-import { SynthUtils } from '@aws-cdk/assert-internal';
-import { Stack } from '@aws-cdk/core';
+import { Template } from '@aws-cdk/assertions';
+import { CfnResource, Stack } from '@aws-cdk/core';
 import { Cluster, KubernetesManifest, KubernetesVersion, HelmChart } from '../lib';
 import { testFixtureNoVpc, testFixtureCluster } from './util';
 
@@ -72,7 +71,7 @@ describe('k8s manifest', () => {
       manifest,
     });
 
-    expect(stack).toHaveResource(KubernetesManifest.RESOURCE_TYPE, {
+    Template.fromStack(stack).hasResourceProperties(KubernetesManifest.RESOURCE_TYPE, {
       Manifest: JSON.stringify(manifest),
     });
 
@@ -91,13 +90,13 @@ describe('k8s manifest', () => {
     cluster.addHelmChart('helm', { chart: 'hello-world' });
 
     // THEN
-    expect(stack).toHaveResource(KubernetesManifest.RESOURCE_TYPE, {
+    Template.fromStack(stack).hasResourceProperties(KubernetesManifest.RESOURCE_TYPE, {
       Manifest: '[{"bar":2334}]',
       ClusterName: 'my-cluster-name',
       RoleArn: 'arn:aws:iam::1111111:role/iam-role-that-has-masters-access',
     });
 
-    expect(stack).toHaveResource(HelmChart.RESOURCE_TYPE, {
+    Template.fromStack(stack).hasResourceProperties(HelmChart.RESOURCE_TYPE, {
       ClusterName: 'my-cluster-name',
       RoleArn: 'arn:aws:iam::1111111:role/iam-role-that-has-masters-access',
       Release: 'myclustercharthelm78d2c26a',
@@ -107,6 +106,17 @@ describe('k8s manifest', () => {
     });
 
 
+  });
+
+  test('default child is a CfnResource', () => {
+    const stack = new Stack();
+    const cluster = Cluster.fromClusterAttributes(stack, 'MyCluster', {
+      clusterName: 'my-cluster-name',
+      kubectlRoleArn: 'arn:aws:iam::1111111:role/iam-role-that-has-masters-access',
+    });
+
+    const manifest = cluster.addManifest('foo', { bar: 2334 });
+    expect(manifest.node.defaultChild).toBeInstanceOf(CfnResource);
   });
 
   describe('prune labels', () => {
@@ -129,7 +139,7 @@ describe('k8s manifest', () => {
       });
 
       // THEN
-      expect(stack).toHaveResource(KubernetesManifest.RESOURCE_TYPE, {
+      Template.fromStack(stack).hasResourceProperties(KubernetesManifest.RESOURCE_TYPE, {
         Manifest: JSON.stringify([{
           apiVersion: 'v1beta1',
           kind: 'Foo',
@@ -171,7 +181,7 @@ describe('k8s manifest', () => {
       );
 
       // THEN
-      expect(stack).toHaveResource(KubernetesManifest.RESOURCE_TYPE, {
+      Template.fromStack(stack).hasResourceProperties(KubernetesManifest.RESOURCE_TYPE, {
         Manifest: JSON.stringify([
           {
             apiVersion: 'v1beta',
@@ -233,7 +243,7 @@ describe('k8s manifest', () => {
       });
 
       // THEN
-      expect(stack).toHaveResource(KubernetesManifest.RESOURCE_TYPE, {
+      Template.fromStack(stack).hasResourceProperties(KubernetesManifest.RESOURCE_TYPE, {
         Manifest: JSON.stringify([
           {
             apiVersion: 'v1beta',
@@ -248,7 +258,7 @@ describe('k8s manifest', () => {
         PruneLabel: 'aws.cdk.eks/prune-c89a5983505f58231ac2a9a86fd82735ccf2308eac',
       });
 
-      expect(stack).toHaveResource(KubernetesManifest.RESOURCE_TYPE, {
+      Template.fromStack(stack).hasResourceProperties(KubernetesManifest.RESOURCE_TYPE, {
         Manifest: JSON.stringify([
           {
             apiVersion: 'v1',
@@ -286,7 +296,7 @@ describe('k8s manifest', () => {
       });
 
       // THEN
-      expect(stack).toHaveResource(KubernetesManifest.RESOURCE_TYPE, {
+      Template.fromStack(stack).hasResourceProperties(KubernetesManifest.RESOURCE_TYPE, {
         Manifest: JSON.stringify([{ malformed: { resource: 'yes' } }]),
         PruneLabel: 'aws.cdk.eks/prune-c89a5983505f58231ac2a9a86fd82735ccf2308eac',
       });
@@ -303,7 +313,7 @@ describe('k8s manifest', () => {
       cluster.addManifest('m1', ['foo']);
 
       // THEN
-      expect(stack).toHaveResource(KubernetesManifest.RESOURCE_TYPE, {
+      Template.fromStack(stack).hasResourceProperties(KubernetesManifest.RESOURCE_TYPE, {
         Manifest: JSON.stringify([['foo']]),
         PruneLabel: 'aws.cdk.eks/prune-c89a5983505f58231ac2a9a86fd82735ccf2308eac',
       });
@@ -336,7 +346,7 @@ describe('k8s manifest', () => {
       });
 
       // THEN
-      const template = SynthUtils.synthesize(stack).template;
+      const template = Template.fromStack(stack).toJSON();
 
       const m1 = template.Resources.Clustermanifestm1E5FBE3C1.Properties;
       const m2 = template.Resources.m201F909C5.Properties;

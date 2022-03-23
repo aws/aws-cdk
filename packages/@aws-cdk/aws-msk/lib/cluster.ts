@@ -9,7 +9,8 @@ import * as core from '@aws-cdk/core';
 import * as cr from '@aws-cdk/custom-resources';
 import * as constructs from 'constructs';
 import { addressOf } from 'constructs/lib/private/uniqueid';
-import { CfnCluster, KafkaVersion } from './';
+import { KafkaVersion } from './';
+import { CfnCluster } from './msk.generated';
 
 /**
  * Represents a MSK Cluster
@@ -539,7 +540,7 @@ export class Cluster extends ClusterBase {
         new iam.PolicyStatement({
           sid:
             'Allow access through AWS Secrets Manager for all principals in the account that are authorized to use AWS Secrets Manager',
-          principals: [new iam.Anyone()],
+          principals: [new iam.AnyPrincipal()],
           actions: [
             'kms:Encrypt',
             'kms:Decrypt',

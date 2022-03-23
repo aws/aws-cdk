@@ -1,9 +1,8 @@
-import { arrayWith, countResources, expect as expectCdk, haveResource, haveResourceLike, ResourcePart } from '@aws-cdk/assert-internal';
-import '@aws-cdk/assert-internal/jest';
+import { Match, Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
+import { describeDeprecated, testFutureBehavior, testLegacyBehavior } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
-import { testFutureBehavior, testLegacyBehavior } from 'cdk-build-tools/lib/feature-flag';
 import * as kms from '../lib';
 
 const ADMIN_ACTIONS: string[] = [
@@ -47,7 +46,7 @@ testFutureBehavior('default key', flags, cdk.App, (app) => {
   const stack = new cdk.Stack(app);
   new kms.Key(stack, 'MyKey');
 
-  expect(stack).toHaveResource('AWS::KMS::Key', {
+  Template.fromStack(stack).hasResource('AWS::KMS::Key', {
     Properties: {
       KeyPolicy: {
         Statement: [
@@ -65,14 +64,14 @@ testFutureBehavior('default key', flags, cdk.App, (app) => {
     },
     DeletionPolicy: 'Retain',
     UpdateReplacePolicy: 'Retain',
-  }, ResourcePart.CompleteDefinition);
+  });
 });
 
 testFutureBehavior('default with no retention', flags, cdk.App, (app) => {
   const stack = new cdk.Stack(app);
   new kms.Key(stack, 'MyKey', { removalPolicy: cdk.RemovalPolicy.DESTROY });
 
-  expect(stack).toHaveResource('AWS::KMS::Key', { DeletionPolicy: 'Delete', UpdateReplacePolicy: 'Delete' }, ResourcePart.CompleteDefinition);
+  Template.fromStack(stack).hasResource('AWS::KMS::Key', { DeletionPolicy: 'Delete', UpdateReplacePolicy: 'Delete' });
 });
 
 describe('key policies', () => {
@@ -85,7 +84,7 @@ describe('key policies', () => {
 
     new kms.Key(stack, 'MyKey', { policy });
 
-    expect(stack).toHaveResource('AWS::KMS::Key', {
+    Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
       KeyPolicy: {
         Statement: [
           {
@@ -110,7 +109,7 @@ describe('key policies', () => {
     const key = new kms.Key(stack, 'MyKey');
     key.addToResourcePolicy(statement);
 
-    expect(stack).toHaveResource('AWS::KMS::Key', {
+    Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
       KeyPolicy: {
         Statement: [
           {
@@ -146,7 +145,7 @@ describe('key policies', () => {
 
     // THEN
     // Key policy should be unmodified by the grant.
-    expect(stack).toHaveResource('AWS::KMS::Key', {
+    Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
       KeyPolicy: {
         Statement: [
           {
@@ -160,7 +159,7 @@ describe('key policies', () => {
       },
     });
 
-    expect(stack).toHaveResource('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -185,7 +184,7 @@ describe('key policies', () => {
 
     // THEN
     // Key policy should be unmodified by the grant.
-    expect(stack).toHaveResource('AWS::KMS::Key', {
+    Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
       KeyPolicy: {
         Statement: [
           {
@@ -199,7 +198,7 @@ describe('key policies', () => {
       },
     });
 
-    expect(stack).toHaveResource('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -226,7 +225,7 @@ describe('key policies', () => {
 
     key.grantEncrypt(principal);
 
-    expect(principalStack).toHaveResourceLike('AWS::IAM::Policy', {
+    Template.fromStack(principalStack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -258,9 +257,9 @@ describe('key policies', () => {
 
     key.grantEncrypt(principal);
 
-    expect(keyStack).toHaveResourceLike('AWS::KMS::Key', {
+    Template.fromStack(keyStack).hasResourceProperties('AWS::KMS::Key', {
       KeyPolicy: {
-        Statement: arrayWith(
+        Statement: Match.arrayWith([
           {
             Action: [
               'kms:Encrypt',
@@ -271,11 +270,11 @@ describe('key policies', () => {
             Principal: { AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, ':role/MyRolePhysicalName']] } },
             Resource: '*',
           },
-        ),
+        ]),
         Version: '2012-10-17',
       },
     });
-    expect(principalStack).toHaveResourceLike('AWS::IAM::Policy', {
+    Template.fromStack(principalStack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -305,27 +304,22 @@ describe('key policies', () => {
 
     key.grantEncrypt(principal);
 
-    expect(keyStack).toHaveResourceLike('AWS::KMS::Key', {
+    Template.fromStack(keyStack).hasResourceProperties('AWS::KMS::Key', {
       KeyPolicy: {
-        Statement: [
-          {
-            // Default policy, unmodified
-          },
-          {
-            Action: [
-              'kms:Encrypt',
-              'kms:ReEncrypt*',
-              'kms:GenerateDataKey*',
-            ],
-            Effect: 'Allow',
-            Principal: { AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::0123456789012:role/MyRolePhysicalName']] } },
-            Resource: '*',
-          },
-        ],
+        Statement: Match.arrayWith([{
+          Action: [
+            'kms:Encrypt',
+            'kms:ReEncrypt*',
+            'kms:GenerateDataKey*',
+          ],
+          Effect: 'Allow',
+          Principal: { AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::0123456789012:role/MyRolePhysicalName']] } },
+          Resource: '*',
+        }]),
         Version: '2012-10-17',
       },
     });
-    expect(principalStack).toHaveResourceLike('AWS::IAM::Policy', {
+    Template.fromStack(principalStack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -348,7 +342,7 @@ describe('key policies', () => {
     const adminRole = iam.Role.fromRoleArn(stack, 'Admin', 'arn:aws:iam::123456789012:role/TrustedAdmin');
     new kms.Key(stack, 'MyKey', { admins: [adminRole] });
 
-    expect(stack).toHaveResource('AWS::KMS::Key', {
+    Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
       KeyPolicy: {
         Statement: [
           {
@@ -380,7 +374,7 @@ describe('key policies', () => {
     });
     new kms.Key(stack, 'MyKey', { admins: [adminRole] });
 
-    expect(stack).toHaveResource('AWS::KMS::Key', {
+    Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
       KeyPolicy: {
         // Unmodified - default key policy
         Statement: [
@@ -396,7 +390,7 @@ describe('key policies', () => {
         Version: '2012-10-17',
       },
     });
-    expect(stack).toHaveResource('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -423,7 +417,7 @@ testFutureBehavior('key with some options', flags, cdk.App, (app) => {
   cdk.Tags.of(key).add('tag2', 'value2');
   cdk.Tags.of(key).add('tag3', '');
 
-  expect(stack).toHaveResourceLike('AWS::KMS::Key', {
+  Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
     Enabled: false,
     EnableKeyRotation: true,
     PendingWindowInDays: 7,
@@ -450,10 +444,31 @@ testFutureBehavior('setting pendingWindow value to not in allowed range will thr
     .toThrow('\'pendingWindow\' value must between 7 and 30 days. Received: 6');
 });
 
-testFutureBehavior('setting trustAccountIdentities to false will throw (when the defaultKeyPolicies feature flag is enabled)', flags, cdk.App, (app) => {
-  const stack = new cdk.Stack(app);
-  expect(() => new kms.Key(stack, 'MyKey', { trustAccountIdentities: false }))
-    .toThrow('`trustAccountIdentities` cannot be false if the @aws-cdk/aws-kms:defaultKeyPolicies feature flag is set');
+describeDeprecated('trustAccountIdentities is deprecated', () => {
+  testFutureBehavior('setting trustAccountIdentities to false will throw (when the defaultKeyPolicies feature flag is enabled)', flags, cdk.App, (app) => {
+    const stack = new cdk.Stack(app);
+    expect(() => new kms.Key(stack, 'MyKey', { trustAccountIdentities: false }))
+      .toThrow('`trustAccountIdentities` cannot be false if the @aws-cdk/aws-kms:defaultKeyPolicies feature flag is set');
+  });
+
+  testLegacyBehavior('trustAccountIdentities changes key policy to allow IAM control', cdk.App, (app) => {
+    const stack = new cdk.Stack(app);
+    new kms.Key(stack, 'MyKey', { trustAccountIdentities: true });
+    Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
+      KeyPolicy: {
+        Statement: [
+          {
+            Action: 'kms:*',
+            Effect: 'Allow',
+            Principal: {
+              AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, ':root']] },
+            },
+            Resource: '*',
+          },
+        ],
+      },
+    });
+  });
 });
 
 testFutureBehavior('addAlias creates an alias', flags, cdk.App, (app) => {
@@ -466,8 +481,8 @@ testFutureBehavior('addAlias creates an alias', flags, cdk.App, (app) => {
   const alias = key.addAlias('alias/xoo');
   expect(alias.aliasName).toBeDefined();
 
-  expect(stack).toCountResources('AWS::KMS::Alias', 1);
-  expect(stack).toHaveResource('AWS::KMS::Alias', {
+  Template.fromStack(stack).resourceCountIs('AWS::KMS::Alias', 1);
+  Template.fromStack(stack).hasResourceProperties('AWS::KMS::Alias', {
     AliasName: 'alias/xoo',
     TargetKeyId: {
       'Fn::GetAtt': [
@@ -490,8 +505,8 @@ testFutureBehavior('can run multiple addAlias', flags, cdk.App, (app) => {
   expect(alias1.aliasName).toBeDefined();
   expect(alias2.aliasName).toBeDefined();
 
-  expect(stack).toCountResources('AWS::KMS::Alias', 2);
-  expect(stack).toHaveResource('AWS::KMS::Alias', {
+  Template.fromStack(stack).resourceCountIs('AWS::KMS::Alias', 2);
+  Template.fromStack(stack).hasResourceProperties('AWS::KMS::Alias', {
     AliasName: 'alias/alias1',
     TargetKeyId: {
       'Fn::GetAtt': [
@@ -500,7 +515,7 @@ testFutureBehavior('can run multiple addAlias', flags, cdk.App, (app) => {
       ],
     },
   });
-  expect(stack).toHaveResource('AWS::KMS::Alias', {
+  Template.fromStack(stack).hasResourceProperties('AWS::KMS::Alias', {
     AliasName: 'alias/alias2',
     TargetKeyId: {
       'Fn::GetAtt': [
@@ -519,9 +534,8 @@ testFutureBehavior('keyId resolves to a Ref', flags, cdk.App, (app) => {
     value: key.keyId,
   });
 
-  expect(stack).toHaveOutput({
-    outputName: 'Out',
-    outputValue: { Ref: 'MyKey6AB29FA6' },
+  Template.fromStack(stack).hasOutput('Out', {
+    Value: { Ref: 'MyKey6AB29FA6' },
   });
 });
 
@@ -568,7 +582,7 @@ describe('imported keys', () => {
 
     expect(myKeyImported.keyId).toEqual('12345678-1234-1234-1234-123456789012');
 
-    expect(stack2).toMatchTemplate({
+    Template.fromStack(stack2).templateMatches({
       Resources: {
         MyKeyImportedAliasB1C5269F: {
           Type: 'AWS::KMS::Alias',
@@ -626,7 +640,7 @@ describe('fromCfnKey()', () => {
   });
 
   test('preserves the KMS Key resource', () => {
-    expectCdk(stack).to(haveResource('AWS::KMS::Key', {
+    Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
       KeyPolicy: {
         Statement: [
           {
@@ -648,9 +662,8 @@ describe('fromCfnKey()', () => {
         ],
         Version: '2012-10-17',
       },
-    }));
-
-    expectCdk(stack).to(countResources('AWS::KMS::Key', 1));
+    });
+    Template.fromStack(stack).resourceCountIs('AWS::KMS::Key', 1);
   });
 
   describe("calling 'addToResourcePolicy()' on the returned Key", () => {
@@ -669,7 +682,7 @@ describe('fromCfnKey()', () => {
     });
 
     test('preserves the mutating call in the resulting template', () => {
-      expectCdk(stack).to(haveResource('AWS::KMS::Key', {
+      Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
         KeyPolicy: {
           Statement: [
             {
@@ -697,7 +710,7 @@ describe('fromCfnKey()', () => {
           ],
           Version: '2012-10-17',
         },
-      }));
+      });
     });
   });
 
@@ -715,7 +728,7 @@ describe('fromCfnKey()', () => {
       });
 
       test('creates the correct IAM Policy', () => {
-        expectCdk(stack).to(haveResourceLike('AWS::IAM::Policy', {
+        Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
           PolicyDocument: {
             Statement: [
               {
@@ -727,11 +740,11 @@ describe('fromCfnKey()', () => {
               },
             ],
           },
-        }));
+        });
       });
 
       test('correctly mutates the Policy of the underlying CfnKey', () => {
-        expectCdk(stack).to(haveResourceLike('AWS::KMS::Key', {
+        Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
           KeyPolicy: {
             Statement: [
               {
@@ -763,7 +776,7 @@ describe('fromCfnKey()', () => {
             ],
             Version: '2012-10-17',
           },
-        }));
+        });
       });
     });
   });
@@ -927,7 +940,7 @@ describe('when the defaultKeyPolicies feature flag is disabled', () => {
     const stack = new cdk.Stack(app);
     new kms.Key(stack, 'MyKey');
 
-    expect(stack).toHaveResource('AWS::KMS::Key', {
+    Template.fromStack(stack).hasResource('AWS::KMS::Key', {
       Properties: {
         KeyPolicy: {
           Statement: [
@@ -945,7 +958,7 @@ describe('when the defaultKeyPolicies feature flag is disabled', () => {
       },
       DeletionPolicy: 'Retain',
       UpdateReplacePolicy: 'Retain',
-    }, ResourcePart.CompleteDefinition);
+    });
   });
 
   testLegacyBehavior('policy if specified appends to the default key policy', cdk.App, (app) => {
@@ -955,7 +968,7 @@ describe('when the defaultKeyPolicies feature flag is disabled', () => {
     p.addArnPrincipal('arn:aws:iam::111122223333:root');
     key.addToResourcePolicy(p);
 
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       Resources: {
         MyKey6AB29FA6: {
           Type: 'AWS::KMS::Key',
@@ -989,31 +1002,12 @@ describe('when the defaultKeyPolicies feature flag is disabled', () => {
     });
   });
 
-  testLegacyBehavior('trustAccountIdentities changes key policy to allow IAM control', cdk.App, (app) => {
-    const stack = new cdk.Stack(app);
-    new kms.Key(stack, 'MyKey', { trustAccountIdentities: true });
-    expect(stack).toHaveResourceLike('AWS::KMS::Key', {
-      KeyPolicy: {
-        Statement: [
-          {
-            Action: 'kms:*',
-            Effect: 'Allow',
-            Principal: {
-              AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, ':root']] },
-            },
-            Resource: '*',
-          },
-        ],
-      },
-    });
-  });
-
   testLegacyBehavior('additional key admins can be specified (with imported/immutable principal)', cdk.App, (app) => {
     const stack = new cdk.Stack(app);
     const adminRole = iam.Role.fromRoleArn(stack, 'Admin', 'arn:aws:iam::123456789012:role/TrustedAdmin');
     new kms.Key(stack, 'MyKey', { admins: [adminRole] });
 
-    expect(stack).toHaveResource('AWS::KMS::Key', {
+    Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
       KeyPolicy: {
         Statement: [
           {
@@ -1045,7 +1039,7 @@ describe('when the defaultKeyPolicies feature flag is disabled', () => {
     });
     new kms.Key(stack, 'MyKey', { admins: [adminRole] });
 
-    expect(stack).toHaveResource('AWS::KMS::Key', {
+    Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
       KeyPolicy: {
         Statement: [
           {
@@ -1068,7 +1062,7 @@ describe('when the defaultKeyPolicies feature flag is disabled', () => {
         Version: '2012-10-17',
       },
     });
-    expect(stack).toHaveResource('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -1093,7 +1087,7 @@ describe('when the defaultKeyPolicies feature flag is disabled', () => {
       key.grantDecrypt(user);
 
       // THEN
-      expect(stack).toHaveResource('AWS::KMS::Key', {
+      Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
         KeyPolicy: {
           Statement: [
             // This one is there by default
@@ -1115,7 +1109,7 @@ describe('when the defaultKeyPolicies feature flag is disabled', () => {
         },
       });
 
-      expect(stack).toHaveResource('AWS::IAM::Policy', {
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         PolicyDocument: {
           Statement: [
             {
@@ -1142,9 +1136,9 @@ describe('when the defaultKeyPolicies feature flag is disabled', () => {
 
       key.grantEncrypt(principal);
 
-      expect(keyStack).toHaveResourceLike('AWS::KMS::Key', {
+      Template.fromStack(keyStack).hasResourceProperties('AWS::KMS::Key', {
         KeyPolicy: {
-          Statement: arrayWith({
+          Statement: Match.arrayWith([{
             Action: [
               'kms:Encrypt',
               'kms:ReEncrypt*',
@@ -1155,7 +1149,7 @@ describe('when the defaultKeyPolicies feature flag is disabled', () => {
               AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, ':root']] },
             },
             Resource: '*',
-          }),
+          }]),
         },
       });
     });
@@ -1167,7 +1161,7 @@ describe('key specs and key usages', () => {
     const stack = new cdk.Stack(app);
     new kms.Key(stack, 'Key', { keySpec: kms.KeySpec.ECC_SECG_P256K1, keyUsage: kms.KeyUsage.SIGN_VERIFY });
 
-    expect(stack).toHaveResourceLike('AWS::KMS::Key', {
+    Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
       KeySpec: 'ECC_SECG_P256K1',
       KeyUsage: 'SIGN_VERIFY',
     });
@@ -1177,7 +1171,7 @@ describe('key specs and key usages', () => {
     const stack = new cdk.Stack(app);
     new kms.Key(stack, 'Key', { keyUsage: kms.KeyUsage.ENCRYPT_DECRYPT });
 
-    expect(stack).toHaveResourceLike('AWS::KMS::Key', {
+    Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
       KeyUsage: 'ENCRYPT_DECRYPT',
     });
   });
@@ -1186,7 +1180,7 @@ describe('key specs and key usages', () => {
     const stack = new cdk.Stack(app);
     new kms.Key(stack, 'Key', { keySpec: kms.KeySpec.RSA_4096 });
 
-    expect(stack).toHaveResourceLike('AWS::KMS::Key', {
+    Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
       KeySpec: 'RSA_4096',
     });
   });

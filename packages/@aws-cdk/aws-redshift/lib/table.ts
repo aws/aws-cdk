@@ -4,6 +4,7 @@ import { ICluster } from './cluster';
 import { DatabaseOptions } from './database-options';
 import { DatabaseQuery } from './private/database-query';
 import { HandlerName } from './private/database-query-provider/handler-name';
+import { getDistKeyColumn, getSortKeyColumns } from './private/database-query-provider/util';
 import { TableHandlerProps } from './private/handler-props';
 import { IUser } from './user';
 
@@ -66,6 +67,20 @@ export interface Column {
    * The data type of the column.
    */
   readonly dataType: string;
+
+  /**
+   * Boolean value that indicates whether the column is to be configured as DISTKEY.
+   *
+   * @default - column is not DISTKEY
+   */
+  readonly distKey?: boolean;
+
+  /**
+   * Boolean value that indicates whether the column is to be configured as SORTKEY.
+   *
+   * @default - column is not a SORTKEY
+   */
+  readonly sortKey?: boolean;
 }
 
 /**
@@ -83,6 +98,20 @@ export interface TableProps extends DatabaseOptions {
    * The columns of the table.
    */
   readonly tableColumns: Column[];
+
+  /**
+   * The distribution style of the table.
+   *
+   * @default TableDistStyle.AUTO
+   */
+  readonly distStyle?: TableDistStyle;
+
+  /**
+   * The sort style of the table.
+   *
+   * @default TableSortStyle.AUTO if no sort key is specified, TableSortStyle.COMPOUND if a sort key is specified
+   */
+  readonly sortStyle?: TableSortStyle;
 
   /**
    * The policy to apply when this resource is removed from the application.
@@ -183,6 +212,14 @@ export class Table extends TableBase {
   constructor(scope: Construct, id: string, props: TableProps) {
     super(scope, id);
 
+    this.validateDistKeyColumns(props.tableColumns);
+    if (props.distStyle) {
+      this.validateDistStyle(props.distStyle, props.tableColumns);
+    }
+    if (props.sortStyle) {
+      this.validateSortStyle(props.sortStyle, props.tableColumns);
+    }
+
     this.tableColumns = props.tableColumns;
     this.cluster = props.cluster;
     this.databaseName = props.databaseName;
@@ -194,9 +231,11 @@ export class Table extends TableBase {
       properties: {
         tableName: {
           prefix: props.tableName ?? cdk.Names.uniqueId(this),
-          generateSuffix: !props.tableName,
+          generateSuffix: !props.tableName ? 'true' : 'false',
         },
         tableColumns: this.tableColumns,
+        distStyle: props.distStyle,
+        sortStyle: props.sortStyle ?? this.getDefaultSortStyle(props.tableColumns),
       },
     });
 
@@ -219,4 +258,83 @@ export class Table extends TableBase {
   public applyRemovalPolicy(policy: cdk.RemovalPolicy): void {
     this.resource.applyRemovalPolicy(policy);
   }
+
+  private validateDistKeyColumns(columns: Column[]): void {
+    try {
+      getDistKeyColumn(columns);
+    } catch (err) {
+      throw new Error('Only one column can be configured as distKey.');
+    }
+  }
+
+  private validateDistStyle(distStyle: TableDistStyle, columns: Column[]): void {
+    const distKeyColumn = getDistKeyColumn(columns);
+    if (distKeyColumn && distStyle !== TableDistStyle.KEY) {
+      throw new Error(`Only 'TableDistStyle.KEY' can be configured when distKey is also configured. Found ${distStyle}`);
+    }
+    if (!distKeyColumn && distStyle === TableDistStyle.KEY) {
+      throw new Error('distStyle of "TableDistStyle.KEY" can only be configured when distKey is also configured.');
+    }
+  }
+
+  private validateSortStyle(sortStyle: TableSortStyle, columns: Column[]): void {
+    const sortKeyColumns = getSortKeyColumns(columns);
+    if (sortKeyColumns.length === 0 && sortStyle !== TableSortStyle.AUTO) {
+      throw new Error(`sortStyle of '${sortStyle}' can only be configured when sortKey is also configured.`);
+    }
+    if (sortKeyColumns.length > 0 && sortStyle === TableSortStyle.AUTO) {
+      throw new Error(`sortStyle of '${TableSortStyle.AUTO}' cannot be configured when sortKey is also configured.`);
+    }
+  }
+
+  private getDefaultSortStyle(columns: Column[]): TableSortStyle {
+    const sortKeyColumns = getSortKeyColumns(columns);
+    return (sortKeyColumns.length === 0) ? TableSortStyle.AUTO : TableSortStyle.COMPOUND;
+  }
+}
+
+/**
+ * The data distribution style of a table.
+ */
+export enum TableDistStyle {
+  /**
+   *  Amazon Redshift assigns an optimal distribution style based on the table data
+   */
+  AUTO = 'AUTO',
+
+  /**
+   * The data in the table is spread evenly across the nodes in a cluster in a round-robin distribution.
+   */
+  EVEN = 'EVEN',
+
+  /**
+   * The data is distributed by the values in the DISTKEY column.
+   */
+  KEY = 'KEY',
+
+  /**
+   * A copy of the entire table is distributed to every node.
+   */
+  ALL = 'ALL',
+}
+
+/**
+ * The sort style of a table.
+ */
+export enum TableSortStyle {
+  /**
+   * Amazon Redshift assigns an optimal sort key based on the table data.
+   */
+  AUTO = 'AUTO',
+
+  /**
+   * Specifies that the data is sorted using a compound key made up of all of the listed columns,
+   * in the order they are listed.
+   */
+  COMPOUND = 'COMPOUND',
+
+  /**
+   * Specifies that the data is sorted using an interleaved sort key.
+   */
+  INTERLEAVED = 'INTERLEAVED',
 }

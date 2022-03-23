@@ -121,7 +121,7 @@ describe('nodejs entrypoint', () => {
 
   });
 
-  test('DELETE after CREATE is ignored with success', async (done) => {
+  test('DELETE after CREATE is ignored with success', async () => {
     // GIVEN
     const event = makeEvent({
       RequestType: 'Delete',
@@ -130,7 +130,7 @@ describe('nodejs entrypoint', () => {
 
     // WHEN
     const response = await invokeHandler(event, async _ => {
-      done.fail('handler should not be called');
+      throw new Error('handler should not be called');
     });
 
     // THEN
@@ -142,8 +142,6 @@ describe('nodejs entrypoint', () => {
       PhysicalResourceId: 'AWSCDK::CustomResourceProviderFramework::CREATE_FAILED',
       LogicalResourceId: '<LogicalResourceId>',
     });
-
-    done();
 
   });
 });
@@ -188,7 +186,7 @@ async function invokeHandler(req: AWSLambda.CloudFormationCustomResourceEvent, u
     actualResponse = responseBody;
   };
 
-  await entrypoint.handler(req);
+  await entrypoint.handler(req, {} as AWSLambda.Context);
   if (!actualResponse) {
     throw new Error('no response sent to cloudformation');
   }

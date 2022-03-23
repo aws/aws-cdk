@@ -26,7 +26,7 @@ export class ApiGatewayDomain implements route53.IAliasRecordTarget {
  * `ApiGatewayDomain` class.
  */
 export class ApiGateway extends ApiGatewayDomain {
-  constructor(api: apig.RestApi) {
+  constructor(api: apig.RestApiBase) {
     if (!api.domainName) {
       throw new Error('API does not define a default domain name');
     }

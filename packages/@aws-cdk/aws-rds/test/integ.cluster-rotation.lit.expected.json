@@ -599,7 +599,9 @@
           "PasswordLength": 30,
           "SecretStringTemplate": "{\"username\":\"admin\"}"
         }
-      }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
     "DatabaseSecretAttachmentE5D1B020": {
       "Type": "AWS::SecretsManager::SecretTargetAttachment",
@@ -839,11 +841,15 @@
     "DatabaseRotationSingleUserSARMapping9AEB3E55": {
       "aws": {
         "applicationId": "arn:aws:serverlessrepo:us-east-1:297356227824:applications/SecretsManagerRDSMySQLRotationSingleUser",
-        "semanticVersion": "1.1.60"
+        "semanticVersion": "1.1.225"
       },
       "aws-cn": {
         "applicationId": "arn:aws-cn:serverlessrepo:cn-north-1:193023089310:applications/SecretsManagerRDSMySQLRotationSingleUser",
         "semanticVersion": "1.1.37"
+      },
+      "aws-us-gov": {
+        "applicationId": "arn:aws-us-gov:serverlessrepo:us-gov-west-1:023102451235:applications/SecretsManagerRDSMySQLRotationSingleUser",
+        "semanticVersion": "1.1.93"
       }
     }
   }

@@ -70,6 +70,7 @@ describe('new style synthesis', () => {
     const template = app.synth().getStackByName('Stack').template;
     expect(template?.Parameters?.BootstrapVersion?.Type).toEqual('AWS::SSM::Parameter::Value<String>');
     expect(template?.Parameters?.BootstrapVersion?.Default).toEqual('/cdk-bootstrap/hnb659fds/version');
+    expect(template?.Parameters?.BootstrapVersion?.Description).toContain(cxapi.SSMPARAM_NO_INVALIDATE);
 
     const assertions = template?.Rules?.CheckBootstrapVersion?.Assertions ?? [];
     expect(assertions.length).toEqual(1);
@@ -286,7 +287,7 @@ describe('new style synthesis', () => {
     // THEN
     const asm = myapp.synth();
 
-    const stackArtifact = asm.getStack(mystack.stackName);
+    const stackArtifact = asm.getStackByName(mystack.stackName);
     expect(stackArtifact.assumeRoleExternalId).toEqual('deploy-external-id');
 
 
@@ -334,6 +335,30 @@ describe('new style synthesis', () => {
     expect(stackArtifact.stackTemplateAssetObjectUrl).toEqual(`s3://file-asset-bucket/000000000000/${templateHash}`);
 
 
+  });
+
+  test('synthesis with dockerPrefix', () => {
+    // GIVEN
+    const myapp = new App();
+
+    // WHEN
+    const mystack = new Stack(myapp, 'mystack-dockerPrefix', {
+      synthesizer: new DefaultStackSynthesizer({
+        dockerTagPrefix: 'test-prefix-',
+      }),
+    });
+
+    mystack.synthesizer.addDockerImageAsset({
+      directoryName: 'some-folder',
+      sourceHash: 'docker-asset-hash',
+    });
+
+    const asm = myapp.synth();
+
+    // THEN
+    const manifest = readAssetManifest(getAssetManifest(asm));
+    const imageTag = manifest.dockerImages?.['docker-asset-hash']?.destinations?.['current_account-current_region'].imageTag;
+    expect(imageTag).toEqual('test-prefix-docker-asset-hash');
   });
 
   test('cannot use same synthesizer for multiple stacks', () => {

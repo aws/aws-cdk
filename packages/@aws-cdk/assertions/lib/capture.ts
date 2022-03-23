@@ -1,3 +1,4 @@
+import { Match } from '.';
 import { Matcher, MatchResult } from './matcher';
 import { Type, getType } from './private/type';
 
@@ -8,21 +9,52 @@ import { Type, getType } from './private/type';
  */
 export class Capture extends Matcher {
   public readonly name: string;
-  private value: any = null;
+  /** @internal */
+  public _captured: any[] = [];
+  private idx = 0;
 
-  constructor() {
+  /**
+   * Initialize a new capture
+   * @param pattern a nested pattern or Matcher.
+   * If a nested pattern is provided `objectLike()` matching is applied.
+   */
+  constructor(private readonly pattern?: any) {
     super();
     this.name = 'Capture';
   }
 
   public test(actual: any): MatchResult {
-    this.value = actual;
-
     const result = new MatchResult(actual);
     if (actual == null) {
-      result.push(this, [], `Can only capture non-nullish values. Found ${actual}`);
+      return result.recordFailure({
+        matcher: this,
+        path: [],
+        message: `Can only capture non-nullish values. Found ${actual}`,
+      });
     }
+
+    if (this.pattern !== undefined) {
+      const innerMatcher = Matcher.isMatcher(this.pattern) ? this.pattern : Match.objectLike(this.pattern);
+      const innerResult = innerMatcher.test(actual);
+      if (innerResult.hasFailed()) {
+        return innerResult;
+      }
+    }
+
+    result.recordCapture({ capture: this, value: actual });
     return result;
+  }
+
+  /**
+   * When multiple results are captured, move the iterator to the next result.
+   * @returns true if another capture is present, false otherwise
+   */
+  public next(): boolean {
+    if (this.idx < this._captured.length - 1) {
+      this.idx++;
+      return true;
+    }
+    return false;
   }
 
   /**
@@ -30,9 +62,10 @@ export class Capture extends Matcher {
    * An error is generated if no value is captured or if the value is not a string.
    */
   public asString(): string {
-    this.checkNotNull();
-    if (getType(this.value) === 'string') {
-      return this.value;
+    this.validate();
+    const val = this._captured[this.idx];
+    if (getType(val) === 'string') {
+      return val;
     }
     this.reportIncorrectType('string');
   }
@@ -42,9 +75,10 @@ export class Capture extends Matcher {
    * An error is generated if no value is captured or if the value is not a number.
    */
   public asNumber(): number {
-    this.checkNotNull();
-    if (getType(this.value) === 'number') {
-      return this.value;
+    this.validate();
+    const val = this._captured[this.idx];
+    if (getType(val) === 'number') {
+      return val;
     }
     this.reportIncorrectType('number');
   }
@@ -54,9 +88,10 @@ export class Capture extends Matcher {
    * An error is generated if no value is captured or if the value is not a boolean.
    */
   public asBoolean(): boolean {
-    this.checkNotNull();
-    if (getType(this.value) === 'boolean') {
-      return this.value;
+    this.validate();
+    const val = this._captured[this.idx];
+    if (getType(val) === 'boolean') {
+      return val;
     }
     this.reportIncorrectType('boolean');
   }
@@ -66,9 +101,10 @@ export class Capture extends Matcher {
    * An error is generated if no value is captured or if the value is not an array.
    */
   public asArray(): any[] {
-    this.checkNotNull();
-    if (getType(this.value) === 'array') {
-      return this.value;
+    this.validate();
+    const val = this._captured[this.idx];
+    if (getType(val) === 'array') {
+      return val;
     }
     this.reportIncorrectType('array');
   }
@@ -78,21 +114,22 @@ export class Capture extends Matcher {
    * An error is generated if no value is captured or if the value is not an object.
    */
   public asObject(): { [key: string]: any } {
-    this.checkNotNull();
-    if (getType(this.value) === 'object') {
-      return this.value;
+    this.validate();
+    const val = this._captured[this.idx];
+    if (getType(val) === 'object') {
+      return val;
     }
     this.reportIncorrectType('object');
   }
 
-  private checkNotNull(): void {
-    if (this.value == null) {
+  private validate(): void {
+    if (this._captured.length === 0) {
       throw new Error('No value captured');
     }
   }
 
   private reportIncorrectType(expected: Type): never {
-    throw new Error(`Captured value is expected to be ${expected} but found ${getType(this.value)}. ` +
-      `Value is ${JSON.stringify(this.value, undefined, 2)}`);
+    throw new Error(`Captured value is expected to be ${expected} but found ${getType(this._captured[this.idx])}. ` +
+      `Value is ${JSON.stringify(this._captured[this.idx], undefined, 2)}`);
   }
 }

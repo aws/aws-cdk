@@ -9,7 +9,9 @@
             "Region": "eu-central-1"
           }
         ]
-      }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     }
   }
 }

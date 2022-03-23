@@ -4,7 +4,7 @@ name: "Close Stale Issues"
 on:
   workflow_dispatch:
   schedule:
-  - cron: "0 6 * * *"
+  - cron: "0 */4 * * *"
 
 jobs:
   cleanup:
@@ -35,8 +35,8 @@ jobs:
         closed-for-staleness-label: closed-for-staleness
 
         # Issue timing
-        days-before-stale: 7
-        days-before-close: 4
+        days-before-stale: 2
+        days-before-close: 5
         days-before-ancient: 365
 
         # If you don't want to mark a issue as being ancient based on a

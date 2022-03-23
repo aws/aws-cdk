@@ -15,7 +15,7 @@ fail() {
 
 echo "============================================================================================="
 echo "building required build tools..."
-time lerna run --stream build --scope cfn2ts --scope ubergen --include-dependencies || fail
+time lerna run --stream build --scope @aws-cdk/cfn2ts --scope @aws-cdk/ubergen --include-dependencies || fail
 
 echo "============================================================================================="
 echo "executing gen..."

@@ -21,13 +21,13 @@ jobs:
     steps:
 
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Install & Build prlint
-        run: cd tools/prlint && yarn install --frozen-lockfile && yarn build+test
+        run: yarn install --frozen-lockfile && cd tools/@aws-cdk/prlint && yarn build+test
 
       - name: Validate
-        uses: ./tools/prlint
+        uses: ./tools/@aws-cdk/prlint
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPO_ROOT: ${{ github.workspace }}

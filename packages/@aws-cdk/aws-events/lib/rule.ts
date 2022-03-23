@@ -1,5 +1,5 @@
 import { IRole, PolicyStatement, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
-import { App, IResource, Lazy, Names, Resource, Stack, Token, PhysicalName } from '@aws-cdk/core';
+import { App, IResource, Lazy, Names, Resource, Stack, Token, PhysicalName, ArnFormat } from '@aws-cdk/core';
 import { Node, Construct } from 'constructs';
 import { IEventBus } from './event-bus';
 import { EventPattern } from './event-pattern';
@@ -98,7 +98,7 @@ export class Rule extends Resource implements IRule {
    * @param eventRuleArn Event Rule ARN (i.e. arn:aws:events:<region>:<account-id>:rule/MyScheduledRule).
    */
   public static fromEventRuleArn(scope: Construct, id: string, eventRuleArn: string): IRule {
-    const parts = Stack.of(scope).parseArn(eventRuleArn);
+    const parts = Stack.of(scope).splitArn(eventRuleArn, ArnFormat.SLASH_RESOURCE_NAME);
 
     class Import extends Resource implements IRule {
       public ruleArn = eventRuleArn;
@@ -128,7 +128,10 @@ export class Rule extends Resource implements IRule {
     }
 
     this.description = props.description;
-    this.scheduleExpression = props.schedule && props.schedule.expressionString;
+    this.scheduleExpression = props.schedule?.expressionString;
+
+    // add a warning on synth when minute is not defined in a cron schedule
+    props.schedule?._bind(this);
 
     const resource = new CfnRule(this, 'Resource', {
       name: this.physicalName,
@@ -253,13 +256,13 @@ export class Rule extends Resource implements IRule {
       arn: targetProps.arn,
       roleArn,
       ecsParameters: targetProps.ecsParameters,
+      httpParameters: targetProps.httpParameters,
       kinesisParameters: targetProps.kinesisParameters,
       runCommandParameters: targetProps.runCommandParameters,
       batchParameters: targetProps.batchParameters,
       deadLetterConfig: targetProps.deadLetterConfig,
       retryPolicy: targetProps.retryPolicy,
       sqsParameters: targetProps.sqsParameters,
-      httpParameters: targetProps.httpParameters,
       input: inputProps && inputProps.input,
       inputPath: inputProps && inputProps.inputPath,
       inputTransformer: inputProps?.inputTemplate !== undefined ? {
@@ -394,7 +397,7 @@ export class Rule extends Resource implements IRule {
         });
         new CfnEventBusPolicy(eventBusPolicyStack, 'GivePermToOtherAccount', {
           action: 'events:PutEvents',
-          statementId: `Allow-account-${sourceAccount}`,
+          statementId: `Allow-account-${sourceAccount}-${this.node.addr}`,
           principal: sourceAccount,
         });
       }

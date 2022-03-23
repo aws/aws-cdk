@@ -1,13 +1,20 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
-import { Stack, App } from '@aws-cdk/core';
+import { Stack, App, Stage as CdkStage } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import * as codepipeline from '../lib';
 import { FakeBuildAction } from './fake-build-action';
 import { FakeSourceAction } from './fake-source-action';
 
-describe.each(['legacy', 'modern'])('with %s synthesis', (synthesisStyle: string) => {
+describe.each([
+  ['legacy', false],
+  ['legacy', true],
+  ['modern', false],
+  ['modern', true],
+])('with %s synthesis, in Stage=%p', (synthesisStyle: string, inStage: boolean) => {
   let app: App;
+  let stackScope: Construct;
   let stack: Stack;
   let sourceArtifact: codepipeline.Artifact;
   let initialStages: codepipeline.StageProps[];
@@ -18,7 +25,9 @@ describe.each(['legacy', 'modern'])('with %s synthesis', (synthesisStyle: string
         ...synthesisStyle === 'modern' ? { '@aws-cdk/core:newStyleStackSynthesis': true } : undefined,
       },
     });
-    stack = new Stack(app, 'PipelineStack', { env: { account: '2222', region: 'us-east-1' } });
+    stackScope = inStage ? new CdkStage(app, 'MyStage') : app;
+
+    stack = new Stack(stackScope, 'PipelineStack', { env: { account: '2222', region: 'us-east-1' } });
     sourceArtifact = new codepipeline.Artifact();
     initialStages = [
       {
@@ -49,8 +58,8 @@ describe.each(['legacy', 'modern'])('with %s synthesis', (synthesisStyle: string
 
     test('creates a bucket but no keys', () => {
       // THEN
-      expect(stack).not.toHaveResource('AWS::KMS::Key');
-      expect(stack).toHaveResource('AWS::S3::Bucket');
+      Template.fromStack(stack).resourceCountIs('AWS::KMS::Key', 0);
+      Template.fromStack(stack).resourceCountIs('AWS::S3::Bucket', 1);
     });
 
     describe('prevents adding a cross-account action', () => {
@@ -114,16 +123,24 @@ describe.each(['legacy', 'modern'])('with %s synthesis', (synthesisStyle: string
         }));
 
         // THEN
-        const asm = app.synth();
+        let asm = app.synth();
+        asm = inStage ? asm.getNestedAssembly('assembly-MyStage') : asm;
         const supportStack = asm.getStackByName(`${stack.stackName}-support-eu-west-1`);
 
         // THEN
-        expect(supportStack).not.toHaveResource('AWS::KMS::Key');
-        expect(supportStack).toHaveResource('AWS::S3::Bucket');
+        Template.fromJSON(supportStack.template).resourceCountIs('AWS::KMS::Key', 0);
+        Template.fromJSON(supportStack.template).hasResourceProperties('AWS::S3::Bucket', {
+          PublicAccessBlockConfiguration: {
+            BlockPublicAcls: true,
+            BlockPublicPolicy: true,
+            IgnorePublicAcls: true,
+            RestrictPublicBuckets: true,
+          },
+        });
       });
 
       test('when twiddling another stack', () => {
-        const stack2 = new Stack(app, 'Stack2', { env: { account: '2222', region: 'eu-west-1' } });
+        const stack2 = new Stack(stackScope, 'Stack2', { env: { account: '2222', region: 'eu-west-1' } });
 
         // WHEN
         stage.addAction(new FakeBuildAction({
@@ -133,8 +150,8 @@ describe.each(['legacy', 'modern'])('with %s synthesis', (synthesisStyle: string
         }));
 
         // THEN
-        expect(stack2).not.toHaveResource('AWS::KMS::Key');
-        expect(stack2).toHaveResource('AWS::S3::Bucket');
+        Template.fromStack(stack2).resourceCountIs('AWS::KMS::Key', 0);
+        Template.fromStack(stack2).resourceCountIs('AWS::S3::Bucket', 1);
       });
     });
   });
@@ -183,11 +200,11 @@ describe('cross-environment CodePipeline', function () {
 
     const asm = app.synth();
     const supportStack = asm.getStackByName(`${pipelineStack.stackName}-support-456`);
-    expect(supportStack).toHaveResourceLike('AWS::IAM::Role', {
+    Template.fromJSON(supportStack.template).hasResourceProperties('AWS::IAM::Role', {
       RoleName: 'pipelinestack-support-456dbuildactionrole91c6f1a469fd11d52dfe',
     });
 
-    expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+    Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
       Stages: [
         { Name: 'Source' },
         {

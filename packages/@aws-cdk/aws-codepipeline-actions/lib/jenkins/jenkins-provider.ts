@@ -1,7 +1,6 @@
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import { CustomActionRegistration } from '../custom-action-registration';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
@@ -190,7 +189,7 @@ export class JenkinsProvider extends BaseJenkinsProvider {
   }
 
   private registerJenkinsCustomAction(id: string, category: codepipeline.ActionCategory) {
-    new CustomActionRegistration(this, id, {
+    new codepipeline.CustomActionRegistration(this, id, {
       category,
       artifactBounds: jenkinsArtifactsBounds,
       provider: this.providerName,

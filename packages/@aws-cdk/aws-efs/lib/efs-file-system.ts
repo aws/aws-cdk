@@ -1,7 +1,7 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
-import { ConcreteDependable, IDependable, IResource, RemovalPolicy, Resource, Size, Stack, Tags } from '@aws-cdk/core';
+import { ArnFormat, ConcreteDependable, IDependable, IResource, RemovalPolicy, Resource, Size, Stack, Tags } from '@aws-cdk/core';
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports
 import { FeatureFlags } from '@aws-cdk/core';
@@ -40,6 +40,19 @@ export enum LifecyclePolicy {
    * After 90 days of not being accessed.
    */
   AFTER_90_DAYS = 'AFTER_90_DAYS'
+}
+
+/**
+ * EFS Out Of Infrequent Access Policy, if a file is accessed given times, it will move back to primary
+ * storage class.
+ *
+ * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-efs-filesystem-lifecyclepolicy.html#cfn-efs-filesystem-lifecyclepolicy-transitiontoprimarystorageclass
+ */
+export enum OutOfInfrequentAccessPolicy {
+  /**
+   * After 1 access
+   */
+  AFTER_1_ACCESS = 'AFTER_1_ACCESS'
 }
 
 /**
@@ -165,6 +178,13 @@ export interface FileSystemProps {
    */
   readonly lifecyclePolicy?: LifecyclePolicy;
 
+  /**
+   * A policy used by EFS lifecycle management to transition files from Infrequent Access (IA) storage class to
+   * primary storage class.
+   *
+   * @default - None. EFS will not transition files from IA storage to primary storage.
+   */
+  readonly outOfInfrequentAccessPolicy?: OutOfInfrequentAccessPolicy;
   /**
    * The performance mode that the file system will operate under.
    * An Amazon EFS file system's performance mode can't be changed after the file system has been created.
@@ -321,10 +341,21 @@ export class FileSystem extends FileSystemBase {
     const encrypted = props.encrypted ?? (FeatureFlags.of(this).isEnabled(
       cxapi.EFS_DEFAULT_ENCRYPTION_AT_REST) ? true : undefined);
 
+    // LifecyclePolicies is an array of lists containing a single policy
+    let lifecyclePolicies = [];
+
+    if (props.lifecyclePolicy) {
+      lifecyclePolicies.push({ transitionToIa: props.lifecyclePolicy });
+    }
+
+    if (props.outOfInfrequentAccessPolicy) {
+      lifecyclePolicies.push({ transitionToPrimaryStorageClass: props.outOfInfrequentAccessPolicy });
+    }
+
     const filesystem = new CfnFileSystem(this, 'Resource', {
       encrypted: encrypted,
       kmsKeyId: props.kmsKey?.keyArn,
-      lifecyclePolicies: (props.lifecyclePolicy ? [{ transitionToIa: props.lifecyclePolicy }] : undefined),
+      lifecyclePolicies: lifecyclePolicies.length > 0 ? lifecyclePolicies : undefined,
       performanceMode: props.performanceMode,
       throughputMode: props.throughputMode,
       provisionedThroughputInMibps: props.provisionedThroughputPerSecond?.toMebibytes(),
@@ -409,7 +440,7 @@ class ImportedFileSystem extends FileSystemBase {
       resourceName: attrs.fileSystemId,
     });
 
-    const parsedArn = Stack.of(scope).parseArn(this.fileSystemArn);
+    const parsedArn = Stack.of(scope).splitArn(this.fileSystemArn, ArnFormat.SLASH_RESOURCE_NAME);
 
     if (!parsedArn.resourceName) {
       throw new Error(`Invalid FileSystem Arn ${this.fileSystemArn}`);

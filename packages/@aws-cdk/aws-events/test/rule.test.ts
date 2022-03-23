@@ -1,5 +1,5 @@
 /* eslint-disable object-curly-newline */
-import '@aws-cdk/assert-internal/jest';
+import { Annotations, Match, Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { EventBus, EventField, IRule, IRuleTarget, RuleTargetConfig, RuleTargetInput, Schedule } from '../lib';
@@ -15,7 +15,7 @@ describe('rule', () => {
       schedule: Schedule.rate(cdk.Duration.minutes(10)),
     });
 
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       'Resources': {
         'MyRuleA44AB831': {
           'Type': 'AWS::Events::Rule',
@@ -26,7 +26,37 @@ describe('rule', () => {
         },
       },
     });
+  });
 
+  test('rule displays warning when minutes are not included in cron', () => {
+    const stack = new cdk.Stack();
+    const rule = new Rule(stack, 'MyRule', {
+      schedule: Schedule.cron({
+        hour: '8',
+        day: '1',
+      }),
+    });
+    expect(rule.node.metadataEntry).toEqual([{
+      type: 'aws:cdk:warning',
+      data: 'cron: If you don\'t pass \'minute\', by default the event runs every minute. Pass \'minute: \'*\'\' if that\'s what you intend, or \'minute: 0\' to run once per hour instead.',
+      trace: undefined,
+    }]);
+    Annotations.fromStack(stack).hasWarning('/Default/MyRule', "cron: If you don't pass 'minute', by default the event runs every minute. Pass 'minute: '*'' if that's what you intend, or 'minute: 0' to run once per hour instead.");
+
+  });
+
+  test('rule does not display warning when minute is set to * in cron', () => {
+    const stack = new cdk.Stack();
+    const rule = new Rule(stack, 'MyRule', {
+      schedule: Schedule.cron({
+        minute: '*',
+        hour: '8',
+        day: '1',
+      }),
+    });
+    expect(rule.node.metadataEntry).toEqual([]);
+    const annotations = Annotations.fromStack(stack).findWarning('*', Match.anyValue());
+    expect(annotations.length).toBe(0);
   });
 
   test('can get rule name', () => {
@@ -42,11 +72,9 @@ describe('rule', () => {
       },
     });
 
-    expect(stack).toHaveResource('Test::Resource', {
+    Template.fromStack(stack).hasResourceProperties('Test::Resource', {
       RuleName: { Ref: 'MyRuleA44AB831' },
     });
-
-
   });
 
   test('get rate as token', () => {
@@ -60,18 +88,15 @@ describe('rule', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::Events::Rule', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
       'Name': 'rateInMinutes',
       'ScheduleExpression': 'rate(5 minutes)',
     });
-
-
   });
 
   test('Seconds is not an allowed value for Schedule rate', () => {
     const lazyDuration = cdk.Duration.seconds(cdk.Lazy.number({ produce: () => 5 }));
     expect(() => Schedule.rate(lazyDuration)).toThrow(/Allowed units for scheduling/i);
-
   });
 
   test('Millis is not an allowed value for Schedule rate', () => {
@@ -79,7 +104,6 @@ describe('rule', () => {
 
     // THEN
     expect(() => Schedule.rate(lazyDuration)).toThrow(/Allowed units for scheduling/i);
-
   });
 
   test('rule with physical name', () => {
@@ -93,11 +117,9 @@ describe('rule', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::Events::Rule', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
       Name: 'PhysicalName',
     });
-
-
   });
 
   test('eventPattern is rendered properly', () => {
@@ -119,7 +141,7 @@ describe('rule', () => {
       },
     });
 
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       'Resources': {
         'MyRuleA44AB831': {
           'Type': 'AWS::Events::Rule',
@@ -140,16 +162,13 @@ describe('rule', () => {
         },
       },
     });
-
-
   });
 
-  test('fails synthesis if neither eventPattern nor scheudleExpression are specified', () => {
+  test('fails synthesis if neither eventPattern nor scheduleExpression are specified', () => {
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'MyStack');
     new Rule(stack, 'Rule');
     expect(() => app.synth()).toThrow(/Either 'eventPattern' or 'schedule' must be defined/);
-
   });
 
   test('addEventPattern can be used to add filters', () => {
@@ -173,7 +192,7 @@ describe('rule', () => {
       },
     });
 
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       'Resources': {
         'MyRuleA44AB831': {
           'Type': 'AWS::Events::Rule',
@@ -202,7 +221,6 @@ describe('rule', () => {
         },
       },
     });
-
   });
 
   test('addEventPattern can de-duplicate filters and keep the order', () => {
@@ -217,7 +235,7 @@ describe('rule', () => {
       detailType: ['EC2 Instance State-change Notification', 'AWS API Call via CloudTrail'],
     });
 
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       'Resources': {
         'MyRuleA44AB831': {
           'Type': 'AWS::Events::Rule',
@@ -233,7 +251,6 @@ describe('rule', () => {
         },
       },
     });
-
   });
 
   test('targets can be added via props or addTarget with input transformer', () => {
@@ -261,7 +278,7 @@ describe('rule', () => {
 
     rule.addTarget(t2);
 
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       'Resources': {
         'EventRule5A491D2C': {
           'Type': 'AWS::Events::Rule',
@@ -291,7 +308,6 @@ describe('rule', () => {
         },
       },
     });
-
   });
 
   test('input template can contain tokens', () => {
@@ -337,7 +353,7 @@ describe('rule', () => {
       }),
     });
 
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       'Resources': {
         'EventRule5A491D2C': {
           'Type': 'AWS::Events::Rule',
@@ -378,8 +394,6 @@ describe('rule', () => {
         },
       },
     });
-
-
   });
 
   test('target can declare role which will be used', () => {
@@ -404,7 +418,7 @@ describe('rule', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::Events::Rule', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
       'Targets': [
         {
           'Arn': 'ARN2',
@@ -413,8 +427,6 @@ describe('rule', () => {
         },
       ],
     });
-
-
   });
 
   test('in cross-account scenario, target role is only used in target account', () => {
@@ -442,7 +454,7 @@ describe('rule', () => {
     });
 
     // THEN
-    expect(ruleStack).toHaveResourceLike('AWS::Events::Rule', {
+    Template.fromStack(ruleStack).hasResourceProperties('AWS::Events::Rule', {
       Targets: [
         {
           Arn: { 'Fn::Join': ['', [
@@ -453,7 +465,7 @@ describe('rule', () => {
         },
       ],
     });
-    expect(targetStack).toHaveResourceLike('AWS::Events::Rule', {
+    Template.fromStack(targetStack).hasResourceProperties('AWS::Events::Rule', {
       'Targets': [
         {
           'Arn': 'ARN2',
@@ -462,8 +474,6 @@ describe('rule', () => {
         },
       ],
     });
-
-
   });
 
   test('asEventRuleTarget can use the ruleArn and a uniqueId of the rule', () => {
@@ -490,7 +500,6 @@ describe('rule', () => {
 
     expect(stack.resolve(receivedRuleArn)).toEqual(stack.resolve(rule.ruleArn));
     expect(receivedRuleId).toEqual(cdk.Names.uniqueId(rule));
-
   });
 
   test('fromEventRuleArn', () => {
@@ -503,7 +512,6 @@ describe('rule', () => {
     // THEN
     expect(importedRule.ruleArn).toEqual('arn:aws:events:us-east-2:123456789012:rule/example');
     expect(importedRule.ruleName).toEqual('example');
-
   });
 
   test('rule can be disabled', () => {
@@ -517,11 +525,9 @@ describe('rule', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::Events::Rule', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
       'State': 'DISABLED',
     });
-
-
   });
 
   test('can add multiple targets with the same id', () => {
@@ -535,7 +541,7 @@ describe('rule', () => {
     rule.addTarget(new SomeTarget());
 
     // THEN
-    expect(stack).toHaveResource('AWS::Events::Rule', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
       Targets: [
         {
           'Arn': 'ARN1',
@@ -553,8 +559,6 @@ describe('rule', () => {
         },
       ],
     });
-
-
   });
 
   test('sqsParameters are generated when they are specified in target props', () => {
@@ -572,7 +576,7 @@ describe('rule', () => {
       targets: [t1],
     });
 
-    expect(stack).toHaveResource('AWS::Events::Rule', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
       Targets: [
         {
           'Arn': 'ARN1',
@@ -583,7 +587,6 @@ describe('rule', () => {
         },
       ],
     });
-
   });
 
   test('associate rule with event bus', () => {
@@ -600,13 +603,11 @@ describe('rule', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::Events::Rule', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
       EventBusName: {
         Ref: 'EventBus7B8748AA',
       },
     });
-
-
   });
 
   test('throws with eventBus and schedule', () => {
@@ -620,7 +621,6 @@ describe('rule', () => {
       schedule: Schedule.rate(cdk.Duration.minutes(10)),
       eventBus,
     })).toThrow(/Cannot associate rule with 'eventBus' when using 'schedule'/);
-
   });
 
   test('allow an imported target if is in the same account and region', () => {
@@ -639,7 +639,7 @@ describe('rule', () => {
 
     rule.addTarget(new SomeTarget('T', resource));
 
-    expect(sourceStack).toHaveResource('AWS::Events::Rule', {
+    Template.fromStack(sourceStack).hasResourceProperties('AWS::Events::Rule', {
       Targets: [
         {
           'Arn': 'ARN1',
@@ -650,8 +650,6 @@ describe('rule', () => {
         },
       ],
     });
-
-
   });
 
   describe('for cross-account and/or cross-region targets', () => {
@@ -668,8 +666,6 @@ describe('rule', () => {
       expect(() => {
         rule.addTarget(new SomeTarget('T', resource));
       }).toThrow(/You need to provide a concrete region/);
-
-
     });
 
     test('requires that the target stack specify a concrete account', () => {
@@ -685,8 +681,6 @@ describe('rule', () => {
       expect(() => {
         rule.addTarget(new SomeTarget('T', resource));
       }).toThrow(/You need to provide a concrete account for the target stack when using cross-account or cross-region events/);
-
-
     });
 
     test('requires that the target stack specify a concrete region', () => {
@@ -703,8 +697,6 @@ describe('rule', () => {
       expect(() => {
         rule.addTarget(new SomeTarget('T', resource));
       }).toThrow(/You need to provide a concrete region for the target stack when using cross-account or cross-region events/);
-
-
     });
 
     test('creates cross-account targets if in the same region', () => {
@@ -726,7 +718,7 @@ describe('rule', () => {
 
       rule.addTarget(new SomeTarget('T', resource));
 
-      expect(sourceStack).toHaveResourceLike('AWS::Events::Rule', {
+      Template.fromStack(sourceStack).hasResourceProperties('AWS::Events::Rule', {
         'State': 'ENABLED',
         'Targets': [
           {
@@ -745,7 +737,7 @@ describe('rule', () => {
         ],
       });
 
-      expect(targetStack).toHaveResource('AWS::Events::Rule', {
+      Template.fromStack(targetStack).hasResourceProperties('AWS::Events::Rule', {
         Targets: [
           {
             'Arn': 'ARN1',
@@ -756,8 +748,6 @@ describe('rule', () => {
           },
         ],
       });
-
-
     });
 
     test('creates cross-region targets', () => {
@@ -779,7 +769,7 @@ describe('rule', () => {
 
       rule.addTarget(new SomeTarget('T', resource));
 
-      expect(sourceStack).toHaveResourceLike('AWS::Events::Rule', {
+      Template.fromStack(sourceStack).hasResourceProperties('AWS::Events::Rule', {
         'State': 'ENABLED',
         'Targets': [
           {
@@ -798,7 +788,7 @@ describe('rule', () => {
         ],
       });
 
-      expect(targetStack).toHaveResource('AWS::Events::Rule', {
+      Template.fromStack(targetStack).hasResourceProperties('AWS::Events::Rule', {
         Targets: [
           {
             'Arn': 'ARN1',
@@ -809,8 +799,6 @@ describe('rule', () => {
           },
         ],
       });
-
-
     });
 
     test('do not create duplicated targets', () => {
@@ -834,7 +822,7 @@ describe('rule', () => {
       // same target should be skipped
       rule.addTarget(new SomeTarget('T1', resource));
 
-      expect(sourceStack).toHaveResourceLike('AWS::Events::Rule', {
+      Template.fromStack(sourceStack).hasResourceProperties('AWS::Events::Rule', {
         'State': 'ENABLED',
         'Targets': [
           {
@@ -853,7 +841,7 @@ describe('rule', () => {
         ],
       });
 
-      expect(sourceStack).not.toHaveResourceLike('AWS::Events::Rule', {
+      Template.fromStack(sourceStack).hasResourceProperties('AWS::Events::Rule', Match.not({
         'State': 'ENABLED',
         'Targets': [
           {
@@ -870,9 +858,7 @@ describe('rule', () => {
             },
           },
         ],
-      });
-
-
+      }));
     });
 
     test('requires that the target is not imported', () => {
@@ -893,8 +879,6 @@ describe('rule', () => {
       expect(() => {
         rule.addTarget(new SomeTarget('T', resource));
       }).toThrow(/Cannot create a cross-account or cross-region rule for an imported resource/);
-
-
     });
 
     test('requires that the source and target stacks be part of the same App', () => {
@@ -911,14 +895,13 @@ describe('rule', () => {
       expect(() => {
         rule.addTarget(new SomeTarget('T', resource));
       }).toThrow(/Event stack and target stack must belong to the same CDK app/);
-
-
     });
 
     test('generates the correct rules in the source and target stacks when eventPattern is passed in the constructor', () => {
       const app = new cdk.App();
 
       const sourceAccount = '123456789012';
+      const nodeAddr = 'c810f4680339b01edf1f157c4fd07da73469742773';
       const sourceStack = new cdk.Stack(app, 'SourceStack', {
         env: {
           account: sourceAccount,
@@ -944,7 +927,7 @@ describe('rule', () => {
       rule.addTarget(new SomeTarget('T1', resource1));
       rule.addTarget(new SomeTarget('T2', resource2));
 
-      expect(sourceStack).toHaveResourceLike('AWS::Events::Rule', {
+      Template.fromStack(sourceStack).hasResourceProperties('AWS::Events::Rule', {
         'EventPattern': {
           'source': [
             'some-event',
@@ -968,7 +951,7 @@ describe('rule', () => {
         ],
       });
 
-      expect(targetStack).toHaveResourceLike('AWS::Events::Rule', {
+      Template.fromStack(targetStack).hasResourceProperties('AWS::Events::Rule', {
         'EventPattern': {
           'source': [
             'some-event',
@@ -982,7 +965,7 @@ describe('rule', () => {
           },
         ],
       });
-      expect(targetStack).toHaveResourceLike('AWS::Events::Rule', {
+      Template.fromStack(targetStack).hasResourceProperties('AWS::Events::Rule', {
         'EventPattern': {
           'source': [
             'some-event',
@@ -998,13 +981,11 @@ describe('rule', () => {
       });
 
       const eventBusPolicyStack = app.node.findChild(`EventBusPolicy-${sourceAccount}-us-west-2-${targetAccount}`) as cdk.Stack;
-      expect(eventBusPolicyStack).toHaveResourceLike('AWS::Events::EventBusPolicy', {
+      Template.fromStack(eventBusPolicyStack).hasResourceProperties('AWS::Events::EventBusPolicy', {
         'Action': 'events:PutEvents',
-        'StatementId': `Allow-account-${sourceAccount}`,
+        'StatementId': `Allow-account-${sourceAccount}-${nodeAddr}`,
         'Principal': sourceAccount,
       });
-
-
     });
 
     test('generates the correct rule in the target stack when addEventPattern in the source rule is used', () => {
@@ -1034,7 +1015,7 @@ describe('rule', () => {
         source: ['some-event'],
       });
 
-      expect(targetStack).toHaveResourceLike('AWS::Events::Rule', {
+      Template.fromStack(targetStack).hasResourceProperties('AWS::Events::Rule', {
         'EventPattern': {
           'source': [
             'some-event',
@@ -1048,14 +1029,12 @@ describe('rule', () => {
           },
         ],
       });
-
-
     });
   });
 });
 
 class SomeTarget implements IRuleTarget {
-  // eslint-disable-next-line cdk/no-core-construct
+  // eslint-disable-next-line @aws-cdk/no-core-construct
   public constructor(private readonly id?: string, private readonly resource?: cdk.IConstruct) {
   }
 

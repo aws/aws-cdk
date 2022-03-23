@@ -46,13 +46,15 @@ export interface BasicLifecycleHookProps {
 
   /**
    * The target of the lifecycle hook
+   *
+   * @default - No target.
    */
-  readonly notificationTarget: ILifecycleHookTarget;
+  readonly notificationTarget?: ILifecycleHookTarget;
 
   /**
    * The role that allows publishing to the notification target
    *
-   * @default - A role is automatically created.
+   * @default - A role will be created if a target is provided. Otherwise, no role is created.
    */
   readonly role?: iam.IRole;
 }
@@ -73,6 +75,9 @@ export interface LifecycleHookProps extends BasicLifecycleHookProps {
 export interface ILifecycleHook extends IResource {
   /**
    * The role for the lifecycle hook to execute
+   *
+   * @default - A default role is created if 'notificationTarget' is specified.
+   * Otherwise, no role is created.
    */
   readonly role: iam.IRole;
 }
@@ -81,10 +86,21 @@ export interface ILifecycleHook extends IResource {
  * Define a life cycle hook
  */
 export class LifecycleHook extends Resource implements ILifecycleHook {
+  private _role?: iam.IRole;
+
   /**
    * The role that allows the ASG to publish to the notification target
+   *
+   * @default - A default role is created if 'notificationTarget' is specified.
+   * Otherwise, no role is created.
    */
-  public readonly role: iam.IRole;
+  public get role() {
+    if (!this._role) {
+      throw new Error('\'role\' is undefined. Please specify a \'role\' or specify a \'notificationTarget\' to have a role provided for you.');
+    }
+
+    return this._role;
+  }
 
   /**
    * The name of this lifecycle hook
@@ -97,11 +113,20 @@ export class LifecycleHook extends Resource implements ILifecycleHook {
       physicalName: props.lifecycleHookName,
     });
 
-    this.role = props.role || new iam.Role(this, 'Role', {
-      assumedBy: new iam.ServicePrincipal('autoscaling.amazonaws.com'),
-    });
+    const targetProps = props.notificationTarget ? props.notificationTarget.bind(this, { lifecycleHook: this, role: props.role }) : undefined;
 
-    const targetProps = props.notificationTarget.bind(this, this);
+    if (props.role) {
+      this._role = props.role;
+
+      if (!props.notificationTarget) {
+        throw new Error("'notificationTarget' parameter required when 'role' parameter is specified");
+      }
+    } else {
+      this._role = targetProps ? targetProps.createdRole : undefined;
+    }
+
+    const l1NotificationTargetArn = targetProps ? targetProps.notificationTargetArn : undefined;
+    const l1RoleArn = this._role ? this.role.roleArn : undefined;
 
     const resource = new CfnLifecycleHook(this, 'Resource', {
       autoScalingGroupName: props.autoScalingGroup.autoScalingGroupName,
@@ -110,14 +135,16 @@ export class LifecycleHook extends Resource implements ILifecycleHook {
       lifecycleHookName: this.physicalName,
       lifecycleTransition: props.lifecycleTransition,
       notificationMetadata: props.notificationMetadata,
-      notificationTargetArn: targetProps.notificationTargetArn,
-      roleArn: this.role.roleArn,
+      notificationTargetArn: l1NotificationTargetArn,
+      roleArn: l1RoleArn,
     });
 
     // A LifecycleHook resource is going to do a permissions test upon creation,
     // so we have to make sure the role has full permissions before creating the
     // lifecycle hook.
-    resource.node.addDependency(this.role);
+    if (this._role) {
+      resource.node.addDependency(this.role);
+    }
 
     this.lifecycleHookName = resource.ref;
   }
