@@ -51,11 +51,11 @@
                 ]
               }
             },
+            "Id": "Target0",
             "RetryPolicy": {
               "MaximumEventAgeInSeconds": 7200,
               "MaximumRetryAttempts": 2
             },
-            "Id": "Target0",
             "RoleArn": {
               "Fn::GetAtt": [
                 "MyProjectEventsRole5B7D93F5",
@@ -138,7 +138,8 @@
                       ":log-group:/aws/codebuild/",
                       {
                         "Ref": "MyProject39F7B0AE"
-                      }
+                      },
+                      ":*"
                     ]
                   ]
                 },
@@ -161,8 +162,7 @@
                       ":log-group:/aws/codebuild/",
                       {
                         "Ref": "MyProject39F7B0AE"
-                      },
-                      ":*"
+                      }
                     ]
                   ]
                 }
@@ -170,11 +170,11 @@
             },
             {
               "Action": [
-                "codebuild:CreateReportGroup",
-                "codebuild:CreateReport",
-                "codebuild:UpdateReport",
+                "codebuild:BatchPutCodeCoverages",
                 "codebuild:BatchPutTestCases",
-                "codebuild:BatchPutCodeCoverages"
+                "codebuild:CreateReport",
+                "codebuild:CreateReportGroup",
+                "codebuild:UpdateReport"
               ],
               "Effect": "Allow",
               "Resource": {
@@ -240,6 +240,9 @@
             ]
           },
           "Type": "CODECOMMIT"
+        },
+        "Cache": {
+          "Type": "NO_CACHE"
         },
         "EncryptionKey": "alias/aws/s3"
       }

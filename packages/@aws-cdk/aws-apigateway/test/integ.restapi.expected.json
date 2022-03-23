@@ -101,7 +101,10 @@
           }
         ],
         "StageName": "beta"
-      }
+      },
+      "DependsOn": [
+        "myapiAccountEC421A0A"
+      ]
     },
     "myapiv113487378": {
       "Type": "AWS::ApiGateway::Resource",

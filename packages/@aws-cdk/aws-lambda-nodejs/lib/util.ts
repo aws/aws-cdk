@@ -35,19 +35,34 @@ export function callsites(): CallSite[] {
  * Find a file by walking up parent directories
  */
 export function findUp(name: string, directory: string = process.cwd()): string | undefined {
+  return findUpMultiple([name], directory)[0];
+}
+
+/**
+ * Find the lowest of multiple files by walking up parent directories. If
+ * multiple files exist at the same level, they will all be returned.
+ */
+export function findUpMultiple(names: string[], directory: string = process.cwd()): string[] {
   const absoluteDirectory = path.resolve(directory);
 
-  const file = path.join(directory, name);
-  if (fs.existsSync(file)) {
-    return file;
+  const files = [];
+  for (const name of names) {
+    const file = path.join(directory, name);
+    if (fs.existsSync(file)) {
+      files.push(file);
+    }
+  }
+
+  if (files.length > 0) {
+    return files;
   }
 
   const { root } = path.parse(absoluteDirectory);
   if (absoluteDirectory === root) {
-    return undefined;
+    return [];
   }
 
-  return findUp(name, path.dirname(absoluteDirectory));
+  return findUpMultiple(names, path.dirname(absoluteDirectory));
 }
 
 /**
@@ -128,4 +143,66 @@ export function extractDependencies(pkgPath: string, modules: string[]): { [key:
   }
 
   return dependencies;
+}
+
+export function getTsconfigCompilerOptions(tsconfigPath: string): string {
+  const compilerOptions = extractTsConfig(tsconfigPath);
+  const excludedCompilerOptions = [
+    'composite',
+    'tsBuildInfoFile',
+  ];
+
+  const options: Record<string, any> = {
+    ...compilerOptions,
+    // Overrides
+    incremental: false,
+    // Intentionally Setting rootDir and outDir, so that the compiled js file always end up next to .ts file.
+    rootDir: './',
+    outDir: './',
+  };
+
+  let compilerOptionsString = '';
+  Object.keys(options).forEach((key: string) => {
+
+    if (excludedCompilerOptions.includes(key)) {
+      return;
+    }
+
+    const value = options[key];
+    const option = '--' + key;
+    const type = typeof value;
+
+    if (type === 'boolean') {
+      if (value) {
+        compilerOptionsString += option + ' ';
+      }
+    } else if (type === 'string') {
+      compilerOptionsString += option + ' ' + value + ' ';
+    } else if (type === 'object') {
+      if (Array.isArray(value)) {
+        compilerOptionsString += option + ' ' + value.join(',') + ' ';
+      }
+    } else {
+      throw new Error(`Missing support for compilerOption: [${key}]: { ${type}, ${value}} \n`);
+    }
+  });
+
+  return compilerOptionsString.trim();
+}
+
+
+function extractTsConfig(tsconfigPath: string, previousCompilerOptions?: Record<string, any>): Record<string, any> | undefined {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const { extends: extendedConfig, compilerOptions } = require(tsconfigPath);
+  const updatedCompilerOptions = {
+    ...(previousCompilerOptions ?? {}),
+    ...compilerOptions,
+  };
+  if (extendedConfig) {
+    return extractTsConfig(
+      path.resolve(tsconfigPath.replace(/[^\/]+$/, ''), extendedConfig),
+      updatedCompilerOptions,
+    );
+  }
+  return updatedCompilerOptions;
 }

@@ -194,7 +194,7 @@ new glue.Table(this, 'MyTable', {
 
 By default, an S3 bucket will be created to store the table's data and stored in the bucket root. You can also manually pass the `bucket` and `s3Prefix`:
 
-### Partitions
+### Partition Keys
 
 To improve query performance, a table can specify `partitionKeys` on which data is stored and queried separately. For example, you might partition a table by `year` and `month` to optimize queries based on a time window:
 
@@ -215,6 +215,52 @@ new glue.Table(this, 'MyTable', {
     type: glue.Schema.SMALL_INT,
   }],
   dataFormat: glue.DataFormat.JSON,
+});
+```
+
+### Partition Indexes
+
+Another way to improve query performance is to specify partition indexes. If no partition indexes are
+present on the table, AWS Glue loads all partitions of the table and filters the loaded partitions using
+the query expression. The query takes more time to run as the number of partitions increase. With an
+index, the query will try to fetch a subset of the partitions instead of loading all partitions of the
+table.
+
+The keys of a partition index must be a subset of the partition keys of the table. You can have a
+maximum of 3 partition indexes per table. To specify a partition index, you can use the `partitionIndexes`
+property:
+
+```ts
+declare const myDatabase: glue.Database;
+new glue.Table(this, 'MyTable', {
+  database: myDatabase,
+  tableName: 'my_table',
+  columns: [{
+    name: 'col1',
+    type: glue.Schema.STRING,
+  }],
+  partitionKeys: [{
+    name: 'year',
+    type: glue.Schema.SMALL_INT,
+  }, {
+    name: 'month',
+    type: glue.Schema.SMALL_INT,
+  }],
+  partitionIndexes: [{
+    indexName: 'my-index', // optional
+    keyNames: ['year'],
+  }], // supply up to 3 indexes
+  dataFormat: glue.DataFormat.JSON,
+});
+```
+
+Alternatively, you can call the `addPartitionIndex()` function on a table:
+
+```ts
+declare const myTable: glue.Table;
+myTable.addPartitionIndex({
+  indexName: 'my-index',
+  keyNames: ['year'],
 });
 ```
 

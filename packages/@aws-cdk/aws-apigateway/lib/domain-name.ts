@@ -48,6 +48,16 @@ export interface DomainNameOptions {
    * @default - mTLS is not configured.
    */
   readonly mtls?: MTLSConfig;
+
+  /**
+   * The base path name that callers of the API must provide in the URL after
+   * the domain name (e.g. `example.com/base-path`). If you specify this
+   * property, it can't be an empty string.
+   *
+   * @default - map requests from the domain root (e.g. `example.com`). If this
+   * is undefined, no additional mappings will be allowed on this domain name.
+   */
+  readonly basePath?: string;
 }
 
 export interface DomainNameProps extends DomainNameOptions {
@@ -104,6 +114,7 @@ export class DomainName extends Resource implements IDomainName {
   public readonly domainName: string;
   public readonly domainNameAliasDomainName: string;
   public readonly domainNameAliasHostedZoneId: string;
+  private readonly basePaths = new Set<string | undefined>();
 
   constructor(scope: Construct, id: string, props: DomainNameProps) {
     super(scope, id);
@@ -136,7 +147,9 @@ export class DomainName extends Resource implements IDomainName {
       : resource.attrRegionalHostedZoneId;
 
     if (props.mapping) {
-      this.addBasePathMapping(props.mapping);
+      this.addBasePathMapping(props.mapping, {
+        basePath: props.basePath,
+      });
     }
   }
 
@@ -146,6 +159,10 @@ export class DomainName extends Resource implements IDomainName {
    * @param options Options for mapping to base path with or without a stage
    */
   public addBasePathMapping(targetApi: IRestApi, options: BasePathMappingOptions = { }) {
+    if (this.basePaths.has(undefined)) {
+      throw new Error('This domain name already has an empty base path. No additional base paths are allowed.');
+    }
+    this.basePaths.add(options.basePath);
     const basePath = options.basePath || '/';
     const id = `Map:${basePath}=>${Names.nodeUniqueId(targetApi.node)}`;
     return new BasePathMapping(this, id, {

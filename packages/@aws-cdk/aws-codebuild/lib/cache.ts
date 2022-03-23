@@ -37,7 +37,13 @@ export enum LocalCacheMode {
  */
 export abstract class Cache {
   public static none(): Cache {
-    return { _toCloudFormation: () => undefined, _bind: () => { return; } };
+    return {
+      _toCloudFormation(): CfnProject.ProjectCacheProperty | undefined {
+        return { type: 'NO_CACHE' };
+      },
+      _bind(): void {
+      },
+    };
   }
 
   /**

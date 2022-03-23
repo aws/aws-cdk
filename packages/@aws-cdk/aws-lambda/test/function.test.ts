@@ -1,6 +1,5 @@
-import '@aws-cdk/assert-internal/jest';
 import * as path from 'path';
-import { ABSENT, ResourcePart, SynthUtils } from '@aws-cdk/assert-internal';
+import { Match, Template } from '@aws-cdk/assertions';
 import { ProfilingGroup } from '@aws-cdk/aws-codeguruprofiler';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as efs from '@aws-cdk/aws-efs';
@@ -9,6 +8,7 @@ import * as kms from '@aws-cdk/aws-kms';
 import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as signer from '@aws-cdk/aws-signer';
+import * as sns from '@aws-cdk/aws-sns';
 import * as sqs from '@aws-cdk/aws-sqs';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
@@ -26,7 +26,7 @@ describe('function', () => {
       runtime: lambda.Runtime.NODEJS_10_X,
     });
 
-    expect(stack).toHaveResource('AWS::IAM::Role', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
       AssumeRolePolicyDocument:
       {
         Statement:
@@ -41,7 +41,7 @@ describe('function', () => {
         [{ 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::aws:policy/service-role/AWSLambdaBasicExecutionRole']] }],
     });
 
-    expect(stack).toHaveResource('AWS::Lambda::Function', {
+    Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
       Properties:
       {
         Code: { ZipFile: 'foo' },
@@ -50,7 +50,7 @@ describe('function', () => {
         Runtime: 'nodejs10.x',
       },
       DependsOn: ['MyLambdaServiceRole4539ECB6'],
-    }, ResourcePart.CompleteDefinition);
+    });
   });
 
   test('adds policy permissions', () => {
@@ -61,7 +61,7 @@ describe('function', () => {
       runtime: lambda.Runtime.NODEJS_10_X,
       initialPolicy: [new iam.PolicyStatement({ actions: ['*'], resources: ['*'] })],
     });
-    expect(stack).toHaveResource('AWS::IAM::Role', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
       AssumeRolePolicyDocument:
       {
         Statement:
@@ -76,7 +76,7 @@ describe('function', () => {
         // eslint-disable-next-line max-len
         [{ 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::aws:policy/service-role/AWSLambdaBasicExecutionRole']] }],
     });
-    expect(stack).toHaveResource('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -95,7 +95,7 @@ describe('function', () => {
       ],
     });
 
-    expect(stack).toHaveResource('AWS::Lambda::Function', {
+    Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
       Properties: {
         Code: { ZipFile: 'foo' },
         Handler: 'index.handler',
@@ -103,7 +103,7 @@ describe('function', () => {
         Runtime: 'nodejs10.x',
       },
       DependsOn: ['MyLambdaServiceRoleDefaultPolicy5BBC6F68', 'MyLambdaServiceRole4539ECB6'],
-    }, ResourcePart.CompleteDefinition);
+    });
   });
 
   test('fails if inline code is used for an invalid runtime', () => {
@@ -127,7 +127,7 @@ describe('function', () => {
         sourceArn: 'arn:aws:s3:::my_bucket',
       });
 
-      expect(stack).toHaveResource('AWS::IAM::Role', {
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
         AssumeRolePolicyDocument: {
           Statement: [
             {
@@ -145,7 +145,7 @@ describe('function', () => {
           [{ 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::aws:policy/service-role/AWSLambdaBasicExecutionRole']] }],
       });
 
-      expect(stack).toHaveResource('AWS::Lambda::Function', {
+      Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
         Properties: {
           Code: {
             ZipFile: 'foo',
@@ -157,14 +157,14 @@ describe('function', () => {
               'Arn',
             ],
           },
-          Runtime: 'python2.7',
+          Runtime: 'python3.9',
         },
         DependsOn: [
           'MyLambdaServiceRole4539ECB6',
         ],
-      }, ResourcePart.CompleteDefinition);
+      });
 
-      expect(stack).toHaveResource('AWS::Lambda::Permission', {
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
         Action: 'lambda:*',
         FunctionName: {
           'Fn::GetAtt': [
@@ -209,7 +209,7 @@ describe('function', () => {
 
       fn.addPermission('S1', { principal: principal });
 
-      expect(stack).toHaveResource('AWS::Lambda::Permission', {
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
         Action: 'lambda:InvokeFunction',
         FunctionName: {
           'Fn::GetAtt': [
@@ -272,7 +272,7 @@ describe('function', () => {
       fn.addToRolePolicy(new iam.PolicyStatement({ actions: ['explicit:explicit'], resources: ['*'] }));
 
       // THEN
-      expect(stack).toHaveResource('AWS::IAM::Policy', {
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         PolicyDocument: {
           Version: '2012-10-17',
           Statement: [
@@ -297,6 +297,71 @@ describe('function', () => {
     expect(imported.functionName).toEqual('ProcessKinesisRecords');
   });
 
+  test('Function.fromFunctionName', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const imported = lambda.Function.fromFunctionName(stack, 'Imported', 'my-function');
+
+    // THEN
+    expect(stack.resolve(imported.functionArn)).toStrictEqual({
+      'Fn::Join': ['', [
+        'arn:',
+        { Ref: 'AWS::Partition' },
+        ':lambda:',
+        { Ref: 'AWS::Region' },
+        ':',
+        { Ref: 'AWS::AccountId' },
+        ':function:my-function',
+      ]],
+    });
+    expect(stack.resolve(imported.functionName)).toStrictEqual({
+      'Fn::Select': [6, {
+        'Fn::Split': [':', {
+          'Fn::Join': ['', [
+            'arn:',
+            { Ref: 'AWS::Partition' },
+            ':lambda:',
+            { Ref: 'AWS::Region' },
+            ':',
+            { Ref: 'AWS::AccountId' },
+            ':function:my-function',
+          ]],
+        }],
+      }],
+    });
+  });
+
+  describe('Function.fromFunctionAttributes()', () => {
+    let stack: cdk.Stack;
+
+    beforeEach(() => {
+      const app = new cdk.App();
+      stack = new cdk.Stack(app, 'Base', {
+        env: { account: '111111111111', region: 'stack-region' },
+      });
+    });
+
+    describe('for a function in a different account and region', () => {
+      let func: lambda.IFunction;
+
+      beforeEach(() => {
+        func = lambda.Function.fromFunctionAttributes(stack, 'iFunc', {
+          functionArn: 'arn:aws:lambda:function-region:222222222222:function:function-name',
+        });
+      });
+
+      test("the function's region is taken from the ARN", () => {
+        expect(func.env.region).toBe('function-region');
+      });
+
+      test("the function's account is taken from the ARN", () => {
+        expect(func.env.account).toBe('222222222222');
+      });
+    });
+  });
+
   describe('addPermissions', () => {
     test('imported Function w/ resolved account and function arn', () => {
       // GIVEN
@@ -314,7 +379,7 @@ describe('function', () => {
       });
 
       // THEN
-      expect(stack).toHaveResource('AWS::Lambda::Permission');
+      Template.fromStack(stack).resourceCountIs('AWS::Lambda::Permission', 1);
     });
 
     test('imported Function w/ unresolved account', () => {
@@ -331,7 +396,7 @@ describe('function', () => {
       });
 
       // THEN
-      expect(stack).not.toHaveResource('AWS::Lambda::Permission');
+      Template.fromStack(stack).resourceCountIs('AWS::Lambda::Permission', 0);
     });
 
     test('imported Function w/ unresolved account & allowPermissions set', () => {
@@ -349,7 +414,7 @@ describe('function', () => {
       });
 
       // THEN
-      expect(stack).toHaveResource('AWS::Lambda::Permission');
+      Template.fromStack(stack).resourceCountIs('AWS::Lambda::Permission', 1);
     });
 
     test('imported Function w/different account', () => {
@@ -368,7 +433,7 @@ describe('function', () => {
       });
 
       // THEN
-      expect(stack).not.toHaveResource('AWS::Lambda::Permission');
+      Template.fromStack(stack).resourceCountIs('AWS::Lambda::Permission', 0);
     });
   });
 
@@ -382,7 +447,7 @@ describe('function', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::Lambda::Function', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
       Code: {
         S3Bucket: {
           Ref: 'AssetParameters9678c34eca93259d11f2d714177347afd66c50116e1e08996eff893d3ca81232S3Bucket1354C645',
@@ -416,7 +481,7 @@ describe('function', () => {
       deadLetterQueueEnabled: true,
     });
 
-    expect(stack).toHaveResource('AWS::IAM::Role', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
       AssumeRolePolicyDocument: {
         Statement: [
           {
@@ -444,7 +509,7 @@ describe('function', () => {
         },
       ],
     });
-    expect(stack).toHaveResource('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -467,7 +532,7 @@ describe('function', () => {
         },
       ],
     });
-    expect(stack).toHaveResource('AWS::Lambda::Function', {
+    Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
       Properties: {
         Code: {
           ZipFile: 'foo',
@@ -494,7 +559,7 @@ describe('function', () => {
         'MyLambdaServiceRoleDefaultPolicy5BBC6F68',
         'MyLambdaServiceRole4539ECB6',
       ],
-    }, ResourcePart.CompleteDefinition);
+    });
   });
 
   test('default function with SQS DLQ when client sets deadLetterQueueEnabled to true and functionName not defined by client', () => {
@@ -507,11 +572,11 @@ describe('function', () => {
       deadLetterQueueEnabled: true,
     });
 
-    expect(stack).toHaveResource('AWS::SQS::Queue', {
+    Template.fromStack(stack).hasResourceProperties('AWS::SQS::Queue', {
       MessageRetentionPeriod: 1209600,
     });
 
-    expect(stack).toHaveResource('AWS::Lambda::Function', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
       DeadLetterConfig: {
         TargetArn: {
           'Fn::GetAtt': [
@@ -533,7 +598,7 @@ describe('function', () => {
       deadLetterQueueEnabled: false,
     });
 
-    expect(stack).toHaveResource('AWS::Lambda::Function', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
       Code: {
         ZipFile: 'foo',
       },
@@ -563,7 +628,7 @@ describe('function', () => {
       deadLetterQueue: dlQueue,
     });
 
-    expect(stack).toHaveResource('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -581,7 +646,7 @@ describe('function', () => {
       },
     });
 
-    expect(stack).toHaveResource('AWS::Lambda::Function', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
       DeadLetterConfig: {
         TargetArn: {
           'Fn::GetAtt': [
@@ -609,7 +674,7 @@ describe('function', () => {
       deadLetterQueue: dlQueue,
     });
 
-    expect(stack).toHaveResource('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -627,7 +692,7 @@ describe('function', () => {
       },
     });
 
-    expect(stack).toHaveResource('AWS::Lambda::Function', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
       DeadLetterConfig: {
         TargetArn: {
           'Fn::GetAtt': [
@@ -656,6 +721,84 @@ describe('function', () => {
     })).toThrow(/deadLetterQueue defined but deadLetterQueueEnabled explicitly set to false/);
   });
 
+  test('default function with SNS DLQ when client provides Topic to be used as DLQ', () => {
+    const stack = new cdk.Stack();
+
+    const dlTopic = new sns.Topic(stack, 'DeadLetterTopic');
+
+    new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_10_X,
+      deadLetterTopic: dlTopic,
+    });
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          {
+            Action: 'sns:Publish',
+            Effect: 'Allow',
+            Resource: {
+              Ref: 'DeadLetterTopicC237650B',
+            },
+          },
+        ]),
+      },
+    });
+    template.hasResourceProperties('AWS::Lambda::Function', {
+      DeadLetterConfig: {
+        TargetArn: {
+          Ref: 'DeadLetterTopicC237650B',
+        },
+      },
+    });
+  });
+
+  test('error when default function with SNS DLQ when client provides Topic to be used as DLQ and deadLetterQueueEnabled set to false', () => {
+    const stack = new cdk.Stack();
+
+    const dlTopic = new sns.Topic(stack, 'DeadLetterTopic');
+
+    expect(() => new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_10_X,
+      deadLetterQueueEnabled: false,
+      deadLetterTopic: dlTopic,
+    })).toThrow(/deadLetterQueue and deadLetterTopic cannot be specified together at the same time/);
+  });
+
+  test('error when default function with SNS DLQ when client provides Topic to be used as DLQ and deadLetterQueueEnabled set to true', () => {
+    const stack = new cdk.Stack();
+
+    const dlTopic = new sns.Topic(stack, 'DeadLetterTopic');
+
+    expect(() => new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_10_X,
+      deadLetterQueueEnabled: true,
+      deadLetterTopic: dlTopic,
+    })).toThrow(/deadLetterQueue and deadLetterTopic cannot be specified together at the same time/);
+  });
+
+  test('error when both topic and queue are presented as DLQ', () => {
+    const stack = new cdk.Stack();
+
+    const dlQueue = new sqs.Queue(stack, 'DLQ');
+    const dlTopic = new sns.Topic(stack, 'DeadLetterTopic');
+
+    expect(() => new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_10_X,
+      deadLetterQueue: dlQueue,
+      deadLetterTopic: dlTopic,
+    })).toThrow(/deadLetterQueue and deadLetterTopic cannot be specified together at the same time/);
+  });
+
   test('default function with Active tracing', () => {
     const stack = new cdk.Stack();
 
@@ -666,7 +809,7 @@ describe('function', () => {
       tracing: lambda.Tracing.ACTIVE,
     });
 
-    expect(stack).toHaveResource('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -688,7 +831,7 @@ describe('function', () => {
       ],
     });
 
-    expect(stack).toHaveResource('AWS::Lambda::Function', {
+    Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
       Properties: {
         Code: {
           ZipFile: 'foo',
@@ -709,7 +852,7 @@ describe('function', () => {
         'MyLambdaServiceRoleDefaultPolicy5BBC6F68',
         'MyLambdaServiceRole4539ECB6',
       ],
-    }, ResourcePart.CompleteDefinition);
+    });
   });
 
   test('default function with PassThrough tracing', () => {
@@ -722,7 +865,7 @@ describe('function', () => {
       tracing: lambda.Tracing.PASS_THROUGH,
     });
 
-    expect(stack).toHaveResource('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -744,7 +887,7 @@ describe('function', () => {
       ],
     });
 
-    expect(stack).toHaveResource('AWS::Lambda::Function', {
+    Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
       Properties: {
         Code: {
           ZipFile: 'foo',
@@ -765,7 +908,7 @@ describe('function', () => {
         'MyLambdaServiceRoleDefaultPolicy5BBC6F68',
         'MyLambdaServiceRole4539ECB6',
       ],
-    }, ResourcePart.CompleteDefinition);
+    });
   });
 
   test('default function with Disabled tracing', () => {
@@ -778,29 +921,9 @@ describe('function', () => {
       tracing: lambda.Tracing.DISABLED,
     });
 
-    expect(stack).not.toHaveResource('AWS::IAM::Policy', {
-      PolicyDocument: {
-        Statement: [
-          {
-            Action: [
-              'xray:PutTraceSegments',
-              'xray:PutTelemetryRecords',
-            ],
-            Effect: 'Allow',
-            Resource: '*',
-          },
-        ],
-        Version: '2012-10-17',
-      },
-      PolicyName: 'MyLambdaServiceRoleDefaultPolicy5BBC6F68',
-      Roles: [
-        {
-          Ref: 'MyLambdaServiceRole4539ECB6',
-        },
-      ],
-    });
+    Template.fromStack(stack).resourceCountIs('AWS::IAM::Policy', 0);
 
-    expect(stack).toHaveResource('AWS::Lambda::Function', {
+    Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
       Properties: {
         Code: {
           ZipFile: 'foo',
@@ -817,7 +940,7 @@ describe('function', () => {
       DependsOn: [
         'MyLambdaServiceRole4539ECB6',
       ],
-    }, ResourcePart.CompleteDefinition);
+    });
   });
 
   test('runtime and handler set to FROM_IMAGE are set to undefined in CloudFormation', () => {
@@ -829,15 +952,14 @@ describe('function', () => {
       runtime: lambda.Runtime.FROM_IMAGE,
     });
 
-    expect(stack).toHaveResource('AWS::Lambda::Function', {
-      Runtime: ABSENT,
-      Handler: ABSENT,
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+      Runtime: Match.absent(),
+      Handler: Match.absent(),
       PackageType: 'Image',
     });
   });
 
   describe('grantInvoke', () => {
-
     test('adds iam:InvokeFunction', () => {
       // GIVEN
       const stack = new cdk.Stack();
@@ -854,7 +976,7 @@ describe('function', () => {
       fn.grantInvoke(role);
 
       // THEN
-      expect(stack).toHaveResource('AWS::IAM::Policy', {
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         PolicyDocument: {
           Version: '2012-10-17',
           Statement: [
@@ -882,7 +1004,7 @@ describe('function', () => {
       fn.grantInvoke(service);
 
       // THEN
-      expect(stack).toHaveResource('AWS::Lambda::Permission', {
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
         Action: 'lambda:InvokeFunction',
         FunctionName: {
           'Fn::GetAtt': [
@@ -908,7 +1030,7 @@ describe('function', () => {
       fn.grantInvoke(account);
 
       // THEN
-      expect(stack).toHaveResource('AWS::Lambda::Permission', {
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
         Action: 'lambda:InvokeFunction',
         FunctionName: {
           'Fn::GetAtt': [
@@ -934,7 +1056,7 @@ describe('function', () => {
       fn.grantInvoke(account);
 
       // THEN
-      expect(stack).toHaveResource('AWS::Lambda::Permission', {
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
         Action: 'lambda:InvokeFunction',
         FunctionName: {
           'Fn::GetAtt': [
@@ -961,7 +1083,7 @@ describe('function', () => {
       fn.grantInvoke(service);
 
       // THEN
-      expect(stack).toHaveResource('AWS::Lambda::Permission', {
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
         Action: 'lambda:InvokeFunction',
         FunctionName: {
           'Fn::GetAtt': [
@@ -988,7 +1110,7 @@ describe('function', () => {
       fn.grantInvoke(iam.Role.fromRoleArn(stack, 'ForeignRole', 'arn:aws:iam::123456789012:role/someRole'));
 
       // THEN
-      expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         PolicyDocument: {
           Statement: [
             {
@@ -1017,7 +1139,7 @@ describe('function', () => {
       fn.grantInvoke(iam.Role.fromRoleArn(stack, 'ForeignRole', 'arn:aws:iam::123456789012:role/someRole'));
 
       // THEN
-      expect(stack).toHaveResource('AWS::Lambda::Permission', {
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
         Action: 'lambda:InvokeFunction',
         FunctionName: {
           'Fn::GetAtt': [
@@ -1040,7 +1162,7 @@ describe('function', () => {
       fn.grantInvoke(new iam.ServicePrincipal('elasticloadbalancing.amazonaws.com'));
 
       // THEN
-      expect(stack).toHaveResource('AWS::Lambda::Permission', {
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
         Action: 'lambda:InvokeFunction',
         FunctionName: 'arn:aws:lambda:us-east-1:123456789012:function:MyFn',
         Principal: 'elasticloadbalancing.amazonaws.com',
@@ -1068,7 +1190,7 @@ describe('function', () => {
       fn.grantInvoke(new iam.ServicePrincipal('elasticloadbalancing.amazonaws.com'));
 
       // THEN
-      expect(stack).toHaveResource('AWS::Lambda::Permission', {
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
         Action: 'lambda:InvokeFunction',
         FunctionName: 'arn:aws:lambda:us-east-1:123456789012:function:MyFn',
         Principal: 'elasticloadbalancing.amazonaws.com',
@@ -1083,8 +1205,25 @@ describe('function', () => {
       const fn = lambda.Function.fromFunctionArn(stack, 'Function', 'arn:aws:lambda:us-east-1:123456789012:function:MyFn');
 
       // THEN
-      expect(() => { fn.grantInvoke(new iam.ServicePrincipal('elasticloadbalancing.amazonaws.com')); })
-        .toThrow(/Cannot modify permission to lambda function/);
+      expect(() => {
+        fn.grantInvoke(new iam.ServicePrincipal('elasticloadbalancing.amazonaws.com'));
+      }).toThrow(/Cannot modify permission to lambda function/);
+    });
+
+    test('on an imported function (different account & w/ skipPermissions', () => {
+      // GIVEN
+      const stack = new cdk.Stack(undefined, undefined, {
+        env: { account: '111111111111' }, // Different account
+      });
+      const fn = lambda.Function.fromFunctionAttributes(stack, 'Function', {
+        functionArn: 'arn:aws:lambda:us-east-1:123456789012:function:MyFn',
+        skipPermissions: true,
+      });
+
+      // THEN
+      expect(() => {
+        fn.grantInvoke(new iam.ServicePrincipal('elasticloadbalancing.amazonaws.com'));
+      }).not.toThrow();
     });
   });
 
@@ -1180,7 +1319,7 @@ describe('function', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::Lambda::Function', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
       Environment: {
         Variables: {
           SOME: 'Variable',
@@ -1204,7 +1343,7 @@ describe('function', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::Lambda::Function', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
       Environment: {
         Variables: {
           SOME: 'Variable',
@@ -1223,7 +1362,7 @@ describe('function', () => {
       reservedConcurrentExecutions: 10,
     });
 
-    expect(stack).toHaveResource('AWS::Lambda::Function', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
       ReservedConcurrentExecutions: 10,
     });
   });
@@ -1275,7 +1414,7 @@ describe('function', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('Custom::LogRetention', {
+    Template.fromStack(stack).hasResourceProperties('Custom::LogRetention', {
       LogGroupName: {
         'Fn::Join': [
           '',
@@ -1306,7 +1445,7 @@ describe('function', () => {
     fn.connections.allowToAnyIpv4(ec2.Port.tcp(443));
 
     // THEN
-    expect(stack).toHaveResource('AWS::EC2::SecurityGroupEgress', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroupEgress', {
       GroupId: 'sg-123456789',
     });
   });
@@ -1331,7 +1470,7 @@ describe('function', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::Lambda::EventInvokeConfig', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventInvokeConfig', {
       FunctionName: {
         Ref: 'fn5FF616E3',
       },
@@ -1376,7 +1515,7 @@ describe('function', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::Lambda::EventInvokeConfig', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventInvokeConfig', {
       FunctionName: 'my-function',
       Qualifier: '$LATEST',
       MaximumRetryAttempts: 1,
@@ -1398,7 +1537,7 @@ describe('function', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::Lambda::EventInvokeConfig', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventInvokeConfig', {
       FunctionName: {
         Ref: 'fn5FF616E3',
       },
@@ -1426,8 +1565,8 @@ describe('function', () => {
     fn._checkEdgeCompatibility();
 
     // THEN
-    expect(stack).toHaveResource('AWS::Lambda::Function', {
-      Environment: ABSENT,
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+      Environment: Match.absent(),
     });
   });
 
@@ -1537,7 +1676,7 @@ describe('function', () => {
     expect(logGroup.logGroupArn).toBeDefined();
   });
 
-  test('dlq is returned when provided by user', () => {
+  test('dlq is returned when provided by user and is Queue', () => {
     const stack = new cdk.Stack();
 
     const dlQueue = new sqs.Queue(stack, 'DeadLetterQueue', {
@@ -1552,12 +1691,37 @@ describe('function', () => {
       deadLetterQueue: dlQueue,
     });
     const deadLetterQueue = fn.deadLetterQueue;
-    expect(deadLetterQueue?.queueArn).toBeDefined();
-    expect(deadLetterQueue?.queueName).toBeDefined();
-    expect(deadLetterQueue?.queueUrl).toBeDefined();
+    const deadLetterTopic = fn.deadLetterTopic;
+
+    expect(deadLetterTopic).toBeUndefined();
+
+    expect(deadLetterQueue).toBeDefined();
+    expect(deadLetterQueue).toBeInstanceOf(sqs.Queue);
   });
 
-  test('dlq is returned when setup by cdk', () => {
+  test('dlq is returned when provided by user and is Topic', () => {
+    const stack = new cdk.Stack();
+
+    const dlTopic = new sns.Topic(stack, 'DeadLetterQueue', {
+      topicName: 'MyLambda_DLQ',
+    });
+
+    const fn = new lambda.Function(stack, 'fn', {
+      handler: 'foo',
+      runtime: lambda.Runtime.NODEJS_10_X,
+      code: lambda.Code.fromInline('foo'),
+      deadLetterTopic: dlTopic,
+    });
+    const deadLetterQueue = fn.deadLetterQueue;
+    const deadLetterTopic = fn.deadLetterTopic;
+
+    expect(deadLetterQueue).toBeUndefined();
+
+    expect(deadLetterTopic).toBeDefined();
+    expect(deadLetterTopic).toBeInstanceOf(sns.Topic);
+  });
+
+  test('dlq is returned when setup by cdk and is Queue', () => {
     const stack = new cdk.Stack();
     const fn = new lambda.Function(stack, 'fn', {
       handler: 'foo',
@@ -1566,9 +1730,12 @@ describe('function', () => {
       deadLetterQueueEnabled: true,
     });
     const deadLetterQueue = fn.deadLetterQueue;
-    expect(deadLetterQueue?.queueArn).toBeDefined();
-    expect(deadLetterQueue?.queueName).toBeDefined();
-    expect(deadLetterQueue?.queueUrl).toBeDefined();
+    const deadLetterTopic = fn.deadLetterTopic;
+
+    expect(deadLetterTopic).toBeUndefined();
+
+    expect(deadLetterQueue).toBeDefined();
+    expect(deadLetterQueue).toBeInstanceOf(sqs.Queue);
   });
 
   test('dlq is undefined when not setup', () => {
@@ -1579,7 +1746,10 @@ describe('function', () => {
       code: lambda.Code.fromInline('foo'),
     });
     const deadLetterQueue = fn.deadLetterQueue;
+    const deadLetterTopic = fn.deadLetterTopic;
+
     expect(deadLetterQueue).toBeUndefined();
+    expect(deadLetterTopic).toBeUndefined();
   });
 
   test('one and only one child LogRetention construct will be created', () => {
@@ -1649,7 +1819,7 @@ describe('function', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::Lambda::Function', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
       Environment: {
         Variables: {
           SOME: 'Variable',
@@ -1675,12 +1845,12 @@ describe('function', () => {
         profiling: true,
       });
 
-      expect(stack).toHaveResource('AWS::CodeGuruProfiler::ProfilingGroup', {
+      Template.fromStack(stack).hasResourceProperties('AWS::CodeGuruProfiler::ProfilingGroup', {
         ProfilingGroupName: 'MyLambdaProfilingGroupC5B6CCD8',
         ComputePlatform: 'AWSLambda',
       });
 
-      expect(stack).toHaveResource('AWS::IAM::Policy', {
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         PolicyDocument: {
           Statement: [
             {
@@ -1704,7 +1874,7 @@ describe('function', () => {
         ],
       });
 
-      expect(stack).toHaveResource('AWS::Lambda::Function', {
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
         Environment: {
           Variables: {
             AWS_CODEGURU_PROFILER_GROUP_ARN: { 'Fn::GetAtt': ['MyLambdaProfilingGroupEC6DE32F', 'Arn'] },
@@ -1724,7 +1894,7 @@ describe('function', () => {
         profilingGroup: new ProfilingGroup(stack, 'ProfilingGroup'),
       });
 
-      expect(stack).toHaveResource('AWS::IAM::Policy', {
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         PolicyDocument: {
           Statement: [
             {
@@ -1748,7 +1918,7 @@ describe('function', () => {
         ],
       });
 
-      expect(stack).toHaveResource('AWS::Lambda::Function', {
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
         Environment: {
           Variables: {
             AWS_CODEGURU_PROFILER_GROUP_ARN: {
@@ -1777,9 +1947,9 @@ describe('function', () => {
         profilingGroup: new ProfilingGroup(stack, 'ProfilingGroup'),
       });
 
-      expect(stack).not.toHaveResource('AWS::IAM::Policy');
+      Template.fromStack(stack).resourceCountIs('AWS::IAM::Policy', 0);
 
-      expect(stack).not.toHaveResource('AWS::Lambda::Function', {
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', Match.not({
         Environment: {
           Variables: {
             AWS_CODEGURU_PROFILER_GROUP_ARN: {
@@ -1794,7 +1964,7 @@ describe('function', () => {
             AWS_CODEGURU_PROFILER_ENABLED: 'TRUE',
           },
         },
-      });
+      }));
     });
 
     test('default function with profiling enabled and client provided env vars', () => {
@@ -1907,8 +2077,8 @@ describe('function', () => {
       });
 
       // THEN
-      const template1 = SynthUtils.synthesize(stack1).template;
-      const template2 = SynthUtils.synthesize(stack2).template;
+      const template1 = Template.fromStack(stack1).toJSON();
+      const template2 = Template.fromStack(stack2).toJSON();
 
       // these functions are different in their configuration but the original
       // logical ID of the version would be the same unless the logical ID
@@ -1941,7 +2111,7 @@ describe('function', () => {
       });
 
       // THEN
-      expect(stack).toHaveResource('AWS::Lambda::Function', {
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
         FileSystemConfigs: [
           {
             Arn: {
@@ -2024,7 +2194,7 @@ describe('function', () => {
       });
 
       // THEN
-      expect(stack).toHaveResource('AWS::Lambda::Function', {
+      Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
         DependsOn: [
           'EfsEfsMountTarget195B2DD2E',
           'EfsEfsMountTarget2315C927F',
@@ -2033,7 +2203,7 @@ describe('function', () => {
           'MyFunctionServiceRoleDefaultPolicyB705ABD4',
           'MyFunctionServiceRole3C357FF2',
         ],
-      }, ResourcePart.CompleteDefinition);
+      });
     });
   });
 
@@ -2129,11 +2299,11 @@ describe('function', () => {
         runtime: lambda.Runtime.FROM_IMAGE,
       });
 
-      expect(stack).toHaveResource('AWS::Lambda::Function', {
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
         Code: {
           ImageUri: 'ecr image uri',
         },
-        ImageConfig: ABSENT,
+        ImageConfig: Match.absent(),
       });
     });
 
@@ -2153,7 +2323,7 @@ describe('function', () => {
         runtime: lambda.Runtime.FROM_IMAGE,
       });
 
-      expect(stack).toHaveResource('AWS::Lambda::Function', {
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
         ImageConfig: {
           Command: ['cmd', 'param1'],
           EntryPoint: ['entrypoint', 'param2'],
@@ -2182,7 +2352,7 @@ describe('function', () => {
         codeSigningConfig,
       });
 
-      expect(stack).toHaveResource('AWS::Lambda::Function', {
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
         CodeSigningConfigArn: {
           'Fn::GetAtt': [
             'CodeSigningConfigD8D41C10',
@@ -2218,7 +2388,7 @@ describe('function', () => {
       architectures: [lambda.Architecture.ARM_64],
     });
 
-    expect(stack).toHaveResource('AWS::Lambda::Function', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
       Architectures: ['arm64'],
     });
   });
@@ -2233,7 +2403,7 @@ describe('function', () => {
       architecture: lambda.Architecture.ARM_64,
     });
 
-    expect(stack).toHaveResource('AWS::Lambda::Function', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
       Architectures: ['arm64'],
     });
   });
@@ -2270,12 +2440,51 @@ describe('function', () => {
     });
     expect(fn.architecture?.name).toEqual('arm64');
   });
+
+  test('Error when function name is longer than 64 chars', () => {
+    const stack = new cdk.Stack();
+    expect(() => new lambda.Function(stack, 'MyFunction', {
+      code: lambda.Code.fromInline('foo'),
+      runtime: lambda.Runtime.NODEJS_14_X,
+      handler: 'index.handler',
+      functionName: 'a'.repeat(65),
+    })).toThrow(/Function name can not be longer than 64 characters/);
+  });
+
+  test('Error when function name contains invalid characters', () => {
+    const stack = new cdk.Stack();
+    [' ', '\n', '\r', '[', ']', '<', '>', '$'].forEach(invalidChar => {
+      expect(() => {
+        new lambda.Function(stack, `foo${invalidChar}`, {
+          code: new lambda.InlineCode('foo'),
+          handler: 'index.handler',
+          runtime: lambda.Runtime.NODEJS_14_X,
+          functionName: `foo${invalidChar}`,
+        });
+      }).toThrow(/can contain only letters, numbers, hyphens, or underscores with no spaces./);
+    });
+  });
+
+  test('No error when function name is Tokenized and Unresolved', () => {
+    const stack = new cdk.Stack();
+    expect(() => {
+      const realFunctionName = 'a'.repeat(141);
+      const tokenizedFunctionName = cdk.Token.asString(new cdk.Intrinsic(realFunctionName));
+
+      new lambda.Function(stack, 'foo', {
+        code: new lambda.InlineCode('foo'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_14_X,
+        functionName: tokenizedFunctionName,
+      });
+    }).not.toThrow();
+  });
 });
 
 function newTestLambda(scope: constructs.Construct) {
   return new lambda.Function(scope, 'MyLambda', {
     code: new lambda.InlineCode('foo'),
     handler: 'bar',
-    runtime: lambda.Runtime.PYTHON_2_7,
+    runtime: lambda.Runtime.PYTHON_3_9,
   });
 }

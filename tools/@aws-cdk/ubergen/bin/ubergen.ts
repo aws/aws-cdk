@@ -129,7 +129,7 @@ async function findLibrariesToPackage(uberPackageJson: PackageJson): Promise<rea
   for (const dir of await fs.readdir(librariesRoot)) {
     const packageJson = await fs.readJson(path.resolve(librariesRoot, dir, 'package.json'));
 
-    if (packageJson.ubergen?.exclude) {
+    if (packageJson.private || packageJson.ubergen?.exclude) {
       console.log(`\t⚠️ Skipping (ubergen excluded):   ${packageJson.name}`);
       continue;
     } else if (packageJson.jsii == null ) {
@@ -364,17 +364,21 @@ async function transformPackage(
     await fs.mkdirp(destinationLib);
     await cfn2ts(cfnScopes, destinationLib);
 
+    // We know what this is going to be, so predict it
+    const alphaPackageName = hasL2s(library) ? `${library.packageJson.name}-alpha` : undefined;
+
     // create a lib/index.ts which only exports the generated files
     fs.writeFileSync(path.join(destinationLib, 'index.ts'),
       /// logic copied from `create-missing-libraries.ts`
       cfnScopes.map(s => (s === 'AWS::Serverless' ? 'AWS::SAM' : s).split('::')[1].toLocaleLowerCase())
         .map(s => `export * from './${s}.generated';`)
         .join('\n'));
-    await pkglint.createLibraryReadme(cfnScopes[0], path.join(destination, 'README.md'));
+    await pkglint.createLibraryReadme(cfnScopes[0], path.join(destination, 'README.md'), alphaPackageName);
 
     await copyOrTransformFiles(destination, destination, allLibraries, uberPackageJson);
   } else {
     await copyOrTransformFiles(library.root, destination, allLibraries, uberPackageJson);
+    await copyLiterateSources(path.join(library.root, 'test'), path.join(destination, 'test'), allLibraries, uberPackageJson);
   }
 
   await fs.writeFile(
@@ -407,6 +411,23 @@ async function transformPackage(
   }
 
   return true;
+}
+
+/**
+ * Return whether a package has L2s
+ *
+ * We determine this on the cheap: the answer is yes if the package has
+ * any .ts files in the `lib` directory other than `index.ts` and `*.generated.ts`.
+ */
+function hasL2s(library: LibraryReference) {
+  try {
+    const sourceFiles = fs.readdirSync(path.join(library.root, 'lib')).filter(n => n.endsWith('.ts') && !n.endsWith('.d.ts'));
+    return sourceFiles.some(n => n !== 'index.ts' && !n.includes('.generated.'));
+  } catch (e) {
+    if (e.code === 'ENOENT') { return false; }
+
+    throw e;
+  }
 }
 
 function transformTargets(monoConfig: PackageJson['jsii']['targets'], targets: PackageJson['jsii']['targets']): PackageJson['jsii']['targets'] {
@@ -502,6 +523,31 @@ async function copyOrTransformFiles(from: string, to: string, libraries: readonl
   });
 
   await Promise.all(promises);
+}
+
+async function copyLiterateSources(from: string, to: string, libraries: readonly LibraryReference[], uberPackageJson: PackageJson) {
+  const libRoot = resolveLibRoot(uberPackageJson);
+  await Promise.all((await fs.readdir(from)).flatMap(async name => {
+    const source = path.join(from, name);
+    const stat = await fs.stat(source);
+
+    if (stat.isDirectory()) {
+      await copyLiterateSources(source, path.join(to, name), libraries, uberPackageJson);
+      return;
+    }
+
+    if (!name.endsWith('.lit.ts')) {
+      return [];
+    }
+
+    await fs.mkdirp(to);
+
+    return fs.writeFile(
+      path.join(to, name),
+      await rewriteLibraryImports(path.join(from, name), to, libRoot, libraries),
+      { encoding: 'utf8' },
+    );
+  }));
 }
 
 /**

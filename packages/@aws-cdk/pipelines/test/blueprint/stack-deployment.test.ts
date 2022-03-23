@@ -4,7 +4,7 @@ import { Stack, Stage } from '@aws-cdk/core';
 import { StageDeployment } from '../../lib';
 import { TestApp } from '../testhelpers/test-app';
 
-test('"templateAsset"  represents the CFN template of the stack', () => {
+test('"templateAsset" represents the CFN template of the stack', () => {
   // GIVEN
   const stage = new Stage(new TestApp(), 'MyStage');
   new Stack(stage, 'MyStack');

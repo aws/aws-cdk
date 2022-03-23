@@ -44,6 +44,16 @@ export interface InstanceProps {
   readonly parameterGroup?: IParameterGroup;
 
   /**
+   * The parameters in the DBParameterGroup to create automatically
+   *
+   * You can only specify parameterGroup or parameters but not both.
+   * You need to use a versioned engine to auto-generate a DBParameterGroup.
+   *
+   * @default - None
+   */
+  readonly parameters?: { [key: string]: string };
+
+  /**
    * Whether to enable Performance Insights for the DB instance.
    *
    * @default - false, unless ``performanceInsightRentention`` or ``performanceInsightEncryptionKey`` is set.
@@ -446,7 +456,7 @@ export abstract class SnapshotCredentials {
 /**
  * Properties common to single-user and multi-user rotation options.
  */
-interface CommonRotationUserOptions {
+export interface CommonRotationUserOptions {
   /**
    * Specifies the number of days after the previous rotation
    * before Secrets Manager triggers the next automatic rotation.

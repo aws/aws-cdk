@@ -95,14 +95,14 @@
     "MyVPCPublicSubnet1NATGateway838228A5": {
       "Type": "AWS::EC2::NatGateway",
       "Properties": {
+        "SubnetId": {
+          "Ref": "MyVPCPublicSubnet1Subnet0C75866A"
+        },
         "AllocationId": {
           "Fn::GetAtt": [
             "MyVPCPublicSubnet1EIP5EB6147D",
             "AllocationId"
           ]
-        },
-        "SubnetId": {
-          "Ref": "MyVPCPublicSubnet1Subnet0C75866A"
         },
         "Tags": [
           {
@@ -316,7 +316,8 @@
                       ":log-group:/aws/codebuild/",
                       {
                         "Ref": "MyProject39F7B0AE"
-                      }
+                      },
+                      ":*"
                     ]
                   ]
                 },
@@ -339,8 +340,7 @@
                       ":log-group:/aws/codebuild/",
                       {
                         "Ref": "MyProject39F7B0AE"
-                      },
-                      ":*"
+                      }
                     ]
                   ]
                 }
@@ -379,6 +379,9 @@
         "Source": {
           "BuildSpec": "{\n  \"version\": \"0.2\"\n}",
           "Type": "NO_SOURCE"
+        },
+        "Cache": {
+          "Type": "NO_CACHE"
         },
         "EncryptionKey": "alias/aws/s3",
         "FileSystemLocations": [
@@ -432,11 +435,11 @@
             {
               "Action": [
                 "ec2:CreateNetworkInterface",
-                "ec2:DescribeNetworkInterfaces",
                 "ec2:DeleteNetworkInterface",
-                "ec2:DescribeSubnets",
-                "ec2:DescribeSecurityGroups",
                 "ec2:DescribeDhcpOptions",
+                "ec2:DescribeNetworkInterfaces",
+                "ec2:DescribeSecurityGroups",
+                "ec2:DescribeSubnets",
                 "ec2:DescribeVpcs"
               ],
               "Effect": "Allow",

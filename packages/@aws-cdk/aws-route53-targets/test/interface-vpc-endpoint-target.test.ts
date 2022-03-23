@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as route53 from '@aws-cdk/aws-route53';
 import { Stack } from '@aws-cdk/core';
@@ -29,7 +29,7 @@ test('use InterfaceVpcEndpoint as record target', () => {
   });
 
   // THEN
-  expect(stack).toHaveResource('AWS::Route53::RecordSet', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Route53::RecordSet', {
     AliasTarget: {
       HostedZoneId: {
         'Fn::Select': [

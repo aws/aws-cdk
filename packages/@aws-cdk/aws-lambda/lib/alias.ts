@@ -3,6 +3,7 @@ import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as iam from '@aws-cdk/aws-iam';
 import { ArnFormat } from '@aws-cdk/core';
 import { Construct } from 'constructs';
+import { Architecture } from './architecture';
 import { EventInvokeConfigOptions } from './event-invoke-config';
 import { IFunction, QualifiedFunctionBase } from './function-base';
 import { extractQualifierFromArn, IVersion } from './lambda-version';
@@ -97,6 +98,7 @@ export class Alias extends QualifiedFunctionBase implements IAlias {
       public readonly functionName = `${attrs.aliasVersion.lambda.functionName}:${attrs.aliasName}`;
       public readonly grantPrincipal = attrs.aliasVersion.grantPrincipal;
       public readonly role = attrs.aliasVersion.role;
+      public readonly architecture = attrs.aliasVersion.lambda.architecture;
 
       protected readonly canCreatePermissions = this._isStackAccount();
       protected readonly qualifier = attrs.aliasName;
@@ -119,6 +121,8 @@ export class Alias extends QualifiedFunctionBase implements IAlias {
   public readonly functionName: string;
 
   public readonly lambda: IFunction;
+
+  public readonly architecture: Architecture;
 
   public readonly version: IVersion;
 
@@ -145,6 +149,7 @@ export class Alias extends QualifiedFunctionBase implements IAlias {
     this.lambda = props.version.lambda;
     this.aliasName = this.physicalName;
     this.version = props.version;
+    this.architecture = this.lambda.architecture;
 
     const alias = new CfnAlias(this, 'Resource', {
       name: this.aliasName,

@@ -1,7 +1,7 @@
 import * as child_process from 'child_process';
 import * as fs from 'fs';
 import * as util from 'util';
-import * as colors from 'colors/safe';
+import * as chalk from 'chalk';
 import { Timers } from './timer';
 
 interface ShellOptions {
@@ -29,7 +29,7 @@ export async function shell(command: string[], options: ShellOptions = {}): Prom
     },
   });
 
-  const makeRed = process.stderr.isTTY ? colors.red : (x: string) => x;
+  const makeRed = process.stderr.isTTY ? chalk.red : (x: string) => x;
 
   return new Promise<string>((resolve, reject) => {
     const stdout = new Array<any>();

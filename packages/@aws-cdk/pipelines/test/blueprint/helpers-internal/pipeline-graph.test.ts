@@ -1,7 +1,7 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import '@aws-cdk/assert-internal/jest';
 import * as cdkp from '../../../lib';
-import { ManualApprovalStep } from '../../../lib';
+import { ManualApprovalStep, Step } from '../../../lib';
 import { Graph, GraphNode, PipelineGraph } from '../../../lib/helpers-internal';
 import { flatten } from '../../../lib/private/javascript';
 import { AppWithOutput, AppWithExposedStacks, OneStackApp, TestApp } from '../../testhelpers/test-app';
@@ -140,6 +140,67 @@ describe('blueprint with wave and stage', () => {
       'Manual Approval',
       'Deploy',
       'Post Approval',
+    ]);
+  });
+
+  test('steps that do not depend on each other are ordered lexicographically', () => {
+    // GIVEN
+    const goStep = new cdkp.ManualApprovalStep('Gogogo');
+    const checkStep = new cdkp.ManualApprovalStep('Check');
+    blueprint.waves[0].stages[0].addPre(
+      checkStep,
+      goStep,
+    );
+
+    // WHEN
+    const graph = new PipelineGraph(blueprint).graph;
+
+    // THEN
+    expect(childrenAt(graph, 'Wave', 'Alpha')).toEqual([
+      'Check',
+      'Gogogo',
+      'Stack',
+    ]);
+  });
+
+  test('steps can depend on each other', () => {
+    // GIVEN
+    const goStep = new cdkp.ManualApprovalStep('Gogogo');
+    const checkStep = new cdkp.ManualApprovalStep('Check');
+    checkStep.addStepDependency(goStep);
+    blueprint.waves[0].stages[0].addPre(
+      checkStep,
+      goStep,
+    );
+
+    // WHEN
+    const graph = new PipelineGraph(blueprint).graph;
+
+    // THEN
+    expect(childrenAt(graph, 'Wave', 'Alpha')).toEqual([
+      'Gogogo',
+      'Check',
+      'Stack',
+    ]);
+  });
+
+  test('Steps.sequence adds correct dependencies', () => {
+    // GIVEN
+    blueprint.waves[0].stages[0].addPre(...Step.sequence([
+      new cdkp.ManualApprovalStep('Gogogo'),
+      new cdkp.ManualApprovalStep('Check'),
+      new cdkp.ManualApprovalStep('DoubleCheck'),
+    ]));
+
+    // WHEN
+    const graph = new PipelineGraph(blueprint).graph;
+
+    // THEN
+    expect(childrenAt(graph, 'Wave', 'Alpha')).toEqual([
+      'Gogogo',
+      'Check',
+      'DoubleCheck',
+      'Stack',
     ]);
   });
 });

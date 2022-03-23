@@ -28,6 +28,8 @@ export interface ClusterResourceProps {
   readonly secretsEncryptionKey?: kms.IKey;
   readonly onEventLayer?: lambda.ILayerVersion;
   readonly clusterHandlerSecurityGroup?: ec2.ISecurityGroup;
+  readonly tags?: { [key: string]: string };
+  readonly logging?: { [key: string]: [ { [key: string]: any } ] };
 }
 
 /**
@@ -89,6 +91,8 @@ export class ClusterResource extends CoreConstruct {
             endpointPrivateAccess: props.endpointPrivateAccess,
             publicAccessCidrs: props.publicAccessCidrs,
           },
+          tags: props.tags,
+          logging: props.logging,
         },
         AssumeRoleArn: this.adminRole.roleArn,
 

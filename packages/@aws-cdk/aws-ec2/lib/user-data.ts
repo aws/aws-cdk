@@ -1,5 +1,5 @@
 import { IBucket } from '@aws-cdk/aws-s3';
-import { CfnElement, Fn, Resource, Stack } from '@aws-cdk/core';
+import { Fn, Resource, Stack, CfnResource } from '@aws-cdk/core';
 import { OperatingSystemType } from './machine-image';
 
 /**
@@ -178,7 +178,7 @@ class LinuxUserData extends UserData {
 
   public addSignalOnExitCommand( resource: Resource ): void {
     const stack = Stack.of(resource);
-    const resourceID = stack.getLogicalId(resource.node.defaultChild as CfnElement);
+    const resourceID = (resource.node.defaultChild as CfnResource).logicalId;
     this.addOnExitCommands(`/opt/aws/bin/cfn-signal --stack ${stack.stackName} --resource ${resourceID} --region ${stack.region} -e $exitCode || echo 'Failed to send Cloudformation Signal'`);
   }
 
@@ -235,7 +235,7 @@ class WindowsUserData extends UserData {
 
   public addSignalOnExitCommand( resource: Resource ): void {
     const stack = Stack.of(resource);
-    const resourceID = stack.getLogicalId(resource.node.defaultChild as CfnElement);
+    const resourceID = (resource.node.defaultChild as CfnResource).logicalId;
 
     this.addOnExitCommands(`cfn-signal --stack ${stack.stackName} --resource ${resourceID} --region ${stack.region} --success ($success.ToString().ToLower())`);
   }
