@@ -63,7 +63,10 @@ export interface IFunction extends IResource, ec2.IConnectable, iam.IGrantable {
   readonly architecture: Architecture;
 
   /**
-   * The ARN(s) to put into the resource field of the generated IAM policy for grantInvoke()
+   * The ARN(s) to put into the resource field of the generated IAM policy for grantInvoke().
+   *
+   * This property is for cdk modules to consume only. You should not need to use this property.
+   * Instead, use grantInvoke() directly.
    */
   readonly resourceArnsForGrantInvoke: string[];
 
