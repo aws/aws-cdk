@@ -310,7 +310,7 @@
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "AssetParameters335bb1977cc537dc87b06d6ac0ec54a99badae8502ad34d4c7e149def466543cS3Bucket0316BB8C"
+            "Ref": "AssetParameters9d04b6e97fcffe55f90ce717ab61c19d06df5a0c5c364c765216bf31a9c98d7dS3BucketA7AEF7D7"
           },
           "S3Key": {
             "Fn::Join": [
@@ -323,7 +323,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParameters335bb1977cc537dc87b06d6ac0ec54a99badae8502ad34d4c7e149def466543cS3VersionKey8CD7D872"
+                          "Ref": "AssetParameters9d04b6e97fcffe55f90ce717ab61c19d06df5a0c5c364c765216bf31a9c98d7dS3VersionKeyA7FD6E61"
                         }
                       ]
                     }
@@ -336,7 +336,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParameters335bb1977cc537dc87b06d6ac0ec54a99badae8502ad34d4c7e149def466543cS3VersionKey8CD7D872"
+                          "Ref": "AssetParameters9d04b6e97fcffe55f90ce717ab61c19d06df5a0c5c364c765216bf31a9c98d7dS3VersionKeyA7FD6E61"
                         }
                       ]
                     }
@@ -600,21 +600,6 @@
                   ]
                 }
               ]
-            },
-            {
-              "Action": [
-                "kms:Decrypt",
-                "kms:Encrypt",
-                "kms:ReEncrypt*",
-                "kms:GenerateDataKey*"
-              ],
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "Key961B73FD",
-                  "Arn"
-                ]
-              }
             }
           ],
           "Version": "2012-10-17"
@@ -789,17 +774,17 @@
       "Type": "String",
       "Description": "Artifact hash for asset \"be270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824\""
     },
-    "AssetParameters335bb1977cc537dc87b06d6ac0ec54a99badae8502ad34d4c7e149def466543cS3Bucket0316BB8C": {
+    "AssetParameters9d04b6e97fcffe55f90ce717ab61c19d06df5a0c5c364c765216bf31a9c98d7dS3BucketA7AEF7D7": {
       "Type": "String",
-      "Description": "S3 bucket for asset \"335bb1977cc537dc87b06d6ac0ec54a99badae8502ad34d4c7e149def466543c\""
+      "Description": "S3 bucket for asset \"9d04b6e97fcffe55f90ce717ab61c19d06df5a0c5c364c765216bf31a9c98d7d\""
     },
-    "AssetParameters335bb1977cc537dc87b06d6ac0ec54a99badae8502ad34d4c7e149def466543cS3VersionKey8CD7D872": {
+    "AssetParameters9d04b6e97fcffe55f90ce717ab61c19d06df5a0c5c364c765216bf31a9c98d7dS3VersionKeyA7FD6E61": {
       "Type": "String",
-      "Description": "S3 key for asset version \"335bb1977cc537dc87b06d6ac0ec54a99badae8502ad34d4c7e149def466543c\""
+      "Description": "S3 key for asset version \"9d04b6e97fcffe55f90ce717ab61c19d06df5a0c5c364c765216bf31a9c98d7d\""
     },
-    "AssetParameters335bb1977cc537dc87b06d6ac0ec54a99badae8502ad34d4c7e149def466543cArtifactHash0D892CC5": {
+    "AssetParameters9d04b6e97fcffe55f90ce717ab61c19d06df5a0c5c364c765216bf31a9c98d7dArtifactHashE49F8A6B": {
       "Type": "String",
-      "Description": "Artifact hash for asset \"335bb1977cc537dc87b06d6ac0ec54a99badae8502ad34d4c7e149def466543c\""
+      "Description": "Artifact hash for asset \"9d04b6e97fcffe55f90ce717ab61c19d06df5a0c5c364c765216bf31a9c98d7d\""
     }
   },
   "Mappings": {
