@@ -45,7 +45,7 @@ function testChanged(files: any[]) {
 }
 
 function integTestChanged(files: any[]) {
-  return files.filter(f => f.filename.toLowerCase().match(/^integ.*.ts$/)).length != 0;
+  return files.filter(f => f.filename.toLowerCase().match(/integ.*.ts/)).length != 0;
 }
 
 function readmeChanged(files: any[]) {
