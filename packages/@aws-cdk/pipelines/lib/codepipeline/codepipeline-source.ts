@@ -136,6 +136,10 @@ export abstract class CodePipelineSource extends Step implements ICodePipelineAc
    * These values can be passed into the environment variables of pipeline steps,
    * so your steps can access information about the source revision.
    *
+   * Pipeline synth step has some source attributes predefined in the environment.
+   * If these suffice, you don't need to use this method for the synth step.
+   * @see https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-env-vars.html
+   *
    * What attributes are available depends on the type of source. These attributes
    * are supported:
    *
