@@ -114,7 +114,6 @@ export class Dashboard extends Resource {
     });
 
     this.dashboardName = this.getResourceNameAttribute(dashboard.ref);
-    // dashboard.dashboardName;
 
     (props.widgets || []).forEach(row => {
       this.addWidgets(...row);
