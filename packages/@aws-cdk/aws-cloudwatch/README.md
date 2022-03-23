@@ -444,7 +444,7 @@ declare const errorAlarm: cloudwatch.Alarm;
 
 dashboard.addWidgets(new cloudwatch.AlarmStatusWidget({
   title: "Errors",
-   alarms: [errorAlarm],
+  alarms: [errorAlarm],
   sortBy: cloudwatch.AlarmStatusWidgetSortBy.STATE_UPDATED_TIMESTAMP,
   states: [cloudwatch.AlarmState.ALARM],
 }));
