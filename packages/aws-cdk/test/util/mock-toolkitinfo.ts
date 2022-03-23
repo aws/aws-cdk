@@ -38,7 +38,7 @@ export class MockToolkitInfo extends ToolkitInfo {
   }
 
   public async validateVersion(expectedVersion: number, ssmParameterName: string | undefined): Promise<void> {
-    const version = ssmParameterName !== undefined ? await this.versionFromSsmParameter(ssmParameterName) : this.version;
+    const version = ssmParameterName !== undefined ? await ToolkitInfo.versionFromSsmParameter(this.sdk, ssmParameterName) : this.version;
 
     if (expectedVersion > version) {
       throw new Error(`This CDK deployment requires bootstrap stack version '${expectedVersion}', found '${version}'. Please run 'cdk bootstrap' with a newer CLI version.`);

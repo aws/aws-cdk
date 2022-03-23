@@ -131,7 +131,7 @@ Its value can either be that of `CANDIDATE_VERSION` (for testing against the lat
 
 Following are the steps involved in running these tests:
 
-1. Run [`./bump-candidate.sh`](../../bump-candidate.sh) to differentiate between the local version and the published version. For example, if the version in `lerna.json` is `1.67.0`, this script will result in a version `1.67.0-rc.0`. This is needed so that we can launch a verdaccio instance serving local tarballs without worrying about conflicts with the public npm uplink. This will help us avoid version quirks that might happen during the *post-release-pre-merge-back* time window.
+1. Run [`./bump-candidate.sh`](../../scripts/bump-candidate.sh) to differentiate between the local version and the published version. For example, if the version in `lerna.json` is `1.67.0`, this script will result in a version `1.67.0-rc.0`. This is needed so that we can launch a verdaccio instance serving local tarballs without worrying about conflicts with the public npm uplink. This will help us avoid version quirks that might happen during the *post-release-pre-merge-back* time window.
 
 2. Run [`./align-version.sh`](../../scripts/align-version.sh) to configure the above version in all our packages.
 

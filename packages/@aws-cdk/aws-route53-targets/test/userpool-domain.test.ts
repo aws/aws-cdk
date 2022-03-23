@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import { UserPool, UserPoolDomain } from '@aws-cdk/aws-cognito';
 import { ARecord, PublicHostedZone, RecordTarget } from '@aws-cdk/aws-route53';
 import { Stack } from '@aws-cdk/core';
@@ -21,7 +21,7 @@ test('use user pool domain as record target', () => {
   });
 
   // THEN
-  expect(stack).toHaveResource('AWS::Route53::RecordSet', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Route53::RecordSet', {
     AliasTarget: {
       DNSName: {
         'Fn::GetAtt': ['UserPoolDomainCloudFrontDomainName0B254952', 'DomainDescription.CloudFrontDistribution'],

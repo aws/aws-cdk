@@ -1,0 +1,19 @@
+{
+    "patch": {
+        "description": "Remove properties that conflict with the CFN spec",
+        "operations": [
+            {
+                "op": "remove",
+                "path": "/ResourceSpecificationVersion"
+            },
+            {
+                "op": "remove",
+                "path": "/ResourceSpecificationTransform"
+            },
+            {
+                "op": "remove",
+                "path": "/Globals"
+            }
+        ]
+    }
+}

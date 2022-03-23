@@ -95,6 +95,51 @@ properly (for example, permissions to invoke any Lambda functions you add to
 your workflow). A role will be created by default, but you can supply an
 existing one as well.
 
+## Accessing State (the JsonPath class)
+
+Every State Machine execution has [State Machine
+Data](https://docs.aws.amazon.com/step-functions/latest/dg/concepts-state-machine-data.html):
+a JSON document containing keys and values that is fed into the state machine,
+gets modified as the state machine progresses, and finally is produced as output.
+
+You can pass fragments of this State Machine Data into Tasks of the state machine.
+To do so, use the static methods on the `JsonPath` class. For example, to pass
+the value that's in the data key of `OrderId` to a Lambda function as you invoke
+it, use `JsonPath.stringAt('$.OrderId')`, like so:
+
+```ts
+import * as lambda from '@aws-cdk/aws-lambda';
+
+declare const orderFn: lambda.Function;
+
+const submitJob = new tasks.LambdaInvoke(this, 'InvokeOrderProcessor', {
+  lambdaFunction: orderFn,
+  payload: sfn.TaskInput.fromObject({
+    OrderId: sfn.JsonPath.stringAt('$.OrderId'),
+  }),
+});
+```
+
+The following methods are available:
+
+| Method | Purpose |
+|--------|---------|
+| `JsonPath.stringAt('$.Field')` | reference a field, return the type as a `string`. |
+| `JsonPath.listAt('$.Field')` | reference a field, return the type as a list of strings. |
+| `JsonPath.numberAt('$.Field')` | reference a field, return the type as a number. Use this for functions that expect a number argument. |
+| `JsonPath.objectAt('$.Field')` | reference a field, return the type as an `IResolvable`. Use this for functions that expect an object argument. |
+| `JsonPath.entirePayload` | reference the entire data object (equivalent to a path of `$`). |
+| `JsonPath.taskToken` | reference the [Task Token](https://docs.aws.amazon.com/step-functions/latest/dg/connect-to-resource.html#connect-wait-token), used for integration patterns that need to run for a long time. |
+
+You can also call [intrinsic functions](https://docs.aws.amazon.com/step-functions/latest/dg/amazon-states-language-intrinsic-functions.html) using the methods on `JsonPath`:
+
+| Method | Purpose |
+|--------|---------|
+| `JsonPath.array(JsonPath.stringAt('$.Field'), ...)` | make an array from other elements. |
+| `JsonPath.format('The value is {}.', JsonPath.stringAt('$.Value'))` | insert elements into a format string. |
+| `JsonPath.stringToJson(JsonPath.stringAt('$.ObjStr'))` | parse a JSON string to an object |
+| `JsonPath.jsonToString(JsonPath.objectAt('$.Obj'))` | stringify an object to a JSON string |
+
 ## Amazon States Language
 
 This library comes with a set of classes that model the [Amazon States
@@ -485,9 +530,9 @@ The class `StateMachineFragment` contains some helper functions (like
 machine as a subclass of this, it will be convenient to use:
 
 ```ts nofixture
-import { Construct, Stack } from '@aws-cdk/core';
+import { Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
-import * as tasks from '@aws-cdk/aws-stepfunctions-tasks';
 
 interface MyJobProps {
   jobFlavor: string;
@@ -515,10 +560,14 @@ class MyStack extends Stack {
   constructor(scope: Construct, id: string) {
     super(scope, id);
     // Do 3 different variants of MyJob in parallel
-    new sfn.Parallel(this, 'All jobs')
+    const parallel = new sfn.Parallel(this, 'All jobs')
       .branch(new MyJob(this, 'Quick', { jobFlavor: 'quick' }).prefixStates())
       .branch(new MyJob(this, 'Medium', { jobFlavor: 'medium' }).prefixStates())
       .branch(new MyJob(this, 'Slow', { jobFlavor: 'slow' }).prefixStates());
+
+    new sfn.StateMachine(this, 'MyStateMachine', {
+      definition: parallel,
+    });
   }
 }
 ```
@@ -599,8 +648,8 @@ new cloudwatch.Alarm(this, 'ThrottledAlarm', {
 
 ## Error names
 
-Step Functions identifies errors in the Amazon States Language using case-sensitive strings, known as error names. 
-The Amazon States Language defines a set of built-in strings that name well-known errors, all beginning with the `States.` prefix. 
+Step Functions identifies errors in the Amazon States Language using case-sensitive strings, known as error names.
+The Amazon States Language defines a set of built-in strings that name well-known errors, all beginning with the `States.` prefix.
 
 * `States.ALL` - A wildcard that matches any known error name.
 * `States.Runtime` - An execution failed due to some exception that could not be processed. Often these are caused by errors at runtime, such as attempting to apply InputPath or OutputPath on a null JSON payload. A `States.Runtime` error is not retriable, and will always cause the execution to fail. A retry or catch on `States.ALL` will NOT catch States.Runtime errors.

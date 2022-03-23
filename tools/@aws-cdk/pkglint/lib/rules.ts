@@ -1,5 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
+import { Bundle } from '@aws-cdk/node-bundle';
 import * as caseUtils from 'case';
 import * as glob from 'glob';
 import * as semver from 'semver';
@@ -54,16 +55,25 @@ export class DescriptionIsRequired extends ValidationRule {
 export class PublishConfigTagIsRequired extends ValidationRule {
   public readonly name = 'package-info/publish-config-tag';
 
+  // The list of packages that are publicly published in both v1 and v2.
+  private readonly SHARED_PACKAGES = [
+    '@aws-cdk/assert',
+    '@aws-cdk/cloud-assembly-schema',
+    '@aws-cdk/cloudformation-diff',
+    '@aws-cdk/cx-api',
+    '@aws-cdk/region-info',
+    'aws-cdk',
+    'awslint',
+    'cdk-assets',
+  ];
+
   public validate(pkg: PackageJson): void {
     if (pkg.json.private) { return; }
 
-    // While v2 is still under development, we publish all v2 packages with the 'next'
-    // distribution tag, while still tagging all v1 packages as 'latest'.
-    // There are two sets of exceptions:
-    // 'aws-cdk-lib' (new v2 package) and all of the '*-alpha' modules, since they are also new packages for v2.
-    const newV2Packages = ['aws-cdk-lib'];
-    const isNewPackageForV2 = newV2Packages.includes(pkg.json.name) || pkg.packageName.endsWith('-alpha');
-    const defaultPublishTag = (cdkMajorVersion() === 2 && !isNewPackageForV2) ? 'next' : 'latest';
+    // v1 packages that are v1-only (e.g., `@aws-cdk/aws-s3`) are always published as `latest`.
+    // Packages that are published with the same namespace to both v1 and v2 are published as `latest-1` on v1 and `latest` on v2.
+    // All v2-only packages are just `latest`.
+    const defaultPublishTag = (cdkMajorVersion() === 2 || !this.SHARED_PACKAGES.includes(pkg.packageName)) ? 'latest' : 'latest-1';
 
     if (pkg.json.publishConfig?.tag !== defaultPublishTag) {
       pkg.report({
@@ -157,6 +167,81 @@ export class LicenseFile extends ValidationRule {
   }
 }
 
+export class BundledCLI extends ValidationRule {
+
+  private static readonly ALLOWED_LICENSES = [
+    'Apache-2.0',
+    'MIT',
+    'BSD-3-Clause',
+    'ISC',
+    'BSD-2-Clause',
+    '0BSD',
+  ];
+
+  private static readonly DONT_ATTRIBUTE = '^@aws-cdk\/|^cdk-assets$';
+
+  public readonly name = 'bundle';
+
+  public validate(pkg: PackageJson): void {
+    const bundleProps = pkg.json['cdk-package']?.bundle;
+
+    if (!bundleProps) {
+      return;
+    }
+
+    const validConfig = this.validateConfig(pkg, bundleProps);
+    if (validConfig) {
+      this.validateBundle(pkg, bundleProps);
+    }
+  }
+
+  /**
+   * Validate package.json contains the necessary information for properly bundling the package.
+   * This will ensure that configuration can be safely used during packaging.
+   */
+  private validateConfig(pkg: PackageJson, bundleProps: any): boolean {
+    let valid = true;
+
+    if (bundleProps.allowedLicenses.join(',') !== BundledCLI.ALLOWED_LICENSES.join(',')) {
+      pkg.report({
+        message: `'cdk-package.bundle.licenses' must be set to "${BundledCLI.ALLOWED_LICENSES}"`,
+        ruleName: `${this.name}/configuration`,
+        fix: () => pkg.json['cdk-package'].bundle.licenses = BundledCLI.ALLOWED_LICENSES,
+      });
+      valid = false;
+    }
+
+    if (bundleProps.dontAttribute !== BundledCLI.DONT_ATTRIBUTE) {
+      pkg.report({
+        message: `'cdk-package.bundle.dontAttribute' must be set to "${BundledCLI.DONT_ATTRIBUTE}"`,
+        ruleName: `${this.name}/configuration`,
+        fix: () => pkg.json['cdk-package'].bundle.dontAttribute = BundledCLI.DONT_ATTRIBUTE,
+      });
+      valid = false;
+    }
+
+    return valid;
+
+  }
+
+  /**
+   * Validate the package is ready for bundling.
+   */
+  private validateBundle(pkg: PackageJson, bundleProps: any) {
+    const bundle = new Bundle({ packageDir: pkg.packageRoot, ...bundleProps });
+    const report = bundle.validate();
+
+    for (const violation of report.violations) {
+      pkg.report({
+        message: violation.message,
+        ruleName: `${this.name}/${violation.type}`,
+        fix: violation.fix,
+      });
+    }
+
+  }
+}
+
 /**
  * There must be a NOTICE file.
  */
@@ -175,6 +260,7 @@ export class ThirdPartyAttributions extends ValidationRule {
   public readonly name = 'license/3p-attributions';
 
   public validate(pkg: PackageJson): void {
+
     const alwaysCheck = ['monocdk', 'aws-cdk-lib'];
     if (pkg.json.private && !alwaysCheck.includes(pkg.json.name)) {
       return;
@@ -368,6 +454,12 @@ export class MaturitySetting extends ValidationRule {
   }
 
   private validateReadmeHasBanner(pkg: PackageJson, maturity: string, levelsPresent: string[]) {
+    if (pkg.packageName === '@aws-cdk/aws-elasticsearch') {
+      // Special case for elasticsearch, which is labeled as stable in package.json
+      // but all APIs are now marked 'deprecated'
+      return;
+    }
+
     const badge = this.readmeBadge(maturity, levelsPresent);
     if (!badge) {
       // Somehow, we don't have a badge for this stability level
@@ -1641,18 +1733,6 @@ export class UbergenPackageVisibility extends ValidationRule {
           },
         });
       }
-    } else {
-      if (pkg.json.private && !pkg.json.ubergen?.exclude) {
-        pkg.report({
-          ruleName: this.name,
-          message: 'ubergen.exclude must be configured for private packages',
-          fix: () => {
-            pkg.json.ubergen = {
-              exclude: true,
-            };
-          },
-        });
-      }
     }
   }
 }
@@ -1676,6 +1756,7 @@ export class NoExperimentalDependents extends ValidationRule {
     ['@aws-cdk/aws-events-targets', ['@aws-cdk/aws-kinesisfirehose']],
     ['@aws-cdk/aws-kinesisfirehose-destinations', ['@aws-cdk/aws-kinesisfirehose']],
     ['@aws-cdk/aws-iot-actions', ['@aws-cdk/aws-iot', '@aws-cdk/aws-kinesisfirehose']],
+    ['@aws-cdk/aws-iotevents-actions', ['@aws-cdk/aws-iotevents']],
   ]);
 
   private readonly excludedModules = ['@aws-cdk/cloudformation-include'];

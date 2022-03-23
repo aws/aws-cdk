@@ -1,4 +1,3 @@
-import '@aws-cdk/assert-internal/jest';
 import * as cdk from '@aws-cdk/core';
 import { IStage } from '../lib/action';
 import { Artifact } from '../lib/artifact';
@@ -30,8 +29,6 @@ describe('general validation', () => {
         expect(validationBlock).toThrow();
       }
     });
-
-
   });
 
   describe('Stage validation', () => {
@@ -39,8 +36,6 @@ describe('general validation', () => {
       const stage = stageForTesting();
 
       expect((stage as any).validate().length).toEqual(1);
-
-
     });
   });
 
@@ -50,8 +45,6 @@ describe('general validation', () => {
       const pipeline = new Pipeline(stack, 'Pipeline');
 
       expect(cdk.ConstructNode.validate(pipeline.node).length).toEqual(1);
-
-
     });
 
     test('should fail if Pipeline has a Source Action in a non-first Stage', () => {
@@ -69,8 +62,6 @@ describe('general validation', () => {
       });
 
       expect(cdk.ConstructNode.validate(pipeline.node).length).toEqual(1);
-
-
     });
   });
 });

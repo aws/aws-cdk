@@ -1,7 +1,7 @@
-import '@aws-cdk/assert-internal/jest';
-import { ABSENT, ResourcePart, SynthUtils } from '@aws-cdk/assert-internal';
+import { Match, Template } from '@aws-cdk/assertions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import { ManagedPolicy, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
+import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
@@ -11,6 +11,7 @@ import * as cxapi from '@aws-cdk/cx-api';
 import {
   AuroraEngineVersion, AuroraMysqlEngineVersion, AuroraPostgresEngineVersion, CfnDBCluster, Credentials, DatabaseCluster,
   DatabaseClusterEngine, DatabaseClusterFromSnapshot, ParameterGroup, PerformanceInsightRetention, SubnetGroup, DatabaseSecret,
+  DatabaseInstanceEngine, SqlServerEngineVersion,
 } from '../lib';
 
 describe('cluster', () => {
@@ -34,7 +35,7 @@ describe('cluster', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::RDS::DBCluster', {
+    Template.fromStack(stack).hasResource('AWS::RDS::DBCluster', {
       Properties: {
         Engine: 'aurora',
         DBSubnetGroupName: { Ref: 'DatabaseSubnets56F17B9A' },
@@ -46,13 +47,13 @@ describe('cluster', () => {
       },
       DeletionPolicy: 'Snapshot',
       UpdateReplacePolicy: 'Snapshot',
-    }, ResourcePart.CompleteDefinition);
+    });
 
-    expect(stack).toCountResources('AWS::RDS::DBInstance', 2);
-    expect(stack).toHaveResource('AWS::RDS::DBInstance', {
+    Template.fromStack(stack).resourceCountIs('AWS::RDS::DBInstance', 2);
+    Template.fromStack(stack).hasResource('AWS::RDS::DBInstance', {
       DeletionPolicy: 'Delete',
       UpdateReplacePolicy: 'Delete',
-    }, ResourcePart.CompleteDefinition);
+    });
   });
 
   test('validates that the number of instances is not a deploy-time value', () => {
@@ -91,7 +92,7 @@ describe('cluster', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::RDS::DBCluster', {
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
       Engine: 'aurora',
       DBSubnetGroupName: { Ref: 'DatabaseSubnets56F17B9A' },
       MasterUsername: 'admin',
@@ -146,7 +147,7 @@ describe('cluster', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::RDS::DBCluster', {
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
       Engine: 'aurora',
       DBSubnetGroupName: { Ref: 'DatabaseSubnets56F17B9A' },
       MasterUsername: 'admin',
@@ -182,7 +183,7 @@ describe('cluster', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::RDS::DBCluster', {
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
       DBClusterParameterGroupName: { Ref: 'ParamsA8366201' },
     });
   });
@@ -201,10 +202,10 @@ describe('cluster', () => {
       removalPolicy: cdk.RemovalPolicy.RETAIN,
     });
 
-    expect(stack).toHaveResourceLike('AWS::RDS::DBSubnetGroup', {
+    Template.fromStack(stack).hasResource('AWS::RDS::DBSubnetGroup', {
       DeletionPolicy: 'Retain',
       UpdateReplacePolicy: 'Retain',
-    }, ResourcePart.CompleteDefinition);
+    });
   });
 
   test('creates a secret when master credentials are not specified', () => {
@@ -226,7 +227,7 @@ describe('cluster', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::RDS::DBCluster', {
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
       MasterUsername: {
         'Fn::Join': [
           '',
@@ -253,7 +254,7 @@ describe('cluster', () => {
       },
     });
 
-    expect(stack).toHaveResource('AWS::SecretsManager::Secret', {
+    Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::Secret', {
       GenerateSecretString: {
         ExcludeCharacters: '\"@/\\',
         GenerateStringKey: 'password',
@@ -282,7 +283,7 @@ describe('cluster', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::RDS::DBCluster', {
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
       KmsKeyId: {
         'Fn::GetAtt': [
           'Key961B73FD',
@@ -316,11 +317,117 @@ describe('cluster', () => {
       },
     });
 
-    expect(stack).toHaveResource('AWS::RDS::DBInstance', {
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
       DBParameterGroupName: {
         Ref: 'ParameterGroup5E32DECB',
       },
     });
+  });
+
+  test('cluster with inline parameter group', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA,
+      parameters: {
+        locks: '100',
+      },
+      instanceProps: {
+        vpc,
+        parameters: {
+          locks: '200',
+        },
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
+      DBClusterParameterGroupName: {
+        Ref: 'DatabaseParameterGroup2A921026',
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBClusterParameterGroup', {
+      Family: 'aurora5.6',
+      Parameters: {
+        locks: '100',
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+      DBParameterGroupName: {
+        Ref: 'DatabaseInstanceParameterGroup6968C5BF',
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBParameterGroup', {
+      Family: 'aurora5.6',
+      Parameters: {
+        locks: '200',
+      },
+    });
+  });
+
+  test('cluster with inline parameter group and parameterGroup arg fails', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const parameterGroup = new ParameterGroup(stack, 'ParameterGroup', {
+      engine: DatabaseInstanceEngine.sqlServerEe({
+        version: SqlServerEngineVersion.VER_11,
+      }),
+      parameters: {
+        locks: '50',
+      },
+    });
+
+    expect(() => {
+      new DatabaseCluster(stack, 'Database', {
+        engine: DatabaseClusterEngine.AURORA,
+        parameters: {
+          locks: '100',
+        },
+        parameterGroup,
+        instanceProps: {
+          vpc,
+          parameters: {
+            locks: '200',
+          },
+        },
+      });
+    }).toThrow(/You cannot specify both parameterGroup and parameters/);
+  });
+
+  test('instance with inline parameter group and parameterGroup arg fails', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const parameterGroup = new ParameterGroup(stack, 'ParameterGroup', {
+      engine: DatabaseInstanceEngine.sqlServerEe({
+        version: SqlServerEngineVersion.VER_11,
+      }),
+      parameters: {
+        locks: '50',
+      },
+    });
+
+    expect(() => {
+      new DatabaseCluster(stack, 'Database', {
+        engine: DatabaseClusterEngine.AURORA,
+        parameters: {
+          locks: '100',
+        },
+        instanceProps: {
+          vpc,
+          parameterGroup,
+          parameters: {
+            locks: '200',
+          },
+        },
+      });
+    }).toThrow(/You cannot specify both parameterGroup and parameters/);
   });
 
   describe('performance insights', () => {
@@ -343,7 +450,7 @@ describe('cluster', () => {
         },
       });
 
-      expect(stack).toHaveResource('AWS::RDS::DBInstance', {
+      Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
         EnablePerformanceInsights: true,
         PerformanceInsightsRetentionPeriod: 731,
         PerformanceInsightsKMSKeyId: { 'Fn::GetAtt': ['Key961B73FD', 'Arn'] },
@@ -367,7 +474,7 @@ describe('cluster', () => {
         },
       });
 
-      expect(stack).toHaveResource('AWS::RDS::DBInstance', {
+      Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
         EnablePerformanceInsights: true,
         PerformanceInsightsRetentionPeriod: 731,
       });
@@ -408,7 +515,7 @@ describe('cluster', () => {
       },
     });
 
-    expect(stack).toHaveResource('AWS::RDS::DBInstance', {
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
       AutoMinorVersionUpgrade: false,
     });
   });
@@ -427,7 +534,7 @@ describe('cluster', () => {
       },
     });
 
-    expect(stack).toHaveResourceLike('AWS::RDS::DBInstance', {
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
       AllowMajorVersionUpgrade: true,
     });
   });
@@ -446,7 +553,7 @@ describe('cluster', () => {
       },
     });
 
-    expect(stack).toHaveResourceLike('AWS::RDS::DBInstance', {
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
       DeleteAutomatedBackups: false,
     });
   });
@@ -471,7 +578,7 @@ describe('cluster', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::RDS::DBCluster', {
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
       Engine: 'aurora-mysql',
       EngineVersion: '5.7.mysql_aurora.2.04.4',
     });
@@ -497,12 +604,10 @@ describe('cluster', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::RDS::DBCluster', {
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
       Engine: 'aurora-postgresql',
       EngineVersion: '10.7',
     });
-
-
   });
 
   test('cluster exposes different read and write endpoints', () => {
@@ -546,7 +651,7 @@ describe('cluster', () => {
     cluster.connections.allowToAnyIpv4(ec2.Port.tcp(443));
 
     // THEN
-    expect(stack).toHaveResource('AWS::EC2::SecurityGroupEgress', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroupEgress', {
       GroupId: 'sg-123456789',
     });
   });
@@ -559,8 +664,6 @@ describe('cluster', () => {
     });
 
     expect(cluster.clusterIdentifier).toEqual('identifier');
-
-
   });
 
   test('minimal imported cluster throws on accessing attributes for unprovided parameters', () => {
@@ -621,8 +724,6 @@ describe('cluster', () => {
       account: '12345',
       region: 'us-test-1',
     });
-
-
   });
 
   test('cluster with enabled monitoring', () => {
@@ -645,14 +746,14 @@ describe('cluster', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::RDS::DBInstance', {
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
       MonitoringInterval: 60,
       MonitoringRoleArn: {
         'Fn::GetAtt': ['DatabaseMonitoringRole576991DA', 'Arn'],
       },
-    }, ResourcePart.Properties);
+    });
 
-    expect(stack).toHaveResource('AWS::IAM::Role', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
       AssumeRolePolicyDocument: {
         Statement: [
           {
@@ -680,8 +781,6 @@ describe('cluster', () => {
         },
       ],
     });
-
-
   });
 
   test('create a cluster with imported monitoring role', () => {
@@ -712,14 +811,12 @@ describe('cluster', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::RDS::DBInstance', {
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
       MonitoringInterval: 60,
       MonitoringRoleArn: {
         'Fn::GetAtt': ['MonitoringRole90457BF9', 'Arn'],
       },
-    }, ResourcePart.Properties);
-
-
+    });
   });
 
   test('addRotationSingleUser()', () => {
@@ -737,7 +834,7 @@ describe('cluster', () => {
     // WHEN
     cluster.addRotationSingleUser();
 
-    expect(stack).toHaveResource('AWS::SecretsManager::RotationSchedule', {
+    Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::RotationSchedule', {
       SecretId: {
         Ref: 'DatabaseSecretAttachmentE5D1B020',
       },
@@ -768,7 +865,7 @@ describe('cluster', () => {
     const userSecret = new DatabaseSecret(stack, 'UserSecret', { username: 'user' });
     cluster.addRotationMultiUser('user', { secret: userSecret.attach(cluster) });
 
-    expect(stack).toHaveResource('AWS::SecretsManager::RotationSchedule', {
+    Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::RotationSchedule', {
       SecretId: {
         Ref: 'UserSecretAttachment16ACBE6D',
       },
@@ -783,7 +880,7 @@ describe('cluster', () => {
       },
     });
 
-    expect(stack).toHaveResourceLike('AWS::Serverless::Application', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Serverless::Application', {
       Parameters: {
         masterSecretArn: {
           Ref: 'DatabaseSecretAttachmentE5D1B020',
@@ -792,15 +889,18 @@ describe('cluster', () => {
     });
   });
 
-  test('addRotationSingleUser() with options', () => {
+  test('addRotationSingleUser() with custom automaticallyAfter, excludeCharacters and vpcSubnets', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    const vpcWithIsolated = new ec2.Vpc(stack, 'Vpc', {
-      subnetConfiguration: [
-        { name: 'public', subnetType: ec2.SubnetType.PUBLIC },
-        { name: 'private', subnetType: ec2.SubnetType.PRIVATE_WITH_NAT },
-        { name: 'isolated', subnetType: ec2.SubnetType.PRIVATE_ISOLATED },
-      ],
+    const vpcWithIsolated = ec2.Vpc.fromVpcAttributes(stack, 'Vpc', {
+      vpcId: 'vpc-id',
+      availabilityZones: ['az1'],
+      publicSubnetIds: ['public-subnet-id-1', 'public-subnet-id-2'],
+      publicSubnetNames: ['public-subnet-name-1', 'public-subnet-name-2'],
+      privateSubnetIds: ['private-subnet-id-1', 'private-subnet-id-2'],
+      privateSubnetNames: ['private-subnet-name-1', 'private-subnet-name-2'],
+      isolatedSubnetIds: ['isolated-subnet-id-1', 'isolated-subnet-id-2'],
+      isolatedSubnetNames: ['isolated-subnet-name-1', 'isolated-subnet-name-2'],
     });
 
     // WHEN
@@ -822,13 +922,13 @@ describe('cluster', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::SecretsManager::RotationSchedule', {
+    Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::RotationSchedule', {
       RotationRules: {
         AutomaticallyAfterDays: 15,
       },
     });
 
-    expect(stack).toHaveResource('AWS::Serverless::Application', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Serverless::Application', {
       Parameters: {
         endpoint: {
           'Fn::Join': ['', [
@@ -838,25 +938,68 @@ describe('cluster', () => {
             { Ref: 'AWS::URLSuffix' },
           ]],
         },
-        functionName: 'DatabaseRotationSingleUser458A45BE',
-        vpcSubnetIds: {
-          'Fn::Join': ['', [
-            { Ref: 'VpcprivateSubnet1SubnetCEAD3716' },
-            ',',
-            { Ref: 'VpcprivateSubnet2Subnet2DE7549C' },
-          ]],
-        },
-        vpcSecurityGroupIds: {
-          'Fn::GetAtt': [
-            'DatabaseRotationSingleUserSecurityGroupAC6E0E73',
-            'GroupId',
-          ],
-        },
+        vpcSubnetIds: 'private-subnet-id-1,private-subnet-id-2',
         excludeCharacters: '°_@',
       },
     });
   });
 
+  test('addRotationMultiUser() with custom automaticallyAfter, excludeCharacters and vpcSubnets', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpcWithIsolated = ec2.Vpc.fromVpcAttributes(stack, 'Vpc', {
+      vpcId: 'vpc-id',
+      availabilityZones: ['az1'],
+      publicSubnetIds: ['public-subnet-id-1', 'public-subnet-id-2'],
+      publicSubnetNames: ['public-subnet-name-1', 'public-subnet-name-2'],
+      privateSubnetIds: ['private-subnet-id-1', 'private-subnet-id-2'],
+      privateSubnetNames: ['private-subnet-name-1', 'private-subnet-name-2'],
+      isolatedSubnetIds: ['isolated-subnet-id-1', 'isolated-subnet-id-2'],
+      isolatedSubnetNames: ['isolated-subnet-name-1', 'isolated-subnet-name-2'],
+    });
+    const userSecret = new DatabaseSecret(stack, 'UserSecret', { username: 'user' });
+
+    // WHEN
+    // DB in isolated subnet (no internet connectivity)
+    const cluster = new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
+      instanceProps: {
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+        vpc: vpcWithIsolated,
+        vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_ISOLATED },
+      },
+    });
+
+    // Rotation in private subnet (internet via NAT)
+    cluster.addRotationMultiUser('user', {
+      secret: userSecret.attach(cluster),
+      automaticallyAfter: cdk.Duration.days(15),
+      excludeCharacters: '°_@',
+      vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_NAT },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::RotationSchedule', {
+      RotationRules: {
+        AutomaticallyAfterDays: 15,
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Serverless::Application', {
+      Parameters: {
+        endpoint: {
+          'Fn::Join': ['', [
+            'https://secretsmanager.',
+            { Ref: 'AWS::Region' },
+            '.',
+            { Ref: 'AWS::URLSuffix' },
+          ]],
+        },
+        vpcSubnetIds: 'private-subnet-id-1,private-subnet-id-2',
+        excludeCharacters: '°_@',
+      },
+    });
+  });
 
   test('addRotationSingleUser() with VPC interface endpoint', () => {
     // GIVEN
@@ -882,7 +1025,7 @@ describe('cluster', () => {
     // Rotation in isolated subnet with access to Secrets Manager API via endpoint
     cluster.addRotationSingleUser({ endpoint });
 
-    expect(stack).toHaveResource('AWS::Serverless::Application', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Serverless::Application', {
       Parameters: {
         endpoint: {
           'Fn::Join': ['', [
@@ -933,8 +1076,6 @@ describe('cluster', () => {
 
     // THEN
     expect(() => cluster.addRotationSingleUser()).toThrow(/without secret/);
-
-
   });
 
   test('throws when trying to add single user rotation multiple times', () => {
@@ -955,8 +1096,6 @@ describe('cluster', () => {
 
     // THEN
     expect(() => cluster.addRotationSingleUser()).toThrow(/A single user rotation was already added to this cluster/);
-
-
   });
 
   test('create a cluster with s3 import role', () => {
@@ -983,7 +1122,7 @@ describe('cluster', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::RDS::DBCluster', {
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
       AssociatedRoles: [{
         RoleArn: {
           'Fn::GetAtt': [
@@ -994,7 +1133,7 @@ describe('cluster', () => {
       }],
     });
 
-    expect(stack).toHaveResource('AWS::RDS::DBClusterParameterGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBClusterParameterGroup', {
       Family: 'aurora5.6',
       Parameters: {
         aurora_load_from_s3_role: {
@@ -1005,8 +1144,6 @@ describe('cluster', () => {
         },
       },
     });
-
-
   });
 
   test('create a cluster with s3 import buckets', () => {
@@ -1031,7 +1168,7 @@ describe('cluster', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::RDS::DBCluster', {
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
       AssociatedRoles: [{
         RoleArn: {
           'Fn::GetAtt': [
@@ -1042,7 +1179,7 @@ describe('cluster', () => {
       }],
     });
 
-    expect(stack).toHaveResource('AWS::RDS::DBClusterParameterGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBClusterParameterGroup', {
       Family: 'aurora5.6',
       Parameters: {
         aurora_load_from_s3_role: {
@@ -1054,7 +1191,7 @@ describe('cluster', () => {
       },
     });
 
-    expect(stack).toHaveResource('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -1091,8 +1228,6 @@ describe('cluster', () => {
         Version: '2012-10-17',
       },
     });
-
-
   });
 
   test('cluster with s3 import bucket adds supported feature name to IAM role', () => {
@@ -1119,7 +1254,7 @@ describe('cluster', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::RDS::DBCluster', {
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
       AssociatedRoles: [{
         RoleArn: {
           'Fn::GetAtt': [
@@ -1130,8 +1265,6 @@ describe('cluster', () => {
         FeatureName: 's3Import',
       }],
     });
-
-
   });
 
   test('throws when s3 import bucket or s3 export bucket is supplied for a Postgres version that does not support it', () => {
@@ -1175,8 +1308,6 @@ describe('cluster', () => {
         s3ExportBuckets: [bucket],
       });
     }).toThrow(/s3Export is not supported for Postgres version: 10.4. Use a version that supports the s3Export feature./);
-
-
   });
 
   test('cluster with s3 export bucket adds supported feature name to IAM role', () => {
@@ -1203,7 +1334,7 @@ describe('cluster', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::RDS::DBCluster', {
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
       AssociatedRoles: [{
         RoleArn: {
           'Fn::GetAtt': [
@@ -1214,8 +1345,6 @@ describe('cluster', () => {
         FeatureName: 's3Export',
       }],
     });
-
-
   });
 
   test('create a cluster with s3 export role', () => {
@@ -1242,7 +1371,7 @@ describe('cluster', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::RDS::DBCluster', {
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
       AssociatedRoles: [{
         RoleArn: {
           'Fn::GetAtt': [
@@ -1253,7 +1382,7 @@ describe('cluster', () => {
       }],
     });
 
-    expect(stack).toHaveResource('AWS::RDS::DBClusterParameterGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBClusterParameterGroup', {
       Family: 'aurora5.6',
       Parameters: {
         aurora_select_into_s3_role: {
@@ -1264,8 +1393,6 @@ describe('cluster', () => {
         },
       },
     });
-
-
   });
 
   testFutureBehavior('create a cluster with s3 export buckets', { [cxapi.S3_GRANT_WRITE_WITHOUT_ACL]: true }, cdk.App, (app) => {
@@ -1290,7 +1417,7 @@ describe('cluster', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::RDS::DBCluster', {
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
       AssociatedRoles: [{
         RoleArn: {
           'Fn::GetAtt': [
@@ -1301,7 +1428,7 @@ describe('cluster', () => {
       }],
     });
 
-    expect(stack).toHaveResource('AWS::RDS::DBClusterParameterGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBClusterParameterGroup', {
       Family: 'aurora5.6',
       Parameters: {
         aurora_select_into_s3_role: {
@@ -1313,7 +1440,7 @@ describe('cluster', () => {
       },
     });
 
-    expect(stack).toHaveResource('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -1323,6 +1450,10 @@ describe('cluster', () => {
               's3:List*',
               's3:DeleteObject*',
               's3:PutObject',
+              's3:PutObjectLegalHold',
+              's3:PutObjectRetention',
+              's3:PutObjectTagging',
+              's3:PutObjectVersionTagging',
               's3:Abort*',
             ],
             Effect: 'Allow',
@@ -1353,8 +1484,6 @@ describe('cluster', () => {
         Version: '2012-10-17',
       },
     });
-
-
   });
 
   test('create a cluster with s3 import and export buckets', () => {
@@ -1381,7 +1510,7 @@ describe('cluster', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::RDS::DBCluster', {
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
       AssociatedRoles: [{
         RoleArn: {
           'Fn::GetAtt': [
@@ -1400,7 +1529,7 @@ describe('cluster', () => {
       }],
     });
 
-    expect(stack).toHaveResource('AWS::RDS::DBClusterParameterGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBClusterParameterGroup', {
       Family: 'aurora5.6',
       Parameters: {
         aurora_load_from_s3_role: {
@@ -1417,8 +1546,6 @@ describe('cluster', () => {
         },
       },
     });
-
-
   });
 
   test('create a cluster with s3 import and export buckets and custom parameter group', () => {
@@ -1453,7 +1580,7 @@ describe('cluster', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::RDS::DBCluster', {
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
       AssociatedRoles: [{
         RoleArn: {
           'Fn::GetAtt': [
@@ -1472,7 +1599,7 @@ describe('cluster', () => {
       }],
     });
 
-    expect(stack).toHaveResource('AWS::RDS::DBClusterParameterGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBClusterParameterGroup', {
       Family: 'aurora5.6',
       Parameters: {
         key: 'value',
@@ -1490,8 +1617,6 @@ describe('cluster', () => {
         },
       },
     });
-
-
   });
 
   test('PostgreSQL cluster with s3 export buckets does not generate custom parameter group and specifies the correct port', () => {
@@ -1518,7 +1643,7 @@ describe('cluster', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::RDS::DBCluster', {
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
       AssociatedRoles: [{
         RoleArn: {
           'Fn::GetAtt': [
@@ -1531,9 +1656,7 @@ describe('cluster', () => {
       Port: 5432,
     });
 
-    expect(stack).not.toHaveResource('AWS::RDS::DBClusterParameterGroup');
-
-
+    Template.fromStack(stack).resourceCountIs('AWS::RDS::DBClusterParameterGroup', 0);
   });
 
   test('unversioned PostgreSQL cluster can be used with s3 import and s3 export buckets', () => {
@@ -1560,7 +1683,7 @@ describe('cluster', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::RDS::DBCluster', {
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
       AssociatedRoles: [
         {
           FeatureName: 's3Import',
@@ -1582,8 +1705,6 @@ describe('cluster', () => {
         },
       ],
     });
-
-
   });
 
   test("Aurora PostgreSQL cluster uses a different default master username than 'admin', which is a reserved word", () => {
@@ -1600,13 +1721,11 @@ describe('cluster', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::SecretsManager::Secret', {
+    Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::Secret', {
       GenerateSecretString: {
         SecretStringTemplate: '{"username":"postgres"}',
       },
     });
-
-
   });
 
   test('MySQL cluster without S3 exports or imports references the correct default ParameterGroup', () => {
@@ -1628,13 +1747,31 @@ describe('cluster', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::RDS::DBCluster', {
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
       DBClusterParameterGroupName: 'default.aurora-mysql5.7',
     });
 
-    expect(stack).not.toHaveResource('AWS::RDS::DBClusterParameterGroup');
+    Template.fromStack(stack).resourceCountIs('AWS::RDS::DBClusterParameterGroup', 0);
+  });
 
+  test('MySQL cluster in version 8.0 uses aws_default_s3_role as a Parameter for S3 import, instead of aurora_load_from_s3_role', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
 
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      instanceProps: { vpc },
+      engine: DatabaseClusterEngine.auroraMysql({ version: AuroraMysqlEngineVersion.VER_3_01_0 }),
+      s3ImportRole: iam.Role.fromRoleArn(stack, 'S3ImportRole', 'arn:aws:iam::123456789012:role/my-role'),
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBClusterParameterGroup', {
+      Family: 'aurora-mysql8.0',
+      Parameters: {
+        aws_default_s3_role: 'arn:aws:iam::123456789012:role/my-role',
+      },
+    });
   });
 
   test('throws when s3ExportRole and s3ExportBuckets properties are both specified', () => {
@@ -1661,8 +1798,6 @@ describe('cluster', () => {
       s3ExportRole: exportRole,
       s3ExportBuckets: [exportBucket],
     })).toThrow();
-
-
   });
 
   test('throws when s3ImportRole and s3ImportBuckets properties are both specified', () => {
@@ -1689,8 +1824,6 @@ describe('cluster', () => {
       s3ImportRole: importRole,
       s3ImportBuckets: [importBucket],
     })).toThrow();
-
-
   });
 
   test('can set CloudWatch log exports', () => {
@@ -1713,11 +1846,9 @@ describe('cluster', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::RDS::DBCluster', {
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
       EnableCloudwatchLogsExports: ['error', 'general', 'slowquery', 'audit'],
     });
-
-
   });
 
   test('can set CloudWatch log retention', () => {
@@ -1741,7 +1872,7 @@ describe('cluster', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('Custom::LogRetention', {
+    Template.fromStack(stack).hasResourceProperties('Custom::LogRetention', {
       ServiceToken: {
         'Fn::GetAtt': [
           'LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A',
@@ -1751,7 +1882,7 @@ describe('cluster', () => {
       LogGroupName: { 'Fn::Join': ['', ['/aws/rds/cluster/', { Ref: 'DatabaseB269D8BB' }, '/error']] },
       RetentionInDays: 90,
     });
-    expect(stack).toHaveResource('Custom::LogRetention', {
+    Template.fromStack(stack).hasResourceProperties('Custom::LogRetention', {
       ServiceToken: {
         'Fn::GetAtt': [
           'LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A',
@@ -1761,8 +1892,6 @@ describe('cluster', () => {
       LogGroupName: { 'Fn::Join': ['', ['/aws/rds/cluster/', { Ref: 'DatabaseB269D8BB' }, '/general']] },
       RetentionInDays: 90,
     });
-
-
   });
 
   test('throws if given unsupported CloudWatch log exports', () => {
@@ -1784,8 +1913,6 @@ describe('cluster', () => {
         cloudwatchLogsExports: ['error', 'general', 'slowquery', 'audit', 'thislogdoesnotexist', 'neitherdoesthisone'],
       });
     }).toThrow(/Unsupported logs for the current engine type: thislogdoesnotexist,neitherdoesthisone/);
-
-
   });
 
   test('can set deletion protection', () => {
@@ -1808,16 +1935,15 @@ describe('cluster', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::RDS::DBCluster', {
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
       DeletionProtection: true,
     });
-
-
   });
 
   test('does not throw (but adds a node error) if a (dummy) VPC does not have sufficient subnets', () => {
     // GIVEN
-    const stack = testStack();
+    const app = new cdk.App();
+    const stack = testStack(app, 'TestStack');
     const vpc = ec2.Vpc.fromLookup(stack, 'VPC', { isDefault: true });
 
     // WHEN
@@ -1837,11 +1963,9 @@ describe('cluster', () => {
     });
 
     // THEN
-    const art = SynthUtils.synthesize(stack);
+    const art = app.synth().getStackArtifact('TestStack');
     const meta = art.findMetadataByType('aws:cdk:error');
     expect(meta[0].data).toEqual('Cluster requires at least 2 subnets, got 0');
-
-
   });
 
   test('create a cluster from a snapshot', () => {
@@ -1859,7 +1983,7 @@ describe('cluster', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::RDS::DBCluster', {
+    Template.fromStack(stack).hasResource('AWS::RDS::DBCluster', {
       Properties: {
         Engine: 'aurora',
         EngineVersion: '5.6.mysql_aurora.1.22.2',
@@ -1870,9 +1994,9 @@ describe('cluster', () => {
       },
       DeletionPolicy: 'Snapshot',
       UpdateReplacePolicy: 'Snapshot',
-    }, ResourcePart.CompleteDefinition);
+    });
 
-    expect(stack).toCountResources('AWS::RDS::DBInstance', 2);
+    Template.fromStack(stack).resourceCountIs('AWS::RDS::DBInstance', 2);
 
     expect(cluster.instanceIdentifiers).toHaveLength(2);
     expect(stack.resolve(cluster.instanceIdentifiers[0])).toEqual({
@@ -1897,6 +2021,27 @@ describe('cluster', () => {
     });
   });
 
+  test('create a cluster from a snapshot with encrypted storage', () => {
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseClusterFromSnapshot(stack, 'Database', {
+      engine: DatabaseClusterEngine.aurora({ version: AuroraEngineVersion.VER_1_22_2 }),
+      instanceProps: {
+        vpc,
+      },
+      snapshotIdentifier: 'mySnapshot',
+      storageEncryptionKey: kms.Key.fromKeyArn(stack, 'Key', 'arn:aws:kms:us-east-1:456:key/my-key'),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
+      KmsKeyId: 'arn:aws:kms:us-east-1:456:key/my-key',
+      StorageEncrypted: true,
+    });
+  });
+
   test('reuse an existing subnet group', () => {
     // GIVEN
     const stack = testStack();
@@ -1915,12 +2060,10 @@ describe('cluster', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::RDS::DBCluster', {
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
       DBSubnetGroupName: 'my-subnet-group',
     });
-    expect(stack).toCountResources('AWS::RDS::DBSubnetGroup', 0);
-
-
+    Template.fromStack(stack).resourceCountIs('AWS::RDS::DBSubnetGroup', 0);
   });
 
   test('defaultChild returns the DB Cluster', () => {
@@ -1941,8 +2084,6 @@ describe('cluster', () => {
 
     // THEN
     expect(cluster.node.defaultChild instanceof CfnDBCluster).toBeTruthy();
-
-
   });
 
   test('fromGeneratedSecret', () => {
@@ -1960,7 +2101,7 @@ describe('cluster', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::RDS::DBCluster', {
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
       MasterUsername: 'admin', // username is a string
       MasterUserPassword: {
         'Fn::Join': [
@@ -1994,7 +2135,7 @@ describe('cluster', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::SecretsManager::Secret', {
+    Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::Secret', {
       ReplicaRegions: [
         {
           Region: 'eu-west-1',
@@ -2023,7 +2164,7 @@ describe('cluster', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::SecretsManager::Secret', {
+    Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::Secret', {
       Name: secretName,
     });
   });
@@ -2044,7 +2185,7 @@ describe('cluster', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::SecretsManager::Secret', {
+    Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::Secret', {
       Name: secretName,
     });
   });
@@ -2066,12 +2207,10 @@ describe('cluster', () => {
       },
     });
     // THEN
-    expect(stack).toHaveResource('AWS::RDS::DBInstance', {
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
       Engine: 'aurora',
       PubliclyAccessible: true,
     });
-
-
   });
 
   test('can set public accessibility for database cluster with instances in public subnet', () => {
@@ -2091,12 +2230,10 @@ describe('cluster', () => {
       },
     });
     // THEN
-    expect(stack).toHaveResource('AWS::RDS::DBInstance', {
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
       Engine: 'aurora',
       PubliclyAccessible: false,
     });
-
-
   });
 
   test('database cluster instances in public subnet should by default have publiclyAccessible set to true', () => {
@@ -2115,12 +2252,10 @@ describe('cluster', () => {
       },
     });
     // THEN
-    expect(stack).toHaveResource('AWS::RDS::DBInstance', {
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
       Engine: 'aurora',
       PubliclyAccessible: true,
     });
-
-
   });
 
   test('changes the case of the cluster identifier if the lowercaseDbIdentifier feature flag is enabled', () => {
@@ -2140,7 +2275,7 @@ describe('cluster', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::RDS::DBCluster', {
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
       DBClusterIdentifier: clusterIdentifier.toLowerCase(),
     });
   });
@@ -2160,7 +2295,7 @@ describe('cluster', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::RDS::DBCluster', {
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
       DBClusterIdentifier: clusterIdentifier,
     });
   });
@@ -2179,7 +2314,7 @@ describe('cluster', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::RDS::DBCluster', {
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
       CopyTagsToSnapshot: true,
     });
   });
@@ -2199,7 +2334,7 @@ describe('cluster', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::RDS::DBCluster', {
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
       CopyTagsToSnapshot: false,
     });
   });
@@ -2219,7 +2354,7 @@ describe('cluster', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::RDS::DBCluster', {
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
       CopyTagsToSnapshot: true,
     });
   });
@@ -2239,7 +2374,7 @@ describe('cluster', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::RDS::DBCluster', {
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
       BacktrackWindow: 24 * 60 * 60,
     });
   });
@@ -2247,8 +2382,8 @@ describe('cluster', () => {
 
 test.each([
   [cdk.RemovalPolicy.RETAIN, 'Retain', 'Retain', 'Retain'],
-  [cdk.RemovalPolicy.SNAPSHOT, 'Snapshot', 'Delete', ABSENT],
-  [cdk.RemovalPolicy.DESTROY, 'Delete', 'Delete', ABSENT],
+  [cdk.RemovalPolicy.SNAPSHOT, 'Snapshot', 'Delete', Match.absent()],
+  [cdk.RemovalPolicy.DESTROY, 'Delete', 'Delete', Match.absent()],
 ])('if Cluster RemovalPolicy is \'%s\', the DBCluster has DeletionPolicy \'%s\', the DBInstance has \'%s\' and the DBSubnetGroup has \'%s\'', (clusterRemovalPolicy, clusterValue, instanceValue, subnetValue) => {
   const stack = new cdk.Stack();
 
@@ -2264,25 +2399,25 @@ test.each([
   });
 
   // THEN
-  expect(stack).toHaveResourceLike('AWS::RDS::DBCluster', {
+  Template.fromStack(stack).hasResource('AWS::RDS::DBCluster', {
     DeletionPolicy: clusterValue,
     UpdateReplacePolicy: clusterValue,
-  }, ResourcePart.CompleteDefinition);
+  });
 
-  expect(stack).toHaveResourceLike('AWS::RDS::DBInstance', {
+  Template.fromStack(stack).hasResource('AWS::RDS::DBInstance', {
     DeletionPolicy: instanceValue,
     UpdateReplacePolicy: instanceValue,
-  }, ResourcePart.CompleteDefinition);
+  });
 
-  expect(stack).toHaveResourceLike('AWS::RDS::DBSubnetGroup', {
+  Template.fromStack(stack).hasResource('AWS::RDS::DBSubnetGroup', {
     DeletionPolicy: subnetValue,
-  }, ResourcePart.CompleteDefinition);
+  });
 });
 
 test.each([
   [cdk.RemovalPolicy.RETAIN, 'Retain', 'Retain', 'Retain'],
-  [cdk.RemovalPolicy.SNAPSHOT, 'Snapshot', 'Delete', ABSENT],
-  [cdk.RemovalPolicy.DESTROY, 'Delete', 'Delete', ABSENT],
+  [cdk.RemovalPolicy.SNAPSHOT, 'Snapshot', 'Delete', Match.absent()],
+  [cdk.RemovalPolicy.DESTROY, 'Delete', 'Delete', Match.absent()],
 ])('if Cluster RemovalPolicy is \'%s\', the DBCluster has DeletionPolicy \'%s\', the DBInstance has \'%s\' and the DBSubnetGroup has \'%s\'', (clusterRemovalPolicy, clusterValue, instanceValue, subnetValue) => {
   const stack = new cdk.Stack();
 
@@ -2298,25 +2433,24 @@ test.each([
   });
 
   // THEN
-  expect(stack).toHaveResourceLike('AWS::RDS::DBCluster', {
+  Template.fromStack(stack).hasResource('AWS::RDS::DBCluster', {
     DeletionPolicy: clusterValue,
     UpdateReplacePolicy: clusterValue,
-  }, ResourcePart.CompleteDefinition);
+  });
 
-  expect(stack).toHaveResourceLike('AWS::RDS::DBInstance', {
+  Template.fromStack(stack).hasResource('AWS::RDS::DBInstance', {
     DeletionPolicy: instanceValue,
     UpdateReplacePolicy: instanceValue,
-  }, ResourcePart.CompleteDefinition);
+  });
 
-  expect(stack).toHaveResourceLike('AWS::RDS::DBSubnetGroup', {
+  Template.fromStack(stack).hasResource('AWS::RDS::DBSubnetGroup', {
     DeletionPolicy: subnetValue,
     UpdateReplacePolicy: subnetValue,
-  }, ResourcePart.CompleteDefinition);
+  });
 });
 
-
-function testStack(app?: cdk.App) {
-  const stack = new cdk.Stack(app, undefined, { env: { account: '12345', region: 'us-test-1' } });
+function testStack(app?: cdk.App, stackId?: string) {
+  const stack = new cdk.Stack(app, stackId, { env: { account: '12345', region: 'us-test-1' } });
   stack.node.setContext('availability-zones:12345:us-test-1', ['us-test-1a', 'us-test-1b']);
   return stack;
 }

@@ -23,7 +23,9 @@ async function main() {
     const files = await glob(arg, { ignore, matchBase: true });
     for (const file of files) {
       const input = await fs.promises.readFile(file, { encoding: 'utf8' });
-      const output = rewriteMonoPackageImports(input, 'aws-cdk-lib', file);
+      const output = rewriteMonoPackageImports(input, 'aws-cdk-lib', file, {
+        rewriteConstructsImports: true,
+      });
       if (output.trim() !== input.trim()) {
         await fs.promises.writeFile(file, output);
       }

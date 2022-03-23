@@ -400,6 +400,32 @@ new autoscaling.AutoScalingGroup(this, 'ASG', {
 });
 ```
 
+## Termination policies
+
+Auto Scaling uses [termination policies](https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-instance-termination.html)
+to determine which instances it terminates first during scale-in events. You
+can specify one or more termination policies with the `terminationPolicies`
+property:
+
+```ts
+declare const vpc: ec2.Vpc;
+declare const instanceType: ec2.InstanceType;
+declare const machineImage: ec2.IMachineImage;
+
+new autoscaling.AutoScalingGroup(this, 'ASG', {
+  vpc,
+  instanceType,
+  machineImage,
+
+  // ...
+
+  terminationPolicies: [
+    autoscaling.TerminationPolicy.OLDEST_INSTANCE,
+    autoscaling.TerminationPolicy.DEFAULT,
+  ],
+});
+```
+
 ## Protecting new instances from being terminated on scale-in
 
 By default, Auto Scaling can terminate an instance at any time after launch when
@@ -460,6 +486,27 @@ The example below demonstrates the `AutoScalingGroupRequireImdsv2Aspect` being u
 const aspect = new autoscaling.AutoScalingGroupRequireImdsv2Aspect();
 
 Aspects.of(this).add(aspect);
+```
+
+## Warm Pool
+
+Auto Scaling offers [a warm pool](https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-warm-pools.html) which gives an ability to decrease latency for applications that have exceptionally long boot times. You can create a warm pool with default parameters as below:
+
+```ts
+declare const autoScalingGroup: autoscaling.AutoScalingGroup;
+
+autoScalingGroup.addWarmPool();
+```
+
+You can also customize a warm pool by configuring parameters:
+
+```ts
+declare const autoScalingGroup: autoscaling.AutoScalingGroup;
+
+autoScalingGroup.addWarmPool({
+  minSize: 1,
+  reuseOnScaleIn: true,
+});
 ```
 
 ## Future work

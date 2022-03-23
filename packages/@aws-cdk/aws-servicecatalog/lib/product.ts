@@ -1,11 +1,11 @@
 import { ArnFormat, IResource, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import { TagOptions } from '.';
 import { CloudFormationTemplate } from './cloudformation-template';
 import { MessageLanguage } from './common';
 import { AssociationManager } from './private/association-manager';
 import { InputValidator } from './private/validation';
 import { CfnCloudFormationProduct } from './servicecatalog.generated';
+import { TagOptions } from './tag-options';
 
 /**
  * A Service Catalog product, currently only supports type CloudFormationProduct
@@ -137,7 +137,7 @@ export interface CloudFormationProductProps {
    *
    * @default - No tagOptions provided
    */
-  readonly tagOptions?: TagOptions
+  readonly tagOptions?: TagOptions;
 }
 
 /**

@@ -89,8 +89,7 @@
               }
             }
           ]
-        },
-        "BucketName": "my-bucket-physical-name-grant-delete"
+        }
       },
       "UpdateReplacePolicy": "Retain",
       "DeletionPolicy": "Retain"

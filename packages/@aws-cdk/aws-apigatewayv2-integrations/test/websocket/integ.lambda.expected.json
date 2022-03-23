@@ -284,6 +284,7 @@
           "Ref": "mywsapi32E6CE11"
         },
         "RouteKey": "$connect",
+        "AuthorizationType": "NONE",
         "Target": {
           "Fn::Join": [
             "",
@@ -373,6 +374,7 @@
           "Ref": "mywsapi32E6CE11"
         },
         "RouteKey": "$disconnect",
+        "AuthorizationType": "NONE",
         "Target": {
           "Fn::Join": [
             "",
@@ -462,6 +464,7 @@
           "Ref": "mywsapi32E6CE11"
         },
         "RouteKey": "$default",
+        "AuthorizationType": "NONE",
         "Target": {
           "Fn::Join": [
             "",
@@ -551,6 +554,7 @@
           "Ref": "mywsapi32E6CE11"
         },
         "RouteKey": "sendmessage",
+        "AuthorizationType": "NONE",
         "Target": {
           "Fn::Join": [
             "",

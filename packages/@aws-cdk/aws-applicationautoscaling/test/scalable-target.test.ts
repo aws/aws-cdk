@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Annotations, Match, Template } from '@aws-cdk/assertions';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
@@ -20,7 +20,7 @@ describe('scalable target', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ApplicationAutoScaling::ScalableTarget', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApplicationAutoScaling::ScalableTarget', {
       ServiceNamespace: 'dynamodb',
       ScalableDimension: 'test:TestCount',
       ResourceId: 'test:this/test',
@@ -43,7 +43,7 @@ describe('scalable target', () => {
     });
 
     // THEN: no exception
-    expect(stack).toHaveResource('AWS::ApplicationAutoScaling::ScalableTarget', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApplicationAutoScaling::ScalableTarget', {
       ServiceNamespace: 'dynamodb',
       ScalableDimension: 'test:TestCount',
       ResourceId: 'test:this/test',
@@ -65,7 +65,7 @@ describe('scalable target', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ApplicationAutoScaling::ScalableTarget', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApplicationAutoScaling::ScalableTarget', {
       ScheduledActions: [
         {
           ScalableTargetAction: {
@@ -77,6 +77,53 @@ describe('scalable target', () => {
         },
       ],
     });
+  });
+
+  test('scheduled scaling shows warning when minute is not defined in cron', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const target = createScalableTarget(stack);
+
+    // WHEN
+    target.scaleOnSchedule('ScaleUp', {
+      schedule: appscaling.Schedule.cron({
+        hour: '8',
+        day: '1',
+      }),
+      maxCapacity: 50,
+      minCapacity: 1,
+    });
+
+    // THEN
+    expect(target.node.metadataEntry).toEqual([{
+      type: 'aws:cdk:warning',
+      data: 'cron: If you don\'t pass \'minute\', by default the event runs every minute. Pass \'minute: \'*\'\' if that\'s what you intend, or \'minute: 0\' to run once per hour instead.',
+      trace: undefined,
+    }]);
+    Annotations.fromStack(stack).hasWarning('/Default/Target', "cron: If you don't pass 'minute', by default the event runs every minute. Pass 'minute: '*'' if that's what you intend, or 'minute: 0' to run once per hour instead.");
+
+  });
+
+  test('scheduled scaling shows no warning when minute is * in cron', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const target = createScalableTarget(stack);
+
+    // WHEN
+    target.scaleOnSchedule('ScaleUp', {
+      schedule: appscaling.Schedule.cron({
+        hour: '8',
+        day: '1',
+        minute: '*',
+      }),
+      maxCapacity: 50,
+      minCapacity: 1,
+    });
+
+    // THEN
+    expect(target.node.metadataEntry).toEqual([]);
+    const annotations = Annotations.fromStack(stack).findWarning('*', Match.anyValue());
+    expect(annotations.length).toBe(0);
   });
 
   test('step scaling on MathExpression', () => {
@@ -104,11 +151,11 @@ describe('scalable target', () => {
     });
 
     // THEN
-    expect(stack).not.toHaveResource('AWS::CloudWatch::Alarm', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', Match.not({
       Period: 60,
-    });
+    }));
 
-    expect(stack).toHaveResource('AWS::CloudWatch::Alarm', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
       ComparisonOperator: 'LessThanOrEqualToThreshold',
       EvaluationPeriods: 1,
       Metrics: [
@@ -144,6 +191,7 @@ describe('scalable target', () => {
     expect(appscaling.ServiceNamespace.LAMBDA).toEqual('lambda');
     expect(appscaling.ServiceNamespace.RDS).toEqual('rds');
     expect(appscaling.ServiceNamespace.SAGEMAKER).toEqual('sagemaker');
+    expect(appscaling.ServiceNamespace.ELASTICACHE).toEqual('elasticache');
   });
 
   test('create scalable target with negative minCapacity throws error', () => {
@@ -202,7 +250,7 @@ describe('scalable target', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ApplicationAutoScaling::ScalableTarget', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApplicationAutoScaling::ScalableTarget', {
       ServiceNamespace: 'dynamodb',
       ScalableDimension: 'test:TestCount',
       ResourceId: 'test:this/test',
