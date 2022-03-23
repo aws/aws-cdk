@@ -58,7 +58,7 @@ export interface AlarmStatusWidgetProps {
   /**
    * Specifies how to sort the alarms in the widget.
    *
-   * @default DEFAULT
+   * @default - alphabetical order
    */
   readonly sortBy?: AlarmStatusWidgetSortBy;
 
