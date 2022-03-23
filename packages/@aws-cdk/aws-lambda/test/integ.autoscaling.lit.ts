@@ -1,4 +1,3 @@
-import * as appscaling from '@aws-cdk/aws-applicationautoscaling';
 import * as cdk from '@aws-cdk/core';
 import * as lambda from '../lib';
 
