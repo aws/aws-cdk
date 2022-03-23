@@ -101,8 +101,8 @@ export class AlarmStatusWidget extends ConcreteWidget {
         properties: {
           title: this.props.title ? this.props.title : 'Alarm Status',
           alarms: this.props.alarms.map((alarm) => alarm.alarmArn),
-          states: this.props.states ?? [],
-          sortBy: this.props.sortBy ?? AlarmStatusWidgetSortBy.DEFAULT,
+          states: this.props.states,
+          sortBy: this.props.sortBy,
         },
       },
     ];
