@@ -69,7 +69,7 @@ export interface AlarmStatusWidgetProps {
    *
    * If you omit this field or specify an empty array, all the alarms specifed in alarms are displayed.
    *
-   * @default - [] - all the alarms specifed in alarms are displayed.
+   * @default -  all the alarms specified in alarms are displayed.
    */
   readonly states?: AlarmState[];
 }
