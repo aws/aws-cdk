@@ -1988,12 +1988,28 @@
             {
               "Action": "lambda:InvokeFunction",
               "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "IngressPingerFunction54746D9B",
-                  "Arn"
-                ]
-              }
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "IngressPingerFunction54746D9B",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "IngressPingerFunction54746D9B",
+                          "Arn"
+                        ]
+                      },
+                      ":*"
+                    ]
+                  ]
+                }
+              ]
             }
           ],
           "Version": "2012-10-17"
@@ -2268,7 +2284,7 @@
       "Type": "String",
       "Description": "S3 key for asset version \"baac0f9c3fa157fdefb24f5722cf1776b897344d12e3dc620c62499051d29c88\""
     },
-    "AssetParametersbaac0f9c3fa157fdefb24f5722cf1776b897344d12e3dc620c62499051d29c88ArtifactHash5B7180F8": {
+    "AssetParameters712e670f4e8905b5bf48e7a7fc59cce8d2d81e350618d910eaae52d3e93579b9ArtifactHashA7B6B572": {
       "Type": "String",
       "Description": "Artifact hash for asset \"baac0f9c3fa157fdefb24f5722cf1776b897344d12e3dc620c62499051d29c88\""
     },
