@@ -45,7 +45,7 @@
                   "Arn"
                 ]
               },
-              "\"]},\"yAxis\":{}}},{\"type\":\"alarm\",\"width\":6,\"height\":3,\"x\":0,\"y\":8,\"properties\":{\"title\":\"Messages in queue\",\"alarms\":[\"",
+              "\"]},\"yAxis\":{}}},{\"type\":\"alarm\",\"width\":6,\"height\":3,\"x\":0,\"y\":8,\"properties\":{\"title\":\"Firing alarms\",\"alarms\":[\"",
               {
                 "Fn::GetAtt": [
                   "Alarm7103F465",
