@@ -147,7 +147,7 @@ async function parseCommandLineArguments() {
           "Only in effect if specified alongside the '--watch' option",
       }),
     )
-    .command('import [STACK]', 'Import existing resource(s) into the given STACK', yargs => yargs
+    .command('import [STACK]', 'Import existing resource(s) into the given STACK', (yargs: Argv) => yargs
       .option('execute', { type: 'boolean', desc: 'Whether to execute ChangeSet (--no-execute will NOT execute the ChangeSet)', default: true })
       .option('change-set-name', { type: 'string', desc: 'Name of the CloudFormation change set to create' })
       .option('rollback', {

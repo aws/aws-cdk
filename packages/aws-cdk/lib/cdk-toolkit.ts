@@ -378,7 +378,7 @@ export class CdkToolkit {
     }
 
     if (Object.keys(stack.template.Resources || {}).length === 0) { // The generated stack has no resources
-      warning('%s: stack has no resources, skipping import.', colors.bold(stack.displayName));
+      warning('%s: stack has no resources, skipping import.', chalk.bold(stack.displayName));
       return;
     }
 
@@ -403,7 +403,7 @@ export class CdkToolkit {
     }
 
     // Import the resources according to the given mapping
-    print('%s: importing resources into stack...', colors.bold(stack.displayName));
+    print('%s: importing resources into stack...', chalk.bold(stack.displayName));
     const tags = tagsForStack(stack);
     await resourceImporter.importResources(resourcesMapping, {
       stack,
