@@ -26,7 +26,7 @@ to be a self contained CDK app. The runner will execute the following for each f
 - `--update` (default=false)
   Rerun integration tests if snapshot fails
 - `--clean` (default=`true`)
-  Do not destroy stacks after deploy (useful for debugging)
+  Destroy stacks after deploy (use `--no-clean` for debugging)
 - `--verbose` (default=`false`)
   verbose logging
 - `--parallel` (default=`false`)
