@@ -1,7 +1,7 @@
 import { Template } from '@aws-cdk/assertions';
 import * as events from '@aws-cdk/aws-events';
 import * as kinesis from '@aws-cdk/aws-kinesis';
-import { Stack } from '@aws-cdk/core';
+import { Stack, Schedule } from '@aws-cdk/core';
 import * as targets from '../../lib';
 
 describe('KinesisStream event target', () => {
@@ -20,7 +20,7 @@ describe('KinesisStream event target', () => {
 
     beforeEach(() => {
       rule = new events.Rule(stack, 'rule', {
-        schedule: events.Schedule.expression('rate(1 minute)'),
+        schedule: Schedule.expression('rate(1 minute)'),
       });
     });
 

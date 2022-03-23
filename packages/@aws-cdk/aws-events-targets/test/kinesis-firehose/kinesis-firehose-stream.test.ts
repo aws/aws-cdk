@@ -1,7 +1,7 @@
 import { Template } from '@aws-cdk/assertions';
 import * as events from '@aws-cdk/aws-events';
 import * as firehose from '@aws-cdk/aws-kinesisfirehose';
-import { Stack } from '@aws-cdk/core';
+import { Stack, Schedule } from '@aws-cdk/core';
 import * as targets from '../../lib';
 
 describe('KinesisFirehoseStream event target', () => {
@@ -20,7 +20,7 @@ describe('KinesisFirehoseStream event target', () => {
 
     beforeEach(() => {
       rule = new events.Rule(stack, 'rule', {
-        schedule: events.Schedule.expression('rate(1 minute)'),
+        schedule: Schedule.expression('rate(1 minute)'),
       });
     });
 

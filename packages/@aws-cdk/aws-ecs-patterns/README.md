@@ -315,7 +315,7 @@ const ecsScheduledTask = new ecsPatterns.ScheduledEc2Task(this, 'ScheduledTask',
     memoryLimitMiB: 256,
     environment: { name: 'TRIGGER', value: 'CloudWatch Events' },
   },
-  schedule: appscaling.Schedule.expression('rate(1 minute)'),
+  schedule: Schedule.expression('rate(1 minute)'),
   enabled: true,
   ruleName: 'sample-scheduled-task-rule',
 });
@@ -331,7 +331,7 @@ const scheduledFargateTask = new ecsPatterns.ScheduledFargateTask(this, 'Schedul
     image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
     memoryLimitMiB: 512,
   },
-  schedule: appscaling.Schedule.expression('rate(1 minute)'),
+  schedule: Schedule.expression('rate(1 minute)'),
   platformVersion: ecs.FargatePlatformVersion.LATEST,
 });
 ```
@@ -386,12 +386,12 @@ const scalableTarget = loadBalancedFargateService.service.autoScaleTaskCount({
 });
 
 scalableTarget.scaleOnSchedule('DaytimeScaleDown', {
-  schedule: appscaling.Schedule.cron({ hour: '8', minute: '0'}),
+  schedule: Schedule.cron({ hour: '8', minute: '0'}),
   minCapacity: 1,
 });
 
 scalableTarget.scaleOnSchedule('EveningRushScaleUp', {
-  schedule: appscaling.Schedule.cron({ hour: '20', minute: '0'}),
+  schedule: Schedule.cron({ hour: '20', minute: '0'}),
   minCapacity: 10,
 });
 ```
@@ -621,7 +621,7 @@ const scheduledFargateTask = new ecsPatterns.ScheduledFargateTask(this, 'Schedul
     image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
     memoryLimitMiB: 512,
   },
-  schedule: appscaling.Schedule.expression('rate(1 minute)'),
+  schedule: Schedule.expression('rate(1 minute)'),
   platformVersion: ecs.FargatePlatformVersion.VERSION1_4,
 });
 ```
@@ -639,7 +639,7 @@ const scheduledFargateTask = new ecsPatterns.ScheduledFargateTask(this, 'Schedul
     image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
     memoryLimitMiB: 512,
   },
-  schedule: appscaling.Schedule.expression('rate(1 minute)'),
+  schedule: Schedule.expression('rate(1 minute)'),
   securityGroups: [securityGroup],
 });
 ```

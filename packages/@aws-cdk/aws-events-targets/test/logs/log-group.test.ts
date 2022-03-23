@@ -13,7 +13,7 @@ test('use log group as an event rule target', () => {
     logGroupName: '/aws/events/MyLogGroup',
   });
   const rule1 = new events.Rule(stack, 'Rule', {
-    schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
+    schedule: cdk.Schedule.rate(cdk.Duration.minutes(1)),
   });
 
   // WHEN
@@ -61,7 +61,7 @@ test('use log group as an event rule target with rule target input', () => {
     logGroupName: '/aws/events/MyLogGroup',
   });
   const rule1 = new events.Rule(stack, 'Rule', {
-    schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
+    schedule: cdk.Schedule.rate(cdk.Duration.minutes(1)),
   });
 
   // WHEN
@@ -119,7 +119,7 @@ test('specifying retry policy and dead letter queue', () => {
     logGroupName: '/aws/events/MyLogGroup',
   });
   const rule1 = new events.Rule(stack, 'Rule', {
-    schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
+    schedule: cdk.Schedule.rate(cdk.Duration.minutes(1)),
   });
 
   const queue = new sqs.Queue(stack, 'Queue');

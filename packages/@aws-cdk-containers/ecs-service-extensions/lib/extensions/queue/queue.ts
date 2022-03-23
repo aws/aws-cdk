@@ -397,7 +397,7 @@ export class QueueExtension extends ServiceExtension {
     }));
 
     new events.Rule(this.scope, 'BacklogPerTaskScheduledRule', {
-      schedule: events.Schedule.rate(cdk.Duration.seconds(60)),
+      schedule: cdk.Schedule.rate(cdk.Duration.seconds(60)),
       targets: [new events_targets.LambdaFunction(backLogPerTaskCalculator)],
     });
 

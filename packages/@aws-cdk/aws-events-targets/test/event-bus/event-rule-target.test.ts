@@ -2,13 +2,13 @@ import { Template } from '@aws-cdk/assertions';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import * as sqs from '@aws-cdk/aws-sqs';
-import { Stack } from '@aws-cdk/core';
+import { Stack, Schedule } from '@aws-cdk/core';
 import * as targets from '../../lib';
 
 test('Use EventBus as an event rule target', () => {
   const stack = new Stack();
   const rule = new events.Rule(stack, 'Rule', {
-    schedule: events.Schedule.expression('rate(1 min)'),
+    schedule: Schedule.expression('rate(1 min)'),
   });
 
   rule.addTarget(new targets.EventBus(events.EventBus.fromEventBusArn(
@@ -50,7 +50,7 @@ test('Use EventBus as an event rule target', () => {
 test('with supplied role', () => {
   const stack = new Stack();
   const rule = new events.Rule(stack, 'Rule', {
-    schedule: events.Schedule.expression('rate(1 min)'),
+    schedule: Schedule.expression('rate(1 min)'),
   });
   const role = new iam.Role(stack, 'Role', {
     assumedBy: new iam.ServicePrincipal('events.amazonaws.com'),
@@ -96,7 +96,7 @@ test('with supplied role', () => {
 test('with a Dead Letter Queue specified', () => {
   const stack = new Stack();
   const rule = new events.Rule(stack, 'Rule', {
-    schedule: events.Schedule.expression('rate(1 min)'),
+    schedule: Schedule.expression('rate(1 min)'),
   });
   const queue = new sqs.Queue(stack, 'Queue');
 

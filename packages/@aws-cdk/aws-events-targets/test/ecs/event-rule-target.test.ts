@@ -33,7 +33,7 @@ test('Can use EC2 taskdef as EventRule target', () => {
   });
 
   const rule = new events.Rule(stack, 'Rule', {
-    schedule: events.Schedule.expression('rate(1 min)'),
+    schedule: cdk.Schedule.expression('rate(1 min)'),
   });
 
   // WHEN
@@ -75,7 +75,7 @@ test('Throws error for lacking of taskRole ' +
   const taskDefinition = ecs.Ec2TaskDefinition.fromEc2TaskDefinitionArn(stack, 'TaskDef', 'importedTaskDefArn');
 
   const rule = new events.Rule(stack, 'Rule', {
-    schedule: events.Schedule.expression('rate(1 min)'),
+    schedule: cdk.Schedule.expression('rate(1 min)'),
   });
 
   // THEN
@@ -104,7 +104,7 @@ test('Can import an EC2 task definition from task definition attributes as Event
   });
 
   const rule = new events.Rule(stack, 'Rule', {
-    schedule: events.Schedule.expression('rate(1 min)'),
+    schedule: cdk.Schedule.expression('rate(1 min)'),
   });
 
   // WHEN
@@ -146,7 +146,7 @@ test('Throws error for lacking of taskRole ' +
   const taskDefinition = ecs.FargateTaskDefinition.fromFargateTaskDefinitionArn(stack, 'TaskDef', 'ImportedTaskDefArn');
 
   const rule = new events.Rule(stack, 'Rule', {
-    schedule: events.Schedule.expression('rate(1 min)'),
+    schedule: cdk.Schedule.expression('rate(1 min)'),
   });
 
   // THEN
@@ -175,7 +175,7 @@ test('Can import a Fargate task definition from task definition attributes as Ev
   });
 
   const rule = new events.Rule(stack, 'Rule', {
-    schedule: events.Schedule.expression('rate(1 min)'),
+    schedule: cdk.Schedule.expression('rate(1 min)'),
   });
 
   // WHEN
@@ -217,7 +217,7 @@ test('Throws error for lacking of taskRole ' +
   const taskDefinition = ecs.TaskDefinition.fromTaskDefinitionArn(stack, 'TaskDef', 'ImportedTaskDefArn');
 
   const rule = new events.Rule(stack, 'Rule', {
-    schedule: events.Schedule.expression('rate(1 min)'),
+    schedule: cdk.Schedule.expression('rate(1 min)'),
   });
 
   // THEN
@@ -246,7 +246,7 @@ test('Can import a Task definition from task definition attributes as EventRule 
   });
 
   const rule = new events.Rule(stack, 'Rule', {
-    schedule: events.Schedule.expression('rate(1 min)'),
+    schedule: cdk.Schedule.expression('rate(1 min)'),
   });
 
   // WHEN
@@ -290,7 +290,7 @@ test('Can use Fargate taskdef as EventRule target', () => {
   });
 
   const rule = new events.Rule(stack, 'Rule', {
-    schedule: events.Schedule.expression('rate(1 min)'),
+    schedule: cdk.Schedule.expression('rate(1 min)'),
   });
 
   // WHEN
@@ -355,7 +355,7 @@ test('Can use same fargate taskdef with multiple rules', () => {
   });
 
   const scheduledRule = new events.Rule(stack, 'ScheduleRule', {
-    schedule: events.Schedule.expression('rate(1 min)'),
+    schedule: cdk.Schedule.expression('rate(1 min)'),
   });
 
   const patternRule = new events.Rule(stack, 'PatternRule', {
@@ -383,7 +383,7 @@ test('Can use same fargate taskdef multiple times in a rule', () => {
   });
 
   const rule = new events.Rule(stack, 'ScheduleRule', {
-    schedule: events.Schedule.expression('rate(1 min)'),
+    schedule: cdk.Schedule.expression('rate(1 min)'),
   });
 
   rule.addTarget(new targets.EcsTask({
@@ -422,7 +422,7 @@ test('Isolated subnet does not have AssignPublicIp=true', () => {
   });
 
   const rule = new events.Rule(stack, 'Rule', {
-    schedule: events.Schedule.expression('rate(1 min)'),
+    schedule: cdk.Schedule.expression('rate(1 min)'),
   });
 
   // WHEN
@@ -481,7 +481,7 @@ testDeprecated('throws an error if both securityGroup and securityGroups is spec
   });
 
   const rule = new events.Rule(stack, 'Rule', {
-    schedule: events.Schedule.expression('rate(1 min)'),
+    schedule: cdk.Schedule.expression('rate(1 min)'),
   });
   const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', { vpc });
 
@@ -509,7 +509,7 @@ test('uses multiple security groups', () => {
   });
 
   const rule = new events.Rule(stack, 'Rule', {
-    schedule: events.Schedule.expression('rate(1 min)'),
+    schedule: cdk.Schedule.expression('rate(1 min)'),
   });
   const securityGroups = [
     new ec2.SecurityGroup(stack, 'SecurityGroupA', { vpc }),
@@ -570,7 +570,7 @@ test('uses existing IAM role', () => {
   });
 
   const rule = new events.Rule(stack, 'Rule', {
-    schedule: events.Schedule.expression('rate(1 min)'),
+    schedule: cdk.Schedule.expression('rate(1 min)'),
   });
 
   // WHEN
@@ -614,7 +614,7 @@ test('uses the specific fargate platform version', () => {
   });
 
   const rule = new events.Rule(stack, 'Rule', {
-    schedule: events.Schedule.expression('rate(1 min)'),
+    schedule: cdk.Schedule.expression('rate(1 min)'),
   });
 
   // WHEN

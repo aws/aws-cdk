@@ -96,7 +96,7 @@ const cluster = new ecs.Cluster(this, 'Cluster', {
 });
 ```
 
-The following code imports an existing cluster using the ARN which can be used to 
+The following code imports an existing cluster using the ARN which can be used to
 import an Amazon ECS service either EC2 or Fargate.
 
 ```ts
@@ -479,7 +479,7 @@ taskDefinition.addContainer('windowsservercore', {
 });
 ```
 
-### Using Graviton2 with Fargate  
+### Using Graviton2 with Fargate
 
 AWS Graviton2 supports AWS Fargate. For more details, please see this [blog post](https://aws.amazon.com/blogs/aws/announcing-aws-graviton2-support-for-aws-fargate-get-up-to-40-better-price-performance-for-your-serverless-containers/)
 
@@ -695,7 +695,7 @@ taskDefinition.addContainer('TheContainer', {
 
 // An Rule that describes the event trigger (in this case a scheduled run)
 const rule = new events.Rule(this, 'Rule', {
-  schedule: events.Schedule.expression('rate(1 min)'),
+  schedule: Schedule.expression('rate(1 min)'),
 });
 
 // Pass an environment variable to the container 'TheContainer' in the task

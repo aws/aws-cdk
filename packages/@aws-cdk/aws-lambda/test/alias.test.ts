@@ -1,8 +1,7 @@
 import { Annotations, Match, Template } from '@aws-cdk/assertions';
-import * as appscaling from '@aws-cdk/aws-applicationautoscaling';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
-import { Lazy, Stack } from '@aws-cdk/core';
+import { Lazy, Stack, Schedule } from '@aws-cdk/core';
 import * as lambda from '../lib';
 
 describe('alias', () => {
@@ -564,7 +563,7 @@ describe('alias', () => {
     // WHEN
     const target = alias.addAutoScaling({ maxCapacity: 5 });
     target.scaleOnSchedule('Scheduling', {
-      schedule: appscaling.Schedule.cron({}),
+      schedule: Schedule.cron({}),
       maxCapacity: 10,
     });
 
@@ -597,7 +596,7 @@ describe('alias', () => {
     // WHEN
     const target = alias.addAutoScaling({ maxCapacity: 5 });
     target.scaleOnSchedule('Scheduling', {
-      schedule: appscaling.Schedule.cron({}),
+      schedule: Schedule.cron({}),
       maxCapacity: 10,
     });
 
@@ -622,7 +621,7 @@ describe('alias', () => {
     // WHEN
     const target = alias.addAutoScaling({ maxCapacity: 5 });
     target.scaleOnSchedule('Scheduling', {
-      schedule: appscaling.Schedule.cron({ minute: '*' }),
+      schedule: Schedule.cron({ minute: '*' }),
       maxCapacity: 10,
     });
 

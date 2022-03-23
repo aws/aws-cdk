@@ -3,7 +3,7 @@ import * as batch from '@aws-cdk/aws-batch';
 import { ContainerImage } from '@aws-cdk/aws-ecs';
 import * as events from '@aws-cdk/aws-events';
 import * as sqs from '@aws-cdk/aws-sqs';
-import { Duration, Stack } from '@aws-cdk/core';
+import { Duration, Stack, Schedule } from '@aws-cdk/core';
 import * as targets from '../../lib';
 
 describe('Batch job event target', () => {
@@ -34,7 +34,7 @@ describe('Batch job event target', () => {
   test('use aws batch job as an event rule target', () => {
     // GIVEN
     const rule = new events.Rule(stack, 'Rule', {
-      schedule: events.Schedule.expression('rate(1 min)'),
+      schedule: Schedule.expression('rate(1 min)'),
     });
 
     // WHEN
@@ -87,7 +87,7 @@ describe('Batch job event target', () => {
   test('use a Dead Letter Queue for the rule target', () => {
     // GIVEN
     const rule = new events.Rule(stack, 'Rule', {
-      schedule: events.Schedule.expression('rate(1 hour)'),
+      schedule: Schedule.expression('rate(1 hour)'),
     });
 
     const queue = new sqs.Queue(stack, 'Queue');
@@ -176,7 +176,7 @@ describe('Batch job event target', () => {
   test('specifying retry policy', () => {
     // GIVEN
     const rule = new events.Rule(stack, 'Rule', {
-      schedule: events.Schedule.expression('rate(1 hour)'),
+      schedule: Schedule.expression('rate(1 hour)'),
     });
 
     const queue = new sqs.Queue(stack, 'Queue');

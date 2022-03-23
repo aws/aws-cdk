@@ -1,7 +1,6 @@
 import { Annotations, Match, Template } from '@aws-cdk/assertions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
-import * as events from '@aws-cdk/aws-events';
 import * as cdk from '@aws-cdk/core';
 import { ScheduledFargateTask } from '../../lib';
 
@@ -17,7 +16,7 @@ test('Can create a scheduled Fargate Task - with only required props', () => {
       image: ecs.ContainerImage.fromRegistry('henk'),
       memoryLimitMiB: 512,
     },
-    schedule: events.Schedule.expression('rate(1 minute)'),
+    schedule: cdk.Schedule.expression('rate(1 minute)'),
   });
 
   // THEN
@@ -95,7 +94,7 @@ test('Can create a scheduled Fargate Task - with optional props', () => {
       environment: { TRIGGER: 'CloudWatch Events' },
     },
     desiredTaskCount: 2,
-    schedule: events.Schedule.expression('rate(1 minute)'),
+    schedule: cdk.Schedule.expression('rate(1 minute)'),
     ruleName: 'sample-scheduled-task-rule',
   });
 
@@ -176,7 +175,7 @@ test('Scheduled Fargate Task - with MemoryReservation defined', () => {
     scheduledFargateTaskImageOptions: {
       image: ecs.ContainerImage.fromRegistry('henk'),
     },
-    schedule: events.Schedule.expression('rate(1 minute)'),
+    schedule: cdk.Schedule.expression('rate(1 minute)'),
   });
 
   // THEN
@@ -215,7 +214,7 @@ test('Scheduled Fargate Task - with Command defined', () => {
       image: ecs.ContainerImage.fromRegistry('henk'),
       command: ['-c', '4', 'amazon.com'],
     },
-    schedule: events.Schedule.expression('rate(1 minute)'),
+    schedule: cdk.Schedule.expression('rate(1 minute)'),
   });
 
   // THEN
@@ -264,7 +263,7 @@ test('Scheduled Fargate Task - with subnetSelection defined', () => {
       image: ecs.ContainerImage.fromRegistry('henk'),
     },
     subnetSelection: { subnetType: ec2.SubnetType.PUBLIC },
-    schedule: events.Schedule.expression('rate(1 minute)'),
+    schedule: cdk.Schedule.expression('rate(1 minute)'),
   });
 
   // THEN
@@ -300,7 +299,7 @@ test('Scheduled Fargate Task - with platformVersion defined', () => {
       image: ecs.ContainerImage.fromRegistry('henk'),
       memoryLimitMiB: 512,
     },
-    schedule: events.Schedule.expression('rate(1 minute)'),
+    schedule: cdk.Schedule.expression('rate(1 minute)'),
     platformVersion: ecs.FargatePlatformVersion.VERSION1_4,
   });
 
@@ -354,7 +353,7 @@ test('Scheduled Fargate Task - with securityGroups defined', () => {
       image: ecs.ContainerImage.fromRegistry('henk'),
       memoryLimitMiB: 512,
     },
-    schedule: events.Schedule.expression('rate(1 minute)'),
+    schedule: cdk.Schedule.expression('rate(1 minute)'),
     securityGroups: [sg],
   });
 
@@ -404,7 +403,7 @@ test('Scheduled Fargate Task - exposes ECS Task', () => {
       image: ecs.ContainerImage.fromRegistry('henk'),
       memoryLimitMiB: 512,
     },
-    schedule: events.Schedule.expression('rate(1 minute)'),
+    schedule: cdk.Schedule.expression('rate(1 minute)'),
   });
 
   // THEN
@@ -423,7 +422,7 @@ test('Scheduled Fargate Task shows warning when minute is not defined in cron', 
       image: ecs.ContainerImage.fromRegistry('henk'),
       memoryLimitMiB: 512,
     },
-    schedule: events.Schedule.cron({}),
+    schedule: cdk.Schedule.cron({}),
   });
 
   // THEN
@@ -447,7 +446,7 @@ test('Scheduled Fargate Task shows no warning when minute is * in cron', () => {
       image: ecs.ContainerImage.fromRegistry('henk'),
       memoryLimitMiB: 512,
     },
-    schedule: events.Schedule.cron({ minute: '*' }),
+    schedule: cdk.Schedule.cron({ minute: '*' }),
   });
 
   // THEN

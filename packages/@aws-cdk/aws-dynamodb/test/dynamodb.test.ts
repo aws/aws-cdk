@@ -1,11 +1,10 @@
 import { Annotations, Match, Template } from '@aws-cdk/assertions';
-import * as appscaling from '@aws-cdk/aws-applicationautoscaling';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kinesis from '@aws-cdk/aws-kinesis';
 import * as kms from '@aws-cdk/aws-kms';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { testLegacyBehavior } from '@aws-cdk/cdk-build-tools/lib/feature-flag';
-import { App, Aws, CfnDeletionPolicy, ConstructNode, Duration, PhysicalName, RemovalPolicy, Resource, Stack, Tags } from '@aws-cdk/core';
+import { App, Aws, CfnDeletionPolicy, ConstructNode, Duration, PhysicalName, RemovalPolicy, Resource, Stack, Tags, Schedule } from '@aws-cdk/core';
 import * as cr from '@aws-cdk/custom-resources';
 import { Construct } from 'constructs';
 import {
@@ -1606,7 +1605,7 @@ test('can autoscale on a schedule', () => {
   // WHEN
   const scaling = table.autoScaleReadCapacity({ minCapacity: 1, maxCapacity: 100 });
   scaling.scaleOnSchedule('SaveMoneyByNotScalingUp', {
-    schedule: appscaling.Schedule.cron({}),
+    schedule: Schedule.cron({}),
     maxCapacity: 10,
   });
 
@@ -1634,7 +1633,7 @@ test('scheduled scaling shows warning when minute is not defined in cron', () =>
   // WHEN
   const scaling = table.autoScaleReadCapacity({ minCapacity: 1, maxCapacity: 100 });
   scaling.scaleOnSchedule('SaveMoneyByNotScalingUp', {
-    schedule: appscaling.Schedule.cron({}),
+    schedule: Schedule.cron({}),
     maxCapacity: 10,
   });
 
@@ -1654,7 +1653,7 @@ test('scheduled scaling shows no warning when minute is * in cron', () => {
   // WHEN
   const scaling = table.autoScaleReadCapacity({ minCapacity: 1, maxCapacity: 100 });
   scaling.scaleOnSchedule('SaveMoneyByNotScalingUp', {
-    schedule: appscaling.Schedule.cron({ minute: '*' }),
+    schedule: Schedule.cron({ minute: '*' }),
     maxCapacity: 10,
   });
 

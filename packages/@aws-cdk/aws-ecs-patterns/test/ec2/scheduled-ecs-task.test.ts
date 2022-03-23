@@ -4,7 +4,6 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import { MachineImage } from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
 import { AsgCapacityProvider } from '@aws-cdk/aws-ecs';
-import * as events from '@aws-cdk/aws-events';
 import * as cdk from '@aws-cdk/core';
 import { ScheduledEc2Task } from '../../lib';
 
@@ -28,7 +27,7 @@ test('Can create a scheduled Ec2 Task - with only required props', () => {
       image: ecs.ContainerImage.fromRegistry('henk'),
       memoryLimitMiB: 512,
     },
-    schedule: events.Schedule.expression('rate(1 minute)'),
+    schedule: cdk.Schedule.expression('rate(1 minute)'),
   });
 
   // THEN
@@ -96,7 +95,7 @@ test('Can create a scheduled Ec2 Task - with optional props', () => {
       environment: { TRIGGER: 'CloudWatch Events' },
     },
     desiredTaskCount: 2,
-    schedule: events.Schedule.expression('rate(1 minute)'),
+    schedule: cdk.Schedule.expression('rate(1 minute)'),
     ruleName: 'sample-scheduled-task-rule',
   });
 
@@ -164,7 +163,7 @@ test('Scheduled ECS Task - with securityGroups defined', () => {
     scheduledEc2TaskDefinitionOptions: {
       taskDefinition,
     },
-    schedule: events.Schedule.expression('rate(1 minute)'),
+    schedule: cdk.Schedule.expression('rate(1 minute)'),
     securityGroups: [sg],
   });
 
@@ -221,7 +220,7 @@ test('Scheduled Ec2 Task - with MemoryReservation defined', () => {
       image: ecs.ContainerImage.fromRegistry('henk'),
       memoryReservationMiB: 512,
     },
-    schedule: events.Schedule.expression('rate(1 minute)'),
+    schedule: cdk.Schedule.expression('rate(1 minute)'),
   });
 
   // THEN
@@ -269,7 +268,7 @@ test('Scheduled Ec2 Task - with Command defined', () => {
       memoryReservationMiB: 512,
       command: ['-c', '4', 'amazon.com'],
     },
-    schedule: events.Schedule.expression('rate(1 minute)'),
+    schedule: cdk.Schedule.expression('rate(1 minute)'),
   });
 
   // THEN
@@ -323,7 +322,7 @@ test('throws if desiredTaskCount is 0', () => {
         image: ecs.ContainerImage.fromRegistry('henk'),
         memoryLimitMiB: 512,
       },
-      schedule: events.Schedule.expression('rate(1 minute)'),
+      schedule: cdk.Schedule.expression('rate(1 minute)'),
       desiredTaskCount: 0,
     }),
   ).toThrow(/You must specify a desiredTaskCount greater than 0/);
@@ -341,7 +340,7 @@ test('Scheduled Ec2 Task - exposes ECS Task', () => {
       image: ecs.ContainerImage.fromRegistry('henk'),
       memoryLimitMiB: 512,
     },
-    schedule: events.Schedule.expression('rate(1 minute)'),
+    schedule: cdk.Schedule.expression('rate(1 minute)'),
   });
 
   // THEN
@@ -360,7 +359,7 @@ test('Scheduled Ec2 Task shows warning when minute is not defined in cron', () =
       image: ecs.ContainerImage.fromRegistry('henk'),
       memoryLimitMiB: 512,
     },
-    schedule: events.Schedule.cron({}),
+    schedule: cdk.Schedule.cron({}),
   });
 
   // THEN
@@ -384,7 +383,7 @@ test('Scheduled Ec2 Task shows no warning when minute is * in cron', () => {
       image: ecs.ContainerImage.fromRegistry('henk'),
       memoryLimitMiB: 512,
     },
-    schedule: events.Schedule.cron({ minute: '*' }),
+    schedule: cdk.Schedule.cron({ minute: '*' }),
   });
 
   // THEN

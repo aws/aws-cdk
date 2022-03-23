@@ -11,10 +11,10 @@ test('use lambda as an event rule target', () => {
   const stack = new cdk.Stack();
   const fn = newTestLambda(stack);
   const rule1 = new events.Rule(stack, 'Rule', {
-    schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
+    schedule: cdk.Schedule.rate(cdk.Duration.minutes(1)),
   });
   const rule2 = new events.Rule(stack, 'Rule2', {
-    schedule: events.Schedule.rate(cdk.Duration.minutes(5)),
+    schedule: cdk.Schedule.rate(cdk.Duration.minutes(5)),
   });
 
   // WHEN
@@ -64,7 +64,7 @@ test('adding same lambda function as target mutiple times creates permission onl
   const stack = new cdk.Stack();
   const fn = newTestLambda(stack);
   const rule = new events.Rule(stack, 'Rule', {
-    schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
+    schedule: cdk.Schedule.rate(cdk.Duration.minutes(1)),
   });
 
   // WHEN
@@ -85,7 +85,7 @@ test('adding different lambda functions as target mutiple times creates multiple
   const fn1 = newTestLambda(stack);
   const fn2 = newTestLambda(stack, '2');
   const rule = new events.Rule(stack, 'Rule', {
-    schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
+    schedule: cdk.Schedule.rate(cdk.Duration.minutes(1)),
   });
 
   // WHEN
@@ -110,7 +110,7 @@ test('adding same singleton lambda function as target mutiple times creates perm
     uuid: 'uuid',
   });
   const rule = new events.Rule(stack, 'Rule', {
-    schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
+    schedule: cdk.Schedule.rate(cdk.Duration.minutes(1)),
   });
 
   // WHEN
@@ -138,7 +138,7 @@ test('lambda handler and cloudwatch event across stacks', () => {
 
   const eventStack = new cdk.Stack(app, 'EventStack');
   new events.Rule(eventStack, 'Rule', {
-    schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
+    schedule: cdk.Schedule.rate(cdk.Duration.minutes(1)),
     targets: [new targets.LambdaFunction(fn)],
   });
 
@@ -162,7 +162,7 @@ test('use a Dead Letter Queue for the rule target', () => {
   const queue = new sqs.Queue(stack, 'Queue');
 
   new events.Rule(stack, 'Rule', {
-    schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
+    schedule: cdk.Schedule.rate(cdk.Duration.minutes(1)),
     targets: [new targets.LambdaFunction(fn, {
       deadLetterQueue: queue,
     })],
@@ -254,7 +254,7 @@ test('throw an error when using a Dead Letter Queue for the rule target in a dif
   const queue = new sqs.Queue(stack2, 'Queue');
 
   let rule = new events.Rule(stack1, 'Rule', {
-    schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
+    schedule: cdk.Schedule.rate(cdk.Duration.minutes(1)),
   });
 
 
@@ -291,7 +291,7 @@ test('must display a warning when using a Dead Letter Queue from another account
   const queue = sqs.Queue.fromQueueArn(stack2, 'Queue', 'arn:aws:sqs:eu-west-1:444455556666:queue1');
 
   new events.Rule(stack1, 'Rule', {
-    schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
+    schedule: cdk.Schedule.rate(cdk.Duration.minutes(1)),
     targets: [new targets.LambdaFunction(fn, {
       deadLetterQueue: queue,
     })],
@@ -339,7 +339,7 @@ test('specifying retry policy', () => {
 
   // WHEN
   new events.Rule(stack, 'Rule', {
-    schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
+    schedule: cdk.Schedule.rate(cdk.Duration.minutes(1)),
     targets: [new targets.LambdaFunction(fn, {
       retryAttempts: 2,
       maxEventAge: cdk.Duration.hours(2),

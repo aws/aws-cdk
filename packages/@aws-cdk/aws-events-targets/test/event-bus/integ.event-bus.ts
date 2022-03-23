@@ -11,7 +11,7 @@ class EventSourceStack extends cdk.Stack {
     super(scope, id, props);
 
     const rule = new events.Rule(this, 'Rule', {
-      schedule: events.Schedule.expression('rate(1 minute)'),
+      schedule: cdk.Schedule.expression('rate(1 minute)'),
     });
 
     const queue = new sqs.Queue(this, 'Queue');

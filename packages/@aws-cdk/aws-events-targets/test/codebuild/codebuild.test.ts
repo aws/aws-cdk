@@ -3,7 +3,7 @@ import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import * as sqs from '@aws-cdk/aws-sqs';
-import { CfnElement, Duration, Stack } from '@aws-cdk/core';
+import { CfnElement, Duration, Stack, Schedule } from '@aws-cdk/core';
 import * as targets from '../../lib';
 
 describe('CodeBuild event target', () => {
@@ -20,7 +20,7 @@ describe('CodeBuild event target', () => {
   test('use codebuild project as an eventrule target', () => {
     // GIVEN
     const rule = new events.Rule(stack, 'Rule', {
-      schedule: events.Schedule.expression('rate(1 min)'),
+      schedule: Schedule.expression('rate(1 min)'),
     });
 
     // WHEN
@@ -67,7 +67,7 @@ describe('CodeBuild event target', () => {
   test('specifying event for codebuild project target', () => {
     // GIVEN
     const rule = new events.Rule(stack, 'Rule', {
-      schedule: events.Schedule.expression('rate(1 hour)'),
+      schedule: Schedule.expression('rate(1 hour)'),
     });
 
     // WHEN
@@ -99,7 +99,7 @@ describe('CodeBuild event target', () => {
   test('specifying custom role for codebuild project target', () => {
     // GIVEN
     const rule = new events.Rule(stack, 'Rule', {
-      schedule: events.Schedule.expression('rate(1 hour)'),
+      schedule: Schedule.expression('rate(1 hour)'),
     });
     const role = new iam.Role(stack, 'MyExampleRole', {
       assumedBy: new iam.AnyPrincipal(),
@@ -125,7 +125,7 @@ describe('CodeBuild event target', () => {
   test('specifying retry policy', () => {
     // GIVEN
     const rule = new events.Rule(stack, 'Rule', {
-      schedule: events.Schedule.expression('rate(1 hour)'),
+      schedule: Schedule.expression('rate(1 hour)'),
     });
 
     // WHEN
@@ -173,7 +173,7 @@ describe('CodeBuild event target', () => {
   test('use a Dead Letter Queue for the rule target', () => {
     // GIVEN
     const rule = new events.Rule(stack, 'Rule', {
-      schedule: events.Schedule.expression('rate(1 hour)'),
+      schedule: Schedule.expression('rate(1 hour)'),
     });
 
     const queue = new sqs.Queue(stack, 'Queue');

@@ -1,5 +1,4 @@
 import { Annotations, Match, Template } from '@aws-cdk/assertions';
-import * as appscaling from '@aws-cdk/aws-applicationautoscaling';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
@@ -1588,7 +1587,7 @@ describe('fargate service', () => {
       // WHEN
       const capacity = service.autoScaleTaskCount({ maxCapacity: 10, minCapacity: 1 });
       capacity.scaleOnSchedule('ScaleOnSchedule', {
-        schedule: appscaling.Schedule.cron({ hour: '8', minute: '0' }),
+        schedule: cdk.Schedule.cron({ hour: '8', minute: '0' }),
         minCapacity: 10,
       });
 
@@ -1772,7 +1771,7 @@ describe('fargate service', () => {
       // WHEN
       const capacity = service.autoScaleTaskCount({ maxCapacity: 10, minCapacity: 1 });
       capacity.scaleOnSchedule('ScaleOnSchedule', {
-        schedule: appscaling.Schedule.cron({ hour: '8' }),
+        schedule: cdk.Schedule.cron({ hour: '8' }),
         minCapacity: 10,
       });
 
@@ -1799,7 +1798,7 @@ describe('fargate service', () => {
       // WHEN
       const capacity = service.autoScaleTaskCount({ maxCapacity: 10, minCapacity: 1 });
       capacity.scaleOnSchedule('ScaleOnSchedule', {
-        schedule: appscaling.Schedule.cron({ hour: '8', minute: '*' }),
+        schedule: cdk.Schedule.cron({ hour: '8', minute: '*' }),
         minCapacity: 10,
       });
 

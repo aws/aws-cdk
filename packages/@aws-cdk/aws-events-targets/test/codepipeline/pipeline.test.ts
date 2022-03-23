@@ -3,7 +3,7 @@ import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import * as sqs from '@aws-cdk/aws-sqs';
-import { CfnElement, Duration, Stack } from '@aws-cdk/core';
+import { CfnElement, Duration, Stack, Schedule } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import * as targets from '../../lib';
 
@@ -57,7 +57,7 @@ describe('CodePipeline event target', () => {
 
     beforeEach(() => {
       rule = new events.Rule(stack, 'rule', {
-        schedule: events.Schedule.expression('rate(1 minute)'),
+        schedule: Schedule.expression('rate(1 minute)'),
       });
     });
 

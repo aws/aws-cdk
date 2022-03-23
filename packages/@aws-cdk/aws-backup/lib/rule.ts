@@ -1,3 +1,4 @@
+import * as events from '@aws-cdk/aws-events';
 import { Duration, Schedule } from '@aws-cdk/core';
 import { IBackupVault } from './vault';
 
@@ -41,7 +42,7 @@ export interface BackupPlanRuleProps {
    *
    * @default - no schedule
    */
-  readonly scheduleExpression?: Schedule;
+  readonly scheduleExpression?: events.Schedule;
 
   /**
    * The duration after a backup is scheduled before a job is canceled if it doesn't start successfully.

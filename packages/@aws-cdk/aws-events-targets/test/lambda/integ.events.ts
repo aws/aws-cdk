@@ -15,18 +15,18 @@ const fn = new lambda.Function(stack, 'MyFunc', {
 });
 
 const timer = new events.Rule(stack, 'Timer', {
-  schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
+  schedule: cdk.Schedule.rate(cdk.Duration.minutes(1)),
 });
 timer.addTarget(new targets.LambdaFunction(fn));
 
 const timer2 = new events.Rule(stack, 'Timer2', {
-  schedule: events.Schedule.rate(cdk.Duration.minutes(2)),
+  schedule: cdk.Schedule.rate(cdk.Duration.minutes(2)),
 });
 timer2.addTarget(new targets.LambdaFunction(fn));
 
 
 const timer3 = new events.Rule(stack, 'Timer3', {
-  schedule: events.Schedule.rate(cdk.Duration.minutes(2)),
+  schedule: cdk.Schedule.rate(cdk.Duration.minutes(2)),
 });
 
 const queue = new sqs.Queue(stack, 'Queue');

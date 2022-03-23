@@ -25,7 +25,7 @@ const stream = new firehose.CfnDeliveryStream(stack, 'MyStream', {
 bucket.grantReadWrite(firehoseRole);
 
 const event = new events.Rule(stack, 'EveryMinute', {
-  schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
+  schedule: cdk.Schedule.rate(cdk.Duration.minutes(1)),
 });
 
 event.addTarget(new targets.KinesisFirehoseStream(stream, {}));

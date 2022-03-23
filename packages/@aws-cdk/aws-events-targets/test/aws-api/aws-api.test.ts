@@ -1,14 +1,14 @@
 import { Annotations, Template } from '@aws-cdk/assertions';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
-import { Stack } from '@aws-cdk/core';
+import { Stack, Schedule } from '@aws-cdk/core';
 import * as targets from '../../lib';
 
 test('use AwsApi as an event rule target', () => {
   // GIVEN
   const stack = new Stack();
   const rule = new events.Rule(stack, 'Rule', {
-    schedule: events.Schedule.expression('rate(15 minutes)'),
+    schedule: Schedule.expression('rate(15 minutes)'),
   });
 
   // WHEN
@@ -98,7 +98,7 @@ test('with policy statement', () => {
   // GIVEN
   const stack = new Stack();
   const rule = new events.Rule(stack, 'Rule', {
-    schedule: events.Schedule.expression('rate(15 minutes)'),
+    schedule: Schedule.expression('rate(15 minutes)'),
   });
 
   // WHEN
@@ -148,7 +148,7 @@ test('with service not in AWS SDK', () => {
   // GIVEN
   const stack = new Stack();
   const rule = new events.Rule(stack, 'Rule', {
-    schedule: events.Schedule.expression('rate(15 minutes)'),
+    schedule: Schedule.expression('rate(15 minutes)'),
   });
   const awsApi = new targets.AwsApi({
     service: 'no-such-service',

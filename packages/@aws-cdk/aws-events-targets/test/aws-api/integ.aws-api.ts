@@ -11,7 +11,7 @@ class AwsApi extends cdk.Stack {
 
     // Force new deployment of 'cool-service' and stop 'dev-instance' at midnight everyday
     const scheduleRule = new events.Rule(this, 'ScheduleRule', {
-      schedule: events.Schedule.cron({
+      schedule: cdk.Schedule.cron({
         hour: '0',
         minute: '0',
       }),

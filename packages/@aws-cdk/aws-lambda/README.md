@@ -435,7 +435,7 @@ import * as targets from '@aws-cdk/aws-events-targets';
 
 declare const fn: lambda.Function;
 const rule = new events.Rule(this, 'Schedule Rule', {
- schedule: events.Schedule.cron({ minute: '0', hour: '4' }),
+ schedule: Schedule.cron({ minute: '0', hour: '4' }),
 });
 rule.addTarget(new targets.LambdaFunction(fn));
 ```

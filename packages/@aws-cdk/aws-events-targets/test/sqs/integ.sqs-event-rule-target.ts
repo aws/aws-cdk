@@ -16,7 +16,7 @@ const stack = new cdk.Stack(app, 'aws-cdk-sqs-event-target');
 const key = new kms.Key(stack, 'MyKey');
 
 const event = new events.Rule(stack, 'MyRule', {
-  schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
+  schedule: cdk.Schedule.rate(cdk.Duration.minutes(1)),
 });
 
 const queue = new sqs.Queue(stack, 'MyQueue', {

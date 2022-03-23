@@ -13,7 +13,7 @@ test('use api gateway rest api as an event rule target', () => {
   const stack = new cdk.Stack();
   const restApi = newTestRestApi(stack);
   const rule = new events.Rule(stack, 'Rule', {
-    schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
+    schedule: cdk.Schedule.rate(cdk.Duration.minutes(1)),
   });
 
   // WHEN
@@ -69,7 +69,7 @@ test('with stage, path, method setting', () => {
   const stack = new cdk.Stack();
   const restApi = newTestRestApi(stack);
   const rule = new events.Rule(stack, 'Rule', {
-    schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
+    schedule: cdk.Schedule.rate(cdk.Duration.minutes(1)),
   });
 
   // WHEN
@@ -126,7 +126,7 @@ test('with http parameters', () => {
   const stack = new cdk.Stack();
   const restApi = newTestRestApi(stack);
   const rule = new events.Rule(stack, 'Rule', {
-    schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
+    schedule: cdk.Schedule.rate(cdk.Duration.minutes(1)),
   });
 
   // WHEN
@@ -166,7 +166,7 @@ test('Throw when the number of wild cards in the path not equal to the number of
   const stack = new cdk.Stack();
   const restApi = newTestRestApi(stack);
   const rule = new events.Rule(stack, 'Rule', {
-    schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
+    schedule: cdk.Schedule.rate(cdk.Duration.minutes(1)),
   });
 
   // WHEN, THEN
@@ -192,7 +192,7 @@ test('with an explicit event role', () => {
   const stack = new cdk.Stack();
   const restApi = newTestRestApi(stack);
   const rule = new events.Rule(stack, 'Rule', {
-    schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
+    schedule: cdk.Schedule.rate(cdk.Duration.minutes(1)),
   });
 
   // WHEN
@@ -224,7 +224,7 @@ test('use a Dead Letter Queue', () => {
   const stack = new cdk.Stack();
   const restApi = newTestRestApi(stack);
   const rule = new events.Rule(stack, 'Rule', {
-    schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
+    schedule: cdk.Schedule.rate(cdk.Duration.minutes(1)),
   });
 
   // WHEN

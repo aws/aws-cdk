@@ -1,10 +1,11 @@
 import { IRole, PolicyStatement, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
-import { App, IResource, Lazy, Names, Resource, Stack, Token, PhysicalName, ArnFormat, Schedule } from '@aws-cdk/core';
+import { App, IResource, Lazy, Names, Resource, Stack, Token, PhysicalName, ArnFormat, Schedule as coreSchedule } from '@aws-cdk/core';
 import { Node, Construct } from 'constructs';
 import { IEventBus } from './event-bus';
 import { EventPattern } from './event-pattern';
 import { CfnEventBusPolicy, CfnRule } from './events.generated';
 import { IRule } from './rule-ref';
+import { Schedule } from './schedule';
 import { IRuleTarget } from './target';
 import { mergeEventPattern, renderEventPattern, sameEnvDimension } from './util';
 
@@ -242,7 +243,7 @@ export class Rule extends Resource implements IRule {
         new MirrorRule(mirrorRuleScope, `${Names.uniqueId(this)}-${id}`, {
           targets: [target],
           eventPattern: this.eventPattern,
-          schedule: this.scheduleExpression ? Schedule.expression(this.scheduleExpression) : undefined,
+          schedule: this.scheduleExpression ? coreSchedule.expression(this.scheduleExpression) : undefined,
           description: this.description,
         }, this);
 

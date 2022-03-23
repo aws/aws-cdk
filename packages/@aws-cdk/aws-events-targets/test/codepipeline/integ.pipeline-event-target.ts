@@ -68,7 +68,7 @@ pipeline.addStage({
 let queue = new sqs.Queue(stack, 'dlq');
 
 new events.Rule(stack, 'rule', {
-  schedule: events.Schedule.expression('rate(1 minute)'),
+  schedule: cdk.Schedule.expression('rate(1 minute)'),
   targets: [new targets.CodePipeline(pipeline, {
     deadLetterQueue: queue,
     maxEventAge: cdk.Duration.hours(2),

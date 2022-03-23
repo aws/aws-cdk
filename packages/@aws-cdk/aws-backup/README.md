@@ -56,7 +56,7 @@ declare const plan: backup.BackupPlan;
 plan.addRule(new backup.BackupPlanRule({
   completionWindow: Duration.hours(2),
   startWindow: Duration.hours(1),
-  scheduleExpression: events.Schedule.cron({ // Only cron expressions are supported
+  scheduleExpression: Schedule.cron({ // Only cron expressions are supported
     day: '15',
     hour: '3',
     minute: '30',

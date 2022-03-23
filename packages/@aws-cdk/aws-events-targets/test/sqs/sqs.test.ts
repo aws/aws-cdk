@@ -1,7 +1,7 @@
 import { Template } from '@aws-cdk/assertions';
 import * as events from '@aws-cdk/aws-events';
 import * as sqs from '@aws-cdk/aws-sqs';
-import { Duration, Stack } from '@aws-cdk/core';
+import { Duration, Stack, Schedule } from '@aws-cdk/core';
 import * as targets from '../../lib';
 
 test('sqs queue as an event rule target', () => {
@@ -9,7 +9,7 @@ test('sqs queue as an event rule target', () => {
   const stack = new Stack();
   const queue = new sqs.Queue(stack, 'MyQueue');
   const rule = new events.Rule(stack, 'MyRule', {
-    schedule: events.Schedule.rate(Duration.hours(1)),
+    schedule: Schedule.rate(Duration.hours(1)),
   });
 
   // WHEN
@@ -75,7 +75,7 @@ test('multiple uses of a queue as a target results in multi policy statement bec
   // WHEN
   for (let i = 0; i < 2; ++i) {
     const rule = new events.Rule(stack, `Rule${i}`, {
-      schedule: events.Schedule.rate(Duration.hours(1)),
+      schedule: Schedule.rate(Duration.hours(1)),
     });
     rule.addTarget(new targets.SqsQueue(queue));
   }
@@ -153,7 +153,7 @@ test('fifo queues are synthesized correctly', () => {
   const stack = new Stack();
   const queue = new sqs.Queue(stack, 'MyQueue', { fifo: true });
   const rule = new events.Rule(stack, 'MyRule', {
-    schedule: events.Schedule.rate(Duration.hours(1)),
+    schedule: Schedule.rate(Duration.hours(1)),
   });
 
   // WHEN
@@ -186,7 +186,7 @@ test('dead letter queue is configured correctly', () => {
   const queue = new sqs.Queue(stack, 'MyQueue', { fifo: true });
   const deadLetterQueue = new sqs.Queue(stack, 'MyDeadLetterQueue');
   const rule = new events.Rule(stack, 'MyRule', {
-    schedule: events.Schedule.rate(Duration.hours(1)),
+    schedule: Schedule.rate(Duration.hours(1)),
   });
 
   // WHEN
@@ -223,7 +223,7 @@ test('specifying retry policy', () => {
   const stack = new Stack();
   const queue = new sqs.Queue(stack, 'MyQueue', { fifo: true });
   const rule = new events.Rule(stack, 'MyRule', {
-    schedule: events.Schedule.rate(Duration.hours(1)),
+    schedule: Schedule.rate(Duration.hours(1)),
   });
 
   // WHEN

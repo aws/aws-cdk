@@ -137,7 +137,7 @@ import * as codepipeline from '@aws-cdk/aws-codepipeline';
 const pipeline = new codepipeline.Pipeline(this, 'Pipeline');
 
 const rule = new events.Rule(this, 'Rule', {
-  schedule: events.Schedule.expression('rate(1 hour)'),
+  schedule: cdk.Schedule.expression('rate(1 hour)'),
 });
 
 rule.addTarget(new targets.CodePipeline(pipeline));
@@ -158,7 +158,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 
 const rule = new events.Rule(this, 'Rule', {
-  schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
+  schedule: cdk.Schedule.rate(cdk.Duration.minutes(1)),
 });
 
 const dlq = new sqs.Queue(this, 'DeadLetterQueue');
@@ -211,7 +211,7 @@ const jobDefinition = new batch.JobDefinition(this, 'MyJob', {
 const queue = new sqs.Queue(this, 'Queue');
 
 const rule = new events.Rule(this, 'Rule', {
-  schedule: events.Schedule.rate(cdk.Duration.hours(1)),
+  schedule: cdk.Schedule.rate(cdk.Duration.hours(1)),
 });
 
 rule.addTarget(new targets.BatchJob(
@@ -238,7 +238,7 @@ import * as api from '@aws-cdk/aws-apigateway';
 import * as lambda from '@aws-cdk/aws-lambda';
 
 const rule = new events.Rule(this, 'Rule', {
-  schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
+  schedule: cdk.Schedule.rate(cdk.Duration.minutes(1)),
 });
 
 const fn = new lambda.Function( this, 'MyFunc', {
@@ -288,7 +288,7 @@ const destination = new events.ApiDestination(this, 'Destination', {
 });
 
 const rule = new events.Rule(this, 'Rule', {
-  schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
+  schedule: cdk.Schedule.rate(cdk.Duration.minutes(1)),
   targets: [new targets.ApiDestination(destination)],
 });
 ```
@@ -301,7 +301,7 @@ The code snippet below creates the scheduled event rule that route events to an 
 
 ```ts
 const rule = new events.Rule(this, 'Rule', {
-  schedule: events.Schedule.expression('rate(1 minute)'),
+  schedule: cdk.Schedule.expression('rate(1 minute)'),
 });
 
 rule.addTarget(new targets.EventBus(

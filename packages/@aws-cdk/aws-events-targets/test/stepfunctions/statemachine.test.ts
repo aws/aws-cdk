@@ -10,7 +10,7 @@ test('State machine can be used as Event Rule target', () => {
   // GIVEN
   const stack = new cdk.Stack();
   const rule = new events.Rule(stack, 'Rule', {
-    schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
+    schedule: cdk.Schedule.rate(cdk.Duration.minutes(1)),
   });
   const stateMachine = new sfn.StateMachine(stack, 'SM', {
     definition: new sfn.Wait(stack, 'Hello', { time: sfn.WaitTime.duration(cdk.Duration.seconds(10)) }),
@@ -61,7 +61,7 @@ test('Existing role can be used for State machine Rule target', () => {
   // GIVEN
   const stack = new cdk.Stack();
   const rule = new events.Rule(stack, 'Rule', {
-    schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
+    schedule: cdk.Schedule.rate(cdk.Duration.minutes(1)),
   });
   const role = new iam.Role(stack, 'Role', {
     assumedBy: new iam.ServicePrincipal('events.amazonaws.com'),
@@ -116,7 +116,7 @@ test('specifying retry policy', () => {
   // GIVEN
   const stack = new cdk.Stack();
   const rule = new events.Rule(stack, 'Rule', {
-    schedule: events.Schedule.expression('rate(1 hour)'),
+    schedule: cdk.Schedule.expression('rate(1 hour)'),
   });
 
   // WHEN
@@ -166,7 +166,7 @@ test('use a Dead Letter Queue for the rule target', () => {
   const stack = new cdk.Stack(app, 'Stack');
 
   const rule = new events.Rule(stack, 'Rule', {
-    schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
+    schedule: cdk.Schedule.rate(cdk.Duration.minutes(1)),
   });
 
   const dlq = new sqs.Queue(stack, 'DeadLetterQueue');

@@ -1,7 +1,7 @@
 import { Template } from '@aws-cdk/assertions';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
-import { Duration, SecretValue, Stack } from '@aws-cdk/core';
+import { Duration, SecretValue, Stack, Schedule } from '@aws-cdk/core';
 import * as targets from '../../lib';
 
 
@@ -25,7 +25,7 @@ describe('with basic auth connection', () => {
     });
 
     rule = new events.Rule(stack, 'Rule', {
-      schedule: events.Schedule.rate(Duration.minutes(1)),
+      schedule: Schedule.rate(Duration.minutes(1)),
     });
   });
 
