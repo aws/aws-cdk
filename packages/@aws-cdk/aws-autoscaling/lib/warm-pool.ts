@@ -13,7 +13,7 @@ export interface WarmPoolOptions {
    * If the value is not specified, instances in the Auto Scaling group will be terminated
    * when the group scales in.
    *
-   * @default - false
+   * @default false
    */
   readonly reuseOnScaleIn?: boolean;
 
@@ -30,13 +30,13 @@ export interface WarmPoolOptions {
   /**
    * The minimum number of instances to maintain in the warm pool.
    *
-   * @default - 0
+   * @default 0
    */
   readonly minSize?: number;
   /**
    * The instance state to transition to after the lifecycle actions are complete.
    *
-   * @default - STOPPED
+   * @default PoolState.STOPPED
    */
   readonly poolState?: PoolState;
 }
