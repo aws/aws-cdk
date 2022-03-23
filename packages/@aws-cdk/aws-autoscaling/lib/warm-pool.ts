@@ -74,8 +74,8 @@ export class WarmPool extends Resource {
         reuseOnScaleIn: props.reuseOnScaleIn,
       } : undefined,
       maxGroupPreparedCapacity: props.maxGroupPreparedCapacity,
-      minSize: props.minSize && props.minSize,
-      poolState: props.poolState && props.poolState,
+      minSize: props.minSize,
+      poolState: props.poolState,
     });
   }
 }
