@@ -1,5 +1,10 @@
 {
   "Resources": {
+    "Bucket12520700A": {
+      "Type": "AWS::S3::Bucket",
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
     "Bucket1NotificationsBC5D9A45": {
       "Type": "Custom::S3BucketNotifications",
       "Properties": {
@@ -48,11 +53,6 @@
         "MyQueueE6CA6235"
       ]
     },
-    "Bucket12520700A": {
-      "Type": "AWS::S3::Bucket",
-      "UpdateReplacePolicy": "Delete",
-      "DeletionPolicy": "Delete"
-    },
     "MyQueueE6CA6235": {
       "Type": "AWS::SQS::Queue",
       "UpdateReplacePolicy": "Delete",
@@ -65,9 +65,9 @@
           "Statement": [
             {
               "Action": [
-                "sqs:SendMessage",
                 "sqs:GetQueueAttributes",
-                "sqs:GetQueueUrl"
+                "sqs:GetQueueUrl",
+                "sqs:SendMessage"
               ],
               "Condition": {
                 "ArnLike": {
@@ -92,9 +92,9 @@
             },
             {
               "Action": [
-                "sqs:SendMessage",
                 "sqs:GetQueueAttributes",
-                "sqs:GetQueueUrl"
+                "sqs:GetQueueUrl",
+                "sqs:SendMessage"
               ],
               "Condition": {
                 "ArnLike": {
@@ -201,6 +201,11 @@
         "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC"
       ]
     },
+    "Bucket25524B414": {
+      "Type": "AWS::S3::Bucket",
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
     "Bucket2NotificationsD9BA2A77": {
       "Type": "Custom::S3BucketNotifications",
       "Properties": {
@@ -245,11 +250,6 @@
         "MyQueueE6CA6235"
       ]
     },
-    "Bucket25524B414": {
-      "Type": "AWS::S3::Bucket",
-      "UpdateReplacePolicy": "Delete",
-      "DeletionPolicy": "Delete"
-    },
     "EncryptedQueueKey6F4FD304": {
       "Type": "AWS::KMS::Key",
       "Properties": {
@@ -282,8 +282,8 @@
               "Action": [
                 "kms:Decrypt",
                 "kms:Encrypt",
-                "kms:ReEncrypt*",
-                "kms:GenerateDataKey*"
+                "kms:GenerateDataKey*",
+                "kms:ReEncrypt*"
               ],
               "Condition": {
                 "ArnLike": {
@@ -303,8 +303,8 @@
             },
             {
               "Action": [
-                "kms:GenerateDataKey*",
-                "kms:Decrypt"
+                "kms:Decrypt",
+                "kms:GenerateDataKey*"
               ],
               "Effect": "Allow",
               "Principal": {
@@ -340,9 +340,9 @@
           "Statement": [
             {
               "Action": [
-                "sqs:SendMessage",
                 "sqs:GetQueueAttributes",
-                "sqs:GetQueueUrl"
+                "sqs:GetQueueUrl",
+                "sqs:SendMessage"
               ],
               "Condition": {
                 "ArnLike": {

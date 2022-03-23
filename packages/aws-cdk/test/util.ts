@@ -89,7 +89,7 @@ function addNestedStacks(templatePath: string, outdir: string, rootStackTemplate
   let template = rootStackTemplate;
 
   if (!template) {
-    const templatePathWithDir = path.join('diff-nested-stacks-templates', templatePath);
+    const templatePathWithDir = path.join('nested-stack-templates', templatePath);
     template = JSON.parse(fs.readFileSync(path.join(__dirname, templatePathWithDir)).toString());
     fs.writeFileSync(path.join(outdir, templatePath), JSON.stringify(template, undefined, 2));
   }
