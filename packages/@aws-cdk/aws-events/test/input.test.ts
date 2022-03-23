@@ -1,7 +1,7 @@
 import { Template } from '@aws-cdk/assertions';
 import { User } from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
-import { EventField, IRuleTarget, RuleTargetInput, Schedule } from '../lib';
+import { EventField, IRuleTarget, RuleTargetInput } from '../lib';
 import { Rule } from '../lib/rule';
 
 describe('input', () => {
@@ -10,7 +10,7 @@ describe('input', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const rule = new Rule(stack, 'Rule', {
-        schedule: Schedule.rate(cdk.Duration.minutes(1)),
+        schedule: cdk.Schedule.rate(cdk.Duration.minutes(1)),
       });
 
       // WHEN
@@ -30,7 +30,7 @@ describe('input', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const rule = new Rule(stack, 'Rule', {
-        schedule: Schedule.rate(cdk.Duration.minutes(1)),
+        schedule: cdk.Schedule.rate(cdk.Duration.minutes(1)),
       });
 
       // WHEN
@@ -67,7 +67,7 @@ describe('input', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const rule = new Rule(stack, 'Rule', {
-        schedule: Schedule.rate(cdk.Duration.minutes(1)),
+        schedule: cdk.Schedule.rate(cdk.Duration.minutes(1)),
       });
 
       // WHEN
@@ -104,7 +104,7 @@ describe('input', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const rule = new Rule(stack, 'Rule', {
-        schedule: Schedule.rate(cdk.Duration.minutes(1)),
+        schedule: cdk.Schedule.rate(cdk.Duration.minutes(1)),
       });
 
       // WHEN
@@ -141,7 +141,7 @@ describe('input', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const rule = new Rule(stack, 'Rule', {
-        schedule: Schedule.rate(cdk.Duration.minutes(1)),
+        schedule: cdk.Schedule.rate(cdk.Duration.minutes(1)),
       });
 
       // WHEN
@@ -178,7 +178,7 @@ describe('input', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const rule = new Rule(stack, 'Rule', {
-        schedule: Schedule.rate(cdk.Duration.minutes(1)),
+        schedule: cdk.Schedule.rate(cdk.Duration.minutes(1)),
       });
 
       // WHEN
@@ -215,7 +215,7 @@ describe('input', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const rule = new Rule(stack, 'Rule', {
-        schedule: Schedule.rate(cdk.Duration.minutes(1)),
+        schedule: cdk.Schedule.rate(cdk.Duration.minutes(1)),
       });
       const user = new User(stack, 'User');
 
@@ -252,7 +252,7 @@ describe('input', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const rule = new Rule(stack, 'Rule', {
-        schedule: Schedule.rate(cdk.Duration.minutes(1)),
+        schedule: cdk.Schedule.rate(cdk.Duration.minutes(1)),
       });
 
       // WHEN
@@ -272,7 +272,7 @@ describe('input', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const rule = new Rule(stack, 'Rule', {
-        schedule: Schedule.rate(cdk.Duration.minutes(1)),
+        schedule: cdk.Schedule.rate(cdk.Duration.minutes(1)),
       });
 
       // WHEN
@@ -292,7 +292,7 @@ describe('input', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const rule = new Rule(stack, 'Rule', {
-        schedule: Schedule.rate(cdk.Duration.minutes(1)),
+        schedule: cdk.Schedule.rate(cdk.Duration.minutes(1)),
       });
 
       const world = cdk.Lazy.string({ produce: () => 'world' });

@@ -1,3 +1,4 @@
+/* istanbul ignore file */
 import { Annotations, Duration } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 

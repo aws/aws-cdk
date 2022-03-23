@@ -1,3 +1,4 @@
+/* istanbul ignore file */
 import { Annotations, Duration } from '@aws-cdk/core';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main

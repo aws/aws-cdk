@@ -2,7 +2,7 @@
 import { Annotations, Match, Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
-import { EventBus, EventField, IRule, IRuleTarget, RuleTargetConfig, RuleTargetInput, Schedule } from '../lib';
+import { EventBus, EventField, IRule, IRuleTarget, RuleTargetConfig, RuleTargetInput } from '../lib';
 import { Rule } from '../lib/rule';
 
 /* eslint-disable quote-props */
@@ -12,7 +12,7 @@ describe('rule', () => {
     const stack = new cdk.Stack();
 
     new Rule(stack, 'MyRule', {
-      schedule: Schedule.rate(cdk.Duration.minutes(10)),
+      schedule: cdk.Schedule.rate(cdk.Duration.minutes(10)),
     });
 
     Template.fromStack(stack).templateMatches({
@@ -31,7 +31,7 @@ describe('rule', () => {
   test('rule displays warning when minutes are not included in cron', () => {
     const stack = new cdk.Stack();
     const rule = new Rule(stack, 'MyRule', {
-      schedule: Schedule.cron({
+      schedule: cdk.Schedule.cron({
         hour: '8',
         day: '1',
       }),
@@ -48,7 +48,7 @@ describe('rule', () => {
   test('rule does not display warning when minute is set to * in cron', () => {
     const stack = new cdk.Stack();
     const rule = new Rule(stack, 'MyRule', {
-      schedule: Schedule.cron({
+      schedule: cdk.Schedule.cron({
         minute: '*',
         hour: '8',
         day: '1',
@@ -62,7 +62,7 @@ describe('rule', () => {
   test('can get rule name', () => {
     const stack = new cdk.Stack();
     const rule = new Rule(stack, 'MyRule', {
-      schedule: Schedule.rate(cdk.Duration.minutes(10)),
+      schedule: cdk.Schedule.rate(cdk.Duration.minutes(10)),
     });
 
     new cdk.CfnResource(stack, 'Res', {
@@ -84,7 +84,7 @@ describe('rule', () => {
 
     new Rule(stack, 'MyScheduledRule', {
       ruleName: 'rateInMinutes',
-      schedule: Schedule.rate(lazyDuration),
+      schedule: cdk.Schedule.rate(lazyDuration),
     });
 
     // THEN
@@ -96,14 +96,14 @@ describe('rule', () => {
 
   test('Seconds is not an allowed value for Schedule rate', () => {
     const lazyDuration = cdk.Duration.seconds(cdk.Lazy.number({ produce: () => 5 }));
-    expect(() => Schedule.rate(lazyDuration)).toThrow(/Allowed units for scheduling/i);
+    expect(() => cdk.Schedule.rate(lazyDuration)).toThrow(/Allowed units for scheduling/i);
   });
 
   test('Millis is not an allowed value for Schedule rate', () => {
     const lazyDuration = cdk.Duration.millis(cdk.Lazy.number({ produce: () => 5 }));
 
     // THEN
-    expect(() => Schedule.rate(lazyDuration)).toThrow(/Allowed units for scheduling/i);
+    expect(() => cdk.Schedule.rate(lazyDuration)).toThrow(/Allowed units for scheduling/i);
   });
 
   test('rule with physical name', () => {
@@ -113,7 +113,7 @@ describe('rule', () => {
     // WHEN
     new Rule(stack, 'MyRule', {
       ruleName: 'PhysicalName',
-      schedule: Schedule.rate(cdk.Duration.minutes(10)),
+      schedule: cdk.Schedule.rate(cdk.Duration.minutes(10)),
     });
 
     // THEN
@@ -273,7 +273,7 @@ describe('rule', () => {
 
     const rule = new Rule(stack, 'EventRule', {
       targets: [t1],
-      schedule: Schedule.rate(cdk.Duration.minutes(5)),
+      schedule: cdk.Schedule.rate(cdk.Duration.minutes(5)),
     });
 
     rule.addTarget(t2);
@@ -314,7 +314,7 @@ describe('rule', () => {
     const stack = new cdk.Stack();
 
     const rule = new Rule(stack, 'EventRule', {
-      schedule: Schedule.rate(cdk.Duration.minutes(1)),
+      schedule: cdk.Schedule.rate(cdk.Duration.minutes(1)),
     });
 
     // a plain string should just be stringified (i.e. double quotes added and escaped)
@@ -401,7 +401,7 @@ describe('rule', () => {
     const stack = new cdk.Stack();
 
     const rule = new Rule(stack, 'EventRule', {
-      schedule: Schedule.rate(cdk.Duration.minutes(1)),
+      schedule: cdk.Schedule.rate(cdk.Duration.minutes(1)),
     });
 
     const role = new iam.Role(stack, 'SomeRole', {
@@ -436,7 +436,7 @@ describe('rule', () => {
     const targetStack = new cdk.Stack(app, 'TargeTStack', { env: { account: '5678', region: 'us-east-1' } });
 
     const rule = new Rule(ruleStack, 'EventRule', {
-      schedule: Schedule.rate(cdk.Duration.minutes(1)),
+      schedule: cdk.Schedule.rate(cdk.Duration.minutes(1)),
     });
 
     const role = new iam.Role(targetStack, 'SomeRole', {
@@ -520,7 +520,7 @@ describe('rule', () => {
 
     // WHEN
     new Rule(stack, 'Rule', {
-      schedule: Schedule.expression('foom'),
+      schedule: cdk.Schedule.expression('foom'),
       enabled: false,
     });
 
@@ -534,7 +534,7 @@ describe('rule', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const rule = new Rule(stack, 'Rule', {
-      schedule: Schedule.expression('foom'),
+      schedule: cdk.Schedule.expression('foom'),
       enabled: false,
     });
     rule.addTarget(new SomeTarget());
@@ -572,7 +572,7 @@ describe('rule', () => {
     };
 
     new Rule(stack, 'EventRule', {
-      schedule: Schedule.rate(cdk.Duration.minutes(5)),
+      schedule: cdk.Schedule.rate(cdk.Duration.minutes(5)),
       targets: [t1],
     });
 
@@ -618,7 +618,7 @@ describe('rule', () => {
 
     // THEN
     expect(() => new Rule(stack, 'MyRule', {
-      schedule: Schedule.rate(cdk.Duration.minutes(10)),
+      schedule: cdk.Schedule.rate(cdk.Duration.minutes(10)),
       eventBus,
     })).toThrow(/Cannot associate rule with 'eventBus' when using 'schedule'/);
   });
