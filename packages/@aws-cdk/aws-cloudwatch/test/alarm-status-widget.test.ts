@@ -25,8 +25,6 @@ describe('Alarm Status Widget', () => {
         properties: {
           title: 'Alarm Status',
           alarms: [{ 'Fn::GetAtt': ['Alarm7103F465', 'Arn'] }],
-          sortBy: 'default',
-          states: [],
         },
       },
     ]);
