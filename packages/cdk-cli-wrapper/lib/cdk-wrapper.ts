@@ -243,10 +243,11 @@ function renderMapArrayArg(flag: string, parameters: { [name: string]: string | 
 }
 
 function renderArrayArg(flag: string, values?: string[]): string[] {
-  return values?.reduce((acc: string[], value) => {
-    acc.push(flag, value);
-    return acc;
-  }, []) ?? [];
+  let args: string[] = [];
+  for (const value of values ?? []) {
+    args.push(flag, value);
+  }
+  return args;
 }
 
 function renderBooleanArg(val: string, arg?: boolean): string[] {
