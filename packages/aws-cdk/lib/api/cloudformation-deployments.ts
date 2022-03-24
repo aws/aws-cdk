@@ -292,13 +292,13 @@ export class CloudFormationDeployments {
   }
 
   public async readCurrentTemplateWithNestedStacks(rootStackArtifact: cxapi.CloudFormationStackArtifact): Promise<Template> {
-    const sdk = await this.prepareSdkWithLookupOrDeployRole(rootStackArtifact);
+    const sdk = (await this.prepareSdkWithLookupOrDeployRole(rootStackArtifact)).stackSdk;
     return (await loadCurrentTemplateWithNestedStacks(rootStackArtifact, sdk)).deployedTemplate;
   }
 
   public async readCurrentTemplate(stackArtifact: cxapi.CloudFormationStackArtifact): Promise<Template> {
     debug(`Reading existing template for stack ${stackArtifact.displayName}.`);
-    const sdk = await this.prepareSdkWithLookupOrDeployRole(stackArtifact);
+    const sdk = (await this.prepareSdkWithLookupOrDeployRole(stackArtifact)).stackSdk;
     return loadCurrentTemplate(stackArtifact, sdk);
   }
 
@@ -307,7 +307,9 @@ export class CloudFormationDeployments {
     toolkitStackName?: string,
   ): Promise<ResourceIdentifierSummaries> {
     debug(`Retrieving template summary for stack ${stackArtifact.displayName}.`);
-    const { stackSdk, resolvedEnvironment } = await this.prepareSdkFor(stackArtifact, stackArtifact.lookupRole?.arn, Mode.ForReading);
+    // Currently, needs to use `deploy-role` since it may need to read templates in the staging
+    // bucket which have been encrypted with a KMS key (and lookup-role may not read encrypted things)
+    const { stackSdk, resolvedEnvironment } = await this.prepareSdkFor(stackArtifact, undefined, Mode.ForReading);
     const cfn = stackSdk.cloudFormation();
 
     const toolkitInfo = await ToolkitInfo.lookup(resolvedEnvironment, stackSdk, toolkitStackName);
@@ -389,16 +391,19 @@ export class CloudFormationDeployments {
     return stack.exists;
   }
 
-  private async prepareSdkWithLookupOrDeployRole(stackArtifact: cxapi.CloudFormationStackArtifact): Promise<ISDK> {
+  private async prepareSdkWithLookupOrDeployRole(stackArtifact: cxapi.CloudFormationStackArtifact): Promise<PreparedSdkForEnvironment> {
     // try to assume the lookup role
     try {
       const result = await prepareSdkWithLookupRoleFor(this.sdkProvider, stackArtifact);
       if (result.didAssumeRole) {
-        return result.sdk;
+        return {
+          resolvedEnvironment: result.resolvedEnvironment,
+          stackSdk: result.sdk,
+        };
       }
     } catch { }
     // fall back to the deploy role
-    return (await this.prepareSdkFor(stackArtifact, undefined, Mode.ForReading)).stackSdk;
+    return this.prepareSdkFor(stackArtifact, undefined, Mode.ForReading);
   }
 
   /**

@@ -51,20 +51,12 @@ export interface ResourceImporterOptions {
 /**
  * Resource importing utility class
  *
- * For each resource that is added in the new template (compared to currently applied template):
- * - look up the identification information for the resource type (if not supported for import, remove resource from template)
- * - identify a physical resource to be imported as the respective CDK construct (logical resource)
- *   - this can either be inferred directly from logical resource parameters (e.g. S3 bucket with explicit bucket name set)
- *   - or user will be interactively queried to provide the respective information
- *   - or the identification information can be loaded from a file
- * - look up the physical resource (perhaps using cloud control API?) and validate it
- *   - if not found, fail "resource to be imported does not exist"
- *   - if settings are different from the template, fail "drift detected" (unless run with --force)
- * - prepare ResourcesToImport CloudFormation structure and modify the template as needed:
- *   - resources skipped or not supporting import are removed from the template
- *   - resources without explicit DeletionPolicy have it added with a value of DELETE
- * - create a CFN change set of type import
- * - execute the change set
+ * - Determines the resources added to a template (compared to the deployed version)
+ * - Look up the identification information
+ *   - Load them from a file, or
+ *   - Ask the user, based on information supplied to us by CloudFormation's GetTemplateSummary
+ * - Translate the input to a structure expected by CloudFormation, update the template to add the
+ *   importable resources, then run an IMPORT changeset.
  */
 export class ResourceImporter {
   private _currentTemplate: any;
@@ -105,13 +97,13 @@ export class ResourceImporter {
       const descr = this.describeResource(resource.logicalId);
       const idProps = contents[resource.logicalId];
       if (idProps) {
-        print('%s: importing using %s', chalk.bold(descr), chalk.bold(fmtdict(idProps)));
+        print('%s: importing using %s', chalk.blue(descr), chalk.blue(fmtdict(idProps)));
 
         ret.importResources.push(resource);
         ret.resourceMap[resource.logicalId] = idProps;
         delete contents[resource.logicalId];
       } else {
-        print('%s: skipping', chalk.bold(descr));
+        print('%s: skipping', chalk.blue(descr));
       }
     }
 
@@ -248,7 +240,7 @@ export class ResourceImporter {
     const resourceProps = chg.resourceDefinition.Properties ?? {};
 
     const fixedIdProps = idProps.filter(p => resourceProps[p]);
-    const fixedIdInput: ResourceIdentifierProperties = mkdict(fixedIdProps.map(p => resourceProps[p]));
+    const fixedIdInput: ResourceIdentifierProperties = mkdict(fixedIdProps.map(p => [p, resourceProps[p]]));
 
     const missingIdProps = idProps.filter(p => !resourceProps[p]);
 
@@ -257,7 +249,7 @@ export class ResourceImporter {
       const props = fmtdict(fixedIdInput);
 
       if (!await promptly.confirm(
-        `${chalk.bold(resourceName)} (${resourceType}): import with ${chalk.bold(props)} (yes/no) [default: yes]? `,
+        `${chalk.blue(resourceName)} (${resourceType}): import with ${chalk.blue(props)} (yes/no) [default: yes]? `,
         { default: 'yes' },
       )) {
         print(`Skipping import of ${resourceName}`);
@@ -269,7 +261,7 @@ export class ResourceImporter {
     const userInput: ResourceIdentifierProperties = {};
     for (const missingIdProp of missingIdProps) {
       const response = (await promptly.prompt(
-        `${chalk.bold(resourceName)} (${resourceType}): enter ${chalk.bold(missingIdProp)} to import (empty to skip):`,
+        `${chalk.blue(resourceName)} (${resourceType}): enter ${chalk.blue(missingIdProp)} to import (empty to skip):`,
         { default: '', trim: true },
       ));
       if (!response) {

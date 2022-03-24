@@ -481,16 +481,17 @@ To import an existing resource to a CDK stack, follow the following steps:
    stack name as an argument.
 4. The CLI will prompt you to pass in the actual names of the resources you are
    importing. After you supply it, the import starts.
-6. When `cdk import` reports success, the resource is managed by CDK. Any subsequent
+5. When `cdk import` reports success, the resource is managed by CDK. Any subsequent
    changes in the construct configuration will be reflected on the resource.
 
-
-**Limitations**
+#### Limitations
 
 This feature is currently in preview. Be aware of the following limitations:
 
 - Importing resources in nested stacks is not possible
-- The current user's credentials are used (instead of synthesized credentials)
+- Uses the deploy role credentials (necessary to read the encrypted staging
+  bucket). Requires a new version (version 12) of the bootstrap stack, for the added
+  IAM permissions to the `deploy-role`.
 - Some complex import operations might not work successfully
 - Not all CloudFormation resources support importing yet
 

@@ -469,8 +469,14 @@ export async function makeBodyParameterAndUpload(
   sdk: ISDK,
   overrideTemplate?: any): Promise<TemplateBodyParameter> {
 
+  // We don't have access to the actual asset manifest here, so pretend that the
+  // stack doesn't have a pre-published URL.
+  const forceUploadStack = Object.create(stack, {
+    stackTemplateAssetObjectUrl: { value: undefined },
+  });
+
   const builder = new AssetManifestBuilder();
-  const bodyparam = await makeBodyParameter(stack, resolvedEnvironment, builder, toolkitInfo, sdk, overrideTemplate);
+  const bodyparam = await makeBodyParameter(forceUploadStack, resolvedEnvironment, builder, toolkitInfo, sdk, overrideTemplate);
   const manifest = builder.toManifest(stack.assembly.directory);
   await publishAssets(manifest, sdkProvider, resolvedEnvironment, { quiet: true });
   return bodyparam;
