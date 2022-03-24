@@ -266,7 +266,7 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
   private _latestVersion?: LatestVersion;
 
   /**
-   * Flag to delay adding a warning message until current version is invoked
+   * Flag to delay adding a warning message until current version is invoked.
    * @internal
    */
   protected _warnIfCurrentVersionCalled: boolean = false;
@@ -278,8 +278,11 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
   protected _invocationGrants: Record<string, iam.Grant> = {};
 
   /**
-   * Adds a warning to function permissions that include `lambda:InvokeFunction`.
-   * This should apply only to permissions on Lambda functions, not versions or aliases.
+   * A warning will be added to functions under the following conditions:
+   * - permissions that include `lambda:InvokeFunction` are added to the unqualified function.
+   * - function.currentVersion is invoked before or after the permission is created.
+   *
+   * This applies only to permissions on Lambda functions, not versions or aliases.
    * This function is overridden as a noOp for QualifiedFunctionBase.
    */
   public considerWarningOnInvokeFunctionPermissions(scope: Construct, action: string) {
