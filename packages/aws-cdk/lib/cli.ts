@@ -161,9 +161,9 @@ async function parseCommandLineArguments() {
         type: 'boolean',
         desc: 'Allow the template diff to include non-addition changes. This may be an unsafe operation.',
       })
-      .option('create-resource-mapping', {
+      .option('record-resource-mapping', {
         type: 'string',
-        alias: 'o',
+        alias: 'r',
         requiresArg: true,
         desc: 'If specified, CDK will generate a mapping of existing physical resources to CDK resources to be imported as. The mapping ' +
           'will be written in the given file path. No actual import operation will be performed',
@@ -483,8 +483,8 @@ async function initCommandLine() {
           changeSetName: args.changeSetName,
           progress: configuration.settings.get(['progress']),
           rollback: configuration.settings.get(['rollback']),
-          createResourceMapping: args['create-resource-mapping']?.length > 0,
-          resourceMappingFile: args['create-resource-mapping'] ? args['create-resource-mapping'] : args['resource-mapping'],
+          recordResourceMapping: args['record-resource-mapping'],
+          resourceMappingFile: args['resource-mapping'],
           force: args.force,
         });
 

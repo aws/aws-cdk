@@ -387,7 +387,7 @@ export class CdkToolkit {
     }
 
     // Prepare a mapping of physical resources to CDK constructs
-    const actualImport = options.createResourceMapping || !options.resourceMappingFile
+    const actualImport = !options.resourceMappingFile
       ? await resourceImporter.askForResourceIdentifiers(additions)
       : await resourceImporter.loadResourceIdentifiers(additions, options.resourceMappingFile);
 
@@ -397,8 +397,8 @@ export class CdkToolkit {
     }
 
     // If "--create-resource-mapping" option was passed, write the resource mapping to the given file and exit
-    if (options.createResourceMapping) {
-      const outputFile = options.resourceMappingFile ?? 'resource-mapping.json';
+    if (options.recordResourceMapping) {
+      const outputFile = options.recordResourceMapping;
       fs.ensureFileSync(outputFile);
       await fs.writeJson(outputFile, actualImport.resourceMap, {
         spaces: 2,
@@ -922,10 +922,11 @@ export interface ImportOptions extends CfnDeployOptions {
   /**
    * Build a physical resource mapping and write it to the given file, without performing the actual import operation
    *
-   * @default false
+   * @default - No file
    */
 
-  readonly createResourceMapping?: boolean;
+  readonly recordResourceMapping?: string;
+
   /**
    * Path to a file with with the physical resource mapping to CDK constructs in JSON format
    *
