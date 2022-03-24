@@ -36,8 +36,8 @@
             {
               "Action": [
                 "athena:getDataCatalog",
-                "athena:startQueryExecution",
-                "athena:getQueryExecution"
+                "athena:getQueryExecution",
+                "athena:startQueryExecution"
               ],
               "Effect": "Allow",
               "Resource": [
@@ -85,26 +85,17 @@
             },
             {
               "Action": [
-                "s3:CreateBucket",
-                "s3:ListBucket",
-                "s3:GetBucketLocation",
-                "s3:GetObject"
-              ],
-              "Effect": "Allow",
-              "Resource": "*"
-            },
-            {
-              "Action": [
+                "athena:getQueryExecution",
+                "lakeformation:GetDataAccess",
                 "s3:AbortMultipartUpload",
+                "s3:CreateBucket",
+                "s3:GetBucketLocation",
+                "s3:GetObject",
+                "s3:ListBucket",
                 "s3:ListBucketMultipartUploads",
                 "s3:ListMultipartUploadParts",
                 "s3:PutObject"
               ],
-              "Effect": "Allow",
-              "Resource": "*"
-            },
-            {
-              "Action": "lakeformation:GetDataAccess",
               "Effect": "Allow",
               "Resource": "*"
             },
@@ -213,11 +204,6 @@
                   ]
                 }
               ]
-            },
-            {
-              "Action": "athena:getQueryExecution",
-              "Effect": "Allow",
-              "Resource": "*"
             }
           ],
           "Version": "2012-10-17"

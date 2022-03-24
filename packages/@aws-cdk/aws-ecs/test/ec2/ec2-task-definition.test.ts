@@ -466,6 +466,9 @@ describe('ec2 task definition', () => {
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::ECR::Repository', {
+        ImageScanningConfiguration: {
+          ScanOnPush: false,
+        },
         LifecyclePolicy: {
           // eslint-disable-next-line max-len
           LifecyclePolicyText: '{"rules":[{"rulePriority":10,"selection":{"tagStatus":"tagged","tagPrefixList":["abc"],"countType":"imageCountMoreThan","countNumber":1},"action":{"type":"expire"}}]}',
@@ -688,7 +691,11 @@ describe('ec2 task definition', () => {
       });
 
       // THEN
-      Template.fromStack(stack).hasResourceProperties('AWS::ECR::Repository', {});
+      Template.fromStack(stack).hasResourceProperties('AWS::ECR::Repository', {
+        ImageScanningConfiguration: {
+          ScanOnPush: false,
+        },
+      });
 
 
     });

@@ -3,7 +3,7 @@ import * as cxapi from '@aws-cdk/cx-api';
 import * as AWS from 'aws-sdk';
 import { Mode } from '../api/aws-auth/credentials';
 import { SdkProvider } from '../api/aws-auth/sdk-provider';
-import { ContextProviderPlugin } from './provider';
+import { ContextProviderPlugin } from '../api/plugin';
 
 export class SecurityGroupContextProviderPlugin implements ContextProviderPlugin {
   constructor(private readonly aws: SdkProvider) {

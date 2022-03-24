@@ -9,14 +9,10 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": "lambda.amazonaws.com"
-              }
-            },
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Principal": {
-                "Service": "edgelambda.amazonaws.com"
+                "Service": [
+                  "edgelambda.amazonaws.com",
+                  "lambda.amazonaws.com"
+                ]
               }
             }
           ],
@@ -44,13 +40,13 @@
         "Code": {
           "ZipFile": "foo"
         },
-        "Handler": "index.handler",
         "Role": {
           "Fn::GetAtt": [
             "LambdaServiceRoleA8ED4D3B",
             "Arn"
           ]
         },
+        "Handler": "index.handler",
         "Runtime": "nodejs10.x"
       },
       "DependsOn": [

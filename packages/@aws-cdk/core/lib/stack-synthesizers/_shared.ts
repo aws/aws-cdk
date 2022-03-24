@@ -96,7 +96,7 @@ function collectStackMetadata(stack: Stack) {
   }
 
   function findParentStack(node: IConstruct): Stack | undefined {
-    if (node instanceof Stack && node.nestedStackParent === undefined) {
+    if (Stack.isStack(node) && node.nestedStackParent === undefined) {
       return node;
     }
 
