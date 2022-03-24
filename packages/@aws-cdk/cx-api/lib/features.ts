@@ -161,6 +161,15 @@ export const LAMBDA_RECOGNIZE_VERSION_PROPS = '@aws-cdk/aws-lambda:recognizeVers
 export const CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021 = '@aws-cdk/aws-cloudfront:defaultSecurityPolicyTLSv1.2_2021';
 
 /**
+ * Enable this flag to make it impossible to accidentally use SecretValues in unsafe locations
+ *
+ * With this flag enabled, `SecretValue` instances can only be passed to
+ * constructs that accept `SecretValue`s; otherwise, `unsafeUnwrap()` must be
+ * called to use it as a regular string.
+ */
+export const CHECK_SECRET_USAGE = '@aws-cdk/core:check-secret-usage';
+
+/**
  * What regions to include in lookup tables of environment agnostic stacks
  *
  * Has no effect on stacks that have a defined region, but will limit the amount
@@ -218,6 +227,7 @@ export const FUTURE_FLAGS: { [key: string]: boolean } = {
   [CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021]: true,
   [ECS_SERVICE_EXTENSIONS_ENABLE_DEFAULT_LOG_DRIVER]: true,
   [EC2_UNIQUE_IMDSV2_LAUNCH_TEMPLATE_NAME]: true,
+  [CHECK_SECRET_USAGE]: true,
 
   // We will advertise this flag when the feature is complete
   // [NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: 'true',
@@ -258,6 +268,7 @@ const FUTURE_FLAGS_DEFAULTS: { [key: string]: boolean } = {
   [CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021]: false,
   [ECS_SERVICE_EXTENSIONS_ENABLE_DEFAULT_LOG_DRIVER]: false,
   [EC2_UNIQUE_IMDSV2_LAUNCH_TEMPLATE_NAME]: false,
+  [CHECK_SECRET_USAGE]: false,
 };
 
 export function futureFlagDefault(flag: string): boolean | undefined {
