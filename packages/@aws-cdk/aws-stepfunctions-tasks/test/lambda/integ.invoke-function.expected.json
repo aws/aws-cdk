@@ -218,6 +218,34 @@
                     "Handler886CB40B",
                     "Arn"
                   ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "CallbackHandler4434C38D",
+                          "Arn"
+                        ]
+                      },
+                      ":*"
+                    ]
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "Handler886CB40B",
+                          "Arn"
+                        ]
+                      },
+                      ":*"
+                    ]
+                  ]
                 }
               ]
             }

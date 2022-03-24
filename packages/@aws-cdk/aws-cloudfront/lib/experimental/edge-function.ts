@@ -47,6 +47,7 @@ export class EdgeFunction extends Resource implements lambda.IVersion {
   public readonly role?: iam.IRole;
   public readonly version: string;
   public readonly architecture: lambda.Architecture;
+  public readonly resourceArnsForGrantInvoke: string[];
 
   private readonly _edgeFunction: lambda.Function;
 
@@ -68,6 +69,7 @@ export class EdgeFunction extends Resource implements lambda.IVersion {
     this.permissionsNode = this._edgeFunction.permissionsNode;
     this.version = lambda.extractQualifierFromArn(this.functionArn);
     this.architecture = this._edgeFunction.architecture;
+    this.resourceArnsForGrantInvoke = this._edgeFunction.resourceArnsForGrantInvoke;
 
     this.node.defaultChild = this._edgeFunction;
   }

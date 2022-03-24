@@ -1908,12 +1908,28 @@
             {
               "Action": "lambda:InvokeFunction",
               "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "TestPipelinePipelineApplicationSecurityCheckCDKPipelinesAutoApprove1EE0AA81",
-                  "Arn"
-                ]
-              }
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "TestPipelinePipelineApplicationSecurityCheckCDKPipelinesAutoApprove1EE0AA81",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "TestPipelinePipelineApplicationSecurityCheckCDKPipelinesAutoApprove1EE0AA81",
+                          "Arn"
+                        ]
+                      },
+                      ":*"
+                    ]
+                  ]
+                }
+              ]
             },
             {
               "Action": "sns:Publish",
@@ -2210,12 +2226,28 @@
             {
               "Action": "lambda:InvokeFunction",
               "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "UnattachedStageStageApplicationSecurityCheckCDKPipelinesAutoApprove249F82F9",
-                  "Arn"
-                ]
-              }
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "UnattachedStageStageApplicationSecurityCheckCDKPipelinesAutoApprove249F82F9",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "UnattachedStageStageApplicationSecurityCheckCDKPipelinesAutoApprove249F82F9",
+                          "Arn"
+                        ]
+                      },
+                      ":*"
+                    ]
+                  ]
+                }
+              ]
             },
             {
               "Action": "sns:Publish",

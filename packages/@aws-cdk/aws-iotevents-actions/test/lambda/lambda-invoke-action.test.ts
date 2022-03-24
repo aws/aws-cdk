@@ -54,7 +54,7 @@ test('Default property', () => {
       Statement: [{
         Action: 'lambda:InvokeFunction',
         Effect: 'Allow',
-        Resource: 'arn:aws:lambda:us-east-1:123456789012:function:MyFn',
+        Resource: ['arn:aws:lambda:us-east-1:123456789012:function:MyFn', 'arn:aws:lambda:us-east-1:123456789012:function:MyFn:*'],
       }],
     },
     Roles: [{

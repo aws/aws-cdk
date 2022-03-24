@@ -421,6 +421,10 @@ export class Function extends FunctionBase {
     return this._currentVersion;
   }
 
+  public get resourceArnsForGrantInvoke() {
+    return [this.functionArn, `${this.functionArn}:*`];
+  }
+
   /** @internal */
   public static _VER_PROPS: { [key: string]: boolean } = {};
 
@@ -476,6 +480,7 @@ export class Function extends FunctionBase {
       public readonly role = role;
       public readonly permissionsNode = this.node;
       public readonly architecture = attrs.architecture ?? Architecture.X86_64;
+      public readonly resourceArnsForGrantInvoke = [this.functionArn, `${this.functionArn}:*`];
 
       protected readonly canCreatePermissions = attrs.sameEnvironment ?? this._isStackAccount();
       protected readonly _skipPermissions = attrs.skipPermissions ?? false;
