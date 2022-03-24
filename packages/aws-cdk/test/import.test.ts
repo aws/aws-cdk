@@ -8,12 +8,14 @@ jest.mock('promptly', () => {
 
 import * as promptly from 'promptly';
 import { CloudFormationDeployments } from '../lib/api/cloudformation-deployments';
-import { ResourceImporter } from '../lib/import';
+import { ResourceImporter, ImportMap } from '../lib/import';
 import { testStack } from './util';
 import { MockSdkProvider } from './util/mock-sdk';
 
 const promptlyConfirm = promptly.confirm as jest.Mock;
 const promptlyPrompt = promptly.prompt as jest.Mock;
+
+let createChangeSetInput: AWS.CloudFormation.CreateChangeSetInput | undefined;
 
 const STACK_WITH_QUEUE = testStack({
   stackName: 'StackWithQueue',
@@ -47,6 +49,7 @@ beforeEach(() => {
   jest.resetAllMocks();
   sdkProvider = new MockSdkProvider({ realSdk: false });
   deployments = new CloudFormationDeployments({ sdkProvider });
+  createChangeSetInput = undefined;
 });
 
 test('discovers importable resources', async () => {
@@ -89,6 +92,7 @@ test('asks human for resource identifiers', async () => {
   promptlyPrompt.mockResolvedValue('TheQueueName');
   const importable = await importer.askForResourceIdentifiers(resources);
 
+  // THEN
   expect(importable.resourceMap).toEqual({
     MyQueue: {
       QueueName: 'TheQueueName',
@@ -101,7 +105,7 @@ test('asks human for resource identifiers', async () => {
   ]);
 });
 
-test('asks human to confirm if identifier is in template', async () => {
+test('asks human to confirm automic import if identifier is in template', async () => {
   // GIVEN
   givenCurrentStack(STACK_WITH_NAMED_QUEUE.stackName, { Resources: {} });
   const importer = new ResourceImporter(STACK_WITH_NAMED_QUEUE, deployments);
@@ -111,6 +115,7 @@ test('asks human to confirm if identifier is in template', async () => {
   promptlyConfirm.mockResolvedValue(true);
   const importable = await importer.askForResourceIdentifiers(resources);
 
+  // THEN
   expect(importable.resourceMap).toEqual({
     MyQueue: {
       QueueName: 'TheQueueName',
@@ -120,6 +125,32 @@ test('asks human to confirm if identifier is in template', async () => {
     expect.objectContaining({
       logicalId: 'MyQueue',
     }),
+  ]);
+});
+
+test('asks human to confirm automic import if identifier is in template', async () => {
+  // GIVEN
+  givenCurrentStack(STACK_WITH_QUEUE.stackName, { Resources: {} });
+  const importer = new ResourceImporter(STACK_WITH_QUEUE, deployments);
+  const resources = await importer.discoverImportableResources();
+  const importMap: ImportMap = {
+    importResources: resources,
+    resourceMap: {
+      MyQueue: { QueueName: 'TheQueueName' },
+    },
+  };
+
+  // WHEN
+  await importer.importResources(importMap, {
+    stack: STACK_WITH_QUEUE,
+  });
+
+  expect(createChangeSetInput?.ResourcesToImport).toEqual([
+    {
+      LogicalResourceId: 'MyQueue',
+      ResourceIdentifier: { QueueName: 'TheQueueName' },
+      ResourceType: 'AWS::SQS::Queue',
+    },
   ]);
 });
 
@@ -152,6 +183,25 @@ function givenCurrentStack(stackName: string, template: any) {
           },
         ],
       };
+    },
+    deleteChangeSet() {
+      return {};
+    },
+    createChangeSet(request) {
+      createChangeSetInput = request;
+      return {};
+    },
+    describeChangeSet() {
+      return {
+        Status: 'CREATE_COMPLETE',
+        Changes: [],
+      };
+    },
+    executeChangeSet() {
+      return {};
+    },
+    describeStackEvents() {
+      return {};
     },
   });
 }
