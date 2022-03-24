@@ -1,7 +1,19 @@
+jest.mock('promptly', () => {
+  return {
+    ...jest.requireActual('promptly'),
+    confirm: jest.fn(),
+    prompt: jest.fn(),
+  };
+});
+
+import * as promptly from 'promptly';
 import { CloudFormationDeployments } from '../lib/api/cloudformation-deployments';
 import { ResourceImporter } from '../lib/import';
 import { testStack } from './util';
 import { MockSdkProvider } from './util/mock-sdk';
+
+const promptlyConfirm = promptly.confirm as jest.Mock;
+const promptlyPrompt = promptly.prompt as jest.Mock;
 
 const STACK_WITH_QUEUE = testStack({
   stackName: 'StackWithQueue',
@@ -10,6 +22,20 @@ const STACK_WITH_QUEUE = testStack({
       MyQueue: {
         Type: 'AWS::SQS::Queue',
         Properties: {},
+      },
+    },
+  },
+});
+
+const STACK_WITH_NAMED_QUEUE = testStack({
+  stackName: 'StackWithQueue',
+  template: {
+    Resources: {
+      MyQueue: {
+        Type: 'AWS::SQS::Queue',
+        Properties: {
+          QueueName: 'TheQueueName',
+        },
       },
     },
   },
@@ -53,6 +79,50 @@ test('by default, its an error if there are non-addition changes in the template
   await expect(importer.discoverImportableResources(true)).resolves.toBeTruthy();
 });
 
+test('asks human for resource identifiers', async () => {
+  // GIVEN
+  givenCurrentStack(STACK_WITH_QUEUE.stackName, { Resources: {} });
+  const importer = new ResourceImporter(STACK_WITH_QUEUE, deployments);
+  const resources = await importer.discoverImportableResources();
+
+  // WHEN
+  promptlyPrompt.mockResolvedValue('TheQueueName');
+  const importable = await importer.askForResourceIdentifiers(resources);
+
+  expect(importable.resourceMap).toEqual({
+    MyQueue: {
+      QueueName: 'TheQueueName',
+    },
+  });
+  expect(importable.importResources).toEqual([
+    expect.objectContaining({
+      logicalId: 'MyQueue',
+    }),
+  ]);
+});
+
+test('asks human to confirm if identifier is in template', async () => {
+  // GIVEN
+  givenCurrentStack(STACK_WITH_NAMED_QUEUE.stackName, { Resources: {} });
+  const importer = new ResourceImporter(STACK_WITH_NAMED_QUEUE, deployments);
+  const resources = await importer.discoverImportableResources();
+
+  // WHEN
+  promptlyConfirm.mockResolvedValue(true);
+  const importable = await importer.askForResourceIdentifiers(resources);
+
+  expect(importable.resourceMap).toEqual({
+    MyQueue: {
+      QueueName: 'TheQueueName',
+    },
+  });
+  expect(importable.importResources).toEqual([
+    expect.objectContaining({
+      logicalId: 'MyQueue',
+    }),
+  ]);
+});
+
 function givenCurrentStack(stackName: string, template: any) {
   sdkProvider.stubCloudFormation({
     describeStacks() {
@@ -71,6 +141,16 @@ function givenCurrentStack(stackName: string, template: any) {
     getTemplate() {
       return {
         TemplateBody: JSON.stringify(template),
+      };
+    },
+    getTemplateSummary() {
+      return {
+        ResourceIdentifierSummaries: [
+          {
+            ResourceType: 'AWS::SQS::Queue',
+            ResourceIdentifiers: ['QueueName'],
+          },
+        ],
       };
     },
   });

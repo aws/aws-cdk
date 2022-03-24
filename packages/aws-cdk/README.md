@@ -492,7 +492,11 @@ This feature is currently in preview. Be aware of the following limitations:
 - Uses the deploy role credentials (necessary to read the encrypted staging
   bucket). Requires a new version (version 12) of the bootstrap stack, for the added
   IAM permissions to the `deploy-role`.
-- Some complex import operations might not work successfully
+- There is no check on whether the properties you specify are correct and complete
+  for the imported resource. Try starting a drift detection operation after importing.
+- Resources that depend on other resources must all be imported together, or one-by-one
+  in the right order. The CLI will not help you import dependent resources in the right
+  order, the CloudFormation deployment will fail with unresolved references.
 
 ### `cdk destroy`
 
