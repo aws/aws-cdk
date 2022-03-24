@@ -13,7 +13,7 @@ const MONOPACKAGE_ROOT = process.cwd();
 const ROOT_PATH = findWorkspacePath();
 const UBER_PACKAGE_JSON_PATH = path.join(MONOPACKAGE_ROOT, 'package.json');
 
-const EXCLUDED_PACKAGES = ['example-construct-library'];
+const EXCLUDED_PACKAGES = ['@aws-cdk/example-construct-library'];
 
 async function main() {
   console.log(`🌴  workspace root path is: ${ROOT_PATH}`);
