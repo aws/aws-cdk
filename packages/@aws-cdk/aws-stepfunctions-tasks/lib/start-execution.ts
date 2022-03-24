@@ -1,6 +1,6 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
-import { Stack } from '@aws-cdk/core';
+import { ArnFormat, Stack } from '@aws-cdk/core';
 import { getResourceArn } from './resource-arn-suffix';
 
 /**
@@ -103,8 +103,8 @@ export class StartExecution implements sfn.IStepFunctionsTask {
         resources: [stack.formatArn({
           service: 'states',
           resource: 'execution',
-          sep: ':',
-          resourceName: `${stack.parseArn(this.stateMachine.stateMachineArn, ':').resourceName}*`,
+          arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+          resourceName: `${stack.splitArn(this.stateMachine.stateMachineArn, ArnFormat.COLON_RESOURCE_NAME).resourceName}*`,
         })],
       }));
 

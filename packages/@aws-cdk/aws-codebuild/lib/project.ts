@@ -8,7 +8,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
-import { Aws, Duration, IResource, Lazy, Names, PhysicalName, Reference, Resource, SecretValue, Stack, Token, TokenComparison, Tokenization } from '@aws-cdk/core';
+import { ArnFormat, Aws, Duration, IResource, Lazy, Names, PhysicalName, Reference, Resource, SecretValue, Stack, Token, TokenComparison, Tokenization } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { IArtifacts } from './artifacts';
 import { BuildSpec } from './build-spec';
@@ -412,7 +412,7 @@ abstract class ProjectBase extends Resource implements IProject {
     return new cloudwatch.Metric({
       namespace: 'AWS/CodeBuild',
       metricName,
-      dimensions: { ProjectName: this.projectName },
+      dimensionsMap: { ProjectName: this.projectName },
       ...props,
     }).attachTo(this);
   }
@@ -751,7 +751,7 @@ export interface BindToCodePipelineOptions {
 export class Project extends ProjectBase {
 
   public static fromProjectArn(scope: Construct, id: string, projectArn: string): IProject {
-    const parsedArn = Stack.of(scope).parseArn(projectArn);
+    const parsedArn = Stack.of(scope).splitArn(projectArn, ArnFormat.SLASH_RESOURCE_NAME);
 
     class Import extends ProjectBase {
       public readonly grantPrincipal: iam.IPrincipal;
@@ -874,7 +874,7 @@ export class Project extends ProjectBase {
           // 2. A Token.
           // 3. A simple value, like 'secret-id'.
           if (envVariableValue.startsWith('arn:')) {
-            const parsedArn = stack.parseArn(envVariableValue, ':');
+            const parsedArn = stack.splitArn(envVariableValue, ArnFormat.COLON_RESOURCE_NAME);
             if (!parsedArn.resourceName) {
               throw new Error('SecretManager ARN is missing the name of the secret: ' + envVariableValue);
             }
@@ -889,7 +889,7 @@ export class Project extends ProjectBase {
               // (CodeBuild supports both),
               // stick a "*" at the end, which makes it work for both
               resourceName: `${secretName}*`,
-              sep: ':',
+              arnFormat: ArnFormat.COLON_RESOURCE_NAME,
               partition: parsedArn.partition,
               account: parsedArn.account,
               region: parsedArn.region,
@@ -903,7 +903,7 @@ export class Project extends ProjectBase {
                 // We do not know the ID of the key, but since this is a cross-account access,
                 // the key policies have to allow this access, so a wildcard is safe here
                 resourceName: '*',
-                sep: '/',
+                arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
                 partition: parsedArn.partition,
                 account: parsedArn.account,
                 region: parsedArn.region,
@@ -931,7 +931,7 @@ export class Project extends ProjectBase {
                     // We do not know the ID of the key, but since this is a cross-account access,
                     // the key policies have to allow this access, so a wildcard is safe here
                     resourceName: '*',
-                    sep: '/',
+                    arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
                     partition: resourceStack.partition,
                     account: resourceStack.account,
                     region: resourceStack.region,
@@ -957,7 +957,7 @@ export class Project extends ProjectBase {
               service: 'secretsmanager',
               resource: 'secret',
               resourceName: `${secretName}-??????`,
-              sep: ':',
+              arnFormat: ArnFormat.COLON_RESOURCE_NAME,
             }));
           }
         }
@@ -1138,9 +1138,8 @@ export class Project extends ProjectBase {
     }
 
     // bind
-    const bindFunction = (this.buildImage as any).bind;
-    if (bindFunction) {
-      bindFunction.call(this.buildImage, this, this, {});
+    if (isBindableBuildImage(this.buildImage)) {
+      this.buildImage.bind(this, this, {});
     }
   }
 
@@ -1257,7 +1256,7 @@ export class Project extends ProjectBase {
     const logGroupArn = Stack.of(this).formatArn({
       service: 'logs',
       resource: 'log-group',
-      sep: ':',
+      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
       resourceName: `/aws/codebuild/${this.projectName}`,
     });
 
@@ -1643,31 +1642,6 @@ export interface IBindableBuildImage extends IBuildImage {
   bind(scope: CoreConstruct, project: IProject, options: BuildImageBindOptions): BuildImageConfig;
 }
 
-class ArmBuildImage implements IBuildImage {
-  public readonly type = 'ARM_CONTAINER';
-  public readonly defaultComputeType = ComputeType.LARGE;
-  public readonly imagePullPrincipalType = ImagePullPrincipalType.CODEBUILD;
-  public readonly imageId: string;
-
-  constructor(imageId: string) {
-    this.imageId = imageId;
-  }
-
-  public validate(buildEnvironment: BuildEnvironment): string[] {
-    const ret = [];
-    if (buildEnvironment.computeType &&
-        buildEnvironment.computeType !== ComputeType.LARGE) {
-      ret.push(`ARM images only support ComputeType '${ComputeType.LARGE}' - ` +
-        `'${buildEnvironment.computeType}' was given`);
-    }
-    return ret;
-  }
-
-  public runScriptBuildspec(entrypoint: string): BuildSpec {
-    return runScriptLinuxBuildSpec(entrypoint);
-  }
-}
-
 /**
  * The options when creating a CodeBuild Docker build image
  * using {@link LinuxBuildImage.fromDockerRegistry}
@@ -1695,8 +1669,12 @@ interface LinuxBuildImageProps {
   readonly repository?: ecr.IRepository;
 }
 
+// Keep around to resolve a circular dependency until removing deprecated ARM image constants from LinuxBuildImage
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { LinuxArmBuildImage } from './linux-arm-build-image';
+
 /**
- * A CodeBuild image running Linux.
+ * A CodeBuild image running x86-64 Linux.
  *
  * This class has a bunch of public constants that represent the most popular images.
  *
@@ -1723,9 +1701,13 @@ export class LinuxBuildImage implements IBuildImage {
   /** The Amazon Linux 2 x86_64 standard image, version `3.0`. */
   public static readonly AMAZON_LINUX_2_3 = LinuxBuildImage.codeBuildImage('aws/codebuild/amazonlinux2-x86_64-standard:3.0');
 
-  public static readonly AMAZON_LINUX_2_ARM: IBuildImage = new ArmBuildImage('aws/codebuild/amazonlinux2-aarch64-standard:1.0');
-  /** Image "aws/codebuild/amazonlinux2-aarch64-standard:2.0". */
-  public static readonly AMAZON_LINUX_2_ARM_2: IBuildImage = new ArmBuildImage('aws/codebuild/amazonlinux2-aarch64-standard:2.0');
+  /** @deprecated Use LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_1_0 instead. */
+  public static readonly AMAZON_LINUX_2_ARM = LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_1_0;
+  /**
+   * Image "aws/codebuild/amazonlinux2-aarch64-standard:2.0".
+   * @deprecated Use LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_2_0 instead.
+   * */
+  public static readonly AMAZON_LINUX_2_ARM_2 = LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_2_0;
 
   /** @deprecated Use {@link STANDARD_2_0} and specify runtime in buildspec runtime-versions section */
   public static readonly UBUNTU_14_04_BASE = LinuxBuildImage.codeBuildImage('aws/codebuild/ubuntu-base:14.04');
@@ -1789,7 +1771,7 @@ export class LinuxBuildImage implements IBuildImage {
   public static readonly UBUNTU_14_04_DOTNET_CORE_2_1 = LinuxBuildImage.codeBuildImage('aws/codebuild/dot-net:core-2.1');
 
   /**
-   * @returns a Linux build image from a Docker Hub image.
+   * @returns a x86-64 Linux build image from a Docker Hub image.
    */
   public static fromDockerRegistry(name: string, options: DockerImageOptions = {}): IBuildImage {
     return new LinuxBuildImage({
@@ -1800,7 +1782,7 @@ export class LinuxBuildImage implements IBuildImage {
   }
 
   /**
-   * @returns A Linux build image from an ECR repository.
+   * @returns A x86-64 Linux build image from an ECR repository.
    *
    * NOTE: if the repository is external (i.e. imported), then we won't be able to add
    * a resource policy statement for it so CodeBuild can pull the image.
@@ -1819,7 +1801,7 @@ export class LinuxBuildImage implements IBuildImage {
   }
 
   /**
-   * Uses an Docker image asset as a Linux build image.
+   * Uses an Docker image asset as a x86-64 Linux build image.
    */
   public static fromAsset(scope: Construct, id: string, props: DockerImageAssetProps): IBuildImage {
     const asset = new DockerImageAsset(scope, id, props);
@@ -1961,7 +1943,7 @@ export class WindowsBuildImage implements IBuildImage {
   }
 
   /**
-   * @returns A Linux build image from an ECR repository.
+   * @returns A Windows build image from an ECR repository.
    *
    * NOTE: if the repository is external (i.e. imported), then we won't be able to add
    * a resource policy statement for it so CodeBuild can pull the image.
@@ -2121,4 +2103,8 @@ export enum ProjectNotificationEvents {
    * Trigger notification when project build phase success
    */
   BUILD_PHASE_SUCCEEDED = 'codebuild-project-build-phase-success',
+}
+
+function isBindableBuildImage(x: unknown): x is IBindableBuildImage {
+  return typeof x === 'object' && !!x && !!(x as any).bind;
 }

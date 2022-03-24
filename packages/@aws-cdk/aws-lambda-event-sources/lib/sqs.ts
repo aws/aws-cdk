@@ -25,6 +25,15 @@ export interface SqsEventSourceProps {
   readonly maxBatchingWindow?: Duration;
 
   /**
+   * Allow functions to return partially successful responses for a batch of records.
+   *
+   * @see https://docs.aws.amazon.com/lambda/latest/dg/with-sqs.html#services-sqs-batchfailurereporting
+   *
+   * @default false
+   */
+  readonly reportBatchItemFailures?: boolean;
+
+  /**
    * If the SQS event source mapping should be enabled.
    *
    * @default true
@@ -61,6 +70,7 @@ export class SqsEventSource implements lambda.IEventSource {
     const eventSourceMapping = target.addEventSourceMapping(`SqsEventSource:${Names.nodeUniqueId(this.queue.node)}`, {
       batchSize: this.props.batchSize,
       maxBatchingWindow: this.props.maxBatchingWindow,
+      reportBatchItemFailures: this.props.reportBatchItemFailures,
       enabled: this.props.enabled,
       eventSourceArn: this.queue.queueArn,
     });

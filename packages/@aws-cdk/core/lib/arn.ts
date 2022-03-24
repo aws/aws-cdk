@@ -130,10 +130,16 @@ export class Arn {
    * the 'scope' is attached to. If all ARN pieces are supplied, the supplied scope
    * can be 'undefined'.
    */
-  public static format(components: ArnComponents, stack: Stack): string {
-    const partition = components.partition ?? stack.partition;
-    const region = components.region ?? stack.region;
-    const account = components.account ?? stack.account;
+  public static format(components: ArnComponents, stack?: Stack): string {
+    const partition = components.partition ?? stack?.partition;
+    const region = components.region ?? stack?.region;
+    const account = components.account ?? stack?.account;
+
+    // Catch both 'null' and 'undefined'
+    if (partition == null || region == null || account == null) {
+      throw new Error(`Arn.format: partition (${partition}), region (${region}), and account (${account}) must all be passed if stack is not passed.`);
+    }
+
     const sep = components.sep ?? (components.arnFormat === ArnFormat.COLON_RESOURCE_NAME ? ':' : '/');
 
     const values = [
@@ -312,7 +318,7 @@ export class Arn {
 
     // Apparently we could just parse this right away. Validate that we got the right
     // resource type (to notify authors of incorrect assumptions right away).
-    const parsed = Arn.parse(arn, '/', true);
+    const parsed = Arn.split(arn, ArnFormat.SLASH_RESOURCE_NAME);
     if (!Token.isUnresolved(parsed.resource) && parsed.resource !== resourceType) {
       throw new Error(`Expected resource type '${resourceType}' in ARN, got '${parsed.resource}' in '${arn}'`);
     }
@@ -410,8 +416,6 @@ function parseArnShape(arn: string): 'token' | string[] {
   // Parse fields out to the best of our ability.
   // Tokens won't contain ":", so this won't break them.
   const components = arn.split(':');
-
-  // const [/* arn */, partition, service, /* region */ , /* account */ , resource] = components;
 
   const partition = components.length > 1 ? components[1] : undefined;
   if (!partition) {

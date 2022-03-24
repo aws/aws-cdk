@@ -95,14 +95,14 @@
     "productionenvironmentvpcPublicSubnet1NATGateway6075E4CA": {
       "Type": "AWS::EC2::NatGateway",
       "Properties": {
+        "SubnetId": {
+          "Ref": "productionenvironmentvpcPublicSubnet1Subnet8D92C089"
+        },
         "AllocationId": {
           "Fn::GetAtt": [
             "productionenvironmentvpcPublicSubnet1EIP54BA88DB",
             "AllocationId"
           ]
-        },
-        "SubnetId": {
-          "Ref": "productionenvironmentvpcPublicSubnet1Subnet8D92C089"
         },
         "Tags": [
           {
@@ -192,14 +192,14 @@
     "productionenvironmentvpcPublicSubnet2NATGatewayE1850FCC": {
       "Type": "AWS::EC2::NatGateway",
       "Properties": {
+        "SubnetId": {
+          "Ref": "productionenvironmentvpcPublicSubnet2Subnet298E6C31"
+        },
         "AllocationId": {
           "Fn::GetAtt": [
             "productionenvironmentvpcPublicSubnet2EIP14CA46AA",
             "AllocationId"
           ]
-        },
-        "SubnetId": {
-          "Ref": "productionenvironmentvpcPublicSubnet2Subnet298E6C31"
         },
         "Tags": [
           {
@@ -289,14 +289,14 @@
     "productionenvironmentvpcPublicSubnet3NATGateway94604057": {
       "Type": "AWS::EC2::NatGateway",
       "Properties": {
+        "SubnetId": {
+          "Ref": "productionenvironmentvpcPublicSubnet3SubnetC7B5665D"
+        },
         "AllocationId": {
           "Fn::GetAtt": [
             "productionenvironmentvpcPublicSubnet3EIP53405AED",
             "AllocationId"
           ]
-        },
-        "SubnetId": {
-          "Ref": "productionenvironmentvpcPublicSubnet3SubnetC7B5665D"
         },
         "Tags": [
           {
@@ -621,14 +621,14 @@
     "developmentenvironmentvpcPublicSubnet1NATGateway6B01CC4E": {
       "Type": "AWS::EC2::NatGateway",
       "Properties": {
+        "SubnetId": {
+          "Ref": "developmentenvironmentvpcPublicSubnet1Subnet0D18046B"
+        },
         "AllocationId": {
           "Fn::GetAtt": [
             "developmentenvironmentvpcPublicSubnet1EIPE8B9F4D4",
             "AllocationId"
           ]
-        },
-        "SubnetId": {
-          "Ref": "developmentenvironmentvpcPublicSubnet1Subnet0D18046B"
         },
         "Tags": [
           {
@@ -718,14 +718,14 @@
     "developmentenvironmentvpcPublicSubnet2NATGateway15A9C252": {
       "Type": "AWS::EC2::NatGateway",
       "Properties": {
+        "SubnetId": {
+          "Ref": "developmentenvironmentvpcPublicSubnet2SubnetC2026CD3"
+        },
         "AllocationId": {
           "Fn::GetAtt": [
             "developmentenvironmentvpcPublicSubnet2EIP560C2BBA",
             "AllocationId"
           ]
-        },
-        "SubnetId": {
-          "Ref": "developmentenvironmentvpcPublicSubnet2SubnetC2026CD3"
         },
         "Tags": [
           {
@@ -815,14 +815,14 @@
     "developmentenvironmentvpcPublicSubnet3NATGatewayAD65DE0B": {
       "Type": "AWS::EC2::NatGateway",
       "Properties": {
+        "SubnetId": {
+          "Ref": "developmentenvironmentvpcPublicSubnet3Subnet00B8A77C"
+        },
         "AllocationId": {
           "Fn::GetAtt": [
             "developmentenvironmentvpcPublicSubnet3EIPE2E366D3",
             "AllocationId"
           ]
-        },
-        "SubnetId": {
-          "Ref": "developmentenvironmentvpcPublicSubnet3Subnet00B8A77C"
         },
         "Tags": [
           {
@@ -1103,6 +1103,18 @@
             ],
             "Essential": true,
             "Image": "nathanpeck/name",
+            "LogConfiguration": {
+              "LogDriver": "awslogs",
+              "Options": {
+                "awslogs-group": {
+                  "Ref": "nameproductionlogsD0BFFE8C"
+                },
+                "awslogs-stream-prefix": "name-production",
+                "awslogs-region": {
+                  "Ref": "AWS::Region"
+                }
+              }
+            },
             "Memory": 2048,
             "Name": "app",
             "PortMappings": [
@@ -1266,11 +1278,6 @@
         }
       }
     },
-    "nameproductiontaskdefinitionenvoyLogGroupF79A2732": {
-      "Type": "AWS::Logs::LogGroup",
-      "UpdateReplacePolicy": "Retain",
-      "DeletionPolicy": "Retain"
-    },
     "nameproductiontaskdefinitionExecutionRoleB72DD86B": {
       "Type": "AWS::IAM::Role",
       "Properties": {
@@ -1295,16 +1302,41 @@
           "Statement": [
             {
               "Action": [
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "nameproductionlogsD0BFFE8C",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::GetAtt": [
+                    "nameproductiontaskdefinitionenvoyLogGroupF79A2732",
+                    "Arn"
+                  ]
+                }
+              ]
+            },
+            {
+              "Action": [
                 "ecr:BatchCheckLayerAvailability",
-                "ecr:GetDownloadUrlForLayer",
-                "ecr:BatchGetImage"
+                "ecr:BatchGetImage",
+                "ecr:GetDownloadUrlForLayer"
               ],
               "Effect": "Allow",
               "Resource": {
                 "Fn::Join": [
                   "",
                   [
-                    "arn:aws:ecr:",
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":ecr:",
                     {
                       "Ref": "AWS::Region"
                     },
@@ -1327,19 +1359,6 @@
               "Action": "ecr:GetAuthorizationToken",
               "Effect": "Allow",
               "Resource": "*"
-            },
-            {
-              "Action": [
-                "logs:CreateLogStream",
-                "logs:PutLogEvents"
-              ],
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "nameproductiontaskdefinitionenvoyLogGroupF79A2732",
-                  "Arn"
-                ]
-              }
             }
           ],
           "Version": "2012-10-17"
@@ -1351,6 +1370,20 @@
           }
         ]
       }
+    },
+    "nameproductiontaskdefinitionenvoyLogGroupF79A2732": {
+      "Type": "AWS::Logs::LogGroup",
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain"
+    },
+    "nameproductionlogsD0BFFE8C": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "name-production-logs",
+        "RetentionInDays": 30
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
     "nameproductionenvoytoappmesh1B44B04A": {
       "Type": "AWS::IAM::Policy",
@@ -1627,6 +1660,18 @@
             ],
             "Essential": true,
             "Image": "nathanpeck/name",
+            "LogConfiguration": {
+              "LogDriver": "awslogs",
+              "Options": {
+                "awslogs-group": {
+                  "Ref": "namedevelopmentlogs108670CC"
+                },
+                "awslogs-stream-prefix": "name-development",
+                "awslogs-region": {
+                  "Ref": "AWS::Region"
+                }
+              }
+            },
             "Memory": 2048,
             "Name": "app",
             "PortMappings": [
@@ -1790,11 +1835,6 @@
         }
       }
     },
-    "namedevelopmenttaskdefinitionenvoyLogGroupF8FCAFD6": {
-      "Type": "AWS::Logs::LogGroup",
-      "UpdateReplacePolicy": "Retain",
-      "DeletionPolicy": "Retain"
-    },
     "namedevelopmenttaskdefinitionExecutionRole48B53E4E": {
       "Type": "AWS::IAM::Role",
       "Properties": {
@@ -1819,16 +1859,41 @@
           "Statement": [
             {
               "Action": [
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "namedevelopmentlogs108670CC",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::GetAtt": [
+                    "namedevelopmenttaskdefinitionenvoyLogGroupF8FCAFD6",
+                    "Arn"
+                  ]
+                }
+              ]
+            },
+            {
+              "Action": [
                 "ecr:BatchCheckLayerAvailability",
-                "ecr:GetDownloadUrlForLayer",
-                "ecr:BatchGetImage"
+                "ecr:BatchGetImage",
+                "ecr:GetDownloadUrlForLayer"
               ],
               "Effect": "Allow",
               "Resource": {
                 "Fn::Join": [
                   "",
                   [
-                    "arn:aws:ecr:",
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":ecr:",
                     {
                       "Ref": "AWS::Region"
                     },
@@ -1851,19 +1916,6 @@
               "Action": "ecr:GetAuthorizationToken",
               "Effect": "Allow",
               "Resource": "*"
-            },
-            {
-              "Action": [
-                "logs:CreateLogStream",
-                "logs:PutLogEvents"
-              ],
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "namedevelopmenttaskdefinitionenvoyLogGroupF8FCAFD6",
-                  "Arn"
-                ]
-              }
             }
           ],
           "Version": "2012-10-17"
@@ -1875,6 +1927,20 @@
           }
         ]
       }
+    },
+    "namedevelopmenttaskdefinitionenvoyLogGroupF8FCAFD6": {
+      "Type": "AWS::Logs::LogGroup",
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain"
+    },
+    "namedevelopmentlogs108670CC": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "name-development-logs",
+        "RetentionInDays": 30
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
     "namedevelopmentenvoytoappmesh45FF08AA": {
       "Type": "AWS::IAM::Policy",
@@ -2135,6 +2201,12 @@
       "ca-central-1": {
         "ecrRepo": "840364872350"
       },
+      "cn-north-1": {
+        "ecrRepo": "919366029133"
+      },
+      "cn-northwest-1": {
+        "ecrRepo": "919830735681"
+      },
       "eu-central-1": {
         "ecrRepo": "840364872350"
       },
@@ -2196,6 +2268,12 @@
       },
       "ca-central-1": {
         "ecrRepo": "840364872350"
+      },
+      "cn-north-1": {
+        "ecrRepo": "919366029133"
+      },
+      "cn-northwest-1": {
+        "ecrRepo": "919830735681"
       },
       "eu-central-1": {
         "ecrRepo": "840364872350"

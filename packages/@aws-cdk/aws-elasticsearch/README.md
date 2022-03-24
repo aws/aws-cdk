@@ -3,20 +3,9 @@
 
 ---
 
-Features                           | Stability
------------------------------------|----------------------------------------------------------------
-CFN Resources                      | ![Stable](https://img.shields.io/badge/stable-success.svg?style=for-the-badge)
-Higher level constructs for Domain | ![Stable](https://img.shields.io/badge/stable-success.svg?style=for-the-badge)
+![Deprecated](https://img.shields.io/badge/deprecated-critical.svg?style=for-the-badge)
 
-> **CFN Resources:** All classes with the `Cfn` prefix in this module ([CFN Resources]) are always
-> stable and safe to use.
->
-> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib
-
-<!-- -->
-
-> **Stable:** Higher level constructs in this module that are marked stable will not undergo any
-> breaking changes. They will strictly follow the [Semantic Versioning](https://semver.org/) model.
+> This API may emit warnings. Backward compatibility is not guaranteed.
 
 ---
 
@@ -29,21 +18,17 @@ Higher level constructs for Domain | ![Stable](https://img.shields.io/badge/stab
 Create a development cluster by simply specifying the version:
 
 ```ts
-import * as es from '@aws-cdk/aws-elasticsearch';
-
 const devDomain = new es.Domain(this, 'Domain', {
-    version: es.ElasticsearchVersion.V7_1,
+  version: es.ElasticsearchVersion.V7_1,
 });
 ```
 
 To perform version upgrades without replacing the entire domain, specify the `enableVersionUpgrade` property.
 
 ```ts
-import * as es from '@aws-cdk/aws-elasticsearch';
-
 const devDomain = new es.Domain(this, 'Domain', {
-    version: es.ElasticsearchVersion.V7_10,
-    enableVersionUpgrade: true // defaults to false
+  version: es.ElasticsearchVersion.V7_10,
+  enableVersionUpgrade: true, // defaults to false
 });
 ```
 
@@ -51,22 +36,22 @@ Create a production grade cluster by also specifying things like capacity and az
 
 ```ts
 const prodDomain = new es.Domain(this, 'Domain', {
-    version: es.ElasticsearchVersion.V7_1,
-    capacity: {
-        masterNodes: 5,
-        dataNodes: 20
-    },
-    ebs: {
-        volumeSize: 20
-    },
-    zoneAwareness: {
-        availabilityZoneCount: 3
-    },
-    logging: {
-        slowSearchLogEnabled: true,
-        appLogEnabled: true,
-        slowIndexLogEnabled: true,
-    },
+  version: es.ElasticsearchVersion.V7_1,
+  capacity: {
+    masterNodes: 5,
+    dataNodes: 20,
+  },
+  ebs: {
+    volumeSize: 20,
+  },
+  zoneAwareness: {
+    availabilityZoneCount: 3,
+  },
+  logging: {
+    slowSearchLogEnabled: true,
+    appLogEnabled: true,
+    slowIndexLogEnabled: true,
+  },
 });
 ```
 
@@ -93,7 +78,7 @@ You can also create it using the CDK, **but note that only the first application
 
 ```ts
 const slr = new iam.CfnServiceLinkedRole(this, 'ElasticSLR', {
-  awsServiceName: 'es.amazonaws.com'
+  awsServiceName: 'es.amazonaws.com',
 });
 ```
 
@@ -104,7 +89,7 @@ This method accepts a domain endpoint of an already existing domain:
 
 ```ts
 const domainEndpoint = 'https://my-domain-jcjotrt6f7otem4sqcwbch3c4u.us-east-1.es.amazonaws.com';
-const domain = Domain.fromDomainEndpoint(this, 'ImportedDomain', domainEndpoint);
+const domain = es.Domain.fromDomainEndpoint(this, 'ImportedDomain', domainEndpoint);
 ```
 
 ## Permissions
@@ -114,13 +99,14 @@ const domain = Domain.fromDomainEndpoint(this, 'ImportedDomain', domainEndpoint)
 Helper methods also exist for managing access to the domain.
 
 ```ts
-const lambda = new lambda.Function(this, 'Lambda', { /* ... */ });
+declare const fn: lambda.Function;
+declare const domain: es.Domain;
 
 // Grant write access to the app-search index
-domain.grantIndexWrite('app-search', lambda);
+domain.grantIndexWrite('app-search', fn);
 
 // Grant read access to the 'app-search/_search' path
-domain.grantPathRead('app-search/_search', lambda);
+domain.grantPathRead('app-search/_search', fn);
 ```
 
 ## Encryption
@@ -129,15 +115,15 @@ The domain can also be created with encryption enabled:
 
 ```ts
 const domain = new es.Domain(this, 'Domain', {
-    version: es.ElasticsearchVersion.V7_4,
-    ebs: {
-        volumeSize: 100,
-        volumeType: EbsDeviceVolumeType.GENERAL_PURPOSE_SSD,
-    },
-    nodeToNodeEncryption: true,
-    encryptionAtRest: {
-        enabled: true,
-    },
+  version: es.ElasticsearchVersion.V7_4,
+  ebs: {
+    volumeSize: 100,
+    volumeType: ec2.EbsDeviceVolumeType.GENERAL_PURPOSE_SSD,
+  },
+  nodeToNodeEncryption: true,
+  encryptionAtRest: {
+    enabled: true,
+  },
 });
 ```
 
@@ -177,6 +163,7 @@ which security groups will be attached to the domain. By default, CDK will selec
 Helper methods exist to access common domain metrics for example:
 
 ```ts
+declare const domain: es.Domain;
 const freeStorageSpace = domain.metricFreeStorageSpace();
 const masterSysMemoryUtilization = domain.metric('MasterSysMemoryUtilization');
 ```
@@ -190,15 +177,15 @@ be supplied or dynamically created if not supplied.
 
 ```ts
 const domain = new es.Domain(this, 'Domain', {
-    version: es.ElasticsearchVersion.V7_1,
-    enforceHttps: true,
-    nodeToNodeEncryption: true,
-    encryptionAtRest: {
-        enabled: true,
-    },
-    fineGrainedAccessControl: {
-        masterUserName: 'master-user',
-    },
+  version: es.ElasticsearchVersion.V7_1,
+  enforceHttps: true,
+  nodeToNodeEncryption: true,
+  encryptionAtRest: {
+    enabled: true,
+  },
+  fineGrainedAccessControl: {
+    masterUserName: 'master-user',
+  },
 });
 
 const masterUserPassword = domain.masterUserPassword;
@@ -228,14 +215,69 @@ stored in the AWS Secrets Manager as secret. The secret has the prefix
 
 ```ts
 const domain = new es.Domain(this, 'Domain', {
-    version: es.ElasticsearchVersion.V7_1,
-    useUnsignedBasicAuth: true,
+  version: es.ElasticsearchVersion.V7_1,
+  useUnsignedBasicAuth: true,
 });
 
 const masterUserPassword = domain.masterUserPassword;
 ```
 
+## Custom access policies
 
+If the domain requires custom access control it can be configured either as a
+constructor property, or later by means of a helper method.
+
+For simple permissions the `accessPolicies` constructor may be sufficient:
+
+```ts
+const domain = new es.Domain(this, 'Domain', {
+  version: es.ElasticsearchVersion.V7_1,
+  accessPolicies: [
+    new iam.PolicyStatement({
+      actions: ['es:*ESHttpPost', 'es:ESHttpPut*'],
+      effect: iam.Effect.ALLOW,
+      principals: [new iam.AccountPrincipal('123456789012')],
+      resources: ['*'],
+    }),
+  ]
+});
+```
+
+For more complex use-cases, for example, to set the domain up to receive data from a
+[cross-account Kinesis Firehose](https://aws.amazon.com/premiumsupport/knowledge-center/kinesis-firehose-cross-account-streaming/) the `addAccessPolicies` helper method
+allows for policies that include the explicit domain ARN.
+
+```ts
+const domain = new es.Domain(this, 'Domain', {
+  version: es.ElasticsearchVersion.V7_1,
+});
+
+domain.addAccessPolicies(
+  new iam.PolicyStatement({
+    actions: ['es:ESHttpPost', 'es:ESHttpPut'],
+    effect: iam.Effect.ALLOW,
+    principals: [new iam.AccountPrincipal('123456789012')],
+    resources: [domain.domainArn, `${domain.domainArn}/*`],
+  }),
+  new iam.PolicyStatement({
+    actions: ['es:ESHttpGet'],
+    effect: iam.Effect.ALLOW,
+    principals: [new iam.AccountPrincipal('123456789012')],
+    resources: [
+      `${domain.domainArn}/_all/_settings`,
+      `${domain.domainArn}/_cluster/stats`,
+      `${domain.domainArn}/index-name*/_mapping/type-name`,
+      `${domain.domainArn}/roletest*/_mapping/roletest`,
+      `${domain.domainArn}/_nodes`,
+      `${domain.domainArn}/_nodes/stats`,
+      `${domain.domainArn}/_nodes/*/stats`,
+      `${domain.domainArn}/_stats`,
+      `${domain.domainArn}/index-name*/_stats`,
+      `${domain.domainArn}/roletest*/_stat`,
+    ],
+  }),
+);
+```
 
 ## Audit logs
 
@@ -243,21 +285,21 @@ Audit logs can be enabled for a domain, but only when fine grained access contro
 
 ```ts
 const domain = new es.Domain(this, 'Domain', {
-    version: es.ElasticsearchVersion.V7_1,
-    enforceHttps: true,
-    nodeToNodeEncryption: true,
-    encryptionAtRest: {
-        enabled: true,
-    },
-    fineGrainedAccessControl: {
-        masterUserName: 'master-user',
-    },
-    logging: {
-        auditLogEnabled: true,
-        slowSearchLogEnabled: true,
-        appLogEnabled: true,
-        slowIndexLogEnabled: true,
-    },
+  version: es.ElasticsearchVersion.V7_1,
+  enforceHttps: true,
+  nodeToNodeEncryption: true,
+  encryptionAtRest: {
+    enabled: true,
+  },
+  fineGrainedAccessControl: {
+    masterUserName: 'master-user',
+  },
+  logging: {
+    auditLogEnabled: true,
+    slowSearchLogEnabled: true,
+    appLogEnabled: true,
+    slowIndexLogEnabled: true,
+  },
 });
 ```
 
@@ -267,12 +309,12 @@ UltraWarm nodes can be enabled to provide a cost-effective way to store large am
 
 ```ts
 const domain = new es.Domain(this, 'Domain', {
-    version: es.ElasticsearchVersion.V7_10,
-    capacity: {
-        masterNodes: 2,
-        warmNodes: 2,
-        warmInstanceType: 'ultrawarm1.medium.elasticsearch',
-    },
+  version: es.ElasticsearchVersion.V7_10,
+  capacity: {
+    masterNodes: 2,
+    warmNodes: 2,
+    warmInstanceType: 'ultrawarm1.medium.elasticsearch',
+  },
 });
 ```
 
@@ -281,11 +323,11 @@ const domain = new es.Domain(this, 'Domain', {
 Custom endpoints can be configured to reach the ES domain under a custom domain name.
 
 ```ts
-new Domain(stack, 'Domain', {
-    version: ElasticsearchVersion.V7_7,
-    customEndpoint: {
-        domainName: 'search.example.com',
-    },
+new es.Domain(this, 'Domain', {
+  version: es.ElasticsearchVersion.V7_7,
+  customEndpoint: {
+    domainName: 'search.example.com',
+  },
 });
 ```
 
@@ -298,13 +340,13 @@ Additionally, an automatic CNAME-Record is created if a hosted zone is provided 
 [Advanced options](https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/es-createupdatedomains.html#es-createdomain-configure-advanced-options) can used to configure additional options.
 
 ```ts
-new Domain(stack, 'Domain', {
-    version: ElasticsearchVersion.V7_7,
-    advancedOptions: {
-        'rest.action.multi.allow_explicit_index': 'false',
-        'indices.fielddata.cache.size': '25',
-        'indices.query.bool.max_clause_count': '2048',
-    },
+new es.Domain(this, 'Domain', {
+  version: es.ElasticsearchVersion.V7_7,
+  advancedOptions: {
+    'rest.action.multi.allow_explicit_index': 'false',
+    'indices.fielddata.cache.size': '25',
+    'indices.query.bool.max_clause_count': '2048',
+  },
 });
 ```
 
@@ -402,7 +444,7 @@ Make the following modifications to your CDK application to migrate to the `@aws
 Follow these steps to migrate your application without data loss:
 
 - Ensure that the [removal policy](https://docs.aws.amazon.com/cdk/api/latest/docs/@aws-cdk_core.RemovalPolicy.html) on your domains are set to `RemovalPolicy.RETAIN`. This is the default for the domain construct, so nothing is required unless you have specifically set the removal policy to some other value.
-- Remove the domain resource from your CloudFormation stacks by manually modifying the synthesized templates used to create the CloudFormation stacks. This may also involve modifying or deleting dependent resources, such as the custom resources that CDK creates to manage the domain's access policy or any other resource you have connected to the domain. You will need to search for references to each domain's logical ID to determine which other resources refer to it and replace or delete those references. Do not remove resources that are dependencies of the domain or you will have to recreate or import them before importing the domain. After modification, deploy the stacks through the AWS Management Console or using the AWS CLI. 
+- Remove the domain resource from your CloudFormation stacks by manually modifying the synthesized templates used to create the CloudFormation stacks. This may also involve modifying or deleting dependent resources, such as the custom resources that CDK creates to manage the domain's access policy or any other resource you have connected to the domain. You will need to search for references to each domain's logical ID to determine which other resources refer to it and replace or delete those references. Do not remove resources that are dependencies of the domain or you will have to recreate or import them before importing the domain. After modification, deploy the stacks through the AWS Management Console or using the AWS CLI.
 - Migrate your CDK application to use the new `@aws-cdk/aws-opensearchservice` module by applying the necessary modifications listed above. Synthesize your application and obtain the resulting stack templates.
 - Copy just the definition of the domain from the "migrated" templates to the corresponding "stripped" templates that you deployed above. [Import](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/resource-import-existing-stack.html) the orphaned domains into your CloudFormation stacks using these templates.
 - Synthesize and deploy your CDK application to reconfigure/recreate the modified dependent resources. The CloudFormation stacks should now contain the same resources as existed prior to migration.

@@ -22,12 +22,10 @@
         "PolicyDocument": {
           "Statement": [
             {
-              "Action": "logs:PutResourcePolicy",
-              "Effect": "Allow",
-              "Resource": "*"
-            },
-            {
-              "Action": "logs:DeleteResourcePolicy",
+              "Action": [
+                "logs:DeleteResourcePolicy",
+                "logs:PutResourcePolicy"
+              ],
               "Effect": "Allow",
               "Resource": "*"
             }
@@ -189,10 +187,7 @@
             "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
           }
         ]
-      },
-      "DependsOn": [
-        "Domain19FCBCB91"
-      ]
+      }
     },
     "Domain1ESAccessPolicy5D846A31": {
       "Type": "Custom::ElasticsearchAccessPolicy",
@@ -219,7 +214,7 @@
               {
                 "Ref": "AWS::AccountId"
               },
-              ":root\\\"},\\\"Resource\\\":\\\"*\\\"}],\\\"Version\\\":\\\"2012-10-17\\\"}\"},\"outputPath\":\"DomainConfig.ElasticsearchClusterConfig.AccessPolicies\",\"physicalResourceId\":{\"id\":\"",
+              ":root\\\"},\\\"Resource\\\":\\\"*\\\"}],\\\"Version\\\":\\\"2012-10-17\\\"}\"},\"outputPaths\":[\"DomainConfig.ElasticsearchClusterConfig.AccessPolicies\"],\"physicalResourceId\":{\"id\":\"",
               {
                 "Ref": "Domain19FCBCB91"
               },
@@ -243,7 +238,7 @@
               {
                 "Ref": "AWS::AccountId"
               },
-              ":root\\\"},\\\"Resource\\\":\\\"*\\\"}],\\\"Version\\\":\\\"2012-10-17\\\"}\"},\"outputPath\":\"DomainConfig.ElasticsearchClusterConfig.AccessPolicies\",\"physicalResourceId\":{\"id\":\"",
+              ":root\\\"},\\\"Resource\\\":\\\"*\\\"}],\\\"Version\\\":\\\"2012-10-17\\\"}\"},\"outputPaths\":[\"DomainConfig.ElasticsearchClusterConfig.AccessPolicies\"],\"physicalResourceId\":{\"id\":\"",
               {
                 "Ref": "Domain19FCBCB91"
               },
@@ -254,8 +249,7 @@
         "InstallLatestAwsSdk": true
       },
       "DependsOn": [
-        "Domain1ESAccessPolicyCustomResourcePolicyC04432B6",
-        "Domain19FCBCB91"
+        "Domain1ESAccessPolicyCustomResourcePolicyC04432B6"
       ],
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete"
@@ -296,7 +290,7 @@
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "AssetParametersf2b7671fc0b80f63e3c94441727cbff799bb0f4991339d990d7b4c419e1ab3ddS3Bucket292EB571"
+            "Ref": "AssetParameters3744fa896361f81b76b1efde632ac07b1920ce09a4ca1ff15ab486f262a19b87S3Bucket36F31A16"
           },
           "S3Key": {
             "Fn::Join": [
@@ -309,7 +303,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParametersf2b7671fc0b80f63e3c94441727cbff799bb0f4991339d990d7b4c419e1ab3ddS3VersionKeyCE9A5F79"
+                          "Ref": "AssetParameters3744fa896361f81b76b1efde632ac07b1920ce09a4ca1ff15ab486f262a19b87S3VersionKeyF80D542B"
                         }
                       ]
                     }
@@ -322,7 +316,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParametersf2b7671fc0b80f63e3c94441727cbff799bb0f4991339d990d7b4c419e1ab3ddS3VersionKeyCE9A5F79"
+                          "Ref": "AssetParameters3744fa896361f81b76b1efde632ac07b1920ce09a4ca1ff15ab486f262a19b87S3VersionKeyF80D542B"
                         }
                       ]
                     }
@@ -368,12 +362,10 @@
         "PolicyDocument": {
           "Statement": [
             {
-              "Action": "logs:PutResourcePolicy",
-              "Effect": "Allow",
-              "Resource": "*"
-            },
-            {
-              "Action": "logs:DeleteResourcePolicy",
+              "Action": [
+                "logs:DeleteResourcePolicy",
+                "logs:PutResourcePolicy"
+              ],
               "Effect": "Allow",
               "Resource": "*"
             }
@@ -535,10 +527,7 @@
             "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
           }
         ]
-      },
-      "DependsOn": [
-        "Domain2644FE48C"
-      ]
+      }
     },
     "Domain2ESAccessPolicy3DF4C2BA": {
       "Type": "Custom::ElasticsearchAccessPolicy",
@@ -565,7 +554,7 @@
               {
                 "Ref": "AWS::AccountId"
               },
-              ":root\\\"},\\\"Resource\\\":\\\"*\\\"}],\\\"Version\\\":\\\"2012-10-17\\\"}\"},\"outputPath\":\"DomainConfig.ElasticsearchClusterConfig.AccessPolicies\",\"physicalResourceId\":{\"id\":\"",
+              ":root\\\"},\\\"Resource\\\":\\\"*\\\"}],\\\"Version\\\":\\\"2012-10-17\\\"}\"},\"outputPaths\":[\"DomainConfig.ElasticsearchClusterConfig.AccessPolicies\"],\"physicalResourceId\":{\"id\":\"",
               {
                 "Ref": "Domain2644FE48C"
               },
@@ -589,7 +578,7 @@
               {
                 "Ref": "AWS::AccountId"
               },
-              ":root\\\"},\\\"Resource\\\":\\\"*\\\"}],\\\"Version\\\":\\\"2012-10-17\\\"}\"},\"outputPath\":\"DomainConfig.ElasticsearchClusterConfig.AccessPolicies\",\"physicalResourceId\":{\"id\":\"",
+              ":root\\\"},\\\"Resource\\\":\\\"*\\\"}],\\\"Version\\\":\\\"2012-10-17\\\"}\"},\"outputPaths\":[\"DomainConfig.ElasticsearchClusterConfig.AccessPolicies\"],\"physicalResourceId\":{\"id\":\"",
               {
                 "Ref": "Domain2644FE48C"
               },
@@ -600,25 +589,24 @@
         "InstallLatestAwsSdk": true
       },
       "DependsOn": [
-        "Domain2ESAccessPolicyCustomResourcePolicy8EED1F24",
-        "Domain2644FE48C"
+        "Domain2ESAccessPolicyCustomResourcePolicy8EED1F24"
       ],
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete"
     }
   },
   "Parameters": {
-    "AssetParametersf2b7671fc0b80f63e3c94441727cbff799bb0f4991339d990d7b4c419e1ab3ddS3Bucket292EB571": {
+    "AssetParameters3744fa896361f81b76b1efde632ac07b1920ce09a4ca1ff15ab486f262a19b87S3Bucket36F31A16": {
       "Type": "String",
-      "Description": "S3 bucket for asset \"f2b7671fc0b80f63e3c94441727cbff799bb0f4991339d990d7b4c419e1ab3dd\""
+      "Description": "S3 bucket for asset \"3744fa896361f81b76b1efde632ac07b1920ce09a4ca1ff15ab486f262a19b87\""
     },
-    "AssetParametersf2b7671fc0b80f63e3c94441727cbff799bb0f4991339d990d7b4c419e1ab3ddS3VersionKeyCE9A5F79": {
+    "AssetParameters3744fa896361f81b76b1efde632ac07b1920ce09a4ca1ff15ab486f262a19b87S3VersionKeyF80D542B": {
       "Type": "String",
-      "Description": "S3 key for asset version \"f2b7671fc0b80f63e3c94441727cbff799bb0f4991339d990d7b4c419e1ab3dd\""
+      "Description": "S3 key for asset version \"3744fa896361f81b76b1efde632ac07b1920ce09a4ca1ff15ab486f262a19b87\""
     },
-    "AssetParametersf2b7671fc0b80f63e3c94441727cbff799bb0f4991339d990d7b4c419e1ab3ddArtifactHash86854188": {
+    "AssetParameters3744fa896361f81b76b1efde632ac07b1920ce09a4ca1ff15ab486f262a19b87ArtifactHash40DDF5EE": {
       "Type": "String",
-      "Description": "Artifact hash for asset \"f2b7671fc0b80f63e3c94441727cbff799bb0f4991339d990d7b4c419e1ab3dd\""
+      "Description": "Artifact hash for asset \"3744fa896361f81b76b1efde632ac07b1920ce09a4ca1ff15ab486f262a19b87\""
     }
   }
 }

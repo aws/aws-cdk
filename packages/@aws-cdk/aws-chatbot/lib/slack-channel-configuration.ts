@@ -173,7 +173,7 @@ abstract class SlackChannelConfigurationBase extends cdk.Resource implements ISl
     return new cloudwatch.Metric({
       namespace: 'AWS/Chatbot',
       region: 'us-east-1',
-      dimensions: {
+      dimensionsMap: {
         ConfigurationName: this.slackChannelConfigurationName,
       },
       metricName,

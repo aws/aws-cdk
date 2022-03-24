@@ -1,7 +1,8 @@
 import * as cxapi from '@aws-cdk/cx-api';
-import { Mode, SdkProvider } from '../api';
+import { Mode } from '../api/aws-auth/credentials';
+import { SdkProvider } from '../api/aws-auth/sdk-provider';
+import { ContextProviderPlugin } from '../api/plugin';
 import { debug } from '../logging';
-import { ContextProviderPlugin } from './provider';
 
 /**
  * Plugin to retrieve the Availability Zones for an endpoint service
@@ -16,7 +17,7 @@ export class EndpointServiceAZContextProviderPlugin implements ContextProviderPl
     const serviceName = args.serviceName;
     debug(`Reading AZs for ${account}:${region}:${serviceName}`);
     const options = { assumeRoleArn: args.lookupRoleArn };
-    const ec2 = (await this.aws.forEnvironment(cxapi.EnvironmentUtils.make(account, region), Mode.ForReading, options)).ec2();
+    const ec2 = (await this.aws.forEnvironment(cxapi.EnvironmentUtils.make(account, region), Mode.ForReading, options)).sdk.ec2();
     const response = await ec2.describeVpcEndpointServices({ ServiceNames: [serviceName] }).promise();
 
     // expect a service in the response

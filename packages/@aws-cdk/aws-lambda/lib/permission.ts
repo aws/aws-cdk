@@ -2,8 +2,8 @@ import * as iam from '@aws-cdk/aws-iam';
 import { Construct } from '@aws-cdk/core';
 
 /**
- * Represents a permission statement that can be added to a Lambda's resource policy
- * via the `addToResourcePolicy` method.
+ * Represents a permission statement that can be added to a Lambda function's
+ * resource policy via the `addPermissions()` method.
  */
 export interface Permission {
   /**

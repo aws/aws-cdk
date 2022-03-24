@@ -453,6 +453,12 @@
       "Properties": {
         "Port": 80,
         "Protocol": "HTTP",
+        "TargetGroupAttributes": [
+          {
+            "Key": "stickiness.enabled",
+            "Value": "false"
+          }
+        ],
         "TargetType": "ip",
         "VpcId": {
           "Ref": "Vpc8378EB38"
@@ -573,8 +579,8 @@
             {
               "Action": [
                 "ecr:BatchCheckLayerAvailability",
-                "ecr:GetDownloadUrlForLayer",
-                "ecr:BatchGetImage"
+                "ecr:BatchGetImage",
+                "ecr:GetDownloadUrlForLayer"
               ],
               "Effect": "Allow",
               "Resource": {

@@ -71,6 +71,18 @@ export class MappingValue implements IMappingValue {
  * Represents a Parameter Mapping.
  */
 export class ParameterMapping {
+
+  /**
+   * Creates a mapping from an object.
+   */
+  public static fromObject(obj: { [key: string]: MappingValue }): ParameterMapping {
+    const mapping = new ParameterMapping();
+    for (const [k, m] of Object.entries(obj)) {
+      mapping.custom(k, m.value);
+    }
+    return mapping;
+  }
+
   /**
   * Represents all created parameter mappings.
   */

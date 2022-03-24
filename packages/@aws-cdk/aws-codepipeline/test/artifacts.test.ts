@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as cdk from '@aws-cdk/core';
 import * as codepipeline from '../lib';
 import { FakeBuildAction } from './fake-build-action';
@@ -10,14 +10,12 @@ describe('artifacts', () => {
   describe('Artifacts in CodePipeline', () => {
     test('cannot be created with an empty name', () => {
       expect(() => new codepipeline.Artifact('')).toThrow(/Artifact name must match regular expression/);
-
-
     });
 
     test('without a name, when used as an input without being used as an output first - should fail validation', () => {
       const stack = new cdk.Stack();
       const sourceOutput = new codepipeline.Artifact();
-      const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
+      new codepipeline.Pipeline(stack, 'Pipeline', {
         stages: [
           {
             stageName: 'Source',
@@ -44,16 +42,13 @@ describe('artifacts', () => {
 
       expect(errors.length).toEqual(1);
       const error = errors[0];
-      expect(error.source).toEqual(pipeline);
-      expect(error.message).toEqual("Action 'Build' is using an unnamed input Artifact, which is not being produced in this pipeline");
-
-
+      expect(error).toMatch(/Action 'Build' is using an unnamed input Artifact, which is not being produced in this pipeline/);
     });
 
     test('with a name, when used as an input without being used as an output first - should fail validation', () => {
       const stack = new cdk.Stack();
       const sourceOutput = new codepipeline.Artifact();
-      const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
+      new codepipeline.Pipeline(stack, 'Pipeline', {
         stages: [
           {
             stageName: 'Source',
@@ -80,16 +75,13 @@ describe('artifacts', () => {
 
       expect(errors.length).toEqual(1);
       const error = errors[0];
-      expect(error.source).toEqual(pipeline);
-      expect(error.message).toEqual("Action 'Build' is using input Artifact 'named', which is not being produced in this pipeline");
-
-
+      expect(error).toMatch(/Action 'Build' is using input Artifact 'named', which is not being produced in this pipeline/);
     });
 
     test('without a name, when used as an output multiple times - should fail validation', () => {
       const stack = new cdk.Stack();
       const sourceOutput = new codepipeline.Artifact();
-      const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
+      new codepipeline.Pipeline(stack, 'Pipeline', {
         stages: [
           {
             stageName: 'Source',
@@ -117,10 +109,7 @@ describe('artifacts', () => {
 
       expect(errors.length).toEqual(1);
       const error = errors[0];
-      expect(error.source).toEqual(pipeline);
-      expect(error.message).toEqual("Both Actions 'Source' and 'Build' are producting Artifact 'Artifact_Source_Source'. Every artifact can only be produced once.");
-
-
+      expect(error).toMatch(/Both Actions 'Source' and 'Build' are producting Artifact 'Artifact_Source_Source'. Every artifact can only be produced once./);
     });
 
     test("an Action's output can be used as input for an Action in the same Stage with a higher runOrder", () => {
@@ -165,9 +154,7 @@ describe('artifacts', () => {
         ],
       });
 
-      expect(stack).toHaveResourceLike('AWS::CodePipeline::Pipeline');
-
-
+      Template.fromStack(stack).resourceCountIs('AWS::CodePipeline::Pipeline', 1);
     });
 
     test('violation of runOrder constraints is detected and reported', () => {
@@ -177,7 +164,7 @@ describe('artifacts', () => {
       const buildOutput1 = new codepipeline.Artifact('buildOutput1');
       const sourceOutput2 = new codepipeline.Artifact('sourceOutput2');
 
-      const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
+      new codepipeline.Pipeline(stack, 'Pipeline', {
         stages: [
           {
             stageName: 'Source',
@@ -217,10 +204,7 @@ describe('artifacts', () => {
 
       expect(errors.length).toEqual(1);
       const error = errors[0];
-      expect(error.source).toEqual(pipeline);
-      expect(error.message).toEqual("Stage 2 Action 2 ('Build'/'build2') is consuming input Artifact 'buildOutput1' before it is being produced at Stage 2 Action 3 ('Build'/'build1')");
-
-
+      expect(error).toMatch(/Stage 2 Action 2 \('Build'\/'build2'\) is consuming input Artifact 'buildOutput1' before it is being produced at Stage 2 Action 3 \('Build'\/'build1'\)/);
     });
 
     test('without a name, sanitize the auto stage-action derived name', () => {
@@ -250,7 +234,7 @@ describe('artifacts', () => {
         ],
       });
 
-      expect(stack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+      Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
         'Stages': [
           {
             'Name': 'Source.@',
@@ -276,15 +260,21 @@ describe('artifacts', () => {
           },
         ],
       });
-
-
     });
   });
 });
 
 /* eslint-disable @aws-cdk/no-core-construct */
-function validate(construct: cdk.IConstruct): cdk.ValidationError[] {
-  cdk.ConstructNode.prepare(construct.node);
-  return cdk.ConstructNode.validate(construct.node);
+function validate(construct: cdk.IConstruct): string[] {
+  try {
+    (construct.node.root as cdk.App).synth();
+    return [];
+  } catch (e) {
+    const err = e as any; // coerce unknown to any
+    if (!('message' in err) || !err.message.startsWith('Validation failed')) {
+      throw e;
+    }
+    return err.message.split('\n').slice(1);
+  }
 }
 /* eslint-enable @aws-cdk/no-core-construct */

@@ -116,7 +116,7 @@ describe('DynamoEventSource', () => {
 
     // WHEN
     fn.addEventSource(new sources.DynamoEventSource(table, {
-      batchSize: 50,
+      batchSize: 5000,
       startingPosition: lambda.StartingPosition.LATEST,
     }));
 
@@ -131,7 +131,50 @@ describe('DynamoEventSource', () => {
       'FunctionName': {
         'Ref': 'Fn9270CBC0',
       },
-      'BatchSize': 50,
+      'BatchSize': 5000,
+      'StartingPosition': 'LATEST',
+    });
+
+
+  });
+
+  test('pass validation if batchsize is token', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const table = new dynamodb.Table(stack, 'T', {
+      partitionKey: {
+        name: 'id',
+        type: dynamodb.AttributeType.STRING,
+      },
+      stream: dynamodb.StreamViewType.NEW_IMAGE,
+    });
+    const batchSize = new cdk.CfnParameter(stack, 'BatchSize', {
+      type: 'Number',
+      default: 100,
+      minValue: 1,
+      maxValue: 10000,
+    });
+    // WHEN
+    fn.addEventSource(new sources.DynamoEventSource(table, {
+      batchSize: batchSize.valueAsNumber,
+      startingPosition: lambda.StartingPosition.LATEST,
+    }));
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+      'EventSourceArn': {
+        'Fn::GetAtt': [
+          'TD925BC7E',
+          'StreamArn',
+        ],
+      },
+      'FunctionName': {
+        'Ref': 'Fn9270CBC0',
+      },
+      'BatchSize': {
+        'Ref': 'BatchSize',
+      },
       'StartingPosition': 'LATEST',
     });
 
@@ -174,12 +217,12 @@ describe('DynamoEventSource', () => {
     expect(() => fn.addEventSource(new sources.DynamoEventSource(table, {
       batchSize: 0,
       startingPosition: lambda.StartingPosition.LATEST,
-    }))).toThrow(/Maximum batch size must be between 1 and 1000 inclusive \(given 0\)/);
+    }))).toThrow(/Maximum batch size must be between 1 and 10000 inclusive \(given 0\)/);
 
 
   });
 
-  test('fails if batch size > 1000', () => {
+  test('fails if batch size > 10000', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new TestFunction(stack, 'Fn');
@@ -193,9 +236,9 @@ describe('DynamoEventSource', () => {
 
     // WHEN
     expect(() => fn.addEventSource(new sources.DynamoEventSource(table, {
-      batchSize: 1001,
+      batchSize: 10001,
       startingPosition: lambda.StartingPosition.LATEST,
-    }))).toThrow(/Maximum batch size must be between 1 and 1000 inclusive \(given 1001\)/);
+    }))).toThrow(/Maximum batch size must be between 1 and 10000 inclusive \(given 10001\)/);
 
 
   });

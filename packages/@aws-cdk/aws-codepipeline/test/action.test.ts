@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import * as codepipeline from '../lib';
@@ -10,54 +10,45 @@ import { FakeSourceAction } from './fake-source-action';
 
 describe('action', () => {
   describe('artifact bounds validation', () => {
-
     test('artifacts count exceed maximum', () => {
       const result = boundsValidationResult(1, 0, 0);
       expect(result.length).toEqual(1);
       expect(result[0]).toMatch(/cannot have more than 0/);
-
     });
 
     test('artifacts count below minimum', () => {
       const result = boundsValidationResult(1, 2, 2);
       expect(result.length).toEqual(1);
       expect(result[0]).toMatch(/must have at least 2/);
-
     });
 
     test('artifacts count within bounds', () => {
       const result = boundsValidationResult(1, 0, 2);
       expect(result.length).toEqual(0);
-
     });
   });
 
   describe('action type validation', () => {
-
     test('must be source and is source', () => {
       const result = validations.validateSourceAction(true, codepipeline.ActionCategory.SOURCE, 'test action', 'test stage');
       expect(result.length).toEqual(0);
-
     });
 
     test('must be source and is not source', () => {
       const result = validations.validateSourceAction(true, codepipeline.ActionCategory.DEPLOY, 'test action', 'test stage');
       expect(result.length).toEqual(1);
       expect(result[0]).toMatch(/may only contain Source actions/);
-
     });
 
     test('cannot be source and is source', () => {
       const result = validations.validateSourceAction(false, codepipeline.ActionCategory.SOURCE, 'test action', 'test stage');
       expect(result.length).toEqual(1);
       expect(result[0]).toMatch(/may only occur in first stage/);
-
     });
 
     test('cannot be source and is not source', () => {
       const result = validations.validateSourceAction(false, codepipeline.ActionCategory.DEPLOY, 'test action', 'test stage');
       expect(result.length).toEqual(0);
-
     });
   });
 
@@ -74,8 +65,6 @@ describe('action', () => {
       expect(() => {
         stage.addAction(action);
       }).toThrow(/Action name must match regular expression:/);
-
-
     });
   });
 
@@ -121,11 +110,9 @@ describe('action', () => {
       });
 
       expect(() => {
-        expect(stack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+        Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
         });
       }).toThrow(/Build\/Fake cannot have more than 3 input artifacts/);
-
-
     });
 
     test('validates that output Artifacts are within bounds', () => {
@@ -166,11 +153,9 @@ describe('action', () => {
       });
 
       expect(() => {
-        expect(stack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+        Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
         });
       }).toThrow(/Source\/Fake cannot have more than 4 output artifacts/);
-
-
     });
   });
 
@@ -199,7 +184,7 @@ describe('action', () => {
       ],
     });
 
-    expect(stack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
       'Stages': [
         {
           'Name': 'Source',
@@ -234,8 +219,6 @@ describe('action', () => {
         },
       ],
     });
-
-
   });
 
   test('the same Action can be safely added to 2 different Stages', () => {
@@ -270,8 +253,6 @@ describe('action', () => {
     expect(() => {
       pipeline.addStage(stage3);
     }).not.toThrow(/FakeAction/);
-
-
   });
 
   describe('input Artifacts', () => {
@@ -285,8 +266,6 @@ describe('action', () => {
           extraInputs: [artifact],
         });
       }).not.toThrow();
-
-
     });
 
     test('can have duplicate names', () => {
@@ -300,8 +279,6 @@ describe('action', () => {
           extraInputs: [artifact2],
         });
       }).not.toThrow();
-
-
     });
   });
 
@@ -317,8 +294,6 @@ describe('action', () => {
           ],
         });
       }).not.toThrow();
-
-
     });
   });
 
@@ -355,8 +330,6 @@ describe('action', () => {
     expect(() => {
       buildStage.addAction(buildAction);
     }).toThrow(/Role is not supported for actions with an owner different than 'AWS' - got 'ThirdParty' \(Action: 'build' in Stage: 'Build'\)/);
-
-
   });
 
   test('actions can be retrieved from stages they have been added to', () => {
@@ -399,8 +372,6 @@ describe('action', () => {
     expect(buildStage.actions.length).toEqual(2);
     expect(buildStage.actions[0].actionProperties.actionName).toEqual('build1');
     expect(buildStage.actions[1].actionProperties.actionName).toEqual('build2');
-
-
   });
 });
 

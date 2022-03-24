@@ -32,8 +32,8 @@
               "Action": [
                 "kms:Decrypt",
                 "kms:Encrypt",
-                "kms:ReEncrypt*",
-                "kms:GenerateDataKey*"
+                "kms:GenerateDataKey*",
+                "kms:ReEncrypt*"
               ],
               "Effect": "Allow",
               "Principal": {
@@ -61,6 +61,14 @@
                 "Arn"
               ]
             },
+            "DeadLetterConfig": {
+              "Arn": {
+                "Fn::GetAtt": [
+                  "MyDeadLetterQueueD997968A",
+                  "Arn"
+                ]
+              }
+            },
             "Id": "Target0"
           }
         ]
@@ -86,9 +94,9 @@
           "Statement": [
             {
               "Action": [
-                "sqs:SendMessage",
                 "sqs:GetQueueAttributes",
-                "sqs:GetQueueUrl"
+                "sqs:GetQueueUrl",
+                "sqs:SendMessage"
               ],
               "Effect": "Allow",
               "Principal": {
@@ -107,6 +115,50 @@
         "Queues": [
           {
             "Ref": "MyQueueE6CA6235"
+          }
+        ]
+      }
+    },
+    "MyDeadLetterQueueD997968A": {
+      "Type": "AWS::SQS::Queue",
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "MyDeadLetterQueuePolicyCC35D52C": {
+      "Type": "AWS::SQS::QueuePolicy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sqs:SendMessage",
+              "Condition": {
+                "ArnEquals": {
+                  "aws:SourceArn": {
+                    "Fn::GetAtt": [
+                      "MyRuleA44AB831",
+                      "Arn"
+                    ]
+                  }
+                }
+              },
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "events.amazonaws.com"
+              },
+              "Resource": {
+                "Fn::GetAtt": [
+                  "MyDeadLetterQueueD997968A",
+                  "Arn"
+                ]
+              },
+              "Sid": "AllowEventRuleawscdksqseventtargetMyRule0027A8F4"
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "Queues": [
+          {
+            "Ref": "MyDeadLetterQueueD997968A"
           }
         ]
       }

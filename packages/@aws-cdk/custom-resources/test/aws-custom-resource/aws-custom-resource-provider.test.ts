@@ -467,3 +467,36 @@ test('installs the latest SDK', async () => {
   // clean up aws-sdk install
   await fs.remove(tmpPath);
 });
+
+test('invalid service name throws explicit error', async () => {
+  const publishFake = sinon.fake.resolves({});
+
+  AWS.mock('SNS', 'publish', publishFake);
+
+  const event: AWSLambda.CloudFormationCustomResourceCreateEvent = {
+    ...eventCommon,
+    RequestType: 'Create',
+    ResourceProperties: {
+      ServiceToken: 'token',
+      Create: JSON.stringify({
+        service: 'thisisnotarealservice',
+        action: 'publish',
+        parameters: {
+          Message: 'message',
+          TopicArn: 'topic',
+        },
+        physicalResourceId: PhysicalResourceId.of('id'),
+      } as AwsSdkCall),
+    },
+  };
+
+  const request = createRequest(body =>
+    body.Status === 'FAILED' &&
+    body.Reason!.startsWith('Service thisisnotarealservice does not exist'),
+  );
+
+  await handler(event, {} as AWSLambda.Context);
+
+  expect(request.isDone()).toBeTruthy();
+});
+

@@ -1,10 +1,11 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
+import { describeDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Cluster, KubernetesResource } from '../lib';
 import { testFixtureNoVpc } from './util';
 
 /* eslint-disable max-len */
 
-describe('manifest', () => {
+describeDeprecated('manifest', () => {
   test('basic usage', () => {
     // GIVEN
     const { stack } = testFixtureNoVpc();
@@ -68,7 +69,7 @@ describe('manifest', () => {
       manifest,
     });
 
-    expect(stack).toHaveResource(KubernetesResource.RESOURCE_TYPE, {
+    Template.fromStack(stack).hasResourceProperties(KubernetesResource.RESOURCE_TYPE, {
       Manifest: JSON.stringify(manifest),
     });
 

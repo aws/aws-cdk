@@ -601,7 +601,9 @@
           "PasswordLength": 41,
           "SecretStringTemplate": "{\"username\":\"docdb\"}"
         }
-      }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
     "DatabaseSecretAttachmentE5D1B020": {
       "Type": "AWS::SecretsManager::SecretTargetAttachment",
@@ -783,6 +785,7 @@
             ]
           },
           "functionName": "awscdkdocdbclusterrotationDatabaseRotationSingleUser7DAE65BE",
+          "excludeCharacters": "\"@/",
           "vpcSubnetIds": {
             "Fn::Join": [
               "",
@@ -815,11 +818,15 @@
     "DatabaseRotationSingleUserSARMapping9AEB3E55": {
       "aws": {
         "applicationId": "arn:aws:serverlessrepo:us-east-1:297356227824:applications/SecretsManagerMongoDBRotationSingleUser",
-        "semanticVersion": "1.1.60"
+        "semanticVersion": "1.1.225"
       },
       "aws-cn": {
         "applicationId": "arn:aws-cn:serverlessrepo:cn-north-1:193023089310:applications/SecretsManagerMongoDBRotationSingleUser",
         "semanticVersion": "1.1.37"
+      },
+      "aws-us-gov": {
+        "applicationId": "arn:aws-us-gov:serverlessrepo:us-gov-west-1:023102451235:applications/SecretsManagerMongoDBRotationSingleUser",
+        "semanticVersion": "1.1.93"
       }
     }
   }

@@ -1,4 +1,14 @@
-import { ABSENT, arrayWith, exactValue, expect as cdkExpect, haveResource, haveResourceLike, Capture, anything } from '../lib/index';
+import {
+  ABSENT,
+  arrayWith,
+  exactValue,
+  expect as cdkExpect,
+  haveResource,
+  haveResourceLike,
+  Capture,
+  anything,
+  stringLike,
+} from '../lib/index';
 import { mkResource, mkStack } from './cloud-artifact';
 
 test('support resource with no properties', () => {
@@ -154,6 +164,30 @@ describe('property absence', () => {
         List: arrayWith({ Prop: 'missme' }),
       }));
     }).toThrowError(/Array did not contain expected element/);
+  });
+
+  test('can use matcher to test stringLike on single-line strings', () => {
+    const synthStack = mkResource({
+      Content: 'something required something',
+    });
+
+    expect(() => {
+      cdkExpect(synthStack).to(haveResource('Some::Resource', {
+        Content: stringLike('*required*'),
+      }));
+    }).not.toThrowError();
+  });
+
+  test('can use matcher to test stringLike on multi-line strings', () => {
+    const synthStack = mkResource({
+      Content: 'something\nrequired\nsomething',
+    });
+
+    expect(() => {
+      cdkExpect(synthStack).to(haveResource('Some::Resource', {
+        Content: stringLike('*required*'),
+      }));
+    }).not.toThrowError();
   });
 
   test('arrayContaining must match all elements in any order', () => {

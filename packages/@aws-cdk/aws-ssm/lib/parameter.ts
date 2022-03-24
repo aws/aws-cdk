@@ -311,9 +311,11 @@ export interface StringParameterAttributes extends CommonStringParameterAttribut
  */
 export interface SecureStringParameterAttributes extends CommonStringParameterAttributes {
   /**
-   * The version number of the value you wish to retrieve. This is required for secure strings.
+   * The version number of the value you wish to retrieve.
+   *
+   * @default - AWS CloudFormation uses the latest version of the parameter
    */
-  readonly version: number;
+  readonly version?: number;
 
   /**
    * The encryption key that is used to encrypt this parameter
@@ -365,7 +367,8 @@ export class StringParameter extends ParameterBase implements IStringParameter {
    * Imports a secure string parameter from the SSM parameter store.
    */
   public static fromSecureStringParameterAttributes(scope: Construct, id: string, attrs: SecureStringParameterAttributes): IStringParameter {
-    const stringValue = new CfnDynamicReference(CfnDynamicReferenceService.SSM_SECURE, `${attrs.parameterName}:${Tokenization.stringifyNumber(attrs.version)}`).toString();
+    const version = attrs.version ? Tokenization.stringifyNumber(attrs.version) : '';
+    const stringValue = new CfnDynamicReference(CfnDynamicReferenceService.SSM_SECURE, `${attrs.parameterName}:${version}`).toString();
 
     class Import extends ParameterBase {
       public readonly parameterName = attrs.parameterName;

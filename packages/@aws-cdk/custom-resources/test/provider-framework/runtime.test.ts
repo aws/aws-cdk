@@ -169,6 +169,23 @@ describe('PhysicalResourceId', () => {
     });
   });
 
+  test('UPDATE: can override the physical ID with the actual on isComplete', async () => {
+    // GIVEN
+    mocks.onEventImplMock = async () => ({ PhysicalResourceId: 'TemporaryPhysicalId' });
+    mocks.isCompleteImplMock = async () => ({ IsComplete: true, PhysicalResourceId: 'NewPhysicalId' });
+
+    // WHEN
+    await simulateEvent({
+      RequestType: 'Update',
+      PhysicalResourceId: 'CurrentPhysicalId',
+    });
+
+    // THEN
+    expectCloudFormationSuccess({
+      PhysicalResourceId: 'NewPhysicalId',
+    });
+  });
+
   test('DELETE: cannot change the physical resource ID during a delete', async () => {
     // GIVEN
     mocks.onEventImplMock = async () => ({ PhysicalResourceId: 'NewPhysicalId' });
@@ -228,6 +245,61 @@ test('if there is no user-defined "isComplete", the waiter will not be triggered
   // THEN
   expectNoWaiter();
   expectCloudFormationSuccess({ PhysicalResourceId: MOCK_PHYSICAL_ID });
+});
+
+describe('NoEcho', () => {
+  test('with onEvent', async () => {
+    // GIVEN
+    mocks.onEventImplMock = async () => ({
+      Data: {
+        Very: 'Sensitive',
+      },
+      NoEcho: true,
+    });
+
+    // WHEN
+    await simulateEvent({
+      RequestType: 'Create',
+    });
+
+    // THEN
+    expectCloudFormationSuccess({
+      Data: {
+        Very: 'Sensitive',
+      },
+      NoEcho: true,
+    });
+  });
+
+  test('with isComplete', async () => {
+    // GIVEN
+    mocks.onEventImplMock = async () => ({
+      Data: {
+        Very: 'Sensitive',
+      },
+      NoEcho: true,
+    });
+    mocks.isCompleteImplMock = async () => ({
+      Data: {
+        Also: 'Confidential',
+      },
+      IsComplete: true,
+    });
+
+    // WHEN
+    await simulateEvent({
+      RequestType: 'Create',
+    });
+
+    // THEN
+    expectCloudFormationSuccess({
+      Data: {
+        Very: 'Sensitive',
+        Also: 'Confidential',
+      },
+      NoEcho: true,
+    });
+  });
 });
 
 test('fails if user handler returns a non-object response', async () => {

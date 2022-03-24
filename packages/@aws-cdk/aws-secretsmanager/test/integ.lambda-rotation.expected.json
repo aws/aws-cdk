@@ -30,52 +30,12 @@
             },
             {
               "Action": [
-                "kms:Decrypt",
-                "kms:Encrypt",
-                "kms:ReEncrypt*",
-                "kms:GenerateDataKey*"
-              ],
-              "Condition": {
-                "StringEquals": {
-                  "kms:ViaService": {
-                    "Fn::Join": [
-                      "",
-                      [
-                        "secretsmanager.",
-                        {
-                          "Ref": "AWS::Region"
-                        },
-                        ".amazonaws.com"
-                      ]
-                    ]
-                  }
-                }
-              },
-              "Effect": "Allow",
-              "Principal": {
-                "AWS": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "arn:",
-                      {
-                        "Ref": "AWS::Partition"
-                      },
-                      ":iam::",
-                      {
-                        "Ref": "AWS::AccountId"
-                      },
-                      ":root"
-                    ]
-                  ]
-                }
-              },
-              "Resource": "*"
-            },
-            {
-              "Action": [
                 "kms:CreateGrant",
-                "kms:DescribeKey"
+                "kms:Decrypt",
+                "kms:DescribeKey",
+                "kms:Encrypt",
+                "kms:GenerateDataKey*",
+                "kms:ReEncrypt*"
               ],
               "Condition": {
                 "StringEquals": {
@@ -118,8 +78,8 @@
               "Action": [
                 "kms:Decrypt",
                 "kms:Encrypt",
-                "kms:ReEncrypt*",
-                "kms:GenerateDataKey*"
+                "kms:GenerateDataKey*",
+                "kms:ReEncrypt*"
               ],
               "Condition": {
                 "StringEquals": {
@@ -165,7 +125,9 @@
             "Arn"
           ]
         }
-      }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
     "SecretSchedule18F2CB66": {
       "Type": "AWS::SecretsManager::RotationSchedule",

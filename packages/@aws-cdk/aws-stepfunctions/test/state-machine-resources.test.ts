@@ -1,12 +1,13 @@
-import { arrayWith, objectLike, ResourcePart } from '@aws-cdk/assert-internal';
-import '@aws-cdk/assert-internal/jest';
+import { Match, Template } from '@aws-cdk/assertions';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as iam from '@aws-cdk/aws-iam';
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import * as stepfunctions from '../lib';
 
 describe('State Machine Resources', () => {
-  test('Tasks can add permissions to the execution role', () => {
+  testDeprecated('Tasks can add permissions to the execution role', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const task = new stepfunctions.Task(stack, 'Task', {
@@ -27,7 +28,7 @@ describe('State Machine Resources', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Version: '2012-10-17',
         Statement: [
@@ -44,18 +45,13 @@ describe('State Machine Resources', () => {
   test('Tasks hidden inside a Parallel state are also included', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    const task = new stepfunctions.Task(stack, 'Task', {
-      task: {
-        bind: () => ({
-          resourceArn: 'resource',
-          policyStatements: [
-            new iam.PolicyStatement({
-              actions: ['resource:Everything'],
-              resources: ['resource'],
-            }),
-          ],
+    const task = new FakeTask(stack, 'Task', {
+      policies: [
+        new iam.PolicyStatement({
+          actions: ['resource:Everything'],
+          resources: ['resource'],
         }),
-      },
+      ],
     });
 
     const para = new stepfunctions.Parallel(stack, 'Para');
@@ -67,7 +63,7 @@ describe('State Machine Resources', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Version: '2012-10-17',
         Statement: [
@@ -81,7 +77,7 @@ describe('State Machine Resources', () => {
     });
   }),
 
-  test('Task should render InputPath / Parameters / OutputPath correctly', () => {
+  testDeprecated('Task should render InputPath / Parameters / OutputPath correctly', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const task = new stepfunctions.Task(stack, 'Task', {
@@ -128,7 +124,7 @@ describe('State Machine Resources', () => {
     });
   }),
 
-  test('Task combines taskobject parameters with direct parameters', () => {
+  testDeprecated('Task combines taskobject parameters with direct parameters', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const task = new stepfunctions.Task(stack, 'Task', {
@@ -174,11 +170,7 @@ describe('State Machine Resources', () => {
   test('Created state machine can grant start execution to a role', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    const task = new stepfunctions.Task(stack, 'Task', {
-      task: {
-        bind: () => ({ resourceArn: 'resource' }),
-      },
-    });
+    const task = new FakeTask(stack, 'Task');
     const stateMachine = new stepfunctions.StateMachine(stack, 'StateMachine', {
       definition: task,
     });
@@ -190,15 +182,45 @@ describe('State Machine Resources', () => {
     stateMachine.grantStartExecution(role);
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
-        Statement: arrayWith(objectLike({
+        Statement: Match.arrayWith([Match.objectLike({
           Action: 'states:StartExecution',
           Effect: 'Allow',
           Resource: {
             Ref: 'StateMachine2E01A3A5',
           },
-        })),
+        })]),
+      },
+    });
+
+  }),
+
+  test('Created state machine can grant start sync execution to a role', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const task = new FakeTask(stack, 'Task');
+    const stateMachine = new stepfunctions.StateMachine(stack, 'StateMachine', {
+      definition: task,
+      stateMachineType: stepfunctions.StateMachineType.EXPRESS,
+    });
+    const role = new iam.Role(stack, 'Role', {
+      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+    });
+
+    // WHEN
+    stateMachine.grantStartSyncExecution(role);
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([Match.objectLike({
+          Action: 'states:StartSyncExecution',
+          Effect: 'Allow',
+          Resource: {
+            Ref: 'StateMachine2E01A3A5',
+          },
+        })]),
       },
     });
 
@@ -207,11 +229,7 @@ describe('State Machine Resources', () => {
   test('Created state machine can grant read access to a role', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    const task = new stepfunctions.Task(stack, 'Task', {
-      task: {
-        bind: () => ({ resourceArn: 'resource' }),
-      },
-    });
+    const task = new FakeTask(stack, 'Task');
     const stateMachine = new stepfunctions.StateMachine(stack, 'StateMachine', {
       definition: task,
     });
@@ -223,7 +241,7 @@ describe('State Machine Resources', () => {
     stateMachine.grantRead(role);
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -297,11 +315,7 @@ describe('State Machine Resources', () => {
   test('Created state machine can grant task response actions to the state machine', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    const task = new stepfunctions.Task(stack, 'Task', {
-      task: {
-        bind: () => ({ resourceArn: 'resource' }),
-      },
-    });
+    const task = new FakeTask(stack, 'Task');
     const stateMachine = new stepfunctions.StateMachine(stack, 'StateMachine', {
       definition: task,
     });
@@ -313,7 +327,7 @@ describe('State Machine Resources', () => {
     stateMachine.grantTaskResponse(role);
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -335,11 +349,7 @@ describe('State Machine Resources', () => {
   test('Created state machine can grant actions to the executions', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    const task = new stepfunctions.Task(stack, 'Task', {
-      task: {
-        bind: () => ({ resourceArn: 'resource' }),
-      },
-    });
+    const task = new FakeTask(stack, 'Task');
     const stateMachine = new stepfunctions.StateMachine(stack, 'StateMachine', {
       definition: task,
     });
@@ -351,7 +361,7 @@ describe('State Machine Resources', () => {
     stateMachine.grantExecution(role, 'states:GetExecutionHistory');
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -400,11 +410,7 @@ describe('State Machine Resources', () => {
   test('Created state machine can grant actions to a role', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    const task = new stepfunctions.Task(stack, 'Task', {
-      task: {
-        bind: () => ({ resourceArn: 'resource' }),
-      },
-    });
+    const task = new FakeTask(stack, 'Task');
     const stateMachine = new stepfunctions.StateMachine(stack, 'StateMachine', {
       definition: task,
     });
@@ -416,7 +422,7 @@ describe('State Machine Resources', () => {
     stateMachine.grant(role, 'states:ListExecution');
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -445,7 +451,7 @@ describe('State Machine Resources', () => {
     stateMachine.grantStartExecution(role);
 
     // THEN
-    expect(stack).toHaveResource('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -478,7 +484,7 @@ describe('State Machine Resources', () => {
     stateMachine.grantRead(role);
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -545,7 +551,7 @@ describe('State Machine Resources', () => {
     stateMachine.grantTaskResponse(role);
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -575,7 +581,7 @@ describe('State Machine Resources', () => {
     stateMachine.grant(role, 'states:ListExecution');
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -675,30 +681,48 @@ describe('State Machine Resources', () => {
   test('State machines must depend on their roles', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    const task = new stepfunctions.Task(stack, 'Task', {
-      task: {
-        bind: () => ({
-          resourceArn: 'resource',
-          policyStatements: [
-            new iam.PolicyStatement({
-              resources: ['resource'],
-              actions: ['lambda:InvokeFunction'],
-            }),
-          ],
+    const task = new FakeTask(stack, 'Task', {
+      policies: [
+        new iam.PolicyStatement({
+          resources: ['resource'],
+          actions: ['lambda:InvokeFunction'],
         }),
-      },
+      ],
     });
     new stepfunctions.StateMachine(stack, 'StateMachine', {
       definition: task,
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::StepFunctions::StateMachine', {
+    Template.fromStack(stack).hasResource('AWS::StepFunctions::StateMachine', {
       DependsOn: [
         'StateMachineRoleDefaultPolicyDF1E6607',
         'StateMachineRoleB840431D',
       ],
-    }, ResourcePart.CompleteDefinition);
+    });
   });
 
 });
+
+interface FakeTaskProps extends stepfunctions.TaskStateBaseProps {
+  readonly policies?: iam.PolicyStatement[];
+}
+
+class FakeTask extends stepfunctions.TaskStateBase {
+  protected readonly taskMetrics?: stepfunctions.TaskMetricsConfig;
+  protected readonly taskPolicies?: iam.PolicyStatement[];
+
+  constructor(scope: Construct, id: string, props: FakeTaskProps = {}) {
+    super(scope, id, props);
+    this.taskPolicies = props.policies;
+  }
+
+  protected _renderTask(): any {
+    return {
+      Resource: 'my-resource',
+      Parameters: stepfunctions.FieldUtils.renderObject({
+        MyParameter: 'myParameter',
+      }),
+    };
+  }
+}

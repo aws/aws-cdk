@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import { CfnResource, Stack } from '@aws-cdk/core';
 import { DatabaseSecret } from '../lib';
 import { DEFAULT_PASSWORD_EXCLUDE_CHARS } from '../lib/private/util';
@@ -14,7 +14,7 @@ describe('database secret', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::SecretsManager::Secret', {
+    Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::Secret', {
       Description: {
         'Fn::Join': [
           '',
@@ -35,8 +35,6 @@ describe('database secret', () => {
     });
 
     expect(getSecretLogicalId(dbSecret, stack)).toEqual('SecretA720EF05');
-
-
   });
 
   test('with master secret', () => {
@@ -54,7 +52,7 @@ describe('database secret', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::SecretsManager::Secret', {
+    Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::Secret', {
       GenerateSecretString: {
         ExcludeCharacters: '"@/\\',
         GenerateStringKey: 'password',
@@ -73,8 +71,6 @@ describe('database secret', () => {
         },
       },
     });
-
-
   });
 
   test('replace on password critera change', () => {
@@ -106,8 +102,6 @@ describe('database secret', () => {
       replaceOnPasswordCriteriaChanges: true,
     });
     expect(dbSecretlogicalId).not.toEqual(getSecretLogicalId(otherSecret2, stack));
-
-
   });
 });
 

@@ -10,6 +10,7 @@ class TestBucketDeployment extends cdk.Stack {
 
     const bucket = new s3.Bucket(this, 'Destination3', {
       removalPolicy: cdk.RemovalPolicy.DESTROY,
+      autoDeleteObjects: true, // needed for integration test cleanup
     });
     const distribution = new cloudfront.CloudFrontWebDistribution(this, 'Distribution', {
       originConfigs: [

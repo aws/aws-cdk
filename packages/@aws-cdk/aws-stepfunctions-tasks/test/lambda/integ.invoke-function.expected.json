@@ -206,22 +206,20 @@
             {
               "Action": "lambda:InvokeFunction",
               "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "Handler886CB40B",
-                  "Arn"
-                ]
-              }
-            },
-            {
-              "Action": "lambda:InvokeFunction",
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "CallbackHandler4434C38D",
-                  "Arn"
-                ]
-              }
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "CallbackHandler4434C38D",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::GetAtt": [
+                    "Handler886CB40B",
+                    "Arn"
+                  ]
+                }
+              ]
             }
           ],
           "Version": "2012-10-17"

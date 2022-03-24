@@ -97,13 +97,15 @@ object to the `schedule` property.
 Configure a run rate of up to 60 minutes with `Schedule.rate`:
 
 ```ts
-Schedule.rate(Duration.minutes(5)), // Runs every 5 minutes.
+const schedule = synthetics.Schedule.rate(Duration.minutes(5)); // Runs every 5 minutes.
 ```
 
-You can also specify a [cron expression](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_cron.html) via `Schedule.expression`:
+You can also specify a [cron expression](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_cron.html) with `Schedule.cron`:
 
 ```ts
-Schedule.expression('cron(0 0,8,16 * * ? *)'), // Run at 12am, 8am, 4pm UTC every day
+const schedule = synthetics.Schedule.cron({
+  hour: '0,8,16', // Run at 12am, 8am, 4pm UTC every day
+});
 ```
 
 If you want the canary to run just once upon deployment, you can use `Schedule.once()`.
@@ -127,7 +129,7 @@ new synthetics.Canary(this, 'Inline Canary', {
     code: synthetics.Code.fromInline('/* Synthetics handler code */'),
     handler: 'index.handler', // must be 'index.handler'
   }),
-  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_1,
+  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_4,
 });
 
 // To supply the code from your local filesystem:
@@ -136,7 +138,7 @@ new synthetics.Canary(this, 'Asset Canary', {
     code: synthetics.Code.fromAsset(path.join(__dirname, 'canary')),
     handler: 'index.handler', // must end with '.handler'
   }),
-  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_1,
+  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_4,
 });
 
 // To supply the code from a S3 bucket:
@@ -147,7 +149,7 @@ new synthetics.Canary(this, 'Bucket Canary', {
     code: synthetics.Code.fromBucket(bucket, 'canary.zip'),
     handler: 'index.handler', // must end with '.handler'
   }),
-  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_1,
+  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_4,
 });
 ```
 
@@ -171,6 +173,32 @@ new synthetics.Canary(this, 'Bucket Canary', {
 >
 > See Synthetics [docs](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_WritingCanary.html).
 
+### Running a canary on a VPC
+
+You can specify what [VPC a canary executes in](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_VPC.html). 
+This can allow for monitoring services that may be internal to a specific VPC. To place a canary within a VPC, you can specify the `vpc` property with the desired `VPC` to place then canary in. 
+This will automatically attach the appropriate IAM permissions to attach to the VPC. This will also create a Security Group and attach to the default subnets for the VPC unless specified via `vpcSubnets` and `securityGroups`.
+
+```ts
+import * as ec2 from '@aws-cdk/aws-ec2';
+
+declare const vpc: ec2.IVpc;
+new synthetics.Canary(this, 'Vpc Canary', {
+  test: synthetics.Test.custom({
+    code: synthetics.Code.fromAsset(path.join(__dirname, 'canary')),
+    handler: 'index.handler',
+  }),
+  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_4,
+  vpc,
+});
+```
+
+> **Note:** By default, the Synthetics runtime needs access to the S3 and CloudWatch APIs, which will fail in a private subnet without internet access enabled (e.g. an isolated subnnet).
+>
+> Ensure that the Canary is placed in a VPC either with internet connectivity or with VPC Endpoints for S3 and CloudWatch enabled and configured.
+>
+> See [Synthetics VPC docs](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_VPC.html).
+
 ### Alarms
 
 You can configure a CloudWatch Alarm on a canary metric. Metrics are emitted by CloudWatch automatically and can be accessed by the following APIs:
@@ -181,8 +209,10 @@ You can configure a CloudWatch Alarm on a canary metric. Metrics are emitted by 
 
 Create an alarm that tracks the canary metric:
 
-```ts fixture=canary
+```ts
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
+
+declare const canary: synthetics.Canary;
 new cloudwatch.Alarm(this, 'CanaryAlarm', {
   metric: canary.metricSuccessPercent(),
   evaluationPeriods: 2,
@@ -190,7 +220,3 @@ new cloudwatch.Alarm(this, 'CanaryAlarm', {
   comparisonOperator: cloudwatch.ComparisonOperator.LESS_THAN_THRESHOLD,
 });
 ```
-
-### Future Work
-
-- Add blueprints to the Test class [#9613](https://github.com/aws/aws-cdk/issues/9613#issue-677134857).
