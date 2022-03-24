@@ -57,6 +57,7 @@ export interface EventInvokeConfigProps extends EventInvokeConfigOptions {
    * The qualifier
    *
    * @default - latest version
+   * @deprecated - pass a Version or Alias object as the instead
    */
   readonly qualifier?: string;
 }
