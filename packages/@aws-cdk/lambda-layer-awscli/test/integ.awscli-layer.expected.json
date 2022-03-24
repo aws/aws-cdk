@@ -5,7 +5,7 @@
       "Properties": {
         "Content": {
           "S3Bucket": {
-            "Ref": "AssetParametersf331b32a8ad8983464106a58e420e7bc7e6341ba2ffb8ac9ad350d7e32845d95S3BucketE02B5488"
+            "Ref": "AssetParametersd78148e12051f01bfd7332d83ccd5c159c8106d3b878d178f7eb093fabafab27S3Bucket940CB35D"
           },
           "S3Key": {
             "Fn::Join": [
@@ -18,7 +18,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParametersf331b32a8ad8983464106a58e420e7bc7e6341ba2ffb8ac9ad350d7e32845d95S3VersionKey4D8E71F2"
+                          "Ref": "AssetParametersd78148e12051f01bfd7332d83ccd5c159c8106d3b878d178f7eb093fabafab27S3VersionKey248C9936"
                         }
                       ]
                     }
@@ -31,7 +31,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParametersf331b32a8ad8983464106a58e420e7bc7e6341ba2ffb8ac9ad350d7e32845d95S3VersionKey4D8E71F2"
+                          "Ref": "AssetParametersd78148e12051f01bfd7332d83ccd5c159c8106d3b878d178f7eb093fabafab27S3VersionKey248C9936"
                         }
                       ]
                     }
@@ -175,12 +175,28 @@
             {
               "Action": "lambda:InvokeFunction",
               "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "Lambdapython36B64E8A5D",
-                  "Arn"
-                ]
-              }
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "Lambdapython36B64E8A5D",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "Lambdapython36B64E8A5D",
+                          "Arn"
+                        ]
+                      },
+                      ":*"
+                    ]
+                  ]
+                }
+              ]
             }
           ],
           "Version": "2012-10-17"
@@ -404,12 +420,28 @@
             {
               "Action": "lambda:InvokeFunction",
               "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "Lambdapython3780349E0A",
-                  "Arn"
-                ]
-              }
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "Lambdapython3780349E0A",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "Lambdapython3780349E0A",
+                          "Arn"
+                        ]
+                      },
+                      ":*"
+                    ]
+                  ]
+                }
+              ]
             }
           ],
           "Version": "2012-10-17"
@@ -633,12 +665,28 @@
             {
               "Action": "lambda:InvokeFunction",
               "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "Lambdapython39426A0480",
-                  "Arn"
-                ]
-              }
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "Lambdapython39426A0480",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "Lambdapython39426A0480",
+                          "Arn"
+                        ]
+                      },
+                      ":*"
+                    ]
+                  ]
+                }
+              ]
             }
           ],
           "Version": "2012-10-17"
@@ -733,17 +781,17 @@
     }
   },
   "Parameters": {
-    "AssetParametersf331b32a8ad8983464106a58e420e7bc7e6341ba2ffb8ac9ad350d7e32845d95S3BucketE02B5488": {
+    "AssetParametersd78148e12051f01bfd7332d83ccd5c159c8106d3b878d178f7eb093fabafab27S3Bucket940CB35D": {
       "Type": "String",
-      "Description": "S3 bucket for asset \"f331b32a8ad8983464106a58e420e7bc7e6341ba2ffb8ac9ad350d7e32845d95\""
+      "Description": "S3 bucket for asset \"d78148e12051f01bfd7332d83ccd5c159c8106d3b878d178f7eb093fabafab27\""
     },
-    "AssetParametersf331b32a8ad8983464106a58e420e7bc7e6341ba2ffb8ac9ad350d7e32845d95S3VersionKey4D8E71F2": {
+    "AssetParametersd78148e12051f01bfd7332d83ccd5c159c8106d3b878d178f7eb093fabafab27S3VersionKey248C9936": {
       "Type": "String",
-      "Description": "S3 key for asset version \"f331b32a8ad8983464106a58e420e7bc7e6341ba2ffb8ac9ad350d7e32845d95\""
+      "Description": "S3 key for asset version \"d78148e12051f01bfd7332d83ccd5c159c8106d3b878d178f7eb093fabafab27\""
     },
-    "AssetParametersf331b32a8ad8983464106a58e420e7bc7e6341ba2ffb8ac9ad350d7e32845d95ArtifactHash16B60F6C": {
+    "AssetParametersd78148e12051f01bfd7332d83ccd5c159c8106d3b878d178f7eb093fabafab27ArtifactHash934284DB": {
       "Type": "String",
-      "Description": "Artifact hash for asset \"f331b32a8ad8983464106a58e420e7bc7e6341ba2ffb8ac9ad350d7e32845d95\""
+      "Description": "Artifact hash for asset \"d78148e12051f01bfd7332d83ccd5c159c8106d3b878d178f7eb093fabafab27\""
     },
     "AssetParameters5dff6208ccd5fb196bb0354fd6e47faa8431a789e6125d20386586fef761ed48S3Bucket1DD21439": {
       "Type": "String",
