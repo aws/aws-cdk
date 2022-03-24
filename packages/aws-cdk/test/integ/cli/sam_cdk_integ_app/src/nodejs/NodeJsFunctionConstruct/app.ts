@@ -1,8 +1,3 @@
-import { uniqueNamesGenerator, animals} from 'unique-names-generator';
-
-const characterName = uniqueNamesGenerator({
-    dictionaries: [animals]
-});
 let response;
 
 exports.lambdaHandler = async(event, context) => {
