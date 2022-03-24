@@ -50,7 +50,7 @@ describe('external task definition', () => {
           ],
         },
         Family: 'ecs-tasks',
-        NetworkMode: ecs.NetworkMode.HOST,
+        NetworkMode: 'host',
         RequiresCompatibilities: [
           'EXTERNAL',
         ],

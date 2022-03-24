@@ -20,7 +20,7 @@ export interface ExternalTaskDefinitionProps extends CommonTaskDefinitionProps {
    *
    * With ECS Anywhere, supported modes are bridge, host and none.
    *
-   * @default - NetworkMode.Bridge
+   * @default NetworkMode.BRIDGE
    */
   readonly networkMode?: NetworkMode;
 }
@@ -71,21 +71,14 @@ export class ExternalTaskDefinition extends TaskDefinition implements IExternalT
   }
 
   /**
-   * The networking mode to use for the containers in the task.
-   */
-  public readonly networkMode: NetworkMode;
-
-  /**
    * Constructs a new instance of the ExternalTaskDefinition class.
    */
   constructor(scope: Construct, id: string, props: ExternalTaskDefinitionProps = {}) {
     super(scope, id, {
       ...props,
       compatibility: Compatibility.EXTERNAL,
-      networkMode: (props.networkMode ?? NetworkMode.BRIDGE),
+      networkMode: props.networkMode ?? NetworkMode.BRIDGE,
     });
-
-    this.networkMode = props.networkMode ?? NetworkMode.BRIDGE;
   }
 
   /**
