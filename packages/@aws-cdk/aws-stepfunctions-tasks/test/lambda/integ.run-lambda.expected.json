@@ -148,6 +148,34 @@
                     "submitJobLambdaEFB00F3C",
                     "Arn"
                   ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "checkJobStateLambda4618B7B7",
+                          "Arn"
+                        ]
+                      },
+                      ":*"
+                    ]
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "submitJobLambdaEFB00F3C",
+                          "Arn"
+                        ]
+                      },
+                      ":*"
+                    ]
+                  ]
                 }
               ]
             }

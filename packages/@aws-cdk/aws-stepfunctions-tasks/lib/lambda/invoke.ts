@@ -119,7 +119,7 @@ export class LambdaInvoke extends sfn.TaskStateBase {
 
     this.taskPolicies = [
       new iam.PolicyStatement({
-        resources: [this.props.lambdaFunction.functionArn],
+        resources: this.props.lambdaFunction.resourceArnsForGrantInvoke,
         actions: ['lambda:InvokeFunction'],
       }),
     ];
