@@ -112,8 +112,5 @@
     "env": {
       "AWSLINT_BASE_CONSTRUCT": true
     }
-  },
-  "ubergen": {
-    "exclude": true
   }
 }
