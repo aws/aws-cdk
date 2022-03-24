@@ -456,7 +456,7 @@ dashboard.addWidgets(new cloudwatch.LogQueryWidget({
 
 ### Custom widget
 
-A `CustomWidget`shows the result of a AWS lambda function:
+A `CustomWidget` shows the result of an AWS Lambda function:
 
 ```ts
 declare const dashboard: cloudwatch.Dashboard;
