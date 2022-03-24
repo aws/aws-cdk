@@ -6,7 +6,7 @@ import { publishAssets } from '../util/asset-publishing';
 import { Mode } from './aws-auth/credentials';
 import { ISDK } from './aws-auth/sdk';
 import { SdkProvider } from './aws-auth/sdk-provider';
-import { deployStack, DeployStackResult, destroyStack } from './deploy-stack';
+import { deployStack, DeployStackResult, destroyStack, makeBodyParameterAndUpload } from './deploy-stack';
 import { loadCurrentTemplateWithNestedStacks, loadCurrentTemplate } from './nested-stack-helpers';
 import { ToolkitInfo } from './toolkit-info';
 import { CloudFormationStack, Template, ResourcesToImport, ResourceIdentifierSummaries } from './util/cloudformation';
@@ -229,6 +229,13 @@ export interface DeployStackOptions {
    * List of existing resources to be IMPORTED into the stack, instead of being CREATED
    */
   readonly resourcesToImport?: ResourcesToImport;
+
+  /**
+   * If present, use this given template instead of the stored one
+   *
+   * @default - Use the stored template
+   */
+  readonly overrideTemplate?: any;
 }
 
 export interface DestroyStackOptions {
@@ -295,12 +302,29 @@ export class CloudFormationDeployments {
     return loadCurrentTemplate(stackArtifact, sdk);
   }
 
-  public async getTemplateSummary(stackArtifact: cxapi.CloudFormationStackArtifact): Promise<ResourceIdentifierSummaries> {
+  public async resourceIdentifierSummaries(
+    stackArtifact: cxapi.CloudFormationStackArtifact,
+    toolkitStackName?: string,
+  ): Promise<ResourceIdentifierSummaries> {
     debug(`Retrieving template summary for stack ${stackArtifact.displayName}.`);
-    const { stackSdk } = await this.prepareSdkFor(stackArtifact, undefined, Mode.ForReading);
+    const { stackSdk, resolvedEnvironment } = await this.prepareSdkFor(stackArtifact, stackArtifact.lookupRole?.arn, Mode.ForReading);
     const cfn = stackSdk.cloudFormation();
 
-    return CloudFormationStack.templateSummary(cfn, stackArtifact.template);
+    const toolkitInfo = await ToolkitInfo.lookup(resolvedEnvironment, stackSdk, toolkitStackName);
+
+    // Upload the template, if necessary, before passing it to CFN
+    const cfnParam = await makeBodyParameterAndUpload(
+      stackArtifact,
+      resolvedEnvironment,
+      toolkitInfo,
+      this.sdkProvider,
+      stackSdk);
+
+    const response = await cfn.getTemplateSummary(cfnParam).promise();
+    if (!response.ResourceIdentifierSummaries) {
+      debug('GetTemplateSummary API call did not return "ResourceIdentifierSummaries"');
+    }
+    return response.ResourceIdentifierSummaries ?? [];
   }
 
   public async deployStack(options: DeployStackOptions): Promise<DeployStackResult> {
@@ -343,6 +367,7 @@ export class CloudFormationDeployments {
       hotswap: options.hotswap,
       extraUserAgent: options.extraUserAgent,
       resourcesToImport: options.resourcesToImport,
+      overrideTemplate: options.overrideTemplate,
     });
   }
 

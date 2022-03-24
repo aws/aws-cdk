@@ -40,17 +40,6 @@ export class CloudFormationStack {
   }
 
   /**
-   * Retrieve the stack template's summary with the information about resource import identifiers
-   */
-  public static async templateSummary(cfn: CloudFormation, template: any): Promise<ResourceIdentifierSummaries> {
-    const response = await cfn.getTemplateSummary({ TemplateBody: JSON.stringify(template) }).promise();
-    if (!response.ResourceIdentifierSummaries) {
-      debug('GetTemplateSummary API call did not return "ReousrceIdentifierSummaries"');
-    }
-    return response.ResourceIdentifierSummaries ?? [];
-  }
-
-  /**
    * Return a copy of the given stack that does not exist
    *
    * It's a little silly that it needs arguments to do that, but there we go.

@@ -15,7 +15,7 @@ import { findCloudWatchLogGroups } from './api/logs/find-cloudwatch-logs';
 import { CloudWatchLogEventMonitor } from './api/logs/logs-monitor';
 import { StackActivityProgress } from './api/util/cloudformation/stack-activity-monitor';
 import { printSecurityDiff, printStackDiff, RequireApproval } from './diff';
-import { ResourceImporter, ResourceMap } from './import';
+import { ResourceImporter } from './import';
 import { data, debug, error, highlight, print, success, warning } from './logging';
 import { deserializeStructure, serializeStructure } from './serialize';
 import { Configuration, PROJECT_CONFIG } from './settings';
@@ -368,44 +368,49 @@ export class CdkToolkit {
       throw new Error(`Stack selection is ambiguous, please choose a specific stack for import [${stacks.stackArtifacts.map(x => x.id).join(', ')}]`);
     }
 
+    if (!process.stdout.isTTY && !options.resourceMappingFile) {
+      throw new Error('--resource-mapping-file is required when input is not a terminal');
+    }
+
     const stack = stacks.stackArtifacts[0];
 
     highlight(stack.displayName);
 
-    if (!stack.environment) {
-      // eslint-disable-next-line max-len
-      throw new Error(`Stack ${stack.displayName} does not define an environment, and AWS credentials could not be obtained from standard locations or no region was configured.`);
-    }
-
-    if (Object.keys(stack.template.Resources || {}).length === 0) { // The generated stack has no resources
-      warning('%s: stack has no resources, skipping import.', chalk.bold(stack.displayName));
+    const resourceImporter = new ResourceImporter(stack, this.props.cloudFormation, {
+      toolkitStackName: options.toolkitStackName,
+    });
+    const additions = await resourceImporter.discoverImportableResources(options.force);
+    if (additions.length === 0) {
+      warning('%s: no new resources compared to the currently deployed stack, skipping import.', chalk.bold(stack.displayName));
       return;
     }
 
-    const resourceImporter = new ResourceImporter(stack, this.props.cloudFormation);
-
     // Prepare a mapping of physical resources to CDK constructs
-    let resourcesMapping: ResourceMap;
-    if (options.createResourceMapping || !options.resourceMappingFile) {
-      resourcesMapping = await resourceImporter.createPhysicalResourceMap();
-    } else {
-      resourcesMapping = await fs.readJson(options.resourceMappingFile);
+    const actualImport = options.createResourceMapping || !options.resourceMappingFile
+      ? await resourceImporter.askForResourceIdentifiers(additions)
+      : await resourceImporter.loadResourceIdentifiers(additions, options.resourceMappingFile);
+
+    if (actualImport.importResources.length === 0) {
+      warning('No resources selected for import.');
+      return;
     }
 
     // If "--create-resource-mapping" option was passed, write the resource mapping to the given file and exit
-    if (options.createResourceMapping && options.resourceMappingFile) {
-      fs.ensureFileSync(options.resourceMappingFile);
-      await fs.writeJson(options.resourceMappingFile, resourcesMapping, {
+    if (options.createResourceMapping) {
+      const outputFile = options.resourceMappingFile ?? 'resource-mapping.json';
+      fs.ensureFileSync(outputFile);
+      await fs.writeJson(outputFile, actualImport.resourceMap, {
         spaces: 2,
         encoding: 'utf8',
       });
+      print('%s: mapping file written.', outputFile);
       return;
     }
 
     // Import the resources according to the given mapping
     print('%s: importing resources into stack...', chalk.bold(stack.displayName));
     const tags = tagsForStack(stack);
-    await resourceImporter.importResources(resourcesMapping, {
+    await resourceImporter.importResources(actualImport, {
       stack,
       deployName: stack.stackName,
       roleArn: options.roleArn,
@@ -915,12 +920,24 @@ export interface DeployOptions extends CfnDeployOptions, WatchOptions {
 export interface ImportOptions extends CfnDeployOptions {
   /**
    * Build a physical resource mapping and write it to the given file, without performing the actual import operation
+   *
+   * @default false
    */
+
   readonly createResourceMapping?: boolean;
   /**
    * Path to a file with with the physical resource mapping to CDK constructs in JSON format
+   *
+   * @default - No mapping file
    */
   readonly resourceMappingFile?: string;
+
+  /**
+   * Allow non-addition changes to the template
+   *
+   * @default false
+   */
+  readonly force?: boolean;
 }
 
 export interface DestroyOptions {

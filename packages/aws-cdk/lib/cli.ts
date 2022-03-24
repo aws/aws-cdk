@@ -150,10 +150,16 @@ async function parseCommandLineArguments() {
     .command('import [STACK]', 'Import existing resource(s) into the given STACK', (yargs: Argv) => yargs
       .option('execute', { type: 'boolean', desc: 'Whether to execute ChangeSet (--no-execute will NOT execute the ChangeSet)', default: true })
       .option('change-set-name', { type: 'string', desc: 'Name of the CloudFormation change set to create' })
+      .option('toolkit-stack-name', { type: 'string', desc: 'The name of the CDK toolkit stack to create', requiresArg: true })
       .option('rollback', {
         type: 'boolean',
         desc: "Rollback stack to stable state on failure. Defaults to 'true', iterate more rapidly with --no-rollback or -R. " +
           'Note: do **not** disable this flag for deployments with resource replacements, as that will always fail',
+      })
+      .option('force', {
+        alias: 'f',
+        type: 'boolean',
+        desc: 'Allow the template diff to include non-addition changes. This may be an unsafe operation.',
       })
       .option('create-resource-mapping', {
         type: 'string',
@@ -479,6 +485,7 @@ async function initCommandLine() {
           rollback: configuration.settings.get(['rollback']),
           createResourceMapping: args['create-resource-mapping']?.length > 0,
           resourceMappingFile: args['create-resource-mapping'] ? args['create-resource-mapping'] : args['resource-mapping'],
+          force: args.force,
         });
 
       case 'watch':

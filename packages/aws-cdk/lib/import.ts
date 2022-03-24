@@ -1,11 +1,12 @@
 import * as cfnDiff from '@aws-cdk/cloudformation-diff';
 import { ResourceDifference } from '@aws-cdk/cloudformation-diff';
 import * as cxapi from '@aws-cdk/cx-api';
-import * as colors from 'colors/safe';
+import * as chalk from 'chalk';
+import * as fs from 'fs-extra';
 import * as promptly from 'promptly';
 import { CloudFormationDeployments, DeployStackOptions } from './api/cloudformation-deployments';
 import { ResourceIdentifierProperties, ResourcesToImport } from './api/util/cloudformation';
-import { debug, error, print, success } from './logging';
+import { error, print, success, warning } from './logging';
 
 /**
  * Parameters that uniquely identify a physical resource of a given type
@@ -38,6 +39,15 @@ export type ResourceIdentifiers = { [resourceType: string]: string[] };
  */
 export type ResourceMap = { [logicalResource: string]: ResourceIdentifierProperties };
 
+export interface ResourceImporterOptions {
+  /**
+   * Name of toolkit stack if non-default
+   *
+   * @default - Default toolkit stack name
+   */
+  readonly toolkitStackName?: string;
+}
+
 /**
  * Resource importing utility class
  *
@@ -57,28 +67,60 @@ export type ResourceMap = { [logicalResource: string]: ResourceIdentifierPropert
  * - execute the change set
  */
 export class ResourceImporter {
-  private resourceIdentifiers: { [key: string]: string[] } | undefined;
-  private currentTemplate: any;
+  private _currentTemplate: any;
 
-  constructor(private stack: cxapi.CloudFormationStackArtifact, private cfn: CloudFormationDeployments) {}
+  constructor(
+    private readonly stack: cxapi.CloudFormationStackArtifact,
+    private readonly cfn: CloudFormationDeployments,
+    private readonly options: ResourceImporterOptions) { }
 
   /**
-   * Prepare a mapping of physical resources to be imported as respective CDK constructs by inferring it from the
-   * construct's configuration when possible and by interactive prompts otherwise
+   * Ask the user for resources to import
    */
-  public async createPhysicalResourceMap(): Promise<ResourceMap> {
-    const importCandidates = await this.getAddedResources();
+  public async askForResourceIdentifiers(available: ImportableResource[]): Promise<ImportMap> {
+    const ret: ImportMap = { importResources: [], resourceMap: {} };
+    const resourceIdentifiers = await this.resourceIdentifiers();
 
-    const resourcesToImport: ResourceMap = {};
-    for (let [logicalId, chg] of Object.entries(importCandidates)) {
-      const resourceName = this.resourceTreePath(logicalId);
-      debug(`Considering resource ${resourceName} (${logicalId}) of type ${chg.newResourceType} for import`);
-      const resourceImportIdentifier = await this.identifyPhysicalResource(logicalId, chg);
-      if (resourceImportIdentifier) {
-        resourcesToImport[resourceName] = resourceImportIdentifier;
+    for (const resource of available) {
+      const identifier = await this.askForResourceIdentifier(resourceIdentifiers, resource);
+      if (!identifier) {
+        continue;
+      }
+
+      ret.importResources.push(resource);
+      ret.resourceMap[resource.logicalId] = identifier;
+    }
+
+    return ret;
+  }
+
+  /**
+   * Load the resources to import from a file
+   */
+  public async loadResourceIdentifiers(available: ImportableResource[], filename: string): Promise<ImportMap> {
+    const contents = await fs.readJson(filename);
+
+    const ret: ImportMap = { importResources: [], resourceMap: {} };
+    for (const resource of available) {
+      const descr = this.describeResource(resource.logicalId);
+      const idProps = contents[resource.logicalId];
+      if (idProps) {
+        print('%s: importing using %s', chalk.bold(descr), chalk.bold(fmtdict(idProps)));
+
+        ret.importResources.push(resource);
+        ret.resourceMap[resource.logicalId] = idProps;
+        delete contents[resource.logicalId];
+      } else {
+        print('%s: skipping', chalk.bold(descr));
       }
     }
-    return resourcesToImport;
+
+    const unknown = Object.keys(contents);
+    if (unknown.length > 0) {
+      warning(`Unrecognized resource identifiers in mapping file: ${unknown.join(', ')}`);
+    }
+
+    return ret;
   }
 
   /**
@@ -88,12 +130,14 @@ export class ResourceImporter {
    * @param resourceMap Mapping from CDK construct tree path to physical resource import identifiers
    * @param options Options to pass to CloudFormation deploy operation
    */
-  public async importResources(resourceMap: ResourceMap, options: DeployStackOptions) {
-    const resourcesToImport: ResourcesToImport = await this.prepareTemplateForImport(resourceMap);
+  public async importResources(importMap: ImportMap, options: DeployStackOptions) {
+    const resourcesToImport: ResourcesToImport = await this.makeResourcesToImport(importMap);
+    const updatedTemplate = await this.currentTemplateWithAdditions(importMap.importResources);
 
     try {
       const result = await this.cfn.deployStack({
         ...options,
+        overrideTemplate: updatedTemplate,
         resourcesToImport,
       });
 
@@ -103,7 +147,7 @@ export class ResourceImporter {
 
       success('\n' + message, options.stack.displayName);
     } catch (e) {
-      error('\n ❌  %s failed: %s', colors.bold(options.stack.displayName), e);
+      error('\n ❌  %s failed: %s', chalk.bold(options.stack.displayName), e);
       throw e;
     }
   }
@@ -114,21 +158,32 @@ export class ResourceImporter {
    *
    * @return mapping logicalResourceId -> resourceDifference
    */
-  private async getAddedResources(): Promise<{ [logicalId: string]: ResourceDifference }> {
-    const diff = cfnDiff.diffTemplate(await this.getCurrentTemplate(), this.stack.template);
+  public async discoverImportableResources(allowNonAdditions = false): Promise<Array<ImportableResource>> {
+    const currentTemplate = await this.currentTemplate();
 
-    // Validate the diff: CloudFormation does not allow any changes to already existing resources on import
-    // and so any change other than new resource addition is invalid - fail if detected (CDKMetadata resource
-    // always changes, so we skip it here and deal with it before triggering the import operation)
-    const nonAdditionChanges = Object.entries(diff.resources.changes).filter(chg => !chg[1].isAddition && chg[0] != 'CDKMetadata').map(chg => chg[0]);
-    if (nonAdditionChanges.length) {
-      const offendingResources = nonAdditionChanges.map(this.resourceTreePath);
+    const diff = cfnDiff.diffTemplate(currentTemplate, this.stack.template);
+
+    // Ignore changes to CDKMetadata
+    const resourceChanges = Object.entries(diff.resources.changes)
+      .filter(([logicalId, _]) => logicalId !== 'CDKMetadata');
+
+    // Split the changes into additions and non-additions. Imports only make sense
+    // for newly-added resources.
+    const nonAdditions = resourceChanges.filter(([_, dif]) => !dif.isAddition);
+    const additions = resourceChanges.filter(([_, dif]) => dif.isAddition);
+
+    if (nonAdditions.length && !allowNonAdditions) {
+      const offendingResources = nonAdditions.map(([logId, _]) => this.describeResource(logId));
       throw new Error('No resource updates or deletes are allowed on import operation. Make sure to resolve pending changes ' +
                       `to existing resources, before attempting an import. Updated/deleted resources: ${offendingResources.join(', ')}`);
     }
 
     // Resources in the new template, that are not present in the current template, are a potential import candidates
-    return diff.resources.filter(chg => chg?.isAddition ?? false).changes;
+    return additions.map(([logicalId, resourceDiff]) => ({
+      logicalId,
+      resourceDiff,
+      resourceDefinition: addDefaultDeletionPolicy(this.stack.template?.Resources?.[logicalId] ?? {}),
+    }));
   }
 
   /**
@@ -136,11 +191,27 @@ export class ResourceImporter {
    *
    * @returns Currently deployed CloudFormation template
    */
-  private async getCurrentTemplate(): Promise<any> {
-    if (!this.currentTemplate) {
-      this.currentTemplate = await this.cfn.readCurrentTemplate(this.stack);
+  private async currentTemplate(): Promise<any> {
+    if (!this._currentTemplate) {
+      this._currentTemplate = await this.cfn.readCurrentTemplate(this.stack);
     }
-    return this.currentTemplate;
+    return this._currentTemplate;
+  }
+
+  /**
+   * Return teh current template, with the given resources added to it
+   */
+  private async currentTemplateWithAdditions(additions: ImportableResource[]): Promise<any> {
+    const template = await this.currentTemplate();
+    if (!template.Resources) {
+      template.Resources = {};
+    }
+
+    for (const add of additions) {
+      template.Resources[add.logicalId] = add.resourceDefinition;
+    }
+
+    return template;
   }
 
   /**
@@ -149,108 +220,80 @@ export class ResourceImporter {
    *
    * @returns a mapping from a resource type to a list of property names that together identify the resource for import
    */
-  private async getResourceIdentifiers(): Promise<ResourceIdentifiers> {
-    if (!this.resourceIdentifiers) {
-      this.resourceIdentifiers = {};
-      const resourceIdentifierSummaries = await this.cfn.getTemplateSummary(this.stack);
-      for (let summary of resourceIdentifierSummaries) {
-        if ('ResourceType' in summary && summary.ResourceType && 'ResourceIdentifiers' in summary && summary.ResourceIdentifiers) {
-          this.resourceIdentifiers[summary.ResourceType] = summary.ResourceIdentifiers;
-        }
+  private async resourceIdentifiers(): Promise<ResourceIdentifiers> {
+    const ret: ResourceIdentifiers = {};
+    const resourceIdentifierSummaries = await this.cfn.resourceIdentifierSummaries(this.stack, this.options.toolkitStackName);
+    for (const summary of resourceIdentifierSummaries) {
+      if ('ResourceType' in summary && summary.ResourceType && 'ResourceIdentifiers' in summary && summary.ResourceIdentifiers) {
+        ret[summary.ResourceType] = summary.ResourceIdentifiers;
       }
     }
-    return this.resourceIdentifiers;
+    return ret;
   }
 
-  // TODO: if --non-interactive (default if no stdin is not TTY) then suppress interactive prompts (fill in a placeholder instead)
-  private async identifyPhysicalResource(logicalId: string, chg: cfnDiff.ResourceDifference): Promise<ResourceIdentifierProperties | undefined> {
-    const resourceIdentifiers = await this.getResourceIdentifiers();
-    const resourceName = this.resourceTreePath(logicalId);
+  private async askForResourceIdentifier(
+    resourceIdentifiers: ResourceIdentifiers,
+    chg: ImportableResource,
+  ): Promise<ResourceIdentifierProperties | undefined> {
+    const resourceName = this.describeResource(chg.logicalId);
 
     // Skip resources that do not support importing
-    if (chg.newResourceType === undefined || !(chg.newResourceType in resourceIdentifiers)) {
-      print(`Skipping import of ${resourceName} - unsupported resource type ${chg.newResourceType}`);
+    const resourceType = chg.resourceDiff.newResourceType;
+    if (resourceType === undefined || !(resourceType in resourceIdentifiers)) {
+      warning(`${resourceName}: unsupported resource type ${resourceType}, skipping import.`);
       return undefined;
     }
 
-    let identifier: ResourceIdentifierProperties = {};
-    let autoImport = true;
-    for (let idpart of resourceIdentifiers[chg.newResourceType]) {
-      if (chg.newProperties && (idpart in chg.newProperties)) {
-        identifier[idpart] = chg.newProperties[idpart];
-      } else {
-        autoImport = false;
-        const response = await promptly.prompt(
-          `Enter ${colors.bold(idpart)} of ${chg.newResourceType} to import as ${colors.bold(resourceName)} (leave empty to skip): `,
-          { default: '' },
-        );
-        if (!response) {
-          print(`Skipping import of ${resourceName}`);
-          return undefined;
-        }
-        identifier[idpart] = response;
-      }
-    }
+    const idProps = resourceIdentifiers[resourceType];
+    const resourceProps = chg.resourceDefinition.Properties ?? {};
 
-    const props = Object.entries(identifier).map(x => `${x[0]}=${x[1]}`).join(', ');
+    const fixedIdProps = idProps.filter(p => resourceProps[p]);
+    const fixedIdInput: ResourceIdentifierProperties = mkdict(fixedIdProps.map(p => resourceProps[p]));
 
-    if (autoImport) {
-      const importConfirmed = await promptly.confirm(
-        `Import physical resource ${chg.newResourceType} with [${colors.bold(props)}] as ${colors.bold(resourceName)} (yes/no) [default: yes]? `,
+    const missingIdProps = idProps.filter(p => !resourceProps[p]);
+
+    if (missingIdProps.length === 0) {
+      // We can auto-import this, but ask the user to confirm
+      const props = fmtdict(fixedIdInput);
+
+      if (!await promptly.confirm(
+        `${chalk.bold(resourceName)} (${resourceType}): import with ${chalk.bold(props)} (yes/no) [default: yes]? `,
         { default: 'yes' },
-      );
-      if (!importConfirmed) {
+      )) {
         print(`Skipping import of ${resourceName}`);
         return undefined;
       }
     }
 
-    return identifier;
+    // Ask the user to provide missing props
+    const userInput: ResourceIdentifierProperties = {};
+    for (const missingIdProp of missingIdProps) {
+      const response = (await promptly.prompt(
+        `${chalk.bold(resourceName)} (${resourceType}): enter ${chalk.bold(missingIdProp)} to import (empty to skip):`,
+        { default: '', trim: true },
+      ));
+      if (!response) {
+        print(`Skipping import of ${resourceName}`);
+        return undefined;
+      }
+      userInput[missingIdProp] = response;
+    }
+
+    return {
+      ...fixedIdInput,
+      ...userInput,
+    };
   }
 
   /**
    * Convert the internal "resource mapping" structure to CloudFormation accepted "ResourcesToImport" structure
-   * @param resourceMap "Resource mapping" from CDK construct tree path to resource import identifiers
-   * @returns ResourcesToImport structure as defined by CloudFormation API
    */
-  private async prepareTemplateForImport(resourceMap: ResourceMap): Promise<ResourcesToImport> {
-    // There's a CloudFormation limitation that on import operation, no other changes are allowed:
-    // Since CDK always changes the CDKMetadata resource with a new value, as a workaround, we override
-    // the template's metadata with currently deployed version
-    const currentTemplate = await this.getCurrentTemplate();
-    if (currentTemplate?.Resources?.CDKMetadata) {
-      // stack was previously deployed
-      this.stack.template.Resources.CDKMetadata = currentTemplate.Resources.CDKMetadata;
-    } else {
-      // new stack will be created
-      delete this.stack.template.Resources.CDKMetadata;
-    }
-
-    const resourcesToImport: ResourcesToImport = [];
-    for (let [logicalId, chg] of Object.entries(await this.getAddedResources())) {
-      const identifiers = resourceMap[this.resourceTreePath(logicalId)];
-      if (identifiers) {
-        // TODO - check physical resource presence and configuration here
-        // resource will be imported
-        print(`Importing ${chg.newResourceType} (${Object.entries(identifiers).map((k, v) => k+'='+v).join(', ')}) as ${logicalId}`);
-        resourcesToImport.push({
-          LogicalResourceId: logicalId,
-          ResourceType: chg.newResourceType!,
-          ResourceIdentifier: identifiers,
-        });
-        // CloudFormation resource import API requires each resource that is being imported to have an explicit DeletionPolicy set. If the resource
-        // doesn't have the DeletionPolicy set, inject it with the value of 'Delete' - CloudFormation default. It is only needed to be present during
-        // the import operation - subsequent deploys drop the option from the template
-        if (!this.stack.template.Resources[logicalId].DeletionPolicy) {
-          this.stack.template.Resources[logicalId].DeletionPolicy = 'Delete';
-        }
-      } else {
-        // resource wasn't chosen for import - for the import operation to succeed, this resource must be removed from the template
-        print(`Skipping import of ${logicalId}`);
-        delete this.stack.template.Resources[logicalId];
-      }
-    }
-    return resourcesToImport;
+  private async makeResourcesToImport(resourceMap: ImportMap): Promise<ResourcesToImport> {
+    return resourceMap.importResources.map(res => ({
+      LogicalResourceId: res.logicalId,
+      ResourceType: res.resourceDiff.newResourceType!,
+      ResourceIdentifier: resourceMap.resourceMap[res.logicalId],
+    }));
   }
 
   /**
@@ -259,11 +302,69 @@ export class ResourceImporter {
    * @param logicalId CloudFormation logical ID of the resource (the key in the template's Resources section)
    * @returns Forward-slash separated path of the resource in CDK construct tree, e.g. MyStack/MyBucket/Resource
    */
-  private resourceTreePath(logicalId: string): string {
-    const treePath = this.stack.template?.Resources?.[logicalId]?.Metadata?.['aws:cdk:path'];
-    if (!treePath) {
-      throw new Error(`Cannot determine CDK construct tree path for resource ${logicalId}. Was the provided CloudFormation template created by cdk synth?`);
-    }
-    return treePath;
+  private describeResource(logicalId: string): string {
+    return this.stack.template?.Resources?.[logicalId]?.Metadata?.['aws:cdk:path'] ?? logicalId;
   }
+}
+
+/**
+ * Information about a resource in the template that is importable
+ */
+export interface ImportableResource {
+  /**
+   * The logical ID of the resource
+   */
+  readonly logicalId: string;
+
+  /**
+   * The resource definition in the new template
+   */
+  readonly resourceDefinition: any;
+
+  /**
+   * The diff as reported by `cloudformation-diff`.
+   */
+  readonly resourceDiff: ResourceDifference;
+}
+
+/**
+ * The information necessary to execute an import operation
+ */
+export interface ImportMap {
+  /**
+   * Mapping logical IDs to physical names
+   */
+  readonly resourceMap: ResourceMap;
+
+  /**
+   * The selection of resources we are actually importing
+   *
+   * For each of the resources in this list, there is a corresponding entry in
+   * the `resourceMap` map.
+   */
+  readonly importResources: ImportableResource[];
+}
+
+export function mkdict<A>(xs: Array<readonly [string, A]>): Record<string, A> {
+  const ret: Record<string, A> = {};
+  for (const [k, v] of xs) {
+    ret[k] = v;
+  }
+  return ret;
+}
+
+function fmtdict<A>(xs: Record<string, A>) {
+  return Object.entries(xs).map(([k, v]) => `${k}=${v}`).join(', ');
+}
+
+/**
+ * Add a default 'Delete' policy, which is required to make the import succeed
+ */
+function addDefaultDeletionPolicy(resource: any): any {
+  if (resource.DeletionPolicy) { return resource; }
+
+  return {
+    ...resource,
+    DeletionPolicy: 'Delete',
+  };
 }
