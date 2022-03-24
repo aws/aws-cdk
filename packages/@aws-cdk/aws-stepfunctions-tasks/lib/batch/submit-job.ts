@@ -1,7 +1,7 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
-import { Size, Stack, withResolved } from '@aws-cdk/core';
+import { Size, Stack, Token, withResolved } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 
@@ -296,7 +296,7 @@ export class BatchSubmitJob extends sfn.TaskStateBase {
       resources.push(
         {
           Type: 'GPU',
-          Value: `${containerOverrides.gpuCount}`,
+          Value: Token.isUnresolved(containerOverrides.gpuCount) ? containerOverrides.gpuCount : `${containerOverrides.gpuCount}`,
         },
       );
     }
@@ -304,7 +304,7 @@ export class BatchSubmitJob extends sfn.TaskStateBase {
       resources.push(
         {
           Type: 'MEMORY',
-          Value: `${containerOverrides.memory.toMebibytes()}`,
+          Value: Token.isUnresolved(containerOverrides.memory) ? containerOverrides.memory : `${containerOverrides.memory.toMebibytes()}`,
         },
       );
     }
@@ -312,7 +312,7 @@ export class BatchSubmitJob extends sfn.TaskStateBase {
       resources.push(
         {
           Type: 'VCPU',
-          Value: `${containerOverrides.vcpus}`,
+          Value: Token.isUnresolved(containerOverrides.vcpus) ? containerOverrides.vcpus : `${containerOverrides.vcpus}`,
         },
       );
     }

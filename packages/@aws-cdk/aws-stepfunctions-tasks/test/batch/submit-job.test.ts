@@ -79,7 +79,7 @@ test('Task with all the parameters', () => {
       instanceType: new ec2.InstanceType('MULTI'),
       memory: cdk.Size.mebibytes(1024),
       gpuCount: 1,
-      vcpus: 10,
+      vcpus: sfn.JsonPath.numberAt('$.taskParameters.cpu'),
     },
     dependsOn: [{ jobId: '1234', type: 'some_type' }],
     payload: sfn.TaskInput.fromObject({
@@ -115,7 +115,7 @@ test('Task with all the parameters', () => {
         Command: ['sudo', 'rm'],
         Environment: [{ Name: 'key', Value: 'value' }],
         InstanceType: 'MULTI',
-        ResourceRequirements: [{ Type: 'GPU', Value: '1' }, { Type: 'MEMORY', Value: '1024' }, { Type: 'VCPU', Value: '10' }],
+        ResourceRequirements: [{ Type: 'GPU', Value: '1' }, { Type: 'MEMORY', Value: '1024' }, { 'Type': 'VCPU', 'Value.$': '$.taskParameters.cpu' }],
       },
       DependsOn: [{ JobId: '1234', Type: 'some_type' }],
       Parameters: { 'foo.$': '$.bar' },
