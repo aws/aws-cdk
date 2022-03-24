@@ -17338,7 +17338,7 @@
         "BackupId": "The ID of the source backup. Specifies the backup that you are copying.",
         "FileSystemType": "The type of Amazon FSx file system, which can be `LUSTRE` , `WINDOWS` , `ONTAP` , or `OPENZFS` .",
         "FileSystemTypeVersion": "(Optional) For FSx for Lustre file systems, sets the Lustre version for the file system that you're creating. Valid values are `2.10` and `2.12` :\n\n- 2.10 is supported by the Scratch and Persistent_1 Lustre deployment types.\n- 2.12 is supported by all Lustre deployment types. `2.12` is required when setting FSx for Lustre `DeploymentType` to `PERSISTENT_2` .\n\nDefault value = `2.10` , except when `DeploymentType` is set to `PERSISTENT_2` , then the default is `2.12` .\n\n> If you set `FileSystemTypeVersion` to `2.10` for a `PERSISTENT_2` Lustre deployment type, the `CreateFileSystem` operation fails.",
-        "KmsKeyId": "The ID of the AWS Key Management Service ( AWS KMS ) key used to encrypt the file system's data for Amazon FSx for Windows File Server file systems, Amazon FSx for NetApp ONTAP file systems, and `PERSISTENT` Amazon FSx for Lustre file systems at rest. If this ID isn't specified, the Amazon FSx-managed key for your account is used. The scratch Amazon FSx for Lustre file systems are always encrypted at rest using the Amazon FSx-managed key for your account. For more information, see [Encrypt](https://docs.aws.amazon.com//kms/latest/APIReference/API_Encrypt.html) in the *AWS Key Management Service API Reference* .",
+        "KmsKeyId": "The ID of the AWS Key Management Service ( AWS KMS ) key used to encrypt Amazon FSx file system data. Used as follows with Amazon FSx file system types:\n\n- Amazon FSx for Lustre `PERSISTENT_1` and `PERSISTENT_2` deployment types only.\n\n`SCRATCH_1` and `SCRATCH_2` types are encrypted using the Amazon FSx service AWS KMS key for your account.\n- Amazon FSx for NetApp ONTAP\n- Amazon FSx for OpenZFS\n- Amazon FSx for Windows File Server",
         "LustreConfiguration": "The Lustre configuration for the file system being created.\n\n> The following parameters are not supported for file systems with the `Persistent_2` deployment type. Instead, use `CreateDataRepositoryAssociation` to create a data repository association to link your Lustre file system to a data repository.\n> \n> - `AutoImportPolicy`\n> - `ExportPath`\n> - `ImportedChunkSize`\n> - `ImportPath`",
         "OntapConfiguration": "The ONTAP configuration properties of the FSx for ONTAP file system that you are creating.",
         "OpenZFSConfiguration": "The Amazon FSx for OpenZFS configuration properties for the file system that you are creating.",
@@ -17402,7 +17402,7 @@
     },
     "AWS::FSx::FileSystem.OntapConfiguration": {
       "attributes": {},
-      "description": "The configuration for this FSx for ONTAP file system.",
+      "description": "The configuration for this Amazon FSx for NetApp ONTAP file system.",
       "properties": {
         "AutomaticBackupRetentionDays": "The number of days to retain automatic backups. Setting this property to `0` disables automatic backups. You can retain automatic backups for a maximum of 90 days. The default is `0` .",
         "DailyAutomaticBackupStartTime": "A recurring daily time, in the format `HH:MM` . `HH` is the zero-padded hour of the day (0-23), and `MM` is the zero-padded minute of the hour. For example, `05:00` specifies 5 AM daily.",
@@ -23638,7 +23638,7 @@
         "Description": "A description of the index.",
         "DocumentMetadataConfigurations": "Specifies the properties of an index field. You can add either a custom or a built-in field. You can add and remove built-in fields at any time. When a built-in field is removed it's configuration reverts to the default for the field. Custom fields can't be removed from an index after they are added.",
         "Edition": "Indicates whether the index is a enterprise edition index or a developer edition index. Valid values are `DEVELOPER_EDITION` and `ENTERPRISE_EDITION` .",
-        "Name": "The name of the index.",
+        "Name": "The identifier of the index.",
         "RoleArn": "An IAM role that gives Amazon Kendra permissions to access your Amazon CloudWatch logs and metrics. This is also the role used when you use the [BatchPutDocument](https://docs.aws.amazon.com/kendra/latest/dg/BatchPutDocument.html) operation to index documents from an Amazon S3 bucket.",
         "ServerSideEncryptionConfiguration": "The identifier of the AWS KMS customer managed key (CMK) to use to encrypt data indexed by Amazon Kendra. Amazon Kendra doesn't support asymmetric CMKs.",
         "Tags": "An array of key-value pairs to apply to this resource.\n\nFor more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) .",
@@ -23648,7 +23648,7 @@
     },
     "AWS::Kendra::Index.CapacityUnitsConfiguration": {
       "attributes": {},
-      "description": "Specifies capacity units configured for your enterprise edition index. You can add and remove capacity units to tune an index to your requirements.",
+      "description": "Specifies additional capacity units configured for your Enterprise Edition index. You can add and remove capacity units to fit your usage requirements.",
       "properties": {
         "QueryCapacityUnits": "The amount of extra query capacity for an index and [GetQuerySuggestions](https://docs.aws.amazon.com/kendra/latest/dg/API_GetQuerySuggestions.html) capacity.\n\nA single extra capacity unit for an index provides 0.1 queries per second or approximately 8,000 queries per day.\n\n`GetQuerySuggestions` capacity is five times the provisioned query capacity for an index, or the base capacity of 2.5 calls per second, whichever is higher. For example, the base capacity for an index is 0.1 queries per second, and `GetQuerySuggestions` capacity has a base of 2.5 calls per second. If you add another 0.1 queries per second to total 0.2 queries per second for an index, the `GetQuerySuggestions` capacity is 2.5 calls per second (higher than five times 0.2 queries per second).",
         "StorageCapacityUnits": "The amount of extra storage capacity for an index. A single capacity unit provides 30 GB of storage space or 100,000 documents, whichever is reached first."
@@ -32951,7 +32951,7 @@
       },
       "description": "The `AWS::RDS::DBParameterGroup` resource creates a custom parameter group for an RDS database family.\n\nThis type can be declared in a template and referenced in the `DBParameterGroupName` property of an `[AWS::RDS::DBInstance](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-database-instance.html)` resource.\n\nFor information about configuring parameters for Amazon RDS DB instances, see [Working with DB parameter groups](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_WorkingWithParamGroups.html) in the *Amazon RDS User Guide* .\n\nFor information about configuring parameters for Amazon Aurora DB instances, see [Working with DB parameter groups and DB cluster parameter groups](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/USER_WorkingWithParamGroups.html) in the *Amazon Aurora User Guide* .\n\n> Applying a parameter group to a DB instance may require the DB instance to reboot, resulting in a database outage for the duration of the reboot.",
       "properties": {
-        "Description": "Provides the customer-specified description for this DB parameter group.",
+        "Description": "Provides the customer-specified description for this DB Parameter Group.",
         "Family": "The DB parameter group family name. A DB parameter group can be associated with one and only one DB parameter group family, and can be applied only to a DB instance running a DB engine and engine version compatible with that DB parameter group family.\n\n> The DB parameter group family can't be changed when updating a DB parameter group. \n\nTo list all of the available parameter group families, use the following command:\n\n`aws rds describe-db-engine-versions --query \"DBEngineVersions[].DBParameterGroupFamily\"`\n\nThe output contains duplicates.\n\nFor more information, see `[CreateDBParameterGroup](https://docs.aws.amazon.com//AmazonRDS/latest/APIReference/API_CreateDBParameterGroup.html)` .",
         "Parameters": "An array of parameter names and values for the parameter update. At least one parameter name and value must be supplied. Subsequent arguments are optional.\n\nFor more information about DB parameters and DB parameter groups for Amazon RDS DB engines, see [Working with DB Parameter Groups](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_WorkingWithParamGroups.html) in the *Amazon RDS User Guide* .\n\nFor more information about DB cluster and DB instance parameters and parameter groups for Amazon Aurora DB engines, see [Working with DB Parameter Groups and DB Cluster Parameter Groups](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/USER_WorkingWithParamGroups.html) in the *Amazon Aurora User Guide* .\n\n> AWS CloudFormation doesn't support specifying an apply method for each individual parameter. The default apply method for each parameter is used.",
         "Tags": "Tags to assign to the DB parameter group."
@@ -33055,7 +33055,7 @@
       "properties": {
         "DBSecurityGroupIngress": "Ingress rules to be applied to the DB security group.",
         "EC2VpcId": "The identifier of an Amazon VPC. This property indicates the VPC that this DB security group belongs to.\n\n> The `EC2VpcId` property is for backward compatibility with older regions, and is no longer recommended for providing security information to an RDS DB instance.",
-        "GroupDescription": "Provides the description of the DB security group.",
+        "GroupDescription": "Provides the description of the DB Security Group.",
         "Tags": "Tags to assign to the DB security group."
       }
     },

@@ -1051,12 +1051,28 @@
             {
               "Action": "lambda:InvokeFunction",
               "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "nameserviceTaskRecordManagerCleanupResourceProviderHandler08068F99",
-                  "Arn"
-                ]
-              }
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "nameserviceTaskRecordManagerCleanupResourceProviderHandler08068F99",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "nameserviceTaskRecordManagerCleanupResourceProviderHandler08068F99",
+                          "Arn"
+                        ]
+                      },
+                      ":*"
+                    ]
+                  ]
+                }
+              ]
             }
           ],
           "Version": "2012-10-17"

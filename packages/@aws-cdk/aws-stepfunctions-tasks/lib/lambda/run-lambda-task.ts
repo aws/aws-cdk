@@ -87,7 +87,7 @@ export class RunLambdaTask implements sfn.IStepFunctionsTask {
     return {
       resourceArn: getResourceArn('lambda', 'invoke', this.integrationPattern),
       policyStatements: [new iam.PolicyStatement({
-        resources: [this.lambdaFunction.functionArn],
+        resources: this.lambdaFunction.resourceArnsForGrantInvoke,
         actions: ['lambda:InvokeFunction'],
       })],
       metricPrefixSingular: 'LambdaFunction',
