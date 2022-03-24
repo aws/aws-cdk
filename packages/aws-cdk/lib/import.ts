@@ -64,7 +64,7 @@ export class ResourceImporter {
   constructor(
     private readonly stack: cxapi.CloudFormationStackArtifact,
     private readonly cfn: CloudFormationDeployments,
-    private readonly options: ResourceImporterOptions) { }
+    private readonly options: ResourceImporterOptions = {}) { }
 
   /**
    * Ask the user for resources to import
