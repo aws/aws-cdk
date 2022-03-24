@@ -9,7 +9,7 @@
 - Run all integration tests in `test` directory
 
 ```bash
-integ-runner
+integ-runner [ARGS] [TEST...]
 ```
 
 This will look for all files that match the naming convention of `/integ.*.ts$/`. Each of these files will be expected
@@ -38,6 +38,8 @@ to be a self contained CDK app. The runner will execute the following for each f
   Search for integration tests recursively from this starting directory
 - `--force` (default=`false`)
   Rerun integration test even if the test passes
+- `--file`
+  Read the list of tests from this file
 
 Example:
 ```bash
@@ -130,7 +132,7 @@ interface TestCase {
    *
    * @default true
    */
-  readonly update?: boolean;
+  readonly stackUpdateWorkflow?: boolean;
 
   /**
    * Additional options to use for each CDK command
@@ -262,10 +264,15 @@ This will synthesize an `integ.json` file with the following contents
 	"update": true,
 	"cdkCommands": {
 	  "deploy": {
-	    "args": ["--require-approval", "never", "--json"]
+	    "args": {
+		  "requireApproval": "never",
+		  "json": true
+		}
 	  },
 	  "destroy": {
-	    "args": ["--force"]
+	    "args": {
+		  "force": true
+		}
 	  }
 	}
   },
