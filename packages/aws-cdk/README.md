@@ -463,7 +463,7 @@ service.
 `cdk import`, which uses [CloudFormation resource
 imports](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/resource-import.html),
 makes it possible to bring an existing resource under CDK/CloudFormation's
-management.
+management. See the [list of resources that can be imported here](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/resource-import-supported-resources.html).
 
 To import an existing resource to a CDK stack, follow the following steps:
 
@@ -488,12 +488,11 @@ To import an existing resource to a CDK stack, follow the following steps:
 
 This feature is currently in preview. Be aware of the following limitations:
 
-- Importing resources in nested stacks is not possible
+- Importing resources in nested stacks is not possible.
 - Uses the deploy role credentials (necessary to read the encrypted staging
   bucket). Requires a new version (version 12) of the bootstrap stack, for the added
   IAM permissions to the `deploy-role`.
 - Some complex import operations might not work successfully
-- Not all CloudFormation resources support importing yet
 
 ### `cdk destroy`
 

@@ -371,7 +371,7 @@ async function initCommandLine() {
       throw new Error('You must either specify a list of Stacks or the `--all` argument');
     }
 
-    args.STACKS = args.STACKS || [];
+    args.STACKS = args.STACKS ?? (args.STACK ? [args.STACK] : []);
     args.ENVIRONMENTS = args.ENVIRONMENTS || [];
 
     const selector: StackSelector = {

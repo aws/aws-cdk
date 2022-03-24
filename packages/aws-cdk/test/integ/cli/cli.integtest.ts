@@ -771,6 +771,42 @@ integTest('skips notice refresh', withDefaultFixture(async (fixture) => {
   await expect(output).not.toContain('Notices refresh failed');
 }));
 
+/**
+ * Create a queue with a fresh name, redeploy orphaning the queue, then import it again
+ */
+integTest('test resource import', withDefaultFixture(async (fixture) => {
+  const outputsFile = path.join(fixture.integTestDir, 'outputs', 'outputs.json');
+  await fs.mkdir(path.dirname(outputsFile), { recursive: true });
+
+  // Initial deploy
+  await fixture.cdkDeploy('importable-stack', {
+    modEnv: { ORPHAN_TOPIC: '1' },
+    options: ['--outputs-file', outputsFile],
+  });
+
+  const outputs = JSON.parse((await fs.readFile(outputsFile, { encoding: 'utf-8' })).toString());
+  const queueName = outputs.QueueName;
+  const queueLogicalId = outputs.QueueLogicalId;
+  fixture.log(`Setup complete, created queue ${queueName}`);
+  try {
+    // Deploy again, orphaning the queue
+    await fixture.cdkDeploy('importable-stack', {
+      modEnv: { OMIT_TOPIC: '1' },
+    });
+
+    // Write a resource mapping file based on the ID from step one, then run an import
+    const mappingFile = path.join(fixture.integTestDir, 'outputs', 'mapping.json');
+    await fs.writeFile(mappingFile, JSON.stringify({ [queueLogicalId]: { QueueName: queueName } }), { encoding: 'utf-8' });
+
+    await fixture.cdk(['import',
+      '--resource-mapping', mappingFile,
+      fixture.fullStackName('importable-stack')]);
+  } finally {
+    // Cleanup
+    await fixture.cdkDestroy('importable-stack');
+  }
+}));
+
 async function listChildren(parent: string, pred: (x: string) => Promise<boolean>) {
   const ret = new Array<string>();
   for (const child of await fs.readdir(parent, { encoding: 'utf-8' })) {

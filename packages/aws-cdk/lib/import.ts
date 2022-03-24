@@ -249,10 +249,10 @@ export class ResourceImporter {
       const props = fmtdict(fixedIdInput);
 
       if (!await promptly.confirm(
-        `${chalk.blue(resourceName)} (${resourceType}): import with ${chalk.blue(props)} (yes/no) [default: yes]? `,
+        `${chalk.blue(resourceName)} (${resourceType}): import with ${chalk.yellow(props)} (yes/no) [default: yes]? `,
         { default: 'yes' },
       )) {
-        print(`Skipping import of ${resourceName}`);
+        print(chalk.grey(`Skipping import of ${resourceName}`));
         return undefined;
       }
     }
@@ -265,7 +265,7 @@ export class ResourceImporter {
         { default: '', trim: true },
       ));
       if (!response) {
-        print(`Skipping import of ${resourceName}`);
+        print(chalk.grey(`Skipping import of ${resourceName}`));
         return undefined;
       }
       userInput[missingIdProp] = response;

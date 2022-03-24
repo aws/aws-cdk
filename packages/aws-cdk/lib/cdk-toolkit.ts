@@ -362,6 +362,7 @@ export class CdkToolkit {
   }
 
   public async import(options: ImportOptions) {
+    print(chalk.grey("The 'cdk import' feature is currently in preview."));
     const stacks = await this.selectStacksForDeploy(options.selector, true, true);
 
     if (stacks.stackCount > 1) {
