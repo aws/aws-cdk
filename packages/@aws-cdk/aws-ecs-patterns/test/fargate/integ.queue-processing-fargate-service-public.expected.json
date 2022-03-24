@@ -562,11 +562,11 @@
           "Statement": [
             {
               "Action": [
-                "sqs:ReceiveMessage",
                 "sqs:ChangeMessageVisibility",
-                "sqs:GetQueueUrl",
                 "sqs:DeleteMessage",
-                "sqs:GetQueueAttributes"
+                "sqs:GetQueueAttributes",
+                "sqs:GetQueueUrl",
+                "sqs:ReceiveMessage"
               ],
               "Effect": "Allow",
               "Resource": {
@@ -606,8 +606,8 @@
             "Essential": true,
             "HealthCheck": {
               "Command": [
-                "CMD-SHELL", 
-                "curl -f http://localhost/ || exit 1" 
+                "CMD-SHELL",
+                "curl -f http://localhost/ || exit 1"
               ],
               "Interval": 720,
               "Retries": 34,
@@ -698,8 +698,8 @@
             {
               "Action": [
                 "ecr:BatchCheckLayerAvailability",
-                "ecr:GetDownloadUrlForLayer",
-                "ecr:BatchGetImage"
+                "ecr:BatchGetImage",
+                "ecr:GetDownloadUrlForLayer"
               ],
               "Effect": "Allow",
               "Resource": {
