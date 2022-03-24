@@ -98,5 +98,8 @@
   "maturity": "experimental",
   "publishConfig": {
     "tag": "latest"
+  },
+  "ubergen": {
+    "exclude": true
   }
 }
