@@ -266,6 +266,12 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
   private _latestVersion?: LatestVersion;
 
   /**
+   * Flag to delay adding a warning message until current version is invoked
+   * @internal
+   */
+  protected _warnIfCurrentVersionCalled: boolean = false;
+
+  /**
    * Mapping of invocation principals to grants. Used to de-dupe `grantInvoke()` calls.
    * @internal
    */
@@ -276,15 +282,23 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
    * This should apply only to permissions on Lambda functions, not versions or aliases.
    * This function is overridden as a noOp for QualifiedFunctionBase.
    */
-  public addWarningOnInvokeFunctionPermissions(scope: Construct, action: string) {
+  public considerWarningOnInvokeFunctionPermissions(scope: Construct, action: string) {
     const affectedPermissions = ['lambda:InvokeFunction', 'lambda:*', 'lambda:Invoke*'];
     if (affectedPermissions.includes(action)) {
-      Annotations.of(scope).addWarning([
-        "AWS Lambda has changed their authorization strategy, which may cause client invocations using the 'Qualifier' parameter of the lambda function to fail with Access Denied errors.",
-        "If you are using a lambda Version or Alias, make sure to call 'grantInvoke' or 'addPermission' on the Version or Alias, not the underlying Function",
-        'See: https://github.com/aws/aws-cdk/issues/19273',
-      ].join('\n'));
+      if (scope.node.tryFindChild('CurrentVersion')) {
+        this.warnInvokeFunctionPermissions(scope);
+      } else {
+        this._warnIfCurrentVersionCalled = true;
+      }
     }
+  }
+
+  protected warnInvokeFunctionPermissions(scope: Construct): void {
+    Annotations.of(scope).addWarning([
+      "AWS Lambda has changed their authorization strategy, which may cause client invocations using the 'Qualifier' parameter of the lambda function to fail with Access Denied errors.",
+      "If you are using a lambda Version or Alias, make sure to call 'grantInvoke' or 'addPermission' on the Version or Alias, not the underlying Function",
+      'See: https://github.com/aws/aws-cdk/issues/19273',
+    ].join('\n'));
   }
 
   /**
@@ -303,7 +317,7 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
     const action = permission.action ?? 'lambda:InvokeFunction';
     const scope = permission.scope ?? this;
 
-    this.addWarningOnInvokeFunctionPermissions(scope, action);
+    this.considerWarningOnInvokeFunctionPermissions(scope, action);
 
     new CfnPermission(scope, id, {
       action,
@@ -560,7 +574,7 @@ export abstract class QualifiedFunctionBase extends FunctionBase {
     });
   }
 
-  public addWarningOnInvokeFunctionPermissions(_scope: Construct, _action: string): void {
+  public considerWarningOnInvokeFunctionPermissions(_scope: Construct, _action: string): void {
     // noOp
     return;
   }

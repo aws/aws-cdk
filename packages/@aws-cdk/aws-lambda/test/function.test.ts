@@ -450,20 +450,80 @@ describe('function', () => {
         });
       });
 
-      test('function', () => {
-        // WHEN
-        fn.addPermission('MyPermission', {
-          principal: new iam.ServicePrincipal('lambda.amazonaws.com'),
+      describe('permissions on functions', () => {
+        test('without lambda:InvokeFunction', () => {
+          // WHEN
+          fn.addPermission('MyPermission', {
+            action: 'lambda.GetFunction',
+            principal: new iam.ServicePrincipal('lambda.amazonaws.com'),
+          });
+
+          // Simulate a workflow where a user has created a currentVersion with the intent to invoke it later.
+          fn.currentVersion;
+
+          // THEN
+          Annotations.fromStack(stack).hasNoWarning('/Default/MyLambda', Match.stringLikeRegexp(warningMessage));
         });
 
-        // THEN
-        Annotations.fromStack(stack).hasWarning('/Default/MyLambda', Match.stringLikeRegexp(warningMessage));
+        describe('with lambda:InvokeFunction', () => {
+          test('without invoking currentVersion', () => {
+            // WHEN
+            fn.addPermission('MyPermission', {
+              principal: new iam.ServicePrincipal('lambda.amazonaws.com'),
+            });
+
+            // THEN
+            Annotations.fromStack(stack).hasNoWarning('/Default/MyLambda', Match.stringLikeRegexp(warningMessage));
+          });
+
+          test('with currentVersion invoked first', () => {
+            // GIVEN
+            // Simulate a workflow where a user has created a currentVersion with the intent to invoke it later.
+            fn.currentVersion;
+
+            // WHEN
+            fn.addPermission('MyPermission', {
+              principal: new iam.ServicePrincipal('lambda.amazonaws.com'),
+            });
+
+            // THEN
+            Annotations.fromStack(stack).hasWarning('/Default/MyLambda', Match.stringLikeRegexp(warningMessage));
+          });
+
+          test('with currentVersion invoked after permissions created', () => {
+            // WHEN
+            fn.addPermission('MyPermission', {
+              principal: new iam.ServicePrincipal('lambda.amazonaws.com'),
+            });
+
+            // Simulate a workflow where a user has created a currentVersion after adding permissions to the function.
+            fn.currentVersion;
+
+            // THEN
+            Annotations.fromStack(stack).hasWarning('/Default/MyLambda', Match.stringLikeRegexp(warningMessage));
+          });
+
+          test('multiple currentVersion calls does not result in multiple warnings', () => {
+            // WHEN
+            fn.currentVersion;
+
+            fn.addPermission('MyPermission', {
+              principal: new iam.ServicePrincipal('lambda.amazonaws.com'),
+            });
+
+            fn.currentVersion;
+
+            // THEN
+            const warns = Annotations.fromStack(stack).findWarning('/Default/MyLambda', Match.stringLikeRegexp(warningMessage));
+            expect(warns).toHaveLength(1);
+          });
+        });
       });
 
-      test('version', () => {
+      test('permission on versions', () => {
         // GIVEN
         const version = new lambda.Version(stack, 'MyVersion', {
-          lambda: fn,
+          lambda: fn.currentVersion,
         });
 
         // WHEN
@@ -475,7 +535,7 @@ describe('function', () => {
         Annotations.fromStack(stack).hasNoWarning('/Default/MyVersion', Match.stringLikeRegexp(warningMessage));
       });
 
-      test('latest version', () => {
+      test('permission on latest version', () => {
         // WHEN
         fn.latestVersion.addPermission('MyPermission', {
           principal: new iam.ServicePrincipal('lambda.amazonaws.com'),
@@ -486,39 +546,41 @@ describe('function', () => {
         Annotations.fromStack(stack).hasNoWarning('/Default/MyLambda/$LATEST', Match.stringLikeRegexp(warningMessage));
       });
 
-      test('alias', () => {
-        // GIVEN
-        const version = new lambda.Version(stack, 'MyVersion', {
-          lambda: fn,
-        });
-        const alias = new lambda.Alias(stack, 'MyAlias', {
-          aliasName: 'alias',
-          version,
-        });
+      describe('permission on alias', () => {
+        test('of current version', () => {
+          // GIVEN
+          const version = new lambda.Version(stack, 'MyVersion', {
+            lambda: fn.currentVersion,
+          });
+          const alias = new lambda.Alias(stack, 'MyAlias', {
+            aliasName: 'alias',
+            version,
+          });
 
-        // WHEN
-        alias.addPermission('MyPermission', {
-          principal: new iam.ServicePrincipal('lambda.amazonaws.com'),
-        });
+          // WHEN
+          alias.addPermission('MyPermission', {
+            principal: new iam.ServicePrincipal('lambda.amazonaws.com'),
+          });
 
-        // THEN
-        Annotations.fromStack(stack).hasNoWarning('/Default/MyAlias', Match.stringLikeRegexp(warningMessage));
-      });
-
-      test('alias on latest version', () => {
-        // GIVEN
-        const alias = new lambda.Alias(stack, 'MyAlias', {
-          aliasName: 'alias',
-          version: fn.latestVersion,
+          // THEN
+          Annotations.fromStack(stack).hasNoWarning('/Default/MyAlias', Match.stringLikeRegexp(warningMessage));
         });
 
-        // WHEN
-        alias.addPermission('MyPermission', {
-          principal: new iam.ServicePrincipal('lambda.amazonaws.com'),
-        });
+        test('of latest version', () => {
+          // GIVEN
+          const alias = new lambda.Alias(stack, 'MyAlias', {
+            aliasName: 'alias',
+            version: fn.latestVersion,
+          });
 
-        // THEN
-        Annotations.fromStack(stack).hasNoWarning('/Default/MyAlias', Match.stringLikeRegexp(warningMessage));
+          // WHEN
+          alias.addPermission('MyPermission', {
+            principal: new iam.ServicePrincipal('lambda.amazonaws.com'),
+          });
+
+          // THEN
+          Annotations.fromStack(stack).hasNoWarning('/Default/MyAlias', Match.stringLikeRegexp(warningMessage));
+        });
       });
 
       test('function without lambda:InvokeFunction', () => {
