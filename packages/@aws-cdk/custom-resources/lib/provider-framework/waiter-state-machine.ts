@@ -1,4 +1,4 @@
-import { Grant, IGrantable, PolicyStatement, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
+import { Grant, IGrantable, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import { IFunction } from '@aws-cdk/aws-lambda';
 import { CfnResource, Duration, Stack } from '@aws-cdk/core';
 
@@ -49,14 +49,8 @@ export class WaiterStateMachine extends Construct {
     const role = new Role(this, 'Role', {
       assumedBy: new ServicePrincipal('states.amazonaws.com'),
     });
-    role.addToPolicy(new PolicyStatement({
-      actions: ['lambda:InvokeFunction'],
-      resources: [props.isCompleteHandler.functionArn],
-    }));
-    role.addToPolicy(new PolicyStatement({
-      actions: ['lambda:InvokeFunction'],
-      resources: [props.timeoutHandler.functionArn],
-    }));
+    props.isCompleteHandler.grantInvoke(role);
+    props.timeoutHandler.grantInvoke(role);
 
     const definition = Stack.of(this).toJsonString({
       StartAt: 'framework-isComplete-task',
