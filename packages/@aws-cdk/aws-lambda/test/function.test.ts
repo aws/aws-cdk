@@ -1131,7 +1131,10 @@ describe('function', () => {
             {
               Action: 'lambda:InvokeFunction',
               Effect: 'Allow',
-              Resource: { 'Fn::GetAtt': ['Function76856677', 'Arn'] },
+              Resource: [
+                { 'Fn::GetAtt': ['Function76856677', 'Arn'] },
+                { 'Fn::Join': ['', [{ 'Fn::GetAtt': ['Function76856677', 'Arn'] }, ':*']] },
+              ],
             },
           ],
         },
@@ -1264,7 +1267,10 @@ describe('function', () => {
             {
               Action: 'lambda:InvokeFunction',
               Effect: 'Allow',
-              Resource: { 'Fn::GetAtt': ['Function76856677', 'Arn'] },
+              Resource: [
+                { 'Fn::GetAtt': ['Function76856677', 'Arn'] },
+                { 'Fn::Join': ['', [{ 'Fn::GetAtt': ['Function76856677', 'Arn'] }, ':*']] },
+              ],
             },
           ],
         },
