@@ -436,6 +436,20 @@ dashboard.addWidgets(
 );
 ```
 
+An alarm status widget only showing firing alarms, sorted by state and timestamp:
+
+```ts
+declare const dashboard: cloudwatch.Dashboard;
+declare const errorAlarm: cloudwatch.Alarm;
+
+dashboard.addWidgets(new cloudwatch.AlarmStatusWidget({
+  title: "Errors",
+  alarms: [errorAlarm],
+  sortBy: cloudwatch.AlarmStatusWidgetSortBy.STATE_UPDATED_TIMESTAMP,
+  states: [cloudwatch.AlarmState.ALARM],
+}));
+```
+
 ### Query results widget
 
 A `LogQueryWidget` shows the results of a query from Logs Insights:
