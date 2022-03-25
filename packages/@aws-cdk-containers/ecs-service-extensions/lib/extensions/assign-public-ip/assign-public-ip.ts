@@ -1,14 +1,11 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as route53 from '@aws-cdk/aws-route53';
+import { Construct } from 'constructs';
 import { Service } from '../../service';
 import { Container } from '../container';
 import { ServiceExtension, ServiceBuild, EnvironmentCapacityType } from '../extension-interfaces';
 import { TaskRecordManager } from './task-record-manager';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from '@aws-cdk/core';
 
 export interface AssignPublicIpExtensionOptions {
   /**

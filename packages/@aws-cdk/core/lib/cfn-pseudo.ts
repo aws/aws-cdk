@@ -1,4 +1,4 @@
-import { Construct } from './construct-compat';
+import { Construct } from 'constructs';
 import { CfnReference } from './private/cfn-reference';
 import { Token } from './token';
 
