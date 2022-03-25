@@ -45,6 +45,7 @@ export interface LambdaInvokeProps extends sfn.TaskStateBaseProps {
    * directly as the `lambdaFunction` argument.
    *
    * @default - Version or alias inherent to the `lambdaFunction` object.
+   * @deprecated pass a Version or Alias object as lambdaFunction instead
    */
   readonly qualifier?: string;
 
