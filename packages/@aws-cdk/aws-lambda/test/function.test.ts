@@ -2492,7 +2492,7 @@ test('throws if ephemeral storage size is out of bound', () => {
   expect(() => new lambda.Function(stack, 'MyLambda', {
     code: new lambda.InlineCode('foo'),
     handler: 'bar',
-    runtime: lambda.Runtime.NODEJS_12_X,
+    runtime: lambda.Runtime.NODEJS_14_X,
     ephemeralStorageSize: 511,
   })).toThrow(/Ephemeral storage size must be between 512 and 10240 MB./);
 });
