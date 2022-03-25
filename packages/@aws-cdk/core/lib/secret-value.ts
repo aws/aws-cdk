@@ -1,10 +1,12 @@
 import { CHECK_SECRET_USAGE } from '@aws-cdk/cx-api';
 import { CfnDynamicReference, CfnDynamicReferenceService } from './cfn-dynamic-reference';
 import { CfnParameter } from './cfn-parameter';
+import { CfnResource } from './cfn-resource';
 import { FeatureFlags } from './feature-flags';
+import { CfnReference } from './private/cfn-reference';
 import { Intrinsic } from './private/intrinsic';
 import { IResolveContext } from './resolvable';
-import { Token } from './token';
+import { Token, Tokenization } from './token';
 
 /**
  * Work with secret values in the CDK
@@ -40,7 +42,9 @@ export class SecretValue extends Intrinsic {
   /**
    * Construct a literal secret value for use with secret-aware constructs
    *
-   * *Do not use this method for any secrets that you care about.*
+   * Do not use this method for any secrets that you care about! The value
+   * will be visible to anyone who has access to the CloudFormation template
+   * (via the AWS Console, SDKs, or CLI).
    *
    * The only reasonable use case for using this method is when you are testing.
    *
@@ -53,7 +57,9 @@ export class SecretValue extends Intrinsic {
   /**
    * Construct a literal secret value for use with secret-aware constructs
    *
-   * *Do not use this method for any secrets that you care about.*
+   * Do not use this method for any secrets that you care about! The value
+   * will be visible to anyone who has access to the CloudFormation template
+   * (via the AWS Console, SDKs, or CLI).
    *
    * The only reasonable use case for using this method is when you are testing.
    */
@@ -138,8 +144,9 @@ export class SecretValue extends Intrinsic {
    * Use a resource's output as secret value
    */
   public static resourceAttribute(attr: string) {
-    if (!Token.isUnresolved(attr)) {
-      throw new Error('SecretValue.resourceAttribute() must be used with a tokenized value');
+    const resolved = Tokenization.reverseCompleteString(attr);
+    if (!resolved || !CfnReference.isCfnReference(resolved) || !CfnResource.isCfnResource(resolved.target)) {
+      throw new Error('SecretValue.resourceAttribute() must be used with a resource attribute');
     }
 
     return new SecretValue(attr);
@@ -181,7 +188,7 @@ export class SecretValue extends Intrinsic {
   public resolve(context: IResolveContext) {
     if (FeatureFlags.of(context.scope).isEnabled(CHECK_SECRET_USAGE)) {
       throw new Error(
-        "Using a SecretValue here risks exposing your secret. Only pass SecretValues to constructs that accept a SecretValue property, or read the secret directly in your runtime code. Call 'secretValue.unsafeUnwrap()' if you understand and accept the risks.",
+        "Using a SecretValue here risks exposing your secret. Only pass SecretValues to constructs that accept a SecretValue property, or call AWS Secrets Manager directly in your runtime code. Call 'secretValue.unsafeUnwrap()' if you understand and accept the risks.",
       );
     }
     return super.resolve(context);

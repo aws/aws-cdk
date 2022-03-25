@@ -189,7 +189,7 @@ export const CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021 = '@aws-cdk/aws-cl
  * constructs that accept `SecretValue`s; otherwise, `unsafeUnwrap()` must be
  * called to use it as a regular string.
  */
-export const CHECK_SECRET_USAGE = '@aws-cdk/core:check-secret-usage';
+export const CHECK_SECRET_USAGE = '@aws-cdk/core:checkSecretUsage';
 
 /**
  * What regions to include in lookup tables of environment agnostic stacks
