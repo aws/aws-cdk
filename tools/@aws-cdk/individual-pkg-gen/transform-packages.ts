@@ -1,6 +1,7 @@
 import * as path from 'path';
 import * as awsCdkMigration from 'aws-cdk-migration';
 import * as fs from 'fs-extra';
+import { SemVer, parse } from 'semver';
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const lerna_project = require('@lerna/project');
 // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -158,7 +159,10 @@ function transformPackageJson(pkg: any, source: string, destination: string, alp
 
   packageJson.name += '-alpha';
   if (ver.alphaVersion) {
-    packageJson.version = ver.alphaVersion;
+    // The -rc.0 suffix is used in the integration pipeline to distinguish candidate packages from real NPM packages, and needs to be retained
+    const rcSuffix = packageJson.version.endsWith('-rc.0') ? '-rc.0' : '';
+    const { major, minor, patch } = parse(packageJson.version) as SemVer;
+    packageJson.version = [major, minor, patch].join('.') + rcSuffix + '-alpha.0';
   }
   packageJson.repository.directory = `packages/individual-packages/${pkgUnscopedName}`;
 
