@@ -48,6 +48,7 @@ export interface RunLambdaTaskProps {
    * Version or alias of the function to be invoked
    *
    * @default - No qualifier
+   * @deprecated pass a Version or Alias object as lambdaFunction instead
    */
   readonly qualifier?: string;
 }
