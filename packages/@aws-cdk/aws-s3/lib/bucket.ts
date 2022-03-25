@@ -1102,7 +1102,7 @@ export enum InventoryFormat {
    */
   PARQUET = 'Parquet',
   /**
-   * Generate the inventory list as Parquet.
+   * Generate the inventory list as ORC.
    */
   ORC = 'ORC',
 }
@@ -2296,6 +2296,16 @@ export enum EventType {
    * restoration completion.
    */
   OBJECT_RESTORE_COMPLETED = 's3:ObjectRestore:Completed',
+
+  /**
+   * Using restore object event types you can receive notifications for
+   * initiation and completion when restoring objects from the S3 Glacier
+   * storage class.
+   *
+   * You use s3:ObjectRestore:Delete to request notification of
+   * restoration completion.
+   */
+  OBJECT_RESTORE_DELETE = 's3:ObjectRestore:Delete',
 
   /**
    * You can use this event type to request Amazon S3 to send a notification

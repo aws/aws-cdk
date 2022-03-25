@@ -84,11 +84,17 @@ export class NotificationsResourceHandler extends Construct {
         return properties;
       }
     }
+
+    const handlerSource = fs.readFileSync(path.join(__dirname, 'lambda/index.py'), 'utf8');
+    if (handlerSource.length > 4096) {
+      throw new Error(`Source of Notifications Resource Handler is too large (${handlerSource.length} > 4096)`);
+    }
+
     const resource = new InLineLambda(this, 'Resource', {
       type: resourceType,
       properties: {
         Description: 'AWS CloudFormation handler for "Custom::S3BucketNotifications" resources (@aws-cdk/aws-s3)',
-        Code: { ZipFile: fs.readFileSync(path.join(__dirname, 'lambda/index.py'), 'utf8') },
+        Code: { ZipFile: handlerSource },
         Handler: 'index.handler',
         Role: this.role.roleArn,
         Runtime: 'python3.7',

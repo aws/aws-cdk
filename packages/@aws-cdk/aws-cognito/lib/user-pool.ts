@@ -585,8 +585,8 @@ export interface UserPoolProps {
   /**
    * Configure the MFA types that users can use in this user pool. Ignored if `mfa` is set to `OFF`.
    *
-   * @default - { sms: true, oneTimePassword: false }, if `mfa` is set to `OPTIONAL` or `REQUIRED`.
-   * { sms: false, oneTimePassword: false }, otherwise
+   * @default - { sms: true, otp: false }, if `mfa` is set to `OPTIONAL` or `REQUIRED`.
+   * { sms: false, otp: false }, otherwise
    */
   readonly mfaSecondFactor?: MfaSecondFactor;
 
