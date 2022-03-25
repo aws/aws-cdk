@@ -1,10 +1,9 @@
-import { Match, Template } from '@aws-cdk/assertions';
+import { Annotations, Match, Template } from '@aws-cdk/assertions';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as sns from '@aws-cdk/aws-sns';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
-import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cdk from '@aws-cdk/core';
 import * as autoscaling from '../lib';
 
@@ -875,7 +874,7 @@ describe('auto scaling group', () => {
     const stack = new cdk.Stack();
     const vpc = mockVpc(stack);
 
-    const asg = new autoscaling.AutoScalingGroup(stack, 'MyStack', {
+    new autoscaling.AutoScalingGroup(stack, 'MyStack', {
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
       machineImage: new ec2.AmazonLinuxImage(),
       vpc,
@@ -890,8 +889,7 @@ describe('auto scaling group', () => {
     });
 
     // THEN
-    expect(asg.node.metadataEntry[0].type).toEqual(cxschema.ArtifactMetadataEntryType.WARN);
-    expect(asg.node.metadataEntry[0].data).toEqual('iops will be ignored without volumeType: EbsDeviceVolumeType.IO1');
+    Annotations.fromStack(stack).hasWarning('/Default/MyStack', 'iops will be ignored without volumeType: EbsDeviceVolumeType.IO1');
   });
 
   test('warning if iops and volumeType !== IO1', () => {
@@ -899,7 +897,7 @@ describe('auto scaling group', () => {
     const stack = new cdk.Stack();
     const vpc = mockVpc(stack);
 
-    const asg = new autoscaling.AutoScalingGroup(stack, 'MyStack', {
+    new autoscaling.AutoScalingGroup(stack, 'MyStack', {
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
       machineImage: new ec2.AmazonLinuxImage(),
       vpc,
@@ -915,8 +913,7 @@ describe('auto scaling group', () => {
     });
 
     // THEN
-    expect(asg.node.metadataEntry[0].type).toEqual(cxschema.ArtifactMetadataEntryType.WARN);
-    expect(asg.node.metadataEntry[0].data).toEqual('iops will be ignored without volumeType: EbsDeviceVolumeType.IO1');
+    Annotations.fromStack(stack).hasWarning('/Default/MyStack', 'iops will be ignored without volumeType: EbsDeviceVolumeType.IO1');
   });
 
   test('step scaling on metric', () => {
