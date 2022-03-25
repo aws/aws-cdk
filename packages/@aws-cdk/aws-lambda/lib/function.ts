@@ -1143,7 +1143,7 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
 
     return {
       size: props.ephemeralStorageSize,
-    }
+    };
   }
 
   private buildTracingConfig(props: FunctionProps) {
