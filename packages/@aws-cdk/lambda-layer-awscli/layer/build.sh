@@ -3,13 +3,11 @@ set -euo pipefail
 
 cd $(dirname $0)
 
-version=$(cat ../awscli.version)
-
-echo ">> Building AWS Lambda layer inside a docker image for CLI version ${version}..."
+echo ">> Building AWS Lambda layer inside a docker image..."
 
 TAG='aws-lambda-layer'
 
-docker build -t ${TAG} . --build-arg AWSCLI_VERSION=${version}
+docker build -t ${TAG} .
 
 echo ">> Extrating layer.zip from the build container..."
 CONTAINER=$(docker run -d ${TAG} false)
