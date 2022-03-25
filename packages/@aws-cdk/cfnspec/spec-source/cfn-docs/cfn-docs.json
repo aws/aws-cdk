@@ -19,7 +19,7 @@
     },
     "AWS::ACMPCA::Certificate.ApiPassthrough": {
       "attributes": {},
-      "description": "Contains X.509 certificate information to be placed in an issued certificate. An `APIPassthrough` or `APICSRPassthrough` template variant must be selected, or else this parameter is ignored.\n\nIf conflicting or duplicate certificate information is supplied from other sources, AWS Private CA applies [order of operation rules](https://docs.aws.amazon.com/acm-pca/latest/userguide/UsingTemplates.html#template-order-of-operations) to determine what information is used.",
+      "description": "Contains X.509 certificate information to be placed in an issued certificate. An `APIPassthrough` or `APICSRPassthrough` template variant must be selected, or else this parameter is ignored.\n\nIf conflicting or duplicate certificate information is supplied from other sources, ACM Private CA applies [order of operation rules](https://docs.aws.amazon.com/acm-pca/latest/userguide/UsingTemplates.html#template-order-of-operations) to determine what information is used.",
       "properties": {
         "Extensions": "Specifies X.509 extension information for a certificate.",
         "Subject": "Contains information about the certificate subject. The Subject field in the certificate identifies the entity that owns or controls the public key in the certificate. The entity can be a user, computer, device, or service. The Subject must contain an X.500 distinguished name (DN). A DN is a sequence of relative distinguished names (RDNs). The RDNs are separated by commas in the certificate."
@@ -111,20 +111,20 @@
       "description": "Defines the X.509 `CertificatePolicies` extension.",
       "properties": {
         "CertPolicyId": "Specifies the object identifier (OID) of the certificate policy under which the certificate was issued. For more information, see NIST's definition of [Object Identifier (OID)](https://docs.aws.amazon.com/https://csrc.nist.gov/glossary/term/Object_Identifier) .",
-        "PolicyQualifiers": "Modifies the given `CertPolicyId` with a qualifier. AWS Private CA supports the certification practice statement (CPS) qualifier."
+        "PolicyQualifiers": "Modifies the given `CertPolicyId` with a qualifier. ACM Private CA supports the certification practice statement (CPS) qualifier."
       }
     },
     "AWS::ACMPCA::Certificate.PolicyQualifierInfo": {
       "attributes": {},
-      "description": "Modifies the `CertPolicyId` of a `PolicyInformation` object with a qualifier. AWS Private CA supports the certification practice statement (CPS) qualifier.",
+      "description": "Modifies the `CertPolicyId` of a `PolicyInformation` object with a qualifier. ACM Private CA supports the certification practice statement (CPS) qualifier.",
       "properties": {
         "PolicyQualifierId": "Identifies the qualifier modifying a `CertPolicyId` .",
-        "Qualifier": "Defines the qualifier type. AWS Private CA supports the use of a URI for a CPS qualifier in this field."
+        "Qualifier": "Defines the qualifier type. ACM Private CA supports the use of a URI for a CPS qualifier in this field."
       }
     },
     "AWS::ACMPCA::Certificate.Qualifier": {
       "attributes": {},
-      "description": "Defines a `PolicyInformation` qualifier. AWS Private CA supports the [certification practice statement (CPS) qualifier](https://docs.aws.amazon.com/https://datatracker.ietf.org/doc/html/rfc5280#section-4.2.1.4) defined in RFC 5280.",
+      "description": "Defines a `PolicyInformation` qualifier. ACM Private CA supports the [certification practice statement (CPS) qualifier](https://docs.aws.amazon.com/https://datatracker.ietf.org/doc/html/rfc5280#section-4.2.1.4) defined in RFC 5280.",
       "properties": {
         "CpsUri": "Contains a pointer to a certification practice statement (CPS) published by the CA."
       }
@@ -194,12 +194,12 @@
     },
     "AWS::ACMPCA::CertificateAuthority.CrlConfiguration": {
       "attributes": {},
-      "description": "Contains configuration information for a certificate revocation list (CRL). Your private certificate authority (CA) creates base CRLs. Delta CRLs are not supported. You can enable CRLs for your new or an existing private CA by setting the *Enabled* parameter to `true` . Your private CA writes CRLs to an S3 bucket that you specify in the *S3BucketName* parameter. You can hide the name of your bucket by specifying a value for the *CustomCname* parameter. Your private CA copies the CNAME or the S3 bucket name to the *CRL Distribution Points* extension of each certificate it issues. Your S3 bucket policy must give write permission to AWS Private CA.\n\nAWS Private CA assets that are stored in Amazon S3 can be protected with encryption. For more information, see [Encrypting Your CRLs](https://docs.aws.amazon.com/acm-pca/latest/userguide/PcaCreateCa.html#crl-encryption) .\n\nYour private CA uses the value in the *ExpirationInDays* parameter to calculate the *nextUpdate* field in the CRL. The CRL is refreshed prior to a certificate's expiration date or when a certificate is revoked. When a certificate is revoked, it appears in the CRL until the certificate expires, and then in one additional CRL after expiration, and it always appears in the audit report.\n\nA CRL is typically updated approximately 30 minutes after a certificate is revoked. If for any reason a CRL update fails, AWS Private CA makes further attempts every 15 minutes.\n\nCRLs contain the following fields:\n\n- *Version* : The current version number defined in RFC 5280 is V2. The integer value is 0x1.\n- *Signature Algorithm* : The name of the algorithm used to sign the CRL.\n- *Issuer* : The X.500 distinguished name of your private CA that issued the CRL.\n- *Last Update* : The issue date and time of this CRL.\n- *Next Update* : The day and time by which the next CRL will be issued.\n- *Revoked Certificates* : List of revoked certificates. Each list item contains the following information.\n\n- *Serial Number* : The serial number, in hexadecimal format, of the revoked certificate.\n- *Revocation Date* : Date and time the certificate was revoked.\n- *CRL Entry Extensions* : Optional extensions for the CRL entry.\n\n- *X509v3 CRL Reason Code* : Reason the certificate was revoked.\n- *CRL Extensions* : Optional extensions for the CRL.\n\n- *X509v3 Authority Key Identifier* : Identifies the public key associated with the private key used to sign the certificate.\n- *X509v3 CRL Number:* : Decimal sequence number for the CRL.\n- *Signature Algorithm* : Algorithm used by your private CA to sign the CRL.\n- *Signature Value* : Signature computed over the CRL.\n\nCertificate revocation lists created by AWS Private CA are DER-encoded. You can use the following OpenSSL command to list a CRL.\n\n`openssl crl -inform DER -text -in *crl_path* -noout`\n\nFor more information, see [Planning a certificate revocation list (CRL)](https://docs.aws.amazon.com/acm-pca/latest/userguide/crl-planning.html) in the *AWS Private Certificate Authority User Guide*",
+      "description": "Contains configuration information for a certificate revocation list (CRL). Your private certificate authority (CA) creates base CRLs. Delta CRLs are not supported. You can enable CRLs for your new or an existing private CA by setting the *Enabled* parameter to `true` . Your private CA writes CRLs to an S3 bucket that you specify in the *S3BucketName* parameter. You can hide the name of your bucket by specifying a value for the *CustomCname* parameter. Your private CA copies the CNAME or the S3 bucket name to the *CRL Distribution Points* extension of each certificate it issues. Your S3 bucket policy must give write permission to ACM Private CA.\n\nACM Private CA assets that are stored in Amazon S3 can be protected with encryption. For more information, see [Encrypting Your CRLs](https://docs.aws.amazon.com/acm-pca/latest/userguide/PcaCreateCa.html#crl-encryption) .\n\nYour private CA uses the value in the *ExpirationInDays* parameter to calculate the *nextUpdate* field in the CRL. The CRL is refreshed prior to a certificate's expiration date or when a certificate is revoked. When a certificate is revoked, it appears in the CRL until the certificate expires, and then in one additional CRL after expiration, and it always appears in the audit report.\n\nA CRL is typically updated approximately 30 minutes after a certificate is revoked. If for any reason a CRL update fails, ACM Private CA makes further attempts every 15 minutes.\n\nCRLs contain the following fields:\n\n- *Version* : The current version number defined in RFC 5280 is V2. The integer value is 0x1.\n- *Signature Algorithm* : The name of the algorithm used to sign the CRL.\n- *Issuer* : The X.500 distinguished name of your private CA that issued the CRL.\n- *Last Update* : The issue date and time of this CRL.\n- *Next Update* : The day and time by which the next CRL will be issued.\n- *Revoked Certificates* : List of revoked certificates. Each list item contains the following information.\n\n- *Serial Number* : The serial number, in hexadecimal format, of the revoked certificate.\n- *Revocation Date* : Date and time the certificate was revoked.\n- *CRL Entry Extensions* : Optional extensions for the CRL entry.\n\n- *X509v3 CRL Reason Code* : Reason the certificate was revoked.\n- *CRL Extensions* : Optional extensions for the CRL.\n\n- *X509v3 Authority Key Identifier* : Identifies the public key associated with the private key used to sign the certificate.\n- *X509v3 CRL Number:* : Decimal sequence number for the CRL.\n- *Signature Algorithm* : Algorithm used by your private CA to sign the CRL.\n- *Signature Value* : Signature computed over the CRL.\n\nCertificate revocation lists created by ACM Private CA are DER-encoded. You can use the following OpenSSL command to list a CRL.\n\n`openssl crl -inform DER -text -in *crl_path* -noout`\n\nFor more information, see [Planning a certificate revocation list (CRL)](https://docs.aws.amazon.com/acm-pca/latest/userguide/crl-planning.html) in the *AWS Certificate Manager Private Certificate Authority (PCA) User Guide*",
       "properties": {
         "CustomCname": "Name inserted into the certificate *CRL Distribution Points* extension that enables the use of an alias for the CRL distribution point. Use this value if you don't want the name of your S3 bucket to be public.",
         "Enabled": "Boolean value that specifies whether certificate revocation lists (CRLs) are enabled. You can use this value to enable certificate revocation for a new CA when you call the `CreateCertificateAuthority` operation or for an existing CA when you call the `UpdateCertificateAuthority` operation.",
         "ExpirationInDays": "Validity period of the CRL in days.",
-        "S3BucketName": "Name of the S3 bucket that contains the CRL. If you do not provide a value for the *CustomCname* argument, the name of your S3 bucket is placed into the *CRL Distribution Points* extension of the issued certificate. You can change the name of your bucket by calling the [UpdateCertificateAuthority](https://docs.aws.amazon.com/acm-pca/latest/APIReference/API_UpdateCertificateAuthority.html) operation. You must specify a [bucket policy](https://docs.aws.amazon.com/acm-pca/latest/userguide/PcaCreateCa.html#s3-policies) that allows AWS Private CA to write the CRL to your bucket.",
+        "S3BucketName": "Name of the S3 bucket that contains the CRL. If you do not provide a value for the *CustomCname* argument, the name of your S3 bucket is placed into the *CRL Distribution Points* extension of the issued certificate. You can change the name of your bucket by calling the [UpdateCertificateAuthority](https://docs.aws.amazon.com/acm-pca/latest/APIReference/API_UpdateCertificateAuthority.html) operation. You must specify a [bucket policy](https://docs.aws.amazon.com/acm-pca/latest/userguide/PcaCreateCa.html#s3-policies) that allows ACM Private CA to write the CRL to your bucket.",
         "S3ObjectAcl": "Determines whether the CRL will be publicly readable or privately held in the CRL Amazon S3 bucket. If you choose PUBLIC_READ, the CRL will be accessible over the public internet. If you choose BUCKET_OWNER_FULL_CONTROL, only the owner of the CRL S3 bucket can access the CRL, and your PKI clients may need an alternative method of access.\n\nIf no value is specified, the default is PUBLIC_READ.\n\n> This default can cause CA creation to fail in some circumstances. If you have enabled the Block Public Access (BPA) feature in your S3 account, then you must specify the value of this parameter as `BUCKET_OWNER_FULL_CONTROL` , and not doing so results in an error. If you have disabled BPA in S3, then you can specify either `BUCKET_OWNER_FULL_CONTROL` or `PUBLIC_READ` as the value. \n\nFor more information, see [Blocking public access to the S3 bucket](https://docs.aws.amazon.com/acm-pca/latest/userguide/PcaCreateCa.html#s3-bpa) ."
       }
     },
@@ -7986,7 +7986,9 @@
         "LoadBalancerInfo": "Information about the load balancer to use in a deployment. For more information, see [Integrating CodeDeploy with Elastic Load Balancing](https://docs.aws.amazon.com/codedeploy/latest/userguide/integrations-aws-elastic-load-balancing.html) in the *AWS CodeDeploy User Guide* .",
         "OnPremisesInstanceTagFilters": "The on-premises instance tags already applied to on-premises instances that you want to include in the deployment group. CodeDeploy includes all on-premises instances identified by any of the tags you specify in this deployment group. To register on-premises instances with CodeDeploy , see [Working with On-Premises Instances for CodeDeploy](https://docs.aws.amazon.com/codedeploy/latest/userguide/instances-on-premises.html) in the *AWS CodeDeploy User Guide* . Duplicates are not allowed.\n\nYou can specify `OnPremisesInstanceTagFilters` or `OnPremisesInstanceTagSet` , but not both.",
         "OnPremisesTagSet": "Information about groups of tags applied to on-premises instances. The deployment group includes only on-premises instances identified by all the tag groups.\n\nYou can specify `OnPremisesInstanceTagFilters` or `OnPremisesInstanceTagSet` , but not both.",
+        "OutdatedInstancesStrategy": "Indicates what happens when new Amazon EC2 instances are launched mid-deployment and do not receive the deployed application revision.\n\nIf this option is set to `UPDATE` or is unspecified, CodeDeploy initiates one or more 'auto-update outdated instances' deployments to apply the deployed application revision to the new Amazon EC2 instances.\n\nIf this option is set to `IGNORE` , CodeDeploy does not initiate a deployment to update the new Amazon EC2 instances. This may result in instances having different revisions.",
         "ServiceRoleArn": "A service role Amazon Resource Name (ARN) that grants CodeDeploy permission to make calls to AWS services on your behalf. For more information, see [Create a Service Role for AWS CodeDeploy](https://docs.aws.amazon.com/codedeploy/latest/userguide/getting-started-create-service-role.html) in the *AWS CodeDeploy User Guide* .\n\n> In some cases, you might need to add a dependency on the service role's policy. For more information, see IAM role policy in [DependsOn Attribute](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-attribute-dependson.html) .",
+        "Tags": "The metadata that you apply to CodeDeploy deployment groups to help you organize and categorize them. Each tag consists of a key and an optional value, both of which you define.",
         "TriggerConfigurations": "Information about triggers associated with the deployment group. Duplicates are not allowed"
       }
     },
@@ -8114,7 +8116,8 @@
       "description": "The `LoadBalancerInfo` property type specifies information about the load balancer or target group used for an AWS CodeDeploy deployment group. For more information, see [Integrating CodeDeploy with Elastic Load Balancing](https://docs.aws.amazon.com/codedeploy/latest/userguide/integrations-aws-elastic-load-balancing.html) in the *AWS CodeDeploy User Guide* .\n\nFor AWS CloudFormation to use the properties specified in `LoadBalancerInfo` , the `DeploymentStyle.DeploymentOption` property must be set to `WITH_TRAFFIC_CONTROL` . If `DeploymentStyle.DeploymentOption` is not set to `WITH_TRAFFIC_CONTROL` , AWS CloudFormation ignores any settings specified in `LoadBalancerInfo` .\n\n> AWS CloudFormation supports blue/green deployments on the AWS Lambda compute platform only. \n\n`LoadBalancerInfo` is a property of the [DeploymentGroup](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-codedeploy-deploymentgroup.html) resource.",
       "properties": {
         "ElbInfoList": "An array that contains information about the load balancer to use for load balancing in a deployment. In Elastic Load Balancing, load balancers are used with Classic Load Balancers.\n\n> Adding more than one load balancer to the array is not supported.",
-        "TargetGroupInfoList": "An array that contains information about the target group to use for load balancing in a deployment. In Elastic Load Balancing , target groups are used with Application Load Balancers .\n\n> Adding more than one target group to the array is not supported."
+        "TargetGroupInfoList": "An array that contains information about the target group to use for load balancing in a deployment. In Elastic Load Balancing , target groups are used with Application Load Balancers .\n\n> Adding more than one target group to the array is not supported.",
+        "TargetGroupPairInfoList": "The target group pair information. This is an array of `TargeGroupPairInfo` objects with a maximum size of one."
       }
     },
     "AWS::CodeDeploy::DeploymentGroup.OnPremisesTagSet": {
@@ -8165,6 +8168,22 @@
       "description": "The `TargetGroupInfo` property type specifies information about a target group in Elastic Load Balancing to use in a deployment. Instances are registered as targets in a target group, and traffic is routed to the target group. For more information, see [TargetGroupInfo](https://docs.aws.amazon.com/codedeploy/latest/APIReference/API_TargetGroupInfo.html) in the *AWS CodeDeploy API Reference*\n\nIf you specify the `TargetGroupInfo` property, the `DeploymentStyle.DeploymentOption` property must be set to `WITH_TRAFFIC_CONTROL` for CodeDeploy to route your traffic using the specified target groups.\n\n`TargetGroupInfo` is a property of the [LoadBalancerInfo](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-codedeploy-deploymentgroup-loadbalancerinfo.html) property type.",
       "properties": {
         "Name": "For blue/green deployments, the name of the target group that instances in the original environment are deregistered from, and instances in the replacement environment registered with. For in-place deployments, the name of the target group that instances are deregistered from, so they are not serving traffic during a deployment, and then re-registered with after the deployment completes. No duplicates allowed.\n\n> AWS CloudFormation supports blue/green deployments on AWS Lambda compute platforms only. \n\nThis value cannot exceed 32 characters, so you should use the `Name` property of the target group, or the `TargetGroupName` attribute with the `Fn::GetAtt` intrinsic function, as shown in the following example. Don't use the group's Amazon Resource Name (ARN) or `TargetGroupFullName` attribute."
+      }
+    },
+    "AWS::CodeDeploy::DeploymentGroup.TargetGroupPairInfo": {
+      "attributes": {},
+      "description": "Information about two target groups and how traffic is routed during an Amazon ECS deployment. An optional test traffic route can be specified.",
+      "properties": {
+        "ProdTrafficRoute": "The path used by a load balancer to route production traffic when an Amazon ECS deployment is complete.",
+        "TargetGroups": "One pair of target groups. One is associated with the original task set. The second is associated with the task set that serves traffic after the deployment is complete.",
+        "TestTrafficRoute": "An optional path used by a load balancer to route test traffic after an Amazon ECS deployment. Validation can occur while test traffic is served during a deployment."
+      }
+    },
+    "AWS::CodeDeploy::DeploymentGroup.TrafficRoute": {
+      "attributes": {},
+      "description": "Information about a listener. The listener contains the path used to route traffic that is received from the load balancer to a target group.",
+      "properties": {
+        "ListenerArns": "The Amazon Resource Name (ARN) of one listener. The listener identifies the route between a target group and a load balancer. This is an array of strings with a maximum size of one."
       }
     },
     "AWS::CodeDeploy::DeploymentGroup.TriggerConfig": {
@@ -12933,8 +12952,8 @@
       },
       "description": "[EC2-VPC only] Adds the specified egress rules to a security group for use with a VPC.\n\nAn outbound rule permits instances to send traffic to the specified destination IPv4 or IPv6 CIDR address ranges, or to the specified destination security groups for the same VPC.\n\nYou specify a protocol for each rule (for example, TCP). For the TCP and UDP protocols, you must also specify the destination port or port range. For the ICMP protocol, you must also specify the ICMP type and code. You can use -1 for the type or code to mean all types or all codes.\n\nYou must specify a destination security group ( `DestinationPrefixListId` or `DestinationSecurityGroupId` ) or a CIDR range ( `CidrIp` or `CidrIpv6` ). If you do not specify one of these parameters, the stack will launch successfully but the rule will not be added to the security group.\n\nRule changes are propagated to affected instances as quickly as possible. However, a small delay might occur.\n\nFor more information about VPC security group limits, see [Amazon VPC Limits](https://docs.aws.amazon.com/vpc/latest/userguide/amazon-vpc-limits.html) .\n\nUse `AWS::EC2::SecurityGroupIngress` and `AWS::EC2::SecurityGroupEgress` only when necessary, typically to allow security groups to reference each other in ingress and egress rules. Otherwise, use the embedded ingress and egress rules of the security group. For more information, see [Amazon EC2 Security Groups](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-network-security.html) .",
       "properties": {
-        "CidrIp": "The IPv4 address range, in CIDR format.\n\nYou must specify a destination security group ( `DestinationPrefixListId` or `DestinationSecurityGroupId` ) or a CIDR range ( `CidrIp` or `CidrIpv6` ).",
-        "CidrIpv6": "The IPv6 address range, in CIDR format.\n\nYou must specify a destination security group ( `DestinationPrefixListId` or `DestinationSecurityGroupId` ) or a CIDR range ( `CidrIp` or `CidrIpv6` ).",
+        "CidrIp": "The IPv4 address range, in CIDR format.\n\nYou must specify a destination security group ( `DestinationPrefixListId` or `DestinationSecurityGroupId` ) or a CIDR range ( `CidrIp` or `CidrIpv6` ).\n\nFor examples of rules that you can add to security groups for specific access scenarios, see [Security group rules for different use cases](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/security-group-rules-reference.html) in the *Amazon EC2 User Guide* .",
+        "CidrIpv6": "The IPv6 address range, in CIDR format.\n\nYou must specify a destination security group ( `DestinationPrefixListId` or `DestinationSecurityGroupId` ) or a CIDR range ( `CidrIp` or `CidrIpv6` ).\n\nFor examples of rules that you can add to security groups for specific access scenarios, see [Security group rules for different use cases](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/security-group-rules-reference.html) in the *Amazon EC2 User Guide* .",
         "Description": "The description of an egress (outbound) security group rule.",
         "DestinationPrefixListId": "[EC2-VPC only] The prefix list IDs for an AWS service. This is the AWS service that you want to access through a VPC endpoint from instances associated with the security group.\n\nYou must specify a destination security group ( `DestinationPrefixListId` or `DestinationSecurityGroupId` ) or a CIDR range ( `CidrIp` or `CidrIpv6` ).",
         "DestinationSecurityGroupId": "The ID of the security group.\n\nYou must specify a destination security group ( `DestinationPrefixListId` or `DestinationSecurityGroupId` ) or a CIDR range ( `CidrIp` or `CidrIpv6` ).",
@@ -17333,20 +17352,20 @@
         "Ref": "`Ref` returns the file system resource ID. For example:\n\n`{\"Ref\":\"file_system_logical_id\"}`\n\nReturns `fs-0123456789abcdef6` .",
         "RootVolumeId": "Returns the root volume ID of the FSx for OpenZFS file system.\n\nExample: `fsvol-0123456789abcdefa`"
       },
-      "description": "The `AWS::FSx::FileSystem` resource is an Amazon FSx resource type that creates an Amazon FSx file system. You can create any of the following supported file system types:\n\n- Amazon FSx for Lustre\n- Amazon FSx for NetApp ONTAP\n- Amazon FSx for OpenZFS\n- Amazon FSx for Windows File Server",
+      "description": "The `AWS::FSx::FileSystem` resource is an Amazon FSx resource type that specifies an Amazon FSx file system. You can create any of the following supported file system types:\n\n- Amazon FSx for Lustre\n- Amazon FSx for NetApp ONTAP\n- Amazon FSx for OpenZFS\n- Amazon FSx for Windows File Server",
       "properties": {
-        "BackupId": "The ID of the source backup. Specifies the backup that you are copying.",
+        "BackupId": "The ID of the file system backup that you are using to create a file system. For more information, see [CreateFileSystemFromBackup](https://docs.aws.amazon.com/fsx/latest/APIReference/API_CreateFileSystemFromBackup.html) .",
         "FileSystemType": "The type of Amazon FSx file system, which can be `LUSTRE` , `WINDOWS` , `ONTAP` , or `OPENZFS` .",
         "FileSystemTypeVersion": "(Optional) For FSx for Lustre file systems, sets the Lustre version for the file system that you're creating. Valid values are `2.10` and `2.12` :\n\n- 2.10 is supported by the Scratch and Persistent_1 Lustre deployment types.\n- 2.12 is supported by all Lustre deployment types. `2.12` is required when setting FSx for Lustre `DeploymentType` to `PERSISTENT_2` .\n\nDefault value = `2.10` , except when `DeploymentType` is set to `PERSISTENT_2` , then the default is `2.12` .\n\n> If you set `FileSystemTypeVersion` to `2.10` for a `PERSISTENT_2` Lustre deployment type, the `CreateFileSystem` operation fails.",
         "KmsKeyId": "The ID of the AWS Key Management Service ( AWS KMS ) key used to encrypt Amazon FSx file system data. Used as follows with Amazon FSx file system types:\n\n- Amazon FSx for Lustre `PERSISTENT_1` and `PERSISTENT_2` deployment types only.\n\n`SCRATCH_1` and `SCRATCH_2` types are encrypted using the Amazon FSx service AWS KMS key for your account.\n- Amazon FSx for NetApp ONTAP\n- Amazon FSx for OpenZFS\n- Amazon FSx for Windows File Server",
-        "LustreConfiguration": "The Lustre configuration for the file system being created.\n\n> The following parameters are not supported for file systems with the `Persistent_2` deployment type. Instead, use `CreateDataRepositoryAssociation` to create a data repository association to link your Lustre file system to a data repository.\n> \n> - `AutoImportPolicy`\n> - `ExportPath`\n> - `ImportedChunkSize`\n> - `ImportPath`",
+        "LustreConfiguration": "The Lustre configuration for the file system being created.\n\n> The following parameters are not supported for file systems with the Lustre `Persistent_2` deployment type.\n> \n> - `AutoImportPolicy`\n> - `ExportPath`\n> - `ImportedChunkSize`\n> - `ImportPath`",
         "OntapConfiguration": "The ONTAP configuration properties of the FSx for ONTAP file system that you are creating.",
         "OpenZFSConfiguration": "The Amazon FSx for OpenZFS configuration properties for the file system that you are creating.",
         "SecurityGroupIds": "A list of IDs specifying the security groups to apply to all network interfaces created for file system access. This list isn't returned in later requests to describe the file system.",
-        "StorageCapacity": "Sets the storage capacity of the file system that you're creating. `StorageCapacity` is required if you are creating a new file system. Do not include `StorageCapacity` if you are creating a file system from a backup.\n\nFor Lustre file systems:",
-        "StorageType": "Sets the storage type for the file system that you're creating. Valid values are `SSD` and `HDD` .\n\n- Set to `SSD` to use solid state drive storage. SSD is supported on all Windows, Lustre, ONTAP, and OpenZFS deployment types.\n- Set to `HDD` to use hard disk drive storage. HDD is supported on `SINGLE_AZ_2` and `MULTI_AZ_1` Windows file system deployment types, and on `PERSISTENT` Lustre file system deployment types.\n\nDefault value is `SSD` . For more information, see [Storage type options](https://docs.aws.amazon.com/fsx/latest/WindowsGuide/optimize-fsx-costs.html#storage-type-options) in the *FSx for Windows File Server User Guide* and [Multiple storage options](https://docs.aws.amazon.com/fsx/latest/LustreGuide/what-is.html#storage-options) in the *FSx for Lustre User Guide* .",
+        "StorageCapacity": "Sets the storage capacity of the file system that you're creating. `StorageCapacity` is required if you are creating a new file system. Do not include `StorageCapacity` if you are creating a file system from a backup.\n\n*FSx for Lustre file systems* - The amount of storage capacity that you can configure depends on the value that you set for `StorageType` and the Lustre `DeploymentType` , as follows:\n\n- For `SCRATCH_2` , `PERSISTENT_2` and `PERSISTENT_1` deployment types using SSD storage type, the valid values are 1200 GiB, 2400 GiB, and increments of 2400 GiB.\n- For `PERSISTENT_1` HDD file systems, valid values are increments of 6000 GiB for 12 MB/s/TiB file systems and increments of 1800 GiB for 40 MB/s/TiB file systems.\n- For `SCRATCH_1` deployment type, valid values are 1200 GiB, 2400 GiB, and increments of 3600 GiB.\n\n*FSx for ONTAP file systems* - The amount of storage capacity that you can configure is from 1024 GiB up to 196,608 GiB (192 TiB).\n\n*FSx for OpenZFS file systems* - The amount of storage capacity that you can configure is from 64 GiB up to 524,288 GiB (512 TiB).\n\n*FSx for Windows File Server file systems* - The amount of storage capacity that you can configure depends on the value that you set for `StorageType` as follows:\n\n- For SSD storage, valid values are 32 GiB-65,536 GiB (64 TiB).\n- For HDD storage, valid values are 2000 GiB-65,536 GiB (64 TiB).",
+        "StorageType": "Sets the storage type for the file system that you're creating. Valid values are `SSD` and `HDD` .\n\n- Set to `SSD` to use solid state drive storage. SSD is supported on all Windows, Lustre, ONTAP, and OpenZFS deployment types.\n- Set to `HDD` to use hard disk drive storage. HDD is supported on `SINGLE_AZ_2` and `MULTI_AZ_1` Windows file system deployment types, and on `PERSISTENT_1` Lustre file system deployment types.\n\nDefault value is `SSD` . For more information, see [Storage type options](https://docs.aws.amazon.com/fsx/latest/WindowsGuide/optimize-fsx-costs.html#storage-type-options) in the *FSx for Windows File Server User Guide* and [Multiple storage options](https://docs.aws.amazon.com/fsx/latest/LustreGuide/what-is.html#storage-options) in the *FSx for Lustre User Guide* .",
         "SubnetIds": "Specifies the IDs of the subnets that the file system will be accessible from. For Windows and ONTAP `MULTI_AZ_1` deployment types,provide exactly two subnet IDs, one for the preferred file server and one for the standby file server. You specify one of these subnets as the preferred subnet using the `WindowsConfiguration > PreferredSubnetID` or `OntapConfiguration > PreferredSubnetID` properties. For more information about Multi-AZ file system configuration, see [Availability and durability: Single-AZ and Multi-AZ file systems](https://docs.aws.amazon.com/fsx/latest/WindowsGuide/high-availability-multiAZ.html) in the *Amazon FSx for Windows User Guide* and [Availability and durability](https://docs.aws.amazon.com/fsx/latest/ONTAPGuide/high-availability-multiAZ.html) in the *Amazon FSx for ONTAP User Guide* .\n\nFor Windows `SINGLE_AZ_1` and `SINGLE_AZ_2` and all Lustre deployment types, provide exactly one subnet ID. The file server is launched in that subnet's Availability Zone.",
-        "Tags": "The tags to associate with the file system. For more information, see [Tagging your Amazon EC2 resources](https://docs.aws.amazon.com//AWSEC2/latest/UserGuide/Using_Tags.html) in the *Amazon EC2 User Guide* .",
+        "Tags": "An array of key-value pairs to apply to this resource.\n\nFor more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) .",
         "WindowsConfiguration": "The configuration object for the Microsoft Windows file system you are creating. This value is required if `FileSystemType` is set to `WINDOWS` ."
       }
     },
@@ -17379,18 +17398,18 @@
       "attributes": {},
       "description": "The configuration for the Amazon FSx for Lustre file system.",
       "properties": {
-        "AutoImportPolicy": "(Optional) Available with `Scratch` and `Persistent_1` deployment types. When you create your file system, your existing S3 objects appear as file and directory listings. Use this property to choose how Amazon FSx keeps your file and directory listings up to date as you add or modify objects in your linked S3 bucket. `AutoImportPolicy` can have the following values:\n\n- `NONE` - (Default) AutoImport is off. Amazon FSx only updates file and directory listings from the linked S3 bucket when the file system is created. FSx does not update file and directory listings for any new or changed objects after choosing this option.\n- `NEW` - AutoImport is on. Amazon FSx automatically imports directory listings of any new objects added to the linked S3 bucket that do not currently exist in the FSx file system.\n- `NEW_CHANGED` - AutoImport is on. Amazon FSx automatically imports file and directory listings of any new objects added to the S3 bucket and any existing objects that are changed in the S3 bucket after you choose this option.\n- `NEW_CHANGED_DELETED` - AutoImport is on. Amazon FSx automatically imports file and directory listings of any new objects added to the S3 bucket, any existing objects that are changed in the S3 bucket, and any objects that were deleted in the S3 bucket.\n\nFor more information, see [Automatically import updates from your S3 bucket](https://docs.aws.amazon.com/fsx/latest/LustreGuide/autoimport-data-repo.html) .\n\n> This parameter is not supported for file systems with the `Persistent_2` deployment type. Instead, use `CreateDataRepositoryAssociation` to create a data repository association to link your Lustre file system to a data repository.",
-        "AutomaticBackupRetentionDays": "The number of days to retain automatic backups. Setting this to 0 disables automatic backups. You can retain automatic backups for a maximum of 90 days. The default is 0. Only valid for use with `PERSISTENT_1` deployment types. For more information, see [Working with backups](https://docs.aws.amazon.com/fsx/latest/LustreGuide/using-backups-fsx.html) in the *Amazon FSx for Lustre User Guide* . (Default = 0)",
+        "AutoImportPolicy": "(Optional) Available with `Scratch` and `Persistent_1` deployment types. When you create your file system, your existing S3 objects appear as file and directory listings. Use this property to choose how Amazon FSx keeps your file and directory listings up to date as you add or modify objects in your linked S3 bucket. `AutoImportPolicy` can have the following values:\n\n- `NONE` - (Default) AutoImport is off. Amazon FSx only updates file and directory listings from the linked S3 bucket when the file system is created. FSx does not update file and directory listings for any new or changed objects after choosing this option.\n- `NEW` - AutoImport is on. Amazon FSx automatically imports directory listings of any new objects added to the linked S3 bucket that do not currently exist in the FSx file system.\n- `NEW_CHANGED` - AutoImport is on. Amazon FSx automatically imports file and directory listings of any new objects added to the S3 bucket and any existing objects that are changed in the S3 bucket after you choose this option.\n- `NEW_CHANGED_DELETED` - AutoImport is on. Amazon FSx automatically imports file and directory listings of any new objects added to the S3 bucket, any existing objects that are changed in the S3 bucket, and any objects that were deleted in the S3 bucket.\n\nFor more information, see [Automatically import updates from your S3 bucket](https://docs.aws.amazon.com/fsx/latest/LustreGuide/autoimport-data-repo.html) .\n\n> This parameter is not supported for Lustre file systems using the `Persistent_2` deployment type.",
+        "AutomaticBackupRetentionDays": "The number of days to retain automatic backups. Setting this property to `0` disables automatic backups. You can retain automatic backups for a maximum of 90 days. The default is `0` .",
         "CopyTagsToBackups": "A Boolean flag indicating whether tags for the file system should be copied to backups. This value defaults to false. If it's set to true, all tags for the file system are copied to all automatic and user-initiated backups where the user doesn't specify tags. If this value is true, and you specify one or more tags, only the specified tags are copied to backups. If you specify one or more tags when creating a user-initiated backup, no tags are copied from the file system, regardless of this value. Only valid for use with `PERSISTENT_1` deployment types.",
-        "DailyAutomaticBackupStartTime": "A recurring daily time, in the format `HH:MM` . `HH` is the zero-padded hour of the day (0-23), and `MM` is the zero-padded minute of the hour. For example, `05:00` specifies 5 AM daily. Only valid for use with `PERSISTENT_1` deployment types.",
+        "DailyAutomaticBackupStartTime": "A recurring daily time, in the format `HH:MM` . `HH` is the zero-padded hour of the day (0-23), and `MM` is the zero-padded minute of the hour. For example, `05:00` specifies 5 AM daily.",
         "DataCompressionType": "Sets the data compression configuration for the file system. `DataCompressionType` can have the following values:\n\n- `NONE` - (Default) Data compression is turned off when the file system is created.\n- `LZ4` - Data compression is turned on with the LZ4 algorithm.\n\nFor more information, see [Lustre data compression](https://docs.aws.amazon.com/fsx/latest/LustreGuide/data-compression.html) in the *Amazon FSx for Lustre User Guide* .",
         "DeploymentType": "(Optional) Choose `SCRATCH_1` and `SCRATCH_2` deployment types when you need temporary storage and shorter-term processing of data. The `SCRATCH_2` deployment type provides in-transit encryption of data and higher burst throughput capacity than `SCRATCH_1` .\n\nChoose `PERSISTENT_1` for longer-term storage and for throughput-focused workloads that aren\u2019t latency-sensitive. `PERSISTENT_1` supports encryption of data in transit, and is available in all AWS Regions in which FSx for Lustre is available.\n\nChoose `PERSISTENT_2` for longer-term storage and for latency-sensitive workloads that require the highest levels of IOPS/throughput. `PERSISTENT_2` supports SSD storage, and offers higher `PerUnitStorageThroughput` (up to 1000 MB/s/TiB). `PERSISTENT_2` is available in a limited number of AWS Regions . For more information, and an up-to-date list of AWS Regions in which `PERSISTENT_2` is available, see [File system deployment options for FSx for Lustre](https://docs.aws.amazon.com/fsx/latest/LustreGuide/using-fsx-lustre.html#lustre-deployment-types) in the *Amazon FSx for Lustre User Guide* .\n\n> If you choose `PERSISTENT_2` , and you set `FileSystemTypeVersion` to `2.10` , the `CreateFileSystem` operation fails. \n\nEncryption of data in transit is automatically turned on when you access `SCRATCH_2` , `PERSISTENT_1` and `PERSISTENT_2` file systems from Amazon EC2 instances that [support automatic encryption](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/data-                 protection.html) in the AWS Regions where they are available. For more information about encryption in transit for FSx for Lustre file systems, see [Encrypting data in transit](https://docs.aws.amazon.com/fsx/latest/LustreGuide/encryption-in-transit-fsxl.html) in the *Amazon FSx for Lustre User Guide* .\n\n(Default = `SCRATCH_1` )",
-        "DriveCacheType": "The type of drive cache used by `PERSISTENT_1` file systems that are provisioned with HDD storage devices. This parameter is required when storage type is HDD. Set this property to `READ` to improve the performance for frequently accessed files by caching up to 20% of the total storage capacity of the file system.\n\nThis parameter is required when `StorageType` is set to `HDD` .",
-        "ExportPath": "(Optional) Available with `Scratch` and `Persistent_1` deployment types. Specifies the path in the Amazon S3 bucket where the root of your Amazon FSx file system is exported. The path must use the same Amazon S3 bucket as specified in ImportPath. You can provide an optional prefix to which new and changed data is to be exported from your Amazon FSx for Lustre file system. If an `ExportPath` value is not provided, Amazon FSx sets a default export path, `s3://import-bucket/FSxLustre[creation-timestamp]` . The timestamp is in UTC format, for example `s3://import-bucket/FSxLustre20181105T222312Z` .\n\nThe Amazon S3 export bucket must be the same as the import bucket specified by `ImportPath` . If you specify only a bucket name, such as `s3://import-bucket` , you get a 1:1 mapping of file system objects to S3 bucket objects. This mapping means that the input data in S3 is overwritten on export. If you provide a custom prefix in the export path, such as `s3://import-bucket/[custom-optional-prefix]` , Amazon FSx exports the contents of your file system to that export prefix in the Amazon S3 bucket.\n\n> This parameter is not supported for file systems with the `Persistent_2` deployment type. Instead, use `CreateDataRepositoryAssociation` to create a data repository association to link your Lustre file system to a data repository.",
-        "ImportPath": "(Optional) The path to the Amazon S3 bucket (including the optional prefix) that you're using as the data repository for your Amazon FSx for Lustre file system. The root of your FSx for Lustre file system will be mapped to the root of the Amazon S3 bucket you select. An example is `s3://import-bucket/optional-prefix` . If you specify a prefix after the Amazon S3 bucket name, only object keys with that prefix are loaded into the file system.\n\nThis parameter is not supported for file systems with the `Persistent_2` deployment type. Instead, use `CreateDataRepositoryAssociation` to create a data repository association to link your Lustre file system to a data repository.",
-        "ImportedFileChunkSize": "(Optional) For files imported from a data repository, this value determines the stripe count and maximum amount of data per file (in MiB) stored on a single physical disk. The maximum number of disks that a single file can be striped across is limited by the total number of disks that make up the file system.\n\nThe default chunk size is 1,024 MiB (1 GiB) and can go as high as 512,000 MiB (500 GiB). Amazon S3 objects have a maximum size of 5 TB.\n\nThis parameter is not supported for file systems with the `Persistent_2` deployment type. Instead, use `CreateDataRepositoryAssociation` to create a data repository association to link your Lustre file system to a data repository.",
+        "DriveCacheType": "The type of drive cache used by `PERSISTENT_1` file systems that are provisioned with HDD storage devices. This parameter is required when storage type is HDD. Set this property to `READ` to improve the performance for frequently accessed files by caching up to 20% of the total storage capacity of the file system.\n\nThis parameter is required when `StorageType` is set to `HDD` and `DeploymentType` is `PERSISTENT_1` .",
+        "ExportPath": "(Optional) Available with `Scratch` and `Persistent_1` deployment types. Specifies the path in the Amazon S3 bucket where the root of your Amazon FSx file system is exported. The path must use the same Amazon S3 bucket as specified in ImportPath. You can provide an optional prefix to which new and changed data is to be exported from your Amazon FSx for Lustre file system. If an `ExportPath` value is not provided, Amazon FSx sets a default export path, `s3://import-bucket/FSxLustre[creation-timestamp]` . The timestamp is in UTC format, for example `s3://import-bucket/FSxLustre20181105T222312Z` .\n\nThe Amazon S3 export bucket must be the same as the import bucket specified by `ImportPath` . If you specify only a bucket name, such as `s3://import-bucket` , you get a 1:1 mapping of file system objects to S3 bucket objects. This mapping means that the input data in S3 is overwritten on export. If you provide a custom prefix in the export path, such as `s3://import-bucket/[custom-optional-prefix]` , Amazon FSx exports the contents of your file system to that export prefix in the Amazon S3 bucket.\n\n> This parameter is not supported for file systems using the `Persistent_2` deployment type.",
+        "ImportPath": "(Optional) The path to the Amazon S3 bucket (including the optional prefix) that you're using as the data repository for your Amazon FSx for Lustre file system. The root of your FSx for Lustre file system will be mapped to the root of the Amazon S3 bucket you select. An example is `s3://import-bucket/optional-prefix` . If you specify a prefix after the Amazon S3 bucket name, only object keys with that prefix are loaded into the file system.\n\n> This parameter is not supported for Lustre file systems using the `Persistent_2` deployment type.",
+        "ImportedFileChunkSize": "(Optional) For files imported from a data repository, this value determines the stripe count and maximum amount of data per file (in MiB) stored on a single physical disk. The maximum number of disks that a single file can be striped across is limited by the total number of disks that make up the file system.\n\nThe default chunk size is 1,024 MiB (1 GiB) and can go as high as 512,000 MiB (500 GiB). Amazon S3 objects have a maximum size of 5 TB.\n\n> This parameter is not supported for Lustre file systems using the `Persistent_2` deployment type.",
         "PerUnitStorageThroughput": "Required with `PERSISTENT_1` and `PERSISTENT_2` deployment types, provisions the amount of read and write throughput for each 1 tebibyte (TiB) of file system storage capacity, in MB/s/TiB. File system throughput capacity is calculated by multiplying \ufb01le system storage capacity (TiB) by the `PerUnitStorageThroughput` (MB/s/TiB). For a 2.4-TiB \ufb01le system, provisioning 50 MB/s/TiB of `PerUnitStorageThroughput` yields 120 MB/s of \ufb01le system throughput. You pay for the amount of throughput that you provision.\n\nValid values:\n\n- For `PERSISTENT_1` SSD storage: 50, 100, 200 MB/s/TiB.\n- For `PERSISTENT_1` HDD storage: 12, 40 MB/s/TiB.\n- For `PERSISTENT_2` SSD storage: 125, 250, 500, 1000 MB/s/TiB.",
-        "WeeklyMaintenanceStartTime": "(Optional) The preferred start time to perform weekly maintenance, formatted d:HH:MM in the UTC time zone, where d is the weekday number, from 1 through 7, beginning with Monday and ending with Sunday."
+        "WeeklyMaintenanceStartTime": "A recurring weekly time, in the format `D:HH:MM` .\n\n`D` is the day of the week, for which 1 represents Monday and 7 represents Sunday. For further details, see [the ISO-8601 spec as described on Wikipedia](https://docs.aws.amazon.com/https://en.wikipedia.org/wiki/ISO_week_date) .\n\n`HH` is the zero-padded hour of the day (0-23), and `MM` is the zero-padded minute of the hour.\n\nFor example, `1:05:00` specifies maintenance at 5 AM Monday."
       }
     },
     "AWS::FSx::FileSystem.NfsExports": {
@@ -17426,6 +17445,7 @@
         "DailyAutomaticBackupStartTime": "A recurring daily time, in the format `HH:MM` . `HH` is the zero-padded hour of the day (0-23), and `MM` is the zero-padded minute of the hour. For example, `05:00` specifies 5 AM daily.",
         "DeploymentType": "Specifies the file system deployment type. Amazon FSx for OpenZFS supports `SINGLE_AZ_1` . `SINGLE_AZ_1` deployment type is configured for redundancy within a single Availability Zone.",
         "DiskIopsConfiguration": "The SSD IOPS (input/output operations per second) configuration for an Amazon FSx for NetApp ONTAP or Amazon FSx for OpenZFS file system. The default is 3 IOPS per GB of storage capacity, but you can provision additional IOPS per GB of storage. The configuration consists of the total number of provisioned SSD IOPS and how the amount was provisioned (by the customer or by the system).",
+        "Options": "To delete a file system if there are child volumes present below the root volume, use the string `DELETE_CHILD_VOLUMES_AND_SNAPSHOTS` . If your file system has child volumes and you don't use this option, the delete request will fail.",
         "RootVolumeConfiguration": "The configuration Amazon FSx uses when creating the root value of the Amazon FSx for OpenZFS file system. All volumes are children of the root volume.",
         "ThroughputCapacity": "Specifies the throughput of an Amazon FSx for OpenZFS file system, measured in megabytes per second (MB/s). Valid values are 64, 128, 256, 512, 1024, 2048, 3072, or 4096 MB/s. You pay for additional throughput capacity that you provision.",
         "WeeklyMaintenanceStartTime": "A recurring weekly time, in the format `D:HH:MM` .\n\n`D` is the day of the week, for which 1 represents Monday and 7 represents Sunday. For further details, see [the ISO-8601 spec as described on Wikipedia](https://docs.aws.amazon.com/https://en.wikipedia.org/wiki/ISO_week_date) .\n\n`HH` is the zero-padded hour of the day (0-23), and `MM` is the zero-padded minute of the hour.\n\nFor example, `1:05:00` specifies maintenance at 5 AM Monday."
@@ -17439,6 +17459,7 @@
         "DataCompressionType": "Specifies the method used to compress the data on the volume. The compression type is `NONE` by default.\n\n- `NONE` - Doesn't compress the data on the volume. `NONE` is the default.\n- `ZSTD` - Compresses the data in the volume using the Zstandard (ZSTD) compression algorithm. Compared to LZ4, Z-Standard provides a better compression ratio to minimize on-disk storage utilization.\n- `LZ4` - Compresses the data in the volume using the LZ4 compression algorithm. Compared to Z-Standard, LZ4 is less compute-intensive and delivers higher write throughput speeds.",
         "NfsExports": "The configuration object for mounting a file system.",
         "ReadOnly": "A Boolean value indicating whether the volume is read-only. Setting this value to `true` can be useful after you have completed changes to a volume and no longer want changes to occur.",
+        "RecordSizeKiB": "Specifies the record size of an OpenZFS root volume, in kibibytes (KiB). Valid values are 4, 8, 16, 32, 64, 128, 256, 512, or 1024 KiB. The default is 128 KiB. Most workloads should use the default record size. Database workflows can benefit from a smaller record size, while streaming workflows can benefit from a larger record size. For additional guidance on setting a custom record size, see [Tips for maximizing performance](https://docs.aws.amazon.com/fsx/latest/OpenZFSGuide/performance.html#performance-tips-zfs) in the *Amazon FSx for OpenZFS User Guide* .",
         "UserAndGroupQuotas": "An object specifying how much storage users or groups can use on the volume."
       }
     },
@@ -17450,7 +17471,7 @@
         "DomainName": "The fully qualified domain name of the self-managed AD directory, such as `corp.example.com` .",
         "FileSystemAdministratorsGroup": "(Optional) The name of the domain group whose members are granted administrative privileges for the file system. Administrative privileges include taking ownership of files and folders, setting audit controls (audit ACLs) on files and folders, and administering the file system remotely by using the FSx Remote PowerShell. The group that you specify must already exist in your domain. If you don't provide one, your AD domain's Domain Admins group is used.",
         "OrganizationalUnitDistinguishedName": "(Optional) The fully qualified distinguished name of the organizational unit within your self-managed AD directory. Amazon FSx only accepts OU as the direct parent of the file system. An example is `OU=FSx,DC=yourdomain,DC=corp,DC=com` . To learn more, see [RFC 2253](https://docs.aws.amazon.com/https://tools.ietf.org/html/rfc2253) . If none is provided, the FSx file system is created in the default location of your self-managed AD directory.\n\n> Only Organizational Unit (OU) objects can be the direct parent of the file system that you're creating.",
-        "Password": "The password for the service account on your self-managed AD domain that Amazon FSx will use to join to your AD domain. We strongly suggest that you follow best practices and *do not* embed passwords in your CFN templates.\n\nThe recommended approach is to use AWS Secrets Manager to store your passwords. You can retrieve them for use in your templates using the `secretsmanager` dynamic reference. There are additional costs associated with using AWS Secrets Manager . To learn more, see [Secrets Manager secrets](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/dynamic-references.html#dynamic-references-secretsmanager) in the *AWS CloudFormation User Guide* .\n\nAlternatively, you can use the `NoEcho` property to obfuscate the password parameter value. For more information, see [Do Not Embed Credentials in Your Templates](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/best-practices.html#creds) in the *AWS CloudFormation User Guide* .",
+        "Password": "The password for the service account on your self-managed AD domain that Amazon FSx will use to join to your AD domain.",
         "UserName": "The user name for the service account on your self-managed AD domain that Amazon FSx will use to join to your AD domain. This account must have the permission to join computers to the domain in the organizational unit provided in `OrganizationalUnitDistinguishedName` , or in the default location of your AD domain."
       }
     },
@@ -17467,17 +17488,17 @@
       "attributes": {},
       "description": "The Microsoft Windows configuration for the file system that's being created.",
       "properties": {
-        "ActiveDirectoryId": "The ID for an existing AWS Managed Microsoft Active Directory (AD) instance that the file system should join when it's created.",
+        "ActiveDirectoryId": "The ID for an existing AWS Managed Microsoft Active Directory (AD) instance that the file system should join when it's created. Required if you are joining the file system to an existing AWS Managed Microsoft AD.",
         "Aliases": "An array of one or more DNS alias names that you want to associate with the Amazon FSx file system. Aliases allow you to use existing DNS names to access the data in your Amazon FSx file system. You can associate up to 50 aliases with a file system at any time.\n\nFor more information, see [Working with DNS Aliases](https://docs.aws.amazon.com/fsx/latest/WindowsGuide/managing-dns-aliases.html) and [Walkthrough 5: Using DNS aliases to access your file system](https://docs.aws.amazon.com/fsx/latest/WindowsGuide/walkthrough05-file-system-custom-CNAME.html) , including additional steps you must take to be able to access your file system using a DNS alias.\n\nAn alias name has to meet the following requirements:\n\n- Formatted as a fully-qualified domain name (FQDN), `hostname.domain` , for example, `accounting.example.com` .\n- Can contain alphanumeric characters, the underscore (_), and the hyphen (-).\n- Cannot start or end with a hyphen.\n- Can start with a numeric.\n\nFor DNS alias names, Amazon FSx stores alphabetical characters as lowercase letters (a-z), regardless of how you specify them: as uppercase letters, lowercase letters, or the corresponding letters in escape codes.",
         "AuditLogConfiguration": "The configuration that Amazon FSx for Windows File Server uses to audit and log user accesses of files, folders, and file shares on the Amazon FSx for Windows File Server file system.",
-        "AutomaticBackupRetentionDays": "The number of days to retain automatic backups. The default is to retain backups for 7 days. Setting this value to 0 disables the creation of automatic backups. The maximum retention period for backups is 90 days.",
-        "CopyTagsToBackups": "A Boolean flag indicating whether tags for the file system should be copied to backups. This value defaults to false. If it's set to true, all tags for the file system are copied to all automatic and user-initiated backups where the user doesn't specify tags. If this value is true, and you specify one or more tags, only the specified tags are copied to backups. If you specify one or more tags when creating a user-initiated backup, no tags are copied from the file system, regardless of this value.",
-        "DailyAutomaticBackupStartTime": "The preferred time to take daily automatic backups, formatted HH:MM in the UTC time zone.",
+        "AutomaticBackupRetentionDays": "The number of days to retain automatic backups. Setting this property to `0` disables automatic backups. You can retain automatic backups for a maximum of 90 days. The default is `0` .",
+        "CopyTagsToBackups": "A boolean flag indicating whether tags for the file system should be copied to backups. This value defaults to false. If it's set to true, all tags for the file system are copied to all automatic and user-initiated backups where the user doesn't specify tags. If this value is true, and you specify one or more tags, only the specified tags are copied to backups. If you specify one or more tags when creating a user-initiated backup, no tags are copied from the file system, regardless of this value.",
+        "DailyAutomaticBackupStartTime": "A recurring daily time, in the format `HH:MM` . `HH` is the zero-padded hour of the day (0-23), and `MM` is the zero-padded minute of the hour. For example, `05:00` specifies 5 AM daily.",
         "DeploymentType": "Specifies the file system deployment type, valid values are the following:\n\n- `MULTI_AZ_1` - Deploys a high availability file system that is configured for Multi-AZ redundancy to tolerate temporary Availability Zone (AZ) unavailability. You can only deploy a Multi-AZ file system in AWS Regions that have a minimum of three Availability Zones. Also supports HDD storage type\n- `SINGLE_AZ_1` - (Default) Choose to deploy a file system that is configured for single AZ redundancy.\n- `SINGLE_AZ_2` - The latest generation Single AZ file system. Specifies a file system that is configured for single AZ redundancy and supports HDD storage type.\n\nFor more information, see [Availability and Durability: Single-AZ and Multi-AZ File Systems](https://docs.aws.amazon.com/fsx/latest/WindowsGuide/high-availability-multiAZ.html) .",
-        "PreferredSubnetId": "Required when `DeploymentType` is set to `MULTI_AZ_1` . This specifies the subnet in which you want the preferred file server to be located. For in- AWS applications, we recommend that you launch your clients in the same Availability Zone (AZ) as your preferred file server to reduce cross-AZ data transfer costs and minimize latency.",
+        "PreferredSubnetId": "Required when `DeploymentType` is set to `MULTI_AZ_1` . This specifies the subnet in which you want the preferred file server to be located. For in- AWS applications, we recommend that you launch your clients in the same availability zone as your preferred file server to reduce cross-availability zone data transfer costs and minimize latency.",
         "SelfManagedActiveDirectoryConfiguration": "The configuration that Amazon FSx uses to join a FSx for Windows File Server file system or an ONTAP storage virtual machine (SVM) to a self-managed (including on-premises) Microsoft Active Directory (AD) directory. For more information, see [Using Amazon FSx with your self-managed Microsoft Active Directory](https://docs.aws.amazon.com/fsx/latest/WindowsGuide/self-managed-AD.html) or [Managing SVMs](https://docs.aws.amazon.com/fsx/latest/ONTAPGuide/managing-svms.html) .",
         "ThroughputCapacity": "Sets the throughput capacity of an Amazon FSx file system, measured in megabytes per second (MB/s), in 2 to the *n* th increments, between 2^3 (8) and 2^11 (2048).",
-        "WeeklyMaintenanceStartTime": "The preferred start time to perform weekly maintenance, formatted d:HH:MM in the UTC time zone, where d is the weekday number, from 1 through 7, beginning with Monday and ending with Sunday."
+        "WeeklyMaintenanceStartTime": "A recurring weekly time, in the format `D:HH:MM` .\n\n`D` is the day of the week, for which 1 represents Monday and 7 represents Sunday. For further details, see [the ISO-8601 spec as described on Wikipedia](https://docs.aws.amazon.com/https://en.wikipedia.org/wiki/ISO_week_date) .\n\n`HH` is the zero-padded hour of the day (0-23), and `MM` is the zero-padded minute of the hour.\n\nFor example, `1:05:00` specifies maintenance at 5 AM Monday."
       }
     },
     "AWS::FinSpace::Environment": {
@@ -22089,6 +22110,203 @@
         "Tags": "Metadata that can be used to manage the the Suite Definition."
       }
     },
+    "AWS::IoTEvents::AlarmModel": {
+      "attributes": {
+        "Ref": "`Ref` returns the name of the alarm model. For example:\n\n`{\"Ref\": \"myAlarmModel\"}`\n\nFor the AWS IoT Events alarm model `myAlarmModel` , `Ref` returns the name of the alarm model."
+      },
+      "description": "Represents an alarm model to monitor an AWS IoT Events input attribute. You can use the alarm to get notified when the value is outside a specified range. For more information, see [Create an alarm model](https://docs.aws.amazon.com/iotevents/latest/developerguide/create-alarms.html) in the *AWS IoT Events Developer Guide* .",
+      "properties": {
+        "AlarmCapabilities": "Contains the configuration information of alarm state changes.",
+        "AlarmEventActions": "Contains information about one or more alarm actions.",
+        "AlarmModelDescription": "The description of the alarm model.",
+        "AlarmModelName": "The name of the alarm model.",
+        "AlarmRule": "Defines when your alarm is invoked.",
+        "Key": "An input attribute used as a key to create an alarm. AWS IoT Events routes [inputs](https://docs.aws.amazon.com/iotevents/latest/apireference/API_Input.html) associated with this key to the alarm.",
+        "RoleArn": "The ARN of the IAM role that allows the alarm to perform actions and access AWS resources. For more information, see [Amazon Resource Names (ARNs)](https://docs.aws.amazon.com/general/latest/gr/aws-arns-and-namespaces.html) in the *AWS General Reference* .",
+        "Severity": "A non-negative integer that reflects the severity level of the alarm.",
+        "Tags": "A list of key-value pairs that contain metadata for the alarm model. The tags help you manage the alarm model. For more information, see [Tagging your AWS IoT Events resources](https://docs.aws.amazon.com/iotevents/latest/developerguide/tagging-iotevents.html) in the *AWS IoT Events Developer Guide* .\n\nYou can create up to 50 tags for one alarm model."
+      }
+    },
+    "AWS::IoTEvents::AlarmModel.AcknowledgeFlow": {
+      "attributes": {},
+      "description": "Specifies whether to get notified for alarm state changes.",
+      "properties": {
+        "Enabled": "The value must be `TRUE` or `FALSE` . If `TRUE` , you receive a notification when the alarm state changes. You must choose to acknowledge the notification before the alarm state can return to `NORMAL` . If `FALSE` , you won't receive notifications. The alarm automatically changes to the `NORMAL` state when the input property value returns to the specified range."
+      }
+    },
+    "AWS::IoTEvents::AlarmModel.AlarmAction": {
+      "attributes": {},
+      "description": "Specifies one of the following actions to receive notifications when the alarm state changes.",
+      "properties": {
+        "DynamoDB": "Defines an action to write to the Amazon DynamoDB table that you created. The standard action payload contains all the information about the detector model instance and the event that triggered the action. You can customize the [payload](https://docs.aws.amazon.com/iotevents/latest/apireference/API_Payload.html) . One column of the DynamoDB table receives all attribute-value pairs in the payload that you specify.\n\nYou must use expressions for all parameters in `DynamoDBAction` . The expressions accept literals, operators, functions, references, and substitution templates.\n\n**Examples** - For literal values, the expressions must contain single quotes. For example, the value for the `hashKeyType` parameter can be `'STRING'` .\n- For references, you must specify either variables or input values. For example, the value for the `hashKeyField` parameter can be `$input.GreenhouseInput.name` .\n- For a substitution template, you must use `${}` , and the template must be in single quotes. A substitution template can also contain a combination of literals, operators, functions, references, and substitution templates.\n\nIn the following example, the value for the `hashKeyValue` parameter uses a substitution template.\n\n`'${$input.GreenhouseInput.temperature * 6 / 5 + 32} in Fahrenheit'`\n- For a string concatenation, you must use `+` . A string concatenation can also contain a combination of literals, operators, functions, references, and substitution templates.\n\nIn the following example, the value for the `tableName` parameter uses a string concatenation.\n\n`'GreenhouseTemperatureTable ' + $input.GreenhouseInput.date`\n\nFor more information, see [Expressions](https://docs.aws.amazon.com/iotevents/latest/developerguide/iotevents-expressions.html) in the *AWS IoT Events Developer Guide* .\n\nIf the defined payload type is a string, `DynamoDBAction` writes non-JSON data to the DynamoDB table as binary data. The DynamoDB console displays the data as Base64-encoded text. The value for the `payloadField` parameter is `<payload-field>_raw` .",
+        "DynamoDBv2": "Defines an action to write to the Amazon DynamoDB table that you created. The default action payload contains all the information about the detector model instance and the event that triggered the action. You can customize the [payload](https://docs.aws.amazon.com/iotevents/latest/apireference/API_Payload.html) . A separate column of the DynamoDB table receives one attribute-value pair in the payload that you specify.\n\nYou must use expressions for all parameters in `DynamoDBv2Action` . The expressions accept literals, operators, functions, references, and substitution templates.\n\n**Examples** - For literal values, the expressions must contain single quotes. For example, the value for the `tableName` parameter can be `'GreenhouseTemperatureTable'` .\n- For references, you must specify either variables or input values. For example, the value for the `tableName` parameter can be `$variable.ddbtableName` .\n- For a substitution template, you must use `${}` , and the template must be in single quotes. A substitution template can also contain a combination of literals, operators, functions, references, and substitution templates.\n\nIn the following example, the value for the `contentExpression` parameter in `Payload` uses a substitution template.\n\n`'{\\\"sensorID\\\": \\\"${$input.GreenhouseInput.sensor_id}\\\", \\\"temperature\\\": \\\"${$input.GreenhouseInput.temperature * 9 / 5 + 32}\\\"}'`\n- For a string concatenation, you must use `+` . A string concatenation can also contain a combination of literals, operators, functions, references, and substitution templates.\n\nIn the following example, the value for the `tableName` parameter uses a string concatenation.\n\n`'GreenhouseTemperatureTable ' + $input.GreenhouseInput.date`\n\nFor more information, see [Expressions](https://docs.aws.amazon.com/iotevents/latest/developerguide/iotevents-expressions.html) in the *AWS IoT Events Developer Guide* .\n\nThe value for the `type` parameter in `Payload` must be `JSON` .",
+        "Firehose": "Sends information about the detector model instance and the event that triggered the action to an Amazon Kinesis Data Firehose delivery stream.",
+        "IotEvents": "Sends an AWS IoT Events input, passing in information about the detector model instance and the event that triggered the action.",
+        "IotSiteWise": "Sends information about the detector model instance and the event that triggered the action to a specified asset property in AWS IoT SiteWise .\n\nYou must use expressions for all parameters in `IotSiteWiseAction` . The expressions accept literals, operators, functions, references, and substitutions templates.\n\n**Examples** - For literal values, the expressions must contain single quotes. For example, the value for the `propertyAlias` parameter can be `'/company/windfarm/3/turbine/7/temperature'` .\n- For references, you must specify either variables or input values. For example, the value for the `assetId` parameter can be `$input.TurbineInput.assetId1` .\n- For a substitution template, you must use `${}` , and the template must be in single quotes. A substitution template can also contain a combination of literals, operators, functions, references, and substitution templates.\n\nIn the following example, the value for the `propertyAlias` parameter uses a substitution template.\n\n`'company/windfarm/${$input.TemperatureInput.sensorData.windfarmID}/turbine/ ${$input.TemperatureInput.sensorData.turbineID}/temperature'`\n\nYou must specify either `propertyAlias` or both `assetId` and `propertyId` to identify the target asset property in AWS IoT SiteWise .\n\nFor more information, see [Expressions](https://docs.aws.amazon.com/iotevents/latest/developerguide/iotevents-expressions.html) in the *AWS IoT Events Developer Guide* .",
+        "IotTopicPublish": "Information required to publish the MQTT message through the AWS IoT message broker.",
+        "Lambda": "Calls a Lambda function, passing in information about the detector model instance and the event that triggered the action.",
+        "Sns": "",
+        "Sqs": "Sends information about the detector model instance and the event that triggered the action to an Amazon SQS queue."
+      }
+    },
+    "AWS::IoTEvents::AlarmModel.AlarmCapabilities": {
+      "attributes": {},
+      "description": "Contains the configuration information of alarm state changes.",
+      "properties": {
+        "AcknowledgeFlow": "Specifies whether to get notified for alarm state changes.",
+        "InitializationConfiguration": "Specifies the default alarm state. The configuration applies to all alarms that were created based on this alarm model."
+      }
+    },
+    "AWS::IoTEvents::AlarmModel.AlarmEventActions": {
+      "attributes": {},
+      "description": "Contains information about one or more alarm actions.",
+      "properties": {
+        "AlarmActions": "Specifies one or more supported actions to receive notifications when the alarm state changes."
+      }
+    },
+    "AWS::IoTEvents::AlarmModel.AlarmRule": {
+      "attributes": {},
+      "description": "Defines when your alarm is invoked.",
+      "properties": {
+        "SimpleRule": "A rule that compares an input property value to a threshold value with a comparison operator."
+      }
+    },
+    "AWS::IoTEvents::AlarmModel.AssetPropertyTimestamp": {
+      "attributes": {},
+      "description": "A structure that contains timestamp information. For more information, see [TimeInNanos](https://docs.aws.amazon.com/iot-sitewise/latest/APIReference/API_TimeInNanos.html) in the *AWS IoT SiteWise API Reference* .\n\nYou must use expressions for all parameters in `AssetPropertyTimestamp` . The expressions accept literals, operators, functions, references, and substitution templates.\n\n**Examples** - For literal values, the expressions must contain single quotes. For example, the value for the `timeInSeconds` parameter can be `'1586400675'` .\n- For references, you must specify either variables or input values. For example, the value for the `offsetInNanos` parameter can be `$variable.time` .\n- For a substitution template, you must use `${}` , and the template must be in single quotes. A substitution template can also contain a combination of literals, operators, functions, references, and substitution templates.\n\nIn the following example, the value for the `timeInSeconds` parameter uses a substitution template.\n\n`'${$input.TemperatureInput.sensorData.timestamp / 1000}'`\n\nFor more information, see [Expressions](https://docs.aws.amazon.com/iotevents/latest/developerguide/iotevents-expressions.html) in the *AWS IoT Events Developer Guide* .",
+      "properties": {
+        "OffsetInNanos": "The nanosecond offset converted from `timeInSeconds` . The valid range is between 0-999999999.",
+        "TimeInSeconds": "The timestamp, in seconds, in the Unix epoch format. The valid range is between 1-31556889864403199."
+      }
+    },
+    "AWS::IoTEvents::AlarmModel.AssetPropertyValue": {
+      "attributes": {},
+      "description": "A structure that contains value information. For more information, see [AssetPropertyValue](https://docs.aws.amazon.com/iot-sitewise/latest/APIReference/API_AssetPropertyValue.html) in the *AWS IoT SiteWise API Reference* .\n\nYou must use expressions for all parameters in `AssetPropertyValue` . The expressions accept literals, operators, functions, references, and substitution templates.\n\n**Examples** - For literal values, the expressions must contain single quotes. For example, the value for the `quality` parameter can be `'GOOD'` .\n- For references, you must specify either variables or input values. For example, the value for the `quality` parameter can be `$input.TemperatureInput.sensorData.quality` .\n\nFor more information, see [Expressions](https://docs.aws.amazon.com/iotevents/latest/developerguide/iotevents-expressions.html) in the *AWS IoT Events Developer Guide* .",
+      "properties": {
+        "Quality": "The quality of the asset property value. The value must be `'GOOD'` , `'BAD'` , or `'UNCERTAIN'` .",
+        "Timestamp": "The timestamp associated with the asset property value. The default is the current event time.",
+        "Value": "The value to send to an asset property."
+      }
+    },
+    "AWS::IoTEvents::AlarmModel.AssetPropertyVariant": {
+      "attributes": {},
+      "description": "A structure that contains an asset property value. For more information, see [Variant](https://docs.aws.amazon.com/iot-sitewise/latest/APIReference/API_Variant.html) in the *AWS IoT SiteWise API Reference* .\n\nYou must use expressions for all parameters in `AssetPropertyVariant` . The expressions accept literals, operators, functions, references, and substitution templates.\n\n**Examples** - For literal values, the expressions must contain single quotes. For example, the value for the `integerValue` parameter can be `'100'` .\n- For references, you must specify either variables or parameters. For example, the value for the `booleanValue` parameter can be `$variable.offline` .\n- For a substitution template, you must use `${}` , and the template must be in single quotes. A substitution template can also contain a combination of literals, operators, functions, references, and substitution templates.\n\nIn the following example, the value for the `doubleValue` parameter uses a substitution template.\n\n`'${$input.TemperatureInput.sensorData.temperature * 6 / 5 + 32}'`\n\nFor more information, see [Expressions](https://docs.aws.amazon.com/iotevents/latest/developerguide/iotevents-expressions.html) in the *AWS IoT Events Developer Guide* .\n\nYou must specify one of the following value types, depending on the `dataType` of the specified asset property. For more information, see [AssetProperty](https://docs.aws.amazon.com/iot-sitewise/latest/APIReference/API_AssetProperty.html) in the *AWS IoT SiteWise API Reference* .",
+      "properties": {
+        "BooleanValue": "The asset property value is a Boolean value that must be `'TRUE'` or `'FALSE'` . You must use an expression, and the evaluated result should be a Boolean value.",
+        "DoubleValue": "The asset property value is a double. You must use an expression, and the evaluated result should be a double.",
+        "IntegerValue": "The asset property value is an integer. You must use an expression, and the evaluated result should be an integer.",
+        "StringValue": "The asset property value is a string. You must use an expression, and the evaluated result should be a string."
+      }
+    },
+    "AWS::IoTEvents::AlarmModel.DynamoDB": {
+      "attributes": {},
+      "description": "Defines an action to write to the Amazon DynamoDB table that you created. The standard action payload contains all the information about the detector model instance and the event that triggered the action. You can customize the [payload](https://docs.aws.amazon.com/iotevents/latest/apireference/API_Payload.html) . One column of the DynamoDB table receives all attribute-value pairs in the payload that you specify.\n\nYou must use expressions for all parameters in `DynamoDBAction` . The expressions accept literals, operators, functions, references, and substitution templates.\n\n**Examples** - For literal values, the expressions must contain single quotes. For example, the value for the `hashKeyType` parameter can be `'STRING'` .\n- For references, you must specify either variables or input values. For example, the value for the `hashKeyField` parameter can be `$input.GreenhouseInput.name` .\n- For a substitution template, you must use `${}` , and the template must be in single quotes. A substitution template can also contain a combination of literals, operators, functions, references, and substitution templates.\n\nIn the following example, the value for the `hashKeyValue` parameter uses a substitution template.\n\n`'${$input.GreenhouseInput.temperature * 6 / 5 + 32} in Fahrenheit'`\n- For a string concatenation, you must use `+` . A string concatenation can also contain a combination of literals, operators, functions, references, and substitution templates.\n\nIn the following example, the value for the `tableName` parameter uses a string concatenation.\n\n`'GreenhouseTemperatureTable ' + $input.GreenhouseInput.date`\n\nFor more information, see [Expressions](https://docs.aws.amazon.com/iotevents/latest/developerguide/iotevents-expressions.html) in the *AWS IoT Events Developer Guide* .\n\nIf the defined payload type is a string, `DynamoDBAction` writes non-JSON data to the DynamoDB table as binary data. The DynamoDB console displays the data as Base64-encoded text. The value for the `payloadField` parameter is `<payload-field>_raw` .",
+      "properties": {
+        "HashKeyField": "The name of the hash key (also called the partition key). The `hashKeyField` value must match the partition key of the target DynamoDB table.",
+        "HashKeyType": "The data type for the hash key (also called the partition key). You can specify the following values:\n\n- `'STRING'` - The hash key is a string.\n- `'NUMBER'` - The hash key is a number.\n\nIf you don't specify `hashKeyType` , the default value is `'STRING'` .",
+        "HashKeyValue": "The value of the hash key (also called the partition key).",
+        "Operation": "The type of operation to perform. You can specify the following values:\n\n- `'INSERT'` - Insert data as a new item into the DynamoDB table. This item uses the specified hash key as a partition key. If you specified a range key, the item uses the range key as a sort key.\n- `'UPDATE'` - Update an existing item of the DynamoDB table with new data. This item's partition key must match the specified hash key. If you specified a range key, the range key must match the item's sort key.\n- `'DELETE'` - Delete an existing item of the DynamoDB table. This item's partition key must match the specified hash key. If you specified a range key, the range key must match the item's sort key.\n\nIf you don't specify this parameter, AWS IoT Events triggers the `'INSERT'` operation.",
+        "Payload": "Information needed to configure the payload.\n\nBy default, AWS IoT Events generates a standard payload in JSON for any action. This action payload contains all attribute-value pairs that have the information about the detector model instance and the event triggered the action. To configure the action payload, you can use `contentExpression` .",
+        "PayloadField": "The name of the DynamoDB column that receives the action payload.\n\nIf you don't specify this parameter, the name of the DynamoDB column is `payload` .",
+        "RangeKeyField": "The name of the range key (also called the sort key). The `rangeKeyField` value must match the sort key of the target DynamoDB table.",
+        "RangeKeyType": "The data type for the range key (also called the sort key), You can specify the following values:\n\n- `'STRING'` - The range key is a string.\n- `'NUMBER'` - The range key is number.\n\nIf you don't specify `rangeKeyField` , the default value is `'STRING'` .",
+        "RangeKeyValue": "The value of the range key (also called the sort key).",
+        "TableName": "The name of the DynamoDB table. The `tableName` value must match the table name of the target DynamoDB table."
+      }
+    },
+    "AWS::IoTEvents::AlarmModel.DynamoDBv2": {
+      "attributes": {},
+      "description": "Defines an action to write to the Amazon DynamoDB table that you created. The default action payload contains all the information about the detector model instance and the event that triggered the action. You can customize the [payload](https://docs.aws.amazon.com/iotevents/latest/apireference/API_Payload.html) . A separate column of the DynamoDB table receives one attribute-value pair in the payload that you specify.\n\nYou must use expressions for all parameters in `DynamoDBv2Action` . The expressions accept literals, operators, functions, references, and substitution templates.\n\n**Examples** - For literal values, the expressions must contain single quotes. For example, the value for the `tableName` parameter can be `'GreenhouseTemperatureTable'` .\n- For references, you must specify either variables or input values. For example, the value for the `tableName` parameter can be `$variable.ddbtableName` .\n- For a substitution template, you must use `${}` , and the template must be in single quotes. A substitution template can also contain a combination of literals, operators, functions, references, and substitution templates.\n\nIn the following example, the value for the `contentExpression` parameter in `Payload` uses a substitution template.\n\n`'{\\\"sensorID\\\": \\\"${$input.GreenhouseInput.sensor_id}\\\", \\\"temperature\\\": \\\"${$input.GreenhouseInput.temperature * 9 / 5 + 32}\\\"}'`\n- For a string concatenation, you must use `+` . A string concatenation can also contain a combination of literals, operators, functions, references, and substitution templates.\n\nIn the following example, the value for the `tableName` parameter uses a string concatenation.\n\n`'GreenhouseTemperatureTable ' + $input.GreenhouseInput.date`\n\nFor more information, see [Expressions](https://docs.aws.amazon.com/iotevents/latest/developerguide/iotevents-expressions.html) in the *AWS IoT Events Developer Guide* .\n\nThe value for the `type` parameter in `Payload` must be `JSON` .",
+      "properties": {
+        "Payload": "",
+        "TableName": "The name of the DynamoDB table."
+      }
+    },
+    "AWS::IoTEvents::AlarmModel.Firehose": {
+      "attributes": {},
+      "description": "Sends information about the detector model instance and the event that triggered the action to an Amazon Kinesis Data Firehose delivery stream.",
+      "properties": {
+        "DeliveryStreamName": "The name of the Kinesis Data Firehose delivery stream where the data is written.",
+        "Payload": "You can configure the action payload when you send a message to an Amazon Kinesis Data Firehose delivery stream.",
+        "Separator": "A character separator that is used to separate records written to the Kinesis Data Firehose delivery stream. Valid values are: '\\n' (newline), '\\t' (tab), '\\r\\n' (Windows newline), ',' (comma)."
+      }
+    },
+    "AWS::IoTEvents::AlarmModel.InitializationConfiguration": {
+      "attributes": {},
+      "description": "Specifies the default alarm state. The configuration applies to all alarms that were created based on this alarm model.",
+      "properties": {
+        "DisabledOnInitialization": "The value must be `TRUE` or `FALSE` . If `FALSE` , all alarm instances created based on the alarm model are activated. The default value is `TRUE` ."
+      }
+    },
+    "AWS::IoTEvents::AlarmModel.IotEvents": {
+      "attributes": {},
+      "description": "Sends an AWS IoT Events input, passing in information about the detector model instance and the event that triggered the action.",
+      "properties": {
+        "InputName": "The name of the AWS IoT Events input where the data is sent.",
+        "Payload": "You can configure the action payload when you send a message to an AWS IoT Events input."
+      }
+    },
+    "AWS::IoTEvents::AlarmModel.IotSiteWise": {
+      "attributes": {},
+      "description": "Sends information about the detector model instance and the event that triggered the action to a specified asset property in AWS IoT SiteWise .\n\nYou must use expressions for all parameters in `IotSiteWiseAction` . The expressions accept literals, operators, functions, references, and substitutions templates.\n\n**Examples** - For literal values, the expressions must contain single quotes. For example, the value for the `propertyAlias` parameter can be `'/company/windfarm/3/turbine/7/temperature'` .\n- For references, you must specify either variables or input values. For example, the value for the `assetId` parameter can be `$input.TurbineInput.assetId1` .\n- For a substitution template, you must use `${}` , and the template must be in single quotes. A substitution template can also contain a combination of literals, operators, functions, references, and substitution templates.\n\nIn the following example, the value for the `propertyAlias` parameter uses a substitution template.\n\n`'company/windfarm/${$input.TemperatureInput.sensorData.windfarmID}/turbine/ ${$input.TemperatureInput.sensorData.turbineID}/temperature'`\n\nYou must specify either `propertyAlias` or both `assetId` and `propertyId` to identify the target asset property in AWS IoT SiteWise .\n\nFor more information, see [Expressions](https://docs.aws.amazon.com/iotevents/latest/developerguide/iotevents-expressions.html) in the *AWS IoT Events Developer Guide* .",
+      "properties": {
+        "AssetId": "The ID of the asset that has the specified property.",
+        "EntryId": "A unique identifier for this entry. You can use the entry ID to track which data entry causes an error in case of failure. The default is a new unique identifier.",
+        "PropertyAlias": "The alias of the asset property.",
+        "PropertyId": "The ID of the asset property.",
+        "PropertyValue": "The value to send to the asset property. This value contains timestamp, quality, and value (TQV) information."
+      }
+    },
+    "AWS::IoTEvents::AlarmModel.IotTopicPublish": {
+      "attributes": {},
+      "description": "Information required to publish the MQTT message through the AWS IoT message broker.",
+      "properties": {
+        "MqttTopic": "The MQTT topic of the message. You can use a string expression that includes variables ( `$variable.<variable-name>` ) and input values ( `$input.<input-name>.<path-to-datum>` ) as the topic string.",
+        "Payload": "You can configure the action payload when you publish a message to an AWS IoT Core topic."
+      }
+    },
+    "AWS::IoTEvents::AlarmModel.Lambda": {
+      "attributes": {},
+      "description": "Calls a Lambda function, passing in information about the detector model instance and the event that triggered the action.",
+      "properties": {
+        "FunctionArn": "The ARN of the Lambda function that is executed.",
+        "Payload": "You can configure the action payload when you send a message to a Lambda function."
+      }
+    },
+    "AWS::IoTEvents::AlarmModel.Payload": {
+      "attributes": {},
+      "description": "Information needed to configure the payload.\n\nBy default, AWS IoT Events generates a standard payload in JSON for any action. This action payload contains all attribute-value pairs that have the information about the detector model instance and the event triggered the action. To configure the action payload, you can use `contentExpression` .",
+      "properties": {
+        "ContentExpression": "The content of the payload. You can use a string expression that includes quoted strings ( `'<string>'` ), variables ( `$variable.<variable-name>` ), input values ( `$input.<input-name>.<path-to-datum>` ), string concatenations, and quoted strings that contain `${}` as the content. The recommended maximum size of a content expression is 1 KB.",
+        "Type": "The value of the payload type can be either `STRING` or `JSON` ."
+      }
+    },
+    "AWS::IoTEvents::AlarmModel.SimpleRule": {
+      "attributes": {},
+      "description": "A rule that compares an input property value to a threshold value with a comparison operator.",
+      "properties": {
+        "ComparisonOperator": "The comparison operator.",
+        "InputProperty": "The value on the left side of the comparison operator. You can specify an AWS IoT Events input attribute as an input property.",
+        "Threshold": "The value on the right side of the comparison operator. You can enter a number or specify an AWS IoT Events input attribute."
+      }
+    },
+    "AWS::IoTEvents::AlarmModel.Sns": {
+      "attributes": {},
+      "description": "Information required to publish the Amazon SNS message.",
+      "properties": {
+        "Payload": "You can configure the action payload when you send a message as an Amazon SNS push notification.",
+        "TargetArn": "The ARN of the Amazon SNS target where the message is sent."
+      }
+    },
+    "AWS::IoTEvents::AlarmModel.Sqs": {
+      "attributes": {},
+      "description": "Sends information about the detector model instance and the event that triggered the action to an Amazon SQS queue.",
+      "properties": {
+        "Payload": "You can configure the action payload when you send a message to an Amazon SQS queue.",
+        "QueueUrl": "The URL of the SQS queue where the data is written.",
+        "UseBase64": "Set this to TRUE if you want the data to be base-64 encoded before it is written to the queue. Otherwise, set this to FALSE."
+      }
+    },
     "AWS::IoTEvents::DetectorModel": {
       "attributes": {
         "Ref": "`Ref` returns the name of the detector model. For example:\n\n`{\"Ref\": \"myDetectorModel\"}`\n\nFor the AWS IoT Events detector model `myDetectorModel` , `Ref` returns the name of the detector model."
@@ -25125,6 +25343,7 @@
         "DeadLetterConfig": "A dead letter queue configuration that specifies the queue or topic where Lambda sends asynchronous events when they fail processing. For more information, see [Dead Letter Queues](https://docs.aws.amazon.com/lambda/latest/dg/invocation-async.html#dlq) .",
         "Description": "A description of the function.",
         "Environment": "Environment variables that are accessible from function code during execution.",
+        "EphemeralStorage": "The size of the function\u2019s /tmp directory in MB. The default value is 512, but can be any whole number between 512 and 10240 MB.",
         "FileSystemConfigs": "Connection settings for an Amazon EFS file system. To connect a function to a file system, a mount target must be available in every Availability Zone that your function connects to. If your template contains an [AWS::EFS::MountTarget](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-efs-mounttarget.html) resource, you must also specify a `DependsOn` attribute to ensure that the mount target is created or updated before the function.\n\nFor more information about using the `DependsOn` attribute, see [DependsOn Attribute](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-attribute-dependson.html) .",
         "FunctionName": "The name of the Lambda function, up to 64 characters in length. If you don't specify a name, AWS CloudFormation generates one.\n\nIf you specify a name, you cannot perform updates that require replacement of this resource. You can perform updates that require no or some interruption. If you must replace the resource, specify a new name.",
         "Handler": "The name of the method within your code that Lambda calls to execute your function. Handler is required if the deployment package is a .zip file archive. The format includes the file name. It can also include namespaces and other qualifiers, depending on the runtime. For more information, see [Programming Model](https://docs.aws.amazon.com/lambda/latest/dg/programming-model-v2.html) .",
@@ -25165,6 +25384,13 @@
       "description": "A function's environment variable settings. You can use environment variables to adjust your function's behavior without updating code. An environment variable is a pair of strings that are stored in a function's version-specific configuration.",
       "properties": {
         "Variables": "Environment variable key-value pairs. For more information, see [Using Lambda environment variables](https://docs.aws.amazon.com/lambda/latest/dg/configuration-envvars.html) ."
+      }
+    },
+    "AWS::Lambda::Function.EphemeralStorage": {
+      "attributes": {},
+      "description": "The size of the function\u2019s /tmp directory in MB. The default value is 512, but can be any whole number between 512 and 10240 MB.",
+      "properties": {
+        "Size": "The size of the function\u2019s /tmp directory."
       }
     },
     "AWS::Lambda::Function.FileSystemConfig": {
@@ -25282,13 +25508,53 @@
         "IdleSessionTTLInSeconds": "The time, in seconds, that Amazon Lex should keep information about a user's conversation with the bot.\n\nA user interaction remains active for the amount of time specified. If no conversation occurs during this time, the session expires and Amazon Lex deletes any data provided before the timeout.\n\nYou can specify between 60 (1 minute) and 86,400 (24 hours) seconds.",
         "Name": "The name of the field to filter the list of bots.",
         "RoleArn": "The Amazon Resource Name (ARN) of the IAM role used to build and run the bot.",
+        "TestBotAliasSettings": "Specifies configuration settings for the alias used to test the bot. If the `TestBotAliasSettings` property is not specified, the settings are configured with default values.",
         "TestBotAliasTags": "A list of tags to add to the test alias for a bot. You can only add tags when you import a bot. You can't use the `UpdateAlias` operation to update tags. To update tags on the test alias, use the `TagResource` operation."
+      }
+    },
+    "AWS::Lex::Bot.AdvancedRecognitionSetting": {
+      "attributes": {},
+      "description": "Specifies settings that enable advanced audio recognition for slot values.",
+      "properties": {
+        "AudioRecognitionStrategy": "Specifies that Amazon Lex should use slot values as a custom vocabulary when recognizing user utterances."
+      }
+    },
+    "AWS::Lex::Bot.AudioLogDestination": {
+      "attributes": {},
+      "description": "Specifies the location of audio log files collected when conversation logging is enabled for a bot.",
+      "properties": {
+        "S3Bucket": "Specifies the Amazon S3 bucket where the audio files are stored."
+      }
+    },
+    "AWS::Lex::Bot.AudioLogSetting": {
+      "attributes": {},
+      "description": "Specifies settings for logging the audio of conversations between Amazon Lex and a user. You specify whether to log audio and the Amazon S3 bucket where the audio file is stored.",
+      "properties": {
+        "Destination": "Specifies the location of the audio log files collected when conversation logging is enabled for a bot.",
+        "Enabled": "Specifies whether audio logging is enabled for the bot."
+      }
+    },
+    "AWS::Lex::Bot.BotAliasLocaleSettings": {
+      "attributes": {},
+      "description": "Specifies settings that are unique to a locale. For example, you can use a different Lambda function for each locale.",
+      "properties": {
+        "CodeHookSpecification": "Specifies the Lambda function to use in this locale.",
+        "Enabled": "Specifies whether the locale is enabled for the bot. If the value is false, the locale isn't available for use."
+      }
+    },
+    "AWS::Lex::Bot.BotAliasLocaleSettingsItem": {
+      "attributes": {},
+      "description": "Specifies locale settings for a single locale.",
+      "properties": {
+        "BotAliasLocaleSetting": "Specifies locale settings for a locale.",
+        "LocaleId": "Specifies the locale that the settings apply to."
       }
     },
     "AWS::Lex::Bot.BotLocale": {
       "attributes": {},
       "description": "Provides configuration information for a locale.",
       "properties": {
+        "CustomVocabulary": "Specifies a custom vocabulary to use with a specific locale.",
         "Description": "A description of the bot locale. Use this to help identify the bot locale in lists.",
         "Intents": "One or more intents defined for the locale.",
         "LocaleId": "The identifier of the language and locale that the bot will be used in. The string must match one of the supported locales.",
@@ -25305,11 +25571,49 @@
         "Value": "The value returned to Amazon Lex when the user chooses this button. This must be one of the slot values configured for the slot."
       }
     },
+    "AWS::Lex::Bot.CloudWatchLogGroupLogDestination": {
+      "attributes": {},
+      "description": "Specifies the Amazon CloudWatch Logs log group where text and metadata logs are delivered. The log group must exist before you enable logging.",
+      "properties": {
+        "CloudWatchLogGroupArn": "Specifies the Amazon Resource Name (ARN) of the log group where text and metadata logs are delivered.",
+        "LogPrefix": "Specifies the prefix of the log stream name within the log group that you specified."
+      }
+    },
+    "AWS::Lex::Bot.CodeHookSpecification": {
+      "attributes": {},
+      "description": "Specifies information about code hooks that Amazon Lex calls during a conversation.",
+      "properties": {
+        "LambdaCodeHook": "Specifies a Lambda function that verifies requests to a bot or fulfills the user's request to a bot."
+      }
+    },
+    "AWS::Lex::Bot.ConversationLogSettings": {
+      "attributes": {},
+      "description": "Specifies settings that manage logging that saves audio, text, and metadata for the conversations with your users.",
+      "properties": {
+        "AudioLogSettings": "Specifies the Amazon S3 settings for logging audio to an S3 bucket.",
+        "TextLogSettings": "Specifies settings to enable text conversation logs. You specify the Amazon CloudWatch Logs log group and whether logs should be stored for an alias."
+      }
+    },
     "AWS::Lex::Bot.CustomPayload": {
       "attributes": {},
       "description": "A custom response string that Amazon Lex sends to your application. You define the content and structure of the string.",
       "properties": {
         "Value": "The string that is sent to your application."
+      }
+    },
+    "AWS::Lex::Bot.CustomVocabulary": {
+      "attributes": {},
+      "description": "Specifies a custom vocabulary. A custom vocabulary is a list of words that you expect to be used during a conversation with your bot.",
+      "properties": {
+        "CustomVocabularyItems": "Specifies a list of words that you expect to be used during a conversation with your bot."
+      }
+    },
+    "AWS::Lex::Bot.CustomVocabularyItem": {
+      "attributes": {},
+      "description": "Specifies an entry in a custom vocabulary.",
+      "properties": {
+        "Phrase": "Specifies 1 - 4 words that should be recognized.",
+        "Weight": "Specifies the degree to which the phrase recognition is boosted. The default value is 1."
       }
     },
     "AWS::Lex::Bot.DialogCodeHookSetting": {
@@ -25441,6 +25745,14 @@
         "QueryFilterStringEnabled": "Determines whether the AMAZON.KendraSearchIntent intent uses a custom query string to query the Amazon Kendra index."
       }
     },
+    "AWS::Lex::Bot.LambdaCodeHook": {
+      "attributes": {},
+      "description": "Specifies a Lambda function that verifies requests to a bot or fulfills the user's request to a bot.",
+      "properties": {
+        "CodeHookInterfaceVersion": "Specifies the version of the request-response that you want Amazon Lex to use to invoke your Lambda function.",
+        "LambdaArn": "Specifies the Amazon Resource Name (ARN) of the Lambda function."
+      }
+    },
     "AWS::Lex::Bot.Message": {
       "attributes": {},
       "description": "The object that provides message text and it's type.",
@@ -25513,6 +25825,15 @@
       "properties": {
         "AllowInterrupt": "Indicates whether the user can interrupt a speech response from Amazon Lex .",
         "MessageGroupsList": "A collection of responses that Amazon Lex can send to the user. Amazon Lex chooses the actual response to send at runtime."
+      }
+    },
+    "AWS::Lex::Bot.S3BucketLogDestination": {
+      "attributes": {},
+      "description": "Specifies an Amazon S3 bucket for logging audio conversations.",
+      "properties": {
+        "KmsKeyArn": "Specifies the Amazon Resource Name (ARN) of an AWS Key Management Service key for encrypting audio log files stored in an Amazon S3 bucket.",
+        "LogPrefix": "Specifies the Amazon S3 prefix to assign to audio log files.",
+        "S3BucketArn": "Specifies the Amazon Resource Name (ARN) of the Amazon S3 bucket where audio files are stored."
       }
     },
     "AWS::Lex::Bot.S3Location": {
@@ -25621,6 +25942,7 @@
       "attributes": {},
       "description": "Contains settings used by Amazon Lex to select a slot value.",
       "properties": {
+        "AdvancedRecognitionSetting": "Specifies settings that enable advanced recognition settings for slot values. You can use this to enable using slot values as a custom vocabulary for recognizing user utterances.",
         "RegexFilter": "A regular expression used to validate the value of a slot.",
         "ResolutionStrategy": "Determines the slot resolution strategy that Amazon Lex uses to return slot type values. The field can be set to one of the following values:\n\n- OriginalValue - Returns the value entered by the user, if the user value is similar to a slot value.\n- TopResolution - If there is a resolution list for the slot, return the first value in the resolution list as the slot type value. If there is no resolution list, null is returned.\n\nIf you don't specify the valueSelectionStrategy, the default is OriginalValue."
       }
@@ -25633,6 +25955,31 @@
         "FrequencyInSeconds": "How often a message should be sent to the user. Minimum of 1 second, maximum of 5 minutes.",
         "MessageGroupsList": "A collection of responses that Amazon Lex can send to the user. Amazon Lex chooses the actual response to send at runtime.",
         "TimeoutInSeconds": "If Amazon Lex waits longer than this length of time for a response, it will stop sending messages."
+      }
+    },
+    "AWS::Lex::Bot.TestBotAliasSettings": {
+      "attributes": {},
+      "description": "Specifies configuration settings for the alias used to test the bot. If the `TestBotAliasSettings` property is not specified, the settings are configured with default values.",
+      "properties": {
+        "BotAliasLocaleSettings": "Specifies settings that are unique to a locale. For example, you can use a different Lambda function depending on the bot's locale.",
+        "ConversationLogSettings": "Specifies settings for conversation logs that save audio, text, and metadata information for conversations with your users.",
+        "Description": "Specifies a description for the test bot alias.",
+        "SentimentAnalysisSettings": "Specifies whether Amazon Lex will use Amazon Comprehend to detect the sentiment of user utterances."
+      }
+    },
+    "AWS::Lex::Bot.TextLogDestination": {
+      "attributes": {},
+      "description": "Specifies the Amazon CloudWatch Logs destination log group for conversation text logs.",
+      "properties": {
+        "CloudWatch": "Specifies the Amazon CloudWatch Logs log group where text and metadata logs are delivered."
+      }
+    },
+    "AWS::Lex::Bot.TextLogSetting": {
+      "attributes": {},
+      "description": "Specifies settings to enable conversation logs.",
+      "properties": {
+        "Destination": "Specifies the Amazon CloudWatch Logs destination log group for conversation text logs.",
+        "Enabled": "Specifies whether conversation logs should be stored for an alias."
       }
     },
     "AWS::Lex::Bot.VoiceSettings": {
@@ -25785,7 +26132,7 @@
     "AWS::Lex::ResourcePolicy": {
       "attributes": {
         "Id": "The identifier of the resource policy.",
-        "RevisionId": ""
+        "RevisionId": "Specifies the current revision of a resource policy."
       },
       "description": "Specifies a new resource policy with the specified policy statements.",
       "properties": {
@@ -37531,24 +37878,24 @@
       "attributes": {
         "Ref": "When you pass the logical ID of an `AWS::SecretsManager::RotationSchedule` resource to the intrinsic `Ref` function, the function returns the ARN of the secret being configured, such as:\n\n*arn:aws:secretsmanager: us-west-2* : *123456789012* :secret: *my-path/my-secret-name* - *1a2b3c*\n\nYou can use the ARN to reference a secret you create in one part of the stack template from within the definition of another resource later, in the same template. You typically do this when you define the [AWS::SecretsManager::SecretTargetAttachment](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-secretsmanager-secrettargetattachment.html) resource type.\n\nFor more information about using the `Ref` function, see [Ref](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-ref.html) ."
       },
-      "description": "Configures rotation for a secret. You must already configure the secret with the details of the database or service. If you define both the secret and the database or service in an AWS CloudFormation template, then define the [AWS::SecretsManager::SecretTargetAttachment](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-secretsmanager-secrettargetattachment.html) resource to populate the secret with the connection details of the database or service before you attempt to configure rotation.",
+      "description": "Sets the rotation schedule and Lambda rotation function for a secret. For more information, see [How rotation works](https://docs.aws.amazon.com/secretsmanager/latest/userguide/rotate-secrets_how.html) . For the rotation function, you have two options:\n\n- You can create a new rotation function based on one of the [Secrets Manager rotation function templates](https://docs.aws.amazon.com/secretsmanager/latest/userguide/reference_available-rotation-templates.html) by using `HostedRotationLambda` .\n- You can choose an existing rotation function by using `RotationLambdaARN` .\n\nFor Amazon RDS , Amazon Redshift , Amazon DocumentDB secrets, if you define both the secret and the database or service in the AWS CloudFormation template, then you need to define the [AWS::SecretsManager::SecretTargetAttachment](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-secretsmanager-secrettargetattachment.html) resource to populate the secret with the connection details of the database or service before you attempt to configure rotation.",
       "properties": {
-        "HostedRotationLambda": "To use these values, you must specify `Transform: AWS::SecretsManager-2020-07-23` at the beginning of the CloudFormation template.\n\nWhen you enter valid values for `RotationSchedule.HostedRotationLambda` , Secrets Manager launches a Lambda that performs rotation on the secret specified in the `secret-id` property. The template creates a Lambda as part of a nested stack within the current stack.",
+        "HostedRotationLambda": "Creates a new Lambda rotation function based on one of the [Secrets Manager rotation function templates](https://docs.aws.amazon.com/secretsmanager/latest/userguide/reference_available-rotation-templates.html) . To use a rotation function that already exists, specify `RotationLambdaARN` instead.",
         "RotateImmediatelyOnUpdate": "Specifies whether to rotate the secret immediately or wait until the next scheduled rotation window. The rotation schedule is defined in `RotationRules` .\n\nIf you don't immediately rotate the secret, Secrets Manager tests the rotation configuration by running the [`testSecret` step](https://docs.aws.amazon.com/secretsmanager/latest/userguide/rotate-secrets_how.html) of the Lambda rotation function. The test creates an `AWSPENDING` version of the secret and then removes it.\n\nIf you don't specify this value, then by default, Secrets Manager rotates the secret immediately.",
-        "RotationLambdaARN": "The ARN of the Lambda function that can rotate the secret. If you don't specify this parameter, then the secret must already have the ARN of a Lambda function configured.\n\nTo reference a Lambda function also created in this template, use the [Ref](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-ref.html) function with the function's logical ID.",
+        "RotationLambdaARN": "The ARN of an existing Lambda rotation function. To specify a rotation function that is also defined in this template, use the [Ref](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-ref.html) function.\n\nTo create a new rotation function based on one of the [Secrets Manager rotation function templates](https://docs.aws.amazon.com/secretsmanager/latest/userguide/reference_available-rotation-templates.html) , specify `HostedRotationLambda` instead.",
         "RotationRules": "A structure that defines the rotation configuration for this secret.",
         "SecretId": "The ARN or name of the secret to rotate.\n\nTo reference a secret also created in this template, use the [Ref](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-ref.html) function with the secret's logical ID."
       }
     },
     "AWS::SecretsManager::RotationSchedule.HostedRotationLambda": {
       "attributes": {},
-      "description": "Specifies that you want to create a hosted Lambda rotation function.\n\nTo use these values, you must specify `Transform: AWS::SecretsManager-2020-07-23` at the beginning of the CloudFormation template.",
+      "description": "Creates a new Lambda rotation function based on one of the [Secrets Manager rotation function templates](https://docs.aws.amazon.com/secretsmanager/latest/userguide/reference_available-rotation-templates.html) .\n\nYou must specify `Transform: AWS::SecretsManager-2020-07-23` at the beginning of the CloudFormation template.",
       "properties": {
         "KmsKeyArn": "The ARN of the KMS key that Secrets Manager uses to encrypt the secret. If you don't specify this value, then Secrets Manager uses the key `aws/secretsmanager` . If `aws/secretsmanager` doesn't yet exist, then Secrets Manager creates it for you automatically the first time it encrypts the secret value.",
         "MasterSecretArn": "The ARN of the secret that contains elevated credentials. You must create the elevated secret before you can set this property. The Lambda rotation function uses this secret for the [Alternating users rotation strategy](https://docs.aws.amazon.com/secretsmanager/latest/userguide/rotating-secrets_strategies.html#rotating-secrets-two-users) .",
         "MasterSecretKmsKeyArn": "The ARN of the KMS key that Secrets Manager uses to encrypt the elevated secret if you use the [alternating users strategy](https://docs.aws.amazon.com/secretsmanager/latest/userguide/rotating-secrets_strategies.html#rotating-secrets-two-users) . If you don't specify this value and you use the alternating users strategy, then Secrets Manager uses the key `aws/secretsmanager` . If `aws/secretsmanager` doesn't yet exist, then Secrets Manager creates it for you automatically the first time it encrypts the secret value.",
         "RotationLambdaName": "The name of the Lambda rotation function.",
-        "RotationType": "The type of rotation template to use. For more information, see [Secrets Manager rotation function templates](https://docs.aws.amazon.com/secretsmanager/latest/userguide/reference_available-rotation-templates.html) .\n\nYou can specify one of the following `RotationTypes` :\n\n- MySQLSingleUser\n- MySQLMultiUser\n- PostgreSQLSingleUser\n- PostgreSQLMultiUser\n- OracleSingleUser\n- OracleMultiUser\n- MariaDBSingleUser\n- MariaDBMultiUser\n- SQLServerSingleUser\n- SQLServerMultiUser\n- RedshiftSingleUser\n- RedshiftMultiUser\n- MongoDBSingleUser\n- MongoDBMultiUser",
+        "RotationType": "The rotation template to base the rotation function on, one of the following:\n\n- `MySQLSingleUser` to use the template [SecretsManagerRDSMySQLRotationSingleUser](https://docs.aws.amazon.com/secretsmanager/latest/userguide/reference_available-rotation-templates.html#sar-template-mysql-singleuser) .\n- `MySQLMultiUser` to use the template [SecretsManagerRDSMySQLRotationMultiUser](https://docs.aws.amazon.com/secretsmanager/latest/userguide/reference_available-rotation-templates.html#sar-template-mysql-multiuser) .\n- `PostgreSQLSingleUser` to use the template [SecretsManagerRDSPostgreSQLRotationSingleUser](https://docs.aws.amazon.com/secretsmanager/latest/userguide/reference_available-rotation-templates.html#sar-template-postgre-singleuser)\n- `PostgreSQLMultiUser` to use the template [SecretsManagerRDSPostgreSQLRotationMultiUser](https://docs.aws.amazon.com/secretsmanager/latest/userguide/reference_available-rotation-templates.html#sar-template-postgre-multiuser) .\n- `OracleSingleUser` to use the template [SecretsManagerRDSOracleRotationSingleUser](https://docs.aws.amazon.com/secretsmanager/latest/userguide/reference_available-rotation-templates.html#sar-template-oracle-singleuser) .\n- `OracleMultiUser` to use the template [SecretsManagerRDSOracleRotationMultiUser](https://docs.aws.amazon.com/secretsmanager/latest/userguide/reference_available-rotation-templates.html#sar-template-oracle-multiuser) .\n- `MariaDBSingleUser` to use the template [SecretsManagerRDSMariaDBRotationSingleUser](https://docs.aws.amazon.com/secretsmanager/latest/userguide/reference_available-rotation-templates.html#sar-template-mariadb-singleuser) .\n- `MariaDBMultiUser` to use the template [SecretsManagerRDSMariaDBRotationMultiUser](https://docs.aws.amazon.com/secretsmanager/latest/userguide/reference_available-rotation-templates.html#sar-template-mariadb-multiuser) .\n- `SQLServerSingleUser` to use the template [SecretsManagerRDSSQLServerRotationSingleUser](https://docs.aws.amazon.com/secretsmanager/latest/userguide/reference_available-rotation-templates.html#sar-template-sqlserver-singleuser) .\n- `SQLServerMultiUser` to use the template [SecretsManagerRDSSQLServerRotationMultiUser](https://docs.aws.amazon.com/secretsmanager/latest/userguide/reference_available-rotation-templates.html#sar-template-sqlserver-multiuser) .\n- `RedshiftSingleUser` to use the template [SecretsManagerRedshiftRotationSingleUsr](https://docs.aws.amazon.com/secretsmanager/latest/userguide/reference_available-rotation-templates.html#sar-template-redshift-singleuser) .\n- `RedshiftMultiUser` to use the template [SecretsManagerRedshiftRotationMultiUser](https://docs.aws.amazon.com/secretsmanager/latest/userguide/reference_available-rotation-templates.html#sar-template-redshift-multiuser) .\n- `MongoDBSingleUser` to use the template [SecretsManagerMongoDBRotationSingleUser](https://docs.aws.amazon.com/secretsmanager/latest/userguide/reference_available-rotation-templates.html#sar-template-mongodb-singleuser) .\n- `MongoDBMultiUser` to use the template [SecretsManagerMongoDBRotationMultiUser](https://docs.aws.amazon.com/secretsmanager/latest/userguide/reference_available-rotation-templates.html#sar-template-mongodb-multiuser) .",
         "SuperuserSecretArn": "The ARN of the secret that contains elevated credentials. You must create the superuser secret before you can set this property. The Lambda rotation function uses this secret for the [Alternating users rotation strategy](https://docs.aws.amazon.com/secretsmanager/latest/userguide/rotating-secrets_strategies.html#rotating-secrets-two-users) .",
         "SuperuserSecretKmsKeyArn": "The ARN of the KMS key that Secrets Manager uses to encrypt the elevated secret if you use the [alternating users strategy](https://docs.aws.amazon.com/secretsmanager/latest/userguide/rotating-secrets_strategies.html#rotating-secrets-two-users) . If you don't specify this value and you use the alternating users strategy, then Secrets Manager uses the key `aws/secretsmanager` . If `aws/secretsmanager` doesn't yet exist, then Secrets Manager creates it for you automatically the first time it encrypts the secret value.",
         "VpcSecurityGroupIds": "A comma-separated list of security group IDs applied to the target database.\n\nThe templates applies the same security groups as on the Lambda rotation function that is created as part of this stack.",
@@ -37557,7 +37904,7 @@
     },
     "AWS::SecretsManager::RotationSchedule.RotationRules": {
       "attributes": {},
-      "description": "A structure that defines the rotation configuration for the secret.",
+      "description": "The rotation schedule and window. We recommend you use `ScheduleExpression` to set a cron or rate expression for the schedule and `Duration` to set the length of the rotation window.",
       "properties": {
         "AutomaticallyAfterDays": "The number of days between automatic scheduled rotations of the secret. You can use this value to check that your secret meets your compliance guidelines for how often secrets must be rotated.\n\nIn `DescribeSecret` and `ListSecrets` , this value is calculated from the rotation schedule after every successful rotation. In `RotateSecret` , you can set the rotation schedule in `RotationRules` with `AutomaticallyAfterDays` or `ScheduleExpression` , but not both.",
         "Duration": "The length of the rotation window in hours, for example `3h` for a three hour window. Secrets Manager rotates your secret at any time during this window. The window must not go into the next UTC day. If you don't specify this value, the window automatically ends at the end of the UTC day. The window begins according to the `ScheduleExpression` . For more information, including examples, see [Schedule expressions in Secrets Manager rotation](https://docs.aws.amazon.com/secretsmanager/latest/userguide/rotate-secrets_schedule.html) .",
@@ -37568,7 +37915,7 @@
       "attributes": {
         "Ref": "When you pass the logical ID of an `AWS::SecretsManager::Secret` resource to the intrinsic `Ref` function, the function returns the ARN of the secret configured such as:\n\n`arn:aws:secretsmanager:us-west-2:123456789012:secret:my-path/my-secret-name-1a2b3c`\n\nIf you know the ARN of a secret, you can reference a secret you created in one part of the stack template from within the definition of another resource in the same template. You typically use the `Ref` function with the [AWS::SecretsManager::SecretTargetAttachment](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-secretsmanager-secrettargetattachment.html) resource type to get references to both the secret and its associated database.\n\nFor more information about using the `Ref` function, see [Ref](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-ref.html) ."
       },
-      "description": "Creates a new secret. A *secret* can be a password, a set of credentials such as a user name and password, an OAuth token, or other secet information that you store in an encrypted form in Secrets Manager.\n\nFor information about creating a secret in the console, see [Create a secret](https://docs.aws.amazon.com/secretsmanager/latest/userguide/manage_create-basic-secret.html) . For information about creating a secret using the CLI or SDK, see [CreateSecret](https://docs.aws.amazon.com/secretsmanager/latest/apireference/API_CreateSecret.html) .\n\nFor information about retrieving a secret from Secrets Manager, see [Retrieve secrets from Secrets Manager](https://docs.aws.amazon.com/secretsmanager/latest/userguide/retrieving-secrets.html) .\n\nTo specify the encrypted value for the secret, you must include either the `GenerateSecretString` or the `SecretString` property, but not both. We recommend that you use the `GenerateSecretString` property to generate a random password as shown in the examples. You can't generate a secret with a `SecretBinary` secret value using AWS CloudFormation .\n\n> Do not create a dynamic reference using a backslash `(\\)` as the final value. AWS CloudFormation cannot resolve those references, which causes a resource failure.",
+      "description": "Creates a new secret. A *secret* can be a password, a set of credentials such as a user name and password, an OAuth token, or other secet information that you store in an encrypted form in Secrets Manager.\n\nTo retrieve a secret in a CloudFormation template, use a *dynamic reference* . For more information, see [Retrieve a secret in an AWS CloudFormation resource](https://docs.aws.amazon.com/secretsmanager/latest/userguide/cfn-example_reference-secret.html) .\n\nA common scenario is to first create a secret with `GenerateSecretString` , which generates a password, and then use a dynamic reference to retrieve the username and password from the secret to use as credentials for a new database. Follow these steps, as shown in the examples below:\n\n- Define the secret without referencing the service or database. You can't reference the service or database because it doesn't exist yet. The secret must contain a username and password.\n- Next, define the service or database. Include the reference to the secret to use stored credentials to define the database admin user and password.\n- Finally, define a `SecretTargetAttachment` resource type to finish configuring the secret with the required database engine type and the connection details of the service or database. The rotation function requires the details, if you attach one later by defining a [AWS::SecretsManager::RotationSchedule](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-secretsmanager-rotationschedule.html) resource type.\n\nFor information about creating a secret in the console, see [Create a secret](https://docs.aws.amazon.com/secretsmanager/latest/userguide/manage_create-basic-secret.html) . For information about creating a secret using the CLI or SDK, see [CreateSecret](https://docs.aws.amazon.com/secretsmanager/latest/apireference/API_CreateSecret.html) .\n\nFor information about retrieving a secret in code, see [Retrieve secrets from Secrets Manager](https://docs.aws.amazon.com/secretsmanager/latest/userguide/retrieving-secrets.html) .\n\n> Do not create a dynamic reference using a backslash `(\\)` as the final value. AWS CloudFormation cannot resolve those references, which causes a resource failure.",
       "properties": {
         "Description": "The description of the secret.",
         "GenerateSecretString": "A structure that specifies how to generate a password to encrypt and store in the secret.\n\nEither `GenerateSecretString` or `SecretString` must have a value, but not both. They cannot both be empty.\n\nWe recommend that you specify the maximum length and include every character type that the system you are generating a password for can support.",
@@ -37597,17 +37944,17 @@
     },
     "AWS::SecretsManager::Secret.ReplicaRegion": {
       "attributes": {},
-      "description": "A custom type that specifies a `Region` and the `KmsKeyId` for a replica secret.",
+      "description": "Specifies a `Region` and the `KmsKeyId` for a replica secret.",
       "properties": {
         "KmsKeyId": "The ARN, key ID, or alias of the KMS key to encrypt the secret. If you don't include this field, Secrets Manager uses `aws/secretsmanager` .",
-        "Region": ""
+        "Region": "(Optional) A string that represents a `Region` , for example \"us-east-1\"."
       }
     },
     "AWS::SecretsManager::SecretTargetAttachment": {
       "attributes": {
         "Ref": "When you pass the logical ID of an `AWS::SecretsManager::SecretTargetAttachment` resource to the intrinsic `Ref` function, the function returns the ARN of the secret, such as:\n\n`arn:aws:secretsmanager:us-west-2:123456789012:secret:my-path/my-secret-name-1a2b3c`\n\nYou can use the ARN to reference a secret you created in one part of the stack template from within the definition of another resource from a different part of the same template.\n\nFor more information about using the `Ref` function, see [Ref](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-ref.html) ."
       },
-      "description": "The `AWS::SecretsManager::SecretTargetAttachment` resource completes the final link between a Secrets Manager secret and the associated database. This is required because each has a dependency on the other. No matter which one you create first, the other doesn't exist yet. To resolve this, you must create the resources in the following order:\n\n- Define the secret without referencing the service or database. You can't reference the service or database because it doesn't exist yet. The secret must contain a user name and password.\n- Next, define the service or database. Include the reference to the secret to use stored credentials to define the database admin user and password.\n- Finally, define a `SecretTargetAttachment` resource type to finish configuring the secret with the required database engine type and the connection details of the service or database. The rotation function requires the details, if you attach one later by defining a [AWS::SecretsManager::RotationSchedule](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-secretsmanager-rotationschedule.html) resource type.",
+      "description": "The `AWS::SecretsManager::SecretTargetAttachment` resource completes the final link between a Secrets Manager secret and the associated database. This is required because each has a dependency on the other.",
       "properties": {
         "SecretId": "The ARN or name of the secret. To reference a secret also created in this template, use the see [Ref](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-ref.html) function with the secret's logical ID.",
         "TargetId": "The ID of the database or cluster.",

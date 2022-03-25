@@ -1,9 +1,8 @@
 import * as path from 'path';
-import { Match, Template } from '@aws-cdk/assertions';
+import { Annotations, Match, Template } from '@aws-cdk/assertions';
 import { Key } from '@aws-cdk/aws-kms';
 import { Asset } from '@aws-cdk/aws-s3-assets';
 import { StringParameter } from '@aws-cdk/aws-ssm';
-import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { App, Stack } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import {
@@ -348,7 +347,7 @@ describe('instance', () => {
     });
 
     test('warning if iops without volumeType', () => {
-      const instance = new Instance(stack, 'Instance', {
+      new Instance(stack, 'Instance', {
         vpc,
         machineImage: new AmazonLinuxImage(),
         instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.LARGE),
@@ -363,14 +362,11 @@ describe('instance', () => {
       });
 
       // THEN
-      expect(instance.node.metadata[0].type).toEqual(cxschema.ArtifactMetadataEntryType.WARN);
-      expect(instance.node.metadata[0].data).toEqual('iops will be ignored without volumeType: IO1, IO2, or GP3');
-
-
+      Annotations.fromStack(stack).hasWarning('/Default/Instance', 'iops will be ignored without volumeType: IO1, IO2, or GP3');
     });
 
     test('warning if iops and invalid volumeType', () => {
-      const instance = new Instance(stack, 'Instance', {
+      new Instance(stack, 'Instance', {
         vpc,
         machineImage: new AmazonLinuxImage(),
         instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.LARGE),
@@ -386,10 +382,7 @@ describe('instance', () => {
       });
 
       // THEN
-      expect(instance.node.metadata[0].type).toEqual(cxschema.ArtifactMetadataEntryType.WARN);
-      expect(instance.node.metadata[0].data).toEqual('iops will be ignored without volumeType: IO1, IO2, or GP3');
-
-
+      Annotations.fromStack(stack).hasWarning('/Default/Instance', 'iops will be ignored without volumeType: IO1, IO2, or GP3');
     });
   });
 
