@@ -1,12 +1,11 @@
 import { ArnFormat, FeatureFlags, Fn, Resource, Stack, Token } from '@aws-cdk/core';
 import { ECS_ARN_FORMAT_INCLUDES_CLUSTER_NAME } from '@aws-cdk/cx-api';
-import { Construct } from 'constructs';
 import { IBaseService } from '../base/base-service';
 import { ICluster } from '../cluster';
 
-// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
-// eslint-disable-next-line
-import { Construct as CoreConstruct } from '@aws-cdk/core';
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
 
 /**
  * The properties to import from the service.
@@ -37,8 +36,7 @@ export function fromServiceAtrributes(scope: Construct, id: string, attrs: Servi
     throw new Error('You can only specify either serviceArn or serviceName.');
   }
 
-  const featureConstruct = new CoreConstruct(scope, randomString());
-  const newArnFormat = FeatureFlags.of(featureConstruct).isEnabled(ECS_ARN_FORMAT_INCLUDES_CLUSTER_NAME);
+  const newArnFormat = FeatureFlags.of(scope).isEnabled(ECS_ARN_FORMAT_INCLUDES_CLUSTER_NAME);
 
   const stack = Stack.of(scope);
   let name: string;
@@ -56,7 +54,7 @@ export function fromServiceAtrributes(scope: Construct, id: string, attrs: Servi
     });
   } else {
     arn = attrs.serviceArn as string;
-    name = extractServiceNameFromArn(featureConstruct, arn);
+    name = extractServiceNameFromArn(scope, arn);
   }
   class Import extends Resource implements IBaseService {
     public readonly serviceArn = arn;
@@ -68,7 +66,7 @@ export function fromServiceAtrributes(scope: Construct, id: string, attrs: Servi
   });
 }
 
-export function extractServiceNameFromArn(scope: CoreConstruct, arn: string): string {
+export function extractServiceNameFromArn(scope: Construct, arn: string): string {
   const newArnFormat = FeatureFlags.of(scope).isEnabled(ECS_ARN_FORMAT_INCLUDES_CLUSTER_NAME);
   const stack = Stack.of(scope);
 
@@ -85,9 +83,4 @@ export function extractServiceNameFromArn(scope: CoreConstruct, arn: string): st
     const resourceNameSplit = resourceName.split('/');
     return resourceNameSplit.length === 1 ? resourceName : resourceNameSplit[1];
   }
-}
-
-function randomString() {
-  // Crazy
-  return Math.random().toString(36).replace(/[^a-z0-9]+/g, '');
 }
