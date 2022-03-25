@@ -33,7 +33,7 @@ class TestStack extends cdk.Stack {
     const cluster = new DatabaseCluster(this, 'Database', {
       masterUser: {
         username: 'docdb',
-        password: cdk.SecretValue.plainText('7959866cacc02c2d243ecfe177464fe6'),
+        password: cdk.SecretValue.unsafePlainText('7959866cacc02c2d243ecfe177464fe6'),
       },
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.R5, ec2.InstanceSize.LARGE),
       vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },

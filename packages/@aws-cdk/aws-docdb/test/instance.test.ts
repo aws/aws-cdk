@@ -187,7 +187,7 @@ class TestStack extends cdk.Stack {
     this.cluster = new DatabaseCluster(this, 'Database', {
       masterUser: {
         username: 'admin',
-        password: cdk.SecretValue.plainText('tooshort'),
+        password: cdk.SecretValue.unsafePlainText('tooshort'),
       },
       instanceType: CLUSTER_INSTANCE_TYPE,
       vpc: this.vpc,

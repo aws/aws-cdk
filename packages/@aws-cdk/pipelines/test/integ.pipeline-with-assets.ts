@@ -44,7 +44,7 @@ class CdkpipelinesDemoPipelineStack extends Stack {
       sourceAction: new codepipeline_actions.GitHubSourceAction({
         actionName: 'GitHub',
         output: sourceArtifact,
-        oauthToken: SecretValue.plainText('not-a-secret'),
+        oauthToken: SecretValue.unsafePlainText('not-a-secret'),
         owner: 'OWNER',
         repo: 'REPO',
         trigger: codepipeline_actions.GitHubTrigger.POLL,

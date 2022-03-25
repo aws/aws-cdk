@@ -19,7 +19,7 @@ import { Token, Tokenization } from './token';
  * Store, and you reference them by calling `SecretValue.secretsManager()` or
  * `SecretValue.ssmSecure()`.
  *
- * You can use `SecretValue.plainText()` to construct a `SecretValue` from a
+ * You can use `SecretValue.unsafePlainText()` to construct a `SecretValue` from a
  * literal string, but doing so is highly discouraged.
  *
  * To make sure secret values don't accidentally end up in readable parts
