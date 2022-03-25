@@ -751,7 +751,7 @@ export class Function extends FunctionBase {
     this._architecture = props.architecture ?? (props.architectures && props.architectures[0]);
 
     if (props.ephemeralStorageSize && (props.ephemeralStorageSize < 512 || props.ephemeralStorageSize > 10240)) {
-      throw new Error('Ephemeral storage size must be between 512 and 10240 MB.');
+      throw new Error(`Ephemeral storage size must be between 512 and 10240 MB, received ${props.ephemeralStorageSize}.`);
     }
 
     const resource: CfnFunction = new CfnFunction(this, 'Resource', {
