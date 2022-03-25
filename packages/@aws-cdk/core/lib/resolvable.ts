@@ -18,6 +18,11 @@ export interface IResolveContext {
   readonly preparing: boolean;
 
   /**
+   * Path
+   */
+  readonly documentPath: string[];
+
+  /**
    * Resolve an inner object
    */
   resolve(x: any, options?: ResolveChangeContextOptions): any;
