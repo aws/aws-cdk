@@ -774,7 +774,9 @@ export class Function extends FunctionBase {
       // Token, actually *modifies* the 'environment' map.
       environment: Lazy.uncachedAny({ produce: () => this.renderEnvironment() }),
       memorySize: props.memorySize,
-      ephemeralStorage: this.buildEphemeralStorage(props),
+      ephemeralStorage: props.ephemeralStorageSize ? {
+        size: props.ephemeralStorageSize,
+      } : undefined
       vpcConfig: this.configureVpc(props),
       deadLetterConfig: this.buildDeadLetterConfig(dlqTopicOrQueue),
       tracingConfig: this.buildTracingConfig(props),
