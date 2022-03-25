@@ -710,6 +710,18 @@ const fn = new lambda.Function(this, 'MyLambda', {
 });
 ```
 
+## Ephemeral Storage
+
+You can configure ephemeral storage (/tmp) between 512 MB and 10,240 MB, and you can now control the amount of ephemeral storage a function gets for reading or writing data, allowing you to use AWS Lambda for ETL jobs, ML inference, or other data-intensive workloads.
+
+```ts
+const fn = new lambda.Function(this, 'MyFunction', {
+  runtime: lambda.Runtime.NODEJS_12_X,
+  handler: 'index.handler',
+  code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
+  ephemeralStorageSize: 1024,
+});
+```
 
 ## Singleton Function
 
