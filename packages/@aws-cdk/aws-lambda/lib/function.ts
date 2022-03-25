@@ -776,7 +776,7 @@ export class Function extends FunctionBase {
       memorySize: props.memorySize,
       ephemeralStorage: props.ephemeralStorageSize ? {
         size: props.ephemeralStorageSize,
-      } : undefined
+      } : undefined,
       vpcConfig: this.configureVpc(props),
       deadLetterConfig: this.buildDeadLetterConfig(dlqTopicOrQueue),
       tracingConfig: this.buildTracingConfig(props),
@@ -1140,16 +1140,6 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
     } else {
       return undefined;
     }
-  }
-
-  private buildEphemeralStorage(props: FunctionProps) {
-    if (props.ephemeralStorageSize === undefined) {
-      return undefined;
-    }
-
-    return {
-      size: props.ephemeralStorageSize,
-    };
   }
 
   private buildTracingConfig(props: FunctionProps) {
