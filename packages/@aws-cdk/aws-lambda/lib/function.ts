@@ -96,6 +96,13 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
   readonly memorySize?: number;
 
   /**
+   * The size of the function’s /tmp directory.
+   *
+   * @default 512
+   */
+  readonly ephemeralStorageSize?: number;
+
+  /**
    * Initial policy statements to add to the created Lambda Role.
    *
    * You can call `addToRolePolicy` to the created lambda to add statements post creation.
@@ -763,6 +770,7 @@ export class Function extends FunctionBase {
       // Token, actually *modifies* the 'environment' map.
       environment: Lazy.uncachedAny({ produce: () => this.renderEnvironment() }),
       memorySize: props.memorySize,
+      ephemeralStorage: this.buildEphemeralStorage(props),
       vpcConfig: this.configureVpc(props),
       deadLetterConfig: this.buildDeadLetterConfig(dlqTopicOrQueue),
       tracingConfig: this.buildTracingConfig(props),
@@ -1125,6 +1133,16 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
       };
     } else {
       return undefined;
+    }
+  }
+
+  private buildEphemeralStorage(props: FunctionProps) {
+    if (props.ephemeralStorageSize === undefined) {
+      return undefined;
+    }
+
+    return {
+      size: props.ephemeralStorageSize,
     }
   }
 
