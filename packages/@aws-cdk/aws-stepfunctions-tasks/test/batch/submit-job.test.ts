@@ -79,7 +79,7 @@ test('Task with all the parameters', () => {
       instanceType: new ec2.InstanceType('MULTI'),
       memory: cdk.Size.mebibytes(1024),
       gpuCount: 1,
-      vcpus: sfn.JsonPath.numberAt('$.taskParameters.cpu'),
+      vcpus: 10,
     },
     dependsOn: [{ jobId: '1234', type: 'some_type' }],
     payload: sfn.TaskInput.fromObject({
@@ -115,7 +115,7 @@ test('Task with all the parameters', () => {
         Command: ['sudo', 'rm'],
         Environment: [{ Name: 'key', Value: 'value' }],
         InstanceType: 'MULTI',
-        ResourceRequirements: [{ Type: 'GPU', Value: '1' }, { Type: 'MEMORY', Value: '1024' }, { 'Type': 'VCPU', 'Value.$': '$.taskParameters.cpu' }],
+        ResourceRequirements: [{ Type: 'GPU', Value: '1' }, { Type: 'MEMORY', Value: '1024' }, { Type: 'VCPU', Value: '10' }],
       },
       DependsOn: [{ JobId: '1234', Type: 'some_type' }],
       Parameters: { 'foo.$': '$.bar' },
@@ -134,6 +134,11 @@ test('supports tokens', () => {
     arraySize: sfn.JsonPath.numberAt('$.arraySize'),
     timeout: cdk.Duration.seconds(sfn.JsonPath.numberAt('$.timeout')),
     attempts: sfn.JsonPath.numberAt('$.attempts'),
+    containerOverrides: {
+      gpuCount: sfn.JsonPath.numberAt('$.gpuCount'),
+      memory: cdk.Size.mebibytes(sfn.JsonPath.numberAt('$.memory')),
+      vcpus: sfn.JsonPath.numberAt('$.vcpus'),
+    },
   });
 
   // THEN
@@ -164,6 +169,22 @@ test('supports tokens', () => {
       },
       'Timeout': {
         'AttemptDurationSeconds.$': '$.timeout',
+      },
+      'ContainerOverrides': {
+        ResourceRequirements: [
+          {
+            'Type': 'GPU',
+            'Value.$': '$.gpuCount',
+          },
+          {
+            'Type': 'MEMORY',
+            'Value.$': '$.memory',
+          },
+          {
+            'Type': 'VCPU',
+            'Value.$': '$.vcpus',
+          },
+        ],
       },
     },
   });

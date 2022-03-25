@@ -197,6 +197,13 @@ export class BatchSubmitJob extends sfn.TaskStateBase {
       }
     });
 
+    // validate memory
+    props.containerOverrides?.memory !== undefined && withResolved(props.containerOverrides.memory.toMebibytes(), (memory) => {
+      if (memory < 4) {
+        throw new Error('memory must be at least 4MiB');
+      }
+    });
+
     // This is required since environment variables must not start with AWS_BATCH;
     // this naming convention is reserved for variables that are set by the AWS Batch service.
     if (props.containerOverrides?.environment) {
@@ -296,7 +303,7 @@ export class BatchSubmitJob extends sfn.TaskStateBase {
       resources.push(
         {
           Type: 'GPU',
-          Value: Token.isUnresolved(containerOverrides.gpuCount) ? containerOverrides.gpuCount : `${containerOverrides.gpuCount}`,
+          Value: tokenOrString(containerOverrides.gpuCount),
         },
       );
     }
@@ -304,7 +311,7 @@ export class BatchSubmitJob extends sfn.TaskStateBase {
       resources.push(
         {
           Type: 'MEMORY',
-          Value: Token.isUnresolved(containerOverrides.memory) ? containerOverrides.memory : `${containerOverrides.memory.toMebibytes()}`,
+          Value: tokenOrString(containerOverrides.memory.toMebibytes()),
         },
       );
     }
@@ -312,7 +319,7 @@ export class BatchSubmitJob extends sfn.TaskStateBase {
       resources.push(
         {
           Type: 'VCPU',
-          Value: Token.isUnresolved(containerOverrides.vcpus) ? containerOverrides.vcpus : `${containerOverrides.vcpus}`,
+          Value: tokenOrString(containerOverrides.vcpus),
         },
       );
     }
@@ -324,4 +331,8 @@ export class BatchSubmitJob extends sfn.TaskStateBase {
       ResourceRequirements: resources.length ? resources : undefined,
     };
   }
+}
+
+function tokenOrString(value: any) {
+  return Token.isUnresolved(value) ? value : value.toString();
 }
