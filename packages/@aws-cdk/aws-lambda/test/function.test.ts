@@ -2487,6 +2487,16 @@ describe('function', () => {
   });
 });
 
+test('throws if ephemeral storage size is out of bound', () => {
+  const stack = new cdk.Stack();
+  expect(() => new lambda.Function(stack, 'MyLambda', {
+    code: new lambda.InlineCode('foo'),
+    handler: 'bar',
+    runtime: lambda.Runtime.NODEJS_12_X,
+    ephemeralStorageSize: 511,
+  })).toThrow(/Ephemeral storage size must be between 512 and 10240 MB./);
+});
+
 function newTestLambda(scope: constructs.Construct) {
   return new lambda.Function(scope, 'MyLambda', {
     code: new lambda.InlineCode('foo'),
