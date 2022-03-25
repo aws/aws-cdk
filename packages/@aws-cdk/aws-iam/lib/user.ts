@@ -332,7 +332,7 @@ export class User extends Resource implements IIdentity, IUser {
   private parseLoginProfile(props: UserProps): CfnUser.LoginProfileProperty | undefined {
     if (props.password) {
       return {
-        password: props.password.toString(),
+        password: props.password.unsafeUnwrap(), // Safe usage
         passwordResetRequired: props.passwordResetRequired,
       };
     }

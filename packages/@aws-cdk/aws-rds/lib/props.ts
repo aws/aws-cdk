@@ -239,7 +239,7 @@ export abstract class Credentials {
    */
   public static fromSecret(secret: secretsmanager.ISecret, username?: string): Credentials {
     return {
-      username: username ?? secret.secretValueFromJson('username').toString(),
+      username: username ?? secret.secretValueFromJson('username').unsafeUnwrap(),
       password: secret.secretValueFromJson('password'),
       encryptionKey: secret.encryptionKey,
       secret,

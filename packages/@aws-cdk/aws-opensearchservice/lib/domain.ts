@@ -1605,7 +1605,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
           masterUserOptions: {
             masterUserArn: masterUserArn,
             masterUserName: masterUserName,
-            masterUserPassword: this.masterUserPassword?.toString(),
+            masterUserPassword: this.masterUserPassword?.unsafeUnwrap(), // Safe usage
           },
         }
         : undefined,

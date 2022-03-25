@@ -132,7 +132,7 @@ export class GitHubSourceAction extends Action {
       new codepipeline.CfnWebhook(scope, 'WebhookResource', {
         authentication: 'GITHUB_HMAC',
         authenticationConfiguration: {
-          secretToken: this.props.oauthToken.toString(),
+          secretToken: this.props.oauthToken.unsafeUnwrap(), // Safe usage
         },
         filters: [
           {
