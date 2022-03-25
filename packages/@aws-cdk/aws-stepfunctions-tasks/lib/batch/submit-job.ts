@@ -191,18 +191,17 @@ export class BatchSubmitJob extends sfn.TaskStateBase {
     });
 
     // validate timeout
-    props.timeout !== undefined && withResolved(props.timeout.toSeconds(), (timeout) => {
-      if (timeout < 60) {
-        throw new Error(`attempt duration must be greater than 60 seconds. Received ${timeout} seconds.`);
-      }
-    });
+    if (props.timeout !== undefined && !props.timeout.isUnresolved() && props.timeout.toSeconds() < 60) {
+      throw new Error(`attempt duration must be at least 60 seconds. Received ${props.timeout} seconds.`);
+    }
 
     // validate memory
-    props.containerOverrides?.memory !== undefined && withResolved(props.containerOverrides.memory.toMebibytes(), (memory) => {
-      if (memory < 4) {
-        throw new Error('memory must be at least 4MiB');
-      }
-    });
+    if (props.containerOverrides?.memory !== undefined &&
+      !props.containerOverrides.memory.isUnresolved() &&
+      props.containerOverrides.memory.toMebibytes() < 4) {
+      throw new Error('memory must be at least 4MiB');
+    }
+
 
     // This is required since environment variables must not start with AWS_BATCH;
     // this naming convention is reserved for variables that are set by the AWS Batch service.
