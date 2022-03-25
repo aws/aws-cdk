@@ -96,7 +96,7 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
   readonly memorySize?: number;
 
   /**
-   * The size of the function’s /tmp directory.
+   * The size of the function’s /tmp directory in MB.
    *
    * @default 512
    */
@@ -749,6 +749,10 @@ export class Function extends FunctionBase {
       throw new Error('Only one architecture must be specified.');
     }
     this._architecture = props.architecture ?? (props.architectures && props.architectures[0]);
+
+    if (props.ephemeralStorageSize && (props.ephemeralStorageSize < 512 || props.ephemeralStorageSize > 10240)) {
+      throw new Error('Ephemeral storage size must be between 512 and 10240 MB.');
+    }
 
     const resource: CfnFunction = new CfnFunction(this, 'Resource', {
       functionName: this.physicalName,
