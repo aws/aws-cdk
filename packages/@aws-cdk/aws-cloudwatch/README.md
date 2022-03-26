@@ -474,6 +474,7 @@ dashboard.addWidgets(new cloudwatch.CustomWidget({
 }));
 ```
 
+You can learn more about custom widgets in the [Amazon Cloudwatch User Guide](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/add_custom_widget_dashboard.html).
 
 ### Dashboard Layout
 
