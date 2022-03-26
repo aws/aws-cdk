@@ -60,8 +60,8 @@ export function withSamIntegrationCdkApp<A extends TestContext & AwsContext>(blo
       } else {
         await installNpmPackages(fixture, {
           'aws-cdk-lib': installationVersion,
-          '@aws-cdk/aws-lambda-go-alpha': `${installationVersion}-alpha.0`,
-          '@aws-cdk/aws-lambda-python-alpha': `${installationVersion}-alpha.0`,
+          '@aws-cdk/aws-lambda-go-alpha': installationVersion.replace('rc', 'alpha'),
+          '@aws-cdk/aws-lambda-python-alpha': installationVersion.replace('rc', 'alpha'),
           'constructs': '^10',
         });
       }
