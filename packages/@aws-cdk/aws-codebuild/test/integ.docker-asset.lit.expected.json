@@ -25,8 +25,8 @@
             {
               "Action": [
                 "ecr:BatchCheckLayerAvailability",
-                "ecr:GetDownloadUrlForLayer",
-                "ecr:BatchGetImage"
+                "ecr:BatchGetImage",
+                "ecr:GetDownloadUrlForLayer"
               ],
               "Effect": "Allow",
               "Resource": {
@@ -82,7 +82,8 @@
                       ":log-group:/aws/codebuild/",
                       {
                         "Ref": "MyProject39F7B0AE"
-                      }
+                      },
+                      ":*"
                     ]
                   ]
                 },
@@ -105,8 +106,7 @@
                       ":log-group:/aws/codebuild/",
                       {
                         "Ref": "MyProject39F7B0AE"
-                      },
-                      ":*"
+                      }
                     ]
                   ]
                 }

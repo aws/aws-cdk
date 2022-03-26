@@ -548,16 +548,14 @@
             {
               "Action": "sns:Publish",
               "Effect": "Allow",
-              "Resource": {
-                "Ref": "signupD2AAA171"
-              }
-            },
-            {
-              "Action": "sns:Publish",
-              "Effect": "Allow",
-              "Resource": {
-                "Ref": "delete1CCE71FF"
-              }
+              "Resource": [
+                {
+                  "Ref": "delete1CCE71FF"
+                },
+                {
+                  "Ref": "signupD2AAA171"
+                }
+              ]
             }
           ],
           "Version": "2012-10-17"
@@ -913,35 +911,27 @@
           "Statement": [
             {
               "Action": [
-                "sqs:ReceiveMessage",
                 "sqs:ChangeMessageVisibility",
-                "sqs:GetQueueUrl",
                 "sqs:DeleteMessage",
-                "sqs:GetQueueAttributes"
+                "sqs:GetQueueAttributes",
+                "sqs:GetQueueUrl",
+                "sqs:ReceiveMessage"
               ],
               "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "EventsQueueB96EB0D2",
-                  "Arn"
-                ]
-              }
-            },
-            {
-              "Action": [
-                "sqs:ReceiveMessage",
-                "sqs:ChangeMessageVisibility",
-                "sqs:GetQueueUrl",
-                "sqs:DeleteMessage",
-                "sqs:GetQueueAttributes"
-              ],
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "signupqueue33AFF2E6",
-                  "Arn"
-                ]
-              }
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "EventsQueueB96EB0D2",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::GetAtt": [
+                    "signupqueue33AFF2E6",
+                    "Arn"
+                  ]
+                }
+              ]
             }
           ],
           "Version": "2012-10-17"

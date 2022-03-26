@@ -23,6 +23,7 @@ import { BasicStepScalingPolicyProps, StepScalingPolicy } from './step-scaling-p
 import { BaseTargetTrackingProps, PredefinedMetric, TargetTrackingScalingPolicy } from './target-tracking-scaling-policy';
 import { TerminationPolicy } from './termination-policy';
 import { BlockDevice, BlockDeviceVolume, EbsDeviceVolumeType } from './volume';
+import { WarmPool, WarmPoolOptions } from './warm-pool';
 
 /**
  * Name tag constant
@@ -741,6 +742,16 @@ abstract class AutoScalingGroupBase extends Resource implements IAutoScalingGrou
     return new LifecycleHook(this, `LifecycleHook${id}`, {
       autoScalingGroup: this,
       ...props,
+    });
+  }
+
+  /**
+   * Add a pool of pre-initialized EC2 instances that sits alongside an Auto Scaling group
+   */
+  public addWarmPool(options?: WarmPoolOptions): WarmPool {
+    return new WarmPool(this, 'WarmPool', {
+      autoScalingGroup: this,
+      ...options,
     });
   }
 
@@ -1629,6 +1640,11 @@ export interface IAutoScalingGroup extends IResource, iam.IGrantable {
    * Send a message to either an SQS queue or SNS topic when instances launch or terminate
    */
   addLifecycleHook(id: string, props: BasicLifecycleHookProps): LifecycleHook;
+
+  /**
+   * Add a pool of pre-initialized EC2 instances that sits alongside an Auto Scaling group
+   */
+  addWarmPool(options?: WarmPoolOptions): WarmPool;
 
   /**
    * Scale out or in based on time

@@ -144,6 +144,7 @@
     "@aws-cdk/aws-autoscalingplans": "0.0.0",
     "@aws-cdk/aws-backup": "0.0.0",
     "@aws-cdk/aws-batch": "0.0.0",
+    "@aws-cdk/aws-billingconductor": "0.0.0",
     "@aws-cdk/aws-budgets": "0.0.0",
     "@aws-cdk/aws-cassandra": "0.0.0",
     "@aws-cdk/aws-ce": "0.0.0",

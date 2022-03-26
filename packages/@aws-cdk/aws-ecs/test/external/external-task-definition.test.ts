@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { Template } from '@aws-cdk/assertions';
+import { Annotations, Template } from '@aws-cdk/assertions';
 import { Protocol } from '@aws-cdk/aws-ec2';
 import { Repository } from '@aws-cdk/aws-ecr';
 import * as iam from '@aws-cdk/aws-iam';
@@ -60,8 +60,6 @@ describe('external task definition', () => {
           ],
         },
       });
-
-
     });
 
     test('correctly sets containers', () => {
@@ -127,8 +125,6 @@ describe('external task definition', () => {
           ],
         },
       });
-
-
     });
 
     test('all container definition options defined', () => {
@@ -330,8 +326,6 @@ describe('external task definition', () => {
           },
         ],
       });
-
-
     });
 
     test('correctly sets containers from ECR repository using all props', () => {
@@ -356,6 +350,9 @@ describe('external task definition', () => {
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::ECR::Repository', {
+        ImageScanningConfiguration: {
+          ScanOnPush: false,
+        },
         LifecyclePolicy: {
           // eslint-disable-next-line max-len
           LifecyclePolicyText: '{"rules":[{"rulePriority":10,"selection":{"tagStatus":"tagged","tagPrefixList":["abc"],"countType":"imageCountMoreThan","countNumber":1},"action":{"type":"expire"}}]}',
@@ -423,8 +420,6 @@ describe('external task definition', () => {
           Name: 'web',
         }],
       });
-
-
     });
   });
 
@@ -498,8 +493,6 @@ describe('external task definition', () => {
         Name: 'web',
       }],
     });
-
-
   });
 
   test('correctly sets containers from ECR repository using an image digest', () => {
@@ -571,8 +564,6 @@ describe('external task definition', () => {
         Name: 'web',
       }],
     });
-
-
   });
 
   test('correctly sets containers from ECR repository using default props', () => {
@@ -587,9 +578,11 @@ describe('external task definition', () => {
     });
 
     // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::ECR::Repository', {});
-
-
+    Template.fromStack(stack).hasResourceProperties('AWS::ECR::Repository', {
+      ImageScanningConfiguration: {
+        ScanOnPush: false,
+      },
+    });
   });
 
   test('warns when setting containers from ECR repository using fromRegistry method', () => {
@@ -597,16 +590,15 @@ describe('external task definition', () => {
     const stack = new cdk.Stack();
 
     const taskDefinition = new ecs.ExternalTaskDefinition(stack, 'ExternalTaskDef');
+
     // WHEN
-    const container = taskDefinition.addContainer('web', {
+    taskDefinition.addContainer('web', {
       image: ecs.ContainerImage.fromRegistry('ACCOUNT.dkr.ecr.REGION.amazonaws.com/REPOSITORY'),
       memoryLimitMiB: 512,
     });
 
     // THEN
-    expect(container.node.metadataEntry[0].data).toEqual("Proper policies need to be attached before pulling from ECR repository, or use 'fromEcrRepository'.");
-
-
+    Annotations.fromStack(stack).hasWarning('/Default/ExternalTaskDef/web', "Proper policies need to be attached before pulling from ECR repository, or use 'fromEcrRepository'.");
   });
 
   test('correctly sets volumes from', () => {
@@ -620,8 +612,6 @@ describe('external task definition', () => {
       },
       name: 'scratch',
     })).toThrow('External task definitions doesnt support volumes' );
-
-
   });
 
   test('error when interferenceAccelerators set', () => {
@@ -633,7 +623,5 @@ describe('external task definition', () => {
       deviceName: 'device1',
       deviceType: 'eia2.medium',
     })).toThrow('Cannot use inference accelerators on tasks that run on External service');
-
-
   });
 });

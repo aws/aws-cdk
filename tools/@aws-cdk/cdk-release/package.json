@@ -38,7 +38,7 @@
   },
   "dependencies": {
     "@lerna/project": "^4.0.0",
-    "changelog-parser": "^2.8.0",
+    "changelog-parser": "^2.8.1",
     "conventional-changelog": "^3.1.25",
     "conventional-changelog-config-spec": "^2.1.0",
     "conventional-changelog-preset-loader": "^2.3.4",

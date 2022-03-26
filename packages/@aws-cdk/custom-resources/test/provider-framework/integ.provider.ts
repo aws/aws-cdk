@@ -16,7 +16,6 @@ class TestStack extends Stack {
       bucket,
       objectKey: 'second.txt',
       contents: 'Hello, world, 1980!',
-      public: true,
     });
 
     const file2 = new S3File(this, 'file2', {

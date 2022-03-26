@@ -1,4 +1,4 @@
-import { ArnFormat, Resource, Stack } from '@aws-cdk/core';
+import { ArnFormat, Lazy, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnMethod, CfnMethodProps } from './apigateway.generated';
 import { Authorizer, IAuthorizer } from './authorizer';
@@ -168,6 +168,8 @@ export class Method extends Resource {
    */
   public readonly api: IRestApi;
 
+  private methodResponses: MethodResponse[];
+
   constructor(scope: Construct, id: string, props: MethodProps) {
     super(scope, id);
 
@@ -196,6 +198,8 @@ export class Method extends Resource {
       authorizer._attachToApi(this.api);
     }
 
+    this.methodResponses = options.methodResponses ?? [];
+
     const integration = props.integration ?? this.resource.defaultIntegration ?? new MockIntegration();
     const bindResult = integration.bind(this);
 
@@ -209,7 +213,7 @@ export class Method extends Resource {
       authorizerId,
       requestParameters: options.requestParameters || defaultMethodOptions.requestParameters,
       integration: this.renderIntegration(bindResult),
-      methodResponses: this.renderMethodResponses(options.methodResponses),
+      methodResponses: Lazy.any({ produce: () => this.renderMethodResponses(this.methodResponses) }, { omitEmptyArray: true }),
       requestModels: this.renderRequestModels(options.requestModels),
       requestValidatorId: this.requestValidatorId(options),
       authorizationScopes: options.authorizationScopes ?? defaultMethodOptions.authorizationScopes,
@@ -265,6 +269,13 @@ export class Method extends Resource {
    */
   public get testMethodArn(): string {
     return this.api.arnForExecuteApi(this.httpMethod, pathForArn(this.resource.path), 'test-invoke-stage');
+  }
+
+  /**
+   * Add a method response to this method
+   */
+  public addMethodResponse(methodResponse: MethodResponse): void {
+    this.methodResponses.push(methodResponse);
   }
 
   private renderIntegration(bindResult: IntegrationConfig): CfnMethod.IntegrationProperty {

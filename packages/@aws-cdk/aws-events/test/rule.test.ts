@@ -30,33 +30,27 @@ describe('rule', () => {
 
   test('rule displays warning when minutes are not included in cron', () => {
     const stack = new cdk.Stack();
-    const rule = new Rule(stack, 'MyRule', {
+    new Rule(stack, 'MyRule', {
       schedule: Schedule.cron({
         hour: '8',
         day: '1',
       }),
     });
-    expect(rule.node.metadataEntry).toEqual([{
-      type: 'aws:cdk:warning',
-      data: 'cron: If you don\'t pass \'minute\', by default the event runs every minute. Pass \'minute: \'*\'\' if that\'s what you intend, or \'minute: 0\' to run once per hour instead.',
-      trace: undefined,
-    }]);
-    Annotations.fromStack(stack).hasWarning('/Default/MyRule', "cron: If you don't pass 'minute', by default the event runs every minute. Pass 'minute: '*'' if that's what you intend, or 'minute: 0' to run once per hour instead.");
 
+    Annotations.fromStack(stack).hasWarning('/Default/MyRule', "cron: If you don't pass 'minute', by default the event runs every minute. Pass 'minute: '*'' if that's what you intend, or 'minute: 0' to run once per hour instead.");
   });
 
   test('rule does not display warning when minute is set to * in cron', () => {
     const stack = new cdk.Stack();
-    const rule = new Rule(stack, 'MyRule', {
+    new Rule(stack, 'MyRule', {
       schedule: Schedule.cron({
         minute: '*',
         hour: '8',
         day: '1',
       }),
     });
-    expect(rule.node.metadataEntry).toEqual([]);
-    const annotations = Annotations.fromStack(stack).findWarning('*', Match.anyValue());
-    expect(annotations.length).toBe(0);
+
+    Annotations.fromStack(stack).hasNoWarning('/Default/MyRule', Match.anyValue());
   });
 
   test('can get rule name', () => {
@@ -901,6 +895,7 @@ describe('rule', () => {
       const app = new cdk.App();
 
       const sourceAccount = '123456789012';
+      const nodeAddr = 'c810f4680339b01edf1f157c4fd07da73469742773';
       const sourceStack = new cdk.Stack(app, 'SourceStack', {
         env: {
           account: sourceAccount,
@@ -982,7 +977,7 @@ describe('rule', () => {
       const eventBusPolicyStack = app.node.findChild(`EventBusPolicy-${sourceAccount}-us-west-2-${targetAccount}`) as cdk.Stack;
       Template.fromStack(eventBusPolicyStack).hasResourceProperties('AWS::Events::EventBusPolicy', {
         'Action': 'events:PutEvents',
-        'StatementId': `Allow-account-${sourceAccount}`,
+        'StatementId': `Allow-account-${sourceAccount}-${nodeAddr}`,
         'Principal': sourceAccount,
       });
     });
