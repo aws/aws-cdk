@@ -29,14 +29,12 @@
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
     "@types/fs-extra": "^8.1.2",
-    "@types/jest": "^27.4.1",
-    "@types/semver": "^7.3.9"
+    "@types/jest": "^27.4.1"
   },
   "dependencies": {
     "aws-cdk-migration": "0.0.0",
     "fs-extra": "^9.1.0",
-    "@lerna/project": "4.0.0",
-    "semver": "^7.3.5"
+    "@lerna/project": "4.0.0"
   },
   "keywords": [
     "aws",
