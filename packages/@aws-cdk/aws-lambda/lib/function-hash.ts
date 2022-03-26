@@ -60,6 +60,7 @@ export const VERSION_LOCKED: { [key: string]: boolean } = {
   DeadLetterConfig: true,
   Description: true,
   Environment: true,
+  EphemeralStorage: true,
   FileSystemConfigs: true,
   FunctionName: true,
   Handler: true,
