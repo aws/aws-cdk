@@ -366,7 +366,6 @@ describe('Graphs', () => {
       properties: {
         title: 'CustomWidget',
         endpoint: 'arn:aws:lambda:us-east-1:123456789:function:customwidgetfunction',
-        params: {},
         updateOn: {
           refresh: true,
           resize: true,

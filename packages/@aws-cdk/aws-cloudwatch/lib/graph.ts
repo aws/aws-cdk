@@ -417,7 +417,7 @@ export interface CustomWidgetProps {
   /**
    * Parameters passed to the lambda function
    *
-   * @default {}
+   * @default - no parameters are passed to the lambda function
    */
   readonly params?: any;
 }
@@ -443,7 +443,7 @@ export class CustomWidget extends ConcreteWidget {
       y: this.y,
       properties: {
         endpoint: this.props.functionArn,
-        params: this.props.params ?? {},
+        params: this.props.params,
         title: this.props.title,
         updateOn: {
           refresh: this.props.updateOnRefresh ?? true,
