@@ -1,12 +1,12 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import { DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, FileAssetSource } from '../assets';
-import { ISynthesisSession } from '../construct-compat';
 import { Stack } from '../stack';
 import { Token } from '../token';
 import { AssetManifestBuilder } from './_asset-manifest-builder';
 import { assertBound, StringSpecializer, stackTemplateFileAsset } from './_shared';
 import { BOOTSTRAP_QUALIFIER_CONTEXT, DefaultStackSynthesizer } from './default-synthesizer';
 import { StackSynthesizer } from './stack-synthesizer';
+import { ISynthesisSession } from './types';
 
 /**
  * Properties for the CliCredentialsStackSynthesizer
