@@ -393,7 +393,7 @@ describe('lambda authorizer', () => {
       PolicyDocument: {
         Statement: [
           {
-            Resource: stack.resolve(func.functionArn),
+            Resource: stack.resolve(func.resourceArnsForGrantInvoke),
             Action: 'lambda:InvokeFunction',
             Effect: 'Allow',
           },
@@ -485,7 +485,7 @@ describe('lambda authorizer', () => {
       PolicyDocument: {
         Statement: [
           {
-            Resource: stack.resolve(func.functionArn),
+            Resource: stack.resolve(func.resourceArnsForGrantInvoke),
             Action: 'lambda:InvokeFunction',
             Effect: 'Allow',
           },

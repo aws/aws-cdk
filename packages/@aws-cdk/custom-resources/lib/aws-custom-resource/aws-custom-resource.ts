@@ -195,6 +195,13 @@ export class AwsCustomResourcePolicy {
    *
    * Each SDK call with be translated to an IAM Policy Statement in the form of: `call.service:call.action` (e.g `s3:PutObject`).
    *
+   * This policy generator assumes the IAM policy name has the same name as the API
+   * call. This is true in 99% of cases, but there are exceptions (for example,
+   * S3's `PutBucketLifecycleConfiguration` requires
+   * `s3:PutLifecycleConfiguration` permissions, Lambda's `Invoke` requires
+   * `lambda:InvokeFunction` permissions). Use `fromStatements` if you want to
+   * do a call that requires different IAM action names.
+   *
    * @param options options for the policy generation
    */
   public static fromSdkCalls(options: SdkCallsPolicyOptions) {

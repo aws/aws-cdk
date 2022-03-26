@@ -577,6 +577,16 @@ export enum InstanceClass {
   X2IDN = 'x2idn',
 
   /**
+   * Memory-intensive instances with higher network bandwith and single-threaded performance, Intel Xeon Scalable (Cascade Lake) processors
+   */
+  MEMORY_INTENSIVE_2_XTZ_INTEL = 'x2iezn',
+
+  /**
+   * Memory-intensive instances with higher network bandwith and single-threaded performance, Intel Xeon Scalable (Cascade Lake) processors
+   */
+  X2IEZN = 'x2iezn',
+
+  /**
    * Instances with customizable hardware acceleration, 1st generation
    */
   FPGA1 = 'f1',

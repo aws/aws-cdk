@@ -58,12 +58,28 @@
             {
               "Action": "lambda:InvokeFunction",
               "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "funcC3A0C2E2",
-                  "Arn"
-                ]
-              }
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "funcC3A0C2E2",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "funcC3A0C2E2",
+                          "Arn"
+                        ]
+                      },
+                      ":*"
+                    ]
+                  ]
+                }
+              ]
             }
           ],
           "Version": "2012-10-17"

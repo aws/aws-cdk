@@ -36,6 +36,7 @@ Import it into your code:
 
 ```ts nofixture
 import * as iot from '@aws-cdk/aws-iot';
+import * as actions from '@aws-cdk/aws-iot-actions';
 ```
 
 ## `TopicRule`

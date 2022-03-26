@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { Match, Template } from '@aws-cdk/assertions';
+import { Annotations, Match, Template } from '@aws-cdk/assertions';
 import { Protocol } from '@aws-cdk/aws-ec2';
 import { Repository } from '@aws-cdk/aws-ecr';
 import * as iam from '@aws-cdk/aws-iam';
@@ -90,8 +90,6 @@ describe('ec2 task definition', () => {
           },
         ],
       });
-
-
     });
 
     test('correctly sets placement constraint', () => {
@@ -112,8 +110,6 @@ describe('ec2 task definition', () => {
         ],
 
       });
-
-
     });
 
     test('correctly sets network mode', () => {
@@ -127,8 +123,6 @@ describe('ec2 task definition', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
         NetworkMode: ecs.NetworkMode.AWS_VPC,
       });
-
-
     });
 
     test('correctly sets ipc mode', () => {
@@ -142,8 +136,6 @@ describe('ec2 task definition', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
         IpcMode: ecs.IpcMode.TASK,
       });
-
-
     });
 
     test('correctly sets pid mode', () => {
@@ -157,8 +149,6 @@ describe('ec2 task definition', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
         PidMode: ecs.PidMode.HOST,
       });
-
-
     });
 
     test('correctly sets containers', () => {
@@ -233,8 +223,6 @@ describe('ec2 task definition', () => {
           ],
         },
       });
-
-
     });
 
     test('all container definition options defined', () => {
@@ -440,8 +428,6 @@ describe('ec2 task definition', () => {
           },
         ],
       });
-
-
     });
 
     test('correctly sets containers from ECR repository using all props', () => {
@@ -466,6 +452,9 @@ describe('ec2 task definition', () => {
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::ECR::Repository', {
+        ImageScanningConfiguration: {
+          ScanOnPush: false,
+        },
         LifecyclePolicy: {
           // eslint-disable-next-line max-len
           LifecyclePolicyText: '{"rules":[{"rulePriority":10,"selection":{"tagStatus":"tagged","tagPrefixList":["abc"],"countType":"imageCountMoreThan","countNumber":1},"action":{"type":"expire"}}]}',
@@ -531,8 +520,6 @@ describe('ec2 task definition', () => {
           Name: 'web',
         }],
       });
-
-
     });
 
     test('correctly sets containers from ECR repository using an image tag', () => {
@@ -688,9 +675,11 @@ describe('ec2 task definition', () => {
       });
 
       // THEN
-      Template.fromStack(stack).hasResourceProperties('AWS::ECR::Repository', {});
-
-
+      Template.fromStack(stack).hasResourceProperties('AWS::ECR::Repository', {
+        ImageScanningConfiguration: {
+          ScanOnPush: false,
+        },
+      });
     });
 
     test('warns when setting containers from ECR repository using fromRegistry method', () => {
@@ -700,14 +689,13 @@ describe('ec2 task definition', () => {
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
       // WHEN
-      const container = taskDefinition.addContainer('web', {
+      taskDefinition.addContainer('web', {
         image: ecs.ContainerImage.fromRegistry('ACCOUNT.dkr.ecr.REGION.amazonaws.com/REPOSITORY'),
         memoryLimitMiB: 512,
       });
 
       // THEN
-      expect(container.node.metadata[0].data).toEqual("Proper policies need to be attached before pulling from ECR repository, or use 'fromEcrRepository'.");
-
+      Annotations.fromStack(stack).hasWarning('/Default/Ec2TaskDef/web', "Proper policies need to be attached before pulling from ECR repository, or use 'fromEcrRepository'.");
     });
 
     test('warns when setting containers from ECR repository by creating a RepositoryImage class', () => {
@@ -719,15 +707,13 @@ describe('ec2 task definition', () => {
       const repo = new ecs.RepositoryImage('ACCOUNT.dkr.ecr.REGION.amazonaws.com/REPOSITORY');
 
       // WHEN
-      const container = taskDefinition.addContainer('web', {
+      taskDefinition.addContainer('web', {
         image: repo,
         memoryLimitMiB: 512,
       });
 
       // THEN
-      expect(container.node.metadata[0].data).toEqual("Proper policies need to be attached before pulling from ECR repository, or use 'fromEcrRepository'.");
-
-
+      Annotations.fromStack(stack).hasWarning('/Default/Ec2TaskDef/web', "Proper policies need to be attached before pulling from ECR repository, or use 'fromEcrRepository'.");
     });
 
     class MyApp extends cdk.App {
@@ -782,8 +768,6 @@ describe('ec2 task definition', () => {
           },
         ],
       });
-
-
     });
 
     test('correctly sets containers from asset using all props', () => {
@@ -798,8 +782,6 @@ describe('ec2 task definition', () => {
         }),
         memoryLimitMiB: 512,
       });
-
-
     });
 
     test('correctly sets scratch space', () => {
@@ -890,8 +872,6 @@ describe('ec2 task definition', () => {
           }],
         })],
       });
-
-
     });
     test('correctly sets links', () => {
       const stack = new cdk.Stack();
@@ -1016,8 +996,6 @@ describe('ec2 task definition', () => {
           ],
         },
       });
-
-
     });
 
     test('correctly sets volumes', () => {
@@ -1091,8 +1069,6 @@ describe('ec2 task definition', () => {
           },
         ],
       });
-
-
     });
 
     test('correctly sets taskRole', () => {
@@ -1113,8 +1089,6 @@ describe('ec2 task definition', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
         TaskRoleArn: stack.resolve(taskDefinition.taskRole.roleArn),
       });
-
-
     });
 
     test('automatically sets taskRole by default', () => {
@@ -1126,8 +1100,6 @@ describe('ec2 task definition', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
         TaskRoleArn: stack.resolve(taskDefinition.taskRole.roleArn),
       });
-
-
     });
 
     test('correctly sets dockerVolumeConfiguration', () => {
@@ -1167,8 +1139,6 @@ describe('ec2 task definition', () => {
           },
         }],
       });
-
-
     });
 
     test('correctly sets efsVolumeConfiguration', () => {
@@ -1200,8 +1170,6 @@ describe('ec2 task definition', () => {
           },
         }],
       });
-
-
     });
   });
 

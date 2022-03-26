@@ -44,7 +44,7 @@
         "StateMachineRoleB840431D"
       ]
     },
-    "StartSyncExecutionRoleDE73CB90": {
+    "StepFunctionsRestApiANYStartSyncExecutionRole425C03BB": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -61,7 +61,7 @@
         }
       }
     },
-    "StartSyncExecutionRoleDefaultPolicy5A5803F8": {
+    "StepFunctionsRestApiANYStartSyncExecutionRoleDefaultPolicy7B6D0CED": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -76,10 +76,10 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "StartSyncExecutionRoleDefaultPolicy5A5803F8",
+        "PolicyName": "StepFunctionsRestApiANYStartSyncExecutionRoleDefaultPolicy7B6D0CED",
         "Roles": [
           {
-            "Ref": "StartSyncExecutionRoleDE73CB90"
+            "Ref": "StepFunctionsRestApiANYStartSyncExecutionRole425C03BB"
           }
         ]
       }
@@ -152,7 +152,7 @@
         "Integration": {
           "Credentials": {
             "Fn::GetAtt": [
-              "StartSyncExecutionRoleDE73CB90",
+              "StepFunctionsRestApiANYStartSyncExecutionRole425C03BB",
               "Arn"
             ]
           },

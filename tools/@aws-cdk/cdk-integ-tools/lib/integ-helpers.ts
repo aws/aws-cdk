@@ -1,4 +1,5 @@
 // Helper functions for integration tests
+import * as assert from 'assert';
 import { spawnSync } from 'child_process';
 import * as path from 'path';
 import { TARGET_PARTITIONS } from '@aws-cdk/cx-api';
@@ -246,7 +247,21 @@ export class IntegrationTest {
     return JSON.parse(await fs.readFile(this.expectedFilePath, { encoding: 'utf-8' }));
   }
 
+  /**
+   * Write the expected JSON to the given file
+   *
+   * Only write the file if the evaluated contents of the JSON are actually
+   * different. This prevents silly diffs where different JSON stringifications
+   * lead to different spacings or ordering, even if nothing actually changed in
+   * the file.
+   */
   public async writeExpected(actual: any) {
+    if (await fs.pathExists(this.expectedFilePath)) {
+      const original = await fs.readJson(this.expectedFilePath);
+      if (deepEqual(original, actual)) {
+        return; // Nothing to do
+      }
+    }
     await fs.writeFile(this.expectedFilePath, JSON.stringify(actual, undefined, 2), { encoding: 'utf-8' });
   }
 
@@ -407,5 +422,14 @@ function exec(commandLine: string[], options: { cwd?: string, json?: boolean, ve
     // eslint-disable-next-line no-console
     console.error('Not JSON: ' + output);
     throw new Error('Command output is not JSON');
+  }
+}
+
+function deepEqual(a: any, b: any) {
+  try {
+    assert.deepEqual(a, b);
+    return true;
+  } catch (e) {
+    return false;
   }
 }

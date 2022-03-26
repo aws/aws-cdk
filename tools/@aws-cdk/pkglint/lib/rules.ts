@@ -1661,18 +1661,6 @@ export class UbergenPackageVisibility extends ValidationRule {
           },
         });
       }
-    } else {
-      if (pkg.json.private && !pkg.json.ubergen?.exclude) {
-        pkg.report({
-          ruleName: this.name,
-          message: 'ubergen.exclude must be configured for private packages',
-          fix: () => {
-            pkg.json.ubergen = {
-              exclude: true,
-            };
-          },
-        });
-      }
     }
   }
 }

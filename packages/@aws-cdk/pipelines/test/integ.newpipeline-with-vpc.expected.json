@@ -18,11 +18,11 @@
     "VpcPublicSubnet1Subnet5C2D37C4": {
       "Type": "AWS::EC2::Subnet",
       "Properties": {
-        "CidrBlock": "10.0.0.0/19",
         "VpcId": {
           "Ref": "Vpc8378EB38"
         },
         "AvailabilityZone": "test-region-1a",
+        "CidrBlock": "10.0.0.0/19",
         "MapPublicIpOnLaunch": true,
         "Tags": [
           {
@@ -115,11 +115,11 @@
     "VpcPublicSubnet2Subnet691E08A3": {
       "Type": "AWS::EC2::Subnet",
       "Properties": {
-        "CidrBlock": "10.0.32.0/19",
         "VpcId": {
           "Ref": "Vpc8378EB38"
         },
         "AvailabilityZone": "test-region-1b",
+        "CidrBlock": "10.0.32.0/19",
         "MapPublicIpOnLaunch": true,
         "Tags": [
           {
@@ -212,11 +212,11 @@
     "VpcPublicSubnet3SubnetBE12F0B6": {
       "Type": "AWS::EC2::Subnet",
       "Properties": {
-        "CidrBlock": "10.0.64.0/19",
         "VpcId": {
           "Ref": "Vpc8378EB38"
         },
         "AvailabilityZone": "test-region-1c",
+        "CidrBlock": "10.0.64.0/19",
         "MapPublicIpOnLaunch": true,
         "Tags": [
           {
@@ -309,11 +309,11 @@
     "VpcPrivateSubnet1Subnet536B997A": {
       "Type": "AWS::EC2::Subnet",
       "Properties": {
-        "CidrBlock": "10.0.96.0/19",
         "VpcId": {
           "Ref": "Vpc8378EB38"
         },
         "AvailabilityZone": "test-region-1a",
+        "CidrBlock": "10.0.96.0/19",
         "MapPublicIpOnLaunch": false,
         "Tags": [
           {
@@ -371,11 +371,11 @@
     "VpcPrivateSubnet2Subnet3788AAA1": {
       "Type": "AWS::EC2::Subnet",
       "Properties": {
-        "CidrBlock": "10.0.128.0/19",
         "VpcId": {
           "Ref": "Vpc8378EB38"
         },
         "AvailabilityZone": "test-region-1b",
+        "CidrBlock": "10.0.128.0/19",
         "MapPublicIpOnLaunch": false,
         "Tags": [
           {
@@ -433,11 +433,11 @@
     "VpcPrivateSubnet3SubnetF258B56E": {
       "Type": "AWS::EC2::Subnet",
       "Properties": {
-        "CidrBlock": "10.0.160.0/19",
         "VpcId": {
           "Ref": "Vpc8378EB38"
         },
         "AvailabilityZone": "test-region-1c",
+        "CidrBlock": "10.0.160.0/19",
         "MapPublicIpOnLaunch": false,
         "Tags": [
           {
@@ -607,16 +607,16 @@
           "Statement": [
             {
               "Action": [
-                "s3:GetObject*",
-                "s3:GetBucket*",
-                "s3:List*",
+                "s3:Abort*",
                 "s3:DeleteObject*",
+                "s3:GetBucket*",
+                "s3:GetObject*",
+                "s3:List*",
                 "s3:PutObject",
                 "s3:PutObjectLegalHold",
                 "s3:PutObjectRetention",
                 "s3:PutObjectTagging",
-                "s3:PutObjectVersionTagging",
-                "s3:Abort*"
+                "s3:PutObjectVersionTagging"
               ],
               "Effect": "Allow",
               "Resource": [
@@ -645,42 +645,32 @@
             {
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "PipelineBuildSynthCodePipelineActionRole4E7A6C97",
-                  "Arn"
-                ]
-              }
-            },
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "PipelineUpdatePipelineSelfMutateCodePipelineActionRoleD6D4E5CF",
-                  "Arn"
-                ]
-              }
-            },
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "PipelineBetaPrepareCodePipelineActionRoleB746DA86",
-                  "Arn"
-                ]
-              }
-            },
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "PipelineBetaDeployCodePipelineActionRole2B286DC9",
-                  "Arn"
-                ]
-              }
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "PipelineBetaDeployCodePipelineActionRole2B286DC9",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::GetAtt": [
+                    "PipelineBetaPrepareCodePipelineActionRoleB746DA86",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::GetAtt": [
+                    "PipelineBuildSynthCodePipelineActionRole4E7A6C97",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::GetAtt": [
+                    "PipelineUpdatePipelineSelfMutateCodePipelineActionRoleD6D4E5CF",
+                    "Arn"
+                  ]
+                }
+              ]
             }
           ],
           "Version": "2012-10-17"
@@ -1035,7 +1025,8 @@
                       ":logs:test-region:12345678:log-group:/aws/codebuild/",
                       {
                         "Ref": "PipelineBuildSynthCdkBuildProject6BEFA8E6"
-                      }
+                      },
+                      ":*"
                     ]
                   ]
                 },
@@ -1050,8 +1041,7 @@
                       ":logs:test-region:12345678:log-group:/aws/codebuild/",
                       {
                         "Ref": "PipelineBuildSynthCdkBuildProject6BEFA8E6"
-                      },
-                      ":*"
+                      }
                     ]
                   ]
                 }
@@ -1059,11 +1049,11 @@
             },
             {
               "Action": [
-                "codebuild:CreateReportGroup",
-                "codebuild:CreateReport",
-                "codebuild:UpdateReport",
+                "codebuild:BatchPutCodeCoverages",
                 "codebuild:BatchPutTestCases",
-                "codebuild:BatchPutCodeCoverages"
+                "codebuild:CreateReport",
+                "codebuild:CreateReportGroup",
+                "codebuild:UpdateReport"
               ],
               "Effect": "Allow",
               "Resource": {
@@ -1085,16 +1075,16 @@
             },
             {
               "Action": [
-                "s3:GetObject*",
-                "s3:GetBucket*",
-                "s3:List*",
+                "s3:Abort*",
                 "s3:DeleteObject*",
+                "s3:GetBucket*",
+                "s3:GetObject*",
+                "s3:List*",
                 "s3:PutObject",
                 "s3:PutObjectLegalHold",
                 "s3:PutObjectRetention",
                 "s3:PutObjectTagging",
-                "s3:PutObjectVersionTagging",
-                "s3:Abort*"
+                "s3:PutObjectVersionTagging"
               ],
               "Effect": "Allow",
               "Resource": [
@@ -1212,11 +1202,11 @@
             {
               "Action": [
                 "ec2:CreateNetworkInterface",
-                "ec2:DescribeNetworkInterfaces",
                 "ec2:DeleteNetworkInterface",
-                "ec2:DescribeSubnets",
-                "ec2:DescribeSecurityGroups",
                 "ec2:DescribeDhcpOptions",
+                "ec2:DescribeNetworkInterfaces",
+                "ec2:DescribeSecurityGroups",
+                "ec2:DescribeSubnets",
                 "ec2:DescribeVpcs"
               ],
               "Effect": "Allow",
@@ -1394,8 +1384,8 @@
             },
             {
               "Action": [
-                "s3:GetObject*",
                 "s3:GetBucket*",
+                "s3:GetObject*",
                 "s3:List*"
               ],
               "Effect": "Allow",
@@ -1483,8 +1473,8 @@
           "Statement": [
             {
               "Action": [
-                "s3:GetObject*",
                 "s3:GetBucket*",
+                "s3:GetObject*",
                 "s3:List*"
               ],
               "Effect": "Allow",
@@ -1737,7 +1727,8 @@
                       ":logs:test-region:12345678:log-group:/aws/codebuild/",
                       {
                         "Ref": "PipelineUpdatePipelineSelfMutationDAA41400"
-                      }
+                      },
+                      ":*"
                     ]
                   ]
                 },
@@ -1752,8 +1743,7 @@
                       ":logs:test-region:12345678:log-group:/aws/codebuild/",
                       {
                         "Ref": "PipelineUpdatePipelineSelfMutationDAA41400"
-                      },
-                      ":*"
+                      }
                     ]
                   ]
                 }
@@ -1761,11 +1751,11 @@
             },
             {
               "Action": [
-                "codebuild:CreateReportGroup",
-                "codebuild:CreateReport",
-                "codebuild:UpdateReport",
+                "codebuild:BatchPutCodeCoverages",
                 "codebuild:BatchPutTestCases",
-                "codebuild:BatchPutCodeCoverages"
+                "codebuild:CreateReport",
+                "codebuild:CreateReportGroup",
+                "codebuild:UpdateReport"
               ],
               "Effect": "Allow",
               "Resource": {
@@ -1800,19 +1790,17 @@
               "Resource": "arn:*:iam::12345678:role/*"
             },
             {
-              "Action": "cloudformation:DescribeStacks",
-              "Effect": "Allow",
-              "Resource": "*"
-            },
-            {
-              "Action": "s3:ListBucket",
+              "Action": [
+                "cloudformation:DescribeStacks",
+                "s3:ListBucket"
+              ],
               "Effect": "Allow",
               "Resource": "*"
             },
             {
               "Action": [
-                "s3:GetObject*",
                 "s3:GetBucket*",
+                "s3:GetObject*",
                 "s3:List*"
               ],
               "Effect": "Allow",
@@ -1931,11 +1919,11 @@
             {
               "Action": [
                 "ec2:CreateNetworkInterface",
-                "ec2:DescribeNetworkInterfaces",
                 "ec2:DeleteNetworkInterface",
-                "ec2:DescribeSubnets",
-                "ec2:DescribeSecurityGroups",
                 "ec2:DescribeDhcpOptions",
+                "ec2:DescribeNetworkInterfaces",
+                "ec2:DescribeSecurityGroups",
+                "ec2:DescribeSubnets",
                 "ec2:DescribeVpcs"
               ],
               "Effect": "Allow",

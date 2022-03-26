@@ -103,8 +103,8 @@
             {
               "Action": [
                 "ecr:BatchCheckLayerAvailability",
-                "ecr:GetDownloadUrlForLayer",
-                "ecr:BatchGetImage"
+                "ecr:BatchGetImage",
+                "ecr:GetDownloadUrlForLayer"
               ],
               "Effect": "Allow",
               "Resource": {
@@ -194,8 +194,8 @@
             },
             {
               "Action": [
-                "ecs:StopTask",
-                "ecs:DescribeTasks"
+                "ecs:DescribeTasks",
+                "ecs:StopTask"
               ],
               "Effect": "Allow",
               "Resource": "*"
@@ -206,13 +206,13 @@
               "Resource": [
                 {
                   "Fn::GetAtt": [
-                    "TaskDefTaskRole1EDB4A67",
+                    "TaskDefExecutionRoleB4775C97",
                     "Arn"
                   ]
                 },
                 {
                   "Fn::GetAtt": [
-                    "TaskDefExecutionRoleB4775C97",
+                    "TaskDefTaskRole1EDB4A67",
                     "Arn"
                   ]
                 }
@@ -220,9 +220,9 @@
             },
             {
               "Action": [
-                "events:PutTargets",
+                "events:DescribeRule",
                 "events:PutRule",
-                "events:DescribeRule"
+                "events:PutTargets"
               ],
               "Effect": "Allow",
               "Resource": {
