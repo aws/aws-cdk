@@ -1,3 +1,4 @@
+import { Annotations } from '@aws-cdk/assertions';
 import * as cdk from '@aws-cdk/core';
 import { IConstruct } from 'constructs';
 import * as s3 from '../lib';
@@ -13,9 +14,7 @@ describe('aspect', () => {
     cdk.Aspects.of(stack).add(new BucketVersioningChecker());
 
     // THEN
-    const assembly = app.synth().getStackArtifact(stack.artifactId);
-    const errorMessage = assembly.messages.find(m => m.entry.data === 'Bucket versioning is not enabled');
-    expect(errorMessage).toBeDefined();
+    Annotations.fromStack(stack).hasError('/Default/MyBucket/Resource', 'Bucket versioning is not enabled');
   });
 
   test('bucket must have versioning: success', () => {
@@ -30,8 +29,7 @@ describe('aspect', () => {
     cdk.Aspects.of(stack).add(new BucketVersioningChecker());
 
     // THEN
-    const assembly = app.synth().getStackArtifact(stack.artifactId);
-    expect(assembly.messages.length).toEqual(0);
+    Annotations.fromStack(stack).hasNoError('/Default/MyBucket/Resource', 'Bucket versioning is not enabled');
   });
 });
 

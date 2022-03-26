@@ -234,9 +234,17 @@ Integration tests perform a few functions in the CDK code base -
 3. (Optionally) Acts as a way to validate that constructs set up the CloudFormation resources as expected. A successful
    CloudFormation deployment does not mean that the resources are set up correctly.
 
-If you are working on a new feature that is using previously unused CloudFormation resource types, or involves
-configuring resource types across services, you need to write integration tests that use these resource types or
-features.
+**When are integration tests required?**
+
+The following list contains common scenarios where we _know_ that integration tests are required.
+This is not an exhaustive list and we will, by default, require integration tests for all
+new features unless there is a good reason why one is not needed.
+
+1. Adding a new feature that is using previously unused CloudFormation resource types
+2. Adding a new feature that is using previously unused (or untested) CloudFormation properties
+3. Involves configuring resource types across services (i.e. integrations)
+4. Adding a new supported version (e.g. a new [AuroraMysqlEngineVersion](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_rds.AuroraMysqlEngineVersion.html))
+5. Adding any functionality via a [Custom Resource](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.custom_resources-readme.html)
 
 To the extent possible, include a section (like below) in the integration test file that specifies how the successfully
 deployed stack can be verified for correctness. Correctness here implies that the resources have been set up correctly.
@@ -253,6 +261,16 @@ The steps here are usually AWS CLI commands but they need not be.
 Examples:
 * [integ.destinations.ts](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/aws-lambda-destinations/test/integ.destinations.ts#L7)
 * [integ.token-authorizer.lit.ts](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/aws-apigateway/test/authorizers/integ.token-authorizer.lit.ts#L7-L12)
+
+**What do do if you cannot run integration tests**
+
+If you are working on a PR that requires an update to an integration test and you are unable
+to run the `cdk-integ` tool to perform a real deployment, please call this out on the pull request
+so a maintainer can run the tests for you. Please **do not** run the `cdk-integ` tool with `--dry-run`
+or manually update the snapshot.
+
+See the [integration test guide](./INTEGRATION_TESTS.md) for a more complete guide on running
+CDK integration tests.
 
 #### yarn watch (Optional)
 
@@ -292,6 +310,8 @@ $ yarn watch & # runs in the background
 
 * Shout out to collaborators.
 
+* Call out any new [unconventional dependencies](#adding-new-unconventional-dependencies) that are created as part of your PR.
+
 * If not obvious (i.e. from unit tests), describe how you verified that your change works.
 
 * If this PR includes breaking changes, they must be listed at the end in the following format
@@ -311,6 +331,30 @@ $ yarn watch & # runs in the background
 
 * Make sure to update the PR title/description if things change. The PR title/description are going to be used as the
   commit title/message and will appear in the CHANGELOG, so maintain them all the way throughout the process.
+
+#### Adding new unconventional dependencies
+
+**For the aws-cdk an unconventional dependency is defined as any dependency that is not managed via the module's
+`package.json` file.**
+
+Sometimes constructs introduce new unconventional dependencies.  Any new unconventional dependency that is introduced needs to have
+an auto upgrade process in place. The recommended way to update dependencies is through [dependabot](https://docs.github.com/en/code-security/supply-chain-security/keeping-your-dependencies-updated-automatically/configuration-options-for-dependency-updates). 
+You can find the dependabot config file [here](./.github/dependabot.yml).
+
+An example of this is the [@aws-cdk/lambda-layer-awscli](packages/@aws-cdk/lambda-layer-awscli) module.
+This module creates a lambda layer that bundles the AWS CLI. This is considered an unconventional
+dependency because the AWS CLI is bundled into the CDK as part of the build, and the version
+of the AWS CLI that is bundled is not managed by the `package.json` file. 
+
+In order to automatically update the version of the AWS CLI, a custom build process was
+created that takes upgrades into consideration. You can take a look at the files in
+[packages/@aws-cdk/lambda-layer-awscli/layer](packages/@aws-cdk/lambda-layer-awscli/layer)
+to see how the build works, but at a high level a [requirements.txt](packages/@aws-cdk/lambda-layer-awscli/layer/requirements.txt)
+file was created to manage the version. This file was then added to [dependabot.yml](https://github.com/aws/aws-cdk/blob/ab57eb6d1ed69b40ed6ec774853c275785acace8/.github/dependabot.yml#L14-L20)
+so that dependabot will automatically upgrade the version as new versions are released.
+
+**If you think your PR introduces a new unconventional dependency, make sure to call it
+out in the description so that we can discuss the best way to manage that dependency.**
 
 ### Step 5: Merge
 
@@ -342,6 +386,7 @@ Breaking changes come in two flavors:
 
 * API surface changes
 * Behavior changes
+
 
 ### API surface changes
 

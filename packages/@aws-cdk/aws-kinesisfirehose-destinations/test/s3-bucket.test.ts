@@ -341,7 +341,10 @@ describe('S3 destination', () => {
             {
               Action: 'lambda:InvokeFunction',
               Effect: 'Allow',
-              Resource: stack.resolve(lambdaFunction.functionArn),
+              Resource: [
+                stack.resolve(lambdaFunction.functionArn),
+                { 'Fn::Join': ['', [stack.resolve(lambdaFunction.functionArn), ':*']] },
+              ],
             },
           ]),
         },
