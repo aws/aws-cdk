@@ -647,3 +647,93 @@ test('uses the specific fargate platform version', () => {
     ],
   });
 });
+
+test('sets TagList for scheduled ECS task', () => {
+  // GIVEN
+  const taskTags = {
+    'test-tag-key': 'test-tag-value',
+  };
+
+  const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef');
+  taskDefinition.addContainer('TheContainer', {
+    image: ecs.ContainerImage.fromRegistry('henk'),
+  });
+
+  const rule = new events.Rule(stack, 'Rule', {
+    schedule: events.Schedule.expression('rate(1 min)'),
+  });
+
+  // WHEN
+  rule.addTarget(new targets.EcsTask({
+    cluster,
+    taskDefinition,
+    taskCount: 1,
+    taskTags,
+    containerOverrides: [{
+      containerName: 'TheContainer',
+      command: ['echo', events.EventField.fromPath('$.detail.event')],
+    }],
+  }));
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+    Targets: [
+      {
+        Arn: { 'Fn::GetAtt': ['EcsCluster97242B84', 'Arn'] },
+        EcsParameters: {
+          LaunchType: 'FARGATE',
+          TagList: [
+            { Key: 'test-tag-key', Value: 'test-tag-value' },
+          ],
+          TaskCount: 1,
+          TaskDefinitionArn: {
+            Ref: 'TaskDef54694570',
+          },
+        },
+        Id: 'Target0',
+      },
+    ],
+  });
+});
+
+test('sets PropagateTags for scheduled ECS task', () => {
+  // GIVEN
+  const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef');
+  taskDefinition.addContainer('TheContainer', {
+    image: ecs.ContainerImage.fromRegistry('henk'),
+  });
+
+  const rule = new events.Rule(stack, 'Rule', {
+    schedule: events.Schedule.expression('rate(1 min)'),
+  });
+
+  // WHEN
+  rule.addTarget(new targets.EcsTask({
+    cluster,
+    taskDefinition,
+    taskCount: 1,
+    propagateTags: targets.PropagatedTagSource.TASK_DEFINITION,
+    containerOverrides: [{
+      containerName: 'TheContainer',
+      command: ['echo', events.EventField.fromPath('$.detail.event')],
+    }],
+  }));
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+    Targets: [
+      {
+        Arn: { 'Fn::GetAtt': ['EcsCluster97242B84', 'Arn'] },
+        EcsParameters: {
+          LaunchType: 'FARGATE',
+          PropagateTags: targets.PropagatedTagSource.TASK_DEFINITION,
+          TaskCount: 1,
+          TaskDefinitionArn: {
+            Ref: 'TaskDef54694570',
+          },
+        },
+        Id: 'Target0',
+      },
+    ],
+  });
+});

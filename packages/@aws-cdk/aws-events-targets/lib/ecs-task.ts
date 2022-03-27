@@ -7,6 +7,16 @@ import { ContainerOverride } from './ecs-task-properties';
 import { singletonEventRole } from './util';
 
 /**
+ * Ony propagate tags from task definition supported
+ */
+export enum PropagatedTagSource {
+  /**
+   * Propagate tags from task definition
+   */
+  TASK_DEFINITION = 'TASK_DEFINITION',
+}
+
+/**
  * Properties to define an ECS Event Task
  */
 export interface EcsTaskProps {
@@ -80,6 +90,20 @@ export interface EcsTaskProps {
    * @default - ECS will set the Fargate platform version to 'LATEST'
    */
   readonly platformVersion?: ecs.FargatePlatformVersion;
+
+  /**
+   * Array of tags to add to the ECS task
+   *
+   * @default Skipped in the generated template
+   */
+  readonly taskTags?: { [key: string]: string };
+
+  /**
+   * Specify tag propagation source
+   *
+   * @default Skipped in the generated template
+   */
+  readonly propagateTags?: PropagatedTagSource;
 }
 
 /**
@@ -107,6 +131,8 @@ export class EcsTask implements events.IRuleTarget {
   private readonly taskCount: number;
   private readonly role: iam.IRole;
   private readonly platformVersion?: ecs.FargatePlatformVersion;
+  private readonly tagList?: { key: string, value: string }[];
+  private readonly propagateTags?: PropagatedTagSource;
 
   constructor(private readonly props: EcsTaskProps) {
     if (props.securityGroup !== undefined && props.securityGroups !== undefined) {
@@ -148,6 +174,15 @@ export class EcsTask implements events.IRuleTarget {
     securityGroup = securityGroup || new ec2.SecurityGroup(this.taskDefinition, 'SecurityGroup', { vpc: this.props.cluster.vpc });
     this.securityGroup = securityGroup; // Maintain backwards-compatibility for customers that read the generated security group.
     this.securityGroups = [securityGroup];
+
+    this.tagList = props.taskTags
+      ? Object.entries(props.taskTags).map((entry) => ({
+        key: entry[0],
+        value: entry[1],
+      }))
+      : undefined;
+
+    this.propagateTags = props.propagateTags;
   }
 
   /**
@@ -179,6 +214,8 @@ export class EcsTask implements events.IRuleTarget {
             securityGroups: this.securityGroups && this.securityGroups.map(sg => sg.securityGroupId),
           },
         },
+        tagList: this.tagList,
+        propagateTags: this.propagateTags,
       }
       : baseEcsParameters;
 
