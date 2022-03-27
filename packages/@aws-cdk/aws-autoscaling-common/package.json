@@ -76,7 +76,7 @@
     "@aws-cdk/pkglint": "0.0.0",
     "@types/jest": "^27.4.0",
     "fast-check": "^2.21.0",
-    "jest": "^27.4.7"
+    "jest": "^27.5.1"
   },
   "dependencies": {
     "@aws-cdk/aws-iam": "0.0.0",

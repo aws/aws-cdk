@@ -40,7 +40,7 @@
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^4.3.1",
     "eslint-plugin-standard": "^4.1.0",
-    "jest": "^27.4.7",
+    "jest": "^27.5.1",
     "lambda-tester": "^3.6.0",
     "sinon": "^9.2.4",
     "nock": "^13.2.4",

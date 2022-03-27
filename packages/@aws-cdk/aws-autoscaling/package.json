@@ -87,7 +87,7 @@
     "@aws-cdk/cx-api": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
     "@types/jest": "^27.4.0",
-    "jest": "^27.4.7"
+    "jest": "^27.5.1"
   },
   "dependencies": {
     "@aws-cdk/aws-autoscaling-common": "0.0.0",
