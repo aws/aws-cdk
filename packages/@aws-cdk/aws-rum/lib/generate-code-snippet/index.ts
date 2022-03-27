@@ -2,7 +2,7 @@
 import { execSync } from 'child_process';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import * as AWS from 'aws-sdk';
-import { WebClientConfigurationOption } from '../app-monitor';
+import { CodeSnippetOptions } from '../code-snippet';
 
 interface ErrorsTelemetryOption {
   stackTraceLength?: number;
@@ -23,7 +23,7 @@ type InteractionTelemetryConfig =
   | 'interaction'
   | readonly ['interaction', InteractionTelemetryOption];
 interface PerformanceTelemetryOption {
-  eventLimit: number;
+  eventLimit?: number;
 }
 type PerformanceTelemetryConfig =
   | 'performance'
@@ -34,10 +34,11 @@ type TelemetryConfig =
   | InteractionTelemetryConfig
   | PerformanceTelemetryConfig;
 interface CookieAttibute {
-  domain?: string
-  path?: string
-  sameSite?: boolean
-  secure?: boolean
+  domain?: string;
+  path?: string;
+  sameSite?: boolean;
+  secure?: boolean;
+  unique?: boolean;
 }
 
 interface WebClientConfiguration {
@@ -104,12 +105,15 @@ class JSBoolean extends JavaScriptType {
   }
 }
 
-type DeepStringType<T> = {
-  [P in keyof T]: T[P] extends object | undefined ? DeepStringType<T[P]> : string
-}
+type DeepStringType<T> = T extends any[] ? DeepStringType<(T[number])>[]
+  : T extends JavaScriptType ? string
+    : T extends object | undefined ? {
+      [P in keyof T]: DeepStringType<T[P]>
+    } : T extends string ? T : string;
+
 
 type DeepJSType<T> = T extends [] ? DeepJSType<(T[number])>[] : T extends object ? {
-  [P in keyof T]: T[P] extends object ? DeepJSType<T[P]> : DeepJSType<T[P]>
+  [P in keyof T]: DeepJSType<T[P]>
 } : T extends number ? number | JSNumber : T extends boolean ? boolean | JSBoolean : T
 
 /**
@@ -182,65 +186,77 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
     const sdkPath = installLatestSdk();
     // eslint-disable-next-line import/no-extraneous-dependencies, @typescript-eslint/no-require-imports
     const aws = require(sdkPath);
-    const region = event.ResourceProperties.region ?? process.env.AWS_DEFAULT_REGION;
-    const rum = new (aws as typeof AWS).RUM({ region });
+    const region = process.env.AWS_DEFAULT_REGION;
+    const rum = new (aws as typeof AWS).RUM();
     const appMonitor = (await rum.getAppMonitor({
       Name: event.ResourceProperties.appMonitorName,
     }).promise()).AppMonitor;
     if (!appMonitor?.Id) {
       return await respond('FAILED', 'Failed to get AppMonitor', context.logStreamName, {});
     }
-    const option: DeepStringType<WebClientConfigurationOption> | undefined = event.ResourceProperties.option;
+    const options: DeepStringType<CodeSnippetOptions> | undefined = event.ResourceProperties.options;
 
-    // Telemetries of option is original struct for it can use from any language
-    // so it need transform to actual type.
-    const telemetries: DeepJSType<TelemetryConfig[]> | undefined = option?.telemetries ? [
-      option.telemetries.errors ? [
-        'errors', {
-          stackTraceLength: asJSNumber(option.telemetries.errors.stackTraceLength),
-        },
-      ] as DeepJSType<ErrorsTelemetryConfig> : undefined,
-      option.telemetries.http ? [
-        'http', {
-          stackTraceLength: asJSNumber(option.telemetries.http.stackTraceLength),
-          recordAllRequests: asJSBoolean(option.telemetries.http.recordAllRequests),
-          addXRayTraceIdHeader: asJSBoolean(option.telemetries.http.addXRayTraceIdHeader),
-          urlsToInclude: option.telemetries.http.urlsToInclude?.map(url => new JSRegExp(url)),
-          urlsToExclude: option.telemetries.http.urlsToExclude?.map(url => new JSRegExp(url)),
-        },
-      ] as DeepJSType<HttpTelemetryConfig> : undefined,
-      option.telemetries.performance ? [
-        'performance', {
-          eventLimit: asJSNumber(option.telemetries.performance.eventLimit),
-        },
-      ] as DeepJSType<PerformanceTelemetryConfig> : undefined,
-      option.telemetries.interaction ? [
-        'interaction', option.telemetries.interaction,
-      ] as DeepJSType<InteractionTelemetryConfig> : undefined,
-    ].filter((telemetry): telemetry is TelemetryConfig => !!telemetry) : undefined;
+    const telemetries: DeepJSType<TelemetryConfig>[] | undefined = options?.telemetries ? (options.telemetries).map(t => {
+      const telemetry = t.config as DeepStringType<TelemetryConfig>;
+      if (typeof telemetry === 'string') {
+        return telemetry;
+      }
+      switch (telemetry[0]) {
+        case 'errors': {
+          return [
+            'errors', {
+              stackTraceLength: asJSNumber(telemetry[1].stackTraceLength),
+            },
+          ];
+        }
+        case 'http': {
+          return [
+            'http', {
+              stackTraceLength: asJSNumber(telemetry[1].stackTraceLength),
+              recordAllRequests: asJSBoolean(telemetry[1].recordAllRequests),
+              addXRayTraceIdHeader: asJSBoolean(telemetry[1].addXRayTraceIdHeader),
+              urlsToInclude: telemetry[1].urlsToInclude?.map(url => new JSRegExp(url)),
+              urlsToExclude: telemetry[1].urlsToExclude?.map(url => new JSRegExp(url)),
+            },
+          ];
+        }
+        case 'performance': {
+          return [
+            'performance', {
+              eventLimit: asJSNumber(telemetry[1].eventLimit),
+            },
+          ];
+        }
+        case 'interaction': {
+          return ['interaction', telemetry[1]];
+        }
+      }
+    }) : undefined;
 
+    const cookieAttibutes = {
+      domain: options?.cookieAttibuteDomain,
+      path: options?.cookieAttibutePath,
+      sameSite: asJSBoolean(options?.cookieAttibuteSameSite),
+      secure: asJSBoolean(options?.cookieAttibuteSecure),
+      unique: asJSBoolean(options?.cookieAttibuteUnique),
+    };
     const defaultConfig = appMonitor.AppMonitorConfiguration;
     const rumWebConfiguration: DeepJSType<WebClientConfiguration> = {
-      allowCookies: asJSBoolean(option?.allowCookies) ?? defaultConfig?.AllowCookies,
-      cookieAttibutes: option?.cookieAttibutes ? {
-        domain: option.cookieAttibutes.domain,
-        path: option.cookieAttibutes.path,
-        sameSite: asJSBoolean(option.cookieAttibutes.sameSite),
-        secure: asJSBoolean(option.cookieAttibutes.secure),
-      } : undefined,
-      disableAutoPageView: asJSBoolean(option?.disableAutoPageView),
-      enableRumClient: asJSBoolean(option?.enableRumClient),
-      enableXRay: asJSBoolean(option?.enableXRay) ?? defaultConfig?.EnableXRay ?? false,
-      endpoint: option?.endpoint ?? `https://dataplane.rum.${region}.amazonaws.com`,
-      guestRoleArn: option?.guestRoleArn ?? defaultConfig?.GuestRoleArn,
-      identityPoolId: option?.identityPoolId ?? defaultConfig?.IdentityPoolId,
-      pageIdFormat: option?.pageIdFormat as 'PATH' | 'HASH' | 'PATH_AND_HASH' | undefined,
-      pagesToInclude: (option?.pagesToInclude ?? defaultConfig?.IncludedPages)?.map((page) => new JSRegExp(page)),
-      pagesToExclude: (option?.pagesToExclude ?? defaultConfig?.ExcludedPages)?.map((page) => new JSRegExp(page)),
-      recordResourceUrl: asJSBoolean(option?.recordResourceUrl),
-      sessionEventLimit: asJSNumber(option?.sessionEventLimit),
-      sessionSampleRate: asJSNumber(option?.sessionSampleRate) ?? defaultConfig?.SessionSampleRate,
-      telemetries: telemetries ?? defaultConfig?.Telemetries as TelemetryConfig[] ?? [],
+      allowCookies: defaultConfig?.AllowCookies,
+      cookieAttibutes: Object.keys(cookieAttibutes).length >= 1 ? cookieAttibutes : undefined,
+      disableAutoPageView: asJSBoolean(options?.disableAutoPageView),
+      enableRumClient: asJSBoolean(options?.enableRumClient),
+      enableXRay: defaultConfig?.EnableXRay ?? false,
+      endpoint: options?.endpoint ?? `https://dataplane.rum.${region}.amazonaws.com`,
+      guestRoleArn: defaultConfig?.GuestRoleArn,
+      identityPoolId: defaultConfig?.IdentityPoolId,
+      pageIdFormat: options?.pageIdFormat as 'PATH' | 'HASH' | 'PATH_AND_HASH' | undefined,
+      pagesToInclude: (options?.pagesToInclude ?? defaultConfig?.IncludedPages)?.map((page) => new JSRegExp(page)),
+      pagesToExclude: (options?.pagesToExclude ?? defaultConfig?.ExcludedPages)?.map((page) => new JSRegExp(page)),
+      recordResourceUrl: asJSBoolean(options?.recordResourceUrl),
+      sessionEventLimit: asJSNumber(options?.sessionEventLimit),
+      sessionSampleRate: defaultConfig?.SessionSampleRate ?? 1,
+      telemetries: telemetries ?? defaultConfig?.Telemetries as TelemetryConfig[] ?? ['errors', 'http', 'performance'],
     };
     await respond('SUCCESS', 'OK', getPhysicalResourceId(event), {
       CodeSnippet: '(function(n,i,v,r,s,c,x,z){' +
@@ -251,11 +267,11 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
         'z.src=s;' +
         "document.head.insertBefore(z,document.getElementsByTagName('script')[0]);" +
         '})(' +
-        "'cwr'," +
+        `"${options?.namespace ?? 'cwr'}",` +
         `'${appMonitor.Id}',` +
-        "'1.0.0'," +
+        `"${options?.applicationVersion ?? '1.0.0'}",` +
         `'${region}',` +
-        "'https://client.rum.us-east-1.amazonaws.com/1.0.2/cwr.js'," +
+        `"https://client.rum.us-east-1.amazonaws.com/${options?.webClientVersion ?? '1.1.0'}/cwr.js",` +
         JavaScript.stringify(rumWebConfiguration) +
         ');'
       ,

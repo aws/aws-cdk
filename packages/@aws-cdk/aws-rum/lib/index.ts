@@ -1,7 +1,5 @@
 export * from './app-monitor';
-export * from './app-monitor-authorizer';
-export * from './cognito-identitypool-authorizer';
-export * from './third-party-provider-authorizer';
+export * from './code-snippet';
 
 // AWS::RUM CloudFormation Resources:
 export * from './rum.generated';
