@@ -153,9 +153,9 @@ async function main() {
 }
 
 export enum LogLevel {
-  WARN,
-  ERROR,
-  INFO,
+  WARN = 'warn',
+  ERROR = 'error',
+  INFO = 'info',
 }
 
 export interface LoggerOpts {

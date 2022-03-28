@@ -160,7 +160,7 @@ export function singleThreadedTestRunner(
   const diagnostics = new Array<Diagnostic>();
   for (const test of request.tests) {
     const runner = new IntegTestRunner(test.fileName, {
-      CDK_DEFAULT_REGION: request.region,
+      AWS_REGION: request.region,
     });
     try {
       if (!runner.hasSnapshot()) {
@@ -194,7 +194,7 @@ export function singleThreadedTestRunner(
         }
       }
     } catch (e) {
-      logger.error('Errors running test cases');
+      logger.error(`Errors running test cases: ${e}`);
     }
   }
 
