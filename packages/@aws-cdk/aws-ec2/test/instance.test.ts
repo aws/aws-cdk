@@ -3,7 +3,8 @@ import { Annotations, Match, Template } from '@aws-cdk/assertions';
 import { Key } from '@aws-cdk/aws-kms';
 import { Asset } from '@aws-cdk/aws-s3-assets';
 import { StringParameter } from '@aws-cdk/aws-ssm';
-import { Stack } from '@aws-cdk/core';
+import { App, Stack } from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import {
   AmazonLinuxImage, BlockDeviceVolume, CloudFormationInit,
   EbsDeviceVolumeType, InitCommand, Instance, InstanceArchitecture, InstanceClass, InstanceSize, InstanceType, LaunchTemplate, UserData, Vpc,
@@ -485,6 +486,13 @@ test('add CloudFormation Init to instance', () => {
 
 test('cause replacement from s3 asset in userdata', () => {
   // GIVEN
+  const app = new App({
+    context: {
+      [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false,
+    },
+  });
+  stack = new Stack(app);
+  vpc = new Vpc(stack, 'Vpc)');
   const userData1 = UserData.forLinux();
   const asset1 = new Asset(stack, 'UserDataAssets1', {
     path: path.join(__dirname, 'asset-fixture', 'data.txt'),
