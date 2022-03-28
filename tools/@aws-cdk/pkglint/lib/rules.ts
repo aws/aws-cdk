@@ -454,6 +454,12 @@ export class MaturitySetting extends ValidationRule {
   }
 
   private validateReadmeHasBanner(pkg: PackageJson, maturity: string, levelsPresent: string[]) {
+    if (pkg.packageName === '@aws-cdk/aws-elasticsearch') {
+      // Special case for elasticsearch, which is labeled as stable in package.json
+      // but all APIs are now marked 'deprecated'
+      return;
+    }
+
     const badge = this.readmeBadge(maturity, levelsPresent);
     if (!badge) {
       // Somehow, we don't have a badge for this stability level
@@ -1727,18 +1733,6 @@ export class UbergenPackageVisibility extends ValidationRule {
           },
         });
       }
-    } else {
-      if (pkg.json.private && !pkg.json.ubergen?.exclude) {
-        pkg.report({
-          ruleName: this.name,
-          message: 'ubergen.exclude must be configured for private packages',
-          fix: () => {
-            pkg.json.ubergen = {
-              exclude: true,
-            };
-          },
-        });
-      }
     }
   }
 }
@@ -1762,6 +1756,7 @@ export class NoExperimentalDependents extends ValidationRule {
     ['@aws-cdk/aws-events-targets', ['@aws-cdk/aws-kinesisfirehose']],
     ['@aws-cdk/aws-kinesisfirehose-destinations', ['@aws-cdk/aws-kinesisfirehose']],
     ['@aws-cdk/aws-iot-actions', ['@aws-cdk/aws-iot', '@aws-cdk/aws-kinesisfirehose']],
+    ['@aws-cdk/aws-iotevents-actions', ['@aws-cdk/aws-iotevents']],
   ]);
 
   private readonly excludedModules = ['@aws-cdk/cloudformation-include'];

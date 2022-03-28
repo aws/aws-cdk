@@ -1,4 +1,4 @@
-import { Match, Template } from '@aws-cdk/assertions';
+import { Annotations, Match, Template } from '@aws-cdk/assertions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
 import {
@@ -39,11 +39,7 @@ describe('AutoScalingGroupRequireImdsv2Aspect', () => {
       },
     }));
 
-    expect(asg.node.metadataEntry).toContainEqual({
-      data: expect.stringContaining('CfnLaunchConfiguration.MetadataOptions field is a CDK token.'),
-      type: 'aws:cdk:warning',
-      trace: undefined,
-    });
+    Annotations.fromStack(stack).hasWarning('/Stack/AutoScalingGroup', Match.stringLikeRegexp('.*CfnLaunchConfiguration.MetadataOptions field is a CDK token.'));
   });
 
   test('requires IMDSv2', () => {
