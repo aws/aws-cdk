@@ -45,6 +45,10 @@ dashboard.addWidgets(new cloudwatch.AlarmWidget({
   title: 'Messages in queue',
   alarm,
 }));
+dashboard.addWidgets(new cloudwatch.AlarmStatusWidget({
+  title: 'Firing alarms',
+  alarms: [alarm],
+}));
 dashboard.addWidgets(new cloudwatch.GraphWidget({
   title: 'More messages in queue with alarm annotation',
   left: [numberOfMessagesVisibleMetric],
