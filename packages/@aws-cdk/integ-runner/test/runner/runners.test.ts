@@ -161,55 +161,6 @@ describe('IntegTest runIntegTests', () => {
     });
   });
 
-  test('with additional args', () => {
-    // WHEN
-    integTest.runIntegTestCase({
-      testCase: {
-        stacks: ['stack1'],
-        cdkCommandOptions: {
-          deploy: {
-            args: {
-              stacks: ['stack1'],
-              json: true,
-              verbose: true,
-            },
-          },
-          destroy: {
-            args: {
-              stacks: ['stack1'],
-              json: true,
-            },
-          },
-        },
-      },
-    });
-
-    // THEN
-    expect(deployMock).toHaveBeenCalledTimes(1);
-    expect(destroyMock).toHaveBeenCalledTimes(1);
-    expect(deployMock.mock.calls[0][0]).toEqual({
-      app: 'node integ.integ-test1.js',
-      requireApproval: 'never',
-      pathMetadata: false,
-      assetMetadata: false,
-      versionReporting: false,
-      stacks: ['stack1'],
-      output: 'cdk-integ.out',
-      json: true,
-      verbose: true,
-    });
-    expect(destroyMock.mock.calls[0][0]).toEqual({
-      app: 'node integ.integ-test1.js',
-      pathMetadata: false,
-      assetMetadata: false,
-      versionReporting: false,
-      force: true,
-      json: true,
-      output: 'cdk-integ.out',
-      stacks: ['stack1'],
-    });
-  });
-
   test('no clean', () => {
     // WHEN
     integTest.runIntegTestCase({
@@ -249,14 +200,6 @@ describe('IntegTest runIntegTests', () => {
       },
     }));
     expect(listMock).toHaveBeenCalledTimes(0);
-  });
-
-  test('determine pragma', async () => {
-    // WHEN
-    const pragmas = integTest.pragmas();
-
-    // THEN
-    expect(pragmas).toEqual(['pragma:ignore-assets']);
   });
 
   test('generate snapshot', () => {
