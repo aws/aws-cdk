@@ -51,6 +51,10 @@ export interface Erip {
 export class AntennaDownlinkConfig extends BaseConfig {
   private readonly _resource: CfnConfig;
 
+  public readonly arn: string;
+  public readonly id: string
+  public readonly type: string
+
   constructor(scope: Construct, id: string, props: AntennaDownlinkConfigProps) {
     super(scope, id, {
       physicalName: props.Name,
@@ -70,6 +74,10 @@ export class AntennaDownlinkConfig extends BaseConfig {
     });
 
     this._resource = resource;
+
+    this.arn = this._resource.attrArn;
+    this.id = this._resource.attrId;
+    this.type = this._resource.attrType;
   }
 }
 
@@ -87,6 +95,10 @@ export interface AntennaDownlinkDemodConfigProps {
 
 export class AntennaDownlinkDemodDecodeConfig extends BaseConfig {
   private readonly _resource: CfnConfig;
+
+  public readonly arn: string;
+  public readonly id: string
+  public readonly type: string
 
   constructor(scope: Construct, id: string, props: AntennaDownlinkDemodConfigProps) {
     super(scope, id, {
@@ -113,6 +125,10 @@ export class AntennaDownlinkDemodDecodeConfig extends BaseConfig {
     });
 
     this._resource = resource;
+
+    this.arn = this._resource.attrArn;
+    this.id = this._resource.attrId;
+    this.type = this._resource.attrType;
   }
 }
 
@@ -129,6 +145,10 @@ export interface AntennaUplinkConfigProps {
 
 export class AntennaUplinkConfig extends BaseConfig {
   private readonly _resource: CfnConfig;
+
+  public readonly arn: string;
+  public readonly id: string
+  public readonly type: string
 
   constructor(scope: Construct, id: string, props: AntennaUplinkConfigProps) {
     super(scope, id, {
@@ -152,6 +172,10 @@ export class AntennaUplinkConfig extends BaseConfig {
     });
 
     this._resource = resource;
+
+    this.arn = this._resource.attrArn;
+    this.id = this._resource.attrId;
+    this.type = this._resource.attrType;
   }
 }
 
@@ -163,6 +187,10 @@ export interface DataflowEndpointConfigProps {
 
 export class DataflowEndpointConfig extends BaseConfig {
   private readonly _resource: CfnConfig;
+
+  public readonly arn: string;
+  public readonly id: string
+  public readonly type: string
 
   constructor(scope: Construct, id: string, props: DataflowEndpointConfigProps) {
     super(scope, id, {
@@ -179,6 +207,10 @@ export class DataflowEndpointConfig extends BaseConfig {
     });
 
     this._resource = resource;
+
+    this.arn = this._resource.attrArn;
+    this.id = this._resource.attrId;
+    this.type = this._resource.attrType;
   }
 }
 
@@ -191,6 +223,10 @@ export interface S3RecordingConfigProps {
 
 export class S3RecordingConfig extends BaseConfig {
   private readonly _resource: CfnConfig;
+
+  public readonly arn: string;
+  public readonly id: string
+  public readonly type: string
 
   constructor(scope: Construct, id: string, props: S3RecordingConfigProps) {
     super(scope, id, {
@@ -208,6 +244,10 @@ export class S3RecordingConfig extends BaseConfig {
     });
 
     this._resource = resource;
+
+    this.arn = this._resource.attrArn;
+    this.id = this._resource.attrId;
+    this.type = this._resource.attrType;
   }
 }
 
@@ -225,7 +265,9 @@ export interface TrackingConfigProps {
 export class TrackingConfig extends BaseConfig {
   private readonly _resource: CfnConfig;
 
-  public readonly trackingConfigArn: string
+  public readonly arn: string;
+  public readonly id: string
+  public readonly type: string
 
   constructor(scope: Construct, id: string, props: TrackingConfigProps) {
     super(scope, id, {
@@ -242,12 +284,9 @@ export class TrackingConfig extends BaseConfig {
 
     this._resource = resource;
 
-    this.trackingConfigArn = this.getResourceArnAttribute(resource.attrArn, {
-      region: '',
-      account: '',
-      service: 'groundstation',
-      resource: this.physicalName,
-    });
+    this.arn = this._resource.attrArn;
+    this.id = this._resource.attrId;
+    this.type = this._resource.attrType;
   }
 }
 
@@ -259,6 +298,10 @@ export interface UplinkEchoConfigProps {
 
 export class UplinkEchoConfig extends BaseConfig {
   private readonly _resource: CfnConfig;
+
+  public readonly arn: string;
+  public readonly id: string
+  public readonly type: string
 
   constructor(scope: Construct, id: string, props: UplinkEchoConfigProps) {
     super(scope, id, {
@@ -275,5 +318,9 @@ export class UplinkEchoConfig extends BaseConfig {
     });
 
     this._resource = resource;
+
+    this.arn = this._resource.attrArn;
+    this.id = this._resource.attrId;
+    this.type = this._resource.attrType;
   }
 }

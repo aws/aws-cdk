@@ -3,7 +3,7 @@ interface Edge {
   to: string
 }
 
-enum NodeType {
+export enum NodeType {
   CODED_SYMBOLS_INGRESS = 'CODED_SYMBOLS_INGRESS',
   IQ_RECOMBINER = 'IQ_RECOMBINER',
   CCSDS_171_133_VITERBI_DECODER = 'CCSDS_171_133_VITERBI_DECODER',
@@ -16,7 +16,7 @@ interface Node {
   [key: string]: any
 }
 
-class DecodeConfig {
+export class DecodeConfig {
   private edges: Edge[]
   private nodes: {[key: string]: Node}
 
@@ -47,5 +47,61 @@ class DecodeConfig {
     } else {
       throw Error(`${from} or ${to} not found in nodes`);
     }
+  }
+}
+
+export enum DemodType {
+  QPSK = 'QPSK',
+  OQPSK = 'OQPSK',
+  BPSK = 'BPSK',
+  SQPSK = 'SQPSK',
+  UAQPSK = 'UAQPSK',
+  PSK_8 = '8PSK',
+  APSK_16_32 = '16/32 APSK',
+  MSK = 'MSK',
+  QAM_16 = '16QAM',
+  GMSK = 'GMSK'
+}
+
+export interface QPSK {
+  carrierFrequencyRecovery: CarrierFrequencyRecovery;
+  symbolTimingRecovery: SymbolTimingRecovery;
+}
+
+export interface OQPSK {
+  carrierFrequencyRecovery: CarrierFrequencyRecovery;
+  symbolTimingRecovery: SymbolTimingRecovery;
+}
+
+export interface SymbolTimingRecovery {
+  symbolRate: CenterFrequency;
+  range: CenterFrequency;
+  matchedFilter: MatchedFilter;
+}
+
+export interface MatchedFilter {
+  type: string;
+  rolloffFactor: number;
+}
+
+export interface CarrierFrequencyRecovery {
+  centerFrequency: CenterFrequency;
+  range: CenterFrequency;
+}
+
+export interface CenterFrequency {
+  value: number;
+  units: string;
+}
+
+export class DemodConfig {
+  private config: {[key: string]: object};
+
+  constructor(config: {[key: string]: object}) {
+    this.config = { ...config };
+  }
+
+  toJSON() {
+    return JSON.stringify(this.config);
   }
 }

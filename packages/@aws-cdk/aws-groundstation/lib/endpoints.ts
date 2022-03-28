@@ -26,21 +26,24 @@ export interface EndpointDetails {
 
 export interface DataflowEndpointGroupProps {
   endpointDetails: EndpointDetails[]
-  name: string
 }
 
 export abstract class DataflowEndpointGroup extends Resource {
   private readonly _resource: CfnDataflowEndpointGroup;
 
+  public readonly arn: string
+  public readonly id: string
+
   constructor(scope: Construct, id: string, props: DataflowEndpointGroupProps) {
-    super(scope, id, {
-      physicalName: props.name,
-    });
+    super(scope, id);
 
     const resource = new CfnDataflowEndpointGroup(this, 'Resource', {
       endpointDetails: props.endpointDetails,
     });
 
     this._resource = resource;
+
+    this.arn = this._resource.attrArn;
+    this.id = this._resource.attrId;
   }
 }
