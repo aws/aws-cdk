@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### Features
 
+
 * **cognito:** configure SNS region for UserPool SMS messages ([#19519](https://github.com/aws/aws-cdk/issues/19519)) ([6eb775e](https://github.com/aws/aws-cdk/commit/6eb775e829d62913bff849d43ed7339f9910d8de)), closes [#19434](https://github.com/aws/aws-cdk/issues/19434)
 * cloudformation spec v62.0.0 ([#19553](https://github.com/aws/aws-cdk/issues/19553)) ([0352dee](https://github.com/aws/aws-cdk/commit/0352deedb445f070ed0cd27406a75872fb71ea53))
 * **autoscaling:** support warm pools ([#19214](https://github.com/aws/aws-cdk/issues/19214)) ([737e611](https://github.com/aws/aws-cdk/commit/737e611577c97b6ad01eaeb05fc544258a9de5ad))
