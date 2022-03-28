@@ -11,13 +11,18 @@ import { Diagnostic, DiagnosticReason } from '../lib/workers/workers';
 
 
 function batchTests(tests: IntegTestConfig[], regions?: string[]): SnapshotBatchRequest[] {
-  const batchSize = regions?.length ?? 10;
+  let batchSize = 10;
+  if (regions && regions.length > 0) {
+    batchSize = Math.ceil(tests.length / regions.length);
+  }
   const ret: SnapshotBatchRequest[] = [];
+  let regionIndex = 0;
   for (let i = 0; i < tests.length; i += batchSize) {
     ret.push({
-      region: regions ? regions[i] : '',
+      region: regions ? regions[regionIndex] : '',
       tests: tests.slice(i, i + batchSize),
     });
+    regionIndex++;
   }
   return ret;
 }
@@ -131,7 +136,7 @@ async function main() {
       }
       if (testDiagnostics.length > 0) {
         logger.highlight('\nTest Results: \n');
-        printResults(diagnostics);
+        printResults(testDiagnostics);
       }
 
       if (argv.clean === false) {

@@ -10,7 +10,7 @@ import { AssemblyManifestReader } from './private/cloud-assembly';
 import { IntegManifestReader } from './private/integ-manifest';
 import * as logger from './private/logger';
 
-const CDK_OUTDIR = 'cdk-integ.out';
+const CDK_OUTDIR_PREFIX = 'cdk-integ.out';
 const CDK_INTEG_STACK_PRAGMA = '/// !cdk-integ';
 const PRAGMA_PREFIX = 'pragma:';
 const SET_CONTEXT_PRAGMA_PREFIX = 'pragma:set-context:';
@@ -101,7 +101,7 @@ export abstract class IntegRunner {
     if (this.hasSnapshot()) {
       this.loadManifest();
     }
-    this.cdkOutDir = this.integOutDir ?? CDK_OUTDIR;
+    this.cdkOutDir = this.integOutDir ?? `${CDK_OUTDIR_PREFIX}.${this.testName}`;
   }
 
   /**
@@ -417,14 +417,14 @@ export class IntegSnapshotRunner extends IntegRunner {
     for (const templateId of Object.keys(existing)) {
       if (!actual.hasOwnProperty(templateId)) {
         failures.push(templateId);
-        logger.print('% exists in snapshot, but not in actual', templateId);
+        logger.print('%s exists in snapshot, but not in actual', templateId);
       }
     }
 
     for (const templateId of Object.keys(actual)) {
       if (!existing.hasOwnProperty(templateId)) {
         failures.push(templateId);
-        logger.print('% does not exist in snapshot, but does in actual', templateId);
+        logger.print('%s does not exist in snapshot, but does in actual', templateId);
       } else {
         let actualTemplate = actual[templateId];
         let expectedTemplate = existing[templateId];
