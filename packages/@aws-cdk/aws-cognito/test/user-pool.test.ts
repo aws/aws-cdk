@@ -235,6 +235,28 @@ describe('User Pool', () => {
     });
   });
 
+  test('snsRegion property is recognized', () => {
+    // GIVEN
+    const stack = new Stack();
+    const role = Role.fromRoleArn(stack, 'smsRole', 'arn:aws:iam::664773442901:role/sms-role');
+
+    // WHEN
+    new UserPool(stack, 'Pool', {
+      smsRole: role,
+      smsRoleExternalId: 'test-external-id',
+      snsRegion: 'test-region-1',
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
+      SmsConfiguration: {
+        ExternalId: 'test-external-id',
+        SnsCallerArn: role.roleArn,
+        SnsRegion: 'test-region-1',
+      },
+    });
+  });
+
   test('import using id', () => {
     // GIVEN
     const stack = new Stack(undefined, undefined, {
