@@ -1,7 +1,8 @@
 import * as cxapi from '@aws-cdk/cx-api';
+import { Construct } from 'constructs';
 import {
   App, App as Root, CfnCondition,
-  CfnDeletionPolicy, CfnResource, Construct,
+  CfnDeletionPolicy, CfnResource,
   Fn, IResource, RemovalPolicy, Resource, Stack,
 } from '../lib';
 import { synthesize } from '../lib/private/synthesis';
@@ -839,13 +840,9 @@ describe('resource', () => {
     const assembly = app.synth();
     const templateB = assembly.getStackByName(stackB.stackName).template;
 
-    expect(templateB).toEqual({
-      Resources: {
-        Resource: {
-          Type: 'R',
-          // Notice absence of 'DependsOn'
-        },
-      },
+    expect(templateB?.Resources?.Resource).toEqual({
+      Type: 'R',
+      // Notice absence of 'DependsOn'
     });
     expect(stackB.dependencies.map(s => s.node.id)).toEqual(['StackA']);
 
