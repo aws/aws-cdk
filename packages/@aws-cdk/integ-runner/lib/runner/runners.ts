@@ -1,13 +1,15 @@
 import * as path from 'path';
+import { Writable, WritableOptions } from 'stream';
+import { StringDecoder, NodeStringDecoder } from 'string_decoder';
 import { TestCase, RequireApproval, DefaultCdkOptions } from '@aws-cdk/cloud-assembly-schema';
 import { diffTemplate, formatDifferences } from '@aws-cdk/cloudformation-diff';
 import { AVAILABILITY_ZONE_FALLBACK_CONTEXT_KEY, FUTURE_FLAGS, TARGET_PARTITIONS } from '@aws-cdk/cx-api';
 import { CdkCliWrapper, ICdk } from 'cdk-cli-wrapper';
 import * as fs from 'fs-extra';
+import { Diagnostic, DiagnosticReason } from '../workers/workers';
 import { canonicalizeTemplate } from './private/canonicalize-assets';
 import { AssemblyManifestReader } from './private/cloud-assembly';
 import { IntegManifestReader } from './private/integ-manifest';
-import * as logger from './private/logger';
 
 const CDK_OUTDIR_PREFIX = 'cdk-integ.out';
 const CDK_INTEG_STACK_PRAGMA = '/// !cdk-integ';
@@ -391,7 +393,7 @@ export class IntegSnapshotRunner extends IntegRunner {
    * Synth the integration tests and compare the templates
    * to the existing snapshot.
    */
-  public testSnapshot(): void {
+  public testSnapshot(): Diagnostic[] {
     try {
       // read the existing snapshot
       const expectedStacks = this.readAssembly(this.snapshotDir);
@@ -407,32 +409,35 @@ export class IntegSnapshotRunner extends IntegRunner {
       const actualStacks = this.readAssembly(path.join(this.directory, this.cdkOutDir));
 
       // diff the existing snapshot (expected) with the integration test (actual)
-      const success = this.diffAssembly(expectedStacks, actualStacks);
+      const diagnostics = this.diffAssembly(expectedStacks, actualStacks);
 
-      if (!success) {
-        // eslint-disable-next-line max-len
-        throw new Error("Some stacks have changed. To verify that they still deploy successfully, run: 'yarn integ --update'");
-      }
+      return diagnostics;
     } finally {
       this.cleanupContextFile();
       this.cleanup();
     }
   }
 
-  private diffAssembly(existing: Record<string, any>, actual: Record<string, any>): boolean {
+  private diffAssembly(existing: Record<string, any>, actual: Record<string, any>): Diagnostic[] {
     const verifyHashes = this.pragmas().includes(VERIFY_ASSET_HASHES);
-    const failures: string[] = [];
+    const failures: Diagnostic[] = [];
     for (const templateId of Object.keys(existing)) {
       if (!actual.hasOwnProperty(templateId)) {
-        failures.push(templateId);
-        logger.print('%s exists in snapshot, but not in actual', templateId);
+        failures.push({
+          testName: this.testName,
+          reason: DiagnosticReason.SNAPSHOT_FAILED,
+          message: `${templateId} exists in snapshot, but not in actual`,
+        });
       }
     }
 
     for (const templateId of Object.keys(actual)) {
       if (!existing.hasOwnProperty(templateId)) {
-        failures.push(templateId);
-        logger.print('%s does not exist in snapshot, but does in actual', templateId);
+        failures.push({
+          testName: this.testName,
+          reason: DiagnosticReason.SNAPSHOT_FAILED,
+          message: `${templateId} does not exist in snapshot, but does in actual`,
+        });
       } else {
         let actualTemplate = actual[templateId];
         let expectedTemplate = existing[templateId];
@@ -443,17 +448,18 @@ export class IntegSnapshotRunner extends IntegRunner {
         }
         const diff = diffTemplate(expectedTemplate, actualTemplate);
         if (!diff.isEmpty) {
-          failures.push(templateId);
-          formatDifferences(process.stdout, diff);
+          const writable = new StringWritable({});
+          formatDifferences(writable, diff);
+          failures.push({
+            reason: DiagnosticReason.SNAPSHOT_FAILED,
+            message: writable.data,
+            testName: this.testName,
+          });
         }
       }
     }
 
-    if (failures.length > 0) {
-      return false;
-    } else {
-      return true;
-    }
+    return failures;
   }
 
   private readAssembly(dir: string): Record<string, any> {
@@ -461,6 +467,30 @@ export class IntegSnapshotRunner extends IntegRunner {
     const stacks = assembly.stacks;
 
     return stacks;
+  }
+}
+
+class StringWritable extends Writable {
+  public data: string;
+  private _decoder: NodeStringDecoder;
+  constructor(options: WritableOptions) {
+    super(options);
+    this._decoder = new StringDecoder();
+    this.data = '';
+  }
+
+  _write(chunk: any, encoding: string, callback: (error?: Error | null) => void): void {
+    if (encoding === 'buffer') {
+      chunk = this._decoder.write(chunk);
+    }
+
+    this.data += chunk;
+    callback();
+  }
+
+  _final(callback: (error?: Error | null) => void): void {
+    this.data += this._decoder.end();
+    callback();
   }
 }
 

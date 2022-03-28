@@ -70,7 +70,7 @@ describe('Snapshot tests', () => {
     expect(result.diagnostics[0]).toEqual({
       reason: DiagnosticReason.SNAPSHOT_FAILED,
       testName: 'test-with-snapshot-assets',
-      message: "Some stacks have changed. To verify that they still deploy successfully, run: 'yarn integ --update'",
+      message: expect.stringContaining('Parameters'),
     });
     expect(result.failedTests[0]).toEqual(test);
   });
