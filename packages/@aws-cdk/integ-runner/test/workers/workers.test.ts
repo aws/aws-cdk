@@ -49,7 +49,7 @@ describe('Snapshot tests', () => {
     expect(result.diagnostics.length).toEqual(1);
     expect(result.failedTests.length).toEqual(0);
     expect(result.diagnostics[0]).toEqual({
-      reason: DiagnosticReason.SUCCESS,
+      reason: DiagnosticReason.SNAPSHOT_SUCCESS,
       testName: 'test-with-snapshot',
       message: 'Success',
     });
@@ -104,7 +104,7 @@ describe('test runner', () => {
 
     expect(spawnSyncMock).toHaveBeenCalledWith(
       expect.stringMatching(/cdk/),
-      ['synth', '--app', 'node integ.integ-test1.js', '--no-version-reporting', '--no-path-metadata', '--no-asset-metadata', '--output', 'cdk-integ.out', '--all'],
+      ['synth', '--app', 'node integ.integ-test1.js', '--no-version-reporting', '--no-path-metadata', '--no-asset-metadata', '--output', 'cdk-integ.out.integ-test1', '--all'],
       expect.anything(),
     );
   });

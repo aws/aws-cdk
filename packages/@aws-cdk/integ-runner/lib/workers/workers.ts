@@ -25,9 +25,14 @@ export enum DiagnosticReason {
   SNAPSHOT_FAILED = 'SNAPSHOT_FAILED',
 
   /**
+   * The snapshot test succeeded
+   */
+  SNAPSHOT_SUCCESS = 'SUCCESS',
+
+  /**
    * The integration test succeeded
    */
-  SUCCESS = 'SUCCESS',
+  TEST_SUCCESS = 'SUCCESS',
 }
 
 /**
@@ -115,7 +120,7 @@ export function singleThreadedSnapshotRunner(
       } else {
         runner.testSnapshot();
         diagnostics.push({
-          reason: DiagnosticReason.SUCCESS,
+          reason: DiagnosticReason.SNAPSHOT_SUCCESS,
           testName: runner.testName,
           message: 'Success',
         });
@@ -171,7 +176,7 @@ export function singleThreadedTestRunner(
             dryRun: request.dryRun,
           });
           diagnostics.push({
-            reason: DiagnosticReason.SUCCESS,
+            reason: DiagnosticReason.TEST_SUCCESS,
             testName: testName,
             message: 'Success',
           });

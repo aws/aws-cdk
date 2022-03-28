@@ -148,7 +148,7 @@ describe('IntegTest runIntegTests', () => {
       assetMetadata: false,
       versionReporting: false,
       stacks: ['stack1'],
-      output: 'cdk-integ.out',
+      output: 'cdk-integ.out.integ-test1',
     });
     expect(destroyMock.mock.calls[0][0]).toEqual({
       app: 'node integ.integ-test1.js',
@@ -157,7 +157,7 @@ describe('IntegTest runIntegTests', () => {
       versionReporting: false,
       force: true,
       stacks: ['stack1'],
-      output: 'cdk-integ.out',
+      output: 'cdk-integ.out.integ-test1',
     });
   });
 
@@ -214,7 +214,7 @@ describe('IntegTest runIntegTests', () => {
       assetMetadata: false,
       versionReporting: false,
       app: 'node integ.integ-test1.js',
-      output: 'cdk-integ.out',
+      output: 'cdk-integ.out.integ-test1',
     });
   });
 });

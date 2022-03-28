@@ -30,8 +30,11 @@ function batchTests(tests: IntegTestConfig[], regions?: string[]): SnapshotBatch
 function printResults(diagnostics: Diagnostic[]): void {
   diagnostics.forEach(diagnostic => {
     switch (diagnostic.reason) {
-      case DiagnosticReason.SUCCESS:
+      case DiagnosticReason.SNAPSHOT_SUCCESS:
         logger.success('  %s No Change!', diagnostic.testName);
+        break;
+      case DiagnosticReason.TEST_SUCCESS:
+        logger.success('  %s Test Succeeded!', diagnostic.testName);
         break;
       case DiagnosticReason.NO_SNAPSHOT:
         logger.error('  %s - No Snapshot!\n    %s', diagnostic.testName, diagnostic.message);
