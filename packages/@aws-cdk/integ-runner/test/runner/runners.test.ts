@@ -1,6 +1,7 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import { IntegTestRunner, IntegSnapshotRunner } from '../../lib/runner/runners';
+import { DiagnosticReason } from '../../lib/workers/workers';
 
 describe('IntegTest runSnapshotTests', () => {
   let synthMock: jest.SpyInstance;
@@ -44,9 +45,7 @@ describe('IntegTest runSnapshotTests', () => {
       'test-with-snapshot-diff.integ.snapshot',
     );
     synthMock = jest.spyOn(integTest.cdk, 'synth').mockImplementation();
-    expect(() => {
-      integTest.testSnapshot();
-    }).toThrow(/Some stacks have changed./);
+    const diagnostics = integTest.testSnapshot();
 
     // THEN
     expect(synthMock).toHaveBeenCalledTimes(1);
@@ -58,6 +57,11 @@ describe('IntegTest runSnapshotTests', () => {
       assetMetadata: false,
       versionReporting: false,
     });
+    expect(diagnostics).toEqual(expect.arrayContaining([expect.objectContaining({
+      reason: DiagnosticReason.SNAPSHOT_FAILED,
+      testName: integTest.testName,
+      message: expect.stringContaining('foobar'),
+    })]));
   });
 
   test('dont diff asset hashes', () => {
@@ -90,9 +94,7 @@ describe('IntegTest runSnapshotTests', () => {
       'test-with-snapshot-assets-diff.integ.snapshot',
     );
     synthMock = jest.spyOn(integTest.cdk, 'synth').mockImplementation();
-    expect(() => {
-      integTest.testSnapshot();
-    }).toThrow(/Some stacks have changed./);
+    const diagnostics = integTest.testSnapshot();
 
     // THEN
     expect(synthMock).toHaveBeenCalledTimes(1);
@@ -104,6 +106,11 @@ describe('IntegTest runSnapshotTests', () => {
       assetMetadata: false,
       versionReporting: false,
     });
+    expect(diagnostics).toEqual(expect.arrayContaining([expect.objectContaining({
+      reason: DiagnosticReason.SNAPSHOT_FAILED,
+      testName: integTest.testName,
+      message: expect.stringContaining('Parameters'),
+    })]));
   });
 });
 

@@ -118,12 +118,17 @@ export function singleThreadedSnapshotRunner(
           message: 'No Snapshot',
         });
       } else {
-        runner.testSnapshot();
-        diagnostics.push({
-          reason: DiagnosticReason.SNAPSHOT_SUCCESS,
-          testName: runner.testName,
-          message: 'Success',
-        });
+        const snapshotDiagnostics = runner.testSnapshot();
+        if (snapshotDiagnostics.length > 0) {
+          diagnostics.push(...snapshotDiagnostics);
+          failedTests.push(test);
+        } else {
+          diagnostics.push({
+            reason: DiagnosticReason.SNAPSHOT_SUCCESS,
+            testName: runner.testName,
+            message: 'Success',
+          });
+        }
       }
     } catch (e) {
       failedTests.push(test);
