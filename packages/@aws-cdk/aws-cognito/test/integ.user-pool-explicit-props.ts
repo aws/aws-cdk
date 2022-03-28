@@ -69,11 +69,12 @@ const userpool = new UserPool(stack, 'myuserpool', {
     userMigration: dummyTrigger('userMigration'),
     verifyAuthChallengeResponse: dummyTrigger('verifyAuthChallengeResponse'),
   },
+  snsRegion: Stack.of(stack).region,
 });
 
 const cognitoDomain = userpool.addDomain('myuserpooldomain', {
   cognitoDomain: {
-    domainPrefix: 'myawesomeapp',
+    domainPrefix: 'cdkintegrationtestuserpoolexplicitprops',
   },
 });
 

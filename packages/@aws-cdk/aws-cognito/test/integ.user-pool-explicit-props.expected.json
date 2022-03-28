@@ -833,6 +833,9 @@
               "myuserpoolsmsRole0E16FDD9",
               "Arn"
             ]
+          },
+          "SnsRegion": {
+            "Ref": "AWS::Region"
           }
         },
         "SmsVerificationMessage": "verification sms message from the integ test. Code is {####}.",
@@ -850,7 +853,7 @@
     "myuserpoolmyuserpooldomainEE1E11AF": {
       "Type": "AWS::Cognito::UserPoolDomain",
       "Properties": {
-        "Domain": "myawesomeapp",
+        "Domain": "cdkintegrationtestuserpoolexplicitprops",
         "UserPoolId": {
           "Ref": "myuserpool01998219"
         }
