@@ -147,12 +147,12 @@ export abstract class IntegRunner {
     this.cdk.synth({
       all: true,
       app: this.cdkApp,
+      output: this.relativeSnapshotDir,
       ...this.defaultArgs,
       // TODO: figure out if we need this...
       // env: {
       //   ...DEFAULT_SYNTH_OPTIONS.env,
       // },
-      output: this.relativeSnapshotDir,
     });
     this.cleanupContextFile();
   }
@@ -178,7 +178,7 @@ export abstract class IntegRunner {
     } else {
       const stacks = (this.cdk.list({
         all: true,
-        app: this.cdkApp,
+        app: this.relativeSnapshotDir,
         output: this.cdkOutDir,
       })).split('\n');
       if (stacks.length !== 1) {
@@ -339,6 +339,8 @@ export class IntegTestRunner extends IntegRunner {
         });
       }
       this.createSnapshot();
+    } catch (e) {
+      throw e;
     } finally {
       if (!options.dryRun) {
         if (clean) {
@@ -368,12 +370,12 @@ export class IntegTestRunner extends IntegRunner {
     this.cdk.synth({
       all: true,
       app: this.cdkApp,
+      output: this.cdkOutDir,
       ...this.defaultArgs,
       // TODO: figure out if we need this...
       // env: {
       //   ...DEFAULT_SYNTH_OPTIONS.env,
       // },
-      output: this.cdkOutDir,
     });
     this.loadManifest(this.cdkOutDir);
     this.cleanupContextFile();
