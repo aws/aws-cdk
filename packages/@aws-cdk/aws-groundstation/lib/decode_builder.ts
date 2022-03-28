@@ -1,6 +1,6 @@
-interface Edge {
-  from: string
-  to: string
+export interface Edge {
+  readonly from: string
+  readonly to: string
 }
 
 export enum NodeType {
@@ -11,9 +11,9 @@ export enum NodeType {
   UNCODED_FRAMES_EGRESS = 'UNCODED_FRAMES_EGRESS'
 }
 
-interface Node {
-  type: NodeType
-  [key: string]: any
+export interface Node {
+  readonly type: NodeType
+  readonly [key: string]: any
 }
 
 export class DecodeConfig {
@@ -63,35 +63,36 @@ export enum DemodType {
   GMSK = 'GMSK'
 }
 
-export interface QPSK {
-  carrierFrequencyRecovery: CarrierFrequencyRecovery;
-  symbolTimingRecovery: SymbolTimingRecovery;
+export interface Qpsk {
+  readonly carrierFrequencyRecovery: CarrierFrequencyRecovery;
+  readonly symbolTimingRecovery: SymbolTimingRecovery;
 }
 
-export interface OQPSK {
-  carrierFrequencyRecovery: CarrierFrequencyRecovery;
-  symbolTimingRecovery: SymbolTimingRecovery;
+
+export interface Oqpsk {
+  readonly carrierFrequencyRecovery: CarrierFrequencyRecovery;
+  readonly symbolTimingRecovery: SymbolTimingRecovery;
 }
 
 export interface SymbolTimingRecovery {
-  symbolRate: CenterFrequency;
-  range: CenterFrequency;
-  matchedFilter: MatchedFilter;
+  readonly symbolRate: CenterFrequency;
+  readonly range: CenterFrequency;
+  readonly matchedFilter: MatchedFilter;
 }
 
 export interface MatchedFilter {
-  type: string;
-  rolloffFactor: number;
+  readonly type: string;
+  readonly rolloffFactor: number;
 }
 
 export interface CarrierFrequencyRecovery {
-  centerFrequency: CenterFrequency;
-  range: CenterFrequency;
+  readonly centerFrequency: CenterFrequency;
+  readonly range: CenterFrequency;
 }
 
 export interface CenterFrequency {
-  value: number;
-  units: string;
+  readonly value: number;
+  readonly units: string;
 }
 
 export class DemodConfig {

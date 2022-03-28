@@ -23,32 +23,38 @@ export enum Polarization {
 }
 
 export interface FrequencyBandwidth {
-  units: FrequencyUnits;
-  value: number;
+  readonly units: FrequencyUnits;
+  readonly value: number;
 }
 
 export interface Frequency {
-  units: FrequencyUnits;
-  value: number;
+  readonly units: FrequencyUnits;
+  readonly value: number;
 }
 
-export interface SpectrumConfig {
-  Bandwidth: FrequencyBandwidth;
-  CenterFrequency: Frequency;
-  Polarization: Polarization;
+export interface BandwidthSpectrumConfig {
+  readonly bandwidth: FrequencyBandwidth;
+  readonly centerFrequency: Frequency;
+  readonly polarization: Polarization;
 }
 
 export interface AntennaDownlinkConfigProps {
-  SpectrumConfig: SpectrumConfig
-  Name: string;
+  readonly spectrumConfig: BandwidthSpectrumConfig
+  readonly name: string;
 }
 
 export interface Erip {
-  units: EripUnits;
-  value: number;
+  readonly units: EripUnits;
+  readonly value: number;
 }
 
+/**
+ * Configuration for Antenna Downlink
+ *
+ * @resource AWS::GroundStation::Config
+ **/
 export class AntennaDownlinkConfig extends BaseConfig {
+
   private readonly _resource: CfnConfig;
 
   public readonly arn: string;
@@ -57,18 +63,14 @@ export class AntennaDownlinkConfig extends BaseConfig {
 
   constructor(scope: Construct, id: string, props: AntennaDownlinkConfigProps) {
     super(scope, id, {
-      physicalName: props.Name,
+      physicalName: props.name,
     });
 
     const resource = new CfnConfig(this, 'Resource', {
-      name: props.Name,
+      name: props.name,
       configData: {
         antennaDownlinkConfig: {
-          spectrumConfig: {
-            bandwidth: props.SpectrumConfig.Bandwidth,
-            centerFrequency: props.SpectrumConfig.CenterFrequency,
-            polarization: props.SpectrumConfig.Polarization,
-          },
+          spectrumConfig: props.spectrumConfig,
         },
       },
     });
@@ -82,17 +84,24 @@ export class AntennaDownlinkConfig extends BaseConfig {
 }
 
 
-export interface AntennaDownlinkDemodConfigProps {
-  DecodeConfig: {
-    UnvalidatedJSON: string
-  }
-  DemodulationConfig: {
-    DemodulationConfig: string
-  }
-  SpectrumConfig: SpectrumConfig,
-  Name: string;
+export interface UnvalidatedJson {
+  readonly unvalidatedJSON: string;
 }
 
+
+export interface AntennaDownlinkDemodConfigProps {
+  readonly decodeConfig: UnvalidatedJson
+  readonly demodulationConfig: UnvalidatedJson
+  readonly spectrumConfig: SpectrumConfig,
+  readonly name: string;
+}
+
+
+/**
+ * Configuration for Antenna Downlink Demodulation
+ *
+ * @resource AWS::GroundStation::Config
+ **/
 export class AntennaDownlinkDemodDecodeConfig extends BaseConfig {
   private readonly _resource: CfnConfig;
 
@@ -102,24 +111,20 @@ export class AntennaDownlinkDemodDecodeConfig extends BaseConfig {
 
   constructor(scope: Construct, id: string, props: AntennaDownlinkDemodConfigProps) {
     super(scope, id, {
-      physicalName: props.Name,
+      physicalName: props.name,
     });
 
     const resource = new CfnConfig(this, 'Resource', {
-      name: props.Name,
+      name: props.name,
       configData: {
         antennaDownlinkDemodDecodeConfig: {
           decodeConfig: {
-            unvalidatedJson: props.DecodeConfig.UnvalidatedJSON,
+            unvalidatedJson: props.decodeConfig.unvalidatedJSON,
           },
           demodulationConfig: {
-            unvalidatedJson: props.DemodulationConfig.DemodulationConfig,
+            unvalidatedJson: props.demodulationConfig.unvalidatedJSON,
           },
-          spectrumConfig: {
-            bandwidth: props.SpectrumConfig.Bandwidth,
-            centerFrequency: props.SpectrumConfig.CenterFrequency,
-            polarization: props.SpectrumConfig.Polarization,
-          },
+          spectrumConfig: props.spectrumConfig,
         },
       },
     });
@@ -133,16 +138,24 @@ export class AntennaDownlinkDemodDecodeConfig extends BaseConfig {
 }
 
 
-export interface AntennaUplinkConfigProps {
-  Name: string
-  SpectrumConfig: {
-    CenterFrequency: Frequency
-    Polarization: Polarization
-  }
-  TargetEirp: Erip
-  TransmitDisabled: boolean
+export interface SpectrumConfig {
+  readonly centerFrequency: Frequency;
+  readonly polarization: Polarization;
 }
 
+export interface AntennaUplinkConfigProps {
+  readonly name: string
+  readonly spectrumConfig: SpectrumConfig
+  readonly targetEirp: Erip
+  readonly transmitDisabled: boolean
+}
+
+
+/**
+ * Configuration for Antenna Uplink
+ *
+ * @resource AWS::GroundStation::Config
+ **/
 export class AntennaUplinkConfig extends BaseConfig {
   private readonly _resource: CfnConfig;
 
@@ -152,22 +165,12 @@ export class AntennaUplinkConfig extends BaseConfig {
 
   constructor(scope: Construct, id: string, props: AntennaUplinkConfigProps) {
     super(scope, id, {
-      physicalName: props.Name,
+      physicalName: props.name,
     });
     const resource = new CfnConfig(this, 'Resource', {
-      name: props.Name,
+      name: props.name,
       configData: {
-        antennaUplinkConfig: {
-          spectrumConfig: {
-            centerFrequency: props.SpectrumConfig.CenterFrequency,
-            polarization: props.SpectrumConfig.Polarization,
-          },
-          targetEirp: {
-            units: props.TargetEirp.units,
-            value: props.TargetEirp.value,
-          },
-          transmitDisabled: props.TransmitDisabled,
-        },
+        antennaUplinkConfig: props,
       },
     });
 
@@ -180,11 +183,17 @@ export class AntennaUplinkConfig extends BaseConfig {
 }
 
 export interface DataflowEndpointConfigProps {
-  Name: string
-  DataflowEndpointName: string
-  DataflowEndpointRegion: string
+  readonly name: string
+  readonly dataflowEndpointName: string
+  readonly dataflowEndpointRegion: string
 }
 
+
+/**
+ * Configuration for a Dataflow Endpoint
+ *
+ * @resource AWS::GroundStation::Config
+ **/
 export class DataflowEndpointConfig extends BaseConfig {
   private readonly _resource: CfnConfig;
 
@@ -194,14 +203,14 @@ export class DataflowEndpointConfig extends BaseConfig {
 
   constructor(scope: Construct, id: string, props: DataflowEndpointConfigProps) {
     super(scope, id, {
-      physicalName: props.Name,
+      physicalName: props.name,
     });
     const resource = new CfnConfig(this, 'Resource', {
-      name: props.Name,
+      name: props.name,
       configData: {
         dataflowEndpointConfig: {
-          dataflowEndpointName: props.DataflowEndpointName,
-          dataflowEndpointRegion: props.DataflowEndpointRegion,
+          dataflowEndpointName: props.dataflowEndpointName,
+          dataflowEndpointRegion: props.dataflowEndpointRegion,
         },
       },
     });
@@ -215,12 +224,17 @@ export class DataflowEndpointConfig extends BaseConfig {
 }
 
 export interface S3RecordingConfigProps {
-  BucketArn: string
-  Prefix: string
-  RoleArn: string
-  Name: string
+  readonly bucketArn: string
+  readonly prefix?: string
+  readonly roleArn: string
+  readonly name: string
 }
 
+/**
+ * Configuration for a S3 Recording
+ *
+ * @resource AWS::GroundStation::Config
+ **/
 export class S3RecordingConfig extends BaseConfig {
   private readonly _resource: CfnConfig;
 
@@ -230,15 +244,15 @@ export class S3RecordingConfig extends BaseConfig {
 
   constructor(scope: Construct, id: string, props: S3RecordingConfigProps) {
     super(scope, id, {
-      physicalName: props.Name,
+      physicalName: props.name,
     });
     const resource = new CfnConfig(this, 'Resource', {
-      name: props.Name,
+      name: props.name,
       configData: {
         s3RecordingConfig: {
-          bucketArn: props.BucketArn,
-          prefix: props.Prefix,
-          roleArn: props.RoleArn,
+          bucketArn: props.bucketArn,
+          prefix: props.prefix,
+          roleArn: props.roleArn,
         },
       },
     });
@@ -258,10 +272,16 @@ export enum Autotrack {
 }
 
 export interface TrackingConfigProps {
-  Autotrack: Autotrack
-  Name: string
+  readonly autotrack: Autotrack
+  readonly name: string
 }
 
+
+/**
+ * Configuration for a Tracking
+ *
+ * @resource AWS::GroundStation::Config
+ **/
 export class TrackingConfig extends BaseConfig {
   private readonly _resource: CfnConfig;
 
@@ -271,13 +291,13 @@ export class TrackingConfig extends BaseConfig {
 
   constructor(scope: Construct, id: string, props: TrackingConfigProps) {
     super(scope, id, {
-      physicalName: props.Name,
+      physicalName: props.name,
     });
     const resource = new CfnConfig(this, 'Resource', {
-      name: props.Name,
+      name: props.name,
       configData: {
         trackingConfig: {
-          autotrack: props.Autotrack,
+          autotrack: props.autotrack,
         },
       },
     });
@@ -291,11 +311,16 @@ export class TrackingConfig extends BaseConfig {
 }
 
 export interface UplinkEchoConfigProps {
-  Name: string
-  AntennaUplinkConfigArn: string
-  Enabled: boolean
+  readonly name: string
+  readonly antennaUplinkConfigArn: string
+  readonly enabled: boolean
 }
 
+/**
+ * Configuration for a Uplink Echo
+ *
+ * @resource AWS::GroundStation::Config
+ **/
 export class UplinkEchoConfig extends BaseConfig {
   private readonly _resource: CfnConfig;
 
@@ -305,14 +330,14 @@ export class UplinkEchoConfig extends BaseConfig {
 
   constructor(scope: Construct, id: string, props: UplinkEchoConfigProps) {
     super(scope, id, {
-      physicalName: props.Name,
+      physicalName: props.name,
     });
     const resource = new CfnConfig(this, 'Resource', {
-      name: props.Name,
+      name: props.name,
       configData: {
         uplinkEchoConfig: {
-          antennaUplinkConfigArn: props.AntennaUplinkConfigArn,
-          enabled: props.Enabled,
+          antennaUplinkConfigArn: props.antennaUplinkConfigArn,
+          enabled: props.enabled,
         },
       },
     });

@@ -3,29 +3,29 @@ import { Construct } from 'constructs';
 import { CfnDataflowEndpointGroup } from './groundstation.generated';
 
 export interface SocketAddress {
-  name: string
-  port: number
+  readonly name: string
+  readonly port: number
 }
 
 export interface DataflowEndpoint {
-  address: SocketAddress
-  mtu: number
-  name: string
+  readonly address: SocketAddress
+  readonly mtu: number
+  readonly name: string
 }
 
 export interface SecurityDetails {
-  roleArn: string
-  securityGroupIds: string[]
-  subnetIds: string[]
+  readonly roleArn: string
+  readonly securityGroupIds: string[]
+  readonly subnetIds: string[]
 }
 
 export interface EndpointDetails {
-  endpoint: DataflowEndpoint
-  securityDetails: SecurityDetails
+  readonly endpoint: DataflowEndpoint
+  readonly securityDetails: SecurityDetails
 }
 
 export interface DataflowEndpointGroupProps {
-  endpointDetails: EndpointDetails[]
+  readonly endpointDetails: EndpointDetails[]
 }
 
 export abstract class DataflowEndpointGroup extends Resource {

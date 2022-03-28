@@ -6,17 +6,17 @@ import { CfnMissionProfile } from './groundstation.generated';
 export interface IMissionProfile extends IResource {}
 
 export interface DataflowEdge {
-  destination: string
-  source: string
+  readonly destination: string
+  readonly source: string
 }
 
 export interface MissionProfileProps {
-  ContactPostPassDurationSeconds?: number;
-  ContactPrePassDurationSeconds?: number;
-  DataflowEdges: DataflowEdge[];
-  MinimumViableContactDurationSeconds: number;
-  Name: string;
-  TrackingConfig: TrackingConfig;
+  readonly contactPostPassDurationSeconds?: number;
+  readonly contactPrePassDurationSeconds?: number;
+  readonly dataflowEdges: DataflowEdge[];
+  readonly minimumViableContactDurationSeconds: number;
+  readonly name: string;
+  readonly trackingConfig: TrackingConfig;
 }
 
 export abstract class MissionProfile extends Resource implements IMissionProfile {
@@ -27,26 +27,26 @@ export abstract class MissionProfile extends Resource implements IMissionProfile
   public readonly region: string
 
   constructor(scope: Construct, id: string, props: MissionProfileProps) {
-    super(scope, id, {
-      physicalName: props.Name,
-    });
-
     const {
-      ContactPostPassDurationSeconds,
-      ContactPrePassDurationSeconds,
-      DataflowEdges,
-      MinimumViableContactDurationSeconds,
-      Name,
-      TrackingConfig,
+      contactPostPassDurationSeconds,
+      contactPrePassDurationSeconds,
+      dataflowEdges,
+      minimumViableContactDurationSeconds,
+      name,
+      trackingConfig,
     } = props;
 
+    super(scope, id, {
+      physicalName: name,
+    });
+
     const resource = new CfnMissionProfile(this, 'Resource', {
-      contactPostPassDurationSeconds: ContactPostPassDurationSeconds,
-      contactPrePassDurationSeconds: ContactPrePassDurationSeconds,
-      dataflowEdges: DataflowEdges,
-      minimumViableContactDurationSeconds: MinimumViableContactDurationSeconds,
-      name: Name,
-      trackingConfigArn: TrackingConfig.arn,
+      contactPostPassDurationSeconds,
+      contactPrePassDurationSeconds,
+      dataflowEdges,
+      minimumViableContactDurationSeconds,
+      name,
+      trackingConfigArn: trackingConfig.arn,
     });
 
     this._resource = resource;
