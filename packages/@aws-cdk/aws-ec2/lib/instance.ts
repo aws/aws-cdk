@@ -248,7 +248,9 @@ export interface InstanceProps {
 
   /**
    * Whether "Detailed Monitoring" is enabled for this instance
+   * Keep in mind that Detailed Monitoring results in extra charges
    *
+   * @see http://aws.amazon.com/cloudwatch/pricing/
    * @default - false
    */
   readonly detailedMonitoring?: boolean;
