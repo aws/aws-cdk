@@ -1,15 +1,25 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
 
+/**
+ * Represents a single integration test
+ */
 export interface IntegTestConfig {
   readonly directory: string;
   readonly fileName: string;
 }
 
+/**
+ * Discover integration tests
+ */
 export class IntegrationTests {
   constructor(private readonly directory: string) {
   }
 
+  /**
+   * Takes an optional list of tests to look for, otherwise
+   * it will look for all tests from the directory
+   */
   public async fromCliArgs(tests?: string[]): Promise<IntegTestConfig[]> {
     let allTests = await this.discover();
     const all = allTests.map(x => x.fileName);
@@ -37,27 +47,25 @@ export class IntegrationTests {
     return allTests;
   }
 
-  public async discover(): Promise<IntegTestConfig[]> {
+  private async discover(): Promise<IntegTestConfig[]> {
     const files = await this.readTree();
     const integs = files.filter(fileName => path.basename(fileName).startsWith('integ.') && path.basename(fileName).endsWith('.js'));
     return this.request(integs);
   }
 
-  public request(files: string[]): IntegTestConfig[] {
+  private request(files: string[]): IntegTestConfig[] {
     return files.map(fileName => { return { directory: this.directory, fileName }; });
   }
 
   private async readTree(): Promise<string[]> {
     const ret = new Array<string>();
 
-    // const rootDir = this.directory;
-
     async function recurse(dir: string) {
       const files = await fs.readdir(dir);
       for (const file of files) {
         const fullPath = path.join(dir, file);
         const statf = await fs.stat(fullPath);
-        if (statf.isFile()) { ret.push(fullPath/* .substr(rootDir.length + 1) */); }
+        if (statf.isFile()) { ret.push(fullPath); }
         if (statf.isDirectory()) { await recurse(path.join(fullPath)); }
       }
     }

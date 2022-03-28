@@ -22,6 +22,24 @@ function batchTests(tests: IntegTestConfig[], regions?: string[]): SnapshotBatch
   return ret;
 }
 
+function printResults(diagnostics: Diagnostic[]): void {
+  diagnostics.forEach(diagnostic => {
+    switch (diagnostic.reason) {
+      case DiagnosticReason.SUCCESS:
+        logger.success('  %s No Change!', diagnostic.testName);
+        break;
+      case DiagnosticReason.NO_SNAPSHOT:
+        logger.error('  %s - No Snapshot!\n    %s', diagnostic.testName, diagnostic.message);
+        break;
+      case DiagnosticReason.SNAPSHOT_FAILED:
+        logger.error('  %s - Snapshot changed!\n%s', diagnostic.testName, diagnostic.message);
+        break;
+      case DiagnosticReason.TEST_FAILED:
+        logger.error('  %s - Failed!\n%s', diagnostic.testName, diagnostic.message);
+    }
+  });
+}
+
 async function main() {
   const argv = yargs
     .usage('Usage: integ-runner [TEST...]')
@@ -29,7 +47,7 @@ async function main() {
     .option('clean', { type: 'boolean', default: true, desc: 'Skips stack clean up after test is completed (use --no-clean to negate)' })
     .option('verbose', { type: 'boolean', default: false, alias: 'v', desc: 'Verbose logs' })
     .option('dry-run', { type: 'boolean', default: false, desc: 'do not actually deploy the stack. just update the snapshot (not recommended!)' })
-    .option('update', { type: 'boolean', default: false, desc: 'rerun integration tests and update snapshots for failed tests.' })
+    .option('update-on-failed', { type: 'boolean', default: false, desc: 'rerun integration tests and update snapshots for failed tests.' })
     .option('force', { type: 'boolean', default: false, desc: 'Rerun all integration tests even if tests are passing' })
     .option('parallel', { type: 'boolean', default: false, desc: 'run integration tests in parallel' })
     .option('parallel-regions', { type: 'array', desc: 'if --parallel is used then these regions are used to run tests in parallel', nargs: 1, default: [] })
@@ -46,11 +64,12 @@ async function main() {
     maxWorkers: N,
   });
 
+  // list of integration tests that will be executed
   const testsToRun: IntegTestConfig[] = [];
   const testsFromArgs: IntegTestConfig[] = [];
   const parallelRegions = arrayFromYargs(argv['parallel-regions']);
   const testRegions: string[] = parallelRegions ?? ['us-east-1', 'us-east-2', 'us-west-2'];
-  const updateFailed = argv.update ?? false;
+  const runUpdateOnFailed = argv['update-on-failed'] ?? false;
 
 
   try {
@@ -85,22 +104,11 @@ async function main() {
 
     if (diagnostics.length > 0) {
       logger.highlight('\nSnapshot Results: \n');
-      diagnostics.forEach(diagnostic => {
-        switch (diagnostic.reason) {
-          case DiagnosticReason.SUCCESS:
-            logger.success('  %s No Change!', diagnostic.testName);
-            break;
-          case DiagnosticReason.NO_SNAPSHOT:
-            logger.error('  %s - No Snapshot!\n    %s', diagnostic.testName, diagnostic.message);
-            break;
-          case DiagnosticReason.SNAPSHOT_FAILED:
-            logger.error('  %s - Snapshot changed!\n%s', diagnostic.testName, diagnostic.message);
-        }
-      });
+      printResults(diagnostics);
     }
     const testDiagnostics = new Array<Diagnostic>();
 
-    if (updateFailed) {
+    if (runUpdateOnFailed) {
       logger.highlight('\nRunning integration tests for failed tests...\n');
       const requests = batchTests(testsToRun, testRegions);
       logger.print('Running in parallel: ');
@@ -123,15 +131,11 @@ async function main() {
       }
       if (testDiagnostics.length > 0) {
         logger.highlight('\nTest Results: \n');
-        testDiagnostics.forEach(diagnostic => {
-          switch (diagnostic.reason) {
-            case DiagnosticReason.SUCCESS:
-              logger.success('  %s Success!', diagnostic.testName);
-              break;
-            case DiagnosticReason.TEST_FAILED:
-              logger.error('  %s - Failed!\n%s', diagnostic.testName, diagnostic.message);
-          }
-        });
+        printResults(diagnostics);
+      }
+
+      if (argv.clean === false) {
+        logger.warning('Not cleaning up stacks since "--no-clean" was used');
       }
     }
 

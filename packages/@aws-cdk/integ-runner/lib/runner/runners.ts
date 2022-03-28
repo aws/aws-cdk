@@ -16,6 +16,9 @@ const PRAGMA_PREFIX = 'pragma:';
 const SET_CONTEXT_PRAGMA_PREFIX = 'pragma:set-context:';
 const VERIFY_ASSET_HASHES = 'pragma:include-assets-hashes';
 
+/**
+ * Represents an Integration test runner
+ */
 export abstract class IntegRunner {
   /**
    * The directory where the snapshot will be stored
@@ -23,30 +26,61 @@ export abstract class IntegRunner {
   public readonly snapshotDir: string;
 
   /**
+   * An instance of the CDK  CLI
+   */
+  public readonly cdk: ICdk;
+
+  /**
+   * Pretty name of the test
+   */
+  public readonly testName: string;
+
+  /**
    * The path to the integration test file
    */
   protected readonly sourceFilePath: string;
 
   /**
-   *
+   * The value used in the '--app' CLI parameter
    */
-  public readonly cdk: ICdk;
-  /**
-   * Pretty name of the test
-   */
-  public readonly testName: string;
   protected readonly cdkApp: string;
+
+  /**
+   * The path where the `cdk.context.json` file
+   * will be created
+   */
   protected readonly cdkContextPath: string;
+
+  /**
+   * The relative path from the cwd to the snapshot directory
+   */
   protected readonly relativeSnapshotDir: string;
+
+  /**
+   * The integration tests that this runner will execute
+   */
   protected _tests?: { [testName: string]: TestCase };
+
+  /**
+   * The working directory that the integration tests will be
+   * executed from
+   */
   protected readonly directory: string;
+
+  /**
+   * Default options to pass to the CDK CLI
+   */
   protected readonly defaultArgs: DefaultCdkOptions = {
     pathMetadata: false,
     assetMetadata: false,
     versionReporting: false,
   }
 
+  /**
+   * The directory where the CDK will be synthed to
+   */
   protected readonly cdkOutDir: string;
+
   constructor(
     private readonly fileName: string,
     private readonly env?: { [name: string]: string },
@@ -77,6 +111,17 @@ export abstract class IntegRunner {
     return this._tests;
   }
 
+  /**
+   * Returns true if a snapshot already exists for this test
+   */
+  public hasSnapshot(): boolean {
+    if (fs.existsSync(this.snapshotDir)) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   protected loadManifest(dir?: string): void {
     try {
       const reader = IntegManifestReader.fromPath(dir ?? this.snapshotDir);
@@ -90,16 +135,6 @@ export abstract class IntegRunner {
     const cdkOutPath = path.join(this.directory, this.cdkOutDir);
     if (fs.existsSync(cdkOutPath)) {
       fs.removeSync(cdkOutPath);
-    }
-  }
-  /**
-   * Returns true if a snapshot already exists for this test
-   */
-  public hasSnapshot(): boolean {
-    if (fs.existsSync(this.snapshotDir)) {
-      return true;
-    } else {
-      return false;
     }
   }
 
@@ -144,7 +179,6 @@ export abstract class IntegRunner {
       }
       tests.stacks.push(...stacks);
     }
-
 
     return {
       [this.testName]: tests,
@@ -196,7 +230,7 @@ export abstract class IntegRunner {
    * For backwards compatibility reasons, all pragmas that DON'T start with this
    * string are considered to be stack names.
    */
-  public pragmas(): string[] {
+  protected pragmas(): string[] {
     return (this.readIntegPragma()).filter(p => p.startsWith(PRAGMA_PREFIX));
   }
 
@@ -234,9 +268,12 @@ export abstract class IntegRunner {
   }
 }
 
+/**
+ * Options for the integration test runner
+ */
 export interface IntegTestRunOptions {
   /**
-   * List of test cases to execute
+   * The test case to execute
    */
   readonly testCase: TestCase;
 
@@ -263,6 +300,10 @@ export interface IntegTestRunOptions {
   readonly dryRun?: boolean;
 }
 
+/**
+ * An integration test runner that orchestrates executing
+ * integration tests
+ */
 export class IntegTestRunner extends IntegRunner {
   constructor(fileName: string, env?: { [name: string]: string }) {
     super(fileName, env);
@@ -272,9 +313,8 @@ export class IntegTestRunner extends IntegRunner {
    * Orchestrates running integration tests. Currently this includes
    *
    * 1. Deploying the integration test stacks
-   * 2. Destroying the integration test stacks
-   * 3. If all is successfull then synth again with our dummy context
-   *    and save the assembly as the new snapshot
+   * 2. Saving the snapshot
+   * 3. Destroying the integration test stacks
    */
   public runIntegTestCase(options: IntegTestRunOptions): void {
     const clean = options.clean ?? true;
@@ -286,7 +326,6 @@ export class IntegTestRunner extends IntegRunner {
           output: this.cdkOutDir,
           app: this.cdkApp,
           ...this.defaultArgs,
-          ...options.testCase.cdkCommandOptions?.deploy?.args,
         });
         this.createSnapshot();
       }
@@ -299,12 +338,6 @@ export class IntegTestRunner extends IntegRunner {
             app: this.cdkApp,
             output: this.cdkOutDir,
             ...this.defaultArgs,
-            ...options.testCase.cdkCommandOptions?.destroy?.args,
-          });
-        } else {
-          workerpool.workerEmit({
-            level: 'WARN',
-            message: 'Not cleaning up stacks since "--no-clean" was used',
           });
         }
       }
@@ -320,6 +353,7 @@ export class IntegTestRunner extends IntegRunner {
     if (this.hasSnapshot()) {
       throw new Error(`${this.testName} already has a snapshot: ${this.snapshotDir}`);
     }
+
     this.writeContext();
     this.cdk.synth({
       all: true,
@@ -336,6 +370,10 @@ export class IntegTestRunner extends IntegRunner {
   }
 }
 
+/**
+ * Runner for snapshot tests. This handles orchestrating
+ * the validation of the integration test snapshots
+ */
 export class IntegSnapshotRunner extends IntegRunner {
   constructor(fileName: string, integOutDir?: string) {
     super(fileName, {}, integOutDir);
@@ -347,8 +385,10 @@ export class IntegSnapshotRunner extends IntegRunner {
    */
   public testSnapshot(): void {
     try {
+      // read the existing snapshot
       const expectedStacks = this.readAssembly(this.snapshotDir);
 
+      // synth the integration test
       this.writeContext();
       this.cdk.synth({
         all: true,
@@ -358,6 +398,7 @@ export class IntegSnapshotRunner extends IntegRunner {
       });
       const actualStacks = this.readAssembly(path.join(this.directory, this.cdkOutDir));
 
+      // diff the existing snapshot (expected) with the integration test (actual)
       const success = this.diffAssembly(expectedStacks, actualStacks);
 
       if (!success) {

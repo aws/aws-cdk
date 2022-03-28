@@ -2,9 +2,15 @@ import * as path from 'path';
 import { AssemblyManifest, Manifest, ArtifactType, AwsCloudFormationStackProperties } from '@aws-cdk/cloud-assembly-schema';
 import * as fs from 'fs-extra';
 
+/**
+ * Reads a Cloud Assembly manifest
+ */
 export class AssemblyManifestReader {
   public static readonly DEFAULT_FILENAME = 'manifest.json';
 
+  /**
+   * Reads a Cloud Assembly manifest from a file
+   */
   public static fromFile(fileName: string): AssemblyManifestReader {
     try {
       const obj = Manifest.loadAssemblyManifest(fileName);
@@ -15,6 +21,11 @@ export class AssemblyManifestReader {
     }
   }
 
+  /**
+   * Reads a Cloud Assembly manifest from a file or a directory
+   * If the given filePath is a directory then it will look for
+   * a file within the directory with the DEFAULT_FILENAME
+   */
   public static fromPath(filePath: string): AssemblyManifestReader {
     let st;
     try {
@@ -32,10 +43,15 @@ export class AssemblyManifestReader {
    * The directory where the manifest was found
    */
   public readonly directory: string;
+
   constructor(directory: string, private readonly manifest: AssemblyManifest) {
     this.directory = directory;
   }
 
+  /**
+   * Get the stacks from the manifest
+   * returns a map of artifactId to CloudFormation template
+   */
   public get stacks(): Record<string, any> {
     const stacks: Record<string, any> = {};
     for (const [artifactId, artifact] of Object.entries(this.manifest.artifacts ?? {})) {

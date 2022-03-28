@@ -2,9 +2,15 @@ import * as path from 'path';
 import { IntegManifest, Manifest, TestCase } from '@aws-cdk/cloud-assembly-schema';
 import * as fs from 'fs-extra';
 
+/**
+ * Reads an integration tests manifest
+ */
 export class IntegManifestReader {
   public static readonly DEFAULT_FILENAME = 'integ.json';
 
+  /**
+   * Reads an integration test manifest from the specified file
+   */
   public static fromFile(fileName: string): IntegManifestReader {
     try {
       const obj = Manifest.loadIntegManifest(fileName);
@@ -15,6 +21,11 @@ export class IntegManifestReader {
     }
   }
 
+  /**
+   * Reads a Integration test manifest from a file or a directory
+   * If the given filePath is a directory then it will look for
+   * a file within the directory with the DEFAULT_FILENAME
+   */
   public static fromPath(filePath: string): IntegManifestReader {
     let st;
     try {
@@ -37,7 +48,7 @@ export class IntegManifestReader {
   }
 
   /**
-   * List of tests
+   * List of integration tests in the manifest
    */
   public get tests(): { [testCaseName: string]: TestCase } {
     return this.manifest.testCases;

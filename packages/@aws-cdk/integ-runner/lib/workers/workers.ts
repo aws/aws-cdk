@@ -3,27 +3,100 @@ import { IntegTestConfig } from '../runner/integ-tests';
 import * as logger from '../runner/private/logger';
 import { IntegSnapshotRunner, IntegTestRunner } from '../runner/runners';
 
+/**
+ * Represents possible reasons for a diagnostic
+ */
 export enum DiagnosticReason {
+  /**
+   * The integration test failed because there
+   * is not existing snapshot
+   */
   NO_SNAPSHOT = 'NO_SNAPSHOT',
+
+  /**
+   * The integration test failed
+   */
   TEST_FAILED = 'TEST_FAILED',
+
+  /**
+   * The snapshot test failed because the actual
+   * snapshot was different than the expected snapshot
+   */
   SNAPSHOT_FAILED = 'SNAPSHOT_FAILED',
+
+  /**
+   * The integration test succeeded
+   */
   SUCCESS = 'SUCCESS',
 }
 
+/**
+ * Options for an integration test batch
+ */
 export interface IntegTestBatchRequest {
+  /**
+   * A list of integration tests to run
+   * in this batch
+   */
   readonly tests: IntegTestConfig[];
+
+  /**
+   * The AWS region to run this batch in
+   */
   readonly region: string;
+
+  /**
+   * Whether or not to destroy the stacks at the
+   * end of the test
+   *
+   * @default true
+   */
   readonly clean?: boolean;
+
+  /**
+   * When this is set to `true` the snapshot will
+   * be created _without_ running the integration test
+   * The resulting snapshot SHOULD NOT be checked in
+   *
+   * @default false
+   */
   readonly dryRun?: boolean;
+
+  /**
+   * Whether to enable verbose logging
+   *
+   * @default false
+   */
   readonly verbose?: boolean;
 }
 
+/**
+ * Integration test diagnostics
+ * This is used to report back the status of each test
+ */
 export interface Diagnostic {
+  /**
+   * The name of the test
+   */
   readonly testName: string;
+
+  /**
+   * The diagnostic message
+   */
   readonly message: string;
+
+  /**
+   * The reason for the diagnostic
+   */
   readonly reason: DiagnosticReason;
 }
 
+/**
+ * Runs a single snapshot test batch request.
+ * For each integration test this will check to see
+ * if there is an existing snapshot, and if there is will
+ * check if there are any changes
+ */
 export function singleThreadedSnapshotRunner(
   tests: IntegTestConfig[],
 ): { failedTests: IntegTestConfig[], diagnostics: Diagnostic[] } {
@@ -63,6 +136,14 @@ export function singleThreadedSnapshotRunner(
   };
 }
 
+/**
+ * Runs a single integration test batch request.
+ * If the test does not have an existing snapshot,
+ * this will first generate a snapshot and then execute
+ * the integration tests.
+ *
+ * If the tests succeed it will then save the snapshot
+ */
 export function singleThreadedTestRunner(
   request: IntegTestBatchRequest,
 ): Diagnostic[] {
