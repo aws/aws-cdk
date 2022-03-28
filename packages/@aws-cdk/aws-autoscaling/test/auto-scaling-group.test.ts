@@ -462,6 +462,33 @@ describe('auto scaling group', () => {
     });
   });
 
+  test('can add Security Group to Fleet as an IConnectable', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = mockVpc(stack);
+
+    // WHEN
+    const asg = new autoscaling.AutoScalingGroup(stack, 'MyASG', {
+      vpc,
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+      machineImage: new ec2.AmazonLinuxImage(),
+    });
+    asg.connections.addSecurityGroup(mockSecurityGroup(stack));
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::LaunchConfiguration', {
+      SecurityGroups: [
+        {
+          'Fn::GetAtt': [
+            'MyASGInstanceSecurityGroupBF55119F',
+            'GroupId',
+          ],
+        },
+        'most-secure',
+      ],
+    });
+  });
+
   test('can set tags', () => {
     // GIVEN
     const stack = getTestStack();

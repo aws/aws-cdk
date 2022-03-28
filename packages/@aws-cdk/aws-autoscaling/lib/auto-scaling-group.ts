@@ -943,7 +943,6 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
 
   private readonly autoScalingGroup: CfnAutoScalingGroup;
   private readonly securityGroup: ec2.ISecurityGroup;
-  private readonly securityGroups: ec2.ISecurityGroup[] = [];
   private readonly loadBalancerNames: string[] = [];
   private readonly targetGroupArns: string[] = [];
   private readonly groupMetrics: GroupMetrics[] = [];
@@ -967,7 +966,6 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       allowAllOutbound: props.allowAllOutbound !== false,
     });
     this.connections = new ec2.Connections({ securityGroups: [this.securityGroup] });
-    this.securityGroups.push(this.securityGroup);
     Tags.of(this).add(NAME_TAG, this.node.path);
 
     this.role = props.role || new iam.Role(this, 'InstanceRole', {
@@ -989,7 +987,10 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     const imageConfig = props.machineImage.getImage(this);
     this.userData = props.userData ?? imageConfig.userData;
     const userDataToken = Lazy.string({ produce: () => Fn.base64(this.userData.render()) });
-    const securityGroupsToken = Lazy.list({ produce: () => this.securityGroups.map(sg => sg.securityGroupId) });
+
+    const securityGroupsToken = Lazy.list({
+      produce: () => this.connections.securityGroups.map(sg => sg.securityGroupId),
+    });
 
     const launchConfig = new CfnLaunchConfiguration(this, 'LaunchConfig', {
       imageId: imageConfig.imageId,
@@ -1110,7 +1111,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
    * @param securityGroup: The security group to add
    */
   public addSecurityGroup(securityGroup: ec2.ISecurityGroup): void {
-    this.securityGroups.push(securityGroup);
+    this.connections.addSecurityGroup(securityGroup);
   }
 
   /**
