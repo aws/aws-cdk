@@ -60,7 +60,7 @@ async function main() {
   // Cap to a reasonable top-level limit to prevent thrash on machines with many, many cores.
   const maxWorkers = parseInt(process.env.CDK_INTEG_MAX_WORKER_COUNT ?? '16');
   const N = Math.min(maxWorkers, Math.max(1, Math.ceil(os.cpus().length / 2)));
-  const pool = workerpool.pool(path.join(__dirname, 'extract_worker.js'), {
+  const pool = workerpool.pool(path.join(__dirname, '../lib/workers/extract_worker.js'), {
     maxWorkers: N,
   });
 
