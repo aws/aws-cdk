@@ -4,7 +4,6 @@ import { diffTemplate, formatDifferences } from '@aws-cdk/cloudformation-diff';
 import { AVAILABILITY_ZONE_FALLBACK_CONTEXT_KEY, FUTURE_FLAGS, TARGET_PARTITIONS } from '@aws-cdk/cx-api';
 import { CdkCliWrapper, ICdk } from 'cdk-cli-wrapper';
 import * as fs from 'fs-extra';
-import * as workerpool from 'workerpool';
 import { canonicalizeTemplate } from './private/canonicalize-assets';
 import { AssemblyManifestReader } from './private/cloud-assembly';
 import { IntegManifestReader } from './private/integ-manifest';
@@ -139,12 +138,21 @@ export abstract class IntegRunner {
   }
 
   protected createSnapshot(): void {
-    if (fs.existsSync(path.join(this.directory, this.cdkOutDir))) {
-      workerpool.workerEmit({
-        message: `creating snapshot at ${this.relativeSnapshotDir}`,
-      });
-      fs.moveSync(path.join(this.directory, this.cdkOutDir), this.snapshotDir, { overwrite: true });
+    if (fs.existsSync(this.snapshotDir)) {
+      fs.removeSync(this.snapshotDir);
     }
+    this.writeContext();
+    this.cdk.synth({
+      all: true,
+      app: this.cdkApp,
+      ...this.defaultArgs,
+      // TODO: figure out if we need this...
+      // env: {
+      //   ...DEFAULT_SYNTH_OPTIONS.env,
+      // },
+      output: this.relativeSnapshotDir,
+    });
+    this.cleanupContextFile();
   }
 
   /**
@@ -327,8 +335,8 @@ export class IntegTestRunner extends IntegRunner {
           app: this.cdkApp,
           ...this.defaultArgs,
         });
-        this.createSnapshot();
       }
+      this.createSnapshot();
     } finally {
       if (!options.dryRun) {
         if (clean) {
