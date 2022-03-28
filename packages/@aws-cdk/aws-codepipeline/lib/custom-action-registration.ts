@@ -2,9 +2,6 @@ import { Construct } from 'constructs';
 import { ActionCategory, ActionArtifactBounds } from './action';
 import { CfnCustomActionType } from './codepipeline.generated';
 
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
  * The creation attributes used for defining a configuration property
@@ -117,7 +114,7 @@ export interface CustomActionRegistrationProps {
  * representing your custom Action, extending the Action class,
  * and taking the `actionProperties` as properly typed, construction properties.
  */
-export class CustomActionRegistration extends CoreConstruct {
+export class CustomActionRegistration extends Construct {
   constructor(scope: Construct, id: string, props: CustomActionRegistrationProps) {
     super(scope, id);
 
