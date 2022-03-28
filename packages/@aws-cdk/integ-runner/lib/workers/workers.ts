@@ -27,12 +27,12 @@ export enum DiagnosticReason {
   /**
    * The snapshot test succeeded
    */
-  SNAPSHOT_SUCCESS = 'SUCCESS',
+  SNAPSHOT_SUCCESS = 'SNAPSHOT_SUCCESS',
 
   /**
    * The integration test succeeded
    */
-  TEST_SUCCESS = 'SUCCESS',
+  TEST_SUCCESS = 'TEST_SUCCESS',
 }
 
 /**
