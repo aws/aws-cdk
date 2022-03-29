@@ -2,6 +2,33 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.18.0](https://github.com/aws/aws-cdk/compare/v2.17.0...v2.18.0) (2022-03-28)
+
+
+### Features
+
+
+* **cognito:** configure SNS region for UserPool SMS messages ([#19519](https://github.com/aws/aws-cdk/issues/19519)) ([6eb775e](https://github.com/aws/aws-cdk/commit/6eb775e829d62913bff849d43ed7339f9910d8de)), closes [#19434](https://github.com/aws/aws-cdk/issues/19434)
+* cloudformation spec v62.0.0 ([#19553](https://github.com/aws/aws-cdk/issues/19553)) ([0352dee](https://github.com/aws/aws-cdk/commit/0352deedb445f070ed0cd27406a75872fb71ea53))
+* **autoscaling:** support warm pools ([#19214](https://github.com/aws/aws-cdk/issues/19214)) ([737e611](https://github.com/aws/aws-cdk/commit/737e611577c97b6ad01eaeb05fc544258a9de5ad))
+* **cfnspec:** cloudformation spec v61.0.0 ([#19457](https://github.com/aws/aws-cdk/issues/19457)) ([16d7552](https://github.com/aws/aws-cdk/commit/16d7552683ea05ea1a24b214b925836dcb72871d))
+* **cli:** support SSO ([#19454](https://github.com/aws/aws-cdk/issues/19454)) ([eba6052](https://github.com/aws/aws-cdk/commit/eba6052e1c8011d7163c782e669e86f5d2fd44d0))
+* **cloudwatch:** Additional Properties for Cloudwatch AlarmStatusWidget ([#19387](https://github.com/aws/aws-cdk/issues/19387)) ([3c9ea5f](https://github.com/aws/aws-cdk/commit/3c9ea5f31e3113fb0d2ba5c633fcd665294a70eb)), closes [#19386](https://github.com/aws/aws-cdk/issues/19386)
+* **ec2:** add support for x2iezn instances ([#19517](https://github.com/aws/aws-cdk/issues/19517)) ([8f6e20e](https://github.com/aws/aws-cdk/commit/8f6e20e5a070fc3ac2c234013b915315a0e7dcfb))
+
+
+### Bug Fixes
+
+* **apigateway:** `StepFunctionsIntegration` does not create required role and responses ([#19486](https://github.com/aws/aws-cdk/issues/19486)) ([d59bee9](https://github.com/aws/aws-cdk/commit/d59bee99768b20427503853eb2ec436959ae7e6f))
+* **bootstrap:** rebootstrap breaks container Functions ([#19446](https://github.com/aws/aws-cdk/issues/19446)) ([49ea263](https://github.com/aws/aws-cdk/commit/49ea26304760801e03dae5479ae03540eaa63f6e)), closes [#18473](https://github.com/aws/aws-cdk/issues/18473)
+* **cli:** templates don't include `.gitignore` ([#19482](https://github.com/aws/aws-cdk/issues/19482)) ([5ce0983](https://github.com/aws/aws-cdk/commit/5ce0983955628c5119340d659abf0201da58bcb6))
+* **core:** Aspects from symlinked modules are not applied ([#19491](https://github.com/aws/aws-cdk/issues/19491)) ([eaeaed7](https://github.com/aws/aws-cdk/commit/eaeaed7a508cdb9c84c96911327b085e907aed98)), closes [#18921](https://github.com/aws/aws-cdk/issues/18921) [#18778](https://github.com/aws/aws-cdk/issues/18778) [#19390](https://github.com/aws/aws-cdk/issues/19390) [#18914](https://github.com/aws/aws-cdk/issues/18914)
+* **ecr:** setting imageScanningConfiguration to false does nothing on existing repository ([#18078](https://github.com/aws/aws-cdk/issues/18078)) ([78bc870](https://github.com/aws/aws-cdk/commit/78bc8703bb932822ceeb16fd57fa576714aa5732)), closes [#18077](https://github.com/aws/aws-cdk/issues/18077)
+* **events:** cannot have more than one cross-account Rule  ([#19441](https://github.com/aws/aws-cdk/issues/19441)) ([a257846](https://github.com/aws/aws-cdk/commit/a2578462119d112c6095e06668add97e7721d570)), closes [#12479](https://github.com/aws/aws-cdk/issues/12479) [#12538](https://github.com/aws/aws-cdk/issues/12538)
+* **iam:** IAM Policies are too large to deploy ([#19114](https://github.com/aws/aws-cdk/issues/19114)) ([3a4fe33](https://github.com/aws/aws-cdk/commit/3a4fe3304ba32bc205cbf4833f7397f633cc1ece)), closes [#18774](https://github.com/aws/aws-cdk/issues/18774) [#16350](https://github.com/aws/aws-cdk/issues/16350) [#18457](https://github.com/aws/aws-cdk/issues/18457) [#18564](https://github.com/aws/aws-cdk/issues/18564) [#19276](https://github.com/aws/aws-cdk/issues/19276)
+* **lambda:** support Lambda's new `Invoke` with `Qualifier` authorization strategy ([#19318](https://github.com/aws/aws-cdk/issues/19318)) ([d06b27f](https://github.com/aws/aws-cdk/commit/d06b27fd4bf351cc9ba5c603352f756c679c34fc)), closes [#19273](https://github.com/aws/aws-cdk/issues/19273)
+* **secretsmanager:** secret rotation uses old application versions ([#19490](https://github.com/aws/aws-cdk/issues/19490)) ([0c983ad](https://github.com/aws/aws-cdk/commit/0c983ad748fa57c0717d9bdf852051046f88b3a9)), closes [#19487](https://github.com/aws/aws-cdk/issues/19487)
+
 ## [2.17.0](https://github.com/aws/aws-cdk/compare/v2.16.0...v2.17.0) (2022-03-17)
 
 
