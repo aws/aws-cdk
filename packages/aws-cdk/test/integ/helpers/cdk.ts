@@ -720,9 +720,11 @@ export async function installNpmPackages(fixture: TestFixture, packages: Record<
 const installNpm7 = memoize0(async (): Promise<string> => {
   const installDir = path.join(os.tmpdir(), 'cdk-integ-npm7');
   await shell(['rm', '-rf', installDir]);
-  await shell(['mkdir', '-p', `${installDir}/node_modules`]);
+  await shell(['mkdir', '-p', installDir]);
 
-  await shell(['npm', 'install', 'npm@7'], { cwd: installDir });
+  await shell(['npm', 'install',
+    '--prefix', installDir,
+    'npm@7']);
 
   return path.join(installDir, 'node_modules', '.bin', 'npm');
 });
