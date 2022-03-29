@@ -245,6 +245,15 @@ export interface InstanceProps {
    * @default - false
    */
   readonly requireImdsv2?: boolean;
+
+  /**
+   * Whether "Detailed Monitoring" is enabled for this instance
+   * Keep in mind that Detailed Monitoring results in extra charges
+   *
+   * @see http://aws.amazon.com/cloudwatch/pricing/
+   * @default - false
+   */
+  readonly detailedMonitoring?: boolean;
 }
 
 /**
@@ -381,6 +390,7 @@ export class Instance extends Resource implements IInstance {
       blockDeviceMappings: props.blockDevices !== undefined ? instanceBlockDeviceMappings(this, props.blockDevices) : undefined,
       privateIpAddress: props.privateIpAddress,
       propagateTagsToVolumeOnCreation: props.propagateTagsToVolumeOnCreation,
+      monitoring: props.detailedMonitoring,
     });
     this.instance.node.addDependency(this.role);
 

@@ -1,5 +1,5 @@
-import { Bucket } from '@aws-cdk/aws-s3';
 import { Template, Match } from '@aws-cdk/assertions';
+import { Bucket } from '@aws-cdk/aws-s3';
 import { Aws, Stack, CfnResource } from '@aws-cdk/core';
 import * as ec2 from '../lib';
 
