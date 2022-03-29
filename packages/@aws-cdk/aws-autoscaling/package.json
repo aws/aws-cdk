@@ -122,6 +122,7 @@
       "export:@aws-cdk/aws-autoscaling.IAutoScalingGroup",
       "props-physical-name:@aws-cdk/aws-autoscaling.AutoScalingGroupProps",
       "props-physical-name:@aws-cdk/aws-autoscaling.ScheduledActionProps",
+      "props-physical-name:@aws-cdk/aws-autoscaling.WarmPoolProps",
       "props-default-doc:@aws-cdk/aws-autoscaling.EbsDeviceOptionsBase.iops",
       "docs-public-apis:@aws-cdk/aws-autoscaling.ScalingProcess.ADD_TO_LOAD_BALANCER",
       "docs-public-apis:@aws-cdk/aws-autoscaling.ScalingProcess.SCHEDULED_ACTIONS",
