@@ -152,19 +152,25 @@ export interface BandwidthSpectrumConfig {
   readonly polarization: Polarization;
 }
 
+
+/**
+ * Basic properties for config
+ */
+export interface ConfigProps {
+  /**
+   * Friendly name of the antenna downlink config.
+   */
+  readonly configName: string;
+}
+
 /**
  *  Provides information about how AWS Ground Station should configure an antenna for downlink during a contact. Use an antenna downlink config in a mission profile to receive the downlink data in raw DigIF format.
  */
-export interface AntennaDownlinkConfigProps {
+export interface AntennaDownlinkConfigProps extends ConfigProps {
   /**
    * Defines the spectrum configuration.
    */
   readonly spectrumConfig: BandwidthSpectrumConfig
-
-  /**
-   * Friendly name of the antenna downlink config.
-   */
-  readonly name: string;
 }
 
 /**
@@ -194,8 +200,7 @@ export interface Erip {
 export class AntennaDownlinkConfig extends BaseConfig {
   constructor(scope: Construct, id: string, props: AntennaDownlinkConfigProps) {
     super(scope, id, {
-      physicalName: props.name,
-      name: props.name,
+      name: props.configName,
       configData: {
         antennaDownlinkConfig: {
           spectrumConfig: props.spectrumConfig,
@@ -220,7 +225,7 @@ export interface UnvalidatedJson {
  * Properties for Antenna Downlink Demod Decode Config
  *
  */
-export interface AntennaDownlinkDemodDecodeConfigProps {
+export interface AntennaDownlinkDemodDecodeConfigProps extends ConfigProps {
   /**
    * Defines how the RF signal will be decoded. See [AWS documentation](https://docs.aws.amazon.com/groundstation/latest/userguide/gs-antenna-downlink-demod-decode.html)
    */
@@ -236,10 +241,7 @@ export interface AntennaDownlinkDemodDecodeConfigProps {
    */
   readonly spectrumConfig: SpectrumConfig,
 
-  /**
-   * Friendly name of the configuration
-   */
-  readonly name: string;
+
 }
 
 
@@ -253,7 +255,7 @@ export interface AntennaDownlinkDemodDecodeConfigProps {
 export class AntennaDownlinkDemodDecodeConfig extends BaseConfig {
   constructor(scope: Construct, id: string, props: AntennaDownlinkDemodDecodeConfigProps) {
     super(scope, id, {
-      name: props.name,
+      name: props.configName,
       configData: {
         antennaDownlinkDemodDecodeConfig: {
           decodeConfig: {
@@ -287,11 +289,8 @@ export interface SpectrumConfig {
 /**
  * Configuration for Antenna Uplink
  */
-export interface AntennaUplinkConfigProps {
-  /**
-   * Friendly name of the configuration
-   */
-  readonly name: string
+export interface AntennaUplinkConfigProps extends ConfigProps {
+
 
   /**
    *  Defines the spectrum configuration.
@@ -324,7 +323,7 @@ export interface AntennaUplinkConfigProps {
 export class AntennaUplinkConfig extends BaseConfig {
   constructor(scope: Construct, id: string, props: AntennaUplinkConfigProps) {
     super(scope, id, {
-      name: props.name,
+      name: props.configName,
       configData: {
         antennaUplinkConfig: props,
       },
@@ -335,11 +334,8 @@ export class AntennaUplinkConfig extends BaseConfig {
 /**
  * Properties for Dataflow Endpoint Configuration
  */
-export interface DataflowEndpointConfigProps {
-  /**
-   * Friendly name of the configuration
-   */
-  readonly name: string
+export interface DataflowEndpointConfigProps extends ConfigProps{
+
 
   /**
    * The name of the dataflow endpoint to use during contacts.
@@ -371,7 +367,7 @@ export interface DataflowEndpointConfigProps {
 export class DataflowEndpointConfig extends BaseConfig {
   constructor(scope: Construct, id: string, props: DataflowEndpointConfigProps) {
     super(scope, id, {
-      name: props.name,
+      name: props.configName,
       configData: {
         dataflowEndpointConfig: {
           dataflowEndpointName: props.dataflowEndpointName,
@@ -386,7 +382,7 @@ export class DataflowEndpointConfig extends BaseConfig {
 /**
  * Configuration for S3 Recording
  */
-export interface S3RecordingConfigProps {
+export interface S3RecordingConfigProps extends ConfigProps{
   /**
    * S3 Bucket where the data is written. The name of the S3 Bucket provided must begin with aws-groundstation.
    */
@@ -404,10 +400,6 @@ export interface S3RecordingConfigProps {
    */
   readonly role: IRole
 
-  /**
-   * Friendly name of the configuration
-   */
-  readonly name: string
 }
 
 /**
@@ -425,7 +417,7 @@ export interface S3RecordingConfigProps {
 export class S3RecordingConfig extends BaseConfig {
   constructor(scope: Construct, id: string, props: S3RecordingConfigProps) {
     super(scope, id, {
-      name: props.name,
+      name: props.configName,
       configData: {
         s3RecordingConfig: {
           bucketArn: props.bucket.bucketArn,
@@ -460,16 +452,11 @@ export enum Autotrack {
 /**
  * Tracking configuration for ground station
  */
-export interface TrackingConfigProps {
+export interface TrackingConfigProps extends ConfigProps {
   /**
    * Tracking mode the dish will use
    */
   readonly autotrack: Autotrack
-
-  /**
-   * Friendly name for the configuration
-   */
-  readonly name: string
 }
 
 
@@ -481,7 +468,7 @@ export interface TrackingConfigProps {
 export class TrackingConfig extends BaseConfig {
   constructor(scope: Construct, id: string, props: TrackingConfigProps) {
     super(scope, id, {
-      name: props.name,
+      name: props.configName,
       configData: {
         trackingConfig: {
           autotrack: props.autotrack,
@@ -494,11 +481,8 @@ export class TrackingConfig extends BaseConfig {
 /**
  * Configuration for an Uplink Echo
  */
-export interface UplinkEchoConfigProps {
-  /**
-   * Friendly name for the configuration
-   */
-  readonly name: string
+export interface UplinkEchoConfigProps extends ConfigProps {
+
 
   /**
    * ARN of the antenna uplink to echo
@@ -521,7 +505,7 @@ export interface UplinkEchoConfigProps {
 export class UplinkEchoConfig extends BaseConfig {
   constructor(scope: Construct, id: string, props: UplinkEchoConfigProps) {
     super(scope, id, {
-      name: props.name,
+      name: props.configName,
       configData: {
         uplinkEchoConfig: {
           antennaUplinkConfigArn: props.antennaUplinkConfig.configArn,

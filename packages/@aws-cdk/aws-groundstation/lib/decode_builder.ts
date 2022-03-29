@@ -264,13 +264,37 @@ export interface CenterFrequency {
 }
 
 /**
+ * Demodulation configuration for DemodConfigBuilder
+ */
+export interface DemodConfig {
+  /**
+   * Demodulation type
+   */
+  readonly type: DemodType;
+
+  /**
+   * Demodulation configuration
+   *
+   * @default None
+   */
+  readonly qpsk?: Qpsk;
+
+  /**
+   * OQPSK Configuration
+   *
+   * @default None
+   */
+  readonly oqpsk?: Oqpsk;
+};
+
+/**
  * Demodulation configuration builder for signal.
  */
-export class DemodConfig {
-  private config: {[key: string]: object};
+export class DemodConfigBuilder {
+  private config: DemodConfig
 
-  constructor(config: {[key: string]: object}) {
-    this.config = { ...config };
+  constructor(config: DemodConfig) {
+    this.config = config ;
   }
 
   /**

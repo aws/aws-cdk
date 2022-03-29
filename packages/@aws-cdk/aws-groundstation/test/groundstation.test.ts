@@ -23,7 +23,7 @@ describe('Groundstation Config', () => {
 
     const config = new S3RecordingConfig(stack, 'S3Config', {
       bucket: bucket,
-      name: 'S3_Config',
+      configName: 'S3_Config',
       role: role,
     });
     expect(config).toBeDefined();
