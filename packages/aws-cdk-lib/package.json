@@ -414,6 +414,7 @@
     "./aws-autoscalingplans": "./aws-autoscalingplans/index.js",
     "./aws-backup": "./aws-backup/index.js",
     "./aws-batch": "./aws-batch/index.js",
+    "./aws-billingconductor": "./aws-billingconductor/index.js",
     "./aws-budgets": "./aws-budgets/index.js",
     "./aws-cassandra": "./aws-cassandra/index.js",
     "./aws-ce": "./aws-ce/index.js",
