@@ -113,7 +113,7 @@ export function singleThreadedSnapshotRunner(
   const diagnostics = new Array<Diagnostic>();
   const failedTests = new Array<IntegTestConfig>();
   for (const test of tests) {
-    const runner = new IntegSnapshotRunner(test.fileName);
+    const runner = new IntegSnapshotRunner({ fileName: test.fileName });
     try {
       if (!runner.hasSnapshot()) {
         failedTests.push(test);
@@ -164,8 +164,11 @@ export function singleThreadedTestRunner(
 ): Diagnostic[] {
   const diagnostics = new Array<Diagnostic>();
   for (const test of request.tests) {
-    const runner = new IntegTestRunner(test.fileName, {
-      AWS_REGION: request.region,
+    const runner = new IntegTestRunner({
+      fileName: test.fileName,
+      env: {
+        AWS_REGION: request.region,
+      },
     });
     try {
       if (!runner.hasSnapshot()) {

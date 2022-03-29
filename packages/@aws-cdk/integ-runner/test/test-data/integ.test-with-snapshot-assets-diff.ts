@@ -1,1 +1,1 @@
-/// !cdk-integ test-stack
+/// !cdk-integ test-stack pragma:enable-lookups

@@ -9,6 +9,11 @@
                     "description": "Version of the manifest",
                     "type": "string"
                 },
+                "enableLookups": {
+                    "description": "Enable lookups for this test. If lookups are enabled\nthen `stackUpdateWorkflow` must be set to false.\nLookups should only be enabled when you are explicitely testing\nlookups.",
+                    "default": false,
+                    "type": "boolean"
+                },
                 "testCases": {
                     "description": "test cases",
                     "type": "object",
@@ -76,10 +81,6 @@
                 "deploy": {
                     "description": "Options to for the cdk deploy command (Default - default deploy options)",
                     "$ref": "#/definitions/DeployCommand"
-                },
-                "synth": {
-                    "description": "Options to for the cdk synth command (Default - default synth options)",
-                    "$ref": "#/definitions/SynthCommand"
                 },
                 "destroy": {
                     "description": "Options to for the cdk destroy command (Default - default destroy options)",
@@ -180,153 +181,6 @@
                 },
                 "ci": {
                     "description": "Whether we are on a CI system",
-                    "default": false,
-                    "type": "boolean"
-                },
-                "stacks": {
-                    "description": "List of stacks to deploy\n\nRequried if `all` is not set (Default - [])",
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "all": {
-                    "description": "Deploy all stacks\n\nRequried if `stacks` is not set (Default - false)",
-                    "type": "boolean"
-                },
-                "app": {
-                    "description": "command-line for executing your app or a cloud assembly directory\ne.g. \"node bin/my-app.js\"\nor\n\"cdk.out\" (Default - read from cdk.json)",
-                    "type": "string"
-                },
-                "roleArn": {
-                    "description": "Role to pass to CloudFormation for deployment (Default - use the bootstrap cfn-exec role)",
-                    "type": "string"
-                },
-                "context": {
-                    "description": "Additional context (Default - no additional context)",
-                    "type": "object",
-                    "additionalProperties": {
-                        "type": "string"
-                    }
-                },
-                "trace": {
-                    "description": "Print trace for stack warnings",
-                    "default": false,
-                    "type": "boolean"
-                },
-                "strict": {
-                    "description": "Do not construct stacks with warnings",
-                    "default": false,
-                    "type": "boolean"
-                },
-                "lookups": {
-                    "description": "Perform context lookups.\n\nSynthesis fails if this is disabled and context lookups need\nto be performed (Default true)",
-                    "type": "boolean"
-                },
-                "ignoreErrors": {
-                    "description": "Ignores synthesis errors, which will likely produce an invalid output",
-                    "default": false,
-                    "type": "boolean"
-                },
-                "json": {
-                    "description": "Use JSON output instead of YAML when templates are printed\nto STDOUT",
-                    "default": false,
-                    "type": "boolean"
-                },
-                "verbose": {
-                    "description": "show debug logs",
-                    "default": false,
-                    "type": "boolean"
-                },
-                "debug": {
-                    "description": "enable emission of additional debugging information, such as creation stack\ntraces of tokens",
-                    "default": false,
-                    "type": "boolean"
-                },
-                "profile": {
-                    "description": "Use the indicated AWS profile as the default environment (Default - no profile is used)",
-                    "type": "string"
-                },
-                "proxy": {
-                    "description": "Use the indicated proxy. Will read from\nHTTPS_PROXY environment if specified (Default - no proxy)",
-                    "type": "string"
-                },
-                "caBundlePath": {
-                    "description": "Path to CA certificate to use when validating HTTPS\nrequests. (Default - read from AWS_CA_BUNDLE environment variable)",
-                    "type": "string"
-                },
-                "ec2Creds": {
-                    "description": "Force trying to fetch EC2 instance credentials (Default - guess EC2 instance status)",
-                    "type": "boolean"
-                },
-                "versionReporting": {
-                    "description": "Include \"AWS::CDK::Metadata\" resource in synthesized templates (Default true)",
-                    "type": "boolean"
-                },
-                "pathMetadata": {
-                    "description": "Include \"aws:cdk:path\" CloudFormation metadata for each resource (Default true)",
-                    "type": "boolean"
-                },
-                "assetMetadata": {
-                    "description": "Include \"aws:asset:*\" CloudFormation metadata for resources that use assets (Default true)",
-                    "type": "boolean"
-                },
-                "staging": {
-                    "description": "Copy assets to the output directory\n\nNeeded for local debugging the source files with SAM CLI",
-                    "default": false,
-                    "type": "boolean"
-                },
-                "output": {
-                    "description": "Emits the synthesized cloud assembly into a directory (Default cdk.out)",
-                    "type": "string"
-                },
-                "notices": {
-                    "description": "Show relevant notices (Default true)",
-                    "type": "boolean"
-                },
-                "color": {
-                    "description": "Show colors and other style from console output (Default true)",
-                    "type": "boolean"
-                }
-            }
-        },
-        "SynthCommand": {
-            "description": "Represents a cdk synth command",
-            "type": "object",
-            "properties": {
-                "args": {
-                    "description": "Additional arguments to pass to the command\nThis can be used to test specific CLI functionality (Default - only default args are used)",
-                    "$ref": "#/definitions/SynthOptions"
-                },
-                "enabled": {
-                    "description": "Whether or not to run this command as part of the workflow\nThis can be used if you only want to test some of the workflow\nfor example enable `synth` and disable `deploy` & `destroy` in order\nto limit the test to synthesis (Default true)",
-                    "type": "boolean"
-                },
-                "expectError": {
-                    "description": "If the runner should expect this command to fail",
-                    "default": false,
-                    "type": "boolean"
-                },
-                "expectedMessage": {
-                    "description": "This can be used in combination with `expectedError`\nto validate that a specific message is returned. (Default - do not validate message)",
-                    "type": "string"
-                }
-            }
-        },
-        "SynthOptions": {
-            "description": "Options to use with cdk synth",
-            "type": "object",
-            "properties": {
-                "validation": {
-                    "description": "After synthesis, validate stacks with the \"validateOnSynth\"\nattribute set (can also be controlled with CDK_VALIDATION) (Default true;)",
-                    "type": "boolean"
-                },
-                "quiet": {
-                    "description": "Do not output CloudFormation Template to stdout (Default false;)",
-                    "type": "boolean"
-                },
-                "exclusively": {
-                    "description": "Only synthesize the given stack",
                     "default": false,
                     "type": "boolean"
                 },

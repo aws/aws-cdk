@@ -19,10 +19,10 @@ describe('IntegTest runSnapshotTests', () => {
   });
   test('with defaults no diff', () => {
     // WHEN
-    const integTest = new IntegSnapshotRunner(
-      path.join(__dirname, '../test-data/integ.test-with-snapshot.js'),
-      'test-with-snapshot.integ.snapshot',
-    );
+    const integTest = new IntegSnapshotRunner({
+      fileName: path.join(__dirname, '../test-data/integ.test-with-snapshot.js'),
+      integOutDir: 'test-with-snapshot.integ.snapshot',
+    });
     synthMock = jest.spyOn(integTest.cdk, 'synth').mockImplementation();
     integTest.testSnapshot();
 
@@ -35,15 +35,16 @@ describe('IntegTest runSnapshotTests', () => {
       pathMetadata: false,
       assetMetadata: false,
       versionReporting: false,
+      lookups: false,
     });
   });
 
   test('with defaults and diff', () => {
     // WHEN
-    const integTest = new IntegSnapshotRunner(
-      path.join(__dirname, '../test-data/integ.test-with-snapshot.js'),
-      'test-with-snapshot-diff.integ.snapshot',
-    );
+    const integTest = new IntegSnapshotRunner({
+      fileName: path.join(__dirname, '../test-data/integ.test-with-snapshot.js'),
+      integOutDir: 'test-with-snapshot-diff.integ.snapshot',
+    });
     synthMock = jest.spyOn(integTest.cdk, 'synth').mockImplementation();
     const diagnostics = integTest.testSnapshot();
 
@@ -56,6 +57,7 @@ describe('IntegTest runSnapshotTests', () => {
       pathMetadata: false,
       assetMetadata: false,
       versionReporting: false,
+      lookups: false,
     });
     expect(diagnostics).toEqual(expect.arrayContaining([expect.objectContaining({
       reason: DiagnosticReason.SNAPSHOT_FAILED,
@@ -66,10 +68,10 @@ describe('IntegTest runSnapshotTests', () => {
 
   test('dont diff asset hashes', () => {
     // WHEN
-    const integTest = new IntegSnapshotRunner(
-      path.join(__dirname, '../test-data/integ.test-with-snapshot-assets-diff.js'),
-      'test-with-snapshot-assets.integ.snapshot',
-    );
+    const integTest = new IntegSnapshotRunner({
+      fileName: path.join(__dirname, '../test-data/integ.test-with-snapshot-assets-diff.js'),
+      integOutDir: 'test-with-snapshot-assets.integ.snapshot',
+    });
     synthMock = jest.spyOn(integTest.cdk, 'synth').mockImplementation();
     expect(() => {
       integTest.testSnapshot();
@@ -84,15 +86,16 @@ describe('IntegTest runSnapshotTests', () => {
       pathMetadata: false,
       assetMetadata: false,
       versionReporting: false,
+      lookups: true,
     });
   });
 
   test('diff asset hashes', () => {
     // WHEN
-    const integTest = new IntegSnapshotRunner(
-      path.join(__dirname, '../test-data/integ.test-with-snapshot-assets.js'),
-      'test-with-snapshot-assets-diff.integ.snapshot',
-    );
+    const integTest = new IntegSnapshotRunner({
+      fileName: path.join(__dirname, '../test-data/integ.test-with-snapshot-assets.js'),
+      integOutDir: 'test-with-snapshot-assets-diff.integ.snapshot',
+    });
     synthMock = jest.spyOn(integTest.cdk, 'synth').mockImplementation();
     const diagnostics = integTest.testSnapshot();
 
@@ -105,6 +108,7 @@ describe('IntegTest runSnapshotTests', () => {
       pathMetadata: false,
       assetMetadata: false,
       versionReporting: false,
+      lookups: false,
     });
     expect(diagnostics).toEqual(expect.arrayContaining([expect.objectContaining({
       reason: DiagnosticReason.SNAPSHOT_FAILED,
@@ -122,7 +126,7 @@ describe('IntegTest runIntegTests', () => {
   let listMock: jest.SpyInstance;
   // let stderrMock: jest.SpyInstance;
   beforeEach(() => {
-    integTest = new IntegTestRunner(path.join(__dirname, '../test-data/integ.integ-test1.js'));
+    integTest = new IntegTestRunner({ fileName: path.join(__dirname, '../test-data/integ.integ-test1.js') });
     deployMock = jest.spyOn(integTest.cdk, 'deploy').mockImplementation();
     destroyMock = jest.spyOn(integTest.cdk, 'destroy').mockImplementation();
     synthMock = jest.spyOn(integTest.cdk, 'synth').mockImplementation();
@@ -148,12 +152,14 @@ describe('IntegTest runIntegTests', () => {
     // THEN
     expect(deployMock).toHaveBeenCalledTimes(1);
     expect(destroyMock).toHaveBeenCalledTimes(1);
+    expect(synthMock).toHaveBeenCalledTimes(0);
     expect(deployMock.mock.calls[0][0]).toEqual({
       app: 'node integ.integ-test1.js',
       requireApproval: 'never',
       pathMetadata: false,
       assetMetadata: false,
       versionReporting: false,
+      lookups: false,
       stacks: ['stack1'],
       output: 'cdk-integ.out.integ-test1',
     });
@@ -165,6 +171,52 @@ describe('IntegTest runIntegTests', () => {
       force: true,
       stacks: ['stack1'],
       output: 'cdk-integ.out.integ-test1',
+    });
+  });
+
+  test('with lookups', () => {
+    // WHEN
+    integTest = new IntegTestRunner({ fileName: path.join(__dirname, '../test-data/integ.test-with-snapshot-assets-diff.js') });
+    deployMock = jest.spyOn(integTest.cdk, 'deploy').mockImplementation();
+    destroyMock = jest.spyOn(integTest.cdk, 'destroy').mockImplementation();
+    synthMock = jest.spyOn(integTest.cdk, 'synth').mockImplementation();
+    listMock = jest.spyOn(integTest.cdk, 'list').mockImplementation();
+    integTest.runIntegTestCase({
+      testCase: {
+        stacks: ['test-stack'],
+      },
+    });
+
+    // THEN
+    expect(deployMock).toHaveBeenCalledTimes(1);
+    expect(destroyMock).toHaveBeenCalledTimes(1);
+    expect(synthMock).toHaveBeenCalledTimes(1);
+    expect(deployMock.mock.calls[0][0]).toEqual({
+      app: 'node integ.test-with-snapshot-assets-diff.js',
+      requireApproval: 'never',
+      pathMetadata: false,
+      assetMetadata: false,
+      versionReporting: false,
+      lookups: true,
+      stacks: ['test-stack'],
+      output: 'cdk-integ.out.test-with-snapshot-assets-diff',
+    });
+    expect(synthMock.mock.calls[0][0]).toEqual({
+      app: 'node integ.test-with-snapshot-assets-diff.js',
+      pathMetadata: false,
+      assetMetadata: false,
+      versionReporting: false,
+      all: true,
+      output: 'test-with-snapshot-assets-diff.integ.snapshot',
+    });
+    expect(destroyMock.mock.calls[0][0]).toEqual({
+      app: 'node integ.test-with-snapshot-assets-diff.js',
+      pathMetadata: false,
+      assetMetadata: false,
+      versionReporting: false,
+      force: true,
+      stacks: ['test-stack'],
+      output: 'cdk-integ.out.test-with-snapshot-assets-diff',
     });
   });
 
@@ -180,6 +232,7 @@ describe('IntegTest runIntegTests', () => {
     // THEN
     expect(deployMock).toHaveBeenCalledTimes(1);
     expect(destroyMock).toHaveBeenCalledTimes(0);
+    expect(synthMock).toHaveBeenCalledTimes(0);
   });
 
   test('dryrun', () => {
@@ -194,6 +247,7 @@ describe('IntegTest runIntegTests', () => {
     // THEN
     expect(deployMock).toHaveBeenCalledTimes(0);
     expect(destroyMock).toHaveBeenCalledTimes(0);
+    expect(synthMock).toHaveBeenCalledTimes(1);
   });
 
   test('determine test stack via pragma', () => {
@@ -228,12 +282,15 @@ describe('IntegTest runIntegTests', () => {
 
 describe('IntegTest no pragma', () => {
   let integTest: IntegTestRunner;
+  let synthMock: jest.SpyInstance;
   beforeEach(() => {
-    integTest = new IntegTestRunner(path.join(__dirname, '../test-data/integ.integ-test2.js'));
+    integTest = new IntegTestRunner({ fileName: path.join(__dirname, '../test-data/integ.integ-test2.js') });
     jest.spyOn(integTest.cdk, 'deploy').mockImplementation();
     jest.spyOn(integTest.cdk, 'destroy').mockImplementation();
-    jest.spyOn(integTest.cdk, 'synth').mockImplementation();
-    jest.spyOn(integTest.cdk, 'list').mockImplementation();
+    synthMock = jest.spyOn(integTest.cdk, 'synth').mockImplementation();
+    jest.spyOn(integTest.cdk, 'list').mockImplementation(() => {
+      return 'stackabc';
+    });
     jest.spyOn(process.stderr, 'write').mockImplementation(() => { return true; });
     jest.spyOn(fs, 'moveSync').mockImplementation(() => { return true; });
     jest.spyOn(fs, 'removeSync').mockImplementation(() => { return true; });
@@ -245,9 +302,6 @@ describe('IntegTest no pragma', () => {
     jest.restoreAllMocks();
   });
   test('get stacks from list', async () => {
-    jest.spyOn(integTest.cdk, 'list').mockImplementation(() => {
-      return 'stackabc';
-    });
     // WHEN
     integTest.generateSnapshot();
 
@@ -257,5 +311,14 @@ describe('IntegTest no pragma', () => {
         stacks: ['stackabc'],
       },
     }));
+    expect(synthMock).toHaveBeenCalledTimes(1);
+    expect(synthMock.mock.calls[0][0]).toEqual({
+      app: 'node integ.integ-test2.js',
+      all: true,
+      pathMetadata: false,
+      assetMetadata: false,
+      versionReporting: false,
+      output: 'cdk-integ.out.integ-test2',
+    });
   });
 });
