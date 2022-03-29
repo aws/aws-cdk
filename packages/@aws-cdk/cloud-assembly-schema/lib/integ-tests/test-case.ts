@@ -1,4 +1,4 @@
-import { SynthOptions, DeployOptions, DestroyOptions } from './commands';
+import { DeployOptions, DestroyOptions } from './commands';
 
 /**
  * Represents an integration test test case
@@ -153,19 +153,6 @@ export interface DeployCommand extends CdkCommand {
 }
 
 /**
- * Represents a cdk synth command
- */
-export interface SynthCommand extends CdkCommand {
-  /**
-   * Additional arguments to pass to the command
-   * This can be used to test specific CLI functionality
-   *
-   * @default - only default args are used
-   */
-  readonly args?: SynthOptions;
-}
-
-/**
  * Represents a cdk destroy command
  */
 export interface DestroyCommand extends CdkCommand {
@@ -191,17 +178,9 @@ export interface CdkCommands {
   readonly deploy?: DeployCommand;
 
   /**
-   * Options to for the cdk synth command
-   *
-   * @default - default synth options
-   */
-  readonly synth?: SynthCommand;
-
-  /**
    * Options to for the cdk destroy command
    *
    * @default - default destroy options
    */
   readonly destroy?: DestroyCommand;
 }
-

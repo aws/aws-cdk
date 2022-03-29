@@ -3,6 +3,23 @@ import { IntegManifest, Manifest, TestCase } from '@aws-cdk/cloud-assembly-schem
 import * as fs from 'fs-extra';
 
 /**
+ * Test case configuration read from the integ manifest
+ */
+export interface IntegTestConfig {
+  /**
+   * Test cases contained in this integration test
+   */
+  readonly testCases: { [testCaseName: string]: TestCase };
+
+  /**
+   * Whether to enable lookups for this test
+   *
+   * @default false
+   */
+  readonly enableLookups: boolean;
+}
+
+/**
  * Reads an integration tests manifest
  */
 export class IntegManifestReader {
@@ -50,7 +67,10 @@ export class IntegManifestReader {
   /**
    * List of integration tests in the manifest
    */
-  public get tests(): { [testCaseName: string]: TestCase } {
-    return this.manifest.testCases;
+  public get tests(): IntegTestConfig {
+    return {
+      testCases: this.manifest.testCases,
+      enableLookups: this.manifest.enableLookups ?? false,
+    };
   }
 }

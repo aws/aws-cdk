@@ -1,6 +1,6 @@
 import * as child_process from 'child_process';
-import { RequireApproval } from '@aws-cdk/cloud-assembly-schema';
 import { CdkCliWrapper } from '../lib/cdk-wrapper';
+import { RequireApproval } from '../lib/commands';
 let spawnSyncMock: jest.SpyInstance;
 
 beforeEach(() => {

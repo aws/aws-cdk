@@ -1,4 +1,4 @@
-import { DefaultCdkOptions, DeployOptions, DestroyOptions, SynthOptions, ListOptions } from '@aws-cdk/cloud-assembly-schema';
+import { DefaultCdkOptions, DeployOptions, DestroyOptions, SynthOptions, ListOptions } from './commands';
 import { exec } from './utils';
 
 /**
