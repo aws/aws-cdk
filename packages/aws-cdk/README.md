@@ -622,6 +622,11 @@ role_arn=arn:aws:iam::123456789123:role/role_to_be_assumed
 mfa_serial=arn:aws:iam::123456789123:mfa/my_user
 ```
 
+## SSO support
+
+If you create an SSO profile with `aws configure sso` and run `aws sso login`, the CDK can use those credentials
+if you set the profile name as the value of `AWS_PROFILE` or pass it to `--profile`.
+
 ## Configuration
 
 On top of passing configuration through command-line arguments, it is possible to use JSON configuration files. The
