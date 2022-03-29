@@ -36,19 +36,14 @@ export enum DiagnosticReason {
 }
 
 /**
- * Options for an integration test batch
+ * Common options for running integration tests
  */
-export interface IntegTestBatchRequest {
+export interface IntegTestOptions {
   /**
    * A list of integration tests to run
    * in this batch
    */
   readonly tests: IntegTestConfig[];
-
-  /**
-   * The AWS region to run this batch in
-   */
-  readonly region: string;
 
   /**
    * Whether or not to destroy the stacks at the
@@ -73,6 +68,16 @@ export interface IntegTestBatchRequest {
    * @default false
    */
   readonly verbose?: boolean;
+}
+
+/**
+ * Options for an integration test batch
+ */
+export interface IntegTestBatchRequest extends IntegTestOptions {
+  /**
+   * The AWS region to run this batch in
+   */
+  readonly region: string;
 }
 
 /**

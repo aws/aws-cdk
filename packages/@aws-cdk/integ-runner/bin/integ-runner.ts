@@ -7,11 +7,29 @@ import * as yargs from 'yargs';
 import { IntegrationTests, IntegTestConfig } from '../lib/runner/integ-tests';
 import * as logger from '../lib/runner/private/logger';
 import { SnapshotBatchResponse, SnapshotBatchRequest, IntegBatchResponse } from '../lib/workers/extract_worker';
-import { Diagnostic, DiagnosticReason } from '../lib/workers/workers';
+import { Diagnostic, DiagnosticReason, IntegTestOptions } from '../lib/workers/workers';
 
+/**
+ * Options for running all integration tests
+ */
+interface IntegTestRunOptions extends IntegTestOptions {
+  /**
+   * The regions to run the integration tests across.
+   * This allows the runner to run integration tests in parallel
+   */
+  readonly regions: string[];
 
+  /**
+   * The workerpool to use
+   */
+  readonly pool: workerpool.WorkerPool;
+}
+
+/**
+ * Split a list of tests into batches that can be run using a workerpool.
+ */
 function batchTests(tests: IntegTestConfig[], regions?: string[]): SnapshotBatchRequest[] {
-  let batchSize = 10;
+  let batchSize = 3;
   if (regions && regions.length > 0) {
     batchSize = Math.ceil(tests.length / regions.length);
   }
@@ -27,6 +45,9 @@ function batchTests(tests: IntegTestConfig[], regions?: string[]): SnapshotBatch
   return ret;
 }
 
+/**
+ * Print out the results from tests
+ */
 function printResults(diagnostics: Diagnostic[]): void {
   diagnostics.forEach(diagnostic => {
     switch (diagnostic.reason) {
@@ -46,6 +67,70 @@ function printResults(diagnostics: Diagnostic[]): void {
         logger.error('  %s - Failed!\n%s', diagnostic.testName, diagnostic.message);
     }
   });
+}
+
+/**
+ * Run Integration tests.
+ *
+ * First batch up the tests using the available regions and then use a workerpool
+ * to run the tests in parallel. For example if there are 12 tests and 3 regions
+ * this will create 3 batches of 4 tests. It will then use the workerpool to run
+ * those 3 batches in parallel. Within a batch, it will run the tests in sequence
+ * so that there will only ever be one test running per region.
+ */
+async function runIntegrationTests(options: IntegTestRunOptions): Promise<void> {
+  const diagnostics = new Array<Diagnostic>();
+  logger.highlight('\nRunning integration tests for failed tests...\n');
+  const requests = batchTests(options.tests, options.regions);
+  logger.print('Running in parallel: ');
+  requests.forEach(request =>
+    logger.print(`Running the following tests in ${request.region}: \n    %s`,
+      request.tests.map(r => r.fileName).join('\n    '),
+    ));
+  const testResponses: IntegBatchResponse[] = await Promise.all(
+    requests.map((request) => options.pool.exec('integTestBatch', [{
+      clean: options.clean,
+      dryRun: options.dryRun,
+      verbose: options.verbose,
+      ...request,
+    }], {
+      on: workerpoolLogger,
+    })),
+  );
+  for (const response of testResponses) {
+    diagnostics.push(...response.diagnostics);
+  }
+  if (diagnostics.length > 0) {
+    logger.highlight('\nTest Results: \n');
+    printResults(diagnostics);
+  }
+}
+
+/**
+ * Run Snapshot tests
+ * First batch up the tests. By default there will be 3 tests per batch.
+ * Use a workerpool to run the batches in parallel.
+ */
+async function runSnapshotTests(pool: workerpool.WorkerPool, tests: IntegTestConfig[]): Promise<IntegTestConfig[]> {
+  const testsToRun: IntegTestConfig[] = [];
+  const requests = batchTests(tests);
+  const diagnostics = new Array<Diagnostic>();
+  logger.highlight('\nVerifying integration test snapshots...\n');
+  const responses: SnapshotBatchResponse[] = await Promise.all(
+    requests.map((request) => pool.exec('snapshotTestBatch', [request], {
+      on: workerpoolLogger,
+    })),
+  );
+  for (const response of responses) {
+    diagnostics.push(...response.diagnostics);
+    testsToRun.push(...response.failedTests);
+  }
+
+  if (diagnostics.length > 0) {
+    logger.highlight('\nSnapshot Results: \n');
+    printResults(diagnostics);
+  }
+  return testsToRun;
 }
 
 async function main() {
@@ -93,54 +178,27 @@ async function main() {
       testsFromArgs.push(...(await new IntegrationTests(argv.directory).fromCliArgs(argv._.map(x => x.toString()))));
     }
 
-    const diagnostics = new Array<Diagnostic>();
+    // If `--force` is not used then first validate the snapshots and gather
+    // the failed snapshot tests. If `--force` is used then we will skip snapshot
+    // tests and run integration tests for all tests
     if (!argv.force) {
-      const requests = batchTests(testsFromArgs);
-      logger.highlight('\nVerifying integration test snapshots...\n');
-      const responses: SnapshotBatchResponse[] = await Promise.all(
-        requests.map((request) => pool.exec('snapshotTestBatch', [request], {
-          on: workerpoolLogger,
-        })),
-      );
-      for (const response of responses) {
-        diagnostics.push(...response.diagnostics);
-        testsToRun.push(...response.failedTests);
-      }
+      const failedSnapshots = await runSnapshotTests(pool, testsFromArgs);
+      testsToRun.push(...failedSnapshots);
     } else {
       testsToRun.push(...testsFromArgs);
     }
 
-    if (diagnostics.length > 0) {
-      logger.highlight('\nSnapshot Results: \n');
-      printResults(diagnostics);
-    }
-    const testDiagnostics = new Array<Diagnostic>();
 
-    if (runUpdateOnFailed) {
-      logger.highlight('\nRunning integration tests for failed tests...\n');
-      const requests = batchTests(testsToRun, testRegions);
-      logger.print('Running in parallel: ');
-      requests.forEach(request =>
-        logger.print(`Running the following tests in ${request.region}: \n    %s`,
-          request.tests.map(r => r.fileName).join('\n    '),
-        ));
-      const testResponses: IntegBatchResponse[] = await Promise.all(
-        requests.map((request) => pool.exec('integTestBatch', [{
-          clean: argv.clean,
-          dryRun: argv['dry-run'],
-          verbose: argv.verbose,
-          ...request,
-        }], {
-          on: workerpoolLogger,
-        })),
-      );
-      for (const response of testResponses) {
-        testDiagnostics.push(...response.diagnostics);
-      }
-      if (testDiagnostics.length > 0) {
-        logger.highlight('\nTest Results: \n');
-        printResults(testDiagnostics);
-      }
+    // run integration tests if `--update-on-failed` OR `--force` is used
+    if (runUpdateOnFailed || argv.force) {
+      await runIntegrationTests({
+        pool,
+        tests: testsToRun,
+        regions: testRegions,
+        clean: argv.clean,
+        dryRun: argv['dry-run'],
+        verbose: argv.verbose,
+      });
 
       if (argv.clean === false) {
         logger.warning('Not cleaning up stacks since "--no-clean" was used');
