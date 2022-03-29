@@ -207,7 +207,7 @@ To create a new CodeDeploy Deployment Group that deploys to a Lambda function:
 ```ts
 declare const myApplication: codedeploy.LambdaApplication;
 declare const func: lambda.Function;
-const version = func.addVersion('1');
+const version = func.currentVersion;
 const version1Alias = new lambda.Alias(this, 'alias', {
   aliasName: 'prod',
   version,
@@ -222,7 +222,7 @@ const deploymentGroup = new codedeploy.LambdaDeploymentGroup(this, 'BlueGreenDep
 
 In order to deploy a new version of this function:
 
-1. Increment the version, e.g. `const version = func.addVersion('2')`.
+1. Reference the version with the latest changes `const version = func.currentVersion`.
 2. Re-deploy the stack (this will trigger a deployment).
 3. Monitor the CodeDeploy deployment as traffic shifts between the versions.
 
