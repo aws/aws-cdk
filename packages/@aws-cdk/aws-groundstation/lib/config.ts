@@ -1,6 +1,6 @@
 import { IRole } from '@aws-cdk/aws-iam';
 import { IBucket } from '@aws-cdk/aws-s3';
-import { Resource, ResourceProps } from '@aws-cdk/core';
+import { Resource } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnConfig, CfnConfigProps } from './groundstation.generated';
 
@@ -39,14 +39,14 @@ class BaseConfig extends Resource implements IConfig {
   public readonly configId: string
   public readonly configType: string
 
-  constructor(scope: Construct, id: string, props: ResourceProps & CfnConfigProps) {
+  constructor(scope: Construct, id: string, props: CfnConfigProps) {
     super(scope, id, {
       physicalName: props.name,
     });
 
     const resource = new CfnConfig(this, 'Resource', {
       name: props.name,
-      configData: {},
+      configData: props.configData,
     });
 
     this.configArn = resource.attrArn;

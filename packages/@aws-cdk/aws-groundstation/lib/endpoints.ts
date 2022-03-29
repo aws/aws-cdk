@@ -86,26 +86,39 @@ export interface DataflowEndpointGroupProps {
    * List of Endpoint Details, containing address and port for each endpoint.
    */
   readonly endpointDetails: EndpointDetails[]
+
+  /**
+   * The name of the dataflow endpoint group.
+   *
+   * @default None
+   */
+  readonly dataflowEndpointGroupName?: string
 }
 
 /**
  *  Dataflow endpoint groups contain a list of endpoints. When the name of a dataflow endpoint group is specified in a mission profile, the Ground Station service will connect to the endpoints and flow data during a contact.
  */
-export abstract class DataflowEndpointGroup extends Resource {
+export class DataflowEndpointGroup extends Resource {
   private readonly _resource: CfnDataflowEndpointGroup;
 
   /**
    * The ARN of the dataflow endpoint group.
+   *
+   * @attribute
    */
-  public readonly arn: string
+  public readonly dataflowEndpointGroupArn: string
 
   /**
    * The logical ID of the dataflow endpoint group.
+   *
+   * @attribute
    */
-  public readonly id: string
+  public readonly dataflowEndpointGroupId: string
 
   constructor(scope: Construct, id: string, props: DataflowEndpointGroupProps) {
-    super(scope, id);
+    super(scope, id, {
+      physicalName: props.dataflowEndpointGroupName,
+    });
 
     const resource = new CfnDataflowEndpointGroup(this, 'Resource', {
       endpointDetails: props.endpointDetails,
@@ -113,7 +126,7 @@ export abstract class DataflowEndpointGroup extends Resource {
 
     this._resource = resource;
 
-    this.arn = this._resource.attrArn;
-    this.id = this._resource.attrId;
+    this.dataflowEndpointGroupArn = this._resource.attrArn;
+    this.dataflowEndpointGroupId = this._resource.attrId;
   }
 }

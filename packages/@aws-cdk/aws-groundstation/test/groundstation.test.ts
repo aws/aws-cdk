@@ -16,8 +16,8 @@ describe('Groundstation Config', () => {
   test('S3RecordingConfig', () => {
     const app = new App();
     const stack = new Stack(app, 'TestStack');
-    const bucket = new Bucket(app, 'Bucket');
-    const role = new Role(app, 'Role', {
+    const bucket = new Bucket(stack, 'Bucket');
+    const role = new Role(stack, 'Role', {
       assumedBy: new ServicePrincipal('groundstation.amazonaws.com'),
     });
 

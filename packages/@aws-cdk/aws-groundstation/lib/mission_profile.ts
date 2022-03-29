@@ -1,5 +1,6 @@
 import { Duration, IResource, Resource } from '@aws-cdk/core';
 import type { Construct } from 'constructs';
+import { IConfig } from './config';
 import { CfnMissionProfile } from './groundstation.generated';
 
 /**
@@ -31,6 +32,7 @@ export interface MissionProfileProps {
    *  Amount of time in seconds after a contact ends that you’d like to receive a CloudWatch Event indicating the pass has finished. For more information on CloudWatch Events, see the What Is CloudWatch Events?
    *
    * @default None
+   * @attribute
    */
   readonly contactPostPassDuration?: Duration;
 
@@ -38,50 +40,63 @@ export interface MissionProfileProps {
    *  Amount of time in seconds prior to contact start that you'd like to receive a CloudWatch Event indicating an upcoming pass. For more information on CloudWatch Events, see the What Is CloudWatch Events?
    *
    * @default None
+   * @attribute
    */
   readonly contactPrePassDuration?: Duration;
 
   /**
    *  A list containing lists of config ARNs. Each list of config ARNs is an edge, with a "from" config and a "to" config.
+   *
+   * @attribute
    */
   readonly dataflowEdges: DataflowEdge[];
 
   /**
    *  Minimum length of a contact in seconds that Ground Station will return when listing contacts. Ground Station will not return contacts shorter than this duration.
+   *
+   * @attribute
    */
   readonly minimumViableContactDuration: Duration;
 
   /**
    *  The name of the mission profile.
    */
-  readonly name: string;
+  readonly missionProfileName: string;
 
   /**
    *  The ARN of a tracking config objects that defines how to track the satellite through the sky during a contact.
+   *
+   * @attribute
    */
-  readonly trackingConfigArn: string;
+  readonly trackingConfig: IConfig;
 }
 
 /**
  *  Mission profiles specify parameters and provide references to config objects to define how Ground Station lists and executes contacts.
  */
-export abstract class MissionProfile extends Resource implements IMissionProfile {
+export class MissionProfile extends Resource implements IMissionProfile {
   private readonly _resource: CfnMissionProfile;
 
   /**
    * The ARN of the mission profile
+   *
+   * @attribute
    */
-  public readonly arn: string;
+  public readonly missionProfileArn: string;
 
   /**
    * The logical Id of the mission profile
+   *
+   * @attribute
    */
-  public readonly id: string
+  public readonly missionProfileId: string
 
   /**
    * The region of the mission profile
+   *
+   * @attribute
    */
-  public readonly region: string
+  public readonly missionProfileRegion: string
 
   constructor(scope: Construct, id: string, props: MissionProfileProps) {
     const {
@@ -89,12 +104,12 @@ export abstract class MissionProfile extends Resource implements IMissionProfile
       contactPrePassDuration,
       dataflowEdges,
       minimumViableContactDuration,
-      name,
-      trackingConfigArn,
+      missionProfileName,
+      trackingConfig,
     } = props;
 
     super(scope, id, {
-      physicalName: name,
+      physicalName: missionProfileName,
     });
 
     const resource = new CfnMissionProfile(this, 'Resource', {
@@ -102,14 +117,14 @@ export abstract class MissionProfile extends Resource implements IMissionProfile
       contactPrePassDurationSeconds: contactPrePassDuration?.toSeconds(),
       dataflowEdges,
       minimumViableContactDurationSeconds: minimumViableContactDuration.toSeconds(),
-      name,
-      trackingConfigArn,
+      name: missionProfileName,
+      trackingConfigArn: trackingConfig.configArn,
     });
 
     this._resource = resource;
 
-    this.arn = this._resource.attrArn;
-    this.id = this._resource.attrId;
-    this.region = this._resource.attrRegion;
+    this.missionProfileArn = this._resource.attrArn;
+    this.missionProfileId = this._resource.attrId;
+    this.missionProfileRegion = this._resource.attrRegion;
   }
 }
