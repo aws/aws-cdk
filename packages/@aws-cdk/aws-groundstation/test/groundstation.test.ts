@@ -22,11 +22,12 @@ describe('Groundstation Config', () => {
     });
 
     const config = new S3RecordingConfig(stack, 'S3Config', {
-      bucketArn: bucket.bucketArn,
+      bucket: bucket,
       name: 'S3_Config',
-      roleArn: role.roleArn,
+      role: role,
     });
     expect(config).toBeDefined();
+
     // expect(config.prefix).toEqual('prefix');
   });
 });

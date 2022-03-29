@@ -1,50 +1,184 @@
-import { Resource } from '@aws-cdk/core';
+import { IRole } from '@aws-cdk/aws-iam';
+import { IBucket } from '@aws-cdk/aws-s3';
+import { Resource, ResourceProps } from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import { CfnConfig } from './groundstation.generated';
+import { CfnConfig, CfnConfigProps } from './groundstation.generated';
 
-export interface IConfig {}
+/**
+ * Base interface for configuration object
+ */
+export interface IConfig {
+  /**
+   * The ARN of the config
+   *
+   * @attribute
+   */
+  readonly configArn: string;
 
-class BaseConfig extends Resource implements IConfig {}
+  /**
+   * The logical Id of the config
+   *
+   * @attribute
+   */
+  readonly configId: string
 
+  /**
+   * The type of the config
+   *
+   * @attribute
+   */
+  readonly configType: string
+}
+
+/**
+ *
+ * @resource AWS::GroundStation::Config
+ */
+class BaseConfig extends Resource implements IConfig {
+  public readonly configArn: string;
+  public readonly configId: string
+  public readonly configType: string
+
+  constructor(scope: Construct, id: string, props: ResourceProps & CfnConfigProps) {
+    super(scope, id, {
+      physicalName: props.name,
+    });
+
+    const resource = new CfnConfig(this, 'Resource', {
+      name: props.name,
+      configData: {},
+    });
+
+    this.configArn = resource.attrArn;
+    this.configId = resource.attrId;
+    this.configType = resource.attrType;
+  }
+}
+
+/**
+* Units of frequency in Hertz
+*/
 export enum FrequencyUnits {
+  /**
+  * Gigahertz (GHz) - 10 ** 9
+  */
   GHZ = 'GHz',
+  /**
+  * Megahertz (MHz) - 10 ** 6
+  */
   MHZ = 'MHz',
+  /**
+  * Kilohertz (kHz) - 10 ** 3
+  */
   KHZ = 'kHz'
 }
 
+/**
+* Effective Isotropic Radiated Power
+*/
 export enum EripUnits {
+  /**
+  *  Decibel watt (dBW) - [More Info](https://en.wikipedia.org/wiki/Decibel_watt)
+  */
   DBW = 'dBW'
 }
 
+/**
+ * Orientation of the radio signal - [More Info](https://en.wikipedia.org/wiki/Circular_polarization)
+ */
 export enum Polarization {
+  /**
+   * Left-handed circular polarization - counter clockwise
+   */
   LEFT_HAND = 'LEFT_HAND',
+  /**
+   * No polarization
+   */
   NONE = 'NONE',
+  /**
+   * Right-handed circular polarization - clockwise
+   */
   RIGHT_HAND = 'RIGHT_HAND'
 }
 
+/**
+ * Bandwidth configuration of the signal
+ */
 export interface FrequencyBandwidth {
+  /**
+   * Units of the bandwidth
+   */
   readonly units: FrequencyUnits;
+
+  /**
+   * Value of the bandwidth frequency
+   */
   readonly value: number;
 }
 
+/**
+ * Frequency of the radio signal
+ */
 export interface Frequency {
+
+  /**
+   * Units of frequency
+   */
   readonly units: FrequencyUnits;
+
+  /**
+   * Value of frequency
+   */
   readonly value: number;
 }
 
+/**
+ * Spectrum configuration with bandwidth
+ */
 export interface BandwidthSpectrumConfig {
+  /**
+   * Bandwidth of the spectrum in Hertz
+   */
   readonly bandwidth: FrequencyBandwidth;
+
+  /**
+   * Center frequency of the spectrum in Hertz
+   */
   readonly centerFrequency: Frequency;
+
+  /**
+   * Polarization of the spectrum
+   */
   readonly polarization: Polarization;
 }
 
+/**
+ *  Provides information about how AWS Ground Station should configure an antenna for downlink during a contact. Use an antenna downlink config in a mission profile to receive the downlink data in raw DigIF format.
+ */
 export interface AntennaDownlinkConfigProps {
+  /**
+   * Defines the spectrum configuration.
+   */
   readonly spectrumConfig: BandwidthSpectrumConfig
+
+  /**
+   * Friendly name of the antenna downlink config.
+   */
   readonly name: string;
 }
 
+/**
+ * Effective Isotropic Radiated Power
+ */
 export interface Erip {
+  /**
+   * units of ERIP
+   */
   readonly units: EripUnits;
+
+  /**
+   * value of ERIP
+   */
   readonly value: number;
 }
 
@@ -52,21 +186,15 @@ export interface Erip {
  * Configuration for Antenna Downlink
  *
  * @resource AWS::GroundStation::Config
+ *
+ * @param scope - scope in which this resource is defined
+ * @param id - scoped id of the resource
+ * @param props - resource properties
  **/
 export class AntennaDownlinkConfig extends BaseConfig {
-
-  private readonly _resource: CfnConfig;
-
-  public readonly arn: string;
-  public readonly id: string
-  public readonly type: string
-
   constructor(scope: Construct, id: string, props: AntennaDownlinkConfigProps) {
     super(scope, id, {
       physicalName: props.name,
-    });
-
-    const resource = new CfnConfig(this, 'Resource', {
       name: props.name,
       configData: {
         antennaDownlinkConfig: {
@@ -74,25 +202,43 @@ export class AntennaDownlinkConfig extends BaseConfig {
         },
       },
     });
-
-    this._resource = resource;
-
-    this.arn = this._resource.attrArn;
-    this.id = this._resource.attrId;
-    this.type = this._resource.attrType;
   }
 }
 
-
+/**
+ * Unvalidated Json that goes into demod and decode configurations
+ */
 export interface UnvalidatedJson {
+  /**
+   * Unvalidated Json string
+   */
   readonly unvalidatedJSON: string;
 }
 
 
-export interface AntennaDownlinkDemodConfigProps {
+/**
+ * Properties for Antenna Downlink Demod Decode Config
+ *
+ */
+export interface AntennaDownlinkDemodDecodeConfigProps {
+  /**
+   * Defines how the RF signal will be decoded. See [AWS documentation](https://docs.aws.amazon.com/groundstation/latest/userguide/gs-antenna-downlink-demod-decode.html)
+   */
   readonly decodeConfig: UnvalidatedJson
+
+  /**
+   * Defines how the RF signal will be demodulated.
+   */
   readonly demodulationConfig: UnvalidatedJson
+
+  /**
+   * Defines the spectrum configuration.
+   */
   readonly spectrumConfig: SpectrumConfig,
+
+  /**
+   * Friendly name of the configuration
+   */
   readonly name: string;
 }
 
@@ -100,21 +246,13 @@ export interface AntennaDownlinkDemodConfigProps {
 /**
  * Configuration for Antenna Downlink Demodulation
  *
+ * Antenna downlink demod decode configs are a more complex and customizable config type that you can use to execute downlink contacts with demod or decode. If you're interested in executing these types of contacts, contact the AWS Ground Station team. We'll help you define the right config and mission profile for your use case.
+ *
  * @resource AWS::GroundStation::Config
  **/
 export class AntennaDownlinkDemodDecodeConfig extends BaseConfig {
-  private readonly _resource: CfnConfig;
-
-  public readonly arn: string;
-  public readonly id: string
-  public readonly type: string
-
-  constructor(scope: Construct, id: string, props: AntennaDownlinkDemodConfigProps) {
+  constructor(scope: Construct, id: string, props: AntennaDownlinkDemodDecodeConfigProps) {
     super(scope, id, {
-      physicalName: props.name,
-    });
-
-    const resource = new CfnConfig(this, 'Resource', {
       name: props.name,
       configData: {
         antennaDownlinkDemodDecodeConfig: {
@@ -128,25 +266,46 @@ export class AntennaDownlinkDemodDecodeConfig extends BaseConfig {
         },
       },
     });
-
-    this._resource = resource;
-
-    this.arn = this._resource.attrArn;
-    this.id = this._resource.attrId;
-    this.type = this._resource.attrType;
   }
 }
 
-
+/**
+ * Spectrum configuration
+ */
 export interface SpectrumConfig {
+  /**
+   * Center frequency of the band
+   */
   readonly centerFrequency: Frequency;
+
+  /**
+   * Polarization value of the signal
+   */
   readonly polarization: Polarization;
 }
 
+/**
+ * Configuration for Antenna Uplink
+ */
 export interface AntennaUplinkConfigProps {
+  /**
+   * Friendly name of the configuration
+   */
   readonly name: string
+
+  /**
+   *  Defines the spectrum configuration.
+   */
   readonly spectrumConfig: SpectrumConfig
+
+  /**
+   *  The equivalent isotropically radiated power (EIRP) to use for uplink transmissions. Valid values are between 20.0 to 50.0 dBW.
+   */
   readonly targetEirp: Erip
+
+  /**
+   *  Whether or not uplink transmit is disabled.
+   */
   readonly transmitDisabled: boolean
 }
 
@@ -154,58 +313,64 @@ export interface AntennaUplinkConfigProps {
 /**
  * Configuration for Antenna Uplink
  *
+ *  You can use antenna uplink configs to configure the antenna for uplink during your contact. They consist of a spectrum config with frequency, polarization, and target effective isotropic radiated power (EIRP). For information about how to configure a contact for uplink loopback, see Uplink Echo Config.
+ *
  * @resource AWS::GroundStation::Config
+ *
+ * @attribute configArn - ARN of the config
+ * @attribute configId - ID of the config
+ * @attribute configType - Type of the config
  **/
 export class AntennaUplinkConfig extends BaseConfig {
-  private readonly _resource: CfnConfig;
-
-  public readonly arn: string;
-  public readonly id: string
-  public readonly type: string
-
   constructor(scope: Construct, id: string, props: AntennaUplinkConfigProps) {
     super(scope, id, {
-      physicalName: props.name,
-    });
-    const resource = new CfnConfig(this, 'Resource', {
       name: props.name,
       configData: {
         antennaUplinkConfig: props,
       },
     });
-
-    this._resource = resource;
-
-    this.arn = this._resource.attrArn;
-    this.id = this._resource.attrId;
-    this.type = this._resource.attrType;
   }
 }
 
+/**
+ * Properties for Dataflow Endpoint Configuration
+ */
 export interface DataflowEndpointConfigProps {
+  /**
+   * Friendly name of the configuration
+   */
   readonly name: string
-  readonly dataflowEndpointName: string
-  readonly dataflowEndpointRegion: string
+
+  /**
+   * The name of the dataflow endpoint to use during contacts.
+   *
+   * @default None
+   */
+  readonly dataflowEndpointName?: string
+
+  /**
+   * The region of the dataflow endpoint to use during contacts. When omitted, Ground Station will use the region of the contact.
+   *
+   * @default None
+   */
+  readonly dataflowEndpointRegion?: string
 }
 
 
 /**
  * Configuration for a Dataflow Endpoint
  *
+ * You can use dataflow endpoint configs to specify which dataflow endpoint in a dataflow endpoint group from which or to which you want data to flow during a contact. The two parameters of a dataflow endpoint config specify the name and region of the dataflow endpoint. When reserving a contact, AWS Ground Station analyzes the mission profile you specified and attempts to find a dataflow endpoint group that contains all of the dataflow endpoints specified by the dataflow endpoint configs contained in your mission profile.
+ *
  * @resource AWS::GroundStation::Config
+ *
+ * @attribute configArn - ARN of the config
+ * @attribute configId - ID of the config
+ * @attribute configType - Type of the config
  **/
 export class DataflowEndpointConfig extends BaseConfig {
-  private readonly _resource: CfnConfig;
-
-  public readonly arn: string;
-  public readonly id: string
-  public readonly type: string
-
   constructor(scope: Construct, id: string, props: DataflowEndpointConfigProps) {
     super(scope, id, {
-      physicalName: props.name,
-    });
-    const resource = new CfnConfig(this, 'Resource', {
       name: props.name,
       configData: {
         dataflowEndpointConfig: {
@@ -214,65 +379,96 @@ export class DataflowEndpointConfig extends BaseConfig {
         },
       },
     });
-
-    this._resource = resource;
-
-    this.arn = this._resource.attrArn;
-    this.id = this._resource.attrId;
-    this.type = this._resource.attrType;
   }
 }
 
+
+/**
+ * Configuration for S3 Recording
+ */
 export interface S3RecordingConfigProps {
-  readonly bucketArn: string
+  /**
+   * S3 Bucket where the data is written. The name of the S3 Bucket provided must begin with aws-groundstation.
+   */
+  readonly bucket: IBucket
+
+  /**
+   * The prefix of the S3 data object. If you choose to use any optional keys for substitution, these values will be replaced with the corresponding information from your contact details. For example, a prefix of {satellite_id}/{year}/{month}/{day}/ will replaced with fake_satellite_id/2021/01/10/
+   *
+   * @default None
+   */
   readonly prefix?: string
-  readonly roleArn: string
+
+  /**
+   * Defines the ARN of the role assumed for putting archives to S3.
+   */
+  readonly role: IRole
+
+  /**
+   * Friendly name of the configuration
+   */
   readonly name: string
 }
 
 /**
  * Configuration for a S3 Recording
  *
+ * You can use S3 recording configs to specify an Amazon S3 bucket to which you want downlinked data delivered. The two parameters of an S3 recording config specify the Amazon S3 bucket and IAM role for AWS Ground Station to assume when delivering the data to your Amazon S3 bucket.
+ *
+ * The IAM role and Amazon S3 bucket specified must meet the following criteria:
+ *  - The Amazon S3 bucket's name must begin with aws-groundstation.
+ *  - The IAM role must have a trust policy that allows the groundstation.amazonaws.com service principal to assume the role. See the Example Trust Policy section below for an example. During config creation the config resource id does not exist, the trust policy must use an asterisk (*) in place of your-config-id and can be updated after creation with the config resource id.
+ *  - The IAM role must have an IAM policy that allows the role to perform the s3:GetBucketLocation action on the bucket and s3:PutObject action on the bucket's objects. If the Amazon S3 bucket has a bucket policy, then the bucket policy must also allow the IAM role to perform these actions. See the Example Role Policy section below for an example.
+ *
  * @resource AWS::GroundStation::Config
  **/
 export class S3RecordingConfig extends BaseConfig {
-  private readonly _resource: CfnConfig;
-
-  public readonly arn: string;
-  public readonly id: string
-  public readonly type: string
-
   constructor(scope: Construct, id: string, props: S3RecordingConfigProps) {
     super(scope, id, {
-      physicalName: props.name,
-    });
-    const resource = new CfnConfig(this, 'Resource', {
       name: props.name,
       configData: {
         s3RecordingConfig: {
-          bucketArn: props.bucketArn,
+          bucketArn: props.bucket.bucketArn,
           prefix: props.prefix,
-          roleArn: props.roleArn,
+          roleArn: props.role.roleArn,
         },
       },
     });
-
-    this._resource = resource;
-
-    this.arn = this._resource.attrArn;
-    this.id = this._resource.attrId;
-    this.type = this._resource.attrType;
   }
 }
 
+/**
+ * You can use tracking configs in the mission profile to determine whether autotrack should be enabled during your contacts.
+ */
 export enum Autotrack {
+  /**
+   * No autotrack should be used for your contacts.
+   */
   REMOVED = 'REMOVED',
+
+  /**
+   * Autotrack is preferred for contacts, but contacts can still be executed without autotrack.
+   */
   PREFERRED = 'PREFERRED',
+
+  /**
+   * Autotrack is required for your contacts.
+   */
   REQUIRED = 'REQUIRED'
 }
 
+/**
+ * Tracking configuration for ground station
+ */
 export interface TrackingConfigProps {
+  /**
+   * Tracking mode the dish will use
+   */
   readonly autotrack: Autotrack
+
+  /**
+   * Friendly name for the configuration
+   */
   readonly name: string
 }
 
@@ -283,17 +479,8 @@ export interface TrackingConfigProps {
  * @resource AWS::GroundStation::Config
  **/
 export class TrackingConfig extends BaseConfig {
-  private readonly _resource: CfnConfig;
-
-  public readonly arn: string;
-  public readonly id: string
-  public readonly type: string
-
   constructor(scope: Construct, id: string, props: TrackingConfigProps) {
     super(scope, id, {
-      physicalName: props.name,
-    });
-    const resource = new CfnConfig(this, 'Resource', {
       name: props.name,
       configData: {
         trackingConfig: {
@@ -301,51 +488,46 @@ export class TrackingConfig extends BaseConfig {
         },
       },
     });
-
-    this._resource = resource;
-
-    this.arn = this._resource.attrArn;
-    this.id = this._resource.attrId;
-    this.type = this._resource.attrType;
   }
 }
 
+/**
+ * Configuration for an Uplink Echo
+ */
 export interface UplinkEchoConfigProps {
+  /**
+   * Friendly name for the configuration
+   */
   readonly name: string
-  readonly antennaUplinkConfigArn: string
+
+  /**
+   * ARN of the antenna uplink to echo
+   */
+  readonly antennaUplinkConfig: IConfig
+
+  /**
+   * Enabled or disabled control of echo
+   */
   readonly enabled: boolean
 }
 
 /**
  * Configuration for a Uplink Echo
  *
+ * Uplink echo configs tell the antenna how to execute an uplink echo. This echoes the signal sent by the antenna back to your dataflow endpoint. An uplink echo config contains the ARN of an uplink config. The antenna uses the parameters from the uplink config pointed to by the ARN when executing an uplink echo.
+ *
  * @resource AWS::GroundStation::Config
  **/
 export class UplinkEchoConfig extends BaseConfig {
-  private readonly _resource: CfnConfig;
-
-  public readonly arn: string;
-  public readonly id: string
-  public readonly type: string
-
   constructor(scope: Construct, id: string, props: UplinkEchoConfigProps) {
     super(scope, id, {
-      physicalName: props.name,
-    });
-    const resource = new CfnConfig(this, 'Resource', {
       name: props.name,
       configData: {
         uplinkEchoConfig: {
-          antennaUplinkConfigArn: props.antennaUplinkConfigArn,
+          antennaUplinkConfigArn: props.antennaUplinkConfig.configArn,
           enabled: props.enabled,
         },
       },
     });
-
-    this._resource = resource;
-
-    this.arn = this._resource.attrArn;
-    this.id = this._resource.attrId;
-    this.type = this._resource.attrType;
   }
 }
