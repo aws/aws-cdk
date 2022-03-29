@@ -657,13 +657,10 @@ integTest('fast deploy', withDefaultFixture(async (fixture) => {
   const changeSet2 = await getLatestChangeSet();
   expect(changeSet2.ChangeSetId).toEqual(changeSet1.ChangeSetId);
 
-  // Deploy the stack again with --force. This creates a changeset which will be
-  // empty (since CFN now tracks changes into nested stacks as well), so we delete
-  // it again because it couldn't be executed anyway.
-  const output = await fixture.cdkDeploy('with-nested-stack', { options: ['--force'] });
+  // Deploy the stack again with --force, now we should create a changeset
+  await fixture.cdkDeploy('with-nested-stack', { options: ['--force'] });
   const changeSet3 = await getLatestChangeSet();
-  expect(output).toContain('No changes are to be performed on');
-  expect(changeSet3.ChangeSetId).toEqual(changeSet2.ChangeSetId);
+  expect(changeSet3.ChangeSetId).not.toEqual(changeSet2.ChangeSetId);
 
   // Deploy the stack again with tags, expected to create a new changeset
   // even though the resources didn't change.
