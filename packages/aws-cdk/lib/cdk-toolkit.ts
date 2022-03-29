@@ -161,6 +161,9 @@ export class CdkToolkit {
 
     const concurrency = options.concurrency || 1;
     const queue = new PQueue({ concurrency });
+    const stacksAwaitingDeploy = stacks.reduce((acc, stack) => ({
+      ...acc, [stack.id]: true,
+    }), {} as Record<string, boolean>);
 
     const progress = concurrency > 1 ? StackActivityProgress.EVENTS : options.progress;
     if (concurrency > 1 && options.progress && options.progress != StackActivityProgress.EVENTS) {
@@ -251,10 +254,12 @@ export class CdkToolkit {
         elapsedDeployTime = new Date().getTime() - startDeployTime;
         print('\n✨  Deployment time: %ss\n', formatTime(elapsedDeployTime));
 
-        stackOutputs[stack.stackName] = result.outputs;
         if (Object.keys(result.outputs).length > 0) {
           print('Outputs:');
+          stackOutputs[stack.stackName] = result.outputs;
         }
+
+        stacksAwaitingDeploy[stack.id] = false;
 
         for (const name of Object.keys(result.outputs).sort()) {
           const value = result.outputs[name];
@@ -291,7 +296,7 @@ export class CdkToolkit {
       stack.dependencies
         .map(({ id }) => id)
         .filter((id) => !id.endsWith('.assets'))
-        .every((id) => !!stackOutputs[id]);
+        .every((id) => !stacksAwaitingDeploy[id]);
 
     const enqueueStackDeploys = async () => {
       while (stacks[0] && isStackUnblocked(stacks[0])) {
