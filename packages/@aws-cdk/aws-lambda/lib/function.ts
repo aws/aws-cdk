@@ -924,7 +924,7 @@ export class Function extends FunctionBase {
    * `this.currentVersion` to obtain a reference to a version resource that gets
    * automatically recreated when the function configuration (or code) changes.
    */
-  public addVersion(
+  public (
     name: string,
     codeSha256?: string,
     description?: string,
