@@ -291,23 +291,37 @@ export class BatchSubmitJob extends sfn.TaskStateBase {
       );
     }
 
-    let resources;
+    let resources: Array<any> = [];
     if (containerOverrides.gpuCount) {
-      resources = [
+      resources.push(
         {
           Type: 'GPU',
           Value: `${containerOverrides.gpuCount}`,
         },
-      ];
+      );
+    }
+    if (containerOverrides.memory) {
+      resources.push(
+        {
+          Type: 'MEMORY',
+          Value: `${containerOverrides.memory.toMebibytes()}`,
+        },
+      );
+    }
+    if (containerOverrides.vcpus) {
+      resources.push(
+        {
+          Type: 'VCPU',
+          Value: `${containerOverrides.vcpus}`,
+        },
+      );
     }
 
     return {
       Command: containerOverrides.command,
       Environment: environment,
       InstanceType: containerOverrides.instanceType?.toString(),
-      Memory: containerOverrides.memory?.toMebibytes(),
-      ResourceRequirements: resources,
-      Vcpus: containerOverrides.vcpus,
+      ResourceRequirements: resources.length ? resources : undefined,
     };
   }
 }
