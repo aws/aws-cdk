@@ -60,7 +60,13 @@
             "Arn"
           ]
         },
-        "Principal": "cognito-idp.amazonaws.com"
+        "Principal": "cognito-idp.amazonaws.com",
+        "SourceArn": {
+          "Fn::GetAtt": [
+            "pool056F3F7E",
+            "Arn"
+          ]
+        }
       }
     },
     "keyFEDD6EC0": {
