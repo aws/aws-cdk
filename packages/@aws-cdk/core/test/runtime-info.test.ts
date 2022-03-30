@@ -1,9 +1,7 @@
 import * as path from 'path';
+import { Construct } from 'constructs';
 import { App, NestedStack, Stack, Stage } from '../lib';
 import { constructInfoFromConstruct, constructInfoFromStack } from '../lib/private/runtime-info';
-
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from '../lib';
 
 const JSII_RUNTIME_SYMBOL = Symbol.for('jsii.rtti');
 

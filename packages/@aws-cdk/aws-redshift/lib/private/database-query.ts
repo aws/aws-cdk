@@ -4,14 +4,13 @@ import * as lambda from '@aws-cdk/aws-lambda';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import * as cdk from '@aws-cdk/core';
 import * as customresources from '@aws-cdk/custom-resources';
-import { Construct } from 'constructs';
 import { Cluster } from '../cluster';
 import { DatabaseOptions } from '../database-options';
 import { DatabaseQueryHandlerProps } from './handler-props';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct as CoreConstruct } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 
 export interface DatabaseQueryProps<HandlerProps> extends DatabaseOptions {
   readonly handler: string;
@@ -24,7 +23,7 @@ export interface DatabaseQueryProps<HandlerProps> extends DatabaseOptions {
   readonly removalPolicy?: cdk.RemovalPolicy;
 }
 
-export class DatabaseQuery<HandlerProps> extends CoreConstruct implements iam.IGrantable {
+export class DatabaseQuery<HandlerProps> extends Construct implements iam.IGrantable {
   readonly grantPrincipal: iam.IPrincipal;
   readonly ref: string;
 

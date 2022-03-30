@@ -8,7 +8,7 @@ import * as kms from '@aws-cdk/aws-kms';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
 import * as cdk8s from 'cdk8s';
-import * as constructs from 'constructs';
+import { Construct } from 'constructs';
 import * as YAML from 'yaml';
 import * as eks from '../lib';
 import { KubectlProvider } from '../lib/kubectl-provider';
@@ -363,7 +363,7 @@ describe('cluster', () => {
     });
 
     // create a plain construct, not a cdk8s chart
-    const someConstruct = new constructs.Construct(stack, 'SomeConstruct');
+    const someConstruct = new Construct(stack, 'SomeConstruct');
 
     expect(() => cluster.addCdk8sChart('chart', someConstruct)).toThrow(/Invalid cdk8s chart. Must contain a \'toJson\' method, but found undefined/);
   });
@@ -378,7 +378,7 @@ describe('cluster', () => {
     });
 
     // create a plain construct, not a cdk8s chart
-    const someConstruct = new cdk.Construct(stack, 'SomeConstruct');
+    const someConstruct = new Construct(stack, 'SomeConstruct');
 
     expect(() => cluster.addCdk8sChart('chart', someConstruct)).toThrow(/Invalid cdk8s chart. Must contain a \'toJson\' method, but found undefined/);
   });
@@ -447,7 +447,7 @@ describe('cluster', () => {
     class ClusterStack extends cdk.Stack {
       public eksCluster: eks.Cluster;
 
-      constructor(scope: constructs.Construct, id: string, props: { sg: ec2.ISecurityGroup, vpc: ec2.IVpc }) {
+      constructor(scope: Construct, id: string, props: { sg: ec2.ISecurityGroup, vpc: ec2.IVpc }) {
         super(scope, id);
         this.eksCluster = new eks.Cluster(this, 'Cluster', {
           version: CLUSTER_VERSION,
@@ -463,7 +463,7 @@ describe('cluster', () => {
       public readonly securityGroup: ec2.ISecurityGroup;
       public readonly vpc: ec2.IVpc;
 
-      constructor(scope: constructs.Construct, id: string) {
+      constructor(scope: Construct, id: string) {
         super(scope, id);
         this.vpc = new ec2.Vpc(this, 'Vpc');
         this.securityGroup = new ec2.SecurityGroup(this, 'SecurityGroup', { vpc: this.vpc });
@@ -484,7 +484,7 @@ describe('cluster', () => {
     class ClusterStack extends cdk.Stack {
       public eksCluster: eks.Cluster;
 
-      constructor(scope: constructs.Construct, id: string, props?: cdk.StackProps) {
+      constructor(scope: Construct, id: string, props?: cdk.StackProps) {
         super(scope, id, props);
         this.eksCluster = new eks.Cluster(this, 'Cluster', {
           version: CLUSTER_VERSION,
@@ -494,7 +494,7 @@ describe('cluster', () => {
     }
 
     class ManifestStack extends cdk.Stack {
-      constructor(scope: constructs.Construct, id: string, props: cdk.StackProps & { cluster: eks.Cluster }) {
+      constructor(scope: Construct, id: string, props: cdk.StackProps & { cluster: eks.Cluster }) {
         super(scope, id, props);
 
         // this role creates a dependency between this stack and the cluster stack
@@ -536,7 +536,7 @@ describe('cluster', () => {
     class ClusterStack extends cdk.Stack {
       public eksCluster: eks.Cluster;
 
-      constructor(scope: constructs.Construct, id: string, props?: cdk.StackProps) {
+      constructor(scope: Construct, id: string, props?: cdk.StackProps) {
         super(scope, id, props);
         this.eksCluster = new eks.Cluster(this, 'Cluster', {
           version: CLUSTER_VERSION,
@@ -546,7 +546,7 @@ describe('cluster', () => {
     }
 
     class ChartStack extends cdk.Stack {
-      constructor(scope: constructs.Construct, id: string, props: cdk.StackProps & { cluster: eks.Cluster }) {
+      constructor(scope: Construct, id: string, props: cdk.StackProps & { cluster: eks.Cluster }) {
         super(scope, id, props);
 
         // this role creates a dependency between this stack and the cluster stack
@@ -579,7 +579,7 @@ describe('cluster', () => {
     class ClusterStack extends cdk.Stack {
       public eksCluster: eks.Cluster;
 
-      constructor(scope: constructs.Construct, id: string, props?: cdk.StackProps) {
+      constructor(scope: Construct, id: string, props?: cdk.StackProps) {
         super(scope, id, props);
         this.eksCluster = new eks.Cluster(this, 'Cluster', {
           version: CLUSTER_VERSION,
@@ -589,7 +589,7 @@ describe('cluster', () => {
     }
 
     class ChartStack extends cdk.Stack {
-      constructor(scope: constructs.Construct, id: string, props: cdk.StackProps & { cluster: eks.Cluster }) {
+      constructor(scope: Construct, id: string, props: cdk.StackProps & { cluster: eks.Cluster }) {
         super(scope, id, props);
 
         const resource = new cdk.CfnResource(this, 'resource', { type: 'MyType' });
@@ -613,7 +613,7 @@ describe('cluster', () => {
     class ClusterStack extends cdk.Stack {
       public eksCluster: eks.Cluster;
 
-      constructor(scope: constructs.Construct, id: string, props?: cdk.StackProps) {
+      constructor(scope: Construct, id: string, props?: cdk.StackProps) {
         super(scope, id, props);
         this.eksCluster = new eks.Cluster(this, 'Cluster', {
           version: CLUSTER_VERSION,
@@ -626,7 +626,7 @@ describe('cluster', () => {
 
       public group: asg.AutoScalingGroup;
 
-      constructor(scope: constructs.Construct, id: string, props: cdk.StackProps & { cluster: eks.Cluster }) {
+      constructor(scope: Construct, id: string, props: cdk.StackProps & { cluster: eks.Cluster }) {
         super(scope, id, props);
 
         // the role is create in this stack implicitly by the ASG
@@ -659,7 +659,7 @@ describe('cluster', () => {
     class ClusterStack extends cdk.Stack {
       public eksCluster: eks.Cluster;
 
-      constructor(scope: constructs.Construct, id: string, props?: cdk.StackProps) {
+      constructor(scope: Construct, id: string, props?: cdk.StackProps) {
         super(scope, id, props);
         this.eksCluster = new eks.Cluster(this, 'EKSCluster', {
           version: CLUSTER_VERSION,
@@ -669,7 +669,7 @@ describe('cluster', () => {
     }
 
     class AppStack extends cdk.Stack {
-      constructor(scope: constructs.Construct, id: string, props: cdk.StackProps & { cluster: eks.Cluster }) {
+      constructor(scope: Construct, id: string, props: cdk.StackProps & { cluster: eks.Cluster }) {
         super(scope, id, props);
 
         new eks.ServiceAccount(this, 'testAccount', { cluster: props.cluster, name: 'test-account', namespace: 'test' });
