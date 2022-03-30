@@ -16,7 +16,7 @@
     },
     "targets": {
       "dotnet": {
-        "namespace": "Amazon.CDK.AWS.ServiceCatalogAppRegistry",
+        "namespace": "Amazon.CDK.AWS.Servicecatalogappregistry",
         "packageId": "Amazon.CDK.AWS.ServiceCatalogAppRegistry",
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk",
@@ -32,7 +32,7 @@
       "python": {
         "classifiers": [
           "Framework :: AWS CDK",
-          "Framework :: AWS CDK :: 1"
+          "Framework :: AWS CDK :: 2"
         ],
         "distName": "aws-cdk.aws-servicecatalogappregistry",
         "module": "aws_cdk.aws_servicecatalogappregistry"
@@ -92,14 +92,14 @@
   },
   "dependencies": {
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.3.69"
+    "constructs": "^10.0.0"
   },
   "peerDependencies": {
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.3.69"
+    "constructs": "^10.0.0"
   },
   "engines": {
-    "node": ">= 10.13.0 <13 || >=13.7.0"
+    "node": ">= 14.15.0"
   },
   "stability": "experimental",
   "maturity": "experimental",
@@ -108,5 +108,6 @@
   },
   "publishConfig": {
     "tag": "latest"
-  }
+  },
+  "private": true
 }
