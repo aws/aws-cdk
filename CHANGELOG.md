@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.151.0](https://github.com/aws/aws-cdk/compare/v1.150.0...v1.151.0) (2022-03-30)
+
+
+### Features
+
+* add new integration test runner ([#19529](https://github.com/aws/aws-cdk/issues/19529)) ([e7f43d1](https://github.com/aws/aws-cdk/commit/e7f43d1a3bb52bbf589d7472c9a9b89e3c1cc8c1))
+* **aws-ec2:** Enable/disable EC2 "Detailed Monitoring" ([#19437](https://github.com/aws/aws-cdk/issues/19437)) ([94f9d27](https://github.com/aws/aws-cdk/commit/94f9d27e626bced5fc68a6ebbd653fea21c6e21e))
+* **cognito:** configure SNS region for UserPool SMS messages ([#19519](https://github.com/aws/aws-cdk/issues/19519)) ([6eb775e](https://github.com/aws/aws-cdk/commit/6eb775e829d62913bff849d43ed7339f9910d8de)), closes [#19434](https://github.com/aws/aws-cdk/issues/19434)
+
+
+### Bug Fixes
+
+* **aws-cdk:** include nested stacks when building changesets ([#19494](https://github.com/aws/aws-cdk/issues/19494)) ([97cc8e2](https://github.com/aws/aws-cdk/commit/97cc8e29e155b222d553b1fe955a0302036feed5)), closes [#5722](https://github.com/aws/aws-cdk/issues/5722) [#17396](https://github.com/aws/aws-cdk/issues/17396) [#19224](https://github.com/aws/aws-cdk/issues/19224)
+* **docdb:** DB Instance ARN uses 'docdb' as the service component instead of 'rds' ([#19555](https://github.com/aws/aws-cdk/issues/19555)) ([6a63924](https://github.com/aws/aws-cdk/commit/6a63924c0b184342befd92903b8867e45b158252)), closes [#19554](https://github.com/aws/aws-cdk/issues/19554)
+
 ## [1.150.0](https://github.com/aws/aws-cdk/compare/v1.149.0...v1.150.0) (2022-03-26)
 
 
