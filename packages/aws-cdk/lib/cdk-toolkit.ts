@@ -898,7 +898,7 @@ export interface DeployOptions extends WatchOptions {
    * Maximum number of simulatenous deployments (dependency permitting) to execute.
    * The default is '1', which executes all deployments serially.
    *
-   * @default - 1
+   * @default 1
    */
   readonly concurrency?: number;
 }
