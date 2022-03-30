@@ -31,7 +31,7 @@
         "module": "aws_cdk.aws_dynamodb_global",
         "classifiers": [
           "Framework :: AWS CDK",
-          "Framework :: AWS CDK :: 1"
+          "Framework :: AWS CDK :: 2"
         ]
       },
       "dotnet": {
