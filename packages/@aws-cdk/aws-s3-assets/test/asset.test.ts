@@ -429,7 +429,3 @@ function mkdtempSync() {
 function isStackArtifact(x: any): x is cxapi.CloudFormationStackArtifact {
   return x instanceof cxapi.CloudFormationStackArtifact;
 }
-
-function isAssetManifestArtifact(x: any): x is cxapi.AssetManifestArtifact {
-  return x instanceof cxapi.AssetManifestArtifact;
-}
