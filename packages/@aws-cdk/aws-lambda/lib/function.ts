@@ -6,7 +6,7 @@ import * as kms from '@aws-cdk/aws-kms';
 import * as logs from '@aws-cdk/aws-logs';
 import * as sns from '@aws-cdk/aws-sns';
 import * as sqs from '@aws-cdk/aws-sqs';
-import { Annotations, ArnFormat, CfnResource, Duration, Fn, Lazy, Names, Stack, Token } from '@aws-cdk/core';
+import { Annotations, ArnFormat, CfnResource, Duration, Fn, Lazy, Names, Size, Stack, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { Architecture } from './architecture';
 import { Code, CodeConfig } from './code';
@@ -100,7 +100,7 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    *
    * @default 512
    */
-  readonly ephemeralStorageSize?: number;
+  readonly ephemeralStorageSize?: Size;
 
   /**
    * Initial policy statements to add to the created Lambda Role.
@@ -751,7 +751,7 @@ export class Function extends FunctionBase {
     this._architecture = props.architecture ?? (props.architectures && props.architectures[0]);
 
     if (props.ephemeralStorageSize && !Token.isUnresolved(props.ephemeralStorageSize)
-      && (props.ephemeralStorageSize < 512 || props.ephemeralStorageSize > 10240)) {
+      && (props.ephemeralStorageSize.toMebibytes() < 512 || props.ephemeralStorageSize.toMebibytes() > 10240)) {
       throw new Error(`Ephemeral storage size must be between 512 and 10240 MB, received ${props.ephemeralStorageSize}.`);
     }
 
@@ -776,7 +776,7 @@ export class Function extends FunctionBase {
       environment: Lazy.uncachedAny({ produce: () => this.renderEnvironment() }),
       memorySize: props.memorySize,
       ephemeralStorage: props.ephemeralStorageSize ? {
-        size: props.ephemeralStorageSize,
+        size: props.ephemeralStorageSize.toMebibytes(),
       } : undefined,
       vpcConfig: this.configureVpc(props),
       deadLetterConfig: this.buildDeadLetterConfig(dlqTopicOrQueue),

@@ -15,6 +15,7 @@ import * as cdk from '@aws-cdk/core';
 import * as constructs from 'constructs';
 import * as _ from 'lodash';
 import * as lambda from '../lib';
+import { Size } from '@aws-cdk/core';
 
 describe('function', () => {
   test('default function', () => {
@@ -2436,6 +2437,7 @@ describe('function', () => {
       architectures: [lambda.Architecture.X86_64, lambda.Architecture.ARM_64],
     })).toThrow(/one architecture must be specified/);
   });
+
   test('Architecture is properly readable from the function', () => {
     const stack = new cdk.Stack();
     const fn = new lambda.Function(stack, 'MyFunction', {
@@ -2493,8 +2495,30 @@ test('throws if ephemeral storage size is out of bound', () => {
     code: new lambda.InlineCode('foo'),
     handler: 'bar',
     runtime: lambda.Runtime.NODEJS_14_X,
-    ephemeralStorageSize: 511,
-  })).toThrow(/Ephemeral storage size must be between 512 and 10240 MB./);
+    ephemeralStorageSize: Size.mebibytes(511),
+  })).toThrow(/Ephemeral storage size must be between 512 and 10240 MB/);
+});
+
+test('set ephemeral storage to desired size', () => {
+  const stack = new cdk.Stack();
+  new lambda.Function(stack, 'MyLambda', {
+    code: new lambda.InlineCode('foo'),
+    handler: 'bar',
+    runtime: lambda.Runtime.NODEJS_14_X,
+    ephemeralStorageSize: Size.mebibytes(1024),
+  });
+
+  Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
+    Properties:
+    {
+      Code: { ZipFile: 'foo' },
+      Handler: 'bar',
+      Runtime: 'nodejs14.x',
+      EphemeralStorage: {
+        Size: 1024,
+      },
+    },
+  });
 });
 
 function newTestLambda(scope: constructs.Construct) {

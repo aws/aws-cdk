@@ -721,7 +721,7 @@ const fn = new lambda.Function(this, 'MyFunction', {
   runtime: lambda.Runtime.NODEJS_12_X,
   handler: 'index.handler',
   code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
-  ephemeralStorageSize: 1024,
+  ephemeralStorageSize: Size.mebibytes(1024),
 });
 ```
 
