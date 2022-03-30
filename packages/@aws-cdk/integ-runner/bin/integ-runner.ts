@@ -2,108 +2,53 @@
 // Exercise all integ stacks and if they deploy, update the expected synth files
 import * as os from 'os';
 import * as path from 'path';
+import * as chalk from 'chalk';
 import * as workerpool from 'workerpool';
 import * as yargs from 'yargs';
 import { IntegrationTests, IntegTestConfig } from '../lib/runner/integ-tests';
 import * as logger from '../lib/runner/private/logger';
-import { SnapshotBatchResponse, SnapshotBatchRequest, IntegBatchResponse } from '../lib/workers/extract_worker';
-import { Diagnostic, DiagnosticReason, IntegTestOptions } from '../lib/workers/workers';
+import { IntegBatchResponse, printResults } from '../lib/workers/common';
+import { SnapshotBatchRequest } from '../lib/workers/extract_worker';
+import { runIntegrationTestsInParallel, IntegTestRunOptions } from '../lib/workers/integ-test-worker';
+
 
 /**
- * Options for running all integration tests
+ * Split a list of snapshot tests into batches that can be run using a workerpool.
  */
-interface IntegTestRunOptions extends IntegTestOptions {
-  /**
-   * The regions to run the integration tests across.
-   * This allows the runner to run integration tests in parallel
-   */
-  readonly regions: string[];
-
-  /**
-   * The workerpool to use
-   */
-  readonly pool: workerpool.WorkerPool;
-}
-
-/**
- * Split a list of tests into batches that can be run using a workerpool.
- */
-function batchTests(tests: IntegTestConfig[], regions?: string[]): SnapshotBatchRequest[] {
+function batchTests(tests: IntegTestConfig[]): SnapshotBatchRequest[] {
   let batchSize = 3;
-  if (regions && regions.length > 0) {
-    batchSize = Math.ceil(tests.length / regions.length);
-  }
   const ret: SnapshotBatchRequest[] = [];
-  let regionIndex = 0;
   for (let i = 0; i < tests.length; i += batchSize) {
     ret.push({
-      region: regions ? regions[regionIndex] : '',
       tests: tests.slice(i, i + batchSize),
     });
-    regionIndex++;
   }
   return ret;
 }
 
-/**
- * Print out the results from tests
- */
-function printResults(diagnostics: Diagnostic[]): void {
-  diagnostics.forEach(diagnostic => {
-    switch (diagnostic.reason) {
-      case DiagnosticReason.SNAPSHOT_SUCCESS:
-        logger.success('  %s No Change!', diagnostic.testName);
-        break;
-      case DiagnosticReason.TEST_SUCCESS:
-        logger.success('  %s Test Succeeded!', diagnostic.testName);
-        break;
-      case DiagnosticReason.NO_SNAPSHOT:
-        logger.error('  %s - No Snapshot!\n    %s', diagnostic.testName, diagnostic.message);
-        break;
-      case DiagnosticReason.SNAPSHOT_FAILED:
-        logger.error('  %s - Snapshot changed!\n%s', diagnostic.testName, diagnostic.message);
-        break;
-      case DiagnosticReason.TEST_FAILED:
-        logger.error('  %s - Failed!\n%s', diagnostic.testName, diagnostic.message);
-    }
-  });
+export function printSummary(total: number, failed: number): void {
+  if (failed > 0) {
+    logger.print('%s:    %s %s, %s total', chalk.bold('Tests'), chalk.red(failed), chalk.red('failed'), total);
+  } else {
+    logger.print('%s:    %s %s, %s total', chalk.bold('Tests'), chalk.green(total), chalk.green('passed'), total);
+  }
 }
 
 /**
  * Run Integration tests.
- *
- * First batch up the tests using the available regions and then use a workerpool
- * to run the tests in parallel. For example if there are 12 tests and 3 regions
- * this will create 3 batches of 4 tests. It will then use the workerpool to run
- * those 3 batches in parallel. Within a batch, it will run the tests in sequence
- * so that there will only ever be one test running per region.
  */
 async function runIntegrationTests(options: IntegTestRunOptions): Promise<void> {
-  const diagnostics = new Array<Diagnostic>();
   logger.highlight('\nRunning integration tests for failed tests...\n');
-  const requests = batchTests(options.tests, options.regions);
-  logger.print('Running in parallel: ');
-  requests.forEach(request =>
-    logger.print(`Running the following tests in ${request.region}: \n    %s`,
-      request.tests.map(r => r.fileName).join('\n    '),
-    ));
-  const testResponses: IntegBatchResponse[] = await Promise.all(
-    requests.map((request) => options.pool.exec('integTestBatch', [{
-      clean: options.clean,
-      dryRun: options.dryRun,
-      verbose: options.verbose,
-      ...request,
-    }], {
-      on: workerpoolLogger,
-    })),
-  );
-  for (const response of testResponses) {
-    diagnostics.push(...response.diagnostics);
+  logger.print('Running in parallel across: %s', options.regions.join(', '));
+  const totalTests = options.tests.length;
+  const failedTests: IntegTestConfig[] = [];
+
+  const responses = await runIntegrationTestsInParallel(options);
+  for (const response of responses) {
+    failedTests.push(...response.failedTests);
   }
-  if (diagnostics.length > 0) {
-    logger.highlight('\nTest Results: \n');
-    printResults(diagnostics);
-  }
+  logger.highlight('\nTest Results: \n');
+  printSummary(totalTests, failedTests.length);
 }
 
 /**
@@ -114,22 +59,18 @@ async function runIntegrationTests(options: IntegTestRunOptions): Promise<void> 
 async function runSnapshotTests(pool: workerpool.WorkerPool, tests: IntegTestConfig[]): Promise<IntegTestConfig[]> {
   const testsToRun: IntegTestConfig[] = [];
   const requests = batchTests(tests);
-  const diagnostics = new Array<Diagnostic>();
   logger.highlight('\nVerifying integration test snapshots...\n');
-  const responses: SnapshotBatchResponse[] = await Promise.all(
+  const responses: IntegBatchResponse[] = await Promise.all(
     requests.map((request) => pool.exec('snapshotTestBatch', [request], {
-      on: workerpoolLogger,
+      on: printResults,
     })),
   );
   for (const response of responses) {
-    diagnostics.push(...response.diagnostics);
     testsToRun.push(...response.failedTests);
   }
 
-  if (diagnostics.length > 0) {
-    logger.highlight('\nSnapshot Results: \n');
-    printResults(diagnostics);
-  }
+  logger.highlight('\nSnapshot Results: \n');
+  printSummary(tests.length, testsToRun.length);
   return testsToRun;
 }
 
@@ -147,9 +88,6 @@ async function main() {
     .options('directory', { type: 'string', default: 'test', desc: 'starting directory to discover integration tests' })
     .argv;
 
-  // Use about half the advertised cores because hyperthreading doesn't seem to
-  // help that much, or we become I/O-bound at some point. On my machine, using
-  // more than half the cores actually makes it slower.
   // Cap to a reasonable top-level limit to prevent thrash on machines with many, many cores.
   const maxWorkers = parseInt(process.env.CDK_INTEG_MAX_WORKER_COUNT ?? '16');
   const N = Math.min(maxWorkers, Math.max(1, Math.ceil(os.cpus().length / 2)));
@@ -207,29 +145,6 @@ async function main() {
 
   } finally {
     void pool.terminate();
-  }
-}
-
-export enum LogLevel {
-  WARN = 'warn',
-  ERROR = 'error',
-  INFO = 'info',
-}
-
-export interface LoggerOpts {
-  message: string;
-  level?: LogLevel;
-}
-function workerpoolLogger(payload: LoggerOpts) {
-  switch (payload.level) {
-    case LogLevel.WARN:
-      logger.warning(payload.message);
-      break;
-    case LogLevel.ERROR:
-      logger.error(payload.message);
-      break;
-    default:
-      logger.print(payload.message);
   }
 }
 

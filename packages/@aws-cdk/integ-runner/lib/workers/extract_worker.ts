@@ -1,13 +1,14 @@
 import * as workerpool from 'workerpool';
 import { IntegTestConfig } from '../runner/integ-tests';
-import { singleThreadedTestRunner, singleThreadedSnapshotRunner, IntegTestBatchRequest, Diagnostic } from './workers';
+import { Diagnostic, IntegBatchResponse } from './common';
+import { singleThreadedSnapshotRunner } from './integ-snapshot-worker';
+import { singleThreadedTestRunner, IntegTestBatchRequest } from './integ-test-worker';
 
 /**
  * Options for running snapshot tests
  */
 export interface SnapshotBatchRequest {
   readonly tests: IntegTestConfig[];
-  readonly region: string;
 }
 
 /**
@@ -18,26 +19,14 @@ export interface SnapshotBatchResponse {
   failedTests: IntegTestConfig[];
 }
 
-/**
- * Integration test results
- */
-export interface IntegBatchResponse {
-  diagnostics: Diagnostic[];
-}
-
 function integTestBatch(request: IntegTestBatchRequest): IntegBatchResponse {
   const result = singleThreadedTestRunner(request);
-  return {
-    diagnostics: result,
-  };
+  return result;
 }
 
-function snapshotTestBatch(request: SnapshotBatchRequest): SnapshotBatchResponse {
+function snapshotTestBatch(request: SnapshotBatchRequest): IntegBatchResponse {
   const result = singleThreadedSnapshotRunner(request.tests);
-  return {
-    diagnostics: result.diagnostics,
-    failedTests: result.failedTests,
-  };
+  return result;
 }
 
 workerpool.worker({
