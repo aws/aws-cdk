@@ -160,7 +160,9 @@ export class PolicyStatement {
   }
 
   /**
-   * aaaaaaaaaaaa
+   * Expose principals to allow their ARNs to be replaced by account ID strings
+   * in policy statements for resources that don't allow full account ARNs, such
+   * as cloudwatch logs.
    */
   public get principals(): IPrincipal[] {
     return [...this._principals];
@@ -330,9 +332,8 @@ export class PolicyStatement {
   }
 
   /**
-   * aaaaaaaaaaaaaaaaaaaaaaa
-   * @param overrides
-   * @returns
+   * Create a new `PolicyStatement` with the same exact properties
+   * as this one, except for the overrides; effectively a copy constructor.
    */
   public copy(overrides: PolicyStatementProps = {}) {
     return new PolicyStatement({

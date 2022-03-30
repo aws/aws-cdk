@@ -359,7 +359,6 @@ export class ArnPrincipal extends PrincipalBase {
    */
   constructor(public readonly arn: string) {
     super();
-    console.log('yay')
   }
 
   public get policyFragment(): PrincipalPolicyFragment {
