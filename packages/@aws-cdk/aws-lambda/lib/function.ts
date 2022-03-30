@@ -11,6 +11,7 @@ import { Construct } from 'constructs';
 import { Architecture } from './architecture';
 import { Code, CodeConfig } from './code';
 import { ICodeSigningConfig } from './code-signing-config';
+import { EphemeralStorage } from './ephemeral-storage';
 import { EventInvokeConfigOptions } from './event-invoke-config';
 import { IEventSource } from './event-source';
 import { FileSystem } from './filesystem';
@@ -339,6 +340,12 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    * @default Architecture.X86_64
    */
   readonly architecture?: Architecture;
+
+  /**
+   * Ephemeral Storage config associated with this function
+   * @default 512
+   */
+  readonly ephemeralStorage?: EphemeralStorage;
 }
 
 export interface FunctionProps extends FunctionOptions {
@@ -622,6 +629,12 @@ export class Function extends FunctionBase {
    */
   public readonly timeout?: Duration;
 
+  /**
+   * Ephemeral Storage config associated with this function
+   * @default 512
+   */
+  public readonly ephemeralStorage?: EphemeralStorage;
+
   public readonly permissionsNode = this.node;
 
 
@@ -776,6 +789,7 @@ export class Function extends FunctionBase {
       fileSystemConfigs,
       codeSigningConfigArn: props.codeSigningConfig?.codeSigningConfigArn,
       architectures: this._architecture ? [this._architecture.name] : undefined,
+      ephemeralStorage: props.ephemeralStorage,
     });
 
     resource.node.addDependency(this.role);
@@ -792,6 +806,7 @@ export class Function extends FunctionBase {
     this.timeout = props.timeout;
 
     this.architecture = props.architecture ?? Architecture.X86_64;
+    this.ephemeralStorage = props.ephemeralStorage;
 
     if (props.layers) {
       if (props.runtime === Runtime.FROM_IMAGE) {

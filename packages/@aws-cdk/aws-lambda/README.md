@@ -385,6 +385,23 @@ new lambda.LayerVersion(this, 'MyLayer', {
 });
 ```
 
+## Ephemeral Storage
+
+Lambda Functions run with a /tmp directory default size of 512 MB. 
+
+The size can be configured to any whole value between 512 and 10240 MB.
+
+It can be configured with the `ephemeralStorage` prop:
+
+```ts
+new lambda.Function(this, 'MyFunction', {
+  runtime: lambda.Runtime.NODEJS_12_X,
+  handler: 'index.handler',
+  code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
+  ephemeralStorage: { size: 1028 },
+});
+```
+
 ## Lambda Insights
 
 Lambda functions can be configured to use CloudWatch [Lambda Insights](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Lambda-Insights.html)

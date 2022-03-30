@@ -2485,6 +2485,17 @@ describe('function', () => {
       });
     }).not.toThrow();
   });
+
+  test('EphemeralStorage is properly readable from function', () => {
+    const stack = new cdk.Stack();
+    const fn = new lambda.Function(stack, 'MyFunction', {
+      code: lambda.Code.fromInline('foo'),
+      runtime: lambda.Runtime.NODEJS_14_X,
+      handler: 'index.handler',
+      ephemeralStorage: { size: 1028 },
+    });
+    expect(fn.ephemeralStorage?.size).toEqual(1028);
+  });
 });
 
 function newTestLambda(scope: constructs.Construct) {

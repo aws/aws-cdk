@@ -20,6 +20,7 @@ export * from './code-signing-config';
 export * from './lambda-insights';
 export * from './log-retention';
 export * from './architecture';
+export * from './ephemeral-storage';
 
 // AWS::Lambda CloudFormation Resources:
 export * from './lambda.generated';
