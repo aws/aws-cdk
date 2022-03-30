@@ -9507,7 +9507,7 @@
       "description": "The AWS::CustomerProfiles::Integration resource specifies an Amazon Connect Customer Profiles Integration.",
       "properties": {
         "DomainName": "The unique name of the domain.",
-        "FlowDefinition": "",
+        "FlowDefinition": "The configuration that controls how Customer Profiles retrieves data from the source.",
         "ObjectTypeName": "The name of the profile object type mapping to use.",
         "ObjectTypeNames": "",
         "Tags": "The tags used to organize, track, or control access for this resource.",
@@ -9516,39 +9516,39 @@
     },
     "AWS::CustomerProfiles::Integration.ConnectorOperator": {
       "attributes": {},
-      "description": "",
+      "description": "The operation to be performed on the provided source fields.",
       "properties": {
-        "Marketo": "",
-        "S3": "",
-        "Salesforce": "",
-        "ServiceNow": "",
-        "Zendesk": ""
+        "Marketo": "The operation to be performed on the provided Marketo source fields.",
+        "S3": "The operation to be performed on the provided Amazon S3 source fields.",
+        "Salesforce": "The operation to be performed on the provided Salesforce source fields.",
+        "ServiceNow": "The operation to be performed on the provided ServiceNow source fields.",
+        "Zendesk": "The operation to be performed on the provided Zendesk source fields."
       }
     },
     "AWS::CustomerProfiles::Integration.FlowDefinition": {
       "attributes": {},
-      "description": "",
+      "description": "The configurations that control how Customer Profiles retrieves data from the source, Amazon AppFlow. Customer Profiles uses this information to create an AppFlow flow on behalf of customers.",
       "properties": {
-        "Description": "",
-        "FlowName": "",
-        "KmsArn": "",
-        "SourceFlowConfig": "",
-        "Tasks": "",
-        "TriggerConfig": ""
+        "Description": "A description of the flow you want to create.",
+        "FlowName": "The specified name of the flow. Use underscores (_) or hyphens (-) only. Spaces are not allowed.",
+        "KmsArn": "The Amazon Resource Name (ARN) of the AWS Key Management Service (KMS) key you provide for encryption.",
+        "SourceFlowConfig": "The configuration that controls how Customer Profiles retrieves data from the source.",
+        "Tasks": "A list of tasks that Customer Profiles performs while transferring the data in the flow run.",
+        "TriggerConfig": "The trigger settings that determine how and when the flow runs."
       }
     },
     "AWS::CustomerProfiles::Integration.IncrementalPullConfig": {
       "attributes": {},
-      "description": "",
+      "description": "Specifies the configuration used when importing incremental records from the source.",
       "properties": {
-        "DatetimeTypeFieldName": ""
+        "DatetimeTypeFieldName": "A field that specifies the date time or timestamp field as the criteria to use when importing incremental records from the source."
       }
     },
     "AWS::CustomerProfiles::Integration.MarketoSourceProperties": {
       "attributes": {},
-      "description": "",
+      "description": "The properties that are applied when Marketo is being used as a source.",
       "properties": {
-        "Object": ""
+        "Object": "The object specified in the Marketo flow source."
       }
     },
     "AWS::CustomerProfiles::Integration.ObjectTypeMapping": {
@@ -9561,101 +9561,101 @@
     },
     "AWS::CustomerProfiles::Integration.S3SourceProperties": {
       "attributes": {},
-      "description": "",
+      "description": "The properties that are applied when Amazon S3 is being used as the flow source.",
       "properties": {
-        "BucketName": "",
-        "BucketPrefix": ""
+        "BucketName": "The Amazon S3 bucket name where the source files are stored.",
+        "BucketPrefix": "The object key for the Amazon S3 bucket in which the source files are stored."
       }
     },
     "AWS::CustomerProfiles::Integration.SalesforceSourceProperties": {
       "attributes": {},
-      "description": "",
+      "description": "The properties that are applied when Salesforce is being used as a source.",
       "properties": {
-        "EnableDynamicFieldUpdate": "",
-        "IncludeDeletedRecords": "",
-        "Object": ""
+        "EnableDynamicFieldUpdate": "The flag that enables dynamic fetching of new (recently added) fields in the Salesforce objects while running a flow.",
+        "IncludeDeletedRecords": "Indicates whether Amazon AppFlow includes deleted files in the flow run.",
+        "Object": "The object specified in the Salesforce flow source."
       }
     },
     "AWS::CustomerProfiles::Integration.ScheduledTriggerProperties": {
       "attributes": {},
-      "description": "",
+      "description": "Specifies the configuration details of a scheduled-trigger flow that you define. Currently, these settings only apply to the scheduled-trigger type.",
       "properties": {
-        "DataPullMode": "",
-        "FirstExecutionFrom": "",
-        "ScheduleEndTime": "",
-        "ScheduleExpression": "",
-        "ScheduleOffset": "",
-        "ScheduleStartTime": "",
-        "Timezone": ""
+        "DataPullMode": "Specifies whether a scheduled flow has an incremental data transfer or a complete data transfer for each flow run.",
+        "FirstExecutionFrom": "Specifies the date range for the records to import from the connector in the first flow run.",
+        "ScheduleEndTime": "Specifies the scheduled end time for a scheduled-trigger flow.",
+        "ScheduleExpression": "The scheduling expression that determines the rate at which the schedule will run, for example rate (5 minutes).",
+        "ScheduleOffset": "Specifies the optional offset that is added to the time interval for a schedule-triggered flow.",
+        "ScheduleStartTime": "Specifies the scheduled start time for a scheduled-trigger flow.",
+        "Timezone": "Specifies the time zone used when referring to the date and time of a scheduled-triggered flow, such as America/New_York."
       }
     },
     "AWS::CustomerProfiles::Integration.ServiceNowSourceProperties": {
       "attributes": {},
-      "description": "",
+      "description": "The properties that are applied when ServiceNow is being used as a source.",
       "properties": {
-        "Object": ""
+        "Object": "The object specified in the ServiceNow flow source."
       }
     },
     "AWS::CustomerProfiles::Integration.SourceConnectorProperties": {
       "attributes": {},
-      "description": "",
+      "description": "Specifies the information that is required to query a particular Amazon AppFlow connector. Customer Profiles supports Salesforce, Zendesk, Marketo, ServiceNow and Amazon S3.",
       "properties": {
-        "Marketo": "",
-        "S3": "",
-        "Salesforce": "",
-        "ServiceNow": "",
-        "Zendesk": ""
+        "Marketo": "The properties that are applied when Marketo is being used as a source.",
+        "S3": "The properties that are applied when Amazon S3 is being used as the flow source.",
+        "Salesforce": "The properties that are applied when Salesforce is being used as a source.",
+        "ServiceNow": "The properties that are applied when ServiceNow is being used as a source.",
+        "Zendesk": "The properties that are applied when using Zendesk as a flow source."
       }
     },
     "AWS::CustomerProfiles::Integration.SourceFlowConfig": {
       "attributes": {},
-      "description": "",
+      "description": "The configuration that controls how Customer Profiles retrieves data from the source.",
       "properties": {
-        "ConnectorProfileName": "",
-        "ConnectorType": "",
-        "IncrementalPullConfig": "",
-        "SourceConnectorProperties": ""
+        "ConnectorProfileName": "The name of the Amazon AppFlow connector profile. This name must be unique for each connector profile in the AWS account.",
+        "ConnectorType": "The type of connector, such as Salesforce, Marketo, and so on.",
+        "IncrementalPullConfig": "Defines the configuration for a scheduled incremental data pull. If a valid configuration is provided, the fields specified in the configuration are used when querying for the incremental data pull.",
+        "SourceConnectorProperties": "Specifies the information that is required to query a particular source connector."
       }
     },
     "AWS::CustomerProfiles::Integration.Task": {
       "attributes": {},
-      "description": "",
+      "description": "The `Task` property type specifies the class for modeling different type of tasks. Task implementation varies based on the TaskType.",
       "properties": {
-        "ConnectorOperator": "",
-        "DestinationField": "",
-        "SourceFields": "",
-        "TaskProperties": "",
-        "TaskType": ""
+        "ConnectorOperator": "The operation to be performed on the provided source fields.",
+        "DestinationField": "A field in a destination connector, or a field value against which Amazon AppFlow validates a source field.",
+        "SourceFields": "The source fields to which a particular task is applied.",
+        "TaskProperties": "A map used to store task-related information. The service looks for particular information based on the TaskType.",
+        "TaskType": "Specifies the particular task implementation that Amazon AppFlow performs."
       }
     },
     "AWS::CustomerProfiles::Integration.TaskPropertiesMap": {
       "attributes": {},
-      "description": "",
+      "description": "A map used to store task-related information. The execution service looks for particular information based on the `TaskType` .",
       "properties": {
-        "OperatorPropertyKey": "",
-        "Property": ""
+        "OperatorPropertyKey": "The task property key.",
+        "Property": "The task property value."
       }
     },
     "AWS::CustomerProfiles::Integration.TriggerConfig": {
       "attributes": {},
-      "description": "",
+      "description": "The trigger settings that determine how and when Amazon AppFlow runs the specified flow.",
       "properties": {
-        "TriggerProperties": "",
-        "TriggerType": ""
+        "TriggerProperties": "Specifies the configuration details of a schedule-triggered flow that you define. Currently, these settings only apply to the Scheduled trigger type.",
+        "TriggerType": "Specifies the type of flow trigger. It can be OnDemand, Scheduled, or Event."
       }
     },
     "AWS::CustomerProfiles::Integration.TriggerProperties": {
       "attributes": {},
-      "description": "",
+      "description": "Specifies the configuration details that control the trigger for a flow. Currently, these settings only apply to the Scheduled trigger type.",
       "properties": {
-        "Scheduled": ""
+        "Scheduled": "Specifies the configuration details of a schedule-triggered flow that you define."
       }
     },
     "AWS::CustomerProfiles::Integration.ZendeskSourceProperties": {
       "attributes": {},
-      "description": "",
+      "description": "The properties that are applied when using Zendesk as a flow source.",
       "properties": {
-        "Object": ""
+        "Object": "The object specified in the Zendesk flow source."
       }
     },
     "AWS::CustomerProfiles::ObjectType": {
@@ -11893,7 +11893,7 @@
         "SubnetId": "[EC2-VPC] The ID of the subnet to launch the instance into.\n\nIf you specify a network interface, you must specify any subnets as part of the network interface.",
         "Tags": "The tags to add to the instance. These tags are not applied to the EBS volumes, such as the root volume.",
         "Tenancy": "The tenancy of the instance (if the instance is running in a VPC). An instance with a tenancy of `dedicated` runs on single-tenant hardware.",
-        "UserData": "The user data to make available to the instance. For more information, see [Run commands on your Linux instance at launch](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/user-data.html) and [Run commands on your Windows instance at launch](https://docs.aws.amazon.com/AWSEC2/latest/WindowsGuide/ec2-windows-user-data.html) . If you are using a command line tool, base64-encoding is performed for you, and you can load the text from a file. Otherwise, you must provide base64-encoded text. User data is limited to 16 KB.",
+        "UserData": "The user data script to make available to the instance. For more information, see [Run commands on your Linux instance at launch](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/user-data.html) and [Run commands on your Windows instance at launch](https://docs.aws.amazon.com/AWSEC2/latest/WindowsGuide/ec2-windows-user-data.html) . If you are using a command line tool, base64-encoding is performed for you, and you can load the text from a file. Otherwise, you must provide base64-encoded text. User data is limited to 16 KB.",
         "Volumes": "The volumes to attach to the instance."
       }
     },
@@ -12658,7 +12658,7 @@
       "properties": {
         "NatGatewayId": "The ID of a NAT gateway.",
         "NetworkInterfaceId": "The ID of a network interface.",
-        "Origin": "Describes how the route was created. The following are possible values:\n\n- `CreateRouteTable` - The route was automatically created when the route table was created.\n- `CreateRoute` - The route was manually added to the route table.\n- `EnableVgwRoutePropagation` - The route was propagated by route propagation.",
+        "Origin": "Describes how the route was created. The following are the possible values:\n\n- CreateRouteTable - The route was automatically created when the route table was created.\n- CreateRoute - The route was manually added to the route table.\n- EnableVgwRoutePropagation - The route was propagated by route propagation.",
         "TransitGatewayId": "The ID of a transit gateway.",
         "VpcPeeringConnectionId": "The ID of a VPC peering connection.",
         "destinationCidr": "The destination IPv4 address, in CIDR notation.",
@@ -12673,7 +12673,7 @@
       "description": "Describes a security group rule.",
       "properties": {
         "Cidr": "The IPv4 address range, in CIDR notation.",
-        "Direction": "The direction. The following are possible values:\n\n- egress\n- ingress",
+        "Direction": "The direction. The following are the possible values:\n\n- egress\n- ingress",
         "PortRange": "The port range.",
         "PrefixListId": "The prefix list ID.",
         "Protocol": "The protocol name.",
@@ -12696,7 +12696,7 @@
         "CustomerGateway": "The customer gateway.",
         "Destination": "The destination.",
         "DestinationVpc": "The destination VPC.",
-        "Direction": "The direction. The following are possible values:\n\n- egress\n- ingress",
+        "Direction": "The direction. The following are the possible values:\n\n- egress\n- ingress",
         "ElasticLoadBalancerListener": "The load balancer listener.",
         "ExplanationCode": "The explanation code.",
         "IngressRouteTable": "The route table.",
@@ -12918,13 +12918,13 @@
     },
     "AWS::EC2::SecurityGroup.Egress": {
       "attributes": {},
-      "description": "Specifies an outbound rule for a security group. An outbound rule permits instances to send traffic to the specified IPv4 or IPv6 address range, or to the instances associated with the specified destination security groups.\n\nYou must specify only one of the following properties: `CidrIp` , `CidrIpv6` , `DestinationPrefixListId` , or `DestinationSecurityGroupId` .\n\nThe EC2 Security Group Rule is an embedded property of the `AWS::EC2::SecurityGroup` type.",
+      "description": "[EC2-VPC only] Adds the specified egress rules to a security group for use with a VPC.\n\nAn outbound rule permits instances to send traffic to the specified destination IPv4 or IPv6 CIDR address ranges, or to the specified destination security groups for the same VPC.\n\nYou specify a protocol for each rule (for example, TCP). For the TCP and UDP protocols, you must also specify the destination port or port range. For the ICMP protocol, you must also specify the ICMP type and code. You can use -1 for the type or code to mean all types or all codes.\n\nYou must specify only one of the following properties: `CidrIp` , `CidrIpv6` , `DestinationPrefixListId` , or `DestinationSecurityGroupId` .\n\nYou must specify a destination security group ( `DestinationPrefixListId` or `DestinationSecurityGroupId` ) or a CIDR range ( `CidrIp` or `CidrIpv6` ). If you do not specify one of these parameters, the stack will launch successfully but the rule will not be added to the security group.\n\nRule changes are propagated to affected instances as quickly as possible. However, a small delay might occur.\n\nFor more information about VPC security group limits, see [Amazon VPC Limits](https://docs.aws.amazon.com/vpc/latest/userguide/amazon-vpc-limits.html) .\n\nUse `SecurityGroup.Ingress` and `SecurityGroup.Egress` only when necessary, typically to allow security groups to reference each other in ingress and egress rules. Otherwise, use the embedded ingress and egress rules of the security group. For more information, see [Amazon EC2 Security Groups](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-network-security.html) .\n\nThe EC2 Security Group Rule is an embedded property of the `AWS::EC2::SecurityGroup` type.",
       "properties": {
-        "CidrIp": "The IPv4 address range, in CIDR format.",
-        "CidrIpv6": "The IPv6 address range, in CIDR format.",
+        "CidrIp": "The IPv4 address range, in CIDR format.\n\nYou must specify a destination security group ( `DestinationPrefixListId` or `DestinationSecurityGroupId` ) or a CIDR range ( `CidrIp` or `CidrIpv6` ).\n\nFor examples of rules that you can add to security groups for specific access scenarios, see [Security group rules for different use cases](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/security-group-rules-reference.html) in the *Amazon EC2 User Guide* .",
+        "CidrIpv6": "The IPv6 address range, in CIDR format.\n\nYou must specify a destination security group ( `DestinationPrefixListId` or `DestinationSecurityGroupId` ) or a CIDR range ( `CidrIp` or `CidrIpv6` ).\n\nFor examples of rules that you can add to security groups for specific access scenarios, see [Security group rules for different use cases](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/security-group-rules-reference.html) in the *Amazon EC2 User Guide* .",
         "Description": "A description for the security group rule.\n\nConstraints: Up to 255 characters in length. Allowed characters are a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=;{}!$*",
-        "DestinationPrefixListId": "[EC2-VPC only] The prefix list IDs for the destination AWS service. This is the AWS service that you want to access through a VPC endpoint from instances associated with the security group.",
-        "DestinationSecurityGroupId": "The ID of the destination VPC security group.",
+        "DestinationPrefixListId": "[EC2-VPC only] The prefix list IDs for the destination AWS service. This is the AWS service that you want to access through a VPC endpoint from instances associated with the security group.\n\nYou must specify a destination security group ( `DestinationPrefixListId` or `DestinationSecurityGroupId` ) or a CIDR range ( `CidrIp` or `CidrIpv6` ).",
+        "DestinationSecurityGroupId": "The ID of the destination VPC security group.\n\nYou must specify a destination security group ( `DestinationPrefixListId` or `DestinationSecurityGroupId` ) or a CIDR range ( `CidrIp` or `CidrIpv6` ).",
         "FromPort": "The start of port range for the TCP and UDP protocols, or an ICMP/ICMPv6 type number. A value of `-1` indicates all ICMP/ICMPv6 types. If you specify all ICMP/ICMPv6 types, you must specify all codes.",
         "IpProtocol": "The IP protocol name ( `tcp` , `udp` , `icmp` , `icmpv6` ) or number (see [Protocol Numbers](https://docs.aws.amazon.com/http://www.iana.org/assignments/protocol-numbers/protocol-numbers.xhtml) ).\n\n[VPC only] Use `-1` to specify all protocols. When authorizing security group rules, specifying `-1` or a protocol number other than `tcp` , `udp` , `icmp` , or `icmpv6` allows traffic on all ports, regardless of any port range you specify. For `tcp` , `udp` , and `icmp` , you must specify a port range. For `icmpv6` , the port range is optional; if you omit the port range, traffic for all types and codes is allowed.",
         "ToPort": "The end of port range for the TCP and UDP protocols, or an ICMP/ICMPv6 code. A value of `-1` indicates all ICMP/ICMPv6 codes. If you specify all ICMP/ICMPv6 types, you must specify all codes."
@@ -12932,16 +12932,16 @@
     },
     "AWS::EC2::SecurityGroup.Ingress": {
       "attributes": {},
-      "description": "Specifies an inbound rule for a security group. An inbound rule permits instances to receive traffic from the specified IPv4 or IPv6 CIDR address range, or from the instances associated with the specified security group.\n\nYou must specify only one of the following properties: `CidrIp` , `CidrIpv6` , `SourcePrefixListId` , `SourceSecurityGroupId` , or `SourceSecurityGroupName` .\n\nThe EC2 Security Group Rule is an embedded property of the `AWS::EC2::SecurityGroup` type.",
+      "description": "Adds an inbound rule to a security group.\n\nAn inbound rule permits instances to receive traffic from the specified IPv4 or IPv6 CIDR address range, or from the instances associated with the specified security group.\n\nYou must specify only one of the following properties: `CidrIp` , `CidrIpv6` , `SourcePrefixListId` , `SourceSecurityGroupId` , or `SourceSecurityGroupName` .\n\nYou specify a protocol for each rule (for example, TCP). For TCP and UDP, you must also specify a port or port range. For ICMP/ICMPv6, you must also specify the ICMP/ICMPv6 type and code. You can use -1 to mean all types or all codes.\n\nYou must specify a source security group ( `SourcePrefixListId` , `SourceSecurityGroupId` , or `SourceSecurityGroupName` ) or a CIDR range ( `CidrIp` or `CidrIpv6` ). If you do not specify one of these parameters, the stack will launch successfully but the rule will not be added to the security group.\n\nRule changes are propagated to instances within the security group as quickly as possible. However, a small delay might occur.\n\nThe EC2 Security Group Rule is an embedded property of the `AWS::EC2::SecurityGroup` type.",
       "properties": {
-        "CidrIp": "The IPv4 address range, in CIDR format.",
-        "CidrIpv6": "The IPv6 address range, in CIDR format.",
-        "Description": "A description for the security group rule.\n\nConstraints: Up to 255 characters in length. Allowed characters are a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=;{}!$*",
+        "CidrIp": "The IPv4 address range, in CIDR format.\n\nYou must specify a destination security group ( `DestinationPrefixListId` or `DestinationSecurityGroupId` ) or a CIDR range ( `CidrIp` or `CidrIpv6` ).\n\nFor examples of rules that you can add to security groups for specific access scenarios, see [Security group rules for different use cases](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/security-group-rules-reference.html) in the *Amazon EC2 User Guide* .",
+        "CidrIpv6": "The IPv6 address range, in CIDR format.\n\nYou must specify a destination security group ( `DestinationPrefixListId` or `DestinationSecurityGroupId` ) or a CIDR range ( `CidrIp` or `CidrIpv6` ).\n\nFor examples of rules that you can add to security groups for specific access scenarios, see [Security group rules for different use cases](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/security-group-rules-reference.html) in the *Amazon EC2 User Guide* .",
+        "Description": "Updates the description of an ingress (inbound) security group rule. You can replace an existing description, or add a description to a rule that did not have one previously.\n\nConstraints: Up to 255 characters in length. Allowed characters are a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=;{}!$*",
         "FromPort": "The start of port range for the TCP and UDP protocols, or an ICMP/ICMPv6 type number. A value of `-1` indicates all ICMP/ICMPv6 types. If you specify all ICMP/ICMPv6 types, you must specify all codes.",
         "IpProtocol": "The IP protocol name ( `tcp` , `udp` , `icmp` , `icmpv6` ) or number (see [Protocol Numbers](https://docs.aws.amazon.com/http://www.iana.org/assignments/protocol-numbers/protocol-numbers.xhtml) ).\n\n[VPC only] Use `-1` to specify all protocols. When authorizing security group rules, specifying `-1` or a protocol number other than `tcp` , `udp` , `icmp` , or `icmpv6` allows traffic on all ports, regardless of any port range you specify. For `tcp` , `udp` , and `icmp` , you must specify a port range. For `icmpv6` , the port range is optional; if you omit the port range, traffic for all types and codes is allowed.",
         "SourcePrefixListId": "[EC2-VPC only] The ID of a prefix list.",
         "SourceSecurityGroupId": "The ID of the security group. You must specify either the security group ID or the security group name in the request. For security groups in a nondefault VPC, you must specify the security group ID.",
-        "SourceSecurityGroupName": "[EC2-Classic, default VPC] The name of the source security group. You can't specify this parameter in combination with an IP address range. Creates rules that grant full ICMP, UDP, and TCP access.",
+        "SourceSecurityGroupName": "[EC2-Classic, default VPC] The name of the source security group. You can't specify this parameter in combination with an IP address range. Creates rules that grant full ICMP, UDP, and TCP access.\n\nYou must specify the `GroupName` property or the `GroupId` property. For security groups that are in a VPC, you must use the `GroupId` property.",
         "SourceSecurityGroupOwnerId": "[nondefault VPC] The AWS account ID for the source security group, if the source security group is in a different account. You can't specify this property with an IP address range. Creates rules that grant full ICMP, UDP, and TCP access.\n\nIf you specify `SourceSecurityGroupName` or `SourceSecurityGroupId` and that security group is owned by a different account than the account creating the stack, you must specify the `SourceSecurityGroupOwnerId` ; otherwise, this property is optional.",
         "ToPort": "The end of port range for the TCP and UDP protocols, or an ICMP/ICMPv6 code. A value of `-1` indicates all ICMP/ICMPv6 codes. If you specify all ICMP/ICMPv6 types, you must specify all codes."
       }
@@ -12950,11 +12950,11 @@
       "attributes": {
         "Ref": "`Ref` returns the name of the security egress rule."
       },
-      "description": "[EC2-VPC only] Adds the specified egress rules to a security group for use with a VPC.\n\nAn outbound rule permits instances to send traffic to the specified destination IPv4 or IPv6 CIDR address ranges, or to the specified destination security groups for the same VPC.\n\nYou specify a protocol for each rule (for example, TCP). For the TCP and UDP protocols, you must also specify the destination port or port range. For the ICMP protocol, you must also specify the ICMP type and code. You can use -1 for the type or code to mean all types or all codes.\n\nYou must specify a destination security group ( `DestinationPrefixListId` or `DestinationSecurityGroupId` ) or a CIDR range ( `CidrIp` or `CidrIpv6` ). If you do not specify one of these parameters, the stack will launch successfully but the rule will not be added to the security group.\n\nRule changes are propagated to affected instances as quickly as possible. However, a small delay might occur.\n\nFor more information about VPC security group limits, see [Amazon VPC Limits](https://docs.aws.amazon.com/vpc/latest/userguide/amazon-vpc-limits.html) .\n\nUse `AWS::EC2::SecurityGroupIngress` and `AWS::EC2::SecurityGroupEgress` only when necessary, typically to allow security groups to reference each other in ingress and egress rules. Otherwise, use the embedded ingress and egress rules of the security group. For more information, see [Amazon EC2 Security Groups](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-network-security.html) .",
+      "description": "[EC2-VPC only] Adds the specified egress rules to a security group for use with a VPC.\n\nAn outbound rule permits instances to send traffic to the specified destination IPv4 or IPv6 CIDR address ranges, or to the specified destination security groups for the same VPC.\n\nYou specify a protocol for each rule (for example, TCP). For the TCP and UDP protocols, you must also specify the destination port or port range. For the ICMP protocol, you must also specify the ICMP type and code. You can use -1 for the type or code to mean all types or all codes.\n\nYou must specify only one of the following properties: `CidrIp` , `CidrIpv6` , `DestinationPrefixListId` , or `DestinationSecurityGroupId` .\n\nYou must specify a destination security group ( `DestinationPrefixListId` or `DestinationSecurityGroupId` ) or a CIDR range ( `CidrIp` or `CidrIpv6` ). If you do not specify one of these parameters, the stack will launch successfully but the rule will not be added to the security group.\n\nRule changes are propagated to affected instances as quickly as possible. However, a small delay might occur.\n\nFor more information about VPC security group limits, see [Amazon VPC Limits](https://docs.aws.amazon.com/vpc/latest/userguide/amazon-vpc-limits.html) .\n\nUse `AWS::EC2::SecurityGroupIngress` and `AWS::EC2::SecurityGroupEgress` only when necessary, typically to allow security groups to reference each other in ingress and egress rules. Otherwise, use the embedded ingress and egress rules of the security group. For more information, see [Amazon EC2 Security Groups](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-network-security.html) .",
       "properties": {
         "CidrIp": "The IPv4 address range, in CIDR format.\n\nYou must specify a destination security group ( `DestinationPrefixListId` or `DestinationSecurityGroupId` ) or a CIDR range ( `CidrIp` or `CidrIpv6` ).\n\nFor examples of rules that you can add to security groups for specific access scenarios, see [Security group rules for different use cases](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/security-group-rules-reference.html) in the *Amazon EC2 User Guide* .",
         "CidrIpv6": "The IPv6 address range, in CIDR format.\n\nYou must specify a destination security group ( `DestinationPrefixListId` or `DestinationSecurityGroupId` ) or a CIDR range ( `CidrIp` or `CidrIpv6` ).\n\nFor examples of rules that you can add to security groups for specific access scenarios, see [Security group rules for different use cases](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/security-group-rules-reference.html) in the *Amazon EC2 User Guide* .",
-        "Description": "The description of an egress (outbound) security group rule.",
+        "Description": "The description of an egress (outbound) security group rule.\n\nConstraints: Up to 255 characters in length. Allowed characters are a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=;{}!$*",
         "DestinationPrefixListId": "[EC2-VPC only] The prefix list IDs for an AWS service. This is the AWS service that you want to access through a VPC endpoint from instances associated with the security group.\n\nYou must specify a destination security group ( `DestinationPrefixListId` or `DestinationSecurityGroupId` ) or a CIDR range ( `CidrIp` or `CidrIpv6` ).",
         "DestinationSecurityGroupId": "The ID of the security group.\n\nYou must specify a destination security group ( `DestinationPrefixListId` or `DestinationSecurityGroupId` ) or a CIDR range ( `CidrIp` or `CidrIpv6` ).",
         "FromPort": "The start of port range for the TCP and UDP protocols, or an ICMP/ICMPv6 type number. A value of `-1` indicates all ICMP/ICMPv6 types. If you specify all ICMP/ICMPv6 types, you must specify all codes.",
@@ -12965,19 +12965,19 @@
     },
     "AWS::EC2::SecurityGroupIngress": {
       "attributes": {},
-      "description": "Adds an inbound rule to a security group.\n\nAn inbound rule permits instances to receive traffic from the specified IPv4 or IPv6 CIDR address range, or from the instances associated with the specified security group.\n\nYou specify a protocol for each rule (for example, TCP). For TCP and UDP, you must also specify a port or port range. For ICMP/ICMPv6, you must also specify the ICMP/ICMPv6 type and code. You can use -1 to mean all types or all codes.\n\nYou must specify a source security group ( `SourcePrefixListId` , `SourceSecurityGroupId` , or `SourceSecurityGroupName` ) or a CIDR range ( `CidrIp` or `CidrIpv6` ). If you do not specify one of these parameters, the stack will launch successfully but the rule will not be added to the security group.\n\nRule changes are propagated to instances within the security group as quickly as possible. However, a small delay might occur.",
+      "description": "Adds an inbound rule to a security group.\n\nAn inbound rule permits instances to receive traffic from the specified IPv4 or IPv6 CIDR address range, or from the instances associated with the specified security group.\n\nYou must specify only one of the following properties: `CidrIp` , `CidrIpv6` , `SourcePrefixListId` , `SourceSecurityGroupId` , or `SourceSecurityGroupName` .\n\nYou specify a protocol for each rule (for example, TCP). For TCP and UDP, you must also specify a port or port range. For ICMP/ICMPv6, you must also specify the ICMP/ICMPv6 type and code. You can use -1 to mean all types or all codes.\n\nYou must specify a source security group ( `SourcePrefixListId` , `SourceSecurityGroupId` , or `SourceSecurityGroupName` ) or a CIDR range ( `CidrIp` or `CidrIpv6` ). If you do not specify one of these parameters, the stack will launch successfully but the rule will not be added to the security group.\n\nRule changes are propagated to instances within the security group as quickly as possible. However, a small delay might occur.",
       "properties": {
-        "CidrIp": "The IPv4 address range, in CIDR format.",
-        "CidrIpv6": "The IPv6 address range, in CIDR format.",
-        "Description": "Updates the description of an ingress (inbound) security group rule. You can replace an existing description, or add a description to a rule that did not have one previously.",
+        "CidrIp": "The IPv4 address range, in CIDR format.\n\nYou must specify a destination security group ( `DestinationPrefixListId` or `DestinationSecurityGroupId` ) or a CIDR range ( `CidrIp` or `CidrIpv6` ).\n\nFor examples of rules that you can add to security groups for specific access scenarios, see [Security group rules for different use cases](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/security-group-rules-reference.html) in the *Amazon EC2 User Guide* .",
+        "CidrIpv6": "The IPv6 address range, in CIDR format.\n\nYou must specify a destination security group ( `DestinationPrefixListId` or `DestinationSecurityGroupId` ) or a CIDR range ( `CidrIp` or `CidrIpv6` ).\n\nFor examples of rules that you can add to security groups for specific access scenarios, see [Security group rules for different use cases](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/security-group-rules-reference.html) in the *Amazon EC2 User Guide* .",
+        "Description": "Updates the description of an ingress (inbound) security group rule. You can replace an existing description, or add a description to a rule that did not have one previously.\n\nConstraints: Up to 255 characters in length. Allowed characters are a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=;{}!$*",
         "FromPort": "The start of port range for the TCP and UDP protocols, or an ICMP/ICMPv6 type number. A value of `-1` indicates all ICMP/ICMPv6 types. If you specify all ICMP/ICMPv6 types, you must specify all codes.\n\nUse this for ICMP and any protocol that uses ports.",
         "GroupId": "The ID of the security group. You must specify either the security group ID or the security group name in the request. For security groups in a nondefault VPC, you must specify the security group ID.\n\nYou must specify the `GroupName` property or the `GroupId` property. For security groups that are in a VPC, you must use the `GroupId` property.",
         "GroupName": "The name of the security group.\n\nConstraints: Up to 255 characters in length. Cannot start with `sg-` .\n\nConstraints for EC2-Classic: ASCII characters\n\nConstraints for EC2-VPC: a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=&;{}!$*",
         "IpProtocol": "The IP protocol name ( `tcp` , `udp` , `icmp` , `icmpv6` ) or number (see [Protocol Numbers](https://docs.aws.amazon.com/http://www.iana.org/assignments/protocol-numbers/protocol-numbers.xhtml) ).\n\n[VPC only] Use `-1` to specify all protocols. When authorizing security group rules, specifying `-1` or a protocol number other than `tcp` , `udp` , `icmp` , or `icmpv6` allows traffic on all ports, regardless of any port range you specify. For `tcp` , `udp` , and `icmp` , you must specify a port range. For `icmpv6` , the port range is optional; if you omit the port range, traffic for all types and codes is allowed.",
         "SourcePrefixListId": "[EC2-VPC only] The ID of a prefix list.",
         "SourceSecurityGroupId": "The ID of the security group. You must specify either the security group ID or the security group name. For security groups in a nondefault VPC, you must specify the security group ID.",
-        "SourceSecurityGroupName": "[EC2-Classic, default VPC] The name of the source security group.\n\nYou must specify the `GroupName` property or the `GroupId` property. For security groups that are in a VPC, you must use the `GroupId` property.",
-        "SourceSecurityGroupOwnerId": "[nondefault VPC] The AWS account ID that owns the source security group. You can't specify this property with an IP address range.\n\nIf you specify `SourceSecurityGroupName` or `SourceSecurityGroupId` and that security group is owned by a different account than the account creating the stack, you must specify the `SourceSecurityGroupOwnerId` ; otherwise, this property is optional.",
+        "SourceSecurityGroupName": "[EC2-Classic, default VPC] The name of the source security group. You can't specify this parameter in combination with an IP address range. Creates rules that grant full ICMP, UDP, and TCP access.\n\nYou must specify the `GroupName` property or the `GroupId` property. For security groups that are in a VPC, you must use the `GroupId` property.",
+        "SourceSecurityGroupOwnerId": "[nondefault VPC] The AWS account ID for the source security group, if the source security group is in a different account. You can't specify this property with an IP address range. Creates rules that grant full ICMP, UDP, and TCP access.\n\nIf you specify `SourceSecurityGroupName` or `SourceSecurityGroupId` and that security group is owned by a different account than the account creating the stack, you must specify the `SourceSecurityGroupOwnerId` ; otherwise, this property is optional.",
         "ToPort": "The end of port range for the TCP and UDP protocols, or an ICMP/ICMPv6 code. A value of `-1` indicates all ICMP/ICMPv6 codes for the specified ICMP type. If you specify all ICMP/ICMPv6 types, you must specify all codes.\n\nUse this for ICMP and any protocol that uses ports."
       }
     },
@@ -13057,7 +13057,7 @@
       "properties": {
         "LaunchTemplateId": "The ID of the launch template. If you specify the template ID, you can't specify the template name.",
         "LaunchTemplateName": "The name of the launch template. You must specify either a template name or a template ID.\n\nMinimum length of 3. Maximum length of 128. Names must match the following pattern: `[a-zA-Z0-9\\(\\)\\.-/_]+`",
-        "Version": "The version number of the launch template. You must specify a version number. AWS CloudFormation does not support specifying `$Latest` or `$Default` for the template version number.\n\nMinimum length of 1. Maximum length of 255. Versions must fit the following pattern: `[\\u0020-\\uD7FF\\uE000-\\uFFFD\\uD800\\uDC00-\\uDBFF\\uDFFF\\r\\n\\t]*`"
+        "Version": "The version number of the launch template. You must specify a version number.\n\nMinimum length of 1. Maximum length of 255. Versions must fit the following pattern: `[\\u0020-\\uD7FF\\uE000-\\uFFFD\\uD800\\uDC00-\\uDBFF\\uDFFF\\r\\n\\t]*`"
       }
     },
     "AWS::EC2::SpotFleet.GroupIdentifier": {
@@ -17499,6 +17499,141 @@
         "SelfManagedActiveDirectoryConfiguration": "The configuration that Amazon FSx uses to join a FSx for Windows File Server file system or an ONTAP storage virtual machine (SVM) to a self-managed (including on-premises) Microsoft Active Directory (AD) directory. For more information, see [Using Amazon FSx with your self-managed Microsoft Active Directory](https://docs.aws.amazon.com/fsx/latest/WindowsGuide/self-managed-AD.html) or [Managing SVMs](https://docs.aws.amazon.com/fsx/latest/ONTAPGuide/managing-svms.html) .",
         "ThroughputCapacity": "Sets the throughput capacity of an Amazon FSx file system, measured in megabytes per second (MB/s), in 2 to the *n* th increments, between 2^3 (8) and 2^11 (2048).",
         "WeeklyMaintenanceStartTime": "A recurring weekly time, in the format `D:HH:MM` .\n\n`D` is the day of the week, for which 1 represents Monday and 7 represents Sunday. For further details, see [the ISO-8601 spec as described on Wikipedia](https://docs.aws.amazon.com/https://en.wikipedia.org/wiki/ISO_week_date) .\n\n`HH` is the zero-padded hour of the day (0-23), and `MM` is the zero-padded minute of the hour.\n\nFor example, `1:05:00` specifies maintenance at 5 AM Monday."
+      }
+    },
+    "AWS::FSx::Snapshot": {
+      "attributes": {
+        "Ref": "`Ref` returns the ID of the snapshot. For example:\n\n`{\"Ref\":\"logical_snapshot_id\"}`\n\nReturns `fsvolsnap-0123456789abcedf5` .",
+        "ResourceARN": "Returns the snapshot's Amazon Resource Name (ARN).\n\nExample: `arn:aws:fsx:us-east-2:111133334444:snapshot/fsvol-01234567890123456/fsvolsnap-0123456789abcedf5`"
+      },
+      "description": "A snapshot of an Amazon FSx for OpenZFS volume.",
+      "properties": {
+        "Name": "The name of the snapshot.",
+        "Tags": "An array of key-value pairs to apply to this resource.\n\nFor more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) .",
+        "VolumeId": "The ID of the volume that the snapshot is of."
+      }
+    },
+    "AWS::FSx::StorageVirtualMachine": {
+      "attributes": {
+        "Ref": "`Ref` returns the resource ID, such as `svm-01234567890123456` . For example:\n\n`{\"Ref\": \"svm_logical_id\"}` returns\n\n`svm-01234567890123456`",
+        "ResourceARN": "Returns the storage virtual machine's Amazon Resource Name (ARN).\n\nExample: `arn:aws:fsx:us-east-2:111111111111:storage-virtual-machine/fs-0123456789abcdef1/svm-01234567890123456`",
+        "StorageVirtualMachineId": "Returns the storgage virtual machine's system generated ID.\n\nExample: `svm-0123456789abcedf1`",
+        "UUID": "Returns the storage virtual machine's system generated unique identifier (UUID).\n\nExample: `abcd0123-cd45-ef67-11aa-1111aaaa23bc`"
+      },
+      "description": "Creates a storage virtual machine (SVM) for an Amazon FSx for ONTAP file system.",
+      "properties": {
+        "ActiveDirectoryConfiguration": "Describes the Microsoft Active Directory configuration to which the SVM is joined, if applicable.",
+        "FileSystemId": "Specifies the FSx for ONTAP file system on which to create the SVM.",
+        "Name": "The name of the SVM.",
+        "RootVolumeSecurityStyle": "The security style of the root volume of the SVM. Specify one of the following values:\n\n- `UNIX` if the file system is managed by a UNIX administrator, the majority of users are NFS clients, and an application accessing the data uses a UNIX user as the service account.\n- `NTFS` if the file system is managed by a Windows administrator, the majority of users are SMB clients, and an application accessing the data uses a Windows user as the service account.\n- `MIXED` if the file system is managed by both UNIX and Windows administrators and users consist of both NFS and SMB clients.",
+        "SvmAdminPassword": "Specifies the password to use when logging on to the SVM using a secure shell (SSH) connection to the SVM's management endpoint. Doing so enables you to manage the SVM using the NetApp ONTAP CLI or REST API. If you do not specify a password, you can still use the file system's `fsxadmin` user to manage the SVM. For more information, see [Managing SVMs using the NetApp ONTAP CLI](https://docs.aws.amazon.com/fsx/latest/ONTAPGuide/managing-resources-ontap-apps.html#vsadmin-ontap-cli) in the *FSx for ONTAP User Guide* .",
+        "Tags": "An array of key-value pairs to apply to this resource.\n\nFor more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) ."
+      }
+    },
+    "AWS::FSx::StorageVirtualMachine.ActiveDirectoryConfiguration": {
+      "attributes": {},
+      "description": "Describes the self-managed Microsoft Active Directory to which you want to join the SVM. Joining an Active Directory provides user authentication and access control for SMB clients, including Microsoft Windows and macOS client accessing the file system.",
+      "properties": {
+        "NetBiosName": "The NetBIOS name of the Active Directory computer object that will be created for your SVM.",
+        "SelfManagedActiveDirectoryConfiguration": "The configuration that Amazon FSx uses to join the ONTAP storage virtual machine (SVM) to your self-managed (including on-premises) Microsoft Active Directory (AD) directory."
+      }
+    },
+    "AWS::FSx::StorageVirtualMachine.SelfManagedActiveDirectoryConfiguration": {
+      "attributes": {},
+      "description": "The configuration that Amazon FSx uses to join a FSx for Windows File Server file system or an ONTAP storage virtual machine (SVM) to a self-managed (including on-premises) Microsoft Active Directory (AD) directory. For more information, see [Using Amazon FSx with your self-managed Microsoft Active Directory](https://docs.aws.amazon.com/fsx/latest/WindowsGuide/self-managed-AD.html) or [Managing SVMs](https://docs.aws.amazon.com/fsx/latest/ONTAPGuide/managing-svms.html) .",
+      "properties": {
+        "DnsIps": "A list of up to three IP addresses of DNS servers or domain controllers in the self-managed AD directory.",
+        "DomainName": "The fully qualified domain name of the self-managed AD directory, such as `corp.example.com` .",
+        "FileSystemAdministratorsGroup": "(Optional) The name of the domain group whose members are granted administrative privileges for the file system. Administrative privileges include taking ownership of files and folders, setting audit controls (audit ACLs) on files and folders, and administering the file system remotely by using the FSx Remote PowerShell. The group that you specify must already exist in your domain. If you don't provide one, your AD domain's Domain Admins group is used.",
+        "OrganizationalUnitDistinguishedName": "(Optional) The fully qualified distinguished name of the organizational unit within your self-managed AD directory. Amazon FSx only accepts OU as the direct parent of the file system. An example is `OU=FSx,DC=yourdomain,DC=corp,DC=com` . To learn more, see [RFC 2253](https://docs.aws.amazon.com/https://tools.ietf.org/html/rfc2253) . If none is provided, the FSx file system is created in the default location of your self-managed AD directory.\n\n> Only Organizational Unit (OU) objects can be the direct parent of the file system that you're creating.",
+        "Password": "The password for the service account on your self-managed AD domain that Amazon FSx will use to join to your AD domain.",
+        "UserName": "The user name for the service account on your self-managed AD domain that Amazon FSx will use to join to your AD domain. This account must have the permission to join computers to the domain in the organizational unit provided in `OrganizationalUnitDistinguishedName` , or in the default location of your AD domain."
+      }
+    },
+    "AWS::FSx::Volume": {
+      "attributes": {
+        "Ref": "`Ref` returns the ID for the volume. For example:\n\n`{\"Ref\":\"vol_logical_id\"}`\n\nReturns `fsvol-0123456789abcdef6` .",
+        "ResourceARN": "Returns the volume's Amazon Resource Name (ARN).\n\nExample: `arn:aws:fsx:us-east-2:111122223333:volume/fs-0123456789abcdef9/fsvol-01234567891112223`",
+        "UUID": "Returns the volume's universally unique identifier (UUID).\n\nExample: `abcd0123-cd45-ef67-11aa-1111aaaa23bc`",
+        "VolumeId": "Returns the volume's ID.\n\nExample: `fsvol-0123456789abcdefa`"
+      },
+      "description": "Creates an FSx for ONTAP or Amazon FSx for OpenZFS storage volume.",
+      "properties": {
+        "BackupId": "Specifies the ID of the volume backup to use to create a new volume.",
+        "Name": "The name of the volume.",
+        "OntapConfiguration": "The configuration of an Amazon FSx for NetApp ONTAP volume.",
+        "OpenZFSConfiguration": "The configuration of an Amazon FSx for OpenZFS volume.",
+        "Tags": "An array of key-value pairs to apply to this resource.\n\nFor more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) .",
+        "VolumeType": "The type of the volume."
+      }
+    },
+    "AWS::FSx::Volume.ClientConfigurations": {
+      "attributes": {},
+      "description": "Specifies who can mount an OpenZFS file system and the options available while mounting the file system.",
+      "properties": {
+        "Clients": "A value that specifies who can mount the file system. You can provide a wildcard character ( `*` ), an IP address ( `0.0.0.0` ), or a CIDR address ( `192.0.2.0/24` ). By default, Amazon FSx uses the wildcard character when specifying the client.",
+        "Options": "The options to use when mounting the file system. For a list of options that you can use with Network File System (NFS), see the [exports(5) - Linux man page](https://docs.aws.amazon.com/https://linux.die.net/man/5/exports) . When choosing your options, consider the following:\n\n- `crossmnt` is used by default. If you don't specify `crossmnt` when changing the client configuration, you won't be able to see or access snapshots in your file system's snapshot directory.\n- `sync` is used by default. If you instead specify `async` , the system acknowledges writes before writing to disk. If the system crashes before the writes are finished, you lose the unwritten data."
+      }
+    },
+    "AWS::FSx::Volume.NfsExports": {
+      "attributes": {},
+      "description": "The configuration object for mounting a Network File System (NFS) file system.",
+      "properties": {
+        "ClientConfigurations": "A list of configuration objects that contain the client and options for mounting the OpenZFS file system."
+      }
+    },
+    "AWS::FSx::Volume.OntapConfiguration": {
+      "attributes": {},
+      "description": "Specifies the configuration of the ONTAP volume that you are creating.",
+      "properties": {
+        "JunctionPath": "Specifies the location in the SVM's namespace where the volume is mounted. The `JunctionPath` must have a leading forward slash, such as `/vol3` .",
+        "SecurityStyle": "The security style for the volume. Specify one of the following values:\n\n- `UNIX` if the file system is managed by a UNIX administrator, the majority of users are NFS clients, and an application accessing the data uses a UNIX user as the service account. `UNIX` is the default.\n- `NTFS` if the file system is managed by a Windows administrator, the majority of users are SMB clients, and an application accessing the data uses a Windows user as the service account.\n- `MIXED` if the file system is managed by both UNIX and Windows administrators and users consist of both NFS and SMB clients.",
+        "SizeInMegabytes": "Specifies the size of the volume, in megabytes (MB), that you are creating.",
+        "StorageEfficiencyEnabled": "Set to true to enable deduplication, compression, and compaction storage efficiency features on the volume.",
+        "StorageVirtualMachineId": "Specifies the ONTAP SVM in which to create the volume.",
+        "TieringPolicy": "Describes the data tiering policy for an ONTAP volume. When enabled, Amazon FSx for ONTAP's intelligent tiering automatically transitions a volume's data between the file system's primary storage and capacity pool storage based on your access patterns.\n\nValid tiering policies are the following:\n\n- `SNAPSHOT_ONLY` - (Default value) moves cold snapshots to the capacity pool storage tier.\n\n- `AUTO` - moves cold user data and snapshots to the capacity pool storage tier based on your access patterns.\n\n- `ALL` - moves all user data blocks in both the active file system and Snapshot copies to the storage pool tier.\n\n- `NONE` - keeps a volume's data in the primary storage tier, preventing it from being moved to the capacity pool tier."
+      }
+    },
+    "AWS::FSx::Volume.OpenZFSConfiguration": {
+      "attributes": {},
+      "description": "Specifies the configuration of the Amazon FSx for OpenZFS volume that you are creating.",
+      "properties": {
+        "CopyTagsToSnapshots": "A Boolean value indicating whether tags for the volume should be copied to snapshots. This value defaults to `false` . If it's set to `true` , all tags for the volume are copied to snapshots where the user doesn't specify tags. If this value is `true` , and you specify one or more tags, only the specified tags are copied to snapshots. If you specify one or more tags when creating the snapshot, no tags are copied from the volume, regardless of this value.",
+        "DataCompressionType": "Specifies the method used to compress the data on the volume. The compression type is `NONE` by default.\n\n- `NONE` - Doesn't compress the data on the volume. `NONE` is the default.\n- `ZSTD` - Compresses the data in the volume using the Zstandard (ZSTD) compression algorithm. Compared to LZ4, Z-Standard provides a better compression ratio to minimize on-disk storage utilization.\n- `LZ4` - Compresses the data in the volume using the LZ4 compression algorithm. Compared to Z-Standard, LZ4 is less compute-intensive and delivers higher write throughput speeds.",
+        "NfsExports": "The configuration object for mounting a Network File System (NFS) file system.",
+        "Options": "To delete the volume's child volumes, snapshots, and clones, use the string `DELETE_CHILD_VOLUMES_AND_SNAPSHOTS` .",
+        "OriginSnapshot": "The configuration object that specifies the snapshot to use as the origin of the data for the volume.",
+        "ParentVolumeId": "The ID of the volume to use as the parent volume of the volume that you are creating.",
+        "ReadOnly": "A Boolean value indicating whether the volume is read-only.",
+        "RecordSizeKiB": "Specifies the suggested block size for a volume in a ZFS dataset, in kibibytes (KiB). Valid values are 4, 8, 16, 32, 64, 128, 256, 512, or 1024 KiB. The default is 128 KiB. We recommend using the default setting for the majority of use cases. Generally, workloads that write in fixed small or large record sizes may benefit from setting a custom record size, like database workloads (small record size) or media streaming workloads (large record size). For additional guidance on when to set a custom record size, see [ZFS Record size](https://docs.aws.amazon.com/fsx/latest/OpenZFSGuide/performance.html#record-size-performance) in the *Amazon FSx for OpenZFS User Guide* .",
+        "StorageCapacityQuotaGiB": "Sets the maximum storage size in gibibytes (GiB) for the volume. You can specify a quota that is larger than the storage on the parent volume. A volume quota limits the amount of storage that the volume can consume to the configured amount, but does not guarantee the space will be available on the parent volume. To guarantee quota space, you must also set `StorageCapacityReservationGiB` . To *not* specify a storage capacity quota, set this to `-1` .\n\nFor more information, see [Volume properties](https://docs.aws.amazon.com/fsx/latest/OpenZFSGuide/managing-volumes.html#volume-properties) in the *Amazon FSx for OpenZFS User Guide* .",
+        "StorageCapacityReservationGiB": "Specifies the amount of storage in gibibytes (GiB) to reserve from the parent volume. Setting `StorageCapacityReservationGiB` guarantees that the specified amount of storage space on the parent volume will always be available for the volume. You can't reserve more storage than the parent volume has. To *not* specify a storage capacity reservation, set this to `0` or `-1` . For more information, see [Volume properties](https://docs.aws.amazon.com/fsx/latest/OpenZFSGuide/managing-volumes.html#volume-properties) in the *Amazon FSx for OpenZFS User Guide* .",
+        "UserAndGroupQuotas": "An object specifying how much storage users or groups can use on the volume."
+      }
+    },
+    "AWS::FSx::Volume.OriginSnapshot": {
+      "attributes": {},
+      "description": "The configuration object that specifies the snapshot to use as the origin of the data for the volume.",
+      "properties": {
+        "CopyStrategy": "The strategy used when copying data from the snapshot to the new volume.\n\n- `CLONE` - The new volume references the data in the origin snapshot. Cloning a snapshot is faster than copying data from the snapshot to a new volume and doesn't consume disk throughput. However, the origin snapshot can't be deleted if there is a volume using its copied data.\n- `FULL_COPY` - Copies all data from the snapshot to the new volume.",
+        "SnapshotARN": "Specifies the snapshot to use when creating an OpenZFS volume from a snapshot."
+      }
+    },
+    "AWS::FSx::Volume.TieringPolicy": {
+      "attributes": {},
+      "description": "Describes the data tiering policy for an ONTAP volume. When enabled, Amazon FSx for ONTAP's intelligent tiering automatically transitions a volume's data between the file system's primary storage and capacity pool storage based on your access patterns.\n\nValid tiering policies are the following:\n\n- `SNAPSHOT_ONLY` - (Default value) moves cold snapshots to the capacity pool storage tier.\n\n- `AUTO` - moves cold user data and snapshots to the capacity pool storage tier based on your access patterns.\n\n- `ALL` - moves all user data blocks in both the active file system and Snapshot copies to the storage pool tier.\n\n- `NONE` - keeps a volume's data in the primary storage tier, preventing it from being moved to the capacity pool tier.",
+      "properties": {
+        "CoolingPeriod": "Specifies the number of days that user data in a volume must remain inactive before it is considered \"cold\" and moved to the capacity pool. Used with the `AUTO` and `SNAPSHOT_ONLY` tiering policies. Enter a whole number between 2 and 183. Default values are 31 days for `AUTO` and 2 days for `SNAPSHOT_ONLY` .",
+        "Name": "Specifies the tiering policy used to transition data. Default value is `SNAPSHOT_ONLY` .\n\n- `SNAPSHOT_ONLY` - moves cold snapshots to the capacity pool storage tier.\n- `AUTO` - moves cold user data and snapshots to the capacity pool storage tier based on your access patterns.\n- `ALL` - moves all user data blocks in both the active file system and Snapshot copies to the storage pool tier.\n- `NONE` - keeps a volume's data in the primary storage tier, preventing it from being moved to the capacity pool tier."
+      }
+    },
+    "AWS::FSx::Volume.UserAndGroupQuotas": {
+      "attributes": {},
+      "description": "An object specifying how much storage users or groups can use on the volume.",
+      "properties": {
+        "Id": "The ID of the user or group.",
+        "StorageCapacityQuotaGiB": "The amount of storage that the user or group can use in gibibytes (GiB).",
+        "Type": "A value that specifies whether the quota applies to a user or group."
       }
     },
     "AWS::FinSpace::Environment": {
@@ -28633,7 +28768,7 @@
         "Mode": "If \"vod,\" all segments are indexed and kept permanently in the destination and manifest. If \"live,\" only the number segments specified in keepSegments and indexNSegments are kept. Newer segments replace older segments, which might prevent players from rewinding all the way to the beginning of the channel. VOD mode uses HLS EXT-X-PLAYLIST-TYPE of EVENT while the channel is running, converting it to a \"VOD\" type manifest on completion of the stream.",
         "OutputSelection": "MANIFESTSANDSEGMENTS: Generates manifests (the master manifest, if applicable, and media manifests) for this output group. SEGMENTSONLY: Doesn't generate any manifests for this output group.",
         "ProgramDateTime": "Includes or excludes the EXT-X-PROGRAM-DATE-TIME tag in .m3u8 manifest files. The value is calculated as follows: Either the program date and time are initialized using the input timecode source, or the time is initialized using the input timecode source and the date is initialized using the timestampOffset.",
-        "ProgramDateTimeClock": "",
+        "ProgramDateTimeClock": "Specifies the algorithm used to drive the HLS EXT-X-PROGRAM-DATE-TIME clock. Options include: INITIALIZE_FROM_OUTPUT_TIMECODE: The PDT clock is initialized as a function of the first output timecode, then incremented by the EXTINF duration of each encoded segment. SYSTEM_CLOCK: The PDT clock is initialized as a function of the UTC wall clock, then incremented by the EXTINF duration of each encoded segment. If the PDT clock diverges from the wall clock by more than 500ms, it is resynchronized to the wall clock.",
         "ProgramDateTimePeriod": "The period of insertion of the EXT-X-PROGRAM-DATE-TIME entry, in seconds.",
         "RedundantManifest": "ENABLED: The master manifest (.m3u8 file) for each pipeline includes information about both pipelines: first its own media files, then the media files of the other pipeline. This feature allows a playout device that supports stale manifest detection to switch from one manifest to the other, when the current manifest seems to be stale. There are still two destinations and two master manifests, but both master manifests reference the media files from both pipelines. DISABLED: The master manifest (.m3u8 file) for each pipeline includes information about its own pipeline only. For an HLS output group with MediaPackage as the destination, the DISABLED behavior is always followed. MediaPackage regenerates the manifests it serves to players, so a redundant manifest from MediaLive is irrelevant.",
         "SegmentLength": "The length of the MPEG-2 Transport Stream segments to create, in seconds. Note that segments will end on the next keyframe after this number of seconds, so the actual segment length might be longer.",
@@ -33226,7 +33361,7 @@
         "AllowMajorVersionUpgrade": "A value that indicates whether major version upgrades are allowed. Changing this parameter doesn't result in an outage and the change is asynchronously applied as soon as possible.\n\nConstraints: Major version upgrades must be allowed when specifying a value for the `EngineVersion` parameter that is a different major version than the DB instance's current version.",
         "AssociatedRoles": "The AWS Identity and Access Management (IAM) roles associated with the DB instance.",
         "AutoMinorVersionUpgrade": "A value that indicates whether minor engine upgrades are applied automatically to the DB instance during the maintenance window. By default, minor engine upgrades are applied automatically.",
-        "AvailabilityZone": "The Availability Zone that the database instance will be created in.\n\nDefault: A random, system-chosen Availability Zone in the endpoint's region.\n\nExample: `us-east-1d`\n\nConstraint: The AvailabilityZone parameter cannot be specified if the MultiAZ parameter is set to `true` . The specified Availability Zone must be in the same region as the current endpoint.",
+        "AvailabilityZone": "The Availability Zone (AZ) where the database will be created. For information on AWS Regions and Availability Zones, see [Regions and Availability Zones](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.RegionsAndAvailabilityZones.html) .\n\n*Amazon Aurora*\n\nNot applicable. Availability Zones are managed by the DB cluster.\n\nDefault: A random, system-chosen Availability Zone in the endpoint's AWS Region .\n\nExample: `us-east-1d`\n\nConstraint: The `AvailabilityZone` parameter can't be specified if the DB instance is a Multi-AZ deployment. The specified Availability Zone must be in the same AWS Region as the current endpoint.\n\n> If you're creating a DB instance in an RDS on VMware environment, specify the identifier of the custom Availability Zone to create the DB instance in.\n> \n> For more information about RDS on VMware, see the [RDS on VMware User Guide.](https://docs.aws.amazon.com/AmazonRDS/latest/RDSonVMwareUserGuide/rds-on-vmware.html)",
         "BackupRetentionPeriod": "The number of days for which automated backups are retained. Setting this parameter to a positive number enables backups. Setting this parameter to 0 disables automated backups.\n\n*Amazon Aurora*\n\nNot applicable. The retention period for automated backups is managed by the DB cluster.\n\nDefault: 1\n\nConstraints:\n\n- Must be a value from 0 to 35\n- Can't be set to 0 if the DB instance is a source to read replicas",
         "CACertificateIdentifier": "The identifier of the CA certificate for this DB instance.\n\n> Specifying or updating this property triggers a reboot. \n\nFor more information about CA certificate identifiers for RDS DB engines, see [Rotating Your SSL/TLS Certificate](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.SSL-certificate-rotation.html) in the *Amazon RDS User Guide* .\n\nFor more information about CA certificate identifiers for Aurora DB engines, see [Rotating Your SSL/TLS Certificate](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/UsingWithRDS.SSL-certificate-rotation.html) in the *Amazon Aurora User Guide* .",
         "CharacterSetName": "For supported engines, indicates that the DB instance should be associated with the specified character set.\n\n*Amazon Aurora*\n\nNot applicable. The character set is managed by the DB cluster. For more information, see [AWS::RDS::DBCluster](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbcluster.html) .",
@@ -33411,9 +33546,9 @@
       "description": "The `Ingress` property type specifies an individual ingress rule within an `AWS::RDS::DBSecurityGroup` resource.",
       "properties": {
         "CIDRIP": "The IP range to authorize.",
-        "EC2SecurityGroupId": "Id of the EC2 Security Group to authorize. For VPC DB Security Groups, `EC2SecurityGroupId` must be provided. Otherwise, EC2SecurityGroupOwnerId and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided.",
-        "EC2SecurityGroupName": "Name of the EC2 Security Group to authorize. For VPC DB Security Groups, `EC2SecurityGroupId` must be provided. Otherwise, EC2SecurityGroupOwnerId and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided.",
-        "EC2SecurityGroupOwnerId": "AWS Account Number of the owner of the EC2 Security Group specified in the EC2SecurityGroupName parameter. The AWS Access Key ID is not an acceptable value. For VPC DB Security Groups, `EC2SecurityGroupId` must be provided. Otherwise, EC2SecurityGroupOwnerId and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided."
+        "EC2SecurityGroupId": "Id of the EC2 security group to authorize. For VPC DB security groups, `EC2SecurityGroupId` must be provided. Otherwise, `EC2SecurityGroupOwnerId` and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided.",
+        "EC2SecurityGroupName": "Name of the EC2 security group to authorize. For VPC DB security groups, `EC2SecurityGroupId` must be provided. Otherwise, `EC2SecurityGroupOwnerId` and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided.",
+        "EC2SecurityGroupOwnerId": "AWS account number of the owner of the EC2 security group specified in the `EC2SecurityGroupName` parameter. The AWS access key ID isn't an acceptable value. For VPC DB security groups, `EC2SecurityGroupId` must be provided. Otherwise, `EC2SecurityGroupOwnerId` and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided."
       }
     },
     "AWS::RDS::DBSecurityGroupIngress": {
@@ -33423,10 +33558,10 @@
       "description": "The `AWS::RDS::DBSecurityGroupIngress` resource enables ingress to a DB security group using one of two forms of authorization. First, you can add EC2 or VPC security groups to the DB security group if the application using the database is running on EC2 or VPC instances. Second, IP ranges are available if the application accessing your database is running on the Internet.\n\nThis type supports updates. For more information about updating stacks, see [AWS CloudFormation Stacks Updates](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks.html) .\n\nFor details about the settings for DB security group ingress, see [AuthorizeDBSecurityGroupIngress](https://docs.aws.amazon.com/AmazonRDS/latest/APIReference/API_AuthorizeDBSecurityGroupIngress.html) .",
       "properties": {
         "CIDRIP": "The IP range to authorize.",
-        "DBSecurityGroupName": "The name of the DB Security Group to add authorization to.",
-        "EC2SecurityGroupId": "Id of the EC2 Security Group to authorize. For VPC DB Security Groups, `EC2SecurityGroupId` must be provided. Otherwise, EC2SecurityGroupOwnerId and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided.",
-        "EC2SecurityGroupName": "Name of the EC2 Security Group to authorize. For VPC DB Security Groups, `EC2SecurityGroupId` must be provided. Otherwise, EC2SecurityGroupOwnerId and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided.",
-        "EC2SecurityGroupOwnerId": "AWS Account Number of the owner of the EC2 Security Group specified in the EC2SecurityGroupName parameter. The AWS Access Key ID is not an acceptable value. For VPC DB Security Groups, `EC2SecurityGroupId` must be provided. Otherwise, EC2SecurityGroupOwnerId and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided."
+        "DBSecurityGroupName": "The name of the DB security group to add authorization to.",
+        "EC2SecurityGroupId": "Id of the EC2 security group to authorize. For VPC DB security groups, `EC2SecurityGroupId` must be provided. Otherwise, `EC2SecurityGroupOwnerId` and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided.",
+        "EC2SecurityGroupName": "Name of the EC2 security group to authorize. For VPC DB security groups, `EC2SecurityGroupId` must be provided. Otherwise, `EC2SecurityGroupOwnerId` and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided.",
+        "EC2SecurityGroupOwnerId": "AWS account number of the owner of the EC2 security group specified in the `EC2SecurityGroupName` parameter. The AWS access key ID isn't an acceptable value. For VPC DB security groups, `EC2SecurityGroupId` must be provided. Otherwise, `EC2SecurityGroupOwnerId` and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided."
       }
     },
     "AWS::RDS::DBSubnetGroup": {
@@ -33435,9 +33570,9 @@
       },
       "description": "The `AWS::RDS::DBSubnetGroup` resource creates a database subnet group. Subnet groups must contain at least two subnets in two different Availability Zones in the same region.\n\nFor more information, see [Working with DB subnet groups](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_VPC.WorkingWithRDSInstanceinaVPC.html#USER_VPC.Subnets) in the *Amazon RDS User Guide* .",
       "properties": {
-        "DBSubnetGroupDescription": "The description for the DB Subnet Group.",
+        "DBSubnetGroupDescription": "The description for the DB subnet group.",
         "DBSubnetGroupName": "The name for the DB subnet group. This value is stored as a lowercase string.\n\nConstraints: Must contain no more than 255 lowercase alphanumeric characters or hyphens. Must not be \"Default\".\n\nExample: `mysubnetgroup`",
-        "SubnetIds": "The EC2 Subnet IDs for the DB Subnet Group.",
+        "SubnetIds": "The EC2 Subnet IDs for the DB subnet group.",
         "Tags": "Tags to assign to the DB subnet group."
       }
     },
@@ -33447,8 +33582,8 @@
       },
       "description": "The `AWS::RDS::EventSubscription` resource allows you to receive notifications for Amazon Relational Database Service events through the Amazon Simple Notification Service (Amazon SNS). For more information, see [Using Amazon RDS Event Notification](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_Events.html) in the *Amazon RDS User Guide* .",
       "properties": {
-        "Enabled": "A Boolean value; set to *true* to activate the subscription, set to *false* to create the subscription but not active it.",
-        "EventCategories": "A list of event categories for a SourceType that you want to subscribe to. You can see a list of the categories for a given SourceType in the [Events](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_Events.html) topic in the Amazon RDS User Guide or by using the *DescribeEventCategories* action.",
+        "Enabled": "A value that indicates whether to activate the subscription. If the event notification subscription isn't activated, the subscription is created but not active.",
+        "EventCategories": "A list of event categories for a particular source type ( `SourceType` ) that you want to subscribe to. You can see a list of the categories for a given source type in the \"Amazon RDS event categories and event messages\" section of the [*Amazon RDS User Guide*](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_Events.Messages.html) or the [*Amazon Aurora User Guide*](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/USER_Events.Messages.html) . You can also see this list by using the `DescribeEventCategories` operation.",
         "SnsTopicArn": "The Amazon Resource Name (ARN) of the SNS topic created for event notification. The ARN is created by Amazon SNS when you create a topic and subscribe to it.",
         "SourceIds": "The list of identifiers of the event sources for which events are returned. If not specified, then all sources are included in the response. An identifier must begin with a letter and must contain only ASCII letters, digits, and hyphens. It can't end with a hyphen or contain two consecutive hyphens.\n\nConstraints:\n\n- If a `SourceIds` value is supplied, `SourceType` must also be provided.\n- If the source type is a DB instance, a `DBInstanceIdentifier` value must be supplied.\n- If the source type is a DB cluster, a `DBClusterIdentifier` value must be supplied.\n- If the source type is a DB parameter group, a `DBParameterGroupName` value must be supplied.\n- If the source type is a DB security group, a `DBSecurityGroupName` value must be supplied.\n- If the source type is a DB snapshot, a `DBSnapshotIdentifier` value must be supplied.\n- If the source type is a DB cluster snapshot, a `DBClusterSnapshotIdentifier` value must be supplied.",
         "SourceType": "The type of source that is generating the events. For example, if you want to be notified of events generated by a DB instance, set this parameter to `db-instance` . If this value isn't specified, all events are returned.\n\nValid values: `db-instance` | `db-cluster` | `db-parameter-group` | `db-security-group` | `db-snapshot` | `db-cluster-snapshot`"
@@ -33581,8 +33716,8 @@
         "RotateEncryptionKey": "",
         "SnapshotClusterIdentifier": "The name of the cluster the source snapshot was created from. This parameter is required if your IAM user has a policy containing a snapshot resource element that specifies anything other than * for the cluster name.",
         "SnapshotCopyGrantName": "The name of the snapshot copy grant.",
-        "SnapshotCopyManual": "",
-        "SnapshotCopyRetentionPeriod": "",
+        "SnapshotCopyManual": "Indicates whether to apply the snapshot retention period to newly copied manual snapshots instead of automated snapshots.",
+        "SnapshotCopyRetentionPeriod": "The number of days to retain automated snapshots in the destination AWS Region after they are copied from the source AWS Region .\n\nBy default, this only changes the retention period of copied automated snapshots.\n\nIf you decrease the retention period for automated snapshots that are copied to a destination AWS Region , Amazon Redshift deletes any existing automated snapshots that were copied to the destination AWS Region and that fall outside of the new retention period.\n\nConstraints: Must be at least 1 and no more than 35 for automated snapshots.\n\nIf you specify the `manual` option, only newly copied manual snapshots will have the new retention period.\n\nIf you specify the value of -1 newly copied manual snapshots are retained indefinitely.\n\nConstraints: The number of days must be either -1 or an integer between 1 and 3,653 for manual snapshots.",
         "SnapshotIdentifier": "The name of the snapshot from which to create the new cluster. This parameter isn't case sensitive.\n\nExample: `my-snapshot-id`",
         "Tags": "A list of tag instances.",
         "VpcSecurityGroupIds": "A list of Virtual Private Cloud (VPC) security groups to be associated with the cluster.\n\nDefault: The default VPC security group is associated with the cluster."
