@@ -299,16 +299,6 @@ export enum InstanceClass {
   C5 = 'c5',
 
   /**
-   * Compute optimized instances, 6th generation
-   */
-  COMPUTE6_INTEL = 'c6i',
-
-  /**
-   * Compute optimized instances, 6th generation
-   */
-  C6I = 'c6i',
-
-  /**
    * Compute optimized instances with local NVME drive, 5th generation
    */
   COMPUTE5_NVME_DRIVE = 'c5d',
@@ -319,7 +309,7 @@ export enum InstanceClass {
   C5D = 'c5d',
 
   /**
-   * Compute optimized instances based on AMD EPYC, 5th generation.
+   * Compute optimized instances based on AMD EPYC, 5th generation
    */
   COMPUTE5_AMD = 'c5a',
 
@@ -329,12 +319,12 @@ export enum InstanceClass {
   C5A = 'c5a',
 
   /**
-   * Compute optimized instances with local NVME drive based on AMD EPYC, 5th generation.
+   * Compute optimized instances with local NVME drive based on AMD EPYC, 5th generation
    */
   COMPUTE5_AMD_NVME_DRIVE = 'c5ad',
 
   /**
-   * Compute optimized instances with local NVME drive based on AMD EPYC, 5th generation.
+   * Compute optimized instances with local NVME drive based on AMD EPYC, 5th generation
    */
   C5AD = 'c5ad',
 
@@ -347,6 +337,26 @@ export enum InstanceClass {
    * Compute optimized instances for high performance computing, 5th generation
    */
   C5N = 'c5n',
+
+  /**
+   * Compute optimized instances, 6th generation
+   */
+  COMPUTE6_INTEL = 'c6i',
+
+  /**
+  * Compute optimized instances, 6th generation
+  */
+  C6I = 'c6i',
+
+  /**
+  * Compute optimized instances based on AMD EPYC (codename Milan), 6th generation
+  */
+  COMPUTE6_AMD = 'c6a',
+
+  /**
+  * Compute optimized instances based on AMD EPYC (codename Milan), 6th generation
+  */
+  C6A = 'c6a',
 
   /**
    * Compute optimized instances for high performance computing, 6th generation with Graviton2 processors
@@ -547,6 +557,36 @@ export enum InstanceClass {
   X2GD = 'x2gd',
 
   /**
+   * Memory-intensive instances with higher network bandwith, local NVME drive, and extended memory. Intel Xeon Scalable (Ice Lake) processors
+   */
+  MEMORY_INTENSIVE_2_XT_INTEL = 'x2iedn',
+
+  /**
+   *  Memory-intensive instances with higher network bandwith, local NVME drive, and extended memory. Intel Xeon Scalable (Ice Lake) processors
+   */
+  X2IEDN = 'x2iedn',
+
+  /**
+   * Memory-intensive instances with higher network bandwith and local NVME drive, Intel Xeon Scalable (Ice Lake) processors
+   */
+  MEMORY_INTENSIVE_2_INTEL = 'x2idn',
+
+  /**
+   * Memory-intensive instances with higher network bandwith and local NVME drive, Intel Xeon Scalable (Ice Lake) processors
+   */
+  X2IDN = 'x2idn',
+
+  /**
+   * Memory-intensive instances with higher network bandwith and single-threaded performance, Intel Xeon Scalable (Cascade Lake) processors
+   */
+  MEMORY_INTENSIVE_2_XTZ_INTEL = 'x2iezn',
+
+  /**
+   * Memory-intensive instances with higher network bandwith and single-threaded performance, Intel Xeon Scalable (Cascade Lake) processors
+   */
+  X2IEZN = 'x2iezn',
+
+  /**
    * Instances with customizable hardware acceleration, 1st generation
    */
   FPGA1 = 'f1',
@@ -725,6 +765,16 @@ export enum InstanceClass {
    * Multi-stream video transcoding instances for resolutions up to 4K UHD, 1st generation
    */
   VT1 = 'vt1',
+
+  /**
+   * High performance computing based on AMD EPYC, 6th generation
+   */
+  HIGH_PERFORMANCE_COMPUTING6_AMD = 'hpc6a',
+
+  /**
+   * High performance computing based on AMD EPYC, 6th generation
+   */
+  HPC6A = 'hpc6a',
 }
 
 /**

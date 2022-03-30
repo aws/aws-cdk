@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import { App, Stack } from '@aws-cdk/core';
 import { AccessKey, AccessKeyStatus, User } from '../lib';
 
@@ -13,7 +13,7 @@ describe('IAM Access keys', () => {
     new AccessKey(stack, 'MyAccessKey', { user });
 
     // THEN
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       Resources: {
         MyUserDC45028B: {
           Type: 'AWS::IAM::User',
@@ -38,7 +38,7 @@ describe('IAM Access keys', () => {
     new AccessKey(stack, 'MyAccessKey', { user, status: AccessKeyStatus.ACTIVE });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::IAM::AccessKey', { Status: 'Active' });
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::AccessKey', { Status: 'Active' });
   });
 
   test('inactive status is specified with correct capitalization', () => {
@@ -54,7 +54,7 @@ describe('IAM Access keys', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::IAM::AccessKey', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::AccessKey', {
       Status: 'Inactive',
     });
   });

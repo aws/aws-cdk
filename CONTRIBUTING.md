@@ -22,7 +22,7 @@ let us know if it's not up-to-date (even better, submit a PR with your  correcti
   - [Step 5: Merge](#step-5-merge)
 - [Breaking Changes](#breaking-changes)
 - [Documentation](#documentation)
-  - [rosetta](#rosetta)
+  - [Rosetta](#rosetta)
 - [Tools](#tools)
   - [Linters](#linters)
   - [cfn2ts](#cfn2ts)
@@ -46,7 +46,7 @@ let us know if it's not up-to-date (even better, submit a PR with your  correcti
 
 The following steps describe how to set up the AWS CDK repository on your local machine.
 The alternative is to use [Gitpod](https://www.gitpod.io/), a Cloud IDE for your development.
-See [Gitpod section](#gitpod) on how to set up the CDK repo on Gitpod.
+See [Gitpod section](#gitpod-alternative) on how to set up the CDK repo on Gitpod.
 
 ### Setup
 
@@ -89,7 +89,7 @@ specific to the CDK.
 
 ### Build
 
-The full build of the CDK takes a long time complete; 1-2 hours depending on the performance of the build machine.
+The full build of the CDK takes a long time to complete; 1-2 hours depending on the performance of the build machine.
 However, most first time contributions will require changing only one CDK module, sometimes two. A full build of the
 CDK is not required in these cases.
 
@@ -217,6 +217,8 @@ Work your magic. Here are some guidelines:
     Watch out for their error messages and adjust your code accordingly.
 * Every change requires a unit test
 * If you change APIs, make sure to update the module's README file
+  * When you add new examples to the module's README file, you must also ensure they compile - the PR build will fail
+    if they do not. To learn more about how to ensure that they compile, see [Documentation](#documentation).
 * Try to maintain a single feature/bugfix per pull request. It's okay to introduce a little bit of housekeeping
   changes along the way, but try to avoid conflating multiple features. Eventually, all these are going to go into a
   single commit, so you can use that to frame your scope.
@@ -232,9 +234,17 @@ Integration tests perform a few functions in the CDK code base -
 3. (Optionally) Acts as a way to validate that constructs set up the CloudFormation resources as expected. A successful
    CloudFormation deployment does not mean that the resources are set up correctly.
 
-If you are working on a new feature that is using previously unused CloudFormation resource types, or involves
-configuring resource types across services, you need to write integration tests that use these resource types or
-features.
+**When are integration tests required?**
+
+The following list contains common scenarios where we _know_ that integration tests are required.
+This is not an exhaustive list and we will, by default, require integration tests for all
+new features unless there is a good reason why one is not needed.
+
+1. Adding a new feature that is using previously unused CloudFormation resource types
+2. Adding a new feature that is using previously unused (or untested) CloudFormation properties
+3. Involves configuring resource types across services (i.e. integrations)
+4. Adding a new supported version (e.g. a new [AuroraMysqlEngineVersion](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_rds.AuroraMysqlEngineVersion.html))
+5. Adding any functionality via a [Custom Resource](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.custom_resources-readme.html)
 
 To the extent possible, include a section (like below) in the integration test file that specifies how the successfully
 deployed stack can be verified for correctness. Correctness here implies that the resources have been set up correctly.
@@ -251,6 +261,16 @@ The steps here are usually AWS CLI commands but they need not be.
 Examples:
 * [integ.destinations.ts](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/aws-lambda-destinations/test/integ.destinations.ts#L7)
 * [integ.token-authorizer.lit.ts](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/aws-apigateway/test/authorizers/integ.token-authorizer.lit.ts#L7-L12)
+
+**What do do if you cannot run integration tests**
+
+If you are working on a PR that requires an update to an integration test and you are unable
+to run the `cdk-integ` tool to perform a real deployment, please call this out on the pull request
+so a maintainer can run the tests for you. Please **do not** run the `cdk-integ` tool with `--dry-run`
+or manually update the snapshot.
+
+See the [integration test guide](./INTEGRATION_TESTS.md) for a more complete guide on running
+CDK integration tests.
 
 #### yarn watch (Optional)
 
@@ -290,6 +310,8 @@ $ yarn watch & # runs in the background
 
 * Shout out to collaborators.
 
+* Call out any new [unconventional dependencies](#adding-new-unconventional-dependencies) that are created as part of your PR.
+
 * If not obvious (i.e. from unit tests), describe how you verified that your change works.
 
 * If this PR includes breaking changes, they must be listed at the end in the following format
@@ -309,6 +331,30 @@ $ yarn watch & # runs in the background
 
 * Make sure to update the PR title/description if things change. The PR title/description are going to be used as the
   commit title/message and will appear in the CHANGELOG, so maintain them all the way throughout the process.
+
+#### Adding new unconventional dependencies
+
+**For the aws-cdk an unconventional dependency is defined as any dependency that is not managed via the module's
+`package.json` file.**
+
+Sometimes constructs introduce new unconventional dependencies.  Any new unconventional dependency that is introduced needs to have
+an auto upgrade process in place. The recommended way to update dependencies is through [dependabot](https://docs.github.com/en/code-security/supply-chain-security/keeping-your-dependencies-updated-automatically/configuration-options-for-dependency-updates). 
+You can find the dependabot config file [here](./.github/dependabot.yml).
+
+An example of this is the [@aws-cdk/lambda-layer-awscli](packages/@aws-cdk/lambda-layer-awscli) module.
+This module creates a lambda layer that bundles the AWS CLI. This is considered an unconventional
+dependency because the AWS CLI is bundled into the CDK as part of the build, and the version
+of the AWS CLI that is bundled is not managed by the `package.json` file. 
+
+In order to automatically update the version of the AWS CLI, a custom build process was
+created that takes upgrades into consideration. You can take a look at the files in
+[packages/@aws-cdk/lambda-layer-awscli/layer](packages/@aws-cdk/lambda-layer-awscli/layer)
+to see how the build works, but at a high level a [requirements.txt](packages/@aws-cdk/lambda-layer-awscli/layer/requirements.txt)
+file was created to manage the version. This file was then added to [dependabot.yml](https://github.com/aws/aws-cdk/blob/ab57eb6d1ed69b40ed6ec774853c275785acace8/.github/dependabot.yml#L14-L20)
+so that dependabot will automatically upgrade the version as new versions are released.
+
+**If you think your PR introduces a new unconventional dependency, make sure to call it
+out in the description so that we can discuss the best way to manage that dependency.**
 
 ### Step 5: Merge
 
@@ -340,6 +386,7 @@ Breaking changes come in two flavors:
 
 * API surface changes
 * Behavior changes
+
 
 ### API surface changes
 
@@ -479,7 +526,7 @@ grantAwesomePowerBeta1();
 ```
 
 Times goes by, we get feedback that this method will actually be much better
-if it accept a `Principal`. Since adding a required property is a breaking
+if it accepts a `Principal`. Since adding a required property is a breaking
 change, we will add `grantAwesomePowerBeta2()` and deprecate
 `grantAwesomePowerBeta1`:
 
@@ -508,7 +555,7 @@ the README for the `aws-ec2` module - https://docs.aws.amazon.com/cdk/api/latest
 
 ### Rosetta
 
-The README file contains code snippets written as typescript code.  Code snippets typed in fenced code blocks
+The README file contains code snippets written as typescript code. Code snippets typed in fenced code blocks
 (such as `` ```ts ``) will be automatically extracted, compiled and translated to other languages when the
 during the [pack](#pack) step. We call this feature 'rosetta'.
 
@@ -541,11 +588,12 @@ When no fixture is specified, the fixture with the name
 `rosetta/default.ts-fixture` will be used if present. `nofixture` can be used to
 opt out of that behavior.
 
-In an `@example` block, which is unfenced, the first line of the example can
-contain three slashes to achieve the same effect:
+In an `@example` block, which is unfenced, additional information pertaining to
+the example can be provided via the `@exampleMetadata` tag:
 
 ```
 /**
+ * @exampleMetadata fixture=with-bucket
  * @example
  *   /// fixture=with-bucket
  *   bucket.addLifecycleTransition({ ...props });
@@ -582,20 +630,20 @@ cases where some of those do not apply - good judgement is to be applied):
   // ...rest of the example...
   ```
 
-- Within `.ts-fixture` files, make use of `declare` statements instead of
-  writing a compatible value (this will make your fixtures more durable):
+- Make use of `declare` statements directly in examples for values that are
+  necessary for compilation but unimportant to the example:
 
   ```ts
-  // An hypothetical 'rosetta/default.ts-fixture' file in `@aws-cdk/core`
-  import * as kms from '@aws-cdk/aws-kms';
-  import * as s3 from '@aws-cdk/aws-s3';
-  import { StackProps } from '@aws-cdk/core';
-
-  declare const kmsKey: kms.IKey;
-  declare const bucket: s3.Bucket;
-
-  declare const props: StackProps;
+  // An example about adding a stage to a pipeline in the @aws-cdk/pipelines library
+  declare const pipeline: pipelines.CodePipeline;
+  declare const myStage: Stage;
+  pipeline.addStage(myStage);   
   ```
+
+- Utilize the `default.ts-fixture` that already exists rather than writing new
+  `.ts-fixture` files. This is because values stored in `.ts-fixture` files do
+  not surface to the examples visible in the docs, so while they help successful
+  compilation, they do not help users understand the example.
 
 ## Tools (Advanced)
 
@@ -662,7 +710,7 @@ extension](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-e
 
 #### pkglint
 
-The `pkglint` tool "lints" package.json files across the repo according to [rules.ts](tools/pkglint/lib/rules.ts).
+The `pkglint` tool "lints" package.json files across the repo according to [rules.ts](tools/@aws-cdk/pkglint/lib/rules.ts).
 
 To evaluate (and attempt to fix) all package linting issues in the repo, run the following command from the root of the
 repository (after bootstrapping):
@@ -803,34 +851,16 @@ The pattern is simple:
    with the name of the context key that **enables** this new feature (for
    example, `ENABLE_STACK_NAME_DUPLICATES`). The context key should be in the
    form `module.Type:feature` (e.g. `@aws-cdk/core:enableStackNameDuplicates`).
-2. Use `node.tryGetContext(cxapi.ENABLE_XXX)` to check if this feature is enabled
+2. Use `FeatureFlags.of(construct).isEnabled(cxapi.ENABLE_XXX)` to check if this feature is enabled
    in your code. If it is not defined, revert to the legacy behavior.
 3. Add your feature flag to the `FUTURE_FLAGS` map in
    [cx-api/lib/features.ts](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/cx-api/lib/features.ts).
    This map is inserted to generated `cdk.json` files for new projects created
    through `cdk init`.
-4. In your PR title (which goes into CHANGELOG), add a `(under feature flag)` suffix. e.g:
+4. In your tests, use the `testFutureBehavior` and `testLegacyBehavior` [jest helper methods] to test the enabled and disabled behavior.
+5. In your PR title (which goes into CHANGELOG), add a `(under feature flag)` suffix. e.g:
 
     `fix(core): impossible to use the same physical stack name for two stacks (under feature flag)`
-
-In the [next major version of the
-CDK](https://github.com/aws/aws-cdk/issues/3398) we will either remove the
-legacy behavior or flip the logic for all these features and then
-reset the `FEATURE_FLAGS` map for the next cycle.
-
-### Feature Flags - CDKv2
-
-We have started working on the next version of the CDK, specifically CDKv2. This is currently being maintained
-on a separate branch `v2-main` whereas `master` continues to track versions `1.x`.
-
-Feature flags introduced in the CDK 1.x and removed in 2.x, must be added to the `FUTURE_FLAGS_EXPIRED` list in
-[cx-api/lib/features.ts](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/cx-api/lib/features.ts)
-on the `v2-main` branch.
-This will make the default behaviour in CDKv2 as if the flag is enabled and also prevents users from disabling
-the feature flag.
-
-A couple of [jest helper methods] are available for use with unit tests. These help run unit tests that test
-behaviour when flags are enabled or disabled in the two major versions.
 
 [jest helper methods]: https://github.com/aws/aws-cdk/blob/master/tools/@aws-cdk/cdk-build-tools/lib/feature-flag.ts
 

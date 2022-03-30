@@ -121,3 +121,8 @@ base-types:@aws-cdk/aws-lambda-event-sources.SelfManagedKafkaEventSourceProps
 changed-type:@aws-cdk/aws-elasticloadbalancingv2.ApplicationLoadBalancer.vpc
 changed-type:@aws-cdk/aws-elasticloadbalancingv2.BaseLoadBalancer.vpc
 changed-type:@aws-cdk/aws-elasticloadbalancingv2.NetworkLoadBalancer.vpc
+
+# removed methods and properties related to event bridge notifications for S3 buckets as they are not yet supported (19 Jan 2022)
+removed:@aws-cdk/aws-s3.Bucket.enableEventBridgeNotification
+removed:@aws-cdk/aws-s3.BucketBase.enableEventBridgeNotification
+removed:@aws-cdk/aws-s3.BucketProps.eventBridgeEnabled

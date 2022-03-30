@@ -3,29 +3,15 @@ import { AssetManifest } from 'cdk-assets';
 import { Tag } from '../cdk-toolkit';
 import { debug, warning } from '../logging';
 import { publishAssets } from '../util/asset-publishing';
-import { Mode, SdkProvider, ISDK } from './aws-auth';
+import { Mode } from './aws-auth/credentials';
+import { ISDK } from './aws-auth/sdk';
+import { SdkProvider } from './aws-auth/sdk-provider';
 import { deployStack, DeployStackResult, destroyStack } from './deploy-stack';
+import { loadCurrentTemplateWithNestedStacks, loadCurrentTemplate } from './nested-stack-helpers';
 import { ToolkitInfo } from './toolkit-info';
 import { CloudFormationStack, Template } from './util/cloudformation';
 import { StackActivityProgress } from './util/cloudformation/stack-activity-monitor';
-
-/**
- * Replace the {ACCOUNT} and {REGION} placeholders in all strings found in a complex object.
- */
-export async function replaceEnvPlaceholders<A extends { }>(object: A, env: cxapi.Environment, sdkProvider: SdkProvider): Promise<A> {
-  return cxapi.EnvironmentPlaceholders.replaceAsync(object, {
-    accountId: () => Promise.resolve(env.account),
-    region: () => Promise.resolve(env.region),
-    partition: async () => {
-      // There's no good way to get the partition!
-      // We should have had it already, except we don't.
-      //
-      // Best we can do is ask the "base credentials" for this environment for their partition. Cross-partition
-      // AssumeRole'ing will never work anyway, so this answer won't be wrong (it will just be slow!)
-      return (await sdkProvider.baseCredentialsPartition(env, Mode.ForReading)) ?? 'aws';
-    },
-  });
-}
+import { replaceEnvPlaceholders } from './util/placeholders';
 
 /**
  * SDK obtained by assuming the lookup role
@@ -96,14 +82,20 @@ export async function prepareSdkWithLookupRoleFor(
       if (version < stack.lookupRole.requiresBootstrapStackVersion) {
         throw new Error(`Bootstrap stack version '${stack.lookupRole.requiresBootstrapStackVersion}' is required, found version '${version}'.`);
       }
-    } else if (!stackSdk.didAssumeRole) {
+      // we may not have assumed the lookup role because one was not provided
+      // if that is the case then don't print the upgrade warning
+    } else if (!stackSdk.didAssumeRole && stack.lookupRole?.requiresBootstrapStackVersion) {
       warning(upgradeMessage);
     }
     return { ...stackSdk, resolvedEnvironment };
   } catch (e) {
     debug(e);
-    warning(warningMessage);
-    warning(upgradeMessage);
+    // only print out the warnings if the lookupRole exists AND there is a required
+    // bootstrap version, otherwise the warnings will print `undefined`
+    if (stack.lookupRole && stack.lookupRole.requiresBootstrapStackVersion) {
+      warning(warningMessage);
+      warning(upgradeMessage);
+    }
     throw (e);
   }
 }
@@ -287,25 +279,15 @@ export class CloudFormationDeployments {
     this.sdkProvider = props.sdkProvider;
   }
 
+  public async readCurrentTemplateWithNestedStacks(rootStackArtifact: cxapi.CloudFormationStackArtifact): Promise<Template> {
+    const sdk = await this.prepareSdkWithLookupOrDeployRole(rootStackArtifact);
+    return (await loadCurrentTemplateWithNestedStacks(rootStackArtifact, sdk)).deployedTemplate;
+  }
+
   public async readCurrentTemplate(stackArtifact: cxapi.CloudFormationStackArtifact): Promise<Template> {
     debug(`Reading existing template for stack ${stackArtifact.displayName}.`);
-    let stackSdk: ISDK | undefined = undefined;
-    // try to assume the lookup role and fallback to the deploy role
-    try {
-      const result = await prepareSdkWithLookupRoleFor(this.sdkProvider, stackArtifact);
-      if (result.didAssumeRole) {
-        stackSdk = result.sdk;
-      }
-    } catch { }
-
-    if (!stackSdk) {
-      stackSdk = (await this.prepareSdkFor(stackArtifact, undefined, Mode.ForReading)).stackSdk;
-    }
-
-    const cfn = stackSdk.cloudFormation();
-
-    const stack = await CloudFormationStack.lookup(cfn, stackArtifact.stackName);
-    return stack.template();
+    const sdk = await this.prepareSdkWithLookupOrDeployRole(stackArtifact);
+    return loadCurrentTemplate(stackArtifact, sdk);
   }
 
   public async deployStack(options: DeployStackOptions): Promise<DeployStackResult> {
@@ -366,6 +348,18 @@ export class CloudFormationDeployments {
     return stack.exists;
   }
 
+  private async prepareSdkWithLookupOrDeployRole(stackArtifact: cxapi.CloudFormationStackArtifact): Promise<ISDK> {
+    // try to assume the lookup role
+    try {
+      const result = await prepareSdkWithLookupRoleFor(this.sdkProvider, stackArtifact);
+      if (result.didAssumeRole) {
+        return result.sdk;
+      }
+    } catch { }
+    // fall back to the deploy role
+    return (await this.prepareSdkFor(stackArtifact, undefined, Mode.ForReading)).stackSdk;
+  }
+
   /**
    * Get the environment necessary for touching the given stack
    *
@@ -411,7 +405,7 @@ export class CloudFormationDeployments {
    */
   private async publishStackAssets(stack: cxapi.CloudFormationStackArtifact, toolkitInfo: ToolkitInfo) {
     const stackEnv = await this.sdkProvider.resolveEnvironment(stack.environment);
-    const assetArtifacts = stack.dependencies.filter(isAssetManifestArtifact);
+    const assetArtifacts = stack.dependencies.filter(cxapi.AssetManifestArtifact.isAssetManifestArtifact);
 
     for (const assetArtifact of assetArtifacts) {
       await this.validateBootstrapStackVersion(
@@ -442,8 +436,4 @@ export class CloudFormationDeployments {
       throw new Error(`${stackName}: ${e.message}`);
     }
   }
-}
-
-function isAssetManifestArtifact(art: cxapi.CloudArtifact): art is cxapi.AssetManifestArtifact {
-  return art instanceof cxapi.AssetManifestArtifact;
 }

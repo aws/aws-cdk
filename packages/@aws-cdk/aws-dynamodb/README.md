@@ -58,6 +58,23 @@ const table = new dynamodb.Table(this, 'Table', {
 Further reading:
 https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.ReadWriteCapacityMode.
 
+## Table Class
+
+DynamoDB supports two table classes:
+
+* STANDARD - the default mode, and is recommended for the vast majority of workloads.
+* STANDARD_INFREQUENT_ACCESS - optimized for tables where storage is the dominant cost.
+
+```ts
+const table = new dynamodb.Table(this, 'Table', {
+  partitionKey: { name: 'id', type: dynamodb.AttributeType.STRING },
+  tableClass: dynamodb.TableClass.STANDARD_INFREQUENT_ACCESS,
+});
+```
+
+Further reading:
+https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.TableClasses.html
+
 ## Configure AutoScaling for your table
 
 You can have DynamoDB automatically raise and lower the read and write capacities

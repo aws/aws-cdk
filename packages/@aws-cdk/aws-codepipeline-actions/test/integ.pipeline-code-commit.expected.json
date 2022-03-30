@@ -219,12 +219,16 @@
           "Statement": [
             {
               "Action": [
-                "s3:GetObject*",
-                "s3:GetBucket*",
-                "s3:List*",
+                "s3:Abort*",
                 "s3:DeleteObject*",
+                "s3:GetBucket*",
+                "s3:GetObject*",
+                "s3:List*",
                 "s3:PutObject",
-                "s3:Abort*"
+                "s3:PutObjectLegalHold",
+                "s3:PutObjectRetention",
+                "s3:PutObjectTagging",
+                "s3:PutObjectVersionTagging"
               ],
               "Effect": "Allow",
               "Resource": [
@@ -255,8 +259,8 @@
                 "kms:Decrypt",
                 "kms:DescribeKey",
                 "kms:Encrypt",
-                "kms:ReEncrypt*",
-                "kms:GenerateDataKey*"
+                "kms:GenerateDataKey*",
+                "kms:ReEncrypt*"
               ],
               "Effect": "Allow",
               "Resource": {
@@ -269,22 +273,20 @@
             {
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "PipelinesourceCodePipelineActionRoleB7E0306A",
-                  "Arn"
-                ]
-              }
-            },
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "PipelinebuildmanualCodePipelineActionRoleE3306AB0",
-                  "Arn"
-                ]
-              }
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "PipelinebuildmanualCodePipelineActionRoleE3306AB0",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::GetAtt": [
+                    "PipelinesourceCodePipelineActionRoleB7E0306A",
+                    "Arn"
+                  ]
+                }
+              ]
             }
           ],
           "Version": "2012-10-17"
@@ -425,12 +427,16 @@
           "Statement": [
             {
               "Action": [
-                "s3:GetObject*",
-                "s3:GetBucket*",
-                "s3:List*",
+                "s3:Abort*",
                 "s3:DeleteObject*",
+                "s3:GetBucket*",
+                "s3:GetObject*",
+                "s3:List*",
                 "s3:PutObject",
-                "s3:Abort*"
+                "s3:PutObjectLegalHold",
+                "s3:PutObjectRetention",
+                "s3:PutObjectTagging",
+                "s3:PutObjectVersionTagging"
               ],
               "Effect": "Allow",
               "Resource": [
@@ -461,8 +467,8 @@
                 "kms:Decrypt",
                 "kms:DescribeKey",
                 "kms:Encrypt",
-                "kms:ReEncrypt*",
-                "kms:GenerateDataKey*"
+                "kms:GenerateDataKey*",
+                "kms:ReEncrypt*"
               ],
               "Effect": "Allow",
               "Resource": {
@@ -474,11 +480,11 @@
             },
             {
               "Action": [
+                "codecommit:CancelUploadArchive",
                 "codecommit:GetBranch",
                 "codecommit:GetCommit",
-                "codecommit:UploadArchive",
                 "codecommit:GetUploadArchiveStatus",
-                "codecommit:CancelUploadArchive"
+                "codecommit:UploadArchive"
               ],
               "Effect": "Allow",
               "Resource": {

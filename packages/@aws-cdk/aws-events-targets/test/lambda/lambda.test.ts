@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Annotations, Template, Match } from '@aws-cdk/assertions';
 import * as events from '@aws-cdk/aws-events';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as sqs from '@aws-cdk/aws-sqs';
@@ -24,7 +24,7 @@ test('use lambda as an event rule target', () => {
   // THEN
   const lambdaId = 'MyLambdaCCE802FB';
 
-  expect(stack).toHaveResource('AWS::Lambda::Permission', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
     Action: 'lambda:InvokeFunction',
     FunctionName: {
       'Fn::GetAtt': [
@@ -36,7 +36,7 @@ test('use lambda as an event rule target', () => {
     SourceArn: { 'Fn::GetAtt': ['Rule4C995B7F', 'Arn'] },
   });
 
-  expect(stack).toHaveResource('AWS::Lambda::Permission', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
     Action: 'lambda:InvokeFunction',
     FunctionName: {
       'Fn::GetAtt': [
@@ -48,8 +48,8 @@ test('use lambda as an event rule target', () => {
     SourceArn: { 'Fn::GetAtt': ['Rule270732244', 'Arn'] },
   });
 
-  expect(stack).toCountResources('AWS::Events::Rule', 2);
-  expect(stack).toHaveResource('AWS::Events::Rule', {
+  Template.fromStack(stack).resourceCountIs('AWS::Events::Rule', 2);
+  Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
     Targets: [
       {
         Arn: { 'Fn::GetAtt': [lambdaId, 'Arn'] },
@@ -76,7 +76,7 @@ test('adding same lambda function as target mutiple times creates permission onl
   }));
 
   // THEN
-  expect(stack).toCountResources('AWS::Lambda::Permission', 1);
+  Template.fromStack(stack).resourceCountIs('AWS::Lambda::Permission', 1);
 });
 
 test('adding different lambda functions as target mutiple times creates multiple permissions', () => {
@@ -97,7 +97,7 @@ test('adding different lambda functions as target mutiple times creates multiple
   }));
 
   // THEN
-  expect(stack).toCountResources('AWS::Lambda::Permission', 2);
+  Template.fromStack(stack).resourceCountIs('AWS::Lambda::Permission', 2);
 });
 
 test('adding same singleton lambda function as target mutiple times creates permission only once', () => {
@@ -122,7 +122,7 @@ test('adding same singleton lambda function as target mutiple times creates perm
   }));
 
   // THEN
-  expect(stack).toCountResources('AWS::Lambda::Permission', 1);
+  Template.fromStack(stack).resourceCountIs('AWS::Lambda::Permission', 1);
 });
 
 test('lambda handler and cloudwatch event across stacks', () => {
@@ -145,7 +145,7 @@ test('lambda handler and cloudwatch event across stacks', () => {
   expect(() => app.synth()).not.toThrow();
 
   // the Permission resource should be in the event stack
-  expect(eventStack).toCountResources('AWS::Lambda::Permission', 1);
+  Template.fromStack(eventStack).resourceCountIs('AWS::Lambda::Permission', 1);
 });
 
 test('use a Dead Letter Queue for the rule target', () => {
@@ -171,7 +171,7 @@ test('use a Dead Letter Queue for the rule target', () => {
   expect(() => app.synth()).not.toThrow();
 
   // the Permission resource should be in the event stack
-  expect(stack).toHaveResource('AWS::Events::Rule', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
     Targets: [
       {
         Arn: {
@@ -193,7 +193,7 @@ test('use a Dead Letter Queue for the rule target', () => {
     ],
   });
 
-  expect(stack).toHaveResource('AWS::SQS::QueuePolicy', {
+  Template.fromStack(stack).hasResourceProperties('AWS::SQS::QueuePolicy', {
     PolicyDocument: {
       Statement: [
         {
@@ -300,7 +300,7 @@ test('must display a warning when using a Dead Letter Queue from another account
   expect(() => app.synth()).not.toThrow();
 
   // the Permission resource should be in the event stack
-  expect(stack1).toHaveResource('AWS::Events::Rule', {
+  Template.fromStack(stack1).hasResourceProperties('AWS::Events::Rule', {
     ScheduleExpression: 'rate(1 minute)',
     State: 'ENABLED',
     Targets: [
@@ -319,10 +319,15 @@ test('must display a warning when using a Dead Letter Queue from another account
     ],
   });
 
-  expect(stack1).not.toHaveResource('AWS::SQS::QueuePolicy');
+  Template.fromStack(stack1).resourceCountIs('AWS::SQS::QueuePolicy', 0);
 
-  let rule = stack1.node.children.find(child => child instanceof events.Rule);
-  expect(rule?.node.metadataEntry[0].data).toMatch(/Cannot add a resource policy to your dead letter queue associated with rule .* because the queue is in a different account\. You must add the resource policy manually to the dead letter queue in account 222222222222\./);
+  Annotations.fromStack(stack1).hasWarning('/Stack1/Rule', Match.objectLike({
+    'Fn::Join': Match.arrayWith([
+      Match.arrayWith([
+        'Cannot add a resource policy to your dead letter queue associated with rule ',
+      ]),
+    ]),
+  }));
 });
 
 
@@ -350,7 +355,7 @@ test('specifying retry policy', () => {
   expect(() => app.synth()).not.toThrow();
 
   // the Permission resource should be in the event stack
-  expect(stack).toHaveResource('AWS::Events::Rule', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
     ScheduleExpression: 'rate(1 minute)',
     State: 'ENABLED',
     Targets: [

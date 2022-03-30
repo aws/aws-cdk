@@ -107,6 +107,25 @@ describe('WebSocketApi', () => {
     });
   });
 
+  test('import', () => {
+    // GIVEN
+    const stack = new Stack();
+    const imported = WebSocketApi.fromWebSocketApiAttributes(stack, 'imported', { webSocketId: 'ws-1234', apiEndpoint: 'api-endpoint' });
+
+    // THEN
+    expect(imported.apiId).toEqual('ws-1234');
+    expect(imported.apiEndpoint).toEqual('api-endpoint');
+  });
+
+  test('apiEndpoint for imported', () => {
+    // GIVEN
+    const stack = new Stack();
+    const api = WebSocketApi.fromWebSocketApiAttributes(stack, 'imported', { webSocketId: 'api-1234' });
+
+    // THEN
+    expect(() => api.apiEndpoint).toThrow(/apiEndpoint is not configured/);
+  });
+
   describe('grantManageConnections', () => {
     test('adds an IAM policy to the principal', () => {
       // GIVEN
@@ -141,7 +160,7 @@ describe('WebSocketApi', () => {
                 {
                   Ref: 'apiC8550315',
                 },
-                '/*/POST/@connections/*',
+                '/*/*/@connections/*',
               ]],
             },
           }]),

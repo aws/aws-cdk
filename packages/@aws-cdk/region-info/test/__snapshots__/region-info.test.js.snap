@@ -795,7 +795,7 @@ Object {
     "servicePrincipals": Object {
       "application-autoscaling": "application-autoscaling.amazonaws.com",
       "autoscaling": "autoscaling.amazonaws.com",
-      "codedeploy": "codedeploy.us-iso-east-1.c2s.ic.gov",
+      "codedeploy": "codedeploy.us-iso-east-1.amazonaws.com",
       "ec2": "ec2.c2s.ic.gov",
       "events": "events.amazonaws.com",
       "lambda": "lambda.amazonaws.com",
@@ -826,7 +826,7 @@ Object {
     "servicePrincipals": Object {
       "application-autoscaling": "application-autoscaling.amazonaws.com",
       "autoscaling": "autoscaling.amazonaws.com",
-      "codedeploy": "codedeploy.us-iso-west-1.c2s.ic.gov",
+      "codedeploy": "codedeploy.us-iso-west-1.amazonaws.com",
       "ec2": "ec2.c2s.ic.gov",
       "events": "events.amazonaws.com",
       "lambda": "lambda.amazonaws.com",
@@ -857,7 +857,7 @@ Object {
     "servicePrincipals": Object {
       "application-autoscaling": "application-autoscaling.amazonaws.com",
       "autoscaling": "autoscaling.amazonaws.com",
-      "codedeploy": "codedeploy.us-isob-east-1.sc2s.sgov.gov",
+      "codedeploy": "codedeploy.us-isob-east-1.amazonaws.com",
       "ec2": "ec2.sc2s.sgov.gov",
       "events": "events.amazonaws.com",
       "lambda": "lambda.amazonaws.com",
