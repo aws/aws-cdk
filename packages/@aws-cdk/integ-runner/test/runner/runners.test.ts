@@ -1,7 +1,7 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import { IntegTestRunner, IntegSnapshotRunner } from '../../lib/runner/runners';
-import { DiagnosticReason } from '../../lib/workers/workers';
+import { DiagnosticReason } from '../../lib/workers/common';
 
 describe('IntegTest runSnapshotTests', () => {
   let synthMock: jest.SpyInstance;

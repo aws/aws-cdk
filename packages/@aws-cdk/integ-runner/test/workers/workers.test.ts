@@ -1,7 +1,9 @@
 import * as child_process from 'child_process';
 import * as path from 'path';
 import * as fs from 'fs-extra';
-import { singleThreadedSnapshotRunner, DiagnosticReason, singleThreadedTestRunner } from '../../lib/workers/workers';
+import * as workerpool from 'workerpool';
+import { singleThreadedSnapshotRunner } from '../../lib/workers/integ-snapshot-worker';
+import { singleThreadedTestRunner, runIntegrationTestsInParallel } from '../../lib/workers/integ-test-worker';
 
 const directory = path.join(__dirname, '../test-data');
 describe('Snapshot tests', () => {
@@ -26,13 +28,7 @@ describe('Snapshot tests', () => {
     const result = singleThreadedSnapshotRunner([test]);
 
     // THEN
-    expect(result.diagnostics.length).toEqual(1);
     expect(result.failedTests.length).toEqual(1);
-    expect(result.diagnostics[0]).toEqual({
-      reason: DiagnosticReason.NO_SNAPSHOT,
-      testName: 'integ-test1',
-      message: 'No Snapshot',
-    });
     expect(result.failedTests[0]).toEqual(test);
   });
 
@@ -46,13 +42,7 @@ describe('Snapshot tests', () => {
     const result = singleThreadedSnapshotRunner([test]);
 
     // THEN
-    expect(result.diagnostics.length).toEqual(1);
     expect(result.failedTests.length).toEqual(0);
-    expect(result.diagnostics[0]).toEqual({
-      reason: DiagnosticReason.SNAPSHOT_SUCCESS,
-      testName: 'test-with-snapshot',
-      message: 'Success',
-    });
   });
 
   test('failed snapshot', () => {
@@ -65,13 +55,7 @@ describe('Snapshot tests', () => {
     const result = singleThreadedSnapshotRunner([test]);
 
     // THEN
-    expect(result.diagnostics.length).toEqual(1);
     expect(result.failedTests.length).toEqual(1);
-    expect(result.diagnostics[0]).toEqual({
-      reason: DiagnosticReason.SNAPSHOT_FAILED,
-      testName: 'test-with-snapshot-assets',
-      message: expect.stringContaining('Parameters'),
-    });
     expect(result.failedTests[0]).toEqual(test);
   });
 });
@@ -107,5 +91,176 @@ describe('test runner', () => {
       ['synth', '--app', 'node integ.integ-test1.js', '--no-version-reporting', '--no-path-metadata', '--no-asset-metadata', '--output', 'cdk-integ.out.integ-test1', '--all'],
       expect.anything(),
     );
+  });
+});
+
+describe('parallel worker', () => {
+  let pool: workerpool.WorkerPool;
+  let stderrMock: jest.SpyInstance;
+  beforeEach(() => {
+    pool = workerpool.pool(path.join(__dirname, './mock-extract_worker.js'));
+    stderrMock = jest.spyOn(process.stderr, 'write').mockImplementation(() => { return true; });
+    jest.spyOn(process.stdout, 'write').mockImplementation(() => { return true; });
+    jest.spyOn(fs, 'moveSync').mockImplementation(() => { return true; });
+    jest.spyOn(fs, 'removeSync').mockImplementation(() => { return true; });
+    jest.spyOn(fs, 'writeFileSync').mockImplementation(() => { return true; });
+  });
+  afterEach(() => {
+    jest.clearAllMocks();
+    jest.resetAllMocks();
+    jest.restoreAllMocks();
+    void pool.terminate();
+  });
+  test('run tests', async () => {
+    const tests = [{
+      fileName: 'integ.test-with-snapshot.js',
+      directory,
+    }];
+    const results = await runIntegrationTestsInParallel({
+      tests,
+      pool,
+      regions: ['us-east-1'],
+    });
+
+    expect(stderrMock.mock.calls[0][0]).toContain(
+      'Running test integ.test-with-snapshot.js in us-east-1',
+    );
+    expect(results).toEqual([
+      {
+        failedTests: [{
+          fileName: 'integ.test-with-snapshot.js',
+          directory,
+        }],
+      },
+    ]);
+  });
+
+  test('run multiple tests', async () => {
+    const tests = [
+      {
+        fileName: 'integ.test-with-snapshot.js',
+        directory,
+      },
+      {
+        fileName: 'integ.another-test-with-snapshot.js',
+        directory,
+      },
+    ];
+    const results = await runIntegrationTestsInParallel({
+      tests,
+      pool,
+      regions: ['us-east-1', 'us-east-2'],
+    });
+
+    expect(stderrMock.mock.calls[1][0]).toContain(
+      'Running test integ.test-with-snapshot.js in us-east-2',
+    );
+    expect(stderrMock.mock.calls[0][0]).toContain(
+      'Running test integ.another-test-with-snapshot.js in us-east-1',
+    );
+    expect(results).toEqual(expect.arrayContaining([
+      {
+        failedTests: [
+          {
+            fileName: 'integ.test-with-snapshot.js',
+            directory,
+          },
+        ],
+      },
+      {
+        failedTests: [
+          {
+            fileName: 'integ.another-test-with-snapshot.js',
+            directory,
+          },
+        ],
+      },
+    ]));
+  });
+
+  test('more tests than regions', async () => {
+    const tests = [
+      {
+        fileName: 'integ.test-with-snapshot.js',
+        directory,
+      },
+      {
+        fileName: 'integ.another-test-with-snapshot.js',
+        directory,
+      },
+    ];
+    const results = await runIntegrationTestsInParallel({
+      tests,
+      pool,
+      regions: ['us-east-1'],
+    });
+
+    expect(stderrMock.mock.calls[1][0]).toContain(
+      'Running test integ.test-with-snapshot.js in us-east-1',
+    );
+    expect(stderrMock.mock.calls[0][0]).toContain(
+      'Running test integ.another-test-with-snapshot.js in us-east-1',
+    );
+    expect(results).toEqual([
+      {
+        failedTests: [
+          {
+            fileName: 'integ.another-test-with-snapshot.js',
+            directory,
+          },
+        ],
+      },
+      {
+        failedTests: [
+          {
+            fileName: 'integ.test-with-snapshot.js',
+            directory,
+          },
+        ],
+      },
+    ]);
+  });
+
+  test('more regions than tests', async () => {
+    const tests = [
+      {
+        fileName: 'integ.test-with-snapshot.js',
+        directory,
+      },
+      {
+        fileName: 'integ.another-test-with-snapshot.js',
+        directory,
+      },
+    ];
+    const results = await runIntegrationTestsInParallel({
+      tests,
+      pool,
+      regions: ['us-east-1', 'us-east-2', 'us-west-2'],
+    });
+
+    expect(stderrMock.mock.calls[1][0]).toContain(
+      'Running test integ.test-with-snapshot.js in us-east-2',
+    );
+    expect(stderrMock.mock.calls[0][0]).toContain(
+      'Running test integ.another-test-with-snapshot.js in us-east-1',
+    );
+    expect(results).toEqual(expect.arrayContaining([
+      {
+        failedTests: [
+          {
+            fileName: 'integ.another-test-with-snapshot.js',
+            directory,
+          },
+        ],
+      },
+      {
+        failedTests: [
+          {
+            fileName: 'integ.test-with-snapshot.js',
+            directory,
+          },
+        ],
+      },
+    ]));
   });
 });

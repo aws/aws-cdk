@@ -6,7 +6,7 @@ import { diffTemplate, formatDifferences } from '@aws-cdk/cloudformation-diff';
 import { AVAILABILITY_ZONE_FALLBACK_CONTEXT_KEY, FUTURE_FLAGS, TARGET_PARTITIONS } from '@aws-cdk/cx-api';
 import { CdkCliWrapper, ICdk } from 'cdk-cli-wrapper';
 import * as fs from 'fs-extra';
-import { Diagnostic, DiagnosticReason } from '../workers/workers';
+import { Diagnostic, DiagnosticReason } from '../workers/common';
 import { canonicalizeTemplate } from './private/canonicalize-assets';
 import { AssemblyManifestReader } from './private/cloud-assembly';
 import { IntegManifestReader } from './private/integ-manifest';
@@ -130,11 +130,11 @@ export abstract class IntegRunner {
       directory: this.directory,
       env: options.env,
     });
+    this.cdkOutDir = options.integOutDir ?? `${CDK_OUTDIR_PREFIX}.${this.testName}`;
     this.cdkApp = `node ${parsed.base}`;
     if (this.hasSnapshot()) {
       this.loadManifest();
     }
-    this.cdkOutDir = options.integOutDir ?? `${CDK_OUTDIR_PREFIX}.${this.testName}`;
   }
 
   /**
@@ -190,10 +190,10 @@ export abstract class IntegRunner {
     if (this.enableLookups) {
       this.writeContext();
       this.cdk.synth({
+        ...this.defaultArgs,
         all: true,
         app: this.cdkApp,
         output: this.relativeSnapshotDir,
-        ...this.defaultArgs,
         // TODO: figure out if we need this...
         // env: {
         //   ...DEFAULT_SYNTH_OPTIONS.env,
@@ -201,7 +201,7 @@ export abstract class IntegRunner {
       });
       this.cleanupContextFile();
     } else {
-      fs.moveSync(this.cdkOutDir, this.snapshotDir, { overwrite: true });
+      fs.moveSync(path.join(this.directory, this.cdkOutDir), this.snapshotDir, { overwrite: true });
     }
   }
 
@@ -225,8 +225,9 @@ export abstract class IntegRunner {
       tests.stacks.push(...pragma);
     } else {
       const stacks = (this.cdk.list({
+        ...this.defaultArgs,
         all: true,
-        app: this.cdkOutDir,
+        app: this.cdkApp,
         output: this.cdkOutDir,
       })).split('\n');
       if (stacks.length !== 1) {
@@ -379,20 +380,20 @@ export class IntegTestRunner extends IntegRunner {
     try {
       if (!options.dryRun) {
         this.cdk.deploy({
+          ...this.defaultArgs,
           stacks: options.testCase.stacks,
           requireApproval: RequireApproval.NEVER,
           output: this.cdkOutDir,
           app: this.cdkApp,
           lookups: this.enableLookups,
-          ...this.defaultArgs,
         });
       } else {
         this.cdk.synth({
+          ...this.defaultArgs,
           stacks: options.testCase.stacks,
           output: this.cdkOutDir,
           app: this.cdkApp,
           lookups: this.enableLookups,
-          ...this.defaultArgs,
         });
       }
       this.createSnapshot();
@@ -402,11 +403,11 @@ export class IntegTestRunner extends IntegRunner {
       if (!options.dryRun) {
         if (clean) {
           this.cdk.destroy({
+            ...this.defaultArgs,
             stacks: options.testCase.stacks,
             force: true,
             app: this.cdkApp,
             output: this.cdkOutDir,
-            ...this.defaultArgs,
           });
         }
       }
@@ -424,10 +425,10 @@ export class IntegTestRunner extends IntegRunner {
     }
 
     this.cdk.synth({
+      ...this.defaultArgs,
       all: true,
       app: this.cdkApp,
       output: this.cdkOutDir,
-      ...this.defaultArgs,
     });
     this.loadManifest(this.cdkOutDir);
   }
@@ -457,18 +458,19 @@ export class IntegSnapshotRunner extends IntegRunner {
       }
       // synth the integration test
       this.cdk.synth({
+        ...this.defaultArgs,
         all: true,
         app: this.cdkApp,
         output: this.cdkOutDir,
         lookups: this.enableLookups,
-        ...this.defaultArgs,
       });
       const actualStacks = this.readAssembly(path.join(this.directory, this.cdkOutDir));
 
       // diff the existing snapshot (expected) with the integration test (actual)
       const diagnostics = this.diffAssembly(expectedStacks, actualStacks);
-
       return diagnostics;
+    } catch (e) {
+      throw e;
     } finally {
       this.cleanupContextFile();
       this.cleanup();
