@@ -227,7 +227,7 @@
                     "type": "string"
                 },
                 "networkMode": {
-                    "description": "Networking mode for the RUN commands during build. _Requires Docker Engine API v1.25+_. (Default - no networking mode specified)",
+                    "description": "Networking mode for the RUN commands during build. (Default - no networking mode specified)",
                     "type": "string"
                 },
                 "id": {

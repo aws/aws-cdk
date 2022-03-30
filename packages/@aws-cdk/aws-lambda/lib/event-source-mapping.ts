@@ -91,7 +91,7 @@ export interface EventSourceMappingOptions {
    * Valid Range: Minimum value of 1. Maximum value of 10000.
    *
    * @default - Amazon Kinesis, Amazon DynamoDB, and Amazon MSK is 100 records.
-   * Both the default and maximum for Amazon SQS are 10 messages.
+   * The default for Amazon SQS is 10 messages. For standard SQS queues, the maximum is 10,000. For FIFO SQS queues, the maximum is 10.
    */
   readonly batchSize?: number;
 

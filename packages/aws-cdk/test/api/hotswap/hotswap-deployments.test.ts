@@ -127,7 +127,7 @@ test('changes only to CDK::Metadata result in a noOp', async () => {
   setup.setCurrentCfnStackTemplate({
     Resources: {
       MetaData: {
-        Type: 'AWS::CDK::MetaData',
+        Type: 'AWS::CDK::Metadata',
         Properties: {
           Prop: 'old-value',
         },
@@ -316,4 +316,43 @@ test('can correctly reference AWS::URLSuffix in hotswappable changes', async () 
     .toHaveBeenCalledWith('cdk-hotswap/success-lambda-function');
   expect(hotswapMockSdkProvider.mockSdkProvider.sdk.removeCustomUserAgent)
     .toHaveBeenCalledWith('cdk-hotswap/success-lambda-function');
+});
+
+test('changing the type of a deployed resource always results in a full deployment', async () => {
+  // GIVEN
+  setup.setCurrentCfnStackTemplate({
+    Resources: {
+      SharedLogicalId: {
+        Type: 'AWS::Lambda::Function',
+        Properties: {
+          Code: {
+            S3Bucket: 'current-bucket',
+            S3Key: 'new-key',
+          },
+          FunctionName: 'my-function',
+        },
+      },
+    },
+  });
+  const cdkStackArtifact = setup.cdkStackArtifactOf({
+    template: {
+      Resources: {
+        SharedLogicalId: {
+          Type: 'AWS::StepFunctions::StateMachine',
+          Properties: {
+            DefinitionString: '{ Prop: "new-value" }',
+            StateMachineName: 'my-machine',
+          },
+        },
+      },
+    },
+  });
+
+  // WHEN
+  const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(cdkStackArtifact);
+
+  // THEN
+  expect(deployStackResult).toBeUndefined();
+  expect(mockUpdateMachineDefinition).not.toHaveBeenCalled();
+  expect(mockUpdateLambdaCode).not.toHaveBeenCalled();
 });

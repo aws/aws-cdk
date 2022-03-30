@@ -205,6 +205,16 @@ export class NestedStack extends Stack {
       return false;
     }
 
+    // When adding tags to nested stack, the tags need to be added to all the resources in
+    // in nested stack, which is handled by the `tags` property, But to tag the
+    //  tags have to be added in the parent stack CfnStack resource. The CfnStack resource created
+    // by this class dont share the same TagManager as that of the one exposed by the `tag` property of the
+    //  class, all the tags need to be copied to the CfnStack resource before synthesizing the resource.
+    // See https://github.com/aws/aws-cdk/pull/19128
+    Object.entries(this.tags.tagValues()).forEach(([key, value]) => {
+      this.resource.tags.setTag(key, value);
+    });
+
     const cfn = JSON.stringify(this._toCloudFormation());
     const templateHash = crypto.createHash('sha256').update(cfn).digest('hex');
 
