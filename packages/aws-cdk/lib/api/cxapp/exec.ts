@@ -71,7 +71,7 @@ export async function execProgram(aws: SdkProvider, config: Configuration): Prom
   try {
     await fs.mkdirp(outdir);
   } catch (error) {
-    throw new Error(`Could not create output directory ${outdir}\n(${error.message})`);
+    throw new Error(`Could not create output directory ${outdir} (${error.message})`);
   }
 
   debug('outdir:', outdir);
