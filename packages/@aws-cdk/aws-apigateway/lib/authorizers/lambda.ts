@@ -105,7 +105,7 @@ abstract class LambdaAuthorizer extends Authorizer implements IAuthorizer {
       this.role.attachInlinePolicy(new iam.Policy(this, 'authorizerInvokePolicy', {
         statements: [
           new iam.PolicyStatement({
-            resources: [this.handler.functionArn],
+            resources: this.handler.resourceArnsForGrantInvoke,
             actions: ['lambda:InvokeFunction'],
           }),
         ],

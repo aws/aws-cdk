@@ -63,6 +63,14 @@ export interface IFunction extends IResource, ec2.IConnectable, iam.IGrantable {
   readonly architecture: Architecture;
 
   /**
+   * The ARN(s) to put into the resource field of the generated IAM policy for grantInvoke().
+   *
+   * This property is for cdk modules to consume only. You should not need to use this property.
+   * Instead, use grantInvoke() directly.
+   */
+  readonly resourceArnsForGrantInvoke: string[];
+
+  /**
    * Adds an event source that maps to this AWS Lambda function.
    * @param id construct ID
    * @param options mapping options
@@ -181,6 +189,20 @@ export interface FunctionAttributes {
   readonly sameEnvironment?: boolean;
 
   /**
+   * Setting this property informs the CDK that the imported function ALREADY HAS the necessary permissions
+   * for what you are trying to do. When not configured, the CDK attempts to auto-determine whether or not
+   * additional permissions are necessary on the function when grant APIs are used. If the CDK tried to add
+   * permissions on an imported lambda, it will fail.
+   *
+   * Set this property *ONLY IF* you are committing to manage the imported function's permissions outside of
+   * CDK. You are acknowledging that your CDK code alone will have insufficient permissions to access the
+   * imported function.
+   *
+   * @default false
+   */
+  readonly skipPermissions?: boolean;
+
+  /**
    * The architecture of this Lambda Function (this is an optional attribute and defaults to X86_64).
    * @default - Architecture.X86_64
    */
@@ -227,6 +249,20 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
    * from different accounts.
    */
   protected abstract readonly canCreatePermissions: boolean;
+
+  /**
+   * The ARN(s) to put into the resource field of the generated IAM policy for grantInvoke()
+   */
+  public abstract readonly resourceArnsForGrantInvoke: string[];
+
+  /**
+   * Whether the user decides to skip adding permissions.
+   * The only use case is for cross-account, imported lambdas
+   * where the user commits to modifying the permisssions
+   * on the imported lambda outside CDK.
+   * @internal
+   */
+  protected readonly _skipPermissions?: boolean;
 
   /**
    * Actual connections object for this Lambda
@@ -329,7 +365,7 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
       grant = iam.Grant.addToPrincipalOrResource({
         grantee,
         actions: ['lambda:InvokeFunction'],
-        resourceArns: [this.functionArn],
+        resourceArns: this.resourceArnsForGrantInvoke,
 
         // Fake resource-like object on which to call addToResourcePolicy(), which actually
         // calls addPermission()
@@ -342,9 +378,10 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
             });
 
             const permissionNode = this._functionNode().tryFindChild(identifier);
-            if (!permissionNode) {
-              throw new Error('Cannot modify permission to lambda function. Function is either imported or $LATEST version. '
-                + 'If the function is imported from the same account use `fromFunctionAttributes()` API with the `sameEnvironment` flag.');
+            if (!permissionNode && !this._skipPermissions) {
+              throw new Error('Cannot modify permission to lambda function. Function is either imported or $LATEST version.\n'
+                + 'If the function is imported from the same account use `fromFunctionAttributes()` API with the `sameEnvironment` flag.\n'
+                + 'If the function is imported from a different account and already has the correct permissions use `fromFunctionAttributes()` API with the `skipPermissions` flag.');
             }
             return { statementAdded: true, policyDependable: permissionNode };
           },
@@ -502,6 +539,10 @@ export abstract class QualifiedFunctionBase extends FunctionBase {
     return this.lambda.latestVersion;
   }
 
+  public get resourceArnsForGrantInvoke() {
+    return [this.functionArn];
+  }
+
   public configureAsyncInvoke(options: EventInvokeConfigOptions): void {
     if (this.node.tryFindChild('EventInvokeConfig') !== undefined) {
       throw new Error(`An EventInvokeConfig has already been configured for the qualified function at ${this.node.path}`);
@@ -554,11 +595,15 @@ class LatestVersion extends FunctionBase implements IVersion {
     return this.lambda.role;
   }
 
-  public addAlias(aliasName: string, options: AliasOptions = {}) {
-    return addAlias(this, this, aliasName, options);
-  }
-
   public get edgeArn(): never {
     throw new Error('$LATEST function version cannot be used for Lambda@Edge');
+  }
+
+  public get resourceArnsForGrantInvoke() {
+    return [this.functionArn];
+  }
+
+  public addAlias(aliasName: string, options: AliasOptions = {}) {
+    return addAlias(this, this, aliasName, options);
   }
 }
