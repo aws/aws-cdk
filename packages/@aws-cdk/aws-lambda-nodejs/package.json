@@ -25,7 +25,7 @@
         "module": "aws_cdk.aws_lambda_nodejs",
         "classifiers": [
           "Framework :: AWS CDK",
-          "Framework :: AWS CDK :: 1"
+          "Framework :: AWS CDK :: 2"
         ]
       }
     },
@@ -79,7 +79,7 @@
     "@aws-cdk/pkglint": "0.0.0",
     "@types/jest": "^27.4.1",
     "delay": "5.0.0",
-    "esbuild": "^0.14.27"
+    "esbuild": "^0.14.29"
   },
   "dependencies": {
     "@aws-cdk/aws-lambda": "0.0.0",

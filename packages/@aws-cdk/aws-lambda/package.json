@@ -25,7 +25,7 @@
         "module": "aws_cdk.aws_lambda",
         "classifiers": [
           "Framework :: AWS CDK",
-          "Framework :: AWS CDK :: 1"
+          "Framework :: AWS CDK :: 2"
         ]
       }
     },
@@ -92,7 +92,7 @@
     "@aws-cdk/pkglint": "0.0.0",
     "@types/aws-lambda": "^8.10.93",
     "@types/jest": "^27.4.1",
-    "@types/lodash": "^4.14.180",
+    "@types/lodash": "^4.14.181",
     "jest": "^27.5.1",
     "lodash": "^4.17.21"
   },
