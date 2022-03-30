@@ -717,6 +717,8 @@ or writing data, allowing you to use AWS Lambda for ETL jobs, ML inference, or o
 The ephemeral storage will be accessible in the functions' `/tmp` directory.
 
 ```ts
+import { Size } from '@aws-cdk/core';
+
 const fn = new lambda.Function(this, 'MyFunction', {
   runtime: lambda.Runtime.NODEJS_14_X,
   handler: 'index.handler',
