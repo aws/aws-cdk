@@ -15,70 +15,6 @@ export interface IntegTestBatchRequest extends IntegTestOptions {
 }
 
 /**
- * A queue holding the list of tests to run and the available regions
- * Each region can only run a single test at a time
- */
-class IntegTestQueue {
-  /**
-   * Map of region to availability
-   */
-  private readonly regions = new Map<string, boolean>();
-
-  /**
-   * List of tests to run
-   */
-  private readonly tests: IntegTestConfig[];
-  constructor(regions: string[], tests: IntegTestConfig[]) {
-    regions.forEach(region => this.regions.set(region, true));
-    this.tests = tests;
-  }
-
-  /**
-   * Returns true if there are still tests that
-   * are available to be run
-   */
-  public get testsAvailable(): boolean {
-    if (this.tests.length > 0) {
-      return true;
-    }
-    return false;
-  }
-
-  /**
-   * Gets the next available region to run the current test in
-   * Returns the region and sets it as unavailable
-   */
-  public get nextAvailableRegion(): string | undefined {
-    for (const [region, available] of this.regions.entries()) {
-      if (available) {
-        this.regions.set(region, false);
-        return region;
-      }
-    }
-    return undefined;
-  }
-
-  /**
-   *  Sets the region as available to run tests
-   */
-  public setRegionAvailable(region: string) {
-    this.regions.set(region, true);
-  }
-
-  /**
-   * Returns the next available test or undefined
-   * if there are no remaining tests
-   */
-  public get nextTest(): IntegTestConfig | undefined {
-    if (this.tests.length > 0) {
-      return this.tests.pop();
-    } else {
-      return undefined;
-    }
-  }
-}
-
-/**
  * Options for running all integration tests
  */
 export interface IntegTestRunOptions extends IntegTestOptions {
@@ -104,18 +40,12 @@ export async function runIntegrationTestsInParallel(
   options: IntegTestRunOptions,
 ): Promise<IntegBatchResponse[]> {
 
-  const queue = new IntegTestQueue(options.regions, options.tests);
+  const queue = options.tests;
   const results: IntegBatchResponse[] = [];
 
-  async function runTest(): Promise<void> {
+  async function runTest(region: string): Promise<void> {
     do {
-      const region = queue.nextAvailableRegion;
-      // if all regions are unavailable then wait and try again
-      if (!region) {
-        await sleep(300);
-        continue;
-      }
-      const test = queue.nextTest;
+      const test = queue.pop();
       if (!test) break;
       logger.highlight(`Running test ${test.fileName} in ${region}`);
       const response: IntegBatchResponse = await options.pool.exec('integTestBatch', [{
@@ -129,11 +59,10 @@ export async function runIntegrationTestsInParallel(
       });
 
       results.push(response);
-      queue.setRegionAvailable(region);
-    } while (queue.testsAvailable);
+    } while (queue.length > 0);
   }
 
-  const workers = options.regions.map(() => runTest());
+  const workers = options.regions.map((region) => runTest(region));
   await Promise.all(workers);
   return results;
 }
@@ -192,8 +121,4 @@ export function singleThreadedTestRunner(request: IntegTestBatchRequest): IntegB
   return {
     failedTests: failures,
   };
-}
-
-async function sleep(ms: number) {
-  return new Promise(ok => setTimeout(ok, ms));
 }
