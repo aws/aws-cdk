@@ -63,6 +63,14 @@ export interface IFunction extends IResource, ec2.IConnectable, iam.IGrantable {
   readonly architecture: Architecture;
 
   /**
+   * The ARN(s) to put into the resource field of the generated IAM policy for grantInvoke().
+   *
+   * This property is for cdk modules to consume only. You should not need to use this property.
+   * Instead, use grantInvoke() directly.
+   */
+  readonly resourceArnsForGrantInvoke: string[];
+
+  /**
    * Adds an event source that maps to this AWS Lambda function.
    * @param id construct ID
    * @param options mapping options
@@ -243,6 +251,11 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
   protected abstract readonly canCreatePermissions: boolean;
 
   /**
+   * The ARN(s) to put into the resource field of the generated IAM policy for grantInvoke()
+   */
+  public abstract readonly resourceArnsForGrantInvoke: string[];
+
+  /**
    * Whether the user decides to skip adding permissions.
    * The only use case is for cross-account, imported lambdas
    * where the user commits to modifying the permisssions
@@ -352,7 +365,7 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
       grant = iam.Grant.addToPrincipalOrResource({
         grantee,
         actions: ['lambda:InvokeFunction'],
-        resourceArns: [this.functionArn],
+        resourceArns: this.resourceArnsForGrantInvoke,
 
         // Fake resource-like object on which to call addToResourcePolicy(), which actually
         // calls addPermission()
@@ -526,6 +539,10 @@ export abstract class QualifiedFunctionBase extends FunctionBase {
     return this.lambda.latestVersion;
   }
 
+  public get resourceArnsForGrantInvoke() {
+    return [this.functionArn];
+  }
+
   public configureAsyncInvoke(options: EventInvokeConfigOptions): void {
     if (this.node.tryFindChild('EventInvokeConfig') !== undefined) {
       throw new Error(`An EventInvokeConfig has already been configured for the qualified function at ${this.node.path}`);
@@ -578,11 +595,15 @@ class LatestVersion extends FunctionBase implements IVersion {
     return this.lambda.role;
   }
 
-  public addAlias(aliasName: string, options: AliasOptions = {}) {
-    return addAlias(this, this, aliasName, options);
-  }
-
   public get edgeArn(): never {
     throw new Error('$LATEST function version cannot be used for Lambda@Edge');
+  }
+
+  public get resourceArnsForGrantInvoke() {
+    return [this.functionArn];
+  }
+
+  public addAlias(aliasName: string, options: AliasOptions = {}) {
+    return addAlias(this, this, aliasName, options);
   }
 }
