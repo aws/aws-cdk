@@ -24,7 +24,7 @@
         "module": "aws_cdk.cloud_assembly_schema",
         "classifiers": [
           "Framework :: AWS CDK",
-          "Framework :: AWS CDK :: 1"
+          "Framework :: AWS CDK :: 2"
         ]
       }
     },
