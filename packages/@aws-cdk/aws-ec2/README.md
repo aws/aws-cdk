@@ -208,7 +208,7 @@ declare const instanceType: ec2.InstanceType;
 
 const provider = ec2.NatProvider.instance({
   instanceType,
-  defaultAllowedTraffic: NatTrafficDirection.OUTBOUND_ONLY,
+  defaultAllowedTraffic: ec2.NatTrafficDirection.OUTBOUND_ONLY,
 });
 new ec2.Vpc(this, 'TheVPC', {
   natGatewayProvider: provider,
