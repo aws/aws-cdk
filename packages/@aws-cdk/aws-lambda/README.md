@@ -725,6 +725,7 @@ const fn = new lambda.Function(this, 'MyFunction', {
 });
 ```
 
+Read more about using this feature in [this AWS blog post](https://aws.amazon.com/blogs/aws/aws-lambda-now-supports-up-to-10-gb-ephemeral-storage/).
 ## Singleton Function
 
 The `SingletonFunction` construct is a way to guarantee that a lambda function will be guaranteed to be part of the stack,
