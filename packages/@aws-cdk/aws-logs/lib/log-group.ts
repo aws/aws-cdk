@@ -194,6 +194,10 @@ abstract class LogGroupBase extends Resource implements ILogGroup {
   /**
    * Adds a statement to the resource policy associated with this log group.
    * A resource policy will be automatically created upon the first call to `addToResourcePolicy`.
+   *
+   * Any ARN Principals inside of the statement will be converted into AWS Account ID strings
+   * because CloudWatch Logs Resource Policies do not accept ARN principals.
+   *
    * @param statement The policy statement to add
    */
   public addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
