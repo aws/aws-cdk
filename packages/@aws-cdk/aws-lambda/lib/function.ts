@@ -399,6 +399,10 @@ export class Function extends FunctionBase {
       return this._currentVersion;
     }
 
+    if (this._warnIfCurrentVersionCalled) {
+      this.warnInvokeFunctionPermissions(this);
+    };
+
     this._currentVersion = new Version(this, 'CurrentVersion', {
       lambda: this,
       ...this.currentVersionOptions,
@@ -419,6 +423,10 @@ export class Function extends FunctionBase {
     }));
 
     return this._currentVersion;
+  }
+
+  public get resourceArnsForGrantInvoke() {
+    return [this.functionArn, `${this.functionArn}:*`];
   }
 
   /** @internal */
@@ -476,6 +484,7 @@ export class Function extends FunctionBase {
       public readonly role = role;
       public readonly permissionsNode = this.node;
       public readonly architecture = attrs.architecture ?? Architecture.X86_64;
+      public readonly resourceArnsForGrantInvoke = [this.functionArn, `${this.functionArn}:*`];
 
       protected readonly canCreatePermissions = attrs.sameEnvironment ?? this._isStackAccount();
       protected readonly _skipPermissions = attrs.skipPermissions ?? false;

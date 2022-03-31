@@ -136,6 +136,10 @@ export abstract class CodePipelineSource extends Step implements ICodePipelineAc
    * These values can be passed into the environment variables of pipeline steps,
    * so your steps can access information about the source revision.
    *
+   * Pipeline synth step has some source attributes predefined in the environment.
+   * If these suffice, you don't need to use this method for the synth step.
+   * @see https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-env-vars.html
+   *
    * What attributes are available depends on the type of source. These attributes
    * are supported:
    *
@@ -162,6 +166,19 @@ export abstract class CodePipelineSource extends Step implements ICodePipelineAc
    *   - `RegistryId`
    *
    * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/reference-variables.html#reference-variables-list
+   * @example
+   * // Access the CommitId of a GitHub source in the synth
+   * const source = pipelines.CodePipelineSource.gitHub('owner/repo', 'main');
+   *
+   * const pipeline = new pipelines.CodePipeline(scope, 'MyPipeline', {
+   *   synth: new pipelines.ShellStep('Synth', {
+   *     input: source,
+   *     commands: [],
+   *     env: {
+   *       'COMMIT_ID': source.sourceAttribute('CommitId'),
+   *     }
+   *   })
+   * });
    */
   public sourceAttribute(name: string): string {
     return makeCodePipelineOutput(this, name);

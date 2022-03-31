@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { Match, Template } from '@aws-cdk/assertions';
+import { Annotations, Match, Template } from '@aws-cdk/assertions';
 import { ProfilingGroup } from '@aws-cdk/aws-codeguruprofiler';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as efs from '@aws-cdk/aws-efs';
@@ -434,6 +434,154 @@ describe('function', () => {
 
       // THEN
       Template.fromStack(stack).resourceCountIs('AWS::Lambda::Permission', 0);
+    });
+
+    describe('annotations on different IFunctions', () => {
+      let stack: cdk.Stack;
+      let fn: lambda.Function;
+      let warningMessage: string;
+      beforeEach(() => {
+        warningMessage = 'AWS Lambda has changed their authorization strategy';
+        stack = new cdk.Stack();
+        fn = new lambda.Function(stack, 'MyLambda', {
+          code: lambda.Code.fromAsset(path.join(__dirname, 'my-lambda-handler')),
+          handler: 'index.handler',
+          runtime: lambda.Runtime.PYTHON_3_6,
+        });
+      });
+
+      describe('permissions on functions', () => {
+        test('without lambda:InvokeFunction', () => {
+          // WHEN
+          fn.addPermission('MyPermission', {
+            action: 'lambda.GetFunction',
+            principal: new iam.ServicePrincipal('lambda.amazonaws.com'),
+          });
+
+          // Simulate a workflow where a user has created a currentVersion with the intent to invoke it later.
+          fn.currentVersion;
+
+          // THEN
+          Annotations.fromStack(stack).hasNoWarning('/Default/MyLambda', Match.stringLikeRegexp(warningMessage));
+        });
+
+        describe('with lambda:InvokeFunction', () => {
+          test('without invoking currentVersion', () => {
+            // WHEN
+            fn.addPermission('MyPermission', {
+              principal: new iam.ServicePrincipal('lambda.amazonaws.com'),
+            });
+
+            // THEN
+            Annotations.fromStack(stack).hasNoWarning('/Default/MyLambda', Match.stringLikeRegexp(warningMessage));
+          });
+
+          test('with currentVersion invoked first', () => {
+            // GIVEN
+            // Simulate a workflow where a user has created a currentVersion with the intent to invoke it later.
+            fn.currentVersion;
+
+            // WHEN
+            fn.addPermission('MyPermission', {
+              principal: new iam.ServicePrincipal('lambda.amazonaws.com'),
+            });
+
+            // THEN
+            Annotations.fromStack(stack).hasWarning('/Default/MyLambda', Match.stringLikeRegexp(warningMessage));
+          });
+
+          test('with currentVersion invoked after permissions created', () => {
+            // WHEN
+            fn.addPermission('MyPermission', {
+              principal: new iam.ServicePrincipal('lambda.amazonaws.com'),
+            });
+
+            // Simulate a workflow where a user has created a currentVersion after adding permissions to the function.
+            fn.currentVersion;
+
+            // THEN
+            Annotations.fromStack(stack).hasWarning('/Default/MyLambda', Match.stringLikeRegexp(warningMessage));
+          });
+
+          test('multiple currentVersion calls does not result in multiple warnings', () => {
+            // WHEN
+            fn.currentVersion;
+
+            fn.addPermission('MyPermission', {
+              principal: new iam.ServicePrincipal('lambda.amazonaws.com'),
+            });
+
+            fn.currentVersion;
+
+            // THEN
+            const warns = Annotations.fromStack(stack).findWarning('/Default/MyLambda', Match.stringLikeRegexp(warningMessage));
+            expect(warns).toHaveLength(1);
+          });
+        });
+      });
+
+      test('permission on versions', () => {
+        // GIVEN
+        const version = new lambda.Version(stack, 'MyVersion', {
+          lambda: fn.currentVersion,
+        });
+
+        // WHEN
+        version.addPermission('MyPermission', {
+          principal: new iam.ServicePrincipal('lambda.amazonaws.com'),
+        });
+
+        // THEN
+        Annotations.fromStack(stack).hasNoWarning('/Default/MyVersion', Match.stringLikeRegexp(warningMessage));
+      });
+
+      test('permission on latest version', () => {
+        // WHEN
+        fn.latestVersion.addPermission('MyPermission', {
+          principal: new iam.ServicePrincipal('lambda.amazonaws.com'),
+        });
+
+        // THEN
+        // cannot add permissions on latest version, so no warning necessary
+        Annotations.fromStack(stack).hasNoWarning('/Default/MyLambda/$LATEST', Match.stringLikeRegexp(warningMessage));
+      });
+
+      describe('permission on alias', () => {
+        test('of current version', () => {
+          // GIVEN
+          const version = new lambda.Version(stack, 'MyVersion', {
+            lambda: fn.currentVersion,
+          });
+          const alias = new lambda.Alias(stack, 'MyAlias', {
+            aliasName: 'alias',
+            version,
+          });
+
+          // WHEN
+          alias.addPermission('MyPermission', {
+            principal: new iam.ServicePrincipal('lambda.amazonaws.com'),
+          });
+
+          // THEN
+          Annotations.fromStack(stack).hasNoWarning('/Default/MyAlias', Match.stringLikeRegexp(warningMessage));
+        });
+
+        test('of latest version', () => {
+          // GIVEN
+          const alias = new lambda.Alias(stack, 'MyAlias', {
+            aliasName: 'alias',
+            version: fn.latestVersion,
+          });
+
+          // WHEN
+          alias.addPermission('MyPermission', {
+            principal: new iam.ServicePrincipal('lambda.amazonaws.com'),
+          });
+
+          // THEN
+          Annotations.fromStack(stack).hasNoWarning('/Default/MyAlias', Match.stringLikeRegexp(warningMessage));
+        });
+      });
     });
   });
 
@@ -983,7 +1131,10 @@ describe('function', () => {
             {
               Action: 'lambda:InvokeFunction',
               Effect: 'Allow',
-              Resource: { 'Fn::GetAtt': ['Function76856677', 'Arn'] },
+              Resource: [
+                { 'Fn::GetAtt': ['Function76856677', 'Arn'] },
+                { 'Fn::Join': ['', [{ 'Fn::GetAtt': ['Function76856677', 'Arn'] }, ':*']] },
+              ],
             },
           ],
         },
@@ -1116,7 +1267,10 @@ describe('function', () => {
             {
               Action: 'lambda:InvokeFunction',
               Effect: 'Allow',
-              Resource: { 'Fn::GetAtt': ['Function76856677', 'Arn'] },
+              Resource: [
+                { 'Fn::GetAtt': ['Function76856677', 'Arn'] },
+                { 'Fn::Join': ['', [{ 'Fn::GetAtt': ['Function76856677', 'Arn'] }, ':*']] },
+              ],
             },
           ],
         },
