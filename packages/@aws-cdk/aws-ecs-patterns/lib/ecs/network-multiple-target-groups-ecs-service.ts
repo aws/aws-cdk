@@ -1,4 +1,4 @@
-import { Ec2Service, Ec2TaskDefinition } from '@aws-cdk/aws-ecs';
+import { Ec2Service, Ec2TaskDefinition, PlacementConstraint, PlacementStrategy } from '@aws-cdk/aws-ecs';
 import { NetworkTargetGroup } from '@aws-cdk/aws-elasticloadbalancingv2';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
@@ -57,6 +57,22 @@ export interface NetworkMultipleTargetGroupsEc2ServiceProps extends NetworkMulti
    * @default - No memory reserved.
    */
   readonly memoryReservationMiB?: number;
+
+  /**
+   * The placement constraints to use for tasks in the service. For more information, see
+   * [Amazon ECS Task Placement Constraints](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-placement-constraints.html).
+   *
+   * @default - No constraints.
+   */
+  readonly placementConstraints?: PlacementConstraint[];
+
+  /**
+   * The placement strategies to use for tasks in the service. For more information, see
+   * [Amazon ECS Task Placement Strategies](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-placement-strategies.html).
+   *
+   * @default - No strategies.
+  */
+  readonly placementStrategies?: PlacementStrategy[];
 }
 
 /**
@@ -150,6 +166,8 @@ export class NetworkMultipleTargetGroupsEc2Service extends NetworkMultipleTarget
       propagateTags: props.propagateTags,
       enableECSManagedTags: props.enableECSManagedTags,
       cloudMapOptions: props.cloudMapOptions,
+      placementConstraints: props.placementConstraints,
+      placementStrategies: props.placementStrategies,
     });
   }
 }
