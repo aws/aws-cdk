@@ -2,6 +2,7 @@ import { Annotations, Template, Match } from '@aws-cdk/assertions';
 import { testFutureBehavior, testLegacyBehavior } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
+import { Construct } from 'constructs';
 import {
   CfnLaunchTemplate,
   Instance,
@@ -34,7 +35,7 @@ describe('RequireImdsv2Aspect', () => {
       // @ts-ignore
       aspect.warn(node, errmsg);
     });
-    const construct = new cdk.Construct(stack, 'Construct');
+    const construct = new Construct(stack, 'Construct');
 
     // WHEN
     aspect.visit(construct);
