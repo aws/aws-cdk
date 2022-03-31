@@ -1,4 +1,4 @@
-import { Match, Template } from '@aws-cdk/assertions';
+import { Annotations, Match, Template } from '@aws-cdk/assertions';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { CfnOutput, CfnResource, Fn, Lazy, Stack, Tags } from '@aws-cdk/core';
 import {
@@ -1557,11 +1557,7 @@ describe('vpc', () => {
         subnetIds: { 'Fn::Split': [',', { 'Fn::ImportValue': 'myPublicSubnetIds' }] },
       });
 
-      expect(vpc.node.metadataEntry).toContainEqual({
-        data: expect.stringContaining("fromVpcAttributes: 'availabilityZones' is a list token: the imported VPC will not work with constructs that require a list of subnets at synthesis time. Use 'Vpc.fromLookup()' or 'Fn.importListValue' instead."),
-        type: 'aws:cdk:warning',
-        trace: undefined,
-      });
+      Annotations.fromStack(stack).hasWarning('/TestStack/VPC', "fromVpcAttributes: 'availabilityZones' is a list token: the imported VPC will not work with constructs that require a list of subnets at synthesis time. Use 'Vpc.fromLookup()' or 'Fn.importListValue' instead.");
     });
 
     test('fromVpcAttributes using fixed-length list tokens', () => {
