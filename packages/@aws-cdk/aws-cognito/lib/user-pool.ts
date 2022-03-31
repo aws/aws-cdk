@@ -936,7 +936,7 @@ export class UserPool extends UserPoolBase {
     const capitalize = name.charAt(0).toUpperCase() + name.slice(1);
     fn.addPermission(`${capitalize}Cognito`, {
       principal: new ServicePrincipal('cognito-idp.amazonaws.com'),
-      sourceArn: this.userPoolArn,
+      sourceArn: Lazy.string({ produce: () => this.userPoolArn }),
     });
   }
 
