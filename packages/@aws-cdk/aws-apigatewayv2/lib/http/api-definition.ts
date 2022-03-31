@@ -5,7 +5,7 @@ import * as s3_assets from '@aws-cdk/aws-s3-assets';
 // eslint-disable-next-line no-duplicate-imports, import/order
 import * as cxapi from '@aws-cdk/cx-api';
 import { Node } from 'constructs';
-import { CfnApi } from './apigatewayv2.generated';
+import { CfnApi } from '../apigatewayv2.generated';
 import { IHttpApi, SpecHttpApi } from './api';
 import { Construct } from '@aws-cdk/core';
 
