@@ -90,12 +90,10 @@ test('lambda as destination', () => {
         {
           Action: 'lambda:InvokeFunction',
           Effect: 'Allow',
-          Resource: {
-            'Fn::GetAtt': [
-              'SuccessFunction93C61D39',
-              'Arn',
-            ],
-          },
+          Resource: [
+            { 'Fn::GetAtt': ['SuccessFunction93C61D39', 'Arn'] },
+            { 'Fn::Join': ['', [{ 'Fn::GetAtt': ['SuccessFunction93C61D39', 'Arn'] }, ':*']] },
+          ],
         },
       ],
       Version: '2012-10-17',

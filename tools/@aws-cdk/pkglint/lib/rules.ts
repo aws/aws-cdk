@@ -454,6 +454,12 @@ export class MaturitySetting extends ValidationRule {
   }
 
   private validateReadmeHasBanner(pkg: PackageJson, maturity: string, levelsPresent: string[]) {
+    if (pkg.packageName === '@aws-cdk/aws-elasticsearch') {
+      // Special case for elasticsearch, which is labeled as stable in package.json
+      // but all APIs are now marked 'deprecated'
+      return;
+    }
+
     const badge = this.readmeBadge(maturity, levelsPresent);
     if (!badge) {
       // Somehow, we don't have a badge for this stability level
@@ -803,7 +809,7 @@ export class JSIIPythonTarget extends ValidationRule {
 
     expectJSON(this.name, pkg, 'jsii.targets.python.distName', moduleName.python.distName);
     expectJSON(this.name, pkg, 'jsii.targets.python.module', moduleName.python.module);
-    expectJSON(this.name, pkg, 'jsii.targets.python.classifiers', ['Framework :: AWS CDK', 'Framework :: AWS CDK :: 1']);
+    expectJSON(this.name, pkg, 'jsii.targets.python.classifiers', ['Framework :: AWS CDK', `Framework :: AWS CDK :: ${cdkMajorVersion()}`]);
   }
 }
 
@@ -1724,18 +1730,6 @@ export class UbergenPackageVisibility extends ValidationRule {
           fix: () => {
             delete pkg.json.private;
             pkg.json.private = true;
-          },
-        });
-      }
-    } else {
-      if (pkg.json.private && !pkg.json.ubergen?.exclude) {
-        pkg.report({
-          ruleName: this.name,
-          message: 'ubergen.exclude must be configured for private packages',
-          fix: () => {
-            pkg.json.ubergen = {
-              exclude: true,
-            };
           },
         });
       }
