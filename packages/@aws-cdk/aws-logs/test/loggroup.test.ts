@@ -1,7 +1,7 @@
 import { Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
-import { CfnParameter, Fn/*, Intrinsic*/, RemovalPolicy, Stack } from '@aws-cdk/core';
+import { CfnParameter, Fn, RemovalPolicy, Stack } from '@aws-cdk/core';
 import { LogGroup, RetentionDays } from '../lib';
 
 describe('log group', () => {
