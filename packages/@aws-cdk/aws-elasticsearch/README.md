@@ -3,20 +3,9 @@
 
 ---
 
-Features                           | Stability
------------------------------------|----------------------------------------------------------------
-CFN Resources                      | ![Stable](https://img.shields.io/badge/stable-success.svg?style=for-the-badge)
-Higher level constructs for Domain | ![Stable](https://img.shields.io/badge/stable-success.svg?style=for-the-badge)
+![Deprecated](https://img.shields.io/badge/deprecated-critical.svg?style=for-the-badge)
 
-> **CFN Resources:** All classes with the `Cfn` prefix in this module ([CFN Resources]) are always
-> stable and safe to use.
->
-> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib
-
-<!-- -->
-
-> **Stable:** Higher level constructs in this module that are marked stable will not undergo any
-> breaking changes. They will strictly follow the [Semantic Versioning](https://semver.org/) model.
+> This API may emit warnings. Backward compatibility is not guaranteed.
 
 ---
 
@@ -233,7 +222,62 @@ const domain = new es.Domain(this, 'Domain', {
 const masterUserPassword = domain.masterUserPassword;
 ```
 
+## Custom access policies
 
+If the domain requires custom access control it can be configured either as a
+constructor property, or later by means of a helper method.
+
+For simple permissions the `accessPolicies` constructor may be sufficient:
+
+```ts
+const domain = new es.Domain(this, 'Domain', {
+  version: es.ElasticsearchVersion.V7_1,
+  accessPolicies: [
+    new iam.PolicyStatement({
+      actions: ['es:*ESHttpPost', 'es:ESHttpPut*'],
+      effect: iam.Effect.ALLOW,
+      principals: [new iam.AccountPrincipal('123456789012')],
+      resources: ['*'],
+    }),
+  ]
+});
+```
+
+For more complex use-cases, for example, to set the domain up to receive data from a
+[cross-account Kinesis Firehose](https://aws.amazon.com/premiumsupport/knowledge-center/kinesis-firehose-cross-account-streaming/) the `addAccessPolicies` helper method
+allows for policies that include the explicit domain ARN.
+
+```ts
+const domain = new es.Domain(this, 'Domain', {
+  version: es.ElasticsearchVersion.V7_1,
+});
+
+domain.addAccessPolicies(
+  new iam.PolicyStatement({
+    actions: ['es:ESHttpPost', 'es:ESHttpPut'],
+    effect: iam.Effect.ALLOW,
+    principals: [new iam.AccountPrincipal('123456789012')],
+    resources: [domain.domainArn, `${domain.domainArn}/*`],
+  }),
+  new iam.PolicyStatement({
+    actions: ['es:ESHttpGet'],
+    effect: iam.Effect.ALLOW,
+    principals: [new iam.AccountPrincipal('123456789012')],
+    resources: [
+      `${domain.domainArn}/_all/_settings`,
+      `${domain.domainArn}/_cluster/stats`,
+      `${domain.domainArn}/index-name*/_mapping/type-name`,
+      `${domain.domainArn}/roletest*/_mapping/roletest`,
+      `${domain.domainArn}/_nodes`,
+      `${domain.domainArn}/_nodes/stats`,
+      `${domain.domainArn}/_nodes/*/stats`,
+      `${domain.domainArn}/_stats`,
+      `${domain.domainArn}/index-name*/_stats`,
+      `${domain.domainArn}/roletest*/_stat`,
+    ],
+  }),
+);
+```
 
 ## Audit logs
 
@@ -400,7 +444,7 @@ Make the following modifications to your CDK application to migrate to the `@aws
 Follow these steps to migrate your application without data loss:
 
 - Ensure that the [removal policy](https://docs.aws.amazon.com/cdk/api/latest/docs/@aws-cdk_core.RemovalPolicy.html) on your domains are set to `RemovalPolicy.RETAIN`. This is the default for the domain construct, so nothing is required unless you have specifically set the removal policy to some other value.
-- Remove the domain resource from your CloudFormation stacks by manually modifying the synthesized templates used to create the CloudFormation stacks. This may also involve modifying or deleting dependent resources, such as the custom resources that CDK creates to manage the domain's access policy or any other resource you have connected to the domain. You will need to search for references to each domain's logical ID to determine which other resources refer to it and replace or delete those references. Do not remove resources that are dependencies of the domain or you will have to recreate or import them before importing the domain. After modification, deploy the stacks through the AWS Management Console or using the AWS CLI. 
+- Remove the domain resource from your CloudFormation stacks by manually modifying the synthesized templates used to create the CloudFormation stacks. This may also involve modifying or deleting dependent resources, such as the custom resources that CDK creates to manage the domain's access policy or any other resource you have connected to the domain. You will need to search for references to each domain's logical ID to determine which other resources refer to it and replace or delete those references. Do not remove resources that are dependencies of the domain or you will have to recreate or import them before importing the domain. After modification, deploy the stacks through the AWS Management Console or using the AWS CLI.
 - Migrate your CDK application to use the new `@aws-cdk/aws-opensearchservice` module by applying the necessary modifications listed above. Synthesize your application and obtain the resulting stack templates.
 - Copy just the definition of the domain from the "migrated" templates to the corresponding "stripped" templates that you deployed above. [Import](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/resource-import-existing-stack.html) the orphaned domains into your CloudFormation stacks using these templates.
 - Synthesize and deploy your CDK application to reconfigure/recreate the modified dependent resources. The CloudFormation stacks should now contain the same resources as existed prior to migration.

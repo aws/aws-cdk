@@ -11,18 +11,20 @@
 
 The AWS CDK Toolkit provides the `cdk` command-line interface that can be used to work with AWS CDK applications.
 
-Command                           | Description
-----------------------------------|-------------------------------------------------------------------------------------
-[`cdk docs`](#cdk-docs)           | Access the online documentation
-[`cdk init`](#cdk-init)           | Start a new CDK project (app or library)
-[`cdk list`](#cdk-list)           | List stacks in an application
-[`cdk synth`](#cdk-synthesize)    | Synthesize a CDK app to CloudFormation template(s)
-[`cdk diff`](#cdk-diff)           | Diff stacks against current state
-[`cdk deploy`](#cdk-deploy)       | Deploy a stack into an AWS account
-[`cdk watch`](#cdk-watch)         | Watches a CDK app for deployable and hotswappable changes
-[`cdk destroy`](#cdk-destroy)     | Deletes a stack from an AWS account
-[`cdk bootstrap`](#cdk-bootstrap) | Deploy a toolkit stack to support deploying large stacks & artifacts
-[`cdk doctor`](#cdk-doctor)       | Inspect the environment and produce information useful for troubleshooting
+Command                               | Description
+--------------------------------------|---------------------------------------------------------------------------------
+[`cdk docs`](#cdk-docs)               | Access the online documentation
+[`cdk init`](#cdk-init)               | Start a new CDK project (app or library)
+[`cdk list`](#cdk-list)               | List stacks in an application
+[`cdk synth`](#cdk-synthesize)        | Synthesize a CDK app to CloudFormation template(s)
+[`cdk diff`](#cdk-diff)               | Diff stacks against current state
+[`cdk deploy`](#cdk-deploy)           | Deploy a stack into an AWS account
+[`cdk watch`](#cdk-watch)             | Watches a CDK app for deployable and hotswappable changes
+[`cdk destroy`](#cdk-destroy)         | Deletes a stack from an AWS account
+[`cdk bootstrap`](#cdk-bootstrap)     | Deploy a toolkit stack to support deploying large stacks & artifacts
+[`cdk doctor`](#cdk-doctor)           | Inspect the environment and produce information useful for troubleshooting
+[`cdk acknowledge`](#cdk-acknowledge) | Acknowledge (and hide) a notice by issue number
+[`cdk notices`](#cdk-notices)         | List all relevant notices for the application
 
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
 
@@ -346,7 +348,8 @@ $ cdk deploy --hotswap [StackNames]
 This will attempt to perform a faster, short-circuit deployment if possible
 (for example, if you only changed the code of a Lambda function in your CDK app,
 but nothing else in your CDK code),
-skipping CloudFormation, and updating the affected resources directly.
+skipping CloudFormation, and updating the affected resources directly;
+this includes changes to resources in nested stacks.
 If the tool detects that the change does not support hotswapping,
 it will fall back and perform a full CloudFormation deployment,
 exactly like `cdk deploy` does without the `--hotswap` flag.
@@ -503,6 +506,102 @@ $ cdk doctor
   - AWS_SDK_LOAD_CONFIG = 1
 ```
 
+## Notices
+
+CDK Notices are important messages regarding security vulnerabilities, regressions, and usage of unsupported
+versions. Relevant notices appear on every command by default. For example,
+
+```console
+$ cdk deploy
+
+... # Normal output of the command
+
+NOTICES
+
+16603   Toggling off auto_delete_objects for Bucket empties the bucket
+
+        Overview: If a stack is deployed with an S3 bucket with
+                  auto_delete_objects=True, and then re-deployed with 
+                  auto_delete_objects=False, all the objects in the bucket 
+                  will be deleted.
+                 
+        Affected versions: <1.126.0.
+
+        More information at: https://github.com/aws/aws-cdk/issues/16603
+
+
+17061   Error when building EKS cluster with monocdk import
+
+        Overview: When using monocdk/aws-eks to build a stack containing
+                  an EKS cluster, error is thrown about missing 
+                  lambda-layer-node-proxy-agent/layer/package.json.
+         
+        Affected versions: >=1.126.0 <=1.130.0.
+
+        More information at: https://github.com/aws/aws-cdk/issues/17061 
+
+
+If you don’t want to see an notice anymore, use "cdk acknowledge ID". For example, "cdk acknowledge 16603".
+```
+
+You can suppress warnings in a variety of ways:
+
+- per individual execution:
+
+  `cdk deploy --no-notices`
+
+- disable all notices indefinitely through context in `cdk.json`:
+
+  ```json
+  {
+    "notices": false,
+    "context": {
+      ...
+    }
+  }
+  ```
+
+- acknowleding individual notices via `cdk acknowledge` (see below).
+
+### `cdk acknowledge`
+
+To hide a particular notice that has been addressed or does not apply, call `cdk acknowledge` with the ID of
+the notice:
+
+```console
+$cdk acknowledge 16603
+```
+
+> Please note that the acknowledgements are made project by project. If you acknowledge an notice in one CDK
+> project, it will still appear on other projects when you run any CDK commands, unless you have suppressed
+> or disabled notices.
+
+
+### `cdk notices`
+
+List the notices that are relevant to the current CDK repository, regardless of context flags or notices that
+have been acknowledged: 
+
+```console
+$ cdk notices
+
+NOTICES
+
+16603   Toggling off auto_delete_objects for Bucket empties the bucket
+
+        Overview: if a stack is deployed with an S3 bucket with 
+                  auto_delete_objects=True, and then re-deployed with 
+                  auto_delete_objects=False, all the objects in the bucket 
+                  will be deleted.
+
+        Affected versions: framework: <=2.15.0 >=2.10.0
+
+        More information at: https://github.com/aws/aws-cdk/issues/16603
+
+
+If you don’t want to see a notice anymore, use "cdk acknowledge <id>". For example, "cdk acknowledge 16603".
+```
+
 ### Bundling
 
 By default asset bundling is skipped for `cdk list` and `cdk destroy`. For `cdk deploy`, `cdk diff`
@@ -522,6 +621,11 @@ source_profile=my_source_role
 role_arn=arn:aws:iam::123456789123:role/role_to_be_assumed
 mfa_serial=arn:aws:iam::123456789123:mfa/my_user
 ```
+
+## SSO support
+
+If you create an SSO profile with `aws configure sso` and run `aws sso login`, the CDK can use those credentials
+if you set the profile name as the value of `AWS_PROFILE` or pass it to `--profile`.
 
 ## Configuration
 
