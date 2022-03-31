@@ -364,7 +364,7 @@ describe('log group', () => {
     });
   });
 
-  test('can add a policy to the log group', () => {
+  test('when added to log groups, IAM users are converted into account IDs in the resource policy', () => {
     // GIVEN
     const stack = new Stack();
     const lg = new LogGroup(stack, 'LogGroup');
@@ -378,16 +378,15 @@ describe('log group', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Logs::ResourcePolicy', {
-      PolicyDocument: '{"Statement":[{"Action":"logs:PutLogEvents","Effect":"Allow","Principal":{"AWS":"arn:aws:iam::123456789012:user/user-name"},"Resource":"*"}],"Version":"2012-10-17"}',
+      PolicyDocument: '{"Statement":[{"Action":"logs:PutLogEvents","Effect":"Allow","Principal":{"AWS":"123456789012"},"Resource":"*"}],"Version":"2012-10-17"}',
       PolicyName: 'LogGroupPolicy643B329C',
     });
   });
 
-  test('policies with token statements correctly extract the account id from the role ARN', () => {
+  test('imported values are treated as if they are ARNs and converted to account IDs via CFN pseudo parameters', () => {
     // GIVEN
     const stack = new Stack();
     const lg = new LogGroup(stack, 'LogGroup');
-    //const tokenizedRole = new Intrinsic('arn:aws:iam::123456789012:role/my-role');
 
     // WHEN
     lg.addToResourcePolicy(new iam.PolicyStatement({
@@ -415,7 +414,6 @@ describe('log group', () => {
       },
     });
   });
-
 
   test('correctly returns physical name of the log group', () => {
     // GIVEN
