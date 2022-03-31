@@ -144,6 +144,13 @@ export class Size {
   public toPebibytes(opts: SizeConversionOptions = {}): number {
     return convert(this.amount, this.unit, StorageUnit.Pebibytes, opts);
   }
+
+  /**
+   * Checks if size is a token or a resolvable object
+   */
+  public isUnresolved() {
+    return Token.isUnresolved(this.amount);
+  }
 }
 
 /**
