@@ -1,3 +1,5 @@
+import { Frequency } from './config';
+
 /**
  * Edge of decode graph
  */
@@ -61,13 +63,34 @@ export interface Node {
 }
 
 /**
- * Helper class to build a decode object
+ * Configuration options for DecodeConfigBuilder.
  */
-export class DecodeConfig {
+export interface DecodeConfig {
+  /**
+   * Edges of the decode graph.
+   */
+  readonly edges: Edge[],
+
+  /**
+   * Nodes of the decode graph.
+   */
+  readonly nodes: {[key: string]: Node}
+}
+
+
+/**
+ * Helper class to build a decode object
+ *
+ * This class is used to build a decode object for a given frequency.
+ *
+ * @param edges Edges of the decode graph.
+ * @param nodes Nodes of the decode graph.
+ */
+export class DecodeConfigBuilder {
   private edges: Edge[]
   private nodes: {[key: string]: Node}
 
-  constructor(edges: Edge[], nodes: {[key: string]: Node}) {
+  constructor({ edges, nodes }: DecodeConfig = { edges: [], nodes: {} }) {
     this.nodes = nodes;
 
     this.edges = [];
@@ -82,9 +105,11 @@ export class DecodeConfig {
 
   /**
    * toString returns the decode config as a JSON string.
+   *
+   * @returns the decode config as a JSON string
    */
   toString() {
-    JSON.stringify({ edges: this.edges, nodeConfigs: this.nodes });
+    return JSON.stringify({ edges: this.edges, nodeConfigs: this.nodes });
   }
 
   /**
@@ -183,6 +208,16 @@ export interface Qpsk {
 }
 
 /**
+ * Filter types available
+ */
+export enum Filter {
+  /**
+   * ROOT RAISED COSINE filter [learn more](https://en.wikipedia.org/wiki/Root-raised-cosine_filter)
+   */
+  ROOT_RAISED_COSINE = 'ROOT_RAISED_COSINE',
+}
+
+/**
  * Demodulation configuration for OQPSK
  */
 export interface Oqpsk {
@@ -198,18 +233,48 @@ export interface Oqpsk {
 }
 
 /**
+ * Timing units
+ */
+export enum TimingUnits {
+  /**
+   * Megasamples per second (Million samples per second)
+   */
+  MSPS = 'Msps',
+
+  /**
+   * Kilosamples per second (Thousand samples per second)
+   */
+  KSPS = 'ksps'
+}
+
+/**
+ * Timing configuration
+ */
+export interface Timing {
+  /**
+   * Value of timing configuration
+   */
+  readonly value: number
+
+  /**
+   * Units of measurement
+   */
+  readonly units: TimingUnits
+}
+
+/**
  * Symbol configuration for timing recovery
  */
 export interface SymbolTimingRecovery {
   /**
    * Symbol Rate
    */
-  readonly symbolRate: CenterFrequency;
+  readonly symbolRate: Timing;
 
   /**
    * Range
    */
-  readonly range: CenterFrequency;
+  readonly range: Timing;
 
   /**
    * Matched Filter
@@ -225,7 +290,7 @@ export interface MatchedFilter {
   /**
    * Type
    */
-  readonly type: string;
+  readonly type: Filter;
 
   /**
    * Rolloff Factor
@@ -240,27 +305,12 @@ export interface CarrierFrequencyRecovery {
   /**
    * Center Frequency
    */
-  readonly centerFrequency: CenterFrequency;
+  readonly centerFrequency: Frequency;
 
   /**
    * Range
    */
-  readonly range: CenterFrequency;
-}
-
-/**
- * Center Frequency of a signal
- */
-export interface CenterFrequency {
-  /**
-   * Value
-   */
-  readonly value: number;
-
-  /**
-   * Units
-   */
-  readonly units: string;
+  readonly range: Frequency;
 }
 
 /**

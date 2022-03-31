@@ -1,6 +1,6 @@
 import { Effect, PolicyDocument, PolicyStatement, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import { Bucket } from '@aws-cdk/aws-s3';
-import { App, Duration, Fn, Stack } from '@aws-cdk/core';
+import { App, Duration, Fn, RemovalPolicy, Stack } from '@aws-cdk/core';
 import { AntennaDownlinkConfig, Autotrack, FrequencyUnits, MissionProfile, Polarization, S3RecordingConfig, TrackingConfig } from '../lib';
 
 const app = new App();
@@ -28,6 +28,8 @@ const demodConfig = new AntennaDownlinkConfig(stack, 'DemodConfig', {
 
 const bucket = new Bucket(stack, 'Bucket', {
   bucketName: `aws-groundstation-${stack.stackName}-${stack.account}`,
+  autoDeleteObjects: true,
+  removalPolicy: RemovalPolicy.DESTROY,
 });
 
 const role = new Role(stack, 'Role', {

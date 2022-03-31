@@ -8,12 +8,16 @@ import { CfnDataflowEndpointGroup } from './groundstation.generated';
 export interface SocketAddress {
   /**
    * The name of the endpoint, such as Endpoint 1.
+   *
+   * @default None
    */
-  readonly name: string
+  readonly name?: string
   /**
    * The port of the endpoint, such as 55888.
+   *
+   * @default None
    */
-  readonly port: number
+  readonly port?: number
 }
 
 
@@ -23,18 +27,24 @@ export interface SocketAddress {
 export interface DataflowEndpoint {
   /**
    *  The address and port of an endpoint.
+   *
+   * @default None
    */
-  readonly address: SocketAddress
+  readonly address?: SocketAddress
 
   /**
    * Maximum transmission unit (MTU) size in bytes of a dataflow endpoint. Valid values are between 1400 and 1500. A default value of 1500 is used if not set.
+   *
+   * @default 1500
    */
-  readonly mtu: number
+  readonly mtu?: number
 
   /**
    * The endpoint name. When listing available contacts for a satellite, Ground Station searches for a dataflow endpoint whose name matches the value specified by the dataflow endpoint config of the selected mission profile. If no matching dataflow endpoints are found then Ground Station will not display any available contacts for the satellite.
+   *
+   * @default None
    */
-  readonly name: string
+  readonly name?: string
 }
 
 /**
@@ -69,13 +79,17 @@ export interface SecurityDetails {
 export interface EndpointDetails {
   /**
    * Information about the endpoint such as name and the endpoint address.
+   *
+   * @default None
    */
-  readonly endpoint: DataflowEndpoint
+  readonly endpoint?: DataflowEndpoint
 
   /**
    * The role ARN, and IDs for security groups and subnets.
+   *
+   * @default None
    */
-  readonly securityDetails: SecurityDetails
+  readonly securityDetails?: SecurityDetails
 }
 
 /**

@@ -1,0 +1,46 @@
+{
+  "Resources": {
+    "AntennaDownlinkConfig196ADE8CA": {
+      "Type": "AWS::GroundStation::Config",
+      "Properties": {
+        "ConfigData": {
+          "AntennaDownlinkConfig": {
+            "SpectrumConfig": {
+              "Bandwidth": {
+                "Units": "MHz",
+                "Value": 10
+              },
+              "CenterFrequency": {
+                "Units": "MHz",
+                "Value": 2200
+              },
+              "Polarization": "LEFT_HAND"
+            }
+          }
+        },
+        "Name": "AntennaDownlinkConfig_1"
+      }
+    },
+    "AntennaDownlinkConfig26914ED47": {
+      "Type": "AWS::GroundStation::Config",
+      "Properties": {
+        "ConfigData": {
+          "AntennaDownlinkConfig": {
+            "SpectrumConfig": {
+              "Bandwidth": {
+                "Units": "MHz",
+                "Value": 54
+              },
+              "CenterFrequency": {
+                "Units": "GHz",
+                "Value": 8400
+              },
+              "Polarization": "NONE"
+            }
+          }
+        },
+        "Name": "AntennaDownlinkConfig_2"
+      }
+    }
+  }
+}

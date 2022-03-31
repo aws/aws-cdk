@@ -133,14 +133,9 @@ export interface Frequency {
 }
 
 /**
- * Spectrum configuration with bandwidth
+ * Spectrum configuration
  */
-export interface BandwidthSpectrumConfig {
-  /**
-   * Bandwidth of the spectrum in Hertz
-   */
-  readonly bandwidth: FrequencyBandwidth;
-
+export interface UplinkSpectrumConfig {
   /**
    * Center frequency of the spectrum in Hertz
    */
@@ -150,6 +145,16 @@ export interface BandwidthSpectrumConfig {
    * Polarization of the spectrum
    */
   readonly polarization: Polarization;
+}
+
+/**
+ * Spectrum configuration with bandwidth
+ */
+export interface SpectrumConfig extends UplinkSpectrumConfig {
+  /**
+   * Bandwidth of the spectrum in Hertz
+   */
+  readonly bandwidth: FrequencyBandwidth;
 }
 
 
@@ -170,7 +175,7 @@ export interface AntennaDownlinkConfigProps extends ConfigProps {
   /**
    * Defines the spectrum configuration.
    */
-  readonly spectrumConfig: BandwidthSpectrumConfig
+  readonly spectrumConfig: SpectrumConfig
 }
 
 /**
@@ -272,40 +277,29 @@ export class AntennaDownlinkDemodDecodeConfig extends BaseConfig {
 }
 
 /**
- * Spectrum configuration
- */
-export interface SpectrumConfig {
-  /**
-   * Center frequency of the band
-   */
-  readonly centerFrequency: Frequency;
-
-  /**
-   * Polarization value of the signal
-   */
-  readonly polarization: Polarization;
-}
-
-/**
  * Configuration for Antenna Uplink
  */
 export interface AntennaUplinkConfigProps extends ConfigProps {
-
-
   /**
-   *  Defines the spectrum configuration.
+   * Defines the spectrum configuration.
+   *
+   * @default None
    */
-  readonly spectrumConfig: SpectrumConfig
+  readonly spectrumConfig?: UplinkSpectrumConfig
 
   /**
    *  The equivalent isotropically radiated power (EIRP) to use for uplink transmissions. Valid values are between 20.0 to 50.0 dBW.
+   *
+   * @default None
    */
-  readonly targetEirp: Erip
+  readonly targetEirp?: Erip
 
   /**
    *  Whether or not uplink transmit is disabled.
+   *
+   * @default false
    */
-  readonly transmitDisabled: boolean
+  readonly transmitDisabled?: boolean
 }
 
 
