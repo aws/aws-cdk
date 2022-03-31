@@ -608,7 +608,7 @@ describe('fargate service', () => {
         image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
       });
 
-      const service = new ecs.FargateService(stack, 'FargateService', {
+      new ecs.FargateService(stack, 'FargateService', {
         cluster,
         taskDefinition,
         deploymentController: {
@@ -617,7 +617,7 @@ describe('fargate service', () => {
       });
 
       // THEN
-      expect(service.node.metadataEntry[0].data).toEqual('taskDefinition and launchType are blanked out when using external deployment controller.');
+      Annotations.fromStack(stack).hasWarning('/Default/FargateService', 'taskDefinition and launchType are blanked out when using external deployment controller.');
       Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
         Cluster: {
           Ref: 'EcsCluster97242B84',
