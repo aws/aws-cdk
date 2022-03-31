@@ -98,7 +98,7 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
   /**
    * The size of the function’s /tmp directory in MB.
    *
-   * @default 512
+   * @default 512 MiB
    */
   readonly ephemeralStorageSize?: Size;
 
