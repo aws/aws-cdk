@@ -12,7 +12,7 @@ import { Construct } from '@aws-cdk/core';
 /**
  * Represents an OpenAPI definition asset.
  */
-export abstract class ApiDefinition {
+export class ApiDefinition {
   /**
    * Creates an API definition from a specification file in an S3 bucket
    */
