@@ -161,8 +161,8 @@ export class PolicyStatement {
 
   /**
    * Expose principals to allow their ARNs to be replaced by account ID strings
-   * in policy statements for resources that don't allow full account ARNs, such
-   * as cloudwatch logs.
+   * in policy statements for resources policies that don't allow full account ARNs,
+   * such as AWS::Logs::ResourcePolicy.
    */
   public get principals(): IPrincipal[] {
     return [...this._principals];
@@ -333,7 +333,7 @@ export class PolicyStatement {
 
   /**
    * Create a new `PolicyStatement` with the same exact properties
-   * as this one, except for the overrides; effectively a copy constructor.
+   * as this one, except for the overrides
    */
   public copy(overrides: PolicyStatementProps = {}) {
     return new PolicyStatement({
@@ -499,7 +499,6 @@ export class PolicyStatement {
     return errors;
   }
 }
-
 
 /**
  * The Effect element of an IAM policy
