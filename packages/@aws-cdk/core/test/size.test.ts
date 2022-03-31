@@ -13,7 +13,7 @@ describe('size', () => {
     expect(stack.resolve(lazySize.toKibibytes())).toEqual(1337);
     expect(
       () => stack.resolve(lazySize.toMebibytes())).toThrow(
-      /Unable to perform time unit conversion on un-resolved token/,
+      /Size must be specified as 'Size.mebibytes\(\)' here/,
     );
 
 
