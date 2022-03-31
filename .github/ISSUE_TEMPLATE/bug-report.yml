@@ -1,7 +1,7 @@
 ---
 name: "🐛 Bug Report"
 description: Report a bug
-title: "(short issue description)"
+title: "(module name): (short issue description)"
 labels: [bug, needs-triage]
 assignees: []
 body:
