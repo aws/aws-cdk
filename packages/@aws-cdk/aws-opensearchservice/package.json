@@ -32,7 +32,7 @@
       "python": {
         "classifiers": [
           "Framework :: AWS CDK",
-          "Framework :: AWS CDK :: 1"
+          "Framework :: AWS CDK :: 2"
         ],
         "distName": "aws-cdk.aws-opensearchservice",
         "module": "aws_cdk.aws_opensearchservice"
@@ -102,7 +102,7 @@
     "@aws-cdk/aws-secretsmanager": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/custom-resources": "0.0.0",
-    "constructs": "^3.3.69"
+    "constructs": "^10.0.0"
   },
   "peerDependencies": {
     "@aws-cdk/aws-certificatemanager": "0.0.0",
@@ -115,10 +115,10 @@
     "@aws-cdk/aws-secretsmanager": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/custom-resources": "0.0.0",
-    "constructs": "^3.3.69"
+    "constructs": "^10.0.0"
   },
   "engines": {
-    "node": ">= 10.13.0 <13 || >=13.7.0"
+    "node": ">= 14.15.0"
   },
   "stability": "stable",
   "maturity": "stable",
@@ -132,6 +132,7 @@
     "announce": false
   },
   "publishConfig": {
-    "tag": "latest"
-  }
+    "tag": "next"
+  },
+  "private": true
 }

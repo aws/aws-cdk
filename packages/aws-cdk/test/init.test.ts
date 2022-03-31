@@ -99,6 +99,56 @@ describe.each(['1', '2'])('v%s tests', (majorVersion) => {
   30_000);
 });
 
+describe('constructs version', () => {
+  beforeEach(() => {
+    mockMajorVersion = '2.0.0';
+    jest.resetAllMocks();
+  });
+
+  cliTest('java', async (workDir) => {
+    await cliInit('app', 'java', false, true, workDir);
+
+    expect(await fs.pathExists(path.join(workDir, 'pom.xml'))).toBeTruthy();
+
+    const pom = (await fs.readFile(path.join(workDir, 'pom.xml'), 'utf8')).split(/\r?\n/);
+    const matches = pom.map(line => line.match(/\<constructs\.version\>(.*)\<\/constructs\.version\>/))
+      .filter(l => l);
+
+    expect(matches.length).toEqual(1);
+    matches.forEach(m => {
+      const version = m && m[1];
+      expect(version).toMatch(/\[10\.[\d]+\.[\d]+,11\.0\.0\)/);
+    });
+  });
+
+  cliTest('.NET', async (workDir) => {
+    await cliInit('app', 'csharp', false, true, workDir);
+
+    const csprojFile = (await recursiveListFiles(workDir)).filter(f => f.endsWith('.csproj'))[0];
+    expect(csprojFile).toBeDefined();
+
+    const csproj = (await fs.readFile(csprojFile, 'utf8')).split(/\r?\n/);
+
+    expect(csproj).toContainEqual(expect.stringMatching(/\<PackageReference Include="Constructs" Version="\[10\..*,11\..*\)"/));
+  });
+
+  cliTest('Python', async (workDir) => {
+    await cliInit('app', 'python', false, true, workDir);
+
+    expect(await fs.pathExists(path.join(workDir, 'requirements.txt'))).toBeTruthy();
+    const setupPy = (await fs.readFile(path.join(workDir, 'requirements.txt'), 'utf8')).split(/\r?\n/);
+    // return RegExpMatchArray (result of line.match()) for every lines that match re.
+    const matches = setupPy.map(line => line.match(/^constructs(.*)/))
+      .filter(l => l);
+
+    expect(matches.length).toEqual(1);
+    matches.forEach(m => {
+      const version = m && m[1];
+      expect(version).toMatch(/>=10\.\d+\.\d,<11\.0\.0/);
+    });
+  });
+});
+
 test('when no version number is present (e.g., local development), the v1 templates are chosen by default', async () => {
   mockMajorVersion = '0.0.0';
   jest.resetAllMocks();
@@ -116,5 +166,25 @@ async function withTempDir(cb: (dir: string) => void | Promise<any>) {
     await cb(tmpDir);
   } finally {
     await fs.remove(tmpDir);
+  }
+}
+
+/**
+ * List all files underneath dir
+ */
+async function recursiveListFiles(rdir: string): Promise<string[]> {
+  const ret = new Array<string>();
+  await recurse(rdir);
+  return ret;
+
+  async function recurse(dir: string) {
+    for (const name of await fs.readdir(dir)) {
+      const fullPath = path.join(dir, name);
+      if ((await fs.stat(fullPath)).isDirectory()) {
+        await recurse(fullPath);
+      } else {
+        ret.push(fullPath);
+      }
+    }
   }
 }
