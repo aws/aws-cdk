@@ -16,7 +16,7 @@ describe('duration', () => {
     expect(stack.resolve(lazyDuration.toSeconds())).toEqual(1337);
     expect(
       () => stack.resolve(lazyDuration.toMinutes())).toThrow(
-      /Unable to perform time unit conversion on un-resolved token/,
+      /Duration must be specified as 'Duration.minutes\(\)' here/,
     );
   });
 

@@ -197,7 +197,7 @@ function convert(amount: number, fromUnit: StorageUnit, toUnit: StorageUnit, opt
   const rounding = options.rounding ?? SizeRoundingBehavior.FAIL;
   if (fromUnit.inKibiBytes === toUnit.inKibiBytes) { return amount; }
   if (Token.isUnresolved(amount)) {
-    throw new Error(`Unable to perform time unit conversion on un-resolved token ${amount}.`);
+    throw new Error(`Size must be specified as 'Size.${toUnit}()' here since its value comes from a token and cannot be converted (got Size.${fromUnit})`);
   }
 
   const multiplier = fromUnit.inKibiBytes / toUnit.inKibiBytes;
