@@ -384,7 +384,7 @@ export abstract class SnapshotCredentials {
    * }
    * ```
    */
-  public static fromSecret(secret: secretsmanager.Secret): SnapshotCredentials {
+  public static fromSecret(secret: secretsmanager.ISecret): SnapshotCredentials {
     return {
       generatePassword: false,
       password: secret.secretValueFromJson('password'),
@@ -435,7 +435,7 @@ export abstract class SnapshotCredentials {
    *
    * @default - none
    */
-  public abstract readonly secret?: secretsmanager.Secret;
+  public abstract readonly secret?: secretsmanager.ISecret;
 
   /**
    * The characters to exclude from the generated password.
