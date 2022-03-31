@@ -322,8 +322,11 @@ export abstract class RestApiBase extends Resource implements IRestApi {
   protected cloudWatchAccount?: CfnAccount;
 
   constructor(scope: Construct, id: string, props: RestApiBaseProps = { }) {
-    super(scope, id);
-    this.restApiName = props.restApiName ?? id;
+    const restApiName = props.restApiName ?? id;
+    super(scope, id, {
+      physicalName: restApiName,
+    });
+    this.restApiName = restApiName;
 
     Object.defineProperty(this, RESTAPI_SYMBOL, { value: true });
   }
@@ -736,7 +739,7 @@ export class RestApi extends RestApiBase {
     super(scope, id, props);
 
     const resource = new CfnRestApi(this, 'Resource', {
-      name: this.restApiName,
+      name: this.physicalName,
       description: props.description,
       policy: props.policy,
       failOnWarnings: props.failOnWarnings,
