@@ -50,11 +50,11 @@ Alternatively you can create an `AutoScalingGroup` from a `LaunchTemplate`:
 
 ```ts
 declare const vpc: ec2.Vpc;
-declare const lt: ec2.LaunchTemplate;
+declare const launchTemplate: ec2.LaunchTemplate;
 
 new autoscaling.AutoScalingGroup(this, 'ASG', {
   vpc,
-  launchTemplate: lt
+  launchTemplate: launchTemplate
 });
 ```
 
@@ -62,8 +62,8 @@ To launch a mixture of Spot and on-demand instances, and/or with multiple instan
 
 ```ts
 declare const vpc: ec2.Vpc;
-declare const lt1: ec2.LaunchTemplate;
-declare const lt2: ec2.LaunchTemplate;
+declare const launchTemplate1: ec2.LaunchTemplate;
+declare const launchTemplate2: ec2.LaunchTemplate;
 
 new autoscaling.AutoScalingGroup(this, 'ASG', {
   vpc,
@@ -71,11 +71,11 @@ new autoscaling.AutoScalingGroup(this, 'ASG', {
     instancesDistribution: {
       onDemandPercentageAboveBaseCapacity: 50, // Mix Spot and On-Demand instances
     },
-    launchTemplate: lt1,
+    launchTemplate: launchTemplate1,
     launchTemplateOverrides: [ // Mix multiple instance types
       { instanceType: new ec2.InstanceType('t3.micro') },
       { instanceType: new ec2.InstanceType('t3a.micro') },
-      { instanceType: new ec2.InstanceType('t4g.micro'), launchTemplate: lt2 },
+      { instanceType: new ec2.InstanceType('t4g.micro'), launchTemplate: launchTemplate2 },
     ],
   }
 });

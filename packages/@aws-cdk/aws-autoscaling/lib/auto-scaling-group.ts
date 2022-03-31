@@ -415,7 +415,7 @@ export interface InstancesDistribution {
    * Indicates how to allocate instance types to fulfill On-Demand capacity. The only valid value is prioritized,
    * which is also the default value.
    *
-   * @default - prioritized
+   * @default OnDemandAllocationStrategy.PRIORITIZED
    */
   readonly onDemandAllocationStrategy?: OnDemandAllocationStrategy,
 
@@ -425,7 +425,7 @@ export interface InstancesDistribution {
    * for the instance types in the overrides, set the value of OnDemandBaseCapacity in terms of the number of
    * capacity units, and not the number of instances.
    *
-   * @default - 0
+   * @default 0
    */
   readonly onDemandBaseCapacity?: number,
 
@@ -434,7 +434,7 @@ export interface InstancesDistribution {
    * OnDemandBaseCapacity. Expressed as a number (for example, 20 specifies 20% On-Demand Instances, 80% Spot Instances).
    * Defaults to 100 if not specified. If set to 100, only On-Demand Instances are provisioned.
    *
-   * @default - 100
+   * @default 100
    */
   readonly onDemandPercentageAboveBaseCapacity?: number,
 
@@ -449,7 +449,7 @@ export interface InstancesDistribution {
    * (from first to last in the list). Amazon EC2 Auto Scaling honors the instance type priorities on a best-effort basis but
    * optimizes for capacity first.
    *
-   * @default - lowest-price
+   * @default SpotAllocationStrategy.LOWEST_PRICE
    */
   readonly spotAllocationStrategy?: SpotAllocationStrategy,
 
@@ -458,7 +458,7 @@ export interface InstancesDistribution {
    * types in the overrides. Valid only when the Spot allocation strategy is lowest-price. Value must be in the range of 1 to 20.
    * Defaults to 2 if not specified.
    *
-   * @default - 2
+   * @default 2
    */
   readonly spotInstancePools?: number,
 
@@ -467,7 +467,7 @@ export interface InstancesDistribution {
    * Amazon EC2 Auto Scaling uses the On-Demand price as the maximum Spot price. To remove a value that you previously set, include
    * the property but specify an empty string ("") for the value.
    *
-   * @default - On-Demand price
+   * @default "" - On-Demand price
    */
   readonly spotMaxPrice?: string
 }
@@ -542,7 +542,7 @@ export interface AutoScalingGroupProps extends CommonAutoScalingGroupProps {
   /**
    * Type of instance to launch
    *
-   * Launch template must not be specified when this property is specified.
+   * `launchTemplate` must not be specified when this property is specified.
    *
    * @default - Do not provide any instance type
    */
@@ -551,7 +551,7 @@ export interface AutoScalingGroupProps extends CommonAutoScalingGroupProps {
   /**
    * AMI to launch
    *
-   * Launch template must not be specified when this property is specified.
+   * `launchTemplate` must not be specified when this property is specified.
    *
    * @default - Do not provide any machine image
    */
@@ -560,7 +560,7 @@ export interface AutoScalingGroupProps extends CommonAutoScalingGroupProps {
   /**
    * Security group to launch the instances in.
    *
-   * Launch template must not be specified when this property is specified.
+   * `launchTemplate` must not be specified when this property is specified.
    *
    * @default - A SecurityGroup will be created if none is specified.
    */
@@ -571,7 +571,7 @@ export interface AutoScalingGroupProps extends CommonAutoScalingGroupProps {
    *
    * The UserData may still be mutated after creation.
    *
-   * Launch template must not be specified when this property is specified.
+   * `launchTemplate` must not be specified when this property is specified.
    *
    * @default - A UserData object appropriate for the MachineImage's
    * Operating System is created.
@@ -583,7 +583,7 @@ export interface AutoScalingGroupProps extends CommonAutoScalingGroupProps {
    *
    * The role must be assumable by the service principal `ec2.amazonaws.com`:
    *
-   * Launch template must not be specified when this property is specified.
+   * `launchTemplate` must not be specified when this property is specified.
    *
    * @example
    *
@@ -618,7 +618,7 @@ export interface AutoScalingGroupProps extends CommonAutoScalingGroupProps {
   /**
    * Whether IMDSv2 should be required on launched instances.
    *
-   * @default - false
+   * @default false
    */
   readonly requireImdsv2?: boolean;
 }
@@ -1163,36 +1163,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
 
     let launchConfig: CfnLaunchConfiguration | undefined = undefined;
     if (props.launchTemplate || props.mixedInstancesPolicy) {
-      if (props.machineImage) {
-        throw new Error('Setting \'machineImage\' must not be set when \'launchTemplate\' or \'mixedInstancesPolicy\' is set');
-      }
-      if (props.instanceType) {
-        throw new Error('Setting \'instanceType\' must not be set when \'launchTemplate\' or \'mixedInstancesPolicy\' is set');
-      }
-      if (props.role) {
-        throw new Error('Setting \'role\' must not be set when \'launchTemplate\' or \'mixedInstancesPolicy\' is set');
-      }
-      if (props.userData) {
-        throw new Error('Setting \'userData\' must not be set when \'launchTemplate\' or \'mixedInstancesPolicy\' is set');
-      }
-      if (props.securityGroup) {
-        throw new Error('Setting \'securityGroup\' must not be set when \'launchTemplate\' or \'mixedInstancesPolicy\' is set');
-      }
-      if (props.keyName) {
-        throw new Error('Setting \'keyName\' must not be set when \'launchTemplate\' or \'mixedInstancesPolicy\' is set');
-      }
-      if (props.instanceMonitoring) {
-        throw new Error('Setting \'instanceMonitoring\' must not be set when \'launchTemplate\' or \'mixedInstancesPolicy\' is set');
-      }
-      if (props.associatePublicIpAddress) {
-        throw new Error('Setting \'associatePublicIpAddress\' must not be set when \'launchTemplate\' or \'mixedInstancesPolicy\' is set');
-      }
-      if (props.spotPrice) {
-        throw new Error('Setting \'spotPrice\' must not be set when \'launchTemplate\' or \'mixedInstancesPolicy\' is set');
-      }
-      if (props.blockDevices) {
-        throw new Error('Setting \'blockDevices\' must not be set when \'launchTemplate\' or \'mixedInstancesPolicy\' is set');
-      }
+      this.verifyNoLaunchConfigPropIsGiven(props);
 
       if (props.launchTemplate && props.mixedInstancesPolicy) {
         throw new Error('Setting \'mixedInstancesPolicy\' must not be set when \'launchTemplate\' is set');
@@ -1459,7 +1430,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
   }
 
   /**
-   * Allows specify security group connections for instances of this fleet.
+   * The network connections associated with this resource.
    */
   public get connections(): ec2.Connections {
     if (this._connections) {
@@ -1474,7 +1445,9 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
   }
 
   /**
-   * UserData for the instances
+   * The Base64-encoded user data to make available to the launched EC2 instances.
+   *
+   * @throws an error if a launch template is given and it does not provide a non-null `userData`
    */
   public get userData(): ec2.UserData {
     if (this._userData) {
@@ -1489,7 +1462,9 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
   }
 
   /**
-   * Role for the instances
+   * The IAM Role in the instance profile
+   *
+   * @throws an error if a launch template is given
    */
   public get role(): iam.IRole {
     if (this._role) {
@@ -1497,6 +1472,39 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     }
 
     throw new Error('The provided launch template does not expose or does not define its role.');
+  }
+
+  private verifyNoLaunchConfigPropIsGiven(props: AutoScalingGroupProps) {
+    if (props.machineImage) {
+      throw new Error('Setting \'machineImage\' must not be set when \'launchTemplate\' or \'mixedInstancesPolicy\' is set');
+    }
+    if (props.instanceType) {
+      throw new Error('Setting \'instanceType\' must not be set when \'launchTemplate\' or \'mixedInstancesPolicy\' is set');
+    }
+    if (props.role) {
+      throw new Error('Setting \'role\' must not be set when \'launchTemplate\' or \'mixedInstancesPolicy\' is set');
+    }
+    if (props.userData) {
+      throw new Error('Setting \'userData\' must not be set when \'launchTemplate\' or \'mixedInstancesPolicy\' is set');
+    }
+    if (props.securityGroup) {
+      throw new Error('Setting \'securityGroup\' must not be set when \'launchTemplate\' or \'mixedInstancesPolicy\' is set');
+    }
+    if (props.keyName) {
+      throw new Error('Setting \'keyName\' must not be set when \'launchTemplate\' or \'mixedInstancesPolicy\' is set');
+    }
+    if (props.instanceMonitoring) {
+      throw new Error('Setting \'instanceMonitoring\' must not be set when \'launchTemplate\' or \'mixedInstancesPolicy\' is set');
+    }
+    if (props.associatePublicIpAddress) {
+      throw new Error('Setting \'associatePublicIpAddress\' must not be set when \'launchTemplate\' or \'mixedInstancesPolicy\' is set');
+    }
+    if (props.spotPrice) {
+      throw new Error('Setting \'spotPrice\' must not be set when \'launchTemplate\' or \'mixedInstancesPolicy\' is set');
+    }
+    if (props.blockDevices) {
+      throw new Error('Setting \'blockDevices\' must not be set when \'launchTemplate\' or \'mixedInstancesPolicy\' is set');
+    }
   }
 
   /**
