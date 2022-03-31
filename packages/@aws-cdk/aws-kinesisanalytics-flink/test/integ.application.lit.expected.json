@@ -276,6 +276,26 @@
           }
         }
       }
+    },
+    "Alarm7103F465": {
+      "Type": "AWS::CloudWatch::Alarm",
+      "Properties": {
+        "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+        "EvaluationPeriods": 1,
+        "Dimensions": [
+          {
+            "Name": "Application",
+            "Value": {
+              "Ref": "AppF1B96344"
+            }
+          }
+        ],
+        "MetricName": "fullRestarts",
+        "Namespace": "AWS/KinesisAnalytics",
+        "Period": 300,
+        "Statistic": "Sum",
+        "Threshold": 3
+      }
     }
   },
   "Parameters": {
