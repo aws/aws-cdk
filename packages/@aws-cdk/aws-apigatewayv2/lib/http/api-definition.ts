@@ -6,7 +6,7 @@ import * as s3_assets from '@aws-cdk/aws-s3-assets';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Node } from 'constructs';
 import { CfnApi } from '../apigatewayv2.generated';
-import { IHttpApi, SpecHttpApi } from './api';
+import { IHttpApi } from './api';
 import { Construct } from '@aws-cdk/core';
 
 /**
@@ -212,7 +212,7 @@ export class AssetApiDefinition extends ApiDefinition {
     };
   }
 
-  public bindAfterCreate(scope: Construct, httpApi: SpecHttpApi) {
+  public bindAfterCreate(scope: Construct, httpApi: IHttpApi) {
     if (!scope.node.tryGetContext(cxapi.ASSET_RESOURCE_METADATA_ENABLED_CONTEXT)) {
       return; // not enabled
     }
