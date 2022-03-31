@@ -483,9 +483,9 @@ export class HttpApi extends HttpApiBase {
  * @resource AWS::ApiGatewayV2:Api
  */
 export class SpecHttpApi extends HttpApiBase {
-  public apiId: string;
-  public httpApiId: string;
-  public apiEndpoint: string;
+  readonly apiId: string;
+  readonly httpApiId: string;
+  readonly apiEndpoint: string;
 
   constructor(scope: Construct, id: string, props: SpecHttpApiProps) {
     super(scope, id);
@@ -500,6 +500,8 @@ export class SpecHttpApi extends HttpApiBase {
 
     console.error('resource', resource);
 
-    this.httpApiId = resource.ref; 
+    this.apiId = resource.ref;
+    this.httpApiId = resource.ref;
+    this.apiEndpoint = resource.attrApiEndpoint
   }
 }
