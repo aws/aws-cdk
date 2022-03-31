@@ -14,14 +14,12 @@ All notable changes to this project will be documented in this file. See [standa
 * **elbv2:** use `addAction()` on an imported application listener ([#19293](https://github.com/aws/aws-cdk/issues/19293)) ([18a6b0c](https://github.com/aws/aws-cdk/commit/18a6b0cecb5e8a419d09a1456953cb2f422a6d76)), closes [#10902](https://github.com/aws/aws-cdk/issues/10902)
 * **kinesisanalytics-flink:** Add metrics to Flink applications ([#19599](https://github.com/aws/aws-cdk/issues/19599)) ([dab6aca](https://github.com/aws/aws-cdk/commit/dab6aca5005c8d6d180aada699a4cebc2ef5aefa))
 * **lambda:** warn if you use `function.grantInvoke` while also using `currentVersion` ([#19464](https://github.com/aws/aws-cdk/issues/19464)) ([fd1fff9](https://github.com/aws/aws-cdk/commit/fd1fff904a70d18dc9c7863aefc03b3ee44c2863)), closes [#19273](https://github.com/aws/aws-cdk/issues/19273) [#19318](https://github.com/aws/aws-cdk/issues/19318)
-* add new integration test runner ([#19529](https://github.com/aws/aws-cdk/issues/19529)) ([e7f43d1](https://github.com/aws/aws-cdk/commit/e7f43d1a3bb52bbf589d7472c9a9b89e3c1cc8c1))
 
 
 ### Bug Fixes
 
 * **apigateway:** allow using GENERATE_IF_NEEDED for the physical name in LambdaRestApi ([#19638](https://github.com/aws/aws-cdk/issues/19638)) ([e817381](https://github.com/aws/aws-cdk/commit/e8173812aad5f482b1bfcc6737f63cfef0c4841c)), closes [#9374](https://github.com/aws/aws-cdk/issues/9374)
 * **apigateway:** id in schema model maps to $id  ([#15113](https://github.com/aws/aws-cdk/issues/15113)) ([ac5a345](https://github.com/aws/aws-cdk/commit/ac5a3458fe3687014166b20aefe30442867d162a)), closes [#14585](https://github.com/aws/aws-cdk/issues/14585)
-* **aws-cdk:** include nested stacks when building changesets ([#19494](https://github.com/aws/aws-cdk/issues/19494)) ([97cc8e2](https://github.com/aws/aws-cdk/commit/97cc8e29e155b222d553b1fe955a0302036feed5)), closes [#5722](https://github.com/aws/aws-cdk/issues/5722) [#17396](https://github.com/aws/aws-cdk/issues/17396) [#19224](https://github.com/aws/aws-cdk/issues/19224)
 * **aws-cognito:** Lambda::Permission of lambdaTrigger should have a SourceArn ([#19622](https://github.com/aws/aws-cdk/issues/19622)) ([c62eeb7](https://github.com/aws/aws-cdk/commit/c62eeb7162d85c8cb162f8c0ad4b93fb5bccf981)), closes [#19604](https://github.com/aws/aws-cdk/issues/19604)
 * **docdb:** DB Instance ARN uses 'docdb' as the service component instead of 'rds' ([#19555](https://github.com/aws/aws-cdk/issues/19555)) ([6a63924](https://github.com/aws/aws-cdk/commit/6a63924c0b184342befd92903b8867e45b158252)), closes [#19554](https://github.com/aws/aws-cdk/issues/19554)
 * **eks:** incorrect version of aws-node-termination-handler ([#19510](https://github.com/aws/aws-cdk/issues/19510)) ([9c712cc](https://github.com/aws/aws-cdk/commit/9c712cc457ccb80d7180fee67a101b76fc01d207))
