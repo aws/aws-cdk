@@ -43,7 +43,7 @@ export class CloudFormationLang {
 
     // Some case analysis to produce minimal expressions
     if (parts.length === 1) { return parts[0]; }
-    if (parts.length === 2 && ['string', 'number'].includes(typeof parts[0]) && ['string', 'number'].includes(typeof parts[1])) {
+    if (parts.length === 2 && isConcatable(parts[0]) && isConcatable(parts[1])) {
       return `${parts[0]}${parts[1]}`;
     }
 
@@ -333,10 +333,6 @@ export function minimalCloudFormationJoin(delimiter: string, values: any[]): any
 
   return values;
 
-  function isConcatable(obj: any): boolean {
-    return ['string', 'number'].includes(typeof obj) && !Token.isUnresolved(obj);
-  }
-
   function isSplicableFnJoinIntrinsic(obj: any): boolean {
     if (!isIntrinsic(obj)) { return false; }
     if (Object.keys(obj)[0] !== 'Fn::Join') { return false; }
@@ -350,6 +346,11 @@ export function minimalCloudFormationJoin(delimiter: string, values: any[]): any
     return true;
   }
 }
+
+function isConcatable(obj: any): boolean {
+  return ['string', 'number'].includes(typeof obj) && !Token.isUnresolved(obj);
+}
+
 
 /**
  * Return whether the given value represents a CloudFormation intrinsic
