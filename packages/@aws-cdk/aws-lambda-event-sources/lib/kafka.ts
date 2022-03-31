@@ -5,10 +5,7 @@ import * as lambda from '@aws-cdk/aws-lambda';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import { Stack, Names } from '@aws-cdk/core';
 import { StreamEventSource, BaseStreamEventSourceProps } from './stream';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 
 /**
  * Properties for a Kafka event source
@@ -188,7 +185,7 @@ export class SelfManagedKafkaEventSource extends StreamEventSource {
   }
 
   public bind(target: lambda.IFunction) {
-    if (!Construct.isConstruct(target)) { throw new Error('Function is not a construct. Unexpected error.'); }
+    if (!(target instanceof Construct)) { throw new Error('Function is not a construct. Unexpected error.'); }
     target.addEventSourceMapping(
       this.mappingId(target),
       this.enrichMappingOptions({
