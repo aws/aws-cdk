@@ -1,5 +1,5 @@
 import { bold, reset, green, yellow, red } from 'chalk';
-import { HistoryActivityPrinter } from '../../lib/api/util/cloudformation/stack-activity-monitor';
+import { CurrentActivityPrinter, HistoryActivityPrinter } from '../../lib/api/util/cloudformation/stack-activity-monitor';
 import { stderr } from './console-listener';
 
 let TIMESTAMP: number;
@@ -221,4 +221,37 @@ test('prints "Failed Resources:" list, when at least one deployment fails', () =
   expect(output[1].trim()).toStrictEqual(`stack-name | 0/2 | ${HUMAN_TIME} | ${red('UPDATE_FAILED       ')} | AWS::CloudFormation::Stack | ${red(bold('stack1'))}`);
   expect(output[2].trim()).toStrictEqual('Failed resources:');
   expect(output[3].trim()).toStrictEqual(`stack-name | ${HUMAN_TIME} | ${red('UPDATE_FAILED       ')} | AWS::CloudFormation::Stack | ${red(bold('stack1'))}`);
+});
+
+describe('updateSleep interval', () => {
+  test('Default - CurrentActivityPrinter', () => {
+    const printer = new CurrentActivityPrinter({
+      resourceTypeColumnWidth: 23,
+      resourcesTotal: 3,
+      stream: process.stderr,
+    });
+
+    expect(printer.updateSleep).toEqual(2_000);
+  });
+
+  test('Default - HistoryActivityPrinter', () => {
+    const printer = new HistoryActivityPrinter({
+      resourceTypeColumnWidth: 23,
+      resourcesTotal: 3,
+      stream: process.stderr,
+    });
+
+    expect(printer.updateSleep).toEqual(5_000);
+  });
+
+  test('Override', () => {
+    const printer = new HistoryActivityPrinter({
+      resourceTypeColumnWidth: 23,
+      resourcesTotal: 3,
+      stream: process.stderr,
+      pollingInterval: 30_000,
+    });
+
+    expect(printer.updateSleep).toEqual(30_000);
+  });
 });

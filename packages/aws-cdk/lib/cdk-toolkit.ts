@@ -223,6 +223,7 @@ export class CdkToolkit {
           rollback: options.rollback,
           hotswap: options.hotswap,
           extraUserAgent: options.extraUserAgent,
+          stackMonitorPollingInterval: options.stackMonitorPollingInterval,
         });
 
         const message = result.noOp
@@ -849,6 +850,13 @@ export interface DeployOptions extends WatchOptions {
    * @default - not monitoring CloudWatch logs
    */
   readonly cloudWatchLogMonitor?: CloudWatchLogEventMonitor;
+
+  /**
+   * Override the polling interval for stack monitors
+   *
+   * @default - dependent on type of monitor
+   */
+  readonly stackMonitorPollingInterval?: number;
 }
 
 export interface DestroyOptions {

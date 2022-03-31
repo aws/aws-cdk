@@ -155,6 +155,13 @@ export interface DeployStackOptions {
   progress?: StackActivityProgress;
 
   /**
+   * Override the polling interval for stack monitors
+   *
+   * @default - dependent on type of monitor
+   */
+  readonly stackMonitorPollingInterval?: number;
+
+  /**
    * Deploy even if the deployed template is identical to the one we are about to deploy.
    * @default false
    */
@@ -349,6 +356,7 @@ async function prepareAndExecuteChangeSet(
       resourcesTotal: cloudFormationStack.exists ? changeSetLength + 1 : changeSetLength,
       progress: options.progress,
       changeSetCreationTime: changeSetDescription.CreationTime,
+      pollingInterval: options.stackMonitorPollingInterval,
     }).start();
     debug('Execution of changeset %s on stack %s has started; waiting for the update to complete...', changeSet.Id, deployName);
     try {

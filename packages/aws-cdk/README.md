@@ -324,6 +324,17 @@ When `cdk deploy` is executed, deployment events will include the complete histo
 
 The `progress` key can also be specified as a user setting (`~/.cdk.json`)
 
+#### Deployment Progress Polling
+
+Stack deployments poll CloudFormation on a set interval (default every 5 seconds) to determine the current status. This can lead to CloudFormation rate limting on certain conditions. The interval can be override using the `stackMonitorPollingInterval` attribute in `cdk.json`:
+
+  ```json
+  {
+    "stackMonitorPollingInterval": 10000,
+    ...
+  }
+  ```
+
 #### Externally Executable CloudFormation Change Sets
 
 For more control over when stack changes are deployed, the CDK can generate a

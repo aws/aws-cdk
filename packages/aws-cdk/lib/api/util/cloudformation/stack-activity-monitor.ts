@@ -61,6 +61,13 @@ export interface WithDefaultPrinterProps {
   progress?: StackActivityProgress;
 
   /**
+   * Override the polling interval for stack monitors
+   *
+   * @default - dependent on type of monitor
+   */
+  readonly pollingInterval?: number;
+
+  /**
    * Whether we are on a CI system
    *
    * If so, disable the "optimized" stack monitor.
@@ -91,10 +98,13 @@ export class StackActivityMonitor {
   public static withDefaultPrinter(
     cfn: aws.CloudFormation,
     stackName: string,
-    stackArtifact: cxapi.CloudFormationStackArtifact, options: WithDefaultPrinterProps = {}) {
+    stackArtifact: cxapi.CloudFormationStackArtifact,
+    options: WithDefaultPrinterProps = {},
+  ) {
     const stream = process.stderr;
 
     const props: PrinterProps = {
+      pollingInterval: options.pollingInterval,
       resourceTypeColumnWidth: calcMaxResourceTypeLength(stackArtifact.template),
       resourcesTotal: options.resourcesTotal,
       stream,
@@ -334,6 +344,13 @@ interface PrinterProps {
    * Stream to write to
    */
   readonly stream: NodeJS.WriteStream;
+
+  /**
+   * Override the polling interval for stack monitors
+   *
+   * @default - dependent on type of monitor
+   */
+  readonly pollingInterval?: number;
 }
 
 export interface IActivityPrinter {
@@ -346,10 +363,8 @@ export interface IActivityPrinter {
 }
 
 abstract class ActivityPrinterBase implements IActivityPrinter {
-  /**
-   * Fetch new activity every 5 seconds
-   */
-  public readonly updateSleep: number = 5_000;
+
+  public readonly updateSleep: number;
 
   /**
    * A list of resource IDs which are currently being processed
@@ -392,6 +407,9 @@ abstract class ActivityPrinterBase implements IActivityPrinter {
     this.resourceDigits = this.resourcesTotal ? Math.ceil(Math.log10(this.resourcesTotal)) : 0;
 
     this.stream = props.stream;
+
+    // Fetch new activity every 5 seconds
+    this.updateSleep = props.pollingInterval ?? 5_000;
   }
 
   public addActivity(activity: StackActivity) {
@@ -589,16 +607,17 @@ export class HistoryActivityPrinter extends ActivityPrinterBase {
  * not included.
  */
 export class CurrentActivityPrinter extends ActivityPrinterBase {
-  /**
-   * This looks very disorienting sleeping for 5 seconds. Update quicker.
-   */
-  public readonly updateSleep: number = 2_000;
+
+  public readonly updateSleep: number;
 
   private oldLogLevel: LogLevel = LogLevel.DEFAULT;
   private block = new RewritableBlock(this.stream);
 
   constructor(props: PrinterProps) {
     super(props);
+
+    // This looks very disorienting sleeping for 5 seconds. Update quicker.
+    this.updateSleep = props.pollingInterval ?? 2_000;
   }
 
   public print(): void {

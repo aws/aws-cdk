@@ -443,6 +443,7 @@ async function initCommandLine() {
           hotswap: args.hotswap,
           watch: args.watch,
           traceLogs: args.logs,
+          stackMonitorPollingInterval: configuration.settings.get(['stackMonitorPollingInterval']),
         });
 
       case 'watch':

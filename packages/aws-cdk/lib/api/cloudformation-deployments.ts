@@ -196,6 +196,13 @@ export interface DeployStackOptions {
   progress?: StackActivityProgress;
 
   /**
+   * Override the polling interval for stack monitors
+   *
+   * @default - dependent on type of monitor
+   */
+  stackMonitorPollingInterval?: number;
+
+  /**
    * Whether we are on a CI system
    *
    * @default false
@@ -327,6 +334,7 @@ export class CloudFormationDeployments {
       rollback: options.rollback,
       hotswap: options.hotswap,
       extraUserAgent: options.extraUserAgent,
+      stackMonitorPollingInterval: options.stackMonitorPollingInterval,
     });
   }
 
