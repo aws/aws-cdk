@@ -6,8 +6,19 @@ import { StringParameter } from '@aws-cdk/aws-ssm';
 import { App, Stack } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import {
-  AmazonLinuxImage, BlockDeviceVolume, CloudFormationInit,
-  EbsDeviceVolumeType, InitCommand, Instance, InstanceArchitecture, InstanceClass, InstanceSize, InstanceType, LaunchTemplate, UserData, Vpc,
+  AmazonLinuxImage,
+  BlockDeviceVolume,
+  CloudFormationInit,
+  EbsDeviceVolumeType,
+  InitCommand,
+  Instance,
+  InstanceArchitecture,
+  InstanceClass,
+  InstanceSize,
+  InstanceType,
+  LaunchTemplate,
+  UserData,
+  Vpc,
 } from '../lib';
 
 let stack: Stack;
@@ -145,7 +156,7 @@ describe('instance', () => {
 
     for (const instanceClass of sampleInstanceClassKeys) {
       // WHEN
-      const key = instanceClass.key as keyof(typeof InstanceClass);
+      const key = instanceClass.key as keyof (typeof InstanceClass);
       const instanceType = InstanceClass[key];
 
       // THEN
@@ -433,6 +444,62 @@ describe('instance', () => {
       },
     });
   });
+
+  describe('Detailed Monitoring', () => {
+    test('instance with Detailed Monitoring enabled', () => {
+      // WHEN
+      new Instance(stack, 'Instance', {
+        vpc,
+        machineImage: new AmazonLinuxImage(),
+        instanceType: new InstanceType('t2.micro'),
+        detailedMonitoring: true,
+      });
+
+      // Force stack synth so the Instance is applied
+      Template.fromStack(stack);
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::Instance', {
+        Monitoring: true,
+      });
+    });
+
+    test('instance with Detailed Monitoring disabled', () => {
+      // WHEN
+      new Instance(stack, 'Instance', {
+        vpc,
+        machineImage: new AmazonLinuxImage(),
+        instanceType: new InstanceType('t2.micro'),
+        detailedMonitoring: false,
+      });
+
+      // Force stack synth so the Instance is applied
+      Template.fromStack(stack);
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::Instance', {
+        Monitoring: false,
+      });
+    });
+
+    test('instance with Detailed Monitoring unset falls back to disabled', () => {
+      // WHEN
+      new Instance(stack, 'Instance', {
+        vpc,
+        machineImage: new AmazonLinuxImage(),
+        instanceType: new InstanceType('t2.micro'),
+      });
+
+      // Force stack synth so the Instance is applied
+      Template.fromStack(stack);
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::Instance', {
+        Monitoring: Match.absent(),
+      });
+    });
+  });
+
 });
 
 test('add CloudFormation Init to instance', () => {
@@ -527,8 +594,14 @@ test('cause replacement from s3 asset in userdata', () => {
   const hash = 'f88eace39faf39d7';
   Template.fromStack(stack).templateMatches(Match.objectLike({
     Resources: Match.objectLike({
-      [`InstanceOne5B821005${hash}`]: Match.objectLike({ Type: 'AWS::EC2::Instance', Properties: Match.anyValue() }),
-      [`InstanceTwoDC29A7A7${hash}`]: Match.objectLike({ Type: 'AWS::EC2::Instance', Properties: Match.anyValue() }),
+      [`InstanceOne5B821005${hash}`]: Match.objectLike({
+        Type: 'AWS::EC2::Instance',
+        Properties: Match.anyValue(),
+      }),
+      [`InstanceTwoDC29A7A7${hash}`]: Match.objectLike({
+        Type: 'AWS::EC2::Instance',
+        Properties: Match.anyValue(),
+      }),
     }),
   }));
 });
