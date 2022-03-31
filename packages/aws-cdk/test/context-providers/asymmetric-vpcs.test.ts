@@ -3,7 +3,11 @@ import * as AWS from 'aws-sdk-mock';
 import { VpcNetworkContextProviderPlugin } from '../../lib/context-providers/vpcs';
 import { MockSdkProvider } from '../util/mock-sdk';
 
-AWS.setSDKInstance(aws);
+// If the 'aws-sdk' package imported here and the 'aws-sdk' package imported by 'aws-sdk-mock' aren't
+// the same physical package on disk (if version mismatches cause hoisting/deduping to not happen),
+// the type check here takes too long and makes the TypeScript compiler fail.
+// Suppress the type check using 'as any' to make this more robust.
+AWS.setSDKInstance(aws as any);
 
 afterEach(done => {
   AWS.restore();

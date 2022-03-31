@@ -7,13 +7,12 @@ describe('Messages', () => {
   let annotations: _Annotations;
   beforeAll(() => {
     stack = new Stack();
-    const foo = new CfnResource(stack, 'Foo', {
+    new CfnResource(stack, 'Foo', {
       type: 'Foo::Bar',
       properties: {
         Fred: 'Thud',
       },
     });
-    foo.node.setContext('disable-stack-trace', false);
 
     new CfnResource(stack, 'Bar', {
       type: 'Foo::Bar',
@@ -51,6 +50,17 @@ describe('Messages', () => {
     });
   });
 
+  describe('hasNoError', () => {
+    test('match', () => {
+      annotations.hasNoError('/Default/Fred', Match.anyValue());
+    });
+
+    test('no match', () => {
+      expect(() => annotations.hasNoError('/Default/Foo', 'this is an error'))
+        .toThrowError(/Expected no matches, but stack has 1 messages as follows:/);
+    });
+  });
+
   describe('findError', () => {
     test('match', () => {
       const result = annotations.findError('*', Match.anyValue());
@@ -61,11 +71,6 @@ describe('Messages', () => {
       const result = annotations.findError('*', 'no message looks like this');
       expect(result.length).toEqual(0);
     });
-
-    test('trace is redacted', () => {
-      const result = annotations.findError('/Default/Foo', Match.anyValue());
-      expect(result[0].entry.trace).toEqual('redacted');
-    });
   });
 
   describe('hasWarning', () => {
@@ -75,6 +80,17 @@ describe('Messages', () => {
 
     test('no match', () => {
       expect(() => annotations.hasWarning('/Default/Foo', Match.anyValue())).toThrowError(/Stack has 1 messages, but none match as expected./);
+    });
+  });
+
+  describe('hasNoWarning', () => {
+    test('match', () => {
+      annotations.hasNoWarning('/Default/Foo', Match.anyValue());
+    });
+
+    test('no match', () => {
+      expect(() => annotations.hasNoWarning('/Default/Fred', 'this is a warning'))
+        .toThrowError(/Expected no matches, but stack has 1 messages as follows:/);
     });
   });
 
@@ -97,6 +113,17 @@ describe('Messages', () => {
 
     test('no match', () => {
       expect(() => annotations.hasInfo('/Default/Qux', 'this info is incorrect')).toThrowError(/Stack has 1 messages, but none match as expected./);
+    });
+  });
+
+  describe('hasNoInfo', () => {
+    test('match', () => {
+      annotations.hasNoInfo('/Default/Qux', 'this info is incorrect');
+    });
+
+    test('no match', () => {
+      expect(() => annotations.hasNoInfo('/Default/Qux', 'this is an info'))
+        .toThrowError(/Expected no matches, but stack has 1 messages as follows:/);
     });
   });
 
@@ -165,15 +192,7 @@ describe('Multiple Messages on the Resource', () => {
     const result2 = annotations.findError('/Default/Bar', Match.stringLikeRegexp('error:.*'));
     expect(result2.length).toEqual(2);
     const result3 = annotations.findWarning('/Default/Bar', 'warning: Foo::Bar is deprecated');
-    expect(result3).toEqual([{
-      level: 'warning',
-      entry: {
-        type: 'aws:cdk:warning',
-        data: 'warning: Foo::Bar is deprecated',
-        trace: 'redacted',
-      },
-      id: '/Default/Bar',
-    }]);
+    expect(result3[0].entry.data).toEqual('warning: Foo::Bar is deprecated');
   });
 });
 class MyAspect implements IAspect {
