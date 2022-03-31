@@ -1,6 +1,6 @@
 import * as child_process from 'child_process';
 import { CdkCliWrapper } from '../lib/cdk-wrapper';
-import { RequireApproval } from '../lib/commands';
+import { RequireApproval } from '../lib/commands/common';
 let spawnSyncMock: jest.SpyInstance;
 
 beforeEach(() => {
@@ -89,6 +89,8 @@ test('deploy with all arguments', () => {
     expect.stringMatching(/aws-cdk\/bin\/cdk/),
     expect.arrayContaining([
       'deploy',
+      '--app',
+      'node bin/my-app.js',
       '--no-strict',
       '--no-trace',
       '--no-lookups',
@@ -120,8 +122,6 @@ test('deploy with all arguments', () => {
       '--change-set-name', 'my-change-set',
       '--toolkit-stack-name', 'Toolkit',
       '--previous-parameters',
-      '--app',
-      'node bin/my-app.js',
       'test-stack1',
     ]),
     expect.objectContaining({
@@ -182,10 +182,10 @@ test('can parse parameters', () => {
     expect.stringMatching(/aws-cdk\/bin\/cdk/),
     [
       'deploy',
-      '--parameters', 'myparam=test',
-      '--parameters', 'test-stack1:myotherparam=test',
       '--app',
       'node bin/my-app.js',
+      '--parameters', 'myparam=test',
+      '--parameters', 'test-stack1:myotherparam=test',
       'test-stack1',
     ],
     expect.objectContaining({
@@ -246,10 +246,10 @@ test('can parse array arguments', () => {
     expect.stringMatching(/aws-cdk\/bin\/cdk/),
     [
       'deploy',
-      '--notification-arns', 'arn:aws:us-east-1:1111111111:some:resource',
-      '--notification-arns', 'arn:aws:us-east-1:1111111111:some:other-resource',
       '--app',
       'node bin/my-app.js',
+      '--notification-arns', 'arn:aws:us-east-1:1111111111:some:resource',
+      '--notification-arns', 'arn:aws:us-east-1:1111111111:some:other-resource',
       'test-stack1',
     ],
     expect.objectContaining({
@@ -355,7 +355,7 @@ test('destroy arguments', () => {
   // THEN
   expect(spawnSyncMock).toHaveBeenCalledWith(
     expect.stringMatching(/aws-cdk\/bin\/cdk/),
-    ['destroy', '--force', '--no-exclusively', '--app', 'node bin/my-app.js', 'test-stack1'],
+    ['destroy', '--app', 'node bin/my-app.js', '--force', '--no-exclusively', 'test-stack1'],
     expect.objectContaining({
       env: expect.objectContaining({
         KEY: 'value',
@@ -416,7 +416,7 @@ test('ls arguments', () => {
   // THEN
   expect(spawnSyncMock).toHaveBeenCalledWith(
     expect.stringMatching(/aws-cdk\/bin\/cdk/),
-    ['ls', '--long', '--app', 'node bin/my-app.js', '*'],
+    ['ls', '--app', 'node bin/my-app.js', '--long', '*'],
     expect.objectContaining({
       env: expect.objectContaining({
         KEY: 'value',
