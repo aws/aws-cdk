@@ -11,6 +11,7 @@ import { HttpRouteIntegration } from './integration';
 import { BatchHttpRouteOptions, HttpMethod, HttpRoute, HttpRouteKey } from './route';
 import { IHttpStage, HttpStage, HttpStageOptions } from './stage';
 import { VpcLink, VpcLinkProps } from './vpc-link';
+export * from './api-definition';
 
 /**
  * Represents an HTTP API
@@ -470,7 +471,7 @@ export class HttpApi extends HttpApiBase {
 /**
  * Props to instantiate a new SpecHttpApi
  */
- export interface SpecHttpApiProps extends HttpApiProps {
+export interface SpecHttpApiProps extends HttpApiProps {
   /**
    * An OpenAPI definition compatible with API Gateway.
    * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-import-api.html
@@ -480,7 +481,7 @@ export class HttpApi extends HttpApiBase {
 
 /**
  * Create a new API Gateway HTTP API endpoint from an OpenAPI Specification file.
- * @resource AWS::ApiGatewayV2:Api
+ * @resource AWS::ApiGatewayV2::Api
  */
 export class SpecHttpApi extends HttpApiBase {
   readonly apiId: string;
@@ -489,7 +490,7 @@ export class SpecHttpApi extends HttpApiBase {
 
   constructor(scope: Construct, id: string, props: SpecHttpApiProps) {
     super(scope, id);
-    const apiDefConfig = props.apiDefinition.bind(this);     
+    const apiDefConfig = props.apiDefinition.bind(this);
     const resource = new CfnApi(this, 'Resource', {
       name: props.apiName,
       body: apiDefConfig.inlineDefinition ?? undefined,
@@ -498,10 +499,8 @@ export class SpecHttpApi extends HttpApiBase {
 
     props.apiDefinition.bindAfterCreate(this, this);
 
-    console.error('resource', resource);
-
     this.apiId = resource.ref;
     this.httpApiId = resource.ref;
-    this.apiEndpoint = resource.attrApiEndpoint
+    this.apiEndpoint = resource.attrApiEndpoint;
   }
 }
