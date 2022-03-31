@@ -765,7 +765,7 @@ const func = new lambda.Function(this, 'Lambda', {
   runtime: lambda.Runtime.NODEJS_12_X,
 });
 // used to make sure each CDK synthesis produces a different Version
-const version = func.addVersion('NewVersion');
+const version = func.currentVersion;
 const alias = new lambda.Alias(this, 'LambdaAlias', {
   aliasName: 'Prod',
   version,

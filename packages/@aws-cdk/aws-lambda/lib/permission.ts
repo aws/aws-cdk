@@ -3,7 +3,7 @@ import { Construct } from 'constructs';
 
 /**
  * Represents a permission statement that can be added to a Lambda function's
- * resource policy via the `addPermissions()` method.
+ * resource policy via the `addPermission()` method.
  */
 export interface Permission {
   /**
