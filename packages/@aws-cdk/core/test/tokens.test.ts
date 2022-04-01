@@ -1,5 +1,5 @@
 import { CfnResource, Fn, isResolvableObject, Lazy, Stack, Token, Tokenization } from '../lib';
-import { createTokenDouble, extractTokenDouble, stringContainsNumberTokens } from '../lib/private/encoding';
+import { createTokenDouble, extractTokenDouble, stringContainsNumberTokens, STRINGIFIED_NUMBER_PATTERN } from '../lib/private/encoding';
 import { Intrinsic } from '../lib/private/intrinsic';
 import { findTokens } from '../lib/private/resolve';
 import { IResolvable } from '../lib/resolvable';
@@ -527,6 +527,14 @@ describe('tokens', () => {
       expect(stringContainsNumberTokens(`${createTokenDouble(0)}`)).toBeTruthy();
       expect(stringContainsNumberTokens(`${createTokenDouble(Math.pow(2, 48) - 1)}`)).toBeTruthy(); // MAX_ENCODABLE_INTEGER
       expect(stringContainsNumberTokens('1234')).toBeFalsy();
+    });
+
+    test('check that the first N encoded numbers can be detected', () => {
+      const re = new RegExp(STRINGIFIED_NUMBER_PATTERN);
+      // Ran this up to 1 million offline
+      for (let i = 0; i < 1000; i++) {
+        expect(`${createTokenDouble(i)}`).toMatch(re);
+      }
     });
 
     test('handle stringified number token', () => {
