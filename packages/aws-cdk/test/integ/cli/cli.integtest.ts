@@ -1,11 +1,12 @@
-import { promises as fs } from 'fs';
+import { promises as fs, existsSync } from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 import { retry, sleep } from '../helpers/aws';
 import { cloneDirectory, MAJOR_VERSION, shell, withDefaultFixture } from '../helpers/cdk';
+import { randomInteger, withSamIntegrationFixture } from '../helpers/sam';
 import { integTest } from '../helpers/test-helpers';
 
-jest.setTimeout(600 * 1000);
+jest.setTimeout(600_000);
 
 integTest('VPC Lookup', withDefaultFixture(async (fixture) => {
   fixture.log('Making sure we are clean before starting.');
@@ -19,7 +20,20 @@ integTest('VPC Lookup', withDefaultFixture(async (fixture) => {
   await fixture.cdkDeploy('import-vpc', { modEnv: { ENABLE_VPC_TESTING: 'IMPORT' } });
 }));
 
-integTest('Two ways of shoing the version', withDefaultFixture(async (fixture) => {
+// testing a construct with a builtin Nodejs Lambda Function.
+// In this case we are testing the s3.Bucket construct with the
+// autoDeleteObjects prop set to true, which creates a Lambda backed
+// CustomResource. Since the compiled Lambda code (e.g. __entrypoint__.js)
+// is bundled as part of the CDK package, we want to make sure we don't
+// introduce changes to the compiled code that could prevent the Lambda from
+// executing. If we do, this test will timeout and fail.
+integTest('Construct with builtin Lambda function', withDefaultFixture(async (fixture) => {
+  await fixture.cdkDeploy('builtin-lambda-function');
+  fixture.log('Setup complete!');
+  await fixture.cdkDestroy('builtin-lambda-function');
+}));
+
+integTest('Two ways of showing the version', withDefaultFixture(async (fixture) => {
   const version1 = await fixture.cdk(['version'], { verbose: false });
   const version2 = await fixture.cdk(['--version'], { verbose: false });
 
@@ -259,7 +273,7 @@ integTest('update to stack in ROLLBACK_COMPLETE state will delete stack and crea
   });
 
   // THEN
-  expect (stackArn).not.toEqual(newStackArn); // new stack was created
+  expect(stackArn).not.toEqual(newStackArn); // new stack was created
   expect(newStackResponse.Stacks?.[0].StackStatus).toEqual('CREATE_COMPLETE');
   expect(newStackResponse.Stacks?.[0].Parameters).toContainEqual(
     {
@@ -742,6 +756,236 @@ integTest('templates on disk contain metadata resource, also in nested assemblie
   const nestedTemplateContents = await fixture.shell(['cat', 'cdk.out/assembly-*-stage/*StackInStage*.template.json']);
 
   expect(JSON.parse(nestedTemplateContents).Resources.CDKMetadata).toBeTruthy();
+}));
+
+integTest('CDK synth add the metadata properties expected by sam', withSamIntegrationFixture(async (fixture) => {
+  // Synth first
+  await fixture.cdkSynth();
+
+  const template = fixture.template('TestStack');
+
+  const expectedResources = [
+    {
+      // Python Layer Version
+      id: 'PythonLayerVersion39495CEF',
+      cdkId: 'PythonLayerVersion',
+      isBundled: true,
+      property: 'Content',
+    },
+    {
+      // Layer Version
+      id: 'LayerVersion3878DA3A',
+      cdkId: 'LayerVersion',
+      isBundled: false,
+      property: 'Content',
+    },
+    {
+      // Bundled layer version
+      id: 'BundledLayerVersionPythonRuntime6BADBD6E',
+      cdkId: 'BundledLayerVersionPythonRuntime',
+      isBundled: true,
+      property: 'Content',
+    },
+    {
+      // Python Function
+      id: 'PythonFunction0BCF77FD',
+      cdkId: 'PythonFunction',
+      isBundled: true,
+      property: 'Code',
+    },
+    {
+      // Log Retention Function
+      id: 'LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A',
+      cdkId: 'LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a',
+      isBundled: false,
+      property: 'Code',
+    },
+    {
+      // Function
+      id: 'FunctionPythonRuntime28CBDA05',
+      cdkId: 'FunctionPythonRuntime',
+      isBundled: false,
+      property: 'Code',
+    },
+    {
+      // Bundled Function
+      id: 'BundledFunctionPythonRuntime4D9A0918',
+      cdkId: 'BundledFunctionPythonRuntime',
+      isBundled: true,
+      property: 'Code',
+    },
+    {
+      // NodeJs Function
+      id: 'NodejsFunction09C1F20F',
+      cdkId: 'NodejsFunction',
+      isBundled: true,
+      property: 'Code',
+    },
+    {
+      // Go Function
+      id: 'GoFunctionCA95FBAA',
+      cdkId: 'GoFunction',
+      isBundled: true,
+      property: 'Code',
+    },
+    {
+      // Docker Image Function
+      id: 'DockerImageFunction28B773E6',
+      cdkId: 'DockerImageFunction',
+      dockerFilePath: 'Dockerfile',
+      property: 'Code.ImageUri',
+    },
+    {
+      // Spec Rest Api
+      id: 'SpecRestAPI7D4B3A34',
+      cdkId: 'SpecRestAPI',
+      property: 'BodyS3Location',
+    },
+  ];
+
+  for (const resource of expectedResources) {
+    fixture.output.write(`validate assets metadata for resource ${resource}`);
+    expect(resource.id in template.Resources).toBeTruthy();
+    expect(template.Resources[resource.id]).toEqual(expect.objectContaining({
+      Metadata: {
+        'aws:cdk:path': `${fixture.fullStackName('TestStack')}/${resource.cdkId}/Resource`,
+        'aws:asset:path': expect.stringMatching(/asset\.[0-9a-zA-Z]{64}/),
+        'aws:asset:is-bundled': resource.isBundled,
+        'aws:asset:dockerfile-path': resource.dockerFilePath,
+        'aws:asset:property': resource.property,
+      },
+    }));
+  }
+
+  // Nested Stack
+  fixture.output.write('validate assets metadata for nested stack resource');
+  expect('NestedStackNestedStackNestedStackNestedStackResourceB70834FD' in template.Resources).toBeTruthy();
+  expect(template.Resources.NestedStackNestedStackNestedStackNestedStackResourceB70834FD).toEqual(expect.objectContaining({
+    Metadata: {
+      'aws:cdk:path': `${fixture.fullStackName('TestStack')}/NestedStack.NestedStack/NestedStack.NestedStackResource`,
+      'aws:asset:path': expect.stringMatching(`${fixture.stackNamePrefix.replace(/-/, '')}TestStackNestedStack[0-9A-Z]{8}\.nested\.template\.json`),
+      'aws:asset:property': 'TemplateURL',
+    },
+  }));
+}));
+
+integTest('CDK synth bundled functions as expected', withSamIntegrationFixture(async (fixture) => {
+  // Synth first
+  await fixture.cdkSynth();
+
+  const template = fixture.template('TestStack');
+
+  const expectedBundledAssets = [
+    {
+      // Python Layer Version
+      id: 'PythonLayerVersion39495CEF',
+      files: [
+        'python/layer_version_dependency.py',
+        'python/geonamescache/__init__.py',
+        'python/geonamescache-1.3.0.dist-info',
+      ],
+    },
+    {
+      // Layer Version
+      id: 'LayerVersion3878DA3A',
+      files: [
+        'layer_version_dependency.py',
+        'requirements.txt',
+      ],
+    },
+    {
+      // Bundled layer version
+      id: 'BundledLayerVersionPythonRuntime6BADBD6E',
+      files: [
+        'python/layer_version_dependency.py',
+        'python/geonamescache/__init__.py',
+        'python/geonamescache-1.3.0.dist-info',
+      ],
+    },
+    {
+      // Python Function
+      id: 'PythonFunction0BCF77FD',
+      files: [
+        'app.py',
+        'geonamescache/__init__.py',
+        'geonamescache-1.3.0.dist-info',
+      ],
+    },
+    {
+      // Function
+      id: 'FunctionPythonRuntime28CBDA05',
+      files: [
+        'app.py',
+        'requirements.txt',
+      ],
+    },
+    {
+      // Bundled Function
+      id: 'BundledFunctionPythonRuntime4D9A0918',
+      files: [
+        'app.py',
+        'geonamescache/__init__.py',
+        'geonamescache-1.3.0.dist-info',
+      ],
+    },
+    {
+      // NodeJs Function
+      id: 'NodejsFunction09C1F20F',
+      files: [
+        'index.js',
+      ],
+    },
+    {
+      // Go Function
+      id: 'GoFunctionCA95FBAA',
+      files: [
+        'bootstrap',
+      ],
+    },
+    {
+      // Docker Image Function
+      id: 'DockerImageFunction28B773E6',
+      files: [
+        'app.js',
+        'Dockerfile',
+        'package.json',
+      ],
+    },
+  ];
+
+  for (const resource of expectedBundledAssets) {
+    const assetPath = template.Resources[resource.id].Metadata['aws:asset:path'];
+    for (const file of resource.files) {
+      fixture.output.write(`validate Path ${file} for resource ${resource}`);
+      expect(existsSync(path.join(fixture.integTestDir, 'cdk.out', assetPath, file))).toBeTruthy();
+    }
+  }
+}));
+
+integTest('sam can locally test the synthesized cdk application', withSamIntegrationFixture(async (fixture) => {
+  // Synth first
+  await fixture.cdkSynth();
+
+  const result = await fixture.samLocalStartApi(
+    'TestStack', false, randomInteger(30000, 40000), '/restapis/spec/pythonFunction');
+  expect(result.actionSucceeded).toBeTruthy();
+  expect(result.actionOutput).toEqual(expect.objectContaining({
+    message: 'Hello World',
+  }));
+}));
+
+integTest('skips notice refresh', withDefaultFixture(async (fixture) => {
+  const output = await fixture.cdkSynth({
+    options: ['--no-notices'],
+    modEnv: {
+      INTEG_STACK_SET: 'stage-using-context',
+    },
+    allowErrExit: true,
+  });
+
+  // Neither succeeds nor fails, but skips the refresh
+  await expect(output).not.toContain('Notices refreshed');
+  await expect(output).not.toContain('Notices refresh failed');
 }));
 
 async function listChildren(parent: string, pred: (x: string) => Promise<boolean>) {

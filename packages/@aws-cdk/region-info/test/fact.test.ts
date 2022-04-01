@@ -1,5 +1,5 @@
-import { AWS_REGIONS } from '../build-tools/aws-entities';
 import { Fact, FactName } from '../lib';
+import { AWS_REGIONS } from '../lib/aws-entities';
 
 describe('find', () => {
   test('returns undefined for an unknown fact', () => {

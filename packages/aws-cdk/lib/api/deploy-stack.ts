@@ -1,5 +1,5 @@
 import * as cxapi from '@aws-cdk/cx-api';
-import * as colors from 'colors/safe';
+import * as chalk from 'chalk';
 import * as uuid from 'uuid';
 import { addMetadataAssetsToManifest } from '../assets';
 import { Tag } from '../cdk-toolkit';
@@ -9,8 +9,9 @@ import { AssetManifestBuilder } from '../util/asset-manifest-builder';
 import { publishAssets } from '../util/asset-publishing';
 import { contentHash } from '../util/content-hash';
 import { ISDK, SdkProvider } from './aws-auth';
+import { CfnEvaluationException } from './evaluate-cloudformation-template';
 import { tryHotswapDeployment } from './hotswap-deployments';
-import { CfnEvaluationException } from './hotswap/evaluate-cloudformation-template';
+import { ICON } from './hotswap/common';
 import { ToolkitInfo } from './toolkit-info';
 import {
   changeSetHasNoChanges, CloudFormationStack, TemplateParameters, waitForChangeSet,
@@ -27,7 +28,6 @@ export interface DeployStackResult {
   readonly noOp: boolean;
   readonly outputs: { [name: string]: string };
   readonly stackArn: string;
-  readonly stackArtifact: cxapi.CloudFormationStackArtifact;
 }
 
 export interface DeployStackOptions {
@@ -231,11 +231,15 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
 
   if (await canSkipDeploy(options, cloudFormationStack, stackParams.hasChanges(cloudFormationStack.parameters))) {
     debug(`${deployName}: skipping deployment (use --force to override)`);
+    // if we can skip deployment and we are performing a hotswap, let the user know
+    // that no hotswap deployment happened
+    if (options.hotswap) {
+      print(`\n ${ICON} %s\n`, chalk.bold('hotswap deployment skipped - no changes were detected (use --force to override)'));
+    }
     return {
       noOp: true,
       outputs: cloudFormationStack.outputs,
       stackArn: cloudFormationStack.stackId,
-      stackArtifact,
     };
   } else {
     debug(`${deployName}: deploying...`);
@@ -289,7 +293,7 @@ async function prepareAndExecuteChangeSet(
   const update = cloudFormationStack.exists && cloudFormationStack.stackStatus.name !== 'REVIEW_IN_PROGRESS';
 
   debug(`Attempting to create ChangeSet with name ${changeSetName} to ${update ? 'update' : 'create'} stack ${deployName}`);
-  print('%s: creating CloudFormation changeset...', colors.bold(deployName));
+  print('%s: creating CloudFormation changeset...', chalk.bold(deployName));
   const executionId = uuid.v4();
   const changeSet = await cfn.createChangeSet({
     StackName: deployName,
@@ -324,7 +328,7 @@ async function prepareAndExecuteChangeSet(
       debug('Deleting empty change set %s', changeSet.Id);
       await cfn.deleteChangeSet({ StackName: deployName, ChangeSetName: changeSetName }).promise();
     }
-    return { noOp: true, outputs: cloudFormationStack.outputs, stackArn: changeSet.StackId!, stackArtifact };
+    return { noOp: true, outputs: cloudFormationStack.outputs, stackArn: changeSet.StackId! };
   }
 
   const execute = options.execute === undefined ? true : options.execute;
@@ -361,7 +365,7 @@ async function prepareAndExecuteChangeSet(
     print('Changeset %s created and waiting in review for manual execution (--no-execute)', changeSet.Id);
   }
 
-  return { noOp: false, outputs: cloudFormationStack.outputs, stackArn: changeSet.StackId!, stackArtifact };
+  return { noOp: false, outputs: cloudFormationStack.outputs, stackArn: changeSet.StackId! };
 }
 
 /**
@@ -401,7 +405,7 @@ async function makeBodyParameter(
       `The template for stack "${stack.displayName}" is ${Math.round(templateJson.length / 1024)}KiB. ` +
       `Templates larger than ${LARGE_TEMPLATE_SIZE_KB}KiB must be uploaded to S3.\n` +
       'Run the following command in order to setup an S3 bucket in this environment, and then re-deploy:\n\n',
-      colors.blue(`\t$ cdk bootstrap ${resolvedEnvironment.name}\n`));
+      chalk.blue(`\t$ cdk bootstrap ${resolvedEnvironment.name}\n`));
 
     throw new Error('Template too large to deploy ("cdk bootstrap" is required)');
   }

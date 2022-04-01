@@ -125,7 +125,7 @@ export class MatchResult {
    * Prepare the result to be analyzed.
    * This API *must* be called prior to analyzing these results.
    */
-  public finalize(): this {
+  public finished(): this {
     if (this.finalized) {
       return this;
     }

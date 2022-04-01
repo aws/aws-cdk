@@ -265,6 +265,7 @@ export class Settings {
     return new Settings({
       app: argv.app,
       browser: argv.browser,
+      build: argv.build,
       context,
       debug: argv.debug,
       tags,
@@ -287,6 +288,7 @@ export class Settings {
       bundlingStacks,
       lookups: argv.lookups,
       rollback: argv.rollback,
+      notices: argv.notices,
     });
   }
 

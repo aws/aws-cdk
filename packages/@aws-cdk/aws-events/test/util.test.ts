@@ -23,21 +23,18 @@ describe('util', () => {
           case: [1],
         },
       });
-
     });
 
     test('merge into an empty destination', () => {
       expect(mergeEventPattern(undefined, { foo: ['123'] })).toEqual({ foo: ['123'] });
       expect(mergeEventPattern(undefined, { foo: { bar: ['123'] } })).toEqual({ foo: { bar: ['123'] } });
       expect(mergeEventPattern({ }, { foo: { bar: ['123'] } })).toEqual({ foo: { bar: ['123'] } });
-
     });
 
     test('fails if a field is not an array', () => {
       expect(() => mergeEventPattern(undefined, 123)).toThrow(/Invalid event pattern '123', expecting an object or an array/);
       expect(() => mergeEventPattern(undefined, 'Hello')).toThrow(/Invalid event pattern '"Hello"', expecting an object or an array/);
       expect(() => mergeEventPattern(undefined, { foo: '123' })).toThrow(/Invalid event pattern field { foo: "123" }. All fields must be arrays/);
-
     });
 
     test('fails if mismatch between dest and src', () => {
@@ -52,7 +49,6 @@ describe('util', () => {
           },
         },
       })).toThrow(/Invalid event pattern field array. Type mismatch between existing pattern \[1\] and added pattern \{"value":\["hello"\]\}/);
-
     });
 
     test('deduplicate match values in pattern array', () => {
@@ -90,7 +86,6 @@ describe('util', () => {
         'detail-type': ['AWS API Call via CloudTrail'],
         'time': [{ prefix: '2017-10-02' }, { prefix: '2017-10-03' }],
       });
-
     });
   });
 });

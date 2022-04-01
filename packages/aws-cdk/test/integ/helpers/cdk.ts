@@ -4,7 +4,6 @@ import * as os from 'os';
 import * as path from 'path';
 import { outputFromStack, AwsClients } from './aws';
 import { memoize0 } from './memoize';
-import { findYarnPackages } from './monorepo';
 import { ResourcePool } from './resource-pool';
 import { TestContext } from './test-helpers';
 
@@ -12,7 +11,7 @@ const REGIONS = process.env.AWS_REGIONS
   ? process.env.AWS_REGIONS.split(',')
   : [process.env.AWS_REGION ?? process.env.AWS_DEFAULT_REGION ?? 'us-east-1'];
 
-const FRAMEWORK_VERSION = process.env.FRAMEWORK_VERSION ?? '*';
+export const FRAMEWORK_VERSION = process.env.FRAMEWORK_VERSION ?? '*';
 
 export let MAJOR_VERSION = FRAMEWORK_VERSION.split('.')[0];
 if (MAJOR_VERSION === '*') {
@@ -32,6 +31,34 @@ process.stdout.write(`Using framework version: ${FRAMEWORK_VERSION} (major versi
 
 const REGION_POOL = new ResourcePool(REGIONS);
 
+
+/**
+ * Cache monorepo discovery results, we only want to do this once per run
+ */
+const YARN_MONOREPO_CACHE: Record<string, any> = {};
+
+/**
+  * Return a { name -> directory } packages found in a Yarn monorepo
+  *
+  * Cached in YARN_MONOREPO_CACHE.
+  */
+export async function findYarnPackages(root: string): Promise<Record<string, string>> {
+  if (!(root in YARN_MONOREPO_CACHE)) {
+    const output: YarnWorkspacesOutput = JSON.parse(await shell(['yarn', 'workspaces', '--silent', 'info'], {
+      captureStderr: false,
+      cwd: root,
+    }));
+
+    const ret: Record<string, string> = {};
+    for (const [k, v] of Object.entries(output)) {
+      ret[k] = path.join(root, v.location);
+    }
+    YARN_MONOREPO_CACHE[root] = ret;
+  }
+  return YARN_MONOREPO_CACHE[root];
+}
+
+type YarnWorkspacesOutput = Record<string, { location: string }>;
 
 export type AwsContext = { readonly aws: AwsClients };
 
@@ -88,6 +115,7 @@ export function withCdkApp<A extends TestContext & AwsContext>(block: (context: 
           '@aws-cdk/aws-ecr-assets': installationVersion,
           '@aws-cdk/aws-cloudformation': installationVersion,
           '@aws-cdk/aws-ec2': installationVersion,
+          '@aws-cdk/aws-s3': installationVersion,
           'constructs': '^3',
         });
       } else {
@@ -283,7 +311,7 @@ export class TestFixture {
     this.output.write(`${s}\n`);
   }
 
-  public async shell(command: string[], options: Omit<ShellOptions, 'cwd'|'output'> = {}): Promise<string> {
+  public async shell(command: string[], options: Omit<ShellOptions, 'cwd' | 'output'> = {}): Promise<string> {
     return shell(command, {
       output: this.output,
       cwd: this.integTestDir,
@@ -658,7 +686,7 @@ export function randomString() {
  * symlinked from the TARGET directory's `node_modules` directory (which is sufficient
  * for Node's dependency lookup mechanism).
  */
-async function installNpmPackages(fixture: TestFixture, packages: Record<string, string>) {
+export async function installNpmPackages(fixture: TestFixture, packages: Record<string, string>) {
   if (process.env.REPO_ROOT) {
     const monoRepo = await findYarnPackages(process.env.REPO_ROOT);
 

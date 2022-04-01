@@ -1,5 +1,4 @@
-import { ResourcePart } from '@aws-cdk/assert-internal';
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import { SamlMetadataDocument, SamlProvider } from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';
 import { Stack } from '@aws-cdk/core';
@@ -27,7 +26,7 @@ test('client vpn endpoint', () => {
     userBasedAuthentication: ClientVpnUserBasedAuthentication.federated(samlProvider),
   });
 
-  expect(stack).toHaveResource('AWS::EC2::ClientVpnEndpoint', {
+  Template.fromStack(stack).hasResourceProperties('AWS::EC2::ClientVpnEndpoint', {
     AuthenticationOptions: [
       {
         MutualAuthentication: {
@@ -73,9 +72,9 @@ test('client vpn endpoint', () => {
     },
   });
 
-  expect(stack).toCountResources('AWS::EC2::ClientVpnTargetNetworkAssociation', 2);
+  Template.fromStack(stack).resourceCountIs('AWS::EC2::ClientVpnTargetNetworkAssociation', 2);
 
-  expect(stack).toHaveResource('AWS::EC2::ClientVpnTargetNetworkAssociation', {
+  Template.fromStack(stack).hasResourceProperties('AWS::EC2::ClientVpnTargetNetworkAssociation', {
     ClientVpnEndpointId: {
       Ref: 'VpcEndpoint6FF034F6',
     },
@@ -84,7 +83,7 @@ test('client vpn endpoint', () => {
     },
   });
 
-  expect(stack).toHaveResource('AWS::EC2::ClientVpnTargetNetworkAssociation', {
+  Template.fromStack(stack).hasResourceProperties('AWS::EC2::ClientVpnTargetNetworkAssociation', {
     ClientVpnEndpointId: {
       Ref: 'VpcEndpoint6FF034F6',
     },
@@ -93,9 +92,8 @@ test('client vpn endpoint', () => {
     },
   });
 
-  expect(stack).toHaveOutput({
-    outputName: 'VpcEndpointSelfServicePortalUrl760AFE23',
-    outputValue: {
+  Template.fromStack(stack).hasOutput('VpcEndpointSelfServicePortalUrl760AFE23', {
+    Value: {
       'Fn::Join': [
         '',
         [
@@ -108,7 +106,7 @@ test('client vpn endpoint', () => {
     },
   });
 
-  expect(stack).toHaveResource('AWS::EC2::ClientVpnAuthorizationRule', {
+  Template.fromStack(stack).hasResourceProperties('AWS::EC2::ClientVpnAuthorizationRule', {
     ClientVpnEndpointId: {
       Ref: 'VpcEndpoint6FF034F6',
     },
@@ -133,7 +131,7 @@ test('client vpn endpoint with custom security groups', () => {
     ],
   });
 
-  expect(stack).toHaveResource('AWS::EC2::ClientVpnEndpoint', {
+  Template.fromStack(stack).hasResourceProperties('AWS::EC2::ClientVpnEndpoint', {
     SecurityGroupIds: [
       {
         'Fn::GetAtt': [
@@ -163,7 +161,7 @@ test('client vpn endpoint with custom logging', () => {
     logStream: logGroup.addStream('LogStream'),
   });
 
-  expect(stack).toHaveResource('AWS::EC2::ClientVpnEndpoint', {
+  Template.fromStack(stack).hasResourceProperties('AWS::EC2::ClientVpnEndpoint', {
     ConnectionLogOptions: {
       CloudwatchLogGroup: {
         Ref: 'LogGroupF5B46931',
@@ -184,7 +182,7 @@ test('client vpn endpoint with logging disabled', () => {
     logging: false,
   });
 
-  expect(stack).toHaveResource('AWS::EC2::ClientVpnEndpoint', {
+  Template.fromStack(stack).hasResourceProperties('AWS::EC2::ClientVpnEndpoint', {
     ConnectionLogOptions: {
       Enabled: false,
     },
@@ -204,9 +202,9 @@ test('client vpn endpoint with custom authorization rules', () => {
     groupId: 'group-id',
   });
 
-  expect(stack).toCountResources('AWS::EC2::ClientVpnAuthorizationRule', 1);
+  Template.fromStack(stack).resourceCountIs('AWS::EC2::ClientVpnAuthorizationRule', 1);
 
-  expect(stack).toHaveResource('AWS::EC2::ClientVpnAuthorizationRule', {
+  Template.fromStack(stack).hasResourceProperties('AWS::EC2::ClientVpnAuthorizationRule', {
     ClientVpnEndpointId: {
       Ref: 'VpcEndpoint6FF034F6',
     },
@@ -229,7 +227,7 @@ test('client vpn endpoint with custom route', () => {
     target: ec2.ClientVpnRouteTarget.local(),
   });
 
-  expect(stack).toHaveResource('AWS::EC2::ClientVpnRoute', {
+  Template.fromStack(stack).hasResource('AWS::EC2::ClientVpnRoute', {
     Properties: {
       ClientVpnEndpointId: {
         Ref: 'VpcEndpoint6FF034F6',
@@ -241,7 +239,36 @@ test('client vpn endpoint with custom route', () => {
       'VpcEndpointAssociation06B066321',
       'VpcEndpointAssociation12B51A67F',
     ],
-  }, ResourcePart.CompleteDefinition);
+  });
+});
+
+test('client vpn endpoint with custom session timeout', () => {
+  vpc.addClientVpnEndpoint('Endpoint', {
+    cidr: '10.100.0.0/16',
+    serverCertificateArn: 'server-certificate-arn',
+    clientCertificateArn: 'client-certificate-arn',
+    sessionTimeout: ec2.ClientVpnSessionTimeout.TEN_HOURS,
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::EC2::ClientVpnEndpoint', {
+    SessionTimeoutHours: 10,
+  });
+});
+
+test('client vpn endpoint with client login banner', () => {
+  vpc.addClientVpnEndpoint('Endpoint', {
+    cidr: '10.100.0.0/16',
+    serverCertificateArn: 'server-certificate-arn',
+    clientCertificateArn: 'client-certificate-arn',
+    clientLoginBanner: 'Welcome!',
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::EC2::ClientVpnEndpoint', {
+    ClientLoginBannerOptions: {
+      Enabled: true,
+      BannerText: 'Welcome!',
+    },
+  });
 });
 
 test('throws with more than 2 dns servers', () => {

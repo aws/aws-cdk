@@ -59,7 +59,8 @@ export interface BundlingOptions {
   readonly loader?: { [ext: string]: string };
 
   /**
-   * Log level for esbuild
+   * Log level for esbuild. This is also propagated to the package manager and
+   * applies to its specific install command.
    *
    * @default LogLevel.WARNING
    */
@@ -203,11 +204,31 @@ export interface BundlingOptions {
   readonly esbuildVersion?: string;
 
   /**
+   * Build arguments to pass into esbuild.
+   *
+   * For example, to add the [--log-limit](https://esbuild.github.io/api/#log-limit) flag:
+   *
+   * ```text
+   * new NodejsFunction(scope, id, {
+   *   ...
+   *   bundling: {
+   *     esbuildArgs: {
+   *       "--log-limit": "0",
+   *     }
+   *   }
+   * });
+   * ```
+   *
+   * @default - no additional esbuild arguments are passed
+   */
+  readonly esbuildArgs?: { [key: string]: string | boolean };
+
+  /**
    * Build arguments to pass when building the bundling image.
    *
    * @default - no build arguments are passed
    */
-  readonly buildArgs?: { [key:string] : string };
+  readonly buildArgs?: { [key: string]: string };
 
   /**
    * Force bundling in a Docker container even if local bundling is
@@ -263,6 +284,47 @@ export interface BundlingOptions {
    * @default - asset hash is calculated based on the bundled output
    */
   readonly assetHash?: string;
+
+  /**
+   * Output format for the generated JavaScript files
+   *
+   * @default OutputFormat.CJS
+   */
+  readonly format?: OutputFormat;
+
+  /**
+   * How to determine the entry point for modules.
+   * Try ['module', 'main'] to default to ES module versions.
+   *
+   * @default ['main', 'module']
+   */
+  readonly mainFields?: string[];
+
+  /**
+   * This option allows you to automatically replace a global variable with an
+   * import from another file.
+   *
+   * @see https://esbuild.github.io/api/#inject
+   * @default - no code is injected
+   */
+  readonly inject?: string[]
+}
+
+/**
+ * Output format for the generated JavaScript files
+ */
+export enum OutputFormat {
+  /**
+   * CommonJS
+   */
+  CJS = 'cjs',
+
+  /**
+   * ECMAScript module
+   *
+   * Requires a running environment that supports `import` and `export` syntax.
+   */
+  ESM = 'esm'
 }
 
 /**
@@ -308,7 +370,7 @@ export interface ICommandHooks {
 }
 
 /**
- * Log level for esbuild
+ * Log levels for esbuild and package managers' install commands.
  */
 export enum LogLevel {
   /** Show everything */

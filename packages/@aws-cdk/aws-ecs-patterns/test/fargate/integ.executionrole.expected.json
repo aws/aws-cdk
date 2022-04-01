@@ -368,8 +368,8 @@
               "Effect": "Allow",
               "Principal": {
                 "Service": [
-                  "ecs.amazonaws.com",
-                  "ecs-tasks.amazonaws.com"
+                  "ecs-tasks.amazonaws.com",
+                  "ecs.amazonaws.com"
                 ]
               }
             }
