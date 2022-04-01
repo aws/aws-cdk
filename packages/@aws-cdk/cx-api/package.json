@@ -23,8 +23,7 @@
         "distName": "aws-cdk.cx-api",
         "module": "aws_cdk.cx_api",
         "classifiers": [
-          "Framework :: AWS CDK",
-          "Framework :: AWS CDK :: 2"
+          "Framework :: AWS CDK"
         ]
       }
     },

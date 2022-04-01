@@ -24,8 +24,7 @@
         "distName": "aws-cdk.app-delivery",
         "module": "aws_cdk.app_delivery",
         "classifiers": [
-          "Framework :: AWS CDK",
-          "Framework :: AWS CDK :: 2"
+          "Framework :: AWS CDK"
         ]
       }
     },
