@@ -360,6 +360,7 @@ const RESOURCE_TYPE_ATTRIBUTES_FORMATS: { [type: string]: { [attribute: string]:
     // the name attribute of the EventBus is the same as the Ref
     Name: parts => parts.resourceName,
   },
+  'AWS::DynamoDB::Table': { Arn: stdSlashResourceArnFmt },
   'AWS::AppSync::GraphQLApi': { ApiId: appsyncGraphQlApiApiIdFmt },
 };
 
