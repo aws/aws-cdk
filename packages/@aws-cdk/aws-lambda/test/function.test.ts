@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { Match, Template } from '@aws-cdk/assertions';
+import { Annotations, Match, Template } from '@aws-cdk/assertions';
 import { ProfilingGroup } from '@aws-cdk/aws-codeguruprofiler';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as efs from '@aws-cdk/aws-efs';
@@ -15,6 +15,7 @@ import * as cdk from '@aws-cdk/core';
 import * as constructs from 'constructs';
 import * as _ from 'lodash';
 import * as lambda from '../lib';
+import { Lazy, Size } from '@aws-cdk/core';
 
 describe('function', () => {
   test('default function', () => {
@@ -434,6 +435,154 @@ describe('function', () => {
 
       // THEN
       Template.fromStack(stack).resourceCountIs('AWS::Lambda::Permission', 0);
+    });
+
+    describe('annotations on different IFunctions', () => {
+      let stack: cdk.Stack;
+      let fn: lambda.Function;
+      let warningMessage: string;
+      beforeEach(() => {
+        warningMessage = 'AWS Lambda has changed their authorization strategy';
+        stack = new cdk.Stack();
+        fn = new lambda.Function(stack, 'MyLambda', {
+          code: lambda.Code.fromAsset(path.join(__dirname, 'my-lambda-handler')),
+          handler: 'index.handler',
+          runtime: lambda.Runtime.PYTHON_3_6,
+        });
+      });
+
+      describe('permissions on functions', () => {
+        test('without lambda:InvokeFunction', () => {
+          // WHEN
+          fn.addPermission('MyPermission', {
+            action: 'lambda.GetFunction',
+            principal: new iam.ServicePrincipal('lambda.amazonaws.com'),
+          });
+
+          // Simulate a workflow where a user has created a currentVersion with the intent to invoke it later.
+          fn.currentVersion;
+
+          // THEN
+          Annotations.fromStack(stack).hasNoWarning('/Default/MyLambda', Match.stringLikeRegexp(warningMessage));
+        });
+
+        describe('with lambda:InvokeFunction', () => {
+          test('without invoking currentVersion', () => {
+            // WHEN
+            fn.addPermission('MyPermission', {
+              principal: new iam.ServicePrincipal('lambda.amazonaws.com'),
+            });
+
+            // THEN
+            Annotations.fromStack(stack).hasNoWarning('/Default/MyLambda', Match.stringLikeRegexp(warningMessage));
+          });
+
+          test('with currentVersion invoked first', () => {
+            // GIVEN
+            // Simulate a workflow where a user has created a currentVersion with the intent to invoke it later.
+            fn.currentVersion;
+
+            // WHEN
+            fn.addPermission('MyPermission', {
+              principal: new iam.ServicePrincipal('lambda.amazonaws.com'),
+            });
+
+            // THEN
+            Annotations.fromStack(stack).hasWarning('/Default/MyLambda', Match.stringLikeRegexp(warningMessage));
+          });
+
+          test('with currentVersion invoked after permissions created', () => {
+            // WHEN
+            fn.addPermission('MyPermission', {
+              principal: new iam.ServicePrincipal('lambda.amazonaws.com'),
+            });
+
+            // Simulate a workflow where a user has created a currentVersion after adding permissions to the function.
+            fn.currentVersion;
+
+            // THEN
+            Annotations.fromStack(stack).hasWarning('/Default/MyLambda', Match.stringLikeRegexp(warningMessage));
+          });
+
+          test('multiple currentVersion calls does not result in multiple warnings', () => {
+            // WHEN
+            fn.currentVersion;
+
+            fn.addPermission('MyPermission', {
+              principal: new iam.ServicePrincipal('lambda.amazonaws.com'),
+            });
+
+            fn.currentVersion;
+
+            // THEN
+            const warns = Annotations.fromStack(stack).findWarning('/Default/MyLambda', Match.stringLikeRegexp(warningMessage));
+            expect(warns).toHaveLength(1);
+          });
+        });
+      });
+
+      test('permission on versions', () => {
+        // GIVEN
+        const version = new lambda.Version(stack, 'MyVersion', {
+          lambda: fn.currentVersion,
+        });
+
+        // WHEN
+        version.addPermission('MyPermission', {
+          principal: new iam.ServicePrincipal('lambda.amazonaws.com'),
+        });
+
+        // THEN
+        Annotations.fromStack(stack).hasNoWarning('/Default/MyVersion', Match.stringLikeRegexp(warningMessage));
+      });
+
+      test('permission on latest version', () => {
+        // WHEN
+        fn.latestVersion.addPermission('MyPermission', {
+          principal: new iam.ServicePrincipal('lambda.amazonaws.com'),
+        });
+
+        // THEN
+        // cannot add permissions on latest version, so no warning necessary
+        Annotations.fromStack(stack).hasNoWarning('/Default/MyLambda/$LATEST', Match.stringLikeRegexp(warningMessage));
+      });
+
+      describe('permission on alias', () => {
+        test('of current version', () => {
+          // GIVEN
+          const version = new lambda.Version(stack, 'MyVersion', {
+            lambda: fn.currentVersion,
+          });
+          const alias = new lambda.Alias(stack, 'MyAlias', {
+            aliasName: 'alias',
+            version,
+          });
+
+          // WHEN
+          alias.addPermission('MyPermission', {
+            principal: new iam.ServicePrincipal('lambda.amazonaws.com'),
+          });
+
+          // THEN
+          Annotations.fromStack(stack).hasNoWarning('/Default/MyAlias', Match.stringLikeRegexp(warningMessage));
+        });
+
+        test('of latest version', () => {
+          // GIVEN
+          const alias = new lambda.Alias(stack, 'MyAlias', {
+            aliasName: 'alias',
+            version: fn.latestVersion,
+          });
+
+          // WHEN
+          alias.addPermission('MyPermission', {
+            principal: new iam.ServicePrincipal('lambda.amazonaws.com'),
+          });
+
+          // THEN
+          Annotations.fromStack(stack).hasNoWarning('/Default/MyAlias', Match.stringLikeRegexp(warningMessage));
+        });
+      });
     });
   });
 
@@ -2436,6 +2585,7 @@ describe('function', () => {
       architectures: [lambda.Architecture.X86_64, lambda.Architecture.ARM_64],
     })).toThrow(/one architecture must be specified/);
   });
+
   test('Architecture is properly readable from the function', () => {
     const stack = new cdk.Stack();
     const fn = new lambda.Function(stack, 'MyFunction', {
@@ -2485,6 +2635,50 @@ describe('function', () => {
       });
     }).not.toThrow();
   });
+});
+
+test('throws if ephemeral storage size is out of bound', () => {
+  const stack = new cdk.Stack();
+  expect(() => new lambda.Function(stack, 'MyLambda', {
+    code: new lambda.InlineCode('foo'),
+    handler: 'bar',
+    runtime: lambda.Runtime.NODEJS_14_X,
+    ephemeralStorageSize: Size.mebibytes(511),
+  })).toThrow(/Ephemeral storage size must be between 512 and 10240 MB/);
+});
+
+test('set ephemeral storage to desired size', () => {
+  const stack = new cdk.Stack();
+  new lambda.Function(stack, 'MyLambda', {
+    code: new lambda.InlineCode('foo'),
+    handler: 'bar',
+    runtime: lambda.Runtime.NODEJS_14_X,
+    ephemeralStorageSize: Size.mebibytes(1024),
+  });
+
+  Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
+    Properties:
+    {
+      Code: { ZipFile: 'foo' },
+      Handler: 'bar',
+      Runtime: 'nodejs14.x',
+      EphemeralStorage: {
+        Size: 1024,
+      },
+    },
+  });
+});
+
+test('ephemeral storage allows unresolved tokens', () => {
+  const stack = new cdk.Stack();
+  expect(() => {
+    new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'bar',
+      runtime: lambda.Runtime.NODEJS_14_X,
+      ephemeralStorageSize: Size.mebibytes(Lazy.number({ produce: () => 1024 })),
+    });
+  }).not.toThrow();
 });
 
 function newTestLambda(scope: constructs.Construct) {
