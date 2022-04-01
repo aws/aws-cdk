@@ -234,6 +234,8 @@ testDeprecated('test ECS queue worker service construct - with optional props', 
     family: 'ecs-task-family',
     circuitBreaker: { rollback: true },
     gpuCount: 256,
+    placementStrategies: [ecs.PlacementStrategy.spreadAcrossInstances(), ecs.PlacementStrategy.packedByCpu(), ecs.PlacementStrategy.randomly()],
+    placementConstraints: [ecs.PlacementConstraint.memberOf('attribute:ecs.instance-type =~ m5a.*')],
   });
 
   // THEN - QueueWorker is of EC2 launch type, an SQS queue is created and all optional properties are set.
@@ -252,6 +254,8 @@ testDeprecated('test ECS queue worker service construct - with optional props', 
     DeploymentController: {
       Type: 'ECS',
     },
+    PlacementConstraints: [{ Type: 'memberOf', Expression: 'attribute:ecs.instance-type =~ m5a.*' }],
+    PlacementStrategies: [{ Field: 'instanceId', Type: 'spread' }, { Field: 'cpu', Type: 'binpack' }, { Type: 'random' }],
   });
 
   Template.fromStack(stack).hasResourceProperties('AWS::SQS::Queue', {
