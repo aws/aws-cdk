@@ -1,28 +1,28 @@
 {
   "Resources": {
-    "MyVpcF9F0CA6F": {
+    "VPCB9E5F0B4": {
       "Type": "AWS::EC2::VPC",
       "Properties": {
-        "CidrBlock": "10.10.0.0/16",
+        "CidrBlock": "10.0.0.0/16",
         "EnableDnsHostnames": true,
         "EnableDnsSupport": true,
         "InstanceTenancy": "default",
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-cdk-ec2-vpn/MyVpc"
+            "Value": "aws-cdk-ec2-vpc-endpoint-service/VPC"
           }
         ]
       }
     },
-    "MyVpcPublicSubnet1SubnetF6608456": {
+    "VPCPublicSubnet1SubnetB4246D30": {
       "Type": "AWS::EC2::Subnet",
       "Properties": {
         "VpcId": {
-          "Ref": "MyVpcF9F0CA6F"
+          "Ref": "VPCB9E5F0B4"
         },
         "AvailabilityZone": "test-region-1a",
-        "CidrBlock": "10.10.0.0/19",
+        "CidrBlock": "10.0.0.0/19",
         "MapPublicIpOnLaunch": true,
         "Tags": [
           {
@@ -35,91 +35,91 @@
           },
           {
             "Key": "Name",
-            "Value": "aws-cdk-ec2-vpn/MyVpc/PublicSubnet1"
+            "Value": "aws-cdk-ec2-vpc-endpoint-service/VPC/PublicSubnet1"
           }
         ]
       }
     },
-    "MyVpcPublicSubnet1RouteTableC46AB2F4": {
+    "VPCPublicSubnet1RouteTableFEE4B781": {
       "Type": "AWS::EC2::RouteTable",
       "Properties": {
         "VpcId": {
-          "Ref": "MyVpcF9F0CA6F"
+          "Ref": "VPCB9E5F0B4"
         },
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-cdk-ec2-vpn/MyVpc/PublicSubnet1"
+            "Value": "aws-cdk-ec2-vpc-endpoint-service/VPC/PublicSubnet1"
           }
         ]
       }
     },
-    "MyVpcPublicSubnet1RouteTableAssociation2ECEE1CB": {
+    "VPCPublicSubnet1RouteTableAssociation0B0896DC": {
       "Type": "AWS::EC2::SubnetRouteTableAssociation",
       "Properties": {
         "RouteTableId": {
-          "Ref": "MyVpcPublicSubnet1RouteTableC46AB2F4"
+          "Ref": "VPCPublicSubnet1RouteTableFEE4B781"
         },
         "SubnetId": {
-          "Ref": "MyVpcPublicSubnet1SubnetF6608456"
+          "Ref": "VPCPublicSubnet1SubnetB4246D30"
         }
       }
     },
-    "MyVpcPublicSubnet1DefaultRoute95FDF9EB": {
+    "VPCPublicSubnet1DefaultRoute91CEF279": {
       "Type": "AWS::EC2::Route",
       "Properties": {
         "RouteTableId": {
-          "Ref": "MyVpcPublicSubnet1RouteTableC46AB2F4"
+          "Ref": "VPCPublicSubnet1RouteTableFEE4B781"
         },
         "DestinationCidrBlock": "0.0.0.0/0",
         "GatewayId": {
-          "Ref": "MyVpcIGW5C4A4F63"
+          "Ref": "VPCIGWB7E252D3"
         }
       },
       "DependsOn": [
-        "MyVpcVPCGW488ACE0D"
+        "VPCVPCGW99B986DC"
       ]
     },
-    "MyVpcPublicSubnet1EIP096967CB": {
+    "VPCPublicSubnet1EIP6AD938E8": {
       "Type": "AWS::EC2::EIP",
       "Properties": {
         "Domain": "vpc",
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-cdk-ec2-vpn/MyVpc/PublicSubnet1"
+            "Value": "aws-cdk-ec2-vpc-endpoint-service/VPC/PublicSubnet1"
           }
         ]
       }
     },
-    "MyVpcPublicSubnet1NATGatewayAD3400C1": {
+    "VPCPublicSubnet1NATGatewayE0556630": {
       "Type": "AWS::EC2::NatGateway",
       "Properties": {
         "SubnetId": {
-          "Ref": "MyVpcPublicSubnet1SubnetF6608456"
+          "Ref": "VPCPublicSubnet1SubnetB4246D30"
         },
         "AllocationId": {
           "Fn::GetAtt": [
-            "MyVpcPublicSubnet1EIP096967CB",
+            "VPCPublicSubnet1EIP6AD938E8",
             "AllocationId"
           ]
         },
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-cdk-ec2-vpn/MyVpc/PublicSubnet1"
+            "Value": "aws-cdk-ec2-vpc-endpoint-service/VPC/PublicSubnet1"
           }
         ]
       }
     },
-    "MyVpcPublicSubnet2Subnet492B6BFB": {
+    "VPCPublicSubnet2Subnet74179F39": {
       "Type": "AWS::EC2::Subnet",
       "Properties": {
         "VpcId": {
-          "Ref": "MyVpcF9F0CA6F"
+          "Ref": "VPCB9E5F0B4"
         },
         "AvailabilityZone": "test-region-1b",
-        "CidrBlock": "10.10.32.0/19",
+        "CidrBlock": "10.0.32.0/19",
         "MapPublicIpOnLaunch": true,
         "Tags": [
           {
@@ -132,91 +132,91 @@
           },
           {
             "Key": "Name",
-            "Value": "aws-cdk-ec2-vpn/MyVpc/PublicSubnet2"
+            "Value": "aws-cdk-ec2-vpc-endpoint-service/VPC/PublicSubnet2"
           }
         ]
       }
     },
-    "MyVpcPublicSubnet2RouteTable1DF17386": {
+    "VPCPublicSubnet2RouteTable6F1A15F1": {
       "Type": "AWS::EC2::RouteTable",
       "Properties": {
         "VpcId": {
-          "Ref": "MyVpcF9F0CA6F"
+          "Ref": "VPCB9E5F0B4"
         },
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-cdk-ec2-vpn/MyVpc/PublicSubnet2"
+            "Value": "aws-cdk-ec2-vpc-endpoint-service/VPC/PublicSubnet2"
           }
         ]
       }
     },
-    "MyVpcPublicSubnet2RouteTableAssociation227DE78D": {
+    "VPCPublicSubnet2RouteTableAssociation5A808732": {
       "Type": "AWS::EC2::SubnetRouteTableAssociation",
       "Properties": {
         "RouteTableId": {
-          "Ref": "MyVpcPublicSubnet2RouteTable1DF17386"
+          "Ref": "VPCPublicSubnet2RouteTable6F1A15F1"
         },
         "SubnetId": {
-          "Ref": "MyVpcPublicSubnet2Subnet492B6BFB"
+          "Ref": "VPCPublicSubnet2Subnet74179F39"
         }
       }
     },
-    "MyVpcPublicSubnet2DefaultRoute052936F6": {
+    "VPCPublicSubnet2DefaultRouteB7481BBA": {
       "Type": "AWS::EC2::Route",
       "Properties": {
         "RouteTableId": {
-          "Ref": "MyVpcPublicSubnet2RouteTable1DF17386"
+          "Ref": "VPCPublicSubnet2RouteTable6F1A15F1"
         },
         "DestinationCidrBlock": "0.0.0.0/0",
         "GatewayId": {
-          "Ref": "MyVpcIGW5C4A4F63"
+          "Ref": "VPCIGWB7E252D3"
         }
       },
       "DependsOn": [
-        "MyVpcVPCGW488ACE0D"
+        "VPCVPCGW99B986DC"
       ]
     },
-    "MyVpcPublicSubnet2EIP8CCBA239": {
+    "VPCPublicSubnet2EIP4947BC00": {
       "Type": "AWS::EC2::EIP",
       "Properties": {
         "Domain": "vpc",
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-cdk-ec2-vpn/MyVpc/PublicSubnet2"
+            "Value": "aws-cdk-ec2-vpc-endpoint-service/VPC/PublicSubnet2"
           }
         ]
       }
     },
-    "MyVpcPublicSubnet2NATGateway91BFBEC9": {
+    "VPCPublicSubnet2NATGateway3C070193": {
       "Type": "AWS::EC2::NatGateway",
       "Properties": {
         "SubnetId": {
-          "Ref": "MyVpcPublicSubnet2Subnet492B6BFB"
+          "Ref": "VPCPublicSubnet2Subnet74179F39"
         },
         "AllocationId": {
           "Fn::GetAtt": [
-            "MyVpcPublicSubnet2EIP8CCBA239",
+            "VPCPublicSubnet2EIP4947BC00",
             "AllocationId"
           ]
         },
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-cdk-ec2-vpn/MyVpc/PublicSubnet2"
+            "Value": "aws-cdk-ec2-vpc-endpoint-service/VPC/PublicSubnet2"
           }
         ]
       }
     },
-    "MyVpcPublicSubnet3Subnet57EEE236": {
+    "VPCPublicSubnet3Subnet631C5E25": {
       "Type": "AWS::EC2::Subnet",
       "Properties": {
         "VpcId": {
-          "Ref": "MyVpcF9F0CA6F"
+          "Ref": "VPCB9E5F0B4"
         },
         "AvailabilityZone": "test-region-1c",
-        "CidrBlock": "10.10.64.0/19",
+        "CidrBlock": "10.0.64.0/19",
         "MapPublicIpOnLaunch": true,
         "Tags": [
           {
@@ -229,91 +229,91 @@
           },
           {
             "Key": "Name",
-            "Value": "aws-cdk-ec2-vpn/MyVpc/PublicSubnet3"
+            "Value": "aws-cdk-ec2-vpc-endpoint-service/VPC/PublicSubnet3"
           }
         ]
       }
     },
-    "MyVpcPublicSubnet3RouteTable15028F08": {
+    "VPCPublicSubnet3RouteTable98AE0E14": {
       "Type": "AWS::EC2::RouteTable",
       "Properties": {
         "VpcId": {
-          "Ref": "MyVpcF9F0CA6F"
+          "Ref": "VPCB9E5F0B4"
         },
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-cdk-ec2-vpn/MyVpc/PublicSubnet3"
+            "Value": "aws-cdk-ec2-vpc-endpoint-service/VPC/PublicSubnet3"
           }
         ]
       }
     },
-    "MyVpcPublicSubnet3RouteTableAssociation5C27DDA4": {
+    "VPCPublicSubnet3RouteTableAssociation427FE0C6": {
       "Type": "AWS::EC2::SubnetRouteTableAssociation",
       "Properties": {
         "RouteTableId": {
-          "Ref": "MyVpcPublicSubnet3RouteTable15028F08"
+          "Ref": "VPCPublicSubnet3RouteTable98AE0E14"
         },
         "SubnetId": {
-          "Ref": "MyVpcPublicSubnet3Subnet57EEE236"
+          "Ref": "VPCPublicSubnet3Subnet631C5E25"
         }
       }
     },
-    "MyVpcPublicSubnet3DefaultRoute3A83AB36": {
+    "VPCPublicSubnet3DefaultRouteA0D29D46": {
       "Type": "AWS::EC2::Route",
       "Properties": {
         "RouteTableId": {
-          "Ref": "MyVpcPublicSubnet3RouteTable15028F08"
+          "Ref": "VPCPublicSubnet3RouteTable98AE0E14"
         },
         "DestinationCidrBlock": "0.0.0.0/0",
         "GatewayId": {
-          "Ref": "MyVpcIGW5C4A4F63"
+          "Ref": "VPCIGWB7E252D3"
         }
       },
       "DependsOn": [
-        "MyVpcVPCGW488ACE0D"
+        "VPCVPCGW99B986DC"
       ]
     },
-    "MyVpcPublicSubnet3EIPC5ACADAB": {
+    "VPCPublicSubnet3EIPAD4BC883": {
       "Type": "AWS::EC2::EIP",
       "Properties": {
         "Domain": "vpc",
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-cdk-ec2-vpn/MyVpc/PublicSubnet3"
+            "Value": "aws-cdk-ec2-vpc-endpoint-service/VPC/PublicSubnet3"
           }
         ]
       }
     },
-    "MyVpcPublicSubnet3NATGatewayD4B50EBE": {
+    "VPCPublicSubnet3NATGatewayD3048F5C": {
       "Type": "AWS::EC2::NatGateway",
       "Properties": {
         "SubnetId": {
-          "Ref": "MyVpcPublicSubnet3Subnet57EEE236"
+          "Ref": "VPCPublicSubnet3Subnet631C5E25"
         },
         "AllocationId": {
           "Fn::GetAtt": [
-            "MyVpcPublicSubnet3EIPC5ACADAB",
+            "VPCPublicSubnet3EIPAD4BC883",
             "AllocationId"
           ]
         },
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-cdk-ec2-vpn/MyVpc/PublicSubnet3"
+            "Value": "aws-cdk-ec2-vpc-endpoint-service/VPC/PublicSubnet3"
           }
         ]
       }
     },
-    "MyVpcPrivateSubnet1Subnet5057CF7E": {
+    "VPCPrivateSubnet1Subnet8BCA10E0": {
       "Type": "AWS::EC2::Subnet",
       "Properties": {
         "VpcId": {
-          "Ref": "MyVpcF9F0CA6F"
+          "Ref": "VPCB9E5F0B4"
         },
         "AvailabilityZone": "test-region-1a",
-        "CidrBlock": "10.10.96.0/19",
+        "CidrBlock": "10.0.96.0/19",
         "MapPublicIpOnLaunch": false,
         "Tags": [
           {
@@ -326,56 +326,56 @@
           },
           {
             "Key": "Name",
-            "Value": "aws-cdk-ec2-vpn/MyVpc/PrivateSubnet1"
+            "Value": "aws-cdk-ec2-vpc-endpoint-service/VPC/PrivateSubnet1"
           }
         ]
       }
     },
-    "MyVpcPrivateSubnet1RouteTable8819E6E2": {
+    "VPCPrivateSubnet1RouteTableBE8A6027": {
       "Type": "AWS::EC2::RouteTable",
       "Properties": {
         "VpcId": {
-          "Ref": "MyVpcF9F0CA6F"
+          "Ref": "VPCB9E5F0B4"
         },
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-cdk-ec2-vpn/MyVpc/PrivateSubnet1"
+            "Value": "aws-cdk-ec2-vpc-endpoint-service/VPC/PrivateSubnet1"
           }
         ]
       }
     },
-    "MyVpcPrivateSubnet1RouteTableAssociation56D38C7E": {
+    "VPCPrivateSubnet1RouteTableAssociation347902D1": {
       "Type": "AWS::EC2::SubnetRouteTableAssociation",
       "Properties": {
         "RouteTableId": {
-          "Ref": "MyVpcPrivateSubnet1RouteTable8819E6E2"
+          "Ref": "VPCPrivateSubnet1RouteTableBE8A6027"
         },
         "SubnetId": {
-          "Ref": "MyVpcPrivateSubnet1Subnet5057CF7E"
+          "Ref": "VPCPrivateSubnet1Subnet8BCA10E0"
         }
       }
     },
-    "MyVpcPrivateSubnet1DefaultRouteA8CDE2FA": {
+    "VPCPrivateSubnet1DefaultRouteAE1D6490": {
       "Type": "AWS::EC2::Route",
       "Properties": {
         "RouteTableId": {
-          "Ref": "MyVpcPrivateSubnet1RouteTable8819E6E2"
+          "Ref": "VPCPrivateSubnet1RouteTableBE8A6027"
         },
         "DestinationCidrBlock": "0.0.0.0/0",
         "NatGatewayId": {
-          "Ref": "MyVpcPublicSubnet1NATGatewayAD3400C1"
+          "Ref": "VPCPublicSubnet1NATGatewayE0556630"
         }
       }
     },
-    "MyVpcPrivateSubnet2Subnet0040C983": {
+    "VPCPrivateSubnet2SubnetCFCDAA7A": {
       "Type": "AWS::EC2::Subnet",
       "Properties": {
         "VpcId": {
-          "Ref": "MyVpcF9F0CA6F"
+          "Ref": "VPCB9E5F0B4"
         },
         "AvailabilityZone": "test-region-1b",
-        "CidrBlock": "10.10.128.0/19",
+        "CidrBlock": "10.0.128.0/19",
         "MapPublicIpOnLaunch": false,
         "Tags": [
           {
@@ -388,56 +388,56 @@
           },
           {
             "Key": "Name",
-            "Value": "aws-cdk-ec2-vpn/MyVpc/PrivateSubnet2"
+            "Value": "aws-cdk-ec2-vpc-endpoint-service/VPC/PrivateSubnet2"
           }
         ]
       }
     },
-    "MyVpcPrivateSubnet2RouteTableCEDCEECE": {
+    "VPCPrivateSubnet2RouteTable0A19E10E": {
       "Type": "AWS::EC2::RouteTable",
       "Properties": {
         "VpcId": {
-          "Ref": "MyVpcF9F0CA6F"
+          "Ref": "VPCB9E5F0B4"
         },
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-cdk-ec2-vpn/MyVpc/PrivateSubnet2"
+            "Value": "aws-cdk-ec2-vpc-endpoint-service/VPC/PrivateSubnet2"
           }
         ]
       }
     },
-    "MyVpcPrivateSubnet2RouteTableAssociation86A610DA": {
+    "VPCPrivateSubnet2RouteTableAssociation0C73D413": {
       "Type": "AWS::EC2::SubnetRouteTableAssociation",
       "Properties": {
         "RouteTableId": {
-          "Ref": "MyVpcPrivateSubnet2RouteTableCEDCEECE"
+          "Ref": "VPCPrivateSubnet2RouteTable0A19E10E"
         },
         "SubnetId": {
-          "Ref": "MyVpcPrivateSubnet2Subnet0040C983"
+          "Ref": "VPCPrivateSubnet2SubnetCFCDAA7A"
         }
       }
     },
-    "MyVpcPrivateSubnet2DefaultRoute9CE96294": {
+    "VPCPrivateSubnet2DefaultRouteF4F5CFD2": {
       "Type": "AWS::EC2::Route",
       "Properties": {
         "RouteTableId": {
-          "Ref": "MyVpcPrivateSubnet2RouteTableCEDCEECE"
+          "Ref": "VPCPrivateSubnet2RouteTable0A19E10E"
         },
         "DestinationCidrBlock": "0.0.0.0/0",
         "NatGatewayId": {
-          "Ref": "MyVpcPublicSubnet2NATGateway91BFBEC9"
+          "Ref": "VPCPublicSubnet2NATGateway3C070193"
         }
       }
     },
-    "MyVpcPrivateSubnet3Subnet772D6AD7": {
+    "VPCPrivateSubnet3Subnet3EDCD457": {
       "Type": "AWS::EC2::Subnet",
       "Properties": {
         "VpcId": {
-          "Ref": "MyVpcF9F0CA6F"
+          "Ref": "VPCB9E5F0B4"
         },
         "AvailabilityZone": "test-region-1c",
-        "CidrBlock": "10.10.160.0/19",
+        "CidrBlock": "10.0.160.0/19",
         "MapPublicIpOnLaunch": false,
         "Tags": [
           {
@@ -450,202 +450,180 @@
           },
           {
             "Key": "Name",
-            "Value": "aws-cdk-ec2-vpn/MyVpc/PrivateSubnet3"
+            "Value": "aws-cdk-ec2-vpc-endpoint-service/VPC/PrivateSubnet3"
           }
         ]
       }
     },
-    "MyVpcPrivateSubnet3RouteTableB790927C": {
+    "VPCPrivateSubnet3RouteTable192186F8": {
       "Type": "AWS::EC2::RouteTable",
       "Properties": {
         "VpcId": {
-          "Ref": "MyVpcF9F0CA6F"
+          "Ref": "VPCB9E5F0B4"
         },
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-cdk-ec2-vpn/MyVpc/PrivateSubnet3"
+            "Value": "aws-cdk-ec2-vpc-endpoint-service/VPC/PrivateSubnet3"
           }
         ]
       }
     },
-    "MyVpcPrivateSubnet3RouteTableAssociationD951741C": {
+    "VPCPrivateSubnet3RouteTableAssociationC28D144E": {
       "Type": "AWS::EC2::SubnetRouteTableAssociation",
       "Properties": {
         "RouteTableId": {
-          "Ref": "MyVpcPrivateSubnet3RouteTableB790927C"
+          "Ref": "VPCPrivateSubnet3RouteTable192186F8"
         },
         "SubnetId": {
-          "Ref": "MyVpcPrivateSubnet3Subnet772D6AD7"
+          "Ref": "VPCPrivateSubnet3Subnet3EDCD457"
         }
       }
     },
-    "MyVpcPrivateSubnet3DefaultRouteEC11C0C5": {
+    "VPCPrivateSubnet3DefaultRoute27F311AE": {
       "Type": "AWS::EC2::Route",
       "Properties": {
         "RouteTableId": {
-          "Ref": "MyVpcPrivateSubnet3RouteTableB790927C"
+          "Ref": "VPCPrivateSubnet3RouteTable192186F8"
         },
         "DestinationCidrBlock": "0.0.0.0/0",
         "NatGatewayId": {
-          "Ref": "MyVpcPublicSubnet3NATGatewayD4B50EBE"
+          "Ref": "VPCPublicSubnet3NATGatewayD3048F5C"
         }
       }
     },
-    "MyVpcIGW5C4A4F63": {
+    "VPCIGWB7E252D3": {
       "Type": "AWS::EC2::InternetGateway",
       "Properties": {
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-cdk-ec2-vpn/MyVpc"
+            "Value": "aws-cdk-ec2-vpc-endpoint-service/VPC"
           }
         ]
       }
     },
-    "MyVpcVPCGW488ACE0D": {
+    "VPCVPCGW99B986DC": {
       "Type": "AWS::EC2::VPCGatewayAttachment",
       "Properties": {
         "VpcId": {
-          "Ref": "MyVpcF9F0CA6F"
+          "Ref": "VPCB9E5F0B4"
         },
         "InternetGatewayId": {
-          "Ref": "MyVpcIGW5C4A4F63"
+          "Ref": "VPCIGWB7E252D3"
         }
       }
     },
-    "MyVpcVpnGateway11FB05E5": {
-      "Type": "AWS::EC2::VPNGateway",
+    "NLBNoPrincipals25B7CFB1": {
+      "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
       "Properties": {
-        "Type": "ipsec.1",
-        "Tags": [
+        "LoadBalancerAttributes": [
           {
-            "Key": "Name",
-            "Value": "aws-cdk-ec2-vpn/MyVpc"
+            "Key": "deletion_protection.enabled",
+            "Value": "false"
+          }
+        ],
+        "Scheme": "internal",
+        "Subnets": [
+          {
+            "Ref": "VPCPrivateSubnet1Subnet8BCA10E0"
+          },
+          {
+            "Ref": "VPCPrivateSubnet2SubnetCFCDAA7A"
+          },
+          {
+            "Ref": "VPCPrivateSubnet3Subnet3EDCD457"
+          }
+        ],
+        "Type": "network"
+      }
+    },
+    "MyVpcEndpointServiceWithNoPrincipals9B24276E": {
+      "Type": "AWS::EC2::VPCEndpointService",
+      "Properties": {
+        "AcceptanceRequired": false,
+        "NetworkLoadBalancerArns": [
+          {
+            "Ref": "NLBNoPrincipals25B7CFB1"
           }
         ]
       }
     },
-    "MyVpcVPCVPNGW0CB969B3": {
-      "Type": "AWS::EC2::VPCGatewayAttachment",
+    "NLBWithPrincipals912E28FF": {
+      "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
       "Properties": {
-        "VpcId": {
-          "Ref": "MyVpcF9F0CA6F"
-        },
-        "VpnGatewayId": {
-          "Ref": "MyVpcVpnGateway11FB05E5"
-        }
-      }
-    },
-    "MyVpcRoutePropagation122FC3BE": {
-      "Type": "AWS::EC2::VPNGatewayRoutePropagation",
-      "Properties": {
-        "RouteTableIds": [
+        "LoadBalancerAttributes": [
           {
-            "Ref": "MyVpcPrivateSubnet1RouteTable8819E6E2"
-          },
-          {
-            "Ref": "MyVpcPrivateSubnet2RouteTableCEDCEECE"
-          },
-          {
-            "Ref": "MyVpcPrivateSubnet3RouteTableB790927C"
+            "Key": "deletion_protection.enabled",
+            "Value": "false"
           }
         ],
-        "VpnGatewayId": {
-          "Ref": "MyVpcVpnGateway11FB05E5"
-        }
+        "Scheme": "internal",
+        "Subnets": [
+          {
+            "Ref": "VPCPrivateSubnet1Subnet8BCA10E0"
+          },
+          {
+            "Ref": "VPCPrivateSubnet2SubnetCFCDAA7A"
+          },
+          {
+            "Ref": "VPCPrivateSubnet3Subnet3EDCD457"
+          }
+        ],
+        "Type": "network"
+      }
+    },
+    "MyVpcEndpointServiceWithPrincipals41EE2DF2": {
+      "Type": "AWS::EC2::VPCEndpointService",
+      "Properties": {
+        "AcceptanceRequired": false,
+        "NetworkLoadBalancerArns": [
+          {
+            "Ref": "NLBWithPrincipals912E28FF"
+          }
+        ]
+      }
+    },
+    "MyVpcEndpointServiceWithPrincipalsPermissions29F9BD5A": {
+      "Type": "AWS::EC2::VPCEndpointServicePermissions",
+      "Properties": {
+        "ServiceId": {
+          "Ref": "MyVpcEndpointServiceWithPrincipals41EE2DF2"
+        },
+        "AllowedPrincipals": [
+          "arn:aws:iam::123456789012:root"
+        ]
+      }
+    }
+  },
+  "Outputs": {
+    "MyVpcEndpointServiceWithNoPrincipalsServiceName": {
+      "Description": "Give this to service consumers so they can connect via VPC Endpoint",
+      "Value": {
+        "Fn::Join": [
+          ".",
+          [
+            "com.amazonaws.vpce",
+            {
+              "Ref": "AWS::Region"
+            },
+            {
+              "Ref": "MyVpcEndpointServiceWithNoPrincipals9B24276E"
+            }
+          ]
+        ]
       },
-      "DependsOn": [
-        "MyVpcVPCVPNGW0CB969B3"
-      ]
-    },
-    "MyVpcDynamicCustomerGatewayFB63DFBF": {
-      "Type": "AWS::EC2::CustomerGateway",
-      "Properties": {
-        "BgpAsn": 65000,
-        "IpAddress": "52.85.255.164",
-        "Type": "ipsec.1",
-        "Tags": [
-          {
-            "Key": "Name",
-            "Value": "aws-cdk-ec2-vpn/MyVpc"
-          }
-        ]
+      "Export": {
+        "Name": "ServiceName"
       }
     },
-    "MyVpcDynamic739F3519": {
-      "Type": "AWS::EC2::VPNConnection",
-      "Properties": {
-        "CustomerGatewayId": {
-          "Ref": "MyVpcDynamicCustomerGatewayFB63DFBF"
-        },
-        "Type": "ipsec.1",
-        "StaticRoutesOnly": false,
-        "Tags": [
-          {
-            "Key": "Name",
-            "Value": "aws-cdk-ec2-vpn/MyVpc"
-          }
-        ],
-        "VpnGatewayId": {
-          "Ref": "MyVpcVpnGateway11FB05E5"
-        },
-        "VpnTunnelOptionsSpecifications": [
-          {
-            "PreSharedKey": "ssmpwaaa"
-          }
-        ]
-      }
-    },
-    "MyVpcStaticCustomerGateway43D01906": {
-      "Type": "AWS::EC2::CustomerGateway",
-      "Properties": {
-        "BgpAsn": 65000,
-        "IpAddress": "52.85.255.197",
-        "Type": "ipsec.1",
-        "Tags": [
-          {
-            "Key": "Name",
-            "Value": "aws-cdk-ec2-vpn/MyVpc"
-          }
-        ]
-      }
-    },
-    "MyVpcStaticABA7F625": {
-      "Type": "AWS::EC2::VPNConnection",
-      "Properties": {
-        "CustomerGatewayId": {
-          "Ref": "MyVpcStaticCustomerGateway43D01906"
-        },
-        "Type": "ipsec.1",
-        "StaticRoutesOnly": true,
-        "Tags": [
-          {
-            "Key": "Name",
-            "Value": "aws-cdk-ec2-vpn/MyVpc"
-          }
-        ],
-        "VpnGatewayId": {
-          "Ref": "MyVpcVpnGateway11FB05E5"
-        }
-      }
-    },
-    "MyVpcStaticRoute192168100240A24A5CC": {
-      "Type": "AWS::EC2::VPNConnectionRoute",
-      "Properties": {
-        "DestinationCidrBlock": "192.168.10.0/24",
-        "VpnConnectionId": {
-          "Ref": "MyVpcStaticABA7F625"
-        }
-      }
-    },
-    "MyVpcStaticRoute19216820024CD4B642F": {
-      "Type": "AWS::EC2::VPNConnectionRoute",
-      "Properties": {
-        "DestinationCidrBlock": "192.168.20.0/24",
-        "VpnConnectionId": {
-          "Ref": "MyVpcStaticABA7F625"
-        }
+    "MyVpcEndpointServiceWithPrincipalsEndpointServiceId": {
+      "Description": "Reference this service from other stacks",
+      "Value": {
+        "Ref": "MyVpcEndpointServiceWithPrincipals41EE2DF2"
+      },
+      "Export": {
+        "Name": "EndpointServiceId"
       }
     }
   }
