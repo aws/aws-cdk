@@ -105,6 +105,12 @@ graph showing the Average statistic with an aggregation period of 5 minutes:
 ```ts
 const cpuUtilization = new cloudwatch.MathExpression({
   expression: "SEARCH('{AWS/EC2,InstanceId} MetricName=\"CPUUtilization\"', 'Average', 300)"
+
+  // Specifying '' as the label suppresses the default behavior
+  // of using the expression as metric label. This is especially appropriate
+  // when using expressions that return multiple time series (like SEARCH()
+  // or METRICS()), to show the labels of the retrieved metrics only.
+  label: '',
 });
 ```
 
@@ -156,6 +162,31 @@ useful when embedding them in graphs, see below).
 > aggregating using `Sum`, which will be the same for both metrics types. If you
 > happen to know the Metric you want to alarm on makes sense as a rate
 > (`Average`) you can always choose to change the statistic.
+
+### Labels
+
+Metric labels are displayed in the legend of graphs that include the metrics.
+
+You can use [dynamic labels](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/graph-dynamic-labels.html)
+to show summary information about the displayed time series
+in the legend. For example, if you use:
+
+```ts
+const minuteErrorRate = fn.metricErrors({
+  statistic: 'sum',
+  period: Duration.hours(1),
+
+  // Show the maximum hourly error count in the legend
+  label: '[max: ${MAX}] Lambda failure rate'
+});
+```
+
+As the metric label, the maximum value in the visible range will
+be shown next to the time series name in the graph's legend.
+
+If the metric is a math expression producing more than one time series, the
+maximum will be individually calculated and shown for each time series produce
+by the math expression.
 
 ## Alarms
 
