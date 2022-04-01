@@ -710,6 +710,24 @@ const fn = new lambda.Function(this, 'MyLambda', {
 });
 ```
 
+## Ephemeral Storage
+
+You can configure ephemeral storage on a function to control the amount of storage it gets for reading
+or writing data, allowing you to use AWS Lambda for ETL jobs, ML inference, or other data-intensive workloads.
+The ephemeral storage will be accessible in the functions' `/tmp` directory.
+
+```ts
+import { Size } from '@aws-cdk/core';
+
+const fn = new lambda.Function(this, 'MyFunction', {
+  runtime: lambda.Runtime.NODEJS_14_X,
+  handler: 'index.handler',
+  code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
+  ephemeralStorageSize: Size.mebibytes(1024),
+});
+```
+
+Read more about using this feature in [this AWS blog post](https://aws.amazon.com/blogs/aws/aws-lambda-now-supports-up-to-10-gb-ephemeral-storage/).
 
 ## Singleton Function
 
