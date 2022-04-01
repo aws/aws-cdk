@@ -733,7 +733,7 @@ export class JSIIPythonTarget extends ValidationRule {
 
     expectJSON(this.name, pkg, 'jsii.targets.python.distName', moduleName.python.distName);
     expectJSON(this.name, pkg, 'jsii.targets.python.module', moduleName.python.module);
-    expectJSON(this.name, pkg, 'jsii.targets.python.classifiers', ['Framework :: AWS CDK', `Framework :: AWS CDK :: ${cdkMajorVersion()}`]);
+    expectJSON(this.name, pkg, 'jsii.targets.python.classifiers', ['Framework :: AWS CDK', 'Framework :: AWS CDK :: 1']);
   }
 }
 
