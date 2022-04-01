@@ -24,8 +24,7 @@
         "distName": "aws-cdk.example-construct-library",
         "module": "aws_cdk.example_construct_library",
         "classifiers": [
-          "Framework :: AWS CDK",
-          "Framework :: AWS CDK :: 2"
+          "Framework :: AWS CDK"
         ]
       }
     },

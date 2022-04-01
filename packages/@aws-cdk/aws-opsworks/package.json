@@ -24,8 +24,7 @@
         "distName": "aws-cdk.aws-opsworks",
         "module": "aws_cdk.aws_opsworks",
         "classifiers": [
-          "Framework :: AWS CDK",
-          "Framework :: AWS CDK :: 2"
+          "Framework :: AWS CDK"
         ]
       }
     },

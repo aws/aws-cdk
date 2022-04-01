@@ -24,8 +24,7 @@
         "distName": "aws-cdk.aws-wafregional",
         "module": "aws_cdk.aws_wafregional",
         "classifiers": [
-          "Framework :: AWS CDK",
-          "Framework :: AWS CDK :: 2"
+          "Framework :: AWS CDK"
         ]
       }
     },

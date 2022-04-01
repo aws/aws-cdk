@@ -24,8 +24,7 @@
         "distName": "aws-cdk.aws-elasticsearch",
         "module": "aws_cdk.aws_elasticsearch",
         "classifiers": [
-          "Framework :: AWS CDK",
-          "Framework :: AWS CDK :: 2"
+          "Framework :: AWS CDK"
         ]
       }
     },

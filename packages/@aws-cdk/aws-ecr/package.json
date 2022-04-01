@@ -24,8 +24,7 @@
         "distName": "aws-cdk.aws-ecr",
         "module": "aws_cdk.aws_ecr",
         "classifiers": [
-          "Framework :: AWS CDK",
-          "Framework :: AWS CDK :: 2"
+          "Framework :: AWS CDK"
         ]
       }
     },
