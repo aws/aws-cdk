@@ -793,7 +793,7 @@ export class Stack extends CoreConstruct implements ITaggable {
         Annotations.of(this).addInfo(`Number of resources: ${numberOfResources} is approaching allowed maximum of ${this.maxResources}`);
       }
     }
-    fs.writeFileSync(outPath, JSON.stringify(template, undefined, 2));
+    fs.writeFileSync(outPath, JSON.stringify(template, undefined, 1));
 
     for (const ctx of this._missingContext) {
       if (lookupRoleArn != null) {
