@@ -536,7 +536,7 @@ describe('SpecHttpApi', () => {
   test('default', () => {
     const stack = new Stack();
     const api = new SpecHttpApi(stack, 'api', {
-      apiDefinition: ApiDefinition.fromInline(JSON.stringify({
+      apiDefinition: ApiDefinition.fromInline({
         openapi: '3.0.2',
         paths: {
           '/pets': {
@@ -575,7 +575,7 @@ describe('SpecHttpApi', () => {
             },
           },
         },
-      })),
+      }),
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Api', {
