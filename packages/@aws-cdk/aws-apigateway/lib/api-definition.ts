@@ -23,6 +23,49 @@ export abstract class ApiDefinition {
   /**
    * Create an API definition from an inline object. The inline object must follow the
    * schema of OpenAPI 2.0 or OpenAPI 3.0
+   *
+   * @example
+   *
+   *   apigateway.ApiDefinition.fromInline({
+   *     openapi: '3.0.2',
+   *     paths: {
+   *       '/pets': {
+   *         get: {
+   *           'responses': {
+   *             200: {
+   *               content: {
+   *                 'application/json': {
+   *                   schema: {
+   *                     $ref: '#/components/schemas/Empty',
+   *                   },
+   *                 },
+   *               },
+   *             },
+   *           },
+   *           'x-amazon-apigateway-integration': {
+   *             responses: {
+   *               default: {
+   *                 statusCode: '200',
+   *               },
+   *             },
+   *             requestTemplates: {
+   *               'application/json': '{"statusCode": 200}',
+   *             },
+   *             passthroughBehavior: 'when_no_match',
+   *             type: 'mock',
+   *           },
+   *         },
+   *       },
+   *     },
+   *     components: {
+   *       schemas: {
+   *         Empty: {
+   *           title: 'Empty Schema',
+   *           type: 'object',
+   *         },
+   *       },
+   *     },
+   *   });
    */
   public static fromInline(definition: any): InlineApiDefinition {
     return new InlineApiDefinition(definition);
