@@ -24,8 +24,7 @@
         "distName": "aws-cdk.aws-managedblockchain",
         "module": "aws_cdk.aws_managedblockchain",
         "classifiers": [
-          "Framework :: AWS CDK",
-          "Framework :: AWS CDK :: 2"
+          "Framework :: AWS CDK"
         ]
       }
     },

@@ -23,8 +23,7 @@
         "distName": "aws-cdk.aws-greengrassv2",
         "module": "aws_cdk.aws_greengrassv2",
         "classifiers": [
-          "Framework :: AWS CDK",
-          "Framework :: AWS CDK :: 2"
+          "Framework :: AWS CDK"
         ]
       }
     },
