@@ -76,9 +76,4 @@ export class StackSetPipelineStack extends Stack {
 }
 
 const app = new App();
-new StackSetPipelineStack(app, 'StackSetPipelineStack', {
-  // env: {
-  //   region: process.env.CDK_DEFAULT_REGION,
-  //   account: process.env.CDK_DEFAULT_ACCOUNT,
-  // },
-});
+new StackSetPipelineStack(app, 'StackSetPipelineStack');
