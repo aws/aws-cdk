@@ -1,8 +1,6 @@
 import * as cdk from '@aws-cdk/core';
 import * as wafv2 from '../lib';
 
-const app = new cdk.App();
-
 class TestStack extends cdk.Stack {
   constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
@@ -15,9 +13,6 @@ class TestStack extends cdk.Stack {
   }
 }
 
-new TestStack(app, 'test-stack', {
-  env: {
-    region: 'us-east-1',
-  },
-});
+const app = new cdk.App();
+new TestStack(app, 'web-acl-integ-stack');
 app.synth();
