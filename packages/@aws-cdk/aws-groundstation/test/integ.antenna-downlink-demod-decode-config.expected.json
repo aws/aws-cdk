@@ -1,0 +1,31 @@
+{
+  "Resources": {
+    "AntennaDownlinkDemodDecodeConfig1B6C00532": {
+      "Type": "AWS::GroundStation::Config",
+      "Properties": {
+        "ConfigData": {
+          "AntennaDownlinkDemodDecodeConfig": {
+            "DecodeConfig": {
+              "UnvalidatedJSON": "{\"type\":\"QPSK\",\"qpsk\":{\"carrierFrequencyRecovery\":{\"centerFrequency\":{\"units\":\"MHz\",\"value\":7812},\"range\":{\"units\":\"kHz\",\"value\":250}},\"symbolTimingRecovery\":{\"matchedFilter\":{\"rolloffFactor\":1,\"type\":\"ROOT_RAISED_COSINE\"},\"symbolRate\":{\"value\":15,\"units\":\"Msps\"},\"range\":{\"value\":0.75,\"units\":\"ksps\"}}}}"
+            },
+            "DemodulationConfig": {
+              "UnvalidatedJSON": "{\"edges\":[{\"from\":\"I-Ingress\",\"to\":\"IQ-Recombiner\"},{\"from\":\"Q-Ingress\",\"to\":\"IQ-Recombiner\"},{\"from\":\"IQ-Recombiner\",\"to\":\"CcsdsViterbiDecoder\"},{\"from\":\"CcsdsViterbiDecoder\",\"to\":\"NrzmDecoder\"},{\"from\":\"NrzmDecoder\",\"to\":\"UncodedFramesEgress\"}],\"nodeConfigs\":{\"I-Ingress\":{\"type\":\"CODED_SYMBOLS_INGRESS\",\"codedSymbolsIngress\":{\"source\":\"I\"}},\"Q-Ingress\":{\"type\":\"CODED_SYMBOLS_INGRESS\",\"codedSymbolsIngress\":{\"source\":\"Q\"}},\"IQ-Recombiner\":{\"type\":\"IQ_RECOMBINER\"},\"CcsdsViterbiDecoder\":{\"type\":\"CCSDS_171_133_VITERBI_DECODER\",\"ccsds171133ViterbiDecoder\":{\"codeRate\":\"ONE_HALF\"}},\"NrzmDecoder\":{\"type\":\"NRZ_M_DECODER\"},\"UncodedFramesEgress\":{\"type\":\"UNCODED_FRAMES_EGRESS\"}}}"
+            },
+            "SpectrumConfig": {
+              "Bandwidth": {
+                "Units": "MHz",
+                "Value": 10
+              },
+              "CenterFrequency": {
+                "Units": "MHz",
+                "Value": 2200
+              },
+              "Polarization": "LEFT_HAND"
+            }
+          }
+        },
+        "Name": "AntennaDownlinkDemodDecodeConfig_1"
+      }
+    }
+  }
+}

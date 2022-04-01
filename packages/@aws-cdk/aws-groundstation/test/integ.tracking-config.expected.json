@@ -1,0 +1,15 @@
+{
+  "Resources": {
+    "TrackingConfigC91D120E": {
+      "Type": "AWS::GroundStation::Config",
+      "Properties": {
+        "ConfigData": {
+          "TrackingConfig": {
+            "Autotrack": "PREFERRED"
+          }
+        },
+        "Name": "TrackingConfig"
+      }
+    }
+  }
+}

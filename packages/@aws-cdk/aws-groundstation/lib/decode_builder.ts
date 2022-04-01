@@ -90,7 +90,8 @@ export class DecodeConfigBuilder {
   private edges: Edge[]
   private nodes: {[key: string]: Node}
 
-  constructor({ edges, nodes }: DecodeConfig = { edges: [], nodes: {} }) {
+  constructor(config: DecodeConfig = { edges: [], nodes: {} }) {
+    const { edges, nodes } = config;
     this.nodes = nodes;
 
     this.edges = [];
@@ -339,6 +340,8 @@ export interface DemodConfig {
 
 /**
  * Demodulation configuration builder for signal.
+ *
+ * @param config - Demodulation configuration
  */
 export class DemodConfigBuilder {
   private config: DemodConfig

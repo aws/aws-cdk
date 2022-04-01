@@ -12,7 +12,7 @@ describe('demodulation builder', () => {
           },
           range: {
             value: 250,
-            units: FrequencyUnits.MHZ,
+            units: FrequencyUnits.KHZ,
           },
         },
         symbolTimingRecovery: {
@@ -37,7 +37,7 @@ describe('demodulation builder', () => {
 
 
 describe('decoder builder', () => {
-  test('', () => {
+  test('toString returns the decoding config as a JSON string', () => {
     const builder = new DecodeConfigBuilder();
     builder.addNode('I-Ingress', {
       type: NodeType.CODED_SYMBOLS_INGRESS,
@@ -68,5 +68,10 @@ describe('decoder builder', () => {
     builder.addEdge('NrzmDecoder', 'UncodedFramesEgress');
 
     expect(builder.toString()).toEqual('{"edges":[{"from":"I-Ingress","to":"IQ-Recombiner"},{"from":"Q-Ingress","to":"IQ-Recombiner"},{"from":"IQ-Recombiner","to":"CcsdsViterbiDecoder"},{"from":"CcsdsViterbiDecoder","to":"NrzmDecoder"},{"from":"NrzmDecoder","to":"UncodedFramesEgress"}],"nodeConfigs":{"I-Ingress":{"type":"CODED_SYMBOLS_INGRESS","codedSymbolsIngress":{"source":"I"}},"Q-Ingress":{"type":"CODED_SYMBOLS_INGRESS","codedSymbolsIngress":{"source":"Q"}},"IQ-Recombiner":{"type":"IQ_RECOMBINER"},"CcsdsViterbiDecoder":{"type":"CCSDS_171_133_VITERBI_DECODER","ccsds171133ViterbiDecoder":{"codeRate":"ONE_HALF"}},"NrzmDecoder":{"type":"NRZ_M_DECODER"},"UncodedFramesEgress":{"type":"UNCODED_FRAMES_EGRESS"}}}');
+  });
+
+  test('builder fails when edges added without nodes', () => {
+    const builder = new DecodeConfigBuilder();
+    expect(() => builder.addEdge('I-Ingress', 'IQ-Recombiner')).toThrow();
   });
 });

@@ -1,0 +1,26 @@
+{
+  "Resources": {
+    "AntennaUplinkConfig1A6519E00": {
+      "Type": "AWS::GroundStation::Config",
+      "Properties": {
+        "ConfigData": {
+          "AntennaUplinkConfig": {
+            "SpectrumConfig": {
+              "CenterFrequency": {
+                "Units": "MHz",
+                "Value": 2100
+              },
+              "Polarization": "RIGHT_HAND"
+            },
+            "TargetEirp": {
+              "Units": "dBW",
+              "Value": 20
+            },
+            "TransmitDisabled": false
+          }
+        },
+        "Name": "AntennaUplinkConfig_1"
+      }
+    }
+  }
+}

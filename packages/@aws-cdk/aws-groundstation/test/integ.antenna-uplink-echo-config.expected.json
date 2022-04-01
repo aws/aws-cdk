@@ -1,0 +1,43 @@
+{
+  "Resources": {
+    "AntennaUplinkConfig1A6519E00": {
+      "Type": "AWS::GroundStation::Config",
+      "Properties": {
+        "ConfigData": {
+          "AntennaUplinkConfig": {
+            "SpectrumConfig": {
+              "CenterFrequency": {
+                "Units": "MHz",
+                "Value": 2072.5
+              },
+              "Polarization": "RIGHT_HAND"
+            },
+            "TargetEirp": {
+              "Units": "dBW",
+              "Value": 20
+            },
+            "TransmitDisabled": false
+          }
+        },
+        "Name": "AntennaUplinkConfig_1"
+      }
+    },
+    "AntennaUplinkEchoConfig1DB8A2FAE": {
+      "Type": "AWS::GroundStation::Config",
+      "Properties": {
+        "ConfigData": {
+          "UplinkEchoConfig": {
+            "AntennaUplinkConfigArn": {
+              "Fn::GetAtt": [
+                "AntennaUplinkConfig1A6519E00",
+                "Arn"
+              ]
+            },
+            "Enabled": true
+          }
+        },
+        "Name": "AntennaUplinkEchoConfig_1"
+      }
+    }
+  }
+}

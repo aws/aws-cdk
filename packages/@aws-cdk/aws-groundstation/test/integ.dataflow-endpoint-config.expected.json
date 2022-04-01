@@ -1,0 +1,35 @@
+{
+  "Resources": {
+    "DataflowEndpointGroup15C88A038": {
+      "Type": "AWS::GroundStation::DataflowEndpointGroup",
+      "Properties": {
+        "EndpointDetails": [
+          {
+            "Endpoint": {
+              "Address": {
+                "Name": "172.10.0.2",
+                "Port": 44720
+              },
+              "Mtu": 1500,
+              "Name": "myEndpoint"
+            }
+          }
+        ]
+      }
+    },
+    "DataflowEndpointConfig117271E61": {
+      "Type": "AWS::GroundStation::Config",
+      "Properties": {
+        "ConfigData": {
+          "DataflowEndpointConfig": {
+            "DataflowEndpointName": "myEndpoint",
+            "DataflowEndpointRegion": {
+              "Ref": "AWS::Region"
+            }
+          }
+        },
+        "Name": "DataflowEndpointConfig_1"
+      }
+    }
+  }
+}

@@ -8,7 +8,7 @@ new AntennaUplinkConfig(stack, 'AntennaUplinkConfig_1', {
   configName: 'AntennaUplinkConfig_1',
   spectrumConfig: {
     centerFrequency: {
-      value: 2072.5,
+      value: 2100,
       units: FrequencyUnits.MHZ,
     },
     polarization: Polarization.RIGHT_HAND,
