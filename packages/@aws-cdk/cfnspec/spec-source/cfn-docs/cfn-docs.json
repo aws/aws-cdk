@@ -8583,7 +8583,7 @@
         "ProviderURL": "The URL of the provider of the Amazon Cognito user pool, specified as a `String` .",
         "Ref": "`Ref` returns a generated ID, such as `us-east-2_zgaEXAMPLE` ."
       },
-      "description": "The `AWS::Cognito::UserPool` resource creates an Amazon Cognito user pool. For more information on working with Amazon Cognito user pools, see [Amazon Cognito User Pools](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-identity-pools.html) and [CreateUserPool](https://docs.aws.amazon.com/cognito-user-identity-pools/latest/APIReference/API_CreateUserPool.html) .",
+      "description": "The `AWS::Cognito::UserPool` resource creates an Amazon Cognito user pool. For more information on working with Amazon Cognito user pools, see [Amazon Cognito User Pools](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-identity-pools.html) and [CreateUserPool](https://docs.aws.amazon.com/cognito-user-identity-pools/latest/APIReference/API_CreateUserPool.html) .\n\n> If you don't specify a value for a parameter, Amazon Cognito sets it to a default value.",
       "properties": {
         "AccountRecoverySetting": "Use this setting to define which verified available method a user can use to recover their password when they call `ForgotPassword` . It allows you to define a preferred method when a user has more than one method available. With this setting, SMS does not qualify for a valid password recovery mechanism if the user also has SMS MFA enabled. In the absence of this setting, Cognito uses the legacy behavior to determine the recovery method where SMS is preferred over email.",
         "AdminCreateUserConfig": "The configuration for creating a new user profile.",
@@ -8622,7 +8622,7 @@
       "properties": {
         "AllowAdminCreateUserOnly": "Set to `True` if only the administrator is allowed to create user profiles. Set to `False` if users can sign themselves up via an app.",
         "InviteMessageTemplate": "The message template to be used for the welcome message to new users.\n\nSee also [Customizing User Invitation Messages](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pool-settings-message-customizations.html#cognito-user-pool-settings-user-invitation-message-customization) .",
-        "UnusedAccountValidityDays": "The user account expiration limit, in days, after which the account is no longer usable. To reset the account after that time limit, you must call `AdminCreateUser` again, specifying `\"RESEND\"` for the `MessageAction` parameter. The default value for this parameter is 7.\n\n> If you set a value for `TemporaryPasswordValidityDays` in `PasswordPolicy` , that value will be used, and `UnusedAccountValidityDays` will be no longer be an available parameter for that user pool."
+        "UnusedAccountValidityDays": "The user account expiration limit, in days, after which a new account that hasn't signed in is no longer usable. To reset the account after that time limit, you must call `AdminCreateUser` again, specifying `\"RESEND\"` for the `MessageAction` parameter. The default value for this parameter is 7.\n\n> If you set a value for `TemporaryPasswordValidityDays` in `PasswordPolicy` , that value will be used, and `UnusedAccountValidityDays` will be no longer be an available parameter for that user pool."
       }
     },
     "AWS::Cognito::UserPool.CustomEmailSender": {
@@ -8783,9 +8783,9 @@
       "attributes": {
         "Ref": "`Ref` returns the Amazon Cognito user pool client ID, such as `1h57kf5cpq17m0eml12EXAMPLE` ."
       },
-      "description": "The `AWS::Cognito::UserPoolClient` resource specifies an Amazon Cognito user pool client.",
+      "description": "The `AWS::Cognito::UserPoolClient` resource specifies an Amazon Cognito user pool client.\n\n> If you don't specify a value for a parameter, Amazon Cognito sets it to a default value.",
       "properties": {
-        "AccessTokenValidity": "The time limit, after which the access token is no longer valid and cannot be used.",
+        "AccessTokenValidity": "The time limit after which the access token is no longer valid and can't be used. If you supply a TokenValidityUnits value, you override the default time unit of *hours* . The default time unit for AccessTokenValidity in an API request is hours.",
         "AllowedOAuthFlows": "The allowed OAuth flows.\n\nSet to `code` to initiate a code grant flow, which provides an authorization code as the response. This code can be exchanged for access tokens with the token endpoint.\n\nSet to `implicit` to specify that the client should get the access token (and, optionally, ID token, based on scopes) directly.\n\nSet to `client_credentials` to specify that the client should get the access token (and, optionally, ID token, based on scopes) from the token endpoint using a combination of client and client_secret.",
         "AllowedOAuthFlowsUserPoolClient": "Set to true if the client is allowed to follow the OAuth protocol when interacting with Amazon Cognito user pools.",
         "AllowedOAuthScopes": "The allowed OAuth scopes. Possible values provided by OAuth are: `phone` , `email` , `openid` , and `profile` . Possible values provided by AWS are: `aws.cognito.signin.user.admin` . Custom scopes created in Resource Servers are also supported.",
@@ -8796,13 +8796,13 @@
         "EnableTokenRevocation": "Activates or deactivates token revocation. For more information about revoking tokens, see [RevokeToken](https://docs.aws.amazon.com/cognito-user-identity-pools/latest/APIReference/API_RevokeToken.html) .\n\nIf you don't include this parameter, token revocation is automatically activated for the new user pool client.",
         "ExplicitAuthFlows": "The authentication flows that are supported by the user pool clients. Flow names without the `ALLOW_` prefix are no longer supported, in favor of new names with the `ALLOW_` prefix.\n\n> Values with `ALLOW_` prefix must be used only along with the `ALLOW_` prefix. \n\nValid values include:\n\n- `ALLOW_ADMIN_USER_PASSWORD_AUTH` : Enable admin based user password authentication flow `ADMIN_USER_PASSWORD_AUTH` . This setting replaces the `ADMIN_NO_SRP_AUTH` setting. With this authentication flow, Amazon Cognito receives the password in the request instead of using the Secure Remote Password (SRP) protocol to verify passwords.\n- `ALLOW_CUSTOM_AUTH` : Enable AWS Lambda trigger based authentication.\n- `ALLOW_USER_PASSWORD_AUTH` : Enable user password-based authentication. In this flow, Amazon Cognito receives the password in the request instead of using the SRP protocol to verify passwords.\n- `ALLOW_USER_SRP_AUTH` : Enable SRP-based authentication.\n- `ALLOW_REFRESH_TOKEN_AUTH` : Enable authflow to refresh tokens.",
         "GenerateSecret": "Boolean to specify whether you want to generate a secret for the user pool client being created.",
-        "IdTokenValidity": "The time limit, after which the ID token is no longer valid and cannot be used.",
+        "IdTokenValidity": "The time limit after which the access token is no longer valid and can't be used. If you supply a TokenValidityUnits value, you override the default time unit of *hours* . The default time unit for AccessTokenValidity in an API request is hours.",
         "LogoutURLs": "A list of allowed logout URLs for the identity providers.",
         "PreventUserExistenceErrors": "Use this setting to choose which errors and responses are returned by Cognito APIs during authentication, account confirmation, and password recovery when the user does not exist in the user pool. When set to `ENABLED` and the user does not exist, authentication returns an error indicating either the username or password was incorrect, and account confirmation and password recovery return a response indicating a code was sent to a simulated destination. When set to `LEGACY` , those APIs will return a `UserNotFoundException` exception if the user does not exist in the user pool.",
         "ReadAttributes": "The read attributes.",
-        "RefreshTokenValidity": "The time limit, in days, after which the refresh token is no longer valid and can't be used.",
+        "RefreshTokenValidity": "The time limit after which the refresh token is no longer valid and can't be used. The default time unit for RefreshTokenValidity in an API request is days.",
         "SupportedIdentityProviders": "A list of provider names for the identity providers that are supported on this client. The following are supported: `COGNITO` , `Facebook` , `SignInWithApple` , `Google` and `LoginWithAmazon` .",
-        "TokenValidityUnits": "The units in which the validity times are represented in. Default for RefreshToken is days, and default for ID and access tokens are hours.",
+        "TokenValidityUnits": "The units in which the validity times are represented. The default unit for RefreshToken is days, and default for ID and access tokens are hours.",
         "UserPoolId": "The user pool ID for the user pool where you want to create a user pool client.",
         "WriteAttributes": "The user pool attributes that the app client can write to.\n\nIf your app client allows users to sign in through an identity provider, this array must include all attributes that you have mapped to identity provider attributes. Amazon Cognito updates mapped attributes when users sign in to your application through an identity provider. If your app client does not have write access to a mapped attribute, Amazon Cognito throws an error when it tries to update the attribute. For more information, see [Specifying Identity Provider Attribute Mappings for Your user pool](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-specifying-attribute-mapping.html) ."
       }
@@ -8820,11 +8820,11 @@
     },
     "AWS::Cognito::UserPoolClient.TokenValidityUnits": {
       "attributes": {},
-      "description": "The units in which the validity times are represented in. Default for RefreshToken is days, and default for ID and access tokens are hours.",
+      "description": "The units in which the validity times are represented. The default unit for RefreshToken is days, and the default for ID and access tokens is hours.",
       "properties": {
-        "AccessToken": "A time unit in \u201cseconds\u201d, \u201cminutes\u201d, \u201chours\u201d or \u201cdays\u201d for the value in AccessTokenValidity, defaults to hours.",
-        "IdToken": "A time unit in \u201cseconds\u201d, \u201cminutes\u201d, \u201chours\u201d or \u201cdays\u201d for the value in IdTokenValidity, defaults to hours.",
-        "RefreshToken": "A time unit in \u201cseconds\u201d, \u201cminutes\u201d, \u201chours\u201d or \u201cdays\u201d for the value in RefreshTokenValidity, defaults to days."
+        "AccessToken": "A time unit in \u201cseconds\u201d, \u201cminutes\u201d, \u201chours\u201d, or \u201cdays\u201d for the value in AccessTokenValidity, defaulting to hours.",
+        "IdToken": "A time unit in \u201cseconds\u201d, \u201cminutes\u201d, \u201chours\u201d, or \u201cdays\u201d for the value in IdTokenValidity, defaulting to hours.",
+        "RefreshToken": "A time unit in \u201cseconds\u201d, \u201cminutes\u201d, \u201chours\u201d, or \u201cdays\u201d for the value in RefreshTokenValidity, defaulting to days."
       }
     },
     "AWS::Cognito::UserPoolDomain": {
@@ -8849,7 +8849,7 @@
       "attributes": {
         "Ref": "`Ref` returns the name of the user pool group. For example: `Admins` ."
       },
-      "description": "Specifies a new group in the identified user pool.\n\nCalling this action requires developer credentials.",
+      "description": "Specifies a new group in the identified user pool.\n\nCalling this action requires developer credentials.\n\n> If you don't specify a value for a parameter, Amazon Cognito sets it to a default value.",
       "properties": {
         "Description": "A string containing the description of the group.",
         "GroupName": "The name of the group. Must be unique.",
@@ -8876,7 +8876,7 @@
       "attributes": {
         "Ref": "`Ref` returns physicalResourceId, which is the resource server identifier \u201cIdentifier\". For example:\n\n`{ \"Ref\": \"yourResourceServerIdentifier\" }`\n\nFor the Amazon Cognito resource server `yourResourceServerIdentifier` , Ref returns the name of the resource server."
       },
-      "description": "The `AWS::Cognito::UserPoolResourceServer` resource creates a new OAuth2.0 resource server and defines custom scopes in it.",
+      "description": "The `AWS::Cognito::UserPoolResourceServer` resource creates a new OAuth2.0 resource server and defines custom scopes in it.\n\n> If you don't specify a value for a parameter, Amazon Cognito sets it to a default value.",
       "properties": {
         "Identifier": "A unique resource server identifier for the resource server. This could be an HTTPS endpoint where the resource server is located. For example: `https://my-weather-api.example.com` .",
         "Name": "A friendly name for the resource server.",
@@ -10681,7 +10681,16 @@
       "attributes": {},
       "description": "Information about a filter used to specify which AWS resources are analyzed for anomalous behavior by DevOps Guru.",
       "properties": {
-        "CloudFormation": "Information about AWS CloudFormation stacks. You can use up to 500 stacks to specify which AWS resources in your account to analyze. For more information, see [Stacks](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/stacks.html) in the *AWS CloudFormation User Guide* ."
+        "CloudFormation": "Information about AWS CloudFormation stacks. You can use up to 500 stacks to specify which AWS resources in your account to analyze. For more information, see [Stacks](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/stacks.html) in the *AWS CloudFormation User Guide* .",
+        "Tags": "The AWS tags used to filter the resources in the resource collection.\n\nTags help you identify and organize your AWS resources. Many AWS services support tagging, so you can assign the same tag to resources from different services to indicate that the resources are related. For example, you can assign the same tag to an Amazon DynamoDB table resource that you assign to an AWS Lambda function. For more information about using tags, see the [Tagging best practices](https://docs.aws.amazon.com/https://d1.awsstatic.com/whitepapers/aws-tagging-best-practices.pdf) whitepaper.\n\nEach AWS tag has two parts.\n\n- A tag *key* (for example, `CostCenter` , `Environment` , `Project` , or `Secret` ). Tag *keys* are case-sensitive.\n- An optional field known as a tag *value* (for example, `111122223333` , `Production` , or a team name). Omitting the tag *value* is the same as using an empty string. Like tag *keys* , tag *values* are case-sensitive.\n\nTogether these are known as *key* - *value* pairs.\n\n> The string used for a *key* in a tag that you use to define your resource coverage must begin with the prefix `Devops-guru-` . The tag *key* might be `Devops-guru-deployment-application` or `Devops-guru-rds-application` . While *keys* are case-sensitive, the case of *key* characters don't matter to DevOps Guru. For example, DevOps Guru works with a *key* named `devops-guru-rds` and a *key* named `DevOps-Guru-RDS` . Possible *key* / *value* pairs in your application might be `Devops-Guru-production-application/RDS` or `Devops-Guru-production-application/containers` ."
+      }
+    },
+    "AWS::DevOpsGuru::ResourceCollection.TagCollection": {
+      "attributes": {},
+      "description": "A collection of AWS stags.\n\nTags help you identify and organize your AWS resources. Many AWS services support tagging, so you can assign the same tag to resources from different services to indicate that the resources are related. For example, you can assign the same tag to an Amazon DynamoDB table resource that you assign to an AWS Lambda function. For more information about using tags, see the [Tagging best practices](https://docs.aws.amazon.com/https://d1.awsstatic.com/whitepapers/aws-tagging-best-practices.pdf) whitepaper.\n\nEach AWS tag has two parts.\n\n- A tag *key* (for example, `CostCenter` , `Environment` , `Project` , or `Secret` ). Tag *keys* are case-sensitive.\n- An optional field known as a tag *value* (for example, `111122223333` , `Production` , or a team name). Omitting the tag *value* is the same as using an empty string. Like tag *keys* , tag *values* are case-sensitive.\n\nTogether these are known as *key* - *value* pairs.\n\n> The string used for a *key* in a tag that you use to define your resource coverage must begin with the prefix `Devops-guru-` . The tag *key* might be `Devops-guru-deployment-application` or `Devops-guru-rds-application` . While *keys* are case-sensitive, the case of *key* characters don't matter to DevOps Guru. For example, DevOps Guru works with a *key* named `devops-guru-rds` and a *key* named `DevOps-Guru-RDS` . Possible *key* / *value* pairs in your application might be `Devops-Guru-production-application/RDS` or `Devops-Guru-production-application/containers` .",
+      "properties": {
+        "AppBoundaryKey": "An AWS tag *key* that is used to identify the AWS resources that DevOps Guru analyzes. All AWS resources in your account and Region tagged with this *key* make up your DevOps Guru application and analysis boundary.\n\n> The string used for a *key* in a tag that you use to define your resource coverage must begin with the prefix `Devops-guru-` . The tag *key* might be `Devops-guru-deployment-application` or `Devops-guru-rds-application` . While *keys* are case-sensitive, the case of *key* characters don't matter to DevOps Guru. For example, DevOps Guru works with a *key* named `devops-guru-rds` and a *key* named `DevOps-Guru-RDS` . Possible *key* / *value* pairs in your application might be `Devops-Guru-production-application/RDS` or `Devops-Guru-production-application/containers` .",
+        "TagValues": "The values in an AWS tag collection.\n\nThe tag's *value* is an optional field used to associate a string with the tag *key* (for example, `111122223333` , `Production` , or a team name). The *key* and *value* are the tag's *key* pair. Omitting the tag *value* is the same as using an empty string. Like tag *keys* , tag *values* are case-sensitive. You can specify a maximum of 256 characters for a tag value."
       }
     },
     "AWS::DeviceFarm::DevicePool": {
@@ -10900,6 +10909,7 @@
         "DBClusterIdentifier": "The identifier of the cluster that the instance will belong to.",
         "DBInstanceClass": "The compute and memory capacity of the instance; for example, `db.m4.large` . If you change the class of an instance there can be some interruption in the cluster's service.",
         "DBInstanceIdentifier": "The instance identifier. This parameter is stored as a lowercase string.\n\nConstraints:\n\n- Must contain from 1 to 63 letters, numbers, or hyphens.\n- The first character must be a letter.\n- Cannot end with a hyphen or contain two consecutive hyphens.\n\nExample: `mydbinstance`",
+        "EnablePerformanceInsights": "",
         "PreferredMaintenanceWindow": "The time range each week during which system maintenance can occur, in Universal Coordinated Time (UTC).\n\nFormat: `ddd:hh24:mi-ddd:hh24:mi`\n\nThe default is a 30-minute window selected at random from an 8-hour block of time for each AWS Region , occurring on a random day of the week.\n\nValid days: Mon, Tue, Wed, Thu, Fri, Sat, Sun\n\nConstraints: Minimum 30-minute window.",
         "Tags": "The tags to be assigned to the instance. You can assign up to 10 tags to an instance."
       }
@@ -12218,11 +12228,25 @@
         "VCpuCount": "The minimum and maximum number of vCPUs."
       }
     },
+    "AWS::EC2::LaunchTemplate.Ipv4PrefixSpecification": {
+      "attributes": {},
+      "description": "Describes an IPv4 prefix.",
+      "properties": {
+        "Ipv4Prefix": "The IPv4 prefix. For information, see [Assigning prefixes to Amazon EC2 network interfaces](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-prefix-eni.html) in the *Amazon Elastic Compute Cloud User Guide* ."
+      }
+    },
     "AWS::EC2::LaunchTemplate.Ipv6Add": {
       "attributes": {},
       "description": "Specifies an IPv6 address in an Amazon EC2 launch template.\n\n`Ipv6Add` is a property of [AWS::EC2::LaunchTemplate NetworkInterface](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-networkinterface.html) .",
       "properties": {
         "Ipv6Address": "One or more specific IPv6 addresses from the IPv6 CIDR block range of your subnet. You can't use this option if you're specifying a number of IPv6 addresses."
+      }
+    },
+    "AWS::EC2::LaunchTemplate.Ipv6PrefixSpecification": {
+      "attributes": {},
+      "description": "Describes the IPv6 prefix.",
+      "properties": {
+        "Ipv6Prefix": "The IPv6 prefix."
       }
     },
     "AWS::EC2::LaunchTemplate.LaunchTemplateData": {
@@ -16725,36 +16749,36 @@
     },
     "AWS::Events::Connection.ApiKeyAuthParameters": {
       "attributes": {},
-      "description": "",
+      "description": "Contains the API key authorization parameters for the connection.",
       "properties": {
-        "ApiKeyName": "",
-        "ApiKeyValue": ""
+        "ApiKeyName": "The name of the API key to use for authorization.",
+        "ApiKeyValue": "The value for the API key to use for authorization."
       }
     },
     "AWS::Events::Connection.AuthParameters": {
       "attributes": {},
-      "description": "",
+      "description": "Contains the authorization parameters to use for the connection.",
       "properties": {
-        "ApiKeyAuthParameters": "",
-        "BasicAuthParameters": "",
-        "InvocationHttpParameters": "",
-        "OAuthParameters": ""
+        "ApiKeyAuthParameters": "The API Key parameters to use for authorization.",
+        "BasicAuthParameters": "The authorization parameters for Basic authorization.",
+        "InvocationHttpParameters": "Additional parameters for the connection that are passed through with every invocation to the HTTP endpoint.",
+        "OAuthParameters": "The OAuth parameters to use for authorization."
       }
     },
     "AWS::Events::Connection.BasicAuthParameters": {
       "attributes": {},
-      "description": "",
+      "description": "Contains the Basic authorization parameters for the connection.",
       "properties": {
-        "Password": "",
-        "Username": ""
+        "Password": "The password associated with the user name to use for Basic authorization.",
+        "Username": "The user name to use for Basic authorization."
       }
     },
     "AWS::Events::Connection.ClientParameters": {
       "attributes": {},
-      "description": "",
+      "description": "Contains the OAuth authorization parameters to use for the connection.",
       "properties": {
-        "ClientID": "",
-        "ClientSecret": ""
+        "ClientID": "The client ID to use for OAuth authorization.",
+        "ClientSecret": "The client secret assciated with the client ID to use for OAuth authorization."
       }
     },
     "AWS::Events::Connection.ConnectionHttpParameters": {
@@ -16768,21 +16792,21 @@
     },
     "AWS::Events::Connection.OAuthParameters": {
       "attributes": {},
-      "description": "",
+      "description": "Contains the OAuth authorization parameters to use for the connection.",
       "properties": {
-        "AuthorizationEndpoint": "",
-        "ClientParameters": "",
-        "HttpMethod": "",
-        "OAuthHttpParameters": ""
+        "AuthorizationEndpoint": "The URL to the authorization endpoint when OAuth is specified as the authorization type.",
+        "ClientParameters": "A `CreateConnectionOAuthClientRequestParameters` object that contains the client parameters for OAuth authorization.",
+        "HttpMethod": "The method to use for the authorization request.",
+        "OAuthHttpParameters": "A `ConnectionHttpParameters` object that contains details about the additional parameters to use for the connection."
       }
     },
     "AWS::Events::Connection.Parameter": {
       "attributes": {},
-      "description": "",
+      "description": "Additional query string parameter for the connection. You can include up to 100 additional query string parameters per request. Each additional parameter counts towards the event payload size, which cannot exceed 64 KB.",
       "properties": {
-        "IsValueSecret": "",
-        "Key": "",
-        "Value": ""
+        "IsValueSecret": "Specifies whether the value is secret.",
+        "Key": "The key for a query string parameter.",
+        "Value": "The value associated with the key for the query string parameter."
       }
     },
     "AWS::Events::EventBus": {
@@ -16796,15 +16820,15 @@
       "properties": {
         "EventSourceName": "If you are creating a partner event bus, this specifies the partner event source that the new event bus will be matched with.",
         "Name": "The name of the new event bus.\n\nEvent bus names cannot contain the / character. You can't use the name `default` for a custom event bus, as this name is already used for your account's default event bus.\n\nIf this is a partner event bus, the name must exactly match the name of the partner event source that this event bus is matched to.",
-        "Tags": ""
+        "Tags": "Tags to associate with the event bus."
       }
     },
     "AWS::Events::EventBus.TagEntry": {
       "attributes": {},
-      "description": "",
+      "description": "A key-value pair associated with an AWS resource. In EventBridge, rules and event buses support tagging.",
       "properties": {
-        "Key": "",
-        "Value": ""
+        "Key": "A string you can use to assign a value. The combination of tag keys and values can help you organize and categorize your resources.",
+        "Value": "The value for the specified tag key."
       }
     },
     "AWS::Events::EventBusPolicy": {
@@ -17947,7 +17971,7 @@
       "properties": {
         "Name": "A descriptive label that is associated with a build. Build names do not need to be unique.",
         "OperatingSystem": "The operating system that the game server binaries are built to run on. This value determines the type of fleet resources that you can use for this build. If your game build contains multiple executables, they all must run on the same operating system. If an operating system is not specified when creating a build, Amazon GameLift uses the default value (WINDOWS_2012). This value cannot be changed later.",
-        "StorageLocation": "Information indicating where your game build files are stored. Use this parameter only when creating a build with files stored in an Amazon S3 bucket that you own. The storage location must specify an Amazon S3 bucket name and key. The location must also specify a role ARN that you set up to allow Amazon Web Services to access your Amazon S3 bucket. The S3 bucket and your new build must be in the same Region.\n\nIf a `StorageLocation` is specified, the size of your file can be found in your Amazon S3 bucket. Amazon Web Services will report a `SizeOnDisk` of 0.",
+        "StorageLocation": "Information indicating where your game build files are stored. Use this parameter only when creating a build with files stored in an Amazon S3 bucket that you own. The storage location must specify an Amazon S3 bucket name and key. The location must also specify a role ARN that you set up to allow Amazon GameLift to access your Amazon S3 bucket. The S3 bucket and your new build must be in the same Region.\n\nIf a `StorageLocation` is specified, the size of your file can be found in your Amazon S3 bucket. Amazon GameLift will report a `SizeOnDisk` of 0.",
         "Version": "Version information that is associated with this build. Version strings do not need to be unique."
       }
     },
@@ -17958,7 +17982,7 @@
         "Bucket": "An Amazon S3 bucket identifier. This is the name of the S3 bucket.\n\n> GameLift currently does not support uploading from Amazon S3 buckets with names that contain a dot (.).",
         "Key": "The name of the zip file that contains the build files or script files.",
         "ObjectVersion": "The version of the file, if object versioning is turned on for the bucket. Amazon GameLift uses this information when retrieving files from your S3 bucket. To retrieve a specific version of the file, provide an object version. To retrieve the latest version of the file, do not set this parameter.",
-        "RoleArn": "The Amazon Resource Name ( [ARN](https://docs.aws.amazon.com/AmazonS3/latest/dev/s3-arn-format.html) ) for an IAM role that allows Amazon Web Services to access the S3 bucket."
+        "RoleArn": "The Amazon Resource Name ( [ARN](https://docs.aws.amazon.com/AmazonS3/latest/dev/s3-arn-format.html) ) for an IAM role that allows Amazon GameLift to access the S3 bucket."
       }
     },
     "AWS::GameLift::Fleet": {
@@ -18066,7 +18090,7 @@
         "LaunchTemplate": "The Amazon EC2 launch template that contains configuration settings and game server code to be deployed to all instances in the game server group. You can specify the template using either the template name or ID. For help with creating a launch template, see [Creating a Launch Template for an Auto Scaling Group](https://docs.aws.amazon.com/autoscaling/ec2/userguide/create-launch-template.html) in the *Amazon Elastic Compute Cloud Auto Scaling User Guide* . After the Auto Scaling group is created, update this value directly in the Auto Scaling group using the AWS console or APIs.\n\n> If you specify network interfaces in your launch template, you must explicitly set the property `AssociatePublicIpAddress` to \"true\". If no network interface is specified in the launch template, GameLift FleetIQ uses your account's default VPC.",
         "MaxSize": "The maximum number of instances allowed in the Amazon EC2 Auto Scaling group. During automatic scaling events, GameLift FleetIQ and EC2 do not scale up the group above this maximum. After the Auto Scaling group is created, update this value directly in the Auto Scaling group using the AWS console or APIs.",
         "MinSize": "The minimum number of instances allowed in the Amazon EC2 Auto Scaling group. During automatic scaling events, GameLift FleetIQ and Amazon EC2 do not scale down the group below this minimum. In production, this value should be set to at least 1. After the Auto Scaling group is created, update this value directly in the Auto Scaling group using the AWS console or APIs.",
-        "RoleArn": "The Amazon Resource Name ( [ARN](https://docs.aws.amazon.com/AmazonS3/latest/dev/s3-arn-format.html) ) for an IAM role that allows Amazon Web Services to access your Amazon EC2 Auto Scaling groups.",
+        "RoleArn": "The Amazon Resource Name ( [ARN](https://docs.aws.amazon.com/AmazonS3/latest/dev/s3-arn-format.html) ) for an IAM role that allows Amazon GameLift to access your Amazon EC2 Auto Scaling groups.",
         "Tags": "A list of labels to assign to the new game server group resource. Tags are developer-defined key-value pairs. Tagging AWS resources is useful for resource management, access management, and cost allocation. For more information, see [Tagging AWS Resources](https://docs.aws.amazon.com/general/latest/gr/aws_tagging.html) in the *AWS General Reference* . Once the resource is created, you can use TagResource, UntagResource, and ListTagsForResource to add, remove, and view tags, respectively. The maximum tag limit may be lower than stated. See the AWS General Reference for actual tagging limits.",
         "VpcSubnets": "A list of virtual private cloud (VPC) subnets to use with instances in the game server group. By default, all GameLift FleetIQ-supported Availability Zones are used. You can use this parameter to specify VPCs that you've set up. This property cannot be updated after the game server group is created, and the corresponding Auto Scaling group will always use the property value that is set with this request, even if the Auto Scaling group is updated directly."
       }
@@ -18207,7 +18231,7 @@
       "description": "The `AWS::GameLift::Script` resource creates a new script record for your Realtime Servers script. Realtime scripts are JavaScript that provide configuration settings and optional custom game logic for your game. The script is deployed when you create a Realtime Servers fleet to host your game sessions. Script logic is executed during an active game session.",
       "properties": {
         "Name": "A descriptive label that is associated with a script. Script names do not need to be unique.",
-        "StorageLocation": "The location of the Amazon S3 bucket where a zipped file containing your Realtime scripts is stored. The storage location must specify the Amazon S3 bucket name, the zip file name (the \"key\"), and a role ARN that allows Amazon Web Services to access the Amazon S3 storage location. The S3 bucket must be in the same Region where you want to create a new script. By default, Amazon Web Services uploads the latest version of the zip file; if you have S3 object versioning turned on, you can use the `ObjectVersion` parameter to specify an earlier version.",
+        "StorageLocation": "The location of the Amazon S3 bucket where a zipped file containing your Realtime scripts is stored. The storage location must specify the Amazon S3 bucket name, the zip file name (the \"key\"), and a role ARN that allows Amazon GameLift to access the Amazon S3 storage location. The S3 bucket must be in the same Region where you want to create a new script. By default, Amazon GameLift uploads the latest version of the zip file; if you have S3 object versioning turned on, you can use the `ObjectVersion` parameter to specify an earlier version.",
         "Tags": "A list of labels to assign to the new script resource. Tags are developer-defined key-value pairs. Tagging AWS resources are useful for resource management, access management and cost allocation. For more information, see [Tagging AWS Resources](https://docs.aws.amazon.com/general/latest/gr/aws_tagging.html) in the *AWS General Reference* . Once the resource is created, you can use TagResource, UntagResource, and ListTagsForResource to add, remove, and view tags. The maximum tag limit may be lower than stated. See the AWS General Reference for actual tagging limits.",
         "Version": "The version that is associated with a build or script. Version strings do not need to be unique."
       }
@@ -18218,8 +18242,8 @@
       "properties": {
         "Bucket": "An Amazon S3 bucket identifier. This is the name of the S3 bucket.\n\n> GameLift currently does not support uploading from Amazon S3 buckets with names that contain a dot (.).",
         "Key": "The name of the zip file that contains the build files or script files.",
-        "ObjectVersion": "The version of the file, if object versioning is turned on for the bucket. Amazon Web Services uses this information when retrieving files from an S3 bucket that you own. Use this parameter to specify a specific version of the file. If not set, the latest version of the file is retrieved.",
-        "RoleArn": "The Amazon Resource Name ( [ARN](https://docs.aws.amazon.com/AmazonS3/latest/dev/s3-arn-format.html) ) for an IAM role that allows Amazon Web Services to access the S3 bucket."
+        "ObjectVersion": "The version of the file, if object versioning is turned on for the bucket. Amazon GameLift uses this information when retrieving files from an S3 bucket that you own. Use this parameter to specify a specific version of the file. If not set, the latest version of the file is retrieved.",
+        "RoleArn": "The Amazon Resource Name ( [ARN](https://docs.aws.amazon.com/AmazonS3/latest/dev/s3-arn-format.html) ) for an IAM role that allows Amazon GameLift to access the S3 bucket."
       }
     },
     "AWS::GlobalAccelerator::Accelerator": {
@@ -25389,7 +25413,7 @@
     },
     "AWS::Lambda::EventSourceMapping": {
       "attributes": {
-        "Id": "",
+        "Id": "The event source mapping's ID.",
         "Ref": "`Ref` returns the mapping's ID."
       },
       "description": "The `AWS::Lambda::EventSourceMapping` resource creates a mapping between an event source and an AWS Lambda function. Lambda reads items from the event source and triggers the function.\n\nFor details about each event source type, see the following topics. In particular, each of the topics describes the required and optional parameters for the specific event source.\n\n- [Configuring a Dynamo DB stream as an event source](https://docs.aws.amazon.com/lambda/latest/dg/with-ddb.html#services-dynamodb-eventsourcemapping)\n- [Configuring a Kinesis stream as an event source](https://docs.aws.amazon.com/lambda/latest/dg/with-kinesis.html#services-kinesis-eventsourcemapping)\n- [Configuring an SQS queue as an event source](https://docs.aws.amazon.com/lambda/latest/dg/with-sqs.html#events-sqs-eventsource)\n- [Configuring an MQ broker as an event source](https://docs.aws.amazon.com/lambda/latest/dg/with-mq.html#services-mq-eventsourcemapping)\n- [Configuring MSK as an event source](https://docs.aws.amazon.com/lambda/latest/dg/with-msk.html)\n- [Configuring Self-Managed Apache Kafka as an event source](https://docs.aws.amazon.com/lambda/latest/dg/kafka-smaa.html)",
@@ -25597,12 +25621,13 @@
     },
     "AWS::Lambda::Permission": {
       "attributes": {},
-      "description": "The `AWS::Lambda::Permission` resource grants an AWS service or another account permission to use a function. You can apply the policy at the function level, or specify a qualifier to restrict access to a single version or alias. If you use a qualifier, the invoker must use the full Amazon Resource Name (ARN) of that version or alias to invoke the function.\n\nTo grant permission to another account, specify the account ID as the `Principal` . For AWS services, the principal is a domain-style identifier defined by the service, like `s3.amazonaws.com` or `sns.amazonaws.com` . For AWS services, you can also specify the ARN of the associated resource as the `SourceArn` . If you grant permission to a service principal without specifying the source, other accounts could potentially configure resources in their account to invoke your Lambda function.\n\nThis resource adds a statement to a resource-based permission policy for the function. For more information about function policies, see [Lambda Function Policies](https://docs.aws.amazon.com/lambda/latest/dg/access-control-resource-based.html) .",
+      "description": "The `AWS::Lambda::Permission` resource grants an AWS service or another account permission to use a function. You can apply the policy at the function level, or specify a qualifier to restrict access to a single version or alias. If you use a qualifier, the invoker must use the full Amazon Resource Name (ARN) of that version or alias to invoke the function.\n\nTo grant permission to another account, specify the account ID as the `Principal` . To grant permission to an organization defined in AWS Organizations , specify the organization ID as the `PrincipalOrgID` . For AWS services, the principal is a domain-style identifier defined by the service, like `s3.amazonaws.com` or `sns.amazonaws.com` . For AWS services, you can also specify the ARN of the associated resource as the `SourceArn` . If you grant permission to a service principal without specifying the source, other accounts could potentially configure resources in their account to invoke your Lambda function.\n\nThis resource adds a statement to a resource-based permission policy for the function. For more information about function policies, see [Lambda Function Policies](https://docs.aws.amazon.com/lambda/latest/dg/access-control-resource-based.html) .",
       "properties": {
         "Action": "The action that the principal can use on the function. For example, `lambda:InvokeFunction` or `lambda:GetFunction` .",
         "EventSourceToken": "For Alexa Smart Home functions, a token that must be supplied by the invoker.",
         "FunctionName": "The name of the Lambda function, version, or alias.\n\n**Name formats** - *Function name* - `my-function` (name-only), `my-function:v1` (with alias).\n- *Function ARN* - `arn:aws:lambda:us-west-2:123456789012:function:my-function` .\n- *Partial ARN* - `123456789012:function:my-function` .\n\nYou can append a version number or alias to any of the formats. The length constraint applies only to the full ARN. If you specify only the function name, it is limited to 64 characters in length.",
         "Principal": "The AWS service or account that invokes the function. If you specify a service, use `SourceArn` or `SourceAccount` to limit who can invoke the function through that service.",
+        "PrincipalOrgID": "The identifier for your organization in AWS Organizations . Use this to grant permissions to all the AWS accounts under this organization.",
         "SourceAccount": "For Amazon S3, the ID of the account that owns the resource. Use this together with `SourceArn` to ensure that the resource is owned by the specified account. It is possible for an Amazon S3 bucket to be deleted by its owner and recreated by another account.",
         "SourceArn": "For AWS services, the ARN of the AWS resource that invokes the function. For example, an Amazon S3 bucket or Amazon SNS topic.\n\nNote that Lambda configures the comparison using the `StringLike` operator."
       }
@@ -29732,6 +29757,14 @@
         "UtcTimingUri": "Specifies the value attribute of the UTC timing field when utcTiming is set to HTTP-ISO or HTTP-HEAD."
       }
     },
+    "AWS::MediaPackage::OriginEndpoint.EncryptionContractConfiguration": {
+      "attributes": {},
+      "description": "",
+      "properties": {
+        "PresetSpeke20Audio": "",
+        "PresetSpeke20Video": ""
+      }
+    },
     "AWS::MediaPackage::OriginEndpoint.HlsEncryption": {
       "attributes": {},
       "description": "Holds encryption information so that access to the content can be controlled by a DRM solution.",
@@ -29798,6 +29831,7 @@
       "description": "Keyprovider settings for DRM.",
       "properties": {
         "CertificateArn": "The Amazon Resource Name (ARN) for the certificate that you imported to AWS Certificate Manager to add content key encryption to this endpoint. For this feature to work, your DRM key provider must support content key encryption.",
+        "EncryptionContractConfiguration": "",
         "ResourceId": "Unique identifier for this endpoint, as it is configured in the key provider service.",
         "RoleArn": "The ARN for the IAM role that's granted by the key provider to provide access to the key provider API. This role must have a trust policy that allows AWS Elemental MediaPackage to assume the role, and it must have a sufficient permissions policy to allow access to the specific key retrieval URL. Valid format: arn:aws:iam::{accountID}:role/{name}",
         "SystemIds": "List of unique identifiers for the DRM systems to use, as defined in the CPIX specification.",
@@ -33361,7 +33395,7 @@
         "AllowMajorVersionUpgrade": "A value that indicates whether major version upgrades are allowed. Changing this parameter doesn't result in an outage and the change is asynchronously applied as soon as possible.\n\nConstraints: Major version upgrades must be allowed when specifying a value for the `EngineVersion` parameter that is a different major version than the DB instance's current version.",
         "AssociatedRoles": "The AWS Identity and Access Management (IAM) roles associated with the DB instance.",
         "AutoMinorVersionUpgrade": "A value that indicates whether minor engine upgrades are applied automatically to the DB instance during the maintenance window. By default, minor engine upgrades are applied automatically.",
-        "AvailabilityZone": "The Availability Zone that the database instance will be created in.\n\nDefault: A random, system-chosen Availability Zone in the endpoint's region.\n\nExample: `us-east-1d`\n\nConstraint: The AvailabilityZone parameter cannot be specified if the MultiAZ parameter is set to `true` . The specified Availability Zone must be in the same region as the current endpoint.",
+        "AvailabilityZone": "The Availability Zone (AZ) where the database will be created. For information on AWS Regions and Availability Zones, see [Regions and Availability Zones](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.RegionsAndAvailabilityZones.html) .\n\n*Amazon Aurora*\n\nNot applicable. Availability Zones are managed by the DB cluster.\n\nDefault: A random, system-chosen Availability Zone in the endpoint's AWS Region .\n\nExample: `us-east-1d`\n\nConstraint: The `AvailabilityZone` parameter can't be specified if the DB instance is a Multi-AZ deployment. The specified Availability Zone must be in the same AWS Region as the current endpoint.\n\n> If you're creating a DB instance in an RDS on VMware environment, specify the identifier of the custom Availability Zone to create the DB instance in.\n> \n> For more information about RDS on VMware, see the [RDS on VMware User Guide.](https://docs.aws.amazon.com/AmazonRDS/latest/RDSonVMwareUserGuide/rds-on-vmware.html)",
         "BackupRetentionPeriod": "The number of days for which automated backups are retained. Setting this parameter to a positive number enables backups. Setting this parameter to 0 disables automated backups.\n\n*Amazon Aurora*\n\nNot applicable. The retention period for automated backups is managed by the DB cluster.\n\nDefault: 1\n\nConstraints:\n\n- Must be a value from 0 to 35\n- Can't be set to 0 if the DB instance is a source to read replicas",
         "CACertificateIdentifier": "The identifier of the CA certificate for this DB instance.\n\n> Specifying or updating this property triggers a reboot. \n\nFor more information about CA certificate identifiers for RDS DB engines, see [Rotating Your SSL/TLS Certificate](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.SSL-certificate-rotation.html) in the *Amazon RDS User Guide* .\n\nFor more information about CA certificate identifiers for Aurora DB engines, see [Rotating Your SSL/TLS Certificate](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/UsingWithRDS.SSL-certificate-rotation.html) in the *Amazon Aurora User Guide* .",
         "CharacterSetName": "For supported engines, indicates that the DB instance should be associated with the specified character set.\n\n*Amazon Aurora*\n\nNot applicable. The character set is managed by the DB cluster. For more information, see [AWS::RDS::DBCluster](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbcluster.html) .",
@@ -33546,9 +33580,9 @@
       "description": "The `Ingress` property type specifies an individual ingress rule within an `AWS::RDS::DBSecurityGroup` resource.",
       "properties": {
         "CIDRIP": "The IP range to authorize.",
-        "EC2SecurityGroupId": "Id of the EC2 Security Group to authorize. For VPC DB Security Groups, `EC2SecurityGroupId` must be provided. Otherwise, EC2SecurityGroupOwnerId and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided.",
-        "EC2SecurityGroupName": "Name of the EC2 Security Group to authorize. For VPC DB Security Groups, `EC2SecurityGroupId` must be provided. Otherwise, EC2SecurityGroupOwnerId and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided.",
-        "EC2SecurityGroupOwnerId": "AWS Account Number of the owner of the EC2 Security Group specified in the EC2SecurityGroupName parameter. The AWS Access Key ID is not an acceptable value. For VPC DB Security Groups, `EC2SecurityGroupId` must be provided. Otherwise, EC2SecurityGroupOwnerId and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided."
+        "EC2SecurityGroupId": "Id of the EC2 security group to authorize. For VPC DB security groups, `EC2SecurityGroupId` must be provided. Otherwise, `EC2SecurityGroupOwnerId` and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided.",
+        "EC2SecurityGroupName": "Name of the EC2 security group to authorize. For VPC DB security groups, `EC2SecurityGroupId` must be provided. Otherwise, `EC2SecurityGroupOwnerId` and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided.",
+        "EC2SecurityGroupOwnerId": "AWS account number of the owner of the EC2 security group specified in the `EC2SecurityGroupName` parameter. The AWS access key ID isn't an acceptable value. For VPC DB security groups, `EC2SecurityGroupId` must be provided. Otherwise, `EC2SecurityGroupOwnerId` and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided."
       }
     },
     "AWS::RDS::DBSecurityGroupIngress": {
@@ -33558,10 +33592,10 @@
       "description": "The `AWS::RDS::DBSecurityGroupIngress` resource enables ingress to a DB security group using one of two forms of authorization. First, you can add EC2 or VPC security groups to the DB security group if the application using the database is running on EC2 or VPC instances. Second, IP ranges are available if the application accessing your database is running on the Internet.\n\nThis type supports updates. For more information about updating stacks, see [AWS CloudFormation Stacks Updates](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks.html) .\n\nFor details about the settings for DB security group ingress, see [AuthorizeDBSecurityGroupIngress](https://docs.aws.amazon.com/AmazonRDS/latest/APIReference/API_AuthorizeDBSecurityGroupIngress.html) .",
       "properties": {
         "CIDRIP": "The IP range to authorize.",
-        "DBSecurityGroupName": "The name of the DB Security Group to add authorization to.",
-        "EC2SecurityGroupId": "Id of the EC2 Security Group to authorize. For VPC DB Security Groups, `EC2SecurityGroupId` must be provided. Otherwise, EC2SecurityGroupOwnerId and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided.",
-        "EC2SecurityGroupName": "Name of the EC2 Security Group to authorize. For VPC DB Security Groups, `EC2SecurityGroupId` must be provided. Otherwise, EC2SecurityGroupOwnerId and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided.",
-        "EC2SecurityGroupOwnerId": "AWS Account Number of the owner of the EC2 Security Group specified in the EC2SecurityGroupName parameter. The AWS Access Key ID is not an acceptable value. For VPC DB Security Groups, `EC2SecurityGroupId` must be provided. Otherwise, EC2SecurityGroupOwnerId and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided."
+        "DBSecurityGroupName": "The name of the DB security group to add authorization to.",
+        "EC2SecurityGroupId": "Id of the EC2 security group to authorize. For VPC DB security groups, `EC2SecurityGroupId` must be provided. Otherwise, `EC2SecurityGroupOwnerId` and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided.",
+        "EC2SecurityGroupName": "Name of the EC2 security group to authorize. For VPC DB security groups, `EC2SecurityGroupId` must be provided. Otherwise, `EC2SecurityGroupOwnerId` and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided.",
+        "EC2SecurityGroupOwnerId": "AWS account number of the owner of the EC2 security group specified in the `EC2SecurityGroupName` parameter. The AWS access key ID isn't an acceptable value. For VPC DB security groups, `EC2SecurityGroupId` must be provided. Otherwise, `EC2SecurityGroupOwnerId` and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided."
       }
     },
     "AWS::RDS::DBSubnetGroup": {
@@ -33570,9 +33604,9 @@
       },
       "description": "The `AWS::RDS::DBSubnetGroup` resource creates a database subnet group. Subnet groups must contain at least two subnets in two different Availability Zones in the same region.\n\nFor more information, see [Working with DB subnet groups](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_VPC.WorkingWithRDSInstanceinaVPC.html#USER_VPC.Subnets) in the *Amazon RDS User Guide* .",
       "properties": {
-        "DBSubnetGroupDescription": "The description for the DB Subnet Group.",
+        "DBSubnetGroupDescription": "The description for the DB subnet group.",
         "DBSubnetGroupName": "The name for the DB subnet group. This value is stored as a lowercase string.\n\nConstraints: Must contain no more than 255 lowercase alphanumeric characters or hyphens. Must not be \"Default\".\n\nExample: `mysubnetgroup`",
-        "SubnetIds": "The EC2 Subnet IDs for the DB Subnet Group.",
+        "SubnetIds": "The EC2 Subnet IDs for the DB subnet group.",
         "Tags": "Tags to assign to the DB subnet group."
       }
     },
@@ -33582,8 +33616,8 @@
       },
       "description": "The `AWS::RDS::EventSubscription` resource allows you to receive notifications for Amazon Relational Database Service events through the Amazon Simple Notification Service (Amazon SNS). For more information, see [Using Amazon RDS Event Notification](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_Events.html) in the *Amazon RDS User Guide* .",
       "properties": {
-        "Enabled": "A Boolean value; set to *true* to activate the subscription, set to *false* to create the subscription but not active it.",
-        "EventCategories": "A list of event categories for a SourceType that you want to subscribe to. You can see a list of the categories for a given SourceType in the [Events](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_Events.html) topic in the Amazon RDS User Guide or by using the *DescribeEventCategories* action.",
+        "Enabled": "A value that indicates whether to activate the subscription. If the event notification subscription isn't activated, the subscription is created but not active.",
+        "EventCategories": "A list of event categories for a particular source type ( `SourceType` ) that you want to subscribe to. You can see a list of the categories for a given source type in the \"Amazon RDS event categories and event messages\" section of the [*Amazon RDS User Guide*](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_Events.Messages.html) or the [*Amazon Aurora User Guide*](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/USER_Events.Messages.html) . You can also see this list by using the `DescribeEventCategories` operation.",
         "SnsTopicArn": "The Amazon Resource Name (ARN) of the SNS topic created for event notification. The ARN is created by Amazon SNS when you create a topic and subscribe to it.",
         "SourceIds": "The list of identifiers of the event sources for which events are returned. If not specified, then all sources are included in the response. An identifier must begin with a letter and must contain only ASCII letters, digits, and hyphens. It can't end with a hyphen or contain two consecutive hyphens.\n\nConstraints:\n\n- If a `SourceIds` value is supplied, `SourceType` must also be provided.\n- If the source type is a DB instance, a `DBInstanceIdentifier` value must be supplied.\n- If the source type is a DB cluster, a `DBClusterIdentifier` value must be supplied.\n- If the source type is a DB parameter group, a `DBParameterGroupName` value must be supplied.\n- If the source type is a DB security group, a `DBSecurityGroupName` value must be supplied.\n- If the source type is a DB snapshot, a `DBSnapshotIdentifier` value must be supplied.\n- If the source type is a DB cluster snapshot, a `DBClusterSnapshotIdentifier` value must be supplied.",
         "SourceType": "The type of source that is generating the events. For example, if you want to be notified of events generated by a DB instance, set this parameter to `db-instance` . If this value isn't specified, all events are returned.\n\nValid values: `db-instance` | `db-cluster` | `db-parameter-group` | `db-security-group` | `db-snapshot` | `db-cluster-snapshot`"
