@@ -217,11 +217,12 @@ export function resolve(obj: any, options: IResolveOptions): any {
   // objects - deep-resolve all values
   //
 
-  // Must not be a Construct at this point, otherwise you probably made a typo
+  // Must not be a non-pure data object at this point, otherwise you probably made a typo
   // mistake somewhere and resolve will get into an infinite loop recursing into
-  // child.parent <---> parent.children
-  if (isConstruct(obj)) {
-    throw new Error('Trying to resolve() a Construct at ' + pathName);
+  // child.parent <---> parent.children (if it's a Construct) or something else that's
+  // probably Bad.
+  if (isClassInstance(obj)) {
+    throw new Error(`Trying to resolve() a non-data object (instance of '${obj.constructor.name}') at ${pathName}`);
   }
 
   const result: any = { };
@@ -302,8 +303,8 @@ export class RememberingTokenResolver extends DefaultTokenResolver {
  * Not in 'construct.ts' because that would lead to a dependency cycle via 'uniqueid.ts',
  * and this is a best-effort protection against a common programming mistake anyway.
  */
-function isConstruct(x: any): boolean {
-  return x._children !== undefined && x._metadata !== undefined;
+function isClassInstance(x: any): boolean {
+  return x && typeof x === 'object' && x.constructor !== Object;
 }
 
 function resolveNumberToken(x: number, context: IResolveContext): any {

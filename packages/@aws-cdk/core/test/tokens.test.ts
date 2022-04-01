@@ -121,8 +121,8 @@ describe('tokens', () => {
   });
 
   // eslint-disable-next-line max-len
-  test('if a resolvable object inherits from a class that is also resolvable, the "constructor" function will not get in the way (uses Object.keys instead of "for in")', () => {
-    expect(resolve({ prop: new DataType() })).toEqual({ prop: { foo: 12, goo: 'hello' } });
+  test('cannot resolve instances of a class that does not implement IResolvable', () => {
+    expect(() => resolve({ prop: new CantResolveClass(3) })).toThrow(/Trying to resolve\(\) a non-data object /);
 
   });
 
@@ -783,16 +783,8 @@ class Promise1 implements IResolvable {
   }
 }
 
-class BaseDataType {
+class CantResolveClass {
   constructor(readonly foo: number) {
-  }
-}
-
-class DataType extends BaseDataType {
-  public goo = 'hello';
-
-  constructor() {
-    super(12);
   }
 }
 
