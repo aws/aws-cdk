@@ -443,7 +443,7 @@ export class Settings {
 
 function expandHomeDir(x: string) {
   if (x.startsWith('~')) {
-    return fs_path.join(os.homedir(), x.substr(1));
+    return fs_path.join(os.homedir(), x.slice(1));
   }
   return x;
 }
