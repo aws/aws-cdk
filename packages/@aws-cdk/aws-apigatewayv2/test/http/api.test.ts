@@ -580,7 +580,6 @@ describe('SpecHttpApi', () => {
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Api', {
-      Name: 'api',
       Body: oas,
     });
 
