@@ -24,7 +24,7 @@ import { Construct } from 'constructs';
 import * as cpactions from '../../lib';
 
 export class StackSetPipelineStack extends Stack {
-  constructor(scope: Construct, id: string, props: StackProps) {
+  constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
     const pipeline = new codepipeline.Pipeline(this, 'Pipeline', {
