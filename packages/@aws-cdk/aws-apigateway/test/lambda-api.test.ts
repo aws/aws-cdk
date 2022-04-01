@@ -242,4 +242,24 @@ describe('lambda api', () => {
       ],
     });
   });
+
+  test('LambdaRestApi allows passing GENERATE_IF_NEEDED as the physical name', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new apigw.LambdaRestApi(stack, 'lambda-rest-api', {
+      handler: new lambda.Function(stack, 'handler', {
+        handler: 'index.handler',
+        code: lambda.Code.fromInline('boom'),
+        runtime: lambda.Runtime.NODEJS_10_X,
+      }),
+      restApiName: cdk.PhysicalName.GENERATE_IF_NEEDED,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::RestApi', {
+      Name: Match.absent(),
+    });
+  });
 });
