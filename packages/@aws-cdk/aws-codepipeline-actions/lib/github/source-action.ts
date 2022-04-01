@@ -152,7 +152,7 @@ export class GitHubSourceAction extends Action {
         Owner: this.props.owner,
         Repo: this.props.repo,
         Branch: this.props.branch || 'master',
-        OAuthToken: this.props.oauthToken.toString(),
+        OAuthToken: this.props.oauthToken.unsafeUnwrap(),
         PollForSourceChanges: this.props.trigger === GitHubTrigger.POLL,
       },
     };

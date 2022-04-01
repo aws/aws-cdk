@@ -243,7 +243,7 @@ export class SecretStringValueBeta1 {
    * const secretValue = secretsmanager.SecretStringValueBeta1.fromToken(JSON.stringify({
    *   username: user.userName,
    *   database: 'foo',
-   *   password: accessKey.secretAccessKey.toString(),
+   *   password: accessKey.secretAccessKey.unsafeUnwrap(),
    * }));
    * ```
    *
