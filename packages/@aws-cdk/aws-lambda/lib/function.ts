@@ -399,6 +399,10 @@ export class Function extends FunctionBase {
       return this._currentVersion;
     }
 
+    if (this._warnIfCurrentVersionCalled) {
+      this.warnInvokeFunctionPermissions(this);
+    };
+
     this._currentVersion = new Version(this, 'CurrentVersion', {
       lambda: this,
       ...this.currentVersionOptions,

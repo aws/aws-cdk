@@ -416,6 +416,62 @@ describe('tests', () => {
     })).toThrow(/Protocol must be TLS when certificates have been specified/);
   });
 
+  test('Can pass multiple certificates to network listener constructor', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Stack');
+    const lb = new elbv2.NetworkLoadBalancer(stack, 'LB', { vpc });
+
+    // WHEN
+    lb.addListener('Listener', {
+      port: 443,
+      certificates: [
+        importedCertificate(stack, 'cert1'),
+        importedCertificate(stack, 'cert2'),
+      ],
+      defaultTargetGroups: [new elbv2.NetworkTargetGroup(stack, 'Group', { vpc, port: 80 })],
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::Listener', {
+      Protocol: 'TLS',
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::ListenerCertificate', {
+      Certificates: [{ CertificateArn: 'cert2' }],
+    });
+  });
+
+  test('Can add multiple certificates to network listener after construction', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Stack');
+    const lb = new elbv2.NetworkLoadBalancer(stack, 'LB', { vpc });
+
+    // WHEN
+    const listener = lb.addListener('Listener', {
+      port: 443,
+      certificates: [
+        importedCertificate(stack, 'cert1'),
+      ],
+      defaultTargetGroups: [new elbv2.NetworkTargetGroup(stack, 'Group', { vpc, port: 80 })],
+    });
+
+    listener.addCertificates('extra', [
+      importedCertificate(stack, 'cert2'),
+    ]);
+
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::Listener', {
+      Protocol: 'TLS',
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::ListenerCertificate', {
+      Certificates: [{ CertificateArn: 'cert2' }],
+    });
+  });
+
   test('not allowed to specify defaultTargetGroups and defaultAction together', () => {
     // GIVEN
     const stack = new cdk.Stack();
@@ -461,4 +517,9 @@ class ResourceWithLBDependency extends cdk.CfnResource {
     super(scope, id, { type: 'Test::Resource' });
     this.node.addDependency(targetGroup.loadBalancerAttached);
   }
+}
+
+function importedCertificate(stack: cdk.Stack,
+  certificateArn = 'arn:aws:certificatemanager:123456789012:testregion:certificate/fd0b8392-3c0e-4704-81b6-8edf8612c852') {
+  return acm.Certificate.fromCertificateArn(stack, certificateArn, certificateArn);
 }

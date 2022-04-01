@@ -1,7 +1,7 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
-import { ArnFormat, ConstructNode, IResource, Resource, Token } from '@aws-cdk/core';
+import { Annotations, ArnFormat, ConstructNode, IResource, Resource, Token } from '@aws-cdk/core';
 import { AliasOptions } from './alias';
 import { Architecture } from './architecture';
 import { EventInvokeConfig, EventInvokeConfigOptions } from './event-invoke-config';
@@ -11,6 +11,10 @@ import { IVersion } from './lambda-version';
 import { CfnPermission } from './lambda.generated';
 import { Permission } from './permission';
 import { addAlias, flatMap } from './util';
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
 
 export interface IFunction extends IResource, ec2.IConnectable, iam.IGrantable {
 
@@ -275,10 +279,43 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
   private _latestVersion?: LatestVersion;
 
   /**
+   * Flag to delay adding a warning message until current version is invoked.
+   * @internal
+   */
+  protected _warnIfCurrentVersionCalled: boolean = false;
+
+  /**
    * Mapping of invocation principals to grants. Used to de-dupe `grantInvoke()` calls.
    * @internal
    */
   protected _invocationGrants: Record<string, iam.Grant> = {};
+
+  /**
+   * A warning will be added to functions under the following conditions:
+   * - permissions that include `lambda:InvokeFunction` are added to the unqualified function.
+   * - function.currentVersion is invoked before or after the permission is created.
+   *
+   * This applies only to permissions on Lambda functions, not versions or aliases.
+   * This function is overridden as a noOp for QualifiedFunctionBase.
+   */
+  public considerWarningOnInvokeFunctionPermissions(scope: Construct, action: string) {
+    const affectedPermissions = ['lambda:InvokeFunction', 'lambda:*', 'lambda:Invoke*'];
+    if (affectedPermissions.includes(action)) {
+      if (scope.node.tryFindChild('CurrentVersion')) {
+        this.warnInvokeFunctionPermissions(scope);
+      } else {
+        this._warnIfCurrentVersionCalled = true;
+      }
+    }
+  }
+
+  protected warnInvokeFunctionPermissions(scope: Construct): void {
+    Annotations.of(scope).addWarning([
+      "AWS Lambda has changed their authorization strategy, which may cause client invocations using the 'Qualifier' parameter of the lambda function to fail with Access Denied errors.",
+      "If you are using a lambda Version or Alias, make sure to call 'grantInvoke' or 'addPermission' on the Version or Alias, not the underlying Function",
+      'See: https://github.com/aws/aws-cdk/issues/19273',
+    ].join('\n'));
+  }
 
   /**
    * Adds a permission to the Lambda resource policy.
@@ -295,6 +332,8 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
     const { sourceAccount, sourceArn } = this.parseConditions(permission.principal) ?? {};
     const action = permission.action ?? 'lambda:InvokeFunction';
     const scope = permission.scope ?? this;
+
+    this.considerWarningOnInvokeFunctionPermissions(scope, action);
 
     new CfnPermission(scope, id, {
       action,
@@ -553,6 +592,11 @@ export abstract class QualifiedFunctionBase extends FunctionBase {
       qualifier: this.qualifier,
       ...options,
     });
+  }
+
+  public considerWarningOnInvokeFunctionPermissions(_scope: Construct, _action: string): void {
+    // noOp
+    return;
   }
 }
 
