@@ -115,7 +115,6 @@ describe('CodeDeploy Lambda DeploymentGroup', () => {
     });
   });
 
-
   test('can be created with explicit name', () => {
     const stack = new cdk.Stack();
     const application = new codedeploy.LambdaApplication(stack, 'MyApp');
@@ -562,6 +561,32 @@ describe('CodeDeploy Lambda DeploymentGroup', () => {
         Events: [
           'DEPLOYMENT_FAILURE',
         ],
+      },
+    });
+  });
+
+  test('uses the correct Service Principal in the us-isob-east-1 region', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'CodeDeployLambdaStack', {
+      env: { region: 'us-isob-east-1' },
+    });
+    const alias = mockAlias(stack);
+    new codedeploy.LambdaDeploymentGroup(stack, 'MyDG', {
+      alias,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+      AssumeRolePolicyDocument: {
+        Statement: [
+          {
+            Action: 'sts:AssumeRole',
+            Effect: 'Allow',
+            Principal: {
+              Service: 'codedeploy.amazonaws.com',
+            },
+          },
+        ],
+        Version: '2012-10-17',
       },
     });
   });
