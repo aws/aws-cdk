@@ -24,21 +24,8 @@ export enum RequireApproval {
 export interface DefaultCdkOptions {
   /**
    * List of stacks to deploy
-   *
-   * Requried if `all` is not set
-   *
-   * @default - []
    */
-  readonly stacks?: string[];
-
-  /**
-   * Deploy all stacks
-   *
-   * Requried if `stacks` is not set
-   *
-   * @default - false
-   */
-  readonly all?: boolean;
+  readonly stacks: string[];
 
   /**
    * command-line for executing your app or a cloud assembly directory
