@@ -67,12 +67,16 @@ function metricGraphJson(metric: IMetric, yAxis?: string, id?: string) {
   if (id) { options.id = id; }
 
   if (options.visible !== false && options.expression && !options.label) {
-    if (options.label === undefined) {
-      options.label = metric.toString();
-    } else {
-      // if an empty string was passed explicitly, set the label to undefined so CloudWatch will use the original metric legend
-      options.label = undefined;
-    }
+    // Label may be '' or undefined.
+    //
+    // If undefined, we'll render the expression as the label, to suppress
+    // the default behavior of CW where it would render the metric
+    // id as label, which we (inelegantly) generate to be something like "metric_alias0".
+    //
+    // For array expressions (returning more than 1 TS) users may sometimes want to
+    // suppress the label completely. For those cases, we'll accept the empty string,
+    // and not render a label at all.
+    options.label = options.label === '' ? undefined : metric.toString();
   }
 
   const renderedOpts = dropUndefined(options);
