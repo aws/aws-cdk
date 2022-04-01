@@ -7,6 +7,7 @@ import {
   CorsHttpMethod, DomainName,
   HttpApi, HttpAuthorizer, HttpIntegrationType, HttpMethod, HttpRouteAuthorizerBindOptions, HttpRouteAuthorizerConfig,
   HttpRouteIntegrationBindOptions, HttpRouteIntegrationConfig, IHttpRouteAuthorizer, HttpRouteIntegration, HttpNoneAuthorizer, PayloadFormatVersion,
+  SpecHttpApi, ApiDefinition,
 } from '../../lib';
 
 describe('HttpApi', () => {
@@ -528,6 +529,71 @@ describe('HttpApi', () => {
         AuthorizationScopes: ['read:chickens'],
       });
     });
+  });
+});
+
+describe('SpecHttpApi', () => {
+  test('default', () => {
+    const stack = new Stack();
+    const api = new SpecHttpApi(stack, 'api', {
+      apiDefinition: ApiDefinition.fromInline(JSON.stringify({
+        openapi: '3.0.2',
+        paths: {
+          '/pets': {
+            get: {
+              'responses': {
+                200: {
+                  content: {
+                    'application/json': {
+                      schema: {
+                        $ref: '#/components/schemas/Empty',
+                      },
+                    },
+                  },
+                },
+              },
+              'x-amazon-apigateway-integration': {
+                responses: {
+                  default: {
+                    statusCode: '200',
+                  },
+                },
+                requestTemplates: {
+                  'application/json': '{"statusCode": 200}',
+                },
+                passthroughBehavior: 'when_no_match',
+                type: 'mock',
+              },
+            },
+          },
+        },
+        components: {
+          schemas: {
+            Empty: {
+              title: 'Empty Schema',
+              type: 'object',
+            },
+          },
+        },
+      })),
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Api', {
+      Name: 'api',
+      ProtocolType: 'HTTP',
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Stage', {
+      ApiId: stack.resolve(api.apiId),
+      StageName: '$default',
+      AutoDeploy: true,
+    });
+
+    Template.fromStack(stack).resourceCountIs('AWS::ApiGatewayV2::Route', 0);
+    Template.fromStack(stack).resourceCountIs('AWS::ApiGatewayV2::Integration', 0);
+
+    // expect(api.url).toBeDefined();
+    expect(api.apiEndpoint).toBeDefined();
   });
 });
 
