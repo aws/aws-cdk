@@ -26,7 +26,7 @@ export abstract class ApiDefinition {
    *
    * @example
    *
-   *   apigateway.ApiDefinition.fromInline({
+   *   ApiDefinition.fromInline({
    *     openapi: '3.0.2',
    *     paths: {
    *       '/pets': {
