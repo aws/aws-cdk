@@ -33,7 +33,7 @@
         "module": "aws_cdk.aws_sso",
         "classifiers": [
           "Framework :: AWS CDK",
-          "Framework :: AWS CDK :: 2"
+          "Framework :: AWS CDK :: 1"
         ]
       }
     }

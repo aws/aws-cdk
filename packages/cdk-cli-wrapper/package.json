@@ -41,7 +41,7 @@
         "module": "aws_cdk.cdk_cli_wrapper",
         "classifiers": [
           "Framework :: AWS CDK",
-          "Framework :: AWS CDK :: 2"
+          "Framework :: AWS CDK :: 1"
         ]
       }
     },

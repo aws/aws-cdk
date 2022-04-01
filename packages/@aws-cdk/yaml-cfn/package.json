@@ -44,7 +44,7 @@
         "module": "aws_cdk.yaml_cfn",
         "classifiers": [
           "Framework :: AWS CDK",
-          "Framework :: AWS CDK :: 2"
+          "Framework :: AWS CDK :: 1"
         ]
       }
     },
