@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as cdk from '@aws-cdk/core';
 import * as apigw from '../lib';
 
@@ -24,7 +24,7 @@ describe('model', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ApiGateway::Model', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Model', {
       RestApiId: { Ref: stack.getLogicalId(api.node.findChild('Resource') as cdk.CfnElement) },
       Schema: {
         $schema: 'http://json-schema.org/draft-04/schema#',
@@ -57,7 +57,7 @@ describe('model', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ApiGateway::Model', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Model', {
       RestApiId: { Ref: stack.getLogicalId(api.node.findChild('Resource') as cdk.CfnElement) },
       Schema: {
         $schema: 'http://json-schema.org/draft-04/schema#',

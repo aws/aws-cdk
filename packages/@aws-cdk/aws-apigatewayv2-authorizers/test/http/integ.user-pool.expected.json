@@ -108,7 +108,7 @@
         "JwtConfiguration": {
           "Audience": [
             {
-              "Ref": "userpoolmyclientFAD947AB"
+              "Ref": "userpoolUserPoolAuthorizerClient6A7486E8"
             }
           ],
           "Issuer": {
@@ -160,7 +160,7 @@
       "UpdateReplacePolicy": "Retain",
       "DeletionPolicy": "Retain"
     },
-    "userpoolmyclientFAD947AB": {
+    "userpoolUserPoolAuthorizerClient6A7486E8": {
       "Type": "AWS::Cognito::UserPoolClient",
       "Properties": {
         "UserPoolId": {

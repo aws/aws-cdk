@@ -21,12 +21,26 @@ import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 In order to have SecretsManager generate a new secret value automatically,
 you can get started with the following:
 
-[example of creating a secret](test/integ.secret.lit.ts)
-
-The `Secret` construct does not allow specifying the `SecretString` property
-of the `AWS::SecretsManager::Secret` resource (as this will almost always
-lead to the secret being surfaced in plain text and possibly committed to
-your source control).
+```ts
+// Default secret
+const secret = new secretsmanager.Secret(this, 'Secret');
+// Using the default secret
+new iam.User(this, 'User', {
+  password: secret.secretValue,
+});
+// Templated secret
+const templatedSecret = new secretsmanager.Secret(this, 'TemplatedSecret', {
+  generateSecretString: {
+    secretStringTemplate: JSON.stringify({ username: 'user' }),
+    generateStringKey: 'password',
+  },
+});
+// Using the templated secret
+new iam.User(this, 'OtherUser', {
+  userName: templatedSecret.secretValueFromJson('username').toString(),
+  password: templatedSecret.secretValueFromJson('password'),
+});
+```
 
 If you need to use a pre-existing secret, the recommended way is to manually
 provision the secret in *AWS SecretsManager* and use the `Secret.fromSecretArn`
@@ -49,7 +63,7 @@ A secret can set `RemovalPolicy`. If it set to `RETAIN`, that removing a secret 
 ## Grant permission to use the secret to a role
 
 You must grant permission to a resource for that resource to be allowed to
-use a secret. This can be achieved with the `Secret.grantRead` and/or `Secret.grantUpdate`
+use a secret. This can be achieved with the `Secret.grantRead` and/or `Secret.grantWrite`
  method, depending on your need:
 
 ```ts

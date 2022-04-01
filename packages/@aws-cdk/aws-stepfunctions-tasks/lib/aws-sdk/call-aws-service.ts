@@ -64,6 +64,10 @@ export class CallAwsService extends sfn.TaskStateBase {
   constructor(scope: Construct, id: string, private readonly props: CallAwsServiceProps) {
     super(scope, id, props);
 
+    if (this.props.integrationPattern === sfn.IntegrationPattern.RUN_JOB) {
+      throw new Error('The RUN_JOB integration pattern is not supported for CallAwsService');
+    }
+
     this.taskPolicies = [
       new iam.PolicyStatement({
         resources: props.iamResources,

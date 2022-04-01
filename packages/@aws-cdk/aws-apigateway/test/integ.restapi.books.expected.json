@@ -229,7 +229,10 @@
           "Ref": "booksapiDeployment308B08F132cc25cf8168bd5e99b9e6d4915866b5"
         },
         "StageName": "prod"
-      }
+      },
+      "DependsOn": [
+        "booksapiAccountDBA98FB9"
+      ]
     },
     "booksapiANYApiPermissionrestapibooksexamplebooksapi4538F335ANY73B3CDDC": {
       "Type": "AWS::Lambda::Permission",

@@ -71,6 +71,7 @@ declare const fn: lambda.Function;
 fn.addEventSource(new SqsEventSource(queue, {
   batchSize: 10, // default
   maxBatchingWindow: Duration.minutes(5),
+  reportBatchItemFailures: true, // default to false
 }));
 ```
 

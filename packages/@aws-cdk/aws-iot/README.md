@@ -34,8 +34,9 @@ $ npm i @aws-cdk/aws-iot
 
 Import it into your code:
 
-```ts
+```ts nofixture
 import * as iot from '@aws-cdk/aws-iot';
+import * as actions from '@aws-cdk/aws-iot-actions';
 ```
 
 ## `TopicRule`
@@ -44,10 +45,6 @@ Create a topic rule that give your devices the ability to interact with AWS serv
 You can create a topic rule with an action that invoke the Lambda action as following:
 
 ```ts
-import * as iot from '@aws-cdk/aws-iot';
-import * as actions from '@aws-cdk/aws-iot-actions';
-import * as lambda from '@aws-cdk/aws-lambda';
-
 const func = new lambda.Function(this, 'MyFunction', {
   runtime: lambda.Runtime.NODEJS_14_X,
   handler: 'index.handler',
@@ -60,7 +57,7 @@ const func = new lambda.Function(this, 'MyFunction', {
 
 new iot.TopicRule(this, 'TopicRule', {
   topicRuleName: 'MyTopicRule', // optional
-  description: 'invokes the lambda finction', // optional
+  description: 'invokes the lambda function', // optional
   sql: iot.IotSql.fromStringAsVer20160323("SELECT topic(2) as device_id, timestamp() as timestamp FROM 'device/+/data'"),
   actions: [new actions.LambdaFunctionAction(func)],
 });
@@ -69,18 +66,18 @@ new iot.TopicRule(this, 'TopicRule', {
 Or, you can add an action after constructing the `TopicRule` instance as following:
 
 ```ts
+declare const func: lambda.Function;
+
 const topicRule = new iot.TopicRule(this, 'TopicRule', {
   sql: iot.IotSql.fromStringAsVer20160323("SELECT topic(2) as device_id, timestamp() as timestamp FROM 'device/+/data'"),
 });
-topicRule.addAction(new actions.LambdaFunctionAction(func))
+topicRule.addAction(new actions.LambdaFunctionAction(func));
 ```
 
 You can also supply `errorAction` as following,
 and the IoT Rule will trigger it if a rule's action is unable to perform:
 
 ```ts
-import * as iot from '@aws-cdk/aws-iot';
-import * as actions from '@aws-cdk/aws-iot-actions';
 import * as logs from '@aws-cdk/aws-logs';
 
 const logGroup = new logs.LogGroup(this, 'MyLogGroup');

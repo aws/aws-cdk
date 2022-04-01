@@ -69,7 +69,7 @@ describe('CallApiGatewayRestApiEndpoint', () => {
       method: HttpMethod.GET,
       stageName: 'dev',
       integrationPattern: sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN,
-      headers: sfn.TaskInput.fromObject({ TaskToken: sfn.JsonPath.taskToken }),
+      headers: sfn.TaskInput.fromObject({ TaskToken: sfn.JsonPath.array(sfn.JsonPath.taskToken) }),
     });
 
     // THEN
@@ -97,7 +97,7 @@ describe('CallApiGatewayRestApiEndpoint', () => {
         },
         AuthType: 'NO_AUTH',
         Headers: {
-          'TaskToken.$': '$$.Task.Token',
+          'TaskToken.$': 'States.Array($$.Task.Token)',
         },
         Method: 'GET',
         Stage: 'dev',

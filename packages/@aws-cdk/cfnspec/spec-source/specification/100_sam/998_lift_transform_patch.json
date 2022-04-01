@@ -1,0 +1,15 @@
+{
+    "ResourceTypes": {
+        "patch:each": {
+            "description": "Lift transform version to each resource",
+            "operations": [
+                {
+                    "op": "copy",
+                    "from": "$/ResourceSpecificationTransform",
+                    "path": "/RequiredTransform"
+                }
+            ]
+        }
+    }
+}
+

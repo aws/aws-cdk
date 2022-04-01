@@ -1,8 +1,9 @@
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as AWS from 'aws-sdk';
-import { Mode, SdkProvider } from '../api';
-import { ContextProviderPlugin } from './provider';
+import { Mode } from '../api/aws-auth/credentials';
+import { SdkProvider } from '../api/aws-auth/sdk-provider';
+import { ContextProviderPlugin } from '../api/plugin';
 
 export class SecurityGroupContextProviderPlugin implements ContextProviderPlugin {
   constructor(private readonly aws: SdkProvider) {
@@ -21,7 +22,7 @@ export class SecurityGroupContextProviderPlugin implements ContextProviderPlugin
     }
 
     const options = { assumeRoleArn: args.lookupRoleArn };
-    const ec2 = (await this.aws.forEnvironment(cxapi.EnvironmentUtils.make(account, region), Mode.ForReading, options)).ec2();
+    const ec2 = (await this.aws.forEnvironment(cxapi.EnvironmentUtils.make(account, region), Mode.ForReading, options)).sdk.ec2();
 
     const filters: AWS.EC2.FilterList = [];
     if (args.vpcId) {

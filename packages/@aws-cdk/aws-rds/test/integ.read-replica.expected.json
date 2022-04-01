@@ -422,6 +422,16 @@
       "UpdateReplacePolicy": "Snapshot",
       "DeletionPolicy": "Snapshot"
     },
+    "ReplicaParameterGroup4BE5EE70": {
+      "Type": "AWS::RDS::DBParameterGroup",
+      "Properties": {
+        "Description": "Parameter group for mysql8.0",
+        "Family": "mysql8.0",
+        "Parameters": {
+          "wait_timeout": "86400"
+        }
+      }
+    },
     "MysqlReplicaSubnetGroup79E1F72A": {
       "Type": "AWS::RDS::DBSubnetGroup",
       "Properties": {
@@ -458,6 +468,9 @@
         "DBInstanceClass": "db.t3.small",
         "BackupRetentionPeriod": 3,
         "CopyTagsToSnapshot": true,
+        "DBParameterGroupName": {
+          "Ref": "ReplicaParameterGroup4BE5EE70"
+        },
         "DBSubnetGroupName": {
           "Ref": "MysqlReplicaSubnetGroup79E1F72A"
         },

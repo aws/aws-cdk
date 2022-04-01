@@ -11,6 +11,14 @@ export interface LibraryReadmeOptions {
    * The name under which we publish this NPM package
    */
   readonly packageName: string;
+
+  /**
+   * Alpha package name
+   *
+   * If the "actual" contents of this library are available in another package,
+   * give the name here.
+   */
+  readonly alphaPackageName?: string;
 }
 
 /**
@@ -55,6 +63,13 @@ export function cfnOnlyReadmeContents(options: LibraryReadmeOptions) {
     '```ts nofixture',
     `import * as ${importName} from '${options.packageName}';`,
     '```',
+    ...(options.alphaPackageName ? [
+      '',
+      '> The construct library for this service is in preview. Since it is not stable yet, it is distributed',
+      '> as a separate package so that you can pin its version independently of the rest of the CDK. See the package:',
+      '>',
+      `> <span class="package-reference">${options.alphaPackageName}</span>`,
+    ] : []),
     '',
     '<!--BEGIN CFNONLY DISCLAIMER-->',
     '',

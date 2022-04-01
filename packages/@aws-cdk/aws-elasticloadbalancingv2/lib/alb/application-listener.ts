@@ -83,15 +83,15 @@ export interface BaseApplicationListenerProps {
   readonly defaultAction?: ListenerAction;
 
   /**
-   * Allow anyone to connect to this listener
+   * Allow anyone to connect to the load balancer on the listener port
    *
-   * If this is specified, the listener will be opened up to anyone who can reach it.
+   * If this is specified, the load balancer will be opened up to anyone who can reach it.
    * For internal load balancers this is anyone in the same VPC. For public load
    * balancers, this is anyone on the internet.
    *
    * If you want to be more selective about who can access this load
    * balancer, set this to `false` and use the listener's `connections`
-   * object to selectively grant access to the listener.
+   * object to selectively grant access to the load balancer on the listener port.
    *
    * @default true
    */
@@ -508,6 +508,21 @@ export interface IApplicationListener extends IResource, ec2.IConnectable {
    * Don't call this directly. It is called by ApplicationTargetGroup.
    */
   registerConnectable(connectable: ec2.IConnectable, portRange: ec2.Port): void;
+
+  /**
+   * Perform the given action on incoming requests
+   *
+   * This allows full control of the default action of the load balancer,
+   * including Action chaining, fixed responses and redirect responses. See
+   * the `ListenerAction` class for all options.
+   *
+   * It's possible to add routing conditions to the Action added in this way.
+   *
+   * It is not possible to add a default action to an imported IApplicationListener.
+   * In order to add actions to an imported IApplicationListener a `priority`
+   * must be provided.
+   */
+  addAction(id: string, props: AddApplicationActionProps): void;
 }
 
 /**
@@ -626,6 +641,36 @@ abstract class ExternalApplicationListener extends Resource implements IApplicat
   public addTargets(_id: string, _props: AddApplicationTargetsProps): ApplicationTargetGroup {
     // eslint-disable-next-line max-len
     throw new Error('Can only call addTargets() when using a constructed ApplicationListener; construct a new TargetGroup and use addTargetGroup.');
+  }
+
+  /**
+   * Perform the given action on incoming requests
+   *
+   * This allows full control of the default action of the load balancer,
+   * including Action chaining, fixed responses and redirect responses. See
+   * the `ListenerAction` class for all options.
+   *
+   * It's possible to add routing conditions to the Action added in this way.
+   *
+   * It is not possible to add a default action to an imported IApplicationListener.
+   * In order to add actions to an imported IApplicationListener a `priority`
+   * must be provided.
+   */
+  public addAction(id: string, props: AddApplicationActionProps): void {
+    checkAddRuleProps(props);
+
+    if (props.priority !== undefined) {
+      // New rule
+      //
+      // TargetGroup.registerListener is called inside ApplicationListenerRule.
+      new ApplicationListenerRule(this, id + 'Rule', {
+        listener: this,
+        priority: props.priority,
+        ...props,
+      });
+    } else {
+      throw new Error('priority must be set for actions added to an imported listener');
+    }
   }
 }
 
@@ -858,7 +903,8 @@ export interface AddApplicationTargetsProps extends AddRuleProps {
   /**
    * Health check configuration
    *
-   * @default No health check
+   * @default - The default value for each property in this configuration varies depending on the target.
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticloadbalancingv2-targetgroup.html#aws-resource-elasticloadbalancingv2-targetgroup-properties
    */
   readonly healthCheck?: HealthCheck;
 

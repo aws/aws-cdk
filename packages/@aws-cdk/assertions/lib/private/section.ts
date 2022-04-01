@@ -15,6 +15,7 @@ export function matchSection(section: any, props: any): MatchSuccess | MatchFail
 
     (logicalId, entry) => {
       const result = matcher.test(entry);
+      result.finished();
       if (!result.hasFailed()) {
         matching[logicalId] = entry;
       } else {
@@ -40,6 +41,12 @@ function eachEntryInSection(
     const resource: { [key: string]: any } = section[logicalId];
     cb(logicalId, resource);
   }
+}
+
+export function formatAllMatches(matches: {[key: string]: any}): string {
+  return [
+    leftPad(JSON.stringify(matches, undefined, 2)),
+  ].join('\n');
 }
 
 export function formatFailure(closestResult: MatchResult): string {

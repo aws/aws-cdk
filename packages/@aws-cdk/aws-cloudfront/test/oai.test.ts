@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as cdk from '@aws-cdk/core';
 import { OriginAccessIdentity } from '../lib';
 
@@ -8,7 +8,7 @@ describe('Origin Access Identity', () => {
 
     new OriginAccessIdentity(stack, 'OAI');
 
-    expect(stack).toMatchTemplate(
+    Template.fromStack(stack).templateMatches(
       {
         Resources: {
           OAIE1EFC67F: {
@@ -31,7 +31,7 @@ describe('Origin Access Identity', () => {
       comment: 'test comment',
     });
 
-    expect(stack).toMatchTemplate(
+    Template.fromStack(stack).templateMatches(
       {
         Resources: {
           OAIE1EFC67F: {
@@ -54,7 +54,7 @@ describe('Origin Access Identity', () => {
       comment: 'This is a really long comment. Auto-generated comments based on ids of origins might sometimes be this long or even longer and that will break',
     });
 
-    expect(stack).toHaveResourceLike('AWS::CloudFront::CloudFrontOriginAccessIdentity', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::CloudFrontOriginAccessIdentity', {
       CloudFrontOriginAccessIdentityConfig: {
         Comment: 'This is a really long comment. Auto-generated comments based on ids of origins might sometimes be this long or even longer and t',
       },

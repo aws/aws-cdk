@@ -4,8 +4,8 @@ import { Architecture, AssetCode, Code, Runtime } from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
 import { PackageInstallation } from './package-installation';
 import { PackageManager } from './package-manager';
-import { BundlingOptions, SourceMapMode } from './types';
-import { exec, extractDependencies, findUp } from './util';
+import { BundlingOptions, OutputFormat, SourceMapMode } from './types';
+import { exec, extractDependencies, findUp, getTsconfigCompilerOptions } from './util';
 
 const ESBUILD_MAJOR_VERSION = '0';
 
@@ -68,13 +68,8 @@ export class Bundling implements cdk.BundlingOptions {
     this.tscInstallation = undefined;
   }
 
-  public static clearTscCompilationCache(): void {
-    this.tscCompiled = false;
-  }
-
   private static esbuildInstallation?: PackageInstallation;
   private static tscInstallation?: PackageInstallation;
-  private static tscCompiled = false
 
   // Core bundling options
   public readonly image: cdk.DockerImage;
@@ -91,10 +86,10 @@ export class Bundling implements cdk.BundlingOptions {
   private readonly packageManager: PackageManager;
 
   constructor(private readonly props: BundlingProps) {
-    this.packageManager = PackageManager.fromLockFile(props.depsLockFilePath);
+    this.packageManager = PackageManager.fromLockFile(props.depsLockFilePath, props.logLevel);
 
     Bundling.esbuildInstallation = Bundling.esbuildInstallation ?? PackageInstallation.detect('esbuild');
-    Bundling.tscInstallation = Bundling.tscInstallation ?? PackageInstallation.detect('tsc');
+    Bundling.tscInstallation = Bundling.tscInstallation ?? PackageInstallation.detect('typescript');
 
     this.projectRoot = props.projectRoot;
     this.relativeEntryPath = path.relative(this.projectRoot, path.resolve(props.entry));
@@ -110,6 +105,11 @@ export class Bundling implements cdk.BundlingOptions {
 
     if (props.preCompilation && !/\.tsx?$/.test(props.entry)) {
       throw new Error('preCompilation can only be used with typescript files');
+    }
+
+    if (props.format === OutputFormat.ESM
+        && (props.runtime === Runtime.NODEJS_10_X || props.runtime === Runtime.NODEJS_12_X)) {
+      throw new Error(`ECMAScript module output format is not supported by the ${props.runtime.name} runtime`);
     }
 
     this.externals = [
@@ -151,26 +151,17 @@ export class Bundling implements cdk.BundlingOptions {
 
   private createBundlingCommand(options: BundlingCommandOptions): string {
     const pathJoin = osPathJoin(options.osPlatform);
-    let tscCommand: string = '';
-    let relativeEntryPath = this.relativeEntryPath;
+    let relativeEntryPath = pathJoin(options.inputDir, this.relativeEntryPath);
+    let tscCommand = '';
 
     if (this.props.preCompilation) {
-
-      let tsconfig = this.relativeTsconfigPath;
+      const tsconfig = this.props.tsconfig ?? findUp('tsconfig.json', path.dirname(this.props.entry));
       if (!tsconfig) {
-        const findConfig = findUp('tsconfig.json', path.dirname(this.props.entry));
-        if (!findConfig) {
-          throw new Error('Cannot find a tsconfig.json, please specify the prop: tsconfig');
-        }
-        tsconfig = path.relative(this.projectRoot, findConfig);
+        throw new Error('Cannot find a `tsconfig.json` but `preCompilation` is set to `true`, please specify it via `tsconfig`');
       }
-
+      const compilerOptions = getTsconfigCompilerOptions(tsconfig);
+      tscCommand = `${options.tscRunner} "${relativeEntryPath}" ${compilerOptions}`;
       relativeEntryPath = relativeEntryPath.replace(/\.ts(x?)$/, '.js$1');
-      if (!Bundling.tscCompiled) {
-        // Intentionally Setting rootDir and outDir, so that the compiled js file always end up next ts file.
-        tscCommand = `${options.tscRunner} --project ${pathJoin(options.inputDir, tsconfig)} --rootDir ./ --outDir ./`;
-        Bundling.tscCompiled = true;
-      }
     }
 
     const loaders = Object.entries(this.props.loader ?? {});
@@ -185,12 +176,14 @@ export class Bundling implements cdk.BundlingOptions {
     const sourceMapValue = sourceMapMode === SourceMapMode.DEFAULT ? '' : `=${this.props.sourceMapMode}`;
     const sourcesContent = this.props.sourcesContent ?? true;
 
+    const outFile = this.props.format === OutputFormat.ESM ? 'index.mjs' : 'index.js';
     const esbuildCommand: string[] = [
       options.esbuildRunner,
-      '--bundle', `"${pathJoin(options.inputDir, relativeEntryPath)}"`,
+      '--bundle', `"${relativeEntryPath}"`,
       `--target=${this.props.target ?? toTarget(this.props.runtime)}`,
       '--platform=node',
-      `--outfile="${pathJoin(options.outputDir, 'index.js')}"`,
+      ...this.props.format ? [`--format=${this.props.format}`] : [],
+      `--outfile="${pathJoin(options.outputDir, outFile)}"`,
       ...this.props.minify ? ['--minify'] : [],
       ...sourceMapEnabled ? [`--sourcemap${sourceMapValue}`] : [],
       ...sourcesContent ? [] : [`--sources-content=${sourcesContent}`],
@@ -204,6 +197,9 @@ export class Bundling implements cdk.BundlingOptions {
       ...this.props.banner ? [`--banner:js=${JSON.stringify(this.props.banner)}`] : [],
       ...this.props.footer ? [`--footer:js=${JSON.stringify(this.props.footer)}`] : [],
       ...this.props.charset ? [`--charset=${this.props.charset}`] : [],
+      ...this.props.mainFields ? [`--main-fields=${this.props.mainFields.join(',')}`] : [],
+      ...this.props.inject ? this.props.inject.map(i => `--inject:${i}`) : [],
+      ...this.props.esbuildArgs ? [toCliArgs(this.props.esbuildArgs)] : [],
     ];
 
     let depsCommand = '';
@@ -305,22 +301,22 @@ class OsCommand {
   public writeJson(filePath: string, data: any): string {
     const stringifiedData = JSON.stringify(data);
     if (this.osPlatform === 'win32') {
-      return `echo ^${stringifiedData}^ > ${filePath}`;
+      return `echo ^${stringifiedData}^ > "${filePath}"`;
     }
 
-    return `echo '${stringifiedData}' > ${filePath}`;
+    return `echo '${stringifiedData}' > "${filePath}"`;
   }
 
   public copy(src: string, dest: string): string {
     if (this.osPlatform === 'win32') {
-      return `copy ${src} ${dest}`;
+      return `copy "${src}" "${dest}"`;
     }
 
-    return `cp ${src} ${dest}`;
+    return `cp "${src}" "${dest}"`;
   }
 
   public changeDirectory(dir: string): string {
-    return `cd ${dir}`;
+    return `cd "${dir}"`;
   }
 }
 
@@ -356,4 +352,18 @@ function toTarget(runtime: Runtime): string {
   }
 
   return `node${match[1]}`;
+}
+
+function toCliArgs(esbuildArgs: { [key: string]: string | boolean }): string {
+  const args = [];
+
+  for (const [key, value] of Object.entries(esbuildArgs)) {
+    if (value === true || value === '') {
+      args.push(key);
+    } else if (value) {
+      args.push(`${key}="${value}"`);
+    }
+  }
+
+  return args.join(' ');
 }

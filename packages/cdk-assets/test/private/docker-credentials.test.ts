@@ -97,11 +97,25 @@ describe('fetchDockerLoginCredentials', () => {
     await expect(fetchDockerLoginCredentials(aws, config, 'misconfigured.example.com')).rejects.toThrow(/unknown credential type/);
   });
 
+  test('does not throw on correctly configured raw domain', async () => {
+    mockSecretWithSecretString({ username: 'secretUser', secret: 'secretPass' });
+
+    await expect(fetchDockerLoginCredentials(aws, config, 'https://secret.example.com/v1/')).resolves.toBeTruthy();
+  });
+
   describe('SecretsManager', () => {
-    test('returns the credentials sucessfully if configured correctly', async () => {
+    test('returns the credentials sucessfully if configured correctly - domain', async () => {
       mockSecretWithSecretString({ username: 'secretUser', secret: 'secretPass' });
 
       const creds = await fetchDockerLoginCredentials(aws, config, 'secret.example.com');
+
+      expect(creds).toEqual({ Username: 'secretUser', Secret: 'secretPass' });
+    });
+
+    test('returns the credentials successfully if configured correctly - raw domain', async () => {
+      mockSecretWithSecretString({ username: 'secretUser', secret: 'secretPass' });
+
+      const creds = await fetchDockerLoginCredentials(aws, config, 'https://secret.example.com');
 
       expect(creds).toEqual({ Username: 'secretUser', Secret: 'secretPass' });
     });

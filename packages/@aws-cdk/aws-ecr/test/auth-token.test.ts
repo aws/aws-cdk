@@ -1,4 +1,4 @@
-import { expect as expectCDK, haveResourceLike } from '@aws-cdk/assert-internal';
+import { Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import { Stack } from '@aws-cdk/core';
 import { AuthorizationToken, PublicGalleryAuthorizationToken } from '../lib';
@@ -13,7 +13,7 @@ describe('auth-token', () => {
     AuthorizationToken.grantRead(user);
 
     // THEN
-    expectCDK(stack).to(haveResourceLike('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -23,7 +23,7 @@ describe('auth-token', () => {
           },
         ],
       },
-    }));
+    });
   });
 
   test('PublicGalleryAuthorizationToken.grantRead()', () => {
@@ -35,7 +35,7 @@ describe('auth-token', () => {
     PublicGalleryAuthorizationToken.grantRead(user);
 
     // THEN
-    expectCDK(stack).to(haveResourceLike('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -48,6 +48,6 @@ describe('auth-token', () => {
           },
         ],
       },
-    }));
+    });
   });
 });

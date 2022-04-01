@@ -72,6 +72,21 @@ export enum Operation {
   /** BatchWriteItem */
   BATCH_WRITE_ITEM = 'BatchWriteItem',
 
+  /** TransactWriteItems */
+  TRANSACT_WRITE_ITEMS = 'TransactWriteItems',
+
+  /** TransactGetItems */
+  TRANSACT_GET_ITEMS = 'TransactGetItems',
+
+  /** ExecuteTransaction */
+  EXECUTE_TRANSACTION = 'ExecuteTransaction',
+
+  /** BatchExecuteStatement */
+  BATCH_EXECUTE_STATEMENT = 'BatchExecuteStatement',
+
+  /** ExecuteStatement */
+  EXECUTE_STATEMENT = 'ExecuteStatement',
+
 }
 
 /**
@@ -102,6 +117,12 @@ export enum TableEncryption {
   /**
    * Server-side KMS encryption with a customer master key managed by customer.
    * If `encryptionKey` is specified, this key will be used, otherwise, one will be defined.
+   *
+   * > **NOTE**: if `encryptionKey` is not specified and the `Table` construct creates
+   * > a KMS key for you, the key will be created with default permissions. If you are using
+   * > CDKv2, these permissions will be sufficient to enable the key for use with DynamoDB tables.
+   * > If you are using CDKv1, make sure the feature flag `@aws-cdk/aws-kms:defaultKeyPolicies`
+   * > is set to `true` in your `cdk.json`.
    */
   CUSTOMER_MANAGED = 'CUSTOMER_MANAGED',
 
@@ -179,9 +200,22 @@ export interface TableOptions extends SchemaOptions {
   readonly serverSideEncryption?: boolean;
 
   /**
+   * Specify the table class.
+   * @default STANDARD
+   */
+  readonly tableClass?: TableClass;
+
+  /**
    * Whether server-side encryption with an AWS managed customer master key is enabled.
    *
    * This property cannot be set if `serverSideEncryption` is set.
+   *
+   * > **NOTE**: if you set this to `CUSTOMER_MANAGED` and `encryptionKey` is not
+   * > specified, the key that the Tablet generates for you will be created with
+   * > default permissions. If you are using CDKv2, these permissions will be
+   * > sufficient to enable the key for use with DynamoDB tables.  If you are
+   * > using CDKv1, make sure the feature flag
+   * > `@aws-cdk/aws-kms:defaultKeyPolicies` is set to `true` in your `cdk.json`.
    *
    * @default - server-side encryption is enabled with an AWS owned customer master key
    */
@@ -645,7 +679,7 @@ abstract class TableBase extends Resource implements ITable {
 
   /**
    * Permits an IAM principal all data read operations from this table:
-   * BatchGetItem, GetRecords, GetShardIterator, Query, GetItem, Scan.
+   * BatchGetItem, GetRecords, GetShardIterator, Query, GetItem, Scan, DescribeTable.
    *
    * Appropriate grants will also be added to the customer-managed KMS key
    * if one was configured.
@@ -653,7 +687,8 @@ abstract class TableBase extends Resource implements ITable {
    * @param grantee The principal to grant access to
    */
   public grantReadData(grantee: iam.IGrantable): iam.Grant {
-    return this.combinedGrant(grantee, { keyActions: perms.KEY_READ_ACTIONS, tableActions: perms.READ_DATA_ACTIONS });
+    const tableActions = perms.READ_DATA_ACTIONS.concat(perms.DESCRIBE_TABLE);
+    return this.combinedGrant(grantee, { keyActions: perms.KEY_READ_ACTIONS, tableActions });
   }
 
   /**
@@ -690,7 +725,7 @@ abstract class TableBase extends Resource implements ITable {
 
   /**
    * Permits an IAM principal all data write operations to this table:
-   * BatchWriteItem, PutItem, UpdateItem, DeleteItem.
+   * BatchWriteItem, PutItem, UpdateItem, DeleteItem, DescribeTable.
    *
    * Appropriate grants will also be added to the customer-managed KMS key
    * if one was configured.
@@ -698,13 +733,15 @@ abstract class TableBase extends Resource implements ITable {
    * @param grantee The principal to grant access to
    */
   public grantWriteData(grantee: iam.IGrantable): iam.Grant {
-    return this.combinedGrant(grantee, { keyActions: perms.KEY_WRITE_ACTIONS, tableActions: perms.WRITE_DATA_ACTIONS });
+    const tableActions = perms.WRITE_DATA_ACTIONS.concat(perms.DESCRIBE_TABLE);
+    const keyActions = perms.KEY_READ_ACTIONS.concat(perms.KEY_WRITE_ACTIONS);
+    return this.combinedGrant(grantee, { keyActions, tableActions });
   }
 
   /**
    * Permits an IAM principal to all data read/write operations to this table.
    * BatchGetItem, GetRecords, GetShardIterator, Query, GetItem, Scan,
-   * BatchWriteItem, PutItem, UpdateItem, DeleteItem
+   * BatchWriteItem, PutItem, UpdateItem, DeleteItem, DescribeTable
    *
    * Appropriate grants will also be added to the customer-managed KMS key
    * if one was configured.
@@ -712,7 +749,7 @@ abstract class TableBase extends Resource implements ITable {
    * @param grantee The principal to grant access to
    */
   public grantReadWriteData(grantee: iam.IGrantable): iam.Grant {
-    const tableActions = perms.READ_DATA_ACTIONS.concat(perms.WRITE_DATA_ACTIONS);
+    const tableActions = perms.READ_DATA_ACTIONS.concat(perms.WRITE_DATA_ACTIONS).concat(perms.DESCRIBE_TABLE);
     const keyActions = perms.KEY_READ_ACTIONS.concat(perms.KEY_WRITE_ACTIONS);
     return this.combinedGrant(grantee, { keyActions, tableActions });
   }
@@ -818,9 +855,23 @@ abstract class TableBase extends Resource implements ITable {
    * How many requests are throttled on this table
    *
    * Default: sum over 5 minutes
+   *
+   * @deprecated Do not use this function. It returns an invalid metric. Use `metricThrottledRequestsForOperation` instead.
    */
   public metricThrottledRequests(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.cannedMetric(DynamoDBMetrics.throttledRequestsSum, props);
+    return this.metric('ThrottledRequests', { statistic: 'sum', ...props });
+  }
+
+  /**
+   * How many requests are throttled on this table, for the given operation
+   *
+   * Default: sum over 5 minutes
+   */
+  public metricThrottledRequestsForOperation(operation: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return new cloudwatch.Metric({
+      ...DynamoDBMetrics.throttledRequestsSum({ Operation: operation, TableName: this.tableName }),
+      ...props,
+    }).attachTo(this);
   }
 
   /**
@@ -1140,6 +1191,7 @@ export class Table extends TableBase {
       },
       sseSpecification,
       streamSpecification,
+      tableClass: props.tableClass,
       timeToLiveSpecification: props.timeToLiveAttribute ? { attributeName: props.timeToLiveAttribute, enabled: true } : undefined,
       contributorInsightsSpecification: props.contributorInsightsEnabled !== undefined ? { enabled: props.contributorInsightsEnabled } : undefined,
       kinesisStreamSpecification: props.kinesisStream ? { streamArn: props.kinesisStream.streamArn } : undefined,
@@ -1542,7 +1594,11 @@ export class Table extends TableBase {
         properties: {
           TableName: this.tableName,
           Region: region,
-          SkipReplicationCompletedWait: waitForReplicationToFinish === undefined ? undefined : !waitForReplicationToFinish,
+          SkipReplicationCompletedWait: waitForReplicationToFinish == null
+            ? undefined
+            // CFN changes Custom Resource properties to strings anyways,
+            // so let's do that ourselves to make it clear in the handler this is a string, not a boolean
+            : (!waitForReplicationToFinish).toString(),
         },
       });
       currentRegion.node.addDependency(
@@ -1725,6 +1781,19 @@ export enum StreamViewType {
   NEW_AND_OLD_IMAGES = 'NEW_AND_OLD_IMAGES',
   /** Only the key attributes of the modified item are written to the stream. */
   KEYS_ONLY = 'KEYS_ONLY'
+}
+
+/**
+ * DynamoDB's table class.
+ *
+ * @see https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.TableClasses.html
+ */
+export enum TableClass {
+  /** Default table class for DynamoDB. */
+  STANDARD = 'STANDARD',
+
+  /** Table class for DynamoDB that reduces storage costs compared to existing DynamoDB Standard tables. */
+  STANDARD_INFREQUENT_ACCESS = 'STANDARD_INFREQUENT_ACCESS',
 }
 
 /**

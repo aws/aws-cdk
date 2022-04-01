@@ -387,18 +387,26 @@ describe('basic pipeline', () => {
       function THEN_codePipelineExpectation() {
         Template.fromStack(pipelineStack).hasResourceProperties('AWS::IAM::Role', {
           AssumeRolePolicyDocument: {
-            Statement: [{
-              Action: 'sts:AssumeRole',
-              Effect: 'Allow',
-              Principal: {
-                Service: 'codebuild.amazonaws.com',
-                AWS: {
-                  'Fn::Join': ['', [
-                    'arn:', { Ref: 'AWS::Partition' }, `:iam::${PIPELINE_ENV.account}:root`,
-                  ]],
+            Statement: [
+              {
+                Action: 'sts:AssumeRole',
+                Effect: 'Allow',
+                Principal: {
+                  Service: 'codebuild.amazonaws.com',
                 },
               },
-            }],
+              {
+                Action: 'sts:AssumeRole',
+                Effect: 'Allow',
+                Principal: {
+                  AWS: {
+                    'Fn::Join': ['', [
+                      'arn:', { Ref: 'AWS::Partition' }, `:iam::${PIPELINE_ENV.account}:root`,
+                    ]],
+                  },
+                },
+              },
+            ],
           },
         });
         Template.fromStack(pipelineStack).hasResourceProperties('AWS::IAM::Policy',
@@ -493,18 +501,26 @@ describe('basic pipeline', () => {
       function THEN_codePipelineExpectation() {
         Template.fromStack(pipelineStack).hasResourceProperties('AWS::IAM::Role', {
           AssumeRolePolicyDocument: {
-            Statement: [{
-              Action: 'sts:AssumeRole',
-              Effect: 'Allow',
-              Principal: {
-                Service: 'codebuild.amazonaws.com',
-                AWS: {
-                  'Fn::Join': ['', [
-                    'arn:', { Ref: 'AWS::Partition' }, `:iam::${PIPELINE_ENV.account}:root`,
-                  ]],
+            Statement: [
+              {
+                Action: 'sts:AssumeRole',
+                Effect: 'Allow',
+                Principal: {
+                  Service: 'codebuild.amazonaws.com',
                 },
               },
-            }],
+              {
+                Action: 'sts:AssumeRole',
+                Effect: 'Allow',
+                Principal: {
+                  AWS: {
+                    'Fn::Join': ['', [
+                      'arn:', { Ref: 'AWS::Partition' }, `:iam::${PIPELINE_ENV.account}:root`,
+                    ]],
+                  },
+                },
+              },
+            ],
           },
         });
         Template.fromStack(pipelineStack).hasResourceProperties('AWS::IAM::Policy',
@@ -583,7 +599,7 @@ behavior('can supply pre-install scripts to asset upload', (suite) => {
         BuildSpec: Match.serializedJson(Match.objectLike({
           phases: {
             install: {
-              commands: ['npm config set registry https://registry.com', 'npm install -g cdk-assets'],
+              commands: ['npm config set registry https://registry.com', 'npm install -g cdk-assets@1'],
             },
           },
         })),
@@ -742,7 +758,7 @@ describe('pipeline with single asset publisher', () => {
 
     function THEN_codePipelineExpectation() {
       // THEN
-      const buildSpecName = new Capture();
+      const buildSpecName = new Capture(stringLike('buildspec-*.yaml'));
       Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
         Stages: Match.arrayWith([{
           Name: 'Assets',
@@ -764,7 +780,6 @@ describe('pipeline with single asset publisher', () => {
 
       const actualFileName = buildSpecName.asString();
 
-      expect(actualFileName).toMatch(/^buildspec-.*\.yaml$/);
       const buildSpec = JSON.parse(fs.readFileSync(path.join(assembly.directory, actualFileName), { encoding: 'utf-8' }));
       expect(buildSpec.phases.build.commands).toContain(`cdk-assets --path "assembly-FileAssetApp/FileAssetAppStackEADD68C5.assets.json" --verbose publish "${FILE_ASSET_SOURCE_HASH}:current_account-current_region"`);
       expect(buildSpec.phases.build.commands).toContain(`cdk-assets --path "assembly-FileAssetApp/FileAssetAppStackEADD68C5.assets.json" --verbose publish "${FILE_ASSET_SOURCE_HASH2}:current_account-current_region"`);
@@ -804,8 +819,8 @@ describe('pipeline with single asset publisher', () => {
 
     function THEN_codePipelineExpectation(pipelineStack2: Stack) {
       // THEN
-      const buildSpecName1 = new Capture();
-      const buildSpecName2 = new Capture();
+      const buildSpecName1 = new Capture(stringLike('buildspec-*.yaml'));
+      const buildSpecName2 = new Capture(stringLike('buildspec-*.yaml'));
       Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
         Source: {
           BuildSpec: buildSpecName1,
@@ -870,7 +885,7 @@ describe('pipeline with custom asset publisher BuildSpec', () => {
 
 
     function THEN_codePipelineExpectation() {
-      const buildSpecName = new Capture();
+      const buildSpecName = new Capture(stringLike('buildspec-*'));
 
       Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
         Stages: Match.arrayWith([{
