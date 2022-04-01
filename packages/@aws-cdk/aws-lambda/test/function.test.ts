@@ -15,7 +15,7 @@ import * as cdk from '@aws-cdk/core';
 import * as constructs from 'constructs';
 import * as _ from 'lodash';
 import * as lambda from '../lib';
-import { Size } from '@aws-cdk/core';
+import { Lazy, Size } from '@aws-cdk/core';
 
 describe('function', () => {
   test('default function', () => {
@@ -2667,6 +2667,18 @@ test('set ephemeral storage to desired size', () => {
       },
     },
   });
+});
+
+test('ephemeral storage allows unresolved tokens', () => {
+  const stack = new cdk.Stack();
+  expect(() => {
+    new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'bar',
+      runtime: lambda.Runtime.NODEJS_14_X,
+      ephemeralStorageSize: Size.mebibytes(Lazy.number({ produce: () => 1024 })),
+    });
+  }).not.toThrow();
 });
 
 function newTestLambda(scope: constructs.Construct) {
