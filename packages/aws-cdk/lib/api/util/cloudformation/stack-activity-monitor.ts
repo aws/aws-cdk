@@ -290,7 +290,7 @@ export class StackActivityMonitor {
 
     // remove "<stack-name>/" prefix
     if (path.startsWith(this.stackName + '/')) {
-      path = path.substr(this.stackName.length + 1);
+      path = path.slice(this.stackName.length + 1);
     }
     return path;
   }
@@ -527,7 +527,7 @@ export class HistoryActivityPrinter extends ActivityPrinterBase {
         e.StackName,
         (progress !== false ? `${this.progress()} | ` : ''),
         new Date(e.Timestamp).toLocaleTimeString(),
-        color(padRight(STATUS_WIDTH, (e.ResourceStatus || '').substr(0, STATUS_WIDTH))), // pad left and trim
+        color(padRight(STATUS_WIDTH, (e.ResourceStatus || '').slice(0, STATUS_WIDTH))), // pad left and trim
         padRight(this.props.resourceTypeColumnWidth, e.ResourceType || ''),
         color(chalk.bold(resourceName)),
         logicalId,
@@ -623,7 +623,7 @@ export class CurrentActivityPrinter extends ActivityPrinterBase {
 
       return util.format('%s | %s | %s | %s%s',
         padLeft(TIMESTAMP_WIDTH, new Date(res.event.Timestamp).toLocaleTimeString()),
-        color(padRight(STATUS_WIDTH, (res.event.ResourceStatus || '').substr(0, STATUS_WIDTH))),
+        color(padRight(STATUS_WIDTH, (res.event.ResourceStatus || '').slice(0, STATUS_WIDTH))),
         padRight(this.props.resourceTypeColumnWidth, res.event.ResourceType || ''),
         color(chalk.bold(shorten(40, resourceName))),
         this.failureReasonOnNextLine(res));
@@ -652,7 +652,7 @@ export class CurrentActivityPrinter extends ActivityPrinterBase {
 
       lines.push(util.format(chalk.red('%s | %s | %s | %s%s') + '\n',
         padLeft(TIMESTAMP_WIDTH, new Date(failure.event.Timestamp).toLocaleTimeString()),
-        padRight(STATUS_WIDTH, (failure.event.ResourceStatus || '').substr(0, STATUS_WIDTH)),
+        padRight(STATUS_WIDTH, (failure.event.ResourceStatus || '').slice(0, STATUS_WIDTH)),
         padRight(this.props.resourceTypeColumnWidth, failure.event.ResourceType || ''),
         shorten(40, failure.event.LogicalResourceId ?? ''),
         this.failureReasonOnNextLine(failure)));
@@ -744,7 +744,7 @@ function colorFromStatusActivity(status?: string) {
 function shorten(maxWidth: number, p: string) {
   if (p.length <= maxWidth) { return p; }
   const half = Math.floor((maxWidth - 3) / 2);
-  return p.substr(0, half) + '...' + p.substr(p.length - half);
+  return p.slice(0, half) + '...' + p.slice(-half);
 }
 
 const TIMESTAMP_WIDTH = 12;

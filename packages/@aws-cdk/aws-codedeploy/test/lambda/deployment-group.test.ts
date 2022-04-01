@@ -323,12 +323,10 @@ describe('CodeDeploy Lambda DeploymentGroup', () => {
       PolicyDocument: {
         Statement: [{
           Action: 'lambda:InvokeFunction',
-          Resource: {
-            'Fn::GetAtt': [
-              'PreHook8B53F672',
-              'Arn',
-            ],
-          },
+          Resource: [
+            { 'Fn::GetAtt': ['PreHook8B53F672', 'Arn'] },
+            { 'Fn::Join': ['', [{ 'Fn::GetAtt': ['PreHook8B53F672', 'Arn'] }, ':*']] },
+          ],
           Effect: 'Allow',
         }],
         Version: '2012-10-17',
@@ -371,12 +369,10 @@ describe('CodeDeploy Lambda DeploymentGroup', () => {
       PolicyDocument: {
         Statement: [{
           Action: 'lambda:InvokeFunction',
-          Resource: {
-            'Fn::GetAtt': [
-              'PreHook8B53F672',
-              'Arn',
-            ],
-          },
+          Resource: [
+            { 'Fn::GetAtt': ['PreHook8B53F672', 'Arn'] },
+            { 'Fn::Join': ['', [{ 'Fn::GetAtt': ['PreHook8B53F672', 'Arn'] }, ':*']] },
+          ],
           Effect: 'Allow',
         }],
         Version: '2012-10-17',
@@ -419,12 +415,10 @@ describe('CodeDeploy Lambda DeploymentGroup', () => {
       PolicyDocument: {
         Statement: [{
           Action: 'lambda:InvokeFunction',
-          Resource: {
-            'Fn::GetAtt': [
-              'PostHookF2E49B30',
-              'Arn',
-            ],
-          },
+          Resource: [
+            { 'Fn::GetAtt': ['PostHookF2E49B30', 'Arn'] },
+            { 'Fn::Join': ['', [{ 'Fn::GetAtt': ['PostHookF2E49B30', 'Arn'] }, ':*']] },
+          ],
           Effect: 'Allow',
         }],
         Version: '2012-10-17',
@@ -467,12 +461,10 @@ describe('CodeDeploy Lambda DeploymentGroup', () => {
       PolicyDocument: {
         Statement: [{
           Action: 'lambda:InvokeFunction',
-          Resource: {
-            'Fn::GetAtt': [
-              'PostHookF2E49B30',
-              'Arn',
-            ],
-          },
+          Resource: [
+            { 'Fn::GetAtt': ['PostHookF2E49B30', 'Arn'] },
+            { 'Fn::Join': ['', [{ 'Fn::GetAtt': ['PostHookF2E49B30', 'Arn'] }, ':*']] },
+          ],
           Effect: 'Allow',
         }],
         Version: '2012-10-17',
