@@ -30,6 +30,7 @@ export class StackSetPipelineStack extends Stack {
     const pipeline = new codepipeline.Pipeline(this, 'Pipeline', {
       artifactBucket: new s3.Bucket(this, 'ArtifactBucket', {
         removalPolicy: RemovalPolicy.DESTROY,
+        autoDeleteObjects: true,
       }),
     });
 
@@ -76,8 +77,8 @@ export class StackSetPipelineStack extends Stack {
 
 const app = new App();
 new StackSetPipelineStack(app, 'StackSetPipelineStack', {
-  env: {
-    region: process.env.CDK_DEFAULT_REGION,
-    account: process.env.CDK_DEFAULT_ACCOUNT,
-  },
+  // env: {
+  //   region: process.env.CDK_DEFAULT_REGION,
+  //   account: process.env.CDK_DEFAULT_ACCOUNT,
+  // },
 });
