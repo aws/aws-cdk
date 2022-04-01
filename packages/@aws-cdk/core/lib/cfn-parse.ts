@@ -537,8 +537,8 @@ export class CfnParser {
           if (dotIndex === -1) {
             throw new Error(`Short-form Fn::GetAtt must contain a '.' in its string argument, got: '${value}'`);
           }
-          logicalId = value.substr(0, dotIndex);
-          attributeName = value.substr(dotIndex + 1); // the +1 is to skip the actual '.'
+          logicalId = value.slice(0, dotIndex);
+          attributeName = value.slice(dotIndex + 1); // the +1 is to skip the actual '.'
           stringForm = true;
         } else {
           // ...or a 2-element list

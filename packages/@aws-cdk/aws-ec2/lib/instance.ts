@@ -430,7 +430,7 @@ export class Instance extends Resource implements IInstance {
         } finally {
           recursing = false;
         }
-        const digest = md5.digest('hex').substr(0, 16);
+        const digest = md5.digest('hex').slice(0, 16);
         return `${originalLogicalId}${digest}`;
       },
     }));

@@ -408,7 +408,7 @@ async function asyncGlobalReplace(str: string, regex: RegExp, cb: (x: string) =>
 
     start = regex.lastIndex;
   }
-  ret.push(str.substr(start));
+  ret.push(str.slice(start));
 
   return ret.join('');
 }

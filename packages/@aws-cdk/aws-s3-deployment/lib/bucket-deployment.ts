@@ -357,7 +357,7 @@ export class BucketDeployment extends CoreConstruct {
     let prefix: string = props.destinationKeyPrefix ?
       `:${props.destinationKeyPrefix}` :
       '';
-    prefix += `:${this.cr.node.addr.substr(-8)}`;
+    prefix += `:${this.cr.node.addr.slice(-8)}`;
     const tagKey = CUSTOM_RESOURCE_OWNER_TAG + prefix;
 
     // destinationKeyPrefix can be 104 characters before we hit

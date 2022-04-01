@@ -348,7 +348,7 @@ export abstract class ResourceBase extends ResourceConstruct implements IResourc
       }
 
       // trim trailing "/"
-      return this.resourceForPath(path.substr(1));
+      return this.resourceForPath(path.slice(1));
     }
 
     const parts = path.split('/');
@@ -544,11 +544,11 @@ export class ProxyResource extends Resource {
 function validateResourcePathPart(part: string) {
   // strip {} which indicate this is a parameter
   if (part.startsWith('{') && part.endsWith('}')) {
-    part = part.substr(1, part.length - 2);
+    part = part.slice(1, -1);
 
     // proxy resources are allowed to end with a '+'
     if (part.endsWith('+')) {
-      part = part.substr(0, part.length - 1);
+      part = part.slice(0, -1);
     }
   }
 
