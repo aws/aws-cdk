@@ -24,8 +24,7 @@
         "distName": "aws-cdk.aws-glue",
         "module": "aws_cdk.aws_glue",
         "classifiers": [
-          "Framework :: AWS CDK",
-          "Framework :: AWS CDK :: 2"
+          "Framework :: AWS CDK"
         ]
       }
     },
