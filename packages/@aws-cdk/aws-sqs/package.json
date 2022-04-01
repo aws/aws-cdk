@@ -24,8 +24,7 @@
         "distName": "aws-cdk.aws-sqs",
         "module": "aws_cdk.aws_sqs",
         "classifiers": [
-          "Framework :: AWS CDK",
-          "Framework :: AWS CDK :: 2"
+          "Framework :: AWS CDK"
         ]
       }
     },

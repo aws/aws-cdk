@@ -24,8 +24,7 @@
         "distName": "aws-cdk.aws-kinesisfirehose",
         "module": "aws_cdk.aws_kinesisfirehose",
         "classifiers": [
-          "Framework :: AWS CDK",
-          "Framework :: AWS CDK :: 2"
+          "Framework :: AWS CDK"
         ]
       }
     },

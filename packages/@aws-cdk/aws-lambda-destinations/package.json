@@ -24,8 +24,7 @@
         "distName": "aws-cdk.aws-lambda-destinations",
         "module": "aws_cdk.aws_lambda_destinations",
         "classifiers": [
-          "Framework :: AWS CDK",
-          "Framework :: AWS CDK :: 2"
+          "Framework :: AWS CDK"
         ]
       }
     },
