@@ -24,8 +24,7 @@
         "distName": "aws-cdk.aws-fsx",
         "module": "aws_cdk.aws_fsx",
         "classifiers": [
-          "Framework :: AWS CDK",
-          "Framework :: AWS CDK :: 1"
+          "Framework :: AWS CDK"
         ]
       }
     },

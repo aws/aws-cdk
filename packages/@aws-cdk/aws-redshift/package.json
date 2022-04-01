@@ -24,8 +24,7 @@
         "distName": "aws-cdk.aws-redshift",
         "module": "aws_cdk.aws_redshift",
         "classifiers": [
-          "Framework :: AWS CDK",
-          "Framework :: AWS CDK :: 1"
+          "Framework :: AWS CDK"
         ]
       }
     },

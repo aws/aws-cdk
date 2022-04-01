@@ -24,8 +24,7 @@
         "distName": "aws-cdk.aws-autoscaling-hooktargets",
         "module": "aws_cdk.aws_autoscaling_hooktargets",
         "classifiers": [
-          "Framework :: AWS CDK",
-          "Framework :: AWS CDK :: 1"
+          "Framework :: AWS CDK"
         ]
       }
     },

@@ -24,8 +24,7 @@
         "distName": "aws-cdk.aws-elasticache",
         "module": "aws_cdk.aws_elasticache",
         "classifiers": [
-          "Framework :: AWS CDK",
-          "Framework :: AWS CDK :: 1"
+          "Framework :: AWS CDK"
         ]
       }
     },

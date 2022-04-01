@@ -23,8 +23,7 @@
         "distName": "aws-cdk.region-info",
         "module": "aws_cdk.region_info",
         "classifiers": [
-          "Framework :: AWS CDK",
-          "Framework :: AWS CDK :: 1"
+          "Framework :: AWS CDK"
         ]
       }
     },

@@ -24,8 +24,7 @@
         "distName": "aws-cdk.aws-elasticloadbalancing",
         "module": "aws_cdk.aws_elasticloadbalancing",
         "classifiers": [
-          "Framework :: AWS CDK",
-          "Framework :: AWS CDK :: 1"
+          "Framework :: AWS CDK"
         ]
       }
     },

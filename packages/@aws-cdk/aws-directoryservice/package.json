@@ -24,8 +24,7 @@
         "distName": "aws-cdk.aws-directoryservice",
         "module": "aws_cdk.aws_directoryservice",
         "classifiers": [
-          "Framework :: AWS CDK",
-          "Framework :: AWS CDK :: 1"
+          "Framework :: AWS CDK"
         ]
       }
     },

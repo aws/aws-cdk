@@ -25,8 +25,7 @@
         "distName": "aws-cdk.aws-eks-legacy",
         "module": "aws_cdk.aws_eks_legacy",
         "classifiers": [
-          "Framework :: AWS CDK",
-          "Framework :: AWS CDK :: 1"
+          "Framework :: AWS CDK"
         ]
       }
     },

@@ -24,8 +24,7 @@
         "distName": "aws-cdk.aws-sam",
         "module": "aws_cdk.aws_sam",
         "classifiers": [
-          "Framework :: AWS CDK",
-          "Framework :: AWS CDK :: 1"
+          "Framework :: AWS CDK"
         ]
       }
     },
