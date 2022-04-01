@@ -11,7 +11,7 @@ const REGIONS = process.env.AWS_REGIONS
   ? process.env.AWS_REGIONS.split(',')
   : [process.env.AWS_REGION ?? process.env.AWS_DEFAULT_REGION ?? 'us-east-1'];
 
-const FRAMEWORK_VERSION = process.env.FRAMEWORK_VERSION ?? '*';
+export const FRAMEWORK_VERSION = process.env.FRAMEWORK_VERSION ?? '*';
 
 export let MAJOR_VERSION = FRAMEWORK_VERSION.split('.')[0];
 if (MAJOR_VERSION === '*') {
@@ -686,7 +686,7 @@ export function randomString() {
  * symlinked from the TARGET directory's `node_modules` directory (which is sufficient
  * for Node's dependency lookup mechanism).
  */
-async function installNpmPackages(fixture: TestFixture, packages: Record<string, string>) {
+export async function installNpmPackages(fixture: TestFixture, packages: Record<string, string>) {
   if (process.env.REPO_ROOT) {
     const monoRepo = await findYarnPackages(process.env.REPO_ROOT);
 

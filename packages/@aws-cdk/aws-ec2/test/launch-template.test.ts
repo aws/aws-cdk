@@ -1,4 +1,4 @@
-import { Template } from '@aws-cdk/assertions';
+import { Annotations, Template, Match } from '@aws-cdk/assertions';
 import {
   CfnInstanceProfile,
   Role,
@@ -585,14 +585,15 @@ describe('LaunchTemplate marketOptions', () => {
     [7, 1],
   ])('for range duration errors: %p', (duration: number, expectedErrors: number) => {
     // WHEN
-    const template = new LaunchTemplate(stack, 'Template', {
+    new LaunchTemplate(stack, 'Template', {
       spotOptions: {
         blockDuration: Duration.hours(duration),
       },
     });
 
     // THEN
-    expect(template.node.metadataEntry).toHaveLength(expectedErrors);
+    const errors = Annotations.fromStack(stack).findError('/Default/Template', Match.anyValue());
+    expect(errors).toHaveLength(expectedErrors);
   });
 
   test('for bad duration', () => {
