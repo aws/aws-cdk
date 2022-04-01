@@ -32,12 +32,8 @@ Here's an example that sets up a Global Accelerator for two Application Load
 Balancers in two different AWS Regions:
 
 ```ts
-import globalaccelerator = require('@aws-cdk/aws-globalaccelerator');
-import ga_endpoints = require('@aws-cdk/aws-globalaccelerator-endpoints');
-import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
-
 // Create an Accelerator
-const accelerator = new globalaccelerator.Accelerator(stack, 'Accelerator');
+const accelerator = new globalaccelerator.Accelerator(this, 'Accelerator');
 
 // Create a Listener
 const listener = accelerator.addListener('Listener', {
@@ -48,10 +44,10 @@ const listener = accelerator.addListener('Listener', {
 });
 
 // Import the Load Balancers
-const nlb1 = elbv2.NetworkLoadBalancer.fromNetworkLoadBalancerAttributes(stack, 'NLB1', {
+const nlb1 = elbv2.NetworkLoadBalancer.fromNetworkLoadBalancerAttributes(this, 'NLB1', {
   loadBalancerArn: 'arn:aws:elasticloadbalancing:us-west-2:111111111111:loadbalancer/app/my-load-balancer1/e16bef66805b',
 });
-const nlb2 = elbv2.NetworkLoadBalancer.fromNetworkLoadBalancerAttributes(stack, 'NLB2', {
+const nlb2 = elbv2.NetworkLoadBalancer.fromNetworkLoadBalancerAttributes(this, 'NLB2', {
   loadBalancerArn: 'arn:aws:elasticloadbalancing:ap-south-1:111111111111:loadbalancer/app/my-load-balancer2/5513dc2ea8a1',
 });
 
@@ -95,7 +91,8 @@ There are 4 types of Endpoints, and they can be found in the
 ### Application Load Balancers
 
 ```ts
-const alb = new elbv2.ApplicationLoadBalancer(...);
+declare const alb: elbv2.ApplicationLoadBalancer;
+declare const listener: globalaccelerator.Listener;
 
 listener.addEndpointGroup('Group', {
   endpoints: [
@@ -110,7 +107,8 @@ listener.addEndpointGroup('Group', {
 ### Network Load Balancers
 
 ```ts
-const nlb = new elbv2.NetworkLoadBalancer(...);
+declare const nlb: elbv2.NetworkLoadBalancer;
+declare const listener: globalaccelerator.Listener;
 
 listener.addEndpointGroup('Group', {
   endpoints: [
@@ -124,7 +122,8 @@ listener.addEndpointGroup('Group', {
 ### EC2 Instances
 
 ```ts
-const instance = new ec2.instance(...);
+declare const listener: globalaccelerator.Listener;
+declare const instance: ec2.Instance;
 
 listener.addEndpointGroup('Group', {
   endpoints: [
@@ -139,7 +138,8 @@ listener.addEndpointGroup('Group', {
 ### Elastic IP Addresses
 
 ```ts
-const eip = new ec2.CfnEIP(...);
+declare const listener: globalaccelerator.Listener;
+declare const eip: ec2.CfnEIP;
 
 listener.addEndpointGroup('Group', {
   endpoints: [
@@ -170,22 +170,23 @@ which you can use in connection rules. You must pass a reference to the VPC in w
 context the security group will be looked up. Example:
 
 ```ts
-// ...
+declare const listener: globalaccelerator.Listener;
 
 // Non-open ALB
-const alb = new elbv2.ApplicationLoadBalancer(stack, 'ALB', { /* ... */ });
+declare const alb: elbv2.ApplicationLoadBalancer;
 
 const endpointGroup = listener.addEndpointGroup('Group', {
   endpoints: [
     new ga_endpoints.ApplicationLoadBalancerEndpoint(alb, {
-      preserveClientIps: true,
-    })],
+      preserveClientIp: true,
+    }),
   ],
 });
 
 // Remember that there is only one AGA security group per VPC.
+declare const vpc: ec2.Vpc;
 const agaSg = endpointGroup.connectionsPeer('GlobalAcceleratorSG', vpc);
 
 // Allow connections from the AGA to the ALB
-alb.connections.allowFrom(agaSg, Port.tcp(443));
+alb.connections.allowFrom(agaSg, ec2.Port.tcp(443));
 ```

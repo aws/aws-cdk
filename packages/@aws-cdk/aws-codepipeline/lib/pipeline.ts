@@ -399,6 +399,7 @@ export class Pipeline extends PipelineBase {
         bucketName: PhysicalName.GENERATE_IF_NEEDED,
         encryptionKey,
         encryption: encryptionKey ? s3.BucketEncryption.KMS : s3.BucketEncryption.KMS_MANAGED,
+        enforceSSL: true,
         blockPublicAccess: new s3.BlockPublicAccess(s3.BlockPublicAccess.BLOCK_ALL),
         removalPolicy: RemovalPolicy.RETAIN,
       });

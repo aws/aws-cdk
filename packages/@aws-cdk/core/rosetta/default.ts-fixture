@@ -23,6 +23,7 @@ import {
   CustomResource,
   CustomResourceProvider,
   CustomResourceProviderRuntime,
+  DefaultStackSynthesizer,
   DependableTrait,
   Duration,
   Fn,

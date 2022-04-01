@@ -2,8 +2,12 @@ import { Match, Template } from '@aws-cdk/assertions';
 import { User } from '@aws-cdk/aws-iam';
 import { Stack } from '@aws-cdk/core';
 import {
-  WebSocketRouteIntegration, WebSocketApi, WebSocketIntegrationType,
-  WebSocketRouteIntegrationBindOptions, WebSocketRouteIntegrationConfig,
+  WebSocketRouteIntegration,
+  WebSocketApi,
+  WebSocketApiKeySelectionExpression,
+  WebSocketIntegrationType,
+  WebSocketRouteIntegrationBindOptions,
+  WebSocketRouteIntegrationConfig,
 } from '../../lib';
 
 describe('WebSocketApi', () => {
@@ -16,6 +20,27 @@ describe('WebSocketApi', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Api', {
+      Name: 'api',
+      ProtocolType: 'WEBSOCKET',
+    });
+
+    Template.fromStack(stack).resourceCountIs('AWS::ApiGatewayV2::Stage', 0);
+    Template.fromStack(stack).resourceCountIs('AWS::ApiGatewayV2::Route', 0);
+    Template.fromStack(stack).resourceCountIs('AWS::ApiGatewayV2::Integration', 0);
+  });
+
+  test('apiKeySelectionExpression: given a value', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new WebSocketApi(stack, 'api', {
+      apiKeySelectionExpression: WebSocketApiKeySelectionExpression.AUTHORIZER_USAGE_IDENTIFIER_KEY,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Api', {
+      ApiKeySelectionExpression: '$context.authorizer.usageIdentifierKey',
       Name: 'api',
       ProtocolType: 'WEBSOCKET',
     });
@@ -82,6 +107,25 @@ describe('WebSocketApi', () => {
     });
   });
 
+  test('import', () => {
+    // GIVEN
+    const stack = new Stack();
+    const imported = WebSocketApi.fromWebSocketApiAttributes(stack, 'imported', { webSocketId: 'ws-1234', apiEndpoint: 'api-endpoint' });
+
+    // THEN
+    expect(imported.apiId).toEqual('ws-1234');
+    expect(imported.apiEndpoint).toEqual('api-endpoint');
+  });
+
+  test('apiEndpoint for imported', () => {
+    // GIVEN
+    const stack = new Stack();
+    const api = WebSocketApi.fromWebSocketApiAttributes(stack, 'imported', { webSocketId: 'api-1234' });
+
+    // THEN
+    expect(() => api.apiEndpoint).toThrow(/apiEndpoint is not configured/);
+  });
+
   describe('grantManageConnections', () => {
     test('adds an IAM policy to the principal', () => {
       // GIVEN
@@ -116,7 +160,7 @@ describe('WebSocketApi', () => {
                 {
                   Ref: 'apiC8550315',
                 },
-                '/*/POST/@connections/*',
+                '/*/*/@connections/*',
               ]],
             },
           }]),

@@ -1,5 +1,4 @@
-import { arrayWith, objectLike } from '@aws-cdk/assert-internal';
-import '@aws-cdk/assert-internal/jest';
+import { Match, Template } from '@aws-cdk/assertions';
 import * as ecr from '@aws-cdk/aws-ecr';
 import * as cdk from '@aws-cdk/core';
 import * as codebuild from '../lib';
@@ -22,7 +21,7 @@ describe('Linux GPU build image', () => {
         },
       });
 
-      expect(stack).toHaveResourceLike('AWS::CodeBuild::Project', {
+      Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
         Environment: {
           ComputeType: 'BUILD_GENERAL1_LARGE',
           Image: {
@@ -37,9 +36,9 @@ describe('Linux GPU build image', () => {
         },
       });
 
-      expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         PolicyDocument: {
-          Statement: arrayWith(objectLike({
+          Statement: Match.arrayWith([Match.objectLike({
             Action: [
               'ecr:BatchCheckLayerAvailability',
               'ecr:GetDownloadUrlForLayer',
@@ -54,7 +53,7 @@ describe('Linux GPU build image', () => {
                 ':123456789012:repository/my-repo',
               ]],
             },
-          })),
+          })]),
         },
       });
     });
@@ -78,7 +77,7 @@ describe('Linux GPU build image', () => {
         },
       });
 
-      expect(stack).toHaveResourceLike('AWS::CodeBuild::Project', {
+      Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
         Environment: {
           ComputeType: 'BUILD_GENERAL1_LARGE',
           Image: {
@@ -96,9 +95,9 @@ describe('Linux GPU build image', () => {
         },
       });
 
-      expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         PolicyDocument: {
-          Statement: arrayWith(objectLike({
+          Statement: Match.arrayWith([Match.objectLike({
             Action: [
               'ecr:BatchCheckLayerAvailability',
               'ecr:GetDownloadUrlForLayer',
@@ -116,7 +115,7 @@ describe('Linux GPU build image', () => {
                 { Ref: 'myrepo5DFA62E5' },
               ]],
             },
-          })),
+          })]),
         },
       });
     });
@@ -138,7 +137,7 @@ describe('Linux GPU build image', () => {
         },
       });
 
-      expect(stack).toHaveResourceLike('AWS::CodeBuild::Project', {
+      Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
         Environment: {
           ComputeType: 'BUILD_GENERAL1_LARGE',
           Image: {
@@ -154,9 +153,9 @@ describe('Linux GPU build image', () => {
         },
       });
 
-      expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         PolicyDocument: {
-          Statement: arrayWith(objectLike({
+          Statement: Match.arrayWith([Match.objectLike({
             Action: [
               'ecr:BatchCheckLayerAvailability',
               'ecr:GetDownloadUrlForLayer',
@@ -173,7 +172,7 @@ describe('Linux GPU build image', () => {
                 ':repository/test-repo',
               ]],
             },
-          })),
+          })]),
         },
       });
     });
@@ -195,7 +194,7 @@ describe('Linux GPU build image', () => {
         },
       });
 
-      expect(stack).toHaveResourceLike('AWS::CodeBuild::Project', {
+      Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
         Environment: {
           ComputeType: 'BUILD_GENERAL1_LARGE',
           Image: {
@@ -210,9 +209,9 @@ describe('Linux GPU build image', () => {
         },
       });
 
-      expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         PolicyDocument: {
-          Statement: arrayWith(objectLike({
+          Statement: Match.arrayWith([Match.objectLike({
             Action: [
               'ecr:BatchCheckLayerAvailability',
               'ecr:GetDownloadUrlForLayer',
@@ -227,7 +226,7 @@ describe('Linux GPU build image', () => {
                 ':585695036304:repository/foo/bar/foo/fooo',
               ]],
             },
-          })),
+          })]),
         },
       });
     });

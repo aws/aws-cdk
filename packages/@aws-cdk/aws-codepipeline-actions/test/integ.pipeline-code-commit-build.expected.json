@@ -55,7 +55,8 @@
                       ":log-group:/aws/codebuild/",
                       {
                         "Ref": "MyBuildProject30DB9D6E"
-                      }
+                      },
+                      ":*"
                     ]
                   ]
                 },
@@ -78,8 +79,7 @@
                       ":log-group:/aws/codebuild/",
                       {
                         "Ref": "MyBuildProject30DB9D6E"
-                      },
-                      ":*"
+                      }
                     ]
                   ]
                 }
@@ -87,12 +87,16 @@
             },
             {
               "Action": [
-                "s3:GetObject*",
-                "s3:GetBucket*",
-                "s3:List*",
+                "s3:Abort*",
                 "s3:DeleteObject*",
+                "s3:GetBucket*",
+                "s3:GetObject*",
+                "s3:List*",
                 "s3:PutObject",
-                "s3:Abort*"
+                "s3:PutObjectLegalHold",
+                "s3:PutObjectRetention",
+                "s3:PutObjectTagging",
+                "s3:PutObjectVersionTagging"
               ],
               "Effect": "Allow",
               "Resource": [
@@ -123,23 +127,8 @@
                 "kms:Decrypt",
                 "kms:DescribeKey",
                 "kms:Encrypt",
-                "kms:ReEncrypt*",
-                "kms:GenerateDataKey*"
-              ],
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "PipelineArtifactsBucketEncryptionKey01D58D69",
-                  "Arn"
-                ]
-              }
-            },
-            {
-              "Action": [
-                "kms:Decrypt",
-                "kms:Encrypt",
-                "kms:ReEncrypt*",
-                "kms:GenerateDataKey*"
+                "kms:GenerateDataKey*",
+                "kms:ReEncrypt*"
               ],
               "Effect": "Allow",
               "Resource": {
@@ -170,49 +159,6 @@
                     },
                     ":parameter/param_store"
                   ]
-                ]
-              }
-            },
-            {
-              "Action": [
-                "s3:GetObject*",
-                "s3:GetBucket*",
-                "s3:List*"
-              ],
-              "Effect": "Allow",
-              "Resource": [
-                {
-                  "Fn::GetAtt": [
-                    "PipelineArtifactsBucket22248F97",
-                    "Arn"
-                  ]
-                },
-                {
-                  "Fn::Join": [
-                    "",
-                    [
-                      {
-                        "Fn::GetAtt": [
-                          "PipelineArtifactsBucket22248F97",
-                          "Arn"
-                        ]
-                      },
-                      "/*"
-                    ]
-                  ]
-                }
-              ]
-            },
-            {
-              "Action": [
-                "kms:Decrypt",
-                "kms:DescribeKey"
-              ],
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "PipelineArtifactsBucketEncryptionKey01D58D69",
-                  "Arn"
                 ]
               }
             }
@@ -248,6 +194,9 @@
         },
         "Source": {
           "Type": "CODEPIPELINE"
+        },
+        "Cache": {
+          "Type": "NO_CACHE"
         },
         "EncryptionKey": {
           "Fn::GetAtt": [
@@ -292,6 +241,20 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete"
     },
+    "PipelineArtifactsBucketEncryptionKeyAlias5C510EEE": {
+      "Type": "AWS::KMS::Alias",
+      "Properties": {
+        "AliasName": "alias/codepipeline-awscdkcodepipelinecodecommitcodebuildpipeline9540e1f5",
+        "TargetKeyId": {
+          "Fn::GetAtt": [
+            "PipelineArtifactsBucketEncryptionKey01D58D69",
+            "Arn"
+          ]
+        }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
     "PipelineArtifactsBucket22248F97": {
       "Type": "AWS::S3::Bucket",
       "Properties": {
@@ -320,19 +283,52 @@
       "UpdateReplacePolicy": "Retain",
       "DeletionPolicy": "Retain"
     },
-    "PipelineArtifactsBucketEncryptionKeyAlias5C510EEE": {
-      "Type": "AWS::KMS::Alias",
+    "PipelineArtifactsBucketPolicyD4F9712A": {
+      "Type": "AWS::S3::BucketPolicy",
       "Properties": {
-        "AliasName": "alias/codepipeline-awscdkcodepipelinecodecommitcodebuildpipeline9540e1f5",
-        "TargetKeyId": {
-          "Fn::GetAtt": [
-            "PipelineArtifactsBucketEncryptionKey01D58D69",
-            "Arn"
-          ]
+        "Bucket": {
+          "Ref": "PipelineArtifactsBucket22248F97"
+        },
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "s3:*",
+              "Condition": {
+                "Bool": {
+                  "aws:SecureTransport": "false"
+                }
+              },
+              "Effect": "Deny",
+              "Principal": {
+                "AWS": "*"
+              },
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "PipelineArtifactsBucket22248F97",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "PipelineArtifactsBucket22248F97",
+                          "Arn"
+                        ]
+                      },
+                      "/*"
+                    ]
+                  ]
+                }
+              ]
+            }
+          ],
+          "Version": "2012-10-17"
         }
-      },
-      "UpdateReplacePolicy": "Delete",
-      "DeletionPolicy": "Delete"
+      }
     },
     "PipelineRoleD68726F7": {
       "Type": "AWS::IAM::Role",
@@ -358,12 +354,16 @@
           "Statement": [
             {
               "Action": [
-                "s3:GetObject*",
-                "s3:GetBucket*",
-                "s3:List*",
+                "s3:Abort*",
                 "s3:DeleteObject*",
+                "s3:GetBucket*",
+                "s3:GetObject*",
+                "s3:List*",
                 "s3:PutObject",
-                "s3:Abort*"
+                "s3:PutObjectLegalHold",
+                "s3:PutObjectRetention",
+                "s3:PutObjectTagging",
+                "s3:PutObjectVersionTagging"
               ],
               "Effect": "Allow",
               "Resource": [
@@ -394,8 +394,8 @@
                 "kms:Decrypt",
                 "kms:DescribeKey",
                 "kms:Encrypt",
-                "kms:ReEncrypt*",
-                "kms:GenerateDataKey*"
+                "kms:GenerateDataKey*",
+                "kms:ReEncrypt*"
               ],
               "Effect": "Allow",
               "Resource": {
@@ -408,32 +408,26 @@
             {
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "PipelinesourceCodePipelineActionRoleB7E0306A",
-                  "Arn"
-                ]
-              }
-            },
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "PipelinebuildCodePipelineActionRole11BCD4FF",
-                  "Arn"
-                ]
-              }
-            },
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "PipelinebuildtestCodePipelineActionRole467D0DFA",
-                  "Arn"
-                ]
-              }
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "PipelinebuildCodePipelineActionRole11BCD4FF",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::GetAtt": [
+                    "PipelinebuildtestCodePipelineActionRole467D0DFA",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::GetAtt": [
+                    "PipelinesourceCodePipelineActionRoleB7E0306A",
+                    "Arn"
+                  ]
+                }
+              ]
             }
           ],
           "Version": "2012-10-17"
@@ -616,12 +610,16 @@
           "Statement": [
             {
               "Action": [
-                "s3:GetObject*",
-                "s3:GetBucket*",
-                "s3:List*",
+                "s3:Abort*",
                 "s3:DeleteObject*",
+                "s3:GetBucket*",
+                "s3:GetObject*",
+                "s3:List*",
                 "s3:PutObject",
-                "s3:Abort*"
+                "s3:PutObjectLegalHold",
+                "s3:PutObjectRetention",
+                "s3:PutObjectTagging",
+                "s3:PutObjectVersionTagging"
               ],
               "Effect": "Allow",
               "Resource": [
@@ -652,8 +650,8 @@
                 "kms:Decrypt",
                 "kms:DescribeKey",
                 "kms:Encrypt",
-                "kms:ReEncrypt*",
-                "kms:GenerateDataKey*"
+                "kms:GenerateDataKey*",
+                "kms:ReEncrypt*"
               ],
               "Effect": "Allow",
               "Resource": {
@@ -665,11 +663,11 @@
             },
             {
               "Action": [
+                "codecommit:CancelUploadArchive",
                 "codecommit:GetBranch",
                 "codecommit:GetCommit",
-                "codecommit:UploadArchive",
                 "codecommit:GetUploadArchiveStatus",
-                "codecommit:CancelUploadArchive"
+                "codecommit:UploadArchive"
               ],
               "Effect": "Allow",
               "Resource": {

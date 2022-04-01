@@ -1,6 +1,6 @@
 import { ISDK } from '../aws-auth';
+import { EvaluateCloudFormationTemplate } from '../evaluate-cloudformation-template';
 import { ChangeHotswapImpact, ChangeHotswapResult, HotswapOperation, HotswappableChangeCandidate } from './common';
-import { EvaluateCloudFormationTemplate } from './evaluate-cloudformation-template';
 
 export async function isHotswappableStateMachineChange(
   logicalId: string, change: HotswappableChangeCandidate, evaluateCfnTemplate: EvaluateCloudFormationTemplate,
@@ -57,7 +57,7 @@ class StateMachineHotswapOperation implements HotswapOperation {
   public readonly resourceNames: string[];
 
   constructor(private readonly stepFunctionResource: StateMachineResource) {
-    this.resourceNames = [this.stepFunctionResource.stateMachineArn.split(':')[6]];
+    this.resourceNames = [`StateMachine '${this.stepFunctionResource.stateMachineArn.split(':')[6]}'`];
   }
 
   public async apply(sdk: ISDK): Promise<any> {

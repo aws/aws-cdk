@@ -1,9 +1,10 @@
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as AWS from 'aws-sdk';
-import { Mode, SdkProvider } from '../api';
+import { Mode } from '../api/aws-auth/credentials';
+import { SdkProvider } from '../api/aws-auth/sdk-provider';
+import { ContextProviderPlugin } from '../api/plugin';
 import { debug } from '../logging';
-import { ContextProviderPlugin } from './provider';
 
 /**
  * Plugin to read arbitrary SSM parameter names
@@ -42,7 +43,7 @@ export class SSMContextProviderPlugin implements ContextProviderPlugin {
   private async getSsmParameterValue(account: string, region: string, parameterName: string, lookupRoleArn?: string)
     : Promise<AWS.SSM.GetParameterResult> {
     const options = { assumeRoleArn: lookupRoleArn };
-    const ssm = (await this.aws.forEnvironment(cxapi.EnvironmentUtils.make(account, region), Mode.ForReading, options)).ssm();
+    const ssm = (await this.aws.forEnvironment(cxapi.EnvironmentUtils.make(account, region), Mode.ForReading, options)).sdk.ssm();
     try {
       return await ssm.getParameter({ Name: parameterName }).promise();
     } catch (e) {

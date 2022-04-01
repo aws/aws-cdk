@@ -1,7 +1,9 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import * as AWS from 'aws-sdk';
 import * as cdk_assets from 'cdk-assets';
-import { ISDK, Mode, SdkProvider } from '../api';
+import { Mode } from '../api/aws-auth/credentials';
+import { ISDK } from '../api/aws-auth/sdk';
+import { SdkProvider } from '../api/aws-auth/sdk-provider';
 import { debug, error, print } from '../logging';
 
 /**
@@ -19,6 +21,7 @@ export async function publishAssets(manifest: cdk_assets.AssetManifest, sdk: Sdk
     aws: new PublishingAws(sdk, targetEnv),
     progressListener: new PublishingProgressListener(),
     throwOnError: false,
+    publishInParallel: true,
   });
   await publisher.publish();
   if (publisher.hasFailures) {
@@ -93,10 +96,10 @@ class PublishingAws implements cdk_assets.IAws {
       return maybeSdk;
     }
 
-    const sdk = await this.aws.forEnvironment(env, Mode.ForWriting, {
+    const sdk = (await this.aws.forEnvironment(env, Mode.ForWriting, {
       assumeRoleArn: options.assumeRoleArn,
       assumeRoleExternalId: options.assumeRoleExternalId,
-    });
+    })).sdk;
     this.sdkCache.set(cacheKey, sdk);
 
     return sdk;
