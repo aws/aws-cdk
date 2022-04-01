@@ -8,9 +8,9 @@
         },
         "Scope": "CLOUDFRONT",
         "VisibilityConfig": {
-          "CloudWatchMetricsEnabled": false,
-          "MetricName": "test-metric-name",
-          "SampledRequestsEnabled": false
+          "CloudWatchMetricsEnabled": true,
+          "MetricName": "my-web-acl-name",
+          "SampledRequestsEnabled": true
         },
         "Name": "my-web-acl-name"
       }

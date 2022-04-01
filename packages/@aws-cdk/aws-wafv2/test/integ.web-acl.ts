@@ -11,11 +11,6 @@ class TestStack extends cdk.Stack {
       webAclName: 'my-web-acl-name',
       scope: wafv2.Scope.CLOUDFRONT,
       defaultAction: wafv2.DefaultAction.block(),
-      visibilityConfig: {
-        cloudWatchMetricsEnabled: false,
-        metricName: 'test-metric-name',
-        sampledRequestsEnabled: false,
-      },
     });
   }
 }

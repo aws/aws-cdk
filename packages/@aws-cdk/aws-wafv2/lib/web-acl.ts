@@ -21,29 +21,6 @@ export enum Scope {
 }
 
 /**
- * Defines and enables Amazon CloudWatch metrics and web request sample collection.
- */
-export interface VisibilityConfig {
-  /**
-   * A boolean indicating whether the associated resource sends metrics to Amazon CloudWatch.
-   */
-  readonly cloudWatchMetricsEnabled: boolean;
-
-  /**
-   * The descriptive name of the Amazon CloudWatch metric. The name can contain only alphanumeric characters
-   * (A-Z, a-z, 0-9), with length from one to 128 characters. It can't contain whitespace or metric names reserved
-   * for AWS WAF, for example "All" and "Default_Action." You can't change a MetricName after you create a VisibilityConfig.
-   */
-  readonly metricName: string;
-
-  /**
-   * A boolean indicating whether AWS WAF should store a sampling of the web requests that match the rules.
-   * You can view the sampled requests through the AWS WAF console.
-   */
-  readonly sampledRequestsEnabled: boolean;
-}
-
-/**
  * Properties for defining an AWS WAF web ACL
  */
 export interface WebAclProps {
@@ -62,12 +39,6 @@ export interface WebAclProps {
    * The action to perform if none of the Rules contained in the WebACL match.
    */
   readonly defaultAction: DefaultAction;
-
-  /**
-   * Defines and enables Amazon CloudWatch metrics and web request sample collection.
-   * @default Set false to both Amazon CloudWatch metrics and web request sample collection
-   */
-  readonly visibilityConfig?: VisibilityConfig;
 }
 
 /**
@@ -109,17 +80,15 @@ export class WebAcl extends Resource {
       physicalName: props.webAclName,
     });
 
-    const visibilityConfig: VisibilityConfig = props.visibilityConfig ?? {
-      cloudWatchMetricsEnabled: true,
-      metricName: props.webAclName || Names.uniqueId(this),
-      sampledRequestsEnabled: true,
-    };
-
     const resource = new CfnWebACL(this, 'Resource', {
       name: this.physicalName,
       scope: props.scope,
       defaultAction: props.defaultAction.bind(this).configuration,
-      visibilityConfig,
+      visibilityConfig: {
+        cloudWatchMetricsEnabled: true,
+        metricName: props.webAclName || Names.uniqueId(this),
+        sampledRequestsEnabled: true,
+      },
     });
 
     this.webAclName = this.getResourceNameAttribute(resource.ref);

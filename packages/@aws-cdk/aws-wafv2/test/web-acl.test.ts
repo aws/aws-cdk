@@ -126,27 +126,3 @@ test('can set physical name', () => {
     }),
   });
 });
-
-test('can set visibilityConfig', () => {
-  const stack = new cdk.Stack();
-
-  // WHEN
-  new wafv2.WebAcl(stack, 'MyWebAcl', {
-    scope: wafv2.Scope.REGIONAL,
-    defaultAction: wafv2.DefaultAction.allow(),
-    visibilityConfig: {
-      cloudWatchMetricsEnabled: false,
-      metricName: 'test-metric-name',
-      sampledRequestsEnabled: false,
-    },
-  });
-
-  // THEN
-  Template.fromStack(stack).hasResourceProperties('AWS::WAFv2::WebACL', {
-    VisibilityConfig: {
-      CloudWatchMetricsEnabled: false,
-      MetricName: 'test-metric-name',
-      SampledRequestsEnabled: false,
-    },
-  });
-});

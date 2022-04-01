@@ -47,10 +47,5 @@ new wafv2.WebAcl(this, 'WebAcl', {
   webAclName: 'my-web-acl-name', // OPTIONAL
   scope: wafv2.Scope.CLOUDFRONT,
   defaultAction: wafv2.DefaultAction.block(),
-  visibilityConfig: { // OPTIONAL
-    cloudWatchMetricsEnabled: true,
-    metricName: 'test-metric-name',
-    sampledRequestsEnabled: true,
-  },
 });
 ```
