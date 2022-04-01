@@ -518,16 +518,6 @@ describe('DatabaseCluster', () => {
     });
   });
 
-  test('can import a cluster with minimal attributes', () => {
-    const stack = testStack();
-
-    const cluster = DatabaseCluster.fromDatabaseClusterAttributes(stack, 'Database', {
-      clusterIdentifier: 'identifier',
-    });
-
-    expect(cluster.clusterIdentifier).toEqual('identifier');
-  });
-
   test('minimal imported cluster throws on accessing attributes for unprovided parameters', () => {
     const stack = testStack();
 
@@ -535,6 +525,7 @@ describe('DatabaseCluster', () => {
       clusterIdentifier: 'identifier',
     });
 
+    expect(cluster.clusterIdentifier).toEqual('identifier');
     expect(() => cluster.clusterEndpoint).toThrow(/Cannot access `clusterEndpoint` of an imported cluster/);
     expect(() => cluster.clusterReadEndpoint).toThrow(/Cannot access `clusterReadEndpoint` of an imported cluster/);
     expect(() => cluster.instanceIdentifiers).toThrow(/Cannot access `instanceIdentifiers` of an imported cluster/);
