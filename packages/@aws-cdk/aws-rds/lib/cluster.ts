@@ -552,7 +552,7 @@ export class DatabaseCluster extends DatabaseClusterNew {
       ...this.newCfnProps,
       // Admin
       masterUsername: credentials.username,
-      masterUserPassword: credentials.password?.toString(),
+      masterUserPassword: credentials.password?.unsafeUnwrap(),
       // Tags
       copyTagsToSnapshot: props.copyTagsToSnapshot ?? true,
     });

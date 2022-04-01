@@ -521,7 +521,7 @@ export class ServerlessCluster extends ServerlessClusterNew {
     const cluster = new CfnDBCluster(this, 'Resource', {
       ...this.newCfnProps,
       masterUsername: credentials.username,
-      masterUserPassword: credentials.password?.toString(),
+      masterUserPassword: credentials.password?.unsafeUnwrap(),
       kmsKeyId: props.storageEncryptionKey?.keyArn,
     });
 
