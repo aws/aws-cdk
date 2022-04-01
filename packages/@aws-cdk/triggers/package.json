@@ -23,8 +23,7 @@
         "distName": "aws-cdk.triggers",
         "module": "aws_cdk.triggers",
         "classifiers": [
-          "Framework :: AWS CDK",
-          "Framework :: AWS CDK :: 2"
+          "Framework :: AWS CDK"
         ]
       }
     },

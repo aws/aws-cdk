@@ -24,8 +24,7 @@
         "distName": "aws-cdk.aws-codestar",
         "module": "aws_cdk.aws_codestar",
         "classifiers": [
-          "Framework :: AWS CDK",
-          "Framework :: AWS CDK :: 2"
+          "Framework :: AWS CDK"
         ]
       }
     },
