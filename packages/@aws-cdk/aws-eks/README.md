@@ -539,7 +539,7 @@ To deploy the controller on your EKS cluster, configure the `albController` prop
 new eks.Cluster(this, 'HelloEKS', {
   version: eks.KubernetesVersion.V1_21,
   albController: {
-    version: eks.AlbControllerVersion.V2_3_1,
+    version: eks.AlbControllerVersion.V2_4_1,
   },
 });
 ```
@@ -1144,6 +1144,24 @@ cluster.addHelmChart('test-chart', {
 });
 ```
 
+### OCI Charts
+
+OCI charts are also supported.
+Also replace the `${VARS}` with appropriate values.
+
+```ts
+declare const cluster: eks.Cluster;
+// option 1: use a construct
+new eks.HelmChart(this, 'MyOCIChart', {
+  cluster,
+  chart: 'some-chart',
+  repository: 'oci://${ACCOUNT_ID}.dkr.ecr.${ACCOUNT_REGION}.amazonaws.com/${REPO_NAME}',
+  namespace: 'oci',
+  version: '0.0.1'
+});
+
+```
+
 Helm charts are implemented as CloudFormation resources in CDK.
 This means that if the chart is deleted from your code (or the stack is
 deleted), the next `cdk deploy` will issue a `helm uninstall` command and the
@@ -1399,7 +1417,7 @@ Kubernetes [endpoint access](#endpoint-access), you must also specify:
 
 ## Logging
 
-EKS supports cluster logging for 5 different types of events: 
+EKS supports cluster logging for 5 different types of events:
 
 * API requests to the cluster.
 * Cluster access via the Kubernetes API.

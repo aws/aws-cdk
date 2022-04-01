@@ -1,4 +1,5 @@
-import { Match, Template } from '@aws-cdk/assertions';
+import { Match, Template, Annotations } from '@aws-cdk/assertions';
+import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as sqs from '@aws-cdk/aws-sqs';
 import { Stack } from '@aws-cdk/core';
@@ -95,4 +96,28 @@ test('if the queue is encrypted with a custom kms key, the key resource policy i
       }]),
     },
   });
+});
+
+test('if the queue is encrypted with a imported kms key, printout warning', () => {
+  const stack = new Stack();
+  const bucket = new s3.Bucket(stack, 'Bucket');
+  const key = kms.Key.fromKeyArn(stack, 'ImportedKey', 'arn:aws:kms:us-west-2:111122223333:key/1234abcd-12ab-34cd-56ef-1234567890ab');
+  const queue = new sqs.Queue(stack, 'Queue', {
+    encryption: sqs.QueueEncryption.KMS,
+    encryptionMasterKey: key,
+  });
+
+  bucket.addObjectCreatedNotification(new notif.SqsDestination(queue));
+
+  Annotations.fromStack(stack).hasWarning('/Default/ImportedKey', `Can not change key policy of imported kms key. Ensure that your key policy contains the following permissions: \n${JSON.stringify({
+    Action: [
+      'kms:GenerateDataKey*',
+      'kms:Decrypt',
+    ],
+    Effect: 'Allow',
+    Principal: {
+      Service: 's3.amazonaws.com',
+    },
+    Resource: '*',
+  }, null, 2)}`);
 });

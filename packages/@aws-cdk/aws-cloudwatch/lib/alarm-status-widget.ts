@@ -1,5 +1,32 @@
 import { IAlarm } from './alarm-base';
+import { AlarmState } from './alarm-rule';
 import { ConcreteWidget } from './widget';
+
+
+/**
+ * The sort possibilities for AlarmStatusWidgets
+ */
+export enum AlarmStatusWidgetSortBy {
+
+  /**
+   * Choose DEFAULT to sort them in alphabetical order by alarm name.
+   */
+  DEFAULT = 'default',
+
+  /**
+   * Choose STATE_UPDATED_TIMESTAMP to sort them first by alarm state, with alarms in ALARM state first,
+   * INSUFFICIENT_DATA alarms next, and OK alarms last.
+   * Within each group, the alarms are sorted by when they last changed state, with more recent state changes listed first.
+   */
+  STATE_UPDATED_TIMESTAMP = 'stateUpdatedTimestamp',
+
+  /**
+   * Choose TIMESTAMP to sort them by the time when the alarms most recently changed state,
+   * no matter the current alarm state.
+   * The alarm that changed state most recently is listed first.
+   */
+  TIMESTAMP = 'timestamp',
+}
 
 /**
  * Properties for an Alarm Status Widget
@@ -27,6 +54,24 @@ export interface AlarmStatusWidgetProps {
    * @default 3
    */
   readonly height?: number;
+
+  /**
+   * Specifies how to sort the alarms in the widget.
+   *
+   * @default - alphabetical order
+   */
+  readonly sortBy?: AlarmStatusWidgetSortBy;
+
+  /**
+   * Use this field to filter the list of alarms displayed in the widget to only those alarms currently in the specified states.
+   * You can specify one or more alarm states in the value for this field.
+   * The alarm states that you can specify are ALARM, INSUFFICIENT_DATA, and OK.
+   *
+   * If you omit this field or specify an empty array, all the alarms specifed in alarms are displayed.
+   *
+   * @default -  all the alarms specified in alarms are displayed.
+   */
+  readonly states?: AlarmState[];
 }
 
 /**
@@ -56,6 +101,8 @@ export class AlarmStatusWidget extends ConcreteWidget {
         properties: {
           title: this.props.title ? this.props.title : 'Alarm Status',
           alarms: this.props.alarms.map((alarm) => alarm.alarmArn),
+          states: this.props.states,
+          sortBy: this.props.sortBy,
         },
       },
     ];
