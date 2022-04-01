@@ -504,7 +504,7 @@ function filterBuildSpecCommands(buildSpec: codebuild.BuildSpec, osType: ec2.Ope
   function extractTag(x: any): [string | undefined, any] {
     if (typeof x !== 'string') { return [undefined, x]; }
     for (const tag of [winTag, linuxTag]) {
-      if (x.startsWith(tag)) { return [tag, x.substr(tag.length)]; }
+      if (x.startsWith(tag)) { return [tag, x.slice(tag.length)]; }
     }
     return [undefined, x];
   }
