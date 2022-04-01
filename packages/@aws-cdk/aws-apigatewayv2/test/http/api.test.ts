@@ -535,65 +535,58 @@ describe('HttpApi', () => {
 describe('SpecHttpApi', () => {
   test('default', () => {
     const stack = new Stack();
-    const api = new SpecHttpApi(stack, 'api', {
-      apiDefinition: ApiDefinition.fromInline({
-        openapi: '3.0.2',
-        paths: {
-          '/pets': {
-            get: {
-              'responses': {
-                200: {
-                  content: {
-                    'application/json': {
-                      schema: {
-                        $ref: '#/components/schemas/Empty',
-                      },
+    const oas = {
+      openapi: '3.0.2',
+      paths: {
+        '/pets': {
+          get: {
+            'responses': {
+              200: {
+                content: {
+                  'application/json': {
+                    schema: {
+                      $ref: '#/components/schemas/Empty',
                     },
                   },
                 },
               },
-              'x-amazon-apigateway-integration': {
-                responses: {
-                  default: {
-                    statusCode: '200',
-                  },
+            },
+            'x-amazon-apigateway-integration': {
+              responses: {
+                default: {
+                  statusCode: '200',
                 },
-                requestTemplates: {
-                  'application/json': '{"statusCode": 200}',
-                },
-                passthroughBehavior: 'when_no_match',
-                type: 'mock',
               },
+              requestTemplates: {
+                'application/json': '{"statusCode": 200}',
+              },
+              passthroughBehavior: 'when_no_match',
+              type: 'mock',
             },
           },
         },
-        components: {
-          schemas: {
-            Empty: {
-              title: 'Empty Schema',
-              type: 'object',
-            },
+      },
+      components: {
+        schemas: {
+          Empty: {
+            title: 'Empty Schema',
+            type: 'object',
           },
         },
-      }),
+      },
+    };
+    const api = new SpecHttpApi(stack, 'api', {
+      apiDefinition: ApiDefinition.fromInline(oas),
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Api', {
       Name: 'api',
-      ProtocolType: 'HTTP',
+      Body: oas,
     });
 
-    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Stage', {
-      ApiId: stack.resolve(api.apiId),
-      StageName: '$default',
-      AutoDeploy: true,
-    });
-
-    Template.fromStack(stack).resourceCountIs('AWS::ApiGatewayV2::Route', 0);
-    Template.fromStack(stack).resourceCountIs('AWS::ApiGatewayV2::Integration', 0);
-
-    // expect(api.url).toBeDefined();
     expect(api.apiEndpoint).toBeDefined();
+    expect(api.apiId).toBeDefined();
+    expect(api.httpApiId).toBeDefined();
   });
 });
 
