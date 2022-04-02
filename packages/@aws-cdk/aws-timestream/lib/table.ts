@@ -1,5 +1,5 @@
 import { UnknownPrincipal } from '@aws-cdk/aws-iam';
-import { Duration, IResource, Resource } from '@aws-cdk/core';
+import { ArnFormat, Duration, IResource, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { IDatabase } from './database';
 import { CfnTable, CfnTableProps } from './timestream.generated';
@@ -21,6 +21,11 @@ export interface ITable extends IResource {
    * @attribute
    */
   readonly tableName: string;
+
+  /**
+   * Database Name
+   */
+  readonly databaseName: string
 }
 
 /**
@@ -129,9 +134,16 @@ abstract class TableBase extends Resource implements ITable {
    * @returns Table construct
    */
   public static fromTableArn(scope: Construct, id: string, tableArn: string): ITable {
+    const stack = Stack.of(scope);
+    const splitArn = stack.splitArn(tableArn, ArnFormat.SLASH_RESOURCE_NAME);
+
+    const re = /(?<database>.*?)\/table\/(?<table>.*)/;
+    const groups = splitArn.resourceName?.match(re)?.groups;
+
     class Import extends TableBase {
       public readonly tableArn = tableArn;
-      public readonly tableName = this.physicalName
+      public readonly tableName = groups?.table || ''
+      public readonly databaseName = groups?.database || ''
       public readonly grantPrincipal = new UnknownPrincipal({ resource: this });
     }
     return new Import(scope, id, {
@@ -141,6 +153,7 @@ abstract class TableBase extends Resource implements ITable {
 
   public abstract readonly tableArn: string;
   public abstract readonly tableName: string;
+  public abstract readonly databaseName: string;
 }
 
 /**
@@ -160,6 +173,11 @@ export class Table extends TableBase {
    * @attribute
    */
   public readonly tableName: string;
+
+  /**
+   * Database Name
+   */
+  public readonly databaseName: string;
 
   constructor(scope: Construct, id: string, props: TableProps) {
     super(scope, id, {
@@ -183,5 +201,6 @@ export class Table extends TableBase {
 
     this.tableArn = resource.attrArn;
     this.tableName = resource.attrName;
+    this.databaseName = resource.databaseName;
   }
 }
