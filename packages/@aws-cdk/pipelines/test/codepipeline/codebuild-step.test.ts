@@ -125,8 +125,8 @@ test('timeout from defaults can be overridden', () => {
 test('envFromOutputs works even with very long stage and stack names', () => {
   const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk');
 
-  const myApp = new AppWithOutput(app, 'Alpha'.repeat(20), {
-    stackId: 'Stack'.repeat(20),
+  const myApp = new AppWithOutput(app, 'Alpha'.repeat(10), {
+    stackId: 'Stack'.repeat(10),
   });
 
   pipeline.addStage(myApp, {
