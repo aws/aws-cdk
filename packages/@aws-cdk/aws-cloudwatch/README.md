@@ -104,7 +104,7 @@ graph showing the Average statistic with an aggregation period of 5 minutes:
 
 ```ts
 const cpuUtilization = new cloudwatch.MathExpression({
-  expression: "SEARCH('{AWS/EC2,InstanceId} MetricName=\"CPUUtilization\"', 'Average', 300)"
+  expression: "SEARCH('{AWS/EC2,InstanceId} MetricName=\"CPUUtilization\"', 'Average', 300)",
 
   // Specifying '' as the label suppresses the default behavior
   // of using the expression as metric label. This is especially appropriate
@@ -177,7 +177,7 @@ const minuteErrorRate = fn.metricErrors({
   period: Duration.hours(1),
 
   // Show the maximum hourly error count in the legend
-  label: '[max: ${MAX}] Lambda failure rate'
+  label: '[max: ${MAX}] Lambda failure rate',
 });
 ```
 
@@ -339,7 +339,7 @@ dashboard.addWidgets(new cloudwatch.GraphWidget({
   right: [errorCountMetric.with({
     statistic: "average",
     label: "Error rate",
-    color: cloudwatch.Color.GREEN
+    color: cloudwatch.Color.GREEN,
   })]
 }));
 ```
