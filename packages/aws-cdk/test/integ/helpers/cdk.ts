@@ -297,7 +297,7 @@ export interface CdkModernBootstrapCommandOptions extends CommonCdkBootstrapComm
 }
 
 export class TestFixture {
-  public readonly qualifier = randomString().substr(0, 10);
+  public readonly qualifier = randomString().slice(0, 10);
   private readonly bucketsToDelete = new Array<string>();
 
   constructor(
