@@ -1,3 +1,270 @@
+# CloudFormation Resource Specification v63.0.0
+
+## New Resource Types
+
+* AWS::Events::Endpoint
+
+## Attribute Changes
+
+
+## Property Changes
+
+
+## Property Type Changes
+
+* AWS::EKS::Cluster.Provider (__added__)
+* AWS::DMS::Endpoint.OracleSettings AccessAlternateDirectly (__added__)
+* AWS::DMS::Endpoint.OracleSettings AddSupplementalLogging (__added__)
+* AWS::DMS::Endpoint.OracleSettings AdditionalArchivedLogDestId (__added__)
+* AWS::DMS::Endpoint.OracleSettings AllowSelectNestedTables (__added__)
+* AWS::DMS::Endpoint.OracleSettings ArchivedLogDestId (__added__)
+* AWS::DMS::Endpoint.OracleSettings ArchivedLogsOnly (__added__)
+* AWS::DMS::Endpoint.OracleSettings AsmPassword (__added__)
+* AWS::DMS::Endpoint.OracleSettings AsmServer (__added__)
+* AWS::DMS::Endpoint.OracleSettings AsmUser (__added__)
+* AWS::DMS::Endpoint.OracleSettings CharLengthSemantics (__added__)
+* AWS::DMS::Endpoint.OracleSettings DirectPathNoLog (__added__)
+* AWS::DMS::Endpoint.OracleSettings DirectPathParallelLoad (__added__)
+* AWS::DMS::Endpoint.OracleSettings EnableHomogenousTablespace (__added__)
+* AWS::DMS::Endpoint.OracleSettings ExtraArchivedLogDestIds (__added__)
+* AWS::DMS::Endpoint.OracleSettings FailTasksOnLobTruncation (__added__)
+* AWS::DMS::Endpoint.OracleSettings NumberDatatypeScale (__added__)
+* AWS::DMS::Endpoint.OracleSettings OraclePathPrefix (__added__)
+* AWS::DMS::Endpoint.OracleSettings ParallelAsmReadThreads (__added__)
+* AWS::DMS::Endpoint.OracleSettings ReadAheadBlocks (__added__)
+* AWS::DMS::Endpoint.OracleSettings ReadTableSpaceName (__added__)
+* AWS::DMS::Endpoint.OracleSettings ReplacePathPrefix (__added__)
+* AWS::DMS::Endpoint.OracleSettings RetryInterval (__added__)
+* AWS::DMS::Endpoint.OracleSettings SecurityDbEncryption (__added__)
+* AWS::DMS::Endpoint.OracleSettings SecurityDbEncryptionName (__added__)
+* AWS::DMS::Endpoint.OracleSettings SpatialDataOptionToGeoJsonFunctionName (__added__)
+* AWS::DMS::Endpoint.OracleSettings StandbyDelayTime (__added__)
+* AWS::DMS::Endpoint.OracleSettings UseAlternateFolderForOnline (__added__)
+* AWS::DMS::Endpoint.OracleSettings UseBFile (__added__)
+* AWS::DMS::Endpoint.OracleSettings UseDirectPathFullLoad (__added__)
+* AWS::DMS::Endpoint.OracleSettings UseLogminerReader (__added__)
+* AWS::DMS::Endpoint.OracleSettings UsePathPrefix (__added__)
+* AWS::DMS::Endpoint.PostgreSqlSettings AfterConnectScript (__added__)
+* AWS::DMS::Endpoint.PostgreSqlSettings CaptureDdls (__added__)
+* AWS::DMS::Endpoint.PostgreSqlSettings DdlArtifactsSchema (__added__)
+* AWS::DMS::Endpoint.PostgreSqlSettings ExecuteTimeout (__added__)
+* AWS::DMS::Endpoint.PostgreSqlSettings FailTasksOnLobTruncation (__added__)
+* AWS::DMS::Endpoint.PostgreSqlSettings HeartbeatEnable (__added__)
+* AWS::DMS::Endpoint.PostgreSqlSettings HeartbeatFrequency (__added__)
+* AWS::DMS::Endpoint.PostgreSqlSettings HeartbeatSchema (__added__)
+* AWS::DMS::Endpoint.PostgreSqlSettings MaxFileSize (__added__)
+* AWS::DMS::Endpoint.PostgreSqlSettings PluginName (__added__)
+* AWS::DMS::Endpoint.PostgreSqlSettings SlotName (__added__)
+* AWS::EKS::Cluster.EncryptionConfig Provider.PrimitiveType (__deleted__)
+* AWS::EKS::Cluster.EncryptionConfig Provider.Type (__added__)
+* AWS::FSx::FileSystem.OntapConfiguration ThroughputCapacity.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+
+
+# CloudFormation Resource Specification v62.0.0
+
+## New Resource Types
+
+* AWS::FSx::Snapshot
+* AWS::FSx::StorageVirtualMachine
+* AWS::FSx::Volume
+* AWS::IoTEvents::AlarmModel
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::DocDB::DBInstance EnablePerformanceInsights (__added__)
+* AWS::Lambda::Function EphemeralStorage (__added__)
+* AWS::Lambda::Permission PrincipalOrgID (__added__)
+* AWS::Lex::Bot TestBotAliasSettings (__added__)
+
+## Property Type Changes
+
+* AWS::DevOpsGuru::ResourceCollection.TagCollection (__added__)
+* AWS::EC2::LaunchTemplate.Ipv4PrefixSpecification (__added__)
+* AWS::EC2::LaunchTemplate.Ipv6PrefixSpecification (__added__)
+* AWS::Lambda::Function.EphemeralStorage (__added__)
+* AWS::Lex::Bot.AdvancedRecognitionSetting (__added__)
+* AWS::Lex::Bot.AudioLogDestination (__added__)
+* AWS::Lex::Bot.AudioLogSetting (__added__)
+* AWS::Lex::Bot.BotAliasLocaleSettings (__added__)
+* AWS::Lex::Bot.BotAliasLocaleSettingsItem (__added__)
+* AWS::Lex::Bot.CloudWatchLogGroupLogDestination (__added__)
+* AWS::Lex::Bot.CodeHookSpecification (__added__)
+* AWS::Lex::Bot.ConversationLogSettings (__added__)
+* AWS::Lex::Bot.CustomVocabulary (__added__)
+* AWS::Lex::Bot.CustomVocabularyItem (__added__)
+* AWS::Lex::Bot.LambdaCodeHook (__added__)
+* AWS::Lex::Bot.S3BucketLogDestination (__added__)
+* AWS::Lex::Bot.TestBotAliasSettings (__added__)
+* AWS::Lex::Bot.TextLogDestination (__added__)
+* AWS::Lex::Bot.TextLogSetting (__added__)
+* AWS::MediaPackage::OriginEndpoint.EncryptionContractConfiguration (__added__)
+* AWS::DevOpsGuru::ResourceCollection.ResourceCollectionFilter Tags (__added__)
+* AWS::EC2::LaunchTemplate.NetworkInterface Ipv4PrefixCount (__added__)
+* AWS::EC2::LaunchTemplate.NetworkInterface Ipv4Prefixes (__added__)
+* AWS::EC2::LaunchTemplate.NetworkInterface Ipv6PrefixCount (__added__)
+* AWS::EC2::LaunchTemplate.NetworkInterface Ipv6Prefixes (__added__)
+* AWS::Lex::Bot.BotLocale CustomVocabulary (__added__)
+* AWS::Lex::Bot.SlotValueSelectionSetting AdvancedRecognitionSetting (__added__)
+* AWS::MediaPackage::OriginEndpoint.SpekeKeyProvider EncryptionContractConfiguration (__added__)
+
+
+# CloudFormation Resource Specification v61.0.0
+
+## New Resource Types
+
+* AWS::BillingConductor::BillingGroup
+* AWS::BillingConductor::CustomLineItem
+* AWS::BillingConductor::PricingPlan
+* AWS::BillingConductor::PricingRule
+
+## Attribute Changes
+
+* AWS::DMS::ReplicationInstance ReplicationInstancePrivateIpAddresses.PrimitiveItemType (__deleted__)
+* AWS::DMS::ReplicationInstance ReplicationInstancePrivateIpAddresses.Type (__deleted__)
+* AWS::DMS::ReplicationInstance ReplicationInstancePrivateIpAddresses.PrimitiveType (__added__)
+* AWS::DMS::ReplicationInstance ReplicationInstancePublicIpAddresses.PrimitiveItemType (__deleted__)
+* AWS::DMS::ReplicationInstance ReplicationInstancePublicIpAddresses.Type (__deleted__)
+* AWS::DMS::ReplicationInstance ReplicationInstancePublicIpAddresses.PrimitiveType (__added__)
+* AWS::EC2::Subnet Id (__deleted__)
+* AWS::EC2::Subnet SubnetId (__added__)
+
+## Property Changes
+
+* AWS::CodeDeploy::DeploymentGroup OutdatedInstancesStrategy (__added__)
+* AWS::CodeDeploy::DeploymentGroup Tags (__added__)
+* AWS::DMS::Endpoint Tags.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::DMS::ReplicationSubnetGroup Tags.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::EC2::Subnet AvailabilityZoneId (__added__)
+* AWS::EC2::Subnet EnableDns64 (__added__)
+* AWS::EC2::Subnet Ipv6Native (__added__)
+* AWS::EC2::Subnet PrivateDnsNameOptionsOnLaunch (__added__)
+* AWS::EC2::Subnet CidrBlock.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::Inspector::AssessmentTemplate RulesPackageArns.DuplicatesAllowed (__added__)
+* AWS::Inspector::AssessmentTemplate UserAttributesForFindings.DuplicatesAllowed (__added__)
+* AWS::Inspector::ResourceGroup ResourceGroupTags.DuplicatesAllowed (__added__)
+
+## Property Type Changes
+
+* AWS::ACMPCA::Certificate.CustomAttribute (__added__)
+* AWS::ACMPCA::Certificate.CustomExtension (__added__)
+* AWS::ACMPCA::CertificateAuthority.CustomAttribute (__added__)
+* AWS::CodeDeploy::DeploymentGroup.TargetGroupPairInfo (__added__)
+* AWS::CodeDeploy::DeploymentGroup.TrafficRoute (__added__)
+* AWS::ACMPCA::Certificate.Extensions CustomExtensions (__added__)
+* AWS::ACMPCA::Certificate.Subject CustomAttributes (__added__)
+* AWS::ACMPCA::CertificateAuthority.Subject CustomAttributes (__added__)
+* AWS::CodeDeploy::DeploymentGroup.LoadBalancerInfo TargetGroupPairInfoList (__added__)
+* AWS::FSx::FileSystem.OpenZFSConfiguration Options (__added__)
+* AWS::FSx::FileSystem.RootVolumeConfiguration RecordSizeKiB (__added__)
+
+
+# CloudFormation Resource Specification v60.0.0
+
+## New Resource Types
+
+* AWS::Personalize::Dataset
+* AWS::Personalize::DatasetGroup
+* AWS::Personalize::Schema
+* AWS::Personalize::Solution
+
+## Attribute Changes
+
+* AWS::EC2::Subnet Id (__added__)
+* AWS::EC2::Subnet Ipv6CidrBlocks.DuplicatesAllowed (__added__)
+
+## Property Changes
+
+* AWS::EC2::Subnet AvailabilityZoneId (__deleted__)
+* AWS::EC2::Subnet EnableDns64 (__deleted__)
+* AWS::EC2::Subnet Ipv6Native (__deleted__)
+* AWS::EC2::Subnet PrivateDnsNameOptionsOnLaunch (__deleted__)
+* AWS::EC2::Subnet Ipv6CidrBlock.UpdateType (__changed__)
+  * Old: Conditional
+  * New: Mutable
+* AWS::EC2::Subnet VpcId.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-subnet.html#cfn-awsec2subnet-prop-vpcid
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-subnet.html#cfn-ec2-subnet-vpcid
+* AWS::EC2::TransitGatewayPeeringAttachment Options (__deleted__)
+* AWS::ECS::Service EnableECSManagedTags.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::ECS::Service LoadBalancers.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::ECS::Service PropagateTags.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::ECS::Service ServiceRegistries.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::FIS::ExperimentTemplate LogConfiguration (__added__)
+
+## Property Type Changes
+
+* AWS::EC2::Subnet.PrivateDnsNameOptionsOnLaunch (__removed__)
+* AWS::EC2::TransitGatewayPeeringAttachment.TransitGatewayPeeringAttachmentOptions (__removed__)
+* AWS::AppFlow::Flow.MarketoDestinationProperties (__added__)
+* AWS::AutoScaling::ScalingPolicy.Metric (__added__)
+* AWS::AutoScaling::ScalingPolicy.MetricDataQuery (__added__)
+* AWS::AutoScaling::ScalingPolicy.MetricStat (__added__)
+* AWS::AutoScaling::ScalingPolicy.PredictiveScalingCustomizedCapacityMetric (__added__)
+* AWS::AutoScaling::ScalingPolicy.PredictiveScalingCustomizedLoadMetric (__added__)
+* AWS::AutoScaling::ScalingPolicy.PredictiveScalingCustomizedScalingMetric (__added__)
+* AWS::FIS::ExperimentTemplate.ExperimentTemplateLogConfiguration (__added__)
+* AWS::AppFlow::Flow.DestinationConnectorProperties Marketo (__added__)
+* AWS::AutoScaling::ScalingPolicy.PredictiveScalingMetricSpecification CustomizedCapacityMetricSpecification (__added__)
+* AWS::AutoScaling::ScalingPolicy.PredictiveScalingMetricSpecification CustomizedLoadMetricSpecification (__added__)
+* AWS::AutoScaling::ScalingPolicy.PredictiveScalingMetricSpecification CustomizedScalingMetricSpecification (__added__)
+* AWS::ECS::Service.LoadBalancer ContainerName.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::ECS::Service.LoadBalancer ContainerPort.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::ECS::Service.LoadBalancer LoadBalancerName.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::ECS::Service.LoadBalancer TargetGroupArn.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::ECS::Service.ServiceRegistry ContainerName.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::ECS::Service.ServiceRegistry ContainerPort.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::ECS::Service.ServiceRegistry Port.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::ECS::Service.ServiceRegistry RegistryArn.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::FIS::ExperimentTemplate.ExperimentTemplateTarget Parameters (__added__)
+* AWS::Lex::BotAlias.AudioLogDestination S3Bucket.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::Lex::BotAlias.TextLogDestination CloudWatch.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::Lex::BotAlias.TextLogSetting Destination.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::Lex::BotAlias.TextLogSetting Enabled.Required (__changed__)
+  * Old: false
+  * New: true
+
+
 # CloudFormation Resource Specification v59.0.0
 
 ## New Resource Types

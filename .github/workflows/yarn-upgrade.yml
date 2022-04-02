@@ -27,15 +27,19 @@ jobs:
         run: echo "::set-output name=dir::$(yarn cache dir)"
 
       - name: Restore Yarn cache
-        uses: actions/cache@v2.1.7
+        uses: actions/cache@v3
         with:
           path: ${{ steps.yarn-cache.outputs.dir }}
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |-
             ${{ runner.os }}-yarn-
+      - name: Yarn Install
+        run: yarn install --frozen-lockfile
       - name: Install Tools
         run: |-
           npm -g install lerna npm-check-updates@^9.0.0
+      - name: Build CLI
+        run: cd packages/aws-cdk && ../../scripts/buildup
       - name: List Mono-Repo Packages
         id: list-packages
         # These need to be ignored from the `ncu` runs!
@@ -59,12 +63,16 @@ jobs:
           lerna exec --parallel ncu -- --upgrade --filter=@types/node,@types/fs-extra --target=minor
           lerna exec --parallel ncu -- --upgrade --filter=typescript --target=patch
           lerna exec --parallel ncu -- --upgrade --reject='@types/node,@types/fs-extra,constructs,typescript,aws-sdk,aws-sdk-mock,${{ steps.list-packages.outputs.list }}'  --target=minor
+          
       # This will ensure the current lockfile is up-to-date with the dependency specifications (necessary for "yarn update" to run)
       - name: Run "yarn install"
         run: yarn install
 
       - name: Run "yarn upgrade"
         run: yarn upgrade
+        
+      - name: Regenerate CLI attributions
+        run: cd packages/aws-cdk && yarn pkglint
 
       # Next, create and upload the changes as a patch file. This will later be downloaded to create a pull request
       # Creating a pull request requires write permissions and it's best to keep write privileges isolated.
@@ -100,7 +108,7 @@ jobs:
           }}/upgrade.patch || echo "Empty patch. Skipping."'
 
       - name: Make Pull Request
-        uses: peter-evans/create-pull-request@v3
+        uses: peter-evans/create-pull-request@v4
         with:
           # Git commit details
           branch: automation/yarn-upgrade
@@ -115,4 +123,4 @@ jobs:
           team-reviewers: aws-cdk-team
           # Github prevents further Github actions to be run if the default Github token is used.
           # Instead use a privileged token here, so further GH actions can be triggered on this PR.
-          token: ${{ secrets.AUTOMATION_GITHUB_TOKEN }}
+          token: ${{ secrets.PROJEN_GITHUB_TOKEN }}

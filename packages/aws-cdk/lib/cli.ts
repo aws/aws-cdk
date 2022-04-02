@@ -10,6 +10,7 @@ import { CloudFormationDeployments } from '../lib/api/cloudformation-deployments
 import { StackSelector } from '../lib/api/cxapp/cloud-assembly';
 import { CloudExecutable } from '../lib/api/cxapp/cloud-executable';
 import { execProgram } from '../lib/api/cxapp/exec';
+import { PluginHost } from '../lib/api/plugin';
 import { ToolkitInfo } from '../lib/api/toolkit-info';
 import { StackActivityProgress } from '../lib/api/util/cloudformation/stack-activity-monitor';
 import { CdkToolkit } from '../lib/cdk-toolkit';
@@ -20,7 +21,6 @@ import { RequireApproval } from '../lib/diff';
 import { availableInitLanguages, cliInit, printAvailableTemplates } from '../lib/init';
 import { data, debug, error, print, setLogLevel } from '../lib/logging';
 import { displayNotices, refreshNotices } from '../lib/notices';
-import { PluginHost } from '../lib/plugin';
 import { Command, Configuration, Settings } from '../lib/settings';
 import * as version from '../lib/version';
 
@@ -56,6 +56,7 @@ async function parseCommandLineArguments() {
     .env('CDK')
     .usage('Usage: cdk -a <cdk-app> COMMAND')
     .option('app', { type: 'string', alias: 'a', desc: 'REQUIRED: command-line for executing your app or a cloud assembly directory (e.g. "node bin/my-app.js")', requiresArg: true })
+    .option('build', { type: 'string', desc: 'Command-line for a pre-synth build' })
     .option('context', { type: 'array', alias: 'c', desc: 'Add contextual string parameter (KEY=VALUE)', nargs: 1, requiresArg: true })
     .option('plugin', { type: 'array', alias: 'p', desc: 'Name or path of a node package that extend the CDK features. Can be specified multiple times', nargs: 1 })
     .option('trace', { type: 'boolean', desc: 'Print trace for stack warnings' })

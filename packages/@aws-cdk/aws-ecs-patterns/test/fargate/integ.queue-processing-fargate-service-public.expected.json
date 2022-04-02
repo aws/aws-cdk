@@ -18,11 +18,11 @@
     "VPCPublicSubnet1SubnetB4246D30": {
       "Type": "AWS::EC2::Subnet",
       "Properties": {
-        "CidrBlock": "10.0.0.0/19",
         "VpcId": {
           "Ref": "VPCB9E5F0B4"
         },
         "AvailabilityZone": "test-region-1a",
+        "CidrBlock": "10.0.0.0/19",
         "MapPublicIpOnLaunch": true,
         "Tags": [
           {
@@ -115,11 +115,11 @@
     "VPCPublicSubnet2Subnet74179F39": {
       "Type": "AWS::EC2::Subnet",
       "Properties": {
-        "CidrBlock": "10.0.32.0/19",
         "VpcId": {
           "Ref": "VPCB9E5F0B4"
         },
         "AvailabilityZone": "test-region-1b",
+        "CidrBlock": "10.0.32.0/19",
         "MapPublicIpOnLaunch": true,
         "Tags": [
           {
@@ -212,11 +212,11 @@
     "VPCPublicSubnet3Subnet631C5E25": {
       "Type": "AWS::EC2::Subnet",
       "Properties": {
-        "CidrBlock": "10.0.64.0/19",
         "VpcId": {
           "Ref": "VPCB9E5F0B4"
         },
         "AvailabilityZone": "test-region-1c",
+        "CidrBlock": "10.0.64.0/19",
         "MapPublicIpOnLaunch": true,
         "Tags": [
           {
@@ -309,11 +309,11 @@
     "VPCPrivateSubnet1Subnet8BCA10E0": {
       "Type": "AWS::EC2::Subnet",
       "Properties": {
-        "CidrBlock": "10.0.96.0/19",
         "VpcId": {
           "Ref": "VPCB9E5F0B4"
         },
         "AvailabilityZone": "test-region-1a",
+        "CidrBlock": "10.0.96.0/19",
         "MapPublicIpOnLaunch": false,
         "Tags": [
           {
@@ -371,11 +371,11 @@
     "VPCPrivateSubnet2SubnetCFCDAA7A": {
       "Type": "AWS::EC2::Subnet",
       "Properties": {
-        "CidrBlock": "10.0.128.0/19",
         "VpcId": {
           "Ref": "VPCB9E5F0B4"
         },
         "AvailabilityZone": "test-region-1b",
+        "CidrBlock": "10.0.128.0/19",
         "MapPublicIpOnLaunch": false,
         "Tags": [
           {
@@ -433,11 +433,11 @@
     "VPCPrivateSubnet3Subnet3EDCD457": {
       "Type": "AWS::EC2::Subnet",
       "Properties": {
-        "CidrBlock": "10.0.160.0/19",
         "VpcId": {
           "Ref": "VPCB9E5F0B4"
         },
         "AvailabilityZone": "test-region-1c",
+        "CidrBlock": "10.0.160.0/19",
         "MapPublicIpOnLaunch": false,
         "Tags": [
           {
@@ -562,11 +562,11 @@
           "Statement": [
             {
               "Action": [
-                "sqs:ReceiveMessage",
                 "sqs:ChangeMessageVisibility",
-                "sqs:GetQueueUrl",
                 "sqs:DeleteMessage",
-                "sqs:GetQueueAttributes"
+                "sqs:GetQueueAttributes",
+                "sqs:GetQueueUrl",
+                "sqs:ReceiveMessage"
               ],
               "Effect": "Allow",
               "Resource": {
@@ -606,11 +606,11 @@
             "Essential": true,
             "HealthCheck": {
               "Command": [
-                "CMD-SHELL", 
-                "curl -f http://localhost/ || exit 1" 
+                "CMD-SHELL",
+                "curl -f http://localhost/ || exit 1"
               ],
-              "Interval": 720,
-              "Retries": 34,
+              "Interval": 5,
+              "Retries": 10,
               "Timeout": 5
             },
             "Image": {
@@ -698,8 +698,8 @@
             {
               "Action": [
                 "ecr:BatchCheckLayerAvailability",
-                "ecr:GetDownloadUrlForLayer",
-                "ecr:BatchGetImage"
+                "ecr:BatchGetImage",
+                "ecr:GetDownloadUrlForLayer"
               ],
               "Effect": "Allow",
               "Resource": {
