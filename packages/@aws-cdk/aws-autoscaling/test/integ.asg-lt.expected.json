@@ -423,10 +423,100 @@
         "MaxSize": "10",
         "MinSize": "0",
         "DesiredCapacity": "5",
+        "LaunchTemplate": {
+          "LaunchTemplateId": {
+            "Ref": "MainLT4FC09097"
+          },
+          "Version": {
+            "Fn::GetAtt": [
+              "MainLT4FC09097",
+              "LatestVersionNumber"
+            ]
+          }
+        },
+        "VPCZoneIdentifier": [
+          {
+            "Ref": "VPCPrivateSubnet1Subnet8BCA10E0"
+          },
+          {
+            "Ref": "VPCPrivateSubnet2SubnetCFCDAA7A"
+          }
+        ]
+      },
+      "UpdatePolicy": {
+        "AutoScalingScheduledAction": {
+          "IgnoreUnmodifiedGroupSizeProperties": true
+        }
+      }
+    },
+    "AsgFromMipASG9EFCE2FC": {
+      "Type": "AWS::AutoScaling::AutoScalingGroup",
+      "Properties": {
+        "MaxSize": "10",
+        "MinSize": "0",
+        "DesiredCapacity": "5",
         "MixedInstancesPolicy": {
           "InstancesDistribution": {
             "OnDemandPercentageAboveBaseCapacity": 50
           },
+          "LaunchTemplate": {
+            "LaunchTemplateSpecification": {
+              "LaunchTemplateId": {
+                "Ref": "MainLT4FC09097"
+              },
+              "Version": {
+                "Fn::GetAtt": [
+                  "MainLT4FC09097",
+                  "LatestVersionNumber"
+                ]
+              }
+            },
+            "Overrides": [
+              {
+                "InstanceType": "t3.micro"
+              },
+              {
+                "InstanceType": "t3a.micro"
+              },
+              {
+                "InstanceType": "t4g.micro",
+                "LaunchTemplateSpecification": {
+                  "LaunchTemplateId": {
+                    "Ref": "T4gLT8FF7D308"
+                  },
+                  "Version": {
+                    "Fn::GetAtt": [
+                      "T4gLT8FF7D308",
+                      "LatestVersionNumber"
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "VPCZoneIdentifier": [
+          {
+            "Ref": "VPCPrivateSubnet1Subnet8BCA10E0"
+          },
+          {
+            "Ref": "VPCPrivateSubnet2SubnetCFCDAA7A"
+          }
+        ]
+      },
+      "UpdatePolicy": {
+        "AutoScalingScheduledAction": {
+          "IgnoreUnmodifiedGroupSizeProperties": true
+        }
+      }
+    },
+    "AsgFromMipWithoutDistributionASG4BF292F9": {
+      "Type": "AWS::AutoScaling::AutoScalingGroup",
+      "Properties": {
+        "MaxSize": "10",
+        "MinSize": "0",
+        "DesiredCapacity": "5",
+        "MixedInstancesPolicy": {
           "LaunchTemplate": {
             "LaunchTemplateSpecification": {
               "LaunchTemplateId": {

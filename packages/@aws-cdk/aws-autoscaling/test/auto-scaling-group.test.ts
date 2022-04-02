@@ -1457,6 +1457,51 @@ describe('auto scaling group', () => {
     });
   });
 
+  test('Can use mixed instance policy without instances distribution', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const lt = LaunchTemplate.fromLaunchTemplateAttributes(stack, 'imported-lt', {
+      launchTemplateId: 'test-lt-id',
+      versionNumber: '0',
+    });
+
+    new autoscaling.AutoScalingGroup(stack, 'mip-asg', {
+      mixedInstancesPolicy: {
+        launchTemplate: lt,
+        launchTemplateOverrides: [{
+          instanceType: new InstanceType('t4g.micro'),
+          launchTemplate: lt,
+          weightedCapacity: 9,
+        }],
+      },
+      vpc: mockVpc(stack),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::AutoScalingGroup', {
+      MixedInstancesPolicy: {
+        LaunchTemplate: {
+          LaunchTemplateSpecification: {
+            LaunchTemplateId: 'test-lt-id',
+            Version: '0',
+          },
+          Overrides: [
+            {
+              InstanceType: 't4g.micro',
+              LaunchTemplateSpecification: {
+                LaunchTemplateId: 'test-lt-id',
+                Version: '0',
+              },
+              WeightedCapacity: '9',
+            },
+          ],
+        },
+      },
+    });
+  });
+
   test('Cannot specify both Launch Template and Launch Config', () => {
     // GIVEN
     const stack = new cdk.Stack();

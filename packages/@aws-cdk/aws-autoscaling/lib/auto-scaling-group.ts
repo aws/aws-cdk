@@ -1229,7 +1229,6 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       });
 
       launchConfig.node.addDependency(this.role);
-
       this.osType = imageConfig.osType;
     }
 
@@ -1651,38 +1650,40 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     }
 
     if (mixedInstancesPolicy) {
+      let instancesDistribution: CfnAutoScalingGroup.InstancesDistributionProperty | undefined = undefined;
       if (mixedInstancesPolicy.instancesDistribution) {
         const dist = mixedInstancesPolicy.instancesDistribution;
-        return {
-          mixedInstancesPolicy: {
-            instancesDistribution: {
-              onDemandAllocationStrategy: dist.onDemandAllocationStrategy?.toString(),
-              onDemandBaseCapacity: dist.onDemandBaseCapacity,
-              onDemandPercentageAboveBaseCapacity: dist.onDemandPercentageAboveBaseCapacity,
-              spotAllocationStrategy: dist.spotAllocationStrategy?.toString(),
-              spotInstancePools: dist.spotInstancePools,
-              spotMaxPrice: dist.spotMaxPrice,
-            },
-            launchTemplate: {
-              launchTemplateSpecification: this.convertILaunchTemplateToSpecification(mixedInstancesPolicy.launchTemplate),
-              ...(mixedInstancesPolicy.launchTemplateOverrides ? {
-                overrides: mixedInstancesPolicy.launchTemplateOverrides.map(override => {
-                  if (override.weightedCapacity && Math.floor(override.weightedCapacity) !== override.weightedCapacity) {
-                    throw new Error('Weight must be an integer');
-                  }
-                  return {
-                    instanceType: override.instanceType.toString(),
-                    launchTemplateSpecification: override.launchTemplate
-                      ? this.convertILaunchTemplateToSpecification(override.launchTemplate)
-                      : undefined,
-                    weightedCapacity: override.weightedCapacity?.toString(),
-                  };
-                }),
-              } : {}),
-            },
-          },
+        instancesDistribution = {
+          onDemandAllocationStrategy: dist.onDemandAllocationStrategy?.toString(),
+          onDemandBaseCapacity: dist.onDemandBaseCapacity,
+          onDemandPercentageAboveBaseCapacity: dist.onDemandPercentageAboveBaseCapacity,
+          spotAllocationStrategy: dist.spotAllocationStrategy?.toString(),
+          spotInstancePools: dist.spotInstancePools,
+          spotMaxPrice: dist.spotMaxPrice,
         };
       }
+      return {
+        mixedInstancesPolicy: {
+          instancesDistribution,
+          launchTemplate: {
+            launchTemplateSpecification: this.convertILaunchTemplateToSpecification(mixedInstancesPolicy.launchTemplate),
+            ...(mixedInstancesPolicy.launchTemplateOverrides ? {
+              overrides: mixedInstancesPolicy.launchTemplateOverrides.map(override => {
+                if (override.weightedCapacity && Math.floor(override.weightedCapacity) !== override.weightedCapacity) {
+                  throw new Error('Weight must be an integer');
+                }
+                return {
+                  instanceType: override.instanceType.toString(),
+                  launchTemplateSpecification: override.launchTemplate
+                    ? this.convertILaunchTemplateToSpecification(override.launchTemplate)
+                    : undefined,
+                  weightedCapacity: override.weightedCapacity?.toString(),
+                };
+              }),
+            } : {}),
+          },
+        },
+      };
     }
 
     throw new Error('Either launchConfig, launchTemplate or mixedInstancesPolicy needs to be specified.');

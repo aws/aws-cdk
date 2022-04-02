@@ -28,10 +28,33 @@ const vpc = new ec2.Vpc(stack, 'VPC', {
 
 new autoscaling.AutoScalingGroup(stack, 'AsgFromLT', {
   vpc,
+  launchTemplate: lt,
+  minCapacity: 0,
+  maxCapacity: 10,
+  desiredCapacity: 5,
+});
+
+new autoscaling.AutoScalingGroup(stack, 'AsgFromMip', {
+  vpc,
   mixedInstancesPolicy: {
     instancesDistribution: {
       onDemandPercentageAboveBaseCapacity: 50,
     },
+    launchTemplate: lt,
+    launchTemplateOverrides: [
+      { instanceType: new ec2.InstanceType('t3.micro') },
+      { instanceType: new ec2.InstanceType('t3a.micro') },
+      { instanceType: new ec2.InstanceType('t4g.micro'), launchTemplate: ltOverrideT4g },
+    ],
+  },
+  minCapacity: 0,
+  maxCapacity: 10,
+  desiredCapacity: 5,
+});
+
+new autoscaling.AutoScalingGroup(stack, 'AsgFromMipWithoutDistribution', {
+  vpc,
+  mixedInstancesPolicy: {
     launchTemplate: lt,
     launchTemplateOverrides: [
       { instanceType: new ec2.InstanceType('t3.micro') },
