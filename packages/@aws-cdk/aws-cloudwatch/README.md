@@ -172,6 +172,8 @@ to show summary information about the displayed time series
 in the legend. For example, if you use:
 
 ```ts
+declare const fn: lambda.Function;
+
 const minuteErrorRate = fn.metricErrors({
   statistic: 'sum',
   period: Duration.hours(1),
