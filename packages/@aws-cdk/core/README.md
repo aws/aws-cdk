@@ -270,7 +270,7 @@ Using AWS Secrets Manager is the recommended way to reference secrets in a CDK a
 - `SecretValue.cfnDynamicReference(dynref)`: refers to a secret described by a CloudFormation dynamic reference (used by `ssmSecure` and `secretsManager`).
 - `SecretValue.resourceAttribute(attr)`: refers to a secret returned from a CloudFormation resource creation.
 
-`SecretValue`s should only be passed to construct that accept properties of type
+`SecretValue`s should only be passed to constructs that accept properties of type
 `SecretValue`. These constructs are written to ensure your secrets will not be
 exposed where they shouldn't be. If you try to use a `SecretValue` in a
 different location, an error about unsafe secret usage will be thrown at
