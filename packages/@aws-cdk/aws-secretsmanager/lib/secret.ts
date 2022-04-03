@@ -568,7 +568,7 @@ export class Secret extends SecretBase {
     }
 
     if ((props.generateSecretString ? 1 : 0) + (props.secretStringBeta1 ? 1 : 0) + (props.secretStringValue ? 1 : 0) > 1) {
-      throw new Error('Cannot specify more than one of `generateSecretString` and `secretStringValue` (or `secretStringBeta1`).');
+      throw new Error('Cannot specify more than one of `generateSecretString`, `secretStringValue`, and `secretStringBeta1`.');
     }
 
     const secretString = props.secretStringValue?.unsafeUnwrap() ?? props.secretStringBeta1?.secretValue();

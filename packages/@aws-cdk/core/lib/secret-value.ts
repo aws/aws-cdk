@@ -14,9 +14,9 @@ import { Token, Tokenization } from './token';
  * Constructs that need secrets will declare parameters of type `SecretValue`.
  *
  * The actual values of these secrets should not be committed to your
- * repository, or even end up in the synthesized template. Instead, they should
- * be stored in an external system like AWS Secrets Manager or SSM Parameter
- * Store, and you reference them by calling `SecretValue.secretsManager()` or
+ * repository, or even end up in the synthesized CloudFormation template. Instead, you should
+ * store them in an external system like AWS Secrets Manager or SSM Parameter
+ * Store, and you can reference them by calling `SecretValue.secretsManager()` or
  * `SecretValue.ssmSecure()`.
  *
  * You can use `SecretValue.unsafePlainText()` to construct a `SecretValue` from a
