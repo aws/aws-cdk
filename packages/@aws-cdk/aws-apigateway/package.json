@@ -24,8 +24,7 @@
         "distName": "aws-cdk.aws-apigateway",
         "module": "aws_cdk.aws_apigateway",
         "classifiers": [
-          "Framework :: AWS CDK",
-          "Framework :: AWS CDK :: 2"
+          "Framework :: AWS CDK"
         ]
       }
     },

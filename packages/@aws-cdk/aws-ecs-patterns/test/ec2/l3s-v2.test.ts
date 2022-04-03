@@ -11,6 +11,8 @@ import {
   Ec2TaskDefinition,
   PropagatedTagSource,
   Protocol,
+  PlacementStrategy,
+  PlacementConstraint,
 } from '@aws-cdk/aws-ecs';
 import { ApplicationProtocol, SslPolicy } from '@aws-cdk/aws-elasticloadbalancingv2';
 import { CompositePrincipal, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
@@ -162,6 +164,8 @@ describe('When Application Load Balancer', () => {
           protocol: Protocol.TCP,
         },
       ],
+      placementStrategies: [PlacementStrategy.spreadAcrossInstances(), PlacementStrategy.packedByCpu(), PlacementStrategy.randomly()],
+      placementConstraints: [PlacementConstraint.memberOf('attribute:ecs.instance-type =~ m5a.*')],
     });
 
     // THEN
@@ -188,6 +192,8 @@ describe('When Application Load Balancer', () => {
       ],
       PropagateTags: 'SERVICE',
       ServiceName: 'myService',
+      PlacementConstraints: [{ Type: 'memberOf', Expression: 'attribute:ecs.instance-type =~ m5a.*' }],
+      PlacementStrategies: [{ Field: 'instanceId', Type: 'spread' }, { Field: 'cpu', Type: 'binpack' }, { Type: 'random' }],
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
@@ -1039,6 +1045,8 @@ describe('When Network Load Balancer', () => {
           listener: 'listener2',
         },
       ],
+      placementStrategies: [PlacementStrategy.spreadAcrossInstances(), PlacementStrategy.packedByCpu(), PlacementStrategy.randomly()],
+      placementConstraints: [PlacementConstraint.memberOf('attribute:ecs.instance-type =~ m5a.*')],
     });
 
     // THEN
@@ -1066,6 +1074,8 @@ describe('When Network Load Balancer', () => {
       PropagateTags: 'SERVICE',
       SchedulingStrategy: 'REPLICA',
       ServiceName: 'myService',
+      PlacementConstraints: [{ Type: 'memberOf', Expression: 'attribute:ecs.instance-type =~ m5a.*' }],
+      PlacementStrategies: [{ Field: 'instanceId', Type: 'spread' }, { Field: 'cpu', Type: 'binpack' }, { Type: 'random' }],
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {

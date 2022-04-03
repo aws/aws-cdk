@@ -23,8 +23,7 @@
         "distName": "aws-cdk.cloud-assembly-schema",
         "module": "aws_cdk.cloud_assembly_schema",
         "classifiers": [
-          "Framework :: AWS CDK",
-          "Framework :: AWS CDK :: 2"
+          "Framework :: AWS CDK"
         ]
       }
     },

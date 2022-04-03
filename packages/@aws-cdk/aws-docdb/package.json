@@ -24,8 +24,7 @@
         "distName": "aws-cdk.aws-docdb",
         "module": "aws_cdk.aws_docdb",
         "classifiers": [
-          "Framework :: AWS CDK",
-          "Framework :: AWS CDK :: 2"
+          "Framework :: AWS CDK"
         ]
       }
     },

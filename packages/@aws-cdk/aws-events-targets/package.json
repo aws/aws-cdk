@@ -24,8 +24,7 @@
         "distName": "aws-cdk.aws-events-targets",
         "module": "aws_cdk.aws_events_targets",
         "classifiers": [
-          "Framework :: AWS CDK",
-          "Framework :: AWS CDK :: 2"
+          "Framework :: AWS CDK"
         ]
       }
     },
