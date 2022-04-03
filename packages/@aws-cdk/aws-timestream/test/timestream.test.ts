@@ -59,6 +59,41 @@ describe('Timestream Table', () => {
     });
   });
 
+  test('table with all properties', () => {
+    const app = new App();
+    const stack = new Stack(app, 'TestStack');
+
+    const bucket = new Bucket(stack, 'Bucket');
+    const key = new Key(stack, 'TestKey');
+
+    const database = new Database(stack, 'TestDatabase', {
+      databaseName: 'Database_1',
+      kmsKey: key,
+    });
+
+    new Table(stack, 'TestTable', {
+      database,
+      tableName: 'testTable',
+      magneticStoreWriteProperties: {
+        enableMagneticStoreWrites: true,
+        magneticStoreRejectedDataLocation: {
+          s3Configuration: {
+            bucketName: bucket.bucketName,
+            encryptionOption: EncryptionOptions.SSE_S3,
+            kmsKeyId: key.keyId,
+          },
+        },
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Timestream::Table', {
+      DatabaseName: {
+        Ref: 'TestDatabase7A4A91C2',
+      },
+      TableName: 'testTable',
+    });
+  });
+
   test('table from arn', () => {
     const app = new App();
     const stack = new Stack(app, 'TestStack');
