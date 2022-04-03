@@ -1,31 +1,143 @@
 # AWS::Timestream Construct Library
-<!--BEGIN STABILITY BANNER-->
 
----
+Constructs for creating Timestream databases, tables, and scheduled queries.
 
-![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
+## Database
 
-> All classes with the `Cfn` prefix in this module ([CFN Resources]) are always stable and safe to use.
->
-> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib
+THe most basic database construct
 
----
-
-<!--END STABILITY BANNER-->
-
-This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
-
-```ts nofixture
-import * as timestream from '@aws-cdk/aws-timestream';
+```ts
+new Database(scope, "TimestreamDatabase");
 ```
 
-<!--BEGIN CFNONLY DISCLAIMER-->
+You can include a specific database name
 
-There are no hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet. 
-However, you can still use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, and use this service exactly as you would using CloudFormation directly.
+```ts
+new Database(scope, "TimestreamDatabase", {
+  databaseName: "iot_data",
+});
+```
 
-For more information on the resources and properties available for this service, see the [CloudFormation documentation for AWS::Timestream](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_Timestream.html).
+And include a key for encryption
 
-(Read the [CDK Contributing Guide](https://github.com/aws/aws-cdk/blob/master/CONTRIBUTING.md) if you are interested in contributing to this construct library.)
+```ts
+declare const key: kms.Key;
 
-<!--END CFNONLY DISCLAIMER-->
+new Database(scope, "TimestreamDatabase", {
+  databaseName: "iot_data",
+  kmsKey: key,
+});
+```
+
+## Table
+
+Creating a simple table can be done with just a database reference.
+
+```ts
+declare const database: Database;
+
+new Table(scope, "TimestreamTable", { database });
+```
+
+To specify name
+
+```ts
+declare const database: Database;
+
+new Table(scope, "TimestreamTable", {
+  database,
+  tableName: "data_table",
+});
+```
+
+### Magnetic Store Write Properties
+
+You can specify how magnetic storage (hard drive) is used by the table.
+
+```ts
+declare const database: Database;
+declare const bucket: s3.Bucket;
+
+new Table(scope, "TimestreamTable", {
+  database,
+  magneticStoreWriteProperties: {
+    enableMagneticStoreWrites: true,
+    magneticStoreRejectedDataLocation: {
+      s3Configuration: {
+        bucketName: bucket.bucketName,
+        encryptionOption: EncryptionOptions.SSE_S3,
+      },
+    },
+  },
+});
+```
+
+### Retention Properties
+
+The retention duration for the memory store and magnetic store.
+
+```ts
+declare const database: Database;
+
+new Table(scope, "TimestreamTable", {
+  database,
+  retentionProperties: {
+    memoryStoreRetentionPeriod: Duration.hours(24),
+    magneticStoreRetentionPeriod: Duration.days(7),
+  },
+});
+```
+
+## Scheduled Query
+
+Create a scheduled query that will be run on your behalf at the configured schedule. Timestream assumes the execution role provided as part of the ScheduledQueryExecutionRoleArn parameter to run the query. You can use the NotificationConfiguration parameter to configure notification for your scheduled query operations.
+
+```ts
+declare const table: Table;
+declare const topic: sns.Topic;
+declare const bucket: s3.Bucket;
+
+new ScheduledQuery(scope, "ScheduledQuery", {
+  queryString:
+    'SELECT time, measure_name as name, measure_name as amount FROM "ATestDB"."Test"',
+  errorReportConfiguration: {
+    s3Configuration: {
+      bucketName: bucket.bucketName,
+      encryptionOption: EncryptionOptions.SSE_S3,
+      objectKeyPrefix: "prefix/",
+    },
+  },
+  scheduledQueryName: "Test_Query",
+  notificationConfiguration: {
+    snsConfiguration: {
+      topicArn: topic.topicArn,
+    },
+  },
+  targetConfiguration: {
+    timestreamConfiguration: {
+      databaseName: table.databaseName,
+      dimensionMappings: [
+        {
+          name: "name",
+          dimensionValueType: "VARCHAR",
+        },
+      ],
+      multiMeasureMappings: {
+        targetMultiMeasureName: "test",
+        multiMeasureAttributeMappings: [
+          {
+            measureValueType: "VARCHAR",
+            sourceColumn: "amount",
+          },
+        ],
+      },
+      tableName: Fn.select(1, Fn.split("|", table.tableName)),
+      timeColumn: "time",
+    },
+  },
+  scheduleConfiguration: {
+    scheduleExpression: "cron(0/30 * * * ? *)",
+  },
+  scheduledQueryExecutionRole: role,
+});
+```

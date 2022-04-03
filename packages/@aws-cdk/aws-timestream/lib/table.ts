@@ -2,6 +2,7 @@ import { UnknownPrincipal } from '@aws-cdk/aws-iam';
 import { ArnFormat, Duration, IResource, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { IDatabase } from './database';
+import { EncryptionOptions } from './enums';
 import { CfnTable, CfnTableProps } from './timestream.generated';
 
 /**
@@ -38,19 +39,23 @@ export interface MagneticS3Configuration {
   readonly bucketName: string,
 
   /**
-   * The encryption option for the S3 location. Valid values are S3 server-side encryption with an S3 managed key (SSE_S3) or AWS managed key ( SSE_KMS).
+   * The encryption option for the S3 location. Valid values are S3 server-side encryption with an S3 managed key (SSE_S3) or AWS managed key (SSE_KMS).
    */
-  readonly encryptionOption: string,
+  readonly encryptionOption: EncryptionOptions,
 
   /**
    * The AWS KMS key ID to use when encrypting with an AWS managed key.
+   *
+   * @default None
    */
-  readonly kmsKeyId: string,
+  readonly kmsKeyId?: string,
 
   /**
    * The prefix to use option for the objects stored in S3.
+   *
+   * @default None
    */
-  readonly objectKeyPrefix: string
+  readonly objectKeyPrefix?: string
 }
 
 /**
@@ -74,8 +79,10 @@ export interface MagneticStoreWriteProperties {
 
   /**
    * The location to write error reports for records rejected, asynchronously, during magnetic store writes. Only S3Configuration objects are allowed
+   *
+   * @default None
    */
-  readonly magneticStoreRejectedDataLocation: MagneticStoreRejectedDataLocation
+  readonly magneticStoreRejectedDataLocation?: MagneticStoreRejectedDataLocation
 }
 
 /**
@@ -83,12 +90,12 @@ export interface MagneticStoreWriteProperties {
  */
 export interface RetentionProperties {
   /**
-   * Retention duration for memory store, in hours.
+   * Retention duration for memory store.
    */
   readonly memoryStoreRetentionPeriod: Duration
 
   /**
-   * Retention duration for magnetic store, in days.
+   * Retention duration for magnetic store.
    */
   readonly magneticStoreRetentionPeriod: Duration
 }
@@ -184,6 +191,12 @@ export class Table extends TableBase {
       physicalName: props.tableName,
     });
 
+    this.node.addDependency(props.database);
+
+    if (props.magneticStoreWriteProperties?.enableMagneticStoreWrites && !props.magneticStoreWriteProperties.magneticStoreRejectedDataLocation) {
+      throw Error('If enableMagneticStoreWrites is true magneticStoreRejectedDataLocation must be defined.');
+    }
+
     const cfnTableProps: CfnTableProps = {
       databaseName: props.database.databaseName,
       magneticStoreWriteProperties: props.magneticStoreWriteProperties,
@@ -198,9 +211,13 @@ export class Table extends TableBase {
     }
 
     const resource = new CfnTable(this, 'Resource', cfnTableProps);
+    // resource.node.addDependency(props.database);
 
-    this.tableArn = resource.attrArn;
-    this.tableName = resource.attrName;
+    this.tableArn = this.getResourceArnAttribute(resource.attrArn, {
+      service: 'timestream',
+      resource: this.physicalName,
+    });
+    this.tableName = this.getResourceNameAttribute(resource.ref);
     this.databaseName = resource.databaseName;
   }
 }

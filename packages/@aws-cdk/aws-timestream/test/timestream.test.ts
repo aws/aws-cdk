@@ -28,11 +28,9 @@ describe('Timestream Database', () => {
     const app = new App();
     const stack = new Stack(app, 'TestStack');
 
-    Database.fromDatabaseArn(stack, 'ArnTestDatabase', 'arn:aws:timestream:us-east-1:123456789012:database/database');
+    const database = Database.fromDatabaseArn(stack, 'ArnTestDatabase', 'arn:aws:timestream:us-east-1:123456789012:database/database');
 
-    // Template.fromStack(stack).hasResourceProperties('AWS::Timestream::Database', {
-
-    // });
+    expect(database.databaseName).toBe('database');
   });
 });
 
@@ -54,8 +52,10 @@ describe('Timestream Table', () => {
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::Timestream::Table', {
+      DatabaseName: {
+        Ref: 'TestDatabase7A4A91C2',
+      },
       TableName: 'testTable',
-      DatabaseName: 'Database_1',
     });
   });
 
@@ -71,7 +71,7 @@ describe('Timestream Table', () => {
 });
 
 describe('Timestream Scheduled Query', () => {
-  test('', () => {
+  test('Scheduled Query is created', () => {
     const app = new App();
     const stack = new Stack(app, 'TestStack');
 
@@ -82,7 +82,6 @@ describe('Timestream Scheduled Query', () => {
     const role = new Role(stack, 'TestRole', {
       assumedBy: new ServicePrincipal('timestream.amazonaws.com'),
     });
-
 
     new ScheduledQuery(stack, 'SQ_1', {
       queryString: 'SELECT * FROM DATABASE',
@@ -107,13 +106,59 @@ describe('Timestream Scheduled Query', () => {
           ],
           tableName: table.tableName,
           timeColumn: 'hour',
-
         },
       },
       scheduleConfiguration: {
         scheduleExpression: '',
       },
       scheduledQueryExecutionRole: role,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Timestream::ScheduledQuery', {
+      ErrorReportConfiguration: {
+        S3Configuration: {
+          BucketName: {
+            Ref: 'TestBucket560B80BC',
+          },
+          EncryptionOption: 'SSE_S3',
+          ObjectKeyPrefix: 'prefix/',
+        },
+      },
+      NotificationConfiguration: {
+        SnsConfiguration: {
+          TopicArn: {
+            Ref: 'TestTopic339EC197',
+          },
+        },
+      },
+      QueryString: 'SELECT * FROM DATABASE',
+      ScheduleConfiguration: {
+        ScheduleExpression: '',
+      },
+      ScheduledQueryExecutionRoleArn: {
+        'Fn::GetAtt': [
+          'TestRole6C9272DF',
+          'Arn',
+        ],
+      },
+      ScheduledQueryName: 'Test Query',
+      TargetConfiguration: {
+        TimestreamConfiguration: {
+          DatabaseName: {
+            Ref: 'TestDatabase7A4A91C2',
+          },
+          DimensionMappings: [
+            {
+              DimensionValueType: 'VARCHAR',
+              Name: 'region',
+            },
+          ],
+          TableName: {
+            Ref: 'TestTable5769773A',
+          },
+          TimeColumn: 'hour',
+        },
+      },
     });
   });
 });

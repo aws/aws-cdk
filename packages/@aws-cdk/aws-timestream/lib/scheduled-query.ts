@@ -2,6 +2,7 @@ import { IRole, UnknownPrincipal } from '@aws-cdk/aws-iam';
 import { IKey } from '@aws-cdk/aws-kms';
 import { IResource, Resource } from '@aws-cdk/core';
 import { Construct } from 'constructs';
+import { EncryptionOptions } from './enums';
 import { CfnScheduledQuery } from './timestream.generated';
 
 /**
@@ -147,21 +148,6 @@ abstract class ScheduledQueryBase extends Resource implements IScheduledQuery {
   abstract readonly scheduledQuerySqTargetConfiguration: string
 
 
-}
-
-/**
- * Encryption Options
- */
-export enum EncryptionOptions {
-  /**
-   * Server Side Encryption - Key Management Service
-   */
-  SSE_KMS = 'SSE_KMS',
-
-  /**
-   * Server Side Encryption - S3
-   */
-  SSE_S3 = 'SSE_S3'
 }
 
 /**

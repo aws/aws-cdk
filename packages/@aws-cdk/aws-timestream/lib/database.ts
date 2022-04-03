@@ -1,6 +1,6 @@
 import { UnknownPrincipal } from '@aws-cdk/aws-iam';
 import { IKey } from '@aws-cdk/aws-kms';
-import { IResource, Resource, Token } from '@aws-cdk/core';
+import { ArnFormat, IResource, Resource, Stack, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnDatabase } from './timestream.generated';
 
@@ -54,9 +54,12 @@ abstract class DatabaseBase extends Resource implements IDatabase {
    * @returns Database contruct
    */
   public static fromDatabaseArn(scope: Construct, id: string, databaseArn: string): IDatabase {
+    const stack = Stack.of(scope);
+    const splitArn = stack.splitArn(databaseArn, ArnFormat.SLASH_RESOURCE_NAME);
+
     class Import extends DatabaseBase {
       public readonly databaseArn = databaseArn;
-      public readonly databaseName = this.physicalName
+      public readonly databaseName = splitArn.resourceName || ''
       public readonly grantPrincipal = new UnknownPrincipal({ resource: this });
     }
     return new Import(scope, id, {
@@ -101,8 +104,11 @@ export class Database extends DatabaseBase {
       kmsKeyId: props?.kmsKey?.keyId,
     });
 
-    this.databaseArn = resource.attrArn;
-    this.databaseName = this.physicalName;
+    this.databaseArn = this.getResourceArnAttribute(resource.attrArn, {
+      service: 'timestream',
+      resource: this.physicalName,
+    });
+    this.databaseName = this.getResourceNameAttribute(resource.ref);
   }
 
   private validateDatabaseName(databaseName: string) {

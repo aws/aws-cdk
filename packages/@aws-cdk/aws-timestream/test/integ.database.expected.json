@@ -1,0 +1,47 @@
+{
+  "Resources": {
+    "TestKey4CACAF33": {
+      "Type": "AWS::KMS::Key",
+      "Properties": {
+        "KeyPolicy": {
+          "Statement": [
+            {
+              "Action": "kms:*",
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":iam::12345678:root"
+                    ]
+                  ]
+                }
+              },
+              "Resource": "*"
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      },
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain"
+    },
+    "TestDatabase7A4A91C2": {
+      "Type": "AWS::Timestream::Database",
+      "Properties": {
+        "DatabaseName": "ATestDB",
+        "KmsKeyId": {
+          "Ref": "TestKey4CACAF33"
+        }
+      }
+    },
+    "TestDatabase28D78544F": {
+      "Type": "AWS::Timestream::Database"
+    }
+  }
+}
