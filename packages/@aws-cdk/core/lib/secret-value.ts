@@ -4,7 +4,7 @@ import { CfnParameter } from './cfn-parameter';
 import { CfnResource } from './cfn-resource';
 import { FeatureFlags } from './feature-flags';
 import { CfnReference } from './private/cfn-reference';
-import { Intrinsic } from './private/intrinsic';
+import { Intrinsic, IntrinsicProps } from './private/intrinsic';
 import { IResolveContext } from './resolvable';
 import { Token, Tokenization } from './token';
 
@@ -155,12 +155,13 @@ export class SecretValue extends Intrinsic {
   private readonly rawValue: any;
 
   /**
-   * Construct a SecretValue
+   * Construct a SecretValue (do not use!)
    *
-   * @deprecated Do not use the constructor directly: use one of the factory functions on the class
+   * Do not use the constructor directly: use one of the factory functions on the class
+   * instead.
    */
-  constructor(protectedValue: any) {
-    super(protectedValue);
+  constructor(protectedValue: any, options?: IntrinsicProps) {
+    super(protectedValue, options);
     this.rawValue = protectedValue;
   }
 
