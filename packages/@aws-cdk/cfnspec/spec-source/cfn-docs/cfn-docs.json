@@ -10127,18 +10127,60 @@
       "attributes": {},
       "description": "Provides information that defines an Oracle endpoint. This information includes the output format of records applied to the endpoint and details of transaction and control table data information. For information about other available settings, see [Extra connection attributes when using Oracle as a source for AWS DMS](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Source.Oracle.html#CHAP_Source.Oracle.ConnectionAttrib) and [Extra connection attributes when using Oracle as a target for AWS DMS](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Target.Oracle.html#CHAP_Target.Oracle.ConnectionAttrib) in the *AWS Database Migration Service User Guide* .",
       "properties": {
+        "AccessAlternateDirectly": "Set this attribute to `false` in order to use the Binary Reader to capture change data for an Amazon RDS for Oracle as the source. This tells the DMS instance to not access redo logs through any specified path prefix replacement using direct file access.",
+        "AddSupplementalLogging": "Set this attribute to set up table-level supplemental logging for the Oracle database. This attribute enables PRIMARY KEY supplemental logging on all tables selected for a migration task.\n\nIf you use this option, you still need to enable database-level supplemental logging.",
+        "AdditionalArchivedLogDestId": "Set this attribute with `ArchivedLogDestId` in a primary/ standby setup. This attribute is useful in the case of a switchover. In this case, AWS DMS needs to know which destination to get archive redo logs from to read changes. This need arises because the previous primary instance is now a standby instance after switchover.\n\nAlthough AWS DMS supports the use of the Oracle `RESETLOGS` option to open the database, never use `RESETLOGS` unless necessary. For additional information about `RESETLOGS` , see [RMAN Data Repair Concepts](https://docs.aws.amazon.com/https://docs.oracle.com/en/database/oracle/oracle-database/19/bradv/rman-data-repair-concepts.html#GUID-1805CCF7-4AF2-482D-B65A-998192F89C2B) in the *Oracle Database Backup and Recovery User's Guide* .",
+        "AllowSelectNestedTables": "Set this attribute to `true` to enable replication of Oracle tables containing columns that are nested tables or defined types.",
+        "ArchivedLogDestId": "Specifies the ID of the destination for the archived redo logs. This value should be the same as a number in the dest_id column of the v$archived_log view. If you work with an additional redo log destination, use the `AdditionalArchivedLogDestId` option to specify the additional destination ID. Doing this improves performance by ensuring that the correct logs are accessed from the outset.",
+        "ArchivedLogsOnly": "When this field is set to `Y` , AWS DMS only accesses the archived redo logs. If the archived redo logs are stored on Oracle ASM only, the AWS DMS user account needs to be granted ASM privileges.",
+        "AsmPassword": "For an Oracle source endpoint, your Oracle Automatic Storage Management (ASM) password. You can set this value from the `*asm_user_password*` value. You set this value as part of the comma-separated value that you set to the `Password` request parameter when you create the endpoint to access transaction logs using Binary Reader. For more information, see [Configuration for change data capture (CDC) on an Oracle source database](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Source.Oracle.html#dms/latest/userguide/CHAP_Source.Oracle.html#CHAP_Source.Oracle.CDC.Configuration) .",
+        "AsmServer": "For an Oracle source endpoint, your ASM server address. You can set this value from the `asm_server` value. You set `asm_server` as part of the extra connection attribute string to access an Oracle server with Binary Reader that uses ASM. For more information, see [Configuration for change data capture (CDC) on an Oracle source database](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Source.Oracle.html#dms/latest/userguide/CHAP_Source.Oracle.html#CHAP_Source.Oracle.CDC.Configuration) .",
+        "AsmUser": "For an Oracle source endpoint, your ASM user name. You can set this value from the `asm_user` value. You set `asm_user` as part of the extra connection attribute string to access an Oracle server with Binary Reader that uses ASM. For more information, see [Configuration for change data capture (CDC) on an Oracle source database](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Source.Oracle.html#dms/latest/userguide/CHAP_Source.Oracle.html#CHAP_Source.Oracle.CDC.Configuration) .",
+        "CharLengthSemantics": "Specifies whether the length of a character column is in bytes or in characters. To indicate that the character column length is in characters, set this attribute to `CHAR` . Otherwise, the character column length is in bytes.\n\nExample: `charLengthSemantics=CHAR;`",
+        "DirectPathNoLog": "When set to `true` , this attribute helps to increase the commit rate on the Oracle target database by writing directly to tables and not writing a trail to database logs.",
+        "DirectPathParallelLoad": "When set to `true` , this attribute specifies a parallel load when `useDirectPathFullLoad` is set to `Y` . This attribute also only applies when you use the AWS DMS parallel load feature. Note that the target table cannot have any constraints or indexes.",
+        "EnableHomogenousTablespace": "Set this attribute to enable homogenous tablespace replication and create existing tables or indexes under the same tablespace on the target.",
+        "ExtraArchivedLogDestIds": "Specifies the IDs of one more destinations for one or more archived redo logs. These IDs are the values of the `dest_id` column in the `v$archived_log` view. Use this setting with the `archivedLogDestId` extra connection attribute in a primary-to-single setup or a primary-to-multiple-standby setup.\n\nThis setting is useful in a switchover when you use an Oracle Data Guard database as a source. In this case, AWS DMS needs information about what destination to get archive redo logs from to read changes. AWS DMS needs this because after the switchover the previous primary is a standby instance. For example, in a primary-to-single standby setup you might apply the following settings.\n\n`archivedLogDestId=1; ExtraArchivedLogDestIds=[2]`\n\nIn a primary-to-multiple-standby setup, you might apply the following settings.\n\n`archivedLogDestId=1; ExtraArchivedLogDestIds=[2,3,4]`\n\nAlthough AWS DMS supports the use of the Oracle `RESETLOGS` option to open the database, never use `RESETLOGS` unless it's necessary. For more information about `RESETLOGS` , see [RMAN Data Repair Concepts](https://docs.aws.amazon.com/https://docs.oracle.com/en/database/oracle/oracle-database/19/bradv/rman-data-repair-concepts.html#GUID-1805CCF7-4AF2-482D-B65A-998192F89C2B) in the *Oracle Database Backup and Recovery User's Guide* .",
+        "FailTasksOnLobTruncation": "When set to `true` , this attribute causes a task to fail if the actual size of an LOB column is greater than the specified `LobMaxSize` .\n\nIf a task is set to limited LOB mode and this option is set to `true` , the task fails instead of truncating the LOB data.",
+        "NumberDatatypeScale": "Specifies the number scale. You can select a scale up to 38, or you can select FLOAT. By default, the NUMBER data type is converted to precision 38, scale 10.\n\nExample: `numberDataTypeScale=12`",
+        "OraclePathPrefix": "Set this string attribute to the required value in order to use the Binary Reader to capture change data for an Amazon RDS for Oracle as the source. This value specifies the default Oracle root used to access the redo logs.",
+        "ParallelAsmReadThreads": "Set this attribute to change the number of threads that DMS configures to perform a change data capture (CDC) load using Oracle Automatic Storage Management (ASM). You can specify an integer value between 2 (the default) and 8 (the maximum). Use this attribute together with the `readAheadBlocks` attribute.",
+        "ReadAheadBlocks": "Set this attribute to change the number of read-ahead blocks that DMS configures to perform a change data capture (CDC) load using Oracle Automatic Storage Management (ASM). You can specify an integer value between 1000 (the default) and 200,000 (the maximum).",
+        "ReadTableSpaceName": "When set to `true` , this attribute supports tablespace replication.",
+        "ReplacePathPrefix": "Set this attribute to true in order to use the Binary Reader to capture change data for an Amazon RDS for Oracle as the source. This setting tells DMS instance to replace the default Oracle root with the specified `usePathPrefix` setting to access the redo logs.",
+        "RetryInterval": "Specifies the number of seconds that the system waits before resending a query.\n\nExample: `retryInterval=6;`",
         "SecretsManagerAccessRoleArn": "The full Amazon Resource Name (ARN) of the IAM role that specifies AWS DMS as the trusted entity and grants the required permissions to access the value in `SecretsManagerSecret` . The role must allow the `iam:PassRole` action. `SecretsManagerSecret` has the value of the AWS Secrets Manager secret that allows access to the Oracle endpoint.\n\n> You can specify one of two sets of values for these permissions. You can specify the values for this setting and `SecretsManagerSecretId` . Or you can specify clear-text values for `UserName` , `Password` , `ServerName` , and `Port` . You can't specify both.\n> \n> For more information on creating this `SecretsManagerSecret` , the corresponding `SecretsManagerAccessRoleArn` , and the `SecretsManagerSecretId` that is required to access it, see [Using secrets to access AWS Database Migration Service resources](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Security.html#security-iam-secretsmanager) in the *AWS Database Migration Service User Guide* .",
         "SecretsManagerOracleAsmAccessRoleArn": "Required only if your Oracle endpoint uses Advanced Storage Manager (ASM). The full ARN of the IAM role that specifies AWS DMS as the trusted entity and grants the required permissions to access the `SecretsManagerOracleAsmSecret` . This `SecretsManagerOracleAsmSecret` has the secret value that allows access to the Oracle ASM of the endpoint.\n\n> You can specify one of two sets of values for these permissions. You can specify the values for this setting and `SecretsManagerOracleAsmSecretId` . Or you can specify clear-text values for `AsmUserName` , `AsmPassword` , and `AsmServerName` . You can't specify both.\n> \n> For more information on creating this `SecretsManagerOracleAsmSecret` , the corresponding `SecretsManagerOracleAsmAccessRoleArn` , and the `SecretsManagerOracleAsmSecretId` that is required to access it, see [Using secrets to access AWS Database Migration Service resources](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Security.html#security-iam-secretsmanager) in the *AWS Database Migration Service User Guide* .",
         "SecretsManagerOracleAsmSecretId": "Required only if your Oracle endpoint uses Advanced Storage Manager (ASM). The full ARN, partial ARN, or display name of the `SecretsManagerOracleAsmSecret` that contains the Oracle ASM connection details for the Oracle endpoint.",
-        "SecretsManagerSecretId": "The full ARN, partial ARN, or display name of the `SecretsManagerSecret` that contains the Oracle endpoint connection details."
+        "SecretsManagerSecretId": "The full ARN, partial ARN, or display name of the `SecretsManagerSecret` that contains the Oracle endpoint connection details.",
+        "SecurityDbEncryption": "For an Oracle source endpoint, the transparent data encryption (TDE) password required by AWM DMS to access Oracle redo logs encrypted by TDE using Binary Reader. It is also the `*TDE_Password*` part of the comma-separated value you set to the `Password` request parameter when you create the endpoint. The `SecurityDbEncryptian` setting is related to this `SecurityDbEncryptionName` setting. For more information, see [Supported encryption methods for using Oracle as a source for AWS DMS](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Source.Oracle.html#CHAP_Source.Oracle.Encryption) in the *AWS Database Migration Service User Guide* .",
+        "SecurityDbEncryptionName": "For an Oracle source endpoint, the name of a key used for the transparent data encryption (TDE) of the columns and tablespaces in an Oracle source database that is encrypted using TDE. The key value is the value of the `SecurityDbEncryption` setting. For more information on setting the key name value of `SecurityDbEncryptionName` , see the information and example for setting the `securityDbEncryptionName` extra connection attribute in [Supported encryption methods for using Oracle as a source for AWS DMS](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Source.Oracle.html#CHAP_Source.Oracle.Encryption) in the *AWS Database Migration Service User Guide* .",
+        "SpatialDataOptionToGeoJsonFunctionName": "Use this attribute to convert `SDO_GEOMETRY` to `GEOJSON` format. By default, DMS calls the `SDO2GEOJSON` custom function if present and accessible. Or you can create your own custom function that mimics the operation of `SDOGEOJSON` and set `SpatialDataOptionToGeoJsonFunctionName` to call it instead.",
+        "StandbyDelayTime": "Use this attribute to specify a time in minutes for the delay in standby sync. If the source is an Oracle Active Data Guard standby database, use this attribute to specify the time lag between primary and standby databases.\n\nIn AWS DMS , you can create an Oracle CDC task that uses an Active Data Guard standby instance as a source for replicating ongoing changes. Doing this eliminates the need to connect to an active database that might be in production.",
+        "UseAlternateFolderForOnline": "Set this attribute to `true` in order to use the Binary Reader to capture change data for an Amazon RDS for Oracle as the source. This tells the DMS instance to use any specified prefix replacement to access all online redo logs.",
+        "UseBFile": "Set this attribute to Y to capture change data using the Binary Reader utility. Set `UseLogminerReader` to N to set this attribute to Y. To use Binary Reader with Amazon RDS for Oracle as the source, you set additional attributes. For more information about using this setting with Oracle Automatic Storage Management (ASM), see [Using Oracle LogMiner or AWS DMS Binary Reader for CDC](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Source.Oracle.html#CHAP_Source.Oracle.CDC) .",
+        "UseDirectPathFullLoad": "Set this attribute to Y to have AWS DMS use a direct path full load. Specify this value to use the direct path protocol in the Oracle Call Interface (OCI). By using this OCI protocol, you can bulk-load Oracle target tables during a full load.",
+        "UseLogminerReader": "Set this attribute to Y to capture change data using the Oracle LogMiner utility (the default). Set this attribute to N if you want to access the redo logs as a binary file. When you set `UseLogminerReader` to N, also set `UseBfile` to Y. For more information on this setting and using Oracle ASM, see [Using Oracle LogMiner or AWS DMS Binary Reader for CDC](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Source.Oracle.html#CHAP_Source.Oracle.CDC) in the *AWS DMS User Guide* .",
+        "UsePathPrefix": "Set this string attribute to the required value in order to use the Binary Reader to capture change data for an Amazon RDS for Oracle as the source. This value specifies the path prefix used to replace the default Oracle root to access the redo logs."
       }
     },
     "AWS::DMS::Endpoint.PostgreSqlSettings": {
       "attributes": {},
       "description": "Provides information that defines a PostgreSQL endpoint. This information includes the output format of records applied to the endpoint and details of transaction and control table data information. For information about other available settings, see [Extra connection attributes when using PostgreSQL as a source for AWS DMS](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Source.PostgreSQL.html#CHAP_Source.PostgreSQL.ConnectionAttrib) and [Extra connection attributes when using PostgreSQL as a target for AWS DMS](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Target.PostgreSQL.html#CHAP_Target.PostgreSQL.ConnectionAttrib) in the *AWS Database Migration Service User Guide* .",
       "properties": {
+        "AfterConnectScript": "For use with change data capture (CDC) only, this attribute has AWS DMS bypass foreign keys and user triggers to reduce the time it takes to bulk load data.\n\nExample: `afterConnectScript=SET session_replication_role='replica'`",
+        "CaptureDdls": "To capture DDL events, AWS DMS creates various artifacts in the PostgreSQL database when the task starts. You can later remove these artifacts.\n\nIf this value is set to `N` , you don't have to create tables or triggers on the source database.",
+        "DdlArtifactsSchema": "The schema in which the operational DDL database artifacts are created.\n\nExample: `ddlArtifactsSchema=xyzddlschema;`",
+        "ExecuteTimeout": "Sets the client statement timeout for the PostgreSQL instance, in seconds. The default value is 60 seconds.\n\nExample: `executeTimeout=100;`",
+        "FailTasksOnLobTruncation": "When set to `true` , this value causes a task to fail if the actual size of a LOB column is greater than the specified `LobMaxSize` .\n\nIf task is set to Limited LOB mode and this option is set to true, the task fails instead of truncating the LOB data.",
+        "HeartbeatEnable": "The write-ahead log (WAL) heartbeat feature mimics a dummy transaction. By doing this, it prevents idle logical replication slots from holding onto old WAL logs, which can result in storage full situations on the source. This heartbeat keeps `restart_lsn` moving and prevents storage full scenarios.",
+        "HeartbeatFrequency": "Sets the WAL heartbeat frequency (in minutes).",
+        "HeartbeatSchema": "Sets the schema in which the heartbeat artifacts are created.",
+        "MaxFileSize": "Specifies the maximum size (in KB) of any .csv file used to transfer data to PostgreSQL.\n\nExample: `maxFileSize=512`",
+        "PluginName": "Specifies the plugin to use to create a replication slot.",
         "SecretsManagerAccessRoleArn": "The full Amazon Resource Name (ARN) of the IAM role that specifies AWS DMS as the trusted entity and grants the required permissions to access the value in `SecretsManagerSecret` . The role must allow the `iam:PassRole` action. `SecretsManagerSecret` has the value of the AWS Secrets Manager secret that allows access to the PostgreSQL endpoint.\n\n> You can specify one of two sets of values for these permissions. You can specify the values for this setting and `SecretsManagerSecretId` . Or you can specify clear-text values for `UserName` , `Password` , `ServerName` , and `Port` . You can't specify both.\n> \n> For more information on creating this `SecretsManagerSecret` , the corresponding `SecretsManagerAccessRoleArn` , and the `SecretsManagerSecretId` that is required to access it, see [Using secrets to access AWS Database Migration Service resources](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Security.html#security-iam-secretsmanager) in the *AWS Database Migration Service User Guide* .",
-        "SecretsManagerSecretId": "The full ARN, partial ARN, or display name of the `SecretsManagerSecret` that contains the PostgreSQL endpoint connection details."
+        "SecretsManagerSecretId": "The full ARN, partial ARN, or display name of the `SecretsManagerSecret` that contains the PostgreSQL endpoint connection details.",
+        "SlotName": "Sets the name of a previously created logical replication slot for a change data capture (CDC) load of the PostgreSQL source instance.\n\nWhen used with the `CdcStartPosition` request parameter for the AWS DMS API , this attribute also makes it possible to use native CDC start points. DMS verifies that the specified logical replication slot exists before starting the CDC load task. It also verifies that the task was created with a valid setting of `CdcStartPosition` . If the specified slot doesn't exist or the task doesn't have a valid `CdcStartPosition` setting, DMS raises an error.\n\nFor more information about setting the `CdcStartPosition` request parameter, see [Determining a CDC native start point](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Task.CDC.html#CHAP_Task.CDC.StartPoint.Native) in the *AWS Database Migration Service User Guide* . For more information about using `CdcStartPosition` , see [CreateReplicationTask](https://docs.aws.amazon.com/dms/latest/APIReference/API_CreateReplicationTask.html) , [StartReplicationTask](https://docs.aws.amazon.com/dms/latest/APIReference/API_StartReplicationTask.html) , and [ModifyReplicationTask](https://docs.aws.amazon.com/dms/latest/APIReference/API_ModifyReplicationTask.html) ."
       }
     },
     "AWS::DMS::Endpoint.RedisSettings": {
@@ -14777,6 +14819,13 @@
         "Type": "The name of the log type."
       }
     },
+    "AWS::EKS::Cluster.Provider": {
+      "attributes": {},
+      "description": "Identifies the AWS Key Management Service ( AWS KMS ) key used to encrypt the secrets.",
+      "properties": {
+        "KeyArn": "Amazon Resource Name (ARN) or alias of the KMS key. The KMS key must be symmetric, created in the same region as the cluster, and if the KMS key was created in a different account, the user must have access to the KMS key. For more information, see [Allowing Users in Other Accounts to Use a KMS key](https://docs.aws.amazon.com/kms/latest/developerguide/key-policy-modifying-external-accounts.html) in the *AWS Key Management Service Developer Guide* ."
+      }
+    },
     "AWS::EKS::Cluster.ResourcesVpcConfig": {
       "attributes": {},
       "description": "An object representing the VPC configuration to use for an Amazon EKS cluster.\n\n> When updating a resource, you must include these properties if the previous CloudFormation template of the resource had them:\n> \n> - `EndpointPublicAccess`\n> - `EndpointPrivateAccess`\n> - `PublicAccessCidrs`",
@@ -16807,6 +16856,68 @@
         "IsValueSecret": "Specifies whether the value is secret.",
         "Key": "The key for a query string parameter.",
         "Value": "The value associated with the key for the query string parameter."
+      }
+    },
+    "AWS::Events::Endpoint": {
+      "attributes": {
+        "Arn": "",
+        "EndpointId": "",
+        "EndpointUrl": "",
+        "Ref": "",
+        "State": "",
+        "StateReason": ""
+      },
+      "description": "",
+      "properties": {
+        "Description": "",
+        "EventBuses": "",
+        "Name": "",
+        "ReplicationConfig": "",
+        "RoleArn": "",
+        "RoutingConfig": ""
+      }
+    },
+    "AWS::Events::Endpoint.EndpointEventBus": {
+      "attributes": {},
+      "description": "",
+      "properties": {
+        "EventBusArn": ""
+      }
+    },
+    "AWS::Events::Endpoint.FailoverConfig": {
+      "attributes": {},
+      "description": "",
+      "properties": {
+        "Primary": "",
+        "Secondary": ""
+      }
+    },
+    "AWS::Events::Endpoint.Primary": {
+      "attributes": {},
+      "description": "",
+      "properties": {
+        "HealthCheck": ""
+      }
+    },
+    "AWS::Events::Endpoint.ReplicationConfig": {
+      "attributes": {},
+      "description": "",
+      "properties": {
+        "State": ""
+      }
+    },
+    "AWS::Events::Endpoint.RoutingConfig": {
+      "attributes": {},
+      "description": "",
+      "properties": {
+        "FailoverConfig": ""
+      }
+    },
+    "AWS::Events::Endpoint.Secondary": {
+      "attributes": {},
+      "description": "",
+      "properties": {
+        "Route": ""
       }
     },
     "AWS::Events::EventBus": {
@@ -20571,7 +20682,7 @@
       },
       "description": "Creates a new container recipe. Container recipes define how images are configured, tested, and assessed.",
       "properties": {
-        "Components": "Components for build and test that are included in the container recipe.",
+        "Components": "Build and test components that are included in the container recipe. Recipes require a minimum of one build component, and can have a maximum of 20 build and test components in any combination.",
         "ContainerType": "Specifies the type of container, such as Docker.",
         "Description": "The description of the container recipe.",
         "DockerfileTemplateData": "Dockerfiles are text documents that are used to build Docker containers, and ensure that they contain all of the elements required by the application running inside. The template data consists of contextual variables where Image Builder places build information or scripts, based on your container image recipe.",
@@ -20754,7 +20865,7 @@
     },
     "AWS::ImageBuilder::ImageRecipe.AdditionalInstanceConfiguration": {
       "attributes": {},
-      "description": "In addition to your infrastruction configuration, these settings provide an extra layer of control over your build instances. For instances where Image Builder installs the Systems Manager agent, you can choose whether to keep it for the AMI that you create. You can also specify commands to run on launch for all of your build instances.",
+      "description": "In addition to your infrastructure configuration, these settings provide an extra layer of control over your build instances. You can also specify commands to run on launch for all of your build instances.\n\nImage Builder does not automatically install the Systems Manager agent on Windows instances. If your base image includes the Systems Manager agent, then the AMI that you create will also include the agent. For Linux instances, if the base image does not already include the Systems Manager agent, Image Builder installs it. For Linux instances where Image Builder installs the Systems Manager agent, you can choose whether to keep it for the AMI that you create.",
       "properties": {
         "SystemsManagerAgent": "Contains settings for the Systems Manager agent on your build instance.",
         "UserDataOverride": "Use this property to provide commands or a command script to run when you launch your build instance.\n\nThe userDataOverride property replaces any commands that Image Builder might have added to ensure that Systems Manager is installed on your Linux build instance. If you override the user data, make sure that you add commands to install Systems Manager, if it is not pre-installed on your base image.\n\n> The user data is always base 64 encoded. For example, the following commands are encoded as `IyEvYmluL2Jhc2gKbWtkaXIgLXAgL3Zhci9iYi8KdG91Y2ggL3Zhci$` :\n> \n> *#!/bin/bash*\n> \n> mkdir -p /var/bb/\n> \n> touch /var"
@@ -20834,7 +20945,7 @@
       "attributes": {},
       "description": "The instance metadata options that apply to the HTTP requests that pipeline builds use to launch EC2 build and test instances. For more information about instance metadata options, see [Configure the instance metadata options](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/configuring-instance-metadata-options.html) in the **Amazon EC2 User Guide** for Linux instances, or [Configure the instance metadata options](https://docs.aws.amazon.com/AWSEC2/latest/WindowsGuide/configuring-instance-metadata-options.html) in the **Amazon EC2 Windows Guide** for Windows instances.",
       "properties": {
-        "HttpPutResponseHopLimit": "Limit the number of hops that an instance metadata request can traverse to reach its destination.",
+        "HttpPutResponseHopLimit": "Limit the number of hops that an instance metadata request can traverse to reach its destination. The default is one hop. However, if HTTP tokens are required, container image builds need a minimum of two hops.",
         "HttpTokens": "Indicates whether a signed token header is required for instance metadata retrieval requests. The values affect the response as follows:\n\n- *required* \u2013 When you retrieve the IAM role credentials, version 2.0 credentials are returned in all cases.\n- *optional* \u2013 You can include a signed token header in your request to retrieve instance metadata, or you can leave it out. If you include it, version 2.0 credentials are returned for the IAM role. Otherwise, version 1.0 credentials are returned.\n\nThe default setting is *optional* ."
       }
     },
@@ -23442,7 +23553,7 @@
       "description": "The `AWS::KMS::Key` resource specifies a [symmetric or asymmetric](https://docs.aws.amazon.com/kms/latest/developerguide/symmetric-asymmetric.html) [KMS key](https://docs.aws.amazon.com/kms/latest/developerguide/concepts.html#kms_keys) in AWS Key Management Service ( AWS KMS ).\n\nYou can use the `AWS::KMS::Key` resource to specify a symmetric or asymmetric multi-Region primary key. To specify a replica key, use the [AWS::KMS::ReplicaKey](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kms-replicakey.html) resource. For information about multi-Region keys, see [Multi-Region keys](https://docs.aws.amazon.com/kms/latest/developerguide/multi-region-keys-overview.html) in the *AWS Key Management Service Developer Guide* .\n\nYou cannot use the `AWS::KMS::Key` resource to specify a KMS key with [imported key material](https://docs.aws.amazon.com/kms/latest/developerguide/importing-keys.html) or a KMS key in a [custom key store](https://docs.aws.amazon.com/kms/latest/developerguide/custom-key-store-overview.html) .\n\n> AWS KMS is replacing the term *customer master key (CMK)* with *AWS KMS key* and *KMS key* . The concept has not changed. To prevent breaking changes, AWS KMS is keeping some variations of this term. \n\nYou can use symmetric KMS keys to encrypt and decrypt small amounts of data, but they are more commonly used to generate data keys and data key pairs. You can also use symmetric KMS key to encrypt data stored in AWS services that are [integrated with AWS KMS](https://docs.aws.amazon.com//kms/features/#AWS_Service_Integration) . For more information, see [What is AWS Key Management Service ?](https://docs.aws.amazon.com/kms/latest/developerguide/overview.html) in the *AWS Key Management Service Developer Guide* .\n\nYou can use asymmetric KMS keys to encrypt and decrypt data or sign messages and verify signatures. To create an asymmetric key, you must specify an asymmetric `KeySpec` value and a `KeyUsage` value.\n\n> If you change the value of the `KeyUsage` , `KeySpec` , or `MultiRegion` property on an existing KMS key, the existing KMS key is [scheduled for deletion](https://docs.aws.amazon.com/kms/latest/developerguide/deleting-keys.html) and a new KMS key is created with the specified value.\n> \n> While scheduled for deletion, the existing KMS key becomes unusable. If you don't [cancel the scheduled deletion](https://docs.aws.amazon.com/kms/latest/developerguide/deleting-keys.html#deleting-keys-scheduling-key-deletion) of the existing KMS key outside of CloudFormation, all data encrypted under the existing KMS key becomes unrecoverable when the KMS key is deleted. \n\n*Regions*\n\nAWS KMS CloudFormation resources are supported in all Regions in which AWS CloudFormation is supported. However, in the  (ap-southeast-3), you cannot use a CloudFormation template to create or manage asymmetric KMS keys or multi-Region KMS keys (primary or replica).",
       "properties": {
         "Description": "A description of the KMS key. Use a description that helps you to distinguish this KMS key from others in the account, such as its intended use.",
-        "EnableKeyRotation": "Enables automatic rotation of the key material for the specified KMS key. By default, automatic key rotation is not enabled.\n\nAWS KMS does not support automatic key rotation on asymmetric KMS keys. For asymmetric KMS keys, omit the `EnableKeyRotation` property or set it to `false` .\n\nWhen you enable automatic rotation, AWS KMS automatically creates new key material for the KMS key 365 days after the enable (or reenable) date and every 365 days thereafter. AWS KMS retains all key material until you delete the KMS key. For detailed information about automatic key rotation, see [Rotating KMS keys](https://docs.aws.amazon.com/kms/latest/developerguide/rotate-keys.html) in the *AWS Key Management Service Developer Guide* .",
+        "EnableKeyRotation": "Enables automatic rotation of the key material for the specified KMS key. By default, automatic key rotation is not enabled.\n\nAWS KMS supports automatic rotation only for symmetric KMS keys ( `KeySpec` = `SYMMETRIC_DEFAULT` ). Automatic key rotation is *not* supported for asymmetric KMS keys. For asymmetric KMS keys, omit the `EnableKeyRotation` property or set it to `false` .\n\nTo enable automatic key rotation of the key material for a multi-Region KMS key, set `EnableKeyRotation` to `true` on the primary key (created by using `AWS::KMS::Key` ). AWS KMS copies the rotation status to all replica keys when you create them. For details, see [Rotating multi-Region keys](https://docs.aws.amazon.com/kms/latest/developerguide/multi-region-keys-manage.html#multi-region-rotate) in the *AWS Key Management Service Developer Guide* .\n\nWhen you enable automatic rotation, AWS KMS automatically creates new key material for the KMS key one year after the enable date and every year thereafter. AWS KMS retains all key material until you delete the KMS key. For detailed information about automatic key rotation, see [Rotating KMS keys](https://docs.aws.amazon.com/kms/latest/developerguide/rotate-keys.html) in the *AWS Key Management Service Developer Guide* .",
         "Enabled": "Specifies whether the KMS key is enabled. Disabled KMS keys cannot be used in cryptographic operations.\n\nWhen `Enabled` is `true` , the *key state* of the KMS key is `Enabled` . When `Enabled` is `false` , the key state of the KMS key is `Disabled` . The default value is `true` .\n\nThe actual key state of the KMS key might be affected by actions taken outside of CloudFormation, such as running the [EnableKey](https://docs.aws.amazon.com/kms/latest/APIReference/API_EnableKey.html) , [DisableKey](https://docs.aws.amazon.com/kms/latest/APIReference/API_DisableKey.html) , or [ScheduleKeyDeletion](https://docs.aws.amazon.com/kms/latest/APIReference/API_ScheduleKeyDeletion.html) operations.\n\nFor information about the key states of a KMS key, see [Key state: Effect on your KMS key](https://docs.aws.amazon.com/kms/latest/developerguide/key-state.html) in the *AWS Key Management Service Developer Guide* .",
         "KeyPolicy": "The key policy that authorizes use of the KMS key. The key policy must conform to the following rules.\n\n- The key policy must allow the caller to make a subsequent [PutKeyPolicy](https://docs.aws.amazon.com/kms/latest/APIReference/API_PutKeyPolicy.html) request on the KMS key. This reduces the risk that the KMS key becomes unmanageable. For more information, refer to the scenario in the [Default key policy](https://docs.aws.amazon.com/kms/latest/developerguide/key-policies.html#key-policy-default-allow-root-enable-iam) section of the **AWS Key Management Service Developer Guide** .\n- Each statement in the key policy must contain one or more principals. The principals in the key policy must exist and be visible to AWS KMS . When you create a new AWS principal (for example, an IAM user or role), you might need to enforce a delay before including the new principal in a key policy because the new principal might not be immediately visible to AWS KMS . For more information, see [Changes that I make are not always immediately visible](https://docs.aws.amazon.com/IAM/latest/UserGuide/troubleshoot_general.html#troubleshoot_general_eventual-consistency) in the *AWS Identity and Access Management User Guide* .\n- The key policy size limit is 32 kilobytes (32768 bytes).\n\nIf you are unsure of which policy to use, consider the *default key policy* . This is the key policy that AWS KMS applies to KMS keys that are created by using the CreateKey API with no specified key policy. It gives the AWS account that owns the key permission to perform all operations on the key. It also allows you write IAM policies to authorize access to the key. For details, see [Default key policy](https://docs.aws.amazon.com/kms/latest/developerguide/key-policies.html#key-policy-default) in the *AWS Key Management Service Developer Guide* .\n\n*Minimum* : `1`\n\n*Maximum* : `32768`",
         "KeySpec": "Specifies the type of KMS key to create. The default value, `SYMMETRIC_DEFAULT` , creates a KMS key with a 256-bit symmetric key for encryption and decryption. For help choosing a key spec for your KMS key, see [How to choose Your KMS key configuration](https://docs.aws.amazon.com/kms/latest/developerguide/symm-asymm-choose.html) in the *AWS Key Management Service Developer Guide* .\n\nThe `KeySpec` property determines whether the KMS key contains a symmetric key or an asymmetric key pair. It also determines the encryption algorithms or signing algorithms that the KMS key supports. You can't change the `KeySpec` after the KMS key is created. To further restrict the algorithms that can be used with the KMS key, use a condition key in its key policy or IAM policy. For more information, see [kms:EncryptionAlgorithm](https://docs.aws.amazon.com/kms/latest/developerguide/policy-conditions.html#conditions-kms-encryption-algorithm) or [kms:Signing Algorithm](https://docs.aws.amazon.com/kms/latest/developerguide/policy-conditions.html#conditions-kms-signing-algorithm) in the *AWS Key Management Service Developer Guide* .\n\n> If you change the `KeySpec` of an existing KMS key, the existing KMS key is scheduled for deletion and a new KMS key is created with the specified `KeySpec` value. While the scheduled deletion is pending, you can't use the existing KMS key. Unless you [cancel the scheduled deletion](https://docs.aws.amazon.com/kms/latest/developerguide/deleting-keys.html#deleting-keys-scheduling-key-deletion) of the KMS key outside of CloudFormation, all data encrypted under the existing KMS key becomes unrecoverable when the KMS key is deleted. > [AWS services that are integrated with AWS KMS](https://docs.aws.amazon.com/kms/features/#AWS_Service_Integration) use symmetric KMS keys to protect your data. These services do not support asymmetric KMS keys. For help determining whether a KMS key is symmetric or asymmetric, see [Identifying Symmetric and Asymmetric KMS keys](https://docs.aws.amazon.com/kms/latest/developerguide/find-symm-asymm.html) in the *AWS Key Management Service Developer Guide* . \n\nAWS KMS supports the following key specs for KMS keys:\n\n- Symmetric key (default)\n\n- `SYMMETRIC_DEFAULT` (AES-256-GCM)\n- Asymmetric RSA key pairs\n\n- `RSA_2048`\n- `RSA_3072`\n- `RSA_4096`\n- Asymmetric NIST-recommended elliptic curve key pairs\n\n- `ECC_NIST_P256` (secp256r1)\n- `ECC_NIST_P384` (secp384r1)\n- `ECC_NIST_P521` (secp521r1)\n- Other asymmetric elliptic curve key pairs\n\n- `ECC_SECG_P256K1` (secp256k1), commonly used for cryptocurrencies.",
@@ -36626,8 +36737,8 @@
     },
     "AWS::SageMaker::App": {
       "attributes": {
-        "AppArn": "The Amazon Resource Name (ARN) of the App, such as `arn:aws:sagemaker:us-west-2:account-id:app/my-app-name` .",
-        "Ref": "`Ref` returns the App type, App name, domain ID, and user profile name."
+        "AppArn": "The Amazon Resource Name (ARN) of the app, such as `arn:aws:sagemaker:us-west-2:account-id:app/my-app-name` .",
+        "Ref": "`Ref` returns the app type, app name, Domain ID, and user profile name."
       },
       "description": "Creates a running app for the specified UserProfile. Supported apps are `JupyterServer` and `KernelGateway` . This operation is automatically invoked by Amazon SageMaker Studio upon access to the associated Domain, and when new kernel configurations are selected by the user. A user may have multiple Apps active simultaneously.",
       "properties": {
@@ -36886,23 +36997,26 @@
     },
     "AWS::SageMaker::Domain": {
       "attributes": {
-        "DomainArn": "The Amazon Resource Name (ARN) of the domain, such as `arn:aws:sagemaker:us-west-2:account-id:domain/my-domain-name` .",
-        "DomainId": "The domain ID.",
+        "DomainArn": "The Amazon Resource Name (ARN) of the Domain, such as `arn:aws:sagemaker:us-west-2:account-id:domain/my-domain-name` .",
+        "DomainId": "The Domain ID.",
         "HomeEfsFileSystemId": "The ID of the Amazon Elastic File System (EFS) managed by this Domain.",
-        "Ref": "`Ref` returns the domain ID, such as `d-xxxxxxxxxxxx` .",
+        "Ref": "`Ref` returns the Domain ID, such as `d-xxxxxxxxxxxx` .",
+        "SecurityGroupIdForDomainBoundary": "The ID of the security group that authorizes traffic between the `RSessionGateway` apps and the `RStudioServerPro` app.",
         "SingleSignOnManagedApplicationInstanceId": "The AWS SSO managed application instance ID.",
-        "Url": "The URL for the domain."
+        "Url": "The URL for the Domain."
       },
       "description": "Creates a `Domain` used by Amazon SageMaker Studio. A domain consists of an associated Amazon Elastic File System (EFS) volume, a list of authorized users, and a variety of security, application, policy, and Amazon Virtual Private Cloud (VPC) configurations. An AWS account is limited to one domain per region. Users within a domain can share notebook files and other artifacts with each other.\n\n*EFS storage*\n\nWhen a domain is created, an EFS volume is created for use by all of the users within the domain. Each user receives a private home directory within the EFS volume for notebooks, Git repositories, and data files.\n\nSageMaker uses the AWS Key Management Service ( AWS KMS) to encrypt the EFS volume attached to the domain with an AWS managed key by default. For more control, you can specify a customer managed key. For more information, see [Protect Data at Rest Using Encryption](https://docs.aws.amazon.com/sagemaker/latest/dg/encryption-at-rest.html) .\n\n*VPC configuration*\n\nAll SageMaker Studio traffic between the domain and the EFS volume is through the specified VPC and subnets. For other Studio traffic, you can specify the `AppNetworkAccessType` parameter. `AppNetworkAccessType` corresponds to the network access type that you choose when you onboard to Studio. The following options are available:\n\n- `PublicInternetOnly` - Non-EFS traffic goes through a VPC managed by Amazon SageMaker, which allows internet access. This is the default value.\n- `VpcOnly` - All Studio traffic is through the specified VPC and subnets. Internet access is disabled by default. To allow internet access, you must specify a NAT gateway.\n\nWhen internet access is disabled, you won't be able to run a Studio notebook or to train or host models unless your VPC has an interface endpoint to the SageMaker API and runtime or a NAT gateway and your security groups allow outbound connections.\n\n> NFS traffic over TCP on port 2049 needs to be allowed in both inbound and outbound rules in order to launch a SageMaker Studio app successfully. \n\nFor more information, see [Connect SageMaker Studio Notebooks to Resources in a VPC](https://docs.aws.amazon.com/sagemaker/latest/dg/studio-notebooks-and-internet-access.html) .",
       "properties": {
         "AppNetworkAccessType": "Specifies the VPC used for non-EFS traffic. The default value is `PublicInternetOnly` .\n\n- `PublicInternetOnly` - Non-EFS traffic is through a VPC managed by Amazon SageMaker , which allows direct internet access\n- `VpcOnly` - All Studio traffic is through the specified VPC and subnets\n\n*Valid Values* : `PublicInternetOnly | VpcOnly`",
-        "AuthMode": "The mode of authentication that members use to access the domain.\n\n*Valid Values* : `SSO | IAM`",
+        "AppSecurityGroupManagement": "The entity that creates and manages the required security groups for inter-app communication in `VpcOnly` mode. Required when `CreateDomain.AppNetworkAccessType` is `VpcOnly` and `DomainSettings.RStudioServerProDomainSettings.DomainExecutionRoleArn` is provided.",
+        "AuthMode": "The mode of authentication that members use to access the Domain.\n\n*Valid Values* : `SSO | IAM`",
         "DefaultUserSettings": "The default user settings.",
         "DomainName": "The domain name.",
-        "KmsKeyId": "SageMaker uses AWS KMS to encrypt the EFS volume attached to the domain with an AWS managed customer master key (CMK) by default. For more control, specify a customer managed CMK.\n\n*Length Constraints* : Maximum length of 2048.\n\n*Pattern* : `.*`",
+        "DomainSettings": "A collection of settings that apply to the `SageMaker Domain` . These settings are specified through the `CreateDomain` API call.",
+        "KmsKeyId": "SageMaker uses AWS KMS to encrypt the EFS volume attached to the Domain with an AWS managed customer master key (CMK) by default. For more control, specify a customer managed CMK.\n\n*Length Constraints* : Maximum length of 2048.\n\n*Pattern* : `.*`",
         "SubnetIds": "The VPC subnets that Studio uses for communication.\n\n*Length Constraints* : Maximum length of 32.\n\n*Array members* : Minimum number of 1 item. Maximum number of 16 items.\n\n*Pattern* : `[-0-9a-zA-Z]+`",
-        "Tags": "Tags to associated with the Domain. Each tag consists of a key and an optional value. Tag keys must be unique per resource. Tags are searchable using the Search API.\n\nTags that you specify for the Domain are also added to all Apps that are launched in the Domain.\n\n*Array members* : Minimum number of 0 items. Maximum number of 50 items.",
-        "VpcId": "The ID of the Amazon Virtual Private Cloud (VPC) that Studio uses for communication.\n\n*Length Constraints* : Maximum length of 32.\n\n*Pattern* : `[-0-9a-zA-Z]+`"
+        "Tags": "Tags to associated with the Domain. Each tag consists of a key and an optional value. Tag keys must be unique per resource. Tags are searchable using the Search API.\n\nTags that you specify for the Domain are also added to all apps that are launched in the Domain.\n\n*Array members* : Minimum number of 0 items. Maximum number of 50 items.",
+        "VpcId": "The ID of the Amazon Virtual Private Cloud (Amazon VPC) that Studio uses for communication.\n\n*Length Constraints* : Maximum length of 32.\n\n*Pattern* : `[-0-9a-zA-Z]+`"
       }
     },
     "AWS::SageMaker::Domain.CustomImage": {
@@ -36912,6 +37026,14 @@
         "AppImageConfigName": "The name of the AppImageConfig.",
         "ImageName": "The name of the CustomImage. Must be unique to your account.",
         "ImageVersionNumber": "The version number of the CustomImage."
+      }
+    },
+    "AWS::SageMaker::Domain.DomainSettings": {
+      "attributes": {},
+      "description": "A collection of settings that apply to the `SageMaker Domain` . These settings are specified through the `CreateDomain` API call.",
+      "properties": {
+        "RStudioServerProDomainSettings": "A collection of settings that configure the `RStudioServerPro` Domain-level app.",
+        "SecurityGroupIds": "The security groups for the Amazon Virtual Private Cloud that the `Domain` uses for communication between Domain-level apps and user apps."
       }
     },
     "AWS::SageMaker::Domain.JupyterServerAppSettings": {
@@ -36927,6 +37049,24 @@
       "properties": {
         "CustomImages": "A list of custom SageMaker images that are configured to run as a KernelGateway app.",
         "DefaultResourceSpec": "The default instance type and the Amazon Resource Name (ARN) of the default SageMaker image used by the KernelGateway app.\n\n> The Amazon SageMaker Studio UI does not use the default instance type value set here. The default instance type set here is used when Apps are created using the AWS Command Line Interface or AWS CloudFormation and the instance type parameter value is not passed."
+      }
+    },
+    "AWS::SageMaker::Domain.RStudioServerProAppSettings": {
+      "attributes": {},
+      "description": "A collection of settings that configure user interaction with the `RStudioServerPro` app. `RStudioServerProAppSettings` cannot be updated. The `RStudioServerPro` app must be deleted and a new one created to make any changes.",
+      "properties": {
+        "AccessStatus": "Indicates whether the current user has access to the `RStudioServerPro` app.",
+        "UserGroup": "The level of permissions that the user has within the `RStudioServerPro` app. This value defaults to `User`. The `Admin` value allows the user access to the RStudio Administrative Dashboard."
+      }
+    },
+    "AWS::SageMaker::Domain.RStudioServerProDomainSettings": {
+      "attributes": {},
+      "description": "A collection of settings that configure the `RStudioServerPro` Domain-level app.",
+      "properties": {
+        "DefaultResourceSpec": "A collection that defines the default `InstanceType` , `SageMakerImageArn` , and `SageMakerImageVersionArn` for the Domain.",
+        "DomainExecutionRoleArn": "The ARN of the execution role for the `RStudioServerPro` Domain-level app.",
+        "RStudioConnectUrl": "A URL pointing to an RStudio Connect server.",
+        "RStudioPackageManagerUrl": "A URL pointing to an RStudio Package Manager server."
       }
     },
     "AWS::SageMaker::Domain.ResourceSpec": {
@@ -36954,6 +37094,7 @@
         "ExecutionRole": "The execution role for the user.",
         "JupyterServerAppSettings": "The Jupyter server's app settings.",
         "KernelGatewayAppSettings": "The kernel gateway app settings.",
+        "RStudioServerProAppSettings": "A collection of settings that configure user interaction with the `RStudioServerPro` app.",
         "SecurityGroups": "The security groups for the Amazon Virtual Private Cloud (VPC) that Studio uses for communication.\n\nOptional when the `CreateDomain.AppNetworkAccessType` parameter is set to `PublicInternetOnly` .\n\nRequired when the `CreateDomain.AppNetworkAccessType` parameter is set to `VpcOnly` .\n\nAmazon SageMaker adds a security group to allow NFS traffic from SageMaker Studio. Therefore, the number of security groups that you can specify is one less than the maximum number shown.",
         "SharingSettings": "Specifies options for sharing SageMaker Studio notebooks."
       }
@@ -37203,7 +37344,7 @@
         "Environment": "The environment variables to set in the Docker container. Each key and value in the `Environment` string to string map can have length of up to 1024. We support up to 16 entries in the map.",
         "Image": "The path where inference code is stored. This can be either in Amazon EC2 Container Registry or in a Docker registry that is accessible from the same VPC that you configure for your endpoint. If you are using your own custom algorithm instead of an algorithm provided by SageMaker, the inference code must meet SageMaker requirements. SageMaker supports both `registry/repository[:tag]` and `registry/repository[@digest]` image path formats. For more information, see [Using Your Own Algorithms with Amazon SageMaker](https://docs.aws.amazon.com/sagemaker/latest/dg/your-algorithms.html)",
         "ImageConfig": "Specifies whether the model container is in Amazon ECR or a private Docker registry accessible from your Amazon Virtual Private Cloud (VPC). For information about storing containers in a private Docker registry, see [Use a Private Docker Registry for Real-Time Inference Containers](https://docs.aws.amazon.com/sagemaker/latest/dg/your-algorithms-containers-inference-private.html)",
-        "InferenceSpecificationName": "The inference specification name in the model package version.",
+        "InferenceSpecificationName": "",
         "Mode": "Whether the container hosts a single model or multiple models.",
         "ModelDataUrl": "The S3 path where the model artifacts, which result from model training, are stored. This path must point to a single gzip compressed tar archive (.tar.gz suffix). The S3 path is required for SageMaker built-in algorithms, but not if you use your own algorithms. For more information on built-in algorithms, see [Common Parameters](https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-algo-docker-registry-paths.html) .\n\n> The model artifacts must be in an S3 bucket that is in the same region as the model or endpoint you are creating. \n\nIf you provide a value for this parameter, SageMaker uses AWS Security Token Service to download model artifacts from the S3 path you provide. AWS STS is activated in your IAM user account by default. If you previously deactivated AWS STS for a region, you need to reactivate AWS STS for that region. For more information, see [Activating and Deactivating AWS STS in an AWS Region](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_temp_enable-regions.html) in the *AWS Identity and Access Management User Guide* .\n\n> If you use a built-in algorithm to create a model, SageMaker requires that you provide a S3 path to the model artifacts in `ModelDataUrl` .",
         "ModelPackageName": "The name or Amazon Resource Name (ARN) of the model package to use to create the model.",
@@ -37902,7 +38043,7 @@
       },
       "description": "The `AWS::SageMaker::Pipeline` resource creates shell scripts that run when you create and/or start a SageMaker Pipeline. For information about SageMaker Pipelines, see [SageMaker Pipelines](https://docs.aws.amazon.com/sagemaker/latest/dg/pipelines.html) in the *Amazon SageMaker Developer Guide* .",
       "properties": {
-        "ParallelismConfiguration": "The parallelism configuration applied to the pipeline.",
+        "ParallelismConfiguration": "",
         "PipelineDefinition": "The definition of the pipeline. This can be either a JSON string or an Amazon S3 location.",
         "PipelineDescription": "The description of the pipeline.",
         "PipelineDisplayName": "The display name of the pipeline.",
@@ -37929,7 +38070,7 @@
     },
     "AWS::SageMaker::UserProfile": {
       "attributes": {
-        "Ref": "`Ref` returns the domain ID and the user profile name, such as `d-xxxxxxxxxxxx` and `my-user-profile` , respectively.",
+        "Ref": "`Ref` returns the Domain ID and the user profile name, such as `d-xxxxxxxxxxxx` and `my-user-profile` , respectively.",
         "UserProfileArn": "The Amazon Resource Name (ARN) of the user profile, such as `arn:aws:sagemaker:us-west-2:account-id:user-profile/my-user-profile` ."
       },
       "description": "Creates a user profile. A user profile represents a single user within a domain, and is the main way to reference a \"person\" for the purposes of sharing, reporting, and other user-oriented features. This entity is created when a user onboards to Amazon SageMaker Studio. If an administrator invites a person by email or imports them from SSO, a user profile is automatically created. A user profile is the primary holder of settings for an individual user and has a reference to the user's private Amazon Elastic File System (EFS) home directory.",
@@ -37937,7 +38078,7 @@
         "DomainId": "The domain ID.",
         "SingleSignOnUserIdentifier": "A specifier for the type of value specified in SingleSignOnUserValue. Currently, the only supported value is \"UserName\". If the Domain's AuthMode is SSO, this field is required. If the Domain's AuthMode is not SSO, this field cannot be specified.",
         "SingleSignOnUserValue": "The username of the associated AWS Single Sign-On User for this UserProfile. If the Domain's AuthMode is SSO, this field is required, and must match a valid username of a user in your directory. If the Domain's AuthMode is not SSO, this field cannot be specified.",
-        "Tags": "An array of key-value pairs to apply to this resource.\n\nTags that you specify for the User Profile are also added to all Apps that the User Profile launches.\n\nFor more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) .",
+        "Tags": "An array of key-value pairs to apply to this resource.\n\nTags that you specify for the User Profile are also added to all apps that the User Profile launches.\n\nFor more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) .",
         "UserProfileName": "The user profile name.",
         "UserSettings": "A collection of settings that apply to users of Amazon SageMaker Studio."
       }
@@ -37966,6 +38107,14 @@
         "DefaultResourceSpec": "The default instance type and the Amazon Resource Name (ARN) of the default SageMaker image used by the KernelGateway app.\n\n> The Amazon SageMaker Studio UI does not use the default instance type value set here. The default instance type set here is used when Apps are created using the AWS Command Line Interface or AWS CloudFormation and the instance type parameter value is not passed."
       }
     },
+    "AWS::SageMaker::UserProfile.RStudioServerProAppSettings": {
+      "attributes": {},
+      "description": "A collection of settings that configure user interaction with the `RStudioServerPro` app. `RStudioServerProAppSettings` cannot be updated. The `RStudioServerPro` app must be deleted and a new one created to make any changes.",
+      "properties": {
+        "AccessStatus": "Indicates whether the current user has access to the `RStudioServerPro` app.",
+        "UserGroup": "The level of permissions that the user has within the `RStudioServerPro` app. This value defaults to `User`. The `Admin` value allows the user access to the RStudio Administrative Dashboard."
+      }
+    },
     "AWS::SageMaker::UserProfile.ResourceSpec": {
       "attributes": {},
       "description": "Specifies the ARN's of a SageMaker image and SageMaker image version, and the instance type that the version runs on.",
@@ -37991,6 +38140,7 @@
         "ExecutionRole": "The execution role for the user.",
         "JupyterServerAppSettings": "The Jupyter server's app settings.",
         "KernelGatewayAppSettings": "The kernel gateway app settings.",
+        "RStudioServerProAppSettings": "A collection of settings that configure user interaction with the `RStudioServerPro` app.",
         "SecurityGroups": "The security groups for the Amazon Virtual Private Cloud (VPC) that Studio uses for communication.\n\nOptional when the `CreateDomain.AppNetworkAccessType` parameter is set to `PublicInternetOnly` .\n\nRequired when the `CreateDomain.AppNetworkAccessType` parameter is set to `VpcOnly` .\n\nAmazon SageMaker adds a security group to allow NFS traffic from SageMaker Studio. Therefore, the number of security groups that you can specify is one less than the maximum number shown.",
         "SharingSettings": "Specifies options for sharing SageMaker Studio notebooks."
       }
@@ -39099,7 +39249,7 @@
         "CustomStepDetails": "Details for a step that invokes a lambda function.\n\nConsists of the lambda function name, target, and timeout (in seconds).",
         "DeleteStepDetails": "Details for a step that deletes the file.",
         "TagStepDetails": "Details for a step that creates one or more tags.\n\nYou specify one or more tags: each tag contains a key/value pair.",
-        "Type": "Currently, the following step types are supported.\n\n- *Copy* : copy the file to another location\n- *Custom* : custom step with a lambda target\n- *Delete* : delete the file\n- *Tag* : add a tag to the file"
+        "Type": "Currently, the following step types are supported.\n\n- *COPY* : copy the file to another location\n- *CUSTOM* : custom step with a lambda target\n- *DELETE* : delete the file\n- *TAG* : add a tag to the file"
       }
     },
     "AWS::WAF::ByteMatchSet": {
