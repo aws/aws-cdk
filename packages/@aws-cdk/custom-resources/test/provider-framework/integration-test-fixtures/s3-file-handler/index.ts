@@ -28,7 +28,7 @@ export async function putObject(event: AWSCDKAsyncCustomResource.OnEventRequest)
 
   // trim trailing `/`
   if (objectKey.startsWith('/')) {
-    objectKey = objectKey.substr(1);
+    objectKey = objectKey.slice(1);
   }
 
   const publicRead = event.ResourceProperties[api.PROP_PUBLIC] || false;

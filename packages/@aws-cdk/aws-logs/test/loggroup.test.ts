@@ -1,7 +1,7 @@
 import { Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
-import { CfnParameter, RemovalPolicy, Stack } from '@aws-cdk/core';
+import { CfnParameter, Fn, RemovalPolicy, Stack } from '@aws-cdk/core';
 import { LogGroup, RetentionDays } from '../lib';
 
 describe('log group', () => {
@@ -364,7 +364,7 @@ describe('log group', () => {
     });
   });
 
-  test('can add a policy to the log group', () => {
+  test('when added to log groups, IAM users are converted into account IDs in the resource policy', () => {
     // GIVEN
     const stack = new Stack();
     const lg = new LogGroup(stack, 'LogGroup');
@@ -378,8 +378,40 @@ describe('log group', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Logs::ResourcePolicy', {
-      PolicyDocument: '{"Statement":[{"Action":"logs:PutLogEvents","Effect":"Allow","Principal":{"AWS":"arn:aws:iam::123456789012:user/user-name"},"Resource":"*"}],"Version":"2012-10-17"}',
+      PolicyDocument: '{"Statement":[{"Action":"logs:PutLogEvents","Effect":"Allow","Principal":{"AWS":"123456789012"},"Resource":"*"}],"Version":"2012-10-17"}',
       PolicyName: 'LogGroupPolicy643B329C',
+    });
+  });
+
+  test('imported values are treated as if they are ARNs and converted to account IDs via CFN pseudo parameters', () => {
+    // GIVEN
+    const stack = new Stack();
+    const lg = new LogGroup(stack, 'LogGroup');
+
+    // WHEN
+    lg.addToResourcePolicy(new iam.PolicyStatement({
+      resources: ['*'],
+      actions: ['logs:PutLogEvents'],
+      principals: [iam.Role.fromRoleArn(stack, 'Role', Fn.importValue('SomeRole'))],
+    }));
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::ResourcePolicy', {
+      PolicyDocument: {
+        'Fn::Join': [
+          '',
+          [
+            '{\"Statement\":[{\"Action\":\"logs:PutLogEvents\",\"Effect\":\"Allow\",\"Principal\":{\"AWS\":\"',
+            {
+              'Fn::Select': [
+                4,
+                { 'Fn::Split': [':', { 'Fn::ImportValue': 'SomeRole' }] },
+              ],
+            },
+            '\"},\"Resource\":\"*\"}],\"Version\":\"2012-10-17\"}',
+          ],
+        ],
+      },
     });
   });
 
