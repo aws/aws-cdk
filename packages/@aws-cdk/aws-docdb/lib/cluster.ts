@@ -257,62 +257,50 @@ export class DatabaseCluster extends DatabaseClusterBase {
    */
   public static fromDatabaseClusterAttributes(scope: Construct, id: string, attrs: DatabaseClusterAttributes): IDatabaseCluster {
     class Import extends DatabaseClusterBase implements IDatabaseCluster {
-      public readonly clusterIdentifier = attrs.clusterIdentifier;
-      public readonly defaultPort = attrs.port ? ec2.Port.tcp(attrs.port) : undefined;
+      public readonly defaultPort = attrs.port != undefined ? ec2.Port.tcp(attrs.port) : undefined;
       public readonly connections = new ec2.Connections({
-        securityGroups: !!attrs.securityGroup ? [attrs.securityGroup] : undefined,
+        securityGroups: attrs.securityGroup ? [attrs.securityGroup] : undefined,
         defaultPort: this.defaultPort,
       });
+      public readonly clusterIdentifier = attrs.clusterIdentifier;
+      private readonly _instanceIdentifiers?= attrs.instanceIdentifiers;
+      private readonly _clusterEndpoint?= attrs.clusterEndpointAddress && attrs.port != undefined ?
+        new Endpoint(attrs.clusterEndpointAddress, attrs.port) : undefined;
+      private readonly _clusterReadEndpoint?= attrs.readerEndpointAddress && attrs.port != undefined ?
+        new Endpoint(attrs.readerEndpointAddress, attrs.port) : undefined;
+      private readonly _instanceEndpoints?= attrs.instanceEndpointAddresses && attrs.port != undefined ?
+        attrs.instanceEndpointAddresses.map(addr => new Endpoint(addr, attrs.port!)) : undefined;
+      private readonly _securityGroupId?= attrs.securityGroup?.securityGroupId;
 
-      private readonly _clusterEndpoint?: Endpoint;
-      private readonly _clusterReadEndpoint?: Endpoint;
-      private readonly _instanceIdentifiers?: string[];
-      private readonly _instanceEndpoints?: Endpoint[];
-      private readonly _securityGroupId?: string;
-
-      constructor(_scope: Construct, _id: string, _attrs: DatabaseClusterAttributes) {
-        super(_scope, _id);
-
-        this._clusterEndpoint = (_attrs.clusterEndpointAddress && _attrs.port) ? new Endpoint(_attrs.clusterEndpointAddress, _attrs.port) : undefined;
-        this._clusterReadEndpoint = (_attrs.readerEndpointAddress && _attrs.port)
-          ? new Endpoint(_attrs.readerEndpointAddress, _attrs.port)
-          : undefined;
-        this._instanceIdentifiers = _attrs.instanceIdentifiers;
-        this._instanceEndpoints = (_attrs.instanceEndpointAddresses && _attrs.port)
-          ? _attrs.instanceEndpointAddresses.map(addr => new Endpoint(addr, _attrs.port!))
-          : undefined;
-        this._securityGroupId = _attrs.securityGroup?.securityGroupId;
-      }
-
-      public get clusterEndpoint() {
-        if (!this._clusterEndpoint) {
-          throw new Error('Cannot access `clusterEndpoint` of an imported cluster without an endpoint address and port');
-        }
-        return this._clusterEndpoint;
-      }
-
-      public get clusterReadEndpoint() {
-        if (!this._clusterReadEndpoint) {
-          throw new Error('Cannot access `clusterReadEndpoint` of an imported cluster without a readerEndpointAddress and port');
-        }
-        return this._clusterReadEndpoint;
-      }
-
-      public get instanceIdentifiers() {
+      public get instanceIdentifiers(): string[] {
         if (!this._instanceIdentifiers) {
           throw new Error('Cannot access `instanceIdentifiers` of an imported cluster without provided instanceIdentifiers');
         }
         return this._instanceIdentifiers;
       }
 
-      public get instanceEndpoints() {
+      public get clusterEndpoint(): Endpoint {
+        if (!this._clusterEndpoint) {
+          throw new Error('Cannot access `clusterEndpoint` of an imported cluster without an endpoint address and port');
+        }
+        return this._clusterEndpoint;
+      }
+
+      public get clusterReadEndpoint(): Endpoint {
+        if (!this._clusterReadEndpoint) {
+          throw new Error('Cannot access `clusterReadEndpoint` of an imported cluster without a readerEndpointAddress and port');
+        }
+        return this._clusterReadEndpoint;
+      }
+
+      public get instanceEndpoints(): Endpoint[] {
         if (!this._instanceEndpoints) {
           throw new Error('Cannot access `instanceEndpoints` of an imported cluster without instanceEndpointAddresses and port');
         }
         return this._instanceEndpoints;
       }
 
-      public get securityGroupId() {
+      public get securityGroupId(): string {
         if (!this._securityGroupId) {
           throw new Error('Cannot access `securityGroupId` of an imported cluster without securityGroupId');
         }
@@ -320,7 +308,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
       }
     }
 
-    return new Import(scope, id, attrs);
+    return new Import(scope, id);
   }
 
   /**
