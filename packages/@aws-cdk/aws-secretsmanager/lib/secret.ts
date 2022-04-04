@@ -240,6 +240,8 @@ export class SecretStringValueBeta1 {
    * The secret may also be embedded in a string representation of a JSON structure:
    *
    * ```ts
+   * const user = new iam.User(this, 'User');
+   * const accessKey = new iam.AccessKey(this, 'AccessKey', { user });
    * const secretValue = secretsmanager.SecretStringValueBeta1.fromToken(JSON.stringify({
    *   username: user.userName,
    *   database: 'foo',
