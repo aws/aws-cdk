@@ -6,18 +6,9 @@ import * as cdk from '@aws-cdk/core';
 import * as tasks from '../../lib';
 
 const app = new cdk.App();
-const stack = new cdk.Stack(app, 'aws-ecs-integ2', {
-  env: {
-    account: process.env.CDK_INTEG_ACCOUNT || process.env.CDK_DEFAULT_ACCOUNT,
-    region: process.env.CDK_INTEG_REGION || process.env.CDK_DEFAULT_REGION,
-  },
-});
+const stack = new cdk.Stack(app, 'aws-ecs-integ2');
 
-const vpc = ec2.Vpc.fromLookup(stack, 'Vpc', {
-  isDefault: true,
-});
-
-const cluster = new ecs.Cluster(stack, 'FargateCluster', { vpc });
+const cluster = new ecs.Cluster(stack, 'FargateCluster');
 cluster.addCapacity('DefaultAutoScalingGroup', {
   instanceType: new ec2.InstanceType('t2.micro'),
   vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },

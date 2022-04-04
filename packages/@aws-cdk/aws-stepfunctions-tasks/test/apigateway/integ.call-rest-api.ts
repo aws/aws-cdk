@@ -17,7 +17,7 @@ const stack = new cdk.Stack(app, 'CallRestApiInteg');
 const restApi = new apigateway.RestApi(stack, 'MyRestApi');
 
 const hello = new apigateway.LambdaIntegration(new lambda.Function(stack, 'Hello', {
-  runtime: lambda.Runtime.NODEJS_10_X,
+  runtime: lambda.Runtime.NODEJS_14_X,
   handler: 'index.handler',
   code: new lambda.InlineCode('exports.handler = async function(event, context) { return { statusCode: 200, body: "hello, world!" }; };'),
 }));
