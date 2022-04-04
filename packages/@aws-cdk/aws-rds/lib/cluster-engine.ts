@@ -98,6 +98,14 @@ export interface IClusterEngine extends IEngine {
   readonly supportedLogTypes: string[];
 
   /**
+   * Whether the IAM Roles used for data importing and exporting need to be combined,
+   * or can they be separate.
+   *
+   * @default false
+   */
+  readonly combineImportAndExportRoles?: boolean;
+
+  /**
    * Method called when the engine is used to create a new cluster.
    */
   bindToCluster(scope: Construct, options: ClusterEngineBindOptions): ClusterEngineConfig;
@@ -154,11 +162,13 @@ interface MysqlClusterEngineBaseProps {
   readonly engineType: string;
   readonly engineVersion?: EngineVersion;
   readonly defaultMajorVersion: string;
+  readonly combineImportAndExportRoles?: boolean;
 }
 
 abstract class MySqlClusterEngineBase extends ClusterEngineBase {
   public readonly engineFamily = 'MYSQL';
   public readonly supportedLogTypes: string[] = ['error', 'general', 'slowquery', 'audit'];
+  public readonly combineImportAndExportRoles?: boolean;
 
   constructor(props: MysqlClusterEngineBaseProps) {
     super({
@@ -167,6 +177,7 @@ abstract class MySqlClusterEngineBase extends ClusterEngineBase {
       multiUserRotationApplication: secretsmanager.SecretRotationApplication.MYSQL_ROTATION_MULTI_USER,
       engineVersion: props.engineVersion ? props.engineVersion : { majorVersion: props.defaultMajorVersion },
     });
+    this.combineImportAndExportRoles = props.combineImportAndExportRoles;
   }
 
   public bindToCluster(scope: Construct, options: ClusterEngineBindOptions): ClusterEngineConfig {
@@ -177,14 +188,18 @@ abstract class MySqlClusterEngineBase extends ClusterEngineBase {
       })
       : config.parameterGroup);
     if (options.s3ImportRole) {
-      // major version 8.0 uses a different name for the S3 import parameter
-      const s3ImportParam = this.engineVersion?.majorVersion === '8.0'
+      // versions which combine the import and export Roles (right now, this is only 8.0)
+      // require a different parameter name (identical for both import and export)
+      const s3ImportParam = this.combineImportAndExportRoles
         ? 'aws_default_s3_role'
         : 'aurora_load_from_s3_role';
       parameterGroup?.addParameter(s3ImportParam, options.s3ImportRole.roleArn);
     }
     if (options.s3ExportRole) {
-      parameterGroup?.addParameter('aurora_select_into_s3_role', options.s3ExportRole.roleArn);
+      const s3ExportParam = this.combineImportAndExportRoles
+        ? 'aws_default_s3_role'
+        : 'aurora_select_into_s3_role';
+      parameterGroup?.addParameter(s3ExportParam, options.s3ExportRole.roleArn);
     }
 
     return {
@@ -366,17 +381,28 @@ export class AuroraMysqlEngineVersion {
   }
 
   private static builtIn_8_0(minorVersion: string): AuroraMysqlEngineVersion {
-    return new AuroraMysqlEngineVersion(`8.0.mysql_aurora.${minorVersion}`, '8.0');
+    // 8.0 of the MySQL engine needs to combine the import and export Roles
+    return new AuroraMysqlEngineVersion(`8.0.mysql_aurora.${minorVersion}`, '8.0', true);
   }
 
   /** The full version string, for example, "5.7.mysql_aurora.1.78.3.6". */
   public readonly auroraMysqlFullVersion: string;
-  /** The major version of the engine. Currently, it's always "5.7". */
+  /** The major version of the engine. Currently, it's either "5.7", or "8.0". */
   public readonly auroraMysqlMajorVersion: string;
+  /**
+   * Whether this version requires combining the import and export IAM Roles.
+   *
+   * @internal
+   */
+  public readonly _combineImportAndExportRoles?: boolean;
 
-  private constructor(auroraMysqlFullVersion: string, auroraMysqlMajorVersion: string = '5.7') {
+  private constructor(
+    auroraMysqlFullVersion: string, auroraMysqlMajorVersion: string = '5.7',
+    combineImportAndExportRoles?: boolean,
+  ) {
     this.auroraMysqlFullVersion = auroraMysqlFullVersion;
     this.auroraMysqlMajorVersion = auroraMysqlMajorVersion;
+    this._combineImportAndExportRoles = combineImportAndExportRoles;
   }
 }
 
@@ -400,6 +426,7 @@ class AuroraMysqlClusterEngine extends MySqlClusterEngineBase {
         }
         : undefined,
       defaultMajorVersion: '5.7',
+      combineImportAndExportRoles: version?._combineImportAndExportRoles,
     });
   }
 
