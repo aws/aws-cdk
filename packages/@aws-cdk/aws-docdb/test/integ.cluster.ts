@@ -31,6 +31,7 @@ class TestStack extends cdk.Stack {
     });
 
     const cluster = new DatabaseCluster(this, 'Database', {
+      engineVersion: '3.6.0',
       masterUser: {
         username: 'docdb',
         password: cdk.SecretValue.unsafePlainText('7959866cacc02c2d243ecfe177464fe6'),

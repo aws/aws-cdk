@@ -117,7 +117,7 @@ describe('DatabaseInstance', () => {
           [
             'arn:',
             { Ref: 'AWS::Partition' },
-            ':docdb:us-test-1:12345:db:',
+            ':rds:us-test-1:12345:db:',
             { Ref: 'InstanceC1063A87' },
           ],
         ],
@@ -160,7 +160,7 @@ describe('DatabaseInstance', () => {
           [
             'arn:',
             { Ref: 'AWS::Partition' },
-            `:docdb:us-test-1:12345:db:${instanceIdentifier}`,
+            `:rds:us-test-1:12345:db:${instanceIdentifier}`,
           ],
         ],
       },

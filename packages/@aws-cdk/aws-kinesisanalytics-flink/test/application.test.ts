@@ -1,5 +1,6 @@
 import * as path from 'path';
 import { Match, Template } from '@aws-cdk/assertions';
+import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as iam from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
@@ -601,5 +602,67 @@ describe('Application', () => {
     expect(flinkApp.applicationName).toEqual('my-app');
     expect(flinkApp.applicationArn).toEqual(arn);
     expect(flinkApp.addToRolePolicy(new iam.PolicyStatement())).toBe(false);
+  });
+
+  test('get metric', () => {
+    const flinkApp = new flink.Application(stack, 'Application', { ...requiredProps });
+    expect(flinkApp.metric('KPUs', { statistic: 'Sum' }))
+      .toMatchObject({
+        namespace: 'AWS/KinesisAnalytics',
+        metricName: 'KPUs',
+        dimensions: { Application: flinkApp.applicationName },
+        statistic: 'Sum',
+      });
+  });
+
+  test('canned metrics', () => {
+    const flinkApp = new flink.Application(stack, 'Application', { ...requiredProps });
+
+    // Table driven test with: [method, metricName, default statistic]
+    const assertions: Array<[(options?: cloudwatch.MetricOptions) => cloudwatch.Metric, string, string]> = [
+      [flinkApp.metricKpus, 'KPUs', 'Average'],
+      [flinkApp.metricDowntime, 'downtime', 'Average'],
+      [flinkApp.metricUptime, 'uptime', 'Average'],
+      [flinkApp.metricFullRestarts, 'fullRestarts', 'Sum'],
+      [flinkApp.metricNumberOfFailedCheckpoints, 'numberOfFailedCheckpoints', 'Sum'],
+      [flinkApp.metricLastCheckpointDuration, 'lastCheckpointDuration', 'Maximum'],
+      [flinkApp.metricLastCheckpointSize, 'lastCheckpointSize', 'Maximum'],
+      [flinkApp.metricCpuUtilization, 'cpuUtilization', 'Average'],
+      [flinkApp.metricHeapMemoryUtilization, 'heapMemoryUtilization', 'Average'],
+      [flinkApp.metricOldGenerationGCTime, 'oldGenerationGCTime', 'Sum'],
+      [flinkApp.metricOldGenerationGCCount, 'oldGenerationGCCount', 'Sum'],
+      [flinkApp.metricThreadsCount, 'threadsCount', 'Average'],
+      [flinkApp.metricNumRecordsIn, 'numRecordsIn', 'Average'],
+      [flinkApp.metricNumRecordsInPerSecond, 'numRecordsInPerSecond', 'Average'],
+      [flinkApp.metricNumRecordsOut, 'numRecordsOut', 'Average'],
+      [flinkApp.metricNumRecordsOutPerSecond, 'numRecordsOutPerSecond', 'Average'],
+      [flinkApp.metricNumLateRecordsDropped, 'numLateRecordsDropped', 'Sum'],
+      [flinkApp.metricCurrentInputWatermark, 'currentInputWatermark', 'Maximum'],
+      [flinkApp.metricCurrentOutputWatermark, 'currentOutputWatermark', 'Maximum'],
+      [flinkApp.metricManagedMemoryUsed, 'managedMemoryUsed', 'Average'],
+      [flinkApp.metricManagedMemoryTotal, 'managedMemoryTotal', 'Average'],
+      [flinkApp.metricManagedMemoryUtilization, 'managedMemoryUtilization', 'Average'],
+      [flinkApp.metricIdleTimeMsPerSecond, 'idleTimeMsPerSecond', 'Average'],
+      [flinkApp.metricBackPressuredTimeMsPerSecond, 'backPressuredTimeMsPerSecond', 'Average'],
+      [flinkApp.metricBusyTimePerMsPerSecond, 'busyTimePerMsPerSecond', 'Average'],
+    ];
+
+    assertions.forEach(([method, metricName, defaultStatistic]) => {
+      // Test metrics with no options provided
+      expect(method.call(flinkApp)).toMatchObject({
+        metricName,
+        statistic: defaultStatistic,
+        namespace: 'AWS/KinesisAnalytics',
+        dimensions: {
+          Application: flinkApp.applicationName,
+        },
+      });
+
+      // Make sure we can override the default statistic and add other options
+      expect(method.call(flinkApp, { statistic: 'special', color: '#00ff00' })).toMatchObject({
+        statistic: 'special',
+        color: '#00ff00',
+      });
+    });
   });
 });
