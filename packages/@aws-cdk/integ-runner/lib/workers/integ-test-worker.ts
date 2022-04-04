@@ -1,8 +1,8 @@
 import * as workerpool from 'workerpool';
+import * as logger from '../logger';
 import { IntegTestConfig } from '../runner/integ-tests';
-import * as logger from '../runner/private/logger';
 import { IntegTestRunner } from '../runner/runners';
-import { printResults, IntegBatchResponse, IntegTestOptions, DiagnosticReason } from './common';
+import { printResults, printSummary, IntegBatchResponse, IntegTestOptions, DiagnosticReason } from './common';
 
 /**
  * Options for an integration test batch
@@ -30,6 +30,22 @@ export interface IntegTestRunOptions extends IntegTestOptions {
   readonly pool: workerpool.WorkerPool;
 }
 
+/**
+ * Run Integration tests.
+ */
+export async function runIntegrationTests(options: IntegTestRunOptions): Promise<void> {
+  logger.highlight('\nRunning integration tests for failed tests...\n');
+  logger.print('Running in parallel across: %s', options.regions.join(', '));
+  const totalTests = options.tests.length;
+  const failedTests: IntegTestConfig[] = [];
+
+  const responses = await runIntegrationTestsInParallel(options);
+  for (const response of responses) {
+    failedTests.push(...response.failedTests);
+  }
+  logger.highlight('\nTest Results: \n');
+  printSummary(totalTests, failedTests.length);
+}
 
 /**
  * Runs a set of integration tests in parallel across a list of AWS regions.

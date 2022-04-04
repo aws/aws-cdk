@@ -1,9 +1,9 @@
+import * as workerpool from 'workerpool';
 import * as child_process from 'child_process';
 import * as path from 'path';
 import * as fs from 'fs-extra';
-import * as workerpool from 'workerpool';
-import { singleThreadedSnapshotRunner } from '../../lib/workers/integ-snapshot-worker';
-import { singleThreadedTestRunner, runIntegrationTestsInParallel } from '../../lib/workers/integ-test-worker';
+import { singleThreadedTestRunner, runIntegrationTestsInParallel, runIntegrationTests } from '../../lib/workers/integ-test-worker';
+import { singleThreadedSnapshotRunner } from '../../lib/workers';
 
 const directory = path.join(__dirname, '../test-data');
 describe('Snapshot tests', () => {
@@ -99,17 +99,49 @@ describe('parallel worker', () => {
   let stderrMock: jest.SpyInstance;
   beforeEach(() => {
     pool = workerpool.pool(path.join(__dirname, './mock-extract_worker.js'));
+    jest.spyOn(child_process, 'spawnSync').mockImplementation();
     stderrMock = jest.spyOn(process.stderr, 'write').mockImplementation(() => { return true; });
     jest.spyOn(process.stdout, 'write').mockImplementation(() => { return true; });
     jest.spyOn(fs, 'moveSync').mockImplementation(() => { return true; });
     jest.spyOn(fs, 'removeSync').mockImplementation(() => { return true; });
     jest.spyOn(fs, 'writeFileSync').mockImplementation(() => { return true; });
   });
-  afterEach(() => {
+  afterEach(async () => {
+    await pool.terminate();
     jest.clearAllMocks();
     jest.resetAllMocks();
     jest.restoreAllMocks();
-    void pool.terminate();
+  });
+  test('run all integration tests', async () => {
+    const tests = [
+      {
+        fileName: 'integ.test-with-snapshot.js',
+        directory,
+      },
+      {
+        fileName: 'integ.another-test-with-snapshot.js',
+        directory,
+      },
+    ];
+    await runIntegrationTests({
+      tests,
+      pool,
+      regions: ['us-east-1', 'us-east-2'],
+    });
+
+    expect(stderrMock.mock.calls[0][0]).toContain(
+      'Running integration tests for failed tests...',
+    );
+    expect(stderrMock.mock.calls[1][0]).toContain(
+      'Running in parallel across: us-east-1, us-east-2',
+    );
+    expect(stderrMock.mock.calls[3][0]).toContain(
+      'Running test integ.test-with-snapshot.js in us-east-2',
+    );
+    expect(stderrMock.mock.calls[2][0]).toContain(
+      'Running test integ.another-test-with-snapshot.js in us-east-1',
+    );
+
   });
   test('run tests', async () => {
     const tests = [{
@@ -117,8 +149,8 @@ describe('parallel worker', () => {
       directory,
     }];
     const results = await runIntegrationTestsInParallel({
-      tests,
       pool,
+      tests,
       regions: ['us-east-1'],
     });
 

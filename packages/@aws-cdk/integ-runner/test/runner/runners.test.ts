@@ -20,7 +20,7 @@ describe('IntegTest runSnapshotTests', () => {
   test('with defaults no diff', () => {
     // WHEN
     const integTest = new IntegSnapshotRunner({
-      fileName: path.join(__dirname, '../test-data/integ.test-with-snapshot.js'),
+      fileName: 'test/test-data/integ.test-with-snapshot.js',
       integOutDir: 'test-with-snapshot.integ.snapshot',
     });
     synthMock = jest.spyOn(integTest.cdk, 'synth').mockImplementation();
@@ -284,7 +284,7 @@ describe('IntegTest no pragma', () => {
   let integTest: IntegTestRunner;
   let synthMock: jest.SpyInstance;
   beforeEach(() => {
-    integTest = new IntegTestRunner({ fileName: path.join(__dirname, '../test-data/integ.integ-test2.js') });
+    integTest = new IntegTestRunner({ fileName: 'test/test-data/integ.integ-test2.js' });
     jest.spyOn(integTest.cdk, 'deploy').mockImplementation();
     jest.spyOn(integTest.cdk, 'destroy').mockImplementation();
     synthMock = jest.spyOn(integTest.cdk, 'synth').mockImplementation();

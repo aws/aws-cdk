@@ -127,6 +127,7 @@ export abstract class IntegRunner {
     this.sourceFilePath = path.join(this.directory, parsed.base);
     this.cdkContextPath = path.join(this.directory, 'cdk.context.json');
     this.cdk = options.cdk ?? new CdkCliWrapper({
+      cdkExecutable: require.resolve('aws-cdk/bin/cdk'),
       directory: this.directory,
       env: options.env,
     });
@@ -330,7 +331,7 @@ export abstract class IntegRunner {
 /**
  * Options for the integration test runner
  */
-export interface IntegTestRunOptions {
+export interface RunOptions {
   /**
    * The test case to execute
    */
@@ -375,7 +376,7 @@ export class IntegTestRunner extends IntegRunner {
    * 2. Saving the snapshot
    * 3. Destroying the integration test stacks
    */
-  public runIntegTestCase(options: IntegTestRunOptions): void {
+  public runIntegTestCase(options: RunOptions): void {
     const clean = options.clean ?? true;
     try {
       if (!options.dryRun) {

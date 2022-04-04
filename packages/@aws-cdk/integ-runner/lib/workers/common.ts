@@ -1,5 +1,6 @@
+import * as chalk from 'chalk';
+import * as logger from '../logger';
 import { IntegTestConfig } from '../runner/integ-tests';
-import * as logger from '../runner/private/logger';
 
 /**
  * Integration test results
@@ -94,6 +95,14 @@ export interface Diagnostic {
    * The reason for the diagnostic
    */
   readonly reason: DiagnosticReason;
+}
+
+export function printSummary(total: number, failed: number): void {
+  if (failed > 0) {
+    logger.print('%s:    %s %s, %s total', chalk.bold('Tests'), chalk.red(failed), chalk.red('failed'), total);
+  } else {
+    logger.print('%s:    %s %s, %s total', chalk.bold('Tests'), chalk.green(total), chalk.green('passed'), total);
+  }
 }
 
 /**
