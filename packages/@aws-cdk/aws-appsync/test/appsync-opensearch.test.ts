@@ -15,7 +15,7 @@ beforeEach(() => {
     schema: appsync.Schema.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
   });
   domain = new opensearch.Domain(stack, 'OsDomain', {
-    version: opensearch.EngineVersion.OPENSEARCH_1_2,
+    version: opensearch.EngineVersion.OPENSEARCH_1_1,
   });
 });
 
