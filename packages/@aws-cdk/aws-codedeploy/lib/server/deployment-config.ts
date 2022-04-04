@@ -1,7 +1,7 @@
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnDeploymentConfig } from '../codedeploy.generated';
-import { arnForDeploymentConfig } from '../utils';
+import { arnForDeploymentConfig, validateName } from '../utils';
 
 /**
  * The Deployment Configuration of an EC2/on-premise Deployment Group.
@@ -118,6 +118,10 @@ export class ServerDeploymentConfig extends cdk.Resource implements IServerDeplo
 
     this.deploymentConfigName = resource.ref;
     this.deploymentConfigArn = arnForDeploymentConfig(this.deploymentConfigName);
+  }
+
+  protected validate(): string[] {
+    return validateName('Deployment config', this.physicalName);
   }
 }
 

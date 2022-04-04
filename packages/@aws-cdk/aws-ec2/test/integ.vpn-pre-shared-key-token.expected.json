@@ -18,11 +18,11 @@
     "MyVpcPublicSubnet1SubnetF6608456": {
       "Type": "AWS::EC2::Subnet",
       "Properties": {
-        "CidrBlock": "10.10.0.0/19",
         "VpcId": {
           "Ref": "MyVpcF9F0CA6F"
         },
         "AvailabilityZone": "test-region-1a",
+        "CidrBlock": "10.10.0.0/19",
         "MapPublicIpOnLaunch": true,
         "Tags": [
           {
@@ -95,14 +95,14 @@
     "MyVpcPublicSubnet1NATGatewayAD3400C1": {
       "Type": "AWS::EC2::NatGateway",
       "Properties": {
+        "SubnetId": {
+          "Ref": "MyVpcPublicSubnet1SubnetF6608456"
+        },
         "AllocationId": {
           "Fn::GetAtt": [
             "MyVpcPublicSubnet1EIP096967CB",
             "AllocationId"
           ]
-        },
-        "SubnetId": {
-          "Ref": "MyVpcPublicSubnet1SubnetF6608456"
         },
         "Tags": [
           {
@@ -115,11 +115,11 @@
     "MyVpcPublicSubnet2Subnet492B6BFB": {
       "Type": "AWS::EC2::Subnet",
       "Properties": {
-        "CidrBlock": "10.10.32.0/19",
         "VpcId": {
           "Ref": "MyVpcF9F0CA6F"
         },
         "AvailabilityZone": "test-region-1b",
+        "CidrBlock": "10.10.32.0/19",
         "MapPublicIpOnLaunch": true,
         "Tags": [
           {
@@ -192,14 +192,14 @@
     "MyVpcPublicSubnet2NATGateway91BFBEC9": {
       "Type": "AWS::EC2::NatGateway",
       "Properties": {
+        "SubnetId": {
+          "Ref": "MyVpcPublicSubnet2Subnet492B6BFB"
+        },
         "AllocationId": {
           "Fn::GetAtt": [
             "MyVpcPublicSubnet2EIP8CCBA239",
             "AllocationId"
           ]
-        },
-        "SubnetId": {
-          "Ref": "MyVpcPublicSubnet2Subnet492B6BFB"
         },
         "Tags": [
           {
@@ -212,11 +212,11 @@
     "MyVpcPublicSubnet3Subnet57EEE236": {
       "Type": "AWS::EC2::Subnet",
       "Properties": {
-        "CidrBlock": "10.10.64.0/19",
         "VpcId": {
           "Ref": "MyVpcF9F0CA6F"
         },
         "AvailabilityZone": "test-region-1c",
+        "CidrBlock": "10.10.64.0/19",
         "MapPublicIpOnLaunch": true,
         "Tags": [
           {
@@ -289,14 +289,14 @@
     "MyVpcPublicSubnet3NATGatewayD4B50EBE": {
       "Type": "AWS::EC2::NatGateway",
       "Properties": {
+        "SubnetId": {
+          "Ref": "MyVpcPublicSubnet3Subnet57EEE236"
+        },
         "AllocationId": {
           "Fn::GetAtt": [
             "MyVpcPublicSubnet3EIPC5ACADAB",
             "AllocationId"
           ]
-        },
-        "SubnetId": {
-          "Ref": "MyVpcPublicSubnet3Subnet57EEE236"
         },
         "Tags": [
           {
@@ -309,11 +309,11 @@
     "MyVpcPrivateSubnet1Subnet5057CF7E": {
       "Type": "AWS::EC2::Subnet",
       "Properties": {
-        "CidrBlock": "10.10.96.0/19",
         "VpcId": {
           "Ref": "MyVpcF9F0CA6F"
         },
         "AvailabilityZone": "test-region-1a",
+        "CidrBlock": "10.10.96.0/19",
         "MapPublicIpOnLaunch": false,
         "Tags": [
           {
@@ -371,11 +371,11 @@
     "MyVpcPrivateSubnet2Subnet0040C983": {
       "Type": "AWS::EC2::Subnet",
       "Properties": {
-        "CidrBlock": "10.10.128.0/19",
         "VpcId": {
           "Ref": "MyVpcF9F0CA6F"
         },
         "AvailabilityZone": "test-region-1b",
+        "CidrBlock": "10.10.128.0/19",
         "MapPublicIpOnLaunch": false,
         "Tags": [
           {
@@ -433,11 +433,11 @@
     "MyVpcPrivateSubnet3Subnet772D6AD7": {
       "Type": "AWS::EC2::Subnet",
       "Properties": {
-        "CidrBlock": "10.10.160.0/19",
         "VpcId": {
           "Ref": "MyVpcF9F0CA6F"
         },
         "AvailabilityZone": "test-region-1c",
+        "CidrBlock": "10.10.160.0/19",
         "MapPublicIpOnLaunch": false,
         "Tags": [
           {
@@ -592,7 +592,7 @@
         },
         "VpnTunnelOptionsSpecifications": [
           {
-            "PreSharedKey": "{{resolve:ssm-secure:ssm-pw:1}}"
+            "PreSharedKey": "ssmpwaaa"
           }
         ]
       }
