@@ -257,7 +257,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
    */
   public static fromDatabaseClusterAttributes(scope: Construct, id: string, attrs: DatabaseClusterAttributes): IDatabaseCluster {
     class Import extends DatabaseClusterBase implements IDatabaseCluster {
-      public readonly defaultPort = attrs.port != undefined ? ec2.Port.tcp(attrs.port) : undefined;
+      public readonly defaultPort = typeof attrs.port !== 'undefined' ? ec2.Port.tcp(attrs.port) : undefined;
       public readonly connections = new ec2.Connections({
         securityGroups: attrs.securityGroup ? [attrs.securityGroup] : undefined,
         defaultPort: this.defaultPort,
