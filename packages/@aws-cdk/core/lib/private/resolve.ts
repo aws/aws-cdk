@@ -304,7 +304,7 @@ export class RememberingTokenResolver extends DefaultTokenResolver {
  * and this is a best-effort protection against a common programming mistake anyway.
  */
 function isClassInstance(x: any): boolean {
-  return x && typeof x === 'object' && x.constructor !== Object;
+  return x && typeof x === 'object' && x.constructor !== Object && !Array.isArray(x);
 }
 
 function resolveNumberToken(x: number, context: IResolveContext): any {
