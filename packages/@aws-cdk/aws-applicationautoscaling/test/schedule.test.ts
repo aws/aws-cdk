@@ -45,7 +45,7 @@ describe('rate', () => {
     const stack = new Stack();
     const lazyDuration = Duration.minutes(Lazy.number({ produce: () => 5 }));
     const rate = appscaling.Schedule.rate(lazyDuration);
-    expect('rate(5 minutes)').toEqual(stack.resolve(rate).expressionString);
+    expect('rate(5 minutes)').toEqual(stack.resolve(rate.expressionString));
 
   });
 
