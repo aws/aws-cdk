@@ -23,7 +23,6 @@ class TestStack extends cdk.Stack {
     new AccessPoint(this, 'MyObjectLambda1', {
       bucket,
       handler: handler1,
-      accessPointName: 'obj-lambda-1',
       cloudWatchMetricsEnabled: true,
       supportsGetObjectPartNumber: true,
     });
@@ -31,7 +30,6 @@ class TestStack extends cdk.Stack {
     new AccessPoint(this, 'MyObjectLambda2', {
       bucket,
       handler: handler2,
-      accessPointName: 'obj-lambda-1',
       supportsGetObjectRange: true,
       payload: { foo: 10 },
     });
