@@ -462,12 +462,3 @@ test('can synth fast', () => {
     }),
   );
 });
-
-test('cannot resolve executable', () => {
-  expect(() => {
-    new CdkCliWrapper({
-      directory: '/project',
-      cdkExecutable: 'invalid',
-    });
-  }).toThrow(/could not resolve path to cdk executable: "invalid"/);
-});

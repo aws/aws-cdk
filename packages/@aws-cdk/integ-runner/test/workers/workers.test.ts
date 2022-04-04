@@ -1,9 +1,9 @@
-import * as workerpool from 'workerpool';
 import * as child_process from 'child_process';
 import * as path from 'path';
 import * as fs from 'fs-extra';
-import { singleThreadedTestRunner, runIntegrationTestsInParallel, runIntegrationTests } from '../../lib/workers/integ-test-worker';
+import * as workerpool from 'workerpool';
 import { singleThreadedSnapshotRunner } from '../../lib/workers';
+import { singleThreadedTestRunner, runIntegrationTestsInParallel, runIntegrationTests } from '../../lib/workers/integ-test-worker';
 
 const directory = path.join(__dirname, '../test-data');
 describe('Snapshot tests', () => {
