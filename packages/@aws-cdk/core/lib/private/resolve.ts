@@ -217,7 +217,7 @@ export function resolve(obj: any, options: IResolveOptions): any {
   // objects - deep-resolve all values
   //
 
-  // Must not be a non-pure data object at this point, otherwise you probably made a typo
+  // Must be a pure data object at this point, otherwise you probably made a typo
   // mistake somewhere and resolve will get into an infinite loop recursing into
   // child.parent <---> parent.children (if it's a Construct) or something else that's
   // probably Bad.
