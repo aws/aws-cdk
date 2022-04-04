@@ -154,6 +154,11 @@ export class SecretValue extends Intrinsic {
 
   private readonly rawValue: any;
 
+  /**
+   * Construct a SecretValue
+   *
+   * @deprecated Do not use the constructor directly: use one of the factory functions on the class
+   */
   constructor(protectedValue: any) {
     super(protectedValue);
     this.rawValue = protectedValue;
