@@ -177,8 +177,12 @@ export class TokenMap {
 
   private registerNumberKey(token: IResolvable): number {
     const counter = this.tokenCounter++;
+    const dbl = createTokenDouble(counter);
+    // Register in the number map, as well as a string representation of that token
+    // in the string map.
     this.numberTokenMap.set(counter, token);
-    return createTokenDouble(counter);
+    this.stringTokenMap.set(`${dbl}`, token);
+    return dbl;
   }
 }
 

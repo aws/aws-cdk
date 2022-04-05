@@ -451,7 +451,7 @@ export class CloudFormationDeployments {
    */
   private async publishStackAssets(stack: cxapi.CloudFormationStackArtifact, toolkitInfo: ToolkitInfo) {
     const stackEnv = await this.sdkProvider.resolveEnvironment(stack.environment);
-    const assetArtifacts = stack.dependencies.filter(isAssetManifestArtifact);
+    const assetArtifacts = stack.dependencies.filter(cxapi.AssetManifestArtifact.isAssetManifestArtifact);
 
     for (const assetArtifact of assetArtifacts) {
       await this.validateBootstrapStackVersion(
@@ -482,8 +482,4 @@ export class CloudFormationDeployments {
       throw new Error(`${stackName}: ${e.message}`);
     }
   }
-}
-
-function isAssetManifestArtifact(art: cxapi.CloudArtifact): art is cxapi.AssetManifestArtifact {
-  return art instanceof cxapi.AssetManifestArtifact;
 }
