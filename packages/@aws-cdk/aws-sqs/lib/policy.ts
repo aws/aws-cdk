@@ -34,20 +34,23 @@ export class QueuePolicy extends Resource {
    */
   public readonly document = new PolicyDocument();
 
-  /**
-   * Not currently supported by AWS CloudFormation.
-   * @attribute
-   */
-  public readonly queuePolicyId: string;
-
   constructor(scope: Construct, id: string, props: QueuePolicyProps) {
     super(scope, id);
 
-    const resource = new CfnQueuePolicy(this, 'Resource', {
+    new CfnQueuePolicy(this, 'Resource', {
       policyDocument: this.document,
       queues: props.queues.map(q => q.queueUrl),
     });
+  }
 
-    this.queuePolicyId = resource.attrId;
+  /**
+   * Not currently supported by AWS CloudFormation.
+   *
+   * This attribute temporarily existed in CloudFormation, and then was removed again.
+   *
+   * @attribute
+   */
+  public get queuePolicyId(): string {
+    throw new Error('QueuePolicy.queuePolicyId has been removed from CloudFormation');
   }
 }
