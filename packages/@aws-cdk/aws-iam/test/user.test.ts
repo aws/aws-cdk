@@ -1,5 +1,5 @@
 import { Template } from '@aws-cdk/assertions';
-import { App, SecretValue, Stack, Token } from '@aws-cdk/core';
+import { App, CfnResource, SecretValue, Stack, Token } from '@aws-cdk/core';
 import { Group, ManagedPolicy, Policy, PolicyStatement, User } from '../lib';
 
 describe('IAM user', () => {
