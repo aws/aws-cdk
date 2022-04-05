@@ -1,20 +1,20 @@
-import { CfnCondition } from './cfn-condition';
-import { CfnElement } from './cfn-element';
-import { Fn } from './cfn-fn';
-import { CfnMapping } from './cfn-mapping';
-import { Aws } from './cfn-pseudo';
-import { CfnResource } from './cfn-resource';
+import { CfnCondition } from '../cfn-condition';
+import { CfnElement } from '../cfn-element';
+import { Fn } from '../cfn-fn';
+import { CfnMapping } from '../cfn-mapping';
+import { Aws } from '../cfn-pseudo';
+import { CfnResource } from '../cfn-resource';
 import {
   CfnAutoScalingReplacingUpdate, CfnAutoScalingRollingUpdate, CfnAutoScalingScheduledAction, CfnCodeDeployLambdaAliasUpdate,
   CfnCreationPolicy, CfnDeletionPolicy, CfnResourceAutoScalingCreationPolicy, CfnResourceSignal, CfnUpdatePolicy,
-} from './cfn-resource-policy';
-import { CfnTag } from './cfn-tag';
-import { Lazy } from './lazy';
-import { CfnReference, ReferenceRendering } from './private/cfn-reference';
-import { IResolvable } from './resolvable';
-import { Validator } from './runtime';
-import { isResolvableObject, Token } from './token';
-import { undefinedIfAllValuesAreEmpty } from './util';
+} from '../cfn-resource-policy';
+import { CfnTag } from '../cfn-tag';
+import { Lazy } from '../lazy';
+import { CfnReference, ReferenceRendering } from '../private/cfn-reference';
+import { IResolvable } from '../resolvable';
+import { Validator } from '../runtime';
+import { isResolvableObject, Token } from '../token';
+import { undefinedIfAllValuesAreEmpty } from '../util';
 
 /**
  * The class used as the intermediate result from the generated L1 methods
