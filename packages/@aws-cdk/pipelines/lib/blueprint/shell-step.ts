@@ -173,7 +173,7 @@ export class ShellStep extends Step {
 
       const fileSet = step.primaryOutput;
       if (!fileSet) {
-        throw new Error(`'${id}': additionalInput for directory '${directory}' should be a step that produces a file set, got ${step}`);
+        throw new Error(`'${id}': additionalInput for directory '${directory}' should be a step that has produced a file set, got ${step}`);
       }
       this.addDependencyFileSet(fileSet);
       this.inputs.push({ directory, fileSet });
