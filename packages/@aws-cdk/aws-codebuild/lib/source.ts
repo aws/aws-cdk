@@ -518,7 +518,7 @@ abstract class ThirdPartyGitSource extends GitSource {
   private readonly reportBuildStatus: boolean;
   private readonly webhook?: boolean;
   private readonly webhookTriggersBatchBuild?: boolean;
-  protected readonly buildStatusUrl: string;
+  protected readonly buildStatusUrl?: string;
 
   protected constructor(props: ThirdPartyGitSourceProps) {
     super(props);

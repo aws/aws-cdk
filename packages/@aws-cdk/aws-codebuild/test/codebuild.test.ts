@@ -1033,8 +1033,12 @@ describe('sources with customised build status configuration', () => {
         const context = "My custom CodeBuild worker!"
         const stack = new cdk.Stack();
         const source = codebuild.Source.gitHub(
-            stack, { owner: 'awslabs', repo: 'aws-cdk', buildStatusContext: context }
+            { owner: 'awslabs', repo: 'aws-cdk', buildStatusContext: context }
         );
+
+        new codebuild.Project(stack, 'MyProject', {
+          source,
+        });
         Template.fromStack(source).hasResourceProperties(
             'AWS::CodeBuild::Project', {
                 'Source': {
@@ -1046,12 +1050,41 @@ describe('sources with customised build status configuration', () => {
         )
     })
     test('github enterprise', () => {
+        const context = "My custom CodeBuild worker!"
         const stack = new cdk.Stack();
-        const source = codebuild.Source.gitHubEnterprise(stack, { httpsCloneUrl: 'url' })
+        const source = codebuild.Source.gitHubEnterprise({ 
+            httpsCloneUrl: 'url',
+            buildStatusContext: context
+        })
+        new codebuild.Project(stack, 'MyProject', {
+          source,
+        });
+        Template.fromStack(source).hasResourceProperties(
+            'AWS::CodeBuild::Project', {
+                'Source': {
+                    'buildStatusConfig': {
+                        'context': context,
+                    }
+                }
+            }
+        )
     })
     test('bitbucket', () => {
+        const context = "My custom CodeBuild worker!"
         const stack = new cdk.Stack();
-        const source = codebuild.Source.bitBucket(stack, { owner: 'awslabs', repo: 'aws-cdk' })
+        const source = codebuild.Source.bitBucket({ owner: 'awslabs', repo: 'aws-cdk' })
+        new codebuild.Project(stack, 'MyProject', {
+          source,
+        })
+        Template.fromStack(source).hasResourceProperties(
+            'AWS::CodeBuild::Project', {
+                'Source': {
+                    'buildStatusConfig': {
+                        'context': context,
+                    }
+                }
+            }
+        )
     })
 })
 
@@ -1060,14 +1093,15 @@ describe('sources with customised build status configuration', () => {
         const context = "My custom CodeBuild worker!"
         const targetUrl = "https://example.com"
         const stack = new cdk.Stack();
-        const source = codebuild.Source.gitHub(
-            stack, {
-                owner: 'awslabs',
-                repo: 'aws-cdk',
-                buildStatusContext: context,
-                buildStatusUrl: targetUrl,
-            }
-        );
+        const source = codebuild.Source.gitHub({
+            owner: 'awslabs',
+            repo: 'aws-cdk',
+            buildStatusContext: context,
+            buildStatusUrl: targetUrl,
+        });
+        new codebuild.Project(stack, 'MyProject', {
+          source,
+        })
         Template.fromStack(source).hasResourceProperties(
             'AWS::CodeBuild::Project', {
                 'Source': {
