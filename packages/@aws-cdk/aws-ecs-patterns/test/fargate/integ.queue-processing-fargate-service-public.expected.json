@@ -18,11 +18,11 @@
     "VPCPublicSubnet1SubnetB4246D30": {
       "Type": "AWS::EC2::Subnet",
       "Properties": {
+        "CidrBlock": "10.0.0.0/19",
         "VpcId": {
           "Ref": "VPCB9E5F0B4"
         },
         "AvailabilityZone": "test-region-1a",
-        "CidrBlock": "10.0.0.0/19",
         "MapPublicIpOnLaunch": true,
         "Tags": [
           {
@@ -115,11 +115,11 @@
     "VPCPublicSubnet2Subnet74179F39": {
       "Type": "AWS::EC2::Subnet",
       "Properties": {
+        "CidrBlock": "10.0.32.0/19",
         "VpcId": {
           "Ref": "VPCB9E5F0B4"
         },
         "AvailabilityZone": "test-region-1b",
-        "CidrBlock": "10.0.32.0/19",
         "MapPublicIpOnLaunch": true,
         "Tags": [
           {
@@ -212,11 +212,11 @@
     "VPCPublicSubnet3Subnet631C5E25": {
       "Type": "AWS::EC2::Subnet",
       "Properties": {
+        "CidrBlock": "10.0.64.0/19",
         "VpcId": {
           "Ref": "VPCB9E5F0B4"
         },
         "AvailabilityZone": "test-region-1c",
-        "CidrBlock": "10.0.64.0/19",
         "MapPublicIpOnLaunch": true,
         "Tags": [
           {
@@ -309,11 +309,11 @@
     "VPCPrivateSubnet1Subnet8BCA10E0": {
       "Type": "AWS::EC2::Subnet",
       "Properties": {
+        "CidrBlock": "10.0.96.0/19",
         "VpcId": {
           "Ref": "VPCB9E5F0B4"
         },
         "AvailabilityZone": "test-region-1a",
-        "CidrBlock": "10.0.96.0/19",
         "MapPublicIpOnLaunch": false,
         "Tags": [
           {
@@ -371,11 +371,11 @@
     "VPCPrivateSubnet2SubnetCFCDAA7A": {
       "Type": "AWS::EC2::Subnet",
       "Properties": {
+        "CidrBlock": "10.0.128.0/19",
         "VpcId": {
           "Ref": "VPCB9E5F0B4"
         },
         "AvailabilityZone": "test-region-1b",
-        "CidrBlock": "10.0.128.0/19",
         "MapPublicIpOnLaunch": false,
         "Tags": [
           {
@@ -433,11 +433,11 @@
     "VPCPrivateSubnet3Subnet3EDCD457": {
       "Type": "AWS::EC2::Subnet",
       "Properties": {
+        "CidrBlock": "10.0.160.0/19",
         "VpcId": {
           "Ref": "VPCB9E5F0B4"
         },
         "AvailabilityZone": "test-region-1c",
-        "CidrBlock": "10.0.160.0/19",
         "MapPublicIpOnLaunch": false,
         "Tags": [
           {
@@ -609,7 +609,7 @@
                 "CMD-SHELL",
                 "curl -f http://localhost/ || exit 1"
               ],
-              "Interval": 5,
+              "Interval": 6,
               "Retries": 10,
               "Timeout": 5
             },
@@ -628,7 +628,7 @@
                   {
                     "Ref": "AWS::URLSuffix"
                   },
-                  "/aws-cdk/assets:d6b024485c22795b5f5379edcd5cd6485f5bec6eb80bd072b20526f8eb2e0c64"
+                  "/aws-cdk/assets:95cefedd43575452a70cdeeeceb0f1c5728fd58c9ff8e81e760c3dac33c46417"
                 ]
               ]
             },
