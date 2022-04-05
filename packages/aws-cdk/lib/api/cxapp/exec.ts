@@ -68,7 +68,11 @@ export async function execProgram(aws: SdkProvider, config: Configuration): Prom
   if (!outdir) {
     throw new Error('unexpected: --output is required');
   }
-  await fs.mkdirp(outdir);
+  try {
+    await fs.mkdirp(outdir);
+  } catch (error) {
+    throw new Error(`Could not create output directory ${outdir} (${error.message})`);
+  }
 
   debug('outdir:', outdir);
   env[cxapi.OUTDIR_ENV] = outdir;

@@ -1,8 +1,4 @@
-import {
-  expect as expectCDK,
-  haveResourceLike,
-} from '@aws-cdk/assert-internal';
-import '@aws-cdk/assert-internal/jest';
+import { Annotations, Match, Template } from '@aws-cdk/assertions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
 import {
@@ -37,16 +33,13 @@ describe('AutoScalingGroupRequireImdsv2Aspect', () => {
     cdk.Aspects.of(stack).add(aspect);
 
     // THEN
-    expectCDK(stack).notTo(haveResourceLike('AWS::AutoScaling::LaunchConfiguration', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::LaunchConfiguration', Match.not({
       MetadataOptions: {
         HttpTokens: 'required',
       },
     }));
-    expect(asg.node.metadataEntry).toContainEqual({
-      data: expect.stringContaining('CfnLaunchConfiguration.MetadataOptions field is a CDK token.'),
-      type: 'aws:cdk:warning',
-      trace: undefined,
-    });
+
+    Annotations.fromStack(stack).hasWarning('/Stack/AutoScalingGroup', Match.stringLikeRegexp('.*CfnLaunchConfiguration.MetadataOptions field is a CDK token.'));
   });
 
   test('requires IMDSv2', () => {
@@ -62,11 +55,11 @@ describe('AutoScalingGroupRequireImdsv2Aspect', () => {
     cdk.Aspects.of(stack).add(aspect);
 
     // THEN
-    expectCDK(stack).to(haveResourceLike('AWS::AutoScaling::LaunchConfiguration', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::LaunchConfiguration', {
       MetadataOptions: {
         HttpTokens: 'required',
       },
-    }));
+    });
   });
 });
 

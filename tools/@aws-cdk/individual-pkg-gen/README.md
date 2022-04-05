@@ -3,7 +3,7 @@
 The tool contains the logic of the copying the packages we release individually,
 instead of vending them inside `aws-cdk-lib`,
 from their original V1 form in `packages/@aws-cdk/` to `packages/individual-packages`.
-It's called from the [`transform.sh` script](../../scripts/transform.sh).
+It's called from the [`transform.sh` script](../../../scripts/transform.sh).
 
 We do the translation in 2 phases:
 

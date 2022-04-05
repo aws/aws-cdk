@@ -1,11 +1,11 @@
 import * as childProcess from 'child_process';
 import * as path from 'path';
 import * as cxapi from '@aws-cdk/cx-api';
-import * as colors from 'colors/safe';
+import * as chalk from 'chalk';
 import * as fs from 'fs-extra';
 import * as semver from 'semver';
 import { error, print, warning } from './logging';
-import { cdkHomeDir } from './util/directories';
+import { cdkHomeDir, rootDir } from './util/directories';
 import { versionNumber } from './version';
 
 export type InvokeHook = (targetDirectory: string) => Promise<void>;
@@ -37,7 +37,7 @@ export async function cliInit(type?: string, language?: string, canUseNetwork = 
     warning(`No --language was provided, but '${type}' supports only '${language}', so defaulting to --language=${language}`);
   }
   if (!language) {
-    print(`Available languages for ${colors.green(type)}: ${template.languages.map(l => colors.blue(l)).join(', ')}`);
+    print(`Available languages for ${chalk.green(type)}: ${template.languages.map(l => chalk.blue(l)).join(', ')}`);
     throw new Error('No language was selected');
   }
 
@@ -94,8 +94,8 @@ export class InitTemplate {
    */
   public async install(language: string, targetDirectory: string) {
     if (this.languages.indexOf(language) === -1) {
-      error(`The ${colors.blue(language)} language is not supported for ${colors.green(this.name)} `
-          + `(it supports: ${this.languages.map(l => colors.blue(l)).join(', ')})`);
+      error(`The ${chalk.blue(language)} language is not supported for ${chalk.green(this.name)} `
+          + `(it supports: ${this.languages.map(l => chalk.blue(l)).join(', ')})`);
       throw new Error(`Unsupported language: ${language}`);
     }
     const sourceDirectory = path.join(this.basePath, language);
@@ -156,11 +156,11 @@ export class InitTemplate {
   }
 
   private expand(template: string, project: ProjectInfo) {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const manifest = require(path.join(rootDir(), 'package.json'));
     const MATCH_VER_BUILD = /\+[a-f0-9]+$/; // Matches "+BUILD" in "x.y.z-beta+BUILD"
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const cdkVersion = require('../package.json').version.replace(MATCH_VER_BUILD, '');
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const constructsVersion = require('../package.json').devDependencies.constructs.replace(MATCH_VER_BUILD, '');
+    const cdkVersion = manifest.version.replace(MATCH_VER_BUILD, '');
+    const constructsVersion = manifest.devDependencies.constructs.replace(MATCH_VER_BUILD, '');
     return template.replace(/%name%/g, project.name)
       .replace(/%name\.camelCased%/g, camelCase(project.name))
       .replace(/%name\.PascalCased%/g, camelCase(project.name, { pascalCase: true }))
@@ -191,6 +191,7 @@ export class InitTemplate {
     config.context = {
       ...config.context,
       ...futureFlags,
+      ...cxapi.NEW_PROJECT_DEFAULT_CONTEXT,
     };
 
     await fs.writeJson(cdkJson, config, { spaces: 2 });
@@ -211,7 +212,7 @@ function versionedTemplatesDir(): Promise<string> {
       currentVersion = '1.0.0';
     }
     const majorVersion = semver.major(currentVersion);
-    resolve(path.join(__dirname, 'init-templates', `v${majorVersion}`));
+    resolve(path.join(rootDir(), 'lib', 'init-templates', `v${majorVersion}`));
   });
 }
 
@@ -253,20 +254,20 @@ export async function printAvailableTemplates(language?: string) {
   print('Available templates:');
   for (const template of await availableInitTemplates()) {
     if (language && template.languages.indexOf(language) === -1) { continue; }
-    print(`* ${colors.green(template.name)}: ${template.description}`);
-    const languageArg = language ? colors.bold(language)
-      : template.languages.length > 1 ? `[${template.languages.map(t => colors.bold(t)).join('|')}]`
-        : colors.bold(template.languages[0]);
-    print(`   └─ ${colors.blue(`cdk init ${colors.bold(template.name)} --language=${languageArg}`)}`);
+    print(`* ${chalk.green(template.name)}: ${template.description}`);
+    const languageArg = language ? chalk.bold(language)
+      : template.languages.length > 1 ? `[${template.languages.map(t => chalk.bold(t)).join('|')}]`
+        : chalk.bold(template.languages[0]);
+    print(`   └─ ${chalk.blue(`cdk init ${chalk.bold(template.name)} --language=${languageArg}`)}`);
   }
 }
 
 async function initializeProject(template: InitTemplate, language: string, canUseNetwork: boolean, generateOnly: boolean, workDir: string) {
   await assertIsEmptyDirectory(workDir);
-  print(`Applying project template ${colors.green(template.name)} for ${colors.blue(language)}`);
+  print(`Applying project template ${chalk.green(template.name)} for ${chalk.blue(language)}`);
   await template.install(language, workDir);
   if (await fs.pathExists('README.md')) {
-    print(colors.green(await fs.readFile('README.md', { encoding: 'utf-8' })));
+    print(chalk.green(await fs.readFile('README.md', { encoding: 'utf-8' })));
   }
 
   if (!generateOnly) {
@@ -321,7 +322,7 @@ async function postInstallTypescript(canUseNetwork: boolean, cwd: string) {
     return;
   }
 
-  print(`Executing ${colors.green(`${command} install`)}...`);
+  print(`Executing ${chalk.green(`${command} install`)}...`);
   try {
     await execute(command, ['install'], { cwd });
   } catch (e) {
@@ -349,7 +350,7 @@ async function postInstallJava(canUseNetwork: boolean, cwd: string) {
 async function postInstallPython(cwd: string) {
   const python = pythonExecutable();
   warning(`Please run '${python} -m venv .venv'!`);
-  print(`Executing ${colors.green('Creating virtualenv...')}`);
+  print(`Executing ${chalk.green('Creating virtualenv...')}`);
   try {
     await execute(python, ['-m venv', '.venv'], { cwd });
   } catch (e) {

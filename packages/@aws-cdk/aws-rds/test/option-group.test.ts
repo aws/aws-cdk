@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
 import { DatabaseInstanceEngine, OptionGroup, OracleEngineVersion } from '../lib';
@@ -21,7 +21,7 @@ describe('option group', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::RDS::OptionGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::OptionGroup', {
       EngineName: 'oracle-se2',
       MajorEngineVersion: '12.1',
       OptionConfigurations: [
@@ -30,8 +30,6 @@ describe('option group', () => {
         },
       ],
     });
-
-
   });
 
   test('option group with new security group', () => {
@@ -55,7 +53,7 @@ describe('option group', () => {
     optionGroup.optionConnections.OEM.connections.allowDefaultPortFromAnyIpv4();
 
     // THEN
-    expect(stack).toHaveResource('AWS::RDS::OptionGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::OptionGroup', {
       OptionConfigurations: [
         {
           OptionName: 'OEM',
@@ -72,7 +70,7 @@ describe('option group', () => {
       ],
     });
 
-    expect(stack).toHaveResource('AWS::EC2::SecurityGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroup', {
       GroupDescription: 'Security group for OEM option',
       SecurityGroupIngress: [
         {
@@ -87,8 +85,6 @@ describe('option group', () => {
         Ref: 'VPCB9E5F0B4',
       },
     });
-
-
   });
 
   test('option group with existing security group', () => {
@@ -113,7 +109,7 @@ describe('option group', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::RDS::OptionGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::OptionGroup', {
       OptionConfigurations: [
         {
           OptionName: 'OEM',
@@ -129,8 +125,6 @@ describe('option group', () => {
         },
       ],
     });
-
-
   });
 
   test('throws when using an option with port and no vpc', () => {
@@ -149,7 +143,5 @@ describe('option group', () => {
         },
       ],
     })).toThrow(/`port`.*`vpc`/);
-
-
   });
 });

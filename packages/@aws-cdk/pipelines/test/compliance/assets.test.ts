@@ -387,18 +387,26 @@ describe('basic pipeline', () => {
       function THEN_codePipelineExpectation() {
         Template.fromStack(pipelineStack).hasResourceProperties('AWS::IAM::Role', {
           AssumeRolePolicyDocument: {
-            Statement: [{
-              Action: 'sts:AssumeRole',
-              Effect: 'Allow',
-              Principal: {
-                Service: 'codebuild.amazonaws.com',
-                AWS: {
-                  'Fn::Join': ['', [
-                    'arn:', { Ref: 'AWS::Partition' }, `:iam::${PIPELINE_ENV.account}:root`,
-                  ]],
+            Statement: [
+              {
+                Action: 'sts:AssumeRole',
+                Effect: 'Allow',
+                Principal: {
+                  Service: 'codebuild.amazonaws.com',
                 },
               },
-            }],
+              {
+                Action: 'sts:AssumeRole',
+                Effect: 'Allow',
+                Principal: {
+                  AWS: {
+                    'Fn::Join': ['', [
+                      'arn:', { Ref: 'AWS::Partition' }, `:iam::${PIPELINE_ENV.account}:root`,
+                    ]],
+                  },
+                },
+              },
+            ],
           },
         });
         Template.fromStack(pipelineStack).hasResourceProperties('AWS::IAM::Policy',
@@ -493,18 +501,26 @@ describe('basic pipeline', () => {
       function THEN_codePipelineExpectation() {
         Template.fromStack(pipelineStack).hasResourceProperties('AWS::IAM::Role', {
           AssumeRolePolicyDocument: {
-            Statement: [{
-              Action: 'sts:AssumeRole',
-              Effect: 'Allow',
-              Principal: {
-                Service: 'codebuild.amazonaws.com',
-                AWS: {
-                  'Fn::Join': ['', [
-                    'arn:', { Ref: 'AWS::Partition' }, `:iam::${PIPELINE_ENV.account}:root`,
-                  ]],
+            Statement: [
+              {
+                Action: 'sts:AssumeRole',
+                Effect: 'Allow',
+                Principal: {
+                  Service: 'codebuild.amazonaws.com',
                 },
               },
-            }],
+              {
+                Action: 'sts:AssumeRole',
+                Effect: 'Allow',
+                Principal: {
+                  AWS: {
+                    'Fn::Join': ['', [
+                      'arn:', { Ref: 'AWS::Partition' }, `:iam::${PIPELINE_ENV.account}:root`,
+                    ]],
+                  },
+                },
+              },
+            ],
           },
         });
         Template.fromStack(pipelineStack).hasResourceProperties('AWS::IAM::Policy',
@@ -583,7 +599,7 @@ behavior('can supply pre-install scripts to asset upload', (suite) => {
         BuildSpec: Match.serializedJson(Match.objectLike({
           phases: {
             install: {
-              commands: ['npm config set registry https://registry.com', 'npm install -g cdk-assets'],
+              commands: ['npm config set registry https://registry.com', 'npm install -g cdk-assets@1'],
             },
           },
         })),

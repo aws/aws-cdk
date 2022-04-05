@@ -47,6 +47,12 @@ const fakeChokidarWatch = {
   },
 };
 
+const mockData = jest.fn();
+jest.mock('../lib/logging', () => ({
+  ...jest.requireActual('../lib/logging'),
+  data: mockData,
+}));
+
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Bootstrapper } from '../lib/api/bootstrap';
@@ -55,10 +61,12 @@ import { DeployStackResult } from '../lib/api/deploy-stack';
 import { Template } from '../lib/api/util/cloudformation';
 import { CdkToolkit, Tag } from '../lib/cdk-toolkit';
 import { RequireApproval } from '../lib/diff';
+import { flatten } from '../lib/util';
 import { instanceMockFrom, MockCloudExecutable, TestStackArtifact } from './util';
 
 let cloudExecutable: MockCloudExecutable;
 let bootstrapper: jest.Mocked<Bootstrapper>;
+let stderrMock: jest.SpyInstance;
 beforeEach(() => {
   jest.resetAllMocks();
 
@@ -79,6 +87,7 @@ beforeEach(() => {
     }],
   });
 
+  stderrMock = jest.spyOn(process.stderr, 'write').mockImplementation(() => { return true; });
 });
 
 function defaultToolkitSetup() {
@@ -93,6 +102,284 @@ function defaultToolkitSetup() {
     }),
   });
 }
+
+describe('readCurrentTemplate', () => {
+  let template: any;
+  let mockForEnvironment = jest.fn();
+  let mockCloudExecutable: MockCloudExecutable;
+  beforeEach(() => {
+
+    template = {
+      Resources: {
+        Func: {
+          Type: 'AWS::Lambda::Function',
+          Properties: {
+            Key: 'Value',
+          },
+        },
+      },
+    };
+    mockCloudExecutable = new MockCloudExecutable({
+      stacks: [
+        {
+          stackName: 'Test-Stack-C',
+          template,
+          properties: {
+            assumeRoleArn: 'bloop:${AWS::Region}:${AWS::AccountId}',
+            lookupRole: {
+              arn: 'bloop-lookup:${AWS::Region}:${AWS::AccountId}',
+              requiresBootstrapStackVersion: 5,
+              bootstrapStackVersionSsmParameter: '/bootstrap/parameter',
+            },
+          },
+        },
+        {
+          stackName: 'Test-Stack-A',
+          template,
+          properties: {
+            assumeRoleArn: 'bloop:${AWS::Region}:${AWS::AccountId}',
+          },
+        },
+      ],
+    });
+    mockForEnvironment = jest.fn().mockImplementation(() => { return { sdk: mockCloudExecutable.sdkProvider.sdk, didAssumeRole: true }; });
+    mockCloudExecutable.sdkProvider.forEnvironment = mockForEnvironment;
+    mockCloudExecutable.sdkProvider.stubCloudFormation({
+      getTemplate() {
+        return {
+          TemplateBody: JSON.stringify(template),
+        };
+      },
+      describeStacks() {
+        return {
+          Stacks: [
+            {
+              StackName: 'Test-Stack-C',
+              StackStatus: 'CREATE_COMPLETE',
+              CreationTime: new Date(),
+            },
+            {
+              StackName: 'Test-Stack-A',
+              StackStatus: 'CREATE_COMPLETE',
+              CreationTime: new Date(),
+            },
+          ],
+        };
+      },
+    });
+  });
+
+  test('lookup role is used', async () => {
+    // GIVEN
+    let requestedParameterName: string;
+    mockCloudExecutable.sdkProvider.stubSSM({
+      getParameter(request) {
+        requestedParameterName = request.Name;
+        return {
+          Parameter: {
+            Value: '6',
+          },
+        };
+      },
+    });
+    const cdkToolkit = new CdkToolkit({
+      cloudExecutable: mockCloudExecutable,
+      configuration: mockCloudExecutable.configuration,
+      sdkProvider: mockCloudExecutable.sdkProvider,
+      cloudFormation: new CloudFormationDeployments({ sdkProvider: mockCloudExecutable.sdkProvider }),
+    });
+
+    // WHEN
+    await cdkToolkit.deploy({
+      selector: { patterns: ['Test-Stack-C'] },
+    });
+
+    // THEN
+    expect(requestedParameterName!).toEqual('/bootstrap/parameter');
+    expect(mockForEnvironment.mock.calls.length).toEqual(2);
+    expect(mockForEnvironment.mock.calls[0][2]).toEqual({
+      assumeRoleArn: 'bloop-lookup:here:123456789012',
+    });
+  });
+
+  test('fallback to deploy role if bootstrap stack version is not valid', async () => {
+    // GIVEN
+    let requestedParameterName: string;
+    mockCloudExecutable.sdkProvider.stubSSM({
+      getParameter(request) {
+        requestedParameterName = request.Name;
+        return {
+          Parameter: {
+            Value: '1',
+          },
+        };
+      },
+    });
+    const cdkToolkit = new CdkToolkit({
+      cloudExecutable: mockCloudExecutable,
+      configuration: mockCloudExecutable.configuration,
+      sdkProvider: mockCloudExecutable.sdkProvider,
+      cloudFormation: new CloudFormationDeployments({ sdkProvider: mockCloudExecutable.sdkProvider }),
+    });
+
+    // WHEN
+    await cdkToolkit.deploy({
+      selector: { patterns: ['Test-Stack-C'] },
+    });
+
+    // THEN
+    expect(flatten(stderrMock.mock.calls)).toEqual(expect.arrayContaining([
+      expect.stringMatching(/Could not assume bloop-lookup:here:123456789012/),
+      expect.stringMatching(/please upgrade to bootstrap version >= 5/),
+    ]));
+    expect(requestedParameterName!).toEqual('/bootstrap/parameter');
+    expect(mockForEnvironment.mock.calls.length).toEqual(3);
+    expect(mockForEnvironment.mock.calls[0][2]).toEqual({
+      assumeRoleArn: 'bloop-lookup:here:123456789012',
+    });
+    expect(mockForEnvironment.mock.calls[1][2]).toEqual({
+      assumeRoleArn: 'bloop:here:123456789012',
+    });
+  });
+
+  test('fallback to deploy role if bootstrap version parameter not found', async () => {
+    // GIVEN
+    mockCloudExecutable.sdkProvider.stubSSM({
+      getParameter() {
+        throw new Error('not found');
+      },
+    });
+    const cdkToolkit = new CdkToolkit({
+      cloudExecutable: mockCloudExecutable,
+      configuration: mockCloudExecutable.configuration,
+      sdkProvider: mockCloudExecutable.sdkProvider,
+      cloudFormation: new CloudFormationDeployments({ sdkProvider: mockCloudExecutable.sdkProvider }),
+    });
+
+    // WHEN
+    await cdkToolkit.deploy({
+      selector: { patterns: ['Test-Stack-C'] },
+    });
+
+    // THEN
+    expect(flatten(stderrMock.mock.calls)).toEqual(expect.arrayContaining([
+      expect.stringMatching(/Could not assume bloop-lookup:here:123456789012/),
+      expect.stringMatching(/please upgrade to bootstrap version >= 5/),
+    ]));
+    expect(mockForEnvironment.mock.calls.length).toEqual(3);
+    expect(mockForEnvironment.mock.calls[0][2]).toEqual({
+      assumeRoleArn: 'bloop-lookup:here:123456789012',
+    });
+    expect(mockForEnvironment.mock.calls[1][2]).toEqual({
+      assumeRoleArn: 'bloop:here:123456789012',
+    });
+  });
+
+  test('fallback to deploy role if forEnvironment throws', async () => {
+    // GIVEN
+    // throw error first for the 'prepareSdkWithLookupRoleFor' call and succeed for the rest
+    mockForEnvironment = jest.fn().mockImplementationOnce(() => { throw new Error('error'); })
+      .mockImplementation(() => { return { sdk: mockCloudExecutable.sdkProvider.sdk, didAssumeRole: true };});
+    mockCloudExecutable.sdkProvider.forEnvironment = mockForEnvironment;
+    mockCloudExecutable.sdkProvider.stubSSM({
+      getParameter() {
+        return { };
+      },
+    });
+    const cdkToolkit = new CdkToolkit({
+      cloudExecutable: mockCloudExecutable,
+      configuration: mockCloudExecutable.configuration,
+      sdkProvider: mockCloudExecutable.sdkProvider,
+      cloudFormation: new CloudFormationDeployments({ sdkProvider: mockCloudExecutable.sdkProvider }),
+    });
+
+    // WHEN
+    await cdkToolkit.deploy({
+      selector: { patterns: ['Test-Stack-C'] },
+    });
+
+    // THEN
+    expect(mockCloudExecutable.sdkProvider.sdk.ssm).not.toHaveBeenCalled();
+    expect(flatten(stderrMock.mock.calls)).toEqual(expect.arrayContaining([
+      expect.stringMatching(/Could not assume bloop-lookup:here:123456789012/),
+      expect.stringMatching(/please upgrade to bootstrap version >= 5/),
+    ]));
+    expect(mockForEnvironment.mock.calls.length).toEqual(3);
+    expect(mockForEnvironment.mock.calls[0][2]).toEqual({
+      assumeRoleArn: 'bloop-lookup:here:123456789012',
+    });
+    expect(mockForEnvironment.mock.calls[1][2]).toEqual({
+      assumeRoleArn: 'bloop:here:123456789012',
+    });
+  });
+
+  test('dont lookup bootstrap version parameter if default credentials are used', async () => {
+    // GIVEN
+    mockForEnvironment = jest.fn().mockImplementation(() => { return { sdk: mockCloudExecutable.sdkProvider.sdk, didAssumeRole: false }; });
+    mockCloudExecutable.sdkProvider.forEnvironment = mockForEnvironment;
+    const cdkToolkit = new CdkToolkit({
+      cloudExecutable: mockCloudExecutable,
+      configuration: mockCloudExecutable.configuration,
+      sdkProvider: mockCloudExecutable.sdkProvider,
+      cloudFormation: new CloudFormationDeployments({ sdkProvider: mockCloudExecutable.sdkProvider }),
+    });
+    mockCloudExecutable.sdkProvider.stubSSM({
+      getParameter() {
+        return { };
+      },
+    });
+
+    // WHEN
+    await cdkToolkit.deploy({
+      selector: { patterns: ['Test-Stack-C'] },
+    });
+
+    // THEN
+    expect(flatten(stderrMock.mock.calls)).toEqual(expect.arrayContaining([
+      expect.stringMatching(/please upgrade to bootstrap version >= 5/),
+    ]));
+    expect(mockCloudExecutable.sdkProvider.sdk.ssm).not.toHaveBeenCalled();
+    expect(mockForEnvironment.mock.calls.length).toEqual(3);
+    expect(mockForEnvironment.mock.calls[0][2]).toEqual({
+      assumeRoleArn: 'bloop-lookup:here:123456789012',
+    });
+    expect(mockForEnvironment.mock.calls[1][2]).toEqual({
+      assumeRoleArn: 'bloop:here:123456789012',
+    });
+  });
+
+  test('do not print warnings if lookup role not provided in stack artifact', async () => {
+    // GIVEN
+    mockCloudExecutable.sdkProvider.stubSSM({
+      getParameter() {
+        return {};
+      },
+    });
+    const cdkToolkit = new CdkToolkit({
+      cloudExecutable: mockCloudExecutable,
+      configuration: mockCloudExecutable.configuration,
+      sdkProvider: mockCloudExecutable.sdkProvider,
+      cloudFormation: new CloudFormationDeployments({ sdkProvider: mockCloudExecutable.sdkProvider }),
+    });
+
+    // WHEN
+    await cdkToolkit.deploy({
+      selector: { patterns: ['Test-Stack-A'] },
+    });
+
+    // THEN
+    expect(flatten(stderrMock.mock.calls)).not.toEqual(expect.arrayContaining([
+      expect.stringMatching(/Could not assume/),
+      expect.stringMatching(/please upgrade to bootstrap version/),
+    ]));
+    expect(mockCloudExecutable.sdkProvider.sdk.ssm).not.toHaveBeenCalled();
+    expect(mockForEnvironment.mock.calls.length).toEqual(2);
+    expect(mockForEnvironment.mock.calls[0][2]).toEqual({
+      assumeRoleArn: undefined,
+      assumeRoleExternalId: undefined,
+    });
+  });
+});
 
 describe('deploy', () => {
   test('fails when no valid stack names are given', async () => {
@@ -122,7 +409,7 @@ describe('deploy', () => {
 
       // WHEN
       await cdkToolkit.deploy({
-        selector: { patterns: ['Test-Stack-A'] },
+        selector: { patterns: ['Test-Stack-A-Display-Name'] },
         requireApproval: RequireApproval.Never,
         hotswap: true,
       });
@@ -157,7 +444,7 @@ describe('deploy', () => {
       const toolkit = defaultToolkitSetup();
 
       // WHEN
-      await toolkit.deploy({ selector: { patterns: ['Test-Stack-A'] } });
+      await toolkit.deploy({ selector: { patterns: ['Test-Stack-A-Display-Name'] } });
     });
 
     test('with stacks all stacks specified as wildcard', async () => {
@@ -350,13 +637,20 @@ describe('watch', () => {
 
     describe("when the 'ready' event has already fired", () => {
       beforeEach(() => {
+        // The ready callback triggers a deployment so each test
+        // that uses this function will see 'cdkDeployMock' called
+        // an additional time.
         fakeChokidarWatcherOn.readyCallback();
+      });
+
+      test("an initial 'deploy' is triggered, without any file changes", async () => {
+        expect(cdkDeployMock).toHaveBeenCalledTimes(1);
       });
 
       test("does trigger a 'deploy' for a file change", async () => {
         await fakeChokidarWatcherOn.fileEventCallback('add', 'my-file');
 
-        expect(cdkDeployMock).toHaveBeenCalled();
+        expect(cdkDeployMock).toHaveBeenCalledTimes(2);
       });
 
       test("triggers a 'deploy' twice for two file changes", async () => {
@@ -365,7 +659,7 @@ describe('watch', () => {
           fakeChokidarWatcherOn.fileEventCallback('change', 'my-file2'),
         ]);
 
-        expect(cdkDeployMock).toHaveBeenCalledTimes(2);
+        expect(cdkDeployMock).toHaveBeenCalledTimes(3);
       });
 
       test("batches file changes that happen during 'deploy'", async () => {
@@ -373,21 +667,32 @@ describe('watch', () => {
           fakeChokidarWatcherOn.fileEventCallback('add', 'my-file1'),
           fakeChokidarWatcherOn.fileEventCallback('change', 'my-file2'),
           fakeChokidarWatcherOn.fileEventCallback('unlink', 'my-file3'),
+          fakeChokidarWatcherOn.fileEventCallback('add', 'my-file4'),
         ]);
 
-        expect(cdkDeployMock).toHaveBeenCalledTimes(2);
+        expect(cdkDeployMock).toHaveBeenCalledTimes(3);
       });
     });
   });
 });
 
 describe('synth', () => {
+  test('successful synth outputs hierarchical stack ids', async () => {
+    const toolkit = defaultToolkitSetup();
+    await toolkit.synth([], false, false);
+
+    // Separate tests as colorizing hampers detection
+    expect(stderrMock.mock.calls[1][0]).toMatch('Test-Stack-A-Display-Name');
+    expect(stderrMock.mock.calls[1][0]).toMatch('Test-Stack-B');
+  });
+
   test('with no stdout option', async () => {
     // GIVE
     const toolkit = defaultToolkitSetup();
 
     // THEN
-    await expect(toolkit.synth(['Test-Stack-A'], false, true)).resolves.toBeUndefined();
+    await toolkit.synth(['Test-Stack-A-Display-Name'], false, true);
+    expect(mockData.mock.calls.length).toEqual(0);
   });
 
   afterEach(() => {
@@ -418,7 +723,8 @@ describe('synth', () => {
     test('causes synth to succeed if autoValidate=false', async() => {
       const toolkit = defaultToolkitSetup();
       const autoValidate = false;
-      await expect(toolkit.synth([], false, true, autoValidate)).resolves.toBeUndefined();
+      await toolkit.synth([], false, true, autoValidate);
+      expect(mockData.mock.calls.length).toEqual(0);
     });
   });
 
@@ -468,7 +774,10 @@ describe('synth', () => {
 
     const toolkit = defaultToolkitSetup();
 
-    await expect(toolkit.synth([MockStack.MOCK_STACK_D.stackName], true, false)).resolves.toBeDefined();
+    await toolkit.synth([MockStack.MOCK_STACK_D.stackName], true, false);
+
+    expect(mockData.mock.calls.length).toEqual(1);
+    expect(mockData.mock.calls[0][0]).toBeDefined();
   });
 });
 
@@ -487,6 +796,7 @@ class MockStack {
         },
       ],
     },
+    displayName: 'Test-Stack-A-Display-Name',
   };
   public static readonly MOCK_STACK_B: TestStackArtifact = {
     stackName: 'Test-Stack-B',

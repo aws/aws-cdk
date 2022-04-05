@@ -574,7 +574,7 @@ export class InterfaceVpcEndpoint extends VpcEndpoint implements IInterfaceVpcEn
     const subnets = subnetSelection.subnets;
 
     // Sanity check the subnet count
-    if (subnetSelection.subnets.length == 0) {
+    if (!subnetSelection.isPendingLookup && subnetSelection.subnets.length == 0) {
       throw new Error('Cannot create a VPC Endpoint with no subnets');
     }
 

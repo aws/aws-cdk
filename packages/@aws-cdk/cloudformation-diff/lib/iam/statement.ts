@@ -1,5 +1,8 @@
-import * as deepEqual from 'fast-deep-equal';
 import { deepRemoveUndefined } from '../util';
+
+// namespace object imports won't work in the bundle for function exports
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const deepEqual = require('fast-deep-equal');
 
 export class Statement {
   /**
@@ -321,5 +324,5 @@ export function renderCondition(condition: any): string {
   // We can make it more compact without losing information by getting rid of the outermost braces
   // and the indentation.
   const lines = jsonRepresentation.split('\n');
-  return lines.slice(1, lines.length - 1).map(s => s.substr(2)).join('\n');
+  return lines.slice(1, lines.length - 1).map(s => s.slice(2)).join('\n');
 }
