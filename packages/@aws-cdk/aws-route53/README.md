@@ -218,6 +218,7 @@ const zoneFromAttributes = route53.PublicHostedZone.fromPublicHostedZoneAttribut
   hostedZoneId: 'ZOJJZC49E0EPZ',
 });
 
+// Does not know zoneName
 const zoneFromId = route53.PublicHostedZone.fromPublicHostedZoneId(this, 'MyZone', 'ZOJJZC49E0EPZ');
 ```
 
