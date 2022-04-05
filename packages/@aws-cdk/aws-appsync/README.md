@@ -84,6 +84,14 @@ demoDS.createResolver({
   responseMappingTemplate: appsync.MappingTemplate.dynamoDbResultList(),
 });
 
+// Resolver for the Query "listDemos" that scans the DynamoDb table and returns a paginated list with default limit.
+demoDS.createResolver({
+  typeName: 'Query',
+  fieldName: 'listDemos',
+  requestMappingTemplate: appsync.MappingTemplate.dynamoDbListItems(10),
+  responseMappingTemplate: appsync.MappingTemplate.dynamoDbResultList(),
+});
+
 // Resolver for the Mutation "addDemo" that puts the item into the DynamoDb table.
 demoDS.createResolver({
   typeName: 'Mutation',
