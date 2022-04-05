@@ -88,7 +88,7 @@ test('cross-env group ARNs include path', () => {
     properties: { GroupArn: group.groupArn },
   });
 
-  expect(referencerStack).toHaveResource('Custom::GroupReferencer', {
+  Template.fromStack(referencerStack).hasResourceProperties('Custom::GroupReferencer', {
     GroupArn: {
       'Fn::Join': [
         '',

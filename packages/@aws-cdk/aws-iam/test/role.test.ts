@@ -585,7 +585,7 @@ test('cross-env role ARNs include path', () => {
     properties: { RoleArn: role.roleArn },
   });
 
-  expect(referencerStack).toHaveResource('Custom::RoleReferencer', {
+  Template.fromStack(referencerStack).hasResourceProperties('Custom::RoleReferencer', {
     RoleArn: {
       'Fn::Join': [
         '',

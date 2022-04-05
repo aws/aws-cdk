@@ -303,7 +303,7 @@ test('cross-env user ARNs include path', () => {
     properties: { UserArn: user.userArn },
   });
 
-  expect(referencerStack).toHaveResource('Custom::UserReferencer', {
+  Template.fromStack(referencerStack).hasResourceProperties('Custom::UserReferencer', {
     UserArn: {
       'Fn::Join': [
         '',
