@@ -52,16 +52,20 @@ export abstract class MappingTemplate {
    * limitKeyName = 'limit'
    * nextTokenKeyName = 'nextToken'
    */
-  public static dynamoDbListItems(
-    defaultLimit?: number, 
+  public static dynamoDbListItems({
+    defaultLimit = 100, 
+    limitKeyName = 'limit',
+    nextTokenKeyName = 'nextToken'
+  }: {
+    defaultLimit?: number,
     limitKeyName?: string,
     nextTokenKeyName?: string
-  ): MappingTemplate {
+  }): MappingTemplate {
     return this.fromString(`{
       "version" : "2017-02-28", 
       "operation" : "Scan", 
-      "limit": $util.defaultIfNull($ctx.args.${limitKeyName || 'limit'}, ${defaultLimit || 100}), 
-      "nextToken": $util.toJson($util.defaultIfNullOrBlank($ctx.args.${nextTokenKeyName || 'nextToken'}, null))
+      "limit": $util.defaultIfNull($ctx.args.${limitKeyName}, ${defaultLimit}), 
+      "nextToken": $util.toJson($util.defaultIfNullOrBlank($ctx.args.${nextTokenKeyName}, null))
     }`);
   }
   
