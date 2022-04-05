@@ -263,14 +263,14 @@ export class DatabaseCluster extends DatabaseClusterBase {
         defaultPort: this.defaultPort,
       });
       public readonly clusterIdentifier = attrs.clusterIdentifier;
-      private readonly _instanceIdentifiers?= attrs.instanceIdentifiers;
-      private readonly _clusterEndpoint?= attrs.clusterEndpointAddress && attrs.port != undefined ?
+      private readonly _instanceIdentifiers = attrs.instanceIdentifiers;
+      private readonly _clusterEndpoint = attrs.clusterEndpointAddress && attrs.port != undefined ?
         new Endpoint(attrs.clusterEndpointAddress, attrs.port) : undefined;
-      private readonly _clusterReadEndpoint?= attrs.readerEndpointAddress && attrs.port != undefined ?
+      private readonly _clusterReadEndpoint = attrs.readerEndpointAddress && attrs.port != undefined ?
         new Endpoint(attrs.readerEndpointAddress, attrs.port) : undefined;
-      private readonly _instanceEndpoints?= attrs.instanceEndpointAddresses && attrs.port != undefined ?
+      private readonly _instanceEndpoints = attrs.instanceEndpointAddresses && attrs.port != undefined ?
         attrs.instanceEndpointAddresses.map(addr => new Endpoint(addr, attrs.port!)) : undefined;
-      private readonly _securityGroupId?= attrs.securityGroup?.securityGroupId;
+      private readonly _securityGroupId = attrs.securityGroup?.securityGroupId;
 
       public get instanceIdentifiers(): string[] {
         if (!this._instanceIdentifiers) {
