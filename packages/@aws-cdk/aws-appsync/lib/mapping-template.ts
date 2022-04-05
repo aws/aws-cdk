@@ -57,7 +57,12 @@ export abstract class MappingTemplate {
     limitKeyName?: string,
     nextTokenKeyName?: string
   ): MappingTemplate {
-    return this.fromString(`{"version" : "2017-02-28", "operation" : "Scan", "limit": $util.defaultIfNull($ctx.args.${limitKeyName || 'limit'}, ${defaultLimit || 100}), "nextToken": $util.toJson($util.defaultIfNullOrBlank($ctx.args.${nextTokenKeyName || 'nextToken'}, null))}`);
+    return this.fromString(`{
+      "version" : "2017-02-28", 
+      "operation" : "Scan", 
+      "limit": $util.defaultIfNull($ctx.args.${limitKeyName || 'limit'}, ${defaultLimit || 100}), 
+      "nextToken": $util.toJson($util.defaultIfNullOrBlank($ctx.args.${nextTokenKeyName || 'nextToken'}, null))
+    }`);
   }
   
   /**
