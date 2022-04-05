@@ -697,7 +697,7 @@ describe('cluster', () => {
     Template.fromStack(stack).hasResourceProperties('Custom::AWSCDK-EKS-Cluster', {
       Config: {
         roleArn: { 'Fn::GetAtt': ['ClusterRoleFA261979', 'Arn'] },
-        version: '1.21',
+        version: '1.22',
         resourcesVpcConfig: {
           securityGroupIds: [{ 'Fn::GetAtt': ['ClusterControlPlaneSecurityGroupD274242C', 'GroupId'] }],
           subnetIds: [
@@ -1657,7 +1657,7 @@ describe('cluster', () => {
       const { app, stack } = testFixtureNoVpc();
 
       // WHEN
-      new eks.EksOptimizedImage({ kubernetesVersion: '1.21' }).getImage(stack);
+      new eks.EksOptimizedImage({ kubernetesVersion: '1.22' }).getImage(stack);
 
       // THEN
       const assembly = app.synth();
@@ -1668,7 +1668,7 @@ describe('cluster', () => {
       )).toEqual(true);
       expect(Object.entries(parameters).some(
         ([k, v]) => k.startsWith('SsmParameterValueawsserviceeksoptimizedami') &&
-          (v as any).Default.includes('/1.21/'),
+          (v as any).Default.includes('/1.22/'),
       )).toEqual(true);
 
     });
@@ -1806,7 +1806,7 @@ describe('cluster', () => {
       const { app, stack } = testFixtureNoVpc();
 
       // WHEN
-      new BottleRocketImage({ kubernetesVersion: '1.21' }).getImage(stack);
+      new BottleRocketImage({ kubernetesVersion: '1.22' }).getImage(stack);
 
       // THEN
       const assembly = app.synth();
@@ -1817,7 +1817,7 @@ describe('cluster', () => {
       )).toEqual(true);
       expect(Object.entries(parameters).some(
         ([k, v]) => k.startsWith('SsmParameterValueawsservicebottlerocketaws') &&
-          (v as any).Default.includes('/aws-k8s-1.21/'),
+          (v as any).Default.includes('/aws-k8s-1.22/'),
       )).toEqual(true);
 
     });
@@ -1838,7 +1838,7 @@ describe('cluster', () => {
         Config: {
           name: 'my-cluster-name',
           roleArn: { 'Fn::GetAtt': ['MyClusterRoleBA20FE72', 'Arn'] },
-          version: '1.21',
+          version: '1.22',
           resourcesVpcConfig: {
             securityGroupIds: [
               { 'Fn::GetAtt': ['MyClusterControlPlaneSecurityGroup6B658F79', 'GroupId'] },
