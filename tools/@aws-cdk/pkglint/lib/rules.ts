@@ -178,7 +178,7 @@ export class BundledCLI extends ValidationRule {
     '0BSD',
   ];
 
-  private static readonly DONT_ATTRIBUTE = '^@aws-cdk\/|^cdk-assets$';
+  private static readonly DONT_ATTRIBUTE = '^@aws-cdk\/|^cdk-assets$|^cdk-cli-wrapper$';
 
   public readonly name = 'bundle';
 
