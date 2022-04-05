@@ -18,7 +18,7 @@ const functionStack = new cdk.Stack(app, 'FunctionStack', {
 });
 const fction = new lambda.Function(functionStack, 'Echo', {
   handler: 'index.handler',
-  runtime: lambda.Runtime.NODEJS_10_X,
+  runtime: lambda.Runtime.NODEJS_14_X,
   code: lambda.Code.fromInline(`exports.handler = ${handler.toString()}`),
 });
 
