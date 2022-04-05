@@ -44,13 +44,9 @@ export abstract class MappingTemplate {
    * Mapping template to list a set of items from a DynamoDB table
    * 
    * @param defaultLimit the default value for the limit argument
-   * @param limitKeyName the name of the limit argument
-   * @param nextTokenKeyName the name of the next token argument
    * 
    * @default 
    * defaultLimit = 100
-   * limitKeyName = 'limit'
-   * nextTokenKeyName = 'nextToken'
    */
   public static dynamoDbListItems(
     defaultLimit: number
