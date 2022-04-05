@@ -1039,7 +1039,7 @@ describe('sources with customised build status configuration', () => {
         new codebuild.Project(stack, 'MyProject', {
           source,
         });
-        Template.fromStack(source).hasResourceProperties(
+        Template.fromStack(stack).hasResourceProperties(
             'AWS::CodeBuild::Project', {
                 'Source': {
                     'buildStatusConfig': {
@@ -1059,7 +1059,7 @@ describe('sources with customised build status configuration', () => {
         new codebuild.Project(stack, 'MyProject', {
           source,
         });
-        Template.fromStack(source).hasResourceProperties(
+        Template.fromStack(stack).hasResourceProperties(
             'AWS::CodeBuild::Project', {
                 'Source': {
                     'buildStatusConfig': {
@@ -1076,7 +1076,7 @@ describe('sources with customised build status configuration', () => {
         new codebuild.Project(stack, 'MyProject', {
           source,
         })
-        Template.fromStack(source).hasResourceProperties(
+        Template.fromStack(stack).hasResourceProperties(
             'AWS::CodeBuild::Project', {
                 'Source': {
                     'buildStatusConfig': {
@@ -1102,7 +1102,7 @@ describe('sources with customised build status configuration', () => {
         new codebuild.Project(stack, 'MyProject', {
           source,
         })
-        Template.fromStack(source).hasResourceProperties(
+        Template.fromStack(stack).hasResourceProperties(
             'AWS::CodeBuild::Project', {
                 'Source': {
                     'buildStatusConfig': {

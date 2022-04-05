@@ -547,22 +547,11 @@ abstract class ThirdPartyGitSource extends GitSource {
     if (this.webhookTriggersBatchBuild) {
       project.enableBatchBuilds();
     }
-    const buildStatusConfig = {
-        targetUrl: this.buildStatusUrl
-    }
-    if (typeof superConfig["buildStatusContext"] !== "undefined") {
-        // Github/GitHubEnterprise
-        buildStatusConfig["context"] = superConfig["buildStatusContext"]
-    } else if (typeof superConfig["buildStatusName"] !== "undefined") {
-        // BitBucket
-        buildStatusConfig["context"] = superConfig["buildStatusName"]
-    }
 
     return {
       sourceProperty: {
         ...superConfig.sourceProperty,
         reportBuildStatus: this.reportBuildStatus,
-        buildStatusConfig,
       },
       sourceVersion: superConfig.sourceVersion,
       buildTriggers: webhook === undefined ? undefined : {
