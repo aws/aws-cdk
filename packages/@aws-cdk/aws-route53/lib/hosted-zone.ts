@@ -238,13 +238,13 @@ export class PublicHostedZone extends HostedZone implements IPublicHostedZone {
   }
 
   /**
-   * Imports a hosted zone from another stack.
+   * Imports a public hosted zone from another stack.
    *
    * Use when both hosted zone ID and hosted zone name are known.
    *
    * @param scope the parent Construct for this Construct
    * @param id  the logical name of this Construct
-   * @param attrs the HostedZoneAttributes (hosted zone ID and hosted zone name)
+   * @param attrs the PublicHostedZoneAttributes (hosted zone ID and hosted zone name)
    */
   public static fromPublicHostedZoneAttributes(scope: Construct, id: string, attrs: PublicHostedZoneAttributes): IHostedZone {
     class Import extends Resource implements IHostedZone {
