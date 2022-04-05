@@ -17,7 +17,7 @@ import { testFixture, testFixtureNoVpc } from './util';
 
 /* eslint-disable max-len */
 
-const CLUSTER_VERSION = eks.KubernetesVersion.V1_21;
+const CLUSTER_VERSION = eks.KubernetesVersion.V1_22;
 
 describe('cluster', () => {
 
@@ -135,9 +135,9 @@ describe('cluster', () => {
     test('throws if selecting more than one subnet group', () => {
       expect(() => new eks.Cluster(stack, 'Cluster', {
         vpc: vpc,
-        vpcSubnets: [{ subnetType: ec2.SubnetType.PUBLIC }, { subnetType: ec2.SubnetType.PRIVATE }],
+        vpcSubnets: [{ subnetType: ec2.SubnetType.PUBLIC }, { subnetType: ec2.SubnetType.PRIVATE_WITH_NAT }],
         defaultCapacity: 0,
-        version: eks.KubernetesVersion.V1_21,
+        version: CLUSTER_VERSION,
       })).toThrow(/cannot select multiple subnet groups/);
 
 
@@ -149,7 +149,7 @@ describe('cluster', () => {
         vpc: vpc,
         vpcSubnets: [{ subnetType: ec2.SubnetType.PUBLIC }],
         defaultCapacity: 0,
-        version: eks.KubernetesVersion.V1_21,
+        version: CLUSTER_VERSION,
       });
 
       // THEN
@@ -697,7 +697,7 @@ describe('cluster', () => {
     Template.fromStack(stack).hasResourceProperties('Custom::AWSCDK-EKS-Cluster', {
       Config: {
         roleArn: { 'Fn::GetAtt': ['ClusterRoleFA261979', 'Arn'] },
-        version: '1.21',
+        version: '1.22',
         resourcesVpcConfig: {
           securityGroupIds: [{ 'Fn::GetAtt': ['ClusterControlPlaneSecurityGroupD274242C', 'GroupId'] }],
           subnetIds: [
@@ -1657,7 +1657,7 @@ describe('cluster', () => {
       const { app, stack } = testFixtureNoVpc();
 
       // WHEN
-      new eks.EksOptimizedImage({ kubernetesVersion: '1.21' }).getImage(stack);
+      new eks.EksOptimizedImage({ kubernetesVersion: '1.22' }).getImage(stack);
 
       // THEN
       const assembly = app.synth();
@@ -1668,7 +1668,7 @@ describe('cluster', () => {
       )).toEqual(true);
       expect(Object.entries(parameters).some(
         ([k, v]) => k.startsWith('SsmParameterValueawsserviceeksoptimizedami') &&
-          (v as any).Default.includes('/1.21/'),
+          (v as any).Default.includes('/1.22/'),
       )).toEqual(true);
 
     });
@@ -1806,7 +1806,7 @@ describe('cluster', () => {
       const { app, stack } = testFixtureNoVpc();
 
       // WHEN
-      new BottleRocketImage({ kubernetesVersion: '1.21' }).getImage(stack);
+      new BottleRocketImage({ kubernetesVersion: '1.22' }).getImage(stack);
 
       // THEN
       const assembly = app.synth();
@@ -1817,7 +1817,7 @@ describe('cluster', () => {
       )).toEqual(true);
       expect(Object.entries(parameters).some(
         ([k, v]) => k.startsWith('SsmParameterValueawsservicebottlerocketaws') &&
-          (v as any).Default.includes('/aws-k8s-1.21/'),
+          (v as any).Default.includes('/aws-k8s-1.22/'),
       )).toEqual(true);
 
     });
@@ -1838,7 +1838,7 @@ describe('cluster', () => {
         Config: {
           name: 'my-cluster-name',
           roleArn: { 'Fn::GetAtt': ['MyClusterRoleBA20FE72', 'Arn'] },
-          version: '1.21',
+          version: '1.22',
           resourcesVpcConfig: {
             securityGroupIds: [
               { 'Fn::GetAtt': ['MyClusterControlPlaneSecurityGroup6B658F79', 'GroupId'] },
@@ -2789,7 +2789,7 @@ describe('cluster', () => {
         natGateways: 1,
         subnetConfiguration: [
           {
-            subnetType: ec2.SubnetType.PRIVATE,
+            subnetType: ec2.SubnetType.PRIVATE_WITH_NAT,
             name: 'Private1',
           },
           {
@@ -2848,7 +2848,7 @@ describe('cluster', () => {
 
       for (let i = 0; i < 20; i++) {
         subnetConfiguration.push({
-          subnetType: ec2.SubnetType.PRIVATE,
+          subnetType: ec2.SubnetType.PRIVATE_WITH_NAT,
           name: `Private${i}`,
         },
         );
@@ -2897,7 +2897,7 @@ describe('cluster', () => {
 
       for (let i = 0; i < 20; i++) {
         subnetConfiguration.push({
-          subnetType: ec2.SubnetType.PRIVATE,
+          subnetType: ec2.SubnetType.PRIVATE_WITH_NAT,
           name: `Private${i}`,
         },
         );
