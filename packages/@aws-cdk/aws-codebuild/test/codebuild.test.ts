@@ -1028,6 +1028,59 @@ describe('secondary sources', () => {
   });
 });
 
+describe('sources with customised build status configuration', () => {
+    test('github', () => {
+        const context = "My custom CodeBuild worker!"
+        const stack = new cdk.Stack();
+        const source = codebuild.Source.gitHub(
+            stack, { owner: 'awslabs', repo: 'aws-cdk', buildStatusContext: context }
+        );
+        Template.fromStack(source).hasResourceProperties(
+            'AWS::CodeBuild::Project', {
+                'Source': {
+                    'buildStatusConfig': {
+                        'context': context,
+                    }
+                }
+            }
+        )
+    })
+    test('github enterprise', () => {
+        const stack = new cdk.Stack();
+        const source = codebuild.Source.gitHubEnterprise(stack, { httpsCloneUrl: 'url' })
+    })
+    test('bitbucket', () => {
+        const stack = new cdk.Stack();
+        const source = codebuild.Source.bitBucket(stack, { owner: 'awslabs', repo: 'aws-cdk' })
+    })
+})
+
+describe('sources with customised build status configuration', () => {
+    test('github with targetUrl', () => {
+        const context = "My custom CodeBuild worker!"
+        const targetUrl = "https://example.com"
+        const stack = new cdk.Stack();
+        const source = codebuild.Source.gitHub(
+            stack, {
+                owner: 'awslabs',
+                repo: 'aws-cdk',
+                buildStatusContext: context,
+                buildStatusUrl: targetUrl,
+            }
+        );
+        Template.fromStack(source).hasResourceProperties(
+            'AWS::CodeBuild::Project', {
+                'Source': {
+                    'buildStatusConfig': {
+                        'context': context,
+                        'targetUrl': targetUrl,
+                    }
+                }
+            }
+        )
+    })
+})
+
 describe('secondary source versions', () => {
   test('allow secondary source versions', () => {
     const stack = new cdk.Stack();

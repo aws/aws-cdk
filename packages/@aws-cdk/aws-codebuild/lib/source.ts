@@ -501,12 +501,11 @@ interface ThirdPartyGitSourceProps extends GitSourceProps {
   readonly webhookFilters?: FilterGroup[];
 
   /**
- * This parameter is used for the `url`/`target_url` parameter in the Bitbucket/GitHub commit status.
- * BitBucket: `url`
- * Github: `target_url`
- *
- * @default ???????????
- */
+   * This parameter is used for the `url`/`target_url` parameter in the Bitbucket/GitHub commit status.
+   *
+   * @example "The URL that the build will report back to the source provider. Can use built-in CodeBuild variables, like $AWS_REGION"
+   * @default "link to the AWS Console for CodeBuild to a particular build execution"
+   */
   readonly buildStatusUrl?: string;
 }
 
@@ -659,21 +658,46 @@ class S3Source extends Source {
 }
 
 /**
- * wip
+ * Common properties between {@link GitHubSource} and {@link GitHubEnterpriseSource}.
  */
-export interface GithubContextProps extends ThirdPartyGitSourceProps {
+interface CommonGithubSourceProps extends ThirdPartyGitSourceProps {
   /**
    * This parameter is used for the `context` parameter in the GitHub commit status.
    *
-   * @example 'My build #$CODEBUILD_BUILD_NUMBER'
+   * @example "My build #$CODEBUILD_BUILD_NUMBER"
+   * @default "AWS CodeBuild $AWS_REGION ($PROJECT_NAME)"
    */
-    readonly buildStatusContext: string
+   readonly buildStatusContext?: string
+}
+
+abstract class CommonGithubSource extends ThirdPartyGitSource {
+  private readonly buildStatusContext?: string;
+
+  constructor(props: CommonGithubSourceProps) {
+    super(props);
+    this.buildStatusContext = props.buildStatusContext
+  }
+
+  public bind(_scope: CoreConstruct, project: IProject): SourceConfig {
+    const superConfig = super.bind(_scope, project);
+    return {
+      sourceProperty: {
+        ...superConfig.sourceProperty,
+        buildStatusConfig: {
+          context: this.buildStatusContext,
+          targetUrl: this.buildStatusUrl,
+        },
+      },
+      sourceVersion: superConfig.sourceVersion,
+      buildTriggers: superConfig.buildTriggers,
+    };
+  }
 }
 
 /**
  * Construction properties for {@link GitHubSource} and {@link GitHubEnterpriseSource}.
  */
-export interface GitHubSourceProps extends GithubContextProps {
+export interface GitHubSourceProps extends CommonGithubSourceProps {
   /**
    * The GitHub account/user that owns the repo.
    *
@@ -692,15 +716,13 @@ export interface GitHubSourceProps extends GithubContextProps {
 /**
  * GitHub Source definition for a CodeBuild project.
  */
-class GitHubSource extends ThirdPartyGitSource {
+class GitHubSource extends CommonGithubSource {
   public readonly type = GITHUB_SOURCE_TYPE;
   private readonly httpsCloneUrl: string;
-  private readonly buildStatusContext: string;
 
   constructor(props: GitHubSourceProps) {
     super(props);
     this.httpsCloneUrl = `https://github.com/${props.owner}/${props.repo}.git`;
-    this.buildStatusContext = props.buildStatusContext
   }
 
   public bind(_scope: CoreConstruct, project: IProject): SourceConfig {
@@ -719,7 +741,7 @@ class GitHubSource extends ThirdPartyGitSource {
 /**
  * Construction properties for {@link GitHubEnterpriseSource}.
  */
-export interface GitHubEnterpriseSourceProps extends GithubContextProps {
+export interface GitHubEnterpriseSourceProps extends CommonGithubSourceProps {
   /**
    * The HTTPS URL of the repository in your GitHub Enterprise installation.
    */
@@ -736,11 +758,10 @@ export interface GitHubEnterpriseSourceProps extends GithubContextProps {
 /**
  * GitHub Enterprise Source definition for a CodeBuild project.
  */
-class GitHubEnterpriseSource extends ThirdPartyGitSource {
+class GitHubEnterpriseSource extends CommonGithubSource {
   public readonly type = GITHUB_ENTERPRISE_SOURCE_TYPE;
   private readonly httpsCloneUrl: string;
   private readonly ignoreSslErrors?: boolean;
-  private readonly buildStatusContext: string;
 
   constructor(props: GitHubEnterpriseSourceProps) {
     super(props);
@@ -763,10 +784,6 @@ class GitHubEnterpriseSource extends ThirdPartyGitSource {
         ...superConfig.sourceProperty,
         location: this.httpsCloneUrl,
         insecureSsl: this.ignoreSslErrors,
-        buildStatusConfig: {
-            context: this.buildStatusContext,
-            targetUrl: this.buildStatusUrl,
-        },
       },
       sourceVersion: superConfig.sourceVersion,
       buildTriggers: superConfig.buildTriggers,
@@ -813,9 +830,10 @@ export interface BitBucketSourceProps extends ThirdPartyGitSourceProps {
   /**
    * This parameter is used for the `name` parameter in the Bitbucket commit status.
    *
-   * @example 'My build #$CODEBUILD_BUILD_NUMBER'
+   * @example "My build #$CODEBUILD_BUILD_NUMBER"
+   * @default "AWS CodeBuild $AWS_REGION ($PROJECT_NAME)"
    */
-  readonly buildStatusName: string;
+  readonly buildStatusName?: string;
 }
 
 /**
@@ -824,11 +842,12 @@ export interface BitBucketSourceProps extends ThirdPartyGitSourceProps {
 class BitBucketSource extends ThirdPartyGitSource {
   public readonly type = BITBUCKET_SOURCE_TYPE;
   private readonly httpsCloneUrl: any;
-  private readonly buildStatusName: string;
+  private readonly buildStatusName?: string;
 
   constructor(props: BitBucketSourceProps) {
     super(props);
     this.httpsCloneUrl = `https://bitbucket.org/${props.owner}/${props.repo}.git`;
+    this.buildStatusName = props.buildStatusName
   }
 
   public bind(_scope: CoreConstruct, _project: IProject): SourceConfig {
@@ -842,6 +861,10 @@ class BitBucketSource extends ThirdPartyGitSource {
       sourceProperty: {
         ...superConfig.sourceProperty,
         location: this.httpsCloneUrl,
+        buildStatusConfig: {
+            context: this.buildStatusName,
+            targetUrl: this.buildStatusUrl,
+        },
       },
       sourceVersion: superConfig.sourceVersion,
       buildTriggers: superConfig.buildTriggers,
