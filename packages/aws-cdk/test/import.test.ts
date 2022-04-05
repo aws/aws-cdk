@@ -58,8 +58,8 @@ test('discovers importable resources', async () => {
   });
 
   const importer = new ResourceImporter(STACK_WITH_QUEUE, deployments);
-  const resources = await importer.discoverImportableResources();
-  expect(resources).toEqual([
+  const { additions } = await importer.discoverImportableResources();
+  expect(additions).toEqual([
     expect.objectContaining({
       logicalId: 'MyQueue',
     }),
@@ -86,11 +86,11 @@ test('asks human for resource identifiers', async () => {
   // GIVEN
   givenCurrentStack(STACK_WITH_QUEUE.stackName, { Resources: {} });
   const importer = new ResourceImporter(STACK_WITH_QUEUE, deployments);
-  const resources = await importer.discoverImportableResources();
+  const { additions } = await importer.discoverImportableResources();
 
   // WHEN
   promptlyPrompt.mockResolvedValue('TheQueueName');
-  const importable = await importer.askForResourceIdentifiers(resources);
+  const importable = await importer.askForResourceIdentifiers(additions);
 
   // THEN
   expect(importable.resourceMap).toEqual({
@@ -109,11 +109,11 @@ test('asks human to confirm automic import if identifier is in template', async 
   // GIVEN
   givenCurrentStack(STACK_WITH_NAMED_QUEUE.stackName, { Resources: {} });
   const importer = new ResourceImporter(STACK_WITH_NAMED_QUEUE, deployments);
-  const resources = await importer.discoverImportableResources();
+  const { additions } = await importer.discoverImportableResources();
 
   // WHEN
   promptlyConfirm.mockResolvedValue(true);
-  const importable = await importer.askForResourceIdentifiers(resources);
+  const importable = await importer.askForResourceIdentifiers(additions);
 
   // THEN
   expect(importable.resourceMap).toEqual({
@@ -132,9 +132,9 @@ test('asks human to confirm automic import if identifier is in template', async 
   // GIVEN
   givenCurrentStack(STACK_WITH_QUEUE.stackName, { Resources: {} });
   const importer = new ResourceImporter(STACK_WITH_QUEUE, deployments);
-  const resources = await importer.discoverImportableResources();
+  const { additions } = await importer.discoverImportableResources();
   const importMap: ImportMap = {
-    importResources: resources,
+    importResources: additions,
     resourceMap: {
       MyQueue: { QueueName: 'TheQueueName' },
     },
