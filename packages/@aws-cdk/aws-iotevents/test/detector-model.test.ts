@@ -500,8 +500,8 @@ test('cannot create transitions that transit to duprecated target state', () => 
 describe('Expression', () => {
   const E = iotevents.Expression;
   test.each([
-    ['currentInput', (_input: iotevents.IInput) => E.currentInput(_input), 'currentInput("test-input")'],
-    ['inputAttribute', (_input: iotevents.IInput) => E.inputAttribute(_input, 'json.path'), '$input.test-input.json.path'],
+    ['currentInput', (testInput: iotevents.IInput) => E.currentInput(testInput), 'currentInput("test-input")'],
+    ['inputAttribute', (testInput: iotevents.IInput) => E.inputAttribute(testInput, 'json.path'), '$input.test-input.json.path'],
     ['eq', () => E.eq(E.fromString('"aaa"'), E.fromString('"bbb"')), '"aaa" == "bbb"'],
     ['neq', () => E.neq(E.fromString('"aaa"'), E.fromString('"bbb"')), '"aaa" != "bbb"'],
     ['lt', () => E.lt(E.fromString('5'), E.fromString('2')), '5 < 2'],

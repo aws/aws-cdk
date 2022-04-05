@@ -40,17 +40,6 @@ class TestStack extends cdk.Stack {
     });
     const offlineState = new iotevents.State({
       stateName: 'offline',
-      onInput: [{
-        eventName: 'test-input-event',
-        actions: [
-          ['neq', iotevents.Expression.neq(iotevents.Expression.fromString('31.7'), iotevents.Expression.fromString('31.7'))] as const,
-          ['gt', iotevents.Expression.gt(iotevents.Expression.fromString('31.7'), iotevents.Expression.fromString('31.7'))] as const,
-          ['lt', iotevents.Expression.lt(iotevents.Expression.fromString('31.7'), iotevents.Expression.fromString('31.7'))] as const,
-          ['gte', iotevents.Expression.gte(iotevents.Expression.fromString('31.7'), iotevents.Expression.fromString('31.7'))] as const,
-          ['lte', iotevents.Expression.lte(iotevents.Expression.fromString('31.7'), iotevents.Expression.fromString('31.7'))] as const,
-          ['or', iotevents.Expression.or(iotevents.Expression.fromString('true'), iotevents.Expression.fromString('false'))] as const,
-        ].map(([variableName, value]) => ({ bind: () => ({ configuration: { setVariable: { variableName, value: value.evaluate() } } }) })),
-      }],
     });
 
     // 1st => 2nd

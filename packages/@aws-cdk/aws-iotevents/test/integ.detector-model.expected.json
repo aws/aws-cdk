@@ -123,49 +123,6 @@
             },
             {
               "OnInput": {
-                "Events": [
-                  {
-                    "Actions": [
-                      {
-                        "SetVariable": {
-                          "Value": "31.7 != 31.7",
-                          "VariableName": "neq"
-                        }
-                      },
-                      {
-                        "SetVariable": {
-                          "Value": "31.7 > 31.7",
-                          "VariableName": "gt"
-                        }
-                      },
-                      {
-                        "SetVariable": {
-                          "Value": "31.7 < 31.7",
-                          "VariableName": "lt"
-                        }
-                      },
-                      {
-                        "SetVariable": {
-                          "Value": "31.7 >= 31.7",
-                          "VariableName": "gte"
-                        }
-                      },
-                      {
-                        "SetVariable": {
-                          "Value": "31.7 <= 31.7",
-                          "VariableName": "lte"
-                        }
-                      },
-                      {
-                        "SetVariable": {
-                          "Value": "true || false",
-                          "VariableName": "or"
-                        }
-                      }
-                    ],
-                    "EventName": "test-input-event"
-                  }
-                ],
                 "TransitionEvents": [
                   {
                     "Condition": {

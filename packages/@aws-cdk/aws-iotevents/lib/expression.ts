@@ -88,15 +88,14 @@ export abstract class Expression {
 
   /**
    * This is called to evaluate the expression.
+   *
+   * @param parentPriority priority of the parent of this expression,
+   *   used for determining whether or not to add parenthesis around the expression.
+   *   This is intended to be set according to MDN rules, see
+   *   https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Operator_Precedence#table
+   *   for details
    */
-  public abstract evaluate(
-    /**
-     * The parent operator priority for determine to add parenthesis.
-     * This is intended to be set according to MDN rules.
-     * @see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Operator_Precedence#table
-     */
-    parentPriority?: number
-  ): string;
+  public abstract evaluate(parentPriority?: number): string;
 }
 
 class StringExpression extends Expression {
@@ -126,9 +125,8 @@ class BinaryOperationExpression extends Expression {
 
   public evaluate(parentPriority?: number) {
     const expression = `${this.left.evaluate(this.priority)} ${this.operator} ${this.right.evaluate(this.priority)}`;
-    if (parentPriority === undefined) {
-      return expression;
-    }
-    return parentPriority > this.priority ? `(${expression})` : expression;
+    return parentPriority === undefined || parentPriority <= this.priority
+      ? expression
+      : `(${expression})`;
   }
 }
