@@ -1,0 +1,120 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "lambda-event-source-sqs": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "lambda-event-source-sqs.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/lambda-event-source-sqs/F/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FServiceRole3AC82EE1",
+            "trace": [
+              "new Role (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/role.js:50:22)",
+              "new Function (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function.js:82:35)",
+              "new TestFunction (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda-event-sources/test/test-function.js:7:9)",
+              "new SqsEventSourceTest (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda-event-sources/test/integ.sqs.js:10:20)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda-event-sources/test/integ.sqs.js:18:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/lambda-event-source-sqs/F/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FServiceRoleDefaultPolicy17A19BFA",
+            "trace": [
+              "new Policy (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/policy.js:50:26)",
+              "Role.addToPrincipalPolicy (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/role.js:199:34)",
+              "Function.addToPrincipal (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/grant.js:87:65)",
+              "Function.addToPrincipalOrResource (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/grant.js:43:30)",
+              "Queue.grant (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-sqs/lib/queue-base.js:97:26)",
+              "Queue.grantConsumeMessages (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-sqs/lib/queue-base.js:50:26)",
+              "SqsEventSource.bind (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda-event-sources/lib/sqs.js:43:20)",
+              "TestFunction.addEventSource (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function-base.js:162:16)",
+              "new SqsEventSourceTest (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda-event-sources/test/integ.sqs.js:12:12)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda-event-sources/test/integ.sqs.js:18:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/lambda-event-source-sqs/F/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FC4345940",
+            "trace": [
+              "new Function (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function.js:158:26)",
+              "new TestFunction (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda-event-sources/test/test-function.js:7:9)",
+              "new SqsEventSourceTest (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda-event-sources/test/integ.sqs.js:10:20)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda-event-sources/test/integ.sqs.js:18:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/lambda-event-source-sqs/F/SqsEventSource:lambdaeventsourcesqsQ67DE9201/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FSqsEventSourcelambdaeventsourcesqsQ67DE9201754EC819",
+            "trace": [
+              "new EventSourceMapping (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/event-source-mapping.js:105:39)",
+              "TestFunction.addEventSourceMapping (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function-base.js:116:16)",
+              "SqsEventSource.bind (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda-event-sources/lib/sqs.js:35:43)",
+              "TestFunction.addEventSource (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function-base.js:162:16)",
+              "new SqsEventSourceTest (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda-event-sources/test/integ.sqs.js:12:12)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda-event-sources/test/integ.sqs.js:18:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/lambda-event-source-sqs/Q/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Q63C6E3AB",
+            "trace": [
+              "new Queue (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-sqs/lib/queue.js:81:23)",
+              "new SqsEventSourceTest (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda-event-sources/test/integ.sqs.js:11:23)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda-event-sources/test/integ.sqs.js:18:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ]
+      },
+      "displayName": "lambda-event-source-sqs"
+    }
+  }
+}

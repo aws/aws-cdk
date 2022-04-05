@@ -1,0 +1,1573 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "assembly-PipelineStack-Beta": {
+      "type": "cdk:cloud-assembly",
+      "properties": {
+        "directoryName": "assembly-PipelineStack-Beta",
+        "displayName": "PipelineStack/Beta"
+      }
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "PipelineStack.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "PipelineStack.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "PipelineStack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "PipelineStack.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b92001398a72048e88383894de1c7b330a172b541bbbbf24764adf16ec0151d0.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "PipelineStack.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "PipelineStack.assets"
+      ],
+      "metadata": {
+        "/PipelineStack/Vpc/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Vpc8378EB38",
+            "trace": [
+              "new Vpc (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:399:25)",
+              "new PipelineStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/test/integ.newpipeline-with-vpc.js:14:21)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/test/integ.newpipeline-with-vpc.js:47:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/PipelineStack/Vpc/PublicSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1Subnet5C2D37C4",
+            "trace": [
+              "new Subnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:731:24)",
+              "new PublicSubnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:891:9)",
+              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:641:42",
+              "Array.forEach (<anonymous>)",
+              "Vpc.createSubnetResources (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:615:32)",
+              "Vpc.createSubnets (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:611:18)",
+              "new Vpc (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:425:14)",
+              "new PipelineStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/test/integ.newpipeline-with-vpc.js:14:21)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/test/integ.newpipeline-with-vpc.js:47:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/PipelineStack/Vpc/PublicSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1RouteTable6C95E38E",
+            "trace": [
+              "new Subnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:747:23)",
+              "new PublicSubnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:891:9)",
+              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:641:42",
+              "Array.forEach (<anonymous>)",
+              "Vpc.createSubnetResources (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:615:32)",
+              "Vpc.createSubnets (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:611:18)",
+              "new Vpc (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:425:14)",
+              "new PipelineStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/test/integ.newpipeline-with-vpc.js:14:21)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/test/integ.newpipeline-with-vpc.js:47:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/PipelineStack/Vpc/PublicSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1RouteTableAssociation97140677",
+            "trace": [
+              "new Subnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:752:9)",
+              "new PublicSubnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:891:9)",
+              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:641:42",
+              "Array.forEach (<anonymous>)",
+              "Vpc.createSubnetResources (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:615:32)",
+              "Vpc.createSubnets (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:611:18)",
+              "new Vpc (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:425:14)",
+              "new PipelineStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/test/integ.newpipeline-with-vpc.js:14:21)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/test/integ.newpipeline-with-vpc.js:47:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/PipelineStack/Vpc/PublicSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1DefaultRoute3DA9E72A",
+            "trace": [
+              "PublicSubnet.addDefaultInternetRoute (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:780:23)",
+              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:437:30",
+              "Array.forEach (<anonymous>)",
+              "new Vpc (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:436:32)",
+              "new PipelineStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/test/integ.newpipeline-with-vpc.js:14:21)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/test/integ.newpipeline-with-vpc.js:47:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/PipelineStack/Vpc/PublicSubnet1/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1EIPD7E02669",
+            "trace": [
+              "PublicSubnet.addNatGateway (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:907:102)",
+              "NatGatewayProvider.configureNat (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/nat.js:91:33)",
+              "Vpc.createNatGateways (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:589:18)",
+              "new Vpc (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:442:22)",
+              "new PipelineStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/test/integ.newpipeline-with-vpc.js:14:21)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/test/integ.newpipeline-with-vpc.js:47:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/PipelineStack/Vpc/PublicSubnet1/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1NATGateway4D7517AA",
+            "trace": [
+              "PublicSubnet.addNatGateway (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:905:21)",
+              "NatGatewayProvider.configureNat (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/nat.js:91:33)",
+              "Vpc.createNatGateways (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:589:18)",
+              "new Vpc (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:442:22)",
+              "new PipelineStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/test/integ.newpipeline-with-vpc.js:14:21)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/test/integ.newpipeline-with-vpc.js:47:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/PipelineStack/Vpc/PublicSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2Subnet691E08A3",
+            "trace": [
+              "new Subnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:731:24)",
+              "new PublicSubnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:891:9)",
+              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:641:42",
+              "Array.forEach (<anonymous>)",
+              "Vpc.createSubnetResources (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:615:32)",
+              "Vpc.createSubnets (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:611:18)",
+              "new Vpc (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:425:14)",
+              "new PipelineStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/test/integ.newpipeline-with-vpc.js:14:21)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/test/integ.newpipeline-with-vpc.js:47:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/PipelineStack/Vpc/PublicSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2RouteTable94F7E489",
+            "trace": [
+              "new Subnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:747:23)",
+              "new PublicSubnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:891:9)",
+              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:641:42",
+              "Array.forEach (<anonymous>)",
+              "Vpc.createSubnetResources (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:615:32)",
+              "Vpc.createSubnets (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:611:18)",
+              "new Vpc (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:425:14)",
+              "new PipelineStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/test/integ.newpipeline-with-vpc.js:14:21)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/test/integ.newpipeline-with-vpc.js:47:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/PipelineStack/Vpc/PublicSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2RouteTableAssociationDD5762D8",
+            "trace": [
+              "new Subnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:752:9)",
+              "new PublicSubnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:891:9)",
+              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:641:42",
+              "Array.forEach (<anonymous>)",
+              "Vpc.createSubnetResources (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:615:32)",
+              "Vpc.createSubnets (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:611:18)",
+              "new Vpc (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:425:14)",
+              "new PipelineStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/test/integ.newpipeline-with-vpc.js:14:21)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/test/integ.newpipeline-with-vpc.js:47:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/PipelineStack/Vpc/PublicSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2DefaultRoute97F91067",
+            "trace": [
+              "PublicSubnet.addDefaultInternetRoute (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:780:23)",
+              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:437:30",
+              "Array.forEach (<anonymous>)",
+              "new Vpc (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:436:32)",
+              "new PipelineStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/test/integ.newpipeline-with-vpc.js:14:21)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/test/integ.newpipeline-with-vpc.js:47:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/PipelineStack/Vpc/PublicSubnet2/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2EIP3C605A87",
+            "trace": [
+              "PublicSubnet.addNatGateway (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:907:102)",
+              "NatGatewayProvider.configureNat (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/nat.js:91:33)",
+              "Vpc.createNatGateways (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:589:18)",
+              "new Vpc (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:442:22)",
+              "new PipelineStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/test/integ.newpipeline-with-vpc.js:14:21)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/test/integ.newpipeline-with-vpc.js:47:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/PipelineStack/Vpc/PublicSubnet2/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2NATGateway9182C01D",
+            "trace": [
+              "PublicSubnet.addNatGateway (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:905:21)",
+              "NatGatewayProvider.configureNat (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/nat.js:91:33)",
+              "Vpc.createNatGateways (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:589:18)",
+              "new Vpc (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:442:22)",
+              "new PipelineStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/test/integ.newpipeline-with-vpc.js:14:21)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/test/integ.newpipeline-with-vpc.js:47:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/PipelineStack/Vpc/PrivateSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet1Subnet536B997A",
+            "trace": [
+              "new Subnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:731:24)",
+              "new PrivateSubnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:922:9)",
+              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:646:43",
+              "Array.forEach (<anonymous>)",
+              "Vpc.createSubnetResources (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:615:32)",
+              "Vpc.createSubnets (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:611:18)",
+              "new Vpc (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:425:14)",
+              "new PipelineStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/test/integ.newpipeline-with-vpc.js:14:21)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/test/integ.newpipeline-with-vpc.js:47:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/PipelineStack/Vpc/PrivateSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet1RouteTableB2C5B500",
+            "trace": [
+              "new Subnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:747:23)",
+              "new PrivateSubnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:922:9)",
+              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:646:43",
+              "Array.forEach (<anonymous>)",
+              "Vpc.createSubnetResources (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:615:32)",
+              "Vpc.createSubnets (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:611:18)",
+              "new Vpc (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:425:14)",
+              "new PipelineStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/test/integ.newpipeline-with-vpc.js:14:21)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/test/integ.newpipeline-with-vpc.js:47:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/PipelineStack/Vpc/PrivateSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet1RouteTableAssociation70C59FA6",
+            "trace": [
+              "new Subnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:752:9)",
+              "new PrivateSubnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:922:9)",
+              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:646:43",
+              "Array.forEach (<anonymous>)",
+              "Vpc.createSubnetResources (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:615:32)",
+              "Vpc.createSubnets (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:611:18)",
+              "new Vpc (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:425:14)",
+              "new PipelineStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/test/integ.newpipeline-with-vpc.js:14:21)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/test/integ.newpipeline-with-vpc.js:47:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/PipelineStack/Vpc/PrivateSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet1DefaultRouteBE02A9ED",
+            "trace": [
+              "PrivateSubnet.addRoute (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:822:23)",
+              "NatGatewayProvider.configureSubnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/nat.js:103:16)",
+              "NatGatewayProvider.configureNat (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/nat.js:97:18)",
+              "Vpc.createNatGateways (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:589:18)",
+              "new Vpc (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:442:22)",
+              "new PipelineStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/test/integ.newpipeline-with-vpc.js:14:21)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/test/integ.newpipeline-with-vpc.js:47:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/PipelineStack/Vpc/PrivateSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet2Subnet3788AAA1",
+            "trace": [
+              "new Subnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:731:24)",
+              "new PrivateSubnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:922:9)",
+              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:646:43",
+              "Array.forEach (<anonymous>)",
+              "Vpc.createSubnetResources (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:615:32)",
+              "Vpc.createSubnets (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:611:18)",
+              "new Vpc (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:425:14)",
+              "new PipelineStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/test/integ.newpipeline-with-vpc.js:14:21)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/test/integ.newpipeline-with-vpc.js:47:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/PipelineStack/Vpc/PrivateSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet2RouteTableA678073B",
+            "trace": [
+              "new Subnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:747:23)",
+              "new PrivateSubnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:922:9)",
+              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:646:43",
+              "Array.forEach (<anonymous>)",
+              "Vpc.createSubnetResources (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:615:32)",
+              "Vpc.createSubnets (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:611:18)",
+              "new Vpc (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:425:14)",
+              "new PipelineStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/test/integ.newpipeline-with-vpc.js:14:21)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/test/integ.newpipeline-with-vpc.js:47:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/PipelineStack/Vpc/PrivateSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet2RouteTableAssociationA89CAD56",
+            "trace": [
+              "new Subnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:752:9)",
+              "new PrivateSubnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:922:9)",
+              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:646:43",
+              "Array.forEach (<anonymous>)",
+              "Vpc.createSubnetResources (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:615:32)",
+              "Vpc.createSubnets (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:611:18)",
+              "new Vpc (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:425:14)",
+              "new PipelineStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/test/integ.newpipeline-with-vpc.js:14:21)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/test/integ.newpipeline-with-vpc.js:47:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/PipelineStack/Vpc/PrivateSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet2DefaultRoute060D2087",
+            "trace": [
+              "PrivateSubnet.addRoute (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:822:23)",
+              "NatGatewayProvider.configureSubnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/nat.js:103:16)",
+              "NatGatewayProvider.configureNat (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/nat.js:97:18)",
+              "Vpc.createNatGateways (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:589:18)",
+              "new Vpc (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:442:22)",
+              "new PipelineStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/test/integ.newpipeline-with-vpc.js:14:21)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/test/integ.newpipeline-with-vpc.js:47:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/PipelineStack/Vpc/IGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcIGWD7BA715C",
+            "trace": [
+              "new Vpc (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:429:25)",
+              "new PipelineStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/test/integ.newpipeline-with-vpc.js:14:21)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/test/integ.newpipeline-with-vpc.js:47:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/PipelineStack/Vpc/VPCGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcVPCGWBF912B6E",
+            "trace": [
+              "new Vpc (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:432:25)",
+              "new PipelineStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/test/integ.newpipeline-with-vpc.js:14:21)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/test/integ.newpipeline-with-vpc.js:47:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/PipelineStack/Pipeline/Pipeline/ArtifactsBucket/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineArtifactsBucketAEA9A052",
+            "trace": [
+              "new Bucket (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-s3/lib/bucket.js:590:26)",
+              "new Pipeline (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codepipeline/lib/pipeline.js:173:27)",
+              "CodePipeline.doBuildPipeline (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/codepipeline/codepipeline.js:95:30)",
+              "CodePipeline.buildPipeline (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/main/pipeline-base.js:88:14)",
+              "CodePipeline.buildJustInTime (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/main/pipeline-base.js:96:18)",
+              "Object.visit (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/main/pipeline-base.js:39:57)",
+              "recurse (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:86:20)",
+              "recurse (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:98:17)",
+              "recurse (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:98:17)",
+              "invokeAspects (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:72:5)",
+              "Object.synthesize (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:16:5)",
+              "App.synth (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stage.js:89:41)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/test/integ.newpipeline-with-vpc.js:50:5)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/PipelineStack/Pipeline/Pipeline/ArtifactsBucket/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineArtifactsBucketPolicyF53CCC52",
+            "trace": [
+              "new BucketPolicy (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-s3/lib/bucket-policy.js:37:25)",
+              "Bucket.addToResourcePolicy (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-s3/lib/bucket.js:146:27)",
+              "Bucket.enforceSSLStatement (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-s3/lib/bucket.js:815:14)",
+              "new Bucket (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-s3/lib/bucket.js:627:18)",
+              "new Pipeline (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codepipeline/lib/pipeline.js:173:27)",
+              "CodePipeline.doBuildPipeline (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/codepipeline/codepipeline.js:95:30)",
+              "CodePipeline.buildPipeline (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/main/pipeline-base.js:88:14)",
+              "CodePipeline.buildJustInTime (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/main/pipeline-base.js:96:18)",
+              "Object.visit (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/main/pipeline-base.js:39:57)",
+              "recurse (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:86:20)",
+              "recurse (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:98:17)",
+              "recurse (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:98:17)",
+              "invokeAspects (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:72:5)",
+              "Object.synthesize (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:16:5)",
+              "App.synth (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stage.js:89:41)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/test/integ.newpipeline-with-vpc.js:50:5)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/PipelineStack/Pipeline/Pipeline/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineRoleB27FAA37",
+            "trace": [
+              "new Role (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/role.js:50:22)",
+              "new Pipeline (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codepipeline/lib/pipeline.js:184:35)",
+              "CodePipeline.doBuildPipeline (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/codepipeline/codepipeline.js:95:30)",
+              "CodePipeline.buildPipeline (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/main/pipeline-base.js:88:14)",
+              "CodePipeline.buildJustInTime (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/main/pipeline-base.js:96:18)",
+              "Object.visit (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/main/pipeline-base.js:39:57)",
+              "recurse (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:86:20)",
+              "recurse (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:98:17)",
+              "recurse (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:98:17)",
+              "invokeAspects (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:72:5)",
+              "Object.synthesize (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:16:5)",
+              "App.synth (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stage.js:89:41)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/test/integ.newpipeline-with-vpc.js:50:5)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/PipelineStack/Pipeline/Pipeline/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineRoleDefaultPolicy7BDC1ABB",
+            "trace": [
+              "new Policy (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/policy.js:50:26)",
+              "Role.addToPrincipalPolicy (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/role.js:199:34)",
+              "Function.addToPrincipal (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/grant.js:87:65)",
+              "Function.addToPrincipalOrResource (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/grant.js:43:30)",
+              "Bucket.grant (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-s3/lib/bucket.js:426:31)",
+              "Bucket.grantReadWrite (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-s3/lib/bucket.js:298:21)",
+              "new Pipeline (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codepipeline/lib/pipeline.js:197:29)",
+              "CodePipeline.doBuildPipeline (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/codepipeline/codepipeline.js:95:30)",
+              "CodePipeline.buildPipeline (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/main/pipeline-base.js:88:14)",
+              "CodePipeline.buildJustInTime (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/main/pipeline-base.js:96:18)",
+              "Object.visit (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/main/pipeline-base.js:39:57)",
+              "recurse (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:86:20)",
+              "recurse (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:98:17)",
+              "recurse (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:98:17)",
+              "invokeAspects (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:72:5)",
+              "Object.synthesize (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:16:5)",
+              "App.synth (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stage.js:89:41)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/test/integ.newpipeline-with-vpc.js:50:5)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/PipelineStack/Pipeline/Pipeline/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Pipeline9850B417",
+            "trace": [
+              "new Pipeline (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codepipeline/lib/pipeline.js:187:30)",
+              "CodePipeline.doBuildPipeline (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/codepipeline/codepipeline.js:95:30)",
+              "CodePipeline.buildPipeline (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/main/pipeline-base.js:88:14)",
+              "CodePipeline.buildJustInTime (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/main/pipeline-base.js:96:18)",
+              "Object.visit (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/main/pipeline-base.js:39:57)",
+              "recurse (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:86:20)",
+              "recurse (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:98:17)",
+              "recurse (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:98:17)",
+              "invokeAspects (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:72:5)",
+              "Object.synthesize (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:16:5)",
+              "App.synth (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stage.js:89:41)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/test/integ.newpipeline-with-vpc.js:50:5)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/PipelineStack/Pipeline/Pipeline/Source/rix0rrr_cdk-pipelines-demo/WebhookResource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineSourcerix0rrrcdkpipelinesdemoWebhookResourceDB0C1BCA",
+            "trace": [
+              "GitHubSourceAction.bound (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codepipeline-actions/lib/github/source-action.js:49:13)",
+              "GitHubSourceAction.bind (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codepipeline/lib/action.js:80:21)",
+              "RichAction.bind (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codepipeline/lib/private/rich-action.js:25:28)",
+              "Pipeline._attachActionToPipeline (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codepipeline/lib/pipeline.js:308:41)",
+              "Stage.attachActionToPipeline (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codepipeline/lib/private/stage.js:124:31)",
+              "Stage.addAction (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codepipeline/lib/private/stage.js:71:33)",
+              "GitHubSource.produceAction (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/codepipeline/codepipeline-source.js:126:15)",
+              "CodePipeline.pipelineStagesAndActionsFromGraph (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/codepipeline/codepipeline.js:151:48)",
+              "CodePipeline.doBuildPipeline (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/codepipeline/codepipeline.js:109:14)",
+              "CodePipeline.buildPipeline (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/main/pipeline-base.js:88:14)",
+              "CodePipeline.buildJustInTime (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/main/pipeline-base.js:96:18)",
+              "Object.visit (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/main/pipeline-base.js:39:57)",
+              "recurse (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:86:20)",
+              "recurse (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:98:17)",
+              "recurse (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:98:17)",
+              "invokeAspects (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:72:5)",
+              "Object.synthesize (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:16:5)",
+              "App.synth (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stage.js:89:41)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/test/integ.newpipeline-with-vpc.js:50:5)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/PipelineStack/Pipeline/Pipeline/Build/Synth/CdkBuildProject/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineBuildSynthCdkBuildProjectRole231EEA2A",
+            "trace": [
+              "new Role (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/role.js:50:22)",
+              "new Project (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codebuild/lib/project.js:267:35)",
+              "new PipelineProject (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codebuild/lib/pipeline-project.js:15:9)",
+              "CodeBuildFactory.produceAction (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/codepipeline/private/codebuild-factory.js:151:25)",
+              "CodePipeline.pipelineStagesAndActionsFromGraph (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/codepipeline/codepipeline.js:151:48)",
+              "CodePipeline.doBuildPipeline (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/codepipeline/codepipeline.js:109:14)",
+              "CodePipeline.buildPipeline (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/main/pipeline-base.js:88:14)",
+              "CodePipeline.buildJustInTime (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/main/pipeline-base.js:96:18)",
+              "Object.visit (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/main/pipeline-base.js:39:57)",
+              "recurse (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:86:20)",
+              "recurse (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:98:17)",
+              "recurse (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:98:17)",
+              "invokeAspects (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:72:5)",
+              "Object.synthesize (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:16:5)",
+              "App.synth (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stage.js:89:41)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/test/integ.newpipeline-with-vpc.js:50:5)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/PipelineStack/Pipeline/Pipeline/Build/Synth/CdkBuildProject/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineBuildSynthCdkBuildProjectRoleDefaultPolicyFB6C941C",
+            "trace": [
+              "new Policy (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/policy.js:50:26)",
+              "Role.addToPrincipalPolicy (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/role.js:199:34)",
+              "PipelineProject.addVpcRequiredPermissions (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codebuild/lib/project.js:858:19)",
+              "new Project (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codebuild/lib/project.js:345:14)",
+              "new PipelineProject (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codebuild/lib/pipeline-project.js:15:9)",
+              "CodeBuildFactory.produceAction (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/codepipeline/private/codebuild-factory.js:151:25)",
+              "CodePipeline.pipelineStagesAndActionsFromGraph (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/codepipeline/codepipeline.js:151:48)",
+              "CodePipeline.doBuildPipeline (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/codepipeline/codepipeline.js:109:14)",
+              "CodePipeline.buildPipeline (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/main/pipeline-base.js:88:14)",
+              "CodePipeline.buildJustInTime (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/main/pipeline-base.js:96:18)",
+              "Object.visit (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/main/pipeline-base.js:39:57)",
+              "recurse (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:86:20)",
+              "recurse (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:98:17)",
+              "recurse (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:98:17)",
+              "invokeAspects (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:72:5)",
+              "Object.synthesize (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:16:5)",
+              "App.synth (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stage.js:89:41)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/test/integ.newpipeline-with-vpc.js:50:5)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/PipelineStack/Pipeline/Pipeline/Build/Synth/CdkBuildProject/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineBuildSynthCdkBuildProjectSecurityGroup84F92459",
+            "trace": [
+              "new SecurityGroup (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/security-group.js:194:30)",
+              "PipelineProject.configureVpc (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codebuild/lib/project.js:806:35)",
+              "new Project (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codebuild/lib/project.js:334:29)",
+              "new PipelineProject (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codebuild/lib/pipeline-project.js:15:9)",
+              "CodeBuildFactory.produceAction (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/codepipeline/private/codebuild-factory.js:151:25)",
+              "CodePipeline.pipelineStagesAndActionsFromGraph (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/codepipeline/codepipeline.js:151:48)",
+              "CodePipeline.doBuildPipeline (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/codepipeline/codepipeline.js:109:14)",
+              "CodePipeline.buildPipeline (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/main/pipeline-base.js:88:14)",
+              "CodePipeline.buildJustInTime (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/main/pipeline-base.js:96:18)",
+              "Object.visit (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/main/pipeline-base.js:39:57)",
+              "recurse (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:86:20)",
+              "recurse (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:98:17)",
+              "recurse (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:98:17)",
+              "invokeAspects (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:72:5)",
+              "Object.synthesize (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:16:5)",
+              "App.synth (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stage.js:89:41)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/test/integ.newpipeline-with-vpc.js:50:5)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/PipelineStack/Pipeline/Pipeline/Build/Synth/CdkBuildProject/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineBuildSynthCdkBuildProject6BEFA8E6",
+            "trace": [
+              "new Project (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codebuild/lib/project.js:309:26)",
+              "new PipelineProject (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codebuild/lib/pipeline-project.js:15:9)",
+              "CodeBuildFactory.produceAction (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/codepipeline/private/codebuild-factory.js:151:25)",
+              "CodePipeline.pipelineStagesAndActionsFromGraph (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/codepipeline/codepipeline.js:151:48)",
+              "CodePipeline.doBuildPipeline (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/codepipeline/codepipeline.js:109:14)",
+              "CodePipeline.buildPipeline (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/main/pipeline-base.js:88:14)",
+              "CodePipeline.buildJustInTime (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/main/pipeline-base.js:96:18)",
+              "Object.visit (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/main/pipeline-base.js:39:57)",
+              "recurse (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:86:20)",
+              "recurse (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:98:17)",
+              "recurse (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:98:17)",
+              "invokeAspects (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:72:5)",
+              "Object.synthesize (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:16:5)",
+              "App.synth (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stage.js:89:41)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/test/integ.newpipeline-with-vpc.js:50:5)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/PipelineStack/Pipeline/Pipeline/Build/Synth/CdkBuildProject/PolicyDocument/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineBuildSynthCdkBuildProjectPolicyDocument4D16371A",
+            "trace": [
+              "new Policy (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/policy.js:50:26)",
+              "PipelineProject.addVpcRequiredPermissions (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codebuild/lib/project.js:878:22)",
+              "new Project (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codebuild/lib/project.js:345:14)",
+              "new PipelineProject (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codebuild/lib/pipeline-project.js:15:9)",
+              "CodeBuildFactory.produceAction (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/codepipeline/private/codebuild-factory.js:151:25)",
+              "CodePipeline.pipelineStagesAndActionsFromGraph (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/codepipeline/codepipeline.js:151:48)",
+              "CodePipeline.doBuildPipeline (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/codepipeline/codepipeline.js:109:14)",
+              "CodePipeline.buildPipeline (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/main/pipeline-base.js:88:14)",
+              "CodePipeline.buildJustInTime (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/main/pipeline-base.js:96:18)",
+              "Object.visit (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/main/pipeline-base.js:39:57)",
+              "recurse (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:86:20)",
+              "recurse (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:98:17)",
+              "recurse (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:98:17)",
+              "invokeAspects (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:72:5)",
+              "Object.synthesize (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:16:5)",
+              "App.synth (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stage.js:89:41)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/test/integ.newpipeline-with-vpc.js:50:5)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/PipelineStack/Pipeline/Pipeline/Build/Synth/CodePipelineActionRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineBuildSynthCodePipelineActionRole4E7A6C97",
+            "trace": [
+              "new Role (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/role.js:50:22)",
+              "Pipeline.getRoleForAction (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codepipeline/lib/pipeline.js:458:26)",
+              "Pipeline._attachActionToPipeline (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codepipeline/lib/pipeline.js:304:33)",
+              "Stage.attachActionToPipeline (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codepipeline/lib/private/stage.js:124:31)",
+              "Stage.addAction (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codepipeline/lib/private/stage.js:71:33)",
+              "CodeBuildFactory.produceAction (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/codepipeline/private/codebuild-factory.js:175:15)",
+              "CodePipeline.pipelineStagesAndActionsFromGraph (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/codepipeline/codepipeline.js:151:48)",
+              "CodePipeline.doBuildPipeline (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/codepipeline/codepipeline.js:109:14)",
+              "CodePipeline.buildPipeline (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/main/pipeline-base.js:88:14)",
+              "CodePipeline.buildJustInTime (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/main/pipeline-base.js:96:18)",
+              "Object.visit (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/main/pipeline-base.js:39:57)",
+              "recurse (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:86:20)",
+              "recurse (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:98:17)",
+              "recurse (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:98:17)",
+              "invokeAspects (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:72:5)",
+              "Object.synthesize (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:16:5)",
+              "App.synth (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stage.js:89:41)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/test/integ.newpipeline-with-vpc.js:50:5)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/PipelineStack/Pipeline/Pipeline/Build/Synth/CodePipelineActionRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineBuildSynthCodePipelineActionRoleDefaultPolicy92C90290",
+            "trace": [
+              "new Policy (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/policy.js:50:26)",
+              "Role.addToPrincipalPolicy (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/role.js:199:34)",
+              "Role.addToPolicy (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/role.js:207:21)",
+              "CodeBuildAction.bound (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codepipeline-actions/lib/codebuild/build-action.js:75:22)",
+              "CodeBuildAction.bind (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codepipeline/lib/action.js:80:21)",
+              "RichAction.bind (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codepipeline/lib/private/rich-action.js:25:28)",
+              "Pipeline._attachActionToPipeline (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codepipeline/lib/pipeline.js:308:41)",
+              "Stage.attachActionToPipeline (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codepipeline/lib/private/stage.js:124:31)",
+              "Stage.addAction (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codepipeline/lib/private/stage.js:71:33)",
+              "CodeBuildFactory.produceAction (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/codepipeline/private/codebuild-factory.js:175:15)",
+              "CodePipeline.pipelineStagesAndActionsFromGraph (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/codepipeline/codepipeline.js:151:48)",
+              "CodePipeline.doBuildPipeline (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/codepipeline/codepipeline.js:109:14)",
+              "CodePipeline.buildPipeline (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/main/pipeline-base.js:88:14)",
+              "CodePipeline.buildJustInTime (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/main/pipeline-base.js:96:18)",
+              "Object.visit (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/main/pipeline-base.js:39:57)",
+              "recurse (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:86:20)",
+              "recurse (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:98:17)",
+              "recurse (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:98:17)",
+              "invokeAspects (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:72:5)",
+              "Object.synthesize (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:16:5)",
+              "App.synth (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stage.js:89:41)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/test/integ.newpipeline-with-vpc.js:50:5)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/PipelineStack/Pipeline/Pipeline/UpdatePipeline/SelfMutate/CodePipelineActionRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineUpdatePipelineSelfMutateCodePipelineActionRoleD6D4E5CF",
+            "trace": [
+              "new Role (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/role.js:50:22)",
+              "Pipeline.getRoleForAction (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codepipeline/lib/pipeline.js:458:26)",
+              "Pipeline._attachActionToPipeline (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codepipeline/lib/pipeline.js:304:33)",
+              "Stage.attachActionToPipeline (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codepipeline/lib/private/stage.js:124:31)",
+              "Stage.addAction (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codepipeline/lib/private/stage.js:71:33)",
+              "CodeBuildFactory.produceAction (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/codepipeline/private/codebuild-factory.js:175:15)",
+              "Object.produceAction (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/codepipeline/private/codebuild-factory.js:61:40)",
+              "CodePipeline.pipelineStagesAndActionsFromGraph (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/codepipeline/codepipeline.js:151:48)",
+              "CodePipeline.doBuildPipeline (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/codepipeline/codepipeline.js:109:14)",
+              "CodePipeline.buildPipeline (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/main/pipeline-base.js:88:14)",
+              "CodePipeline.buildJustInTime (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/main/pipeline-base.js:96:18)",
+              "Object.visit (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/main/pipeline-base.js:39:57)",
+              "recurse (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:86:20)",
+              "recurse (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:98:17)",
+              "recurse (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:98:17)",
+              "invokeAspects (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:72:5)",
+              "Object.synthesize (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:16:5)",
+              "App.synth (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stage.js:89:41)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/test/integ.newpipeline-with-vpc.js:50:5)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/PipelineStack/Pipeline/Pipeline/UpdatePipeline/SelfMutate/CodePipelineActionRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineUpdatePipelineSelfMutateCodePipelineActionRoleDefaultPolicyE626265B",
+            "trace": [
+              "new Policy (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/policy.js:50:26)",
+              "Role.addToPrincipalPolicy (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/role.js:199:34)",
+              "Role.addToPolicy (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/role.js:207:21)",
+              "CodeBuildAction.bound (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codepipeline-actions/lib/codebuild/build-action.js:75:22)",
+              "CodeBuildAction.bind (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codepipeline/lib/action.js:80:21)",
+              "RichAction.bind (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codepipeline/lib/private/rich-action.js:25:28)",
+              "Pipeline._attachActionToPipeline (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codepipeline/lib/pipeline.js:308:41)",
+              "Stage.attachActionToPipeline (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codepipeline/lib/private/stage.js:124:31)",
+              "Stage.addAction (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codepipeline/lib/private/stage.js:71:33)",
+              "CodeBuildFactory.produceAction (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/codepipeline/private/codebuild-factory.js:175:15)",
+              "Object.produceAction (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/codepipeline/private/codebuild-factory.js:61:40)",
+              "CodePipeline.pipelineStagesAndActionsFromGraph (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/codepipeline/codepipeline.js:151:48)",
+              "CodePipeline.doBuildPipeline (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/codepipeline/codepipeline.js:109:14)",
+              "CodePipeline.buildPipeline (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/main/pipeline-base.js:88:14)",
+              "CodePipeline.buildJustInTime (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/main/pipeline-base.js:96:18)",
+              "Object.visit (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/main/pipeline-base.js:39:57)",
+              "recurse (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:86:20)",
+              "recurse (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:98:17)",
+              "recurse (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:98:17)",
+              "invokeAspects (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:72:5)",
+              "Object.synthesize (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:16:5)",
+              "App.synth (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stage.js:89:41)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/test/integ.newpipeline-with-vpc.js:50:5)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/PipelineStack/Pipeline/Pipeline/Assets/FileAsset1/CodePipelineActionRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineAssetsFileAsset1CodePipelineActionRoleC0EC649A",
+            "trace": [
+              "new Role (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/role.js:50:22)",
+              "Pipeline.getRoleForAction (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codepipeline/lib/pipeline.js:458:26)",
+              "Pipeline._attachActionToPipeline (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codepipeline/lib/pipeline.js:304:33)",
+              "Stage.attachActionToPipeline (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codepipeline/lib/private/stage.js:124:31)",
+              "Stage.addAction (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codepipeline/lib/private/stage.js:71:33)",
+              "CodeBuildFactory.produceAction (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/codepipeline/private/codebuild-factory.js:175:15)",
+              "Object.produceAction (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/codepipeline/private/codebuild-factory.js:61:40)",
+              "CodePipeline.pipelineStagesAndActionsFromGraph (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/codepipeline/codepipeline.js:151:48)",
+              "CodePipeline.doBuildPipeline (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/codepipeline/codepipeline.js:109:14)",
+              "CodePipeline.buildPipeline (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/main/pipeline-base.js:88:14)",
+              "CodePipeline.buildJustInTime (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/main/pipeline-base.js:96:18)",
+              "Object.visit (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/main/pipeline-base.js:39:57)",
+              "recurse (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:86:20)",
+              "recurse (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:98:17)",
+              "recurse (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:98:17)",
+              "invokeAspects (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:72:5)",
+              "Object.synthesize (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:16:5)",
+              "App.synth (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stage.js:89:41)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/test/integ.newpipeline-with-vpc.js:50:5)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/PipelineStack/Pipeline/Pipeline/Assets/FileAsset1/CodePipelineActionRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineAssetsFileAsset1CodePipelineActionRoleDefaultPolicy5F0BE7E8",
+            "trace": [
+              "new Policy (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/policy.js:50:26)",
+              "Role.addToPrincipalPolicy (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/role.js:199:34)",
+              "Role.addToPolicy (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/role.js:207:21)",
+              "CodeBuildAction.bound (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codepipeline-actions/lib/codebuild/build-action.js:75:22)",
+              "CodeBuildAction.bind (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codepipeline/lib/action.js:80:21)",
+              "RichAction.bind (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codepipeline/lib/private/rich-action.js:25:28)",
+              "Pipeline._attachActionToPipeline (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codepipeline/lib/pipeline.js:308:41)",
+              "Stage.attachActionToPipeline (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codepipeline/lib/private/stage.js:124:31)",
+              "Stage.addAction (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codepipeline/lib/private/stage.js:71:33)",
+              "CodeBuildFactory.produceAction (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/codepipeline/private/codebuild-factory.js:175:15)",
+              "Object.produceAction (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/codepipeline/private/codebuild-factory.js:61:40)",
+              "CodePipeline.pipelineStagesAndActionsFromGraph (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/codepipeline/codepipeline.js:151:48)",
+              "CodePipeline.doBuildPipeline (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/codepipeline/codepipeline.js:109:14)",
+              "CodePipeline.buildPipeline (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/main/pipeline-base.js:88:14)",
+              "CodePipeline.buildJustInTime (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/main/pipeline-base.js:96:18)",
+              "Object.visit (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/main/pipeline-base.js:39:57)",
+              "recurse (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:86:20)",
+              "recurse (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:98:17)",
+              "recurse (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:98:17)",
+              "invokeAspects (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:72:5)",
+              "Object.synthesize (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:16:5)",
+              "App.synth (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stage.js:89:41)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/test/integ.newpipeline-with-vpc.js:50:5)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/PipelineStack/Pipeline/Pipeline/Assets/FileAsset2/CodePipelineActionRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineAssetsFileAsset2CodePipelineActionRole06965A59",
+            "trace": [
+              "new Role (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/role.js:50:22)",
+              "Pipeline.getRoleForAction (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codepipeline/lib/pipeline.js:458:26)",
+              "Pipeline._attachActionToPipeline (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codepipeline/lib/pipeline.js:304:33)",
+              "Stage.attachActionToPipeline (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codepipeline/lib/private/stage.js:124:31)",
+              "Stage.addAction (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codepipeline/lib/private/stage.js:71:33)",
+              "CodeBuildFactory.produceAction (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/codepipeline/private/codebuild-factory.js:175:15)",
+              "Object.produceAction (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/codepipeline/private/codebuild-factory.js:61:40)",
+              "CodePipeline.pipelineStagesAndActionsFromGraph (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/codepipeline/codepipeline.js:151:48)",
+              "CodePipeline.doBuildPipeline (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/codepipeline/codepipeline.js:109:14)",
+              "CodePipeline.buildPipeline (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/main/pipeline-base.js:88:14)",
+              "CodePipeline.buildJustInTime (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/main/pipeline-base.js:96:18)",
+              "Object.visit (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/main/pipeline-base.js:39:57)",
+              "recurse (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:86:20)",
+              "recurse (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:98:17)",
+              "recurse (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:98:17)",
+              "invokeAspects (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:72:5)",
+              "Object.synthesize (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:16:5)",
+              "App.synth (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stage.js:89:41)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/test/integ.newpipeline-with-vpc.js:50:5)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/PipelineStack/Pipeline/Pipeline/Assets/FileAsset2/CodePipelineActionRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineAssetsFileAsset2CodePipelineActionRoleDefaultPolicy2399F4BC",
+            "trace": [
+              "new Policy (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/policy.js:50:26)",
+              "Role.addToPrincipalPolicy (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/role.js:199:34)",
+              "Role.addToPolicy (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/role.js:207:21)",
+              "CodeBuildAction.bound (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codepipeline-actions/lib/codebuild/build-action.js:75:22)",
+              "CodeBuildAction.bind (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codepipeline/lib/action.js:80:21)",
+              "RichAction.bind (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codepipeline/lib/private/rich-action.js:25:28)",
+              "Pipeline._attachActionToPipeline (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codepipeline/lib/pipeline.js:308:41)",
+              "Stage.attachActionToPipeline (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codepipeline/lib/private/stage.js:124:31)",
+              "Stage.addAction (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codepipeline/lib/private/stage.js:71:33)",
+              "CodeBuildFactory.produceAction (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/codepipeline/private/codebuild-factory.js:175:15)",
+              "Object.produceAction (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/codepipeline/private/codebuild-factory.js:61:40)",
+              "CodePipeline.pipelineStagesAndActionsFromGraph (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/codepipeline/codepipeline.js:151:48)",
+              "CodePipeline.doBuildPipeline (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/codepipeline/codepipeline.js:109:14)",
+              "CodePipeline.buildPipeline (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/main/pipeline-base.js:88:14)",
+              "CodePipeline.buildJustInTime (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/main/pipeline-base.js:96:18)",
+              "Object.visit (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/main/pipeline-base.js:39:57)",
+              "recurse (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:86:20)",
+              "recurse (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:98:17)",
+              "recurse (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:98:17)",
+              "invokeAspects (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:72:5)",
+              "Object.synthesize (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:16:5)",
+              "App.synth (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stage.js:89:41)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/test/integ.newpipeline-with-vpc.js:50:5)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/PipelineStack/Pipeline/UpdatePipeline/SelfMutation/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineUpdatePipelineSelfMutationRole57E559E8",
+            "trace": [
+              "new Role (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/role.js:50:22)",
+              "new Project (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codebuild/lib/project.js:267:35)",
+              "new PipelineProject (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codebuild/lib/pipeline-project.js:15:9)",
+              "CodeBuildFactory.produceAction (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/codepipeline/private/codebuild-factory.js:151:25)",
+              "Object.produceAction (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/codepipeline/private/codebuild-factory.js:61:40)",
+              "CodePipeline.pipelineStagesAndActionsFromGraph (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/codepipeline/codepipeline.js:151:48)",
+              "CodePipeline.doBuildPipeline (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/codepipeline/codepipeline.js:109:14)",
+              "CodePipeline.buildPipeline (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/main/pipeline-base.js:88:14)",
+              "CodePipeline.buildJustInTime (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/main/pipeline-base.js:96:18)",
+              "Object.visit (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/main/pipeline-base.js:39:57)",
+              "recurse (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:86:20)",
+              "recurse (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:98:17)",
+              "recurse (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:98:17)",
+              "invokeAspects (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:72:5)",
+              "Object.synthesize (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:16:5)",
+              "App.synth (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stage.js:89:41)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/test/integ.newpipeline-with-vpc.js:50:5)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/PipelineStack/Pipeline/UpdatePipeline/SelfMutation/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineUpdatePipelineSelfMutationRoleDefaultPolicyA225DA4E",
+            "trace": [
+              "new Policy (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/policy.js:50:26)",
+              "Role.addToPrincipalPolicy (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/role.js:199:34)",
+              "PipelineProject.addVpcRequiredPermissions (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codebuild/lib/project.js:858:19)",
+              "new Project (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codebuild/lib/project.js:345:14)",
+              "new PipelineProject (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codebuild/lib/pipeline-project.js:15:9)",
+              "CodeBuildFactory.produceAction (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/codepipeline/private/codebuild-factory.js:151:25)",
+              "Object.produceAction (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/codepipeline/private/codebuild-factory.js:61:40)",
+              "CodePipeline.pipelineStagesAndActionsFromGraph (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/codepipeline/codepipeline.js:151:48)",
+              "CodePipeline.doBuildPipeline (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/codepipeline/codepipeline.js:109:14)",
+              "CodePipeline.buildPipeline (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/main/pipeline-base.js:88:14)",
+              "CodePipeline.buildJustInTime (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/main/pipeline-base.js:96:18)",
+              "Object.visit (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/main/pipeline-base.js:39:57)",
+              "recurse (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:86:20)",
+              "recurse (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:98:17)",
+              "recurse (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:98:17)",
+              "invokeAspects (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:72:5)",
+              "Object.synthesize (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:16:5)",
+              "App.synth (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stage.js:89:41)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/test/integ.newpipeline-with-vpc.js:50:5)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/PipelineStack/Pipeline/UpdatePipeline/SelfMutation/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineUpdatePipelineSelfMutationSecurityGroup94164EDC",
+            "trace": [
+              "new SecurityGroup (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/security-group.js:194:30)",
+              "PipelineProject.configureVpc (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codebuild/lib/project.js:806:35)",
+              "new Project (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codebuild/lib/project.js:334:29)",
+              "new PipelineProject (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codebuild/lib/pipeline-project.js:15:9)",
+              "CodeBuildFactory.produceAction (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/codepipeline/private/codebuild-factory.js:151:25)",
+              "Object.produceAction (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/codepipeline/private/codebuild-factory.js:61:40)",
+              "CodePipeline.pipelineStagesAndActionsFromGraph (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/codepipeline/codepipeline.js:151:48)",
+              "CodePipeline.doBuildPipeline (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/codepipeline/codepipeline.js:109:14)",
+              "CodePipeline.buildPipeline (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/main/pipeline-base.js:88:14)",
+              "CodePipeline.buildJustInTime (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/main/pipeline-base.js:96:18)",
+              "Object.visit (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/main/pipeline-base.js:39:57)",
+              "recurse (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:86:20)",
+              "recurse (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:98:17)",
+              "recurse (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:98:17)",
+              "invokeAspects (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:72:5)",
+              "Object.synthesize (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:16:5)",
+              "App.synth (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stage.js:89:41)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/test/integ.newpipeline-with-vpc.js:50:5)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/PipelineStack/Pipeline/UpdatePipeline/SelfMutation/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineUpdatePipelineSelfMutationDAA41400",
+            "trace": [
+              "new Project (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codebuild/lib/project.js:309:26)",
+              "new PipelineProject (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codebuild/lib/pipeline-project.js:15:9)",
+              "CodeBuildFactory.produceAction (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/codepipeline/private/codebuild-factory.js:151:25)",
+              "Object.produceAction (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/codepipeline/private/codebuild-factory.js:61:40)",
+              "CodePipeline.pipelineStagesAndActionsFromGraph (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/codepipeline/codepipeline.js:151:48)",
+              "CodePipeline.doBuildPipeline (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/codepipeline/codepipeline.js:109:14)",
+              "CodePipeline.buildPipeline (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/main/pipeline-base.js:88:14)",
+              "CodePipeline.buildJustInTime (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/main/pipeline-base.js:96:18)",
+              "Object.visit (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/main/pipeline-base.js:39:57)",
+              "recurse (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:86:20)",
+              "recurse (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:98:17)",
+              "recurse (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:98:17)",
+              "invokeAspects (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:72:5)",
+              "Object.synthesize (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:16:5)",
+              "App.synth (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stage.js:89:41)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/test/integ.newpipeline-with-vpc.js:50:5)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/PipelineStack/Pipeline/UpdatePipeline/SelfMutation/PolicyDocument/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineUpdatePipelineSelfMutationPolicyDocumentD327DC74",
+            "trace": [
+              "new Policy (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/policy.js:50:26)",
+              "PipelineProject.addVpcRequiredPermissions (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codebuild/lib/project.js:878:22)",
+              "new Project (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codebuild/lib/project.js:345:14)",
+              "new PipelineProject (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codebuild/lib/pipeline-project.js:15:9)",
+              "CodeBuildFactory.produceAction (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/codepipeline/private/codebuild-factory.js:151:25)",
+              "Object.produceAction (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/codepipeline/private/codebuild-factory.js:61:40)",
+              "CodePipeline.pipelineStagesAndActionsFromGraph (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/codepipeline/codepipeline.js:151:48)",
+              "CodePipeline.doBuildPipeline (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/codepipeline/codepipeline.js:109:14)",
+              "CodePipeline.buildPipeline (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/main/pipeline-base.js:88:14)",
+              "CodePipeline.buildJustInTime (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/main/pipeline-base.js:96:18)",
+              "Object.visit (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/main/pipeline-base.js:39:57)",
+              "recurse (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:86:20)",
+              "recurse (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:98:17)",
+              "recurse (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:98:17)",
+              "invokeAspects (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:72:5)",
+              "Object.synthesize (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:16:5)",
+              "App.synth (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stage.js:89:41)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/test/integ.newpipeline-with-vpc.js:50:5)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/PipelineStack/Pipeline/Assets/FileRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineAssetsFileRole59943A77",
+            "trace": [
+              "new Role (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/role.js:50:22)",
+              "new AssetSingletonRole (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/private/asset-singleton-role.js:14:9)",
+              "CodePipeline.obtainAssetCodeBuildRole (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/codepipeline/codepipeline.js:492:27)",
+              "CodePipeline.publishAssetsAction (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/codepipeline/codepipeline.js:369:27)",
+              "CodePipeline.actionFromNode (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/codepipeline/codepipeline.js:212:29)",
+              "CodePipeline.pipelineStagesAndActionsFromGraph (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/codepipeline/codepipeline.js:145:46)",
+              "CodePipeline.doBuildPipeline (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/codepipeline/codepipeline.js:109:14)",
+              "CodePipeline.buildPipeline (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/main/pipeline-base.js:88:14)",
+              "CodePipeline.buildJustInTime (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/main/pipeline-base.js:96:18)",
+              "Object.visit (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/main/pipeline-base.js:39:57)",
+              "recurse (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:86:20)",
+              "recurse (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:98:17)",
+              "recurse (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:98:17)",
+              "invokeAspects (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:72:5)",
+              "Object.synthesize (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:16:5)",
+              "App.synth (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stage.js:89:41)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/test/integ.newpipeline-with-vpc.js:50:5)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/PipelineStack/Pipeline/Assets/FileRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineAssetsFileRoleDefaultPolicy14DB8755",
+            "trace": [
+              "new Policy (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/policy.js:50:26)",
+              "AssetSingletonRole.addToPrincipalPolicy (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/role.js:199:34)",
+              "AssetSingletonRole.addToPrincipalPolicy (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/private/asset-singleton-role.js:73:22)",
+              "AssetSingletonRole.addToPolicy (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/role.js:207:21)",
+              "new AssetSingletonRole (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/private/asset-singleton-role.js:17:14)",
+              "CodePipeline.obtainAssetCodeBuildRole (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/codepipeline/codepipeline.js:492:27)",
+              "CodePipeline.publishAssetsAction (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/codepipeline/codepipeline.js:369:27)",
+              "CodePipeline.actionFromNode (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/codepipeline/codepipeline.js:212:29)",
+              "CodePipeline.pipelineStagesAndActionsFromGraph (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/codepipeline/codepipeline.js:145:46)",
+              "CodePipeline.doBuildPipeline (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/codepipeline/codepipeline.js:109:14)",
+              "CodePipeline.buildPipeline (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/main/pipeline-base.js:88:14)",
+              "CodePipeline.buildJustInTime (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/main/pipeline-base.js:96:18)",
+              "Object.visit (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/main/pipeline-base.js:39:57)",
+              "recurse (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:86:20)",
+              "recurse (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:98:17)",
+              "recurse (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:98:17)",
+              "invokeAspects (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:72:5)",
+              "Object.synthesize (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:16:5)",
+              "App.synth (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stage.js:89:41)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/test/integ.newpipeline-with-vpc.js:50:5)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/PipelineStack/Pipeline/Assets/FileAsset1/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineAssetsFileAsset1SecurityGroupF04F1AD4",
+            "trace": [
+              "new SecurityGroup (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/security-group.js:194:30)",
+              "PipelineProject.configureVpc (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codebuild/lib/project.js:806:35)",
+              "new Project (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codebuild/lib/project.js:334:29)",
+              "new PipelineProject (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codebuild/lib/pipeline-project.js:15:9)",
+              "CodeBuildFactory.produceAction (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/codepipeline/private/codebuild-factory.js:151:25)",
+              "Object.produceAction (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/codepipeline/private/codebuild-factory.js:61:40)",
+              "CodePipeline.pipelineStagesAndActionsFromGraph (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/codepipeline/codepipeline.js:151:48)",
+              "CodePipeline.doBuildPipeline (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/codepipeline/codepipeline.js:109:14)",
+              "CodePipeline.buildPipeline (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/main/pipeline-base.js:88:14)",
+              "CodePipeline.buildJustInTime (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/main/pipeline-base.js:96:18)",
+              "Object.visit (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/main/pipeline-base.js:39:57)",
+              "recurse (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:86:20)",
+              "recurse (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:98:17)",
+              "recurse (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:98:17)",
+              "invokeAspects (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:72:5)",
+              "Object.synthesize (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:16:5)",
+              "App.synth (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stage.js:89:41)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/test/integ.newpipeline-with-vpc.js:50:5)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/PipelineStack/Pipeline/Assets/FileAsset1/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineAssetsFileAsset185A67CB4",
+            "trace": [
+              "new Project (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codebuild/lib/project.js:309:26)",
+              "new PipelineProject (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codebuild/lib/pipeline-project.js:15:9)",
+              "CodeBuildFactory.produceAction (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/codepipeline/private/codebuild-factory.js:151:25)",
+              "Object.produceAction (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/codepipeline/private/codebuild-factory.js:61:40)",
+              "CodePipeline.pipelineStagesAndActionsFromGraph (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/codepipeline/codepipeline.js:151:48)",
+              "CodePipeline.doBuildPipeline (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/codepipeline/codepipeline.js:109:14)",
+              "CodePipeline.buildPipeline (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/main/pipeline-base.js:88:14)",
+              "CodePipeline.buildJustInTime (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/main/pipeline-base.js:96:18)",
+              "Object.visit (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/main/pipeline-base.js:39:57)",
+              "recurse (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:86:20)",
+              "recurse (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:98:17)",
+              "recurse (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:98:17)",
+              "invokeAspects (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:72:5)",
+              "Object.synthesize (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:16:5)",
+              "App.synth (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stage.js:89:41)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/test/integ.newpipeline-with-vpc.js:50:5)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/PipelineStack/Pipeline/Assets/FileAsset1/PolicyDocument/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineAssetsFileAsset1PolicyDocument4681543E",
+            "trace": [
+              "new Policy (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/policy.js:50:26)",
+              "PipelineProject.addVpcRequiredPermissions (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codebuild/lib/project.js:878:22)",
+              "new Project (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codebuild/lib/project.js:345:14)",
+              "new PipelineProject (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codebuild/lib/pipeline-project.js:15:9)",
+              "CodeBuildFactory.produceAction (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/codepipeline/private/codebuild-factory.js:151:25)",
+              "Object.produceAction (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/codepipeline/private/codebuild-factory.js:61:40)",
+              "CodePipeline.pipelineStagesAndActionsFromGraph (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/codepipeline/codepipeline.js:151:48)",
+              "CodePipeline.doBuildPipeline (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/codepipeline/codepipeline.js:109:14)",
+              "CodePipeline.buildPipeline (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/main/pipeline-base.js:88:14)",
+              "CodePipeline.buildJustInTime (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/main/pipeline-base.js:96:18)",
+              "Object.visit (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/main/pipeline-base.js:39:57)",
+              "recurse (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:86:20)",
+              "recurse (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:98:17)",
+              "recurse (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:98:17)",
+              "invokeAspects (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:72:5)",
+              "Object.synthesize (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:16:5)",
+              "App.synth (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stage.js:89:41)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/test/integ.newpipeline-with-vpc.js:50:5)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/PipelineStack/Pipeline/Assets/FileAsset2/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineAssetsFileAsset2SecurityGroupA400C1A5",
+            "trace": [
+              "new SecurityGroup (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/security-group.js:194:30)",
+              "PipelineProject.configureVpc (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codebuild/lib/project.js:806:35)",
+              "new Project (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codebuild/lib/project.js:334:29)",
+              "new PipelineProject (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codebuild/lib/pipeline-project.js:15:9)",
+              "CodeBuildFactory.produceAction (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/codepipeline/private/codebuild-factory.js:151:25)",
+              "Object.produceAction (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/codepipeline/private/codebuild-factory.js:61:40)",
+              "CodePipeline.pipelineStagesAndActionsFromGraph (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/codepipeline/codepipeline.js:151:48)",
+              "CodePipeline.doBuildPipeline (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/codepipeline/codepipeline.js:109:14)",
+              "CodePipeline.buildPipeline (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/main/pipeline-base.js:88:14)",
+              "CodePipeline.buildJustInTime (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/main/pipeline-base.js:96:18)",
+              "Object.visit (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/main/pipeline-base.js:39:57)",
+              "recurse (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:86:20)",
+              "recurse (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:98:17)",
+              "recurse (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:98:17)",
+              "invokeAspects (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:72:5)",
+              "Object.synthesize (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:16:5)",
+              "App.synth (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stage.js:89:41)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/test/integ.newpipeline-with-vpc.js:50:5)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/PipelineStack/Pipeline/Assets/FileAsset2/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineAssetsFileAsset24D2D639B",
+            "trace": [
+              "new Project (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codebuild/lib/project.js:309:26)",
+              "new PipelineProject (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codebuild/lib/pipeline-project.js:15:9)",
+              "CodeBuildFactory.produceAction (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/codepipeline/private/codebuild-factory.js:151:25)",
+              "Object.produceAction (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/codepipeline/private/codebuild-factory.js:61:40)",
+              "CodePipeline.pipelineStagesAndActionsFromGraph (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/codepipeline/codepipeline.js:151:48)",
+              "CodePipeline.doBuildPipeline (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/codepipeline/codepipeline.js:109:14)",
+              "CodePipeline.buildPipeline (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/main/pipeline-base.js:88:14)",
+              "CodePipeline.buildJustInTime (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/main/pipeline-base.js:96:18)",
+              "Object.visit (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/lib/main/pipeline-base.js:39:57)",
+              "recurse (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:86:20)",
+              "recurse (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:98:17)",
+              "recurse (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:98:17)",
+              "invokeAspects (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:72:5)",
+              "Object.synthesize (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:16:5)",
+              "App.synth (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stage.js:89:41)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/test/integ.newpipeline-with-vpc.js:50:5)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/PipelineStack/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion",
+            "trace": [
+              "addBootstrapVersionRule (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/default-synthesizer.js:237:19)",
+              "DefaultStackSynthesizer.synthesize (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/default-synthesizer.js:127:13)",
+              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:155:35",
+              "visit (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:200:9)",
+              "visit (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:197:9)",
+              "synthesizeTree (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:148:5)",
+              "Object.synthesize (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:33:5)",
+              "App.synth (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stage.js:89:41)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/test/integ.newpipeline-with-vpc.js:50:5)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/PipelineStack/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion",
+            "trace": [
+              "addBootstrapVersionRule (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/default-synthesizer.js:245:5)",
+              "DefaultStackSynthesizer.synthesize (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/default-synthesizer.js:127:13)",
+              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:155:35",
+              "visit (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:200:9)",
+              "visit (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:197:9)",
+              "synthesizeTree (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:148:5)",
+              "Object.synthesize (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:33:5)",
+              "App.synth (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stage.js:89:41)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/pipelines/test/integ.newpipeline-with-vpc.js:50:5)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ]
+      },
+      "displayName": "PipelineStack"
+    }
+  }
+}

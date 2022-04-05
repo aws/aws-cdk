@@ -1,0 +1,90 @@
+{
+  "Resources": {
+    "Repo02AC86CF": {
+      "Type": "AWS::ECR::Repository",
+      "Properties": {
+        "ImageScanningConfiguration": {
+          "ScanOnPush": true
+        }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "RepoImageScanComplete7BC71935": {
+      "Type": "AWS::Events::Rule",
+      "Properties": {
+        "EventPattern": {
+          "source": [
+            "aws.ecr"
+          ],
+          "detail-type": [
+            "ECR Image Scan"
+          ],
+          "detail": {
+            "repository-name": [
+              {
+                "Ref": "Repo02AC86CF"
+              }
+            ],
+            "scan-status": [
+              "COMPLETE"
+            ]
+          }
+        },
+        "State": "ENABLED"
+      }
+    }
+  },
+  "Outputs": {
+    "RepositoryURI": {
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            {
+              "Fn::Select": [
+                4,
+                {
+                  "Fn::Split": [
+                    ":",
+                    {
+                      "Fn::GetAtt": [
+                        "Repo02AC86CF",
+                        "Arn"
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            ".dkr.ecr.",
+            {
+              "Fn::Select": [
+                3,
+                {
+                  "Fn::Split": [
+                    ":",
+                    {
+                      "Fn::GetAtt": [
+                        "Repo02AC86CF",
+                        "Arn"
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            ".",
+            {
+              "Ref": "AWS::URLSuffix"
+            },
+            "/",
+            {
+              "Ref": "Repo02AC86CF"
+            }
+          ]
+        ]
+      }
+    }
+  }
+}

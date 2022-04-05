@@ -1,0 +1,116 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "aws-cdk-codecommit": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-cdk-codecommit.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/aws-cdk-codecommit/MyCodecommitRepository/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyCodecommitRepository26DB372B",
+            "trace": [
+              "new Repository (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codecommit/lib/repository.js:194:28)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codecommit/test/integ.repository-notification.js:9:20)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/aws-cdk-codecommit/MyCodecommitRepository/NotifyOnPullRequestCreated/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyCodecommitRepositoryNotifyOnPullRequestCreated4CAB0621",
+            "trace": [
+              "new NotificationRule (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codestarnotifications/lib/notification-rule.js:37:26)",
+              "Repository.notifyOn (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codecommit/lib/repository.js:126:16)",
+              "Repository.notifyOnPullRequestCreated (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codecommit/lib/repository.js:151:21)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codecommit/test/integ.repository-notification.js:13:12)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/aws-cdk-codecommit/MyCodecommitRepository/NotifyOnPullRequestMerged/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyCodecommitRepositoryNotifyOnPullRequestMerged80574FED",
+            "trace": [
+              "new NotificationRule (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codestarnotifications/lib/notification-rule.js:37:26)",
+              "Repository.notifyOn (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codecommit/lib/repository.js:126:16)",
+              "Repository.notifyOnPullRequestMerged (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codecommit/lib/repository.js:160:21)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codecommit/test/integ.repository-notification.js:14:12)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/aws-cdk-codecommit/MyTopic/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyTopic86869434",
+            "trace": [
+              "new Topic (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-sns/lib/topic.js:35:26)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codecommit/test/integ.repository-notification.js:12:16)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/aws-cdk-codecommit/MyTopic/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyTopicPolicy12A5EC17",
+            "trace": [
+              "new TopicPolicy (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-sns/lib/policy.js:40:9)",
+              "Topic.addToResourcePolicy (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-sns/lib/topic-base.js:45:27)",
+              "Function.addToPrincipalOrResource (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/grant.js:68:49)",
+              "Topic.grantPublish (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-sns/lib/topic-base.js:63:26)",
+              "Topic.bindAsNotificationRuleTarget (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-sns/lib/topic-base.js:77:14)",
+              "NotificationRule.addTarget (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codestarnotifications/lib/notification-rule.js:79:34)",
+              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codestarnotifications/lib/notification-rule.js:50:18",
+              "Array.forEach (<anonymous>)",
+              "new NotificationRule (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codestarnotifications/lib/notification-rule.js:49:70)",
+              "Repository.notifyOn (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codecommit/lib/repository.js:126:16)",
+              "Repository.notifyOnPullRequestCreated (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codecommit/lib/repository.js:151:21)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codecommit/test/integ.repository-notification.js:13:12)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ]
+      },
+      "displayName": "aws-cdk-codecommit"
+    }
+  }
+}

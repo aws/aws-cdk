@@ -1,0 +1,298 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "integtest-restapi-fromdefinition-asset": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "integtest-restapi-fromdefinition-asset.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/integtest-restapi-fromdefinition-asset": [
+          {
+            "type": "aws:cdk:asset",
+            "data": {
+              "path": "asset.68497ac876de4e963fc8f7b5f1b28844c18ecc95e3f7c6e9e0bf250e03c037fb.yaml",
+              "id": "68497ac876de4e963fc8f7b5f1b28844c18ecc95e3f7c6e9e0bf250e03c037fb",
+              "packaging": "file",
+              "sourceHash": "68497ac876de4e963fc8f7b5f1b28844c18ecc95e3f7c6e9e0bf250e03c037fb",
+              "s3BucketParameter": "AssetParameters68497ac876de4e963fc8f7b5f1b28844c18ecc95e3f7c6e9e0bf250e03c037fbS3Bucket42039E29",
+              "s3KeyParameter": "AssetParameters68497ac876de4e963fc8f7b5f1b28844c18ecc95e3f7c6e9e0bf250e03c037fbS3VersionKeyB590532F",
+              "artifactHashParameter": "AssetParameters68497ac876de4e963fc8f7b5f1b28844c18ecc95e3f7c6e9e0bf250e03c037fbArtifactHashA9C91B6D"
+            },
+            "trace": [
+              "ConstructNode.addMetadata (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/construct-compat.js:352:62)",
+              "LegacyStackSynthesizer.doAddFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:170:29)",
+              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:82:25)",
+              "Stack.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack.js:408:33)",
+              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:59",
+              "withoutDeprecationWarnings (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:197:16)",
+              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:20)",
+              "new Asset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-s3-assets/lib/asset.js:39:44)",
+              "AssetApiDefinition.bind (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/lib/api-definition.js:152:26)",
+              "new SpecRestApi (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/lib/restapi.js:327:50)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.api-definition.asset.js:13:13)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/integtest-restapi-fromdefinition-asset/my-api/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myapi4C7BF186",
+            "trace": [
+              "new SpecRestApi (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/lib/restapi.js:328:26)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.api-definition.asset.js:13:13)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/integtest-restapi-fromdefinition-asset/my-api/Default/books/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myapibooks51D54548",
+            "trace": [
+              "new Resource (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/lib/resource.js:187:26)",
+              "RootResource.addResource (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/lib/resource.js:19:16)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.api-definition.asset.js:16:10)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/integtest-restapi-fromdefinition-asset/my-api/Default/books/GET/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myapibooksGETD6B2F597",
+            "trace": [
+              "new Method (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/lib/method.js:54:26)",
+              "Resource.addMethod (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/lib/resource.js:24:16)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.api-definition.asset.js:16:31)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/integtest-restapi-fromdefinition-asset/my-api/Deployment/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myapiDeployment92F2CB49fe116fef7f552ff0fc433c9aa3930d2f",
+            "trace": [
+              "new Deployment (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/lib/deployment.js:45:25)",
+              "SpecRestApi._configureDeployment (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/lib/restapi.js:260:38)",
+              "new SpecRestApi (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/lib/restapi.js:342:14)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.api-definition.asset.js:13:13)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/integtest-restapi-fromdefinition-asset/my-api/DeploymentStage.prod/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myapiDeploymentStageprod298F01AF",
+            "trace": [
+              "new Stage (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/lib/stage.js:55:26)",
+              "SpecRestApi._configureDeployment (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/lib/restapi.js:268:36)",
+              "new SpecRestApi (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/lib/restapi.js:342:14)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.api-definition.asset.js:13:13)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/integtest-restapi-fromdefinition-asset/my-api/Endpoint": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myapiEndpoint3628AFE3",
+            "trace": [
+              "SpecRestApi._configureDeployment (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/lib/restapi.js:272:13)",
+              "new SpecRestApi (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/lib/restapi.js:342:14)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.api-definition.asset.js:13:13)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/integtest-restapi-fromdefinition-asset/my-api/CloudWatchRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myapiCloudWatchRole095452E5",
+            "trace": [
+              "new Role (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/role.js:50:22)",
+              "SpecRestApi._configureCloudWatchRole (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/lib/restapi.js:228:22)",
+              "new SpecRestApi (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/lib/restapi.js:348:18)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.api-definition.asset.js:13:13)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/integtest-restapi-fromdefinition-asset/my-api/Account": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myapiAccountEC421A0A",
+            "trace": [
+              "SpecRestApi._configureCloudWatchRole (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/lib/restapi.js:232:34)",
+              "new SpecRestApi (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/lib/restapi.js:348:18)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.api-definition.asset.js:13:13)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/integtest-restapi-fromdefinition-asset/AssetParameters/68497ac876de4e963fc8f7b5f1b28844c18ecc95e3f7c6e9e0bf250e03c037fb/S3Bucket": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters68497ac876de4e963fc8f7b5f1b28844c18ecc95e3f7c6e9e0bf250e03c037fbS3Bucket42039E29",
+            "trace": [
+              "new FileAssetParameters (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/asset-parameters.js:12:36)",
+              "LegacyStackSynthesizer.doAddFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:157:22)",
+              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:82:25)",
+              "Stack.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack.js:408:33)",
+              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:59",
+              "withoutDeprecationWarnings (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:197:16)",
+              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:20)",
+              "new Asset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-s3-assets/lib/asset.js:39:44)",
+              "AssetApiDefinition.bind (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/lib/api-definition.js:152:26)",
+              "new SpecRestApi (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/lib/restapi.js:327:50)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.api-definition.asset.js:13:13)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/integtest-restapi-fromdefinition-asset/AssetParameters/68497ac876de4e963fc8f7b5f1b28844c18ecc95e3f7c6e9e0bf250e03c037fb/S3VersionKey": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters68497ac876de4e963fc8f7b5f1b28844c18ecc95e3f7c6e9e0bf250e03c037fbS3VersionKeyB590532F",
+            "trace": [
+              "new FileAssetParameters (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/asset-parameters.js:16:35)",
+              "LegacyStackSynthesizer.doAddFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:157:22)",
+              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:82:25)",
+              "Stack.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack.js:408:33)",
+              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:59",
+              "withoutDeprecationWarnings (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:197:16)",
+              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:20)",
+              "new Asset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-s3-assets/lib/asset.js:39:44)",
+              "AssetApiDefinition.bind (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/lib/api-definition.js:152:26)",
+              "new SpecRestApi (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/lib/restapi.js:327:50)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.api-definition.asset.js:13:13)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/integtest-restapi-fromdefinition-asset/AssetParameters/68497ac876de4e963fc8f7b5f1b28844c18ecc95e3f7c6e9e0bf250e03c037fb/ArtifactHash": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters68497ac876de4e963fc8f7b5f1b28844c18ecc95e3f7c6e9e0bf250e03c037fbArtifactHashA9C91B6D",
+            "trace": [
+              "new FileAssetParameters (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/asset-parameters.js:20:38)",
+              "LegacyStackSynthesizer.doAddFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:157:22)",
+              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:82:25)",
+              "Stack.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack.js:408:33)",
+              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:59",
+              "withoutDeprecationWarnings (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:197:16)",
+              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:20)",
+              "new Asset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-s3-assets/lib/asset.js:39:44)",
+              "AssetApiDefinition.bind (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/lib/api-definition.js:152:26)",
+              "new SpecRestApi (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/lib/restapi.js:327:50)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.api-definition.asset.js:13:13)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/integtest-restapi-fromdefinition-asset/PetsURL": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PetsURL",
+            "trace": [
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.api-definition.asset.js:27:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/integtest-restapi-fromdefinition-asset/BooksURL": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BooksURL",
+            "trace": [
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.api-definition.asset.js:30:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ]
+      },
+      "displayName": "integtest-restapi-fromdefinition-asset"
+    }
+  }
+}

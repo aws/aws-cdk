@@ -1,0 +1,141 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "integtest-restapi-fromdefinition-inline": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "integtest-restapi-fromdefinition-inline.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/integtest-restapi-fromdefinition-inline/my-api/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myapi4C7BF186",
+            "trace": [
+              "new SpecRestApi (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/lib/restapi.js:328:26)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.api-definition.inline.js:11:13)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/integtest-restapi-fromdefinition-inline/my-api/Deployment/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myapiDeployment92F2CB49a59bca458e4fac1fcd742212ded42a65",
+            "trace": [
+              "new Deployment (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/lib/deployment.js:45:25)",
+              "SpecRestApi._configureDeployment (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/lib/restapi.js:260:38)",
+              "new SpecRestApi (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/lib/restapi.js:342:14)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.api-definition.inline.js:11:13)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/integtest-restapi-fromdefinition-inline/my-api/DeploymentStage.prod/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myapiDeploymentStageprod298F01AF",
+            "trace": [
+              "new Stage (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/lib/stage.js:55:26)",
+              "SpecRestApi._configureDeployment (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/lib/restapi.js:268:36)",
+              "new SpecRestApi (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/lib/restapi.js:342:14)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.api-definition.inline.js:11:13)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/integtest-restapi-fromdefinition-inline/my-api/Endpoint": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myapiEndpoint3628AFE3",
+            "trace": [
+              "SpecRestApi._configureDeployment (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/lib/restapi.js:272:13)",
+              "new SpecRestApi (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/lib/restapi.js:342:14)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.api-definition.inline.js:11:13)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/integtest-restapi-fromdefinition-inline/my-api/CloudWatchRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myapiCloudWatchRole095452E5",
+            "trace": [
+              "new Role (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/role.js:50:22)",
+              "SpecRestApi._configureCloudWatchRole (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/lib/restapi.js:228:22)",
+              "new SpecRestApi (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/lib/restapi.js:348:18)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.api-definition.inline.js:11:13)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/integtest-restapi-fromdefinition-inline/my-api/Account": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myapiAccountEC421A0A",
+            "trace": [
+              "SpecRestApi._configureCloudWatchRole (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/lib/restapi.js:232:34)",
+              "new SpecRestApi (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/lib/restapi.js:348:18)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.api-definition.inline.js:11:13)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/integtest-restapi-fromdefinition-inline/PetsURL": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PetsURL",
+            "trace": [
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.api-definition.inline.js:60:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ]
+      },
+      "displayName": "integtest-restapi-fromdefinition-inline"
+    }
+  }
+}

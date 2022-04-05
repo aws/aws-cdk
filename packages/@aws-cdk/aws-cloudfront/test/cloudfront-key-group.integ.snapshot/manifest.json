@@ -1,0 +1,54 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "aws-cdk-cloudfront-custom": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-cdk-cloudfront-custom.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/aws-cdk-cloudfront-custom/AwesomePublicKey/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwesomePublicKeyED3E7F55",
+            "trace": [
+              "new PublicKey (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-cloudfront/lib/public-key.js:22:26)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-cloudfront/test/integ.cloudfront-key-group.js:9:9)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/aws-cdk-cloudfront-custom/AwesomeKeyGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwesomeKeyGroup3EF8348B",
+            "trace": [
+              "new KeyGroup (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-cloudfront/lib/key-group.js:19:26)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-cloudfront/test/integ.cloudfront-key-group.js:7:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ]
+      },
+      "displayName": "aws-cdk-cloudfront-custom"
+    }
+  }
+}

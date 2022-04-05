@@ -1,0 +1,323 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "cdk-integ-lambda-function-project": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "cdk-integ-lambda-function-project.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/cdk-integ-lambda-function-project": [
+          {
+            "type": "aws:cdk:asset",
+            "data": {
+              "path": "asset.51a124c454095f3106d92ba6c988cda953780ef31f562c86bd4ca693a7fdf724",
+              "id": "51a124c454095f3106d92ba6c988cda953780ef31f562c86bd4ca693a7fdf724",
+              "packaging": "zip",
+              "sourceHash": "51a124c454095f3106d92ba6c988cda953780ef31f562c86bd4ca693a7fdf724",
+              "s3BucketParameter": "AssetParameters51a124c454095f3106d92ba6c988cda953780ef31f562c86bd4ca693a7fdf724S3BucketDA99AAC5",
+              "s3KeyParameter": "AssetParameters51a124c454095f3106d92ba6c988cda953780ef31f562c86bd4ca693a7fdf724S3VersionKey561281CF",
+              "artifactHashParameter": "AssetParameters51a124c454095f3106d92ba6c988cda953780ef31f562c86bd4ca693a7fdf724ArtifactHash2CDEA207"
+            },
+            "trace": [
+              "ConstructNode.addMetadata (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/construct-compat.js:352:62)",
+              "LegacyStackSynthesizer.doAddFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:170:29)",
+              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:82:25)",
+              "TestStack.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack.js:408:33)",
+              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:59",
+              "withoutDeprecationWarnings (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:197:16)",
+              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:20)",
+              "new Asset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-s3-assets/lib/asset.js:39:44)",
+              "AssetCode.bind (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/code.js:206:26)",
+              "new LayerVersion (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/layers.js:43:33)",
+              "new PythonLayerVersion (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda-python/lib/layer.js:32:9)",
+              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda-python/test/integ.function.project.js:20:17)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda-python/test/integ.function.project.js:32:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          },
+          {
+            "type": "aws:cdk:asset",
+            "data": {
+              "path": "asset.c5c2604faa927103df13d5a72632c7be09d3fc34b6b31039a6acec9acf0f9116",
+              "id": "c5c2604faa927103df13d5a72632c7be09d3fc34b6b31039a6acec9acf0f9116",
+              "packaging": "zip",
+              "sourceHash": "c5c2604faa927103df13d5a72632c7be09d3fc34b6b31039a6acec9acf0f9116",
+              "s3BucketParameter": "AssetParametersc5c2604faa927103df13d5a72632c7be09d3fc34b6b31039a6acec9acf0f9116S3BucketD74EF551",
+              "s3KeyParameter": "AssetParametersc5c2604faa927103df13d5a72632c7be09d3fc34b6b31039a6acec9acf0f9116S3VersionKey9612D0E2",
+              "artifactHashParameter": "AssetParametersc5c2604faa927103df13d5a72632c7be09d3fc34b6b31039a6acec9acf0f9116ArtifactHash1E0614B3"
+            },
+            "trace": [
+              "ConstructNode.addMetadata (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/construct-compat.js:352:62)",
+              "LegacyStackSynthesizer.doAddFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:170:29)",
+              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:82:25)",
+              "TestStack.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack.js:408:33)",
+              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:59",
+              "withoutDeprecationWarnings (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:197:16)",
+              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:20)",
+              "new Asset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-s3-assets/lib/asset.js:39:44)",
+              "AssetCode.bind (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/code.js:206:26)",
+              "new Function (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function.js:100:33)",
+              "new PythonFunction (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda-python/lib/function.js:32:9)",
+              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda-python/test/integ.function.project.js:16:20)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda-python/test/integ.function.project.js:32:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/cdk-integ-lambda-function-project/Shared/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SharedDACC02AA",
+            "trace": [
+              "new LayerVersion (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/layers.js:50:26)",
+              "new PythonLayerVersion (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda-python/lib/layer.js:32:9)",
+              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda-python/test/integ.function.project.js:20:17)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda-python/test/integ.function.project.js:32:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/cdk-integ-lambda-function-project/AssetParameters/51a124c454095f3106d92ba6c988cda953780ef31f562c86bd4ca693a7fdf724/S3Bucket": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters51a124c454095f3106d92ba6c988cda953780ef31f562c86bd4ca693a7fdf724S3BucketDA99AAC5",
+            "trace": [
+              "new FileAssetParameters (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/asset-parameters.js:12:36)",
+              "LegacyStackSynthesizer.doAddFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:157:22)",
+              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:82:25)",
+              "TestStack.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack.js:408:33)",
+              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:59",
+              "withoutDeprecationWarnings (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:197:16)",
+              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:20)",
+              "new Asset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-s3-assets/lib/asset.js:39:44)",
+              "AssetCode.bind (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/code.js:206:26)",
+              "new LayerVersion (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/layers.js:43:33)",
+              "new PythonLayerVersion (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda-python/lib/layer.js:32:9)",
+              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda-python/test/integ.function.project.js:20:17)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda-python/test/integ.function.project.js:32:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/cdk-integ-lambda-function-project/AssetParameters/51a124c454095f3106d92ba6c988cda953780ef31f562c86bd4ca693a7fdf724/S3VersionKey": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters51a124c454095f3106d92ba6c988cda953780ef31f562c86bd4ca693a7fdf724S3VersionKey561281CF",
+            "trace": [
+              "new FileAssetParameters (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/asset-parameters.js:16:35)",
+              "LegacyStackSynthesizer.doAddFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:157:22)",
+              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:82:25)",
+              "TestStack.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack.js:408:33)",
+              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:59",
+              "withoutDeprecationWarnings (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:197:16)",
+              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:20)",
+              "new Asset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-s3-assets/lib/asset.js:39:44)",
+              "AssetCode.bind (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/code.js:206:26)",
+              "new LayerVersion (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/layers.js:43:33)",
+              "new PythonLayerVersion (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda-python/lib/layer.js:32:9)",
+              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda-python/test/integ.function.project.js:20:17)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda-python/test/integ.function.project.js:32:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/cdk-integ-lambda-function-project/AssetParameters/51a124c454095f3106d92ba6c988cda953780ef31f562c86bd4ca693a7fdf724/ArtifactHash": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters51a124c454095f3106d92ba6c988cda953780ef31f562c86bd4ca693a7fdf724ArtifactHash2CDEA207",
+            "trace": [
+              "new FileAssetParameters (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/asset-parameters.js:20:38)",
+              "LegacyStackSynthesizer.doAddFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:157:22)",
+              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:82:25)",
+              "TestStack.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack.js:408:33)",
+              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:59",
+              "withoutDeprecationWarnings (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:197:16)",
+              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:20)",
+              "new Asset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-s3-assets/lib/asset.js:39:44)",
+              "AssetCode.bind (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/code.js:206:26)",
+              "new LayerVersion (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/layers.js:43:33)",
+              "new PythonLayerVersion (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda-python/lib/layer.js:32:9)",
+              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda-python/test/integ.function.project.js:20:17)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda-python/test/integ.function.project.js:32:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/cdk-integ-lambda-function-project/AssetParameters/c5c2604faa927103df13d5a72632c7be09d3fc34b6b31039a6acec9acf0f9116/S3Bucket": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParametersc5c2604faa927103df13d5a72632c7be09d3fc34b6b31039a6acec9acf0f9116S3BucketD74EF551",
+            "trace": [
+              "new FileAssetParameters (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/asset-parameters.js:12:36)",
+              "LegacyStackSynthesizer.doAddFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:157:22)",
+              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:82:25)",
+              "TestStack.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack.js:408:33)",
+              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:59",
+              "withoutDeprecationWarnings (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:197:16)",
+              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:20)",
+              "new Asset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-s3-assets/lib/asset.js:39:44)",
+              "AssetCode.bind (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/code.js:206:26)",
+              "new Function (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function.js:100:33)",
+              "new PythonFunction (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda-python/lib/function.js:32:9)",
+              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda-python/test/integ.function.project.js:16:20)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda-python/test/integ.function.project.js:32:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/cdk-integ-lambda-function-project/AssetParameters/c5c2604faa927103df13d5a72632c7be09d3fc34b6b31039a6acec9acf0f9116/S3VersionKey": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParametersc5c2604faa927103df13d5a72632c7be09d3fc34b6b31039a6acec9acf0f9116S3VersionKey9612D0E2",
+            "trace": [
+              "new FileAssetParameters (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/asset-parameters.js:16:35)",
+              "LegacyStackSynthesizer.doAddFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:157:22)",
+              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:82:25)",
+              "TestStack.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack.js:408:33)",
+              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:59",
+              "withoutDeprecationWarnings (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:197:16)",
+              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:20)",
+              "new Asset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-s3-assets/lib/asset.js:39:44)",
+              "AssetCode.bind (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/code.js:206:26)",
+              "new Function (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function.js:100:33)",
+              "new PythonFunction (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda-python/lib/function.js:32:9)",
+              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda-python/test/integ.function.project.js:16:20)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda-python/test/integ.function.project.js:32:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/cdk-integ-lambda-function-project/AssetParameters/c5c2604faa927103df13d5a72632c7be09d3fc34b6b31039a6acec9acf0f9116/ArtifactHash": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParametersc5c2604faa927103df13d5a72632c7be09d3fc34b6b31039a6acec9acf0f9116ArtifactHash1E0614B3",
+            "trace": [
+              "new FileAssetParameters (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/asset-parameters.js:20:38)",
+              "LegacyStackSynthesizer.doAddFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:157:22)",
+              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:82:25)",
+              "TestStack.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack.js:408:33)",
+              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:59",
+              "withoutDeprecationWarnings (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:197:16)",
+              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:20)",
+              "new Asset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-s3-assets/lib/asset.js:39:44)",
+              "AssetCode.bind (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/code.js:206:26)",
+              "new Function (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function.js:100:33)",
+              "new PythonFunction (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda-python/lib/function.js:32:9)",
+              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda-python/test/integ.function.project.js:16:20)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda-python/test/integ.function.project.js:32:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/cdk-integ-lambda-function-project/my_handler/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myhandlerServiceRole77891068",
+            "trace": [
+              "new Role (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/role.js:50:22)",
+              "new Function (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function.js:82:35)",
+              "new PythonFunction (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda-python/lib/function.js:32:9)",
+              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda-python/test/integ.function.project.js:16:20)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda-python/test/integ.function.project.js:32:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/cdk-integ-lambda-function-project/my_handler/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myhandlerD202FA8E",
+            "trace": [
+              "new Function (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function.js:154:26)",
+              "new PythonFunction (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda-python/lib/function.js:32:9)",
+              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda-python/test/integ.function.project.js:16:20)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda-python/test/integ.function.project.js:32:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/cdk-integ-lambda-function-project/FunctionArn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FunctionArn",
+            "trace": [
+              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda-python/test/integ.function.project.js:26:9)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda-python/test/integ.function.project.js:32:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ]
+      },
+      "displayName": "cdk-integ-lambda-function-project"
+    }
+  }
+}

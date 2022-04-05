@@ -1,0 +1,516 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "integ-servicecatalog-portfolio": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "integ-servicecatalog-portfolio.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/integ-servicecatalog-portfolio/TestRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestRole6C9272DF",
+            "trace": [
+              "new Role (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/role.js:50:22)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-servicecatalog/test/integ.portfolio.js:9:14)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/integ-servicecatalog-portfolio/TestGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestGroupAF88660E",
+            "trace": [
+              "new Group (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/group.js:68:23)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-servicecatalog/test/integ.portfolio.js:12:15)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/integ-servicecatalog-portfolio/TestPortfolio/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestPortfolio4AC794EB",
+            "trace": [
+              "new Portfolio (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-servicecatalog/lib/portfolio.js:93:26)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-servicecatalog/test/integ.portfolio.js:13:19)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/integ-servicecatalog-portfolio/TestPortfolio/PortolioPrincipalAssociation20e1afa20ac2": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestPortfolioPortolioPrincipalAssociation20e1afa20ac27E1A060D",
+            "trace": [
+              "Portfolio.associatePrincipal (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-servicecatalog/lib/portfolio.js:76:13)",
+              "Portfolio.giveAccessToRole (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-servicecatalog/lib/portfolio.js:19:14)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-servicecatalog/test/integ.portfolio.js:19:11)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/integ-servicecatalog-portfolio/TestPortfolio/PortolioPrincipalAssociation44a1ca1c2338": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestPortfolioPortolioPrincipalAssociation44a1ca1c23384D6E460B",
+            "trace": [
+              "Portfolio.associatePrincipal (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-servicecatalog/lib/portfolio.js:76:13)",
+              "Portfolio.giveAccessToGroup (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-servicecatalog/lib/portfolio.js:25:14)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-servicecatalog/test/integ.portfolio.js:20:11)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/integ-servicecatalog-portfolio/TestPortfolio/TagOptionAssociation517ba9dbaf19": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestPortfolioTagOptionAssociation517ba9dbaf19EA8252F0",
+            "trace": [
+              "Function.associateTagOptions (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-servicecatalog/lib/private/association-manager.js:119:17)",
+              "Portfolio.associateTagOptions (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-servicecatalog/lib/portfolio.js:40:50)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-servicecatalog/test/integ.portfolio.js:27:11)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/integ-servicecatalog-portfolio/TestPortfolio/TagOptionAssociationb38e9aae7f1b": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestPortfolioTagOptionAssociationb38e9aae7f1bD3708991",
+            "trace": [
+              "Function.associateTagOptions (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-servicecatalog/lib/private/association-manager.js:119:17)",
+              "Portfolio.associateTagOptions (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-servicecatalog/lib/portfolio.js:40:50)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-servicecatalog/test/integ.portfolio.js:27:11)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/integ-servicecatalog-portfolio/TestPortfolio/TagOptionAssociationeeabbf0db0e3": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestPortfolioTagOptionAssociationeeabbf0db0e3ADBF0A6D",
+            "trace": [
+              "Function.associateTagOptions (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-servicecatalog/lib/private/association-manager.js:119:17)",
+              "Portfolio.associateTagOptions (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-servicecatalog/lib/portfolio.js:40:50)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-servicecatalog/test/integ.portfolio.js:27:11)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/integ-servicecatalog-portfolio/TestPortfolio/PortfolioSharebf5b82f04250": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestPortfolioPortfolioSharebf5b82f042508F035880",
+            "trace": [
+              "Portfolio.shareWithAccount (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-servicecatalog/lib/portfolio.js:32:9)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-servicecatalog/test/integ.portfolio.js:28:11)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/integ-servicecatalog-portfolio/TestPortfolio/PortfolioProductAssociationa0185761d231": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestPortfolioPortfolioProductAssociationa0185761d231B0D998A7",
+            "trace": [
+              "Function.associateProductWithPortfolio (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-servicecatalog/lib/private/association-manager.js:15:15)",
+              "Portfolio.addProduct (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-servicecatalog/lib/portfolio.js:28:50)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-servicecatalog/test/integ.portfolio.js:40:11)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/integ-servicecatalog-portfolio/TestPortfolio/ResourceUpdateConstrainta0185761d231": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestPortfolioResourceUpdateConstrainta0185761d231AB0EAAE0",
+            "trace": [
+              "Function.constrainTagUpdates (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-servicecatalog/lib/private/association-manager.js:28:32)",
+              "Portfolio.constrainTagUpdates (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-servicecatalog/lib/portfolio.js:43:50)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-servicecatalog/test/integ.portfolio.js:41:11)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/integ-servicecatalog-portfolio/TestPortfolio/LaunchNotificationConstraintf2572fdcecad": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestPortfolioLaunchNotificationConstraintf2572fdcecadB6DD8541",
+            "trace": [
+              "Function.notifyOnStackEvents (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-servicecatalog/lib/private/association-manager.js:46:32)",
+              "Portfolio.notifyOnStackEvents (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-servicecatalog/lib/portfolio.js:46:50)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-servicecatalog/test/integ.portfolio.js:44:11)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/integ-servicecatalog-portfolio/TestPortfolio/LaunchNotificationConstrainta9675fc4d6aa": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestPortfolioLaunchNotificationConstrainta9675fc4d6aa995BF1B9",
+            "trace": [
+              "Function.notifyOnStackEvents (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-servicecatalog/lib/private/association-manager.js:46:32)",
+              "Portfolio.notifyOnStackEvents (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-servicecatalog/lib/portfolio.js:46:50)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-servicecatalog/test/integ.portfolio.js:45:11)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/integ-servicecatalog-portfolio/TestPortfolio/LaunchRoleConstrainta0185761d231": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestPortfolioLaunchRoleConstrainta0185761d2312183162C",
+            "trace": [
+              "Function.setLaunchRoleConstraint (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-servicecatalog/lib/private/association-manager.js:134:32)",
+              "Function.setLaunchRole (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-servicecatalog/lib/private/association-manager.js:79:14)",
+              "Portfolio.setLaunchRole (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-servicecatalog/lib/portfolio.js:52:50)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-servicecatalog/test/integ.portfolio.js:52:11)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/integ-servicecatalog-portfolio/TestPortfolio/LaunchTemplateConstraintfac7b49c426e": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestPortfolioLaunchTemplateConstraintfac7b49c426e599F9FFF",
+            "trace": [
+              "Function.constrainCloudFormationParameters (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-servicecatalog/lib/private/association-manager.js:64:32)",
+              "Portfolio.constrainCloudFormationParameters (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-servicecatalog/lib/portfolio.js:49:50)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-servicecatalog/test/integ.portfolio.js:67:11)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/integ-servicecatalog-portfolio/TagOptions/5f31c54ba705": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TagOptions5f31c54ba705F110F743",
+            "trace": [
+              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-servicecatalog/lib/tag-options.js:38:35",
+              "Set.forEach (<anonymous>)",
+              "TagOptions.createUnderlyingTagOptions (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-servicecatalog/lib/tag-options.js:35:29)",
+              "new TagOptions (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-servicecatalog/lib/tag-options.js:22:36)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-servicecatalog/test/integ.portfolio.js:21:20)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/integ-servicecatalog-portfolio/TagOptions/8d263919cebb": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TagOptions8d263919cebb6764AC10",
+            "trace": [
+              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-servicecatalog/lib/tag-options.js:38:35",
+              "Set.forEach (<anonymous>)",
+              "TagOptions.createUnderlyingTagOptions (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-servicecatalog/lib/tag-options.js:35:29)",
+              "new TagOptions (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-servicecatalog/lib/tag-options.js:22:36)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-servicecatalog/test/integ.portfolio.js:21:20)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/integ-servicecatalog-portfolio/TagOptions/a260cbbd99c4": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TagOptionsa260cbbd99c416C40F73",
+            "trace": [
+              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-servicecatalog/lib/tag-options.js:38:35",
+              "Set.forEach (<anonymous>)",
+              "TagOptions.createUnderlyingTagOptions (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-servicecatalog/lib/tag-options.js:35:29)",
+              "new TagOptions (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-servicecatalog/lib/tag-options.js:22:36)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-servicecatalog/test/integ.portfolio.js:21:20)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/integ-servicecatalog-portfolio/TestProduct/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestProduct7606930B",
+            "trace": [
+              "new CloudFormationProduct (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-servicecatalog/lib/product.js:52:25)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-servicecatalog/test/integ.portfolio.js:29:17)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/integ-servicecatalog-portfolio/TestProduct/TagOptionAssociation667d45e6d8a1": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestProductTagOptionAssociation667d45e6d8a1F30303D6",
+            "trace": [
+              "Function.associateTagOptions (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-servicecatalog/lib/private/association-manager.js:119:17)",
+              "CloudFormationProduct.associateTagOptions (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-servicecatalog/lib/product.js:13:50)",
+              "new CloudFormationProduct (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-servicecatalog/lib/product.js:71:18)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-servicecatalog/test/integ.portfolio.js:29:17)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/integ-servicecatalog-portfolio/TestProduct/TagOptionAssociationec68fcd0154f": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestProductTagOptionAssociationec68fcd0154fF6DAD979",
+            "trace": [
+              "Function.associateTagOptions (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-servicecatalog/lib/private/association-manager.js:119:17)",
+              "CloudFormationProduct.associateTagOptions (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-servicecatalog/lib/product.js:13:50)",
+              "new CloudFormationProduct (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-servicecatalog/lib/product.js:71:18)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-servicecatalog/test/integ.portfolio.js:29:17)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/integ-servicecatalog-portfolio/TestProduct/TagOptionAssociation259ba31b62cc": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestProductTagOptionAssociation259ba31b62cc63D068F9",
+            "trace": [
+              "Function.associateTagOptions (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-servicecatalog/lib/private/association-manager.js:119:17)",
+              "CloudFormationProduct.associateTagOptions (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-servicecatalog/lib/product.js:13:50)",
+              "new CloudFormationProduct (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-servicecatalog/lib/product.js:71:18)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-servicecatalog/test/integ.portfolio.js:29:17)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/integ-servicecatalog-portfolio/Topic1/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Topic198E71B3E",
+            "trace": [
+              "new Topic (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-sns/lib/topic.js:35:26)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-servicecatalog/test/integ.portfolio.js:42:15)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/integ-servicecatalog-portfolio/specialTopic/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "specialTopic7664DE4C",
+            "trace": [
+              "new Topic (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-sns/lib/topic.js:35:26)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-servicecatalog/test/integ.portfolio.js:43:22)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/integ-servicecatalog-portfolio/LaunchRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LaunchRole2CFB2E44",
+            "trace": [
+              "new Role (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/role.js:50:22)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-servicecatalog/test/integ.portfolio.js:49:20)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/integ-servicecatalog-portfolio/SecondTestPortfolio/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SecondTestPortfolio96C8F4BA",
+            "trace": [
+              "new Portfolio (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-servicecatalog/lib/portfolio.js:93:26)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-servicecatalog/test/integ.portfolio.js:53:25)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/integ-servicecatalog-portfolio/SecondTestPortfolio/PortfolioProductAssociationcda67a671c20": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SecondTestPortfolioPortfolioProductAssociationcda67a671c209FE862F2",
+            "trace": [
+              "Function.associateProductWithPortfolio (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-servicecatalog/lib/private/association-manager.js:15:15)",
+              "Function.deployWithStackSets (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-servicecatalog/lib/private/association-manager.js:90:34)",
+              "Portfolio.deployWithStackSets (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-servicecatalog/lib/portfolio.js:67:50)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-servicecatalog/test/integ.portfolio.js:60:17)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/integ-servicecatalog-portfolio/SecondTestPortfolio/StackSetConstraintcda67a671c20": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SecondTestPortfolioStackSetConstraintcda67a671c20A02367A6",
+            "trace": [
+              "Function.deployWithStackSets (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-servicecatalog/lib/private/association-manager.js:97:32)",
+              "Portfolio.deployWithStackSets (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-servicecatalog/lib/portfolio.js:67:50)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-servicecatalog/test/integ.portfolio.js:60:17)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/integ-servicecatalog-portfolio/AdminRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AdminRole38563C57",
+            "trace": [
+              "new Role (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/role.js:50:22)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-servicecatalog/test/integ.portfolio.js:57:19)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ]
+      },
+      "displayName": "integ-servicecatalog-portfolio"
+    }
+  }
+}

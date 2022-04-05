@@ -1,0 +1,304 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "aws-stepfunctions-integ": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-stepfunctions-integ.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/aws-stepfunctions-integ": [
+          {
+            "type": "aws:cdk:asset",
+            "data": {
+              "path": "asset.d030bb7913ca422df69f29b2ea678ab4e5085bb3cbb17029e4b101d2dc4e3e0d.py",
+              "id": "d030bb7913ca422df69f29b2ea678ab4e5085bb3cbb17029e4b101d2dc4e3e0d",
+              "packaging": "file",
+              "sourceHash": "d030bb7913ca422df69f29b2ea678ab4e5085bb3cbb17029e4b101d2dc4e3e0d",
+              "s3BucketParameter": "AssetParametersd030bb7913ca422df69f29b2ea678ab4e5085bb3cbb17029e4b101d2dc4e3e0dS3BucketB8F6851B",
+              "s3KeyParameter": "AssetParametersd030bb7913ca422df69f29b2ea678ab4e5085bb3cbb17029e4b101d2dc4e3e0dS3VersionKey7BCC06FC",
+              "artifactHashParameter": "AssetParametersd030bb7913ca422df69f29b2ea678ab4e5085bb3cbb17029e4b101d2dc4e3e0dArtifactHashEC764944"
+            },
+            "trace": [
+              "ConstructNode.addMetadata (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/construct-compat.js:352:62)",
+              "LegacyStackSynthesizer.doAddFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:170:29)",
+              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:82:25)",
+              "Stack.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack.js:408:33)",
+              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:59",
+              "withoutDeprecationWarnings (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:197:16)",
+              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:20)",
+              "new Asset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-s3-assets/lib/asset.js:39:44)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-stepfunctions-tasks/test/glue/integ.glue-task.js:20:19)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/aws-stepfunctions-integ/AssetParameters/d030bb7913ca422df69f29b2ea678ab4e5085bb3cbb17029e4b101d2dc4e3e0d/S3Bucket": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParametersd030bb7913ca422df69f29b2ea678ab4e5085bb3cbb17029e4b101d2dc4e3e0dS3BucketB8F6851B",
+            "trace": [
+              "new FileAssetParameters (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/asset-parameters.js:12:36)",
+              "LegacyStackSynthesizer.doAddFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:157:22)",
+              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:82:25)",
+              "Stack.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack.js:408:33)",
+              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:59",
+              "withoutDeprecationWarnings (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:197:16)",
+              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:20)",
+              "new Asset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-s3-assets/lib/asset.js:39:44)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-stepfunctions-tasks/test/glue/integ.glue-task.js:20:19)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/aws-stepfunctions-integ/AssetParameters/d030bb7913ca422df69f29b2ea678ab4e5085bb3cbb17029e4b101d2dc4e3e0d/S3VersionKey": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParametersd030bb7913ca422df69f29b2ea678ab4e5085bb3cbb17029e4b101d2dc4e3e0dS3VersionKey7BCC06FC",
+            "trace": [
+              "new FileAssetParameters (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/asset-parameters.js:16:35)",
+              "LegacyStackSynthesizer.doAddFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:157:22)",
+              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:82:25)",
+              "Stack.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack.js:408:33)",
+              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:59",
+              "withoutDeprecationWarnings (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:197:16)",
+              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:20)",
+              "new Asset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-s3-assets/lib/asset.js:39:44)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-stepfunctions-tasks/test/glue/integ.glue-task.js:20:19)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/aws-stepfunctions-integ/AssetParameters/d030bb7913ca422df69f29b2ea678ab4e5085bb3cbb17029e4b101d2dc4e3e0d/ArtifactHash": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParametersd030bb7913ca422df69f29b2ea678ab4e5085bb3cbb17029e4b101d2dc4e3e0dArtifactHashEC764944",
+            "trace": [
+              "new FileAssetParameters (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/asset-parameters.js:20:38)",
+              "LegacyStackSynthesizer.doAddFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:157:22)",
+              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:82:25)",
+              "Stack.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack.js:408:33)",
+              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:59",
+              "withoutDeprecationWarnings (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:197:16)",
+              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:20)",
+              "new Asset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-s3-assets/lib/asset.js:39:44)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-stepfunctions-tasks/test/glue/integ.glue-task.js:20:19)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/aws-stepfunctions-integ/Glue Job Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GlueJobRole1CD031E0",
+            "trace": [
+              "new Role (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/role.js:50:22)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-stepfunctions-tasks/test/glue/integ.glue-task.js:23:17)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/aws-stepfunctions-integ/Glue Job Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GlueJobRoleDefaultPolicy3D94D6F1",
+            "trace": [
+              "new Policy (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/policy.js:50:26)",
+              "Role.addToPrincipalPolicy (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/role.js:199:34)",
+              "Function.addToPrincipal (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/grant.js:87:65)",
+              "Function.addToPrincipalOrResource (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/grant.js:43:30)",
+              "Import.grant (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-s3/lib/bucket.js:423:31)",
+              "Import.grantRead (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-s3/lib/bucket.js:265:21)",
+              "Asset.grantRead (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-s3-assets/lib/asset.js:92:21)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-stepfunctions-tasks/test/glue/integ.glue-task.js:29:11)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/aws-stepfunctions-integ/Glue Job": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GlueJob",
+            "trace": [
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-stepfunctions-tasks/test/glue/integ.glue-task.js:30:13)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/aws-stepfunctions-integ/State Machine/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StateMachineRole543B9670",
+            "trace": [
+              "new Role (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/role.js:50:22)",
+              "new StateMachine (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-stepfunctions/lib/state-machine.js:266:35)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-stepfunctions-tasks/test/glue/integ.glue-task.js:50:22)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/aws-stepfunctions-integ/State Machine/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StateMachineRoleDefaultPolicyDA5F7DA8",
+            "trace": [
+              "new Policy (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/policy.js:50:26)",
+              "Role.addToPrincipalPolicy (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/role.js:199:34)",
+              "StateMachine.addToRolePolicy (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-stepfunctions/lib/state-machine.js:302:19)",
+              "new StateMachine (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-stepfunctions/lib/state-machine.js:282:18)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-stepfunctions-tasks/test/glue/integ.glue-task.js:50:22)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/aws-stepfunctions-integ/State Machine/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StateMachine81935E76",
+            "trace": [
+              "new StateMachine (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-stepfunctions/lib/state-machine.js:272:26)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-stepfunctions-tasks/test/glue/integ.glue-task.js:50:22)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/aws-stepfunctions-integ/State Machine ARN Output": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StateMachineARNOutput",
+            "trace": [
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-stepfunctions-tasks/test/glue/integ.glue-task.js:53:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/aws-stepfunctions-integ/Service-principalMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ServiceprincipalMap",
+            "trace": [
+              "Object.deployTimeLookup (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/region-lookup.js:35:19)",
+              "Stack.regionalFact (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack.js:557:32)",
+              "ServicePrincipalToken.resolve (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/principals.js:642:22)",
+              "RememberingTokenResolver.resolveToken (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/resolvable.js:48:30)",
+              "RememberingTokenResolver.resolveToken (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/resolve.js:197:22)",
+              "resolve (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/resolve.js:130:55)",
+              "Object.resolve [as mapToken] (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/resolve.js:57:48)",
+              "TokenizedStringFragments.mapTokens (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/string-fragments.js:62:43)",
+              "RememberingTokenResolver.resolveString (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/resolvable.js:69:26)",
+              "RememberingTokenResolver.resolveString (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/resolve.js:200:27)",
+              "resolve (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/resolve.js:97:54)",
+              "Object.resolve (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/resolve.js:57:48)",
+              "resolve (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/resolve.js:145:51)",
+              "Object.resolve (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/resolve.js:57:48)",
+              "resolve (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/resolve.js:145:51)",
+              "Object.resolve (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/resolve.js:57:48)",
+              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/resolve.js:121:51",
+              "Array.map (<anonymous>)",
+              "resolve (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/resolve.js:121:14)",
+              "Object.resolve (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/resolve.js:57:48)",
+              "resolve (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/resolve.js:145:51)",
+              "Object.resolve (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/resolve.js:57:48)",
+              "RememberingTokenResolver.resolveToken (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/resolvable.js:50:32)",
+              "RememberingTokenResolver.resolveToken (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/resolve.js:197:22)",
+              "resolve (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/resolve.js:130:55)",
+              "Object.resolve (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/resolve.js:57:48)",
+              "resolve (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/resolve.js:145:51)",
+              "Object.resolve (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/resolve.js:57:48)",
+              "RememberingTokenResolver.resolveToken (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/resolvable.js:50:32)",
+              "RememberingTokenResolver.resolveToken (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/resolve.js:197:22)",
+              "resolve (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/resolve.js:130:55)",
+              "Object.resolve (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/resolve.js:57:48)",
+              "resolve (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/resolve.js:145:51)",
+              "Object.resolve (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/resolve.js:57:48)",
+              "RememberingTokenResolver.resolveToken (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/resolvable.js:50:32)",
+              "RememberingTokenResolver.resolveToken (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/resolve.js:197:22)",
+              "resolve (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/resolve.js:130:55)",
+              "Object.resolve (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/resolve.js:57:48)",
+              "resolve (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/resolve.js:145:51)",
+              "Object.resolve (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/resolve.js:57:48)",
+              "resolve (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/resolve.js:145:51)",
+              "Object.findTokens (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/resolve.js:183:5)",
+              "findAllReferences (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/refs.js:97:38)",
+              "Object.resolveReferences (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/refs.js:20:19)",
+              "Object.prepareApp (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/prepare-app.js:30:12)",
+              "Object.synthesize (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:21:19)",
+              "App.synth (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stage.js:89:41)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-stepfunctions-tasks/test/glue/integ.glue-task.js:56:5)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ]
+      },
+      "displayName": "aws-stepfunctions-integ"
+    }
+  }
+}

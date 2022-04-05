@@ -1,0 +1,277 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "MyStack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "MyStack.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/MyStack": [
+          {
+            "type": "aws:cdk:asset",
+            "data": {
+              "path": "asset.6b78a08a66c707ed36509dde1cebf8e7d5244a3b039122c2c00a5137efb845e2",
+              "id": "6b78a08a66c707ed36509dde1cebf8e7d5244a3b039122c2c00a5137efb845e2",
+              "packaging": "zip",
+              "sourceHash": "6b78a08a66c707ed36509dde1cebf8e7d5244a3b039122c2c00a5137efb845e2",
+              "s3BucketParameter": "AssetParameters6b78a08a66c707ed36509dde1cebf8e7d5244a3b039122c2c00a5137efb845e2S3Bucket2EB34879",
+              "s3KeyParameter": "AssetParameters6b78a08a66c707ed36509dde1cebf8e7d5244a3b039122c2c00a5137efb845e2S3VersionKey03A4DC8B",
+              "artifactHashParameter": "AssetParameters6b78a08a66c707ed36509dde1cebf8e7d5244a3b039122c2c00a5137efb845e2ArtifactHash29DBC1FA"
+            },
+            "trace": [
+              "ConstructNode.addMetadata (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/construct-compat.js:352:62)",
+              "LegacyStackSynthesizer.doAddFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:170:29)",
+              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:82:25)",
+              "Stack.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack.js:411:33)",
+              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:59",
+              "withoutDeprecationWarnings (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:197:16)",
+              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:20)",
+              "new CustomResourceProvider (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/custom-resource-provider/custom-resource-provider.js:81:41)",
+              "Function.getOrCreateProvider (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/custom-resource-provider/custom-resource-provider.js:166:94)",
+              "new Trigger (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/triggers/lib/trigger.js:22:56)",
+              "new TriggerFunction (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/triggers/lib/trigger-function.js:16:24)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/triggers/test/integ.triggers.js:11:17)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/MyStack/Topic1/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Topic198E71B3E",
+            "trace": [
+              "new Topic (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-sns/lib/topic.js:35:26)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/triggers/test/integ.triggers.js:9:16)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/MyStack/Topic2/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Topic269377B75",
+            "trace": [
+              "new Topic (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-sns/lib/topic.js:35:26)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/triggers/test/integ.triggers.js:10:16)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/MyStack/MyFunction/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyFunctionServiceRole3C357FF2",
+            "trace": [
+              "new Role (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/role.js:50:22)",
+              "new Function (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function.js:82:35)",
+              "new TriggerFunction (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/triggers/lib/trigger-function.js:14:9)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/triggers/test/integ.triggers.js:11:17)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/MyStack/MyFunction/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyFunction3BAA72D1",
+            "trace": [
+              "new Function (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function.js:158:26)",
+              "new TriggerFunction (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/triggers/lib/trigger-function.js:14:9)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/triggers/test/integ.triggers.js:11:17)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/MyStack/MyFunction/Trigger/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyFunctionTriggerDB129D7B",
+            "trace": [
+              "new CustomResource (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/custom-resource.js:42:25)",
+              "new Trigger (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/triggers/lib/trigger.js:33:9)",
+              "new TriggerFunction (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/triggers/lib/trigger-function.js:16:24)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/triggers/test/integ.triggers.js:11:17)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/MyStack/MyFunction/CurrentVersion/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyFunctionCurrentVersion197490AFd134f68e4774c24a4ca6cc78849e3dfd",
+            "trace": [
+              "new Version (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/lambda-version.js:36:25)",
+              "TriggerFunction.get currentVersion [as currentVersion] (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function.js:281:32)",
+              "Trigger.determineHandlerArn (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/triggers/lib/trigger.js:52:30)",
+              "new Trigger (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/triggers/lib/trigger.js:21:33)",
+              "new TriggerFunction (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/triggers/lib/trigger-function.js:16:24)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/triggers/test/integ.triggers.js:11:17)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/MyStack/AWSCDK.TriggerCustomResourceProviderCustomResourceProvider/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AWSCDKTriggerCustomResourceProviderCustomResourceProviderRoleE18FAF0A",
+            "trace": [
+              "new CustomResourceProvider (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/custom-resource-provider/custom-resource-provider.js:95:22)",
+              "Function.getOrCreateProvider (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/custom-resource-provider/custom-resource-provider.js:166:94)",
+              "new Trigger (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/triggers/lib/trigger.js:22:56)",
+              "new TriggerFunction (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/triggers/lib/trigger-function.js:16:24)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/triggers/test/integ.triggers.js:11:17)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/MyStack/AWSCDK.TriggerCustomResourceProviderCustomResourceProvider/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AWSCDKTriggerCustomResourceProviderCustomResourceProviderHandler97BECD91",
+            "trace": [
+              "new CustomResourceProvider (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/custom-resource-provider/custom-resource-provider.js:111:25)",
+              "Function.getOrCreateProvider (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/custom-resource-provider/custom-resource-provider.js:166:94)",
+              "new Trigger (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/triggers/lib/trigger.js:22:56)",
+              "new TriggerFunction (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/triggers/lib/trigger-function.js:16:24)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/triggers/test/integ.triggers.js:11:17)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/MyStack/AssetParameters/6b78a08a66c707ed36509dde1cebf8e7d5244a3b039122c2c00a5137efb845e2/S3Bucket": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters6b78a08a66c707ed36509dde1cebf8e7d5244a3b039122c2c00a5137efb845e2S3Bucket2EB34879",
+            "trace": [
+              "new FileAssetParameters (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/asset-parameters.js:12:36)",
+              "LegacyStackSynthesizer.doAddFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:157:22)",
+              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:82:25)",
+              "Stack.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack.js:411:33)",
+              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:59",
+              "withoutDeprecationWarnings (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:197:16)",
+              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:20)",
+              "new CustomResourceProvider (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/custom-resource-provider/custom-resource-provider.js:81:41)",
+              "Function.getOrCreateProvider (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/custom-resource-provider/custom-resource-provider.js:166:94)",
+              "new Trigger (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/triggers/lib/trigger.js:22:56)",
+              "new TriggerFunction (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/triggers/lib/trigger-function.js:16:24)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/triggers/test/integ.triggers.js:11:17)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/MyStack/AssetParameters/6b78a08a66c707ed36509dde1cebf8e7d5244a3b039122c2c00a5137efb845e2/S3VersionKey": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters6b78a08a66c707ed36509dde1cebf8e7d5244a3b039122c2c00a5137efb845e2S3VersionKey03A4DC8B",
+            "trace": [
+              "new FileAssetParameters (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/asset-parameters.js:16:35)",
+              "LegacyStackSynthesizer.doAddFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:157:22)",
+              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:82:25)",
+              "Stack.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack.js:411:33)",
+              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:59",
+              "withoutDeprecationWarnings (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:197:16)",
+              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:20)",
+              "new CustomResourceProvider (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/custom-resource-provider/custom-resource-provider.js:81:41)",
+              "Function.getOrCreateProvider (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/custom-resource-provider/custom-resource-provider.js:166:94)",
+              "new Trigger (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/triggers/lib/trigger.js:22:56)",
+              "new TriggerFunction (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/triggers/lib/trigger-function.js:16:24)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/triggers/test/integ.triggers.js:11:17)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/MyStack/AssetParameters/6b78a08a66c707ed36509dde1cebf8e7d5244a3b039122c2c00a5137efb845e2/ArtifactHash": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters6b78a08a66c707ed36509dde1cebf8e7d5244a3b039122c2c00a5137efb845e2ArtifactHash29DBC1FA",
+            "trace": [
+              "new FileAssetParameters (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/asset-parameters.js:20:38)",
+              "LegacyStackSynthesizer.doAddFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:157:22)",
+              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:82:25)",
+              "Stack.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack.js:411:33)",
+              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:59",
+              "withoutDeprecationWarnings (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:197:16)",
+              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:20)",
+              "new CustomResourceProvider (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/custom-resource-provider/custom-resource-provider.js:81:41)",
+              "Function.getOrCreateProvider (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/custom-resource-provider/custom-resource-provider.js:166:94)",
+              "new Trigger (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/triggers/lib/trigger.js:22:56)",
+              "new TriggerFunction (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/triggers/lib/trigger-function.js:16:24)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/triggers/test/integ.triggers.js:11:17)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ]
+      },
+      "displayName": "MyStack"
+    }
+  }
+}

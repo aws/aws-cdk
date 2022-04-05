@@ -1,0 +1,134 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "aws-cdk-codebuild-project-vpc": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-cdk-codebuild-project-vpc.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/aws-cdk-codebuild-project-vpc/MyProject/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyProjectRole9BBE5233",
+            "trace": [
+              "new Role (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/role.js:50:22)",
+              "new Project (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codebuild/lib/project.js:267:35)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codebuild/test/integ.project-notification.js:9:17)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/aws-cdk-codebuild-project-vpc/MyProject/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyProjectRoleDefaultPolicyB19B7C29",
+            "trace": [
+              "new Policy (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/policy.js:50:26)",
+              "Role.addToPrincipalPolicy (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/role.js:199:34)",
+              "Project.addToRolePolicy (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codebuild/lib/project.js:56:23)",
+              "new Project (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codebuild/lib/project.js:352:14)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codebuild/test/integ.project-notification.js:9:17)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/aws-cdk-codebuild-project-vpc/MyProject/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyProject39F7B0AE",
+            "trace": [
+              "new Project (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codebuild/lib/project.js:309:26)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codebuild/test/integ.project-notification.js:9:17)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/aws-cdk-codebuild-project-vpc/MyProject/NotifyOnBuildSucceeded/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyProjectNotifyOnBuildSucceeded225C467F",
+            "trace": [
+              "new NotificationRule (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codestarnotifications/lib/notification-rule.js:37:26)",
+              "Project.notifyOn (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codebuild/lib/project.js:228:16)",
+              "Project.notifyOnBuildSucceeded (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codebuild/lib/project.js:235:21)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codebuild/test/integ.project-notification.js:20:9)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/aws-cdk-codebuild-project-vpc/MyTopic/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyTopic86869434",
+            "trace": [
+              "new Topic (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-sns/lib/topic.js:35:26)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codebuild/test/integ.project-notification.js:19:16)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/aws-cdk-codebuild-project-vpc/MyTopic/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyTopicPolicy12A5EC17",
+            "trace": [
+              "new TopicPolicy (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-sns/lib/policy.js:40:9)",
+              "Topic.addToResourcePolicy (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-sns/lib/topic-base.js:45:27)",
+              "Function.addToPrincipalOrResource (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/grant.js:68:49)",
+              "Topic.grantPublish (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-sns/lib/topic-base.js:63:26)",
+              "Topic.bindAsNotificationRuleTarget (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-sns/lib/topic-base.js:77:14)",
+              "NotificationRule.addTarget (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codestarnotifications/lib/notification-rule.js:79:34)",
+              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codestarnotifications/lib/notification-rule.js:50:18",
+              "Array.forEach (<anonymous>)",
+              "new NotificationRule (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codestarnotifications/lib/notification-rule.js:49:70)",
+              "Project.notifyOn (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codebuild/lib/project.js:228:16)",
+              "Project.notifyOnBuildSucceeded (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codebuild/lib/project.js:235:21)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codebuild/test/integ.project-notification.js:20:9)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ]
+      },
+      "displayName": "aws-cdk-codebuild-project-vpc"
+    }
+  }
+}

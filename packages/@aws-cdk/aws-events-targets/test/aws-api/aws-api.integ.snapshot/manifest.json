@@ -1,0 +1,311 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "aws-cdk-aws-api-target-integ": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-cdk-aws-api-target-integ.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/aws-cdk-aws-api-target-integ": [
+          {
+            "type": "aws:cdk:asset",
+            "data": {
+              "path": "asset.6e29dae9ab5b8a6c0aa8f922991cad784ebd048388ec6587d4832f307ef92f94",
+              "id": "6e29dae9ab5b8a6c0aa8f922991cad784ebd048388ec6587d4832f307ef92f94",
+              "packaging": "zip",
+              "sourceHash": "6e29dae9ab5b8a6c0aa8f922991cad784ebd048388ec6587d4832f307ef92f94",
+              "s3BucketParameter": "AssetParameters6e29dae9ab5b8a6c0aa8f922991cad784ebd048388ec6587d4832f307ef92f94S3BucketEBC7D1F4",
+              "s3KeyParameter": "AssetParameters6e29dae9ab5b8a6c0aa8f922991cad784ebd048388ec6587d4832f307ef92f94S3VersionKeyDC9DCE00",
+              "artifactHashParameter": "AssetParameters6e29dae9ab5b8a6c0aa8f922991cad784ebd048388ec6587d4832f307ef92f94ArtifactHash34B6F705"
+            },
+            "trace": [
+              "ConstructNode.addMetadata (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/construct-compat.js:352:62)",
+              "LegacyStackSynthesizer.doAddFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:170:29)",
+              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:82:25)",
+              "AwsApi.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack.js:411:33)",
+              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:59",
+              "withoutDeprecationWarnings (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:197:16)",
+              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:20)",
+              "new Asset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-s3-assets/lib/asset.js:39:44)",
+              "AssetCode.bind (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/code.js:206:26)",
+              "new Function (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function.js:100:33)",
+              "SingletonFunction.ensureLambda (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/singleton-lambda.js:132:16)",
+              "new SingletonFunction (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/singleton-lambda.js:24:36)",
+              "AwsApi.bind (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-events-targets/lib/aws-api.js:28:25)",
+              "Rule.addTarget (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-events/lib/rule.js:88:36)",
+              "new AwsApi (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-events-targets/test/aws-api/integ.aws-api.js:18:22)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-events-targets/test/aws-api/integ.aws-api.js:51:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/aws-cdk-aws-api-target-integ/ScheduleRule/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ScheduleRuleDA5BD877",
+            "trace": [
+              "new Rule (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-events/lib/rule.js:36:26)",
+              "new AwsApi (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-events-targets/test/aws-api/integ.aws-api.js:12:30)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-events-targets/test/aws-api/integ.aws-api.js:51:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/aws-cdk-aws-api-target-integ/ScheduleRule/AllowEventRuleawscdkawsapitargetintegScheduleRuleScheduleRuleTarget0HandlerF2C0C898": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ScheduleRuleAllowEventRuleawscdkawsapitargetintegScheduleRuleScheduleRuleTarget0HandlerF2C0C898874A4805",
+            "trace": [
+              "Function.addPermission (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function-base.js:70:9)",
+              "SingletonFunction.addPermission (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/singleton-lambda.js:98:36)",
+              "Object.addLambdaPermission (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-events-targets/lib/util.js:63:17)",
+              "AwsApi.bind (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-events-targets/lib/aws-api.js:46:16)",
+              "Rule.addTarget (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-events/lib/rule.js:88:36)",
+              "new AwsApi (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-events-targets/test/aws-api/integ.aws-api.js:18:22)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-events-targets/test/aws-api/integ.aws-api.js:51:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/aws-cdk-aws-api-target-integ/ScheduleRule/AllowEventRuleawscdkawsapitargetintegScheduleRuleScheduleRuleTarget1Handler4688817C": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ScheduleRuleAllowEventRuleawscdkawsapitargetintegScheduleRuleScheduleRuleTarget1Handler4688817C0179F894",
+            "trace": [
+              "Function.addPermission (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function-base.js:70:9)",
+              "SingletonFunction.addPermission (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/singleton-lambda.js:98:36)",
+              "Object.addLambdaPermission (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-events-targets/lib/util.js:63:17)",
+              "AwsApi.bind (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-events-targets/lib/aws-api.js:46:16)",
+              "Rule.addTarget (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-events/lib/rule.js:88:36)",
+              "new AwsApi (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-events-targets/test/aws-api/integ.aws-api.js:26:22)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-events-targets/test/aws-api/integ.aws-api.js:51:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/aws-cdk-aws-api-target-integ/AWSb4cf1abd4e4f4bc699441af7ccd9ec37/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AWSb4cf1abd4e4f4bc699441af7ccd9ec37ServiceRole9FFE9C50",
+            "trace": [
+              "new Role (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/role.js:50:22)",
+              "new Function (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function.js:82:35)",
+              "SingletonFunction.ensureLambda (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/singleton-lambda.js:132:16)",
+              "new SingletonFunction (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/singleton-lambda.js:24:36)",
+              "AwsApi.bind (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-events-targets/lib/aws-api.js:28:25)",
+              "Rule.addTarget (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-events/lib/rule.js:88:36)",
+              "new AwsApi (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-events-targets/test/aws-api/integ.aws-api.js:18:22)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-events-targets/test/aws-api/integ.aws-api.js:51:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/aws-cdk-aws-api-target-integ/AWSb4cf1abd4e4f4bc699441af7ccd9ec37/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AWSb4cf1abd4e4f4bc699441af7ccd9ec37ServiceRoleDefaultPolicy4D43A7C1",
+            "trace": [
+              "new Policy (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/policy.js:50:26)",
+              "Role.addToPrincipalPolicy (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/role.js:199:34)",
+              "SingletonFunction.addToRolePolicy (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function-base.js:86:19)",
+              "AwsApi.bind (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-events-targets/lib/aws-api.js:40:21)",
+              "Rule.addTarget (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-events/lib/rule.js:88:36)",
+              "new AwsApi (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-events-targets/test/aws-api/integ.aws-api.js:18:22)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-events-targets/test/aws-api/integ.aws-api.js:51:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/aws-cdk-aws-api-target-integ/AWSb4cf1abd4e4f4bc699441af7ccd9ec37/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AWSb4cf1abd4e4f4bc699441af7ccd9ec371511E620",
+            "trace": [
+              "new Function (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function.js:158:26)",
+              "SingletonFunction.ensureLambda (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/singleton-lambda.js:132:16)",
+              "new SingletonFunction (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/singleton-lambda.js:24:36)",
+              "AwsApi.bind (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-events-targets/lib/aws-api.js:28:25)",
+              "Rule.addTarget (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-events/lib/rule.js:88:36)",
+              "new AwsApi (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-events-targets/test/aws-api/integ.aws-api.js:18:22)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-events-targets/test/aws-api/integ.aws-api.js:51:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/aws-cdk-aws-api-target-integ/AssetParameters/6e29dae9ab5b8a6c0aa8f922991cad784ebd048388ec6587d4832f307ef92f94/S3Bucket": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters6e29dae9ab5b8a6c0aa8f922991cad784ebd048388ec6587d4832f307ef92f94S3BucketEBC7D1F4",
+            "trace": [
+              "new FileAssetParameters (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/asset-parameters.js:12:36)",
+              "LegacyStackSynthesizer.doAddFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:157:22)",
+              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:82:25)",
+              "AwsApi.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack.js:411:33)",
+              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:59",
+              "withoutDeprecationWarnings (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:197:16)",
+              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:20)",
+              "new Asset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-s3-assets/lib/asset.js:39:44)",
+              "AssetCode.bind (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/code.js:206:26)",
+              "new Function (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function.js:100:33)",
+              "SingletonFunction.ensureLambda (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/singleton-lambda.js:132:16)",
+              "new SingletonFunction (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/singleton-lambda.js:24:36)",
+              "AwsApi.bind (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-events-targets/lib/aws-api.js:28:25)",
+              "Rule.addTarget (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-events/lib/rule.js:88:36)",
+              "new AwsApi (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-events-targets/test/aws-api/integ.aws-api.js:18:22)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-events-targets/test/aws-api/integ.aws-api.js:51:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/aws-cdk-aws-api-target-integ/AssetParameters/6e29dae9ab5b8a6c0aa8f922991cad784ebd048388ec6587d4832f307ef92f94/S3VersionKey": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters6e29dae9ab5b8a6c0aa8f922991cad784ebd048388ec6587d4832f307ef92f94S3VersionKeyDC9DCE00",
+            "trace": [
+              "new FileAssetParameters (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/asset-parameters.js:16:35)",
+              "LegacyStackSynthesizer.doAddFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:157:22)",
+              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:82:25)",
+              "AwsApi.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack.js:411:33)",
+              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:59",
+              "withoutDeprecationWarnings (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:197:16)",
+              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:20)",
+              "new Asset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-s3-assets/lib/asset.js:39:44)",
+              "AssetCode.bind (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/code.js:206:26)",
+              "new Function (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function.js:100:33)",
+              "SingletonFunction.ensureLambda (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/singleton-lambda.js:132:16)",
+              "new SingletonFunction (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/singleton-lambda.js:24:36)",
+              "AwsApi.bind (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-events-targets/lib/aws-api.js:28:25)",
+              "Rule.addTarget (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-events/lib/rule.js:88:36)",
+              "new AwsApi (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-events-targets/test/aws-api/integ.aws-api.js:18:22)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-events-targets/test/aws-api/integ.aws-api.js:51:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/aws-cdk-aws-api-target-integ/AssetParameters/6e29dae9ab5b8a6c0aa8f922991cad784ebd048388ec6587d4832f307ef92f94/ArtifactHash": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters6e29dae9ab5b8a6c0aa8f922991cad784ebd048388ec6587d4832f307ef92f94ArtifactHash34B6F705",
+            "trace": [
+              "new FileAssetParameters (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/asset-parameters.js:20:38)",
+              "LegacyStackSynthesizer.doAddFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:157:22)",
+              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:82:25)",
+              "AwsApi.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack.js:411:33)",
+              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:59",
+              "withoutDeprecationWarnings (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:197:16)",
+              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:20)",
+              "new Asset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-s3-assets/lib/asset.js:39:44)",
+              "AssetCode.bind (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/code.js:206:26)",
+              "new Function (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function.js:100:33)",
+              "SingletonFunction.ensureLambda (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/singleton-lambda.js:132:16)",
+              "new SingletonFunction (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/singleton-lambda.js:24:36)",
+              "AwsApi.bind (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-events-targets/lib/aws-api.js:28:25)",
+              "Rule.addTarget (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-events/lib/rule.js:88:36)",
+              "new AwsApi (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-events-targets/test/aws-api/integ.aws-api.js:18:22)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-events-targets/test/aws-api/integ.aws-api.js:51:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/aws-cdk-aws-api-target-integ/PatternRule/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PatternRule4AF6D328",
+            "trace": [
+              "new Rule (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-events/lib/rule.js:36:26)",
+              "new AwsApi (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-events-targets/test/aws-api/integ.aws-api.js:34:29)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-events-targets/test/aws-api/integ.aws-api.js:51:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/aws-cdk-aws-api-target-integ/PatternRule/AllowEventRuleawscdkawsapitargetintegPatternRulePatternRuleTarget0HandlerA0821464": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PatternRuleAllowEventRuleawscdkawsapitargetintegPatternRulePatternRuleTarget0HandlerA0821464BB49C5D3",
+            "trace": [
+              "Function.addPermission (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function-base.js:70:9)",
+              "SingletonFunction.addPermission (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/singleton-lambda.js:98:36)",
+              "Object.addLambdaPermission (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-events-targets/lib/util.js:63:17)",
+              "AwsApi.bind (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-events-targets/lib/aws-api.js:46:16)",
+              "Rule.addTarget (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-events/lib/rule.js:88:36)",
+              "new AwsApi (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-events-targets/test/aws-api/integ.aws-api.js:42:21)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-events-targets/test/aws-api/integ.aws-api.js:51:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ]
+      },
+      "displayName": "aws-cdk-aws-api-target-integ"
+    }
+  }
+}

@@ -1,0 +1,327 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "aws-cdk-codebuild-events": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-cdk-codebuild-events.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/aws-cdk-codebuild-events/MyRepo/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyRepoF4F48043",
+            "trace": [
+              "new Repository (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codecommit/lib/repository.js:194:28)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-events-targets/test/codebuild/integ.project-events.js:14:14)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/aws-cdk-codebuild-events/MyRepo/OnCommit/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyRepoOnCommit0E80B304",
+            "trace": [
+              "new Rule (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-events/lib/rule.js:36:26)",
+              "Repository.onEvent (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codecommit/lib/repository.js:27:22)",
+              "Repository.onStateChange (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codecommit/lib/repository.js:40:27)",
+              "Repository.onReferenceUpdated (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codecommit/lib/repository.js:60:27)",
+              "Repository.onCommit (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codecommit/lib/repository.js:101:27)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-events-targets/test/codebuild/integ.project-events.js:36:27)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/aws-cdk-codebuild-events/MyProject/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyProjectRole9BBE5233",
+            "trace": [
+              "new Role (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/role.js:50:22)",
+              "new Project (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codebuild/lib/project.js:267:35)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-events-targets/test/codebuild/integ.project-events.js:17:17)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/aws-cdk-codebuild-events/MyProject/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyProjectRoleDefaultPolicyB19B7C29",
+            "trace": [
+              "new Policy (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/policy.js:50:26)",
+              "Role.addToPrincipalPolicy (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/role.js:199:34)",
+              "Project.addToRolePolicy (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codebuild/lib/project.js:56:23)",
+              "CodeCommitSource.bind (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codebuild/lib/source.js:402:17)",
+              "new Project (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codebuild/lib/project.js:276:42)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-events-targets/test/codebuild/integ.project-events.js:17:17)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/aws-cdk-codebuild-events/MyProject/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyProject39F7B0AE",
+            "trace": [
+              "new Project (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codebuild/lib/project.js:309:26)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-events-targets/test/codebuild/integ.project-events.js:17:17)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/aws-cdk-codebuild-events/MyProject/StateChange/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyProjectStateChange2DAB75B7",
+            "trace": [
+              "new Rule (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-events/lib/rule.js:36:26)",
+              "Project.onEvent (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codebuild/lib/project.js:65:22)",
+              "Project.onStateChange (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codebuild/lib/project.js:101:27)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-events-targets/test/codebuild/integ.project-events.js:26:9)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/aws-cdk-codebuild-events/MyProject/PhaseChange/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyProjectPhaseChangeCE6728A3",
+            "trace": [
+              "new Rule (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-events/lib/rule.js:36:26)",
+              "Project.onEvent (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codebuild/lib/project.js:65:22)",
+              "Project.onPhaseChange (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codebuild/lib/project.js:114:27)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-events-targets/test/codebuild/integ.project-events.js:30:9)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/aws-cdk-codebuild-events/MyProject/EventsRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyProjectEventsRole5B7D93F5",
+            "trace": [
+              "new Role (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/role.js:50:22)",
+              "Object.singletonEventRole (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-events-targets/lib/util.js:39:18)",
+              "CodeBuildProject.bind (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-events-targets/lib/codebuild.js:28:50)",
+              "Rule.addTarget (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-events/lib/rule.js:88:36)",
+              "Repository.onEvent (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codecommit/lib/repository.js:32:14)",
+              "Repository.onStateChange (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codecommit/lib/repository.js:40:27)",
+              "Repository.onReferenceUpdated (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codecommit/lib/repository.js:60:27)",
+              "Repository.onCommit (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codecommit/lib/repository.js:101:27)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-events-targets/test/codebuild/integ.project-events.js:36:27)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/aws-cdk-codebuild-events/MyProject/EventsRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyProjectEventsRoleDefaultPolicy397DCBF8",
+            "trace": [
+              "new Policy (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/policy.js:50:26)",
+              "Role.addToPrincipalPolicy (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/role.js:199:34)",
+              "Role.addToPolicy (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/role.js:207:21)",
+              "Array.forEach (<anonymous>)",
+              "Object.singletonEventRole (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-events-targets/lib/util.js:43:22)",
+              "CodeBuildProject.bind (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-events-targets/lib/codebuild.js:28:50)",
+              "Rule.addTarget (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-events/lib/rule.js:88:36)",
+              "Repository.onEvent (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codecommit/lib/repository.js:32:14)",
+              "Repository.onStateChange (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codecommit/lib/repository.js:40:27)",
+              "Repository.onReferenceUpdated (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codecommit/lib/repository.js:60:27)",
+              "Repository.onCommit (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codecommit/lib/repository.js:101:27)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-events-targets/test/codebuild/integ.project-events.js:36:27)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/aws-cdk-codebuild-events/MyQueue/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyQueueE6CA6235",
+            "trace": [
+              "new Queue (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-sqs/lib/queue.js:81:23)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-events-targets/test/codebuild/integ.project-events.js:20:15)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/aws-cdk-codebuild-events/MyQueue/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyQueuePolicy6BBEDDAC",
+            "trace": [
+              "new QueuePolicy (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-sqs/lib/policy.js:32:26)",
+              "Queue.addToResourcePolicy (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-sqs/lib/queue-base.js:22:27)",
+              "SqsSubscription.bind (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-sns-subscriptions/lib/sqs.js:34:20)",
+              "Topic.addSubscription (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-sns/lib/topic-base.js:20:49)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-events-targets/test/codebuild/integ.project-events.js:23:7)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/aws-cdk-codebuild-events/MyQueue/awscdkcodebuildeventsMyTopic550011DC/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyQueueawscdkcodebuildeventsMyTopic550011DCF72DE3ED",
+            "trace": [
+              "new Subscription (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-sns/lib/subscription.js:46:9)",
+              "Topic.addSubscription (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-sns/lib/topic-base.js:31:9)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-events-targets/test/codebuild/integ.project-events.js:23:7)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/aws-cdk-codebuild-events/DeadLetterQueue/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DeadLetterQueue9F481546",
+            "trace": [
+              "new Queue (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-sqs/lib/queue.js:81:23)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-events-targets/test/codebuild/integ.project-events.js:21:25)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/aws-cdk-codebuild-events/DeadLetterQueue/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DeadLetterQueuePolicyB1FB890C",
+            "trace": [
+              "new QueuePolicy (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-sqs/lib/policy.js:32:26)",
+              "Queue.addToResourcePolicy (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-sqs/lib/queue-base.js:22:27)",
+              "Object.addToDeadLetterQueueResourcePolicy (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-events-targets/lib/util.js:85:15)",
+              "CodeBuildProject.bind (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-events-targets/lib/codebuild.js:23:20)",
+              "Rule.addTarget (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-events/lib/rule.js:88:36)",
+              "Repository.onEvent (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codecommit/lib/repository.js:32:14)",
+              "Repository.onStateChange (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codecommit/lib/repository.js:40:27)",
+              "Repository.onReferenceUpdated (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codecommit/lib/repository.js:60:27)",
+              "Repository.onCommit (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codecommit/lib/repository.js:101:27)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-events-targets/test/codebuild/integ.project-events.js:36:27)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/aws-cdk-codebuild-events/MyTopic/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyTopic86869434",
+            "trace": [
+              "new Topic (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-sns/lib/topic.js:35:26)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-events-targets/test/codebuild/integ.project-events.js:22:15)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/aws-cdk-codebuild-events/MyTopic/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyTopicPolicy12A5EC17",
+            "trace": [
+              "new TopicPolicy (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-sns/lib/policy.js:40:9)",
+              "Topic.addToResourcePolicy (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-sns/lib/topic-base.js:45:27)",
+              "Function.addToPrincipalOrResource (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/grant.js:68:49)",
+              "Topic.grantPublish (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-sns/lib/topic-base.js:63:26)",
+              "SnsTopic.bind (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-events-targets/lib/sns.js:32:20)",
+              "Rule.addTarget (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-events/lib/rule.js:88:36)",
+              "Project.onEvent (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codebuild/lib/project.js:66:14)",
+              "Project.onStateChange (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codebuild/lib/project.js:101:27)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-events-targets/test/codebuild/integ.project-events.js:26:9)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ]
+      },
+      "displayName": "aws-cdk-codebuild-events"
+    }
+  }
+}

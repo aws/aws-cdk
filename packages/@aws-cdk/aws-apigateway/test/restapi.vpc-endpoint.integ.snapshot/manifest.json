@@ -1,0 +1,676 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "test-apigateway-vpcendpoint": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "test-apigateway-vpcendpoint.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/test-apigateway-vpcendpoint/MyVpc/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcF9F0CA6F",
+            "trace": [
+              "new Vpc (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:399:25)",
+              "new Test (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.vpc-endpoint.js:15:21)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.vpc-endpoint.js:38:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/test-apigateway-vpcendpoint/MyVpc/PublicSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcPublicSubnet1SubnetF6608456",
+            "trace": [
+              "new Subnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:731:24)",
+              "new PublicSubnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:891:9)",
+              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:641:42",
+              "Array.forEach (<anonymous>)",
+              "Vpc.createSubnetResources (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:615:32)",
+              "Vpc.createSubnets (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:611:18)",
+              "new Vpc (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:425:14)",
+              "new Test (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.vpc-endpoint.js:15:21)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.vpc-endpoint.js:38:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/test-apigateway-vpcendpoint/MyVpc/PublicSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcPublicSubnet1RouteTableC46AB2F4",
+            "trace": [
+              "new Subnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:747:23)",
+              "new PublicSubnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:891:9)",
+              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:641:42",
+              "Array.forEach (<anonymous>)",
+              "Vpc.createSubnetResources (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:615:32)",
+              "Vpc.createSubnets (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:611:18)",
+              "new Vpc (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:425:14)",
+              "new Test (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.vpc-endpoint.js:15:21)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.vpc-endpoint.js:38:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/test-apigateway-vpcendpoint/MyVpc/PublicSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcPublicSubnet1RouteTableAssociation2ECEE1CB",
+            "trace": [
+              "new Subnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:752:9)",
+              "new PublicSubnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:891:9)",
+              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:641:42",
+              "Array.forEach (<anonymous>)",
+              "Vpc.createSubnetResources (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:615:32)",
+              "Vpc.createSubnets (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:611:18)",
+              "new Vpc (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:425:14)",
+              "new Test (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.vpc-endpoint.js:15:21)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.vpc-endpoint.js:38:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/test-apigateway-vpcendpoint/MyVpc/PublicSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcPublicSubnet1DefaultRoute95FDF9EB",
+            "trace": [
+              "PublicSubnet.addDefaultInternetRoute (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:780:23)",
+              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:437:30",
+              "Array.forEach (<anonymous>)",
+              "new Vpc (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:436:32)",
+              "new Test (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.vpc-endpoint.js:15:21)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.vpc-endpoint.js:38:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/test-apigateway-vpcendpoint/MyVpc/PublicSubnet1/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcPublicSubnet1EIP096967CB",
+            "trace": [
+              "PublicSubnet.addNatGateway (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:907:102)",
+              "NatGatewayProvider.configureNat (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/nat.js:91:33)",
+              "Vpc.createNatGateways (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:589:18)",
+              "new Vpc (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:442:22)",
+              "new Test (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.vpc-endpoint.js:15:21)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.vpc-endpoint.js:38:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/test-apigateway-vpcendpoint/MyVpc/PublicSubnet1/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcPublicSubnet1NATGatewayAD3400C1",
+            "trace": [
+              "PublicSubnet.addNatGateway (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:905:21)",
+              "NatGatewayProvider.configureNat (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/nat.js:91:33)",
+              "Vpc.createNatGateways (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:589:18)",
+              "new Vpc (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:442:22)",
+              "new Test (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.vpc-endpoint.js:15:21)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.vpc-endpoint.js:38:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/test-apigateway-vpcendpoint/MyVpc/PublicSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcPublicSubnet2Subnet492B6BFB",
+            "trace": [
+              "new Subnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:731:24)",
+              "new PublicSubnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:891:9)",
+              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:641:42",
+              "Array.forEach (<anonymous>)",
+              "Vpc.createSubnetResources (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:615:32)",
+              "Vpc.createSubnets (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:611:18)",
+              "new Vpc (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:425:14)",
+              "new Test (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.vpc-endpoint.js:15:21)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.vpc-endpoint.js:38:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/test-apigateway-vpcendpoint/MyVpc/PublicSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcPublicSubnet2RouteTable1DF17386",
+            "trace": [
+              "new Subnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:747:23)",
+              "new PublicSubnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:891:9)",
+              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:641:42",
+              "Array.forEach (<anonymous>)",
+              "Vpc.createSubnetResources (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:615:32)",
+              "Vpc.createSubnets (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:611:18)",
+              "new Vpc (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:425:14)",
+              "new Test (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.vpc-endpoint.js:15:21)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.vpc-endpoint.js:38:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/test-apigateway-vpcendpoint/MyVpc/PublicSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcPublicSubnet2RouteTableAssociation227DE78D",
+            "trace": [
+              "new Subnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:752:9)",
+              "new PublicSubnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:891:9)",
+              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:641:42",
+              "Array.forEach (<anonymous>)",
+              "Vpc.createSubnetResources (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:615:32)",
+              "Vpc.createSubnets (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:611:18)",
+              "new Vpc (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:425:14)",
+              "new Test (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.vpc-endpoint.js:15:21)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.vpc-endpoint.js:38:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/test-apigateway-vpcendpoint/MyVpc/PublicSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcPublicSubnet2DefaultRoute052936F6",
+            "trace": [
+              "PublicSubnet.addDefaultInternetRoute (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:780:23)",
+              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:437:30",
+              "Array.forEach (<anonymous>)",
+              "new Vpc (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:436:32)",
+              "new Test (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.vpc-endpoint.js:15:21)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.vpc-endpoint.js:38:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/test-apigateway-vpcendpoint/MyVpc/PublicSubnet2/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcPublicSubnet2EIP8CCBA239",
+            "trace": [
+              "PublicSubnet.addNatGateway (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:907:102)",
+              "NatGatewayProvider.configureNat (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/nat.js:91:33)",
+              "Vpc.createNatGateways (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:589:18)",
+              "new Vpc (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:442:22)",
+              "new Test (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.vpc-endpoint.js:15:21)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.vpc-endpoint.js:38:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/test-apigateway-vpcendpoint/MyVpc/PublicSubnet2/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcPublicSubnet2NATGateway91BFBEC9",
+            "trace": [
+              "PublicSubnet.addNatGateway (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:905:21)",
+              "NatGatewayProvider.configureNat (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/nat.js:91:33)",
+              "Vpc.createNatGateways (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:589:18)",
+              "new Vpc (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:442:22)",
+              "new Test (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.vpc-endpoint.js:15:21)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.vpc-endpoint.js:38:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/test-apigateway-vpcendpoint/MyVpc/PrivateSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcPrivateSubnet1Subnet5057CF7E",
+            "trace": [
+              "new Subnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:731:24)",
+              "new PrivateSubnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:922:9)",
+              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:646:43",
+              "Array.forEach (<anonymous>)",
+              "Vpc.createSubnetResources (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:615:32)",
+              "Vpc.createSubnets (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:611:18)",
+              "new Vpc (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:425:14)",
+              "new Test (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.vpc-endpoint.js:15:21)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.vpc-endpoint.js:38:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/test-apigateway-vpcendpoint/MyVpc/PrivateSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcPrivateSubnet1RouteTable8819E6E2",
+            "trace": [
+              "new Subnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:747:23)",
+              "new PrivateSubnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:922:9)",
+              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:646:43",
+              "Array.forEach (<anonymous>)",
+              "Vpc.createSubnetResources (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:615:32)",
+              "Vpc.createSubnets (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:611:18)",
+              "new Vpc (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:425:14)",
+              "new Test (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.vpc-endpoint.js:15:21)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.vpc-endpoint.js:38:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/test-apigateway-vpcendpoint/MyVpc/PrivateSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcPrivateSubnet1RouteTableAssociation56D38C7E",
+            "trace": [
+              "new Subnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:752:9)",
+              "new PrivateSubnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:922:9)",
+              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:646:43",
+              "Array.forEach (<anonymous>)",
+              "Vpc.createSubnetResources (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:615:32)",
+              "Vpc.createSubnets (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:611:18)",
+              "new Vpc (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:425:14)",
+              "new Test (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.vpc-endpoint.js:15:21)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.vpc-endpoint.js:38:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/test-apigateway-vpcendpoint/MyVpc/PrivateSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcPrivateSubnet1DefaultRouteA8CDE2FA",
+            "trace": [
+              "PrivateSubnet.addRoute (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:822:23)",
+              "NatGatewayProvider.configureSubnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/nat.js:103:16)",
+              "NatGatewayProvider.configureNat (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/nat.js:97:18)",
+              "Vpc.createNatGateways (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:589:18)",
+              "new Vpc (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:442:22)",
+              "new Test (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.vpc-endpoint.js:15:21)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.vpc-endpoint.js:38:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/test-apigateway-vpcendpoint/MyVpc/PrivateSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcPrivateSubnet2Subnet0040C983",
+            "trace": [
+              "new Subnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:731:24)",
+              "new PrivateSubnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:922:9)",
+              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:646:43",
+              "Array.forEach (<anonymous>)",
+              "Vpc.createSubnetResources (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:615:32)",
+              "Vpc.createSubnets (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:611:18)",
+              "new Vpc (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:425:14)",
+              "new Test (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.vpc-endpoint.js:15:21)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.vpc-endpoint.js:38:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/test-apigateway-vpcendpoint/MyVpc/PrivateSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcPrivateSubnet2RouteTableCEDCEECE",
+            "trace": [
+              "new Subnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:747:23)",
+              "new PrivateSubnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:922:9)",
+              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:646:43",
+              "Array.forEach (<anonymous>)",
+              "Vpc.createSubnetResources (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:615:32)",
+              "Vpc.createSubnets (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:611:18)",
+              "new Vpc (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:425:14)",
+              "new Test (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.vpc-endpoint.js:15:21)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.vpc-endpoint.js:38:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/test-apigateway-vpcendpoint/MyVpc/PrivateSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcPrivateSubnet2RouteTableAssociation86A610DA",
+            "trace": [
+              "new Subnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:752:9)",
+              "new PrivateSubnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:922:9)",
+              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:646:43",
+              "Array.forEach (<anonymous>)",
+              "Vpc.createSubnetResources (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:615:32)",
+              "Vpc.createSubnets (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:611:18)",
+              "new Vpc (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:425:14)",
+              "new Test (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.vpc-endpoint.js:15:21)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.vpc-endpoint.js:38:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/test-apigateway-vpcendpoint/MyVpc/PrivateSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcPrivateSubnet2DefaultRoute9CE96294",
+            "trace": [
+              "PrivateSubnet.addRoute (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:822:23)",
+              "NatGatewayProvider.configureSubnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/nat.js:103:16)",
+              "NatGatewayProvider.configureNat (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/nat.js:97:18)",
+              "Vpc.createNatGateways (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:589:18)",
+              "new Vpc (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:442:22)",
+              "new Test (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.vpc-endpoint.js:15:21)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.vpc-endpoint.js:38:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/test-apigateway-vpcendpoint/MyVpc/IGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcIGW5C4A4F63",
+            "trace": [
+              "new Vpc (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:429:25)",
+              "new Test (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.vpc-endpoint.js:15:21)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.vpc-endpoint.js:38:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/test-apigateway-vpcendpoint/MyVpc/VPCGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcVPCGW488ACE0D",
+            "trace": [
+              "new Vpc (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:432:25)",
+              "new Test (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.vpc-endpoint.js:15:21)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.vpc-endpoint.js:38:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/test-apigateway-vpcendpoint/MyVpc/MyVpcEndpoint/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcMyVpcEndpointSecurityGroup52BE62B3",
+            "trace": [
+              "new SecurityGroup (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/security-group.js:194:30)",
+              "new InterfaceVpcEndpoint (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc-endpoint.js:272:57)",
+              "Vpc.addInterfaceEndpoint (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:188:16)",
+              "new Test (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.vpc-endpoint.js:16:33)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.vpc-endpoint.js:38:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/test-apigateway-vpcendpoint/MyVpc/MyVpcEndpoint/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcMyVpcEndpointA401F313",
+            "trace": [
+              "new InterfaceVpcEndpoint (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc-endpoint.js:285:26)",
+              "Vpc.addInterfaceEndpoint (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:188:16)",
+              "new Test (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.vpc-endpoint.js:16:33)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.vpc-endpoint.js:38:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/test-apigateway-vpcendpoint/MyApi/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyApi49610EDF",
+            "trace": [
+              "new RestApi (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/lib/restapi.js:376:26)",
+              "new Test (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.vpc-endpoint.js:19:21)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.vpc-endpoint.js:38:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/test-apigateway-vpcendpoint/MyApi/CloudWatchRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyApiCloudWatchRole2BEC1A9C",
+            "trace": [
+              "new Role (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/role.js:50:22)",
+              "RestApi._configureCloudWatchRole (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/lib/restapi.js:228:22)",
+              "new RestApi (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/lib/restapi.js:393:18)",
+              "new Test (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.vpc-endpoint.js:19:21)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.vpc-endpoint.js:38:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/test-apigateway-vpcendpoint/MyApi/Account": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyApiAccount13882D84",
+            "trace": [
+              "RestApi._configureCloudWatchRole (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/lib/restapi.js:232:34)",
+              "new RestApi (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/lib/restapi.js:393:18)",
+              "new Test (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.vpc-endpoint.js:19:21)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.vpc-endpoint.js:38:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/test-apigateway-vpcendpoint/MyApi/Deployment/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyApiDeploymentECB0D05E58dcfc85d01f2b81270e177f5347476d",
+            "trace": [
+              "new Deployment (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/lib/deployment.js:45:25)",
+              "RestApi._configureDeployment (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/lib/restapi.js:260:38)",
+              "new RestApi (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/lib/restapi.js:395:14)",
+              "new Test (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.vpc-endpoint.js:19:21)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.vpc-endpoint.js:38:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/test-apigateway-vpcendpoint/MyApi/DeploymentStage.prod/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyApiDeploymentStageprodE1054AF0",
+            "trace": [
+              "new Stage (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/lib/stage.js:55:26)",
+              "RestApi._configureDeployment (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/lib/restapi.js:268:36)",
+              "new RestApi (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/lib/restapi.js:395:14)",
+              "new Test (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.vpc-endpoint.js:19:21)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.vpc-endpoint.js:38:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/test-apigateway-vpcendpoint/MyApi/Endpoint": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyApiEndpoint869ABE96",
+            "trace": [
+              "RestApi._configureDeployment (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/lib/restapi.js:272:13)",
+              "new RestApi (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/lib/restapi.js:395:14)",
+              "new Test (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.vpc-endpoint.js:19:21)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.vpc-endpoint.js:38:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/test-apigateway-vpcendpoint/MyApi/Default/GET/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyApiGETD0C7AA0C",
+            "trace": [
+              "new Method (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/lib/method.js:54:26)",
+              "RootResource.addMethod (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/lib/resource.js:24:16)",
+              "new Test (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.vpc-endpoint.js:34:18)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.vpc-endpoint.js:38:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ]
+      },
+      "displayName": "test-apigateway-vpcendpoint"
+    }
+  }
+}

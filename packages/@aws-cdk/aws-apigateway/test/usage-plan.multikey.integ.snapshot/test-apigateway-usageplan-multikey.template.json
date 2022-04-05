@@ -1,0 +1,43 @@
+{
+  "Resources": {
+    "myusageplan4B391740": {
+      "Type": "AWS::ApiGateway::UsagePlan"
+    },
+    "myusageplanUsagePlanKeyResource095B4EA9": {
+      "Type": "AWS::ApiGateway::UsagePlanKey",
+      "Properties": {
+        "KeyId": {
+          "Ref": "myapikey18B056ACE"
+        },
+        "KeyType": "API_KEY",
+        "UsagePlanId": {
+          "Ref": "myusageplan4B391740"
+        }
+      }
+    },
+    "myusageplanUsagePlanKeyResourcetestapigatewayusageplanmultikeymyapikey29D6460C6AE8DE59D": {
+      "Type": "AWS::ApiGateway::UsagePlanKey",
+      "Properties": {
+        "KeyId": {
+          "Ref": "myapikey250C8F11B"
+        },
+        "KeyType": "API_KEY",
+        "UsagePlanId": {
+          "Ref": "myusageplan4B391740"
+        }
+      }
+    },
+    "myapikey18B056ACE": {
+      "Type": "AWS::ApiGateway::ApiKey",
+      "Properties": {
+        "Enabled": true
+      }
+    },
+    "myapikey250C8F11B": {
+      "Type": "AWS::ApiGateway::ApiKey",
+      "Properties": {
+        "Enabled": true
+      }
+    }
+  }
+}

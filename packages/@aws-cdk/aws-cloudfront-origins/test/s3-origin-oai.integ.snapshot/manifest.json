@@ -1,0 +1,91 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "cloudfront-s3-origin-oai": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "cloudfront-s3-origin-oai.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/cloudfront-s3-origin-oai/Bucket/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Bucket83908E77",
+            "trace": [
+              "new Bucket (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-s3/lib/bucket.js:587:26)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-cloudfront-origins/test/integ.s3-origin-oai.js:9:16)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/cloudfront-s3-origin-oai/Bucket/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BucketPolicyE9A3008A",
+            "trace": [
+              "new BucketPolicy (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-s3/lib/bucket-policy.js:37:25)",
+              "Bucket.addToResourcePolicy (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-s3/lib/bucket.js:146:27)",
+              "S3BucketOrigin.bind (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-cloudfront-origins/lib/s3-origin.js:66:21)",
+              "S3Origin.bind (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-cloudfront-origins/lib/s3-origin.js:29:28)",
+              "Distribution.addOrigin (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-cloudfront/lib/distribution.js:113:45)",
+              "new Distribution (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-cloudfront/lib/distribution.js:35:31)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-cloudfront-origins/test/integ.s3-origin-oai.js:13:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/cloudfront-s3-origin-oai/OriginAccessIdentity/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "OriginAccessIdentityDF1E3CAC",
+            "trace": [
+              "new OriginAccessIdentity (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-cloudfront/lib/origin-access-identity.js:38:25)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-cloudfront-origins/test/integ.s3-origin-oai.js:10:30)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/cloudfront-s3-origin-oai/Distribution/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Distribution830FAC52",
+            "trace": [
+              "new Distribution (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-cloudfront/lib/distribution.js:48:30)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-cloudfront-origins/test/integ.s3-origin-oai.js:13:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ]
+      },
+      "displayName": "cloudfront-s3-origin-oai"
+    }
+  }
+}

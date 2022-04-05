@@ -1,0 +1,113 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "aws-cdk-codebuild-logging": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-cdk-codebuild-logging.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/aws-cdk-codebuild-logging/LogingGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogingGroupE599B53B",
+            "trace": [
+              "new LogGroup (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-logs/lib/log-group.js:217:26)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codebuild/test/integ.project-logging.js:12:23)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/aws-cdk-codebuild-logging/LoggingBucket/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LoggingBucket1E5A6F3B",
+            "trace": [
+              "new Bucket (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-s3/lib/bucket.js:587:26)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codebuild/test/integ.project-logging.js:17:21)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/aws-cdk-codebuild-logging/Project/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ProjectRole4CCB274E",
+            "trace": [
+              "new Role (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/role.js:50:22)",
+              "new Project (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codebuild/lib/project.js:267:35)",
+              "new PipelineProject (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codebuild/lib/pipeline-project.js:15:9)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codebuild/test/integ.project-logging.js:9:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/aws-cdk-codebuild-logging/Project/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ProjectRoleDefaultPolicy7F29461B",
+            "trace": [
+              "new Policy (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/policy.js:50:26)",
+              "Role.addToPrincipalPolicy (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/role.js:199:34)",
+              "Function.addToPrincipal (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/grant.js:87:65)",
+              "Function.addToPrincipalOrResource (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/grant.js:43:30)",
+              "Bucket.grant (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-s3/lib/bucket.js:423:31)",
+              "Bucket.grantWrite (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-s3/lib/bucket.js:268:21)",
+              "PipelineProject.renderLoggingConfiguration (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codebuild/lib/project.js:834:74)",
+              "new Project (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codebuild/lib/project.js:335:30)",
+              "new PipelineProject (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codebuild/lib/pipeline-project.js:15:9)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codebuild/test/integ.project-logging.js:9:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/aws-cdk-codebuild-logging/Project/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ProjectC78D97AD",
+            "trace": [
+              "new Project (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codebuild/lib/project.js:309:26)",
+              "new PipelineProject (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codebuild/lib/pipeline-project.js:15:9)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codebuild/test/integ.project-logging.js:9:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ]
+      },
+      "displayName": "aws-cdk-codebuild-logging"
+    }
+  }
+}

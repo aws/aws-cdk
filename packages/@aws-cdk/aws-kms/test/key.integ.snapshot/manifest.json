@@ -1,0 +1,71 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "aws-cdk-kms-1": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-cdk-kms-1.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/aws-cdk-kms-1/MyKey/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyKey6AB29FA6",
+            "trace": [
+              "new Key (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-kms/lib/key.js:296:26)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-kms/test/integ.key.js:8:13)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/aws-cdk-kms-1/MyKey/Alias/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyKeyAlias1B45D9DA",
+            "trace": [
+              "new Alias (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-kms/lib/alias.js:75:26)",
+              "Key.addAlias (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-kms/lib/key.js:30:23)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-kms/test/integ.key.js:14:5)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/aws-cdk-kms-1/AsymmetricKey/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AsymmetricKey26BBC514",
+            "trace": [
+              "new Key (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-kms/lib/key.js:296:26)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-kms/test/integ.key.js:15:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ]
+      },
+      "displayName": "aws-cdk-kms-1"
+    }
+  }
+}

@@ -1,0 +1,103 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "integ-user-pool-idp-amazon": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "integ-user-pool-idp-amazon.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/integ-user-pool-idp-amazon/pool/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "pool056F3F7E",
+            "trace": [
+              "new UserPool (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-cognito/lib/user-pool.js:246:26)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-cognito/test/integ.user-pool-idp.amazon.js:12:18)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/integ-user-pool-idp-amazon/pool/client/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "poolclient2623294C",
+            "trace": [
+              "new UserPoolClient (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-cognito/lib/user-pool-client.js:134:26)",
+              "UserPool.addClient (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-cognito/lib/user-pool.js:156:16)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-cognito/test/integ.user-pool-idp.amazon.js:27:25)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/integ-user-pool-idp-amazon/pool/domain/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "pooldomain430FA744",
+            "trace": [
+              "new UserPoolDomain (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-cognito/lib/user-pool-domain.js:28:26)",
+              "UserPool.addDomain (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-cognito/lib/user-pool.js:162:16)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-cognito/test/integ.user-pool-idp.amazon.js:28:25)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/integ-user-pool-idp-amazon/amazon/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "amazon2D32744A",
+            "trace": [
+              "new UserPoolIdentityProviderAmazon (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-cognito/lib/user-pool-idps/amazon.js:19:26)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-cognito/test/integ.user-pool-idp.amazon.js:15:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/integ-user-pool-idp-amazon/SignInLink": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SignInLink",
+            "trace": [
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-cognito/test/integ.user-pool-idp.amazon.js:33:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ]
+      },
+      "displayName": "integ-user-pool-idp-amazon"
+    }
+  }
+}

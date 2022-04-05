@@ -1,0 +1,139 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "lambda-invoke-action-test-stack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "lambda-invoke-action-test-stack.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/lambda-invoke-action-test-stack/MyInput/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyInput08947B23",
+            "trace": [
+              "new Input (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iotevents/lib/input.js:34:26)",
+              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iotevents-actions/test/lambda/integ.lambda-invoke-action.js:16:23)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iotevents-actions/test/lambda/integ.lambda-invoke-action.js:43:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/lambda-invoke-action-test-stack/MyFunction/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyFunctionServiceRole3C357FF2",
+            "trace": [
+              "new Role (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/role.js:50:22)",
+              "new Function (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function.js:82:35)",
+              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iotevents-actions/test/lambda/integ.lambda-invoke-action.js:20:22)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iotevents-actions/test/lambda/integ.lambda-invoke-action.js:43:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/lambda-invoke-action-test-stack/MyFunction/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyFunction3BAA72D1",
+            "trace": [
+              "new Function (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function.js:154:26)",
+              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iotevents-actions/test/lambda/integ.lambda-invoke-action.js:20:22)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iotevents-actions/test/lambda/integ.lambda-invoke-action.js:43:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/lambda-invoke-action-test-stack/MyDetectorModel/DetectorModelRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyDetectorModelDetectorModelRoleF2FB4D88",
+            "trace": [
+              "new Role (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/role.js:50:22)",
+              "new DetectorModel (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iotevents/lib/detector-model.js:39:73)",
+              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iotevents-actions/test/lambda/integ.lambda-invoke-action.js:36:9)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iotevents-actions/test/lambda/integ.lambda-invoke-action.js:43:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/lambda-invoke-action-test-stack/MyDetectorModel/DetectorModelRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyDetectorModelDetectorModelRoleDefaultPolicy82887422",
+            "trace": [
+              "new Policy (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/policy.js:50:26)",
+              "Role.addToPrincipalPolicy (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/role.js:199:34)",
+              "Function.addToPrincipal (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/grant.js:87:65)",
+              "Function.addToPrincipalOrResource (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/grant.js:43:30)",
+              "Function.grantInvoke (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function-base.js:97:31)",
+              "LambdaInvokeAction.bind (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iotevents-actions/lib/lambda-invoke-action.js:17:19)",
+              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iotevents/lib/state.js:93:104",
+              "Array.map (<anonymous>)",
+              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iotevents/lib/state.js:93:83",
+              "Array.map (<anonymous>)",
+              "toEventsJson (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iotevents/lib/state.js:88:67)",
+              "State.toStateJson (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iotevents/lib/state.js:72:25)",
+              "State._collectStateJsons (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iotevents/lib/state.js:52:18)",
+              "new DetectorModel (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iotevents/lib/detector-model.js:49:44)",
+              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iotevents-actions/test/lambda/integ.lambda-invoke-action.js:36:9)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iotevents-actions/test/lambda/integ.lambda-invoke-action.js:43:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/lambda-invoke-action-test-stack/MyDetectorModel/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyDetectorModel559C0B0E",
+            "trace": [
+              "new DetectorModel (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iotevents/lib/detector-model.js:42:26)",
+              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iotevents-actions/test/lambda/integ.lambda-invoke-action.js:36:9)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iotevents-actions/test/lambda/integ.lambda-invoke-action.js:43:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ]
+      },
+      "displayName": "lambda-invoke-action-test-stack"
+    }
+  }
+}

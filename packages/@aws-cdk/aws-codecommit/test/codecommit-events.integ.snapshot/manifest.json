@@ -1,0 +1,73 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "aws-cdk-codecommit-events": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-cdk-codecommit-events.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/aws-cdk-codecommit-events/Repo/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Repo02AC86CF",
+            "trace": [
+              "new Repository (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codecommit/lib/repository.js:194:28)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codecommit/test/integ.codecommit-events.js:8:14)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/aws-cdk-codecommit-events/Repo/OnReferenceCreated/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RepoOnReferenceCreatedF1C66FF1",
+            "trace": [
+              "new Rule (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-events/lib/rule.js:36:26)",
+              "Repository.onEvent (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codecommit/lib/repository.js:27:22)",
+              "Repository.onStateChange (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codecommit/lib/repository.js:40:27)",
+              "Repository.onReferenceCreated (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codecommit/lib/repository.js:51:27)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codecommit/test/integ.codecommit-events.js:14:6)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/aws-cdk-codecommit-events/MyTopic/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyTopic86869434",
+            "trace": [
+              "new Topic (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-sns/lib/topic.js:35:26)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codecommit/test/integ.codecommit-events.js:11:15)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ]
+      },
+      "displayName": "aws-cdk-codecommit-events"
+    }
+  }
+}

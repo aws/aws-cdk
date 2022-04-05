@@ -1,0 +1,86 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "integ-servicecatalogappregistry-application": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "integ-servicecatalogappregistry-application.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/integ-servicecatalogappregistry-application/TestApplication/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestApplication2FBC585F",
+            "trace": [
+              "new Application (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-servicecatalogappregistry/lib/application.js:56:29)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-servicecatalogappregistry/test/integ.application.js:7:21)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/integ-servicecatalogappregistry-application/TestApplication/ResourceAssociationd232b63e52a8": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestApplicationResourceAssociationd232b63e52a8414E905D",
+            "trace": [
+              "Application.associateStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-servicecatalogappregistry/lib/application.js:39:13)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-servicecatalogappregistry/test/integ.application.js:31:13)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/integ-servicecatalogappregistry-application/TestApplication/AttributeGroupAssociation4ba7f5842818": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestApplicationAttributeGroupAssociation4ba7f5842818B8EE1C6F",
+            "trace": [
+              "Application.associateAttributeGroup (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-servicecatalogappregistry/lib/application.js:24:13)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-servicecatalogappregistry/test/integ.application.js:32:13)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/integ-servicecatalogappregistry-application/TestAttributeGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestAttributeGroupB1CB284F",
+            "trace": [
+              "new AttributeGroup (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-servicecatalogappregistry/lib/attribute-group.js:20:32)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-servicecatalogappregistry/test/integ.application.js:11:24)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ]
+      },
+      "displayName": "integ-servicecatalogappregistry-application"
+    }
+  }
+}

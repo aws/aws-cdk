@@ -1,0 +1,86 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "integ-distribution-policies": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "integ-distribution-policies.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/integ-distribution-policies/CachePolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CachePolicy26D8A535",
+            "trace": [
+              "new CachePolicy (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-cloudfront/lib/cache-policy.js:32:26)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-cloudfront/test/integ.distribution-policies.js:8:21)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/integ-distribution-policies/OriginRequestPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "OriginRequestPolicy3EFDB4FA",
+            "trace": [
+              "new OriginRequestPolicy (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-cloudfront/lib/origin-request-policy.js:28:26)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-cloudfront/test/integ.distribution-policies.js:11:29)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/integ-distribution-policies/ResponseHeadersPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ResponseHeadersPolicy13DBF9E0",
+            "trace": [
+              "new ResponseHeadersPolicy (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-cloudfront/lib/response-headers-policy.js:22:26)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-cloudfront/test/integ.distribution-policies.js:15:31)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/integ-distribution-policies/Dist/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DistB3B78991",
+            "trace": [
+              "new Distribution (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-cloudfront/lib/distribution.js:48:30)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-cloudfront/test/integ.distribution-policies.js:27:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ]
+      },
+      "displayName": "integ-distribution-policies"
+    }
+  }
+}

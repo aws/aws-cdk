@@ -1,0 +1,127 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "cdk-backup": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "cdk-backup.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/cdk-backup/Table/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TableCD117FA1",
+            "trace": [
+              "new Table (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-dynamodb/lib/table.js:477:22)",
+              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-backup/test/integ.backup.js:10:9)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-backup/test/integ.backup.js:32:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/cdk-backup/FileSystem": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FileSystem",
+            "trace": [
+              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-backup/test/integ.backup.js:17:20)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-backup/test/integ.backup.js:32:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/cdk-backup/Vault/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Vault23237E5B",
+            "trace": [
+              "new BackupVault (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-backup/lib/vault.js:90:23)",
+              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-backup/test/integ.backup.js:19:23)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-backup/test/integ.backup.js:32:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/cdk-backup/Plan/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PlanDAF4E53A",
+            "trace": [
+              "new BackupPlan (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-backup/lib/plan.js:20:22)",
+              "Function.dailyWeeklyMonthly5YearRetention (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-backup/lib/plan.js:71:22)",
+              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-backup/test/integ.backup.js:22:40)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-backup/test/integ.backup.js:32:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/cdk-backup/Plan/Selection/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PlanSelectionRole6D10F4B7",
+            "trace": [
+              "new Role (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/role.js:50:22)",
+              "new BackupSelection (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-backup/lib/selection.js:22:36)",
+              "BackupPlan.addSelection (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-backup/lib/plan.js:147:16)",
+              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-backup/test/integ.backup.js:23:14)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-backup/test/integ.backup.js:32:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/cdk-backup/Plan/Selection/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PlanSelectionF88CBC04",
+            "trace": [
+              "new BackupSelection (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-backup/lib/selection.js:30:27)",
+              "BackupPlan.addSelection (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-backup/lib/plan.js:147:16)",
+              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-backup/test/integ.backup.js:23:14)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-backup/test/integ.backup.js:32:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ]
+      },
+      "displayName": "cdk-backup"
+    }
+  }
+}

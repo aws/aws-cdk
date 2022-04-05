@@ -1,0 +1,285 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "integ-parameter-arns": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "integ-parameter-arns.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/integ-parameter-arns/ParameterNameParameter": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ParameterNameParameter",
+            "trace": [
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ssm/test/integ.parameter-arns.js:8:15)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/integ-parameter-arns/StringAutogen/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StringAutogenE7E896E4",
+            "trace": [
+              "new StringParameter (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ssm/lib/parameter.js:120:26)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ssm/test/integ.parameter-arns.js:10:5)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/integ-parameter-arns/StringSimple/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StringSimpleA681514D",
+            "trace": [
+              "new StringParameter (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ssm/lib/parameter.js:120:26)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ssm/test/integ.parameter-arns.js:11:5)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/integ-parameter-arns/StringPath/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StringPathD8120137",
+            "trace": [
+              "new StringParameter (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ssm/lib/parameter.js:120:26)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ssm/test/integ.parameter-arns.js:12:5)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/integ-parameter-arns/ListAutogen/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ListAutogenC5DA1CAE",
+            "trace": [
+              "new StringListParameter (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ssm/lib/parameter.js:266:26)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ssm/test/integ.parameter-arns.js:13:5)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/integ-parameter-arns/ListSimple/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ListSimple9DB641CB",
+            "trace": [
+              "new StringListParameter (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ssm/lib/parameter.js:266:26)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ssm/test/integ.parameter-arns.js:14:5)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/integ-parameter-arns/ListPath/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ListPath120D6FAB",
+            "trace": [
+              "new StringListParameter (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ssm/lib/parameter.js:266:26)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ssm/test/integ.parameter-arns.js:15:5)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/integ-parameter-arns/ParameterizedSimple/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ParameterizedSimpleB6311859",
+            "trace": [
+              "new StringParameter (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ssm/lib/parameter.js:120:26)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ssm/test/integ.parameter-arns.js:16:5)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/integ-parameter-arns/ParameterizedNonSimple/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ParameterizedNonSimple23C44BF6",
+            "trace": [
+              "new StringParameter (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ssm/lib/parameter.js:120:26)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ssm/test/integ.parameter-arns.js:17:5)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/integ-parameter-arns/StringAutogenArn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StringAutogenArn",
+            "trace": [
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ssm/test/integ.parameter-arns.js:20:5)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/integ-parameter-arns/StringSimpleArn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StringSimpleArn",
+            "trace": [
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ssm/test/integ.parameter-arns.js:20:5)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/integ-parameter-arns/StringPathArn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StringPathArn",
+            "trace": [
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ssm/test/integ.parameter-arns.js:20:5)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/integ-parameter-arns/ListAutogenArn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ListAutogenArn",
+            "trace": [
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ssm/test/integ.parameter-arns.js:20:5)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/integ-parameter-arns/ListSimpleArn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ListSimpleArn",
+            "trace": [
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ssm/test/integ.parameter-arns.js:20:5)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/integ-parameter-arns/ListPathArn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ListPathArn",
+            "trace": [
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ssm/test/integ.parameter-arns.js:20:5)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/integ-parameter-arns/ParameterizedSimpleArn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ParameterizedSimpleArn",
+            "trace": [
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ssm/test/integ.parameter-arns.js:20:5)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/integ-parameter-arns/ParameterizedNonSimpleArn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ParameterizedNonSimpleArn",
+            "trace": [
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ssm/test/integ.parameter-arns.js:20:5)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ]
+      },
+      "displayName": "integ-parameter-arns"
+    }
+  }
+}

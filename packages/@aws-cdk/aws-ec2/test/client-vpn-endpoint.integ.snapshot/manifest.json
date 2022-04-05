@@ -1,0 +1,691 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "cdk-ec2-client-vpn-endpoint": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "cdk-ec2-client-vpn-endpoint.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/cdk-ec2-client-vpn-endpoint": [
+          {
+            "type": "aws:cdk:asset",
+            "data": {
+              "path": "asset.c0eca79e4277becf35cc23c67499f47e70fd50078e025e595c51ed97b9699c5f",
+              "id": "c0eca79e4277becf35cc23c67499f47e70fd50078e025e595c51ed97b9699c5f",
+              "packaging": "zip",
+              "sourceHash": "c0eca79e4277becf35cc23c67499f47e70fd50078e025e595c51ed97b9699c5f",
+              "s3BucketParameter": "AssetParametersc0eca79e4277becf35cc23c67499f47e70fd50078e025e595c51ed97b9699c5fS3Bucket42BD8ED5",
+              "s3KeyParameter": "AssetParametersc0eca79e4277becf35cc23c67499f47e70fd50078e025e595c51ed97b9699c5fS3VersionKeyA7C3DEE3",
+              "artifactHashParameter": "AssetParametersc0eca79e4277becf35cc23c67499f47e70fd50078e025e595c51ed97b9699c5fArtifactHash18BB2B9F"
+            },
+            "trace": [
+              "ConstructNode.addMetadata (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/construct-compat.js:352:62)",
+              "LegacyStackSynthesizer.doAddFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:170:29)",
+              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:82:25)",
+              "TestStack.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack.js:408:33)",
+              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:59",
+              "withoutDeprecationWarnings (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:197:16)",
+              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:20)",
+              "new CustomResourceProvider (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/custom-resource-provider/custom-resource-provider.js:81:41)",
+              "Function.getOrCreateProvider (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/custom-resource-provider/custom-resource-provider.js:166:94)",
+              "Function.getOrCreate (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/custom-resource-provider/custom-resource-provider.js:148:21)",
+              "new ImportCertificates (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/test/integ.client-vpn-endpoint.js:32:60)",
+              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/test/integ.client-vpn-endpoint.js:14:30)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/test/integ.client-vpn-endpoint.js:58:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/cdk-ec2-client-vpn-endpoint/ImportCertificates/CreateCertificates/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ImportCertificatesCreateCertificates71085A81",
+            "trace": [
+              "new CustomResource (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/custom-resource.js:42:25)",
+              "new ImportCertificates (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/test/integ.client-vpn-endpoint.js:41:36)",
+              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/test/integ.client-vpn-endpoint.js:14:30)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/test/integ.client-vpn-endpoint.js:58:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/cdk-ec2-client-vpn-endpoint/ImportCertificates/DeleteCertificates/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ImportCertificatesDeleteCertificates6462F0A6",
+            "trace": [
+              "new CustomResource (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/custom-resource.js:42:25)",
+              "new ImportCertificates (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/test/integ.client-vpn-endpoint.js:47:9)",
+              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/test/integ.client-vpn-endpoint.js:14:30)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/test/integ.client-vpn-endpoint.js:58:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/cdk-ec2-client-vpn-endpoint/Custom::ACMImportCertificatesCustomResourceProvider/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomACMImportCertificatesCustomResourceProviderRole2CE46D14",
+            "trace": [
+              "new CustomResourceProvider (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/custom-resource-provider/custom-resource-provider.js:95:22)",
+              "Function.getOrCreateProvider (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/custom-resource-provider/custom-resource-provider.js:166:94)",
+              "Function.getOrCreate (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/custom-resource-provider/custom-resource-provider.js:148:21)",
+              "new ImportCertificates (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/test/integ.client-vpn-endpoint.js:32:60)",
+              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/test/integ.client-vpn-endpoint.js:14:30)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/test/integ.client-vpn-endpoint.js:58:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/cdk-ec2-client-vpn-endpoint/Custom::ACMImportCertificatesCustomResourceProvider/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomACMImportCertificatesCustomResourceProviderHandler2EB12457",
+            "trace": [
+              "new CustomResourceProvider (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/custom-resource-provider/custom-resource-provider.js:111:25)",
+              "Function.getOrCreateProvider (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/custom-resource-provider/custom-resource-provider.js:166:94)",
+              "Function.getOrCreate (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/custom-resource-provider/custom-resource-provider.js:148:21)",
+              "new ImportCertificates (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/test/integ.client-vpn-endpoint.js:32:60)",
+              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/test/integ.client-vpn-endpoint.js:14:30)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/test/integ.client-vpn-endpoint.js:58:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/cdk-ec2-client-vpn-endpoint/AssetParameters/c0eca79e4277becf35cc23c67499f47e70fd50078e025e595c51ed97b9699c5f/S3Bucket": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParametersc0eca79e4277becf35cc23c67499f47e70fd50078e025e595c51ed97b9699c5fS3Bucket42BD8ED5",
+            "trace": [
+              "new FileAssetParameters (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/asset-parameters.js:12:36)",
+              "LegacyStackSynthesizer.doAddFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:157:22)",
+              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:82:25)",
+              "TestStack.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack.js:408:33)",
+              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:59",
+              "withoutDeprecationWarnings (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:197:16)",
+              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:20)",
+              "new CustomResourceProvider (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/custom-resource-provider/custom-resource-provider.js:81:41)",
+              "Function.getOrCreateProvider (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/custom-resource-provider/custom-resource-provider.js:166:94)",
+              "Function.getOrCreate (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/custom-resource-provider/custom-resource-provider.js:148:21)",
+              "new ImportCertificates (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/test/integ.client-vpn-endpoint.js:32:60)",
+              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/test/integ.client-vpn-endpoint.js:14:30)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/test/integ.client-vpn-endpoint.js:58:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/cdk-ec2-client-vpn-endpoint/AssetParameters/c0eca79e4277becf35cc23c67499f47e70fd50078e025e595c51ed97b9699c5f/S3VersionKey": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParametersc0eca79e4277becf35cc23c67499f47e70fd50078e025e595c51ed97b9699c5fS3VersionKeyA7C3DEE3",
+            "trace": [
+              "new FileAssetParameters (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/asset-parameters.js:16:35)",
+              "LegacyStackSynthesizer.doAddFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:157:22)",
+              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:82:25)",
+              "TestStack.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack.js:408:33)",
+              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:59",
+              "withoutDeprecationWarnings (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:197:16)",
+              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:20)",
+              "new CustomResourceProvider (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/custom-resource-provider/custom-resource-provider.js:81:41)",
+              "Function.getOrCreateProvider (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/custom-resource-provider/custom-resource-provider.js:166:94)",
+              "Function.getOrCreate (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/custom-resource-provider/custom-resource-provider.js:148:21)",
+              "new ImportCertificates (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/test/integ.client-vpn-endpoint.js:32:60)",
+              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/test/integ.client-vpn-endpoint.js:14:30)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/test/integ.client-vpn-endpoint.js:58:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/cdk-ec2-client-vpn-endpoint/AssetParameters/c0eca79e4277becf35cc23c67499f47e70fd50078e025e595c51ed97b9699c5f/ArtifactHash": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParametersc0eca79e4277becf35cc23c67499f47e70fd50078e025e595c51ed97b9699c5fArtifactHash18BB2B9F",
+            "trace": [
+              "new FileAssetParameters (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/asset-parameters.js:20:38)",
+              "LegacyStackSynthesizer.doAddFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:157:22)",
+              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:82:25)",
+              "TestStack.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack.js:408:33)",
+              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:59",
+              "withoutDeprecationWarnings (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:197:16)",
+              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:20)",
+              "new CustomResourceProvider (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/custom-resource-provider/custom-resource-provider.js:81:41)",
+              "Function.getOrCreateProvider (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/custom-resource-provider/custom-resource-provider.js:166:94)",
+              "Function.getOrCreate (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/custom-resource-provider/custom-resource-provider.js:148:21)",
+              "new ImportCertificates (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/test/integ.client-vpn-endpoint.js:32:60)",
+              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/test/integ.client-vpn-endpoint.js:14:30)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/test/integ.client-vpn-endpoint.js:58:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/cdk-ec2-client-vpn-endpoint/Vpc/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Vpc8378EB38",
+            "trace": [
+              "new Vpc (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:399:25)",
+              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/test/integ.client-vpn-endpoint.js:15:21)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/test/integ.client-vpn-endpoint.js:58:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/cdk-ec2-client-vpn-endpoint/Vpc/PublicSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1Subnet5C2D37C4",
+            "trace": [
+              "new Subnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:731:24)",
+              "new PublicSubnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:891:9)",
+              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:641:42",
+              "Array.forEach (<anonymous>)",
+              "Vpc.createSubnetResources (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:615:32)",
+              "Vpc.createSubnets (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:611:18)",
+              "new Vpc (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:425:14)",
+              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/test/integ.client-vpn-endpoint.js:15:21)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/test/integ.client-vpn-endpoint.js:58:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/cdk-ec2-client-vpn-endpoint/Vpc/PublicSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1RouteTable6C95E38E",
+            "trace": [
+              "new Subnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:747:23)",
+              "new PublicSubnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:891:9)",
+              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:641:42",
+              "Array.forEach (<anonymous>)",
+              "Vpc.createSubnetResources (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:615:32)",
+              "Vpc.createSubnets (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:611:18)",
+              "new Vpc (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:425:14)",
+              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/test/integ.client-vpn-endpoint.js:15:21)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/test/integ.client-vpn-endpoint.js:58:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/cdk-ec2-client-vpn-endpoint/Vpc/PublicSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1RouteTableAssociation97140677",
+            "trace": [
+              "new Subnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:752:9)",
+              "new PublicSubnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:891:9)",
+              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:641:42",
+              "Array.forEach (<anonymous>)",
+              "Vpc.createSubnetResources (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:615:32)",
+              "Vpc.createSubnets (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:611:18)",
+              "new Vpc (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:425:14)",
+              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/test/integ.client-vpn-endpoint.js:15:21)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/test/integ.client-vpn-endpoint.js:58:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/cdk-ec2-client-vpn-endpoint/Vpc/PublicSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1DefaultRoute3DA9E72A",
+            "trace": [
+              "PublicSubnet.addDefaultInternetRoute (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:780:23)",
+              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:437:30",
+              "Array.forEach (<anonymous>)",
+              "new Vpc (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:436:32)",
+              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/test/integ.client-vpn-endpoint.js:15:21)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/test/integ.client-vpn-endpoint.js:58:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/cdk-ec2-client-vpn-endpoint/Vpc/PublicSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2Subnet691E08A3",
+            "trace": [
+              "new Subnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:731:24)",
+              "new PublicSubnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:891:9)",
+              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:641:42",
+              "Array.forEach (<anonymous>)",
+              "Vpc.createSubnetResources (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:615:32)",
+              "Vpc.createSubnets (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:611:18)",
+              "new Vpc (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:425:14)",
+              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/test/integ.client-vpn-endpoint.js:15:21)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/test/integ.client-vpn-endpoint.js:58:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/cdk-ec2-client-vpn-endpoint/Vpc/PublicSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2RouteTable94F7E489",
+            "trace": [
+              "new Subnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:747:23)",
+              "new PublicSubnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:891:9)",
+              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:641:42",
+              "Array.forEach (<anonymous>)",
+              "Vpc.createSubnetResources (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:615:32)",
+              "Vpc.createSubnets (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:611:18)",
+              "new Vpc (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:425:14)",
+              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/test/integ.client-vpn-endpoint.js:15:21)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/test/integ.client-vpn-endpoint.js:58:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/cdk-ec2-client-vpn-endpoint/Vpc/PublicSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2RouteTableAssociationDD5762D8",
+            "trace": [
+              "new Subnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:752:9)",
+              "new PublicSubnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:891:9)",
+              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:641:42",
+              "Array.forEach (<anonymous>)",
+              "Vpc.createSubnetResources (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:615:32)",
+              "Vpc.createSubnets (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:611:18)",
+              "new Vpc (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:425:14)",
+              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/test/integ.client-vpn-endpoint.js:15:21)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/test/integ.client-vpn-endpoint.js:58:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/cdk-ec2-client-vpn-endpoint/Vpc/PublicSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2DefaultRoute97F91067",
+            "trace": [
+              "PublicSubnet.addDefaultInternetRoute (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:780:23)",
+              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:437:30",
+              "Array.forEach (<anonymous>)",
+              "new Vpc (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:436:32)",
+              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/test/integ.client-vpn-endpoint.js:15:21)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/test/integ.client-vpn-endpoint.js:58:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/cdk-ec2-client-vpn-endpoint/Vpc/IsolatedSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcIsolatedSubnet1SubnetE48C5737",
+            "trace": [
+              "new Subnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:731:24)",
+              "new PrivateSubnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:922:9)",
+              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:651:44",
+              "Array.forEach (<anonymous>)",
+              "Vpc.createSubnetResources (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:615:32)",
+              "Vpc.createSubnets (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:611:18)",
+              "new Vpc (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:425:14)",
+              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/test/integ.client-vpn-endpoint.js:15:21)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/test/integ.client-vpn-endpoint.js:58:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/cdk-ec2-client-vpn-endpoint/Vpc/IsolatedSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcIsolatedSubnet1RouteTable4771E3E5",
+            "trace": [
+              "new Subnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:747:23)",
+              "new PrivateSubnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:922:9)",
+              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:651:44",
+              "Array.forEach (<anonymous>)",
+              "Vpc.createSubnetResources (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:615:32)",
+              "Vpc.createSubnets (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:611:18)",
+              "new Vpc (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:425:14)",
+              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/test/integ.client-vpn-endpoint.js:15:21)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/test/integ.client-vpn-endpoint.js:58:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/cdk-ec2-client-vpn-endpoint/Vpc/IsolatedSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcIsolatedSubnet1RouteTableAssociationD300FCBB",
+            "trace": [
+              "new Subnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:752:9)",
+              "new PrivateSubnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:922:9)",
+              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:651:44",
+              "Array.forEach (<anonymous>)",
+              "Vpc.createSubnetResources (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:615:32)",
+              "Vpc.createSubnets (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:611:18)",
+              "new Vpc (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:425:14)",
+              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/test/integ.client-vpn-endpoint.js:15:21)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/test/integ.client-vpn-endpoint.js:58:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/cdk-ec2-client-vpn-endpoint/Vpc/IsolatedSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcIsolatedSubnet2Subnet16364B91",
+            "trace": [
+              "new Subnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:731:24)",
+              "new PrivateSubnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:922:9)",
+              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:651:44",
+              "Array.forEach (<anonymous>)",
+              "Vpc.createSubnetResources (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:615:32)",
+              "Vpc.createSubnets (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:611:18)",
+              "new Vpc (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:425:14)",
+              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/test/integ.client-vpn-endpoint.js:15:21)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/test/integ.client-vpn-endpoint.js:58:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/cdk-ec2-client-vpn-endpoint/Vpc/IsolatedSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcIsolatedSubnet2RouteTable1D30AF7D",
+            "trace": [
+              "new Subnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:747:23)",
+              "new PrivateSubnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:922:9)",
+              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:651:44",
+              "Array.forEach (<anonymous>)",
+              "Vpc.createSubnetResources (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:615:32)",
+              "Vpc.createSubnets (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:611:18)",
+              "new Vpc (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:425:14)",
+              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/test/integ.client-vpn-endpoint.js:15:21)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/test/integ.client-vpn-endpoint.js:58:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/cdk-ec2-client-vpn-endpoint/Vpc/IsolatedSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcIsolatedSubnet2RouteTableAssociationF7B18CCA",
+            "trace": [
+              "new Subnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:752:9)",
+              "new PrivateSubnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:922:9)",
+              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:651:44",
+              "Array.forEach (<anonymous>)",
+              "Vpc.createSubnetResources (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:615:32)",
+              "Vpc.createSubnets (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:611:18)",
+              "new Vpc (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:425:14)",
+              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/test/integ.client-vpn-endpoint.js:15:21)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/test/integ.client-vpn-endpoint.js:58:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/cdk-ec2-client-vpn-endpoint/Vpc/IGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcIGWD7BA715C",
+            "trace": [
+              "new Vpc (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:429:25)",
+              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/test/integ.client-vpn-endpoint.js:15:21)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/test/integ.client-vpn-endpoint.js:58:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/cdk-ec2-client-vpn-endpoint/Vpc/VPCGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcVPCGWBF912B6E",
+            "trace": [
+              "new Vpc (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:432:25)",
+              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/test/integ.client-vpn-endpoint.js:15:21)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/test/integ.client-vpn-endpoint.js:58:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/cdk-ec2-client-vpn-endpoint/Vpc/Endpoint/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcEndpointSecurityGroup7B25EFDC",
+            "trace": [
+              "new SecurityGroup (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/security-group.js:194:30)",
+              "new ClientVpnEndpoint (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/client-vpn-endpoint.js:117:94)",
+              "Vpc.addClientVpnEndpoint (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:179:16)",
+              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/test/integ.client-vpn-endpoint.js:20:13)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/test/integ.client-vpn-endpoint.js:58:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/cdk-ec2-client-vpn-endpoint/Vpc/Endpoint/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcEndpoint6FF034F6",
+            "trace": [
+              "new ClientVpnEndpoint (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/client-vpn-endpoint.js:121:26)",
+              "Vpc.addClientVpnEndpoint (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:179:16)",
+              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/test/integ.client-vpn-endpoint.js:20:13)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/test/integ.client-vpn-endpoint.js:58:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/cdk-ec2-client-vpn-endpoint/Vpc/Endpoint/Association0": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcEndpointAssociation06B066321",
+            "trace": [
+              "new ClientVpnEndpoint (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/client-vpn-endpoint.js:165:48)",
+              "Vpc.addClientVpnEndpoint (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:179:16)",
+              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/test/integ.client-vpn-endpoint.js:20:13)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/test/integ.client-vpn-endpoint.js:58:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/cdk-ec2-client-vpn-endpoint/Vpc/Endpoint/Association1": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcEndpointAssociation12B51A67F",
+            "trace": [
+              "new ClientVpnEndpoint (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/client-vpn-endpoint.js:165:48)",
+              "Vpc.addClientVpnEndpoint (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:179:16)",
+              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/test/integ.client-vpn-endpoint.js:20:13)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/test/integ.client-vpn-endpoint.js:58:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/cdk-ec2-client-vpn-endpoint/Vpc/Endpoint/AuthorizeAll/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcEndpointAuthorizeAll70F0E613",
+            "trace": [
+              "new ClientVpnAuthorizationRule (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/client-vpn-authorization-rule.js:24:9)",
+              "ClientVpnEndpoint.addAuthorizationRule (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/client-vpn-endpoint.js:197:16)",
+              "new ClientVpnEndpoint (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/client-vpn-endpoint.js:172:18)",
+              "Vpc.addClientVpnEndpoint (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:179:16)",
+              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/test/integ.client-vpn-endpoint.js:20:13)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/test/integ.client-vpn-endpoint.js:58:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/cdk-ec2-client-vpn-endpoint/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogGroupF5B46931",
+            "trace": [
+              "new LogGroup (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-logs/lib/log-group.js:217:26)",
+              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/test/integ.client-vpn-endpoint.js:17:26)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/test/integ.client-vpn-endpoint.js:58:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ]
+      },
+      "displayName": "cdk-ec2-client-vpn-endpoint"
+    }
+  }
+}

@@ -1,0 +1,592 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "restapi-books-example": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "restapi-books-example.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/restapi-books-example/BooksHandler/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BooksHandlerServiceRole5B6A8847",
+            "trace": [
+              "new Role (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/role.js:50:22)",
+              "new Function (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function.js:82:35)",
+              "new BookStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.books.js:9:58)",
+              "new BookApp (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.books.js:42:9)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.books.js:59:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/restapi-books-example/BooksHandler/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BooksHandler3EB83358",
+            "trace": [
+              "new Function (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function.js:154:26)",
+              "new BookStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.books.js:9:58)",
+              "new BookApp (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.books.js:42:9)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.books.js:59:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/restapi-books-example/BookHandler/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BookHandlerServiceRole894768AD",
+            "trace": [
+              "new Role (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/role.js:50:22)",
+              "new Function (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function.js:82:35)",
+              "new BookStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.books.js:14:57)",
+              "new BookApp (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.books.js:42:9)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.books.js:59:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/restapi-books-example/BookHandler/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BookHandlerF9638A7A",
+            "trace": [
+              "new Function (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function.js:154:26)",
+              "new BookStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.books.js:14:57)",
+              "new BookApp (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.books.js:42:9)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.books.js:59:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/restapi-books-example/Hello/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HelloServiceRole1E55EA16",
+            "trace": [
+              "new Role (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/role.js:50:22)",
+              "new Function (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function.js:82:35)",
+              "new BookStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.books.js:19:51)",
+              "new BookApp (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.books.js:42:9)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.books.js:59:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/restapi-books-example/Hello/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Hello4A628BD4",
+            "trace": [
+              "new Function (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function.js:154:26)",
+              "new BookStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.books.js:19:51)",
+              "new BookApp (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.books.js:42:9)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.books.js:59:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/restapi-books-example/books-api/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "booksapiE1885304",
+            "trace": [
+              "new RestApi (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/lib/restapi.js:376:26)",
+              "new BookStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.books.js:24:21)",
+              "new BookApp (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.books.js:42:9)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.books.js:59:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/restapi-books-example/books-api/CloudWatchRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "booksapiCloudWatchRole089CB225",
+            "trace": [
+              "new Role (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/role.js:50:22)",
+              "RestApi._configureCloudWatchRole (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/lib/restapi.js:228:22)",
+              "new RestApi (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/lib/restapi.js:393:18)",
+              "new BookStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.books.js:24:21)",
+              "new BookApp (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.books.js:42:9)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.books.js:59:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/restapi-books-example/books-api/Account": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "booksapiAccountDBA98FB9",
+            "trace": [
+              "RestApi._configureCloudWatchRole (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/lib/restapi.js:232:34)",
+              "new RestApi (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/lib/restapi.js:393:18)",
+              "new BookStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.books.js:24:21)",
+              "new BookApp (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.books.js:42:9)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.books.js:59:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/restapi-books-example/books-api/Deployment/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "booksapiDeployment308B08F132cc25cf8168bd5e99b9e6d4915866b5",
+            "trace": [
+              "new Deployment (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/lib/deployment.js:45:25)",
+              "RestApi._configureDeployment (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/lib/restapi.js:260:38)",
+              "new RestApi (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/lib/restapi.js:395:14)",
+              "new BookStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.books.js:24:21)",
+              "new BookApp (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.books.js:42:9)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.books.js:59:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/restapi-books-example/books-api/DeploymentStage.prod/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "booksapiDeploymentStageprod55D8E03E",
+            "trace": [
+              "new Stage (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/lib/stage.js:55:26)",
+              "RestApi._configureDeployment (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/lib/restapi.js:268:36)",
+              "new RestApi (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/lib/restapi.js:395:14)",
+              "new BookStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.books.js:24:21)",
+              "new BookApp (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.books.js:42:9)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.books.js:59:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/restapi-books-example/books-api/Endpoint": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "booksapiEndpointE230E8D5",
+            "trace": [
+              "RestApi._configureDeployment (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/lib/restapi.js:272:13)",
+              "new RestApi (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/lib/restapi.js:395:14)",
+              "new BookStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.books.js:24:21)",
+              "new BookApp (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.books.js:42:9)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.books.js:59:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/restapi-books-example/books-api/Default/ANY/ApiPermission.restapibooksexamplebooksapi4538F335.ANY..": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "booksapiANYApiPermissionrestapibooksexamplebooksapi4538F335ANY73B3CDDC",
+            "trace": [
+              "Function.addPermission (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function-base.js:38:9)",
+              "LambdaIntegration.bind (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/lib/integrations/lambda.js:40:22)",
+              "new Method (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/lib/method.js:38:40)",
+              "RootResource.addMethod (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/lib/resource.js:24:16)",
+              "new BookStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.books.js:25:18)",
+              "new BookApp (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.books.js:42:9)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.books.js:59:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/restapi-books-example/books-api/Default/ANY/ApiPermission.Test.restapibooksexamplebooksapi4538F335.ANY..": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "booksapiANYApiPermissionTestrestapibooksexamplebooksapi4538F335ANYB0D7D8AC",
+            "trace": [
+              "Function.addPermission (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function-base.js:38:9)",
+              "LambdaIntegration.bind (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/lib/integrations/lambda.js:47:26)",
+              "new Method (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/lib/method.js:38:40)",
+              "RootResource.addMethod (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/lib/resource.js:24:16)",
+              "new BookStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.books.js:25:18)",
+              "new BookApp (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.books.js:42:9)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.books.js:59:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/restapi-books-example/books-api/Default/ANY/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "booksapiANYF4F0CDEB",
+            "trace": [
+              "new Method (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/lib/method.js:54:26)",
+              "RootResource.addMethod (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/lib/resource.js:24:16)",
+              "new BookStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.books.js:25:18)",
+              "new BookApp (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.books.js:42:9)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.books.js:59:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/restapi-books-example/books-api/Default/books/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "booksapibooks97D84727",
+            "trace": [
+              "new Resource (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/lib/resource.js:187:26)",
+              "RootResource.addResource (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/lib/resource.js:19:16)",
+              "new BookStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.books.js:26:32)",
+              "new BookApp (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.books.js:42:9)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.books.js:59:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/restapi-books-example/books-api/Default/books/GET/ApiPermission.restapibooksexamplebooksapi4538F335.GET..books": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "booksapibooksGETApiPermissionrestapibooksexamplebooksapi4538F335GETbooks391776D8",
+            "trace": [
+              "Function.addPermission (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function-base.js:38:9)",
+              "LambdaIntegration.bind (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/lib/integrations/lambda.js:40:22)",
+              "new Method (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/lib/method.js:38:40)",
+              "Resource.addMethod (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/lib/resource.js:24:16)",
+              "new BookStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.books.js:30:15)",
+              "new BookApp (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.books.js:42:9)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.books.js:59:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/restapi-books-example/books-api/Default/books/GET/ApiPermission.Test.restapibooksexamplebooksapi4538F335.GET..books": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "booksapibooksGETApiPermissionTestrestapibooksexamplebooksapi4538F335GETbooks01FB3D1B",
+            "trace": [
+              "Function.addPermission (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function-base.js:38:9)",
+              "LambdaIntegration.bind (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/lib/integrations/lambda.js:47:26)",
+              "new Method (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/lib/method.js:38:40)",
+              "Resource.addMethod (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/lib/resource.js:24:16)",
+              "new BookStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.books.js:30:15)",
+              "new BookApp (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.books.js:42:9)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.books.js:59:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/restapi-books-example/books-api/Default/books/GET/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "booksapibooksGETA776447A",
+            "trace": [
+              "new Method (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/lib/method.js:54:26)",
+              "Resource.addMethod (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/lib/resource.js:24:16)",
+              "new BookStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.books.js:30:15)",
+              "new BookApp (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.books.js:42:9)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.books.js:59:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/restapi-books-example/books-api/Default/books/POST/ApiPermission.restapibooksexamplebooksapi4538F335.POST..books": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "booksapibooksPOSTApiPermissionrestapibooksexamplebooksapi4538F335POSTbooksDFEC643F",
+            "trace": [
+              "Function.addPermission (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function-base.js:38:9)",
+              "LambdaIntegration.bind (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/lib/integrations/lambda.js:40:22)",
+              "new Method (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/lib/method.js:38:40)",
+              "Resource.addMethod (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/lib/resource.js:24:16)",
+              "new BookStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.books.js:31:15)",
+              "new BookApp (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.books.js:42:9)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.books.js:59:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/restapi-books-example/books-api/Default/books/POST/ApiPermission.Test.restapibooksexamplebooksapi4538F335.POST..books": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "booksapibooksPOSTApiPermissionTestrestapibooksexamplebooksapi4538F335POSTbooks1C6D24C8",
+            "trace": [
+              "Function.addPermission (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function-base.js:38:9)",
+              "LambdaIntegration.bind (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/lib/integrations/lambda.js:47:26)",
+              "new Method (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/lib/method.js:38:40)",
+              "Resource.addMethod (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/lib/resource.js:24:16)",
+              "new BookStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.books.js:31:15)",
+              "new BookApp (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.books.js:42:9)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.books.js:59:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/restapi-books-example/books-api/Default/books/POST/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "booksapibooksPOSTF6C6559D",
+            "trace": [
+              "new Method (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/lib/method.js:54:26)",
+              "Resource.addMethod (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/lib/resource.js:24:16)",
+              "new BookStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.books.js:31:15)",
+              "new BookApp (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.books.js:42:9)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.books.js:59:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/restapi-books-example/books-api/Default/books/{book_id}/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "booksapibooksbookid5264BCA2",
+            "trace": [
+              "new Resource (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/lib/resource.js:187:26)",
+              "Resource.addResource (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/lib/resource.js:19:16)",
+              "new BookStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.books.js:32:28)",
+              "new BookApp (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.books.js:42:9)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.books.js:59:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/restapi-books-example/books-api/Default/books/{book_id}/GET/ApiPermission.restapibooksexamplebooksapi4538F335.GET..books.{book_id}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "booksapibooksbookidGETApiPermissionrestapibooksexamplebooksapi4538F335GETbooksbookidBB91DFBD",
+            "trace": [
+              "Function.addPermission (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function-base.js:38:9)",
+              "LambdaIntegration.bind (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/lib/integrations/lambda.js:40:22)",
+              "new Method (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/lib/method.js:38:40)",
+              "Resource.addMethod (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/lib/resource.js:24:16)",
+              "new BookStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.books.js:35:14)",
+              "new BookApp (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.books.js:42:9)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.books.js:59:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/restapi-books-example/books-api/Default/books/{book_id}/GET/ApiPermission.Test.restapibooksexamplebooksapi4538F335.GET..books.{book_id}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "booksapibooksbookidGETApiPermissionTestrestapibooksexamplebooksapi4538F335GETbooksbookidA0230B08",
+            "trace": [
+              "Function.addPermission (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function-base.js:38:9)",
+              "LambdaIntegration.bind (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/lib/integrations/lambda.js:47:26)",
+              "new Method (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/lib/method.js:38:40)",
+              "Resource.addMethod (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/lib/resource.js:24:16)",
+              "new BookStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.books.js:35:14)",
+              "new BookApp (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.books.js:42:9)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.books.js:59:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/restapi-books-example/books-api/Default/books/{book_id}/GET/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "booksapibooksbookidGETCCE21986",
+            "trace": [
+              "new Method (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/lib/method.js:54:26)",
+              "Resource.addMethod (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/lib/resource.js:24:16)",
+              "new BookStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.books.js:35:14)",
+              "new BookApp (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.books.js:42:9)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.books.js:59:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/restapi-books-example/books-api/Default/books/{book_id}/DELETE/ApiPermission.restapibooksexamplebooksapi4538F335.DELETE..books.{book_id}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "booksapibooksbookidDELETEApiPermissionrestapibooksexamplebooksapi4538F335DELETEbooksbookid76C1C947",
+            "trace": [
+              "Function.addPermission (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function-base.js:38:9)",
+              "LambdaIntegration.bind (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/lib/integrations/lambda.js:40:22)",
+              "new Method (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/lib/method.js:38:40)",
+              "Resource.addMethod (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/lib/resource.js:24:16)",
+              "new BookStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.books.js:36:14)",
+              "new BookApp (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.books.js:42:9)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.books.js:59:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/restapi-books-example/books-api/Default/books/{book_id}/DELETE/ApiPermission.Test.restapibooksexamplebooksapi4538F335.DELETE..books.{book_id}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "booksapibooksbookidDELETEApiPermissionTestrestapibooksexamplebooksapi4538F335DELETEbooksbookid09D6CB8A",
+            "trace": [
+              "Function.addPermission (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function-base.js:38:9)",
+              "LambdaIntegration.bind (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/lib/integrations/lambda.js:47:26)",
+              "new Method (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/lib/method.js:38:40)",
+              "Resource.addMethod (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/lib/resource.js:24:16)",
+              "new BookStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.books.js:36:14)",
+              "new BookApp (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.books.js:42:9)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.books.js:59:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/restapi-books-example/books-api/Default/books/{book_id}/DELETE/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "booksapibooksbookidDELETE214F4059",
+            "trace": [
+              "new Method (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/lib/method.js:54:26)",
+              "Resource.addMethod (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/lib/resource.js:24:16)",
+              "new BookStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.books.js:36:14)",
+              "new BookApp (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.books.js:42:9)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.restapi.books.js:59:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ]
+      },
+      "displayName": "restapi-books-example"
+    }
+  }
+}

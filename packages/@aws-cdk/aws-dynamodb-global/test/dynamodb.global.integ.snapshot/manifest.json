@@ -1,0 +1,403 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "globdynamodbintegglobdynamodbinteguseast11DF47AEF": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/us-east-1",
+      "properties": {
+        "templateFile": "globdynamodbintegglobdynamodbinteguseast11DF47AEF.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/Default/globdynamodbinteg/globdynamodbinteg-us-east-1/globdynamodbinteg-GlobalTable-us-east-1": [
+          {
+            "type": "aws:cdk:hasPhysicalName",
+            "data": {
+              "Ref": "globdynamodbintegGlobalTableuseast162596384"
+            },
+            "trace": [
+              "ConstructNode.addMetadata (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/construct-compat.js:352:62)",
+              "new Table (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-dynamodb/lib/table.js:505:23)",
+              "new GlobalTable (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-dynamodb-global/lib/aws-dynamodb-global.js:46:35)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-dynamodb-global/test/integ.dynamodb.global.js:11:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/Default/globdynamodbinteg/globdynamodbinteg-us-east-1/globdynamodbinteg-GlobalTable-us-east-1/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "globdynamodbintegGlobalTableuseast162596384",
+            "trace": [
+              "new Table (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-dynamodb/lib/table.js:477:22)",
+              "new GlobalTable (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-dynamodb-global/lib/aws-dynamodb-global.js:46:35)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-dynamodb-global/test/integ.dynamodb.global.js:11:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ]
+      },
+      "displayName": "Default/globdynamodbinteg/globdynamodbinteg-us-east-1"
+    },
+    "globdynamodbintegglobdynamodbinteguseast23BC6B972": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/us-east-2",
+      "properties": {
+        "templateFile": "globdynamodbintegglobdynamodbinteguseast23BC6B972.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/Default/globdynamodbinteg/globdynamodbinteg-us-east-2/globdynamodbinteg-GlobalTable-us-east-2": [
+          {
+            "type": "aws:cdk:hasPhysicalName",
+            "data": {
+              "Ref": "globdynamodbintegGlobalTableuseast2EF897C2E"
+            },
+            "trace": [
+              "ConstructNode.addMetadata (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/construct-compat.js:352:62)",
+              "new Table (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-dynamodb/lib/table.js:505:23)",
+              "new GlobalTable (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-dynamodb-global/lib/aws-dynamodb-global.js:46:35)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-dynamodb-global/test/integ.dynamodb.global.js:11:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/Default/globdynamodbinteg/globdynamodbinteg-us-east-2/globdynamodbinteg-GlobalTable-us-east-2/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "globdynamodbintegGlobalTableuseast2EF897C2E",
+            "trace": [
+              "new Table (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-dynamodb/lib/table.js:477:22)",
+              "new GlobalTable (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-dynamodb-global/lib/aws-dynamodb-global.js:46:35)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-dynamodb-global/test/integ.dynamodb.global.js:11:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ]
+      },
+      "displayName": "Default/globdynamodbinteg/globdynamodbinteg-us-east-2"
+    },
+    "globdynamodbintegglobdynamodbinteguswest2104B9501": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/us-west-2",
+      "properties": {
+        "templateFile": "globdynamodbintegglobdynamodbinteguswest2104B9501.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/Default/globdynamodbinteg/globdynamodbinteg-us-west-2/globdynamodbinteg-GlobalTable-us-west-2": [
+          {
+            "type": "aws:cdk:hasPhysicalName",
+            "data": {
+              "Ref": "globdynamodbintegGlobalTableuswest27374C2EA"
+            },
+            "trace": [
+              "ConstructNode.addMetadata (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/construct-compat.js:352:62)",
+              "new Table (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-dynamodb/lib/table.js:505:23)",
+              "new GlobalTable (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-dynamodb-global/lib/aws-dynamodb-global.js:46:35)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-dynamodb-global/test/integ.dynamodb.global.js:11:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/Default/globdynamodbinteg/globdynamodbinteg-us-west-2/globdynamodbinteg-GlobalTable-us-west-2/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "globdynamodbintegGlobalTableuswest27374C2EA",
+            "trace": [
+              "new Table (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-dynamodb/lib/table.js:477:22)",
+              "new GlobalTable (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-dynamodb-global/lib/aws-dynamodb-global.js:46:35)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-dynamodb-global/test/integ.dynamodb.global.js:11:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ]
+      },
+      "displayName": "Default/globdynamodbinteg/globdynamodbinteg-us-west-2"
+    },
+    "globdynamodbintegCustomResource": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "globdynamodbintegCustomResource.template.json",
+        "validateOnSynth": false
+      },
+      "dependencies": [
+        "globdynamodbintegglobdynamodbinteguseast11DF47AEF",
+        "globdynamodbintegglobdynamodbinteguseast23BC6B972",
+        "globdynamodbintegglobdynamodbinteguswest2104B9501"
+      ],
+      "metadata": {
+        "/Default/globdynamodbinteg-CustomResource": [
+          {
+            "type": "aws:cdk:asset",
+            "data": {
+              "path": "asset.94575de3fd18404e41e94a6c1d4b7a1eec2985fd23d2c11999d095e09667ba3a",
+              "id": "94575de3fd18404e41e94a6c1d4b7a1eec2985fd23d2c11999d095e09667ba3a",
+              "packaging": "zip",
+              "sourceHash": "94575de3fd18404e41e94a6c1d4b7a1eec2985fd23d2c11999d095e09667ba3a",
+              "s3BucketParameter": "AssetParameters94575de3fd18404e41e94a6c1d4b7a1eec2985fd23d2c11999d095e09667ba3aS3Bucket66843878",
+              "s3KeyParameter": "AssetParameters94575de3fd18404e41e94a6c1d4b7a1eec2985fd23d2c11999d095e09667ba3aS3VersionKey14680708",
+              "artifactHashParameter": "AssetParameters94575de3fd18404e41e94a6c1d4b7a1eec2985fd23d2c11999d095e09667ba3aArtifactHash5687D31D"
+            },
+            "trace": [
+              "ConstructNode.addMetadata (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/construct-compat.js:352:62)",
+              "LegacyStackSynthesizer.doAddFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:170:29)",
+              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:82:25)",
+              "GlobalTableCoordinator.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack.js:408:33)",
+              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:59",
+              "withoutDeprecationWarnings (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:197:16)",
+              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:20)",
+              "new Asset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-s3-assets/lib/asset.js:39:44)",
+              "AssetCode.bind (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/code.js:206:26)",
+              "new Function (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function.js:100:33)",
+              "SingletonFunction.ensureLambda (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/singleton-lambda.js:132:16)",
+              "new SingletonFunction (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/singleton-lambda.js:24:36)",
+              "new GlobalTableCoordinator (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-dynamodb-global/lib/global-table-coordinator.js:15:32)",
+              "new GlobalTable (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-dynamodb-global/lib/aws-dynamodb-global.js:40:45)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-dynamodb-global/test/integ.dynamodb.global.js:11:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/Default/globdynamodbinteg-CustomResource/SingletonLambdaD38B65A66B544FB69BAD9CD40A6DAC12/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonLambdaD38B65A66B544FB69BAD9CD40A6DAC12ServiceRoleD9686810",
+            "trace": [
+              "new Role (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/role.js:50:22)",
+              "new Function (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function.js:82:35)",
+              "SingletonFunction.ensureLambda (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/singleton-lambda.js:132:16)",
+              "new SingletonFunction (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/singleton-lambda.js:24:36)",
+              "new GlobalTableCoordinator (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-dynamodb-global/lib/global-table-coordinator.js:15:32)",
+              "new GlobalTable (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-dynamodb-global/lib/aws-dynamodb-global.js:40:45)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-dynamodb-global/test/integ.dynamodb.global.js:11:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/Default/globdynamodbinteg-CustomResource/SingletonLambdaD38B65A66B544FB69BAD9CD40A6DAC12/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonLambdaD38B65A66B544FB69BAD9CD40A6DAC12ServiceRoleDefaultPolicy6E7EDDB6",
+            "trace": [
+              "new Policy (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/policy.js:50:26)",
+              "Role.addToPrincipalPolicy (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/role.js:199:34)",
+              "grantCreateGlobalTableLambda (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-dynamodb-global/lib/global-table-coordinator.js:43:19)",
+              "new GlobalTableCoordinator (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-dynamodb-global/lib/global-table-coordinator.js:23:9)",
+              "new GlobalTable (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-dynamodb-global/lib/aws-dynamodb-global.js:40:45)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-dynamodb-global/test/integ.dynamodb.global.js:11:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/Default/globdynamodbinteg-CustomResource/SingletonLambdaD38B65A66B544FB69BAD9CD40A6DAC12/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonLambdaD38B65A66B544FB69BAD9CD40A6DAC1233FDC96A",
+            "trace": [
+              "new Function (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function.js:154:26)",
+              "SingletonFunction.ensureLambda (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/singleton-lambda.js:132:16)",
+              "new SingletonFunction (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/singleton-lambda.js:24:36)",
+              "new GlobalTableCoordinator (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-dynamodb-global/lib/global-table-coordinator.js:15:32)",
+              "new GlobalTable (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-dynamodb-global/lib/aws-dynamodb-global.js:40:45)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-dynamodb-global/test/integ.dynamodb.global.js:11:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/Default/globdynamodbinteg-CustomResource/AssetParameters/94575de3fd18404e41e94a6c1d4b7a1eec2985fd23d2c11999d095e09667ba3a/S3Bucket": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters94575de3fd18404e41e94a6c1d4b7a1eec2985fd23d2c11999d095e09667ba3aS3Bucket66843878",
+            "trace": [
+              "new FileAssetParameters (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/asset-parameters.js:12:36)",
+              "LegacyStackSynthesizer.doAddFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:157:22)",
+              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:82:25)",
+              "GlobalTableCoordinator.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack.js:408:33)",
+              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:59",
+              "withoutDeprecationWarnings (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:197:16)",
+              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:20)",
+              "new Asset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-s3-assets/lib/asset.js:39:44)",
+              "AssetCode.bind (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/code.js:206:26)",
+              "new Function (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function.js:100:33)",
+              "SingletonFunction.ensureLambda (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/singleton-lambda.js:132:16)",
+              "new SingletonFunction (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/singleton-lambda.js:24:36)",
+              "new GlobalTableCoordinator (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-dynamodb-global/lib/global-table-coordinator.js:15:32)",
+              "new GlobalTable (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-dynamodb-global/lib/aws-dynamodb-global.js:40:45)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-dynamodb-global/test/integ.dynamodb.global.js:11:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/Default/globdynamodbinteg-CustomResource/AssetParameters/94575de3fd18404e41e94a6c1d4b7a1eec2985fd23d2c11999d095e09667ba3a/S3VersionKey": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters94575de3fd18404e41e94a6c1d4b7a1eec2985fd23d2c11999d095e09667ba3aS3VersionKey14680708",
+            "trace": [
+              "new FileAssetParameters (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/asset-parameters.js:16:35)",
+              "LegacyStackSynthesizer.doAddFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:157:22)",
+              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:82:25)",
+              "GlobalTableCoordinator.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack.js:408:33)",
+              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:59",
+              "withoutDeprecationWarnings (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:197:16)",
+              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:20)",
+              "new Asset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-s3-assets/lib/asset.js:39:44)",
+              "AssetCode.bind (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/code.js:206:26)",
+              "new Function (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function.js:100:33)",
+              "SingletonFunction.ensureLambda (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/singleton-lambda.js:132:16)",
+              "new SingletonFunction (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/singleton-lambda.js:24:36)",
+              "new GlobalTableCoordinator (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-dynamodb-global/lib/global-table-coordinator.js:15:32)",
+              "new GlobalTable (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-dynamodb-global/lib/aws-dynamodb-global.js:40:45)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-dynamodb-global/test/integ.dynamodb.global.js:11:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/Default/globdynamodbinteg-CustomResource/AssetParameters/94575de3fd18404e41e94a6c1d4b7a1eec2985fd23d2c11999d095e09667ba3a/ArtifactHash": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters94575de3fd18404e41e94a6c1d4b7a1eec2985fd23d2c11999d095e09667ba3aArtifactHash5687D31D",
+            "trace": [
+              "new FileAssetParameters (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/asset-parameters.js:20:38)",
+              "LegacyStackSynthesizer.doAddFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:157:22)",
+              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:82:25)",
+              "GlobalTableCoordinator.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack.js:408:33)",
+              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:59",
+              "withoutDeprecationWarnings (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:197:16)",
+              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:20)",
+              "new Asset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-s3-assets/lib/asset.js:39:44)",
+              "AssetCode.bind (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/code.js:206:26)",
+              "new Function (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function.js:100:33)",
+              "SingletonFunction.ensureLambda (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/singleton-lambda.js:132:16)",
+              "new SingletonFunction (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/singleton-lambda.js:24:36)",
+              "new GlobalTableCoordinator (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-dynamodb-global/lib/global-table-coordinator.js:15:32)",
+              "new GlobalTable (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-dynamodb-global/lib/aws-dynamodb-global.js:40:45)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-dynamodb-global/test/integ.dynamodb.global.js:11:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/Default/globdynamodbinteg-CustomResource/CfnCustomResource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CfnCustomResource",
+            "trace": [
+              "new CustomResource (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/custom-resource.js:42:25)",
+              "new GlobalTableCoordinator (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-dynamodb-global/lib/global-table-coordinator.js:24:9)",
+              "new GlobalTable (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-dynamodb-global/lib/aws-dynamodb-global.js:40:45)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-dynamodb-global/test/integ.dynamodb.global.js:11:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ]
+      },
+      "displayName": "Default/globdynamodbinteg-CustomResource"
+    },
+    "Default": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "Default.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/Default/globdynamodbinteg": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "The @aws-cdk/aws-dynamodb-global module has been deprecated in favor of @aws-cdk/aws-dynamodb.Table.replicationRegions",
+            "trace": [
+              "Annotations.addMessage (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/annotations.js:86:42)",
+              "Annotations.addWarning (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/annotations.js:32:14)",
+              "new GlobalTable (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-dynamodb-global/lib/aws-dynamodb-global.js:28:34)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-dynamodb-global/test/integ.dynamodb.global.js:11:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ]
+      },
+      "displayName": "Default"
+    }
+  }
+}

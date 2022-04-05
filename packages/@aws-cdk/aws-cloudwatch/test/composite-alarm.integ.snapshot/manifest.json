@@ -1,0 +1,124 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "CompositeAlarmIntegrationTest": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "CompositeAlarmIntegrationTest.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/CompositeAlarmIntegrationTest/Alarm1/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Alarm1F9009D71",
+            "trace": [
+              "new Alarm (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-cloudwatch/lib/alarm.js:103:23)",
+              "new CompositeAlarmIntegrationTest (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-cloudwatch/test/integ.composite-alarm.js:12:24)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-cloudwatch/test/integ.composite-alarm.js:45:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/CompositeAlarmIntegrationTest/Alarm2/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Alarm2A7122E13",
+            "trace": [
+              "new Alarm (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-cloudwatch/lib/alarm.js:103:23)",
+              "new CompositeAlarmIntegrationTest (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-cloudwatch/test/integ.composite-alarm.js:17:24)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-cloudwatch/test/integ.composite-alarm.js:45:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/CompositeAlarmIntegrationTest/Alarm3/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Alarm32341D8D9",
+            "trace": [
+              "new Alarm (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-cloudwatch/lib/alarm.js:103:23)",
+              "new CompositeAlarmIntegrationTest (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-cloudwatch/test/integ.composite-alarm.js:22:24)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-cloudwatch/test/integ.composite-alarm.js:45:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/CompositeAlarmIntegrationTest/Alarm4/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Alarm4671832C8",
+            "trace": [
+              "new Alarm (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-cloudwatch/lib/alarm.js:103:23)",
+              "new CompositeAlarmIntegrationTest (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-cloudwatch/test/integ.composite-alarm.js:27:24)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-cloudwatch/test/integ.composite-alarm.js:45:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/CompositeAlarmIntegrationTest/Alarm5/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Alarm548383B2F",
+            "trace": [
+              "new Alarm (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-cloudwatch/lib/alarm.js:103:23)",
+              "new CompositeAlarmIntegrationTest (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-cloudwatch/test/integ.composite-alarm.js:32:24)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-cloudwatch/test/integ.composite-alarm.js:45:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/CompositeAlarmIntegrationTest/CompositeAlarm/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CompositeAlarmF4C3D082",
+            "trace": [
+              "new CompositeAlarm (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-cloudwatch/lib/composite-alarm.js:24:23)",
+              "new CompositeAlarmIntegrationTest (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-cloudwatch/test/integ.composite-alarm.js:39:9)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-cloudwatch/test/integ.composite-alarm.js:45:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ]
+      },
+      "displayName": "CompositeAlarmIntegrationTest"
+    }
+  }
+}

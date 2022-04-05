@@ -1,0 +1,106 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "aws-servicediscovery-integ": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-servicediscovery-integ.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/aws-servicediscovery-integ/MyNamespace/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyNamespaceD0BB8558",
+            "trace": [
+              "new HttpNamespace (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-servicediscovery/lib/http-namespace.js:18:20)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-servicediscovery/test/integ.service-with-http-namespace.lit.js:7:19)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/aws-servicediscovery-integ/MyNamespace/NonIpService/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyNamespaceNonIpService3B425009",
+            "trace": [
+              "new Service (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-servicediscovery/lib/service.js:79:25)",
+              "HttpNamespace.createService (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-servicediscovery/lib/http-namespace.js:51:16)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-servicediscovery/test/integ.service-with-http-namespace.lit.js:10:28)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/aws-servicediscovery-integ/MyNamespace/NonIpService/NonIpInstance/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyNamespaceNonIpServiceNonIpInstanceFF8FB3DE",
+            "trace": [
+              "new NonIpInstance (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-servicediscovery/lib/non-ip-instance.js:26:26)",
+              "Service.registerNonIpInstance (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-servicediscovery/lib/service.js:124:16)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-servicediscovery/test/integ.service-with-http-namespace.lit.js:13:10)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/aws-servicediscovery-integ/MyNamespace/IpService/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyNamespaceIpService220F547F",
+            "trace": [
+              "new Service (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-servicediscovery/lib/service.js:79:25)",
+              "HttpNamespace.createService (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-servicediscovery/lib/http-namespace.js:51:16)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-servicediscovery/test/integ.service-with-http-namespace.lit.js:16:28)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/aws-servicediscovery-integ/MyNamespace/IpService/IpInstance/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyNamespaceIpServiceIpInstance8CD1B210",
+            "trace": [
+              "new IpInstance (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-servicediscovery/lib/ip-instance.js:39:26)",
+              "Service.registerIpInstance (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-servicediscovery/lib/service.js:134:16)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-servicediscovery/test/integ.service-with-http-namespace.lit.js:23:10)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ]
+      },
+      "displayName": "aws-servicediscovery-integ"
+    }
+  }
+}

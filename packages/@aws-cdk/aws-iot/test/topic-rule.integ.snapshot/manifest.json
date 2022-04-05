@@ -1,0 +1,39 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "test-stack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "test-stack.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/test-stack/TopicRule/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TopicRule40A4EA44",
+            "trace": [
+              "new TopicRule (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iot/lib/topic-rule.js:21:26)",
+              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iot/test/integ.topic-rule.js:10:9)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iot/test/integ.topic-rule.js:24:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ]
+      },
+      "displayName": "test-stack"
+    }
+  }
+}

@@ -17,6 +17,7 @@ const PRAGMA_PREFIX = 'pragma:';
 const SET_CONTEXT_PRAGMA_PREFIX = 'pragma:set-context:';
 const VERIFY_ASSET_HASHES = 'pragma:include-assets-hashes';
 const ENABLE_LOOKUPS_PRAGMA = 'pragma:enable-lookups';
+const DISABLE_UPDATE_WORKFLOW = 'pragma:disable-update-workflow';
 
 /**
  * Options for creating an integration test runner
@@ -112,6 +113,7 @@ export abstract class IntegRunner {
   }
 
   private _enableLookups?: boolean;
+  private _disableUpdateWorkflow?: boolean;
 
   /**
    * The directory where the CDK will be synthed to
@@ -121,17 +123,28 @@ export abstract class IntegRunner {
   constructor(options: IntegRunnerOptions) {
     const parsed = path.parse(options.fileName);
     this.directory = parsed.dir;
-    this.testName = parsed.name.slice(6);
-    this.snapshotDir = path.join(this.directory, `${this.testName}.integ.snapshot`);
-    this.relativeSnapshotDir = `${this.testName}.integ.snapshot`;
+    const testName = parsed.name.slice(6);
+
+    // if we are running in a package directory then juse use the fileName
+    // as the testname, but if we are running in a parent directory with
+    // multiple packages then use the directory/filename as the testname
+    if (parsed.dir === 'test') {
+      this.testName = testName;
+    } else {
+      this.testName = `${parsed.dir}/${parsed.name}`;
+    }
+    this.snapshotDir = path.join(this.directory, `${testName}.integ.snapshot`);
+    this.relativeSnapshotDir = `${testName}.integ.snapshot`;
     this.sourceFilePath = path.join(this.directory, parsed.base);
     this.cdkContextPath = path.join(this.directory, 'cdk.context.json');
     this.cdk = options.cdk ?? new CdkCliWrapper({
       cdkExecutable: require.resolve('aws-cdk/bin/cdk'),
       directory: this.directory,
-      env: options.env,
+      env: {
+        ...options.env,
+      },
     });
-    this.cdkOutDir = options.integOutDir ?? `${CDK_OUTDIR_PREFIX}.${this.testName}`;
+    this.cdkOutDir = options.integOutDir ?? `${CDK_OUTDIR_PREFIX}.${testName}`;
     this.cdkApp = `node ${parsed.base}`;
     if (this.hasSnapshot()) {
       this.loadManifest();
@@ -143,6 +156,14 @@ export abstract class IntegRunner {
    */
   protected get enableLookups(): boolean {
     return this._enableLookups ?? false;
+  }
+
+  /**
+   * Whether or not to run the update workflow when
+   * updating the snapshot
+   */
+  protected get disableUpdateWorkflow(): boolean {
+    return this._disableUpdateWorkflow ?? false;
   }
 
   /**
@@ -171,6 +192,7 @@ export abstract class IntegRunner {
     } catch (e) {
       this._tests = this.renderTestCasesForLegacyTests();
       this._enableLookups = this.pragmas().includes(ENABLE_LOOKUPS_PRAGMA);
+      this._disableUpdateWorkflow = this.pragmas().includes(DISABLE_UPDATE_WORKFLOW);
     }
   }
 
@@ -181,6 +203,25 @@ export abstract class IntegRunner {
     }
   }
 
+  /**
+   * In cases where we do not want to retain the assets,
+   * for example, if the assets are very large
+   */
+  protected removeAssetsFromSnapshot(): void {
+    const files = fs.readdirSync(this.snapshotDir);
+    files.forEach(file => {
+      const fileName = path.join(this.snapshotDir, file);
+      if (file.startsWith('asset.')) {
+        if (fs.lstatSync(fileName).isDirectory()) {
+          fs.emptyDirSync(fileName);
+          fs.rmdirSync(fileName);
+        } else {
+          fs.unlinkSync(fileName);
+        }
+      }
+    });
+  }
+
   protected createSnapshot(): void {
     if (fs.existsSync(this.snapshotDir)) {
       fs.removeSync(this.snapshotDir);
@@ -189,20 +230,19 @@ export abstract class IntegRunner {
     // if lookups are enabled then we need to synth again
     // using dummy context and save that as the snapshot
     if (this.enableLookups) {
-      this.writeContext();
-      this.cdk.synth({
-        ...this.defaultArgs,
-        all: true,
-        app: this.cdkApp,
+      this.cdk.synthFast({
+        execCmd: this.cdkApp.split(' '),
+        env: {
+          ...DEFAULT_SYNTH_OPTIONS.env,
+          CDK_CONTEXT_JSON: JSON.stringify(this.getContext()),
+        },
         output: this.relativeSnapshotDir,
-        // TODO: figure out if we need this...
-        // env: {
-        //   ...DEFAULT_SYNTH_OPTIONS.env,
-        // },
       });
-      this.cleanupContextFile();
     } else {
       fs.moveSync(path.join(this.directory, this.cdkOutDir), this.snapshotDir, { overwrite: true });
+    }
+    if (this.disableUpdateWorkflow) {
+      this.removeAssetsFromSnapshot();
     }
   }
 
@@ -294,11 +334,7 @@ export abstract class IntegRunner {
     return (this.readIntegPragma()).filter(p => p.startsWith(PRAGMA_PREFIX));
   }
 
-  /**
-   * There is not currently a way to pass structured context to the CLI
-   * so to workaround this we write the context to a file
-   */
-  protected writeContext(additionalContext?: Record<string, any>): void {
+  protected getContext(additionalContext?: Record<string, any>): Record<string, any> {
     const ctxPragmaContext: Record<string, any> = {};
 
     // apply context from set-context pragma
@@ -313,18 +349,11 @@ export abstract class IntegRunner {
 
       ctxPragmaContext[key] = value;
     }
-    const context: Record<string, any> = {
+    return {
       ...DEFAULT_SYNTH_OPTIONS.context,
       ...ctxPragmaContext,
       ...additionalContext,
     };
-    fs.writeFileSync(this.cdkContextPath, JSON.stringify(context, undefined, 2), { encoding: 'utf-8' });
-  }
-
-  protected cleanupContextFile() {
-    if (fs.existsSync(this.cdkContextPath)) {
-      fs.unlinkSync(this.cdkContextPath);
-    }
   }
 }
 
@@ -389,12 +418,16 @@ export class IntegTestRunner extends IntegRunner {
           lookups: this.enableLookups,
         });
       } else {
-        this.cdk.synth({
-          ...this.defaultArgs,
-          stacks: options.testCase.stacks,
+        const env: Record<string, any> = {
+          ...DEFAULT_SYNTH_OPTIONS.env,
+        };
+        if (this.enableLookups) {
+          env.CDK_CONTEXT_JSON = JSON.stringify(this.getContext());
+        }
+        this.cdk.synthFast({
+          execCmd: this.cdkApp.split(' '),
+          env,
           output: this.cdkOutDir,
-          app: this.cdkApp,
-          lookups: this.enableLookups,
         });
       }
       this.createSnapshot();
@@ -425,10 +458,12 @@ export class IntegTestRunner extends IntegRunner {
       throw new Error(`${this.testName} already has a snapshot: ${this.snapshotDir}`);
     }
 
-    this.cdk.synth({
-      ...this.defaultArgs,
-      all: true,
-      app: this.cdkApp,
+    this.cdk.synthFast({
+      execCmd: this.cdkApp.split(' '),
+      env: {
+        ...DEFAULT_SYNTH_OPTIONS.env,
+        CDK_CONTEXT_JSON: JSON.stringify(this.getContext()),
+      },
       output: this.cdkOutDir,
     });
     this.loadManifest(this.cdkOutDir);
@@ -453,17 +488,18 @@ export class IntegSnapshotRunner extends IntegRunner {
       // read the existing snapshot
       const expectedStacks = this.readAssembly(this.snapshotDir);
 
+      const env: Record<string, any> = {
+        ...DEFAULT_SYNTH_OPTIONS.env,
+      };
       // if lookups are enabled then write the dummy context file
       if (this.enableLookups) {
-        this.writeContext();
+        env.CDK_CONTEXT_JSON = JSON.stringify(this.getContext());
       }
       // synth the integration test
-      this.cdk.synth({
-        ...this.defaultArgs,
-        all: true,
-        app: this.cdkApp,
+      this.cdk.synthFast({
+        execCmd: this.cdkApp.split(' '),
+        env,
         output: this.cdkOutDir,
-        lookups: this.enableLookups,
       });
       const actualStacks = this.readAssembly(path.join(this.directory, this.cdkOutDir));
 
@@ -473,7 +509,6 @@ export class IntegSnapshotRunner extends IntegRunner {
     } catch (e) {
       throw e;
     } finally {
-      this.cleanupContextFile();
       this.cleanup();
     }
   }

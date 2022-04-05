@@ -1,0 +1,56 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "cdk-integ-elasticsearch-advancedsecurity": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "cdk-integ-elasticsearch-advancedsecurity.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/cdk-integ-elasticsearch-advancedsecurity/User/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "User00B015A1",
+            "trace": [
+              "new User (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/user.js:29:22)",
+              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-elasticsearch/test/integ.elasticsearch.advancedsecurity.js:9:22)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-elasticsearch/test/integ.elasticsearch.advancedsecurity.js:25:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/cdk-integ-elasticsearch-advancedsecurity/Domain/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Domain66AC69E0",
+            "trace": [
+              "new Domain (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-elasticsearch/lib/domain.js:717:23)",
+              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-elasticsearch/test/integ.elasticsearch.advancedsecurity.js:10:9)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-elasticsearch/test/integ.elasticsearch.advancedsecurity.js:25:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ]
+      },
+      "displayName": "cdk-integ-elasticsearch-advancedsecurity"
+    }
+  }
+}

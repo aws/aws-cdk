@@ -1,0 +1,283 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "cdk-integ-elasticsearch-unsignedbasicauth": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "cdk-integ-elasticsearch-unsignedbasicauth.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/cdk-integ-elasticsearch-unsignedbasicauth": [
+          {
+            "type": "aws:cdk:asset",
+            "data": {
+              "path": "asset.dad5595646c3e39df600f872d08887f9fb408c42b22f568bc66c22979f476981",
+              "id": "dad5595646c3e39df600f872d08887f9fb408c42b22f568bc66c22979f476981",
+              "packaging": "zip",
+              "sourceHash": "dad5595646c3e39df600f872d08887f9fb408c42b22f568bc66c22979f476981",
+              "s3BucketParameter": "AssetParametersdad5595646c3e39df600f872d08887f9fb408c42b22f568bc66c22979f476981S3Bucket0C90C820",
+              "s3KeyParameter": "AssetParametersdad5595646c3e39df600f872d08887f9fb408c42b22f568bc66c22979f476981S3VersionKey2007A749",
+              "artifactHashParameter": "AssetParametersdad5595646c3e39df600f872d08887f9fb408c42b22f568bc66c22979f476981ArtifactHash0C4FC28E"
+            },
+            "trace": [
+              "ConstructNode.addMetadata (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/construct-compat.js:352:62)",
+              "LegacyStackSynthesizer.doAddFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:170:29)",
+              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:82:25)",
+              "TestStack.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack.js:411:33)",
+              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:59",
+              "withoutDeprecationWarnings (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:197:16)",
+              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:20)",
+              "new Asset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-s3-assets/lib/asset.js:39:44)",
+              "AssetCode.bind (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/code.js:206:26)",
+              "new Function (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function.js:100:33)",
+              "SingletonFunction.ensureLambda (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/singleton-lambda.js:132:16)",
+              "new SingletonFunction (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/singleton-lambda.js:24:36)",
+              "new AwsCustomResource (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/lib/aws-custom-resource/aws-custom-resource.js:145:26)",
+              "new ElasticsearchAccessPolicy (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-elasticsearch/lib/elasticsearch-access-policy.js:12:9)",
+              "Domain.addAccessPolicies (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-elasticsearch/lib/domain.js:905:37)",
+              "new Domain (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-elasticsearch/lib/domain.js:833:18)",
+              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-elasticsearch/test/integ.elasticsearch.unsignedbasicauth.js:9:9)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-elasticsearch/test/integ.elasticsearch.unsignedbasicauth.js:17:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/cdk-integ-elasticsearch-unsignedbasicauth/Domain/MasterUser/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DomainMasterUserBFAFA7D9",
+            "trace": [
+              "new Secret (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-secretsmanager/lib/secret.js:203:26)",
+              "createMasterUserPassword (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-elasticsearch/lib/domain.js:520:20)",
+              "new Domain (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-elasticsearch/lib/domain.js:532:110)",
+              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-elasticsearch/test/integ.elasticsearch.unsignedbasicauth.js:9:9)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-elasticsearch/test/integ.elasticsearch.unsignedbasicauth.js:17:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/cdk-integ-elasticsearch-unsignedbasicauth/Domain/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Domain66AC69E0",
+            "trace": [
+              "new Domain (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-elasticsearch/lib/domain.js:717:23)",
+              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-elasticsearch/test/integ.elasticsearch.unsignedbasicauth.js:9:9)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-elasticsearch/test/integ.elasticsearch.unsignedbasicauth.js:17:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/cdk-integ-elasticsearch-unsignedbasicauth/Domain/ESAccessPolicy/CustomResourcePolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DomainESAccessPolicyCustomResourcePolicy9747FC42",
+            "trace": [
+              "new Policy (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/policy.js:50:26)",
+              "new AwsCustomResource (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/lib/aws-custom-resource/aws-custom-resource.js:186:24)",
+              "new ElasticsearchAccessPolicy (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-elasticsearch/lib/elasticsearch-access-policy.js:12:9)",
+              "Domain.addAccessPolicies (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-elasticsearch/lib/domain.js:905:37)",
+              "new Domain (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-elasticsearch/lib/domain.js:833:18)",
+              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-elasticsearch/test/integ.elasticsearch.unsignedbasicauth.js:9:9)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-elasticsearch/test/integ.elasticsearch.unsignedbasicauth.js:17:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/cdk-integ-elasticsearch-unsignedbasicauth/Domain/ESAccessPolicy/Resource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DomainESAccessPolicy89986F33",
+            "trace": [
+              "new CustomResource (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/custom-resource.js:42:25)",
+              "new AwsCustomResource (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/lib/aws-custom-resource/aws-custom-resource.js:193:31)",
+              "new ElasticsearchAccessPolicy (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-elasticsearch/lib/elasticsearch-access-policy.js:12:9)",
+              "Domain.addAccessPolicies (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-elasticsearch/lib/domain.js:905:37)",
+              "new Domain (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-elasticsearch/lib/domain.js:833:18)",
+              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-elasticsearch/test/integ.elasticsearch.unsignedbasicauth.js:9:9)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-elasticsearch/test/integ.elasticsearch.unsignedbasicauth.js:17:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/cdk-integ-elasticsearch-unsignedbasicauth/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2",
+            "trace": [
+              "new Role (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/role.js:50:22)",
+              "new Function (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function.js:82:35)",
+              "SingletonFunction.ensureLambda (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/singleton-lambda.js:132:16)",
+              "new SingletonFunction (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/singleton-lambda.js:24:36)",
+              "new AwsCustomResource (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/lib/aws-custom-resource/aws-custom-resource.js:145:26)",
+              "new ElasticsearchAccessPolicy (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-elasticsearch/lib/elasticsearch-access-policy.js:12:9)",
+              "Domain.addAccessPolicies (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-elasticsearch/lib/domain.js:905:37)",
+              "new Domain (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-elasticsearch/lib/domain.js:833:18)",
+              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-elasticsearch/test/integ.elasticsearch.unsignedbasicauth.js:9:9)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-elasticsearch/test/integ.elasticsearch.unsignedbasicauth.js:17:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/cdk-integ-elasticsearch-unsignedbasicauth/AWS679f53fac002430cb0da5b7982bd2287/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AWS679f53fac002430cb0da5b7982bd22872D164C4C",
+            "trace": [
+              "new Function (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function.js:158:26)",
+              "SingletonFunction.ensureLambda (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/singleton-lambda.js:132:16)",
+              "new SingletonFunction (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/singleton-lambda.js:24:36)",
+              "new AwsCustomResource (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/lib/aws-custom-resource/aws-custom-resource.js:145:26)",
+              "new ElasticsearchAccessPolicy (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-elasticsearch/lib/elasticsearch-access-policy.js:12:9)",
+              "Domain.addAccessPolicies (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-elasticsearch/lib/domain.js:905:37)",
+              "new Domain (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-elasticsearch/lib/domain.js:833:18)",
+              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-elasticsearch/test/integ.elasticsearch.unsignedbasicauth.js:9:9)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-elasticsearch/test/integ.elasticsearch.unsignedbasicauth.js:17:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/cdk-integ-elasticsearch-unsignedbasicauth/AssetParameters/dad5595646c3e39df600f872d08887f9fb408c42b22f568bc66c22979f476981/S3Bucket": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParametersdad5595646c3e39df600f872d08887f9fb408c42b22f568bc66c22979f476981S3Bucket0C90C820",
+            "trace": [
+              "new FileAssetParameters (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/asset-parameters.js:12:36)",
+              "LegacyStackSynthesizer.doAddFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:157:22)",
+              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:82:25)",
+              "TestStack.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack.js:411:33)",
+              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:59",
+              "withoutDeprecationWarnings (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:197:16)",
+              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:20)",
+              "new Asset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-s3-assets/lib/asset.js:39:44)",
+              "AssetCode.bind (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/code.js:206:26)",
+              "new Function (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function.js:100:33)",
+              "SingletonFunction.ensureLambda (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/singleton-lambda.js:132:16)",
+              "new SingletonFunction (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/singleton-lambda.js:24:36)",
+              "new AwsCustomResource (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/lib/aws-custom-resource/aws-custom-resource.js:145:26)",
+              "new ElasticsearchAccessPolicy (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-elasticsearch/lib/elasticsearch-access-policy.js:12:9)",
+              "Domain.addAccessPolicies (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-elasticsearch/lib/domain.js:905:37)",
+              "new Domain (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-elasticsearch/lib/domain.js:833:18)",
+              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-elasticsearch/test/integ.elasticsearch.unsignedbasicauth.js:9:9)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-elasticsearch/test/integ.elasticsearch.unsignedbasicauth.js:17:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/cdk-integ-elasticsearch-unsignedbasicauth/AssetParameters/dad5595646c3e39df600f872d08887f9fb408c42b22f568bc66c22979f476981/S3VersionKey": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParametersdad5595646c3e39df600f872d08887f9fb408c42b22f568bc66c22979f476981S3VersionKey2007A749",
+            "trace": [
+              "new FileAssetParameters (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/asset-parameters.js:16:35)",
+              "LegacyStackSynthesizer.doAddFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:157:22)",
+              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:82:25)",
+              "TestStack.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack.js:411:33)",
+              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:59",
+              "withoutDeprecationWarnings (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:197:16)",
+              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:20)",
+              "new Asset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-s3-assets/lib/asset.js:39:44)",
+              "AssetCode.bind (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/code.js:206:26)",
+              "new Function (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function.js:100:33)",
+              "SingletonFunction.ensureLambda (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/singleton-lambda.js:132:16)",
+              "new SingletonFunction (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/singleton-lambda.js:24:36)",
+              "new AwsCustomResource (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/lib/aws-custom-resource/aws-custom-resource.js:145:26)",
+              "new ElasticsearchAccessPolicy (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-elasticsearch/lib/elasticsearch-access-policy.js:12:9)",
+              "Domain.addAccessPolicies (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-elasticsearch/lib/domain.js:905:37)",
+              "new Domain (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-elasticsearch/lib/domain.js:833:18)",
+              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-elasticsearch/test/integ.elasticsearch.unsignedbasicauth.js:9:9)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-elasticsearch/test/integ.elasticsearch.unsignedbasicauth.js:17:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/cdk-integ-elasticsearch-unsignedbasicauth/AssetParameters/dad5595646c3e39df600f872d08887f9fb408c42b22f568bc66c22979f476981/ArtifactHash": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParametersdad5595646c3e39df600f872d08887f9fb408c42b22f568bc66c22979f476981ArtifactHash0C4FC28E",
+            "trace": [
+              "new FileAssetParameters (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/asset-parameters.js:20:38)",
+              "LegacyStackSynthesizer.doAddFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:157:22)",
+              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:82:25)",
+              "TestStack.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack.js:411:33)",
+              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:59",
+              "withoutDeprecationWarnings (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:197:16)",
+              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:20)",
+              "new Asset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-s3-assets/lib/asset.js:39:44)",
+              "AssetCode.bind (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/code.js:206:26)",
+              "new Function (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function.js:100:33)",
+              "SingletonFunction.ensureLambda (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/singleton-lambda.js:132:16)",
+              "new SingletonFunction (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/singleton-lambda.js:24:36)",
+              "new AwsCustomResource (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/lib/aws-custom-resource/aws-custom-resource.js:145:26)",
+              "new ElasticsearchAccessPolicy (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-elasticsearch/lib/elasticsearch-access-policy.js:12:9)",
+              "Domain.addAccessPolicies (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-elasticsearch/lib/domain.js:905:37)",
+              "new Domain (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-elasticsearch/lib/domain.js:833:18)",
+              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-elasticsearch/test/integ.elasticsearch.unsignedbasicauth.js:9:9)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-elasticsearch/test/integ.elasticsearch.unsignedbasicauth.js:17:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ]
+      },
+      "displayName": "cdk-integ-elasticsearch-unsignedbasicauth"
+    }
+  }
+}

@@ -437,7 +437,7 @@ test('can synth fast', () => {
     },
   });
   cdk.synthFast({
-    execCmd: 'node bin/my-app.js',
+    execCmd: ['node', 'bin/my-app.js'],
     output: 'cdk.output',
     env: {
       OTHERKEY: 'othervalue',

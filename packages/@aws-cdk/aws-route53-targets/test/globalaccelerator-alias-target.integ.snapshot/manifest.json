@@ -1,0 +1,89 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "aws-cdk-globalaccelerator-integ": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-cdk-globalaccelerator-integ.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/aws-cdk-globalaccelerator-integ/Accelerator/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Accelerator8EB0B6B1",
+            "trace": [
+              "new Accelerator (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-globalaccelerator/lib/accelerator.js:18:26)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53-targets/test/integ.globalaccelerator-alias-target.js:10:19)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/aws-cdk-globalaccelerator-integ/HostedZone/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HostedZoneDB99F866",
+            "trace": [
+              "new HostedZone (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53/lib/hosted-zone.js:26:26)",
+              "new PublicHostedZone (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53/lib/hosted-zone.js:137:9)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53-targets/test/integ.globalaccelerator-alias-target.js:14:14)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/aws-cdk-globalaccelerator-integ/LocalGlobalAcceleratorAlias/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LocalGlobalAcceleratorAlias18B4A87A",
+            "trace": [
+              "new RecordSet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53/lib/record-set.js:156:27)",
+              "new ARecord (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53/lib/record-set.js:188:9)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53-targets/test/integ.globalaccelerator-alias-target.js:15:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/aws-cdk-globalaccelerator-integ/ExistingGlobalAcceleratorAlias/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExistingGlobalAcceleratorAlias7ACF888C",
+            "trace": [
+              "new RecordSet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53/lib/record-set.js:156:27)",
+              "new ARecord (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53/lib/record-set.js:188:9)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53-targets/test/integ.globalaccelerator-alias-target.js:21:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ]
+      },
+      "displayName": "aws-cdk-globalaccelerator-integ"
+    }
+  }
+}

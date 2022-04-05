@@ -1,0 +1,71 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "integ-kinesis-stream-dashboard": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "integ-kinesis-stream-dashboard.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/integ-kinesis-stream-dashboard/myStream/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myStream547FAD7F",
+            "trace": [
+              "new Stream (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-kinesis/lib/stream.js:354:23)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-kinesis/test/integ.stream-dashboard.js:8:16)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/integ-kinesis-stream-dashboard/AwsCdkKinesisEncryptedStreamsUnsupportedRegions": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsCdkKinesisEncryptedStreamsUnsupportedRegions",
+            "trace": [
+              "Stream.parseEncryption (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-kinesis/lib/stream.js:410:17)",
+              "new Stream (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-kinesis/lib/stream.js:353:58)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-kinesis/test/integ.stream-dashboard.js:8:16)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/integ-kinesis-stream-dashboard/StreamDashboard/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StreamDashboardAAF4FCF8",
+            "trace": [
+              "new Dashboard (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-cloudwatch/lib/dashboard.js:43:9)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-kinesis/test/integ.stream-dashboard.js:9:19)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ]
+      },
+      "displayName": "integ-kinesis-stream-dashboard"
+    }
+  }
+}

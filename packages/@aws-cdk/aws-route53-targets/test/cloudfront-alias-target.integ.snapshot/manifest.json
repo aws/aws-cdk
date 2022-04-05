@@ -1,0 +1,107 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "aws-cdk-cloudfront": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-cdk-cloudfront.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/aws-cdk-cloudfront/HostedZone/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HostedZoneDB99F866",
+            "trace": [
+              "new HostedZone (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53/lib/hosted-zone.js:26:26)",
+              "new PublicHostedZone (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53/lib/hosted-zone.js:137:9)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53-targets/test/integ.cloudfront-alias-target.js:10:14)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/aws-cdk-cloudfront/HostedZone/Alias/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HostedZoneAlias40D2E006",
+            "trace": [
+              "new RecordSet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53/lib/record-set.js:156:27)",
+              "new ARecord (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53/lib/record-set.js:188:9)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53-targets/test/integ.cloudfront-alias-target.js:24:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/aws-cdk-cloudfront/Bucket/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Bucket83908E77",
+            "trace": [
+              "new Bucket (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-s3/lib/bucket.js:587:26)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53-targets/test/integ.cloudfront-alias-target.js:11:22)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/aws-cdk-cloudfront/MyDistribution/CFDistribution": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyDistributionCFDistributionDE147309",
+            "trace": [
+              "new CloudFrontWebDistribution (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-cloudfront/lib/web-distribution.js:306:30)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53-targets/test/integ.cloudfront-alias-target.js:14:22)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/aws-cdk-cloudfront/AWSCloudFrontPartitionHostedZoneIdMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AWSCloudFrontPartitionHostedZoneIdMap",
+            "trace": [
+              "Function.getHostedZoneId (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53-targets/lib/cloudfront-target.js:23:105)",
+              "CloudFrontTarget.bind (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53-targets/lib/cloudfront-target.js:37:44)",
+              "new RecordSet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53/lib/record-set.js:161:79)",
+              "new ARecord (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53/lib/record-set.js:188:9)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53-targets/test/integ.cloudfront-alias-target.js:24:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ]
+      },
+      "displayName": "aws-cdk-cloudfront"
+    }
+  }
+}

@@ -1,0 +1,78 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "cdk-integ-secret-hosted-rotation": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "cdk-integ-secret-hosted-rotation.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/cdk-integ-secret-hosted-rotation/Secret/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SecretA720EF05",
+            "trace": [
+              "new Secret (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-secretsmanager/lib/secret.js:203:26)",
+              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-secretsmanager/test/integ.hosted-rotation.js:8:24)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-secretsmanager/test/integ.hosted-rotation.js:15:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/cdk-integ-secret-hosted-rotation/Secret/Schedule/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SecretSchedule18F2CB66",
+            "trace": [
+              "new RotationSchedule (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-secretsmanager/lib/rotation-schedule.js:44:9)",
+              "Secret.addRotationSchedule (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-secretsmanager/lib/secret.js:127:16)",
+              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-secretsmanager/test/integ.hosted-rotation.js:9:16)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-secretsmanager/test/integ.hosted-rotation.js:15:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/cdk-integ-secret-hosted-rotation/Secret/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SecretPolicy06C9821C",
+            "trace": [
+              "new ResourcePolicy (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-secretsmanager/lib/policy.js:32:9)",
+              "Secret.addToResourcePolicy (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-secretsmanager/lib/secret.js:134:27)",
+              "Secret.denyAccountRootDelete (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-secretsmanager/lib/secret.js:149:14)",
+              "new RotationSchedule (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-secretsmanager/lib/rotation-schedule.js:53:22)",
+              "Secret.addRotationSchedule (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-secretsmanager/lib/secret.js:127:16)",
+              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-secretsmanager/test/integ.hosted-rotation.js:9:16)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-secretsmanager/test/integ.hosted-rotation.js:15:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ]
+      },
+      "displayName": "cdk-integ-secret-hosted-rotation"
+    }
+  }
+}

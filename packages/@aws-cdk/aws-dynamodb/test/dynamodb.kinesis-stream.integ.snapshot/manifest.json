@@ -1,0 +1,71 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "aws-cdk-dynamodb-kinesis-stream": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-cdk-dynamodb-kinesis-stream.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/aws-cdk-dynamodb-kinesis-stream/Stream/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Stream790BDEE4",
+            "trace": [
+              "new Stream (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-kinesis/lib/stream.js:354:23)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-dynamodb/test/integ.dynamodb.kinesis-stream.js:8:16)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/aws-cdk-dynamodb-kinesis-stream/AwsCdkKinesisEncryptedStreamsUnsupportedRegions": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsCdkKinesisEncryptedStreamsUnsupportedRegions",
+            "trace": [
+              "Stream.parseEncryption (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-kinesis/lib/stream.js:410:17)",
+              "new Stream (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-kinesis/lib/stream.js:353:58)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-dynamodb/test/integ.dynamodb.kinesis-stream.js:8:16)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/aws-cdk-dynamodb-kinesis-stream/Table/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TableCD117FA1",
+            "trace": [
+              "new Table (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-dynamodb/lib/table.js:477:22)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-dynamodb/test/integ.dynamodb.kinesis-stream.js:9:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ]
+      },
+      "displayName": "aws-cdk-dynamodb-kinesis-stream"
+    }
+  }
+}

@@ -1,0 +1,71 @@
+{
+  "version": "17.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "ExampleResourceIntegTestStack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "ExampleResourceIntegTestStack.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/ExampleResourceIntegTestStack/ExampleResource/WaitConditionHandle": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExampleResourceWaitConditionHandle9C53A8D3",
+            "trace": [
+              "new ExampleResource (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/example-construct-library/lib/example-resource.js:159:37)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/example-construct-library/test/integ.example-resource.js:18:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/ExampleResourceIntegTestStack/ExampleResource/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExampleResourceAC53F4AE",
+            "trace": [
+              "new ExampleResource (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/example-construct-library/lib/example-resource.js:163:26)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/example-construct-library/test/integ.example-resource.js:18:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/ExampleResourceIntegTestStack/ExampleResource/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExampleResourceRole0533653E",
+            "trace": [
+              "new Role (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/role.js:50:22)",
+              "new ExampleResource (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/example-construct-library/lib/example-resource.js:194:36)",
+              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/example-construct-library/test/integ.example-resource.js:18:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
+              "Module.load (node:internal/modules/cjs/loader:981:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ]
+      },
+      "displayName": "ExampleResourceIntegTestStack"
+    }
+  }
+}
