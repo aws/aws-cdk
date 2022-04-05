@@ -44,28 +44,18 @@ export abstract class MappingTemplate {
    * Mapping template to list a set of items from a DynamoDB table
    * 
    * @param defaultLimit the default value for the limit argument
-   * @param limitKeyName the name of the limit argument
-   * @param nextTokenKeyName the name of the next token argument
    * 
    * @default 
    * defaultLimit = 100
-   * limitKeyName = 'limit'
-   * nextTokenKeyName = 'nextToken'
    */
-  public static dynamoDbListItems({
-    defaultLimit = 100, 
-    limitKeyName = 'limit',
-    nextTokenKeyName = 'nextToken'
-  }: {
-    defaultLimit?: number,
-    limitKeyName?: string,
-    nextTokenKeyName?: string
-  }): MappingTemplate {
+  public static dynamoDbListItems(
+    defaultLimit: number
+  ): MappingTemplate {
     return this.fromString(`{
       "version" : "2017-02-28", 
       "operation" : "Scan", 
-      "limit": $util.defaultIfNull($ctx.args.${limitKeyName}, ${defaultLimit}), 
-      "nextToken": $util.toJson($util.defaultIfNullOrBlank($ctx.args.${nextTokenKeyName}, null))
+      "limit": $util.defaultIfNull($ctx.args.limit, ${defaultLimit}), 
+      "nextToken": $util.toJson($util.defaultIfNullOrBlank($ctx.args.nextToken, null))
     }`);
   }
   
