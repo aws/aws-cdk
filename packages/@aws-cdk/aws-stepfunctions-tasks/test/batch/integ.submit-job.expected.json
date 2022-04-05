@@ -869,7 +869,7 @@
                 {
                   "Ref": "AWS::URLSuffix"
                 },
-                "/aws-cdk/assets:3691f011ed75cf0fd05152b8fae3d684323da3da9eaf3be68cba18cb9def2562"
+                "/aws-cdk/assets:8b518243ecbfcfd08b4734069e7e74ff97b7889dfde0a60d16e7bdc96e6c593b"
               ]
             ]
           },
@@ -959,9 +959,9 @@
             },
             {
               "Action": [
-                "events:PutTargets",
+                "events:DescribeRule",
                 "events:PutRule",
-                "events:DescribeRule"
+                "events:PutTargets"
               ],
               "Effect": "Allow",
               "Resource": {
