@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import { Metric } from '@aws-cdk/aws-cloudwatch';
 import { Stack } from '@aws-cdk/core';
 import { FilterPattern, LogGroup, MetricFilter } from '../lib';
@@ -19,7 +19,7 @@ describe('metric filter', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::Logs::MetricFilter', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::MetricFilter', {
       MetricTransformations: [{
         MetricNamespace: 'AWS/Test',
         MetricName: 'Latency',
@@ -28,8 +28,6 @@ describe('metric filter', () => {
       FilterPattern: '{ $.latency = "*" }',
       LogGroupName: { Ref: 'LogGroupF5B46931' },
     });
-
-
   });
 
   test('metric filter exposes metric', () => {
@@ -54,8 +52,6 @@ describe('metric filter', () => {
       namespace: 'AWS/Test',
       statistic: 'avg',
     }));
-
-
   });
 
   test('metric filter exposes metric with custom statistic', () => {
@@ -80,7 +76,5 @@ describe('metric filter', () => {
       namespace: 'AWS/Test',
       statistic: 'maximum',
     }));
-
-
   });
 });

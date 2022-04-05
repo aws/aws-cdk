@@ -151,6 +151,13 @@ export interface NoncurrentVersionTransition {
    * @default No transition count.
    */
   readonly transitionAfter: Duration;
+
+  /**
+   * Indicates the number of noncurrent version objects to be retained. Can be up to 100 noncurrent versions retained.
+   *
+   * @default No noncurrent version retained.
+   */
+  readonly noncurrentVersionsToRetain?: number;
 }
 
 /**

@@ -114,6 +114,17 @@ export interface BranchOptions {
    * @default - no asset
    */
   readonly asset?: Asset
+
+  /**
+   * Enables performance mode for the branch.
+   *
+   * Performance mode optimizes for faster hosting performance by keeping content cached at the edge
+   * for a longer interval. When performance mode is enabled, hosting configuration or code changes
+   * can take up to 10 minutes to roll out.
+   *
+   * @default false
+   */
+  readonly performanceMode?: boolean;
 }
 
 /**
@@ -168,6 +179,7 @@ export class Branch extends Resource implements IBranch {
       environmentVariables: Lazy.any({ produce: () => renderEnvironmentVariables(this.environmentVariables) }, { omitEmptyArray: true }),
       pullRequestEnvironmentName: props.pullRequestEnvironmentName,
       stage: props.stage,
+      enablePerformanceMode: props.performanceMode,
     });
 
     this.arn = branch.attrArn;
@@ -223,7 +235,7 @@ class AmplifyAssetDeploymentProvider extends NestedStack {
       {
         entry: path.join(
           __dirname,
-          'asset-deployment-handler/index.ts',
+          'asset-deployment-handler/index.js',
         ),
         runtime: lambda.Runtime.NODEJS_14_X,
         handler: 'onEvent',
@@ -247,7 +259,7 @@ class AmplifyAssetDeploymentProvider extends NestedStack {
       {
         entry: path.join(
           __dirname,
-          'asset-deployment-handler/index.ts',
+          'asset-deployment-handler/index.js',
         ),
         runtime: lambda.Runtime.NODEJS_14_X,
         handler: 'isComplete',

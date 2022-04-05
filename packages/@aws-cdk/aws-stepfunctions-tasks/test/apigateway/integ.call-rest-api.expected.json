@@ -73,7 +73,10 @@
           "Ref": "MyRestApiDeploymentB555B582d61dc696e12272a0706c826196fa8d62"
         },
         "StageName": "prod"
-      }
+      },
+      "DependsOn": [
+        "MyRestApiAccount2FB6DB7A"
+      ]
     },
     "MyRestApiANYApiPermissionCallRestApiIntegMyRestApiB570839CANY0C27C1E3": {
       "Type": "AWS::Lambda::Permission",
@@ -240,7 +243,7 @@
           ]
         },
         "Handler": "index.handler",
-        "Runtime": "nodejs10.x"
+        "Runtime": "nodejs14.x"
       },
       "DependsOn": [
         "HelloServiceRole1E55EA16"

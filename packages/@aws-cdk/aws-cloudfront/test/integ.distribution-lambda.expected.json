@@ -9,14 +9,10 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": "lambda.amazonaws.com"
-              }
-            },
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Principal": {
-                "Service": "edgelambda.amazonaws.com"
+                "Service": [
+                  "edgelambda.amazonaws.com",
+                  "lambda.amazonaws.com"
+                ]
               }
             }
           ],
@@ -44,20 +40,20 @@
         "Code": {
           "ZipFile": "foo"
         },
-        "Handler": "index.handler",
         "Role": {
           "Fn::GetAtt": [
             "LambdaServiceRoleA8ED4D3B",
             "Arn"
           ]
         },
-        "Runtime": "nodejs10.x"
+        "Handler": "index.handler",
+        "Runtime": "nodejs14.x"
       },
       "DependsOn": [
         "LambdaServiceRoleA8ED4D3B"
       ]
     },
-    "LambdaCurrentVersionDF706F6A25bf7d67df4eb614ea2e1ea69c8759b6": {
+    "LambdaCurrentVersionDF706F6A9a632a294ae3a9cd4d550f1c4e26619d": {
       "Type": "AWS::Lambda::Version",
       "Properties": {
         "FunctionName": {
@@ -76,7 +72,7 @@
               {
                 "EventType": "origin-request",
                 "LambdaFunctionARN": {
-                  "Ref": "LambdaCurrentVersionDF706F6A25bf7d67df4eb614ea2e1ea69c8759b6"
+                  "Ref": "LambdaCurrentVersionDF706F6A9a632a294ae3a9cd4d550f1c4e26619d"
                 }
               }
             ],

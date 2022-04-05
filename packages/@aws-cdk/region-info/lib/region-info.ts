@@ -1,3 +1,4 @@
+import { partitionInformation } from './aws-entities';
 import { Fact, FactName } from './fact';
 
 /**
@@ -26,6 +27,26 @@ export class RegionInfo {
       const fact = Fact.find(regionInfo.name, factName);
       if (fact) {
         ret[regionInfo.name] = fact;
+      }
+    }
+    return ret;
+  }
+
+  /**
+   * Retrieves a collection of all fact values for all regions, limited to some partitions
+   *
+   * @param factName the name of the fact to retrieve values for.
+   *   For a list of common fact names, see the FactName class
+   * @param partitions list of partitions to retrieve facts for. Defaults
+   *   to `['aws', 'aws-cn']`.
+   * @returns a mapping with AWS region codes as the keys,
+   *   and the fact in the given region as the value for that key
+   */
+  public static limitedRegionMap(factName: string, partitions: string[]): { [region: string]: string } {
+    const ret: Record<string, string> = {};
+    for (const [region, value] of Object.entries(RegionInfo.regionMap(factName))) {
+      if (partitions.includes(partitionInformation(region).partition)) {
+        ret[region] = value;
       }
     }
     return ret;

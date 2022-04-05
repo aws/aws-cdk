@@ -490,6 +490,10 @@ export interface ServiceProps {
    * The IAM role that grants the App Runner service access to a source repository.
    * It's required for ECR image repositories (but not for ECR Public repositories).
    *
+   * The role must be assumable by the 'build.apprunner.amazonaws.com' service principal.
+   *
+   * @see https://docs.aws.amazon.com/apprunner/latest/dg/security_iam_service-with-iam.html#security_iam_service-with-iam-roles-service.access
+   *
    * @default - generate a new access role.
    */
   readonly accessRole?: iam.IRole;
@@ -497,6 +501,10 @@ export interface ServiceProps {
   /**
    * The IAM role that provides permissions to your App Runner service.
    * These are permissions that your code needs when it calls any AWS APIs.
+   *
+   * The role must be assumable by the 'tasks.apprunner.amazonaws.com' service principal.
+   *
+   * @see https://docs.aws.amazon.com/apprunner/latest/dg/security_iam_service-with-iam.html#security_iam_service-with-iam-roles-service.instance
    *
    * @default - no instance role attached.
    */

@@ -61,10 +61,16 @@ export class KinesisMetrics {
     return CannedMetrics.getRecordsIteratorAgeMillisecondsMaximum(dimensions);
   }
   public static putRecordSuccessAverage(dimensions: { StreamName: string }) {
-    return CannedMetrics.putRecordSuccessAverage(dimensions);
+    return {
+      ...CannedMetrics.putRecordSuccessSum(dimensions),
+      statistic: 'Average',
+    };
   }
   public static putRecordsBytesAverage(dimensions: { StreamName: string }) {
-    return CannedMetrics.putRecordsBytesAverage(dimensions);
+    return {
+      ...CannedMetrics.putRecordsBytesSum(dimensions),
+      statistic: 'Average',
+    };
   }
   public static putRecordsLatencyAverage(dimensions: { StreamName: string }) {
     return {
@@ -115,15 +121,28 @@ export class KinesisMetrics {
     };
   }
   public static incomingBytesAverage(dimensions: { StreamName: string }) {
-    return CannedMetrics.incomingBytesAverage(dimensions);
+    return {
+      ...CannedMetrics.incomingBytesSum(dimensions),
+      statistic: 'Average',
+    };
   }
   public static incomingRecordsAverage(dimensions: { StreamName: string }) {
-    return CannedMetrics.incomingRecordsAverage(dimensions);
+    return {
+      ...CannedMetrics.incomingRecordsSum(dimensions),
+      statistic: 'Average',
+    };
+
   }
   public static readProvisionedThroughputExceededAverage(dimensions: { StreamName: string }) {
-    return CannedMetrics.readProvisionedThroughputExceededAverage(dimensions);
+    return {
+      ...CannedMetrics.readProvisionedThroughputExceededSum(dimensions),
+      statistic: 'Average',
+    };
   }
   public static writeProvisionedThroughputExceededAverage(dimensions: { StreamName: string }) {
-    return CannedMetrics.writeProvisionedThroughputExceededAverage(dimensions);
+    return {
+      ...CannedMetrics.writeProvisionedThroughputExceededSum(dimensions),
+      statistic: 'Average',
+    };
   }
 }

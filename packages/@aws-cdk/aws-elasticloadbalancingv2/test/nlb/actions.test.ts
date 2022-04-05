@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
 import * as elbv2 from '../../lib';
@@ -27,7 +27,7 @@ describe('tests', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::Listener', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::Listener', {
       DefaultActions: [
         {
           ForwardConfig: {
@@ -63,7 +63,7 @@ describe('tests', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::Listener', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::Listener', {
       DefaultActions: [
         {
           ForwardConfig: {

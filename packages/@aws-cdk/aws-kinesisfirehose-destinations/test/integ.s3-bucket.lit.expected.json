@@ -23,9 +23,9 @@
           "Statement": [
             {
               "Action": [
+                "s3:DeleteObject*",
                 "s3:GetBucket*",
-                "s3:List*",
-                "s3:DeleteObject*"
+                "s3:List*"
               ],
               "Effect": "Allow",
               "Principal": {
@@ -110,7 +110,7 @@
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "AssetParameters3993fb4cd942505a050d08b09d5444e14c265cf9cd0fb8b0c5f621446b6cead9S3Bucket4673BB1A"
+            "Ref": "AssetParametersbe270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824S3Bucket09A62232"
           },
           "S3Key": {
             "Fn::Join": [
@@ -123,7 +123,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParameters3993fb4cd942505a050d08b09d5444e14c265cf9cd0fb8b0c5f621446b6cead9S3VersionKey46E40510"
+                          "Ref": "AssetParametersbe270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824S3VersionKeyA28118BE"
                         }
                       ]
                     }
@@ -136,7 +136,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParameters3993fb4cd942505a050d08b09d5444e14c265cf9cd0fb8b0c5f621446b6cead9S3VersionKey46E40510"
+                          "Ref": "AssetParametersbe270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824S3VersionKeyA28118BE"
                         }
                       ]
                     }
@@ -196,9 +196,9 @@
           "Statement": [
             {
               "Action": [
+                "s3:DeleteObject*",
                 "s3:GetBucket*",
-                "s3:List*",
-                "s3:DeleteObject*"
+                "s3:List*"
               ],
               "Effect": "Allow",
               "Principal": {
@@ -310,7 +310,7 @@
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "AssetParameters5ee078f2a1957fe672d6cfd84faf49e07b8460758b5cd2669b3df1212a14cd19S3BucketFEDDFB43"
+            "Ref": "AssetParameters9d04b6e97fcffe55f90ce717ab61c19d06df5a0c5c364c765216bf31a9c98d7dS3BucketA7AEF7D7"
           },
           "S3Key": {
             "Fn::Join": [
@@ -323,7 +323,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParameters5ee078f2a1957fe672d6cfd84faf49e07b8460758b5cd2669b3df1212a14cd19S3VersionKey244C2747"
+                          "Ref": "AssetParameters9d04b6e97fcffe55f90ce717ab61c19d06df5a0c5c364c765216bf31a9c98d7dS3VersionKeyA7FD6E61"
                         }
                       ]
                     }
@@ -336,7 +336,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParameters5ee078f2a1957fe672d6cfd84faf49e07b8460758b5cd2669b3df1212a14cd19S3VersionKey244C2747"
+                          "Ref": "AssetParameters9d04b6e97fcffe55f90ce717ab61c19d06df5a0c5c364c765216bf31a9c98d7dS3VersionKeyA7FD6E61"
                         }
                       ]
                     }
@@ -476,19 +476,43 @@
           "Statement": [
             {
               "Action": [
-                "s3:GetObject*",
-                "s3:GetBucket*",
-                "s3:List*",
+                "s3:Abort*",
                 "s3:DeleteObject*",
+                "s3:GetBucket*",
+                "s3:GetObject*",
+                "s3:List*",
                 "s3:PutObject",
-                "s3:Abort*"
+                "s3:PutObjectLegalHold",
+                "s3:PutObjectRetention",
+                "s3:PutObjectTagging",
+                "s3:PutObjectVersionTagging"
               ],
               "Effect": "Allow",
               "Resource": [
                 {
                   "Fn::GetAtt": [
+                    "BackupBucket26B8E51C",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::GetAtt": [
                     "Bucket83908E77",
                     "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "BackupBucket26B8E51C",
+                          "Arn"
+                        ]
+                      },
+                      "/*"
+                    ]
                   ]
                 },
                 {
@@ -513,27 +537,51 @@
                 "logs:PutLogEvents"
               ],
               "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "LogGroupF5B46931",
-                  "Arn"
-                ]
-              }
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "DeliveryStreamLogGroup9D8FA3BB",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::GetAtt": [
+                    "LogGroupF5B46931",
+                    "Arn"
+                  ]
+                }
+              ]
             },
             {
               "Action": [
-                "s3:GetObject*",
-                "s3:GetBucket*",
-                "s3:List*",
-                "s3:DeleteObject*",
-                "s3:PutObject",
-                "s3:Abort*"
+                "kms:Decrypt",
+                "kms:Encrypt",
+                "kms:GenerateDataKey*",
+                "kms:ReEncrypt*"
               ],
               "Effect": "Allow",
               "Resource": [
                 {
                   "Fn::GetAtt": [
-                    "BackupBucket26B8E51C",
+                    "BackupKey60B97760",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::GetAtt": [
+                    "Key961B73FD",
+                    "Arn"
+                  ]
+                }
+              ]
+            },
+            {
+              "Action": "lambda:InvokeFunction",
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "DataProcessorFunctionAD472B9A",
                     "Arn"
                   ]
                 },
@@ -543,68 +591,15 @@
                     [
                       {
                         "Fn::GetAtt": [
-                          "BackupBucket26B8E51C",
+                          "DataProcessorFunctionAD472B9A",
                           "Arn"
                         ]
                       },
-                      "/*"
+                      ":*"
                     ]
                   ]
                 }
               ]
-            },
-            {
-              "Action": [
-                "logs:CreateLogStream",
-                "logs:PutLogEvents"
-              ],
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "DeliveryStreamLogGroup9D8FA3BB",
-                  "Arn"
-                ]
-              }
-            },
-            {
-              "Action": [
-                "kms:Decrypt",
-                "kms:Encrypt",
-                "kms:ReEncrypt*",
-                "kms:GenerateDataKey*"
-              ],
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "BackupKey60B97760",
-                  "Arn"
-                ]
-              }
-            },
-            {
-              "Action": "lambda:InvokeFunction",
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "DataProcessorFunctionAD472B9A",
-                  "Arn"
-                ]
-              }
-            },
-            {
-              "Action": [
-                "kms:Decrypt",
-                "kms:Encrypt",
-                "kms:ReEncrypt*",
-                "kms:GenerateDataKey*"
-              ],
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "Key961B73FD",
-                  "Arn"
-                ]
-              }
             }
           ],
           "Version": "2012-10-17"
@@ -767,29 +762,29 @@
     }
   },
   "Parameters": {
-    "AssetParameters3993fb4cd942505a050d08b09d5444e14c265cf9cd0fb8b0c5f621446b6cead9S3Bucket4673BB1A": {
+    "AssetParametersbe270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824S3Bucket09A62232": {
       "Type": "String",
-      "Description": "S3 bucket for asset \"3993fb4cd942505a050d08b09d5444e14c265cf9cd0fb8b0c5f621446b6cead9\""
+      "Description": "S3 bucket for asset \"be270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824\""
     },
-    "AssetParameters3993fb4cd942505a050d08b09d5444e14c265cf9cd0fb8b0c5f621446b6cead9S3VersionKey46E40510": {
+    "AssetParametersbe270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824S3VersionKeyA28118BE": {
       "Type": "String",
-      "Description": "S3 key for asset version \"3993fb4cd942505a050d08b09d5444e14c265cf9cd0fb8b0c5f621446b6cead9\""
+      "Description": "S3 key for asset version \"be270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824\""
     },
-    "AssetParameters3993fb4cd942505a050d08b09d5444e14c265cf9cd0fb8b0c5f621446b6cead9ArtifactHashBD621721": {
+    "AssetParametersbe270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824ArtifactHash76F8FCF2": {
       "Type": "String",
-      "Description": "Artifact hash for asset \"3993fb4cd942505a050d08b09d5444e14c265cf9cd0fb8b0c5f621446b6cead9\""
+      "Description": "Artifact hash for asset \"be270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824\""
     },
-    "AssetParameters5ee078f2a1957fe672d6cfd84faf49e07b8460758b5cd2669b3df1212a14cd19S3BucketFEDDFB43": {
+    "AssetParameters9d04b6e97fcffe55f90ce717ab61c19d06df5a0c5c364c765216bf31a9c98d7dS3BucketA7AEF7D7": {
       "Type": "String",
-      "Description": "S3 bucket for asset \"5ee078f2a1957fe672d6cfd84faf49e07b8460758b5cd2669b3df1212a14cd19\""
+      "Description": "S3 bucket for asset \"9d04b6e97fcffe55f90ce717ab61c19d06df5a0c5c364c765216bf31a9c98d7d\""
     },
-    "AssetParameters5ee078f2a1957fe672d6cfd84faf49e07b8460758b5cd2669b3df1212a14cd19S3VersionKey244C2747": {
+    "AssetParameters9d04b6e97fcffe55f90ce717ab61c19d06df5a0c5c364c765216bf31a9c98d7dS3VersionKeyA7FD6E61": {
       "Type": "String",
-      "Description": "S3 key for asset version \"5ee078f2a1957fe672d6cfd84faf49e07b8460758b5cd2669b3df1212a14cd19\""
+      "Description": "S3 key for asset version \"9d04b6e97fcffe55f90ce717ab61c19d06df5a0c5c364c765216bf31a9c98d7d\""
     },
-    "AssetParameters5ee078f2a1957fe672d6cfd84faf49e07b8460758b5cd2669b3df1212a14cd19ArtifactHashC1C6FCBC": {
+    "AssetParameters9d04b6e97fcffe55f90ce717ab61c19d06df5a0c5c364c765216bf31a9c98d7dArtifactHashE49F8A6B": {
       "Type": "String",
-      "Description": "Artifact hash for asset \"5ee078f2a1957fe672d6cfd84faf49e07b8460758b5cd2669b3df1212a14cd19\""
+      "Description": "Artifact hash for asset \"9d04b6e97fcffe55f90ce717ab61c19d06df5a0c5c364c765216bf31a9c98d7d\""
     }
   },
   "Mappings": {

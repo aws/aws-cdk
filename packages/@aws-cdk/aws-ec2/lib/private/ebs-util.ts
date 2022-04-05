@@ -24,19 +24,38 @@ function synthesizeBlockDeviceMappings<RT, NDT>(construct: Construct, blockDevic
   return blockDevices.map<RT>(({ deviceName, volume, mappingEnabled }): RT => {
     const { virtualName, ebsDevice: ebs } = volume;
 
+    let finalEbs: CfnLaunchTemplate.EbsProperty | CfnInstance.EbsProperty | undefined;
+
     if (ebs) {
-      const { iops, volumeType } = ebs;
+
+      const { iops, volumeType, kmsKey, ...rest } = ebs;
 
       if (!iops) {
-        if (volumeType === EbsDeviceVolumeType.IO1) {
-          throw new Error('iops property is required with volumeType: EbsDeviceVolumeType.IO1');
+        if (volumeType === EbsDeviceVolumeType.IO1 || volumeType === EbsDeviceVolumeType.IO2) {
+          throw new Error('iops property is required with volumeType: EbsDeviceVolumeType.IO1 and EbsDeviceVolumeType.IO2');
         }
-      } else if (volumeType !== EbsDeviceVolumeType.IO1) {
-        Annotations.of(construct).addWarning('iops will be ignored without volumeType: EbsDeviceVolumeType.IO1');
+      } else if (volumeType !== EbsDeviceVolumeType.IO1 && volumeType !== EbsDeviceVolumeType.IO2 && volumeType !== EbsDeviceVolumeType.GP3) {
+        Annotations.of(construct).addWarning('iops will be ignored without volumeType: IO1, IO2, or GP3');
       }
+
+      /**
+       * Because the Ebs properties of the L2 Constructs do not match the Ebs properties of the Cfn Constructs,
+       * we have to do some transformation and handle all destructed properties
+       */
+
+      finalEbs = {
+        ...rest,
+        iops,
+        volumeType,
+        kmsKeyId: kmsKey?.keyArn,
+      };
+
+    } else {
+      finalEbs = undefined;
     }
 
+
     const noDevice = mappingEnabled === false ? noDeviceValue : undefined;
-    return { deviceName, ebs, virtualName, noDevice } as any;
+    return { deviceName, ebs: finalEbs, virtualName, noDevice } as any;
   });
 }

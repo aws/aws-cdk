@@ -78,6 +78,16 @@ export class AlbControllerVersion {
   public static readonly V2_3_0 = new AlbControllerVersion('v2.3.0', false);
 
   /**
+   * v2.3.1
+   */
+  public static readonly V2_3_1 = new AlbControllerVersion('v2.3.1', false);
+
+  /**
+   * v2.4.1
+   */
+  public static readonly V2_4_1 = new AlbControllerVersion('v2.4.1', false);
+
+  /**
    * Specify a custom version.
    * Use this if the version you need is not available in one of the predefined versions.
    * Note that in this case, you will also need to provide an IAM policy in the controller options.
@@ -96,7 +106,7 @@ export class AlbControllerVersion {
     /**
      * Whether or not its a custom version.
      */
-    public readonly custom: boolean) {}
+    public readonly custom: boolean) { }
 }
 
 /**
@@ -233,8 +243,10 @@ export class AlbController extends CoreConstruct {
         },
         region: Stack.of(this).region,
         vpcId: props.cluster.vpc.vpcId,
-        repository: props.repository ?? '602401143452.dkr.ecr.us-west-2.amazonaws.com/amazon/aws-load-balancer-controller',
-        tag: props.version.version,
+        image: {
+          repository: props.repository ?? '602401143452.dkr.ecr.us-west-2.amazonaws.com/amazon/aws-load-balancer-controller',
+          tag: props.version.version,
+        },
       },
     });
 
@@ -243,5 +255,4 @@ export class AlbController extends CoreConstruct {
     chart.node.addDependency(props.cluster.openIdConnectProvider);
     chart.node.addDependency(props.cluster.awsAuth);
   }
-
 }

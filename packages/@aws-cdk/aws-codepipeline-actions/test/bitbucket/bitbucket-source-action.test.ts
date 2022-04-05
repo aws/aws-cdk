@@ -1,5 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
-import { arrayWith, objectLike } from '@aws-cdk/assert-internal';
+import { Template, Match } from '@aws-cdk/assertions';
 import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import { describeDeprecated } from '@aws-cdk/cdk-build-tools';
@@ -17,7 +16,7 @@ describeDeprecated('BitBucket source Action', () => {
         codeBuildCloneOutput: false,
       });
 
-      expect(stack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+      Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
         'Stages': [
           {
             'Name': 'Source',
@@ -58,7 +57,7 @@ describeDeprecated('BitBucket source Action', () => {
       codeBuildCloneOutput: true,
     });
 
-    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       'PolicyDocument': {
         'Statement': [
           {
@@ -88,11 +87,14 @@ describeDeprecated('BitBucket source Action', () => {
     createBitBucketAndCodeBuildPipeline(stack, {
       codeBuildCloneOutput: true,
     });
-    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       'PolicyDocument': {
-        'Statement': arrayWith(
-          objectLike({
-            'Action': 's3:PutObjectAcl',
+        'Statement': Match.arrayWith([
+          Match.objectLike({
+            'Action': [
+              's3:PutObjectAcl',
+              's3:PutObjectVersionAcl',
+            ],
             'Effect': 'Allow',
             'Resource': {
               'Fn::Join': [
@@ -109,7 +111,7 @@ describeDeprecated('BitBucket source Action', () => {
               ],
             },
           }),
-        ),
+        ]),
       },
     });
 
@@ -121,7 +123,7 @@ describeDeprecated('BitBucket source Action', () => {
       triggerOnPush: false,
     });
 
-    expect(stack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
       'Stages': [
         {
           'Name': 'Source',

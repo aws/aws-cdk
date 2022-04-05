@@ -49,7 +49,8 @@
                       ":log-group:/aws/codebuild/",
                       {
                         "Ref": "MyProject39F7B0AE"
-                      }
+                      },
+                      ":*"
                     ]
                   ]
                 },
@@ -72,8 +73,7 @@
                       ":log-group:/aws/codebuild/",
                       {
                         "Ref": "MyProject39F7B0AE"
-                      },
-                      ":*"
+                      }
                     ]
                   ]
                 }
@@ -113,6 +113,9 @@
           "Location": "https://github.com/aws/aws-cdk.git",
           "ReportBuildStatus": false,
           "Type": "GITHUB"
+        },
+        "Cache": {
+          "Type": "NO_CACHE"
         },
         "EncryptionKey": "alias/aws/s3"
       }

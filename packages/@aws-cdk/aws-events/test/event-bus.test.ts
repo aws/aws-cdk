@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Aws, CfnResource, Stack, Arn, App, PhysicalName, CfnOutput } from '@aws-cdk/core';
@@ -13,11 +13,22 @@ describe('event bus', () => {
     new EventBus(stack, 'Bus');
 
     // THEN
-    expect(stack).toHaveResource('AWS::Events::EventBus', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Events::EventBus', {
       Name: 'Bus',
     });
+  });
 
+  test('default event bus with empty props object', () => {
+    // GIVEN
+    const stack = new Stack();
 
+    // WHEN
+    new EventBus(stack, 'Bus', {});
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Events::EventBus', {
+      Name: 'Bus',
+    });
   });
 
   test('named event bus', () => {
@@ -30,11 +41,9 @@ describe('event bus', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::Events::EventBus', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Events::EventBus', {
       Name: 'myEventBus',
     });
-
-
   });
 
   test('partner event bus', () => {
@@ -47,12 +56,10 @@ describe('event bus', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::Events::EventBus', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Events::EventBus', {
       Name: 'aws.partner/PartnerName/acct1/repo1',
       EventSourceName: 'aws.partner/PartnerName/acct1/repo1',
     });
-
-
   });
 
   test('imported event bus', () => {
@@ -71,12 +78,10 @@ describe('event bus', () => {
       },
     });
 
-    expect(stack).toHaveResource('Test::Resource', {
+    Template.fromStack(stack).hasResourceProperties('Test::Resource', {
       EventBusArn1: { 'Fn::GetAtt': ['BusEA82B648', 'Arn'] },
       EventBusArn2: { 'Fn::GetAtt': ['BusEA82B648', 'Arn'] },
     });
-
-
   });
 
   test('imported event bus from name', () => {
@@ -88,8 +93,6 @@ describe('event bus', () => {
 
     // WHEN
     expect(stack.resolve(eventBus.eventBusName)).toEqual(stack.resolve(importEB.eventBusName));
-
-
   });
 
   test('same account imported event bus has right resource env', () => {
@@ -102,8 +105,6 @@ describe('event bus', () => {
     // WHEN
     expect(stack.resolve(importEB.env.account)).toEqual({ 'Fn::Select': [4, { 'Fn::Split': [':', { 'Fn::GetAtt': ['BusEA82B648', 'Arn'] }] }] });
     expect(stack.resolve(importEB.env.region)).toEqual({ 'Fn::Select': [3, { 'Fn::Split': [':', { 'Fn::GetAtt': ['BusEA82B648', 'Arn'] }] }] });
-
-
   });
 
   test('cross account imported event bus has right resource env', () => {
@@ -123,8 +124,6 @@ describe('event bus', () => {
     // WHEN
     expect(importEB.env.account).toEqual(arnParts.account);
     expect(importEB.env.region).toEqual(arnParts.region);
-
-
   });
 
   test('can get bus name', () => {
@@ -143,11 +142,9 @@ describe('event bus', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('Test::Resource', {
+    Template.fromStack(stack).hasResourceProperties('Test::Resource', {
       EventBusName: { Ref: 'BusEA82B648' },
     });
-
-
   });
 
   test('can get bus arn', () => {
@@ -166,11 +163,9 @@ describe('event bus', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('Test::Resource', {
+    Template.fromStack(stack).hasResourceProperties('Test::Resource', {
       EventBusArn: { 'Fn::GetAtt': ['BusEA82B648', 'Arn'] },
     });
-
-
   });
 
   test('event bus name cannot be default', () => {
@@ -186,8 +181,6 @@ describe('event bus', () => {
     expect(() => {
       createInvalidBus();
     }).toThrow(/'eventBusName' must not be 'default'/);
-
-
   });
 
   test('event bus name cannot contain slash', () => {
@@ -203,8 +196,6 @@ describe('event bus', () => {
     expect(() => {
       createInvalidBus();
     }).toThrow(/'eventBusName' must not contain '\/'/);
-
-
   });
 
   test('event bus cannot have name and source name', () => {
@@ -221,8 +212,6 @@ describe('event bus', () => {
     expect(() => {
       createInvalidBus();
     }).toThrow(/'eventBusName' and 'eventSourceName' cannot both be provided/);
-
-
   });
 
   test('event bus name cannot be empty string', () => {
@@ -238,8 +227,6 @@ describe('event bus', () => {
     expect(() => {
       createInvalidBus();
     }).toThrow(/'eventBusName' must satisfy: /);
-
-
   });
 
   test('does not throw if eventBusName is a token', () => {
@@ -250,8 +237,6 @@ describe('event bus', () => {
     expect(() => new EventBus(stack, 'EventBus', {
       eventBusName: Aws.STACK_NAME,
     })).not.toThrow();
-
-
   });
 
   test('event bus source name must follow pattern', () => {
@@ -267,8 +252,6 @@ describe('event bus', () => {
     expect(() => {
       createInvalidBus();
     }).toThrow(/'eventSourceName' must satisfy: \/\^aws/);
-
-
   });
 
   test('event bus source name cannot be empty string', () => {
@@ -284,8 +267,6 @@ describe('event bus', () => {
     expect(() => {
       createInvalidBus();
     }).toThrow(/'eventSourceName' must satisfy: /);
-
-
   });
 
   testDeprecated('can grant PutEvents', () => {
@@ -299,7 +280,7 @@ describe('event bus', () => {
     EventBus.grantPutEvents(role);
 
     // THEN
-    expect(stack).toHaveResource('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -316,8 +297,6 @@ describe('event bus', () => {
         },
       ],
     });
-
-
   });
 
   test('can grant PutEvents using grantAllPutEvents', () => {
@@ -331,7 +310,7 @@ describe('event bus', () => {
     EventBus.grantAllPutEvents(role);
 
     // THEN
-    expect(stack).toHaveResource('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -348,9 +327,8 @@ describe('event bus', () => {
         },
       ],
     });
-
-
   });
+
   test('can grant PutEvents to a specific event bus', () => {
     // GIVEN
     const stack = new Stack();
@@ -364,7 +342,7 @@ describe('event bus', () => {
     eventBus.grantPutEventsTo(role);
 
     // THEN
-    expect(stack).toHaveResource('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -386,9 +364,8 @@ describe('event bus', () => {
         },
       ],
     });
-
-
   });
+
   test('can archive events', () => {
     // GIVEN
     const stack = new Stack();
@@ -404,11 +381,11 @@ describe('event bus', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::Events::EventBus', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Events::EventBus', {
       Name: 'Bus',
     });
 
-    expect(stack).toHaveResource('AWS::Events::Archive', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Events::Archive', {
       SourceArn: {
         'Fn::GetAtt': [
           'BusEA82B648',
@@ -437,9 +414,8 @@ describe('event bus', () => {
       RetentionDays: 0,
       ArchiveName: 'MyArchive',
     });
-
-
   });
+
   test('can archive events from an imported EventBus', () => {
     // GIVEN
     const stack = new Stack();
@@ -457,11 +433,11 @@ describe('event bus', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::Events::EventBus', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Events::EventBus', {
       Name: 'Bus',
     });
 
-    expect(stack).toHaveResource('AWS::Events::Archive', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Events::Archive', {
       SourceArn: {
         'Fn::GetAtt': [
           'BusEA82B648',
@@ -513,9 +489,8 @@ describe('event bus', () => {
       RetentionDays: 0,
       ArchiveName: 'MyArchive',
     });
-
-
   });
+
   test('cross account event bus uses generated physical name', () => {
     // GIVEN
     const app = new App();
@@ -540,7 +515,7 @@ describe('event bus', () => {
     new CfnOutput(stack2, 'BusName', { value: bus1.eventBusName });
 
     // THEN
-    expect(stack1).toHaveResource('AWS::Events::EventBus', {
+    Template.fromStack(stack1).hasResourceProperties('AWS::Events::EventBus', {
       Name: 'stack1stack1busca19bdf8ab2e51b62a5a',
     });
   });

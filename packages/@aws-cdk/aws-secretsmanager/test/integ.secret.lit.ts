@@ -13,7 +13,7 @@ class SecretsManagerStack extends cdk.Stack {
     const secret = new secretsmanager.Secret(this, 'Secret');
     secret.grantRead(role);
 
-    new iam.User(this, 'User', {
+    const user = new iam.User(this, 'User', {
       password: secret.secretValue,
     });
 
@@ -28,6 +28,12 @@ class SecretsManagerStack extends cdk.Stack {
     new iam.User(this, 'OtherUser', {
       userName: templatedSecret.secretValueFromJson('username').toString(),
       password: templatedSecret.secretValueFromJson('password'),
+    });
+
+    // Secret with predefined value
+    const accessKey = new iam.AccessKey(this, 'AccessKey', { user });
+    new secretsmanager.Secret(this, 'PredefinedSecret', {
+      secretStringBeta1: secretsmanager.SecretStringValueBeta1.fromToken(accessKey.secretAccessKey.toString()),
     });
     /// !hide
   }
