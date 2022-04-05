@@ -150,7 +150,7 @@ export class ResourceImporter {
    *
    * @return mapping logicalResourceId -> resourceDifference
    */
-  public async discoverImportableResources(allowNonAdditions = false): Promise<Array<ImportableResource>> {
+  public async discoverImportableResources(allowNonAdditions = false): Promise<DiscoverImportableResourcesResult> {
     const currentTemplate = await this.currentTemplate();
 
     const diff = cfnDiff.diffTemplate(currentTemplate, this.stack.template);
@@ -164,18 +164,26 @@ export class ResourceImporter {
     const nonAdditions = resourceChanges.filter(([_, dif]) => !dif.isAddition);
     const additions = resourceChanges.filter(([_, dif]) => dif.isAddition);
 
-    if (nonAdditions.length && !allowNonAdditions) {
+    if (nonAdditions.length) {
       const offendingResources = nonAdditions.map(([logId, _]) => this.describeResource(logId));
-      throw new Error('No resource updates or deletes are allowed on import operation. Make sure to resolve pending changes ' +
-                      `to existing resources, before attempting an import. Updated/deleted resources: ${offendingResources.join(', ')}`);
+
+      if (allowNonAdditions) {
+        warning(`Ignoring updated/deleted resources (--force): ${offendingResources.join(', ')}`);
+      } else {
+        throw new Error('No resource updates or deletes are allowed on import operation. Make sure to resolve pending changes ' +
+                        `to existing resources, before attempting an import. Updated/deleted resources: ${offendingResources.join(', ')} (--force to override)`);
+      }
     }
 
     // Resources in the new template, that are not present in the current template, are a potential import candidates
-    return additions.map(([logicalId, resourceDiff]) => ({
-      logicalId,
-      resourceDiff,
-      resourceDefinition: addDefaultDeletionPolicy(this.stack.template?.Resources?.[logicalId] ?? {}),
-    }));
+    return {
+      additions: additions.map(([logicalId, resourceDiff]) => ({
+        logicalId,
+        resourceDiff,
+        resourceDefinition: addDefaultDeletionPolicy(this.stack.template?.Resources?.[logicalId] ?? {}),
+      })),
+      hasNonAdditions: nonAdditions.length > 0,
+    };
   }
 
   /**
@@ -240,7 +248,7 @@ export class ResourceImporter {
     const resourceProps = chg.resourceDefinition.Properties ?? {};
 
     const fixedIdProps = idProps.filter(p => resourceProps[p]);
-    const fixedIdInput: ResourceIdentifierProperties = mkdict(fixedIdProps.map(p => [p, resourceProps[p]]));
+    const fixedIdInput: ResourceIdentifierProperties = Object.fromEntries(fixedIdProps.map(p => [p, resourceProps[p]]));
 
     const missingIdProps = idProps.filter(p => !resourceProps[p]);
 
@@ -337,14 +345,6 @@ export interface ImportMap {
   readonly importResources: ImportableResource[];
 }
 
-export function mkdict<A>(xs: Array<readonly [string, A]>): Record<string, A> {
-  const ret: Record<string, A> = {};
-  for (const [k, v] of xs) {
-    ret[k] = v;
-  }
-  return ret;
-}
-
 function fmtdict<A>(xs: Record<string, A>) {
   return Object.entries(xs).map(([k, v]) => `${k}=${v}`).join(', ');
 }
@@ -359,4 +359,9 @@ function addDefaultDeletionPolicy(resource: any): any {
     ...resource,
     DeletionPolicy: 'Delete',
   };
+}
+
+export interface DiscoverImportableResourcesResult {
+  readonly additions: ImportableResource[];
+  readonly hasNonAdditions: boolean;
 }

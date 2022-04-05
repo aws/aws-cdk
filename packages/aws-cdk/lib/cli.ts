@@ -160,7 +160,7 @@ async function parseCommandLineArguments() {
       .option('force', {
         alias: 'f',
         type: 'boolean',
-        desc: 'Allow the template diff to include non-addition changes. This may be an unsafe operation.',
+        desc: 'Do not abort if the template diff includes updates or deletes. This is probably safe but we\'re not sure, let us know how it goes.',
       })
       .option('record-resource-mapping', {
         type: 'string',
@@ -373,7 +373,7 @@ async function initCommandLine() {
     }
 
     args.STACKS = args.STACKS ?? (args.STACK ? [args.STACK] : []);
-    args.ENVIRONMENTS = args.ENVIRONMENTS || [];
+    args.ENVIRONMENTS = args.ENVIRONMENTS ?? [];
 
     const selector: StackSelector = {
       allTopLevel: args.all,

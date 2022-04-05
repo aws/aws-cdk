@@ -380,7 +380,7 @@ export class CdkToolkit {
     const resourceImporter = new ResourceImporter(stack, this.props.cloudFormation, {
       toolkitStackName: options.toolkitStackName,
     });
-    const additions = await resourceImporter.discoverImportableResources(options.force);
+    const { additions, hasNonAdditions } = await resourceImporter.discoverImportableResources(options.force);
     if (additions.length === 0) {
       warning('%s: no new resources compared to the currently deployed stack, skipping import.', chalk.bold(stack.displayName));
       return;
@@ -423,6 +423,19 @@ export class CdkToolkit {
       progress: options.progress,
       rollback: options.rollback,
     });
+
+    // Notify user of next steps
+    print(
+      `Import operation complete. We recommend you run a ${chalk.blueBright('drift detection')} operation `
+      + 'to confirm your CDK app resource definitions are up-to-date. Read more here: '
+      + chalk.underline.blueBright('https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/detect-drift-stack.html'));
+    if (actualImport.importResources.length < additions.length) {
+      print('');
+      warning(`Some resources were skipped. Run another ${chalk.blueBright('cdk import')} or a ${chalk.blueBright('cdk deploy')} to bring the stack up-to-date with your CDK app definition.`);
+    } else if (hasNonAdditions) {
+      print('');
+      warning(`Your app has pending updates or deletes excluded from this import operation. Run a ${chalk.blueBright('cdk deploy')} to bring the stack up-to-date with your CDK app definition.`);
+    }
   }
 
   public async destroy(options: DestroyOptions) {
