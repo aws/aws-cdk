@@ -31,6 +31,7 @@ export interface MockSdkProviderOptions {
  */
 export class MockSdkProvider extends SdkProvider {
   public readonly sdk: ISDK;
+  private readonly _mockSdk?: MockSdk;
 
   constructor(options: MockSdkProviderOptions = {}) {
     super(FAKE_CREDENTIAL_CHAIN, 'bermuda-triangle-1337', { customUserAgent: 'aws-cdk/jest' });
@@ -40,8 +41,15 @@ export class MockSdkProvider extends SdkProvider {
     if (options.realSdk ?? true) {
       this.sdk = new SDK(FAKE_CREDENTIALS, this.defaultRegion, { customUserAgent: 'aws-cdk/jest' });
     } else {
-      this.sdk = new MockSdk();
+      this.sdk = this._mockSdk = new MockSdk();
     }
+  }
+
+  public get mockSdk(): MockSdk {
+    if (!this._mockSdk) {
+      throw new Error('MockSdkProvider was not created with \'realSdk: false\'');
+    }
+    return this._mockSdk;
   }
 
   async baseCredentialsPartition(_environment: cxapi.Environment, _mode: Mode): Promise<string | undefined> {
