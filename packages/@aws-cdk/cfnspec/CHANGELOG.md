@@ -1,3 +1,1275 @@
+# CloudFormation Resource Specification v65.0.0
+
+## New Resource Types
+
+
+## Removed Resource Types
+
+* AWS::Events::Endpoint
+
+## Attribute Changes
+
+* AWS::SQS::QueuePolicy Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sqs-queuepolicy.html
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sqs-policy.html
+* AWS::SQS::QueuePolicy Id (__deleted__)
+* AWS::SageMaker::Domain SecurityGroupIdForDomainBoundary (__added__)
+
+## Property Changes
+
+* AWS::ECS::Service PlacementConstraints.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::ECS::Service PlacementStrategies.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::SQS::QueuePolicy PolicyDocument.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sqs-queuepolicy.html#cfn-sqs-queuepolicy-policydocument
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sqs-policy.html#cfn-sqs-queuepolicy-policydoc
+* AWS::SQS::QueuePolicy Queues.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sqs-queuepolicy.html#cfn-sqs-queuepolicy-queues
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sqs-policy.html#cfn-sqs-queuepolicy-queues
+* AWS::SageMaker::Domain AppSecurityGroupManagement (__added__)
+* AWS::SageMaker::Domain DomainSettings (__added__)
+
+## Property Type Changes
+
+* AWS::SageMaker::Domain.DomainSettings (__added__)
+* AWS::SageMaker::Domain.RStudioServerProAppSettings (__added__)
+* AWS::SageMaker::Domain.RStudioServerProDomainSettings (__added__)
+* AWS::SageMaker::UserProfile.RStudioServerProAppSettings (__added__)
+* AWS::DMS::Endpoint.KafkaSettings IncludePartitionValue (__added__)
+* AWS::DMS::Endpoint.KafkaSettings MessageFormat (__added__)
+* AWS::DMS::Endpoint.KafkaSettings MessageMaxBytes (__added__)
+* AWS::DMS::Endpoint.KinesisSettings IncludePartitionValue (__added__)
+* AWS::DMS::Endpoint.MySqlSettings AfterConnectScript (__added__)
+* AWS::DMS::Endpoint.MySqlSettings CleanSourceMetadataOnMismatch (__added__)
+* AWS::DMS::Endpoint.MySqlSettings EventsPollInterval (__added__)
+* AWS::DMS::Endpoint.MySqlSettings MaxFileSize (__added__)
+* AWS::DMS::Endpoint.MySqlSettings ParallelLoadThreads (__added__)
+* AWS::DMS::Endpoint.MySqlSettings ServerTimezone (__added__)
+* AWS::DMS::Endpoint.MySqlSettings TargetDbType (__added__)
+* AWS::ECS::Service.PlacementConstraint Expression.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::ECS::Service.PlacementConstraint Type.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::ECS::Service.PlacementStrategy Field.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::ECS::Service.PlacementStrategy Type.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::SageMaker::Domain.UserSettings RStudioServerProAppSettings (__added__)
+* AWS::SageMaker::UserProfile.UserSettings RStudioServerProAppSettings (__added__)
+
+
+# CloudFormation Resource Specification v63.0.0
+
+## New Resource Types
+
+* AWS::Events::Endpoint
+
+## Attribute Changes
+
+
+## Property Changes
+
+
+## Property Type Changes
+
+* AWS::EKS::Cluster.Provider (__added__)
+* AWS::DMS::Endpoint.OracleSettings AccessAlternateDirectly (__added__)
+* AWS::DMS::Endpoint.OracleSettings AddSupplementalLogging (__added__)
+* AWS::DMS::Endpoint.OracleSettings AdditionalArchivedLogDestId (__added__)
+* AWS::DMS::Endpoint.OracleSettings AllowSelectNestedTables (__added__)
+* AWS::DMS::Endpoint.OracleSettings ArchivedLogDestId (__added__)
+* AWS::DMS::Endpoint.OracleSettings ArchivedLogsOnly (__added__)
+* AWS::DMS::Endpoint.OracleSettings AsmPassword (__added__)
+* AWS::DMS::Endpoint.OracleSettings AsmServer (__added__)
+* AWS::DMS::Endpoint.OracleSettings AsmUser (__added__)
+* AWS::DMS::Endpoint.OracleSettings CharLengthSemantics (__added__)
+* AWS::DMS::Endpoint.OracleSettings DirectPathNoLog (__added__)
+* AWS::DMS::Endpoint.OracleSettings DirectPathParallelLoad (__added__)
+* AWS::DMS::Endpoint.OracleSettings EnableHomogenousTablespace (__added__)
+* AWS::DMS::Endpoint.OracleSettings ExtraArchivedLogDestIds (__added__)
+* AWS::DMS::Endpoint.OracleSettings FailTasksOnLobTruncation (__added__)
+* AWS::DMS::Endpoint.OracleSettings NumberDatatypeScale (__added__)
+* AWS::DMS::Endpoint.OracleSettings OraclePathPrefix (__added__)
+* AWS::DMS::Endpoint.OracleSettings ParallelAsmReadThreads (__added__)
+* AWS::DMS::Endpoint.OracleSettings ReadAheadBlocks (__added__)
+* AWS::DMS::Endpoint.OracleSettings ReadTableSpaceName (__added__)
+* AWS::DMS::Endpoint.OracleSettings ReplacePathPrefix (__added__)
+* AWS::DMS::Endpoint.OracleSettings RetryInterval (__added__)
+* AWS::DMS::Endpoint.OracleSettings SecurityDbEncryption (__added__)
+* AWS::DMS::Endpoint.OracleSettings SecurityDbEncryptionName (__added__)
+* AWS::DMS::Endpoint.OracleSettings SpatialDataOptionToGeoJsonFunctionName (__added__)
+* AWS::DMS::Endpoint.OracleSettings StandbyDelayTime (__added__)
+* AWS::DMS::Endpoint.OracleSettings UseAlternateFolderForOnline (__added__)
+* AWS::DMS::Endpoint.OracleSettings UseBFile (__added__)
+* AWS::DMS::Endpoint.OracleSettings UseDirectPathFullLoad (__added__)
+* AWS::DMS::Endpoint.OracleSettings UseLogminerReader (__added__)
+* AWS::DMS::Endpoint.OracleSettings UsePathPrefix (__added__)
+* AWS::DMS::Endpoint.PostgreSqlSettings AfterConnectScript (__added__)
+* AWS::DMS::Endpoint.PostgreSqlSettings CaptureDdls (__added__)
+* AWS::DMS::Endpoint.PostgreSqlSettings DdlArtifactsSchema (__added__)
+* AWS::DMS::Endpoint.PostgreSqlSettings ExecuteTimeout (__added__)
+* AWS::DMS::Endpoint.PostgreSqlSettings FailTasksOnLobTruncation (__added__)
+* AWS::DMS::Endpoint.PostgreSqlSettings HeartbeatEnable (__added__)
+* AWS::DMS::Endpoint.PostgreSqlSettings HeartbeatFrequency (__added__)
+* AWS::DMS::Endpoint.PostgreSqlSettings HeartbeatSchema (__added__)
+* AWS::DMS::Endpoint.PostgreSqlSettings MaxFileSize (__added__)
+* AWS::DMS::Endpoint.PostgreSqlSettings PluginName (__added__)
+* AWS::DMS::Endpoint.PostgreSqlSettings SlotName (__added__)
+* AWS::EKS::Cluster.EncryptionConfig Provider.PrimitiveType (__deleted__)
+* AWS::EKS::Cluster.EncryptionConfig Provider.Type (__added__)
+* AWS::FSx::FileSystem.OntapConfiguration ThroughputCapacity.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+
+
+# CloudFormation Resource Specification v62.0.0
+
+## New Resource Types
+
+* AWS::FSx::Snapshot
+* AWS::FSx::StorageVirtualMachine
+* AWS::FSx::Volume
+* AWS::IoTEvents::AlarmModel
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::DocDB::DBInstance EnablePerformanceInsights (__added__)
+* AWS::Lambda::Function EphemeralStorage (__added__)
+* AWS::Lambda::Permission PrincipalOrgID (__added__)
+* AWS::Lex::Bot TestBotAliasSettings (__added__)
+
+## Property Type Changes
+
+* AWS::DevOpsGuru::ResourceCollection.TagCollection (__added__)
+* AWS::EC2::LaunchTemplate.Ipv4PrefixSpecification (__added__)
+* AWS::EC2::LaunchTemplate.Ipv6PrefixSpecification (__added__)
+* AWS::Lambda::Function.EphemeralStorage (__added__)
+* AWS::Lex::Bot.AdvancedRecognitionSetting (__added__)
+* AWS::Lex::Bot.AudioLogDestination (__added__)
+* AWS::Lex::Bot.AudioLogSetting (__added__)
+* AWS::Lex::Bot.BotAliasLocaleSettings (__added__)
+* AWS::Lex::Bot.BotAliasLocaleSettingsItem (__added__)
+* AWS::Lex::Bot.CloudWatchLogGroupLogDestination (__added__)
+* AWS::Lex::Bot.CodeHookSpecification (__added__)
+* AWS::Lex::Bot.ConversationLogSettings (__added__)
+* AWS::Lex::Bot.CustomVocabulary (__added__)
+* AWS::Lex::Bot.CustomVocabularyItem (__added__)
+* AWS::Lex::Bot.LambdaCodeHook (__added__)
+* AWS::Lex::Bot.S3BucketLogDestination (__added__)
+* AWS::Lex::Bot.TestBotAliasSettings (__added__)
+* AWS::Lex::Bot.TextLogDestination (__added__)
+* AWS::Lex::Bot.TextLogSetting (__added__)
+* AWS::MediaPackage::OriginEndpoint.EncryptionContractConfiguration (__added__)
+* AWS::DevOpsGuru::ResourceCollection.ResourceCollectionFilter Tags (__added__)
+* AWS::EC2::LaunchTemplate.NetworkInterface Ipv4PrefixCount (__added__)
+* AWS::EC2::LaunchTemplate.NetworkInterface Ipv4Prefixes (__added__)
+* AWS::EC2::LaunchTemplate.NetworkInterface Ipv6PrefixCount (__added__)
+* AWS::EC2::LaunchTemplate.NetworkInterface Ipv6Prefixes (__added__)
+* AWS::Lex::Bot.BotLocale CustomVocabulary (__added__)
+* AWS::Lex::Bot.SlotValueSelectionSetting AdvancedRecognitionSetting (__added__)
+* AWS::MediaPackage::OriginEndpoint.SpekeKeyProvider EncryptionContractConfiguration (__added__)
+
+
+# CloudFormation Resource Specification v61.0.0
+
+## New Resource Types
+
+* AWS::BillingConductor::BillingGroup
+* AWS::BillingConductor::CustomLineItem
+* AWS::BillingConductor::PricingPlan
+* AWS::BillingConductor::PricingRule
+
+## Attribute Changes
+
+* AWS::DMS::ReplicationInstance ReplicationInstancePrivateIpAddresses.PrimitiveItemType (__deleted__)
+* AWS::DMS::ReplicationInstance ReplicationInstancePrivateIpAddresses.Type (__deleted__)
+* AWS::DMS::ReplicationInstance ReplicationInstancePrivateIpAddresses.PrimitiveType (__added__)
+* AWS::DMS::ReplicationInstance ReplicationInstancePublicIpAddresses.PrimitiveItemType (__deleted__)
+* AWS::DMS::ReplicationInstance ReplicationInstancePublicIpAddresses.Type (__deleted__)
+* AWS::DMS::ReplicationInstance ReplicationInstancePublicIpAddresses.PrimitiveType (__added__)
+* AWS::EC2::Subnet Id (__deleted__)
+* AWS::EC2::Subnet SubnetId (__added__)
+
+## Property Changes
+
+* AWS::CodeDeploy::DeploymentGroup OutdatedInstancesStrategy (__added__)
+* AWS::CodeDeploy::DeploymentGroup Tags (__added__)
+* AWS::DMS::Endpoint Tags.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::DMS::ReplicationSubnetGroup Tags.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::EC2::Subnet AvailabilityZoneId (__added__)
+* AWS::EC2::Subnet EnableDns64 (__added__)
+* AWS::EC2::Subnet Ipv6Native (__added__)
+* AWS::EC2::Subnet PrivateDnsNameOptionsOnLaunch (__added__)
+* AWS::EC2::Subnet CidrBlock.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::Inspector::AssessmentTemplate RulesPackageArns.DuplicatesAllowed (__added__)
+* AWS::Inspector::AssessmentTemplate UserAttributesForFindings.DuplicatesAllowed (__added__)
+* AWS::Inspector::ResourceGroup ResourceGroupTags.DuplicatesAllowed (__added__)
+
+## Property Type Changes
+
+* AWS::ACMPCA::Certificate.CustomAttribute (__added__)
+* AWS::ACMPCA::Certificate.CustomExtension (__added__)
+* AWS::ACMPCA::CertificateAuthority.CustomAttribute (__added__)
+* AWS::CodeDeploy::DeploymentGroup.TargetGroupPairInfo (__added__)
+* AWS::CodeDeploy::DeploymentGroup.TrafficRoute (__added__)
+* AWS::ACMPCA::Certificate.Extensions CustomExtensions (__added__)
+* AWS::ACMPCA::Certificate.Subject CustomAttributes (__added__)
+* AWS::ACMPCA::CertificateAuthority.Subject CustomAttributes (__added__)
+* AWS::CodeDeploy::DeploymentGroup.LoadBalancerInfo TargetGroupPairInfoList (__added__)
+* AWS::FSx::FileSystem.OpenZFSConfiguration Options (__added__)
+* AWS::FSx::FileSystem.RootVolumeConfiguration RecordSizeKiB (__added__)
+
+
+# CloudFormation Resource Specification v60.0.0
+
+## New Resource Types
+
+* AWS::Personalize::Dataset
+* AWS::Personalize::DatasetGroup
+* AWS::Personalize::Schema
+* AWS::Personalize::Solution
+
+## Attribute Changes
+
+* AWS::EC2::Subnet Id (__added__)
+* AWS::EC2::Subnet Ipv6CidrBlocks.DuplicatesAllowed (__added__)
+
+## Property Changes
+
+* AWS::EC2::Subnet AvailabilityZoneId (__deleted__)
+* AWS::EC2::Subnet EnableDns64 (__deleted__)
+* AWS::EC2::Subnet Ipv6Native (__deleted__)
+* AWS::EC2::Subnet PrivateDnsNameOptionsOnLaunch (__deleted__)
+* AWS::EC2::Subnet Ipv6CidrBlock.UpdateType (__changed__)
+  * Old: Conditional
+  * New: Mutable
+* AWS::EC2::Subnet VpcId.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-subnet.html#cfn-awsec2subnet-prop-vpcid
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-subnet.html#cfn-ec2-subnet-vpcid
+* AWS::EC2::TransitGatewayPeeringAttachment Options (__deleted__)
+* AWS::ECS::Service EnableECSManagedTags.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::ECS::Service LoadBalancers.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::ECS::Service PropagateTags.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::ECS::Service ServiceRegistries.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::FIS::ExperimentTemplate LogConfiguration (__added__)
+
+## Property Type Changes
+
+* AWS::EC2::Subnet.PrivateDnsNameOptionsOnLaunch (__removed__)
+* AWS::EC2::TransitGatewayPeeringAttachment.TransitGatewayPeeringAttachmentOptions (__removed__)
+* AWS::AppFlow::Flow.MarketoDestinationProperties (__added__)
+* AWS::AutoScaling::ScalingPolicy.Metric (__added__)
+* AWS::AutoScaling::ScalingPolicy.MetricDataQuery (__added__)
+* AWS::AutoScaling::ScalingPolicy.MetricStat (__added__)
+* AWS::AutoScaling::ScalingPolicy.PredictiveScalingCustomizedCapacityMetric (__added__)
+* AWS::AutoScaling::ScalingPolicy.PredictiveScalingCustomizedLoadMetric (__added__)
+* AWS::AutoScaling::ScalingPolicy.PredictiveScalingCustomizedScalingMetric (__added__)
+* AWS::FIS::ExperimentTemplate.ExperimentTemplateLogConfiguration (__added__)
+* AWS::AppFlow::Flow.DestinationConnectorProperties Marketo (__added__)
+* AWS::AutoScaling::ScalingPolicy.PredictiveScalingMetricSpecification CustomizedCapacityMetricSpecification (__added__)
+* AWS::AutoScaling::ScalingPolicy.PredictiveScalingMetricSpecification CustomizedLoadMetricSpecification (__added__)
+* AWS::AutoScaling::ScalingPolicy.PredictiveScalingMetricSpecification CustomizedScalingMetricSpecification (__added__)
+* AWS::ECS::Service.LoadBalancer ContainerName.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::ECS::Service.LoadBalancer ContainerPort.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::ECS::Service.LoadBalancer LoadBalancerName.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::ECS::Service.LoadBalancer TargetGroupArn.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::ECS::Service.ServiceRegistry ContainerName.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::ECS::Service.ServiceRegistry ContainerPort.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::ECS::Service.ServiceRegistry Port.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::ECS::Service.ServiceRegistry RegistryArn.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::FIS::ExperimentTemplate.ExperimentTemplateTarget Parameters (__added__)
+* AWS::Lex::BotAlias.AudioLogDestination S3Bucket.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::Lex::BotAlias.TextLogDestination CloudWatch.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::Lex::BotAlias.TextLogSetting Destination.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::Lex::BotAlias.TextLogSetting Enabled.Required (__changed__)
+  * Old: false
+  * New: true
+
+
+# CloudFormation Resource Specification v59.0.0
+
+## New Resource Types
+
+* AWS::EKS::IdentityProviderConfig
+* AWS::MSK::BatchScramSecret
+* AWS::MSK::Configuration
+
+## Attribute Changes
+
+* AWS::ImageBuilder::Image ImageUri (__added__)
+* AWS::MSK::Cluster Arn (__added__)
+
+## Property Changes
+
+* AWS::AmplifyUIBuilder::Component SchemaVersion (__added__)
+* AWS::ApiGateway::BasePathMapping Id (__added__)
+* AWS::EC2::TransitGatewayVpcAttachment SubnetIds.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::EC2::TransitGatewayVpcAttachment TransitGatewayId.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::EC2::TransitGatewayVpcAttachment VpcId.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::ImageBuilder::Image ContainerRecipeArn.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::MSK::Cluster CurrentVersion (__added__)
+* AWS::MSK::Cluster Tags.PrimitiveType (__deleted__)
+* AWS::MSK::Cluster Tags.PrimitiveItemType (__added__)
+* AWS::MSK::Cluster Tags.Type (__added__)
+
+## Property Type Changes
+
+* AWS::DataBrew::Job.Output MaxOutputFiles (__added__)
+* AWS::MSK::Cluster.BrokerNodeGroupInfo ClientSubnets.DuplicatesAllowed (__added__)
+* AWS::MSK::Cluster.BrokerNodeGroupInfo SecurityGroups.DuplicatesAllowed (__added__)
+* AWS::MSK::Cluster.Tls CertificateAuthorityArnList.DuplicatesAllowed (__added__)
+
+
+# CloudFormation Resource Specification v58.0.0
+
+## New Resource Types
+
+* AWS::AppIntegrations::DataIntegration
+* AWS::DataSync::LocationFSxLustre
+
+## Attribute Changes
+
+* AWS::AmplifyUIBuilder::Component CreatedAt (__deleted__)
+* AWS::AmplifyUIBuilder::Component ModifiedAt (__deleted__)
+
+## Property Changes
+
+* AWS::AmplifyUIBuilder::Component Events (__added__)
+* AWS::AmplifyUIBuilder::Component BindingProperties.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::AmplifyUIBuilder::Component ComponentType.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::AmplifyUIBuilder::Component Name.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::AmplifyUIBuilder::Component Overrides.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::AmplifyUIBuilder::Component Properties.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::AmplifyUIBuilder::Component Variants.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::Events::Connection AuthParameters.PrimitiveType (__deleted__)
+* AWS::Events::Connection AuthParameters.Type (__added__)
+* AWS::Transfer::Server PostAuthenticationLoginBanner (__added__)
+* AWS::Transfer::Server PreAuthenticationLoginBanner (__added__)
+
+## Property Type Changes
+
+* AWS::AmplifyUIBuilder::Component.ActionParameters (__added__)
+* AWS::AmplifyUIBuilder::Component.ComponentEvent (__added__)
+* AWS::AmplifyUIBuilder::Component.ComponentEvents (__added__)
+* AWS::AmplifyUIBuilder::Component.MutationActionSetStateParameter (__added__)
+* AWS::AppFlow::Flow.SAPODataDestinationProperties (__added__)
+* AWS::AppFlow::Flow.SuccessResponseHandlingConfig (__added__)
+* AWS::AppMesh::Mesh.MeshServiceDiscovery (__added__)
+* AWS::Events::Connection.ApiKeyAuthParameters (__added__)
+* AWS::Events::Connection.AuthParameters (__added__)
+* AWS::Events::Connection.BasicAuthParameters (__added__)
+* AWS::Events::Connection.ClientParameters (__added__)
+* AWS::Events::Connection.ConnectionHttpParameters (__added__)
+* AWS::Events::Connection.OAuthParameters (__added__)
+* AWS::Events::Connection.Parameter (__added__)
+* AWS::AmplifyUIBuilder::Component.ComponentChild Events (__added__)
+* AWS::AmplifyUIBuilder::Component.ComponentConditionProperty OperandType (__added__)
+* AWS::AmplifyUIBuilder::Component.ComponentProperty ComponentName (__added__)
+* AWS::AmplifyUIBuilder::Component.ComponentProperty Property (__added__)
+* AWS::AppFlow::Flow.DestinationConnectorProperties SAPOData (__added__)
+
+
+# CloudFormation Resource Specification v57.0.0
+
+## New Resource Types
+
+* AWS::ECR::PullThroughCacheRule
+
+## Attribute Changes
+
+* AWS::Batch::ComputeEnvironment ComputeEnvironmentArn (__added__)
+* AWS::Batch::JobQueue JobQueueArn (__added__)
+* AWS::SES::ConfigurationSetEventDestination Id (__added__)
+
+## Property Changes
+
+* AWS::Batch::ComputeEnvironment Tags.PrimitiveType (__deleted__)
+* AWS::Batch::ComputeEnvironment Tags.PrimitiveItemType (__added__)
+* AWS::Batch::ComputeEnvironment Tags.Type (__added__)
+* AWS::Batch::JobQueue ComputeEnvironmentOrder.DuplicatesAllowed (__added__)
+* AWS::Batch::JobQueue Tags.PrimitiveType (__deleted__)
+* AWS::Batch::JobQueue Tags.PrimitiveItemType (__added__)
+* AWS::Batch::JobQueue Tags.Type (__added__)
+* AWS::DocDB::DBCluster MasterUserPassword.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::DocDB::DBCluster MasterUsername.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::EC2::Instance PrivateDnsNameOptions (__added__)
+* AWS::IoT::Authorizer EnableCachingForHttp (__added__)
+* AWS::Kendra::DataSource CustomDocumentEnrichmentConfiguration (__added__)
+* AWS::Lambda::EventSourceMapping FilterCriteria.PrimitiveType (__deleted__)
+* AWS::Lambda::EventSourceMapping FilterCriteria.Type (__added__)
+* AWS::Lambda::EventSourceMapping StartingPositionTimestamp.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::StepFunctions::StateMachine StateMachineType.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+
+## Property Type Changes
+
+* AWS::EC2::Instance.PrivateDnsNameOptions (__added__)
+* AWS::Kendra::DataSource.CustomDocumentEnrichmentConfiguration (__added__)
+* AWS::Kendra::DataSource.DocumentAttributeCondition (__added__)
+* AWS::Kendra::DataSource.DocumentAttributeTarget (__added__)
+* AWS::Kendra::DataSource.DocumentAttributeValue (__added__)
+* AWS::Kendra::DataSource.HookConfiguration (__added__)
+* AWS::Kendra::DataSource.InlineCustomDocumentEnrichmentConfiguration (__added__)
+* AWS::Lambda::EventSourceMapping.Filter (__added__)
+* AWS::Lambda::EventSourceMapping.FilterCriteria (__added__)
+* AWS::WAFv2::WebACL.FieldIdentifier (__added__)
+* AWS::WAFv2::WebACL.ManagedRuleGroupConfig (__added__)
+* AWS::Batch::ComputeEnvironment.ComputeResources Ec2Configuration.DuplicatesAllowed (__added__)
+* AWS::Batch::ComputeEnvironment.ComputeResources InstanceTypes.DuplicatesAllowed (__added__)
+* AWS::Batch::ComputeEnvironment.ComputeResources SecurityGroupIds.DuplicatesAllowed (__added__)
+* AWS::Batch::ComputeEnvironment.ComputeResources Subnets.DuplicatesAllowed (__added__)
+* AWS::Batch::ComputeEnvironment.ComputeResources Tags.PrimitiveType (__deleted__)
+* AWS::Batch::ComputeEnvironment.ComputeResources Tags.PrimitiveItemType (__added__)
+* AWS::Batch::ComputeEnvironment.ComputeResources Tags.Type (__added__)
+* AWS::EC2::SpotFleet.LaunchTemplateOverrides Priority (__added__)
+* AWS::IoTAnalytics::Dataset.RetentionPeriod NumberOfDays.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::IoTAnalytics::Dataset.RetentionPeriod Unlimited.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::NetworkFirewall::FirewallPolicy.FirewallPolicy StatefulDefaultActions.DuplicatesAllowed (__changed__)
+  * Old: false
+  * New: true
+* AWS::NetworkFirewall::FirewallPolicy.FirewallPolicy StatefulRuleGroupReferences.DuplicatesAllowed (__changed__)
+  * Old: false
+  * New: true
+* AWS::NetworkFirewall::FirewallPolicy.FirewallPolicy StatelessCustomActions.DuplicatesAllowed (__changed__)
+  * Old: false
+  * New: true
+* AWS::NetworkFirewall::FirewallPolicy.FirewallPolicy StatelessDefaultActions.DuplicatesAllowed (__changed__)
+  * Old: false
+  * New: true
+* AWS::NetworkFirewall::FirewallPolicy.FirewallPolicy StatelessFragmentDefaultActions.DuplicatesAllowed (__changed__)
+  * Old: false
+  * New: true
+* AWS::NetworkFirewall::FirewallPolicy.FirewallPolicy StatelessRuleGroupReferences.DuplicatesAllowed (__changed__)
+  * Old: false
+  * New: true
+* AWS::NetworkFirewall::FirewallPolicy.PublishMetricAction Dimensions.DuplicatesAllowed (__changed__)
+  * Old: false
+  * New: true
+* AWS::NetworkFirewall::RuleGroup.IPSet Definition.DuplicatesAllowed (__changed__)
+  * Old: false
+  * New: true
+* AWS::NetworkFirewall::RuleGroup.MatchAttributes DestinationPorts.DuplicatesAllowed (__changed__)
+  * Old: false
+  * New: true
+* AWS::NetworkFirewall::RuleGroup.MatchAttributes Destinations.DuplicatesAllowed (__changed__)
+  * Old: false
+  * New: true
+* AWS::NetworkFirewall::RuleGroup.MatchAttributes Protocols.DuplicatesAllowed (__changed__)
+  * Old: false
+  * New: true
+* AWS::NetworkFirewall::RuleGroup.MatchAttributes SourcePorts.DuplicatesAllowed (__changed__)
+  * Old: false
+  * New: true
+* AWS::NetworkFirewall::RuleGroup.MatchAttributes Sources.DuplicatesAllowed (__changed__)
+  * Old: false
+  * New: true
+* AWS::NetworkFirewall::RuleGroup.MatchAttributes TCPFlags.DuplicatesAllowed (__changed__)
+  * Old: false
+  * New: true
+* AWS::NetworkFirewall::RuleGroup.PortSet Definition.DuplicatesAllowed (__changed__)
+  * Old: false
+  * New: true
+* AWS::NetworkFirewall::RuleGroup.PublishMetricAction Dimensions.DuplicatesAllowed (__changed__)
+  * Old: false
+  * New: true
+* AWS::NetworkFirewall::RuleGroup.RuleDefinition Actions.DuplicatesAllowed (__changed__)
+  * Old: false
+  * New: true
+* AWS::NetworkFirewall::RuleGroup.RuleOption Settings.DuplicatesAllowed (__changed__)
+  * Old: false
+  * New: true
+* AWS::NetworkFirewall::RuleGroup.RulesSource StatefulRules.DuplicatesAllowed (__changed__)
+  * Old: false
+  * New: true
+* AWS::NetworkFirewall::RuleGroup.RulesSourceList TargetTypes.DuplicatesAllowed (__changed__)
+  * Old: false
+  * New: true
+* AWS::NetworkFirewall::RuleGroup.RulesSourceList Targets.DuplicatesAllowed (__changed__)
+  * Old: false
+  * New: true
+* AWS::NetworkFirewall::RuleGroup.StatefulRule RuleOptions.DuplicatesAllowed (__changed__)
+  * Old: false
+  * New: true
+* AWS::NetworkFirewall::RuleGroup.StatelessRulesAndCustomActions CustomActions.DuplicatesAllowed (__changed__)
+  * Old: false
+  * New: true
+* AWS::NetworkFirewall::RuleGroup.StatelessRulesAndCustomActions StatelessRules.DuplicatesAllowed (__changed__)
+  * Old: false
+  * New: true
+* AWS::NetworkFirewall::RuleGroup.TCPFlagField Flags.DuplicatesAllowed (__changed__)
+  * Old: false
+  * New: true
+* AWS::NetworkFirewall::RuleGroup.TCPFlagField Masks.DuplicatesAllowed (__changed__)
+  * Old: false
+  * New: true
+* AWS::SES::ConfigurationSetEventDestination.CloudWatchDestination DimensionConfigurations.DuplicatesAllowed (__added__)
+* AWS::SES::ConfigurationSetEventDestination.EventDestination MatchingEventTypes.DuplicatesAllowed (__added__)
+* AWS::WAFv2::WebACL.ManagedRuleGroupStatement ManagedRuleGroupConfigs (__added__)
+
+## Unapplied changes
+
+* AWS::AppIntegrations is at 53.1.0
+
+# CloudFormation Resource Specification v56.0.0
+
+## New Resource Types
+
+* AWS::AppRunner::VpcConnector
+* AWS::CloudFormation::HookDefaultVersion
+* AWS::CloudFormation::HookTypeConfig
+* AWS::CloudFormation::HookVersion
+
+## Attribute Changes
+
+* AWS::AutoScaling::LaunchConfiguration Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-as-launchconfig.html
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-autoscaling-launchconfiguration.html
+* AWS::EKS::Nodegroup Id (__added__)
+* AWS::SES::Template Id (__added__)
+* AWS::SQS::Queue QueueUrl (__added__)
+* AWS::SQS::Queue Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sqs-queues.html
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sqs-queue.html
+
+## Property Changes
+
+* AWS::AppRunner::Service NetworkConfiguration (__added__)
+* AWS::AutoScaling::LaunchConfiguration AssociatePublicIpAddress.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-as-launchconfig.html#cf-as-launchconfig-associatepubip
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-autoscaling-launchconfiguration.html#cfn-autoscaling-launchconfiguration-associatepublicipaddress
+* AWS::AutoScaling::LaunchConfiguration BlockDeviceMappings.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-as-launchconfig.html#cfn-as-launchconfig-blockdevicemappings
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-autoscaling-launchconfiguration.html#cfn-autoscaling-launchconfiguration-blockdevicemappings
+* AWS::AutoScaling::LaunchConfiguration ClassicLinkVPCId.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-as-launchconfig.html#cfn-as-launchconfig-classiclinkvpcid
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-autoscaling-launchconfiguration.html#cfn-autoscaling-launchconfiguration-classiclinkvpcid
+* AWS::AutoScaling::LaunchConfiguration ClassicLinkVPCSecurityGroups.DuplicatesAllowed (__deleted__)
+* AWS::AutoScaling::LaunchConfiguration ClassicLinkVPCSecurityGroups.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-as-launchconfig.html#cfn-as-launchconfig-classiclinkvpcsecuritygroups
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-autoscaling-launchconfiguration.html#cfn-autoscaling-launchconfiguration-classiclinkvpcsecuritygroups
+* AWS::AutoScaling::LaunchConfiguration EbsOptimized.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-as-launchconfig.html#cfn-as-launchconfig-ebsoptimized
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-autoscaling-launchconfiguration.html#cfn-autoscaling-launchconfiguration-ebsoptimized
+* AWS::AutoScaling::LaunchConfiguration IamInstanceProfile.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-as-launchconfig.html#cfn-as-launchconfig-iaminstanceprofile
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-autoscaling-launchconfiguration.html#cfn-autoscaling-launchconfiguration-iaminstanceprofile
+* AWS::AutoScaling::LaunchConfiguration ImageId.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-as-launchconfig.html#cfn-as-launchconfig-imageid
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-autoscaling-launchconfiguration.html#cfn-autoscaling-launchconfiguration-imageid
+* AWS::AutoScaling::LaunchConfiguration InstanceId.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-as-launchconfig.html#cfn-as-launchconfig-instanceid
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-autoscaling-launchconfiguration.html#cfn-autoscaling-launchconfiguration-instanceid
+* AWS::AutoScaling::LaunchConfiguration InstanceMonitoring.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-as-launchconfig.html#cfn-as-launchconfig-instancemonitoring
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-autoscaling-launchconfiguration.html#cfn-autoscaling-launchconfiguration-instancemonitoring
+* AWS::AutoScaling::LaunchConfiguration InstanceType.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-as-launchconfig.html#cfn-as-launchconfig-instancetype
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-autoscaling-launchconfiguration.html#cfn-autoscaling-launchconfiguration-instancetype
+* AWS::AutoScaling::LaunchConfiguration KernelId.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-as-launchconfig.html#cfn-as-launchconfig-kernelid
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-autoscaling-launchconfiguration.html#cfn-autoscaling-launchconfiguration-kernelid
+* AWS::AutoScaling::LaunchConfiguration KeyName.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-as-launchconfig.html#cfn-as-launchconfig-keyname
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-autoscaling-launchconfiguration.html#cfn-autoscaling-launchconfiguration-keyname
+* AWS::AutoScaling::LaunchConfiguration LaunchConfigurationName.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-as-launchconfig.html#cfn-autoscaling-launchconfig-launchconfigurationname
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-autoscaling-launchconfiguration.html#cfn-autoscaling-launchconfiguration-launchconfigurationname
+* AWS::AutoScaling::LaunchConfiguration MetadataOptions.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-as-launchconfig.html#cfn-autoscaling-launchconfig-metadataoptions
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-autoscaling-launchconfiguration.html#cfn-autoscaling-launchconfiguration-metadataoptions
+* AWS::AutoScaling::LaunchConfiguration PlacementTenancy.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-as-launchconfig.html#cfn-as-launchconfig-placementtenancy
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-autoscaling-launchconfiguration.html#cfn-autoscaling-launchconfiguration-placementtenancy
+* AWS::AutoScaling::LaunchConfiguration RamDiskId.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-as-launchconfig.html#cfn-as-launchconfig-ramdiskid
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-autoscaling-launchconfiguration.html#cfn-autoscaling-launchconfiguration-ramdiskid
+* AWS::AutoScaling::LaunchConfiguration SecurityGroups.DuplicatesAllowed (__deleted__)
+* AWS::AutoScaling::LaunchConfiguration SecurityGroups.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-as-launchconfig.html#cfn-as-launchconfig-securitygroups
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-autoscaling-launchconfiguration.html#cfn-autoscaling-launchconfiguration-securitygroups
+* AWS::AutoScaling::LaunchConfiguration SpotPrice.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-as-launchconfig.html#cfn-as-launchconfig-spotprice
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-autoscaling-launchconfiguration.html#cfn-autoscaling-launchconfiguration-spotprice
+* AWS::AutoScaling::LaunchConfiguration UserData.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-as-launchconfig.html#cfn-as-launchconfig-userdata
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-autoscaling-launchconfiguration.html#cfn-autoscaling-launchconfiguration-userdata
+* AWS::CustomerProfiles::Integration ObjectTypeNames (__added__)
+* AWS::CustomerProfiles::Integration ObjectTypeName.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::DocDB::DBCluster CopyTagsToSnapshot (__added__)
+* AWS::EC2::Subnet AvailabilityZoneId (__added__)
+* AWS::EC2::Subnet EnableDns64 (__added__)
+* AWS::EC2::Subnet Ipv6Native (__added__)
+* AWS::EC2::Subnet PrivateDnsNameOptionsOnLaunch (__added__)
+* AWS::EC2::Subnet Ipv6CidrBlock.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Conditional
+* AWS::EC2::VPC Ipv4IpamPoolId (__added__)
+* AWS::EC2::VPC Ipv4NetmaskLength (__added__)
+* AWS::EC2::VPCCidrBlock Ipv4IpamPoolId (__added__)
+* AWS::EC2::VPCCidrBlock Ipv4NetmaskLength (__added__)
+* AWS::EC2::VPCCidrBlock Ipv6IpamPoolId (__added__)
+* AWS::EC2::VPCCidrBlock Ipv6NetmaskLength (__added__)
+* AWS::EKS::Nodegroup DiskSize.PrimitiveType (__changed__)
+  * Old: Double
+  * New: Integer
+* AWS::EKS::Nodegroup InstanceTypes.DuplicatesAllowed (__added__)
+* AWS::EKS::Nodegroup Subnets.DuplicatesAllowed (__added__)
+* AWS::SQS::Queue ContentBasedDeduplication.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sqs-queues.html#aws-sqs-queue-contentbaseddeduplication
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sqs-queue.html#cfn-sqs-queue-contentbaseddeduplication
+* AWS::SQS::Queue DeduplicationScope.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sqs-queues.html#aws-sqs-queue-deduplicationscope
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sqs-queue.html#cfn-sqs-queue-deduplicationscope
+* AWS::SQS::Queue DelaySeconds.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sqs-queues.html#aws-sqs-queue-delayseconds
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sqs-queue.html#cfn-sqs-queue-delayseconds
+* AWS::SQS::Queue FifoQueue.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sqs-queues.html#aws-sqs-queue-fifoqueue
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sqs-queue.html#cfn-sqs-queue-fifoqueue
+* AWS::SQS::Queue FifoThroughputLimit.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sqs-queues.html#aws-sqs-queue-fifothroughputlimit
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sqs-queue.html#cfn-sqs-queue-fifothroughputlimit
+* AWS::SQS::Queue KmsDataKeyReusePeriodSeconds.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sqs-queues.html#aws-sqs-queue-kmsdatakeyreuseperiodseconds
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sqs-queue.html#cfn-sqs-queue-kmsdatakeyreuseperiodseconds
+* AWS::SQS::Queue KmsMasterKeyId.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sqs-queues.html#aws-sqs-queue-kmsmasterkeyid
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sqs-queue.html#cfn-sqs-queue-kmsmasterkeyid
+* AWS::SQS::Queue MaximumMessageSize.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sqs-queues.html#aws-sqs-queue-maxmesgsize
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sqs-queue.html#cfn-sqs-queue-maximummessagesize
+* AWS::SQS::Queue MessageRetentionPeriod.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sqs-queues.html#aws-sqs-queue-msgretentionperiod
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sqs-queue.html#cfn-sqs-queue-messageretentionperiod
+* AWS::SQS::Queue QueueName.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sqs-queues.html#aws-sqs-queue-name
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sqs-queue.html#cfn-sqs-queue-queuename
+* AWS::SQS::Queue ReceiveMessageWaitTimeSeconds.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sqs-queues.html#aws-sqs-queue-receivemsgwaittime
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sqs-queue.html#cfn-sqs-queue-receivemessagewaittimeseconds
+* AWS::SQS::Queue RedriveAllowPolicy.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sqs-queues.html#aws-sqs-queue-redriveallowpolicy
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sqs-queue.html#cfn-sqs-queue-redriveallowpolicy
+* AWS::SQS::Queue RedrivePolicy.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sqs-queues.html#aws-sqs-queue-redrive
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sqs-queue.html#cfn-sqs-queue-redrivepolicy
+* AWS::SQS::Queue Tags.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sqs-queues.html#cfn-sqs-queue-tags
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sqs-queue.html#cfn-sqs-queue-tags
+* AWS::SQS::Queue VisibilityTimeout.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sqs-queues.html#aws-sqs-queue-visiblitytimeout
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sqs-queue.html#cfn-sqs-queue-visibilitytimeout
+
+## Property Type Changes
+
+* AWS::AppRunner::Service.EgressConfiguration (__added__)
+* AWS::AppRunner::Service.NetworkConfiguration (__added__)
+* AWS::CustomerProfiles::Integration.ObjectTypeMapping (__added__)
+* AWS::EC2::Subnet.PrivateDnsNameOptionsOnLaunch (__added__)
+* AWS::AutoScaling::LaunchConfiguration.BlockDevice DeleteOnTermination.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-as-launchconfig-blockdev-template.html#cfn-as-launchconfig-blockdev-template-deleteonterm
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscaling-launchconfiguration-blockdevice.html#cfn-autoscaling-launchconfiguration-blockdevice-deleteontermination
+* AWS::AutoScaling::LaunchConfiguration.BlockDevice DeleteOnTermination.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::AutoScaling::LaunchConfiguration.BlockDevice Encrypted.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-as-launchconfig-blockdev-template.html#cfn-as-launchconfig-blockdev-template-encrypted
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscaling-launchconfiguration-blockdevice.html#cfn-autoscaling-launchconfiguration-blockdevice-encrypted
+* AWS::AutoScaling::LaunchConfiguration.BlockDevice Encrypted.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::AutoScaling::LaunchConfiguration.BlockDevice Iops.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-as-launchconfig-blockdev-template.html#cfn-as-launchconfig-blockdev-template-iops
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscaling-launchconfiguration-blockdevice.html#cfn-autoscaling-launchconfiguration-blockdevice-iops
+* AWS::AutoScaling::LaunchConfiguration.BlockDevice Iops.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::AutoScaling::LaunchConfiguration.BlockDevice SnapshotId.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-as-launchconfig-blockdev-template.html#cfn-as-launchconfig-blockdev-template-snapshotid
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscaling-launchconfiguration-blockdevice.html#cfn-autoscaling-launchconfiguration-blockdevice-snapshotid
+* AWS::AutoScaling::LaunchConfiguration.BlockDevice SnapshotId.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::AutoScaling::LaunchConfiguration.BlockDevice Throughput.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-as-launchconfig-blockdev-template.html#cfn-as-launchconfig-blockdev-template-throughput
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscaling-launchconfiguration-blockdevice.html#cfn-autoscaling-launchconfiguration-blockdevice-throughput
+* AWS::AutoScaling::LaunchConfiguration.BlockDevice Throughput.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::AutoScaling::LaunchConfiguration.BlockDevice VolumeSize.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-as-launchconfig-blockdev-template.html#cfn-as-launchconfig-blockdev-template-volumesize
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscaling-launchconfiguration-blockdevice.html#cfn-autoscaling-launchconfiguration-blockdevice-volumesize
+* AWS::AutoScaling::LaunchConfiguration.BlockDevice VolumeSize.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::AutoScaling::LaunchConfiguration.BlockDevice VolumeType.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-as-launchconfig-blockdev-template.html#cfn-as-launchconfig-blockdev-template-volumetype
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscaling-launchconfiguration-blockdevice.html#cfn-autoscaling-launchconfiguration-blockdevice-volumetype
+* AWS::AutoScaling::LaunchConfiguration.BlockDevice VolumeType.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::AutoScaling::LaunchConfiguration.BlockDeviceMapping DeviceName.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-as-launchconfig-blockdev-mapping.html#cfn-as-launchconfig-blockdev-mapping-devicename
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscaling-launchconfiguration-blockdevicemapping.html#cfn-autoscaling-launchconfiguration-blockdevicemapping-devicename
+* AWS::AutoScaling::LaunchConfiguration.BlockDeviceMapping DeviceName.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::AutoScaling::LaunchConfiguration.BlockDeviceMapping Ebs.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-as-launchconfig-blockdev-mapping.html#cfn-as-launchconfig-blockdev-mapping-ebs
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscaling-launchconfiguration-blockdevicemapping.html#cfn-autoscaling-launchconfiguration-blockdevicemapping-ebs
+* AWS::AutoScaling::LaunchConfiguration.BlockDeviceMapping Ebs.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::AutoScaling::LaunchConfiguration.BlockDeviceMapping NoDevice.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-as-launchconfig-blockdev-mapping.html#cfn-as-launchconfig-blockdev-mapping-nodevice
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscaling-launchconfiguration-blockdevicemapping.html#cfn-autoscaling-launchconfiguration-blockdevicemapping-nodevice
+* AWS::AutoScaling::LaunchConfiguration.BlockDeviceMapping NoDevice.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::AutoScaling::LaunchConfiguration.BlockDeviceMapping VirtualName.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-as-launchconfig-blockdev-mapping.html#cfn-as-launchconfig-blockdev-mapping-virtualname
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscaling-launchconfiguration-blockdevicemapping.html#cfn-autoscaling-launchconfiguration-blockdevicemapping-virtualname
+* AWS::AutoScaling::LaunchConfiguration.BlockDeviceMapping VirtualName.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::AutoScaling::LaunchConfiguration.MetadataOptions HttpEndpoint.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscaling-launchconfig-metadataoptions.html#cfn-autoscaling-launchconfig-metadataoptions-httpendpoint
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscaling-launchconfiguration-metadataoptions.html#cfn-autoscaling-launchconfiguration-metadataoptions-httpendpoint
+* AWS::AutoScaling::LaunchConfiguration.MetadataOptions HttpEndpoint.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::AutoScaling::LaunchConfiguration.MetadataOptions HttpPutResponseHopLimit.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscaling-launchconfig-metadataoptions.html#cfn-autoscaling-launchconfig-metadataoptions-httpputresponsehoplimit
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscaling-launchconfiguration-metadataoptions.html#cfn-autoscaling-launchconfiguration-metadataoptions-httpputresponsehoplimit
+* AWS::AutoScaling::LaunchConfiguration.MetadataOptions HttpPutResponseHopLimit.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::AutoScaling::LaunchConfiguration.MetadataOptions HttpTokens.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscaling-launchconfig-metadataoptions.html#cfn-autoscaling-launchconfig-metadataoptions-httptokens
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscaling-launchconfiguration-metadataoptions.html#cfn-autoscaling-launchconfiguration-metadataoptions-httptokens
+* AWS::AutoScaling::LaunchConfiguration.MetadataOptions HttpTokens.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::DynamoDB::GlobalTable.ReplicaSpecification TableClass (__added__)
+* AWS::EKS::Nodegroup.RemoteAccess SourceSecurityGroups.DuplicatesAllowed (__added__)
+* AWS::EKS::Nodegroup.ScalingConfig DesiredSize.PrimitiveType (__changed__)
+  * Old: Double
+  * New: Integer
+* AWS::EKS::Nodegroup.ScalingConfig MaxSize.PrimitiveType (__changed__)
+  * Old: Double
+  * New: Integer
+* AWS::EKS::Nodegroup.ScalingConfig MinSize.PrimitiveType (__changed__)
+  * Old: Double
+  * New: Integer
+* AWS::SES::Template.Template SubjectPart.Required (__changed__)
+  * Old: false
+  * New: true
+
+## Unapplied changes
+
+* AWS::AppIntegrations is at 53.1.0
+
+# CloudFormation Resource Specification v55.0.0
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::RoboMaker::RobotApplication Environment (__added__)
+* AWS::RoboMaker::RobotApplication RobotSoftwareSuite.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::RoboMaker::RobotApplication Sources.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::RoboMaker::RobotApplication Tags.PrimitiveType (__deleted__)
+* AWS::RoboMaker::RobotApplication Tags.PrimitiveItemType (__added__)
+* AWS::RoboMaker::RobotApplication Tags.Type (__added__)
+
+## Property Type Changes
+
+* AWS::EC2::LaunchTemplate.PrivateDnsNameOptions (__added__)
+* AWS::Events::Rule.SageMakerPipelineParameter (__added__)
+* AWS::Events::Rule.SageMakerPipelineParameters (__added__)
+* AWS::ApplicationInsights::Application.HANAPrometheusExporter AgreeToInstallHANADBClient.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::ApplicationInsights::Application.HANAPrometheusExporter HANAPort.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::ApplicationInsights::Application.HANAPrometheusExporter HANASID.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::ApplicationInsights::Application.HANAPrometheusExporter HANASecretName.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::Cognito::UserPool.SmsConfiguration SnsRegion (__added__)
+* AWS::DMS::Endpoint.S3Settings AddColumnName (__added__)
+* AWS::DMS::Endpoint.S3Settings CannedAclForObjects (__added__)
+* AWS::DMS::Endpoint.S3Settings CdcInsertsAndUpdates (__added__)
+* AWS::DMS::Endpoint.S3Settings CdcInsertsOnly (__added__)
+* AWS::DMS::Endpoint.S3Settings CdcMaxBatchInterval (__added__)
+* AWS::DMS::Endpoint.S3Settings CdcMinFileSize (__added__)
+* AWS::DMS::Endpoint.S3Settings CdcPath (__added__)
+* AWS::DMS::Endpoint.S3Settings CsvNoSupValue (__added__)
+* AWS::DMS::Endpoint.S3Settings CsvNullValue (__added__)
+* AWS::DMS::Endpoint.S3Settings DataFormat (__added__)
+* AWS::DMS::Endpoint.S3Settings DataPageSize (__added__)
+* AWS::DMS::Endpoint.S3Settings DatePartitionDelimiter (__added__)
+* AWS::DMS::Endpoint.S3Settings DatePartitionEnabled (__added__)
+* AWS::DMS::Endpoint.S3Settings DatePartitionSequence (__added__)
+* AWS::DMS::Endpoint.S3Settings DatePartitionTimezone (__added__)
+* AWS::DMS::Endpoint.S3Settings DictPageSizeLimit (__added__)
+* AWS::DMS::Endpoint.S3Settings EnableStatistics (__added__)
+* AWS::DMS::Endpoint.S3Settings EncodingType (__added__)
+* AWS::DMS::Endpoint.S3Settings EncryptionMode (__added__)
+* AWS::DMS::Endpoint.S3Settings IgnoreHeaderRows (__added__)
+* AWS::DMS::Endpoint.S3Settings IncludeOpForFullLoad (__added__)
+* AWS::DMS::Endpoint.S3Settings MaxFileSize (__added__)
+* AWS::DMS::Endpoint.S3Settings ParquetTimestampInMillisecond (__added__)
+* AWS::DMS::Endpoint.S3Settings ParquetVersion (__added__)
+* AWS::DMS::Endpoint.S3Settings PreserveTransactions (__added__)
+* AWS::DMS::Endpoint.S3Settings Rfc4180 (__added__)
+* AWS::DMS::Endpoint.S3Settings RowGroupLength (__added__)
+* AWS::DMS::Endpoint.S3Settings ServerSideEncryptionKmsKeyId (__added__)
+* AWS::DMS::Endpoint.S3Settings TimestampColumnName (__added__)
+* AWS::DMS::Endpoint.S3Settings UseCsvNoSupValue (__added__)
+* AWS::DMS::Endpoint.S3Settings UseTaskStartTimeForFullLoadTimestamp (__added__)
+* AWS::EC2::LaunchTemplate.LaunchTemplateData PrivateDnsNameOptions (__added__)
+* AWS::EC2::LaunchTemplate.MetadataOptions InstanceMetadataTags (__added__)
+* AWS::Events::Rule.Target SageMakerPipelineParameters (__added__)
+* AWS::RoboMaker::RobotApplication.RobotSoftwareSuite Version.Required (__changed__)
+  * Old: true
+  * New: false
+
+## Unapplied changes
+
+* AWS::AppIntegrations is at 53.1.0
+
+# CloudFormation Resource Specification v54.0.0
+
+## New Resource Types
+
+* AWS::KafkaConnect::Connector
+* AWS::Rekognition::Collection
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::IVS::RecordingConfiguration ThumbnailConfiguration (__added__)
+* AWS::Location::GeofenceCollection PricingPlan.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::Location::Map PricingPlan.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::Location::PlaceIndex PricingPlan.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::Location::RouteCalculator PricingPlan.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::Location::Tracker PricingPlan.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::SecretsManager::RotationSchedule RotateImmediatelyOnUpdate (__added__)
+* AWS::Timestream::Table MagneticStoreWriteProperties (__added__)
+
+## Property Type Changes
+
+* AWS::GuardDuty::Detector.CFNKubernetesAuditLogsConfiguration (__added__)
+* AWS::GuardDuty::Detector.CFNKubernetesConfiguration (__added__)
+* AWS::IVS::RecordingConfiguration.ThumbnailConfiguration (__added__)
+* AWS::MSK::Cluster.ProvisionedThroughput (__added__)
+* AWS::ECS::TaskDefinition.EFSVolumeConfiguration AuthorizationConfig.PrimitiveType (__deleted__)
+* AWS::GuardDuty::Detector.CFNDataSourceConfigurations Kubernetes (__added__)
+* AWS::MSK::Cluster.BrokerNodeGroupInfo StorageInfo.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::MSK::Cluster.EBSStorageInfo ProvisionedThroughput (__added__)
+* AWS::MSK::Cluster.EBSStorageInfo VolumeSize.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::MSK::Cluster.StorageInfo EBSStorageInfo.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Route53::RecordSetGroup.RecordSet Comment (__deleted__)
+* AWS::SecretsManager::RotationSchedule.RotationRules Duration (__added__)
+* AWS::SecretsManager::RotationSchedule.RotationRules ScheduleExpression (__added__)
+
+## Unapplied changes
+
+* AWS::AppIntegrations is at 53.1.0
+
+# CloudFormation Resource Specification v53.1.0
+
+## New Resource Types
+
+* AWS::Lightsail::Certificate
+* AWS::Lightsail::Container
+* AWS::Lightsail::Distribution
+
+## Attribute Changes
+
+* AWS::ServiceDiscovery::PrivateDnsNamespace HostedZoneId (__added__)
+* AWS::ServiceDiscovery::PublicDnsNamespace HostedZoneId (__added__)
+
+## Property Changes
+
+* AWS::DMS::Endpoint GcpMySQLSettings (__added__)
+* AWS::SageMaker::Device Device.PrimitiveType (__deleted__)
+* AWS::SageMaker::Pipeline ParallelismConfiguration (__added__)
+
+## Property Type Changes
+
+* AWS::ApplicationInsights::Application.HAClusterPrometheusExporter (__added__)
+* AWS::ApplicationInsights::Application.HANAPrometheusExporter (__added__)
+* AWS::DMS::Endpoint.GcpMySQLSettings (__added__)
+* AWS::SSM::MaintenanceWindowTask.CloudWatchOutputConfig (__added__)
+* AWS::ApplicationInsights::Application.ConfigurationDetails HAClusterPrometheusExporter (__added__)
+* AWS::ApplicationInsights::Application.ConfigurationDetails HANAPrometheusExporter (__added__)
+* AWS::DataBrew::Job.OutputLocation BucketOwner (__added__)
+* AWS::DataBrew::Job.S3Location BucketOwner (__added__)
+* AWS::RoboMaker::SimulationApplication.RobotSoftwareSuite Version.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::RoboMaker::SimulationApplication.SimulationSoftwareSuite Version.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::SSM::MaintenanceWindowTask.MaintenanceWindowRunCommandParameters CloudWatchOutputConfig (__added__)
+* AWS::SSM::MaintenanceWindowTask.MaintenanceWindowRunCommandParameters DocumentVersion (__added__)
+
+## Unapplied changes
+
+* AWS::ECS is at 51.0.0
+
+
+## Unapplied changes
+
+* AWS::ECS is at 51.0.0
+* AWS::SageMaker is at 51.0.0
+
+
+## Unapplied changes
+
+* AWS::ECS is at 51.0.0
+* AWS::SageMaker is at 51.0.0
+
+
+## Unapplied changes
+
+* AWS::ECS is at 51.0.0
+* AWS::SageMaker is at 51.0.0
+
+
+## Unapplied changes
+
+* AWS::ECS is at 51.0.0
+* AWS::SageMaker is at 51.0.0
+
+# CloudFormation Resource Specification v53.0.0
+
+## New Resource Types
+
+* AWS::AppStream::ApplicationEntitlementAssociation
+* AWS::AppStream::Entitlement
+* AWS::EC2::NetworkInsightsAccessScope
+* AWS::EC2::NetworkInsightsAccessScopeAnalysis
+* AWS::Forecast::Dataset
+* AWS::Forecast::DatasetGroup
+* AWS::InspectorV2::Filter
+* AWS::KinesisVideo::SignalingChannel
+* AWS::KinesisVideo::Stream
+* AWS::Lightsail::Alarm
+* AWS::Lightsail::Bucket
+* AWS::Lightsail::LoadBalancer
+* AWS::Lightsail::LoadBalancerTlsCertificate
+
+## Attribute Changes
+
+* AWS::EC2::Host HostId (__added__)
+* AWS::EC2::IPAMScope IpamScopeType (__added__)
+* AWS::EC2::VPNGatewayRoutePropagation Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpn-gatewayrouteprop.html
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpngatewayroutepropagation.html
+* AWS::EC2::VPNGatewayRoutePropagation Id (__added__)
+* AWS::IoTAnalytics::Channel Id (__added__)
+* AWS::IoTAnalytics::Dataset Id (__added__)
+* AWS::IoTAnalytics::Datastore Id (__added__)
+* AWS::RDS::DBProxy VpcId (__deleted__)
+* AWS::Redshift::EventSubscription EventCategoriesList.DuplicatesAllowed (__added__)
+
+## Property Changes
+
+* AWS::AppSync::FunctionConfiguration MaxBatchSize (__added__)
+* AWS::AppSync::Resolver MaxBatchSize (__added__)
+* AWS::AutoScaling::WarmPool InstanceReusePolicy (__added__)
+* AWS::Config::OrganizationConfigRule OrganizationCustomCodeRuleMetadata (__added__)
+* AWS::EC2::ClientVpnEndpoint ClientLoginBannerOptions (__added__)
+* AWS::EC2::ClientVpnEndpoint SessionTimeoutHours (__added__)
+* AWS::EC2::FlowLog DestinationOptions (__added__)
+* AWS::EC2::IPAMScope IpamScopeType (__deleted__)
+* AWS::EC2::VPNGatewayRoutePropagation RouteTableIds.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpn-gatewayrouteprop.html#cfn-ec2-vpngatewayrouteprop-routetableids
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpngatewayroutepropagation.html#cfn-ec2-vpngatewayroutepropagation-routetableids
+* AWS::EC2::VPNGatewayRoutePropagation VpnGatewayId.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpn-gatewayrouteprop.html#cfn-ec2-vpngatewayrouteprop-vpngatewayid
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpngatewayroutepropagation.html#cfn-ec2-vpngatewayroutepropagation-vpngatewayid
+* AWS::Events::EventBus Tags (__added__)
+* AWS::GameLift::GameSessionQueue Tags (__added__)
+* AWS::GameLift::MatchmakingConfiguration Tags (__added__)
+* AWS::GameLift::MatchmakingRuleSet Tags (__added__)
+* AWS::GameLift::Script Tags (__added__)
+* AWS::IoT::JobTemplate JobExecutionsRetryConfig (__added__)
+* AWS::IoTAnalytics::Channel Tags.DuplicatesAllowed (__added__)
+* AWS::IoTAnalytics::Dataset Actions.DuplicatesAllowed (__added__)
+* AWS::IoTAnalytics::Dataset ContentDeliveryRules.DuplicatesAllowed (__added__)
+* AWS::IoTAnalytics::Dataset LateDataRules.DuplicatesAllowed (__added__)
+* AWS::IoTAnalytics::Dataset Tags.DuplicatesAllowed (__added__)
+* AWS::IoTAnalytics::Dataset Triggers.DuplicatesAllowed (__added__)
+* AWS::IoTAnalytics::Datastore Tags.DuplicatesAllowed (__added__)
+* AWS::RUM::AppMonitor Domain.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::RUM::AppMonitor Name.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::Redshift::EventSubscription EventCategories.DuplicatesAllowed (__added__)
+
+## Property Type Changes
+
+* AWS::KinesisAnalyticsV2::Application.CustomArtifactsConfiguration (__removed__)
+* AWS::AutoScaling::WarmPool.InstanceReusePolicy (__added__)
+* AWS::Config::OrganizationConfigRule.OrganizationCustomCodeRuleMetadata (__added__)
+* AWS::EC2::ClientVpnEndpoint.ClientLoginBannerOptions (__added__)
+* AWS::EC2::LaunchTemplate.InstanceRequirements (__added__)
+* AWS::Events::EventBus.TagEntry (__added__)
+* AWS::Glue::Crawler.MongoDBTarget (__added__)
+* AWS::IoTSiteWise::Gateway.GreengrassV2 (__added__)
+* AWS::NimbleStudio::LaunchProfile.StreamConfigurationSessionStorage (__added__)
+* AWS::NimbleStudio::LaunchProfile.StreamingSessionStorageRoot (__added__)
+* AWS::AppSync::Resolver.CachingConfig Ttl.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::EC2::LaunchTemplate.LaunchTemplateData InstanceRequirements (__added__)
+* AWS::Glue::Crawler.S3Target DlqEventQueueArn (__added__)
+* AWS::Glue::Crawler.S3Target EventQueueArn (__added__)
+* AWS::Glue::Crawler.S3Target SampleSize (__added__)
+* AWS::Glue::Crawler.Targets MongoDBTargets (__added__)
+* AWS::IoTAnalytics::Dataset.ContainerAction Variables.DuplicatesAllowed (__added__)
+* AWS::IoTAnalytics::Dataset.DatasetContentVersionValue DatasetName.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iotanalytics-dataset-variable-datasetcontentversionvalue.html#cfn-iotanalytics-dataset-variable-datasetcontentversionvalue-datasetname
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iotanalytics-dataset-datasetcontentversionvalue.html#cfn-iotanalytics-dataset-datasetcontentversionvalue-datasetname
+* AWS::IoTAnalytics::Dataset.DatasetContentVersionValue DatasetName.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::IoTAnalytics::Dataset.OutputFileUriValue FileName.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iotanalytics-dataset-variable-outputfileurivalue.html#cfn-iotanalytics-dataset-variable-outputfileurivalue-filename
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iotanalytics-dataset-outputfileurivalue.html#cfn-iotanalytics-dataset-outputfileurivalue-filename
+* AWS::IoTAnalytics::Dataset.OutputFileUriValue FileName.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::IoTAnalytics::Dataset.QueryAction Filters.DuplicatesAllowed (__added__)
+* AWS::IoTAnalytics::Dataset.Schedule ScheduleExpression.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iotanalytics-dataset-trigger-schedule.html#cfn-iotanalytics-dataset-trigger-schedule-scheduleexpression
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iotanalytics-dataset-schedule.html#cfn-iotanalytics-dataset-schedule-scheduleexpression
+* AWS::IoTAnalytics::Datastore.DatastorePartitions Partitions.DuplicatesAllowed (__added__)
+* AWS::IoTAnalytics::Datastore.IotSiteWiseMultiLayerStorage CustomerManagedS3Storage.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::IoTAnalytics::Datastore.SchemaDefinition Columns.DuplicatesAllowed (__added__)
+* AWS::IoTAnalytics::Pipeline.AddAttributes Attributes.PrimitiveType (__deleted__)
+* AWS::IoTAnalytics::Pipeline.AddAttributes Attributes.PrimitiveItemType (__added__)
+* AWS::IoTAnalytics::Pipeline.AddAttributes Attributes.Type (__added__)
+* AWS::IoTAnalytics::Pipeline.AddAttributes Attributes.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::IoTAnalytics::Pipeline.AddAttributes Name.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::IoTAnalytics::Pipeline.Channel ChannelName.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::IoTAnalytics::Pipeline.Channel Name.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::IoTAnalytics::Pipeline.Datastore DatastoreName.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::IoTAnalytics::Pipeline.Datastore Name.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::IoTAnalytics::Pipeline.DeviceRegistryEnrich Attribute.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::IoTAnalytics::Pipeline.DeviceRegistryEnrich Name.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::IoTAnalytics::Pipeline.DeviceRegistryEnrich RoleArn.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::IoTAnalytics::Pipeline.DeviceRegistryEnrich ThingName.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::IoTAnalytics::Pipeline.DeviceShadowEnrich Attribute.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::IoTAnalytics::Pipeline.DeviceShadowEnrich Name.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::IoTAnalytics::Pipeline.DeviceShadowEnrich RoleArn.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::IoTAnalytics::Pipeline.DeviceShadowEnrich ThingName.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::IoTAnalytics::Pipeline.Filter Filter.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::IoTAnalytics::Pipeline.Filter Name.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::IoTAnalytics::Pipeline.Lambda BatchSize.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::IoTAnalytics::Pipeline.Lambda LambdaName.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::IoTAnalytics::Pipeline.Lambda Name.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::IoTAnalytics::Pipeline.Math Attribute.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::IoTAnalytics::Pipeline.Math Math.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::IoTAnalytics::Pipeline.Math Name.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::IoTAnalytics::Pipeline.RemoveAttributes Attributes.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::IoTAnalytics::Pipeline.RemoveAttributes Name.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::IoTAnalytics::Pipeline.SelectAttributes Attributes.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::IoTAnalytics::Pipeline.SelectAttributes Name.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::IoTSiteWise::Gateway.GatewayPlatform GreengrassV2 (__added__)
+* AWS::IoTSiteWise::Gateway.GatewayPlatform Greengrass.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::KinesisAnalyticsV2::Application.ZeppelinApplicationConfiguration CustomArtifactsConfiguration.ItemType (__added__)
+* AWS::KinesisAnalyticsV2::Application.ZeppelinApplicationConfiguration CustomArtifactsConfiguration.Type (__changed__)
+  * Old: CustomArtifactsConfiguration
+  * New: List
+* AWS::Lex::BotAlias.BotAliasLocaleSettingsItem BotAliasLocaleSetting.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::Lex::BotAlias.BotAliasLocaleSettingsItem LocaleId.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::Lex::BotAlias.TextLogDestination CloudWatch.Type (__added__)
+* AWS::MediaLive::Channel.HlsGroupSettings ProgramDateTimeClock (__added__)
+* AWS::MediaLive::Channel.InputSettings Scte35Pid (__added__)
+* AWS::NimbleStudio::LaunchProfile.StreamConfiguration MaxStoppedSessionLengthInMinutes (__added__)
+* AWS::NimbleStudio::LaunchProfile.StreamConfiguration SessionStorage (__added__)
+* AWS::Transfer::Server.ProtocolDetails TlsSessionResumptionMode (__added__)
+
+## Unapplied changes
+
+* AWS::ECS is at 51.0.0
+* AWS::SageMaker is at 51.0.0
+
 
 # Serverless Application Model (SAM) Resource Specification v2016-10-31
 

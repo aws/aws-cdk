@@ -1,5 +1,4 @@
-import { SynthUtils } from '@aws-cdk/assert-internal';
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as autoscaling from '@aws-cdk/aws-autoscaling';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
@@ -18,7 +17,7 @@ describe('CodeDeploy Server Deployment Group', () => {
       application,
     });
 
-    expect(stack).toHaveResource('AWS::CodeDeploy::DeploymentGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeDeploy::DeploymentGroup', {
       'ApplicationName': {
         'Ref': 'MyApp3CE31C26',
       },
@@ -36,9 +35,8 @@ describe('CodeDeploy Server Deployment Group', () => {
       value: serverDeploymentGroup.application.applicationName,
     });
 
-    expect(stack2).toHaveOutput({
-      outputName: 'Output',
-      outputValue: 'defaultmydgapplication78dba0bb0c7580b32033',
+    Template.fromStack(stack2).hasOutput('Output', {
+      Value: 'defaultmydgapplication78dba0bb0c7580b32033',
     });
   });
 
@@ -68,7 +66,7 @@ describe('CodeDeploy Server Deployment Group', () => {
       installAgent: true,
     });
 
-    expect(stack).toHaveResource('AWS::AutoScaling::LaunchConfiguration', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::LaunchConfiguration', {
       'UserData': {
         'Fn::Base64': {
           'Fn::Join': [
@@ -104,7 +102,7 @@ describe('CodeDeploy Server Deployment Group', () => {
       installAgent: true,
     });
 
-    expect(stack).toHaveResource('AWS::AutoScaling::LaunchConfiguration', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::LaunchConfiguration', {
       'UserData': {
         'Fn::Base64': {
           'Fn::Join': [
@@ -135,7 +133,7 @@ describe('CodeDeploy Server Deployment Group', () => {
       autoScalingGroups: [asg],
     });
 
-    expect(stack).toHaveResource('AWS::CodeDeploy::DeploymentGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeDeploy::DeploymentGroup', {
       'AutoScalingGroups': [
         {
           'Ref': 'ASG46ED3070',
@@ -156,7 +154,7 @@ describe('CodeDeploy Server Deployment Group', () => {
     const deploymentGroup = new codedeploy.ServerDeploymentGroup(stack, 'DeploymentGroup');
     deploymentGroup.addAutoScalingGroup(asg);
 
-    expect(stack).toHaveResource('AWS::CodeDeploy::DeploymentGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeDeploy::DeploymentGroup', {
       'AutoScalingGroups': [
         {
           'Ref': 'ASG46ED3070',
@@ -178,7 +176,7 @@ describe('CodeDeploy Server Deployment Group', () => {
       loadBalancer: codedeploy.LoadBalancer.application(targetGroup),
     });
 
-    expect(stack).toHaveResource('AWS::CodeDeploy::DeploymentGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeDeploy::DeploymentGroup', {
       'LoadBalancerInfo': {
         'TargetGroupInfoList': [
           {
@@ -210,7 +208,7 @@ describe('CodeDeploy Server Deployment Group', () => {
       loadBalancer: codedeploy.LoadBalancer.network(targetGroup),
     });
 
-    expect(stack).toHaveResource('AWS::CodeDeploy::DeploymentGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeDeploy::DeploymentGroup', {
       'LoadBalancerInfo': {
         'TargetGroupInfoList': [
           {
@@ -241,7 +239,7 @@ describe('CodeDeploy Server Deployment Group', () => {
       ),
     });
 
-    expect(stack).toHaveResource('AWS::CodeDeploy::DeploymentGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeDeploy::DeploymentGroup', {
       'Ec2TagSet': {
         'Ec2TagSetList': [
           {
@@ -276,7 +274,7 @@ describe('CodeDeploy Server Deployment Group', () => {
       ),
     });
 
-    expect(stack).toHaveResource('AWS::CodeDeploy::DeploymentGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeDeploy::DeploymentGroup', {
       'OnPremisesTagSet': {
         'OnPremisesTagSetList': [
           {
@@ -343,7 +341,7 @@ describe('CodeDeploy Server Deployment Group', () => {
     const deploymentGroup = new codedeploy.ServerDeploymentGroup(stack, 'DeploymentGroup');
     deploymentGroup.addAlarm(alarm);
 
-    expect(stack).toHaveResource('AWS::CodeDeploy::DeploymentGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeDeploy::DeploymentGroup', {
       'AlarmConfiguration': {
         'Alarms': [
           {
@@ -362,7 +360,7 @@ describe('CodeDeploy Server Deployment Group', () => {
 
     new codedeploy.ServerDeploymentGroup(stack, 'DeploymentGroup');
 
-    expect(stack).toHaveResource('AWS::CodeDeploy::DeploymentGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeDeploy::DeploymentGroup', {
       'AutoRollbackConfiguration': {
         'Enabled': true,
         'Events': [
@@ -391,7 +389,7 @@ describe('CodeDeploy Server Deployment Group', () => {
     });
     deploymentGroup.addAlarm(alarm);
 
-    expect(stack).toHaveResource('AWS::CodeDeploy::DeploymentGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeDeploy::DeploymentGroup', {
       'AutoRollbackConfiguration': {
         'Enabled': true,
         'Events': [
@@ -402,7 +400,8 @@ describe('CodeDeploy Server Deployment Group', () => {
   });
 
   test('setting to roll back on alarms without providing any results in an exception', () => {
-    const stack = new cdk.Stack();
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app);
 
     new codedeploy.ServerDeploymentGroup(stack, 'DeploymentGroup', {
       autoRollback: {
@@ -410,7 +409,7 @@ describe('CodeDeploy Server Deployment Group', () => {
       },
     });
 
-    expect(() => SynthUtils.toCloudFormation(stack)).toThrow(/deploymentInAlarm/);
+    expect(() => app.synth()).toThrow(/deploymentInAlarm/);
   });
 
   test('can be used with an imported ALB Target Group as the load balancer', () => {
@@ -424,7 +423,7 @@ describe('CodeDeploy Server Deployment Group', () => {
       ),
     });
 
-    expect(stack).toHaveResourceLike('AWS::CodeDeploy::DeploymentGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeDeploy::DeploymentGroup', {
       'LoadBalancerInfo': {
         'TargetGroupInfoList': [
           {
@@ -436,6 +435,27 @@ describe('CodeDeploy Server Deployment Group', () => {
         'DeploymentOption': 'WITH_TRAFFIC_CONTROL',
       },
     });
+  });
+
+  test('fail with more than 100 characters in name', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app);
+    new codedeploy.ServerDeploymentGroup(stack, 'MyDG', {
+      deploymentGroupName: 'a'.repeat(101),
+    });
+
+    expect(() => app.synth()).toThrow(`Deployment group name: "${'a'.repeat(101)}" can be a max of 100 characters.`);
+  });
+
+  test('fail with unallowed characters in name', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app);
+    new codedeploy.ServerDeploymentGroup(stack, 'MyDG', {
+
+      deploymentGroupName: 'my name',
+    });
+
+    expect(() => app.synth()).toThrow('Deployment group name: "my name" can only contain letters (a-z, A-Z), numbers (0-9), periods (.), underscores (_), + (plus signs), = (equals signs), , (commas), @ (at signs), - (minus signs).');
   });
 
 });

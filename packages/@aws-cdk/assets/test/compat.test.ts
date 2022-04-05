@@ -1,5 +1,4 @@
 import { SymlinkFollowMode } from '@aws-cdk/core';
-import '@aws-cdk/assert-internal/jest';
 import { FollowMode } from '../lib';
 import { toSymlinkFollow } from '../lib/compat';
 

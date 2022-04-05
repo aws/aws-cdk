@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
 import * as cdk from '@aws-cdk/core';
@@ -24,7 +24,7 @@ describe('instance', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ServiceDiscovery::Instance', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ServiceDiscovery::Instance', {
       InstanceAttributes: {
         AWS_INSTANCE_IPV4: '10.0.0.0',
         AWS_INSTANCE_IPV6: '0:0:0:0:0:ffff:a00:0',
@@ -62,7 +62,7 @@ describe('instance', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ServiceDiscovery::Instance', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ServiceDiscovery::Instance', {
       InstanceAttributes: {
         AWS_INSTANCE_IPV4: '54.239.25.192',
         AWS_INSTANCE_IPV6: '0:0:0:0:0:ffff:a00:0',
@@ -102,7 +102,7 @@ describe('instance', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ServiceDiscovery::Instance', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ServiceDiscovery::Instance', {
       InstanceAttributes: {
         AWS_INSTANCE_IPV4: '10.0.0.0',
         AWS_INSTANCE_IPV6: '0:0:0:0:0:ffff:a00:0',
@@ -256,7 +256,7 @@ describe('instance', () => {
     service.registerLoadBalancer('Loadbalancer', alb, customAttributes);
 
     // THEN
-    expect(stack).toHaveResource('AWS::ServiceDiscovery::Instance', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ServiceDiscovery::Instance', {
       InstanceAttributes: {
         AWS_ALIAS_DNS_NAME: {
           'Fn::GetAtt': [
@@ -343,7 +343,7 @@ describe('instance', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ServiceDiscovery::Instance', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ServiceDiscovery::Instance', {
       InstanceAttributes: {
         AWS_INSTANCE_CNAME: 'foo.com',
         dogs: 'good',
@@ -397,7 +397,7 @@ describe('instance', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ServiceDiscovery::Instance', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ServiceDiscovery::Instance', {
       InstanceAttributes: {
         dogs: 'good',
       },
@@ -494,7 +494,7 @@ describe('instance', () => {
     });
 
     // THEN
-    expect(stack).toCountResources('AWS::ServiceDiscovery::Instance', 2);
+    Template.fromStack(stack).resourceCountIs('AWS::ServiceDiscovery::Instance', 2);
 
 
   });

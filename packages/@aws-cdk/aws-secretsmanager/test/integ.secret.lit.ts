@@ -31,9 +31,9 @@ class SecretsManagerStack extends cdk.Stack {
     });
 
     // Secret with predefined value
-    const accessKey = new iam.CfnAccessKey(this, 'AccessKey', { userName: user.userName });
+    const accessKey = new iam.AccessKey(this, 'AccessKey', { user });
     new secretsmanager.Secret(this, 'PredefinedSecret', {
-      secretStringBeta1: secretsmanager.SecretStringValueBeta1.fromToken(accessKey.attrSecretAccessKey),
+      secretStringBeta1: secretsmanager.SecretStringValueBeta1.fromToken(accessKey.secretAccessKey.toString()),
     });
     /// !hide
   }

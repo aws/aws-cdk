@@ -144,3 +144,14 @@ test('should include outputs-file in settings', () => {
   // THEN
   expect(settings.get(['outputsFile'])).toEqual('my-outputs-file.json');
 });
+
+test('providing a build arg', () => {
+  // GIVEN
+  const settings = Settings.fromCommandLineArguments({
+    _: [Command.SYNTH],
+    build: 'mvn package',
+  });
+
+  // THEN
+  expect(settings.get(['build'])).toEqual('mvn package');
+});

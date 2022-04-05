@@ -1,6 +1,6 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
-import { ArnFormat, FeatureFlags, Fn, IResource, Lazy, RemovalPolicy, Resource, SecretValue, Stack, Token } from '@aws-cdk/core';
+import { ArnFormat, FeatureFlags, Fn, IResource, Lazy, RemovalPolicy, Resource, SecretValue, Stack, Token, TokenComparison } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { IConstruct, Construct } from 'constructs';
 import { ResourcePolicy } from './policy';
@@ -205,8 +205,8 @@ export class SecretStringValueBeta1 {
    * ```ts
    *     // Creates a new IAM user, access and secret keys, and stores the secret access key in a Secret.
    *     const user = new iam.User(this, 'User');
-   *     const accessKey = new iam.CfnAccessKey(this, 'AccessKey', { userName: user.userName });
-   *     const secretValue = secretsmanager.SecretStringValueBeta1.fromToken(accessKey.attrSecretAccessKey);
+   *     const accessKey = new iam.AccessKey(this, 'AccessKey', { user });
+   *     const secretValue = secretsmanager.SecretStringValueBeta1.fromToken(accessKey.secretAccessKey.toString());
    *     new secretsmanager.Secret(this, 'Secret', {
    *       secretStringBeta1: secretValue,
    *     });
@@ -216,7 +216,7 @@ export class SecretStringValueBeta1 {
    *     const secretValue = secretsmanager.SecretStringValueBeta1.fromToken(JSON.stringify({
    *       username: user.userName,
    *       database: 'foo',
-   *       password: accessKey.attrSecretAccessKey
+   *       password: accessKey.secretAccessKey.toString(),
    *     }));
    *
    * Note that the value being a Token does *not* guarantee safety. For example, a Lazy-evaluated string
@@ -306,8 +306,10 @@ abstract class SecretBase extends Resource implements ISecret {
       );
     }
 
+    const crossAccount = Token.compareStrings(Stack.of(this).account, grantee.grantPrincipal.principalAccount || '');
+
     // Throw if secret is not imported and it's shared cross account and no KMS key is provided
-    if (this instanceof Secret && result.resourceStatement && !this.encryptionKey) {
+    if (this instanceof Secret && result.resourceStatement && (!this.encryptionKey && crossAccount === TokenComparison.DIFFERENT)) {
       throw new Error('KMS Key must be provided for cross account access to Secret');
     }
 
@@ -849,8 +851,8 @@ function parseSecretName(construct: IConstruct, secretArn: string) {
     // Secret resource names are in the format `${secretName}-${6-character SecretsManager suffix}`
     // If there is no hyphen (or 6-character suffix) assume no suffix was provided, and return the whole name.
     const lastHyphenIndex = resourceName.lastIndexOf('-');
-    const hasSecretsSuffix = lastHyphenIndex !== -1 && resourceName.substr(lastHyphenIndex + 1).length === 6;
-    return hasSecretsSuffix ? resourceName.substr(0, lastHyphenIndex) : resourceName;
+    const hasSecretsSuffix = lastHyphenIndex !== -1 && resourceName.slice(lastHyphenIndex + 1).length === 6;
+    return hasSecretsSuffix ? resourceName.slice(0, lastHyphenIndex) : resourceName;
   }
   throw new Error('invalid ARN format; no secret name provided');
 }

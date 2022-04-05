@@ -17,8 +17,8 @@ class ExampleComIntegration extends apigatewayv2.HttpRouteIntegration {
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'IntegApiGatewayV2Iam');
 const user = new iam.User(stack, 'User');
-const userAccessKey = new iam.CfnAccessKey(stack, 'UserAccess', {
-  userName: user.userName,
+const userAccessKey = new iam.AccessKey(stack, 'UserAccess', {
+  user,
 });
 
 const httpApi = new apigatewayv2.HttpApi(stack, 'HttpApi', {
@@ -44,11 +44,11 @@ new cdk.CfnOutput(stack, 'API', {
 });
 
 new cdk.CfnOutput(stack, 'TESTACCESSKEYID', {
-  value: userAccessKey.ref,
+  value: userAccessKey.accessKeyId,
 });
 
 new cdk.CfnOutput(stack, 'TESTSECRETACCESSKEY', {
-  value: userAccessKey.attrSecretAccessKey,
+  value: userAccessKey.secretAccessKey.toString(),
 });
 
 new cdk.CfnOutput(stack, 'TESTREGION', {

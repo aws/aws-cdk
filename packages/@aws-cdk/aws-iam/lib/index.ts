@@ -13,6 +13,7 @@ export * from './unknown-principal';
 export * from './oidc-provider';
 export * from './permissions-boundary';
 export * from './saml-provider';
+export * from './access-key';
 
 // AWS::IAM CloudFormation Resources:
 export * from './iam.generated';

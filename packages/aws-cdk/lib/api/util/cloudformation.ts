@@ -16,6 +16,10 @@ interface TemplateParameter {
   [key: string]: any;
 }
 
+export type ResourceIdentifierProperties = CloudFormation.ResourceIdentifierProperties;
+export type ResourceIdentifierSummaries = CloudFormation.ResourceIdentifierSummaries;
+export type ResourcesToImport = CloudFormation.ResourcesToImport;
+
 /**
  * Represents an (existing) Stack in CloudFormation
  *

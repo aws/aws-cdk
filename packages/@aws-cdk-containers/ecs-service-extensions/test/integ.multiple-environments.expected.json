@@ -1103,6 +1103,18 @@
             ],
             "Essential": true,
             "Image": "nathanpeck/name",
+            "LogConfiguration": {
+              "LogDriver": "awslogs",
+              "Options": {
+                "awslogs-group": {
+                  "Ref": "nameproductionlogsD0BFFE8C"
+                },
+                "awslogs-stream-prefix": "name-production",
+                "awslogs-region": {
+                  "Ref": "AWS::Region"
+                }
+              }
+            },
             "Memory": 2048,
             "Name": "app",
             "PortMappings": [
@@ -1266,11 +1278,6 @@
         }
       }
     },
-    "nameproductiontaskdefinitionenvoyLogGroupF79A2732": {
-      "Type": "AWS::Logs::LogGroup",
-      "UpdateReplacePolicy": "Retain",
-      "DeletionPolicy": "Retain"
-    },
     "nameproductiontaskdefinitionExecutionRoleB72DD86B": {
       "Type": "AWS::IAM::Role",
       "Properties": {
@@ -1295,9 +1302,30 @@
           "Statement": [
             {
               "Action": [
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "nameproductionlogsD0BFFE8C",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::GetAtt": [
+                    "nameproductiontaskdefinitionenvoyLogGroupF79A2732",
+                    "Arn"
+                  ]
+                }
+              ]
+            },
+            {
+              "Action": [
                 "ecr:BatchCheckLayerAvailability",
-                "ecr:GetDownloadUrlForLayer",
-                "ecr:BatchGetImage"
+                "ecr:BatchGetImage",
+                "ecr:GetDownloadUrlForLayer"
               ],
               "Effect": "Allow",
               "Resource": {
@@ -1331,19 +1359,6 @@
               "Action": "ecr:GetAuthorizationToken",
               "Effect": "Allow",
               "Resource": "*"
-            },
-            {
-              "Action": [
-                "logs:CreateLogStream",
-                "logs:PutLogEvents"
-              ],
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "nameproductiontaskdefinitionenvoyLogGroupF79A2732",
-                  "Arn"
-                ]
-              }
             }
           ],
           "Version": "2012-10-17"
@@ -1355,6 +1370,20 @@
           }
         ]
       }
+    },
+    "nameproductiontaskdefinitionenvoyLogGroupF79A2732": {
+      "Type": "AWS::Logs::LogGroup",
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain"
+    },
+    "nameproductionlogsD0BFFE8C": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "name-production-logs",
+        "RetentionInDays": 30
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
     "nameproductionenvoytoappmesh1B44B04A": {
       "Type": "AWS::IAM::Policy",
@@ -1631,6 +1660,18 @@
             ],
             "Essential": true,
             "Image": "nathanpeck/name",
+            "LogConfiguration": {
+              "LogDriver": "awslogs",
+              "Options": {
+                "awslogs-group": {
+                  "Ref": "namedevelopmentlogs108670CC"
+                },
+                "awslogs-stream-prefix": "name-development",
+                "awslogs-region": {
+                  "Ref": "AWS::Region"
+                }
+              }
+            },
             "Memory": 2048,
             "Name": "app",
             "PortMappings": [
@@ -1794,11 +1835,6 @@
         }
       }
     },
-    "namedevelopmenttaskdefinitionenvoyLogGroupF8FCAFD6": {
-      "Type": "AWS::Logs::LogGroup",
-      "UpdateReplacePolicy": "Retain",
-      "DeletionPolicy": "Retain"
-    },
     "namedevelopmenttaskdefinitionExecutionRole48B53E4E": {
       "Type": "AWS::IAM::Role",
       "Properties": {
@@ -1823,9 +1859,30 @@
           "Statement": [
             {
               "Action": [
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "namedevelopmentlogs108670CC",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::GetAtt": [
+                    "namedevelopmenttaskdefinitionenvoyLogGroupF8FCAFD6",
+                    "Arn"
+                  ]
+                }
+              ]
+            },
+            {
+              "Action": [
                 "ecr:BatchCheckLayerAvailability",
-                "ecr:GetDownloadUrlForLayer",
-                "ecr:BatchGetImage"
+                "ecr:BatchGetImage",
+                "ecr:GetDownloadUrlForLayer"
               ],
               "Effect": "Allow",
               "Resource": {
@@ -1859,19 +1916,6 @@
               "Action": "ecr:GetAuthorizationToken",
               "Effect": "Allow",
               "Resource": "*"
-            },
-            {
-              "Action": [
-                "logs:CreateLogStream",
-                "logs:PutLogEvents"
-              ],
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "namedevelopmenttaskdefinitionenvoyLogGroupF8FCAFD6",
-                  "Arn"
-                ]
-              }
             }
           ],
           "Version": "2012-10-17"
@@ -1883,6 +1927,20 @@
           }
         ]
       }
+    },
+    "namedevelopmenttaskdefinitionenvoyLogGroupF8FCAFD6": {
+      "Type": "AWS::Logs::LogGroup",
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain"
+    },
+    "namedevelopmentlogs108670CC": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "name-development-logs",
+        "RetentionInDays": 30
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
     "namedevelopmentenvoytoappmesh45FF08AA": {
       "Type": "AWS::IAM::Policy",

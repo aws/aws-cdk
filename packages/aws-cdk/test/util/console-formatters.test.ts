@@ -1,4 +1,4 @@
-import * as colors from 'colors/safe';
+import * as chalk from 'chalk';
 import { formatAsBanner } from '../../lib/util/console-formatters';
 
 test('no banner on empty msg list', () =>
@@ -15,12 +15,12 @@ test('banner works as expected', () =>
 test('banner works for formatted msgs', () =>
   expect(formatAsBanner([
     'hello msg1',
-    colors.yellow('hello msg2'),
-    colors.bold('hello msg3'),
+    chalk.yellow('hello msg2'),
+    chalk.bold('hello msg3'),
   ])).toEqual([
     '******************',
     '*** hello msg1 ***',
-    `*** ${colors.yellow('hello msg2')} ***`,
-    `*** ${colors.bold('hello msg3')} ***`,
+    `*** ${chalk.yellow('hello msg2')} ***`,
+    `*** ${chalk.bold('hello msg3')} ***`,
     '******************',
   ]));

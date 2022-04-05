@@ -50,7 +50,7 @@ export class HttpLambdaIntegration extends HttpRouteIntegration {
     this._id = id;
   }
 
-  public bind(options: HttpRouteIntegrationBindOptions): HttpRouteIntegrationConfig {
+  protected completeBind(options: HttpRouteIntegrationBindOptions) {
     const route = options.route;
     this.handler.addPermission(`${this._id}-Permission`, {
       scope: options.scope,
@@ -61,9 +61,11 @@ export class HttpLambdaIntegration extends HttpRouteIntegration {
         resourceName: `*/*${route.path ?? ''}`, // empty string in the case of the catch-all route $default
       }),
     });
+  }
 
+  public bind(_: HttpRouteIntegrationBindOptions): HttpRouteIntegrationConfig {
     return {
-      type: HttpIntegrationType.LAMBDA_PROXY,
+      type: HttpIntegrationType.AWS_PROXY,
       uri: this.handler.functionArn,
       payloadFormatVersion: this.props.payloadFormatVersion ?? PayloadFormatVersion.VERSION_2_0,
       parameterMapping: this.props.parameterMapping,

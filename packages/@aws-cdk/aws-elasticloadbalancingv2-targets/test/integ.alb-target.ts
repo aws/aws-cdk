@@ -32,13 +32,14 @@ class TestStack extends Stack {
       port: 80,
     });
 
-    listener.addTargets('Targets', {
+    const target = listener.addTargets('Targets', {
       targets: [new targets.AlbTarget(svc.loadBalancer, 80)],
       port: 80,
       healthCheck: {
         protocol: elbv2.Protocol.HTTP,
       },
     });
+    target.node.addDependency(svc.listener);
 
     new CfnOutput(this, 'NlbEndpoint', { value: `http://${nlb.loadBalancerDnsName}` });
   }

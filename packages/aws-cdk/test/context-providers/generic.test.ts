@@ -1,4 +1,4 @@
-import { PluginHost } from '../../lib';
+import { PluginHost } from '../../lib/api/plugin';
 import * as contextproviders from '../../lib/context-providers';
 import { Context, TRANSIENT_CONTEXT_KEY } from '../../lib/settings';
 import { MockSdkProvider } from '../util/mock-sdk';
@@ -6,6 +6,7 @@ import { MockSdkProvider } from '../util/mock-sdk';
 const mockSDK = new MockSdkProvider();
 
 const TEST_PROVIDER: any = 'testprovider';
+const PLUGIN_PROVIDER: any = 'plugin';
 
 test('errors are reported into the context value', async () => {
   // GIVEN
@@ -84,7 +85,7 @@ test('context provider can be registered using PluginHost', async () => {
   let called = false;
 
   // GIVEN
-  PluginHost.instance.registerContextProviderAlpha(TEST_PROVIDER, {
+  PluginHost.instance.registerContextProviderAlpha('prov', {
     async getValue(_: {[key: string]: any}): Promise<any> {
       called = true;
       return '';
@@ -94,16 +95,16 @@ test('context provider can be registered using PluginHost', async () => {
 
   // WHEN
   await contextproviders.provideContextValues([
-    { key: 'asdf', props: { account: '1234', region: 'us-east-1' }, provider: TEST_PROVIDER },
+    { key: 'asdf', props: { account: '1234', region: 'us-east-1', pluginName: 'prov' }, provider: PLUGIN_PROVIDER },
   ], context, mockSDK);
 
   // THEN - error is marked transient
   expect(called).toEqual(true);
 });
 
-test('context provider can be called without account/region', async () => {
+test('plugin context provider can be called without account/region', async () => {
   // GIVEN
-  PluginHost.instance.registerContextProviderAlpha(TEST_PROVIDER, {
+  PluginHost.instance.registerContextProviderAlpha('prov', {
     async getValue(_: {[key: string]: any}): Promise<any> {
       return 'yay';
     },
@@ -112,7 +113,7 @@ test('context provider can be called without account/region', async () => {
 
   // WHEN
   await contextproviders.provideContextValues([
-    { key: 'asdf', props: { banana: 'yellow' } as any, provider: TEST_PROVIDER },
+    { key: 'asdf', props: { banana: 'yellow', pluginName: 'prov' } as any, provider: PLUGIN_PROVIDER },
   ], context, mockSDK);
 
   // THEN - error is marked transient

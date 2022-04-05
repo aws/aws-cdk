@@ -1,5 +1,6 @@
+import { Template, Match } from '@aws-cdk/assertions';
 import { Bucket } from '@aws-cdk/aws-s3';
-import { Aws, Stack } from '@aws-cdk/core';
+import { Aws, Stack, CfnResource } from '@aws-cdk/core';
 import * as ec2 from '../lib';
 
 describe('user data', () => {
@@ -41,6 +42,7 @@ describe('user data', () => {
     const stack = new Stack();
     const resource = new ec2.Vpc(stack, 'RESOURCE');
     const userData = ec2.UserData.forWindows();
+    const logicalId = (resource.node.defaultChild as CfnResource).logicalId;
 
     // WHEN
     userData.addSignalOnExitCommand( resource );
@@ -49,15 +51,54 @@ describe('user data', () => {
     // THEN
     const rendered = userData.render();
 
+    expect(stack.resolve(logicalId)).toEqual('RESOURCE1989552F');
     expect(rendered).toEqual('<powershell>trap {\n' +
         '$success=($PSItem.Exception.Message -eq "Success")\n' +
-        `cfn-signal --stack Default --resource RESOURCE1989552F --region ${Aws.REGION} --success ($success.ToString().ToLower())\n` +
+        `cfn-signal --stack Default --resource ${logicalId} --region ${Aws.REGION} --success ($success.ToString().ToLower())\n` +
         'break\n' +
         '}\n' +
         'command1\n' +
         'throw "Success"</powershell>',
     );
 
+  });
+  test('can create Windows with Signal Command and userDataCausesReplacement', () => {
+    // GIVEN
+    const stack = new Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+    const userData = ec2.UserData.forWindows();
+    const resource = new ec2.Instance(stack, 'RESOURCE', {
+      vpc,
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.T2, ec2.InstanceSize.LARGE),
+      machineImage: ec2.MachineImage.genericWindows({ ['us-east-1']: 'ami-12345678' }),
+      userDataCausesReplacement: true,
+      userData,
+    });
+
+    const logicalId = (resource.node.defaultChild as CfnResource).logicalId;
+
+    // WHEN
+    userData.addSignalOnExitCommand( resource );
+    userData.addCommands('command1');
+
+    // THEN
+    Template.fromStack(stack).templateMatches({
+      Resources: Match.objectLike({
+        RESOURCE1989552Fdfd505305f427919: {
+          Type: 'AWS::EC2::Instance',
+        },
+      }),
+    });
+    expect(stack.resolve(logicalId)).toEqual('RESOURCE1989552Fdfd505305f427919');
+    const rendered = userData.render();
+    expect(rendered).toEqual('<powershell>trap {\n' +
+        '$success=($PSItem.Exception.Message -eq "Success")\n' +
+        `cfn-signal --stack Default --resource ${logicalId} --region ${Aws.REGION} --success ($success.ToString().ToLower())\n` +
+        'break\n' +
+        '}\n' +
+        'command1\n' +
+        'throw "Success"</powershell>',
+    );
   });
   test('can windows userdata download S3 files', () => {
     // GIVEN
@@ -174,6 +215,7 @@ describe('user data', () => {
     // GIVEN
     const stack = new Stack();
     const resource = new ec2.Vpc(stack, 'RESOURCE');
+    const logicalId = (resource.node.defaultChild as CfnResource).logicalId;
 
     // WHEN
     const userData = ec2.UserData.forLinux();
@@ -182,14 +224,52 @@ describe('user data', () => {
 
     // THEN
     const rendered = userData.render();
+    expect(stack.resolve(logicalId)).toEqual('RESOURCE1989552F');
     expect(rendered).toEqual('#!/bin/bash\n' +
         'function exitTrap(){\n' +
         'exitCode=$?\n' +
-        `/opt/aws/bin/cfn-signal --stack Default --resource RESOURCE1989552F --region ${Aws.REGION} -e $exitCode || echo \'Failed to send Cloudformation Signal\'\n` +
+        `/opt/aws/bin/cfn-signal --stack Default --resource ${logicalId} --region ${Aws.REGION} -e $exitCode || echo \'Failed to send Cloudformation Signal\'\n` +
         '}\n' +
         'trap exitTrap EXIT\n' +
         'command1');
 
+  });
+  test('can create Linux with Signal Command and userDataCausesReplacement', () => {
+    // GIVEN
+    const stack = new Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+    const userData = ec2.UserData.forLinux();
+    const resource = new ec2.Instance(stack, 'RESOURCE', {
+      vpc,
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.T2, ec2.InstanceSize.LARGE),
+      machineImage: ec2.MachineImage.genericLinux({ ['us-east-1']: 'ami-12345678' }),
+      userDataCausesReplacement: true,
+      userData,
+    });
+
+    const logicalId = (resource.node.defaultChild as CfnResource).logicalId;
+
+    // WHEN
+    userData.addSignalOnExitCommand( resource );
+    userData.addCommands('command1');
+
+    // THEN
+    Template.fromStack(stack).templateMatches({
+      Resources: Match.objectLike({
+        RESOURCE1989552F74a24ef4fbc89422: {
+          Type: 'AWS::EC2::Instance',
+        },
+      }),
+    });
+    expect(stack.resolve(logicalId)).toEqual('RESOURCE1989552F74a24ef4fbc89422');
+    const rendered = userData.render();
+    expect(rendered).toEqual('#!/bin/bash\n' +
+        'function exitTrap(){\n' +
+        'exitCode=$?\n' +
+        `/opt/aws/bin/cfn-signal --stack Default --resource ${logicalId} --region ${Aws.REGION} -e $exitCode || echo \'Failed to send Cloudformation Signal\'\n` +
+        '}\n' +
+        'trap exitTrap EXIT\n' +
+        'command1');
   });
   test('can linux userdata download S3 files', () => {
     // GIVEN

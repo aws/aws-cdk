@@ -162,3 +162,15 @@ test('with asset deployment', () => {
     },
   });
 });
+
+test('with performance mode', () => {
+  // WHEN
+  app.addBranch('dev', {
+    performanceMode: true,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Amplify::Branch', {
+    EnablePerformanceMode: true,
+  });
+});

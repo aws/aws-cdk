@@ -12,15 +12,17 @@ import { DockerCredential, dockerCredentialsInstallCommands, DockerCredentialUsa
 import { GraphNodeCollection, isGraph, AGraphNode, PipelineGraph } from '../helpers-internal';
 import { PipelineBase } from '../main';
 import { AssetSingletonRole } from '../private/asset-singleton-role';
+import { preferredCliVersion } from '../private/cli-version';
 import { appOf, assemblyBuilderOf, embeddedAsmPath, obtainScope } from '../private/construct-internals';
 import { toPosixPath } from '../private/fs';
 import { actionName, stackVariableNamespace } from '../private/identifiers';
 import { enumerate, flatten, maybeSuffix, noUndefined } from '../private/javascript';
 import { writeTemplateConfiguration } from '../private/template-configuration';
-import { CodeBuildFactory, mergeCodeBuildOptions } from './_codebuild-factory';
 import { ArtifactMap } from './artifact-map';
 import { CodeBuildStep } from './codebuild-step';
 import { CodePipelineActionFactoryResult, ICodePipelineActionFactory } from './codepipeline-action-factory';
+import { CodeBuildFactory, mergeCodeBuildOptions } from './private/codebuild-factory';
+import { namespaceStepOutputs } from './private/outputs';
 
 
 /**
@@ -303,6 +305,7 @@ export class CodePipeline extends PipelineBase {
   private _cloudAssemblyFileSet?: FileSet;
 
   private readonly singlePublisherPerAssetType: boolean;
+  private readonly cliVersion?: string;
 
   constructor(scope: Construct, id: string, private readonly props: CodePipelineProps) {
     super(scope, id, props);
@@ -310,6 +313,7 @@ export class CodePipeline extends PipelineBase {
     this.selfMutation = props.selfMutation ?? true;
     this.dockerCredentials = props.dockerCredentials ?? [];
     this.singlePublisherPerAssetType = !(props.publishAssetsInParallel ?? true);
+    this.cliVersion = props.cliVersion ?? preferredCliVersion();
   }
 
   /**
@@ -415,9 +419,14 @@ export class CodePipeline extends PipelineBase {
             const factory = this.actionFromNode(node);
 
             const nodeType = this.nodeTypeFromNode(node);
+            const name = actionName(node, sharedParent);
+
+            const variablesNamespace = node.data?.type === 'step'
+              ? namespaceStepOutputs(node.data.step, pipelineStage, name)
+              : undefined;
 
             const result = factory.produceAction(pipelineStage, {
-              actionName: actionName(node, sharedParent),
+              actionName: name,
               runOrder,
               artifacts: this.artifacts,
               scope: obtainScope(this.pipeline, stageName),
@@ -426,6 +435,7 @@ export class CodePipeline extends PipelineBase {
               // If this step happens to produce a CodeBuild job, set the default options
               codeBuildDefaults: nodeType ? this.codeBuildDefaultsFor(nodeType) : undefined,
               beforeSelfMutation,
+              variablesNamespace,
             });
 
             if (node.data?.type === 'self-update') {
@@ -603,7 +613,7 @@ export class CodePipeline extends PipelineBase {
   }
 
   private selfMutateAction(): ICodePipelineActionFactory {
-    const installSuffix = this.props.cliVersion ? `@${this.props.cliVersion}` : '';
+    const installSuffix = this.cliVersion ? `@${this.cliVersion}` : '';
 
     const pipelineStack = Stack.of(this.pipeline);
     const pipelineStackIdentifier = pipelineStack.node.path ?? pipelineStack.stackName;
@@ -649,7 +659,7 @@ export class CodePipeline extends PipelineBase {
   }
 
   private publishAssetsAction(node: AGraphNode, assets: StackAsset[]): ICodePipelineActionFactory {
-    const installSuffix = this.props.cliVersion ? `@${this.props.cliVersion}` : '';
+    const installSuffix = this.cliVersion ? `@${this.cliVersion}` : '';
 
     const commands = assets.map(asset => {
       const relativeAssetManifestPath = path.relative(this.myCxAsmRoot, asset.assetManifestPath);

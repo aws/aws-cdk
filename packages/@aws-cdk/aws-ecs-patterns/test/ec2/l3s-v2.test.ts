@@ -1,5 +1,4 @@
-import { SynthUtils } from '@aws-cdk/assert-internal';
-import '@aws-cdk/assert-internal/jest';
+import { Match, Template } from '@aws-cdk/assertions';
 import { AutoScalingGroup } from '@aws-cdk/aws-autoscaling';
 import { Certificate } from '@aws-cdk/aws-certificatemanager';
 import { MachineImage, Vpc } from '@aws-cdk/aws-ec2';
@@ -12,6 +11,8 @@ import {
   Ec2TaskDefinition,
   PropagatedTagSource,
   Protocol,
+  PlacementStrategy,
+  PlacementConstraint,
 } from '@aws-cdk/aws-ecs';
 import { ApplicationProtocol, SslPolicy } from '@aws-cdk/aws-elasticloadbalancingv2';
 import { CompositePrincipal, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
@@ -44,16 +45,16 @@ describe('When Application Load Balancer', () => {
     });
 
     // THEN - stack contains a load balancer, a service, and a target group.
-    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::LoadBalancer');
+    Template.fromStack(stack).resourceCountIs('AWS::ElasticLoadBalancingV2::LoadBalancer', 1);
 
-    expect(stack).toHaveResource('AWS::ECS::Service', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
       DesiredCount: 1,
       LaunchType: 'EC2',
     });
 
-    expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
-        {
+        Match.objectLike({
           Image: 'test',
           LogConfiguration: {
             LogDriver: 'awslogs',
@@ -76,7 +77,7 @@ describe('When Application Load Balancer', () => {
               Protocol: 'tcp',
             },
           ],
-        },
+        }),
       ],
       NetworkMode: 'bridge',
       RequiresCompatibilities: [
@@ -164,10 +165,12 @@ describe('When Application Load Balancer', () => {
           protocol: Protocol.TCP,
         },
       ],
+      placementStrategies: [PlacementStrategy.spreadAcrossInstances(), PlacementStrategy.packedByCpu(), PlacementStrategy.randomly()],
+      placementConstraints: [PlacementConstraint.memberOf('attribute:ecs.instance-type =~ m5a.*')],
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ECS::Service', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
       DesiredCount: 3,
       LaunchType: 'EC2',
       EnableECSManagedTags: true,
@@ -190,9 +193,11 @@ describe('When Application Load Balancer', () => {
       ],
       PropagateTags: 'SERVICE',
       ServiceName: 'myService',
+      PlacementConstraints: [{ Type: 'memberOf', Expression: 'attribute:ecs.instance-type =~ m5a.*' }],
+      PlacementStrategies: [{ Field: 'instanceId', Type: 'spread' }, { Field: 'cpu', Type: 'binpack' }, { Type: 'random' }],
     });
 
-    expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
         {
           Cpu: 256,
@@ -260,7 +265,7 @@ describe('When Application Load Balancer', () => {
       },
     });
 
-    expect(stack).toHaveResourceLike('AWS::ElasticLoadBalancingV2::Listener', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::Listener', {
       Port: 443,
       Protocol: 'HTTPS',
       Certificates: [{
@@ -268,26 +273,6 @@ describe('When Application Load Balancer', () => {
       }],
       SslPolicy: SslPolicy.TLS12_EXT,
     });
-  });
-
-  test('set vpc instead of cluster', () => {
-    // GIVEN
-    const stack = new Stack();
-    const vpc = new Vpc(stack, 'VPC');
-
-    // WHEN
-    new ApplicationMultipleTargetGroupsEc2Service(stack, 'Service', {
-      vpc,
-      memoryLimitMiB: 1024,
-      taskImageOptions: {
-        image: ContainerImage.fromRegistry('test'),
-      },
-    });
-
-    // THEN - stack does not contain a LaunchConfiguration
-    const template = SynthUtils.synthesize(stack, { skipValidation: true });
-    expect(template).not.toHaveResource('AWS::AutoScaling::LaunchConfiguration');
-    expect(() => SynthUtils.synthesize(stack)).toThrow();
   });
 
   test('able to pass pre-defined task definition', () => {
@@ -319,7 +304,7 @@ describe('When Application Load Balancer', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
         {
           Essential: true,
@@ -408,8 +393,8 @@ describe('When Application Load Balancer', () => {
     });
 
     // THEN
-    const template = SynthUtils.synthesize(stack).template.Outputs;
-    expect(template).toEqual({
+    const outputs = Template.fromStack(stack).findOutputs('*');
+    expect(outputs).toEqual({
       ServiceLoadBalancerDNSlb175E78BFE: {
         Value: {
           'Fn::GetAtt': [
@@ -596,7 +581,7 @@ describe('When Application Load Balancer', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ECS::Service', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
       ServiceRegistries: [
         {
           ContainerName: 'web',
@@ -611,7 +596,7 @@ describe('When Application Load Balancer', () => {
       ],
     });
 
-    expect(stack).toHaveResource('AWS::ServiceDiscovery::Service', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ServiceDiscovery::Service', {
       DnsConfig: {
         DnsRecords: [
           {
@@ -926,14 +911,14 @@ describe('When Network Load Balancer', () => {
     });
 
     // THEN - stack contains a load balancer and a service
-    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::LoadBalancer');
+    Template.fromStack(stack).resourceCountIs('AWS::ElasticLoadBalancingV2::LoadBalancer', 1);
 
-    expect(stack).toHaveResource('AWS::ECS::Service', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
       DesiredCount: 1,
       LaunchType: 'EC2',
     });
 
-    expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
         {
           Essential: true,
@@ -1063,10 +1048,12 @@ describe('When Network Load Balancer', () => {
           listener: 'listener2',
         },
       ],
+      placementStrategies: [PlacementStrategy.spreadAcrossInstances(), PlacementStrategy.packedByCpu(), PlacementStrategy.randomly()],
+      placementConstraints: [PlacementConstraint.memberOf('attribute:ecs.instance-type =~ m5a.*')],
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ECS::Service', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
       DesiredCount: 3,
       EnableECSManagedTags: true,
       HealthCheckGracePeriodSeconds: 2,
@@ -1090,9 +1077,11 @@ describe('When Network Load Balancer', () => {
       PropagateTags: 'SERVICE',
       SchedulingStrategy: 'REPLICA',
       ServiceName: 'myService',
+      PlacementConstraints: [{ Type: 'memberOf', Expression: 'attribute:ecs.instance-type =~ m5a.*' }],
+      PlacementStrategies: [{ Field: 'instanceId', Type: 'spread' }, { Field: 'cpu', Type: 'binpack' }, { Type: 'random' }],
     });
 
-    expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
         {
           Cpu: 256,
@@ -1161,26 +1150,6 @@ describe('When Network Load Balancer', () => {
     });
   });
 
-  test('set vpc instead of cluster', () => {
-    // GIVEN
-    const stack = new Stack();
-    const vpc = new Vpc(stack, 'VPC');
-
-    // WHEN
-    new NetworkMultipleTargetGroupsEc2Service(stack, 'Service', {
-      vpc,
-      memoryLimitMiB: 256,
-      taskImageOptions: {
-        image: ContainerImage.fromRegistry('test'),
-      },
-    });
-
-    // THEN - stack does not contain a LaunchConfiguration
-    const template = SynthUtils.synthesize(stack, { skipValidation: true });
-    expect(template).not.toHaveResource('AWS::AutoScaling::LaunchConfiguration');
-    expect(() => SynthUtils.synthesize(stack)).toThrow();
-  });
-
   test('able to pass pre-defined task definition', () => {
     // GIVEN
     const stack = new Stack();
@@ -1210,7 +1179,7 @@ describe('When Network Load Balancer', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
         {
           Essential: true,
@@ -1357,7 +1326,7 @@ describe('When Network Load Balancer', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ECS::Service', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
       ServiceRegistries: [
         {
           ContainerName: 'web',
@@ -1372,7 +1341,7 @@ describe('When Network Load Balancer', () => {
       ],
     });
 
-    expect(stack).toHaveResource('AWS::ServiceDiscovery::Service', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ServiceDiscovery::Service', {
       DnsConfig: {
         DnsRecords: [
           {

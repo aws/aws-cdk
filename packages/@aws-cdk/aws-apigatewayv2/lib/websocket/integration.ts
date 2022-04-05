@@ -24,7 +24,11 @@ export enum WebSocketIntegrationType {
   /**
    * AWS Proxy Integration Type
    */
-  AWS_PROXY = 'AWS_PROXY'
+  AWS_PROXY = 'AWS_PROXY',
+  /**
+   * Mock Integration Type
+   */
+  MOCK = 'MOCK'
 }
 
 /**

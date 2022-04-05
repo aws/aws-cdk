@@ -1,10 +1,10 @@
 import * as path from 'path';
-import * as colors from 'colors/safe';
+import * as chalk from 'chalk';
 import * as fs from 'fs-extra';
 import * as semver from 'semver';
 import { debug, print } from '../lib/logging';
 import { formatAsBanner } from '../lib/util/console-formatters';
-import { cdkCacheDir } from './util/directories';
+import { cdkCacheDir, rootDir } from './util/directories';
 import { getLatestVersionFromNpm } from './util/npm';
 
 const ONE_DAY_IN_SECONDS = 1 * 24 * 60 * 60;
@@ -17,12 +17,12 @@ export const DISPLAY_VERSION = `${versionNumber()} (build ${commit()})`;
 
 export function versionNumber(): string {
   // eslint-disable-next-line @typescript-eslint/no-require-imports
-  return require('../package.json').version.replace(/\+[0-9a-f]+$/, '');
+  return require(path.join(rootDir(), 'package.json')).version.replace(/\+[0-9a-f]+$/, '');
 }
 
 function commit(): string {
   // eslint-disable-next-line @typescript-eslint/no-require-imports
-  return require('../build-info.json').commit;
+  return require(path.join(rootDir(), 'build-info.json')).commit;
 }
 
 export class VersionCheckTTL {
@@ -100,7 +100,7 @@ function getMajorVersionUpgradeMessage(currentVersion: string): string | void {
 
 function getVersionMessage(currentVersion: string, laterVersion: string): string[] {
   return [
-    `Newer version of CDK is available [${colors.green(laterVersion as string)}]`,
+    `Newer version of CDK is available [${chalk.green(laterVersion as string)}]`,
     getMajorVersionUpgradeMessage(currentVersion),
     'Upgrade recommended (npm install -g aws-cdk)',
   ].filter(Boolean) as string[];
