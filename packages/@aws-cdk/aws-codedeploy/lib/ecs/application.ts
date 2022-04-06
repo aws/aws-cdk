@@ -1,7 +1,7 @@
 import { ArnFormat, IResource, Resource } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnApplication } from '../codedeploy.generated';
-import { arnForApplication } from '../utils';
+import { arnForApplication, validateName } from '../utils';
 
 /**
  * Represents a reference to a CodeDeploy Application deploying to Amazon ECS.
@@ -76,5 +76,9 @@ export class EcsApplication extends Resource implements IEcsApplication {
       resourceName: this.physicalName,
       arnFormat: ArnFormat.COLON_RESOURCE_NAME,
     });
+  }
+
+  protected validate(): string[] {
+    return validateName('Application', this.physicalName);
   }
 }
