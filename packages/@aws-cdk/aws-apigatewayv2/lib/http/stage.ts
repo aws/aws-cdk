@@ -167,6 +167,10 @@ export class HttpStage extends HttpStageBase {
       apiId: props.httpApi.apiId,
       stageName: this.physicalName,
       autoDeploy: props.autoDeploy,
+      routeSettings: {
+        throttlingBurstLimit: props.throttle?.burstLimit,
+        rateBurstLimit: props.throttle?.rateLimit,
+      },
     });
 
     this.stageName = this.physicalName;
