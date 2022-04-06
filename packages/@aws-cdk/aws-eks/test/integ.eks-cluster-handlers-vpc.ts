@@ -1,7 +1,6 @@
 /// !cdk-integ pragma:ignore-assets
 import { App, Stack } from '@aws-cdk/core';
 import * as eks from '../lib';
-// import { TestStack } from './util';
 
 const CLUSTER_VERSION = eks.KubernetesVersion.V1_21;
 
