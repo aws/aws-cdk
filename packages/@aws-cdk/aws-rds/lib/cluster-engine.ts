@@ -98,8 +98,8 @@ export interface IClusterEngine extends IEngine {
   readonly supportedLogTypes: string[];
 
   /**
-   * Whether the IAM Roles used for data importing and exporting need to be combined,
-   * or can they be separate.
+   * Whether the IAM Roles used for data importing and exporting need to be combined for this Engine,
+   * or can they be kept separate.
    *
    * @default false
    */
