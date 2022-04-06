@@ -1746,7 +1746,7 @@ describe('User Pool', () => {
         sesRegion: 'us-east-1',
         replyTo: 'reply@example.com',
         configurationSetName: 'default',
-        sesVerifiedDomain: 'example.com'
+        sesVerifiedDomain: 'example.com',
       }),
     });
 
