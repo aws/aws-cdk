@@ -22,14 +22,14 @@ export interface UserPoolSESOptions {
    * An optional name that should be used as the sender's name
    * along with the email.
    *
-   * @default - no name
+   * @default no name
    */
   readonly fromName?: string;
 
   /**
    * The destination to which the receiver of the email should reploy to.
    *
-   * @default - same as the fromEmail
+   * @default same as the fromEmail
    */
   readonly replyTo?: string;
 
@@ -39,7 +39,7 @@ export interface UserPoolSESOptions {
    *
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cognito-userpool-emailconfiguration.html#cfn-cognito-userpool-emailconfiguration-configurationset
    *
-   * @default - no configuration set
+   * @default no configuration set
    */
   readonly configurationSetName?: string;
 
@@ -53,14 +53,14 @@ export interface UserPoolSESOptions {
    *
    * Must be 'us-east-1', 'us-west-2', or 'eu-west-1'
    *
-   * @default - The same region as the Cognito UserPool
+   * @default The same region as the Cognito UserPool
    */
   readonly sesRegion?: string;
 
   /**
    * SES Verified custom domain to be used to verify the identity
    *
-   * @default - no domain
+   * @default no domain
    */
   readonly sesVerifiedDomain?: string
 }
@@ -72,7 +72,7 @@ interface UserPoolEmailConfig {
   /**
    * The name of the configuration set in SES.
    *
-   * @default - none
+   * @default none
    */
   readonly configurationSet?: string;
 
@@ -80,7 +80,7 @@ interface UserPoolEmailConfig {
    * Specifies whether to use Cognito's built in email functionality
    * or SES.
    *
-   * @default - Cognito built in email functionality
+   * @default Cognito built in email functionality
    */
   readonly emailSendingAccount?: string;
 
@@ -97,7 +97,7 @@ interface UserPoolEmailConfig {
   /**
    * The destination to which the receiver of the email should reply to.
    *
-   * @default - same as `from`
+   * @default same as `from`
    */
   readonly replyToEmailAddress?: string;
 
@@ -107,7 +107,7 @@ interface UserPoolEmailConfig {
    * required if emailSendingAccount is DEVELOPER or if
    * 'from' is provided.
    *
-   * @default - none
+   * @default none
    */
   readonly sourceArn?: string;
 }

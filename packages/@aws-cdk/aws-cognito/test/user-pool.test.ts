@@ -1771,9 +1771,7 @@ describe('User Pool', () => {
         },
       },
     });
-
   });
-
 });
 
 test('device tracking is configured correctly', () => {
