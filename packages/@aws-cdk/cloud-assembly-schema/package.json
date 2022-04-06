@@ -23,8 +23,7 @@
         "distName": "aws-cdk.cloud-assembly-schema",
         "module": "aws_cdk.cloud_assembly_schema",
         "classifiers": [
-          "Framework :: AWS CDK",
-          "Framework :: AWS CDK :: 1"
+          "Framework :: AWS CDK"
         ]
       }
     },
@@ -84,7 +83,7 @@
     "semver"
   ],
   "engines": {
-    "node": ">= 10.13.0 <13 || >=13.7.0"
+    "node": ">= 14.15.0"
   },
   "stability": "stable",
   "awslint": {
@@ -99,6 +98,6 @@
   },
   "maturity": "stable",
   "publishConfig": {
-    "tag": "latest-1"
+    "tag": "latest"
   }
 }

@@ -43,8 +43,7 @@
         "distName": "aws-cdk.yaml-cfn",
         "module": "aws_cdk.yaml_cfn",
         "classifiers": [
-          "Framework :: AWS CDK",
-          "Framework :: AWS CDK :: 1"
+          "Framework :: AWS CDK"
         ]
       }
     },
@@ -87,7 +86,7 @@
     "yaml"
   ],
   "engines": {
-    "node": ">= 10.13.0 <13 || >=13.7.0"
+    "node": ">= 14.15.0"
   },
   "stability": "deprecated",
   "maturity": "deprecated",
@@ -95,6 +94,7 @@
     "announce": false
   },
   "publishConfig": {
-    "tag": "latest"
-  }
+    "tag": "next"
+  },
+  "private": true
 }
