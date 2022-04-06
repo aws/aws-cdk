@@ -387,7 +387,11 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
     if (s3ImportRole) {
       clusterAssociatedRoles.push({ roleArn: s3ImportRole.roleArn, featureName: clusterEngineBindConfig.features?.s3Import });
     }
-    if (s3ExportRole) {
+    if (s3ExportRole &&
+        // only add the second associated Role if it's different than the first
+        // (duplicates in the associated Roles array are not allowed by the RDS service)
+        (s3ExportRole !== s3ImportRole ||
+        clusterEngineBindConfig.features?.s3Import !== clusterEngineBindConfig.features?.s3Export)) {
       clusterAssociatedRoles.push({ roleArn: s3ExportRole.roleArn, featureName: clusterEngineBindConfig.features?.s3Export });
     }
 
