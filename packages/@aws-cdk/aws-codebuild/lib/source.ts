@@ -670,7 +670,7 @@ abstract class CommonGithubSource extends ThirdPartyGitSource {
 
   constructor(props: CommonGithubSourceProps) {
     super(props);
-    this.buildStatusContext = props.buildStatusContext
+    this.buildStatusContext = props.buildStatusContext;
   }
 
   public bind(_scope: CoreConstruct, project: IProject): SourceConfig {
@@ -845,7 +845,7 @@ class BitBucketSource extends ThirdPartyGitSource {
   constructor(props: BitBucketSourceProps) {
     super(props);
     this.httpsCloneUrl = `https://bitbucket.org/${props.owner}/${props.repo}.git`;
-    this.buildStatusName = props.buildStatusName
+    this.buildStatusName = props.buildStatusName;
   }
 
   public bind(_scope: CoreConstruct, _project: IProject): SourceConfig {
