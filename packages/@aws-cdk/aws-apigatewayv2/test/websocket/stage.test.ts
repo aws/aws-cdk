@@ -127,9 +127,9 @@ describe('WebSocketStage', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Stage', {
       ApiId: stack.resolve(api.apiId),
       StageName: 'dev',
-      RouteSettings: {
-        throttlingBurstLimit: 1000,
-        rateBurstLimit: 1000,
+      DefaultRouteSettings: {
+        ThrottlingBurstLimit: 1000,
+        ThrottlingRateLimit: 1000,
       },
     });
   });

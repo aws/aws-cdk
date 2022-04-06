@@ -91,9 +91,9 @@ export class WebSocketStage extends StageBase implements IWebSocketStage {
       apiId: props.webSocketApi.apiId,
       stageName: this.physicalName,
       autoDeploy: props.autoDeploy,
-      routeSettings: {
+      defaultRouteSettings: !props.throttle ? undefined : {
         throttlingBurstLimit: props.throttle?.burstLimit,
-        rateBurstLimit: props.throttle?.rateLimit,
+        throttlingRateLimit: props.throttle?.rateLimit,
       },
     });
 

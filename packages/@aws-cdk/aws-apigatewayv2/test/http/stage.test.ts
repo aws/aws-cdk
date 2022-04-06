@@ -184,9 +184,9 @@ describe('HttpStage with domain mapping', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Stage', {
       ApiId: stack.resolve(api.apiId),
       StageName: '$default',
-      RouteSettings: {
-        throttlingBurstLimit: 1000,
-        rateBurstLimit: 1000,
+      DefaultRouteSettings: {
+        ThrottlingBurstLimit: 1000,
+        ThrottlingRateLimit: 1000,
       },
     });
   });
