@@ -56,6 +56,13 @@ export interface UserPoolSESOptions {
    * @default - The same region as the Cognito UserPool
    */
   readonly sesRegion?: string;
+
+  /**
+   * SES Verified custom domain to be used to verify the identity
+   *
+   * @default - no domain
+   */
+  readonly sesVerifiedDomain?: string
 }
 
 /**
@@ -172,7 +179,7 @@ class SESEmail extends UserPoolEmail {
       sourceArn: Stack.of(scope).formatArn({
         service: 'ses',
         resource: 'identity',
-        resourceName: encodeAndTest(this.options.fromEmail),
+        resourceName: encodeAndTest(this.options.sesVerifiedDomain ?? this.options.fromEmail),
         region: this.options.sesRegion ?? region,
       }),
     };
