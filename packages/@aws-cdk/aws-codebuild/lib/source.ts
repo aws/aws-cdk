@@ -501,10 +501,13 @@ interface ThirdPartyGitSourceProps extends GitSourceProps {
   readonly webhookFilters?: FilterGroup[];
 
   /**
-   * This parameter is used for the `url`/`target_url` parameter in the Bitbucket/GitHub commit status.
+   * The URL that the build will report back to the source provider. Can use built-in CodeBuild variables, like $AWS_REGION
    *
-   * @example "The URL that the build will report back to the source provider. Can use built-in CodeBuild variables, like $AWS_REGION"
-   * @default "link to the AWS Console for CodeBuild to a particular build execution"
+   * @see https://docs.aws.amazon.com/codebuild/latest/userguide/create-project-cli.html#cli.source.buildstatusconfig.targeturl
+   * @see https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-env-vars.html
+   *
+   * @example "$CODEBUILD_PUBLIC_BUILD_URL"
+   * @default - link to the AWS Console for CodeBuild to a particular build execution
    */
   readonly buildStatusUrl?: string;
 }
@@ -653,10 +656,13 @@ interface CommonGithubSourceProps extends ThirdPartyGitSourceProps {
   /**
    * This parameter is used for the `context` parameter in the GitHub commit status.
    *
+   * @see https://docs.aws.amazon.com/codebuild/latest/userguide/create-project-cli.html#cli.source.buildstatusconfig.context
+   * @see https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-env-vars.html
+   *
    * @example "My build #$CODEBUILD_BUILD_NUMBER"
    * @default "AWS CodeBuild $AWS_REGION ($PROJECT_NAME)"
    */
-   readonly buildStatusContext?: string
+  readonly buildStatusContext?: string
 }
 
 abstract class CommonGithubSource extends ThirdPartyGitSource {
@@ -819,6 +825,9 @@ export interface BitBucketSourceProps extends ThirdPartyGitSourceProps {
   /**
    * This parameter is used for the `name` parameter in the Bitbucket commit status.
    *
+   * @see https://docs.aws.amazon.com/codebuild/latest/userguide/create-project-cli.html#cli.source.buildstatusconfig.context
+   * @see https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-env-vars.html
+   *
    * @example "My build #$CODEBUILD_BUILD_NUMBER"
    * @default "AWS CodeBuild $AWS_REGION ($PROJECT_NAME)"
    */
@@ -851,8 +860,8 @@ class BitBucketSource extends ThirdPartyGitSource {
         ...superConfig.sourceProperty,
         location: this.httpsCloneUrl,
         buildStatusConfig: {
-            context: this.buildStatusName,
-            targetUrl: this.buildStatusUrl,
+          context: this.buildStatusName,
+          targetUrl: this.buildStatusUrl,
         },
       },
       sourceVersion: superConfig.sourceVersion,
