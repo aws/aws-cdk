@@ -1,23 +1,22 @@
-name: issue-graduation-manager
+name: issue-reprioritization
 on: 
   schedule:
     - cron: "0 0 * * 0"
 
 jobs:
-  issue-graduation-manager:
+  issue-reprioritization:
     permissions:
       issues: write
     runs-on: ubuntu-latest
     steps:
-      - uses: kaizen3031593/issue-graduation-manager@main
-        id: grad-manager
+      - uses: kaizen3031593/issue-reprioritization-manager@main
+        id: reprioritization-manager
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           original-label: p2
           new-label: p1
-          skip-label: no-graduation
-          graduation-threshold: 20
+          reprioritization-threshold: 20
       - uses: kaizen3031593/pr-triage-manager@main
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          on-pulls: ${{ steps.grad-manager.outputs.linked-pulls }}
+          on-pulls: ${{ steps.reprioritization-manager.outputs.linked-pulls }}
