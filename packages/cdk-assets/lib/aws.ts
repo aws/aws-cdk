@@ -44,19 +44,25 @@ export interface Account {
 export class DefaultAwsClient implements IAws {
   private readonly AWS: typeof import('aws-sdk');
   private account?: Account;
+  private readonly credentialsChain:AWS.CredentialProviderChain;
 
   constructor(profile?: string) {
     // Force AWS SDK to look in ~/.aws/credentials and potentially use the configured profile.
     process.env.AWS_SDK_LOAD_CONFIG = '1';
     process.env.AWS_STS_REGIONAL_ENDPOINTS = 'regional';
     process.env.AWS_NODEJS_CONNECTION_REUSE_ENABLED = '1';
+
     if (profile) {
       process.env.AWS_PROFILE = profile;
+
     }
 
     // We need to set the environment before we load this library for the first time.
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     this.AWS = require('aws-sdk');
+    let providers=new Array(new this.AWS.SharedIniFileCredentials(), new this.AWS.EnvironmentCredentials('AWS'));
+    // @ts-ignore
+    this.credentialsChain = new this.AWS.CredentialProviderChain(providers);
   }
 
   public async s3Client(options: ClientOptions) {
@@ -108,7 +114,7 @@ export class DefaultAwsClient implements IAws {
   }
 
   private async awsOptions(options: ClientOptions) {
-    let credentials;
+    let credentials=await this.credentialsChain.resolvePromise();
 
     if (options.assumeRoleArn) {
       credentials = await this.assumeRole(options.region, options.assumeRoleArn, options.assumeRoleExternalId);
