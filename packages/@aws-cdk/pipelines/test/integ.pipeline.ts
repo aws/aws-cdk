@@ -1,7 +1,8 @@
 /// !cdk-integ PipelineStack
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as codepipeline_actions from '@aws-cdk/aws-codepipeline-actions';
-import { App, CfnResource, DefaultStackSynthesizer, SecretValue, Stack, StackProps, Stage, StageProps } from '@aws-cdk/core';
+import * as s3 from '@aws-cdk/aws-s3';
+import { App, CfnResource, DefaultStackSynthesizer, RemovalPolicy, Stack, StackProps, Stage, StageProps } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import * as cdkp from '../lib';
 
