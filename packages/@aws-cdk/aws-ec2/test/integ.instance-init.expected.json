@@ -18,11 +18,11 @@
     "IntegInitVpcPublicSubnet1Subnet41A6F6D4": {
       "Type": "AWS::EC2::Subnet",
       "Properties": {
+        "CidrBlock": "10.0.0.0/19",
         "VpcId": {
           "Ref": "IntegInitVpc0D4FCCB3"
         },
         "AvailabilityZone": "test-region-1a",
-        "CidrBlock": "10.0.0.0/19",
         "MapPublicIpOnLaunch": true,
         "Tags": [
           {
@@ -115,11 +115,11 @@
     "IntegInitVpcPublicSubnet2Subnet9A384F16": {
       "Type": "AWS::EC2::Subnet",
       "Properties": {
+        "CidrBlock": "10.0.32.0/19",
         "VpcId": {
           "Ref": "IntegInitVpc0D4FCCB3"
         },
         "AvailabilityZone": "test-region-1b",
-        "CidrBlock": "10.0.32.0/19",
         "MapPublicIpOnLaunch": true,
         "Tags": [
           {
@@ -212,11 +212,11 @@
     "IntegInitVpcPublicSubnet3Subnet30A34DA1": {
       "Type": "AWS::EC2::Subnet",
       "Properties": {
+        "CidrBlock": "10.0.64.0/19",
         "VpcId": {
           "Ref": "IntegInitVpc0D4FCCB3"
         },
         "AvailabilityZone": "test-region-1c",
-        "CidrBlock": "10.0.64.0/19",
         "MapPublicIpOnLaunch": true,
         "Tags": [
           {
@@ -309,11 +309,11 @@
     "IntegInitVpcPrivateSubnet1Subnet259B51C1": {
       "Type": "AWS::EC2::Subnet",
       "Properties": {
+        "CidrBlock": "10.0.96.0/19",
         "VpcId": {
           "Ref": "IntegInitVpc0D4FCCB3"
         },
         "AvailabilityZone": "test-region-1a",
-        "CidrBlock": "10.0.96.0/19",
         "MapPublicIpOnLaunch": false,
         "Tags": [
           {
@@ -371,11 +371,11 @@
     "IntegInitVpcPrivateSubnet2Subnet1643B059": {
       "Type": "AWS::EC2::Subnet",
       "Properties": {
+        "CidrBlock": "10.0.128.0/19",
         "VpcId": {
           "Ref": "IntegInitVpc0D4FCCB3"
         },
         "AvailabilityZone": "test-region-1b",
-        "CidrBlock": "10.0.128.0/19",
         "MapPublicIpOnLaunch": false,
         "Tags": [
           {
@@ -433,11 +433,11 @@
     "IntegInitVpcPrivateSubnet3Subnet2FEDC394": {
       "Type": "AWS::EC2::Subnet",
       "Properties": {
+        "CidrBlock": "10.0.160.0/19",
         "VpcId": {
           "Ref": "IntegInitVpc0D4FCCB3"
         },
         "AvailabilityZone": "test-region-1c",
-        "CidrBlock": "10.0.160.0/19",
         "MapPublicIpOnLaunch": false,
         "Tags": [
           {
@@ -576,8 +576,8 @@
           "Statement": [
             {
               "Action": [
-                "s3:GetBucket*",
                 "s3:GetObject*",
+                "s3:GetBucket*",
                 "s3:List*"
               ],
               "Effect": "Allow",
@@ -593,8 +593,7 @@
                       ":s3:::",
                       {
                         "Ref": "AssetParametersf8a1af398dac2fad92eeea4fb7620be1c4f504e23e3bfcd859fbb5744187930bS3Bucket597083AB"
-                      },
-                      "/*"
+                      }
                     ]
                   ]
                 },
@@ -609,7 +608,8 @@
                       ":s3:::",
                       {
                         "Ref": "AssetParametersf8a1af398dac2fad92eeea4fb7620be1c4f504e23e3bfcd859fbb5744187930bS3Bucket597083AB"
-                      }
+                      },
+                      "/*"
                     ]
                   ]
                 }
@@ -646,11 +646,7 @@
         ]
       }
     },
-<<<<<<< HEAD
-    "Instance255F35265f1cf298c3504697b": {
-=======
-    "Instance255F352651ad64873f230a4d2": {
->>>>>>> master
+    "Instance255F35265df6e90ddc63384f2": {
       "Type": "AWS::EC2::Instance",
       "Properties": {
         "AvailabilityZone": "test-region-1a",
@@ -691,8 +687,7 @@
                 {
                   "Ref": "AWS::StackName"
                 },
-<<<<<<< HEAD
-                " --resource Instance255F35265f1cf298c3504697b --url https://cloudformation.",
+                " --resource Instance255F35265df6e90ddc63384f2 --url https://cloudformation.",
                 {
                   "Ref": "AWS::Region"
                 },
@@ -705,9 +700,6 @@
                   "Ref": "Instance2InstanceRole03DD7CB2"
                 },
                 " -c default\n  /opt/aws/bin/cfn-signal -e $? --region ",
-=======
-                " --resource Instance255F352651ad64873f230a4d2 -c default\n  /opt/aws/bin/cfn-signal -e $? --region ",
->>>>>>> master
                 {
                   "Ref": "AWS::Region"
                 },
@@ -715,8 +707,7 @@
                 {
                   "Ref": "AWS::StackName"
                 },
-<<<<<<< HEAD
-                " --resource Instance255F35265f1cf298c3504697b --url https://cloudformation.",
+                " --resource Instance255F35265df6e90ddc63384f2 --url https://cloudformation.",
                 {
                   "Ref": "AWS::Region"
                 },
@@ -729,9 +720,6 @@
                   "Ref": "Instance2InstanceRole03DD7CB2"
                 },
                 "\n  cat /var/log/cfn-init.log >&2\n)"
-=======
-                " --resource Instance255F352651ad64873f230a4d2\n  cat /var/log/cfn-init.log >&2\n)"
->>>>>>> master
               ]
             ]
           }
