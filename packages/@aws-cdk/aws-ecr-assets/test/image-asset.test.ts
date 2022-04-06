@@ -373,8 +373,8 @@ describe('image asset', () => {
     const asset1 = new DockerImageAsset(stack, 'Asset1', { directory });
     const asset2 = new DockerImageAsset(stack, 'Asset2', { directory, repositoryName: 'foo' });
 
-    expect(asset1.assetHash).toEqual('365b5d951fc5f725f78093a07e3e1cc7819b4cbe582ca71a4c344752c23bf409');
-    expect(asset2.assetHash).toEqual('313dd1f45a939b77fa8a4eb7780190aa7a20a40c95f503eca9e099186643d717');
+    expect(asset1.assetHash).toEqual('13248c55633f3b198a628bb2ea4663cb5226f8b2801051bd0c725950266fd590');
+    expect(asset2.assetHash).toEqual('b78978ca702a8eccd37804ce31d76cd83a695b557dbf95aeb109332ee8b1fd32');
   });
 });
 
