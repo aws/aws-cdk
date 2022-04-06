@@ -5,14 +5,9 @@ import * as cdk from '@aws-cdk/core';
 import * as ec2 from '../lib';
 
 const app = new cdk.App();
-const stack = new cdk.Stack(app, 'integ-init', {
-  env: {
-    account: process.env.CDK_INTEG_ACCOUNT || process.env.CDK_DEFAULT_ACCOUNT,
-    region: process.env.CDK_INTEG_REGION || process.env.CDK_DEFAULT_REGION,
-  },
-});
+const stack = new cdk.Stack(app, 'integ-init');
 
-const vpc = ec2.Vpc.fromLookup(stack, 'VPC', { isDefault: true });
+const vpc = new ec2.Vpc(stack, 'IntegInitVpc');
 
 const tmpDir = fs.mkdtempSync('/tmp/cfn-init-test');
 fs.writeFileSync(path.resolve(tmpDir, 'testFile'), 'Hello World!\n');

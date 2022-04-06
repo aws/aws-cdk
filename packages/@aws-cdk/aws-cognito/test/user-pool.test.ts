@@ -235,6 +235,28 @@ describe('User Pool', () => {
     });
   });
 
+  test('snsRegion property is recognized', () => {
+    // GIVEN
+    const stack = new Stack();
+    const role = Role.fromRoleArn(stack, 'smsRole', 'arn:aws:iam::664773442901:role/sms-role');
+
+    // WHEN
+    new UserPool(stack, 'Pool', {
+      smsRole: role,
+      smsRoleExternalId: 'test-external-id',
+      snsRegion: 'test-region-1',
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
+      SmsConfiguration: {
+        ExternalId: 'test-external-id',
+        SnsCallerArn: role.roleArn,
+        SnsRegion: 'test-region-1',
+      },
+    });
+  });
+
   test('import using id', () => {
     // GIVEN
     const stack = new Stack(undefined, undefined, {
@@ -313,7 +335,7 @@ describe('User Pool', () => {
     const fn = fooFunction(stack, 'preSignUp');
 
     // WHEN
-    new UserPool(stack, 'Pool', {
+    const pool = new UserPool(stack, 'Pool', {
       lambdaTriggers: {
         preSignUp: fn,
       },
@@ -329,6 +351,7 @@ describe('User Pool', () => {
       Action: 'lambda:InvokeFunction',
       FunctionName: stack.resolve(fn.functionArn),
       Principal: 'cognito-idp.amazonaws.com',
+      SourceArn: stack.resolve(pool.userPoolArn),
     });
   });
 
@@ -340,7 +363,7 @@ describe('User Pool', () => {
     const smsFn = fooFunction(stack, 'customSmsSender');
 
     // WHEN
-    new UserPool(stack, 'Pool', {
+    const pool = new UserPool(stack, 'Pool', {
       customSenderKmsKey: kmsKey,
       lambdaTriggers: {
         customEmailSender: emailFn,
@@ -365,11 +388,13 @@ describe('User Pool', () => {
       Action: 'lambda:InvokeFunction',
       FunctionName: stack.resolve(emailFn.functionArn),
       Principal: 'cognito-idp.amazonaws.com',
+      SourceArn: stack.resolve(pool.userPoolArn),
     });
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
       Action: 'lambda:InvokeFunction',
       FunctionName: stack.resolve(smsFn.functionArn),
       Principal: 'cognito-idp.amazonaws.com',
+      SourceArn: stack.resolve(pool.userPoolArn),
     });
   });
 
@@ -457,6 +482,7 @@ describe('User Pool', () => {
         Action: 'lambda:InvokeFunction',
         FunctionName: stack.resolve(fn.functionArn),
         Principal: 'cognito-idp.amazonaws.com',
+        SourceArn: stack.resolve(pool.userPoolArn),
       });
     });
   });

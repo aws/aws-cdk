@@ -1,10 +1,8 @@
-import { Size, SizeRoundingBehavior, Stack, Token } from '../lib';
+import { Size, SizeRoundingBehavior, Stack, Token, Lazy } from '../lib';
 
 describe('size', () => {
   test('negative amount', () => {
     expect(() => Size.kibibytes(-1)).toThrow(/negative/);
-
-
   });
 
   test('unresolved amount', () => {
@@ -13,10 +11,8 @@ describe('size', () => {
     expect(stack.resolve(lazySize.toKibibytes())).toEqual(1337);
     expect(
       () => stack.resolve(lazySize.toMebibytes())).toThrow(
-      /Unable to perform time unit conversion on un-resolved token/,
+      /Size must be specified as 'Size.mebibytes\(\)' here/,
     );
-
-
   });
 
   test('Size in kibibytes', () => {
@@ -30,8 +26,6 @@ describe('size', () => {
     floatEqual(size.toPebibytes({ rounding: SizeRoundingBehavior.NONE }), 4_294_967_296 / (1024 * 1024 * 1024 * 1024));
 
     expect(Size.kibibytes(4 * 1024 * 1024).toGibibytes()).toEqual(4);
-
-
   });
 
   test('Size in mebibytes', () => {
@@ -45,8 +39,6 @@ describe('size', () => {
     floatEqual(size.toPebibytes({ rounding: SizeRoundingBehavior.NONE }), 4_194_304 / (1024 * 1024 * 1024));
 
     expect(Size.mebibytes(4 * 1024).toGibibytes()).toEqual(4);
-
-
   });
 
   test('Size in gibibyte', () => {
@@ -61,8 +53,6 @@ describe('size', () => {
     floatEqual(size.toPebibytes({ rounding: SizeRoundingBehavior.NONE }), 5 / (1024 * 1024));
 
     expect(Size.gibibytes(4096).toTebibytes()).toEqual(4);
-
-
   });
 
   test('Size in tebibyte', () => {
@@ -76,8 +66,6 @@ describe('size', () => {
     floatEqual(size.toPebibytes({ rounding: SizeRoundingBehavior.NONE }), 5 / 1024);
 
     expect(Size.tebibytes(4096).toPebibytes()).toEqual(4);
-
-
   });
 
   test('Size in pebibytes', () => {
@@ -88,8 +76,6 @@ describe('size', () => {
     expect(size.toGibibytes()).toEqual(5_242_880);
     expect(size.toTebibytes()).toEqual(5_120);
     expect(size.toPebibytes()).toEqual(5);
-
-
   });
 
   test('rounding behavior', () => {
@@ -105,8 +91,12 @@ describe('size', () => {
     expect(size.toGibibytes({ rounding: SizeRoundingBehavior.NONE })).toEqual(5.078125);
     expect(size.toTebibytes({ rounding: SizeRoundingBehavior.NONE })).toEqual(5200 / (1024 * 1024));
     expect(size.toKibibytes({ rounding: SizeRoundingBehavior.NONE })).toEqual(5_324_800);
+  });
 
-
+  test('size is unresolved', () => {
+    const lazySize = Size.pebibytes(Lazy.number({ produce: () => 10 }));
+    expect(lazySize.isUnresolved()).toEqual(true);
+    expect(Size.mebibytes(10).isUnresolved()).toEqual(false);
   });
 });
 
