@@ -59,7 +59,7 @@ export default class CodeGenerator {
     this.code.line();
     this.code.line(`import * as ${CORE} from '${coreImport}';`);
     // import cfn-parse from an embedded folder inside @core, since it is not part of the public API of the module
-    this.code.line(`import * as ${CFN_PARSE} from '${coreImport}/${coreImport === '.' ? '' : 'lib/'}cfn-parse';`);
+    this.code.line(`import * as ${CFN_PARSE} from '${coreImport}/${coreImport === '.' ? '' : 'lib/'}helpers-internal';`);
   }
 
   public emitCode(): void {
