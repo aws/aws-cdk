@@ -14,6 +14,7 @@ import {
   findInnerPackages,
   monoRepoRoot,
 } from './util';
+import { Bundle } from '@aws-cdk/node-bundle';
 
 const PKGLINT_VERSION = require('../package.json').version; // eslint-disable-line @typescript-eslint/no-require-imports
 const AWS_SERVICE_NAMES = require('./aws-service-official-names.json'); // eslint-disable-line @typescript-eslint/no-require-imports
