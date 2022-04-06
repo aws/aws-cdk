@@ -1052,8 +1052,8 @@ describe('sources with customised build status configuration', () => {
     const context = 'My custom CodeBuild worker!';
     const stack = new cdk.Stack();
     const source = codebuild.Source.gitHubEnterprise({
-        httpsCloneUrl: 'url',
-        buildStatusContext: context,
+      httpsCloneUrl: 'url',
+      buildStatusContext: context,
     });
     new codebuild.Project(stack, 'MyProject', { source });
     Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
