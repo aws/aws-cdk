@@ -1,16 +1,15 @@
 /// !cdk-integ pragma:ignore-assets
 import * as ec2 from '@aws-cdk/aws-ec2';
-import { App } from '@aws-cdk/core';
+import { App, Stack } from '@aws-cdk/core';
 import * as eks from '../lib';
-import { TestStack } from './util';
 
-class EksClusterInferenceStack extends TestStack {
+class EksClusterInferenceStack extends Stack {
 
   constructor(scope: App, id: string) {
     super(scope, id);
 
     // just need one nat gateway to simplify the test
-    const vpc = new ec2.Vpc(this, 'Vpc', { maxAzs: 3, natGateways: 1 });
+    const vpc = new ec2.Vpc(this, 'Vpc', { maxAzs: 2, natGateways: 1 });
 
     const cluster = new eks.Cluster(this, 'Cluster', {
       vpc,
