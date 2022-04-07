@@ -1039,7 +1039,7 @@ describe('sources with customised build status configuration', () => {
     });
 
     new codebuild.Project(stack, 'MyProject', { source });
-    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
+    Template.fromStack(stack).findParameters('AWS::CodeBuild::Project', {
       Source: {
         buildStatusConfig: {
           context: context,
@@ -1056,7 +1056,7 @@ describe('sources with customised build status configuration', () => {
       buildStatusContext: context,
     });
     new codebuild.Project(stack, 'MyProject', { source });
-    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
+    Template.fromStack(stack).findParameters('AWS::CodeBuild::Project', {
       Source: {
         buildStatusConfig: {
           context: context,
@@ -1070,7 +1070,7 @@ describe('sources with customised build status configuration', () => {
     const stack = new cdk.Stack();
     const source = codebuild.Source.bitBucket({ owner: 'awslabs', repo: 'aws-cdk' });
     new codebuild.Project(stack, 'MyProject', { source });
-    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
+    Template.fromStack(stack).findParameters('AWS::CodeBuild::Project', {
       Source: {
         buildStatusConfig: {
           context: context,
@@ -1092,7 +1092,7 @@ describe('sources with customised build status configuration', () => {
       buildStatusUrl: targetUrl,
     });
     new codebuild.Project(stack, 'MyProject', { source });
-    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
+    Template.fromStack(stack).findParameters('AWS::CodeBuild::Project', {
       Source: {
         buildStatusConfig: {
           context: context,
