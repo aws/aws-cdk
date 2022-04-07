@@ -265,6 +265,7 @@ export class Settings {
     return new Settings({
       app: argv.app,
       browser: argv.browser,
+      build: argv.build,
       context,
       debug: argv.debug,
       tags,
@@ -442,7 +443,7 @@ export class Settings {
 
 function expandHomeDir(x: string) {
   if (x.startsWith('~')) {
-    return fs_path.join(os.homedir(), x.substr(1));
+    return fs_path.join(os.homedir(), x.slice(1));
   }
   return x;
 }

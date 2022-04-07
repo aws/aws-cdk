@@ -1,7 +1,7 @@
 import { ArnFormat, IResource, Resource } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnApplication } from '../codedeploy.generated';
-import { arnForApplication } from '../utils';
+import { arnForApplication, validateName } from '../utils';
 
 /**
  * Represents a reference to a CodeDeploy Application deploying to AWS Lambda.
@@ -76,5 +76,7 @@ export class LambdaApplication extends Resource implements ILambdaApplication {
       resourceName: this.physicalName,
       arnFormat: ArnFormat.COLON_RESOURCE_NAME,
     });
+
+    this.node.addValidation({ validate: () => validateName('Application', this.physicalName) });
   }
 }

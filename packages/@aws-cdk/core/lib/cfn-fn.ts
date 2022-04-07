@@ -127,7 +127,7 @@ export class Fn {
    * @returns a token represented as a string
    */
   public static select(index: number, array: string[]): string {
-    if (!Token.isUnresolved(array)) {
+    if (!Token.isUnresolved(index) && !Token.isUnresolved(array) && !array.some(Token.isUnresolved)) {
       return array[index];
     }
 

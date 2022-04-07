@@ -34,7 +34,7 @@ export class StackStatus {
   }
 
   get isDeploySuccess(): boolean {
-    return !this.isNotFound && (this.name === 'CREATE_COMPLETE' || this.name === 'UPDATE_COMPLETE');
+    return !this.isNotFound && (this.name === 'CREATE_COMPLETE' || this.name === 'UPDATE_COMPLETE' || this.name === 'IMPORT_COMPLETE');
   }
 
   public toString(): string {

@@ -681,7 +681,9 @@ describe('synth', () => {
     const toolkit = defaultToolkitSetup();
     await toolkit.synth([], false, false);
 
-    expect(stderrMock.mock.calls[1][0]).toMatch('Test-Stack-A-Display-Name, Test-Stack-B');
+    // Separate tests as colorizing hampers detection
+    expect(stderrMock.mock.calls[1][0]).toMatch('Test-Stack-A-Display-Name');
+    expect(stderrMock.mock.calls[1][0]).toMatch('Test-Stack-B');
   });
 
   test('with no stdout option', async () => {

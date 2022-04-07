@@ -115,7 +115,6 @@ describe('CodeDeploy Lambda DeploymentGroup', () => {
     });
   });
 
-
   test('can be created with explicit name', () => {
     const stack = new cdk.Stack();
     const application = new codedeploy.LambdaApplication(stack, 'MyApp');
@@ -130,6 +129,30 @@ describe('CodeDeploy Lambda DeploymentGroup', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::CodeDeploy::DeploymentGroup', {
       DeploymentGroupName: 'test',
     });
+  });
+
+  test('fail with more than 100 characters in name', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app);
+    const alias = mockAlias(stack);
+    new codedeploy.LambdaDeploymentGroup(stack, 'MyDG', {
+      alias,
+      deploymentGroupName: 'a'.repeat(101),
+    });
+
+    expect(() => app.synth()).toThrow(`Deployment group name: "${'a'.repeat(101)}" can be a max of 100 characters.`);
+  });
+
+  test('fail with unallowed characters in name', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app);
+    const alias = mockAlias(stack);
+    new codedeploy.LambdaDeploymentGroup(stack, 'MyDG', {
+      alias,
+      deploymentGroupName: 'my name',
+    });
+
+    expect(() => app.synth()).toThrow('Deployment group name: "my name" can only contain letters (a-z, A-Z), numbers (0-9), periods (.), underscores (_), + (plus signs), = (equals signs), , (commas), @ (at signs), - (minus signs).');
   });
 
   test('can be created with explicit role', () => {
@@ -562,6 +585,32 @@ describe('CodeDeploy Lambda DeploymentGroup', () => {
         Events: [
           'DEPLOYMENT_FAILURE',
         ],
+      },
+    });
+  });
+
+  test('uses the correct Service Principal in the us-isob-east-1 region', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'CodeDeployLambdaStack', {
+      env: { region: 'us-isob-east-1' },
+    });
+    const alias = mockAlias(stack);
+    new codedeploy.LambdaDeploymentGroup(stack, 'MyDG', {
+      alias,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+      AssumeRolePolicyDocument: {
+        Statement: [
+          {
+            Action: 'sts:AssumeRole',
+            Effect: 'Allow',
+            Principal: {
+              Service: 'codedeploy.amazonaws.com',
+            },
+          },
+        ],
+        Version: '2012-10-17',
       },
     });
   });

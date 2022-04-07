@@ -75,7 +75,8 @@ export class FargateProfileResourceHandler extends ResourceHandler {
    */
   private generateProfileName() {
     const suffix = this.requestId.replace(/-/g, ''); // 32 chars
-    const prefix = this.logicalResourceId.substr(0, MAX_NAME_LEN - suffix.length - 1);
+    const offset = MAX_NAME_LEN - suffix.length - 1;
+    const prefix = this.logicalResourceId.slice(0, offset > 0 ? offset : 0);
     return `${prefix}-${suffix}`;
   }
 

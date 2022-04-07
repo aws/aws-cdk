@@ -182,7 +182,7 @@ export abstract class OriginBase implements IOrigin {
     if (originPath === undefined) { return undefined; }
     let path = originPath;
     if (!path.startsWith('/')) { path = '/' + path; }
-    if (path.endsWith('/')) { path = path.substr(0, path.length - 1); }
+    if (path.endsWith('/')) { path = path.slice(0, -1); }
     return path;
   }
 

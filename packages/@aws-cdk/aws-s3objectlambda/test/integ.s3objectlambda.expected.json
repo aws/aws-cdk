@@ -160,7 +160,6 @@
     "MyObjectLambda17554FEF4": {
       "Type": "AWS::S3ObjectLambda::AccessPoint",
       "Properties": {
-        "Name": "obj-lambda-1",
         "ObjectLambdaConfiguration": {
           "AllowedFeatures": [
             "GetObject-PartNumber"
@@ -203,7 +202,6 @@
     "MyObjectLambda2CCBCAAF7": {
       "Type": "AWS::S3ObjectLambda::AccessPoint",
       "Properties": {
-        "Name": "obj-lambda-1",
         "ObjectLambdaConfiguration": {
           "AllowedFeatures": [
             "GetObject-Range"

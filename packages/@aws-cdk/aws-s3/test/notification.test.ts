@@ -146,4 +146,22 @@ describe('notification', () => {
       }),
     }, { suffix: '.png' }, { suffix: '.zip' })).toThrow(/suffix rule/);
   });
+
+  test('EventBridge notification custom resource', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new s3.Bucket(stack, 'MyBucket', {
+      eventBridgeEnabled: true,
+    });
+
+    // THEN
+    Template.fromStack(stack).resourceCountIs('AWS::S3::Bucket', 1);
+    Template.fromStack(stack).hasResourceProperties('Custom::S3BucketNotifications', {
+      NotificationConfiguration: {
+        EventBridgeConfiguration: {},
+      },
+    });
+  });
 });

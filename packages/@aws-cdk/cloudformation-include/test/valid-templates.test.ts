@@ -1081,6 +1081,14 @@ describe('CDK Include', () => {
       loadTestFileToJsObject('properties-not-in-cfn-spec.json'),
     );
   });
+
+  test('roundtrip a fn-select with a fn-if/ref-novalue in it', () => {
+    includeTestTemplate(stack, 'fn-select-with-novalue.json');
+
+    Template.fromStack(stack).templateMatches(
+      loadTestFileToJsObject('fn-select-with-novalue.json'),
+    );
+  });
 });
 
 interface IncludeTestTemplateProps {

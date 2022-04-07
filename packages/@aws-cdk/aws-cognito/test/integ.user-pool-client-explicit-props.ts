@@ -1,11 +1,15 @@
 import { App, RemovalPolicy, Stack } from '@aws-cdk/core';
-import { OAuthScope, UserPool, ClientAttributes } from '../lib';
+import { OAuthScope, UserPool, ClientAttributes, StringAttribute } from '../lib';
 
 const app = new App();
 const stack = new Stack(app, 'integ-user-pool-client-explicit-props');
 
 const userpool = new UserPool(stack, 'myuserpool', {
   removalPolicy: RemovalPolicy.DESTROY,
+  customAttributes: {
+    attribute_one: new StringAttribute(),
+    attribute_two: new StringAttribute(),
+  },
 });
 
 userpool.addClient('myuserpoolclient', {
