@@ -17,7 +17,11 @@
                       {
                         "Ref": "AWS::Partition"
                       },
-                      ":iam::12345678:root"
+                      ":iam::",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":root"
                     ]
                   ]
                 }
@@ -598,7 +602,11 @@
                       {
                         "Ref": "AWS::Partition"
                       },
-                      ":iam::12345678:root"
+                      ":iam::",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":root"
                     ]
                   ]
                 }
@@ -1105,13 +1113,17 @@
           "Fn::Join": [
             "",
             [
-              "https://s3.test-region.",
+              "https://s3.",
+              {
+                "Ref": "AWS::Region"
+              },
+              ".",
               {
                 "Ref": "AWS::URLSuffix"
               },
               "/",
               {
-                "Ref": "AssetParameters437b93a1174b0ed1b2fbfbad239c7150dcdc5cdf6c0344f1d33d6dd70e5510f1S3Bucket64BC66E2"
+                "Ref": "AssetParameters8da8ef613cd1b5a7cebfe44577f36e7ab0b4b00b97a7789401a48c80b78f0852S3Bucket6110578F"
               },
               "/",
               {
@@ -1121,7 +1133,7 @@
                     "Fn::Split": [
                       "||",
                       {
-                        "Ref": "AssetParameters437b93a1174b0ed1b2fbfbad239c7150dcdc5cdf6c0344f1d33d6dd70e5510f1S3VersionKey89A6C9D3"
+                        "Ref": "AssetParameters8da8ef613cd1b5a7cebfe44577f36e7ab0b4b00b97a7789401a48c80b78f0852S3VersionKey3090022B"
                       }
                     ]
                   }
@@ -1134,7 +1146,7 @@
                     "Fn::Split": [
                       "||",
                       {
-                        "Ref": "AssetParameters437b93a1174b0ed1b2fbfbad239c7150dcdc5cdf6c0344f1d33d6dd70e5510f1S3VersionKey89A6C9D3"
+                        "Ref": "AssetParameters8da8ef613cd1b5a7cebfe44577f36e7ab0b4b00b97a7789401a48c80b78f0852S3VersionKey3090022B"
                       }
                     ]
                   }
@@ -1180,7 +1192,11 @@
           "Fn::Join": [
             "",
             [
-              "https://s3.test-region.",
+              "https://s3.",
+              {
+                "Ref": "AWS::Region"
+              },
+              ".",
               {
                 "Ref": "AWS::URLSuffix"
               },
@@ -1289,7 +1305,11 @@
             {
               "Ref": "Cluster9EE0221C"
             },
-            " --region test-region --role-arn ",
+            " --region ",
+            {
+              "Ref": "AWS::Region"
+            },
+            " --role-arn ",
             {
               "Fn::GetAtt": [
                 "AdminRole38563C57",
@@ -1309,7 +1329,11 @@
             {
               "Ref": "Cluster9EE0221C"
             },
-            " --region test-region --role-arn ",
+            " --region ",
+            {
+              "Ref": "AWS::Region"
+            },
+            " --role-arn ",
             {
               "Fn::GetAtt": [
                 "AdminRole38563C57",
@@ -1406,17 +1430,17 @@
       "Type": "String",
       "Description": "Artifact hash for asset \"d65fbdc11b108e0386ed8577c454d4544f6d4e7960f84a0d2e211478d6324dbf\""
     },
-    "AssetParameters437b93a1174b0ed1b2fbfbad239c7150dcdc5cdf6c0344f1d33d6dd70e5510f1S3Bucket64BC66E2": {
+    "AssetParameters8da8ef613cd1b5a7cebfe44577f36e7ab0b4b00b97a7789401a48c80b78f0852S3Bucket6110578F": {
       "Type": "String",
-      "Description": "S3 bucket for asset \"437b93a1174b0ed1b2fbfbad239c7150dcdc5cdf6c0344f1d33d6dd70e5510f1\""
+      "Description": "S3 bucket for asset \"8da8ef613cd1b5a7cebfe44577f36e7ab0b4b00b97a7789401a48c80b78f0852\""
     },
-    "AssetParameters437b93a1174b0ed1b2fbfbad239c7150dcdc5cdf6c0344f1d33d6dd70e5510f1S3VersionKey89A6C9D3": {
+    "AssetParameters8da8ef613cd1b5a7cebfe44577f36e7ab0b4b00b97a7789401a48c80b78f0852S3VersionKey3090022B": {
       "Type": "String",
-      "Description": "S3 key for asset version \"437b93a1174b0ed1b2fbfbad239c7150dcdc5cdf6c0344f1d33d6dd70e5510f1\""
+      "Description": "S3 key for asset version \"8da8ef613cd1b5a7cebfe44577f36e7ab0b4b00b97a7789401a48c80b78f0852\""
     },
-    "AssetParameters437b93a1174b0ed1b2fbfbad239c7150dcdc5cdf6c0344f1d33d6dd70e5510f1ArtifactHash108A612E": {
+    "AssetParameters8da8ef613cd1b5a7cebfe44577f36e7ab0b4b00b97a7789401a48c80b78f0852ArtifactHash3BC91380": {
       "Type": "String",
-      "Description": "Artifact hash for asset \"437b93a1174b0ed1b2fbfbad239c7150dcdc5cdf6c0344f1d33d6dd70e5510f1\""
+      "Description": "Artifact hash for asset \"8da8ef613cd1b5a7cebfe44577f36e7ab0b4b00b97a7789401a48c80b78f0852\""
     },
     "AssetParameters0f0fca85b345e05ce2d9856ebaef0bec86a728074139a71a31b68c96b20289efS3Bucket2C1AF85C": {
       "Type": "String",
