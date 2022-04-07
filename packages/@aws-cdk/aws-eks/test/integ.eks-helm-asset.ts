@@ -48,6 +48,15 @@ class EksClusterStack extends TestStack {
     this.cluster.addHelmChart('test-chart', {
       chartAsset: chartAsset,
     });
+
+    this.cluster.addHelmChart('test-oci-chart', {
+      chart: 's3-chart',
+      release: 's3-chart',
+      repository: 'oci://public.ecr.aws/aws-controllers-k8s/s3-chart',
+      version: 'v0.0.19',
+      namespace: 'ack-system',
+      createNamespace: true,
+    });
   }
 }
 
