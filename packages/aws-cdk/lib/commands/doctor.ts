@@ -62,7 +62,7 @@ function displayCdkEnvironmentVariables() {
 }
 
 function anonymizeAwsVariable(name: string, value: string) {
-  if (name === 'AWS_ACCESS_KEY_ID') { return value.substr(0, 4) + '<redacted>'; } // Show ASIA/AKIA key type, but hide identifier
+  if (name === 'AWS_ACCESS_KEY_ID') { return value.slice(0, 4) + '<redacted>'; } // Show ASIA/AKIA key type, but hide identifier
   if (name === 'AWS_SECRET_ACCESS_KEY' || name === 'AWS_SESSION_TOKEN' || name === 'AWS_SECURITY_TOKEN') { return '<redacted>'; }
   return value;
 }

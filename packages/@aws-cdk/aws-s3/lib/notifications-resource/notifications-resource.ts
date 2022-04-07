@@ -33,6 +33,7 @@ interface NotificationsProps {
  * https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-bucket-notificationconfig.html
  */
 export class BucketNotifications extends Construct {
+  private eventBridgeEnabled = false;
   private readonly lambdaNotifications = new Array<LambdaFunctionConfiguration>();
   private readonly queueNotifications = new Array<QueueConfiguration>();
   private readonly topicNotifications = new Array<TopicConfiguration>();
@@ -91,8 +92,14 @@ export class BucketNotifications extends Construct {
     }
   }
 
+  public enableEventBridgeNotification() {
+    this.createResourceOnce();
+    this.eventBridgeEnabled = true;
+  }
+
   private renderNotificationConfiguration(): NotificationConfiguration {
     return {
+      EventBridgeConfiguration: this.eventBridgeEnabled ? {} : undefined,
       LambdaFunctionConfigurations: this.lambdaNotifications.length > 0 ? this.lambdaNotifications : undefined,
       QueueConfigurations: this.queueNotifications.length > 0 ? this.queueNotifications : undefined,
       TopicConfigurations: this.topicNotifications.length > 0 ? this.topicNotifications : undefined,
@@ -173,6 +180,7 @@ function renderFilters(filters?: NotificationKeyFilter[]): Filter | undefined {
 }
 
 interface NotificationConfiguration {
+  EventBridgeConfiguration?: EventBridgeConfiguration;
   LambdaFunctionConfigurations?: LambdaFunctionConfiguration[];
   QueueConfigurations?: QueueConfiguration[];
   TopicConfigurations?: TopicConfiguration[];
@@ -183,6 +191,8 @@ interface CommonConfiguration {
   Events: EventType[];
   Filter?: Filter
 }
+
+interface EventBridgeConfiguration { }
 
 interface LambdaFunctionConfiguration extends CommonConfiguration {
   LambdaFunctionArn: string;

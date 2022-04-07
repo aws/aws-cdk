@@ -16,6 +16,7 @@ import * as cxapi from '@aws-cdk/cx-api';
 import * as constructs from 'constructs';
 import * as _ from 'lodash';
 import * as lambda from '../lib';
+import { Lazy, Size } from '@aws-cdk/core';
 
 describe('function', () => {
   test('default function', () => {
@@ -2590,6 +2591,7 @@ describe('function', () => {
       architectures: [lambda.Architecture.X86_64, lambda.Architecture.ARM_64],
     })).toThrow(/one architecture must be specified/);
   });
+
   test('Architecture is properly readable from the function', () => {
     const stack = new cdk.Stack();
     const fn = new lambda.Function(stack, 'MyFunction', {
@@ -2639,6 +2641,50 @@ describe('function', () => {
       });
     }).not.toThrow();
   });
+});
+
+test('throws if ephemeral storage size is out of bound', () => {
+  const stack = new cdk.Stack();
+  expect(() => new lambda.Function(stack, 'MyLambda', {
+    code: new lambda.InlineCode('foo'),
+    handler: 'bar',
+    runtime: lambda.Runtime.NODEJS_14_X,
+    ephemeralStorageSize: Size.mebibytes(511),
+  })).toThrow(/Ephemeral storage size must be between 512 and 10240 MB/);
+});
+
+test('set ephemeral storage to desired size', () => {
+  const stack = new cdk.Stack();
+  new lambda.Function(stack, 'MyLambda', {
+    code: new lambda.InlineCode('foo'),
+    handler: 'bar',
+    runtime: lambda.Runtime.NODEJS_14_X,
+    ephemeralStorageSize: Size.mebibytes(1024),
+  });
+
+  Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
+    Properties:
+    {
+      Code: { ZipFile: 'foo' },
+      Handler: 'bar',
+      Runtime: 'nodejs14.x',
+      EphemeralStorage: {
+        Size: 1024,
+      },
+    },
+  });
+});
+
+test('ephemeral storage allows unresolved tokens', () => {
+  const stack = new cdk.Stack();
+  expect(() => {
+    new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'bar',
+      runtime: lambda.Runtime.NODEJS_14_X,
+      ephemeralStorageSize: Size.mebibytes(Lazy.number({ produce: () => 1024 })),
+    });
+  }).not.toThrow();
 });
 
 function newTestLambda(scope: constructs.Construct) {

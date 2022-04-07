@@ -149,7 +149,7 @@ async function findLibrariesToPackage(uberPackageJson: PackageJson): Promise<rea
     result.push({
       packageJson,
       root: path.join(librariesRoot, dir),
-      shortName: packageJson.name.substr('@aws-cdk/'.length),
+      shortName: packageJson.name.slice('@aws-cdk/'.length),
     });
   }
 
@@ -577,7 +577,7 @@ async function rewriteLibraryImports(fromFile: string, targetDir: string, libRoo
 
     const importedFile = modulePath === sourceLibrary.packageJson.name
       ? path.join(libRoot, sourceLibrary.shortName)
-      : path.join(libRoot, sourceLibrary.shortName, modulePath.substr(sourceLibrary.packageJson.name.length + 1));
+      : path.join(libRoot, sourceLibrary.shortName, modulePath.slice(sourceLibrary.packageJson.name.length + 1));
 
     return path.relative(targetDir, importedFile);
   }

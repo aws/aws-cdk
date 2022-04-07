@@ -410,7 +410,7 @@ function updatedExternalLocation(
     return customModulePath;
   }
 
-  if (options.rewriteCfnImports && modulePath.endsWith(`${options.packageUnscopedName?.substr('aws-'.length)}.generated`)) {
+  if (options.rewriteCfnImports && modulePath.endsWith(`${options.packageUnscopedName?.slice('aws-'.length)}.generated`)) {
     return `${libName}/${options.packageUnscopedName}`;
   }
 

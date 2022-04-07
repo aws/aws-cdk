@@ -44,7 +44,7 @@
         "BSD-2-Clause",
         "0BSD"
       ],
-      "dontAttribute": "^@aws-cdk/|^cdk-assets$",
+      "dontAttribute": "^@aws-cdk/|^cdk-assets$|^cdk-cli-wrapper$",
       "test": "bin/cdk --version",
       "entryPoints": [
         "lib/index.js"

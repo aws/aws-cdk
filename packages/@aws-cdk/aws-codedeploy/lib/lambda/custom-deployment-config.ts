@@ -1,7 +1,7 @@
 import { Duration, Names, Resource } from '@aws-cdk/core';
 import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from '@aws-cdk/custom-resources';
 import { Construct } from 'constructs';
-import { arnForDeploymentConfig } from '../utils';
+import { arnForDeploymentConfig, validateName } from '../utils';
 import { ILambdaDeploymentConfig } from './deployment-config';
 
 /**
@@ -141,6 +141,8 @@ export class CustomLambdaDeploymentConfig extends Resource implements ILambdaDep
         resources: AwsCustomResourcePolicy.ANY_RESOURCE,
       }),
     });
+
+    this.node.addValidation({ validate: () => validateName('Deployment config', this.deploymentConfigName) });
   }
 
   // Validate the inputs. The percentage/interval limits come from CodeDeploy

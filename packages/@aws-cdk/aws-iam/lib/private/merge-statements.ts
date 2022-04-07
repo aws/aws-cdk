@@ -18,26 +18,33 @@ import { StatementSchema, normalizeStatement, IamValue } from './postprocess-pol
 export function mergeStatements(statements: StatementSchema[]): StatementSchema[] {
   const compStatements = statements.map(makeComparable);
 
-  let i = 0;
-  while (i < compStatements.length) {
-    let didMerge = false;
+  // Keep trying until nothing changes anymore
+  while (onePass()) { /* again */ }
+  return compStatements.map(renderComparable);
 
-    for (let j = i + 1; j < compStatements.length; j++) {
-      const merged = tryMerge(compStatements[i], compStatements[j]);
-      if (merged) {
-        compStatements[i] = merged;
-        compStatements.splice(j, 1);
-        didMerge = true;
-        break;
+  // Do one optimization pass, return 'true' if we merged anything
+  function onePass() {
+    let ret = false;
+    let i = 0;
+    while (i < compStatements.length) {
+      let didMerge = false;
+
+      for (let j = i + 1; j < compStatements.length; j++) {
+        const merged = tryMerge(compStatements[i], compStatements[j]);
+        if (merged) {
+          compStatements[i] = merged;
+          compStatements.splice(j, 1);
+          ret = didMerge = true;
+          break;
+        }
+      }
+
+      if (!didMerge) {
+        i++;
       }
     }
-
-    if (!didMerge) {
-      i++;
-    }
+    return ret;
   }
-
-  return compStatements.map(renderComparable);
 }
 
 /**

@@ -36,7 +36,7 @@ class EksClusterStack extends TestStack {
       vpc: this.vpc,
       mastersRole,
       defaultCapacity: 2,
-      version: eks.KubernetesVersion.V1_21,
+      version: eks.KubernetesVersion.V1_22,
       secretsEncryptionKey,
       tags: {
         foo: 'bar',
@@ -206,7 +206,7 @@ class EksClusterStack extends TestStack {
     const lt = new ec2.CfnLaunchTemplate(this, 'LaunchTemplate', {
       launchTemplateData: {
         imageId: new eks.EksOptimizedImage({
-          kubernetesVersion: eks.KubernetesVersion.V1_21.version,
+          kubernetesVersion: eks.KubernetesVersion.V1_22.version,
         }).getImage(this).imageId,
         instanceType: new ec2.InstanceType('t3.small').toString(),
         userData: Fn.base64(userData.render()),

@@ -9,7 +9,7 @@ const stack = new cdk.Stack(app, 'aws-cdk-config-rule-scoped-integ');
 const fn = new lambda.Function(stack, 'CustomFunction', {
   code: lambda.AssetCode.fromInline('exports.handler = (event) => console.log(event);'),
   handler: 'index.handler',
-  runtime: lambda.Runtime.NODEJS_10_X,
+  runtime: lambda.Runtime.NODEJS_14_X,
 });
 
 new config.CustomRule(stack, 'Custom', {

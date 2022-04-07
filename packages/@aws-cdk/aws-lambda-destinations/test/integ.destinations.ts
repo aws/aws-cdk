@@ -19,7 +19,7 @@ class TestStack extends Stack {
     const queue = new sqs.Queue(this, 'Queue');
 
     const fn = new lambda.Function(this, 'SnsSqs', {
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       handler: 'index.handler',
       code: lambda.Code.fromInline(`exports.handler = async (event) => {
         if (event === 'OK') return 'success';
@@ -32,7 +32,7 @@ class TestStack extends Stack {
     });
 
     const onSuccessLambda = new lambda.Function(this, 'OnSucces', {
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       handler: 'index.handler',
       code: lambda.Code.fromInline(`exports.handler = async (event) => {
         console.log(event);
@@ -40,7 +40,7 @@ class TestStack extends Stack {
     });
 
     new lambda.Function(this, 'EventBusLambda', {
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       handler: 'index.handler',
       code: lambda.Code.fromInline(`exports.handler = async (event) => {
         if (event === 'OK') return 'success';

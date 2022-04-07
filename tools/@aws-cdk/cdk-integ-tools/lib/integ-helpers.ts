@@ -60,7 +60,7 @@ export class IntegrationTests {
       for (const file of files) {
         const fullPath = path.join(dir, file);
         const statf = await fs.stat(fullPath);
-        if (statf.isFile()) { ret.push(fullPath.substr(rootDir.length + 1)); }
+        if (statf.isFile()) { ret.push(fullPath.slice(rootDir.length + 1)); }
         if (statf.isDirectory()) { await recurse(path.join(fullPath)); }
       }
     }
@@ -82,7 +82,7 @@ export class IntegrationTest {
   private readonly sourceFilePath: string;
 
   constructor(private readonly directory: string, public readonly name: string) {
-    const baseName = this.name.endsWith('.js') ? this.name.substr(0, this.name.length - 3) : this.name;
+    const baseName = this.name.endsWith('.js') ? this.name.slice(0, -3) : this.name;
     this.expectedFileName = baseName + '.expected.json';
     this.expectedFilePath = path.join(this.directory, this.expectedFileName);
     this.sourceFilePath = path.join(this.directory, this.name);

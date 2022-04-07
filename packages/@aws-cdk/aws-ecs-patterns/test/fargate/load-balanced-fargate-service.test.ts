@@ -1047,3 +1047,29 @@ test('test Network load balanced service with docker labels defined', () => {
     ],
   });
 });
+
+test('Passing in token for desiredCount will not throw error', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const vpc = new ec2.Vpc(stack, 'VPC');
+  const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+  const param = new cdk.CfnParameter(stack, 'prammm', {
+    type: 'Number',
+    default: 1,
+  });
+
+  // WHEN
+  const service = new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
+    cluster,
+    taskImageOptions: {
+      image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
+      dockerLabels: { label1: 'labelValue1', label2: 'labelValue2' },
+    },
+    desiredCount: param.valueAsNumber,
+  });
+
+  // THEN
+  expect(() => {
+    service.internalDesiredCount;
+  }).toBeTruthy;
+});
