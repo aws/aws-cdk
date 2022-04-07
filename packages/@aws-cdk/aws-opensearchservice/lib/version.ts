@@ -65,6 +65,9 @@ export class EngineVersion {
   /** AWS OpenSearch 1.1 */
   public static readonly OPENSEARCH_1_1 = EngineVersion.openSearch('1.1');
 
+  /** AWS OpenSearch 1.2 */
+  public static readonly OPENSEARCH_1_2 = EngineVersion.openSearch('1.2');
+
   /**
    * Custom ElasticSearch version
    * @param version custom version number

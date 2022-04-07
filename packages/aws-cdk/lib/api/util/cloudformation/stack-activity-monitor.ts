@@ -665,6 +665,7 @@ export class CurrentActivityPrinter extends ActivityPrinterBase {
 
     // Display in the same block space, otherwise we're going to have silly empty lines.
     this.block.displayLines(lines);
+    this.block.removeEmptyLines(lines);
   }
 
   private progressBar(width: number) {
