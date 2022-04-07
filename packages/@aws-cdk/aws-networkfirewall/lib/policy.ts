@@ -128,6 +128,14 @@ export interface FirewallPolicyProps {
    * @default - undefined
    */
   readonly statelessRuleGroups?: StatelessRuleGroupList[];
+
+
+  /**
+   * The description of the policy.
+   *
+   * @default - undefined
+   */
+  readonly description?: string;
 }
 
 /**
@@ -180,7 +188,6 @@ export class FirewallPolicy extends FirewallPolicyBase {
 				`got: '${props.firewallPolicyName}'`);
     }
 
-    //TODO: Verify default actions only have one standard action
 
     /**
      * Validating Stateless Default Actions
@@ -301,14 +308,19 @@ export class FirewallPolicy extends FirewallPolicyBase {
 
     const resourceProps:CfnFirewallPolicyProps = {
       firewallPolicy: resourcePolicyProperty,
-      firewallPolicyName: this.physicalName,
-      //TODO description
+      firewallPolicyName: props.firewallPolicyName || id,
+      description: props.description,
       //TODO tags
     };
 
-    const resource:CfnFirewallPolicy = new CfnFirewallPolicy(this, this.physicalName, resourceProps);
+    const resource:CfnFirewallPolicy = new CfnFirewallPolicy(this, props.firewallPolicyName || id, resourceProps);
 
-    this.firewallPolicyArn = resource.attrFirewallPolicyArn;
-    this.firewallPolicyId = resource.attrFirewallPolicyId;
+    this.firewallPolicyId = this.getResourceNameAttribute(resource.ref);
+
+    this.firewallPolicyArn = this.getResourceArnAttribute(resource.attrFirewallPolicyArn, {
+      service: 'NetworkFirewall',
+      resource: 'FirewallPolicy',
+      resourceName: this.firewallPolicyId,
+    });
   }
 }

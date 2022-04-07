@@ -76,6 +76,12 @@ export interface FirewallProps {
    */
   readonly policy: IFirewallPolicy;
 
+  /**
+   * The descriptiong of the Firewall
+   *
+   * @default - undefined
+   */
+  readonly description?: string;
 }
 
 /**
@@ -166,19 +172,23 @@ export class Firewall extends FirewallBase {
     }
 
     const resourceProps:CfnFirewallProps = {
-      firewallName: this.physicalName,
+      firewallName: props.firewallName||id,
       firewallPolicyArn: props.policy.firewallPolicyArn,
       subnetMappings: subnets,
       vpcId: props.vpc.vpcId,
-      //TODO: description
+      description: props.description,
       //TODO: tags
     };
 
-    const resource:CfnFirewall = new CfnFirewall(this,
-      this.physicalName, resourceProps);
+    const resource:CfnFirewall = new CfnFirewall(this, id, resourceProps);
 
-    this.firewallId = resource.attrFirewallId;
-    this.firewallArn = resource.attrFirewallArn;
+    this.firewallId = this.getResourceNameAttribute(resource.ref);
+    this.firewallArn = this.getResourceArnAttribute(resource.attrFirewallArn, {
+      service: 'NetworkFirewall',
+      resource: 'Firewall',
+      resourceName: this.firewallId,
+    });
+
     this.endpointIds = resource.attrEndpointIds;
     this.policy = props.policy;
   }

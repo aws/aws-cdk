@@ -228,13 +228,6 @@ export interface Stateful5TupleRuleProps extends StatefulRuleBaseProps {
    */
   readonly action: StatefulStandardAction|string;
 
-
-  /**
-   * The Priority of this rule in the rule group.
-   * Must be unique from other rules
-   */
-  readonly priority: number;
-
   /**
    * The destination port to inspect for.
    * You can specify an individual port, for example 1994 and you can specify a port range, for example 1990:1994 .
@@ -372,7 +365,7 @@ export interface StatefulDomainListRuleProps extends StatefulRuleBaseProps {
    *
    * @default - DENYLIST
    */
-  readonly type?: string | StatefulDomainListType;
+  readonly type?: StatefulDomainListType | string;
 
   /**
    * The domains that you want to inspect for in your traffic flows.
@@ -382,7 +375,7 @@ export interface StatefulDomainListRuleProps extends StatefulRuleBaseProps {
   /**
    * The types of targets to inspect for.
    */
-  readonly targetTypes: string[]|StatefulDomainListTargetType[];
+  readonly targetTypes: (StatefulDomainListTargetType | string)[];
 }
 
 /**

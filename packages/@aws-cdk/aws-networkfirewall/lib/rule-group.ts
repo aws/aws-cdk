@@ -79,11 +79,18 @@ export interface StatelessRuleGroupProps {
   readonly customActions?: CfnRuleGroup.CustomActionProperty[];
 
   /**
-	 * Settings that are available for use in the rules
-	 *
-	 * @default - undefined
-	 */
+   * Settings that are available for use in the rules
+   *
+   * @default - undefined
+   */
   readonly variables?: CfnRuleGroup.RuleVariablesProperty;
+
+  /**
+   * Description of the rule group
+   *
+   * @default - undefined
+   */
+  readonly description?: string;
 }
 
 /**
@@ -141,14 +148,12 @@ export class StatelessRuleGroup extends StatelessRuleGroupBase {
     /**
      * Validate Rule priority
      */
-    if (props.rules !== undefined) {
-      this.verifyUniquePriority();
-    }
     this.rules = props.rules||[];
+    this.verifyUniquePriority();
     /**
      * Validating Capacity
      */
-    const capacity:number = props.capacity || this.calculateCapacity(props.rules);
+    const capacity:number = props.capacity || this.calculateCapacity();
     if (!Number.isInteger(capacity)) {
       throw new Error('capacity must be an integer value, '+
 				`got: '${capacity}'`);
@@ -184,25 +189,31 @@ export class StatelessRuleGroup extends StatelessRuleGroupBase {
 
     const resourceProps:CfnRuleGroupProps={
       capacity: capacity,
-      ruleGroupName: this.physicalName,
+      ruleGroupName: props.ruleGroupName || id,
       type: RuleGroupType.STATELESS,
       ruleGroup: resourceRuleGroupProperty,
-      //description
+      description: props.description,
       //tags
     };
-    const resource:CfnRuleGroup = new CfnRuleGroup(this, this.physicalName, resourceProps);
-    this.ruleGroupId = resource.attrRuleGroupId;
-    this.ruleGroupArn = resource.attrRuleGroupArn;
+    const resource:CfnRuleGroup = new CfnRuleGroup(this, id, resourceProps);
+    this.ruleGroupId = this.getResourceNameAttribute(resource.ref);
+    this.ruleGroupArn = this.getResourceArnAttribute(resource.attrRuleGroupArn, {
+      service: 'NetworkFirewall',
+      resource: 'RuleGroup',
+      resourceName: this.ruleGroupId,
+    });
+
+
   }
 
   /**
    * Calculates the expected capacity required for all applied stateful rules.
    */
-  public calculateCapacity(rules: StatelessRule[]|undefined): number {
+  public calculateCapacity(): number {
     let total:number = 0;
     var statelessRule: StatelessRule;
-    if (rules !== undefined) {
-      for (statelessRule of rules) {
+    if (this.rules !== undefined) {
+      for (statelessRule of this.rules) {
         total += statelessRule.calculateCapacity();
       }
     }
@@ -218,7 +229,7 @@ export class StatelessRuleGroup extends StatelessRuleGroupBase {
     for (rule of this.rules) {
       if (priorities.includes(rule.priority)) {
         throw new Error('Priority must be unique, '+
-          `got duplicate priority: ${rule.priority}`);
+          `got duplicate priority: '${rule.priority}'`);
       }
       priorities.push(rule.priority);
     }
@@ -288,6 +299,20 @@ interface StatefulRuleGroupProps {
    * @default - undefined
    */
   readonly variables?: CfnRuleGroup.RuleVariablesProperty;
+
+  /**
+   * Rule Order
+   *
+   * @default - DEFAULT_RULE_ACTION_ORDER
+   */
+  readonly ruleOrder?: StatefulRuleOptions;
+
+  /**
+   * Description of the rule group
+   *
+   * @default - undefined
+   */
+  readonly description?: string;
 }
 
 /**
@@ -336,42 +361,26 @@ abstract class StatefulRuleGroup extends core.Resource implements IStatefulRuleG
  *
  * @resource AWS::NetworkFIrewall::RuleGroup
  */
-export interface StatefulRuleGroupSuricataProps extends StatefulRuleGroupProps {
+export interface StatefulSuricataRuleGroupProps extends StatefulRuleGroupProps {
   /**
    * The suricata rules
    *
    * @default - undefined
    */
   readonly rules?: string;
-
-
-  /**
-   * Settings that are available for use in the rules
-   *
-   * @default - undefined
-   */
-  readonly ruleVariables?: CfnRuleGroup.RuleVariablesProperty;
-
-  /**
-   * Rule Order
-   *
-   * @default - DEFAULT_RULE_ACTION_ORDER
-   */
-  readonly ruleOrder?: StatefulRuleOptions;
-
 }
 
 /**
- * A Stateful Rule group that holds 5Tuple Rules
+ * A Stateful Rule group that holds Suricata Rules
  *
  * @resource AWS::NetworkFirewall::RuleGroup
  */
-export class StatefulRuleGroupSuricata extends StatefulRuleGroup {
+export class StatefulSuricataRuleGroup extends StatefulRuleGroup {
 
   public readonly ruleGroupArn: string;
   public readonly ruleGroupId: string;
 
-  constructor(scope:Construct, id:string, props?:StatefulRuleGroupSuricataProps) {
+  constructor(scope:Construct, id:string, props?:StatefulSuricataRuleGroupProps) {
     if (props === undefined) {props = {};}
     super(scope, id, props);
 
@@ -389,21 +398,25 @@ export class StatefulRuleGroupSuricata extends StatefulRuleGroup {
     };
     const resourceRuleGroupProperty:CfnRuleGroup.RuleGroupProperty = {
       rulesSource: resourceSourceProperty,
-      ruleVariables: props.ruleVariables || {},
+      ruleVariables: props.variables || {},
       statefulRuleOptions: resourceRuleOptions,
     };
     const resourceProps:CfnRuleGroupProps={
       capacity: props.capacity || 100,
-      ruleGroupName: this.physicalName,
+      ruleGroupName: props.ruleGroupName || id,
       type: RuleGroupType.STATEFUL,
       ruleGroup: resourceRuleGroupProperty,
-      //description
+      description: props.description,
       //tags
     };
 
-    const resource:CfnRuleGroup = new CfnRuleGroup(this, this.physicalName, resourceProps);
-    this.ruleGroupId = resource.attrRuleGroupId;
-    this.ruleGroupArn = resource.attrRuleGroupArn;
+    const resource:CfnRuleGroup = new CfnRuleGroup(this, id, resourceProps);
+    this.ruleGroupId = this.getResourceNameAttribute(resource.ref);
+    this.ruleGroupArn = this.getResourceArnAttribute(resource.attrRuleGroupArn, {
+      service: 'NetworkFirewall',
+      resource: 'RuleGroup',
+      resourceName: this.ruleGroupId,
+    });
   }
 
 }
@@ -413,11 +426,11 @@ export class StatefulRuleGroupSuricata extends StatefulRuleGroup {
  *
  * @resource AWS::NetworkFIrewall::RuleGroup
  */
-export interface StatefulRuleGroup5TupleProps extends StatefulRuleGroupProps {
+export interface Stateful5TupleRuleGroupProps extends StatefulRuleGroupProps {
   /**
    * The rule group rules
    *
-   * @default = undefined
+   * @default - undefined
    */
   readonly rules?: Stateful5TupleRule[];
 }
@@ -426,34 +439,54 @@ export interface StatefulRuleGroup5TupleProps extends StatefulRuleGroupProps {
  * A Stateful Rule group that holds 5Tuple Rules
  * @resource AWS::NetworkFirewall::RuleGroup
  */
-export class StatefulRuleGroup5Tuple extends StatefulRuleGroup {
+export class Stateful5TupleRuleGroup extends StatefulRuleGroup {
 
   public readonly ruleGroupArn: string;
   public readonly ruleGroupId: string;
 
-  constructor(scope:Construct, id:string, props?:StatefulRuleGroup5TupleProps) {
+  constructor(scope:Construct, id:string, props?:Stateful5TupleRuleGroupProps) {
     if (props === undefined) {props = {};}
     super(scope, id, props);
 
-    const resourceSourceProperty:CfnRuleGroup.RulesSourceProperty={};
+    const rules:CfnRuleGroup.StatefulRuleProperty[] = [];
+    if (props.rules !== undefined) {
+      let rule: Stateful5TupleRule;
+      for (rule of props.rules) {
+        rules.push(rule.resource);
+      }
+    }
+
+    const resourceSourceProperty:CfnRuleGroup.RulesSourceProperty={
+      statefulRules: rules,
+    };
+
+    const resourceRuleOptions:CfnRuleGroup.StatefulRuleOptionsProperty = {
+      ruleOrder: props.ruleOrder || StatefulRuleOptions.DEFAULT_ACTION_ORDER,
+    };
 
     const resourceRuleGroupProperty:CfnRuleGroup.RuleGroupProperty = {
-
       rulesSource: resourceSourceProperty,
+      ruleVariables: props.variables || {},
+      statefulRuleOptions: resourceRuleOptions,
     };
 
     const resourceProps:CfnRuleGroupProps={
       capacity: props.capacity || 100,
-      ruleGroupName: this.physicalName,
+      ruleGroupName: props.ruleGroupName || id,
       type: RuleGroupType.STATEFUL,
       ruleGroup: resourceRuleGroupProperty,
-      //description
+      description: props.description,
       //tags
     };
 
-    const resource:CfnRuleGroup = new CfnRuleGroup(this, this.physicalName, resourceProps);
-    this.ruleGroupId = resource.attrRuleGroupId;
-    this.ruleGroupArn = resource.attrRuleGroupArn;
+    const resource:CfnRuleGroup = new CfnRuleGroup(this, id, resourceProps);
+
+    this.ruleGroupId = this.getResourceNameAttribute(resource.ref);
+    this.ruleGroupArn = this.getResourceArnAttribute(resource.attrRuleGroupArn, {
+      service: 'NetworkFirewall',
+      resource: 'RuleGroup',
+      resourceName: this.ruleGroupId,
+    });
   }
 }
 
@@ -462,31 +495,24 @@ export class StatefulRuleGroup5Tuple extends StatefulRuleGroup {
  *
  * @resource AWS::NetworkFIrewall::RuleGroup
  */
-export interface StatefulRuleGroupDomainListProps extends StatefulRuleGroupProps {
+export interface StatefulDomainListRuleGroupProps extends StatefulRuleGroupProps {
   /**
    * The Domain List rule
    * @default - undefined
    */
   readonly rule?: StatefulDomainListRule;
-
-  /**
-   * Indicates how to manage the order of the rule evaluation for the rule group
-   *
-   * @default - Default Action Order
-   */
-  readonly ruleOrder?: StatefulRuleOptions;
 }
 
 /**
  * A Stateful Rule group that holds Domain List Rules
  * @resource AWS::NetworkFirewall::RuleGroup
  */
-export class StatefulRuleGroupDomainList extends StatefulRuleGroup {
+export class StatefulDomainListRuleGroup extends StatefulRuleGroup {
 
   public readonly ruleGroupArn: string;
   public readonly ruleGroupId: string;
 
-  constructor(scope:Construct, id:string, props?:StatefulRuleGroupDomainListProps) {
+  constructor(scope:Construct, id:string, props?:StatefulDomainListRuleGroupProps) {
     if (props === undefined) {props = {};}
     super(scope, id, props);
 
@@ -499,21 +525,25 @@ export class StatefulRuleGroupDomainList extends StatefulRuleGroup {
 
     const resourceRuleGroupProperty:CfnRuleGroup.RuleGroupProperty = {
       rulesSource: resourceSourceProperty,
-      //ruleVariables: ,
+      ruleVariables: props.variables || {},
       statefulRuleOptions: resourceRuleOptions,
     };
 
     const resourceProps:CfnRuleGroupProps={
       capacity: props.capacity || 100,
-      ruleGroupName: this.physicalName,
+      ruleGroupName: props.ruleGroupName || id,
       type: RuleGroupType.STATEFUL,
       ruleGroup: resourceRuleGroupProperty,
-      //description
+      description: props.description,
       //tags
     };
 
-    const resource:CfnRuleGroup = new CfnRuleGroup(this, this.physicalName, resourceProps);
-    this.ruleGroupId = resource.attrRuleGroupId;
-    this.ruleGroupArn = resource.attrRuleGroupArn;
+    const resource:CfnRuleGroup = new CfnRuleGroup(this, id, resourceProps);
+    this.ruleGroupId = this.getResourceNameAttribute(resource.ref);
+    this.ruleGroupArn = this.getResourceArnAttribute(resource.attrRuleGroupArn, {
+      service: 'NetworkFirewall',
+      resource: 'RuleGroup',
+      resourceName: this.ruleGroupId,
+    });
   }
 }

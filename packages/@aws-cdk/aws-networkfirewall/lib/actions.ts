@@ -1,4 +1,6 @@
-
+/**
+ * The actions to take on a packet that matches one of the stateless rule definition's match attributes.
+ */
 export enum StatelessStandardAction {
   /**
    * Discontinues stateless inspection of the packet and forwards it to the stateful rule engine for inspection.
@@ -16,6 +18,9 @@ export enum StatelessStandardAction {
   DROP = 'aws:drop',
 }
 
+/**
+ * Defines what Network Firewall should do with the packets in a traffic flow when the flow matches the stateful rule criteria
+ */
 export enum StatefulStandardAction {
   /**
    * Permits the packets to go to the intended destination.
@@ -33,6 +38,9 @@ export enum StatefulStandardAction {
   ALERT = 'ALERT',
 }
 
+/**
+ * The default actions to take on a packet that doesn't match any stateful rules
+ */
 export enum StatefulStrictAction {
 
   /**
