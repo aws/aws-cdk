@@ -25,7 +25,7 @@ export class EcrImage extends ContainerImage {
   constructor(private readonly repository: ecr.IRepository, private readonly tagOrDigest: string) {
     super();
 
-    this.imageName = this.repositoryUriForTagOrDigest(this.tagOrDigest);
+    this.imageName = this.repository.repositoryUriForTagOrDigest(this.tagOrDigest);
   }
 
   public bind(_scope: CoreConstruct, containerDefinition: ContainerDefinition): ContainerImageConfig {
