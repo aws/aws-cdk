@@ -792,6 +792,7 @@ export class KubernetesVersion {
 
   /**
    * Kubernetes version 1.18
+   * @deprecated Use newer version of EKS
    */
   public static readonly V1_18 = KubernetesVersion.of('1.18');
 
@@ -809,6 +810,11 @@ export class KubernetesVersion {
    * Kubernetes version 1.21
    */
   public static readonly V1_21 = KubernetesVersion.of('1.21');
+
+  /**
+   * Kubernetes version 1.22
+   */
+  public static readonly V1_22 = KubernetesVersion.of('1.22');
 
   /**
    * Custom cluster version
