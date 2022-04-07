@@ -5,7 +5,8 @@
       "type": "cdk:tree",
       "properties": {
         "file": "tree.json"
-      }
+      },
+      "metadata": {}
     },
     "eks-integ-defaults": {
       "type": "aws:cloudformation:stack",
@@ -26,29 +27,7 @@
               "s3BucketParameter": "AssetParametersea4957b16062595851e7d293ee45835db05c5693669a729cc02944b6ad19a204S3Bucket371D99F8",
               "s3KeyParameter": "AssetParametersea4957b16062595851e7d293ee45835db05c5693669a729cc02944b6ad19a204S3VersionKeyFDCB25DD",
               "artifactHashParameter": "AssetParametersea4957b16062595851e7d293ee45835db05c5693669a729cc02944b6ad19a204ArtifactHashB80B497F"
-            },
-            "trace": [
-              "ConstructNode.addMetadata (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/construct-compat.js:352:62)",
-              "LegacyStackSynthesizer.doAddFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:170:29)",
-              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:82:25)",
-              "EksClusterStack.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack.js:411:33)",
-              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:59",
-              "withoutDeprecationWarnings (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:197:16)",
-              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:20)",
-              "new Asset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-s3-assets/lib/asset.js:39:44)",
-              "AssetCode.bind (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/code.js:206:26)",
-              "new Function (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function.js:100:33)",
-              "new ClusterResource (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/lib/cluster-resource.js:27:25)",
-              "new Cluster (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/lib/cluster.js:83:24)",
-              "new EksClusterStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:10:9)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:16:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            }
           },
           {
             "type": "aws:cdk:asset",
@@ -60,1544 +39,401 @@
               "s3BucketParameter": "AssetParameters640847533c8a00b3133aeb128edcac41fb7b60349c9e18764fcf7ea4af14d444S3Bucket919126CB",
               "s3KeyParameter": "AssetParameters640847533c8a00b3133aeb128edcac41fb7b60349c9e18764fcf7ea4af14d444S3VersionKey529BEF54",
               "artifactHashParameter": "AssetParameters640847533c8a00b3133aeb128edcac41fb7b60349c9e18764fcf7ea4af14d444ArtifactHash606C8127"
-            },
-            "trace": [
-              "ConstructNode.addMetadata (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/construct-compat.js:352:62)",
-              "LegacyStackSynthesizer.doAddFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:170:29)",
-              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:82:25)",
-              "EksClusterStack.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack.js:411:33)",
-              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:59",
-              "withoutDeprecationWarnings (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:197:16)",
-              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:20)",
-              "new Asset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-s3-assets/lib/asset.js:39:44)",
-              "AssetCode.bind (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/code.js:206:26)",
-              "new Function (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function.js:100:33)",
-              "Cluster.createKubernetesResourceHandler (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/lib/cluster.js:297:16)",
-              "new Cluster (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/lib/cluster.js:106:41)",
-              "new EksClusterStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:10:9)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:16:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            }
           }
         ],
         "/eks-integ-defaults/Cluster": [
           {
             "type": "aws:cdk:warning",
-            "data": "The @aws-cdk/aws-eks-legacy module will no longer be released as part of the AWS CDK starting March 1st, 2020. Please refer to https://github.com/aws/aws-cdk/issues/5544 for upgrade instructions",
-            "trace": [
-              "Annotations.addMessage (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/annotations.js:86:42)",
-              "Annotations.addWarning (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/annotations.js:32:14)",
-              "new Cluster (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/lib/cluster.js:48:37)",
-              "new EksClusterStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:10:9)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:16:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "The @aws-cdk/aws-eks-legacy module will no longer be released as part of the AWS CDK starting March 1st, 2020. Please refer to https://github.com/aws/aws-cdk/issues/5544 for upgrade instructions"
           }
         ],
         "/eks-integ-defaults/Cluster/DefaultVpc/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultVpcFA9F2722",
-            "trace": [
-              "new Vpc (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:399:25)",
-              "new Cluster (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/lib/cluster.js:50:33)",
-              "new EksClusterStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:10:9)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:16:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "ClusterDefaultVpcFA9F2722"
           }
         ],
         "/eks-integ-defaults/Cluster/DefaultVpc/PublicSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultVpcPublicSubnet1Subnet3BFE1BDA",
-            "trace": [
-              "new Subnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:731:24)",
-              "new PublicSubnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:891:9)",
-              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:641:42",
-              "Array.forEach (<anonymous>)",
-              "Vpc.createSubnetResources (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:615:32)",
-              "Vpc.createSubnets (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:611:18)",
-              "new Vpc (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:425:14)",
-              "new Cluster (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/lib/cluster.js:50:33)",
-              "new EksClusterStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:10:9)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:16:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "ClusterDefaultVpcPublicSubnet1Subnet3BFE1BDA"
           }
         ],
         "/eks-integ-defaults/Cluster/DefaultVpc/PublicSubnet1/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultVpcPublicSubnet1RouteTable1DCCDD98",
-            "trace": [
-              "new Subnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:747:23)",
-              "new PublicSubnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:891:9)",
-              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:641:42",
-              "Array.forEach (<anonymous>)",
-              "Vpc.createSubnetResources (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:615:32)",
-              "Vpc.createSubnets (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:611:18)",
-              "new Vpc (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:425:14)",
-              "new Cluster (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/lib/cluster.js:50:33)",
-              "new EksClusterStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:10:9)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:16:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "ClusterDefaultVpcPublicSubnet1RouteTable1DCCDD98"
           }
         ],
         "/eks-integ-defaults/Cluster/DefaultVpc/PublicSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultVpcPublicSubnet1RouteTableAssociationAFBE6789",
-            "trace": [
-              "new Subnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:752:9)",
-              "new PublicSubnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:891:9)",
-              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:641:42",
-              "Array.forEach (<anonymous>)",
-              "Vpc.createSubnetResources (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:615:32)",
-              "Vpc.createSubnets (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:611:18)",
-              "new Vpc (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:425:14)",
-              "new Cluster (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/lib/cluster.js:50:33)",
-              "new EksClusterStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:10:9)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:16:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "ClusterDefaultVpcPublicSubnet1RouteTableAssociationAFBE6789"
           }
         ],
         "/eks-integ-defaults/Cluster/DefaultVpc/PublicSubnet1/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultVpcPublicSubnet1DefaultRouteCF22EF6E",
-            "trace": [
-              "PublicSubnet.addDefaultInternetRoute (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:780:23)",
-              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:437:30",
-              "Array.forEach (<anonymous>)",
-              "new Vpc (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:436:32)",
-              "new Cluster (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/lib/cluster.js:50:33)",
-              "new EksClusterStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:10:9)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:16:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "ClusterDefaultVpcPublicSubnet1DefaultRouteCF22EF6E"
           }
         ],
         "/eks-integ-defaults/Cluster/DefaultVpc/PublicSubnet1/EIP": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultVpcPublicSubnet1EIP498E2BD2",
-            "trace": [
-              "PublicSubnet.addNatGateway (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:907:102)",
-              "NatGatewayProvider.configureNat (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/nat.js:91:33)",
-              "Vpc.createNatGateways (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:589:18)",
-              "new Vpc (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:442:22)",
-              "new Cluster (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/lib/cluster.js:50:33)",
-              "new EksClusterStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:10:9)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:16:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "ClusterDefaultVpcPublicSubnet1EIP498E2BD2"
           }
         ],
         "/eks-integ-defaults/Cluster/DefaultVpc/PublicSubnet1/NATGateway": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultVpcPublicSubnet1NATGateway6E21013E",
-            "trace": [
-              "PublicSubnet.addNatGateway (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:905:21)",
-              "NatGatewayProvider.configureNat (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/nat.js:91:33)",
-              "Vpc.createNatGateways (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:589:18)",
-              "new Vpc (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:442:22)",
-              "new Cluster (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/lib/cluster.js:50:33)",
-              "new EksClusterStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:10:9)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:16:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "ClusterDefaultVpcPublicSubnet1NATGateway6E21013E"
           }
         ],
         "/eks-integ-defaults/Cluster/DefaultVpc/PublicSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultVpcPublicSubnet2SubnetC4E9A966",
-            "trace": [
-              "new Subnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:731:24)",
-              "new PublicSubnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:891:9)",
-              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:641:42",
-              "Array.forEach (<anonymous>)",
-              "Vpc.createSubnetResources (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:615:32)",
-              "Vpc.createSubnets (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:611:18)",
-              "new Vpc (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:425:14)",
-              "new Cluster (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/lib/cluster.js:50:33)",
-              "new EksClusterStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:10:9)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:16:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "ClusterDefaultVpcPublicSubnet2SubnetC4E9A966"
           }
         ],
         "/eks-integ-defaults/Cluster/DefaultVpc/PublicSubnet2/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultVpcPublicSubnet2RouteTable6F1F5F47",
-            "trace": [
-              "new Subnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:747:23)",
-              "new PublicSubnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:891:9)",
-              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:641:42",
-              "Array.forEach (<anonymous>)",
-              "Vpc.createSubnetResources (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:615:32)",
-              "Vpc.createSubnets (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:611:18)",
-              "new Vpc (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:425:14)",
-              "new Cluster (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/lib/cluster.js:50:33)",
-              "new EksClusterStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:10:9)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:16:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "ClusterDefaultVpcPublicSubnet2RouteTable6F1F5F47"
           }
         ],
         "/eks-integ-defaults/Cluster/DefaultVpc/PublicSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultVpcPublicSubnet2RouteTableAssociationA8539C50",
-            "trace": [
-              "new Subnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:752:9)",
-              "new PublicSubnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:891:9)",
-              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:641:42",
-              "Array.forEach (<anonymous>)",
-              "Vpc.createSubnetResources (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:615:32)",
-              "Vpc.createSubnets (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:611:18)",
-              "new Vpc (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:425:14)",
-              "new Cluster (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/lib/cluster.js:50:33)",
-              "new EksClusterStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:10:9)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:16:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "ClusterDefaultVpcPublicSubnet2RouteTableAssociationA8539C50"
           }
         ],
         "/eks-integ-defaults/Cluster/DefaultVpc/PublicSubnet2/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultVpcPublicSubnet2DefaultRoute1FA8621E",
-            "trace": [
-              "PublicSubnet.addDefaultInternetRoute (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:780:23)",
-              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:437:30",
-              "Array.forEach (<anonymous>)",
-              "new Vpc (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:436:32)",
-              "new Cluster (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/lib/cluster.js:50:33)",
-              "new EksClusterStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:10:9)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:16:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "ClusterDefaultVpcPublicSubnet2DefaultRoute1FA8621E"
           }
         ],
         "/eks-integ-defaults/Cluster/DefaultVpc/PublicSubnet2/EIP": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultVpcPublicSubnet2EIP265F4810",
-            "trace": [
-              "PublicSubnet.addNatGateway (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:907:102)",
-              "NatGatewayProvider.configureNat (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/nat.js:91:33)",
-              "Vpc.createNatGateways (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:589:18)",
-              "new Vpc (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:442:22)",
-              "new Cluster (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/lib/cluster.js:50:33)",
-              "new EksClusterStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:10:9)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:16:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "ClusterDefaultVpcPublicSubnet2EIP265F4810"
           }
         ],
         "/eks-integ-defaults/Cluster/DefaultVpc/PublicSubnet2/NATGateway": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultVpcPublicSubnet2NATGateway4AF4B728",
-            "trace": [
-              "PublicSubnet.addNatGateway (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:905:21)",
-              "NatGatewayProvider.configureNat (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/nat.js:91:33)",
-              "Vpc.createNatGateways (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:589:18)",
-              "new Vpc (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:442:22)",
-              "new Cluster (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/lib/cluster.js:50:33)",
-              "new EksClusterStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:10:9)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:16:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "ClusterDefaultVpcPublicSubnet2NATGateway4AF4B728"
           }
         ],
         "/eks-integ-defaults/Cluster/DefaultVpc/PublicSubnet3/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultVpcPublicSubnet3Subnet1A46184A",
-            "trace": [
-              "new Subnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:731:24)",
-              "new PublicSubnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:891:9)",
-              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:641:42",
-              "Array.forEach (<anonymous>)",
-              "Vpc.createSubnetResources (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:615:32)",
-              "Vpc.createSubnets (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:611:18)",
-              "new Vpc (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:425:14)",
-              "new Cluster (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/lib/cluster.js:50:33)",
-              "new EksClusterStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:10:9)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:16:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "ClusterDefaultVpcPublicSubnet3Subnet1A46184A"
           }
         ],
         "/eks-integ-defaults/Cluster/DefaultVpc/PublicSubnet3/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultVpcPublicSubnet3RouteTableC81F99EF",
-            "trace": [
-              "new Subnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:747:23)",
-              "new PublicSubnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:891:9)",
-              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:641:42",
-              "Array.forEach (<anonymous>)",
-              "Vpc.createSubnetResources (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:615:32)",
-              "Vpc.createSubnets (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:611:18)",
-              "new Vpc (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:425:14)",
-              "new Cluster (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/lib/cluster.js:50:33)",
-              "new EksClusterStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:10:9)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:16:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "ClusterDefaultVpcPublicSubnet3RouteTableC81F99EF"
           }
         ],
         "/eks-integ-defaults/Cluster/DefaultVpc/PublicSubnet3/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultVpcPublicSubnet3RouteTableAssociation7C5D21CC",
-            "trace": [
-              "new Subnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:752:9)",
-              "new PublicSubnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:891:9)",
-              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:641:42",
-              "Array.forEach (<anonymous>)",
-              "Vpc.createSubnetResources (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:615:32)",
-              "Vpc.createSubnets (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:611:18)",
-              "new Vpc (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:425:14)",
-              "new Cluster (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/lib/cluster.js:50:33)",
-              "new EksClusterStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:10:9)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:16:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "ClusterDefaultVpcPublicSubnet3RouteTableAssociation7C5D21CC"
           }
         ],
         "/eks-integ-defaults/Cluster/DefaultVpc/PublicSubnet3/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultVpcPublicSubnet3DefaultRouteB6080504",
-            "trace": [
-              "PublicSubnet.addDefaultInternetRoute (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:780:23)",
-              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:437:30",
-              "Array.forEach (<anonymous>)",
-              "new Vpc (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:436:32)",
-              "new Cluster (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/lib/cluster.js:50:33)",
-              "new EksClusterStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:10:9)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:16:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "ClusterDefaultVpcPublicSubnet3DefaultRouteB6080504"
           }
         ],
         "/eks-integ-defaults/Cluster/DefaultVpc/PublicSubnet3/EIP": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultVpcPublicSubnet3EIP0CBF6D05",
-            "trace": [
-              "PublicSubnet.addNatGateway (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:907:102)",
-              "NatGatewayProvider.configureNat (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/nat.js:91:33)",
-              "Vpc.createNatGateways (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:589:18)",
-              "new Vpc (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:442:22)",
-              "new Cluster (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/lib/cluster.js:50:33)",
-              "new EksClusterStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:10:9)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:16:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "ClusterDefaultVpcPublicSubnet3EIP0CBF6D05"
           }
         ],
         "/eks-integ-defaults/Cluster/DefaultVpc/PublicSubnet3/NATGateway": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultVpcPublicSubnet3NATGatewayEF4BA49A",
-            "trace": [
-              "PublicSubnet.addNatGateway (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:905:21)",
-              "NatGatewayProvider.configureNat (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/nat.js:91:33)",
-              "Vpc.createNatGateways (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:589:18)",
-              "new Vpc (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:442:22)",
-              "new Cluster (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/lib/cluster.js:50:33)",
-              "new EksClusterStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:10:9)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:16:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "ClusterDefaultVpcPublicSubnet3NATGatewayEF4BA49A"
           }
         ],
         "/eks-integ-defaults/Cluster/DefaultVpc/PrivateSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultVpcPrivateSubnet1Subnet03F39409",
-            "trace": [
-              "new Subnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:731:24)",
-              "new PrivateSubnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:922:9)",
-              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:646:43",
-              "Array.forEach (<anonymous>)",
-              "Vpc.createSubnetResources (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:615:32)",
-              "Vpc.createSubnets (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:611:18)",
-              "new Vpc (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:425:14)",
-              "new Cluster (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/lib/cluster.js:50:33)",
-              "new EksClusterStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:10:9)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:16:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "ClusterDefaultVpcPrivateSubnet1Subnet03F39409"
           }
         ],
         "/eks-integ-defaults/Cluster/DefaultVpc/PrivateSubnet1/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultVpcPrivateSubnet1RouteTable7844020C",
-            "trace": [
-              "new Subnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:747:23)",
-              "new PrivateSubnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:922:9)",
-              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:646:43",
-              "Array.forEach (<anonymous>)",
-              "Vpc.createSubnetResources (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:615:32)",
-              "Vpc.createSubnets (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:611:18)",
-              "new Vpc (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:425:14)",
-              "new Cluster (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/lib/cluster.js:50:33)",
-              "new EksClusterStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:10:9)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:16:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "ClusterDefaultVpcPrivateSubnet1RouteTable7844020C"
           }
         ],
         "/eks-integ-defaults/Cluster/DefaultVpc/PrivateSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultVpcPrivateSubnet1RouteTableAssociationF8A67D95",
-            "trace": [
-              "new Subnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:752:9)",
-              "new PrivateSubnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:922:9)",
-              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:646:43",
-              "Array.forEach (<anonymous>)",
-              "Vpc.createSubnetResources (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:615:32)",
-              "Vpc.createSubnets (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:611:18)",
-              "new Vpc (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:425:14)",
-              "new Cluster (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/lib/cluster.js:50:33)",
-              "new EksClusterStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:10:9)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:16:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "ClusterDefaultVpcPrivateSubnet1RouteTableAssociationF8A67D95"
           }
         ],
         "/eks-integ-defaults/Cluster/DefaultVpc/PrivateSubnet1/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultVpcPrivateSubnet1DefaultRouteD624C8BD",
-            "trace": [
-              "PrivateSubnet.addRoute (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:822:23)",
-              "NatGatewayProvider.configureSubnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/nat.js:103:16)",
-              "NatGatewayProvider.configureNat (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/nat.js:97:18)",
-              "Vpc.createNatGateways (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:589:18)",
-              "new Vpc (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:442:22)",
-              "new Cluster (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/lib/cluster.js:50:33)",
-              "new EksClusterStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:10:9)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:16:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "ClusterDefaultVpcPrivateSubnet1DefaultRouteD624C8BD"
           }
         ],
         "/eks-integ-defaults/Cluster/DefaultVpc/PrivateSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultVpcPrivateSubnet2SubnetA526AEA7",
-            "trace": [
-              "new Subnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:731:24)",
-              "new PrivateSubnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:922:9)",
-              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:646:43",
-              "Array.forEach (<anonymous>)",
-              "Vpc.createSubnetResources (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:615:32)",
-              "Vpc.createSubnets (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:611:18)",
-              "new Vpc (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:425:14)",
-              "new Cluster (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/lib/cluster.js:50:33)",
-              "new EksClusterStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:10:9)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:16:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "ClusterDefaultVpcPrivateSubnet2SubnetA526AEA7"
           }
         ],
         "/eks-integ-defaults/Cluster/DefaultVpc/PrivateSubnet2/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultVpcPrivateSubnet2RouteTable1F9A5298",
-            "trace": [
-              "new Subnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:747:23)",
-              "new PrivateSubnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:922:9)",
-              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:646:43",
-              "Array.forEach (<anonymous>)",
-              "Vpc.createSubnetResources (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:615:32)",
-              "Vpc.createSubnets (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:611:18)",
-              "new Vpc (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:425:14)",
-              "new Cluster (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/lib/cluster.js:50:33)",
-              "new EksClusterStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:10:9)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:16:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "ClusterDefaultVpcPrivateSubnet2RouteTable1F9A5298"
           }
         ],
         "/eks-integ-defaults/Cluster/DefaultVpc/PrivateSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultVpcPrivateSubnet2RouteTableAssociationE1240DF2",
-            "trace": [
-              "new Subnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:752:9)",
-              "new PrivateSubnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:922:9)",
-              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:646:43",
-              "Array.forEach (<anonymous>)",
-              "Vpc.createSubnetResources (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:615:32)",
-              "Vpc.createSubnets (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:611:18)",
-              "new Vpc (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:425:14)",
-              "new Cluster (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/lib/cluster.js:50:33)",
-              "new EksClusterStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:10:9)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:16:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "ClusterDefaultVpcPrivateSubnet2RouteTableAssociationE1240DF2"
           }
         ],
         "/eks-integ-defaults/Cluster/DefaultVpc/PrivateSubnet2/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultVpcPrivateSubnet2DefaultRouteAB55737C",
-            "trace": [
-              "PrivateSubnet.addRoute (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:822:23)",
-              "NatGatewayProvider.configureSubnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/nat.js:103:16)",
-              "NatGatewayProvider.configureNat (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/nat.js:97:18)",
-              "Vpc.createNatGateways (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:589:18)",
-              "new Vpc (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:442:22)",
-              "new Cluster (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/lib/cluster.js:50:33)",
-              "new EksClusterStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:10:9)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:16:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "ClusterDefaultVpcPrivateSubnet2DefaultRouteAB55737C"
           }
         ],
         "/eks-integ-defaults/Cluster/DefaultVpc/PrivateSubnet3/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultVpcPrivateSubnet3SubnetB64BC839",
-            "trace": [
-              "new Subnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:731:24)",
-              "new PrivateSubnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:922:9)",
-              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:646:43",
-              "Array.forEach (<anonymous>)",
-              "Vpc.createSubnetResources (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:615:32)",
-              "Vpc.createSubnets (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:611:18)",
-              "new Vpc (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:425:14)",
-              "new Cluster (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/lib/cluster.js:50:33)",
-              "new EksClusterStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:10:9)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:16:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "ClusterDefaultVpcPrivateSubnet3SubnetB64BC839"
           }
         ],
         "/eks-integ-defaults/Cluster/DefaultVpc/PrivateSubnet3/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultVpcPrivateSubnet3RouteTableF71314D0",
-            "trace": [
-              "new Subnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:747:23)",
-              "new PrivateSubnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:922:9)",
-              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:646:43",
-              "Array.forEach (<anonymous>)",
-              "Vpc.createSubnetResources (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:615:32)",
-              "Vpc.createSubnets (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:611:18)",
-              "new Vpc (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:425:14)",
-              "new Cluster (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/lib/cluster.js:50:33)",
-              "new EksClusterStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:10:9)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:16:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "ClusterDefaultVpcPrivateSubnet3RouteTableF71314D0"
           }
         ],
         "/eks-integ-defaults/Cluster/DefaultVpc/PrivateSubnet3/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultVpcPrivateSubnet3RouteTableAssociation3007DC36",
-            "trace": [
-              "new Subnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:752:9)",
-              "new PrivateSubnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:922:9)",
-              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:646:43",
-              "Array.forEach (<anonymous>)",
-              "Vpc.createSubnetResources (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:615:32)",
-              "Vpc.createSubnets (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:611:18)",
-              "new Vpc (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:425:14)",
-              "new Cluster (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/lib/cluster.js:50:33)",
-              "new EksClusterStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:10:9)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:16:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "ClusterDefaultVpcPrivateSubnet3RouteTableAssociation3007DC36"
           }
         ],
         "/eks-integ-defaults/Cluster/DefaultVpc/PrivateSubnet3/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultVpcPrivateSubnet3DefaultRoute932EDFF0",
-            "trace": [
-              "PrivateSubnet.addRoute (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:822:23)",
-              "NatGatewayProvider.configureSubnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/nat.js:103:16)",
-              "NatGatewayProvider.configureNat (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/nat.js:97:18)",
-              "Vpc.createNatGateways (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:589:18)",
-              "new Vpc (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:442:22)",
-              "new Cluster (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/lib/cluster.js:50:33)",
-              "new EksClusterStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:10:9)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:16:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "ClusterDefaultVpcPrivateSubnet3DefaultRoute932EDFF0"
           }
         ],
         "/eks-integ-defaults/Cluster/DefaultVpc/IGW": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultVpcIGW756BE43E",
-            "trace": [
-              "new Vpc (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:429:25)",
-              "new Cluster (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/lib/cluster.js:50:33)",
-              "new EksClusterStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:10:9)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:16:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "ClusterDefaultVpcIGW756BE43E"
           }
         ],
         "/eks-integ-defaults/Cluster/DefaultVpc/VPCGW": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultVpcVPCGWC1D00388",
-            "trace": [
-              "new Vpc (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:432:25)",
-              "new Cluster (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/lib/cluster.js:50:33)",
-              "new EksClusterStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:10:9)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:16:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "ClusterDefaultVpcVPCGWC1D00388"
           }
         ],
         "/eks-integ-defaults/Cluster/ClusterRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterClusterRoleCE5C05DD",
-            "trace": [
-              "new Role (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/role.js:50:22)",
-              "new Cluster (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/lib/cluster.js:53:35)",
-              "new EksClusterStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:10:9)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:16:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "ClusterClusterRoleCE5C05DD"
           }
         ],
         "/eks-integ-defaults/Cluster/ControlPlaneSecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterControlPlaneSecurityGroupD274242C",
-            "trace": [
-              "new SecurityGroup (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/security-group.js:194:30)",
-              "new Cluster (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/lib/cluster.js:60:54)",
-              "new EksClusterStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:10:9)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:16:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "ClusterControlPlaneSecurityGroupD274242C"
           }
         ],
         "/eks-integ-defaults/Cluster/ControlPlaneSecurityGroup/from eksintegdefaultsClusterDefaultCapacityInstanceSecurityGroup913A261E:443": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterControlPlaneSecurityGroupfromeksintegdefaultsClusterDefaultCapacityInstanceSecurityGroup913A261E44376C54A34",
-            "trace": [
-              "SecurityGroup.addIngressRule (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/security-group.js:42:13)",
-              "SecurityGroup.addIngressRule (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/security-group.js:301:19)",
-              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/connections.js:99:31",
-              "ReactiveList.forEachAndForever (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/connections.js:209:13)",
-              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/connections.js:98:51",
-              "ReactiveList.forEachAndForever (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/connections.js:209:13)",
-              "Connections.allowFrom (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/connections.js:97:30)",
-              "Connections.allowTo (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/connections.js:80:31)",
-              "Cluster.addAutoScalingGroup (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/lib/cluster.js:205:38)",
-              "Cluster.addCapacity (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/lib/cluster.js:168:14)",
-              "new Cluster (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/lib/cluster.js:122:41)",
-              "new EksClusterStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:10:9)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:16:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "ClusterControlPlaneSecurityGroupfromeksintegdefaultsClusterDefaultCapacityInstanceSecurityGroup913A261E44376C54A34"
           }
         ],
         "/eks-integ-defaults/Cluster/Resource/ResourceHandler/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterResourceHandlerServiceRole7FB16465",
-            "trace": [
-              "new Role (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/role.js:50:22)",
-              "new Function (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function.js:82:35)",
-              "new ClusterResource (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/lib/cluster-resource.js:27:25)",
-              "new Cluster (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/lib/cluster.js:83:24)",
-              "new EksClusterStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:10:9)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:16:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "ClusterResourceHandlerServiceRole7FB16465"
           }
         ],
         "/eks-integ-defaults/Cluster/Resource/ResourceHandler/ServiceRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterResourceHandlerServiceRoleDefaultPolicy333D0E3A",
-            "trace": [
-              "new Policy (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/policy.js:50:26)",
-              "Role.addToPrincipalPolicy (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/role.js:199:34)",
-              "Function.addToRolePolicy (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function-base.js:86:19)",
-              "new ClusterResource (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/lib/cluster-resource.js:39:17)",
-              "new Cluster (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/lib/cluster.js:83:24)",
-              "new EksClusterStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:10:9)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:16:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "ClusterResourceHandlerServiceRoleDefaultPolicy333D0E3A"
           }
         ],
         "/eks-integ-defaults/Cluster/Resource/ResourceHandler/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterResourceHandler28BF924D",
-            "trace": [
-              "new Function (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function.js:158:26)",
-              "new ClusterResource (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/lib/cluster-resource.js:27:25)",
-              "new Cluster (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/lib/cluster.js:83:24)",
-              "new EksClusterStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:10:9)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:16:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "ClusterResourceHandler28BF924D"
           }
         ],
         "/eks-integ-defaults/Cluster/Resource/Resource/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Cluster9EE0221C",
-            "trace": [
-              "new CustomResource (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/custom-resource.js:42:25)",
-              "new ClusterResource (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/lib/cluster-resource.js:49:26)",
-              "new Cluster (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/lib/cluster.js:83:24)",
-              "new EksClusterStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:10:9)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:16:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "Cluster9EE0221C"
           }
         ],
         "/eks-integ-defaults/Cluster/KubernetesResourceHandler/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterKubernetesResourceHandler81C19BC8",
-            "trace": [
-              "new Function (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function.js:158:26)",
-              "Cluster.createKubernetesResourceHandler (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/lib/cluster.js:297:16)",
-              "new Cluster (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/lib/cluster.js:106:41)",
-              "new EksClusterStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:10:9)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:16:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "ClusterKubernetesResourceHandler81C19BC8"
           }
         ],
         "/eks-integ-defaults/Cluster/DefaultCapacity": [
           {
             "type": "aws:cdk:warning",
-            "data": "desiredCapacity has been configured. Be aware this will reset the size of your AutoScalingGroup on every deployment. See https://github.com/aws/aws-cdk/issues/5215",
-            "trace": [
-              "Annotations.addMessage (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/annotations.js:86:42)",
-              "Annotations.addWarning (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/annotations.js:32:14)",
-              "new AutoScalingGroup (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-autoscaling/lib/auto-scaling-group.js:438:41)",
-              "Cluster.addCapacity (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/lib/cluster.js:158:21)",
-              "new Cluster (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/lib/cluster.js:122:41)",
-              "new EksClusterStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:10:9)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:16:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "desiredCapacity has been configured. Be aware this will reset the size of your AutoScalingGroup on every deployment. See https://github.com/aws/aws-cdk/issues/5215"
           }
         ],
         "/eks-integ-defaults/Cluster/DefaultCapacity/InstanceSecurityGroup": [
           {
             "type": "aws:cdk:warning",
-            "data": "Ignoring Egress rule since 'allowAllOutbound' is set to true; To add customize rules, set allowAllOutbound=false on the SecurityGroup",
-            "trace": [
-              "Annotations.addMessage (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/annotations.js:86:42)",
-              "Annotations.addWarning (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/annotations.js:32:14)",
-              "SecurityGroup.addEgressRule (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/security-group.js:321:45)",
-              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/connections.js:120:31",
-              "ReactiveList.forEachAndForever (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/connections.js:209:13)",
-              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/connections.js:118:38",
-              "ReactiveList.forEachAndForever (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/connections.js:209:13)",
-              "Connections.allowInternally (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/connections.js:117:30)",
-              "Cluster.addAutoScalingGroup (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/lib/cluster.js:200:38)",
-              "Cluster.addCapacity (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/lib/cluster.js:168:14)",
-              "new Cluster (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/lib/cluster.js:122:41)",
-              "new EksClusterStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:10:9)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:16:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "Ignoring Egress rule since 'allowAllOutbound' is set to true; To add customize rules, set allowAllOutbound=false on the SecurityGroup"
           },
           {
             "type": "aws:cdk:warning",
-            "data": "Ignoring Egress rule since 'allowAllOutbound' is set to true; To add customize rules, set allowAllOutbound=false on the SecurityGroup",
-            "trace": [
-              "Annotations.addMessage (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/annotations.js:86:42)",
-              "Annotations.addWarning (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/annotations.js:32:14)",
-              "SecurityGroup.addEgressRule (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/security-group.js:321:45)",
-              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/connections.js:74:31",
-              "ReactiveList.forEachAndForever (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/connections.js:209:13)",
-              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/connections.js:73:51",
-              "ReactiveList.forEachAndForever (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/connections.js:209:13)",
-              "Connections.allowTo (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/connections.js:72:30)",
-              "Cluster.addAutoScalingGroup (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/lib/cluster.js:205:38)",
-              "Cluster.addCapacity (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/lib/cluster.js:168:14)",
-              "new Cluster (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/lib/cluster.js:122:41)",
-              "new EksClusterStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:10:9)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:16:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "Ignoring Egress rule since 'allowAllOutbound' is set to true; To add customize rules, set allowAllOutbound=false on the SecurityGroup"
           },
           {
             "type": "aws:cdk:warning",
-            "data": "Ignoring Egress rule since 'allowAllOutbound' is set to true; To add customize rules, set allowAllOutbound=false on the SecurityGroup",
-            "trace": [
-              "Annotations.addMessage (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/annotations.js:86:42)",
-              "Annotations.addWarning (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/annotations.js:32:14)",
-              "SecurityGroup.addEgressRule (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/security-group.js:321:45)",
-              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/connections.js:74:31",
-              "ReactiveList.forEachAndForever (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/connections.js:209:13)",
-              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/connections.js:73:51",
-              "ReactiveList.forEachAndForever (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/connections.js:209:13)",
-              "Connections.allowTo (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/connections.js:72:30)",
-              "Connections.allowToAnyIpv4 (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/connections.js:129:14)",
-              "Cluster.addAutoScalingGroup (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/lib/cluster.js:207:38)",
-              "Cluster.addCapacity (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/lib/cluster.js:168:14)",
-              "new Cluster (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/lib/cluster.js:122:41)",
-              "new EksClusterStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:10:9)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:16:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "Ignoring Egress rule since 'allowAllOutbound' is set to true; To add customize rules, set allowAllOutbound=false on the SecurityGroup"
           },
           {
             "type": "aws:cdk:warning",
-            "data": "Ignoring Egress rule since 'allowAllOutbound' is set to true; To add customize rules, set allowAllOutbound=false on the SecurityGroup",
-            "trace": [
-              "Annotations.addMessage (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/annotations.js:86:42)",
-              "Annotations.addWarning (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/annotations.js:32:14)",
-              "SecurityGroup.addEgressRule (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/security-group.js:321:45)",
-              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/connections.js:74:31",
-              "ReactiveList.forEachAndForever (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/connections.js:209:13)",
-              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/connections.js:73:51",
-              "ReactiveList.forEachAndForever (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/connections.js:209:13)",
-              "Connections.allowTo (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/connections.js:72:30)",
-              "Connections.allowToAnyIpv4 (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/connections.js:129:14)",
-              "Cluster.addAutoScalingGroup (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/lib/cluster.js:208:38)",
-              "Cluster.addCapacity (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/lib/cluster.js:168:14)",
-              "new Cluster (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/lib/cluster.js:122:41)",
-              "new EksClusterStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:10:9)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:16:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "Ignoring Egress rule since 'allowAllOutbound' is set to true; To add customize rules, set allowAllOutbound=false on the SecurityGroup"
           },
           {
             "type": "aws:cdk:warning",
-            "data": "Ignoring Egress rule since 'allowAllOutbound' is set to true; To add customize rules, set allowAllOutbound=false on the SecurityGroup",
-            "trace": [
-              "Annotations.addMessage (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/annotations.js:86:42)",
-              "Annotations.addWarning (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/annotations.js:32:14)",
-              "SecurityGroup.addEgressRule (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/security-group.js:321:45)",
-              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/connections.js:74:31",
-              "ReactiveList.forEachAndForever (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/connections.js:209:13)",
-              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/connections.js:73:51",
-              "ReactiveList.forEachAndForever (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/connections.js:209:13)",
-              "Connections.allowTo (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/connections.js:72:30)",
-              "Connections.allowToAnyIpv4 (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/connections.js:129:14)",
-              "Cluster.addAutoScalingGroup (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/lib/cluster.js:209:38)",
-              "Cluster.addCapacity (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/lib/cluster.js:168:14)",
-              "new Cluster (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/lib/cluster.js:122:41)",
-              "new EksClusterStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:10:9)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:16:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "Ignoring Egress rule since 'allowAllOutbound' is set to true; To add customize rules, set allowAllOutbound=false on the SecurityGroup"
           }
         ],
         "/eks-integ-defaults/Cluster/DefaultCapacity/InstanceSecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultCapacityInstanceSecurityGroup8FDF4D48",
-            "trace": [
-              "new SecurityGroup (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/security-group.js:194:30)",
-              "new AutoScalingGroup (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-autoscaling/lib/auto-scaling-group.js:375:53)",
-              "Cluster.addCapacity (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/lib/cluster.js:158:21)",
-              "new Cluster (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/lib/cluster.js:122:41)",
-              "new EksClusterStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:10:9)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:16:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "ClusterDefaultCapacityInstanceSecurityGroup8FDF4D48"
           }
         ],
         "/eks-integ-defaults/Cluster/DefaultCapacity/InstanceSecurityGroup/from eksintegdefaultsClusterDefaultCapacityInstanceSecurityGroup913A261E:ALL TRAFFIC": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultCapacityInstanceSecurityGroupfromeksintegdefaultsClusterDefaultCapacityInstanceSecurityGroup913A261EALLTRAFFICA8163873",
-            "trace": [
-              "SecurityGroup.addIngressRule (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/security-group.js:42:13)",
-              "SecurityGroup.addIngressRule (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/security-group.js:301:19)",
-              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/connections.js:119:31",
-              "ReactiveList.forEachAndForever (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/connections.js:209:13)",
-              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/connections.js:118:38",
-              "ReactiveList.forEachAndForever (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/connections.js:209:13)",
-              "Connections.allowInternally (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/connections.js:117:30)",
-              "Cluster.addAutoScalingGroup (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/lib/cluster.js:200:38)",
-              "Cluster.addCapacity (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/lib/cluster.js:168:14)",
-              "new Cluster (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/lib/cluster.js:122:41)",
-              "new EksClusterStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:10:9)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:16:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "ClusterDefaultCapacityInstanceSecurityGroupfromeksintegdefaultsClusterDefaultCapacityInstanceSecurityGroup913A261EALLTRAFFICA8163873"
           }
         ],
         "/eks-integ-defaults/Cluster/DefaultCapacity/InstanceSecurityGroup/from eksintegdefaultsClusterControlPlaneSecurityGroup0FA4E3AB:443": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultCapacityInstanceSecurityGroupfromeksintegdefaultsClusterControlPlaneSecurityGroup0FA4E3AB4436B585189",
-            "trace": [
-              "SecurityGroup.addIngressRule (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/security-group.js:42:13)",
-              "SecurityGroup.addIngressRule (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/security-group.js:301:19)",
-              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/connections.js:99:31",
-              "ReactiveList.forEachAndForever (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/connections.js:209:13)",
-              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/connections.js:98:51",
-              "ReactiveList.forEachAndForever (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/connections.js:209:13)",
-              "Connections.allowFrom (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/connections.js:97:30)",
-              "Cluster.addAutoScalingGroup (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/lib/cluster.js:202:38)",
-              "Cluster.addCapacity (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/lib/cluster.js:168:14)",
-              "new Cluster (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/lib/cluster.js:122:41)",
-              "new EksClusterStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:10:9)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:16:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "ClusterDefaultCapacityInstanceSecurityGroupfromeksintegdefaultsClusterControlPlaneSecurityGroup0FA4E3AB4436B585189"
           }
         ],
         "/eks-integ-defaults/Cluster/DefaultCapacity/InstanceSecurityGroup/from eksintegdefaultsClusterControlPlaneSecurityGroup0FA4E3AB:1025-65535": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultCapacityInstanceSecurityGroupfromeksintegdefaultsClusterControlPlaneSecurityGroup0FA4E3AB102565535C02D6CB8",
-            "trace": [
-              "SecurityGroup.addIngressRule (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/security-group.js:42:13)",
-              "SecurityGroup.addIngressRule (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/security-group.js:301:19)",
-              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/connections.js:99:31",
-              "ReactiveList.forEachAndForever (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/connections.js:209:13)",
-              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/connections.js:98:51",
-              "ReactiveList.forEachAndForever (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/connections.js:209:13)",
-              "Connections.allowFrom (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/connections.js:97:30)",
-              "Cluster.addAutoScalingGroup (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/lib/cluster.js:203:38)",
-              "Cluster.addCapacity (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/lib/cluster.js:168:14)",
-              "new Cluster (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/lib/cluster.js:122:41)",
-              "new EksClusterStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:10:9)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:16:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "ClusterDefaultCapacityInstanceSecurityGroupfromeksintegdefaultsClusterControlPlaneSecurityGroup0FA4E3AB102565535C02D6CB8"
           }
         ],
         "/eks-integ-defaults/Cluster/DefaultCapacity/InstanceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultCapacityInstanceRole3E209969",
-            "trace": [
-              "new Role (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/role.js:50:22)",
-              "new AutoScalingGroup (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-autoscaling/lib/auto-scaling-group.js:382:35)",
-              "Cluster.addCapacity (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/lib/cluster.js:158:21)",
-              "new Cluster (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/lib/cluster.js:122:41)",
-              "new EksClusterStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:10:9)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:16:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "ClusterDefaultCapacityInstanceRole3E209969"
           }
         ],
         "/eks-integ-defaults/Cluster/DefaultCapacity/InstanceProfile": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultCapacityInstanceProfile70387741",
-            "trace": [
-              "new AutoScalingGroup (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-autoscaling/lib/auto-scaling-group.js:390:28)",
-              "Cluster.addCapacity (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/lib/cluster.js:158:21)",
-              "new Cluster (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/lib/cluster.js:122:41)",
-              "new EksClusterStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:10:9)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:16:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "ClusterDefaultCapacityInstanceProfile70387741"
           }
         ],
         "/eks-integ-defaults/Cluster/DefaultCapacity/LaunchConfig": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultCapacityLaunchConfig72790CF7",
-            "trace": [
-              "new AutoScalingGroup (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-autoscaling/lib/auto-scaling-group.js:398:30)",
-              "Cluster.addCapacity (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/lib/cluster.js:158:21)",
-              "new Cluster (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/lib/cluster.js:122:41)",
-              "new EksClusterStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:10:9)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:16:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "ClusterDefaultCapacityLaunchConfig72790CF7"
           }
         ],
         "/eks-integ-defaults/Cluster/DefaultCapacity/ASG": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultCapacityASG00CC9431",
-            "trace": [
-              "new AutoScalingGroup (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-autoscaling/lib/auto-scaling-group.js:484:33)",
-              "Cluster.addCapacity (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/lib/cluster.js:158:21)",
-              "new Cluster (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/lib/cluster.js:122:41)",
-              "new EksClusterStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:10:9)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:16:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "ClusterDefaultCapacityASG00CC9431"
           }
         ],
         "/eks-integ-defaults/Cluster/AwsAuth/manifest/Resource/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterAwsAuthmanifestFE51F8AE",
-            "trace": [
-              "new CustomResource (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/custom-resource.js:42:25)",
-              "new KubernetesResource (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/lib/k8s-resource.js:30:9)",
-              "new AwsAuth (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/lib/aws-auth.js:26:9)",
-              "Cluster.get awsAuth [as awsAuth] (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/lib/cluster.js:262:29)",
-              "Cluster.addAutoScalingGroup (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/lib/cluster.js:233:18)",
-              "Cluster.addCapacity (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/lib/cluster.js:168:14)",
-              "new Cluster (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/lib/cluster.js:122:41)",
-              "new EksClusterStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:10:9)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:16:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "ClusterAwsAuthmanifestFE51F8AE"
           }
         ],
         "/eks-integ-defaults/Cluster/ConfigCommand": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterConfigCommand43AAE40F",
-            "trace": [
-              "new Cluster (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/lib/cluster.js:127:13)",
-              "new EksClusterStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:10:9)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:16:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "ClusterConfigCommand43AAE40F"
           }
         ],
         "/eks-integ-defaults/Cluster/GetTokenCommand": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterGetTokenCommand06AE992E",
-            "trace": [
-              "new Cluster (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/lib/cluster.js:128:13)",
-              "new EksClusterStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:10:9)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:16:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "ClusterGetTokenCommand06AE992E"
           }
         ],
         "/eks-integ-defaults/kubectl-layer-8C2542BC-BF2B-4DFE-B765-E181FD30A9A0/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "kubectllayer8C2542BCBF2B4DFEB765E181FD30A9A0617C4ADA",
-            "trace": [
-              "new KubectlLayer (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/lib/kubectl-layer.js:23:26)",
-              "Function.getOrCreate (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/lib/kubectl-layer.js:47:16)",
-              "new ClusterResource (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/lib/cluster-resource.js:33:51)",
-              "new Cluster (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/lib/cluster.js:83:24)",
-              "new EksClusterStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:10:9)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:16:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "kubectllayer8C2542BCBF2B4DFEB765E181FD30A9A0617C4ADA"
           }
         ],
         "/eks-integ-defaults/AssetParameters/ea4957b16062595851e7d293ee45835db05c5693669a729cc02944b6ad19a204/S3Bucket": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssetParametersea4957b16062595851e7d293ee45835db05c5693669a729cc02944b6ad19a204S3Bucket371D99F8",
-            "trace": [
-              "new FileAssetParameters (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/asset-parameters.js:12:36)",
-              "LegacyStackSynthesizer.doAddFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:157:22)",
-              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:82:25)",
-              "EksClusterStack.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack.js:411:33)",
-              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:59",
-              "withoutDeprecationWarnings (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:197:16)",
-              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:20)",
-              "new Asset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-s3-assets/lib/asset.js:39:44)",
-              "AssetCode.bind (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/code.js:206:26)",
-              "new Function (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function.js:100:33)",
-              "new ClusterResource (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/lib/cluster-resource.js:27:25)",
-              "new Cluster (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/lib/cluster.js:83:24)",
-              "new EksClusterStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:10:9)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:16:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "AssetParametersea4957b16062595851e7d293ee45835db05c5693669a729cc02944b6ad19a204S3Bucket371D99F8"
           }
         ],
         "/eks-integ-defaults/AssetParameters/ea4957b16062595851e7d293ee45835db05c5693669a729cc02944b6ad19a204/S3VersionKey": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssetParametersea4957b16062595851e7d293ee45835db05c5693669a729cc02944b6ad19a204S3VersionKeyFDCB25DD",
-            "trace": [
-              "new FileAssetParameters (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/asset-parameters.js:16:35)",
-              "LegacyStackSynthesizer.doAddFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:157:22)",
-              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:82:25)",
-              "EksClusterStack.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack.js:411:33)",
-              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:59",
-              "withoutDeprecationWarnings (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:197:16)",
-              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:20)",
-              "new Asset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-s3-assets/lib/asset.js:39:44)",
-              "AssetCode.bind (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/code.js:206:26)",
-              "new Function (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function.js:100:33)",
-              "new ClusterResource (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/lib/cluster-resource.js:27:25)",
-              "new Cluster (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/lib/cluster.js:83:24)",
-              "new EksClusterStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:10:9)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:16:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "AssetParametersea4957b16062595851e7d293ee45835db05c5693669a729cc02944b6ad19a204S3VersionKeyFDCB25DD"
           }
         ],
         "/eks-integ-defaults/AssetParameters/ea4957b16062595851e7d293ee45835db05c5693669a729cc02944b6ad19a204/ArtifactHash": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssetParametersea4957b16062595851e7d293ee45835db05c5693669a729cc02944b6ad19a204ArtifactHashB80B497F",
-            "trace": [
-              "new FileAssetParameters (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/asset-parameters.js:20:38)",
-              "LegacyStackSynthesizer.doAddFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:157:22)",
-              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:82:25)",
-              "EksClusterStack.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack.js:411:33)",
-              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:59",
-              "withoutDeprecationWarnings (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:197:16)",
-              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:20)",
-              "new Asset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-s3-assets/lib/asset.js:39:44)",
-              "AssetCode.bind (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/code.js:206:26)",
-              "new Function (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function.js:100:33)",
-              "new ClusterResource (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/lib/cluster-resource.js:27:25)",
-              "new Cluster (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/lib/cluster.js:83:24)",
-              "new EksClusterStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:10:9)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:16:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "AssetParametersea4957b16062595851e7d293ee45835db05c5693669a729cc02944b6ad19a204ArtifactHashB80B497F"
           }
         ],
         "/eks-integ-defaults/AssetParameters/640847533c8a00b3133aeb128edcac41fb7b60349c9e18764fcf7ea4af14d444/S3Bucket": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssetParameters640847533c8a00b3133aeb128edcac41fb7b60349c9e18764fcf7ea4af14d444S3Bucket919126CB",
-            "trace": [
-              "new FileAssetParameters (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/asset-parameters.js:12:36)",
-              "LegacyStackSynthesizer.doAddFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:157:22)",
-              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:82:25)",
-              "EksClusterStack.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack.js:411:33)",
-              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:59",
-              "withoutDeprecationWarnings (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:197:16)",
-              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:20)",
-              "new Asset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-s3-assets/lib/asset.js:39:44)",
-              "AssetCode.bind (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/code.js:206:26)",
-              "new Function (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function.js:100:33)",
-              "Cluster.createKubernetesResourceHandler (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/lib/cluster.js:297:16)",
-              "new Cluster (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/lib/cluster.js:106:41)",
-              "new EksClusterStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:10:9)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:16:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "AssetParameters640847533c8a00b3133aeb128edcac41fb7b60349c9e18764fcf7ea4af14d444S3Bucket919126CB"
           }
         ],
         "/eks-integ-defaults/AssetParameters/640847533c8a00b3133aeb128edcac41fb7b60349c9e18764fcf7ea4af14d444/S3VersionKey": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssetParameters640847533c8a00b3133aeb128edcac41fb7b60349c9e18764fcf7ea4af14d444S3VersionKey529BEF54",
-            "trace": [
-              "new FileAssetParameters (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/asset-parameters.js:16:35)",
-              "LegacyStackSynthesizer.doAddFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:157:22)",
-              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:82:25)",
-              "EksClusterStack.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack.js:411:33)",
-              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:59",
-              "withoutDeprecationWarnings (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:197:16)",
-              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:20)",
-              "new Asset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-s3-assets/lib/asset.js:39:44)",
-              "AssetCode.bind (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/code.js:206:26)",
-              "new Function (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function.js:100:33)",
-              "Cluster.createKubernetesResourceHandler (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/lib/cluster.js:297:16)",
-              "new Cluster (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/lib/cluster.js:106:41)",
-              "new EksClusterStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:10:9)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:16:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "AssetParameters640847533c8a00b3133aeb128edcac41fb7b60349c9e18764fcf7ea4af14d444S3VersionKey529BEF54"
           }
         ],
         "/eks-integ-defaults/AssetParameters/640847533c8a00b3133aeb128edcac41fb7b60349c9e18764fcf7ea4af14d444/ArtifactHash": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssetParameters640847533c8a00b3133aeb128edcac41fb7b60349c9e18764fcf7ea4af14d444ArtifactHash606C8127",
-            "trace": [
-              "new FileAssetParameters (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/asset-parameters.js:20:38)",
-              "LegacyStackSynthesizer.doAddFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:157:22)",
-              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:82:25)",
-              "EksClusterStack.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack.js:411:33)",
-              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:59",
-              "withoutDeprecationWarnings (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:197:16)",
-              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:20)",
-              "new Asset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-s3-assets/lib/asset.js:39:44)",
-              "AssetCode.bind (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/code.js:206:26)",
-              "new Function (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function.js:100:33)",
-              "Cluster.createKubernetesResourceHandler (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/lib/cluster.js:297:16)",
-              "new Cluster (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/lib/cluster.js:106:41)",
-              "new EksClusterStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:10:9)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:16:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "AssetParameters640847533c8a00b3133aeb128edcac41fb7b60349c9e18764fcf7ea4af14d444ArtifactHash606C8127"
           }
         ],
         "/eks-integ-defaults/SsmParameterValue:--aws--service--eks--optimized-ami--1.14--amazon-linux-2--recommended--image_id:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "SsmParameterValueawsserviceeksoptimizedami114amazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter",
-            "trace": [
-              "Function.fromStringParameterAttributes (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ssm/lib/parameter.js:154:15)",
-              "Function.valueForTypedStringParameter (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ssm/lib/parameter.js:224:21)",
-              "Function.valueForStringParameter (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ssm/lib/parameter.js:207:32)",
-              "EksOptimizedImage.getImage (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/lib/cluster.js:384:41)",
-              "new AutoScalingGroup (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-autoscaling/lib/auto-scaling-group.js:394:48)",
-              "Cluster.addCapacity (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/lib/cluster.js:158:21)",
-              "new Cluster (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/lib/cluster.js:122:41)",
-              "new EksClusterStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:10:9)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-eks-legacy/test/integ.eks-cluster.defaults.js:16:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "SsmParameterValueawsserviceeksoptimizedami114amazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
           }
         ]
       },

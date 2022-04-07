@@ -5,7 +5,8 @@
       "type": "cdk:tree",
       "properties": {
         "file": "tree.json"
-      }
+      },
+      "metadata": {}
     },
     "cdk-amplify-codecommit-app": {
       "type": "aws:cloudformation:stack",
@@ -18,94 +19,31 @@
         "/cdk-amplify-codecommit-app/Repo/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Repo02AC86CF",
-            "trace": [
-              "new Repository (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codecommit/lib/repository.js:194:28)",
-              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-amplify/test/integ.app-codecommit.js:9:28)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-amplify/test/integ.app-codecommit.js:19:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "Repo02AC86CF"
           }
         ],
         "/cdk-amplify-codecommit-app/App/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AppRole1AF9B530",
-            "trace": [
-              "new Role (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/role.js:50:22)",
-              "new App (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-amplify/lib/app.js:25:36)",
-              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-amplify/test/integ.app-codecommit.js:12:28)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-amplify/test/integ.app-codecommit.js:19:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "AppRole1AF9B530"
           }
         ],
         "/cdk-amplify-codecommit-app/App/Role/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AppRoleDefaultPolicy9CADBAA1",
-            "trace": [
-              "new Policy (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/policy.js:50:26)",
-              "Role.addToPrincipalPolicy (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/role.js:199:34)",
-              "Function.addToPrincipal (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/grant.js:87:65)",
-              "Repository.grant (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codecommit/lib/repository.js:108:26)",
-              "Repository.grantPull (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-codecommit/lib/repository.js:115:21)",
-              "CodeCommitSourceCodeProvider.bind (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-amplify/lib/source-code-providers.js:55:31)",
-              "new App (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-amplify/lib/app.js:29:115)",
-              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-amplify/test/integ.app-codecommit.js:12:28)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-amplify/test/integ.app-codecommit.js:19:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "AppRoleDefaultPolicy9CADBAA1"
           }
         ],
         "/cdk-amplify-codecommit-app/App/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AppF1B96344",
-            "trace": [
-              "new App (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-amplify/lib/app.js:30:21)",
-              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-amplify/test/integ.app-codecommit.js:12:28)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-amplify/test/integ.app-codecommit.js:19:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "AppF1B96344"
           }
         ],
         "/cdk-amplify-codecommit-app/App/master/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Appmaster71597E87",
-            "trace": [
-              "new Branch (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-amplify/lib/branch.js:25:24)",
-              "App.addBranch (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-amplify/lib/app.js:109:16)",
-              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-amplify/test/integ.app-codecommit.js:15:20)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-amplify/test/integ.app-codecommit.js:19:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "Appmaster71597E87"
           }
         ]
       },

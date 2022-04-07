@@ -5,7 +5,8 @@
       "type": "cdk:tree",
       "properties": {
         "file": "tree.json"
-      }
+      },
+      "metadata": {}
     },
     "cdk-route53-resolver-firewall": {
       "type": "aws:cloudformation:stack",
@@ -26,461 +27,133 @@
               "s3BucketParameter": "AssetParameterse820b3f07bf66854be0dfd6f3ec357a10d644f2011069e5ad07d42f4f89ed35aS3BucketD6778673",
               "s3KeyParameter": "AssetParameterse820b3f07bf66854be0dfd6f3ec357a10d644f2011069e5ad07d42f4f89ed35aS3VersionKey1A69D23D",
               "artifactHashParameter": "AssetParameterse820b3f07bf66854be0dfd6f3ec357a10d644f2011069e5ad07d42f4f89ed35aArtifactHashFF61A347"
-            },
-            "trace": [
-              "ConstructNode.addMetadata (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/construct-compat.js:352:62)",
-              "LegacyStackSynthesizer.doAddFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:170:29)",
-              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:82:25)",
-              "TestStack.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack.js:408:33)",
-              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:59",
-              "withoutDeprecationWarnings (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:197:16)",
-              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:20)",
-              "new Asset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-s3-assets/lib/asset.js:39:44)",
-              "Object.bind (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53resolver/lib/firewall-domain-list.js:75:31)",
-              "new FirewallDomainList (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53resolver/lib/firewall-domain-list.js:97:45)",
-              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53resolver/test/integ.firewall.js:17:9)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53resolver/test/integ.firewall.js:38:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            }
           }
         ],
         "/cdk-route53-resolver-firewall/Vpc/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Vpc8378EB38",
-            "trace": [
-              "new Vpc (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:399:25)",
-              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53resolver/test/integ.firewall.js:10:21)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53resolver/test/integ.firewall.js:38:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "Vpc8378EB38"
           }
         ],
         "/cdk-route53-resolver-firewall/Vpc/PublicSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet1Subnet5C2D37C4",
-            "trace": [
-              "new Subnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:731:24)",
-              "new PublicSubnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:891:9)",
-              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:641:42",
-              "Array.forEach (<anonymous>)",
-              "Vpc.createSubnetResources (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:615:32)",
-              "Vpc.createSubnets (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:611:18)",
-              "new Vpc (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:425:14)",
-              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53resolver/test/integ.firewall.js:10:21)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53resolver/test/integ.firewall.js:38:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "VpcPublicSubnet1Subnet5C2D37C4"
           }
         ],
         "/cdk-route53-resolver-firewall/Vpc/PublicSubnet1/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet1RouteTable6C95E38E",
-            "trace": [
-              "new Subnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:747:23)",
-              "new PublicSubnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:891:9)",
-              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:641:42",
-              "Array.forEach (<anonymous>)",
-              "Vpc.createSubnetResources (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:615:32)",
-              "Vpc.createSubnets (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:611:18)",
-              "new Vpc (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:425:14)",
-              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53resolver/test/integ.firewall.js:10:21)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53resolver/test/integ.firewall.js:38:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "VpcPublicSubnet1RouteTable6C95E38E"
           }
         ],
         "/cdk-route53-resolver-firewall/Vpc/PublicSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet1RouteTableAssociation97140677",
-            "trace": [
-              "new Subnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:752:9)",
-              "new PublicSubnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:891:9)",
-              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:641:42",
-              "Array.forEach (<anonymous>)",
-              "Vpc.createSubnetResources (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:615:32)",
-              "Vpc.createSubnets (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:611:18)",
-              "new Vpc (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:425:14)",
-              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53resolver/test/integ.firewall.js:10:21)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53resolver/test/integ.firewall.js:38:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "VpcPublicSubnet1RouteTableAssociation97140677"
           }
         ],
         "/cdk-route53-resolver-firewall/Vpc/PublicSubnet1/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet1DefaultRoute3DA9E72A",
-            "trace": [
-              "PublicSubnet.addDefaultInternetRoute (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:780:23)",
-              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:437:30",
-              "Array.forEach (<anonymous>)",
-              "new Vpc (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:436:32)",
-              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53resolver/test/integ.firewall.js:10:21)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53resolver/test/integ.firewall.js:38:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "VpcPublicSubnet1DefaultRoute3DA9E72A"
           }
         ],
         "/cdk-route53-resolver-firewall/Vpc/PublicSubnet1/EIP": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet1EIPD7E02669",
-            "trace": [
-              "PublicSubnet.addNatGateway (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:907:102)",
-              "NatGatewayProvider.configureNat (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/nat.js:91:33)",
-              "Vpc.createNatGateways (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:589:18)",
-              "new Vpc (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:442:22)",
-              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53resolver/test/integ.firewall.js:10:21)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53resolver/test/integ.firewall.js:38:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "VpcPublicSubnet1EIPD7E02669"
           }
         ],
         "/cdk-route53-resolver-firewall/Vpc/PublicSubnet1/NATGateway": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet1NATGateway4D7517AA",
-            "trace": [
-              "PublicSubnet.addNatGateway (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:905:21)",
-              "NatGatewayProvider.configureNat (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/nat.js:91:33)",
-              "Vpc.createNatGateways (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:589:18)",
-              "new Vpc (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:442:22)",
-              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53resolver/test/integ.firewall.js:10:21)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53resolver/test/integ.firewall.js:38:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "VpcPublicSubnet1NATGateway4D7517AA"
           }
         ],
         "/cdk-route53-resolver-firewall/Vpc/PrivateSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcPrivateSubnet1Subnet536B997A",
-            "trace": [
-              "new Subnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:731:24)",
-              "new PrivateSubnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:922:9)",
-              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:646:43",
-              "Array.forEach (<anonymous>)",
-              "Vpc.createSubnetResources (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:615:32)",
-              "Vpc.createSubnets (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:611:18)",
-              "new Vpc (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:425:14)",
-              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53resolver/test/integ.firewall.js:10:21)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53resolver/test/integ.firewall.js:38:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "VpcPrivateSubnet1Subnet536B997A"
           }
         ],
         "/cdk-route53-resolver-firewall/Vpc/PrivateSubnet1/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcPrivateSubnet1RouteTableB2C5B500",
-            "trace": [
-              "new Subnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:747:23)",
-              "new PrivateSubnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:922:9)",
-              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:646:43",
-              "Array.forEach (<anonymous>)",
-              "Vpc.createSubnetResources (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:615:32)",
-              "Vpc.createSubnets (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:611:18)",
-              "new Vpc (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:425:14)",
-              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53resolver/test/integ.firewall.js:10:21)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53resolver/test/integ.firewall.js:38:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "VpcPrivateSubnet1RouteTableB2C5B500"
           }
         ],
         "/cdk-route53-resolver-firewall/Vpc/PrivateSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcPrivateSubnet1RouteTableAssociation70C59FA6",
-            "trace": [
-              "new Subnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:752:9)",
-              "new PrivateSubnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:922:9)",
-              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:646:43",
-              "Array.forEach (<anonymous>)",
-              "Vpc.createSubnetResources (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:615:32)",
-              "Vpc.createSubnets (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:611:18)",
-              "new Vpc (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:425:14)",
-              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53resolver/test/integ.firewall.js:10:21)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53resolver/test/integ.firewall.js:38:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "VpcPrivateSubnet1RouteTableAssociation70C59FA6"
           }
         ],
         "/cdk-route53-resolver-firewall/Vpc/PrivateSubnet1/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcPrivateSubnet1DefaultRouteBE02A9ED",
-            "trace": [
-              "PrivateSubnet.addRoute (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:822:23)",
-              "NatGatewayProvider.configureSubnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/nat.js:103:16)",
-              "NatGatewayProvider.configureNat (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/nat.js:97:18)",
-              "Vpc.createNatGateways (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:589:18)",
-              "new Vpc (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:442:22)",
-              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53resolver/test/integ.firewall.js:10:21)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53resolver/test/integ.firewall.js:38:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "VpcPrivateSubnet1DefaultRouteBE02A9ED"
           }
         ],
         "/cdk-route53-resolver-firewall/Vpc/IGW": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcIGWD7BA715C",
-            "trace": [
-              "new Vpc (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:429:25)",
-              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53resolver/test/integ.firewall.js:10:21)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53resolver/test/integ.firewall.js:38:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "VpcIGWD7BA715C"
           }
         ],
         "/cdk-route53-resolver-firewall/Vpc/VPCGW": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcVPCGWBF912B6E",
-            "trace": [
-              "new Vpc (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:432:25)",
-              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53resolver/test/integ.firewall.js:10:21)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53resolver/test/integ.firewall.js:38:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "VpcVPCGWBF912B6E"
           }
         ],
         "/cdk-route53-resolver-firewall/BlockList/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "BlockListC03D0423",
-            "trace": [
-              "new FirewallDomainList (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53resolver/lib/firewall-domain-list.js:98:28)",
-              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53resolver/test/integ.firewall.js:11:27)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53resolver/test/integ.firewall.js:38:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "BlockListC03D0423"
           }
         ],
         "/cdk-route53-resolver-firewall/OverrideList/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "OverrideListF573FB0F",
-            "trace": [
-              "new FirewallDomainList (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53resolver/lib/firewall-domain-list.js:98:28)",
-              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53resolver/test/integ.firewall.js:14:30)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53resolver/test/integ.firewall.js:38:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "OverrideListF573FB0F"
           }
         ],
         "/cdk-route53-resolver-firewall/OtherList/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "OtherListBA4427B5",
-            "trace": [
-              "new FirewallDomainList (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53resolver/lib/firewall-domain-list.js:98:28)",
-              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53resolver/test/integ.firewall.js:17:9)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53resolver/test/integ.firewall.js:38:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "OtherListBA4427B5"
           }
         ],
         "/cdk-route53-resolver-firewall/AssetParameters/e820b3f07bf66854be0dfd6f3ec357a10d644f2011069e5ad07d42f4f89ed35a/S3Bucket": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssetParameterse820b3f07bf66854be0dfd6f3ec357a10d644f2011069e5ad07d42f4f89ed35aS3BucketD6778673",
-            "trace": [
-              "new FileAssetParameters (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/asset-parameters.js:12:36)",
-              "LegacyStackSynthesizer.doAddFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:157:22)",
-              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:82:25)",
-              "TestStack.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack.js:408:33)",
-              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:59",
-              "withoutDeprecationWarnings (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:197:16)",
-              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:20)",
-              "new Asset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-s3-assets/lib/asset.js:39:44)",
-              "Object.bind (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53resolver/lib/firewall-domain-list.js:75:31)",
-              "new FirewallDomainList (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53resolver/lib/firewall-domain-list.js:97:45)",
-              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53resolver/test/integ.firewall.js:17:9)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53resolver/test/integ.firewall.js:38:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "AssetParameterse820b3f07bf66854be0dfd6f3ec357a10d644f2011069e5ad07d42f4f89ed35aS3BucketD6778673"
           }
         ],
         "/cdk-route53-resolver-firewall/AssetParameters/e820b3f07bf66854be0dfd6f3ec357a10d644f2011069e5ad07d42f4f89ed35a/S3VersionKey": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssetParameterse820b3f07bf66854be0dfd6f3ec357a10d644f2011069e5ad07d42f4f89ed35aS3VersionKey1A69D23D",
-            "trace": [
-              "new FileAssetParameters (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/asset-parameters.js:16:35)",
-              "LegacyStackSynthesizer.doAddFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:157:22)",
-              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:82:25)",
-              "TestStack.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack.js:408:33)",
-              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:59",
-              "withoutDeprecationWarnings (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:197:16)",
-              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:20)",
-              "new Asset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-s3-assets/lib/asset.js:39:44)",
-              "Object.bind (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53resolver/lib/firewall-domain-list.js:75:31)",
-              "new FirewallDomainList (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53resolver/lib/firewall-domain-list.js:97:45)",
-              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53resolver/test/integ.firewall.js:17:9)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53resolver/test/integ.firewall.js:38:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "AssetParameterse820b3f07bf66854be0dfd6f3ec357a10d644f2011069e5ad07d42f4f89ed35aS3VersionKey1A69D23D"
           }
         ],
         "/cdk-route53-resolver-firewall/AssetParameters/e820b3f07bf66854be0dfd6f3ec357a10d644f2011069e5ad07d42f4f89ed35a/ArtifactHash": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssetParameterse820b3f07bf66854be0dfd6f3ec357a10d644f2011069e5ad07d42f4f89ed35aArtifactHashFF61A347",
-            "trace": [
-              "new FileAssetParameters (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/asset-parameters.js:20:38)",
-              "LegacyStackSynthesizer.doAddFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:157:22)",
-              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:82:25)",
-              "TestStack.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack.js:408:33)",
-              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:59",
-              "withoutDeprecationWarnings (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:197:16)",
-              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:20)",
-              "new Asset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-s3-assets/lib/asset.js:39:44)",
-              "Object.bind (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53resolver/lib/firewall-domain-list.js:75:31)",
-              "new FirewallDomainList (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53resolver/lib/firewall-domain-list.js:97:45)",
-              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53resolver/test/integ.firewall.js:17:9)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53resolver/test/integ.firewall.js:38:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "AssetParameterse820b3f07bf66854be0dfd6f3ec357a10d644f2011069e5ad07d42f4f89ed35aArtifactHashFF61A347"
           }
         ],
         "/cdk-route53-resolver-firewall/RuleGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "RuleGroup06BA8844",
-            "trace": [
-              "new FirewallRuleGroup (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53resolver/lib/firewall-rule-group.js:88:27)",
-              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53resolver/test/integ.firewall.js:20:27)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53resolver/test/integ.firewall.js:38:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "RuleGroup06BA8844"
           }
         ],
         "/cdk-route53-resolver-firewall/RuleGroup/Association/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "RuleGroupAssociation5494BFB1",
-            "trace": [
-              "new FirewallRuleGroupAssociation (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53resolver/lib/firewall-rule-group-association.js:19:29)",
-              "FirewallRuleGroup.associate (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53resolver/lib/firewall-rule-group.js:128:16)",
-              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53resolver/test/integ.firewall.js:31:19)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53resolver/test/integ.firewall.js:38:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "RuleGroupAssociation5494BFB1"
           }
         ]
       },

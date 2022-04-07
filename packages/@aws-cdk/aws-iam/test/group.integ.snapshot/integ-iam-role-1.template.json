@@ -1,7 +1,7 @@
 {
-  "Resources": {
-    "MyGroupCBA54B1B": {
-      "Type": "AWS::IAM::Group"
-    }
+ "Resources": {
+  "MyGroupCBA54B1B": {
+   "Type": "AWS::IAM::Group"
   }
+ }
 }

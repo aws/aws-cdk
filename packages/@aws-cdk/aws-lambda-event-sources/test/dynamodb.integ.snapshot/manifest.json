@@ -5,7 +5,8 @@
       "type": "cdk:tree",
       "properties": {
         "file": "tree.json"
-      }
+      },
+      "metadata": {}
     },
     "lambda-event-source-dynamodb": {
       "type": "aws:cloudformation:stack",
@@ -18,98 +19,31 @@
         "/lambda-event-source-dynamodb/F/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "FServiceRole3AC82EE1",
-            "trace": [
-              "new Role (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/role.js:50:22)",
-              "new Function (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function.js:82:35)",
-              "new TestFunction (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda-event-sources/test/test-function.js:7:9)",
-              "new DynamoEventSourceTest (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda-event-sources/test/integ.dynamodb.js:11:20)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda-event-sources/test/integ.dynamodb.js:28:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "FServiceRole3AC82EE1"
           }
         ],
         "/lambda-event-source-dynamodb/F/ServiceRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "FServiceRoleDefaultPolicy17A19BFA",
-            "trace": [
-              "new Policy (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/policy.js:50:26)",
-              "Role.addToPrincipalPolicy (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/role.js:199:34)",
-              "Function.addToPrincipal (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/grant.js:87:65)",
-              "Table.grantTableListStreams (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-dynamodb/lib/table.js:156:26)",
-              "Table.grantStreamRead (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-dynamodb/lib/table.js:173:14)",
-              "DynamoEventSource.bind (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda-event-sources/lib/dynamodb.js:30:20)",
-              "TestFunction.addEventSource (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function-base.js:162:16)",
-              "new DynamoEventSourceTest (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda-event-sources/test/integ.dynamodb.js:20:12)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda-event-sources/test/integ.dynamodb.js:28:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "FServiceRoleDefaultPolicy17A19BFA"
           }
         ],
         "/lambda-event-source-dynamodb/F/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "FC4345940",
-            "trace": [
-              "new Function (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function.js:158:26)",
-              "new TestFunction (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda-event-sources/test/test-function.js:7:9)",
-              "new DynamoEventSourceTest (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda-event-sources/test/integ.dynamodb.js:11:20)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda-event-sources/test/integ.dynamodb.js:28:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "FC4345940"
           }
         ],
         "/lambda-event-source-dynamodb/F/DynamoDBEventSource:lambdaeventsourcedynamodbT7967476A/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "FDynamoDBEventSourcelambdaeventsourcedynamodbT7967476AE652DA48",
-            "trace": [
-              "new EventSourceMapping (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/event-source-mapping.js:105:39)",
-              "TestFunction.addEventSourceMapping (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function-base.js:116:16)",
-              "DynamoEventSource.bind (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda-event-sources/lib/dynamodb.js:28:43)",
-              "TestFunction.addEventSource (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function-base.js:162:16)",
-              "new DynamoEventSourceTest (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda-event-sources/test/integ.dynamodb.js:20:12)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda-event-sources/test/integ.dynamodb.js:28:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "FDynamoDBEventSourcelambdaeventsourcedynamodbT7967476AE652DA48"
           }
         ],
         "/lambda-event-source-dynamodb/T/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "TD925BC7E",
-            "trace": [
-              "new Table (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-dynamodb/lib/table.js:477:22)",
-              "new DynamoEventSourceTest (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda-event-sources/test/integ.dynamodb.js:12:23)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda-event-sources/test/integ.dynamodb.js:28:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "TD925BC7E"
           }
         ]
       },

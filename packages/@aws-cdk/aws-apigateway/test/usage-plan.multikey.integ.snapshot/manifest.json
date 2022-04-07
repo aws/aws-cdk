@@ -5,7 +5,8 @@
       "type": "cdk:tree",
       "properties": {
         "file": "tree.json"
-      }
+      },
+      "metadata": {}
     },
     "test-apigateway-usageplan-multikey": {
       "type": "aws:cloudformation:stack",
@@ -18,86 +19,31 @@
         "/test-apigateway-usageplan-multikey/myusageplan/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "myusageplan4B391740",
-            "trace": [
-              "new UsagePlan (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/lib/usage-plan.js:53:20)",
-              "new Test (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.usage-plan.multikey.js:8:27)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.usage-plan.multikey.js:16:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "myusageplan4B391740"
           }
         ],
         "/test-apigateway-usageplan-multikey/myusageplan/UsagePlanKeyResource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "myusageplanUsagePlanKeyResource095B4EA9",
-            "trace": [
-              "UsagePlan.addApiKey (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/lib/usage-plan.js:37:26)",
-              "new Test (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.usage-plan.multikey.js:11:19)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.usage-plan.multikey.js:16:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "myusageplanUsagePlanKeyResource095B4EA9"
           }
         ],
         "/test-apigateway-usageplan-multikey/myusageplan/UsagePlanKeyResource:testapigatewayusageplanmultikeymyapikey29D6460C6": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "myusageplanUsagePlanKeyResourcetestapigatewayusageplanmultikeymyapikey29D6460C6AE8DE59D",
-            "trace": [
-              "UsagePlan.addApiKey (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/lib/usage-plan.js:37:26)",
-              "new Test (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.usage-plan.multikey.js:12:19)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.usage-plan.multikey.js:16:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "myusageplanUsagePlanKeyResourcetestapigatewayusageplanmultikeymyapikey29D6460C6AE8DE59D"
           }
         ],
         "/test-apigateway-usageplan-multikey/myapikey1/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "myapikey18B056ACE",
-            "trace": [
-              "new ApiKey (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/lib/api-key.js:65:26)",
-              "new Test (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.usage-plan.multikey.js:9:25)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.usage-plan.multikey.js:16:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "myapikey18B056ACE"
           }
         ],
         "/test-apigateway-usageplan-multikey/myapikey2/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "myapikey250C8F11B",
-            "trace": [
-              "new ApiKey (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/lib/api-key.js:65:26)",
-              "new Test (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.usage-plan.multikey.js:10:25)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigateway/test/integ.usage-plan.multikey.js:16:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "myapikey250C8F11B"
           }
         ]
       },

@@ -5,7 +5,8 @@
       "type": "cdk:tree",
       "properties": {
         "file": "tree.json"
-      }
+      },
+      "metadata": {}
     },
     "aws-appsync-integ": {
       "type": "aws:cloudformation:stack",
@@ -26,362 +27,115 @@
               "s3BucketParameter": "AssetParametersf38244b9028d22d4e265a5b466bdba928d93b5a4ac2b4bbf583309b3f027f044S3Bucket7A0FC067",
               "s3KeyParameter": "AssetParametersf38244b9028d22d4e265a5b466bdba928d93b5a4ac2b4bbf583309b3f027f044S3VersionKeyCF9AAB81",
               "artifactHashParameter": "AssetParametersf38244b9028d22d4e265a5b466bdba928d93b5a4ac2b4bbf583309b3f027f044ArtifactHash2150188D"
-            },
-            "trace": [
-              "ConstructNode.addMetadata (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/construct-compat.js:352:62)",
-              "LegacyStackSynthesizer.doAddFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:170:29)",
-              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:82:25)",
-              "Stack.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack.js:408:33)",
-              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:59",
-              "withoutDeprecationWarnings (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:197:16)",
-              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:20)",
-              "new Asset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-s3-assets/lib/asset.js:39:44)",
-              "AssetCode.bind (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/code.js:206:26)",
-              "new Function (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function.js:100:33)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-appsync/test/integ.graphql-iam.js:78:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            }
           }
         ],
         "/aws-appsync-integ/Pool/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "PoolD3F588B8",
-            "trace": [
-              "new UserPool (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-cognito/lib/user-pool.js:246:26)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-appsync/test/integ.graphql-iam.js:26:18)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "PoolD3F588B8"
           }
         ],
         "/aws-appsync-integ/Api/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ApiF70053CD",
-            "trace": [
-              "new GraphqlApi (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-appsync/lib/graphqlapi.js:141:20)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-appsync/test/integ.graphql-iam.js:29:13)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "ApiF70053CD"
           }
         ],
         "/aws-appsync-integ/Api/Schema": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ApiSchema510EECD7",
-            "trace": [
-              "Schema.bind (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-appsync/lib/schema.js:50:27)",
-              "new GraphqlApi (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-appsync/lib/graphqlapi.js:156:43)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-appsync/test/integ.graphql-iam.js:29:13)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "ApiSchema510EECD7"
           }
         ],
         "/aws-appsync-integ/Api/ds/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ApidsServiceRoleADC7D124",
-            "trace": [
-              "new Role (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/role.js:50:22)",
-              "new BaseDataSource (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-appsync/lib/data-source.js:25:53)",
-              "new BackedDataSource (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-appsync/lib/data-source.js:70:9)",
-              "new DynamoDbDataSource (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-appsync/lib/data-source.js:98:9)",
-              "GraphqlApi.addDynamoDbDataSource (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-appsync/lib/graphqlapi-base.js:38:16)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-appsync/test/integ.graphql-iam.js:55:20)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "ApidsServiceRoleADC7D124"
           }
         ],
         "/aws-appsync-integ/Api/ds/ServiceRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ApidsServiceRoleDefaultPolicyE5E18D6D",
-            "trace": [
-              "new Policy (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/policy.js:50:26)",
-              "Role.addToPrincipalPolicy (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/role.js:199:34)",
-              "Function.addToPrincipal (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/grant.js:87:65)",
-              "Table.combinedGrant (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-dynamodb/lib/table.js:409:35)",
-              "Table.grantReadWriteData (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-dynamodb/lib/table.js:203:21)",
-              "new DynamoDbDataSource (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-appsync/lib/data-source.js:111:25)",
-              "GraphqlApi.addDynamoDbDataSource (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-appsync/lib/graphqlapi-base.js:38:16)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-appsync/test/integ.graphql-iam.js:55:20)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "ApidsServiceRoleDefaultPolicyE5E18D6D"
           }
         ],
         "/aws-appsync-integ/Api/ds/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Apids0DB53FEA",
-            "trace": [
-              "new BaseDataSource (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-appsync/lib/data-source.js:29:19)",
-              "new BackedDataSource (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-appsync/lib/data-source.js:70:9)",
-              "new DynamoDbDataSource (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-appsync/lib/data-source.js:98:9)",
-              "GraphqlApi.addDynamoDbDataSource (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-appsync/lib/graphqlapi-base.js:38:16)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-appsync/test/integ.graphql-iam.js:55:20)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "Apids0DB53FEA"
           }
         ],
         "/aws-appsync-integ/Api/ds/QuerygetTestResolver/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ApidsQuerygetTestResolverCCED7EC2",
-            "trace": [
-              "new Resolver (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-appsync/lib/resolver.js:34:25)",
-              "DynamoDbDataSource.createResolver (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-appsync/lib/data-source.js:44:16)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-appsync/test/integ.graphql-iam.js:56:8)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "ApidsQuerygetTestResolverCCED7EC2"
           }
         ],
         "/aws-appsync-integ/Api/ds/QuerygetTestsResolver/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ApidsQuerygetTestsResolver952F49EE",
-            "trace": [
-              "new Resolver (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-appsync/lib/resolver.js:34:25)",
-              "DynamoDbDataSource.createResolver (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-appsync/lib/data-source.js:44:16)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-appsync/test/integ.graphql-iam.js:62:8)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "ApidsQuerygetTestsResolver952F49EE"
           }
         ],
         "/aws-appsync-integ/Api/ds/MutationaddTestResolver/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ApidsMutationaddTestResolverBCF0400B",
-            "trace": [
-              "new Resolver (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-appsync/lib/resolver.js:34:25)",
-              "DynamoDbDataSource.createResolver (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-appsync/lib/data-source.js:44:16)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-appsync/test/integ.graphql-iam.js:68:8)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "ApidsMutationaddTestResolverBCF0400B"
           }
         ],
         "/aws-appsync-integ/TestTable/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "TestTable5769773A",
-            "trace": [
-              "new Table (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-dynamodb/lib/table.js:477:22)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-appsync/test/integ.graphql-iam.js:47:19)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "TestTable5769773A"
           }
         ],
         "/aws-appsync-integ/LambdaIAM/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "LambdaIAM687B49AF",
-            "trace": [
-              "new Role (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/role.js:50:22)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-appsync/test/integ.graphql-iam.js:74:19)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "LambdaIAM687B49AF"
           }
         ],
         "/aws-appsync-integ/LambdaIAM/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "LambdaIAMDefaultPolicy96DEA124",
-            "trace": [
-              "new Policy (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/policy.js:50:26)",
-              "Role.addToPrincipalPolicy (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/role.js:199:34)",
-              "Function.addToPrincipal (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/grant.js:87:65)",
-              "GraphqlApi.grant (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-appsync/lib/graphqlapi.js:210:32)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-appsync/test/integ.graphql-iam.js:75:5)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "LambdaIAMDefaultPolicy96DEA124"
           }
         ],
         "/aws-appsync-integ/testQuery/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "testQuery6695AADE",
-            "trace": [
-              "new Function (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function.js:154:26)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-appsync/test/integ.graphql-iam.js:78:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "testQuery6695AADE"
           }
         ],
         "/aws-appsync-integ/AssetParameters/f38244b9028d22d4e265a5b466bdba928d93b5a4ac2b4bbf583309b3f027f044/S3Bucket": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssetParametersf38244b9028d22d4e265a5b466bdba928d93b5a4ac2b4bbf583309b3f027f044S3Bucket7A0FC067",
-            "trace": [
-              "new FileAssetParameters (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/asset-parameters.js:12:36)",
-              "LegacyStackSynthesizer.doAddFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:157:22)",
-              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:82:25)",
-              "Stack.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack.js:408:33)",
-              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:59",
-              "withoutDeprecationWarnings (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:197:16)",
-              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:20)",
-              "new Asset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-s3-assets/lib/asset.js:39:44)",
-              "AssetCode.bind (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/code.js:206:26)",
-              "new Function (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function.js:100:33)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-appsync/test/integ.graphql-iam.js:78:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "AssetParametersf38244b9028d22d4e265a5b466bdba928d93b5a4ac2b4bbf583309b3f027f044S3Bucket7A0FC067"
           }
         ],
         "/aws-appsync-integ/AssetParameters/f38244b9028d22d4e265a5b466bdba928d93b5a4ac2b4bbf583309b3f027f044/S3VersionKey": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssetParametersf38244b9028d22d4e265a5b466bdba928d93b5a4ac2b4bbf583309b3f027f044S3VersionKeyCF9AAB81",
-            "trace": [
-              "new FileAssetParameters (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/asset-parameters.js:16:35)",
-              "LegacyStackSynthesizer.doAddFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:157:22)",
-              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:82:25)",
-              "Stack.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack.js:408:33)",
-              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:59",
-              "withoutDeprecationWarnings (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:197:16)",
-              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:20)",
-              "new Asset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-s3-assets/lib/asset.js:39:44)",
-              "AssetCode.bind (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/code.js:206:26)",
-              "new Function (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function.js:100:33)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-appsync/test/integ.graphql-iam.js:78:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "AssetParametersf38244b9028d22d4e265a5b466bdba928d93b5a4ac2b4bbf583309b3f027f044S3VersionKeyCF9AAB81"
           }
         ],
         "/aws-appsync-integ/AssetParameters/f38244b9028d22d4e265a5b466bdba928d93b5a4ac2b4bbf583309b3f027f044/ArtifactHash": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssetParametersf38244b9028d22d4e265a5b466bdba928d93b5a4ac2b4bbf583309b3f027f044ArtifactHash2150188D",
-            "trace": [
-              "new FileAssetParameters (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/asset-parameters.js:20:38)",
-              "LegacyStackSynthesizer.doAddFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:157:22)",
-              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:82:25)",
-              "Stack.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack.js:408:33)",
-              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:59",
-              "withoutDeprecationWarnings (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:197:16)",
-              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:20)",
-              "new Asset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-s3-assets/lib/asset.js:39:44)",
-              "AssetCode.bind (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/code.js:206:26)",
-              "new Function (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function.js:100:33)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-appsync/test/integ.graphql-iam.js:78:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "AssetParametersf38244b9028d22d4e265a5b466bdba928d93b5a4ac2b4bbf583309b3f027f044ArtifactHash2150188D"
           }
         ],
         "/aws-appsync-integ/testFail/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "testFailServiceRole9FF22F85",
-            "trace": [
-              "new Role (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/role.js:50:22)",
-              "new Function (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function.js:82:35)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-appsync/test/integ.graphql-iam.js:85:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "testFailServiceRole9FF22F85"
           }
         ],
         "/aws-appsync-integ/testFail/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "testFail33CE01D1",
-            "trace": [
-              "new Function (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function.js:154:26)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-appsync/test/integ.graphql-iam.js:85:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "testFail33CE01D1"
           }
         ]
       },

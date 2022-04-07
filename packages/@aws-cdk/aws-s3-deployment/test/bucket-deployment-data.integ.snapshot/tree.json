@@ -87,7 +87,7 @@
                       "aws:cdk:cloudformation:props": {
                         "content": {
                           "s3Bucket": {
-                            "Ref": "AssetParameters55f133baccc1d0e4666b88328d51a8c2ff354c919b8e0fa9f045123a19df1b4eS3Bucket3FE1663B"
+                            "Ref": "AssetParameters92c405c4551a308bcdd55823f8b16268bd3c38fd2a011edaaf3ed72a80f557c4S3BucketC479E94B"
                           },
                           "s3Key": {
                             "Fn::Join": [
@@ -100,7 +100,7 @@
                                       "Fn::Split": [
                                         "||",
                                         {
-                                          "Ref": "AssetParameters55f133baccc1d0e4666b88328d51a8c2ff354c919b8e0fa9f045123a19df1b4eS3VersionKey9DF29482"
+                                          "Ref": "AssetParameters92c405c4551a308bcdd55823f8b16268bd3c38fd2a011edaaf3ed72a80f557c4S3VersionKeyEF78B2AD"
                                         }
                                       ]
                                     }
@@ -113,7 +113,7 @@
                                       "Fn::Split": [
                                         "||",
                                         {
-                                          "Ref": "AssetParameters55f133baccc1d0e4666b88328d51a8c2ff354c919b8e0fa9f045123a19df1b4eS3VersionKey9DF29482"
+                                          "Ref": "AssetParameters92c405c4551a308bcdd55823f8b16268bd3c38fd2a011edaaf3ed72a80f557c4S3VersionKeyEF78B2AD"
                                         }
                                       ]
                                     }
@@ -251,13 +251,13 @@
             "id": "AssetParameters",
             "path": "TestBucketDeploymentContent/AssetParameters",
             "children": {
-              "55f133baccc1d0e4666b88328d51a8c2ff354c919b8e0fa9f045123a19df1b4e": {
-                "id": "55f133baccc1d0e4666b88328d51a8c2ff354c919b8e0fa9f045123a19df1b4e",
-                "path": "TestBucketDeploymentContent/AssetParameters/55f133baccc1d0e4666b88328d51a8c2ff354c919b8e0fa9f045123a19df1b4e",
+              "92c405c4551a308bcdd55823f8b16268bd3c38fd2a011edaaf3ed72a80f557c4": {
+                "id": "92c405c4551a308bcdd55823f8b16268bd3c38fd2a011edaaf3ed72a80f557c4",
+                "path": "TestBucketDeploymentContent/AssetParameters/92c405c4551a308bcdd55823f8b16268bd3c38fd2a011edaaf3ed72a80f557c4",
                 "children": {
                   "S3Bucket": {
                     "id": "S3Bucket",
-                    "path": "TestBucketDeploymentContent/AssetParameters/55f133baccc1d0e4666b88328d51a8c2ff354c919b8e0fa9f045123a19df1b4e/S3Bucket",
+                    "path": "TestBucketDeploymentContent/AssetParameters/92c405c4551a308bcdd55823f8b16268bd3c38fd2a011edaaf3ed72a80f557c4/S3Bucket",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "0.0.0"
@@ -265,7 +265,7 @@
                   },
                   "S3VersionKey": {
                     "id": "S3VersionKey",
-                    "path": "TestBucketDeploymentContent/AssetParameters/55f133baccc1d0e4666b88328d51a8c2ff354c919b8e0fa9f045123a19df1b4e/S3VersionKey",
+                    "path": "TestBucketDeploymentContent/AssetParameters/92c405c4551a308bcdd55823f8b16268bd3c38fd2a011edaaf3ed72a80f557c4/S3VersionKey",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "0.0.0"
@@ -273,7 +273,7 @@
                   },
                   "ArtifactHash": {
                     "id": "ArtifactHash",
-                    "path": "TestBucketDeploymentContent/AssetParameters/55f133baccc1d0e4666b88328d51a8c2ff354c919b8e0fa9f045123a19df1b4e/ArtifactHash",
+                    "path": "TestBucketDeploymentContent/AssetParameters/92c405c4551a308bcdd55823f8b16268bd3c38fd2a011edaaf3ed72a80f557c4/ArtifactHash",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "0.0.0"

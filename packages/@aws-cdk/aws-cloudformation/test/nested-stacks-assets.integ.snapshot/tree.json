@@ -150,7 +150,7 @@
                           ]
                         },
                         "handler": "index.handler",
-                        "runtime": "nodejs12.x"
+                        "runtime": "nodejs14.x"
                       }
                     },
                     "constructInfo": {
@@ -210,7 +210,7 @@
                           },
                           "/",
                           {
-                            "Ref": "AssetParameters361f52cf25e77180eb051b0c81dc3b322cd20ba320c05a4e2ade2d6b285cb2a2S3Bucket256EBA89"
+                            "Ref": "AssetParameters55d70d57e3a130be4abc8e99a5774c42458554081e9a170f4064d77b52c17353S3Bucket3D22FCA3"
                           },
                           "/",
                           {
@@ -220,7 +220,7 @@
                                 "Fn::Split": [
                                   "||",
                                   {
-                                    "Ref": "AssetParameters361f52cf25e77180eb051b0c81dc3b322cd20ba320c05a4e2ade2d6b285cb2a2S3VersionKey60C57EEE"
+                                    "Ref": "AssetParameters55d70d57e3a130be4abc8e99a5774c42458554081e9a170f4064d77b52c17353S3VersionKey31DC70FA"
                                   }
                                 ]
                               }
@@ -233,7 +233,7 @@
                                 "Fn::Split": [
                                   "||",
                                   {
-                                    "Ref": "AssetParameters361f52cf25e77180eb051b0c81dc3b322cd20ba320c05a4e2ade2d6b285cb2a2S3VersionKey60C57EEE"
+                                    "Ref": "AssetParameters55d70d57e3a130be4abc8e99a5774c42458554081e9a170f4064d77b52c17353S3VersionKey31DC70FA"
                                   }
                                 ]
                               }
@@ -301,13 +301,13 @@
                   "version": "0.0.0"
                 }
               },
-              "361f52cf25e77180eb051b0c81dc3b322cd20ba320c05a4e2ade2d6b285cb2a2": {
-                "id": "361f52cf25e77180eb051b0c81dc3b322cd20ba320c05a4e2ade2d6b285cb2a2",
-                "path": "nested-stacks-assets/AssetParameters/361f52cf25e77180eb051b0c81dc3b322cd20ba320c05a4e2ade2d6b285cb2a2",
+              "55d70d57e3a130be4abc8e99a5774c42458554081e9a170f4064d77b52c17353": {
+                "id": "55d70d57e3a130be4abc8e99a5774c42458554081e9a170f4064d77b52c17353",
+                "path": "nested-stacks-assets/AssetParameters/55d70d57e3a130be4abc8e99a5774c42458554081e9a170f4064d77b52c17353",
                 "children": {
                   "S3Bucket": {
                     "id": "S3Bucket",
-                    "path": "nested-stacks-assets/AssetParameters/361f52cf25e77180eb051b0c81dc3b322cd20ba320c05a4e2ade2d6b285cb2a2/S3Bucket",
+                    "path": "nested-stacks-assets/AssetParameters/55d70d57e3a130be4abc8e99a5774c42458554081e9a170f4064d77b52c17353/S3Bucket",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "0.0.0"
@@ -315,7 +315,7 @@
                   },
                   "S3VersionKey": {
                     "id": "S3VersionKey",
-                    "path": "nested-stacks-assets/AssetParameters/361f52cf25e77180eb051b0c81dc3b322cd20ba320c05a4e2ade2d6b285cb2a2/S3VersionKey",
+                    "path": "nested-stacks-assets/AssetParameters/55d70d57e3a130be4abc8e99a5774c42458554081e9a170f4064d77b52c17353/S3VersionKey",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "0.0.0"
@@ -323,7 +323,7 @@
                   },
                   "ArtifactHash": {
                     "id": "ArtifactHash",
-                    "path": "nested-stacks-assets/AssetParameters/361f52cf25e77180eb051b0c81dc3b322cd20ba320c05a4e2ade2d6b285cb2a2/ArtifactHash",
+                    "path": "nested-stacks-assets/AssetParameters/55d70d57e3a130be4abc8e99a5774c42458554081e9a170f4064d77b52c17353/ArtifactHash",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "0.0.0"

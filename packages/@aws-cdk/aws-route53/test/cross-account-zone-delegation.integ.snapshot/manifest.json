@@ -5,7 +5,8 @@
       "type": "cdk:tree",
       "properties": {
         "file": "tree.json"
-      }
+      },
+      "metadata": {}
     },
     "aws-cdk-route53-cross-account-integ": {
       "type": "aws:cloudformation:stack",
@@ -26,275 +27,85 @@
               "s3BucketParameter": "AssetParameters7625bcc3bbd65c490a92d42790a563e31dc02c18006ef272338c8c788849bb8aS3BucketC1366C27",
               "s3KeyParameter": "AssetParameters7625bcc3bbd65c490a92d42790a563e31dc02c18006ef272338c8c788849bb8aS3VersionKeyEE72CEF8",
               "artifactHashParameter": "AssetParameters7625bcc3bbd65c490a92d42790a563e31dc02c18006ef272338c8c788849bb8aArtifactHashAADF3168"
-            },
-            "trace": [
-              "ConstructNode.addMetadata (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/construct-compat.js:352:62)",
-              "LegacyStackSynthesizer.doAddFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:170:29)",
-              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:82:25)",
-              "Stack.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack.js:408:33)",
-              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:59",
-              "withoutDeprecationWarnings (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:197:16)",
-              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:20)",
-              "new CustomResourceProvider (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/custom-resource-provider/custom-resource-provider.js:81:41)",
-              "Function.getOrCreateProvider (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/custom-resource-provider/custom-resource-provider.js:166:94)",
-              "new CrossAccountZoneDelegationRecord (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53/lib/record-set.js:441:56)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53/test/integ.cross-account-zone-delegation.js:16:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            }
           }
         ],
         "/aws-cdk-route53-cross-account-integ/ParentHostedZone/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ParentHostedZoneC2BD86E1",
-            "trace": [
-              "new HostedZone (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53/lib/hosted-zone.js:26:26)",
-              "new PublicHostedZone (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53/lib/hosted-zone.js:137:9)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53/test/integ.cross-account-zone-delegation.js:8:20)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "ParentHostedZoneC2BD86E1"
           }
         ],
         "/aws-cdk-route53-cross-account-integ/ParentHostedZone/CrossAccountZoneDelegationRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ParentHostedZoneCrossAccountZoneDelegationRole95B1C36E",
-            "trace": [
-              "new Role (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/role.js:50:22)",
-              "new PublicHostedZone (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53/lib/hosted-zone.js:148:51)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53/test/integ.cross-account-zone-delegation.js:8:20)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "ParentHostedZoneCrossAccountZoneDelegationRole95B1C36E"
           }
         ],
         "/aws-cdk-route53-cross-account-integ/ChildHostedZoneWithZoneId/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ChildHostedZoneWithZoneId729259E6",
-            "trace": [
-              "new HostedZone (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53/lib/hosted-zone.js:26:26)",
-              "new PublicHostedZone (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53/lib/hosted-zone.js:137:9)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53/test/integ.cross-account-zone-delegation.js:13:29)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "ChildHostedZoneWithZoneId729259E6"
           }
         ],
         "/aws-cdk-route53-cross-account-integ/DelegationWithZoneId/cross-account-zone-delegation-handler-role/Policy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DelegationWithZoneIdcrossaccountzonedelegationhandlerrolePolicy5170A69B",
-            "trace": [
-              "new Policy (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/policy.js:50:26)",
-              "Import.addToPrincipalPolicy (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/role.js:127:42)",
-              "new CrossAccountZoneDelegationRecord (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53/lib/record-set.js:446:49)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53/test/integ.cross-account-zone-delegation.js:16:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "DelegationWithZoneIdcrossaccountzonedelegationhandlerrolePolicy5170A69B"
           }
         ],
         "/aws-cdk-route53-cross-account-integ/DelegationWithZoneId/CrossAccountZoneDelegationCustomResource/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DelegationWithZoneIdCrossAccountZoneDelegationCustomResourceFFD766E7",
-            "trace": [
-              "new CustomResource (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/custom-resource.js:42:25)",
-              "new CrossAccountZoneDelegationRecord (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53/lib/record-set.js:451:32)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53/test/integ.cross-account-zone-delegation.js:16:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "DelegationWithZoneIdCrossAccountZoneDelegationCustomResourceFFD766E7"
           }
         ],
         "/aws-cdk-route53-cross-account-integ/Custom::CrossAccountZoneDelegationCustomResourceProvider/Role": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "CustomCrossAccountZoneDelegationCustomResourceProviderRoleED64687B",
-            "trace": [
-              "new CustomResourceProvider (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/custom-resource-provider/custom-resource-provider.js:95:22)",
-              "Function.getOrCreateProvider (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/custom-resource-provider/custom-resource-provider.js:166:94)",
-              "new CrossAccountZoneDelegationRecord (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53/lib/record-set.js:441:56)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53/test/integ.cross-account-zone-delegation.js:16:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "CustomCrossAccountZoneDelegationCustomResourceProviderRoleED64687B"
           }
         ],
         "/aws-cdk-route53-cross-account-integ/Custom::CrossAccountZoneDelegationCustomResourceProvider/Handler": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "CustomCrossAccountZoneDelegationCustomResourceProviderHandler44A84265",
-            "trace": [
-              "new CustomResourceProvider (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/custom-resource-provider/custom-resource-provider.js:111:25)",
-              "Function.getOrCreateProvider (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/custom-resource-provider/custom-resource-provider.js:166:94)",
-              "new CrossAccountZoneDelegationRecord (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53/lib/record-set.js:441:56)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53/test/integ.cross-account-zone-delegation.js:16:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "CustomCrossAccountZoneDelegationCustomResourceProviderHandler44A84265"
           }
         ],
         "/aws-cdk-route53-cross-account-integ/AssetParameters/7625bcc3bbd65c490a92d42790a563e31dc02c18006ef272338c8c788849bb8a/S3Bucket": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssetParameters7625bcc3bbd65c490a92d42790a563e31dc02c18006ef272338c8c788849bb8aS3BucketC1366C27",
-            "trace": [
-              "new FileAssetParameters (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/asset-parameters.js:12:36)",
-              "LegacyStackSynthesizer.doAddFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:157:22)",
-              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:82:25)",
-              "Stack.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack.js:408:33)",
-              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:59",
-              "withoutDeprecationWarnings (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:197:16)",
-              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:20)",
-              "new CustomResourceProvider (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/custom-resource-provider/custom-resource-provider.js:81:41)",
-              "Function.getOrCreateProvider (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/custom-resource-provider/custom-resource-provider.js:166:94)",
-              "new CrossAccountZoneDelegationRecord (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53/lib/record-set.js:441:56)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53/test/integ.cross-account-zone-delegation.js:16:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "AssetParameters7625bcc3bbd65c490a92d42790a563e31dc02c18006ef272338c8c788849bb8aS3BucketC1366C27"
           }
         ],
         "/aws-cdk-route53-cross-account-integ/AssetParameters/7625bcc3bbd65c490a92d42790a563e31dc02c18006ef272338c8c788849bb8a/S3VersionKey": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssetParameters7625bcc3bbd65c490a92d42790a563e31dc02c18006ef272338c8c788849bb8aS3VersionKeyEE72CEF8",
-            "trace": [
-              "new FileAssetParameters (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/asset-parameters.js:16:35)",
-              "LegacyStackSynthesizer.doAddFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:157:22)",
-              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:82:25)",
-              "Stack.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack.js:408:33)",
-              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:59",
-              "withoutDeprecationWarnings (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:197:16)",
-              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:20)",
-              "new CustomResourceProvider (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/custom-resource-provider/custom-resource-provider.js:81:41)",
-              "Function.getOrCreateProvider (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/custom-resource-provider/custom-resource-provider.js:166:94)",
-              "new CrossAccountZoneDelegationRecord (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53/lib/record-set.js:441:56)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53/test/integ.cross-account-zone-delegation.js:16:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "AssetParameters7625bcc3bbd65c490a92d42790a563e31dc02c18006ef272338c8c788849bb8aS3VersionKeyEE72CEF8"
           }
         ],
         "/aws-cdk-route53-cross-account-integ/AssetParameters/7625bcc3bbd65c490a92d42790a563e31dc02c18006ef272338c8c788849bb8a/ArtifactHash": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssetParameters7625bcc3bbd65c490a92d42790a563e31dc02c18006ef272338c8c788849bb8aArtifactHashAADF3168",
-            "trace": [
-              "new FileAssetParameters (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/asset-parameters.js:20:38)",
-              "LegacyStackSynthesizer.doAddFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:157:22)",
-              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:82:25)",
-              "Stack.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack.js:408:33)",
-              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:59",
-              "withoutDeprecationWarnings (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:197:16)",
-              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:20)",
-              "new CustomResourceProvider (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/custom-resource-provider/custom-resource-provider.js:81:41)",
-              "Function.getOrCreateProvider (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/custom-resource-provider/custom-resource-provider.js:166:94)",
-              "new CrossAccountZoneDelegationRecord (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53/lib/record-set.js:441:56)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53/test/integ.cross-account-zone-delegation.js:16:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "AssetParameters7625bcc3bbd65c490a92d42790a563e31dc02c18006ef272338c8c788849bb8aArtifactHashAADF3168"
           }
         ],
         "/aws-cdk-route53-cross-account-integ/ChildHostedZoneWithZoneName/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ChildHostedZoneWithZoneNameBC2C15F6",
-            "trace": [
-              "new HostedZone (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53/lib/hosted-zone.js:26:26)",
-              "new PublicHostedZone (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53/lib/hosted-zone.js:137:9)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53/test/integ.cross-account-zone-delegation.js:22:31)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "ChildHostedZoneWithZoneNameBC2C15F6"
           }
         ],
         "/aws-cdk-route53-cross-account-integ/DelegationWithZoneName/cross-account-zone-delegation-handler-role/Policy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DelegationWithZoneNamecrossaccountzonedelegationhandlerrolePolicy86996882",
-            "trace": [
-              "new Policy (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/policy.js:50:26)",
-              "Import.addToPrincipalPolicy (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/role.js:127:42)",
-              "new CrossAccountZoneDelegationRecord (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53/lib/record-set.js:446:49)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53/test/integ.cross-account-zone-delegation.js:25:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "DelegationWithZoneNamecrossaccountzonedelegationhandlerrolePolicy86996882"
           }
         ],
         "/aws-cdk-route53-cross-account-integ/DelegationWithZoneName/CrossAccountZoneDelegationCustomResource/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DelegationWithZoneNameCrossAccountZoneDelegationCustomResourceA1A1C94A",
-            "trace": [
-              "new CustomResource (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/custom-resource.js:42:25)",
-              "new CrossAccountZoneDelegationRecord (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53/lib/record-set.js:451:32)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53/test/integ.cross-account-zone-delegation.js:25:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "DelegationWithZoneNameCrossAccountZoneDelegationCustomResourceA1A1C94A"
           }
         ]
       },

@@ -5,7 +5,8 @@
       "type": "cdk:tree",
       "properties": {
         "file": "tree.json"
-      }
+      },
+      "metadata": {}
     },
     "integ-user-pool-idp-google": {
       "type": "aws:cloudformation:stack",
@@ -18,82 +19,31 @@
         "/integ-user-pool-idp-google/pool/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "pool056F3F7E",
-            "trace": [
-              "new UserPool (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-cognito/lib/user-pool.js:246:26)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-cognito/test/integ.user-pool-idp.google.js:12:18)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "pool056F3F7E"
           }
         ],
         "/integ-user-pool-idp-google/pool/client/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "poolclient2623294C",
-            "trace": [
-              "new UserPoolClient (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-cognito/lib/user-pool-client.js:134:26)",
-              "UserPool.addClient (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-cognito/lib/user-pool.js:156:16)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-cognito/test/integ.user-pool-idp.google.js:29:25)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "poolclient2623294C"
           }
         ],
         "/integ-user-pool-idp-google/pool/domain/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "pooldomain430FA744",
-            "trace": [
-              "new UserPoolDomain (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-cognito/lib/user-pool-domain.js:28:26)",
-              "UserPool.addDomain (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-cognito/lib/user-pool.js:162:16)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-cognito/test/integ.user-pool-idp.google.js:30:25)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "pooldomain430FA744"
           }
         ],
         "/integ-user-pool-idp-google/google/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "googleDB2C5242",
-            "trace": [
-              "new UserPoolIdentityProviderGoogle (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-cognito/lib/user-pool-idps/google.js:19:26)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-cognito/test/integ.user-pool-idp.google.js:15:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "googleDB2C5242"
           }
         ],
         "/integ-user-pool-idp-google/SignInLink": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "SignInLink",
-            "trace": [
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-cognito/test/integ.user-pool-idp.google.js:35:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "SignInLink"
           }
         ]
       },

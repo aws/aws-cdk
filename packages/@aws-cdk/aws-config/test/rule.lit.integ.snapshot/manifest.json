@@ -5,7 +5,8 @@
       "type": "cdk:tree",
       "properties": {
         "file": "tree.json"
-      }
+      },
+      "metadata": {}
     },
     "aws-cdk-config-rule-integ": {
       "type": "aws:cloudformation:stack",
@@ -18,167 +19,55 @@
         "/aws-cdk-config-rule-integ/CustomFunction/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "CustomFunctionServiceRoleD3F73B79",
-            "trace": [
-              "new Role (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/role.js:50:22)",
-              "new Function (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function.js:82:35)",
-              "new ConfigStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-config/test/integ.rule.lit.js:14:20)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-config/test/integ.rule.lit.js:34:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "CustomFunctionServiceRoleD3F73B79"
           }
         ],
         "/aws-cdk-config-rule-integ/CustomFunction/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "CustomFunctionBADD59E7",
-            "trace": [
-              "new Function (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function.js:158:26)",
-              "new ConfigStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-config/test/integ.rule.lit.js:14:20)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-config/test/integ.rule.lit.js:34:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "CustomFunctionBADD59E7"
           }
         ],
         "/aws-cdk-config-rule-integ/CustomFunction/Permission": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "CustomFunctionPermission41887A5E",
-            "trace": [
-              "Function.addPermission (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function-base.js:70:9)",
-              "new CustomRule (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-config/lib/rule.js:189:30)",
-              "new ConfigStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-config/test/integ.rule.lit.js:19:9)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-config/test/integ.rule.lit.js:34:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "CustomFunctionPermission41887A5E"
           }
         ],
         "/aws-cdk-config-rule-integ/Custom/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Custom8166710A",
-            "trace": [
-              "new CustomRule (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-config/lib/rule.js:198:22)",
-              "new ConfigStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-config/test/integ.rule.lit.js:19:9)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-config/test/integ.rule.lit.js:34:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "Custom8166710A"
           }
         ],
         "/aws-cdk-config-rule-integ/Drift/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Drift34D3210F",
-            "trace": [
-              "new ManagedRule (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-config/lib/rule.js:135:22)",
-              "new CloudFormationStackDriftDetectionCheck (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-config/lib/managed-rules.js:47:9)",
-              "new ConfigStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-config/test/integ.rule.lit.js:25:27)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-config/test/integ.rule.lit.js:34:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "Drift34D3210F"
           }
         ],
         "/aws-cdk-config-rule-integ/Drift/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DriftRole8A5FB833",
-            "trace": [
-              "new Role (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/role.js:50:22)",
-              "new CloudFormationStackDriftDetectionCheck (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-config/lib/managed-rules.js:56:35)",
-              "new ConfigStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-config/test/integ.rule.lit.js:25:27)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-config/test/integ.rule.lit.js:34:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "DriftRole8A5FB833"
           }
         ],
         "/aws-cdk-config-rule-integ/Drift/ComplianceChange/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DriftComplianceChange4C0F2B82",
-            "trace": [
-              "new Rule (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-events/lib/rule.js:36:26)",
-              "CloudFormationStackDriftDetectionCheck.onEvent (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-config/lib/rule.js:20:22)",
-              "CloudFormationStackDriftDetectionCheck.onComplianceChange (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-config/lib/rule.js:34:27)",
-              "new ConfigStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-config/test/integ.rule.lit.js:29:19)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-config/test/integ.rule.lit.js:34:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "DriftComplianceChange4C0F2B82"
           }
         ],
         "/aws-cdk-config-rule-integ/ComplianceTopic/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ComplianceTopic0229448B",
-            "trace": [
-              "new Topic (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-sns/lib/topic.js:35:26)",
-              "new ConfigStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-config/test/integ.rule.lit.js:27:33)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-config/test/integ.rule.lit.js:34:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "ComplianceTopic0229448B"
           }
         ],
         "/aws-cdk-config-rule-integ/ComplianceTopic/Policy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ComplianceTopicPolicyF8BC46F0",
-            "trace": [
-              "new TopicPolicy (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-sns/lib/policy.js:40:9)",
-              "Topic.addToResourcePolicy (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-sns/lib/topic-base.js:45:27)",
-              "Function.addToPrincipalOrResource (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/grant.js:68:49)",
-              "Topic.grantPublish (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-sns/lib/topic-base.js:63:26)",
-              "SnsTopic.bind (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-events-targets/lib/sns.js:32:20)",
-              "Rule.addTarget (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-events/lib/rule.js:88:36)",
-              "CloudFormationStackDriftDetectionCheck.onEvent (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-config/lib/rule.js:27:14)",
-              "CloudFormationStackDriftDetectionCheck.onComplianceChange (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-config/lib/rule.js:34:27)",
-              "new ConfigStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-config/test/integ.rule.lit.js:29:19)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-config/test/integ.rule.lit.js:34:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "ComplianceTopicPolicyF8BC46F0"
           }
         ]
       },

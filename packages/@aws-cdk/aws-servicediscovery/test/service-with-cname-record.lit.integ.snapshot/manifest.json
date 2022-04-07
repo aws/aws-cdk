@@ -5,7 +5,8 @@
       "type": "cdk:tree",
       "properties": {
         "file": "tree.json"
-      }
+      },
+      "metadata": {}
     },
     "aws-servicediscovery-integ": {
       "type": "aws:cloudformation:stack",
@@ -18,51 +19,19 @@
         "/aws-servicediscovery-integ/Namespace/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Namespace9B63B8C8",
-            "trace": [
-              "new PublicDnsNamespace (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-servicediscovery/lib/public-dns-namespace.js:18:20)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-servicediscovery/test/integ.service-with-cname-record.lit.js:7:19)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "Namespace9B63B8C8"
           }
         ],
         "/aws-servicediscovery-integ/Namespace/Service/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "NamespaceServiceCABDF534",
-            "trace": [
-              "new Service (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-servicediscovery/lib/service.js:79:25)",
-              "PublicDnsNamespace.createService (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-servicediscovery/lib/public-dns-namespace.js:51:16)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-servicediscovery/test/integ.service-with-cname-record.lit.js:10:27)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "NamespaceServiceCABDF534"
           }
         ],
         "/aws-servicediscovery-integ/Namespace/Service/CnameInstance/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "NamespaceServiceCnameInstance5863ED3A",
-            "trace": [
-              "new CnameInstance (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-servicediscovery/lib/cname-instance.js:25:26)",
-              "Service.registerCnameInstance (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-servicediscovery/lib/service.js:144:16)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-servicediscovery/test/integ.service-with-cname-record.lit.js:15:9)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "NamespaceServiceCnameInstance5863ED3A"
           }
         ]
       },

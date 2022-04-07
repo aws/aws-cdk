@@ -5,7 +5,8 @@
       "type": "cdk:tree",
       "properties": {
         "file": "tree.json"
-      }
+      },
+      "metadata": {}
     },
     "ChatbotInteg": {
       "type": "aws:cloudformation:stack",
@@ -18,55 +19,19 @@
         "/ChatbotInteg/MySlackChannel/ConfigurationRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MySlackChannelConfigurationRole1D3F23AE",
-            "trace": [
-              "new Role (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/role.js:50:22)",
-              "new SlackChannelConfiguration (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-chatbot/lib/slack-channel-configuration.js:77:35)",
-              "new ChatbotInteg (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-chatbot/test/integ.chatbot.js:9:30)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-chatbot/test/integ.chatbot.js:25:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "MySlackChannelConfigurationRole1D3F23AE"
           }
         ],
         "/ChatbotInteg/MySlackChannel/ConfigurationRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MySlackChannelConfigurationRoleDefaultPolicyE4C1FA62",
-            "trace": [
-              "new Policy (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/policy.js:50:26)",
-              "Role.addToPrincipalPolicy (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/role.js:199:34)",
-              "SlackChannelConfiguration.addToRolePolicy (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-chatbot/lib/slack-channel-configuration.js:42:19)",
-              "new ChatbotInteg (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-chatbot/test/integ.chatbot.js:15:22)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-chatbot/test/integ.chatbot.js:25:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "MySlackChannelConfigurationRoleDefaultPolicyE4C1FA62"
           }
         ],
         "/ChatbotInteg/MySlackChannel/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MySlackChannelA8E0B56C",
-            "trace": [
-              "new SlackChannelConfiguration (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-chatbot/lib/slack-channel-configuration.js:82:31)",
-              "new ChatbotInteg (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-chatbot/test/integ.chatbot.js:9:30)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-chatbot/test/integ.chatbot.js:25:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "MySlackChannelA8E0B56C"
           }
         ]
       },

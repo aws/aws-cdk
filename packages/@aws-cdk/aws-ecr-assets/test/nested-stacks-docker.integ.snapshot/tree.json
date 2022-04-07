@@ -173,7 +173,7 @@
                           },
                           "/",
                           {
-                            "Ref": "AssetParameters08bf71a5b9aa57c58cc7510137ed079260aac01394d01f4c29a9778ac890b816S3Bucket40925BAC"
+                            "Ref": "AssetParametersc70edfade4427327312f65059a8f5145e9f3304f6d3b65729048ae50762900c4S3Bucket16959373"
                           },
                           "/",
                           {
@@ -183,7 +183,7 @@
                                 "Fn::Split": [
                                   "||",
                                   {
-                                    "Ref": "AssetParameters08bf71a5b9aa57c58cc7510137ed079260aac01394d01f4c29a9778ac890b816S3VersionKey30F5671B"
+                                    "Ref": "AssetParametersc70edfade4427327312f65059a8f5145e9f3304f6d3b65729048ae50762900c4S3VersionKey8D303747"
                                   }
                                 ]
                               }
@@ -196,7 +196,7 @@
                                 "Fn::Split": [
                                   "||",
                                   {
-                                    "Ref": "AssetParameters08bf71a5b9aa57c58cc7510137ed079260aac01394d01f4c29a9778ac890b816S3VersionKey30F5671B"
+                                    "Ref": "AssetParametersc70edfade4427327312f65059a8f5145e9f3304f6d3b65729048ae50762900c4S3VersionKey8D303747"
                                   }
                                 ]
                               }
@@ -222,13 +222,13 @@
             "id": "AssetParameters",
             "path": "nested-stacks-docker/AssetParameters",
             "children": {
-              "08bf71a5b9aa57c58cc7510137ed079260aac01394d01f4c29a9778ac890b816": {
-                "id": "08bf71a5b9aa57c58cc7510137ed079260aac01394d01f4c29a9778ac890b816",
-                "path": "nested-stacks-docker/AssetParameters/08bf71a5b9aa57c58cc7510137ed079260aac01394d01f4c29a9778ac890b816",
+              "c70edfade4427327312f65059a8f5145e9f3304f6d3b65729048ae50762900c4": {
+                "id": "c70edfade4427327312f65059a8f5145e9f3304f6d3b65729048ae50762900c4",
+                "path": "nested-stacks-docker/AssetParameters/c70edfade4427327312f65059a8f5145e9f3304f6d3b65729048ae50762900c4",
                 "children": {
                   "S3Bucket": {
                     "id": "S3Bucket",
-                    "path": "nested-stacks-docker/AssetParameters/08bf71a5b9aa57c58cc7510137ed079260aac01394d01f4c29a9778ac890b816/S3Bucket",
+                    "path": "nested-stacks-docker/AssetParameters/c70edfade4427327312f65059a8f5145e9f3304f6d3b65729048ae50762900c4/S3Bucket",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "0.0.0"
@@ -236,7 +236,7 @@
                   },
                   "S3VersionKey": {
                     "id": "S3VersionKey",
-                    "path": "nested-stacks-docker/AssetParameters/08bf71a5b9aa57c58cc7510137ed079260aac01394d01f4c29a9778ac890b816/S3VersionKey",
+                    "path": "nested-stacks-docker/AssetParameters/c70edfade4427327312f65059a8f5145e9f3304f6d3b65729048ae50762900c4/S3VersionKey",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "0.0.0"
@@ -244,7 +244,7 @@
                   },
                   "ArtifactHash": {
                     "id": "ArtifactHash",
-                    "path": "nested-stacks-docker/AssetParameters/08bf71a5b9aa57c58cc7510137ed079260aac01394d01f4c29a9778ac890b816/ArtifactHash",
+                    "path": "nested-stacks-docker/AssetParameters/c70edfade4427327312f65059a8f5145e9f3304f6d3b65729048ae50762900c4/ArtifactHash",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "0.0.0"

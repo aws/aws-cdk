@@ -5,7 +5,8 @@
       "type": "cdk:tree",
       "properties": {
         "file": "tree.json"
-      }
+      },
+      "metadata": {}
     },
     "appsync-opensearch": {
       "type": "aws:cloudformation:stack",
@@ -18,161 +19,55 @@
         "/appsync-opensearch/User/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "User00B015A1",
-            "trace": [
-              "new User (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/user.js:29:22)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-appsync/test/integ.graphql-opensearch.js:10:14)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "User00B015A1"
           }
         ],
         "/appsync-opensearch/Domain/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Domain66AC69E0",
-            "trace": [
-              "new Domain (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-opensearchservice/lib/domain.js:591:23)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-appsync/test/integ.graphql-opensearch.js:11:16)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "Domain66AC69E0"
           }
         ],
         "/appsync-opensearch/api/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "apiC8550315",
-            "trace": [
-              "new GraphqlApi (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-appsync/lib/graphqlapi.js:141:20)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-appsync/test/integ.graphql-opensearch.js:23:13)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "apiC8550315"
           }
         ],
         "/appsync-opensearch/api/Schema": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "apiSchema0EA92056",
-            "trace": [
-              "Schema.bind (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-appsync/lib/schema.js:50:27)",
-              "new GraphqlApi (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-appsync/lib/graphqlapi.js:156:43)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-appsync/test/integ.graphql-opensearch.js:23:13)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "apiSchema0EA92056"
           }
         ],
         "/appsync-opensearch/api/DefaultApiKey": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "apiDefaultApiKey6AB8D7C4",
-            "trace": [
-              "GraphqlApi.createAPIKey (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-appsync/lib/graphqlapi.js:342:16)",
-              "new GraphqlApi (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-appsync/lib/graphqlapi.js:172:40)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-appsync/test/integ.graphql-opensearch.js:23:13)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "apiDefaultApiKey6AB8D7C4"
           }
         ],
         "/appsync-opensearch/api/ds/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "apidsServiceRoleBDB08107",
-            "trace": [
-              "new Role (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/role.js:50:22)",
-              "new BaseDataSource (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-appsync/lib/data-source.js:25:53)",
-              "new BackedDataSource (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-appsync/lib/data-source.js:70:9)",
-              "new OpenSearchDataSource (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-appsync/lib/data-source.js:234:9)",
-              "GraphqlApi.addOpenSearchDataSource (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-appsync/lib/graphqlapi-base.js:124:16)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-appsync/test/integ.graphql-opensearch.js:27:16)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "apidsServiceRoleBDB08107"
           }
         ],
         "/appsync-opensearch/api/ds/ServiceRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "apidsServiceRoleDefaultPolicy5634EFD0",
-            "trace": [
-              "new Policy (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/policy.js:50:26)",
-              "Role.addToPrincipalPolicy (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/role.js:199:34)",
-              "Function.addToPrincipal (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/grant.js:87:65)",
-              "Domain.grant (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-opensearchservice/lib/domain.js:298:33)",
-              "Domain.grantReadWrite (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-opensearchservice/lib/domain.js:59:21)",
-              "new OpenSearchDataSource (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-appsync/lib/data-source.js:242:22)",
-              "GraphqlApi.addOpenSearchDataSource (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-appsync/lib/graphqlapi-base.js:124:16)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-appsync/test/integ.graphql-opensearch.js:27:16)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "apidsServiceRoleDefaultPolicy5634EFD0"
           }
         ],
         "/appsync-opensearch/api/ds/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "apids4328272F",
-            "trace": [
-              "new BaseDataSource (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-appsync/lib/data-source.js:29:19)",
-              "new BackedDataSource (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-appsync/lib/data-source.js:70:9)",
-              "new OpenSearchDataSource (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-appsync/lib/data-source.js:234:9)",
-              "GraphqlApi.addOpenSearchDataSource (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-appsync/lib/graphqlapi-base.js:124:16)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-appsync/test/integ.graphql-opensearch.js:27:16)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "apids4328272F"
           }
         ],
         "/appsync-opensearch/api/ds/QuerygetTestsResolver/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "apidsQuerygetTestsResolver5C6FBB59",
-            "trace": [
-              "new Resolver (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-appsync/lib/resolver.js:34:25)",
-              "OpenSearchDataSource.createResolver (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-appsync/lib/data-source.js:44:16)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-appsync/test/integ.graphql-opensearch.js:28:4)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "apidsQuerygetTestsResolver5C6FBB59"
           }
         ]
       },

@@ -5,7 +5,8 @@
       "type": "cdk:tree",
       "properties": {
         "file": "tree.json"
-      }
+      },
+      "metadata": {}
     },
     "cdk-rds-read-replica": {
       "type": "aws:cloudformation:stack",
@@ -18,477 +19,145 @@
         "/cdk-rds-read-replica/Vpc/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Vpc8378EB38",
-            "trace": [
-              "new Vpc (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:399:25)",
-              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-rds/test/integ.read-replica.js:9:21)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-rds/test/integ.read-replica.js:57:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "Vpc8378EB38"
           }
         ],
         "/cdk-rds-read-replica/Vpc/isolatedSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcisolatedSubnet1SubnetE62B1B9B",
-            "trace": [
-              "new Subnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:731:24)",
-              "new PrivateSubnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:922:9)",
-              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:651:44",
-              "Array.forEach (<anonymous>)",
-              "Vpc.createSubnetResources (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:615:32)",
-              "Vpc.createSubnets (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:611:18)",
-              "new Vpc (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:425:14)",
-              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-rds/test/integ.read-replica.js:9:21)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-rds/test/integ.read-replica.js:57:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "VpcisolatedSubnet1SubnetE62B1B9B"
           }
         ],
         "/cdk-rds-read-replica/Vpc/isolatedSubnet1/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcisolatedSubnet1RouteTableE442650B",
-            "trace": [
-              "new Subnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:747:23)",
-              "new PrivateSubnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:922:9)",
-              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:651:44",
-              "Array.forEach (<anonymous>)",
-              "Vpc.createSubnetResources (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:615:32)",
-              "Vpc.createSubnets (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:611:18)",
-              "new Vpc (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:425:14)",
-              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-rds/test/integ.read-replica.js:9:21)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-rds/test/integ.read-replica.js:57:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "VpcisolatedSubnet1RouteTableE442650B"
           }
         ],
         "/cdk-rds-read-replica/Vpc/isolatedSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcisolatedSubnet1RouteTableAssociationD259E31A",
-            "trace": [
-              "new Subnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:752:9)",
-              "new PrivateSubnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:922:9)",
-              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:651:44",
-              "Array.forEach (<anonymous>)",
-              "Vpc.createSubnetResources (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:615:32)",
-              "Vpc.createSubnets (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:611:18)",
-              "new Vpc (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:425:14)",
-              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-rds/test/integ.read-replica.js:9:21)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-rds/test/integ.read-replica.js:57:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "VpcisolatedSubnet1RouteTableAssociationD259E31A"
           }
         ],
         "/cdk-rds-read-replica/Vpc/isolatedSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcisolatedSubnet2Subnet39217055",
-            "trace": [
-              "new Subnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:731:24)",
-              "new PrivateSubnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:922:9)",
-              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:651:44",
-              "Array.forEach (<anonymous>)",
-              "Vpc.createSubnetResources (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:615:32)",
-              "Vpc.createSubnets (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:611:18)",
-              "new Vpc (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:425:14)",
-              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-rds/test/integ.read-replica.js:9:21)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-rds/test/integ.read-replica.js:57:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "VpcisolatedSubnet2Subnet39217055"
           }
         ],
         "/cdk-rds-read-replica/Vpc/isolatedSubnet2/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcisolatedSubnet2RouteTable334F9764",
-            "trace": [
-              "new Subnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:747:23)",
-              "new PrivateSubnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:922:9)",
-              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:651:44",
-              "Array.forEach (<anonymous>)",
-              "Vpc.createSubnetResources (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:615:32)",
-              "Vpc.createSubnets (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:611:18)",
-              "new Vpc (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:425:14)",
-              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-rds/test/integ.read-replica.js:9:21)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-rds/test/integ.read-replica.js:57:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "VpcisolatedSubnet2RouteTable334F9764"
           }
         ],
         "/cdk-rds-read-replica/Vpc/isolatedSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcisolatedSubnet2RouteTableAssociation25A4716F",
-            "trace": [
-              "new Subnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:752:9)",
-              "new PrivateSubnet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:922:9)",
-              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:651:44",
-              "Array.forEach (<anonymous>)",
-              "Vpc.createSubnetResources (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:615:32)",
-              "Vpc.createSubnets (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:611:18)",
-              "new Vpc (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/vpc.js:425:14)",
-              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-rds/test/integ.read-replica.js:9:21)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-rds/test/integ.read-replica.js:57:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "VpcisolatedSubnet2RouteTableAssociation25A4716F"
           }
         ],
         "/cdk-rds-read-replica/PostgresSource/SubnetGroup/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "PostgresSourceSubnetGroupBEEB1740",
-            "trace": [
-              "new SubnetGroup (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-rds/lib/subnet-group.js:22:29)",
-              "new DatabaseInstanceNew (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-rds/lib/instance.js:173:87)",
-              "new DatabaseInstanceSource (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-rds/lib/instance.js:276:9)",
-              "new DatabaseInstance (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-rds/lib/instance.js:378:9)",
-              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-rds/test/integ.read-replica.js:20:32)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-rds/test/integ.read-replica.js:57:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "PostgresSourceSubnetGroupBEEB1740"
           }
         ],
         "/cdk-rds-read-replica/PostgresSource/SecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "PostgresSourceSecurityGroup69289E68",
-            "trace": [
-              "new SecurityGroup (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/security-group.js:194:30)",
-              "new DatabaseInstanceNew (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-rds/lib/instance.js:179:57)",
-              "new DatabaseInstanceSource (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-rds/lib/instance.js:276:9)",
-              "new DatabaseInstance (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-rds/lib/instance.js:378:9)",
-              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-rds/test/integ.read-replica.js:20:32)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-rds/test/integ.read-replica.js:57:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "PostgresSourceSecurityGroup69289E68"
           }
         ],
         "/cdk-rds-read-replica/PostgresSource/Secret/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "PostgresSourceSecret0A09A7AD",
-            "trace": [
-              "new Secret (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-secretsmanager/lib/secret.js:203:26)",
-              "new DatabaseSecret (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-rds/lib/database-secret.js:21:9)",
-              "Object.renderCredentials (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-rds/lib/private/util.js:73:62)",
-              "new DatabaseInstance (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-rds/lib/instance.js:380:36)",
-              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-rds/test/integ.read-replica.js:20:32)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-rds/test/integ.read-replica.js:57:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "PostgresSourceSecret0A09A7AD"
           }
         ],
         "/cdk-rds-read-replica/PostgresSource/Secret/Attachment/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "PostgresSourceSecretAttachmentE3C3B705",
-            "trace": [
-              "new SecretTargetAttachment (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-secretsmanager/lib/secret.js:425:28)",
-              "DatabaseSecret.attach (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-secretsmanager/lib/secret.js:177:16)",
-              "new DatabaseInstance (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-rds/lib/instance.js:398:34)",
-              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-rds/test/integ.read-replica.js:20:32)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-rds/test/integ.read-replica.js:57:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "PostgresSourceSecretAttachmentE3C3B705"
           }
         ],
         "/cdk-rds-read-replica/PostgresSource/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "PostgresSourceEB66BFC9",
-            "trace": [
-              "new DatabaseInstance (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-rds/lib/instance.js:382:26)",
-              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-rds/test/integ.read-replica.js:20:32)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-rds/test/integ.read-replica.js:57:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "PostgresSourceEB66BFC9"
           }
         ],
         "/cdk-rds-read-replica/PostgresReplica/SubnetGroup/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "PostgresReplicaSubnetGroup301B59DA",
-            "trace": [
-              "new SubnetGroup (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-rds/lib/subnet-group.js:22:29)",
-              "new DatabaseInstanceNew (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-rds/lib/instance.js:173:87)",
-              "new DatabaseInstanceReadReplica (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-rds/lib/instance.js:459:9)",
-              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-rds/test/integ.read-replica.js:27:9)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-rds/test/integ.read-replica.js:57:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "PostgresReplicaSubnetGroup301B59DA"
           }
         ],
         "/cdk-rds-read-replica/PostgresReplica/SecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "PostgresReplicaSecurityGroup5385C4C2",
-            "trace": [
-              "new SecurityGroup (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/security-group.js:194:30)",
-              "new DatabaseInstanceNew (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-rds/lib/instance.js:179:57)",
-              "new DatabaseInstanceReadReplica (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-rds/lib/instance.js:459:9)",
-              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-rds/test/integ.read-replica.js:27:9)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-rds/test/integ.read-replica.js:57:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "PostgresReplicaSecurityGroup5385C4C2"
           }
         ],
         "/cdk-rds-read-replica/PostgresReplica/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "PostgresReplica23A3C738",
-            "trace": [
-              "new DatabaseInstanceReadReplica (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-rds/lib/instance.js:471:26)",
-              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-rds/test/integ.read-replica.js:27:9)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-rds/test/integ.read-replica.js:57:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "PostgresReplica23A3C738"
           }
         ],
         "/cdk-rds-read-replica/MysqlSource/SubnetGroup/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MysqlSourceSubnetGroup213E979B",
-            "trace": [
-              "new SubnetGroup (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-rds/lib/subnet-group.js:22:29)",
-              "new DatabaseInstanceNew (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-rds/lib/instance.js:173:87)",
-              "new DatabaseInstanceSource (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-rds/lib/instance.js:276:9)",
-              "new DatabaseInstance (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-rds/lib/instance.js:378:9)",
-              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-rds/test/integ.read-replica.js:33:29)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-rds/test/integ.read-replica.js:57:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "MysqlSourceSubnetGroup213E979B"
           }
         ],
         "/cdk-rds-read-replica/MysqlSource/SecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MysqlSourceSecurityGroupC691E169",
-            "trace": [
-              "new SecurityGroup (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/security-group.js:194:30)",
-              "new DatabaseInstanceNew (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-rds/lib/instance.js:179:57)",
-              "new DatabaseInstanceSource (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-rds/lib/instance.js:276:9)",
-              "new DatabaseInstance (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-rds/lib/instance.js:378:9)",
-              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-rds/test/integ.read-replica.js:33:29)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-rds/test/integ.read-replica.js:57:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "MysqlSourceSecurityGroupC691E169"
           }
         ],
         "/cdk-rds-read-replica/MysqlSource/Secret/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MysqlSourceSecretB727C3F2",
-            "trace": [
-              "new Secret (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-secretsmanager/lib/secret.js:203:26)",
-              "new DatabaseSecret (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-rds/lib/database-secret.js:21:9)",
-              "Object.renderCredentials (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-rds/lib/private/util.js:73:62)",
-              "new DatabaseInstance (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-rds/lib/instance.js:380:36)",
-              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-rds/test/integ.read-replica.js:33:29)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-rds/test/integ.read-replica.js:57:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "MysqlSourceSecretB727C3F2"
           }
         ],
         "/cdk-rds-read-replica/MysqlSource/Secret/Attachment/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MysqlSourceSecretAttachment5E4EDF73",
-            "trace": [
-              "new SecretTargetAttachment (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-secretsmanager/lib/secret.js:425:28)",
-              "DatabaseSecret.attach (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-secretsmanager/lib/secret.js:177:16)",
-              "new DatabaseInstance (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-rds/lib/instance.js:398:34)",
-              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-rds/test/integ.read-replica.js:33:29)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-rds/test/integ.read-replica.js:57:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "MysqlSourceSecretAttachment5E4EDF73"
           }
         ],
         "/cdk-rds-read-replica/MysqlSource/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MysqlSource9A10350C",
-            "trace": [
-              "new DatabaseInstance (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-rds/lib/instance.js:382:26)",
-              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-rds/test/integ.read-replica.js:33:29)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-rds/test/integ.read-replica.js:57:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "MysqlSource9A10350C"
           }
         ],
         "/cdk-rds-read-replica/ReplicaParameterGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ReplicaParameterGroup4BE5EE70",
-            "trace": [
-              "ParameterGroup.bindToInstance (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-rds/lib/parameter-group.js:64:37)",
-              "new DatabaseInstanceNew (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-rds/lib/instance.js:216:114)",
-              "new DatabaseInstanceReadReplica (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-rds/lib/instance.js:459:9)",
-              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-rds/test/integ.read-replica.js:46:9)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-rds/test/integ.read-replica.js:57:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "ReplicaParameterGroup4BE5EE70"
           }
         ],
         "/cdk-rds-read-replica/MysqlReplica/SubnetGroup/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MysqlReplicaSubnetGroup79E1F72A",
-            "trace": [
-              "new SubnetGroup (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-rds/lib/subnet-group.js:22:29)",
-              "new DatabaseInstanceNew (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-rds/lib/instance.js:173:87)",
-              "new DatabaseInstanceReadReplica (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-rds/lib/instance.js:459:9)",
-              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-rds/test/integ.read-replica.js:46:9)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-rds/test/integ.read-replica.js:57:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "MysqlReplicaSubnetGroup79E1F72A"
           }
         ],
         "/cdk-rds-read-replica/MysqlReplica/SecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MysqlReplicaSecurityGroup169FAFAA",
-            "trace": [
-              "new SecurityGroup (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-ec2/lib/security-group.js:194:30)",
-              "new DatabaseInstanceNew (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-rds/lib/instance.js:179:57)",
-              "new DatabaseInstanceReadReplica (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-rds/lib/instance.js:459:9)",
-              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-rds/test/integ.read-replica.js:46:9)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-rds/test/integ.read-replica.js:57:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "MysqlReplicaSecurityGroup169FAFAA"
           }
         ],
         "/cdk-rds-read-replica/MysqlReplica/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MysqlReplica87D29F78",
-            "trace": [
-              "new DatabaseInstanceReadReplica (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-rds/lib/instance.js:471:26)",
-              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-rds/test/integ.read-replica.js:46:9)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-rds/test/integ.read-replica.js:57:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "MysqlReplica87D29F78"
           }
         ]
       },

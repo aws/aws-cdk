@@ -5,7 +5,8 @@
       "type": "cdk:tree",
       "properties": {
         "file": "tree.json"
-      }
+      },
+      "metadata": {}
     },
     "aws-cdk-dynamodb": {
       "type": "aws:cloudformation:stack",
@@ -18,55 +19,19 @@
         "/aws-cdk-dynamodb/Table/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "TableCD117FA1",
-            "trace": [
-              "new Table (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-dynamodb/lib/table.js:477:22)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-dynamodb/test/integ.autoscaling.lit.js:8:15)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "TableCD117FA1"
           }
         ],
         "/aws-cdk-dynamodb/Table/ReadScaling/Target/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "TableReadScalingTargetF96E9F76",
-            "trace": [
-              "new ScalableTarget (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-applicationautoscaling/lib/scalable-target.js:38:26)",
-              "new BaseScalableAttribute (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-applicationautoscaling/lib/base-scalable-attribute.js:31:23)",
-              "new ScalableTableAttribute (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-dynamodb/lib/scalable-table-attribute.js:10:9)",
-              "Table.autoScaleReadCapacity (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-dynamodb/lib/table.js:665:58)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-dynamodb/test/integ.autoscaling.lit.js:13:27)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "TableReadScalingTargetF96E9F76"
           }
         ],
         "/aws-cdk-dynamodb/Table/ReadScaling/Target/Tracking/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "TableReadScalingTargetTracking67DF0596",
-            "trace": [
-              "new TargetTrackingScalingPolicy (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-applicationautoscaling/lib/target-tracking-scaling-policy.js:26:26)",
-              "ScalableTarget.scaleToTrackMetric (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-applicationautoscaling/lib/scalable-target.js:97:16)",
-              "ScalableTableAttribute.doScaleToTrackMetric (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-applicationautoscaling/lib/base-scalable-attribute.js:59:21)",
-              "ScalableTableAttribute.scaleOnUtilization (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-dynamodb/lib/scalable-table-attribute.js:32:15)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-dynamodb/test/integ.autoscaling.lit.js:14:13)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "TableReadScalingTargetTracking67DF0596"
           }
         ]
       },

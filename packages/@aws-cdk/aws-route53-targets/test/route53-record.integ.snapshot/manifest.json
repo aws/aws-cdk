@@ -5,7 +5,8 @@
       "type": "cdk:tree",
       "properties": {
         "file": "tree.json"
-      }
+      },
+      "metadata": {}
     },
     "aws-cdk-r53-record-alias-target-integ": {
       "type": "aws:cloudformation:stack",
@@ -18,55 +19,19 @@
         "/aws-cdk-r53-record-alias-target-integ/HostedZone/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "HostedZoneDB99F866",
-            "trace": [
-              "new HostedZone (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53/lib/hosted-zone.js:26:26)",
-              "new PublicHostedZone (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53/lib/hosted-zone.js:137:9)",
-              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53-targets/test/integ.route53-record.js:10:22)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53-targets/test/integ.route53-record.js:25:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "HostedZoneDB99F866"
           }
         ],
         "/aws-cdk-r53-record-alias-target-integ/WWW/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "WWW9F8609DA",
-            "trace": [
-              "new RecordSet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53/lib/record-set.js:156:27)",
-              "new ARecord (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53/lib/record-set.js:188:9)",
-              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53-targets/test/integ.route53-record.js:13:21)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53-targets/test/integ.route53-record.js:25:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "WWW9F8609DA"
           }
         ],
         "/aws-cdk-r53-record-alias-target-integ/Alias/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Alias325C5727",
-            "trace": [
-              "new RecordSet (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53/lib/record-set.js:156:27)",
-              "new ARecord (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53/lib/record-set.js:188:9)",
-              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53-targets/test/integ.route53-record.js:18:9)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-route53-targets/test/integ.route53-record.js:25:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "Alias325C5727"
           }
         ]
       },

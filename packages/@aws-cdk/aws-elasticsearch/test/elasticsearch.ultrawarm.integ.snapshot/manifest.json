@@ -5,7 +5,8 @@
       "type": "cdk:tree",
       "properties": {
         "file": "tree.json"
-      }
+      },
+      "metadata": {}
     },
     "cdk-integ-elasticsearch-ultrawarm": {
       "type": "aws:cloudformation:stack",
@@ -18,18 +19,7 @@
         "/cdk-integ-elasticsearch-ultrawarm/Domain/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Domain66AC69E0",
-            "trace": [
-              "new Domain (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-elasticsearch/lib/domain.js:717:23)",
-              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-elasticsearch/test/integ.elasticsearch.ultrawarm.js:8:9)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-elasticsearch/test/integ.elasticsearch.ultrawarm.js:19:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "Domain66AC69E0"
           }
         ]
       },

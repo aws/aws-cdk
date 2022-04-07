@@ -5,7 +5,8 @@
       "type": "cdk:tree",
       "properties": {
         "file": "tree.json"
-      }
+      },
+      "metadata": {}
     },
     "aws-cdk-cloudwatch-alarms": {
       "type": "aws:cloudformation:stack",
@@ -18,49 +19,19 @@
         "/aws-cdk-cloudwatch-alarms/queue": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "queue",
-            "trace": [
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-cloudwatch/test/integ.alarm-and-dashboard.js:12:15)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "queue"
           }
         ],
         "/aws-cdk-cloudwatch-alarms/Alarm/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Alarm7103F465",
-            "trace": [
-              "new Alarm (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-cloudwatch/lib/alarm.js:103:23)",
-              "Metric.createAlarm (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-cloudwatch/lib/metric.js:187:16)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-cloudwatch/test/integ.alarm-and-dashboard.js:23:45)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "Alarm7103F465"
           }
         ],
         "/aws-cdk-cloudwatch-alarms/Dash/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DashCCD7F836",
-            "trace": [
-              "new Dashboard (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-cloudwatch/lib/dashboard.js:43:9)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-cloudwatch/test/integ.alarm-and-dashboard.js:28:19)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "DashCCD7F836"
           }
         ]
       },

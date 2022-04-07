@@ -5,7 +5,8 @@
       "type": "cdk:tree",
       "properties": {
         "file": "tree.json"
-      }
+      },
+      "metadata": {}
     },
     "aws-glue-security-configuration": {
       "type": "aws:cloudformation:stack",
@@ -18,82 +19,31 @@
         "/aws-glue-security-configuration/Key/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Key961B73FD",
-            "trace": [
-              "new Key (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-kms/lib/key.js:296:26)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-glue/test/integ.security-configuration.js:8:13)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "Key961B73FD"
           }
         ],
         "/aws-glue-security-configuration/KeyedSC/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "KeyedSC862A23F3",
-            "trace": [
-              "new SecurityConfiguration (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-glue/lib/security-configuration.js:105:26)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-glue/test/integ.security-configuration.js:10:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "KeyedSC862A23F3"
           }
         ],
         "/aws-glue-security-configuration/KeylessSC/Key/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "KeylessSCKey4D3DE803",
-            "trace": [
-              "new Key (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-kms/lib/key.js:296:26)",
-              "new SecurityConfiguration (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-glue/lib/security-configuration.js:77:60)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-glue/test/integ.security-configuration.js:26:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "KeylessSCKey4D3DE803"
           }
         ],
         "/aws-glue-security-configuration/KeylessSC/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "KeylessSC42E312EC",
-            "trace": [
-              "new SecurityConfiguration (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-glue/lib/security-configuration.js:105:26)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-glue/test/integ.security-configuration.js:26:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "KeylessSC42E312EC"
           }
         ],
         "/aws-glue-security-configuration/S3SC/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "S3SCE31C83BE",
-            "trace": [
-              "new SecurityConfiguration (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-glue/lib/security-configuration.js:105:26)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-glue/test/integ.security-configuration.js:39:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "S3SCE31C83BE"
           }
         ]
       },

@@ -5,7 +5,8 @@
       "type": "cdk:tree",
       "properties": {
         "file": "tree.json"
-      }
+      },
+      "metadata": {}
     },
     "IntegApiGatewayV2Iam": {
       "type": "aws:cloudformation:stack",
@@ -18,225 +19,79 @@
         "/IntegApiGatewayV2Iam/User/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "User00B015A1",
-            "trace": [
-              "new User (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/user.js:29:22)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigatewayv2-authorizers/test/http/integ.iam.js:19:14)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "User00B015A1"
           }
         ],
         "/IntegApiGatewayV2Iam/User/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "UserDefaultPolicy1F97781E",
-            "trace": [
-              "new Policy (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/policy.js:50:26)",
-              "User.addToPrincipalPolicy (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/user.js:167:34)",
-              "Function.addToPrincipal (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/grant.js:87:65)",
-              "HttpRoute.grantInvoke (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigatewayv2/lib/http/route.js:144:26)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigatewayv2-authorizers/test/http/integ.iam.js:30:10)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "UserDefaultPolicy1F97781E"
           }
         ],
         "/IntegApiGatewayV2Iam/UserAccess/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "UserAccessEC42ADF7",
-            "trace": [
-              "new AccessKey (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/access-key.js:30:27)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigatewayv2-authorizers/test/http/integ.iam.js:20:23)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "UserAccessEC42ADF7"
           }
         ],
         "/IntegApiGatewayV2Iam/HttpApi/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "HttpApiF5A9A8A7",
-            "trace": [
-              "new HttpApi (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigatewayv2/lib/http/api.js:102:26)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigatewayv2-authorizers/test/http/integ.iam.js:23:17)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "HttpApiF5A9A8A7"
           }
         ],
         "/IntegApiGatewayV2Iam/HttpApi/DefaultStage/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "HttpApiDefaultStage3EEB07D6",
-            "trace": [
-              "new HttpStage (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigatewayv2/lib/http/stage.js:41:9)",
-              "new HttpApi (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigatewayv2/lib/http/api.js:118:33)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigatewayv2-authorizers/test/http/integ.iam.js:23:17)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "HttpApiDefaultStage3EEB07D6"
           }
         ],
         "/IntegApiGatewayV2Iam/HttpApi/ANY--foo/examplecom/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "HttpApiANYfooexamplecom903F7A9F",
-            "trace": [
-              "new HttpIntegration (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigatewayv2/lib/http/integration.js:150:23)",
-              "ExampleComIntegration._bindToRoute (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigatewayv2/lib/http/integration.js:195:32)",
-              "new HttpRoute (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigatewayv2/lib/http/route.js:89:42)",
-              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigatewayv2/lib/http/api.js:191:20",
-              "Array.map (<anonymous>)",
-              "HttpApi.addRoutes (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigatewayv2/lib/http/api.js:188:24)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigatewayv2-authorizers/test/http/integ.iam.js:26:28)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "HttpApiANYfooexamplecom903F7A9F"
           }
         ],
         "/IntegApiGatewayV2Iam/HttpApi/ANY--foo/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "HttpApiANYfooD178456F",
-            "trace": [
-              "new HttpRoute (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigatewayv2/lib/http/route.js:118:23)",
-              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigatewayv2/lib/http/api.js:191:20",
-              "Array.map (<anonymous>)",
-              "HttpApi.addRoutes (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigatewayv2/lib/http/api.js:188:24)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigatewayv2-authorizers/test/http/integ.iam.js:26:28)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "HttpApiANYfooD178456F"
           }
         ],
         "/IntegApiGatewayV2Iam/HttpApi/ANY--books--{book}/examplecom/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "HttpApiANYbooksbookexamplecom5C333C98",
-            "trace": [
-              "new HttpIntegration (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigatewayv2/lib/http/integration.js:150:23)",
-              "ExampleComIntegration._bindToRoute (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigatewayv2/lib/http/integration.js:195:32)",
-              "new HttpRoute (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigatewayv2/lib/http/route.js:89:42)",
-              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigatewayv2/lib/http/api.js:191:20",
-              "Array.map (<anonymous>)",
-              "HttpApi.addRoutes (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigatewayv2/lib/http/api.js:188:24)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigatewayv2-authorizers/test/http/integ.iam.js:31:30)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "HttpApiANYbooksbookexamplecom5C333C98"
           }
         ],
         "/IntegApiGatewayV2Iam/HttpApi/ANY--books--{book}/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "HttpApiANYbooksbook2F78361C",
-            "trace": [
-              "new HttpRoute (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigatewayv2/lib/http/route.js:118:23)",
-              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigatewayv2/lib/http/api.js:191:20",
-              "Array.map (<anonymous>)",
-              "HttpApi.addRoutes (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigatewayv2/lib/http/api.js:188:24)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigatewayv2-authorizers/test/http/integ.iam.js:31:30)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "HttpApiANYbooksbook2F78361C"
           }
         ],
         "/IntegApiGatewayV2Iam/API": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "API",
-            "trace": [
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigatewayv2-authorizers/test/http/integ.iam.js:36:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "API"
           }
         ],
         "/IntegApiGatewayV2Iam/TESTACCESSKEYID": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "TESTACCESSKEYID",
-            "trace": [
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigatewayv2-authorizers/test/http/integ.iam.js:39:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "TESTACCESSKEYID"
           }
         ],
         "/IntegApiGatewayV2Iam/TESTSECRETACCESSKEY": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "TESTSECRETACCESSKEY",
-            "trace": [
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigatewayv2-authorizers/test/http/integ.iam.js:42:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "TESTSECRETACCESSKEY"
           }
         ],
         "/IntegApiGatewayV2Iam/TESTREGION": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "TESTREGION",
-            "trace": [
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigatewayv2-authorizers/test/http/integ.iam.js:45:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "TESTREGION"
           }
         ]
       },

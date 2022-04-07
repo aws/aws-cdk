@@ -5,7 +5,8 @@
       "type": "cdk:tree",
       "properties": {
         "file": "tree.json"
-      }
+      },
+      "metadata": {}
     },
     "detector-model-test-stack": {
       "type": "aws:cloudformation:stack",
@@ -18,53 +19,19 @@
         "/detector-model-test-stack/MyInput/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyInput08947B23",
-            "trace": [
-              "new Input (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iotevents/lib/input.js:34:26)",
-              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iotevents/test/integ.detector-model.js:8:23)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iotevents/test/integ.detector-model.js:49:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "MyInput08947B23"
           }
         ],
         "/detector-model-test-stack/MyDetectorModel/DetectorModelRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyDetectorModelDetectorModelRoleF2FB4D88",
-            "trace": [
-              "new Role (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/role.js:50:22)",
-              "new DetectorModel (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iotevents/lib/detector-model.js:39:73)",
-              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iotevents/test/integ.detector-model.js:39:9)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iotevents/test/integ.detector-model.js:49:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "MyDetectorModelDetectorModelRoleF2FB4D88"
           }
         ],
         "/detector-model-test-stack/MyDetectorModel/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyDetectorModel559C0B0E",
-            "trace": [
-              "new DetectorModel (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iotevents/lib/detector-model.js:42:26)",
-              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iotevents/test/integ.detector-model.js:39:9)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iotevents/test/integ.detector-model.js:49:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "MyDetectorModel559C0B0E"
           }
         ]
       },

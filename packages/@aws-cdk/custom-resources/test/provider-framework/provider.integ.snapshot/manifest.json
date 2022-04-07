@@ -5,7 +5,8 @@
       "type": "cdk:tree",
       "properties": {
         "file": "tree.json"
-      }
+      },
+      "metadata": {}
     },
     "integ-provider-framework": {
       "type": "aws:cloudformation:stack",
@@ -26,30 +27,7 @@
               "s3BucketParameter": "AssetParameters4395b44839a882f77d9467a415b5a45ab1eee138cf0d9ce078d6b366890040aaS3BucketE1837AB5",
               "s3KeyParameter": "AssetParameters4395b44839a882f77d9467a415b5a45ab1eee138cf0d9ce078d6b366890040aaS3VersionKey71C8FED0",
               "artifactHashParameter": "AssetParameters4395b44839a882f77d9467a415b5a45ab1eee138cf0d9ce078d6b366890040aaArtifactHash1429BA0D"
-            },
-            "trace": [
-              "ConstructNode.addMetadata (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/construct-compat.js:352:62)",
-              "LegacyStackSynthesizer.doAddFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:170:29)",
-              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:82:25)",
-              "TestStack.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack.js:411:33)",
-              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:59",
-              "withoutDeprecationWarnings (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:197:16)",
-              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:20)",
-              "new Asset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-s3-assets/lib/asset.js:39:44)",
-              "AssetCode.bind (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/code.js:206:26)",
-              "new Function (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function.js:100:33)",
-              "new S3FileProvider (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-file.js:37:29)",
-              "Function.getOrCreate (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-file.js:63:67)",
-              "new S3File (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-file.js:18:42)",
-              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integ.provider.js:14:23)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integ.provider.js:35:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            }
           },
           {
             "type": "aws:cdk:asset",
@@ -61,32 +39,7 @@
               "s3BucketParameter": "AssetParameters8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9S3Bucket40DFAF90",
               "s3KeyParameter": "AssetParameters8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9S3VersionKey36104212",
               "artifactHashParameter": "AssetParameters8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9ArtifactHash26B5BCAA"
-            },
-            "trace": [
-              "ConstructNode.addMetadata (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/construct-compat.js:352:62)",
-              "LegacyStackSynthesizer.doAddFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:170:29)",
-              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:82:25)",
-              "TestStack.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack.js:411:33)",
-              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:59",
-              "withoutDeprecationWarnings (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:197:16)",
-              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:20)",
-              "new Asset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-s3-assets/lib/asset.js:39:44)",
-              "AssetCode.bind (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/code.js:206:26)",
-              "new Function (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function.js:100:33)",
-              "Provider.createFunction (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/lib/provider-framework/provider.js:66:20)",
-              "new Provider (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/lib/provider-framework/provider.js:36:38)",
-              "new S3FileProvider (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-file.js:36:25)",
-              "Function.getOrCreate (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-file.js:63:67)",
-              "new S3File (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-file.js:18:42)",
-              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integ.provider.js:14:23)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integ.provider.js:35:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            }
           },
           {
             "type": "aws:cdk:asset",
@@ -98,982 +51,241 @@
               "s3BucketParameter": "AssetParameters4bafad8d010ba693e235b77d2c6decfc2ac79a8208d4477cbb36d31caf7189e8S3Bucket0DB889DF",
               "s3KeyParameter": "AssetParameters4bafad8d010ba693e235b77d2c6decfc2ac79a8208d4477cbb36d31caf7189e8S3VersionKey67FE4034",
               "artifactHashParameter": "AssetParameters4bafad8d010ba693e235b77d2c6decfc2ac79a8208d4477cbb36d31caf7189e8ArtifactHash6C17CFC2"
-            },
-            "trace": [
-              "ConstructNode.addMetadata (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/construct-compat.js:352:62)",
-              "LegacyStackSynthesizer.doAddFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:170:29)",
-              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:82:25)",
-              "TestStack.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack.js:411:33)",
-              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:59",
-              "withoutDeprecationWarnings (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:197:16)",
-              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:20)",
-              "new Asset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-s3-assets/lib/asset.js:39:44)",
-              "AssetCode.bind (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/code.js:206:26)",
-              "new Function (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function.js:100:33)",
-              "new S3AssertProvider (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:38:25)",
-              "Function.getOrCreate (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:70:79)",
-              "new S3Assert (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:24:44)",
-              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integ.provider.js:23:9)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integ.provider.js:35:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            }
           }
         ],
         "/integ-provider-framework/MyBucket/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyBucketF68F3FF0",
-            "trace": [
-              "new Bucket (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-s3/lib/bucket.js:590:26)",
-              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integ.provider.js:13:24)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integ.provider.js:35:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "MyBucketF68F3FF0"
           }
         ],
         "/integ-provider-framework/file1/Resource/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "file1F37B880C",
-            "trace": [
-              "new CustomResource (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/custom-resource.js:42:25)",
-              "new S3File (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-file.js:17:26)",
-              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integ.provider.js:14:23)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integ.provider.js:35:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "file1F37B880C"
           }
         ],
         "/integ-provider-framework/com.amazonaws.cdk.custom-resources.s3file-provider/s3file-on-event/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "comamazonawscdkcustomresourcess3fileproviders3fileoneventServiceRole999CEEB6",
-            "trace": [
-              "new Role (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/role.js:50:22)",
-              "new Function (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function.js:82:35)",
-              "new S3FileProvider (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-file.js:37:29)",
-              "Function.getOrCreate (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-file.js:63:67)",
-              "new S3File (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-file.js:18:42)",
-              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integ.provider.js:14:23)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integ.provider.js:35:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "comamazonawscdkcustomresourcess3fileproviders3fileoneventServiceRole999CEEB6"
           }
         ],
         "/integ-provider-framework/com.amazonaws.cdk.custom-resources.s3file-provider/s3file-on-event/ServiceRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "comamazonawscdkcustomresourcess3fileproviders3fileoneventServiceRoleDefaultPolicy10D24725",
-            "trace": [
-              "new Policy (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/policy.js:50:26)",
-              "Role.addToPrincipalPolicy (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/role.js:199:34)",
-              "new Function (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function.js:98:23)",
-              "new S3FileProvider (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-file.js:37:29)",
-              "Function.getOrCreate (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-file.js:63:67)",
-              "new S3File (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-file.js:18:42)",
-              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integ.provider.js:14:23)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integ.provider.js:35:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "comamazonawscdkcustomresourcess3fileproviders3fileoneventServiceRoleDefaultPolicy10D24725"
           }
         ],
         "/integ-provider-framework/com.amazonaws.cdk.custom-resources.s3file-provider/s3file-on-event/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "comamazonawscdkcustomresourcess3fileproviders3fileonevent48293DE8",
-            "trace": [
-              "new Function (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function.js:158:26)",
-              "new S3FileProvider (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-file.js:37:29)",
-              "Function.getOrCreate (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-file.js:63:67)",
-              "new S3File (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-file.js:18:42)",
-              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integ.provider.js:14:23)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integ.provider.js:35:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "comamazonawscdkcustomresourcess3fileproviders3fileonevent48293DE8"
           }
         ],
         "/integ-provider-framework/com.amazonaws.cdk.custom-resources.s3file-provider/s3file-provider/framework-onEvent/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "comamazonawscdkcustomresourcess3fileproviderframeworkonEventServiceRoleABFCDA11",
-            "trace": [
-              "new Role (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/role.js:50:22)",
-              "new Function (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function.js:82:35)",
-              "Provider.createFunction (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/lib/provider-framework/provider.js:66:20)",
-              "new Provider (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/lib/provider-framework/provider.js:36:38)",
-              "new S3FileProvider (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-file.js:36:25)",
-              "Function.getOrCreate (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-file.js:63:67)",
-              "new S3File (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-file.js:18:42)",
-              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integ.provider.js:14:23)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integ.provider.js:35:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "comamazonawscdkcustomresourcess3fileproviderframeworkonEventServiceRoleABFCDA11"
           }
         ],
         "/integ-provider-framework/com.amazonaws.cdk.custom-resources.s3file-provider/s3file-provider/framework-onEvent/ServiceRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "comamazonawscdkcustomresourcess3fileproviderframeworkonEventServiceRoleDefaultPolicyA61D075B",
-            "trace": [
-              "new Policy (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/policy.js:50:26)",
-              "Role.addToPrincipalPolicy (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/role.js:199:34)",
-              "Function.addToPrincipal (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/grant.js:87:65)",
-              "Function.addToPrincipalOrResource (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/grant.js:43:30)",
-              "Function.grantInvoke (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function-base.js:129:31)",
-              "Provider.createFunction (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/lib/provider-framework/provider.js:82:29)",
-              "new Provider (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/lib/provider-framework/provider.js:36:38)",
-              "new S3FileProvider (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-file.js:36:25)",
-              "Function.getOrCreate (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-file.js:63:67)",
-              "new S3File (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-file.js:18:42)",
-              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integ.provider.js:14:23)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integ.provider.js:35:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "comamazonawscdkcustomresourcess3fileproviderframeworkonEventServiceRoleDefaultPolicyA61D075B"
           }
         ],
         "/integ-provider-framework/com.amazonaws.cdk.custom-resources.s3file-provider/s3file-provider/framework-onEvent/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "comamazonawscdkcustomresourcess3fileproviderframeworkonEvent34F66A68",
-            "trace": [
-              "new Function (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function.js:158:26)",
-              "Provider.createFunction (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/lib/provider-framework/provider.js:66:20)",
-              "new Provider (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/lib/provider-framework/provider.js:36:38)",
-              "new S3FileProvider (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-file.js:36:25)",
-              "Function.getOrCreate (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-file.js:63:67)",
-              "new S3File (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-file.js:18:42)",
-              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integ.provider.js:14:23)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integ.provider.js:35:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "comamazonawscdkcustomresourcess3fileproviderframeworkonEvent34F66A68"
           }
         ],
         "/integ-provider-framework/AssetParameters/4395b44839a882f77d9467a415b5a45ab1eee138cf0d9ce078d6b366890040aa/S3Bucket": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssetParameters4395b44839a882f77d9467a415b5a45ab1eee138cf0d9ce078d6b366890040aaS3BucketE1837AB5",
-            "trace": [
-              "new FileAssetParameters (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/asset-parameters.js:12:36)",
-              "LegacyStackSynthesizer.doAddFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:157:22)",
-              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:82:25)",
-              "TestStack.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack.js:411:33)",
-              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:59",
-              "withoutDeprecationWarnings (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:197:16)",
-              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:20)",
-              "new Asset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-s3-assets/lib/asset.js:39:44)",
-              "AssetCode.bind (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/code.js:206:26)",
-              "new Function (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function.js:100:33)",
-              "new S3FileProvider (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-file.js:37:29)",
-              "Function.getOrCreate (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-file.js:63:67)",
-              "new S3File (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-file.js:18:42)",
-              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integ.provider.js:14:23)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integ.provider.js:35:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "AssetParameters4395b44839a882f77d9467a415b5a45ab1eee138cf0d9ce078d6b366890040aaS3BucketE1837AB5"
           }
         ],
         "/integ-provider-framework/AssetParameters/4395b44839a882f77d9467a415b5a45ab1eee138cf0d9ce078d6b366890040aa/S3VersionKey": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssetParameters4395b44839a882f77d9467a415b5a45ab1eee138cf0d9ce078d6b366890040aaS3VersionKey71C8FED0",
-            "trace": [
-              "new FileAssetParameters (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/asset-parameters.js:16:35)",
-              "LegacyStackSynthesizer.doAddFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:157:22)",
-              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:82:25)",
-              "TestStack.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack.js:411:33)",
-              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:59",
-              "withoutDeprecationWarnings (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:197:16)",
-              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:20)",
-              "new Asset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-s3-assets/lib/asset.js:39:44)",
-              "AssetCode.bind (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/code.js:206:26)",
-              "new Function (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function.js:100:33)",
-              "new S3FileProvider (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-file.js:37:29)",
-              "Function.getOrCreate (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-file.js:63:67)",
-              "new S3File (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-file.js:18:42)",
-              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integ.provider.js:14:23)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integ.provider.js:35:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "AssetParameters4395b44839a882f77d9467a415b5a45ab1eee138cf0d9ce078d6b366890040aaS3VersionKey71C8FED0"
           }
         ],
         "/integ-provider-framework/AssetParameters/4395b44839a882f77d9467a415b5a45ab1eee138cf0d9ce078d6b366890040aa/ArtifactHash": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssetParameters4395b44839a882f77d9467a415b5a45ab1eee138cf0d9ce078d6b366890040aaArtifactHash1429BA0D",
-            "trace": [
-              "new FileAssetParameters (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/asset-parameters.js:20:38)",
-              "LegacyStackSynthesizer.doAddFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:157:22)",
-              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:82:25)",
-              "TestStack.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack.js:411:33)",
-              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:59",
-              "withoutDeprecationWarnings (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:197:16)",
-              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:20)",
-              "new Asset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-s3-assets/lib/asset.js:39:44)",
-              "AssetCode.bind (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/code.js:206:26)",
-              "new Function (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function.js:100:33)",
-              "new S3FileProvider (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-file.js:37:29)",
-              "Function.getOrCreate (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-file.js:63:67)",
-              "new S3File (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-file.js:18:42)",
-              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integ.provider.js:14:23)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integ.provider.js:35:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "AssetParameters4395b44839a882f77d9467a415b5a45ab1eee138cf0d9ce078d6b366890040aaArtifactHash1429BA0D"
           }
         ],
         "/integ-provider-framework/AssetParameters/8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9/S3Bucket": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssetParameters8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9S3Bucket40DFAF90",
-            "trace": [
-              "new FileAssetParameters (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/asset-parameters.js:12:36)",
-              "LegacyStackSynthesizer.doAddFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:157:22)",
-              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:82:25)",
-              "TestStack.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack.js:411:33)",
-              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:59",
-              "withoutDeprecationWarnings (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:197:16)",
-              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:20)",
-              "new Asset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-s3-assets/lib/asset.js:39:44)",
-              "AssetCode.bind (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/code.js:206:26)",
-              "new Function (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function.js:100:33)",
-              "Provider.createFunction (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/lib/provider-framework/provider.js:66:20)",
-              "new Provider (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/lib/provider-framework/provider.js:36:38)",
-              "new S3FileProvider (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-file.js:36:25)",
-              "Function.getOrCreate (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-file.js:63:67)",
-              "new S3File (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-file.js:18:42)",
-              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integ.provider.js:14:23)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integ.provider.js:35:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "AssetParameters8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9S3Bucket40DFAF90"
           }
         ],
         "/integ-provider-framework/AssetParameters/8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9/S3VersionKey": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssetParameters8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9S3VersionKey36104212",
-            "trace": [
-              "new FileAssetParameters (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/asset-parameters.js:16:35)",
-              "LegacyStackSynthesizer.doAddFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:157:22)",
-              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:82:25)",
-              "TestStack.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack.js:411:33)",
-              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:59",
-              "withoutDeprecationWarnings (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:197:16)",
-              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:20)",
-              "new Asset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-s3-assets/lib/asset.js:39:44)",
-              "AssetCode.bind (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/code.js:206:26)",
-              "new Function (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function.js:100:33)",
-              "Provider.createFunction (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/lib/provider-framework/provider.js:66:20)",
-              "new Provider (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/lib/provider-framework/provider.js:36:38)",
-              "new S3FileProvider (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-file.js:36:25)",
-              "Function.getOrCreate (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-file.js:63:67)",
-              "new S3File (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-file.js:18:42)",
-              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integ.provider.js:14:23)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integ.provider.js:35:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "AssetParameters8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9S3VersionKey36104212"
           }
         ],
         "/integ-provider-framework/AssetParameters/8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9/ArtifactHash": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssetParameters8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9ArtifactHash26B5BCAA",
-            "trace": [
-              "new FileAssetParameters (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/asset-parameters.js:20:38)",
-              "LegacyStackSynthesizer.doAddFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:157:22)",
-              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:82:25)",
-              "TestStack.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack.js:411:33)",
-              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:59",
-              "withoutDeprecationWarnings (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:197:16)",
-              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:20)",
-              "new Asset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-s3-assets/lib/asset.js:39:44)",
-              "AssetCode.bind (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/code.js:206:26)",
-              "new Function (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function.js:100:33)",
-              "Provider.createFunction (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/lib/provider-framework/provider.js:66:20)",
-              "new Provider (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/lib/provider-framework/provider.js:36:38)",
-              "new S3FileProvider (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-file.js:36:25)",
-              "Function.getOrCreate (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-file.js:63:67)",
-              "new S3File (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-file.js:18:42)",
-              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integ.provider.js:14:23)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integ.provider.js:35:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "AssetParameters8dd02cc4ac473ca5b08800e92edaa31a1a7db4005928021d029c5363584f11b9ArtifactHash26B5BCAA"
           }
         ],
         "/integ-provider-framework/AssetParameters/4bafad8d010ba693e235b77d2c6decfc2ac79a8208d4477cbb36d31caf7189e8/S3Bucket": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssetParameters4bafad8d010ba693e235b77d2c6decfc2ac79a8208d4477cbb36d31caf7189e8S3Bucket0DB889DF",
-            "trace": [
-              "new FileAssetParameters (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/asset-parameters.js:12:36)",
-              "LegacyStackSynthesizer.doAddFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:157:22)",
-              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:82:25)",
-              "TestStack.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack.js:411:33)",
-              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:59",
-              "withoutDeprecationWarnings (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:197:16)",
-              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:20)",
-              "new Asset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-s3-assets/lib/asset.js:39:44)",
-              "AssetCode.bind (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/code.js:206:26)",
-              "new Function (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function.js:100:33)",
-              "new S3AssertProvider (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:38:25)",
-              "Function.getOrCreate (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:70:79)",
-              "new S3Assert (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:24:44)",
-              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integ.provider.js:23:9)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integ.provider.js:35:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "AssetParameters4bafad8d010ba693e235b77d2c6decfc2ac79a8208d4477cbb36d31caf7189e8S3Bucket0DB889DF"
           }
         ],
         "/integ-provider-framework/AssetParameters/4bafad8d010ba693e235b77d2c6decfc2ac79a8208d4477cbb36d31caf7189e8/S3VersionKey": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssetParameters4bafad8d010ba693e235b77d2c6decfc2ac79a8208d4477cbb36d31caf7189e8S3VersionKey67FE4034",
-            "trace": [
-              "new FileAssetParameters (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/asset-parameters.js:16:35)",
-              "LegacyStackSynthesizer.doAddFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:157:22)",
-              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:82:25)",
-              "TestStack.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack.js:411:33)",
-              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:59",
-              "withoutDeprecationWarnings (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:197:16)",
-              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:20)",
-              "new Asset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-s3-assets/lib/asset.js:39:44)",
-              "AssetCode.bind (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/code.js:206:26)",
-              "new Function (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function.js:100:33)",
-              "new S3AssertProvider (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:38:25)",
-              "Function.getOrCreate (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:70:79)",
-              "new S3Assert (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:24:44)",
-              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integ.provider.js:23:9)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integ.provider.js:35:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "AssetParameters4bafad8d010ba693e235b77d2c6decfc2ac79a8208d4477cbb36d31caf7189e8S3VersionKey67FE4034"
           }
         ],
         "/integ-provider-framework/AssetParameters/4bafad8d010ba693e235b77d2c6decfc2ac79a8208d4477cbb36d31caf7189e8/ArtifactHash": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssetParameters4bafad8d010ba693e235b77d2c6decfc2ac79a8208d4477cbb36d31caf7189e8ArtifactHash6C17CFC2",
-            "trace": [
-              "new FileAssetParameters (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/asset-parameters.js:20:38)",
-              "LegacyStackSynthesizer.doAddFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:157:22)",
-              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:82:25)",
-              "TestStack.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack.js:411:33)",
-              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:59",
-              "withoutDeprecationWarnings (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:197:16)",
-              "LegacyStackSynthesizer.addFileAsset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:20)",
-              "new Asset (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-s3-assets/lib/asset.js:39:44)",
-              "AssetCode.bind (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/code.js:206:26)",
-              "new Function (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function.js:100:33)",
-              "new S3AssertProvider (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:38:25)",
-              "Function.getOrCreate (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:70:79)",
-              "new S3Assert (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:24:44)",
-              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integ.provider.js:23:9)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integ.provider.js:35:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "AssetParameters4bafad8d010ba693e235b77d2c6decfc2ac79a8208d4477cbb36d31caf7189e8ArtifactHash6C17CFC2"
           }
         ],
         "/integ-provider-framework/file2/Resource/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "file23283EA00",
-            "trace": [
-              "new CustomResource (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/custom-resource.js:42:25)",
-              "new S3File (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-file.js:17:26)",
-              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integ.provider.js:19:23)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integ.provider.js:35:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "file23283EA00"
           }
         ],
         "/integ-provider-framework/assert-file/Resource/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "assertfileD2D1F53A",
-            "trace": [
-              "new CustomResource (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/custom-resource.js:42:25)",
-              "new S3Assert (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:23:9)",
-              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integ.provider.js:23:9)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integ.provider.js:35:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "assertfileD2D1F53A"
           }
         ],
         "/integ-provider-framework/com.amazonaws.cdk.custom-resources.s3assert-provider/s3assert-on-event/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "comamazonawscdkcustomresourcess3assertproviders3assertoneventServiceRole012C0033",
-            "trace": [
-              "new Role (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/role.js:50:22)",
-              "new Function (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function.js:82:35)",
-              "new S3AssertProvider (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:38:25)",
-              "Function.getOrCreate (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:70:79)",
-              "new S3Assert (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:24:44)",
-              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integ.provider.js:23:9)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integ.provider.js:35:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "comamazonawscdkcustomresourcess3assertproviders3assertoneventServiceRole012C0033"
           }
         ],
         "/integ-provider-framework/com.amazonaws.cdk.custom-resources.s3assert-provider/s3assert-on-event/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "comamazonawscdkcustomresourcess3assertproviders3assertoneventF1EEF783",
-            "trace": [
-              "new Function (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function.js:158:26)",
-              "new S3AssertProvider (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:38:25)",
-              "Function.getOrCreate (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:70:79)",
-              "new S3Assert (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:24:44)",
-              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integ.provider.js:23:9)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integ.provider.js:35:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "comamazonawscdkcustomresourcess3assertproviders3assertoneventF1EEF783"
           }
         ],
         "/integ-provider-framework/com.amazonaws.cdk.custom-resources.s3assert-provider/s3assert-is-complete/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "comamazonawscdkcustomresourcess3assertproviders3assertiscompleteServiceRoleACAA755A",
-            "trace": [
-              "new Role (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/role.js:50:22)",
-              "new Function (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function.js:82:35)",
-              "new S3AssertProvider (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:43:28)",
-              "Function.getOrCreate (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:70:79)",
-              "new S3Assert (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:24:44)",
-              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integ.provider.js:23:9)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integ.provider.js:35:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "comamazonawscdkcustomresourcess3assertproviders3assertiscompleteServiceRoleACAA755A"
           }
         ],
         "/integ-provider-framework/com.amazonaws.cdk.custom-resources.s3assert-provider/s3assert-is-complete/ServiceRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "comamazonawscdkcustomresourcess3assertproviders3assertiscompleteServiceRoleDefaultPolicyE8D09091",
-            "trace": [
-              "new Policy (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/policy.js:50:26)",
-              "Role.addToPrincipalPolicy (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/role.js:199:34)",
-              "new Function (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function.js:98:23)",
-              "new S3AssertProvider (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:43:28)",
-              "Function.getOrCreate (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:70:79)",
-              "new S3Assert (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:24:44)",
-              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integ.provider.js:23:9)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integ.provider.js:35:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "comamazonawscdkcustomresourcess3assertproviders3assertiscompleteServiceRoleDefaultPolicyE8D09091"
           }
         ],
         "/integ-provider-framework/com.amazonaws.cdk.custom-resources.s3assert-provider/s3assert-is-complete/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "comamazonawscdkcustomresourcess3assertproviders3assertiscomplete6AC08EF9",
-            "trace": [
-              "new Function (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function.js:158:26)",
-              "new S3AssertProvider (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:43:28)",
-              "Function.getOrCreate (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:70:79)",
-              "new S3Assert (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:24:44)",
-              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integ.provider.js:23:9)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integ.provider.js:35:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "comamazonawscdkcustomresourcess3assertproviders3assertiscomplete6AC08EF9"
           }
         ],
         "/integ-provider-framework/com.amazonaws.cdk.custom-resources.s3assert-provider/s3assert-provider/framework-onEvent/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "comamazonawscdkcustomresourcess3assertproviderframeworkonEventServiceRole34070F2C",
-            "trace": [
-              "new Role (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/role.js:50:22)",
-              "new Function (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function.js:82:35)",
-              "Provider.createFunction (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/lib/provider-framework/provider.js:66:20)",
-              "new Provider (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/lib/provider-framework/provider.js:36:38)",
-              "new S3AssertProvider (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:58:25)",
-              "Function.getOrCreate (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:70:79)",
-              "new S3Assert (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:24:44)",
-              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integ.provider.js:23:9)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integ.provider.js:35:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "comamazonawscdkcustomresourcess3assertproviderframeworkonEventServiceRole34070F2C"
           }
         ],
         "/integ-provider-framework/com.amazonaws.cdk.custom-resources.s3assert-provider/s3assert-provider/framework-onEvent/ServiceRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "comamazonawscdkcustomresourcess3assertproviderframeworkonEventServiceRoleDefaultPolicyDD1903FC",
-            "trace": [
-              "new Policy (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/policy.js:50:26)",
-              "Role.addToPrincipalPolicy (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/role.js:199:34)",
-              "Function.addToPrincipal (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/grant.js:87:65)",
-              "Function.addToPrincipalOrResource (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/grant.js:43:30)",
-              "Function.grantInvoke (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function-base.js:129:31)",
-              "Provider.createFunction (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/lib/provider-framework/provider.js:82:29)",
-              "new Provider (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/lib/provider-framework/provider.js:36:38)",
-              "new S3AssertProvider (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:58:25)",
-              "Function.getOrCreate (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:70:79)",
-              "new S3Assert (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:24:44)",
-              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integ.provider.js:23:9)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integ.provider.js:35:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "comamazonawscdkcustomresourcess3assertproviderframeworkonEventServiceRoleDefaultPolicyDD1903FC"
           }
         ],
         "/integ-provider-framework/com.amazonaws.cdk.custom-resources.s3assert-provider/s3assert-provider/framework-onEvent/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "comamazonawscdkcustomresourcess3assertproviderframeworkonEvent0FE4BD4B",
-            "trace": [
-              "new Function (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function.js:158:26)",
-              "Provider.createFunction (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/lib/provider-framework/provider.js:66:20)",
-              "new Provider (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/lib/provider-framework/provider.js:36:38)",
-              "new S3AssertProvider (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:58:25)",
-              "Function.getOrCreate (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:70:79)",
-              "new S3Assert (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:24:44)",
-              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integ.provider.js:23:9)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integ.provider.js:35:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "comamazonawscdkcustomresourcess3assertproviderframeworkonEvent0FE4BD4B"
           }
         ],
         "/integ-provider-framework/com.amazonaws.cdk.custom-resources.s3assert-provider/s3assert-provider/framework-isComplete/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "comamazonawscdkcustomresourcess3assertproviderframeworkisCompleteServiceRole2C8C7983",
-            "trace": [
-              "new Role (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/role.js:50:22)",
-              "new Function (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function.js:82:35)",
-              "Provider.createFunction (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/lib/provider-framework/provider.js:66:20)",
-              "new Provider (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/lib/provider-framework/provider.js:38:45)",
-              "new S3AssertProvider (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:58:25)",
-              "Function.getOrCreate (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:70:79)",
-              "new S3Assert (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:24:44)",
-              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integ.provider.js:23:9)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integ.provider.js:35:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "comamazonawscdkcustomresourcess3assertproviderframeworkisCompleteServiceRole2C8C7983"
           }
         ],
         "/integ-provider-framework/com.amazonaws.cdk.custom-resources.s3assert-provider/s3assert-provider/framework-isComplete/ServiceRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "comamazonawscdkcustomresourcess3assertproviderframeworkisCompleteServiceRoleDefaultPolicy38CF2774",
-            "trace": [
-              "new Policy (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/policy.js:50:26)",
-              "Role.addToPrincipalPolicy (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/role.js:199:34)",
-              "Function.addToPrincipal (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/grant.js:87:65)",
-              "Function.addToPrincipalOrResource (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/grant.js:43:30)",
-              "Function.grantInvoke (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function-base.js:129:31)",
-              "Provider.createFunction (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/lib/provider-framework/provider.js:82:29)",
-              "new Provider (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/lib/provider-framework/provider.js:38:45)",
-              "new S3AssertProvider (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:58:25)",
-              "Function.getOrCreate (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:70:79)",
-              "new S3Assert (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:24:44)",
-              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integ.provider.js:23:9)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integ.provider.js:35:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "comamazonawscdkcustomresourcess3assertproviderframeworkisCompleteServiceRoleDefaultPolicy38CF2774"
           }
         ],
         "/integ-provider-framework/com.amazonaws.cdk.custom-resources.s3assert-provider/s3assert-provider/framework-isComplete/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "comamazonawscdkcustomresourcess3assertproviderframeworkisComplete63829575",
-            "trace": [
-              "new Function (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function.js:158:26)",
-              "Provider.createFunction (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/lib/provider-framework/provider.js:66:20)",
-              "new Provider (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/lib/provider-framework/provider.js:38:45)",
-              "new S3AssertProvider (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:58:25)",
-              "Function.getOrCreate (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:70:79)",
-              "new S3Assert (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:24:44)",
-              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integ.provider.js:23:9)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integ.provider.js:35:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "comamazonawscdkcustomresourcess3assertproviderframeworkisComplete63829575"
           }
         ],
         "/integ-provider-framework/com.amazonaws.cdk.custom-resources.s3assert-provider/s3assert-provider/framework-onTimeout/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "comamazonawscdkcustomresourcess3assertproviderframeworkonTimeoutServiceRole15F6DFA2",
-            "trace": [
-              "new Role (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/role.js:50:22)",
-              "new Function (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function.js:82:35)",
-              "Provider.createFunction (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/lib/provider-framework/provider.js:66:20)",
-              "new Provider (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/lib/provider-framework/provider.js:39:42)",
-              "new S3AssertProvider (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:58:25)",
-              "Function.getOrCreate (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:70:79)",
-              "new S3Assert (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:24:44)",
-              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integ.provider.js:23:9)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integ.provider.js:35:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "comamazonawscdkcustomresourcess3assertproviderframeworkonTimeoutServiceRole15F6DFA2"
           }
         ],
         "/integ-provider-framework/com.amazonaws.cdk.custom-resources.s3assert-provider/s3assert-provider/framework-onTimeout/ServiceRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "comamazonawscdkcustomresourcess3assertproviderframeworkonTimeoutServiceRoleDefaultPolicyC7408011",
-            "trace": [
-              "new Policy (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/policy.js:50:26)",
-              "Role.addToPrincipalPolicy (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/role.js:199:34)",
-              "Function.addToPrincipal (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/grant.js:87:65)",
-              "Function.addToPrincipalOrResource (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/grant.js:43:30)",
-              "Function.grantInvoke (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function-base.js:129:31)",
-              "Provider.createFunction (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/lib/provider-framework/provider.js:82:29)",
-              "new Provider (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/lib/provider-framework/provider.js:39:42)",
-              "new S3AssertProvider (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:58:25)",
-              "Function.getOrCreate (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:70:79)",
-              "new S3Assert (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:24:44)",
-              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integ.provider.js:23:9)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integ.provider.js:35:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "comamazonawscdkcustomresourcess3assertproviderframeworkonTimeoutServiceRoleDefaultPolicyC7408011"
           }
         ],
         "/integ-provider-framework/com.amazonaws.cdk.custom-resources.s3assert-provider/s3assert-provider/framework-onTimeout/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "comamazonawscdkcustomresourcess3assertproviderframeworkonTimeoutA1E1E5DC",
-            "trace": [
-              "new Function (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function.js:158:26)",
-              "Provider.createFunction (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/lib/provider-framework/provider.js:66:20)",
-              "new Provider (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/lib/provider-framework/provider.js:39:42)",
-              "new S3AssertProvider (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:58:25)",
-              "Function.getOrCreate (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:70:79)",
-              "new S3Assert (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:24:44)",
-              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integ.provider.js:23:9)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integ.provider.js:35:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "comamazonawscdkcustomresourcess3assertproviderframeworkonTimeoutA1E1E5DC"
           }
         ],
         "/integ-provider-framework/com.amazonaws.cdk.custom-resources.s3assert-provider/s3assert-provider/waiter-state-machine/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "comamazonawscdkcustomresourcess3assertproviderwaiterstatemachineRole39E8529F",
-            "trace": [
-              "new Role (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/role.js:50:22)",
-              "new WaiterStateMachine (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/lib/provider-framework/waiter-state-machine.js:19:22)",
-              "new Provider (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/lib/provider-framework/provider.js:41:40)",
-              "new S3AssertProvider (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:58:25)",
-              "Function.getOrCreate (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:70:79)",
-              "new S3Assert (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:24:44)",
-              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integ.provider.js:23:9)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integ.provider.js:35:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "comamazonawscdkcustomresourcess3assertproviderwaiterstatemachineRole39E8529F"
           }
         ],
         "/integ-provider-framework/com.amazonaws.cdk.custom-resources.s3assert-provider/s3assert-provider/waiter-state-machine/Role/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "comamazonawscdkcustomresourcess3assertproviderwaiterstatemachineRoleDefaultPolicy9882AB39",
-            "trace": [
-              "new Policy (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/policy.js:50:26)",
-              "Role.addToPrincipalPolicy (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/role.js:199:34)",
-              "Function.addToPrincipal (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/grant.js:87:65)",
-              "Function.addToPrincipalOrResource (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/grant.js:43:30)",
-              "Function.grantInvoke (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function-base.js:129:31)",
-              "new WaiterStateMachine (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/lib/provider-framework/waiter-state-machine.js:22:33)",
-              "new Provider (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/lib/provider-framework/provider.js:41:40)",
-              "new S3AssertProvider (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:58:25)",
-              "Function.getOrCreate (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:70:79)",
-              "new S3Assert (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:24:44)",
-              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integ.provider.js:23:9)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integ.provider.js:35:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "comamazonawscdkcustomresourcess3assertproviderwaiterstatemachineRoleDefaultPolicy9882AB39"
           }
         ],
         "/integ-provider-framework/com.amazonaws.cdk.custom-resources.s3assert-provider/s3assert-provider/waiter-state-machine/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "comamazonawscdkcustomresourcess3assertproviderwaiterstatemachineAC25148E",
-            "trace": [
-              "new WaiterStateMachine (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/lib/provider-framework/waiter-state-machine.js:49:26)",
-              "new Provider (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/lib/provider-framework/provider.js:41:40)",
-              "new S3AssertProvider (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:58:25)",
-              "Function.getOrCreate (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:70:79)",
-              "new S3Assert (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:24:44)",
-              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integ.provider.js:23:9)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integ.provider.js:35:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "comamazonawscdkcustomresourcess3assertproviderwaiterstatemachineAC25148E"
           }
         ],
         "/integ-provider-framework/file1-url": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "file1url",
-            "trace": [
-              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integ.provider.js:30:9)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integ.provider.js:35:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "file1url"
           }
         ],
         "/integ-provider-framework/file2-url": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "file2url",
-            "trace": [
-              "new TestStack (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integ.provider.js:31:9)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integ.provider.js:35:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "file2url"
           }
         ],
         "/integ-provider-framework/Service-principalMap": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ServiceprincipalMap",
-            "trace": [
-              "Object.deployTimeLookup (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/region-lookup.js:35:19)",
-              "TestStack.regionalFact (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stack.js:560:32)",
-              "ServicePrincipalToken.resolve (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/principals.js:642:22)",
-              "RememberingTokenResolver.resolveToken (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/resolvable.js:48:30)",
-              "RememberingTokenResolver.resolveToken (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/resolve.js:197:22)",
-              "resolve (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/resolve.js:130:55)",
-              "Object.resolve [as mapToken] (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/resolve.js:57:48)",
-              "TokenizedStringFragments.mapTokens (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/string-fragments.js:62:43)",
-              "RememberingTokenResolver.resolveString (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/resolvable.js:69:26)",
-              "RememberingTokenResolver.resolveString (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/resolve.js:200:27)",
-              "resolve (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/resolve.js:97:54)",
-              "Object.resolve (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/resolve.js:57:48)",
-              "resolve (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/resolve.js:145:51)",
-              "Object.resolve (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/resolve.js:57:48)",
-              "resolve (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/resolve.js:145:51)",
-              "Object.resolve (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/resolve.js:57:48)",
-              "/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/resolve.js:121:51",
-              "Array.map (<anonymous>)",
-              "resolve (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/resolve.js:121:14)",
-              "Object.resolve (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/resolve.js:57:48)",
-              "resolve (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/resolve.js:145:51)",
-              "Object.resolve (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/resolve.js:57:48)",
-              "RememberingTokenResolver.resolveToken (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/resolvable.js:50:32)",
-              "RememberingTokenResolver.resolveToken (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/resolve.js:197:22)",
-              "resolve (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/resolve.js:130:55)",
-              "Object.resolve (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/resolve.js:57:48)",
-              "resolve (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/resolve.js:145:51)",
-              "Object.resolve (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/resolve.js:57:48)",
-              "RememberingTokenResolver.resolveToken (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/resolvable.js:50:32)",
-              "RememberingTokenResolver.resolveToken (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/resolve.js:197:22)",
-              "resolve (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/resolve.js:130:55)",
-              "Object.resolve (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/resolve.js:57:48)",
-              "resolve (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/resolve.js:145:51)",
-              "Object.resolve (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/resolve.js:57:48)",
-              "RememberingTokenResolver.resolveToken (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/resolvable.js:50:32)",
-              "RememberingTokenResolver.resolveToken (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/resolve.js:197:22)",
-              "resolve (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/resolve.js:130:55)",
-              "Object.resolve (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/resolve.js:57:48)",
-              "resolve (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/resolve.js:145:51)",
-              "Object.resolve (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/resolve.js:57:48)",
-              "resolve (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/resolve.js:145:51)",
-              "Object.findTokens (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/resolve.js:183:5)",
-              "findAllReferences (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/refs.js:97:38)",
-              "Object.resolveReferences (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/refs.js:20:19)",
-              "Object.prepareApp (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/prepare-app.js:30:12)",
-              "Object.synthesize (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/private/synthesis.js:21:19)",
-              "App.synth (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/core/lib/stage.js:89:41)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/custom-resources/test/provider-framework/integ.provider.js:36:5)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "ServiceprincipalMap"
           }
         ]
       },

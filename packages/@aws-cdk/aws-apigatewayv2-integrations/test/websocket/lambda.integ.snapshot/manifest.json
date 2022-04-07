@@ -5,7 +5,8 @@
       "type": "cdk:tree",
       "properties": {
         "file": "tree.json"
-      }
+      },
+      "metadata": {}
     },
     "WebSocketApiInteg": {
       "type": "aws:cloudformation:stack",
@@ -18,413 +19,139 @@
         "/WebSocketApiInteg/ConnectHandler/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ConnectHandlerServiceRole7E4A9B1F",
-            "trace": [
-              "new Role (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/role.js:50:22)",
-              "new Function (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function.js:82:35)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigatewayv2-integrations/test/websocket/integ.lambda.js:16:24)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "ConnectHandlerServiceRole7E4A9B1F"
           }
         ],
         "/WebSocketApiInteg/ConnectHandler/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ConnectHandler2FFD52D8",
-            "trace": [
-              "new Function (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function.js:154:26)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigatewayv2-integrations/test/websocket/integ.lambda.js:16:24)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "ConnectHandler2FFD52D8"
           }
         ],
         "/WebSocketApiInteg/DisconnectHandler/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DisconnectHandlerServiceRoleE54F14F9",
-            "trace": [
-              "new Role (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/role.js:50:22)",
-              "new Function (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function.js:82:35)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigatewayv2-integrations/test/websocket/integ.lambda.js:21:26)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "DisconnectHandlerServiceRoleE54F14F9"
           }
         ],
         "/WebSocketApiInteg/DisconnectHandler/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DisconnectHandlerCB7ED6F7",
-            "trace": [
-              "new Function (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function.js:154:26)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigatewayv2-integrations/test/websocket/integ.lambda.js:21:26)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "DisconnectHandlerCB7ED6F7"
           }
         ],
         "/WebSocketApiInteg/DefaultHandler/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DefaultHandlerServiceRoleDF00569C",
-            "trace": [
-              "new Role (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/role.js:50:22)",
-              "new Function (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function.js:82:35)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigatewayv2-integrations/test/websocket/integ.lambda.js:26:24)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "DefaultHandlerServiceRoleDF00569C"
           }
         ],
         "/WebSocketApiInteg/DefaultHandler/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DefaultHandler604DF7AC",
-            "trace": [
-              "new Function (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function.js:154:26)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigatewayv2-integrations/test/websocket/integ.lambda.js:26:24)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "DefaultHandler604DF7AC"
           }
         ],
         "/WebSocketApiInteg/MessageHandler/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MessageHandlerServiceRoleDF05266A",
-            "trace": [
-              "new Role (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-iam/lib/role.js:50:22)",
-              "new Function (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function.js:82:35)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigatewayv2-integrations/test/websocket/integ.lambda.js:31:24)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "MessageHandlerServiceRoleDF05266A"
           }
         ],
         "/WebSocketApiInteg/MessageHandler/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MessageHandlerDFBBCD6B",
-            "trace": [
-              "new Function (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function.js:154:26)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigatewayv2-integrations/test/websocket/integ.lambda.js:31:24)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "MessageHandlerDFBBCD6B"
           }
         ],
         "/WebSocketApiInteg/mywsapi/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "mywsapi32E6CE11",
-            "trace": [
-              "new WebSocketApi (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigatewayv2/lib/websocket/api.js:46:26)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigatewayv2-integrations/test/websocket/integ.lambda.js:36:22)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "mywsapi32E6CE11"
           }
         ],
         "/WebSocketApiInteg/mywsapi/$connect-Route/ConnectIntegration-Permission": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "mywsapiconnectRouteConnectIntegrationPermission719B6E63",
-            "trace": [
-              "Function.addPermission (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function-base.js:38:9)",
-              "WebSocketLambdaIntegration.bind (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigatewayv2-integrations/lib/websocket/lambda.js:25:22)",
-              "WebSocketLambdaIntegration._bindToRoute (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigatewayv2/lib/websocket/integration.js:63:33)",
-              "new WebSocketRoute (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigatewayv2/lib/websocket/route.js:25:42)",
-              "WebSocketApi.addRoute (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigatewayv2/lib/websocket/api.js:91:16)",
-              "new WebSocketApi (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigatewayv2/lib/websocket/api.js:56:18)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigatewayv2-integrations/test/websocket/integ.lambda.js:36:22)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "mywsapiconnectRouteConnectIntegrationPermission719B6E63"
           }
         ],
         "/WebSocketApiInteg/mywsapi/$connect-Route/ConnectIntegration/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "mywsapiconnectRouteConnectIntegrationE101DB9B",
-            "trace": [
-              "new WebSocketIntegration (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigatewayv2/lib/websocket/integration.js:31:23)",
-              "WebSocketLambdaIntegration._bindToRoute (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigatewayv2/lib/websocket/integration.js:64:32)",
-              "new WebSocketRoute (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigatewayv2/lib/websocket/route.js:25:42)",
-              "WebSocketApi.addRoute (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigatewayv2/lib/websocket/api.js:91:16)",
-              "new WebSocketApi (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigatewayv2/lib/websocket/api.js:56:18)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigatewayv2-integrations/test/websocket/integ.lambda.js:36:22)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "mywsapiconnectRouteConnectIntegrationE101DB9B"
           }
         ],
         "/WebSocketApiInteg/mywsapi/$connect-Route/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "mywsapiconnectRoute45A0ED6A",
-            "trace": [
-              "new WebSocketRoute (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigatewayv2/lib/websocket/route.js:34:23)",
-              "WebSocketApi.addRoute (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigatewayv2/lib/websocket/api.js:91:16)",
-              "new WebSocketApi (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigatewayv2/lib/websocket/api.js:56:18)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigatewayv2-integrations/test/websocket/integ.lambda.js:36:22)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "mywsapiconnectRoute45A0ED6A"
           }
         ],
         "/WebSocketApiInteg/mywsapi/$disconnect-Route/DisconnectIntegration-Permission": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "mywsapidisconnectRouteDisconnectIntegrationPermissionA8197C41",
-            "trace": [
-              "Function.addPermission (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function-base.js:38:9)",
-              "WebSocketLambdaIntegration.bind (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigatewayv2-integrations/lib/websocket/lambda.js:25:22)",
-              "WebSocketLambdaIntegration._bindToRoute (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigatewayv2/lib/websocket/integration.js:63:33)",
-              "new WebSocketRoute (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigatewayv2/lib/websocket/route.js:25:42)",
-              "WebSocketApi.addRoute (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigatewayv2/lib/websocket/api.js:91:16)",
-              "new WebSocketApi (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigatewayv2/lib/websocket/api.js:59:18)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigatewayv2-integrations/test/websocket/integ.lambda.js:36:22)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "mywsapidisconnectRouteDisconnectIntegrationPermissionA8197C41"
           }
         ],
         "/WebSocketApiInteg/mywsapi/$disconnect-Route/DisconnectIntegration/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "mywsapidisconnectRouteDisconnectIntegrationF927D904",
-            "trace": [
-              "new WebSocketIntegration (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigatewayv2/lib/websocket/integration.js:31:23)",
-              "WebSocketLambdaIntegration._bindToRoute (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigatewayv2/lib/websocket/integration.js:64:32)",
-              "new WebSocketRoute (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigatewayv2/lib/websocket/route.js:25:42)",
-              "WebSocketApi.addRoute (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigatewayv2/lib/websocket/api.js:91:16)",
-              "new WebSocketApi (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigatewayv2/lib/websocket/api.js:59:18)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigatewayv2-integrations/test/websocket/integ.lambda.js:36:22)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "mywsapidisconnectRouteDisconnectIntegrationF927D904"
           }
         ],
         "/WebSocketApiInteg/mywsapi/$disconnect-Route/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "mywsapidisconnectRoute421A8CB9",
-            "trace": [
-              "new WebSocketRoute (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigatewayv2/lib/websocket/route.js:34:23)",
-              "WebSocketApi.addRoute (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigatewayv2/lib/websocket/api.js:91:16)",
-              "new WebSocketApi (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigatewayv2/lib/websocket/api.js:59:18)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigatewayv2-integrations/test/websocket/integ.lambda.js:36:22)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "mywsapidisconnectRoute421A8CB9"
           }
         ],
         "/WebSocketApiInteg/mywsapi/$default-Route/DefaultIntegration-Permission": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "mywsapidefaultRouteDefaultIntegrationPermission3B7F9CA1",
-            "trace": [
-              "Function.addPermission (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function-base.js:38:9)",
-              "WebSocketLambdaIntegration.bind (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigatewayv2-integrations/lib/websocket/lambda.js:25:22)",
-              "WebSocketLambdaIntegration._bindToRoute (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigatewayv2/lib/websocket/integration.js:63:33)",
-              "new WebSocketRoute (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigatewayv2/lib/websocket/route.js:25:42)",
-              "WebSocketApi.addRoute (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigatewayv2/lib/websocket/api.js:91:16)",
-              "new WebSocketApi (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigatewayv2/lib/websocket/api.js:62:18)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigatewayv2-integrations/test/websocket/integ.lambda.js:36:22)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "mywsapidefaultRouteDefaultIntegrationPermission3B7F9CA1"
           }
         ],
         "/WebSocketApiInteg/mywsapi/$default-Route/DefaultIntegration/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "mywsapidefaultRouteDefaultIntegrationFFCB3BA9",
-            "trace": [
-              "new WebSocketIntegration (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigatewayv2/lib/websocket/integration.js:31:23)",
-              "WebSocketLambdaIntegration._bindToRoute (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigatewayv2/lib/websocket/integration.js:64:32)",
-              "new WebSocketRoute (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigatewayv2/lib/websocket/route.js:25:42)",
-              "WebSocketApi.addRoute (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigatewayv2/lib/websocket/api.js:91:16)",
-              "new WebSocketApi (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigatewayv2/lib/websocket/api.js:62:18)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigatewayv2-integrations/test/websocket/integ.lambda.js:36:22)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "mywsapidefaultRouteDefaultIntegrationFFCB3BA9"
           }
         ],
         "/WebSocketApiInteg/mywsapi/$default-Route/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "mywsapidefaultRouteE9382DF8",
-            "trace": [
-              "new WebSocketRoute (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigatewayv2/lib/websocket/route.js:34:23)",
-              "WebSocketApi.addRoute (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigatewayv2/lib/websocket/api.js:91:16)",
-              "new WebSocketApi (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigatewayv2/lib/websocket/api.js:62:18)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigatewayv2-integrations/test/websocket/integ.lambda.js:36:22)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "mywsapidefaultRouteE9382DF8"
           }
         ],
         "/WebSocketApiInteg/mywsapi/sendmessage-Route/SendMessageIntegration-Permission": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "mywsapisendmessageRouteSendMessageIntegrationPermission92C9841E",
-            "trace": [
-              "Function.addPermission (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-lambda/lib/function-base.js:38:9)",
-              "WebSocketLambdaIntegration.bind (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigatewayv2-integrations/lib/websocket/lambda.js:25:22)",
-              "WebSocketLambdaIntegration._bindToRoute (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigatewayv2/lib/websocket/integration.js:63:33)",
-              "new WebSocketRoute (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigatewayv2/lib/websocket/route.js:25:42)",
-              "WebSocketApi.addRoute (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigatewayv2/lib/websocket/api.js:91:16)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigatewayv2-integrations/test/websocket/integ.lambda.js:46:14)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "mywsapisendmessageRouteSendMessageIntegrationPermission92C9841E"
           }
         ],
         "/WebSocketApiInteg/mywsapi/sendmessage-Route/SendMessageIntegration/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "mywsapisendmessageRouteSendMessageIntegrationD29E12F9",
-            "trace": [
-              "new WebSocketIntegration (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigatewayv2/lib/websocket/integration.js:31:23)",
-              "WebSocketLambdaIntegration._bindToRoute (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigatewayv2/lib/websocket/integration.js:64:32)",
-              "new WebSocketRoute (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigatewayv2/lib/websocket/route.js:25:42)",
-              "WebSocketApi.addRoute (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigatewayv2/lib/websocket/api.js:91:16)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigatewayv2-integrations/test/websocket/integ.lambda.js:46:14)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "mywsapisendmessageRouteSendMessageIntegrationD29E12F9"
           }
         ],
         "/WebSocketApiInteg/mywsapi/sendmessage-Route/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "mywsapisendmessageRouteAE873328",
-            "trace": [
-              "new WebSocketRoute (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigatewayv2/lib/websocket/route.js:34:23)",
-              "WebSocketApi.addRoute (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigatewayv2/lib/websocket/api.js:91:16)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigatewayv2-integrations/test/websocket/integ.lambda.js:46:14)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "mywsapisendmessageRouteAE873328"
           }
         ],
         "/WebSocketApiInteg/mystage/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "mystage114C35EC",
-            "trace": [
-              "new WebSocketStage (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigatewayv2/lib/websocket/stage.js:24:9)",
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigatewayv2-integrations/test/websocket/integ.lambda.js:41:15)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "mystage114C35EC"
           }
         ],
         "/WebSocketApiInteg/ApiEndpoint": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ApiEndpoint",
-            "trace": [
-              "Object.<anonymous> (/home/hallcor/work/aws-cdk/integ-snapshot-updates/packages/@aws-cdk/aws-apigatewayv2-integrations/test/websocket/integ.lambda.js:47:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1103:14)",
-              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1155:10)",
-              "Module.load (node:internal/modules/cjs/loader:981:32)",
-              "Function.Module._load (node:internal/modules/cjs/loader:822:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
-              "node:internal/main/run_main_module:17:47"
-            ]
+            "data": "ApiEndpoint"
           }
         ]
       },

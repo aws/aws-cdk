@@ -201,6 +201,11 @@ export abstract class IntegRunner {
     if (fs.existsSync(cdkOutPath)) {
       fs.removeSync(cdkOutPath);
     }
+    if (fs.existsSync(this.snapshotDir)) {
+      this.removeAssetsCacheFromSnapshot();
+      const assembly = AssemblyManifestReader.fromPath(this.snapshotDir);
+      assembly.cleanManifest();
+    }
   }
 
   /**
@@ -218,6 +223,22 @@ export abstract class IntegRunner {
         } else {
           fs.unlinkSync(fileName);
         }
+      }
+    });
+  }
+
+  /**
+   * Remove the asset cache (.cache/) files from the snapshot.
+   * These are a cache of the asset zips, but we are fine with
+   * re-zipping on deploy
+   */
+  protected removeAssetsCacheFromSnapshot(): void {
+    const files = fs.readdirSync(this.snapshotDir);
+    files.forEach(file => {
+      const fileName = path.join(this.snapshotDir, file);
+      if (fs.lstatSync(fileName).isDirectory() && file === '.cache') {
+        fs.emptyDirSync(fileName);
+        fs.rmdirSync(fileName);
       }
     });
   }
@@ -244,6 +265,7 @@ export abstract class IntegRunner {
     if (this.disableUpdateWorkflow) {
       this.removeAssetsFromSnapshot();
     }
+    this.cleanup();
   }
 
   /**

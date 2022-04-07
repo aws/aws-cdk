@@ -1,198 +1,198 @@
 {
-  "Resources": {
-    "tsdecoratorhandlerServiceRole61E9E52C": {
-      "Type": "AWS::IAM::Role",
-      "Properties": {
-        "AssumeRolePolicyDocument": {
-          "Statement": [
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Principal": {
-                "Service": "lambda.amazonaws.com"
-              }
-            }
-          ],
-          "Version": "2012-10-17"
-        },
-        "ManagedPolicyArns": [
-          {
-            "Fn::Join": [
-              "",
-              [
-                "arn:",
-                {
-                  "Ref": "AWS::Partition"
-                },
-                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-              ]
-            ]
-          }
-        ]
+ "Resources": {
+  "tsdecoratorhandlerServiceRole61E9E52C": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
       }
+     ],
+     "Version": "2012-10-17"
     },
-    "tsdecoratorhandlerC8E2F076": {
-      "Type": "AWS::Lambda::Function",
-      "Properties": {
-        "Code": {
-          "S3Bucket": {
-            "Ref": "AssetParameterseabc31406197e0565e63a3a4f3748f4e91a1e85d7956f7b359e56e6a3429c8dbS3BucketC4E7C2DF"
-          },
-          "S3Key": {
-            "Fn::Join": [
-              "",
-              [
-                {
-                  "Fn::Select": [
-                    0,
-                    {
-                      "Fn::Split": [
-                        "||",
-                        {
-                          "Ref": "AssetParameterseabc31406197e0565e63a3a4f3748f4e91a1e85d7956f7b359e56e6a3429c8dbS3VersionKey76453C6B"
-                        }
-                      ]
-                    }
-                  ]
-                },
-                {
-                  "Fn::Select": [
-                    1,
-                    {
-                      "Fn::Split": [
-                        "||",
-                        {
-                          "Ref": "AssetParameterseabc31406197e0565e63a3a4f3748f4e91a1e85d7956f7b359e56e6a3429c8dbS3VersionKey76453C6B"
-                        }
-                      ]
-                    }
-                  ]
-                }
-              ]
-            ]
-          }
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
         },
-        "Role": {
-          "Fn::GetAtt": [
-            "tsdecoratorhandlerServiceRole61E9E52C",
-            "Arn"
-          ]
-        },
-        "Environment": {
-          "Variables": {
-            "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1"
-          }
-        },
-        "Handler": "index.handler",
-        "Runtime": "nodejs14.x"
-      },
-      "DependsOn": [
-        "tsdecoratorhandlerServiceRole61E9E52C"
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
       ]
-    },
-    "tsdecoratorhandlertsconfigServiceRoleC4AE481E": {
-      "Type": "AWS::IAM::Role",
-      "Properties": {
-        "AssumeRolePolicyDocument": {
-          "Statement": [
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Principal": {
-                "Service": "lambda.amazonaws.com"
-              }
-            }
-          ],
-          "Version": "2012-10-17"
-        },
-        "ManagedPolicyArns": [
-          {
-            "Fn::Join": [
-              "",
-              [
-                "arn:",
-                {
-                  "Ref": "AWS::Partition"
-                },
-                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-              ]
-            ]
-          }
-        ]
-      }
-    },
-    "tsdecoratorhandlertsconfig68EC191E": {
-      "Type": "AWS::Lambda::Function",
-      "Properties": {
-        "Code": {
-          "S3Bucket": {
-            "Ref": "AssetParameterseabc31406197e0565e63a3a4f3748f4e91a1e85d7956f7b359e56e6a3429c8dbS3BucketC4E7C2DF"
-          },
-          "S3Key": {
-            "Fn::Join": [
-              "",
-              [
-                {
-                  "Fn::Select": [
-                    0,
-                    {
-                      "Fn::Split": [
-                        "||",
-                        {
-                          "Ref": "AssetParameterseabc31406197e0565e63a3a4f3748f4e91a1e85d7956f7b359e56e6a3429c8dbS3VersionKey76453C6B"
-                        }
-                      ]
-                    }
-                  ]
-                },
-                {
-                  "Fn::Select": [
-                    1,
-                    {
-                      "Fn::Split": [
-                        "||",
-                        {
-                          "Ref": "AssetParameterseabc31406197e0565e63a3a4f3748f4e91a1e85d7956f7b359e56e6a3429c8dbS3VersionKey76453C6B"
-                        }
-                      ]
-                    }
-                  ]
-                }
-              ]
-            ]
-          }
-        },
-        "Role": {
-          "Fn::GetAtt": [
-            "tsdecoratorhandlertsconfigServiceRoleC4AE481E",
-            "Arn"
-          ]
-        },
-        "Environment": {
-          "Variables": {
-            "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1"
-          }
-        },
-        "Handler": "index.handler",
-        "Runtime": "nodejs14.x"
-      },
-      "DependsOn": [
-        "tsdecoratorhandlertsconfigServiceRoleC4AE481E"
-      ]
-    }
+     }
+    ]
+   }
   },
-  "Parameters": {
-    "AssetParameterseabc31406197e0565e63a3a4f3748f4e91a1e85d7956f7b359e56e6a3429c8dbS3BucketC4E7C2DF": {
-      "Type": "String",
-      "Description": "S3 bucket for asset \"eabc31406197e0565e63a3a4f3748f4e91a1e85d7956f7b359e56e6a3429c8db\""
+  "tsdecoratorhandlerC8E2F076": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Ref": "AssetParameterseabc31406197e0565e63a3a4f3748f4e91a1e85d7956f7b359e56e6a3429c8dbS3BucketC4E7C2DF"
+     },
+     "S3Key": {
+      "Fn::Join": [
+       "",
+       [
+        {
+         "Fn::Select": [
+          0,
+          {
+           "Fn::Split": [
+            "||",
+            {
+             "Ref": "AssetParameterseabc31406197e0565e63a3a4f3748f4e91a1e85d7956f7b359e56e6a3429c8dbS3VersionKey76453C6B"
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "Fn::Select": [
+          1,
+          {
+           "Fn::Split": [
+            "||",
+            {
+             "Ref": "AssetParameterseabc31406197e0565e63a3a4f3748f4e91a1e85d7956f7b359e56e6a3429c8dbS3VersionKey76453C6B"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      ]
+     }
     },
-    "AssetParameterseabc31406197e0565e63a3a4f3748f4e91a1e85d7956f7b359e56e6a3429c8dbS3VersionKey76453C6B": {
-      "Type": "String",
-      "Description": "S3 key for asset version \"eabc31406197e0565e63a3a4f3748f4e91a1e85d7956f7b359e56e6a3429c8db\""
+    "Role": {
+     "Fn::GetAtt": [
+      "tsdecoratorhandlerServiceRole61E9E52C",
+      "Arn"
+     ]
     },
-    "AssetParameterseabc31406197e0565e63a3a4f3748f4e91a1e85d7956f7b359e56e6a3429c8dbArtifactHashA173AEE4": {
-      "Type": "String",
-      "Description": "Artifact hash for asset \"eabc31406197e0565e63a3a4f3748f4e91a1e85d7956f7b359e56e6a3429c8db\""
-    }
+    "Environment": {
+     "Variables": {
+      "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1"
+     }
+    },
+    "Handler": "index.handler",
+    "Runtime": "nodejs14.x"
+   },
+   "DependsOn": [
+    "tsdecoratorhandlerServiceRole61E9E52C"
+   ]
+  },
+  "tsdecoratorhandlertsconfigServiceRoleC4AE481E": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "tsdecoratorhandlertsconfig68EC191E": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Ref": "AssetParameterseabc31406197e0565e63a3a4f3748f4e91a1e85d7956f7b359e56e6a3429c8dbS3BucketC4E7C2DF"
+     },
+     "S3Key": {
+      "Fn::Join": [
+       "",
+       [
+        {
+         "Fn::Select": [
+          0,
+          {
+           "Fn::Split": [
+            "||",
+            {
+             "Ref": "AssetParameterseabc31406197e0565e63a3a4f3748f4e91a1e85d7956f7b359e56e6a3429c8dbS3VersionKey76453C6B"
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "Fn::Select": [
+          1,
+          {
+           "Fn::Split": [
+            "||",
+            {
+             "Ref": "AssetParameterseabc31406197e0565e63a3a4f3748f4e91a1e85d7956f7b359e56e6a3429c8dbS3VersionKey76453C6B"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      ]
+     }
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "tsdecoratorhandlertsconfigServiceRoleC4AE481E",
+      "Arn"
+     ]
+    },
+    "Environment": {
+     "Variables": {
+      "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1"
+     }
+    },
+    "Handler": "index.handler",
+    "Runtime": "nodejs14.x"
+   },
+   "DependsOn": [
+    "tsdecoratorhandlertsconfigServiceRoleC4AE481E"
+   ]
   }
+ },
+ "Parameters": {
+  "AssetParameterseabc31406197e0565e63a3a4f3748f4e91a1e85d7956f7b359e56e6a3429c8dbS3BucketC4E7C2DF": {
+   "Type": "String",
+   "Description": "S3 bucket for asset \"eabc31406197e0565e63a3a4f3748f4e91a1e85d7956f7b359e56e6a3429c8db\""
+  },
+  "AssetParameterseabc31406197e0565e63a3a4f3748f4e91a1e85d7956f7b359e56e6a3429c8dbS3VersionKey76453C6B": {
+   "Type": "String",
+   "Description": "S3 key for asset version \"eabc31406197e0565e63a3a4f3748f4e91a1e85d7956f7b359e56e6a3429c8db\""
+  },
+  "AssetParameterseabc31406197e0565e63a3a4f3748f4e91a1e85d7956f7b359e56e6a3429c8dbArtifactHashA173AEE4": {
+   "Type": "String",
+   "Description": "Artifact hash for asset \"eabc31406197e0565e63a3a4f3748f4e91a1e85d7956f7b359e56e6a3429c8db\""
+  }
+ }
 }

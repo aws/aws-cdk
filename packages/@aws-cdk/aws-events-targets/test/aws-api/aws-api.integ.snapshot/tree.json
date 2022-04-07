@@ -269,7 +269,7 @@
                   "aws:cdk:cloudformation:props": {
                     "code": {
                       "s3Bucket": {
-                        "Ref": "AssetParameters6e29dae9ab5b8a6c0aa8f922991cad784ebd048388ec6587d4832f307ef92f94S3BucketEBC7D1F4"
+                        "Ref": "AssetParameters542b391ec2b6ad0d542935d260039e6e534c46b76e45b0a0d564fb1a378d7742S3Bucket45BA9D5A"
                       },
                       "s3Key": {
                         "Fn::Join": [
@@ -282,7 +282,7 @@
                                   "Fn::Split": [
                                     "||",
                                     {
-                                      "Ref": "AssetParameters6e29dae9ab5b8a6c0aa8f922991cad784ebd048388ec6587d4832f307ef92f94S3VersionKeyDC9DCE00"
+                                      "Ref": "AssetParameters542b391ec2b6ad0d542935d260039e6e534c46b76e45b0a0d564fb1a378d7742S3VersionKey7B97424D"
                                     }
                                   ]
                                 }
@@ -295,7 +295,7 @@
                                   "Fn::Split": [
                                     "||",
                                     {
-                                      "Ref": "AssetParameters6e29dae9ab5b8a6c0aa8f922991cad784ebd048388ec6587d4832f307ef92f94S3VersionKeyDC9DCE00"
+                                      "Ref": "AssetParameters542b391ec2b6ad0d542935d260039e6e534c46b76e45b0a0d564fb1a378d7742S3VersionKey7B97424D"
                                     }
                                   ]
                                 }
@@ -330,13 +330,13 @@
             "id": "AssetParameters",
             "path": "aws-cdk-aws-api-target-integ/AssetParameters",
             "children": {
-              "6e29dae9ab5b8a6c0aa8f922991cad784ebd048388ec6587d4832f307ef92f94": {
-                "id": "6e29dae9ab5b8a6c0aa8f922991cad784ebd048388ec6587d4832f307ef92f94",
-                "path": "aws-cdk-aws-api-target-integ/AssetParameters/6e29dae9ab5b8a6c0aa8f922991cad784ebd048388ec6587d4832f307ef92f94",
+              "542b391ec2b6ad0d542935d260039e6e534c46b76e45b0a0d564fb1a378d7742": {
+                "id": "542b391ec2b6ad0d542935d260039e6e534c46b76e45b0a0d564fb1a378d7742",
+                "path": "aws-cdk-aws-api-target-integ/AssetParameters/542b391ec2b6ad0d542935d260039e6e534c46b76e45b0a0d564fb1a378d7742",
                 "children": {
                   "S3Bucket": {
                     "id": "S3Bucket",
-                    "path": "aws-cdk-aws-api-target-integ/AssetParameters/6e29dae9ab5b8a6c0aa8f922991cad784ebd048388ec6587d4832f307ef92f94/S3Bucket",
+                    "path": "aws-cdk-aws-api-target-integ/AssetParameters/542b391ec2b6ad0d542935d260039e6e534c46b76e45b0a0d564fb1a378d7742/S3Bucket",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "0.0.0"
@@ -344,7 +344,7 @@
                   },
                   "S3VersionKey": {
                     "id": "S3VersionKey",
-                    "path": "aws-cdk-aws-api-target-integ/AssetParameters/6e29dae9ab5b8a6c0aa8f922991cad784ebd048388ec6587d4832f307ef92f94/S3VersionKey",
+                    "path": "aws-cdk-aws-api-target-integ/AssetParameters/542b391ec2b6ad0d542935d260039e6e534c46b76e45b0a0d564fb1a378d7742/S3VersionKey",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "0.0.0"
@@ -352,7 +352,7 @@
                   },
                   "ArtifactHash": {
                     "id": "ArtifactHash",
-                    "path": "aws-cdk-aws-api-target-integ/AssetParameters/6e29dae9ab5b8a6c0aa8f922991cad784ebd048388ec6587d4832f307ef92f94/ArtifactHash",
+                    "path": "aws-cdk-aws-api-target-integ/AssetParameters/542b391ec2b6ad0d542935d260039e6e534c46b76e45b0a0d564fb1a378d7742/ArtifactHash",
                     "constructInfo": {
                       "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "0.0.0"
