@@ -56,7 +56,7 @@ export interface IRepository extends IResource {
    *    ACCOUNT.dkr.ecr.REGION.amazonaws.com/REPOSITORY[:TAG]
    *    ACCOUNT.dkr.ecr.REGION.amazonaws.com/REPOSITORY[@DIGEST]
    *
-   * @param tagOrDigest Image digest to use (tools usually default to the image with the "latest" tag if omitted)
+   * @param tagOrDigest Image tag or digest to use (tools usually default to the image with the "latest" tag if omitted)
    */
   repositoryUriForTagOrDigest(tagOrDigest?: string): string;
 
@@ -172,6 +172,14 @@ export abstract class RepositoryBase extends Resource implements IRepository {
     return this.repositoryUriWithSuffix(digestSuffix);
   }
 
+  /**
+   * Returns the URL of the repository. Can be used in `docker push/pull`.
+   *
+   *    ACCOUNT.dkr.ecr.REGION.amazonaws.com/REPOSITORY[:TAG]
+   *    ACCOUNT.dkr.ecr.REGION.amazonaws.com/REPOSITORY[@DIGEST]
+   *
+   * @param tagOrDigest Optional image tag or digest
+   */
   public repositoryUriForTagOrDigest(tagOrDigest?: string): string {
     if (tagOrDigest?.startsWith('sha256:')) {
       return this.repositoryUriForDigest(tagOrDigest);
