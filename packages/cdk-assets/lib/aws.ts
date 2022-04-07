@@ -51,16 +51,17 @@ export class DefaultAwsClient implements IAws {
     process.env.AWS_SDK_LOAD_CONFIG = '1';
     process.env.AWS_STS_REGIONAL_ENDPOINTS = 'regional';
     process.env.AWS_NODEJS_CONNECTION_REUSE_ENABLED = '1';
+    let providers=new Array();
 
-    if (profile) {
-      process.env.AWS_PROFILE = profile;
-
-    }
 
     // We need to set the environment before we load this library for the first time.
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     this.AWS = require('aws-sdk');
-    let providers=new Array(new this.AWS.SharedIniFileCredentials(), new this.AWS.EnvironmentCredentials('AWS'));
+    if (profile) {
+      process.env.AWS_PROFILE = profile;
+      providers.push(new this.AWS.SharedIniFileCredentials());
+    }
+    providers.push(new this.AWS.EnvironmentCredentials('AWS'));
     // @ts-ignore
     this.credentialsChain = new this.AWS.CredentialProviderChain(providers);
   }
@@ -120,11 +121,12 @@ export class DefaultAwsClient implements IAws {
       credentials = await this.assumeRole(options.region, options.assumeRoleArn, options.assumeRoleExternalId);
     }
 
-    return {
+    let result = {
       region: options.region,
       customUserAgent: 'cdk-assets',
       credentials,
     };
+    return result;
   }
 
   /**
