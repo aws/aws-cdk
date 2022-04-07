@@ -3,6 +3,7 @@ import * as jsonschema from 'jsonschema';
 import * as semver from 'semver';
 import * as assets from './assets';
 import * as assembly from './cloud-assembly';
+import * as integ from './integ-tests';
 
 /* eslint-disable @typescript-eslint/no-var-requires */
 /* eslint-disable @typescript-eslint/no-require-imports */
@@ -20,6 +21,8 @@ const ASSEMBLY_SCHEMA = require('../schema/cloud-assembly.schema.json');
  * Version is shared for both manifests
  */
 const SCHEMA_VERSION = require('../schema/cloud-assembly.version.json').version;
+
+const INTEG_SCHEMA = require('../schema/integ.schema.json');
 
 /**
  * Options for the loadManifest operation
@@ -87,6 +90,25 @@ export class Manifest {
    */
   public static loadAssetManifest(filePath: string): assets.AssetManifest {
     return this.loadManifest(filePath, ASSETS_SCHEMA);
+  }
+
+  /**
+   * Validates and saves the integ manifest to file.
+   *
+   * @param manifest - manifest.
+   * @param filePath - output file path.
+   */
+  public static saveIntegManifest(manifest: integ.IntegManifest, filePath: string) {
+    Manifest.saveManifest(manifest, filePath, INTEG_SCHEMA);
+  }
+
+  /**
+   * Load and validates the integ manifest from file.
+   *
+   * @param filePath - path to the manifest file.
+   */
+  public static loadIntegManifest(filePath: string): integ.IntegManifest {
+    return this.loadManifest(filePath, INTEG_SCHEMA);
   }
 
   /**
