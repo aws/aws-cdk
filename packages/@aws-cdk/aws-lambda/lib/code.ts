@@ -452,7 +452,7 @@ export interface EcrImageCodeProps {
   readonly workingDirectory?: string;
 
   /**
-   * The image tag to use when pulling the image from ECR.
+   * The image tag or digest to use when pulling the image from ECR.
    * @default 'latest'
    */
   readonly tag?: string;
@@ -473,7 +473,7 @@ export class EcrImageCode extends Code {
 
     return {
       image: {
-        imageUri: this.repository.repositoryUriForTag(this.props?.tag ?? 'latest'),
+        imageUri: this.repository.repositoryUriForTagOrDigest(this.props?.tag ?? 'latest'),
         cmd: this.props.cmd,
         entrypoint: this.props.entrypoint,
         workingDirectory: this.props.workingDirectory,

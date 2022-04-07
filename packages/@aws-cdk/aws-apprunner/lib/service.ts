@@ -217,7 +217,7 @@ export interface EcrProps {
    */
   readonly repository: ecr.IRepository;
   /**
-   * Image tag.
+   * Image tag or digest.
    * @default - 'latest'
    */
   readonly tag?: string;
@@ -313,7 +313,7 @@ export class EcrSource extends Source {
     return {
       imageRepository: {
         imageConfiguration: this.props.imageConfiguration,
-        imageIdentifier: this.props.repository.repositoryUriForTag(this.props.tag || 'latest'),
+        imageIdentifier: this.props.repository.repositoryUriForTagOrDigest(this.props.tag || 'latest'),
         imageRepositoryType: ImageRepositoryType.ECR,
       },
       ecrRepository: this.props.repository,
