@@ -1,5 +1,146 @@
 {
   "Resources": {
+    "SourceBucketDDD2130A": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "Tags": [
+          {
+            "Key": "aws-cdk:auto-delete-objects",
+            "Value": "true"
+          }
+        ]
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "SourceBucketPolicy703DFBF9": {
+      "Type": "AWS::S3::BucketPolicy",
+      "Properties": {
+        "Bucket": {
+          "Ref": "SourceBucketDDD2130A"
+        },
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "s3:DeleteObject*",
+                "s3:GetBucket*",
+                "s3:List*"
+              ],
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::GetAtt": [
+                    "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
+                    "Arn"
+                  ]
+                }
+              },
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "SourceBucketDDD2130A",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "SourceBucketDDD2130A",
+                          "Arn"
+                        ]
+                      },
+                      "/*"
+                    ]
+                  ]
+                }
+              ]
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      }
+    },
+    "SourceBucketAutoDeleteObjectsCustomResourceC68FC040": {
+      "Type": "Custom::S3AutoDeleteObjects",
+      "Properties": {
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F",
+            "Arn"
+          ]
+        },
+        "BucketName": {
+          "Ref": "SourceBucketDDD2130A"
+        }
+      },
+      "DependsOn": [
+        "SourceBucketPolicy703DFBF9"
+      ],
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ]
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+          }
+        ]
+      }
+    },
+    "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+          },
+          "S3Key": "be270bbdebe0851c887569796e3997437cca54ce86893ed94788500448e92824.zip"
+        },
+        "Timeout": 900,
+        "MemorySize": 128,
+        "Handler": "__entrypoint__.handler",
+        "Role": {
+          "Fn::GetAtt": [
+            "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
+            "Arn"
+          ]
+        },
+        "Runtime": "nodejs12.x",
+        "Description": {
+          "Fn::Join": [
+            "",
+            [
+              "Lambda function for auto-deleting objects in ",
+              {
+                "Ref": "SourceBucketDDD2130A"
+              },
+              " S3 bucket."
+            ]
+          ]
+        }
+      },
+      "DependsOn": [
+        "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
+      ]
+    },
     "TestPipelineArtifactsBucketEncryptionKey13258842": {
       "Type": "AWS::KMS::Key",
       "Properties": {
@@ -17,7 +158,11 @@
                       {
                         "Ref": "AWS::Partition"
                       },
-                      ":iam::12345678:root"
+                      ":iam::",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":root"
                     ]
                   ]
                 }
@@ -39,7 +184,18 @@
                       {
                         "Ref": "AWS::Partition"
                       },
-                      ":iam::12345678:role/cdk-hnb659fds-deploy-role-12345678-test-region"
+                      ":iam::",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":role/cdk-hnb659fds-deploy-role-",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      "-",
+                      {
+                        "Ref": "AWS::Region"
+                      }
                     ]
                   ]
                 }
@@ -153,7 +309,18 @@
                       {
                         "Ref": "AWS::Partition"
                       },
-                      ":iam::12345678:role/cdk-hnb659fds-deploy-role-12345678-test-region"
+                      ":iam::",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":role/cdk-hnb659fds-deploy-role-",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      "-",
+                      {
+                        "Ref": "AWS::Region"
+                      }
                     ]
                   ]
                 }
@@ -309,6 +476,12 @@
                 },
                 {
                   "Fn::GetAtt": [
+                    "TestPipelineSourceS3CodePipelineActionRoleEF21D3A0",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::GetAtt": [
                     "TestPipelineUnattachedStageSingleStageManualApprovalCodePipelineActionRoleF7A614C8",
                     "Arn"
                   ]
@@ -327,7 +500,18 @@
                       {
                         "Ref": "AWS::Partition"
                       },
-                      ":iam::12345678:role/cdk-hnb659fds-deploy-role-12345678-test-region"
+                      ":iam::",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":role/cdk-hnb659fds-deploy-role-",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      "-",
+                      {
+                        "Ref": "AWS::Region"
+                      }
                     ]
                   ]
                 }
@@ -359,23 +543,28 @@
               {
                 "ActionTypeId": {
                   "Category": "Source",
-                  "Owner": "ThirdParty",
-                  "Provider": "GitHub",
+                  "Owner": "AWS",
+                  "Provider": "S3",
                   "Version": "1"
                 },
                 "Configuration": {
-                  "Owner": "OWNER",
-                  "Repo": "REPO",
-                  "Branch": "master",
-                  "OAuthToken": "not-a-secret",
-                  "PollForSourceChanges": true
+                  "S3Bucket": {
+                    "Ref": "SourceBucketDDD2130A"
+                  },
+                  "S3ObjectKey": "key"
                 },
-                "Name": "GitHub",
+                "Name": "S3",
                 "OutputArtifacts": [
                   {
-                    "Name": "Artifact_Source_GitHub"
+                    "Name": "Artifact_Source_S3"
                   }
                 ],
+                "RoleArn": {
+                  "Fn::GetAtt": [
+                    "TestPipelineSourceS3CodePipelineActionRoleEF21D3A0",
+                    "Arn"
+                  ]
+                },
                 "RunOrder": 1
               }
             ],
@@ -398,7 +587,7 @@
                 },
                 "InputArtifacts": [
                   {
-                    "Name": "Artifact_Source_GitHub"
+                    "Name": "Artifact_Source_S3"
                   }
                 ],
                 "Name": "Synth",
@@ -497,7 +686,18 @@
                         {
                           "Ref": "AWS::Partition"
                         },
-                        ":iam::12345678:role/cdk-hnb659fds-cfn-exec-role-12345678-test-region"
+                        ":iam::",
+                        {
+                          "Ref": "AWS::AccountId"
+                        },
+                        ":role/cdk-hnb659fds-cfn-exec-role-",
+                        {
+                          "Ref": "AWS::AccountId"
+                        },
+                        "-",
+                        {
+                          "Ref": "AWS::Region"
+                        }
                       ]
                     ]
                   },
@@ -519,7 +719,18 @@
                       {
                         "Ref": "AWS::Partition"
                       },
-                      ":iam::12345678:role/cdk-hnb659fds-deploy-role-12345678-test-region"
+                      ":iam::",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":role/cdk-hnb659fds-deploy-role-",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      "-",
+                      {
+                        "Ref": "AWS::Region"
+                      }
                     ]
                   ]
                 },
@@ -546,7 +757,18 @@
                       {
                         "Ref": "AWS::Partition"
                       },
-                      ":iam::12345678:role/cdk-hnb659fds-deploy-role-12345678-test-region"
+                      ":iam::",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":role/cdk-hnb659fds-deploy-role-",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      "-",
+                      {
+                        "Ref": "AWS::Region"
+                      }
                     ]
                   ]
                 },
@@ -693,7 +915,18 @@
                         {
                           "Ref": "AWS::Partition"
                         },
-                        ":iam::12345678:role/cdk-hnb659fds-cfn-exec-role-12345678-test-region"
+                        ":iam::",
+                        {
+                          "Ref": "AWS::AccountId"
+                        },
+                        ":role/cdk-hnb659fds-cfn-exec-role-",
+                        {
+                          "Ref": "AWS::AccountId"
+                        },
+                        "-",
+                        {
+                          "Ref": "AWS::Region"
+                        }
                       ]
                     ]
                   },
@@ -715,7 +948,18 @@
                       {
                         "Ref": "AWS::Partition"
                       },
-                      ":iam::12345678:role/cdk-hnb659fds-deploy-role-12345678-test-region"
+                      ":iam::",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":role/cdk-hnb659fds-deploy-role-",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      "-",
+                      {
+                        "Ref": "AWS::Region"
+                      }
                     ]
                   ]
                 },
@@ -742,7 +986,18 @@
                       {
                         "Ref": "AWS::Partition"
                       },
-                      ":iam::12345678:role/cdk-hnb659fds-deploy-role-12345678-test-region"
+                      ":iam::",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":role/cdk-hnb659fds-deploy-role-",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      "-",
+                      {
+                        "Ref": "AWS::Region"
+                      }
                     ]
                   ]
                 },
@@ -766,7 +1021,18 @@
                         {
                           "Ref": "AWS::Partition"
                         },
-                        ":iam::12345678:role/cdk-hnb659fds-cfn-exec-role-12345678-test-region"
+                        ":iam::",
+                        {
+                          "Ref": "AWS::AccountId"
+                        },
+                        ":role/cdk-hnb659fds-cfn-exec-role-",
+                        {
+                          "Ref": "AWS::AccountId"
+                        },
+                        "-",
+                        {
+                          "Ref": "AWS::Region"
+                        }
                       ]
                     ]
                   },
@@ -788,7 +1054,18 @@
                       {
                         "Ref": "AWS::Partition"
                       },
-                      ":iam::12345678:role/cdk-hnb659fds-deploy-role-12345678-test-region"
+                      ":iam::",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":role/cdk-hnb659fds-deploy-role-",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      "-",
+                      {
+                        "Ref": "AWS::Region"
+                      }
                     ]
                   ]
                 },
@@ -815,7 +1092,18 @@
                       {
                         "Ref": "AWS::Partition"
                       },
-                      ":iam::12345678:role/cdk-hnb659fds-deploy-role-12345678-test-region"
+                      ":iam::",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":role/cdk-hnb659fds-deploy-role-",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      "-",
+                      {
+                        "Ref": "AWS::Region"
+                      }
                     ]
                   ]
                 },
@@ -839,7 +1127,18 @@
                         {
                           "Ref": "AWS::Partition"
                         },
-                        ":iam::12345678:role/cdk-hnb659fds-cfn-exec-role-12345678-test-region"
+                        ":iam::",
+                        {
+                          "Ref": "AWS::AccountId"
+                        },
+                        ":role/cdk-hnb659fds-cfn-exec-role-",
+                        {
+                          "Ref": "AWS::AccountId"
+                        },
+                        "-",
+                        {
+                          "Ref": "AWS::Region"
+                        }
                       ]
                     ]
                   },
@@ -861,7 +1160,18 @@
                       {
                         "Ref": "AWS::Partition"
                       },
-                      ":iam::12345678:role/cdk-hnb659fds-deploy-role-12345678-test-region"
+                      ":iam::",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":role/cdk-hnb659fds-deploy-role-",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      "-",
+                      {
+                        "Ref": "AWS::Region"
+                      }
                     ]
                   ]
                 },
@@ -888,7 +1198,18 @@
                       {
                         "Ref": "AWS::Partition"
                       },
-                      ":iam::12345678:role/cdk-hnb659fds-deploy-role-12345678-test-region"
+                      ":iam::",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":role/cdk-hnb659fds-deploy-role-",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      "-",
+                      {
+                        "Ref": "AWS::Region"
+                      }
                     ]
                   ]
                 },
@@ -965,7 +1286,18 @@
                         {
                           "Ref": "AWS::Partition"
                         },
-                        ":iam::12345678:role/cdk-hnb659fds-cfn-exec-role-12345678-test-region"
+                        ":iam::",
+                        {
+                          "Ref": "AWS::AccountId"
+                        },
+                        ":role/cdk-hnb659fds-cfn-exec-role-",
+                        {
+                          "Ref": "AWS::AccountId"
+                        },
+                        "-",
+                        {
+                          "Ref": "AWS::Region"
+                        }
                       ]
                     ]
                   },
@@ -987,7 +1319,18 @@
                       {
                         "Ref": "AWS::Partition"
                       },
-                      ":iam::12345678:role/cdk-hnb659fds-deploy-role-12345678-test-region"
+                      ":iam::",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":role/cdk-hnb659fds-deploy-role-",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      "-",
+                      {
+                        "Ref": "AWS::Region"
+                      }
                     ]
                   ]
                 },
@@ -1014,7 +1357,18 @@
                       {
                         "Ref": "AWS::Partition"
                       },
-                      ":iam::12345678:role/cdk-hnb659fds-deploy-role-12345678-test-region"
+                      ":iam::",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":role/cdk-hnb659fds-deploy-role-",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      "-",
+                      {
+                        "Ref": "AWS::Region"
+                      }
                     ]
                   ]
                 },
@@ -1038,7 +1392,18 @@
                         {
                           "Ref": "AWS::Partition"
                         },
-                        ":iam::12345678:role/cdk-hnb659fds-cfn-exec-role-12345678-test-region"
+                        ":iam::",
+                        {
+                          "Ref": "AWS::AccountId"
+                        },
+                        ":role/cdk-hnb659fds-cfn-exec-role-",
+                        {
+                          "Ref": "AWS::AccountId"
+                        },
+                        "-",
+                        {
+                          "Ref": "AWS::Region"
+                        }
                       ]
                     ]
                   },
@@ -1060,7 +1425,18 @@
                       {
                         "Ref": "AWS::Partition"
                       },
-                      ":iam::12345678:role/cdk-hnb659fds-deploy-role-12345678-test-region"
+                      ":iam::",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":role/cdk-hnb659fds-deploy-role-",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      "-",
+                      {
+                        "Ref": "AWS::Region"
+                      }
                     ]
                   ]
                 },
@@ -1087,7 +1463,18 @@
                       {
                         "Ref": "AWS::Partition"
                       },
-                      ":iam::12345678:role/cdk-hnb659fds-deploy-role-12345678-test-region"
+                      ":iam::",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":role/cdk-hnb659fds-deploy-role-",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      "-",
+                      {
+                        "Ref": "AWS::Region"
+                      }
                     ]
                   ]
                 },
@@ -1126,6 +1513,133 @@
         "TestPipelineRole63C35BBD"
       ]
     },
+    "TestPipelineSourceS3CodePipelineActionRoleEF21D3A0": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":iam::",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":root"
+                    ]
+                  ]
+                }
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      }
+    },
+    "TestPipelineSourceS3CodePipelineActionRoleDefaultPolicy8B0350FD": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "s3:GetBucket*",
+                "s3:GetObject*",
+                "s3:List*"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "SourceBucketDDD2130A",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "SourceBucketDDD2130A",
+                          "Arn"
+                        ]
+                      },
+                      "/key"
+                    ]
+                  ]
+                }
+              ]
+            },
+            {
+              "Action": [
+                "s3:Abort*",
+                "s3:DeleteObject*",
+                "s3:PutObject",
+                "s3:PutObjectLegalHold",
+                "s3:PutObjectRetention",
+                "s3:PutObjectTagging",
+                "s3:PutObjectVersionTagging"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "TestPipelineArtifactsBucket026AF2F9",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "TestPipelineArtifactsBucket026AF2F9",
+                          "Arn"
+                        ]
+                      },
+                      "/*"
+                    ]
+                  ]
+                }
+              ]
+            },
+            {
+              "Action": [
+                "kms:Decrypt",
+                "kms:Encrypt",
+                "kms:GenerateDataKey*",
+                "kms:ReEncrypt*"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "TestPipelineArtifactsBucketEncryptionKey13258842",
+                  "Arn"
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "TestPipelineSourceS3CodePipelineActionRoleDefaultPolicy8B0350FD",
+        "Roles": [
+          {
+            "Ref": "TestPipelineSourceS3CodePipelineActionRoleEF21D3A0"
+          }
+        ]
+      }
+    },
     "TestPipelineBuildSynthCodePipelineActionRoleF7BF5926": {
       "Type": "AWS::IAM::Role",
       "Properties": {
@@ -1143,7 +1657,11 @@
                       {
                         "Ref": "AWS::Partition"
                       },
-                      ":iam::12345678:root"
+                      ":iam::",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":root"
                     ]
                   ]
                 }
@@ -1222,7 +1740,15 @@
                       {
                         "Ref": "AWS::Partition"
                       },
-                      ":logs:test-region:12345678:log-group:/aws/codebuild/",
+                      ":logs:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":log-group:/aws/codebuild/",
                       {
                         "Ref": "TestPipelineBuildSynthCdkBuildProject755D4B01"
                       },
@@ -1238,7 +1764,15 @@
                       {
                         "Ref": "AWS::Partition"
                       },
-                      ":logs:test-region:12345678:log-group:/aws/codebuild/",
+                      ":logs:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":log-group:/aws/codebuild/",
                       {
                         "Ref": "TestPipelineBuildSynthCdkBuildProject755D4B01"
                       }
@@ -1264,7 +1798,15 @@
                     {
                       "Ref": "AWS::Partition"
                     },
-                    ":codebuild:test-region:12345678:report-group/",
+                    ":codebuild:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":report-group/",
                     {
                       "Ref": "TestPipelineBuildSynthCdkBuildProject755D4B01"
                     },
@@ -1395,7 +1937,11 @@
                       {
                         "Ref": "AWS::Partition"
                       },
-                      ":iam::12345678:root"
+                      ":iam::",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":root"
                     ]
                   ]
                 }
@@ -1453,7 +1999,11 @@
                       {
                         "Ref": "AWS::Partition"
                       },
-                      ":iam::12345678:root"
+                      ":iam::",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":root"
                     ]
                   ]
                 }
@@ -1481,7 +2031,11 @@
                       {
                         "Ref": "AWS::Partition"
                       },
-                      ":iam::12345678:root"
+                      ":iam::",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":root"
                     ]
                   ]
                 }
@@ -1539,7 +2093,11 @@
                       {
                         "Ref": "AWS::Partition"
                       },
-                      ":iam::12345678:root"
+                      ":iam::",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":root"
                     ]
                   ]
                 }
@@ -1567,7 +2125,11 @@
                       {
                         "Ref": "AWS::Partition"
                       },
-                      ":iam::12345678:root"
+                      ":iam::",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":root"
                     ]
                   ]
                 }
@@ -1625,7 +2187,11 @@
                       {
                         "Ref": "AWS::Partition"
                       },
-                      ":iam::12345678:root"
+                      ":iam::",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":root"
                     ]
                   ]
                 }
@@ -1653,7 +2219,11 @@
                       {
                         "Ref": "AWS::Partition"
                       },
-                      ":iam::12345678:root"
+                      ":iam::",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":root"
                     ]
                   ]
                 }
@@ -1711,7 +2281,11 @@
                       {
                         "Ref": "AWS::Partition"
                       },
-                      ":iam::12345678:root"
+                      ":iam::",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":root"
                     ]
                   ]
                 }
@@ -1786,7 +2360,9 @@
       "Type": "AWS::Lambda::Function",
       "Properties": {
         "Code": {
-          "S3Bucket": "cdk-hnb659fds-assets-12345678-test-region",
+          "S3Bucket": {
+            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+          },
           "S3Key": "6c6c8f170c2cc5c6e35d90fe172fbc17cae75777b84707d58332dee79f444404.zip"
         },
         "Role": {
@@ -1842,7 +2418,15 @@
                       {
                         "Ref": "AWS::Partition"
                       },
-                      ":logs:test-region:12345678:log-group:/aws/codebuild/",
+                      ":logs:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":log-group:/aws/codebuild/",
                       {
                         "Ref": "TestPipelinePipelineApplicationSecurityCheckCDKSecurityCheckBEE4547C"
                       },
@@ -1858,7 +2442,15 @@
                       {
                         "Ref": "AWS::Partition"
                       },
-                      ":logs:test-region:12345678:log-group:/aws/codebuild/",
+                      ":logs:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":log-group:/aws/codebuild/",
                       {
                         "Ref": "TestPipelinePipelineApplicationSecurityCheckCDKSecurityCheckBEE4547C"
                       }
@@ -1884,7 +2476,15 @@
                     {
                       "Ref": "AWS::Partition"
                     },
-                    ":codebuild:test-region:12345678:report-group/",
+                    ":codebuild:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":report-group/",
                     {
                       "Ref": "TestPipelinePipelineApplicationSecurityCheckCDKSecurityCheckBEE4547C"
                     },
@@ -2104,7 +2704,9 @@
       "Type": "AWS::Lambda::Function",
       "Properties": {
         "Code": {
-          "S3Bucket": "cdk-hnb659fds-assets-12345678-test-region",
+          "S3Bucket": {
+            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+          },
           "S3Key": "6c6c8f170c2cc5c6e35d90fe172fbc17cae75777b84707d58332dee79f444404.zip"
         },
         "Role": {
@@ -2160,7 +2762,15 @@
                       {
                         "Ref": "AWS::Partition"
                       },
-                      ":logs:test-region:12345678:log-group:/aws/codebuild/",
+                      ":logs:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":log-group:/aws/codebuild/",
                       {
                         "Ref": "UnattachedStageStageApplicationSecurityCheckCDKSecurityCheckADCE795B"
                       },
@@ -2176,7 +2786,15 @@
                       {
                         "Ref": "AWS::Partition"
                       },
-                      ":logs:test-region:12345678:log-group:/aws/codebuild/",
+                      ":logs:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":log-group:/aws/codebuild/",
                       {
                         "Ref": "UnattachedStageStageApplicationSecurityCheckCDKSecurityCheckADCE795B"
                       }
@@ -2202,7 +2820,15 @@
                     {
                       "Ref": "AWS::Partition"
                     },
-                    ":codebuild:test-region:12345678:report-group/",
+                    ":codebuild:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":report-group/",
                     {
                       "Ref": "UnattachedStageStageApplicationSecurityCheckCDKSecurityCheckADCE795B"
                     },

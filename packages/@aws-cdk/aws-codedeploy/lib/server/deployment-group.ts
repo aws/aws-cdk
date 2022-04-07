@@ -8,7 +8,7 @@ import { ArnFormat } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnDeploymentGroup } from '../codedeploy.generated';
 import { AutoRollbackConfig } from '../rollback-config';
-import { arnForDeploymentGroup, renderAlarmConfiguration, renderAutoRollbackConfiguration } from '../utils';
+import { arnForDeploymentGroup, renderAlarmConfiguration, renderAutoRollbackConfiguration, validateName } from '../utils';
 import { IServerApplication, ServerApplication } from './application';
 import { IServerDeploymentConfig, ServerDeploymentConfig } from './deployment-config';
 import { LoadBalancer, LoadBalancerGeneration } from './load-balancer';
@@ -339,6 +339,10 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
 
   public get autoScalingGroups(): autoscaling.IAutoScalingGroup[] | undefined {
     return this._autoScalingGroups.slice();
+  }
+
+  protected validate(): string[] {
+    return validateName('Deployment group', this.physicalName);
   }
 
   private addCodeDeployAgentInstallUserData(asg: autoscaling.IAutoScalingGroup): void {

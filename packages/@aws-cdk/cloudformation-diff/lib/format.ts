@@ -340,7 +340,7 @@ class Formatter {
      */
     function normalizePath(p: string) {
       if (p.startsWith('/')) {
-        p = p.substr(1);
+        p = p.slice(1);
       }
 
       let parts = p.split('/');

@@ -445,7 +445,7 @@ export class StackOutput {
 }
 
 function stripPrefix(s: string, prefix: string) {
-  return s.startsWith(prefix) ? s.substr(prefix.length) : s;
+  return s.startsWith(prefix) ? s.slice(prefix.length) : s;
 }
 
 function isAssetManifest(s: cxapi.CloudArtifact): s is cxapi.AssetManifestArtifact {

@@ -159,7 +159,7 @@ export abstract class CfnRefElement extends CfnElement {
 
 function notTooLong(x: string) {
   if (x.length < 100) { return x; }
-  return x.substr(0, 47) + '...' + x.substr(x.length - 47);
+  return x.slice(0, 47) + '...' + x.slice(-47);
 }
 
 import { CfnReference } from './private/cfn-reference';

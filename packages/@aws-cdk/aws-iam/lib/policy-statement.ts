@@ -70,6 +70,9 @@ export class PolicyStatement {
   private readonly condition: { [key: string]: any } = { };
   private principalConditionsJson?: string;
 
+  // Hold on to those principals
+  private readonly _principals = new Array<IPrincipal>();
+
   constructor(props: PolicyStatementProps = {}) {
     // Validate actions
     for (const action of [...props.actions || [], ...props.notActions || []]) {
@@ -145,6 +148,7 @@ export class PolicyStatement {
    * @param principals IAM principals that will be added
    */
   public addPrincipals(...principals: IPrincipal[]) {
+    this._principals.push(...principals);
     if (Object.keys(principals).length > 0 && Object.keys(this.notPrincipal).length > 0) {
       throw new Error('Cannot add \'Principals\' to policy statement if \'NotPrincipals\' have been added');
     }
@@ -154,6 +158,15 @@ export class PolicyStatement {
       mergePrincipal(this.principal, fragment.principalJson);
       this.addPrincipalConditions(fragment.conditions);
     }
+  }
+
+  /**
+   * Expose principals to allow their ARNs to be replaced by account ID strings
+   * in policy statements for resources policies that don't allow full account ARNs,
+   * such as AWS::Logs::ResourcePolicy.
+   */
+  public get principals(): IPrincipal[] {
+    return [...this._principals];
   }
 
   /**
@@ -317,6 +330,25 @@ export class PolicyStatement {
    */
   public addAccountCondition(accountId: string) {
     this.addCondition('StringEquals', { 'sts:ExternalId': accountId });
+  }
+
+  /**
+   * Create a new `PolicyStatement` with the same exact properties
+   * as this one, except for the overrides
+   */
+  public copy(overrides: PolicyStatementProps = {}) {
+    return new PolicyStatement({
+      sid: overrides.sid ?? this.sid,
+      effect: overrides.effect ?? this.effect,
+      actions: overrides.actions ?? this.action,
+      notActions: overrides.notActions ?? this.notAction,
+
+      principals: overrides.principals,
+      notPrincipals: overrides.notPrincipals,
+
+      resources: overrides.resources ?? this.resource,
+      notResources: overrides.notResources ?? this.notResource,
+    });
   }
 
   /**

@@ -371,6 +371,9 @@ export class Stack extends CoreConstruct implements ITaggable {
     }
 
     this._stackName = props.stackName ?? this.generateStackName();
+    if (this._stackName.length > 128) {
+      throw new Error(`Stack name must be <= 128 characters. Stack name: '${this._stackName}'`);
+    }
     this.tags = new TagManager(TagType.KEY_VALUE, 'aws:cdk:stack', props.tags);
 
     if (!VALID_STACK_NAME_REGEX.test(this.stackName)) {
@@ -793,7 +796,7 @@ export class Stack extends CoreConstruct implements ITaggable {
         Annotations.of(this).addInfo(`Number of resources: ${numberOfResources} is approaching allowed maximum of ${this.maxResources}`);
       }
     }
-    fs.writeFileSync(outPath, JSON.stringify(template, undefined, 2));
+    fs.writeFileSync(outPath, JSON.stringify(template, undefined, 1));
 
     for (const ctx of this._missingContext) {
       if (lookupRoleArn != null) {

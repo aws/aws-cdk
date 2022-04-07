@@ -862,7 +862,7 @@ export class Project extends ProjectBase {
             // If the parameter name starts with / the resource name is not separated with a double '/'
             // arn:aws:ssm:region:1111111111:parameter/PARAM_NAME
             resourceName: envVariableValue.startsWith('/')
-              ? envVariableValue.substr(1)
+              ? envVariableValue.slice(1)
               : envVariableValue,
           }));
         }

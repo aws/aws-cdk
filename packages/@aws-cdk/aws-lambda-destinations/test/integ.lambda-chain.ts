@@ -20,7 +20,7 @@ class TestStack extends Stack {
     super(scope, id, props);
 
     const lambdaProps: lambda.FunctionProps = {
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       handler: 'index.handler',
       code: lambda.Code.fromInline(`exports.handler = async (event) => {
         console.log('Event: %j', event);

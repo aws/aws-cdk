@@ -86,5 +86,5 @@ export function transformObjectKeys(val: any, transform: (str: string) => string
  * This function lower cases the first character of the string provided.
  */
 export function lowerCaseFirstCharacter(str: string): string {
-  return str.length > 0 ? `${str[0].toLowerCase()}${str.substr(1)}` : str;
+  return str.length > 0 ? `${str[0].toLowerCase()}${str.slice(1)}` : str;
 }

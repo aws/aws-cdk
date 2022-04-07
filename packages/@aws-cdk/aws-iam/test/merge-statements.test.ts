@@ -441,6 +441,36 @@ test('fail merging typed and untyped principals', () => {
   ]);
 });
 
+test('keep merging even if it requires multiple passes', () => {
+  // [A, R1], [B, R1], [A, R2], [B, R2]
+  // -> [{A, B}, R1], [{A, B], R2]
+  // -> [{A, B}, {R1, R2}]
+  assertMerged([
+    new iam.PolicyStatement({
+      actions: ['service:A'],
+      resources: ['R1'],
+    }),
+    new iam.PolicyStatement({
+      actions: ['service:B'],
+      resources: ['R1'],
+    }),
+    new iam.PolicyStatement({
+      actions: ['service:A'],
+      resources: ['R2'],
+    }),
+    new iam.PolicyStatement({
+      actions: ['service:B'],
+      resources: ['R2'],
+    }),
+  ], [
+    {
+      Effect: 'Allow',
+      Action: ['service:A', 'service:B'],
+      Resource: ['R1', 'R2'],
+    },
+  ]);
+});
+
 function assertNoMerge(statements: iam.PolicyStatement[]) {
   const app = new App();
   const stack = new Stack(app, 'Stack');

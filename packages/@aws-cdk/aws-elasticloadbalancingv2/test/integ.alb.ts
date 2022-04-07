@@ -21,7 +21,7 @@ const listener = lb.addListener('Listener', {
 
 const group1 = listener.addTargets('Target', {
   port: 80,
-  targets: [new elbv2.IpTarget('10.0.128.4')],
+  targets: [new elbv2.IpTarget('10.0.128.6')],
   stickinessCookieDuration: cdk.Duration.minutes(5),
 });
 
@@ -35,6 +35,7 @@ const group2 = listener.addTargets('ConditionalTarget', {
   slowStart: cdk.Duration.minutes(1),
 });
 
+
 group1.metricTargetResponseTime().createAlarm(stack, 'ResponseTimeHigh1', {
   threshold: 5,
   evaluationPeriods: 2,
@@ -43,6 +44,11 @@ group1.metricTargetResponseTime().createAlarm(stack, 'ResponseTimeHigh1', {
 group2.metricTargetResponseTime().createAlarm(stack, 'ResponseTimeHigh2', {
   threshold: 5,
   evaluationPeriods: 2,
+});
+
+vpc.publicSubnets.forEach(subnet => {
+  group2.node.addDependency(subnet);
+  group1.node.addDependency(subnet);
 });
 
 app.synth();

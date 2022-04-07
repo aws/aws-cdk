@@ -5,7 +5,7 @@ import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnDeploymentGroup } from '../codedeploy.generated';
 import { AutoRollbackConfig } from '../rollback-config';
-import { arnForDeploymentGroup, renderAlarmConfiguration, renderAutoRollbackConfiguration } from '../utils';
+import { arnForDeploymentGroup, renderAlarmConfiguration, renderAutoRollbackConfiguration, validateName } from '../utils';
 import { ILambdaApplication, LambdaApplication } from './application';
 import { ILambdaDeploymentConfig, LambdaDeploymentConfig } from './deployment-config';
 
@@ -253,6 +253,10 @@ export class LambdaDeploymentGroup extends cdk.Resource implements ILambdaDeploy
       resourceArns: [this.deploymentGroupArn],
       actions: ['codedeploy:PutLifecycleEventHookExecutionStatus'],
     });
+  }
+
+  protected validate(): string[] {
+    return validateName('Deployment group', this.physicalName);
   }
 }
 

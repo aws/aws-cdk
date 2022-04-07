@@ -767,14 +767,8 @@ class ServicePrincipalToken implements cdk.IResolvable {
   public resolve(ctx: cdk.IResolveContext) {
     if (this.opts.region) {
       // Special case, handle it separately to not break legacy behavior.
-      return (
-        RegionInfo.get(this.opts.region).servicePrincipal(this.service) ??
-        Default.servicePrincipal(
-          this.service,
-          this.opts.region,
-          cdk.Aws.URL_SUFFIX,
-        )
-      );
+      return RegionInfo.get(this.opts.region).servicePrincipal(this.service) ??
+        Default.servicePrincipal(this.service, this.opts.region, cdk.Aws.URL_SUFFIX);
     }
 
     const stack = cdk.Stack.of(ctx.scope);
