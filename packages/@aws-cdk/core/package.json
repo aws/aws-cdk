@@ -145,13 +145,6 @@
     "build+extract": "yarn build && yarn rosetta:extract",
     "build+test+extract": "yarn build+test && yarn rosetta:extract"
   },
-  "exports": {
-    ".": "./lib/index.js",
-    "./package.json": "./package.json",
-    "./.jsii": "./.jsii",
-    "./.warnings.jsii.js": "./.warnings.jsii.js",
-    "./lib/helpers-internal": "./lib/helpers-internal/index.js"
-  },
   "cdk-build": {
     "cloudformation": "AWS::CloudFormation",
     "cfn2ts-core-import": ".",
@@ -168,6 +161,11 @@
     "statements": 55,
     "lines": 55,
     "branches": 35
+  },
+  "ubergen": {
+    "exports": {
+      "./lib/helpers-internal": "./lib/helpers-internal/index.js"
+    }
   },
   "keywords": [
     "aws",
