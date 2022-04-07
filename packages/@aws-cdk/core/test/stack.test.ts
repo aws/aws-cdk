@@ -20,6 +20,19 @@ describe('stack', () => {
     expect(toCloudFormation(stack)).toEqual({ });
   });
 
+  test('stack name cannot exceed 128 characters', () => {
+    // GIVEN
+    const app = new App({});
+    const reallyLongStackName = 'LookAtMyReallyLongStackNameThisStackNameIsLongerThan128CharactersThatIsNutsIDontThinkThereIsEnoughAWSAvailableToLetEveryoneHaveStackNamesThisLong';
+
+    // THEN
+    expect(() => {
+      new Stack(app, 'MyStack', {
+        stackName: reallyLongStackName,
+      });
+    }).toThrow(`Stack name must be <= 128 characters. Stack name: '${reallyLongStackName}'`);
+  });
+
   test('stack objects have some template-level propeties, such as Description, Version, Transform', () => {
     const stack = new Stack();
     stack.templateOptions.templateFormatVersion = 'MyTemplateVersion';
